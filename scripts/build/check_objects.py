@@ -77,6 +77,14 @@ class Context:
         self.retail = layout.Retail()
         self.addresses = {n: a for a, n, _s, _f in self.pieces.symbols.rows}
         self.gp = self.addresses["_gp"]
+        # Names splat made up for values it took for addresses; the linker
+        # script defines them.
+        undefined = self.obj_dir.parent / "splat" / "main.undefined_syms.txt"
+        if undefined.is_file():
+            for line in undefined.read_text().splitlines():
+                name, _, value = line.split("//")[0].strip().rstrip(";").partition("=")
+                if value:
+                    self.addresses.setdefault(name.strip(), int(value, 0))
 
     def address_of(self, name):
         address = self.addresses.get(name)
@@ -155,8 +163,9 @@ def check_unit(ctx, unit, verbose):
             if want_nobits != (section.sh_type == SHT_NOBITS):
                 errors.append(f"{name}: section type {section.sh_type}")
             cursor = start + size if section_name not in disassemble.CODE_SECTIONS else end
-        if cursor != hi:
-            errors.append(f"{section_name}: run ends 0x{cursor:08X}, retail 0x{hi:08X}")
+        run_end = expected[-1][2] if expected else hi
+        if cursor != run_end:
+            errors.append(f"{section_name}: run ends 0x{cursor:08X}, retail 0x{run_end:08X}")
 
     # Bytes and relocations.
     relocs = defaultdict(list)

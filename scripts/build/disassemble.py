@@ -20,8 +20,13 @@ A unit's run of a data section is cut at every symbol main.symbols.txt lists
 in it, and at every unnamed address (`D_<ADDR8>`) that splat's assembly refers
 to, so each such address is a symbol the unit defines; a run that does not
 start on a symbol starts with an invented `D_<ADDR8>`. Each piece runs to the
-next cut, so padding belongs to the datum before it. `.sbss` and `.bss` are cut
-the same way; the source defines those pieces itself (`pieces`).
+next cut, so padding belongs to the datum before it, except that a run stops
+at a symbol the linker script defines inside it: what follows is the script's
+to pad. `.sbss` and `.bss` are cut the same way; the source defines those
+pieces itself (`pieces`).
+
+Every file splat wrote is then given a local twin for each global label it
+branches to (`twin_branched_labels`).
 """
 
 import argparse
@@ -50,6 +55,17 @@ HEADER = '.include "macro.inc"\n\n.set noat\n.set noreorder\n\n'
 INVENTED = re.compile(r"\bD_([0-9A-F]{8})\b")
 SECTION_LINE = re.compile(r"^\s*\.section\s+([^\s,]+)")
 GLABEL = re.compile(r"^\s*glabel\s+(\S+)\s*$")
+
+BRANCH_TARGET = re.compile(
+    r"^(\s*/\*.*?\*/\s+b(?!reak\b)[a-z0-9]*\s+(?:[^,\s]+,\s*)*)"
+    r"([A-Za-z_$.][\w.$]*)[ \t]*$",
+    re.M,
+)
+GLOBAL_LABEL = re.compile(r"^[ \t]*(?:glabel|jlabel) (\S+)$", re.M)
+# gas treats a label starting with `.L` as local, and tools/mwccgap skips
+# exactly the lines that look like `.L...:` when it sizes a function.
+TWIN_PREFIX = ".L"
+TWIN_SUFFIX = "$b"
 
 
 def invented_name(address):
@@ -89,6 +105,45 @@ def referenced_addresses(lay):
     return found
 
 
+def local_twin(name):
+    return f"{TWIN_PREFIX}{name}{TWIN_SUFFIX}"
+
+
+def twin_branched_labels(text):
+    """Give a local twin to every global label this file branches to.
+
+    gas and mwld disagree by one instruction about an R_MIPS_PC16 addend, so a
+    branch to a global label links one short. Only a name defined here can
+    get a twin, and only the branches are repointed.
+    """
+    defined = set(GLOBAL_LABEL.findall(text))
+    branched = {m.group(2) for m in BRANCH_TARGET.finditer(text)} & defined
+    if not branched:
+        return text
+
+    text = BRANCH_TARGET.sub(
+        lambda m: m.group(1)
+        + (local_twin(m.group(2)) if m.group(2) in branched else m.group(2)),
+        text,
+    )
+    alternation = "|".join(re.escape(name) for name in branched)
+    return re.sub(
+        rf"^([ \t]*(?:glabel|jlabel) ({alternation}))$",
+        lambda m: f"{m.group(1)}\n{local_twin(m.group(2))}:",
+        text,
+        flags=re.M,
+    )
+
+
+def twin_split_files():
+    """Apply `twin_branched_labels` to every file splat wrote."""
+    for path in sorted((ROOT / layout.ASM).rglob("*.s")):
+        text = path.read_text(encoding="utf-8")
+        twinned = twin_branched_labels(text)
+        if twinned != text:
+            path.write_text(twinned, encoding="utf-8")
+
+
 class Pieces:
     """How each game unit's sections divide into symbols."""
 
@@ -98,6 +153,8 @@ class Pieces:
         if references is None:
             references = referenced_addresses(self.layout)
         self.references = sorted(references)
+        self.linker_marks = sorted(a for a, n, _s, _f in self.symbols.rows
+                                   if n in layout.LINKER_SYMBOLS and n != "_gp")
         self._cache = {}
 
     def listed(self, lo, hi):
@@ -109,6 +166,7 @@ class Pieces:
         key = (unit, section)
         if key in self._cache:
             return self._cache[key]
+        hi = next((mark for mark in self.linker_marks if lo < mark < hi), hi)
         names = dict(self.listed(lo, hi))
         if section not in CODE_SECTIONS:
             names.setdefault(lo, invented_name(lo))
@@ -292,6 +350,7 @@ def main():
     os.chdir(ROOT)
     if not args.no_splat:
         run_splat()
+        twin_split_files()
 
     lay = layout.Layout()
     pieces = Pieces(lay)

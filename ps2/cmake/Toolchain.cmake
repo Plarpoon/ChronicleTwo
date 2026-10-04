@@ -19,5 +19,5 @@ set(CC_DEP_FLAGS -MD)
 set(MW_LD ${TOOLS_DIR}/compilers/mw/2.4-001213/mwldps2.exe
     CACHE STRING "The MWLD executable that links the game")
 set(LD ${WIBO} ${MW_LD})
-set(LD_FLAGS -map -nostdlib -m _start -nodead -g)
+set(LD_FLAGS -map -nostdlib -m ENTRYPOINT -nodead -g)
 set(LD_SCRIPT ${CONFIG_DIR}/${BASENAME}.lcf)

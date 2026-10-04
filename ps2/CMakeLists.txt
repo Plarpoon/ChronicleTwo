@@ -306,11 +306,4 @@ add_dependencies(run iso)
 # objdiff and m2c
 #
 
-# cmake/Objdiff.cmake, when present, defines the `objdiff` and `ctx` targets
-# from everything above; until then both are empty.
-include(Objdiff OPTIONAL)
-foreach(target objdiff ctx)
-    if(NOT TARGET ${target})
-        add_custom_target(${target})
-    endif()
-endforeach()
+include(Objdiff)

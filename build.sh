@@ -23,8 +23,7 @@ require_rom
 # The build itself, the same inside a container as through the one started
 # below. CLEAN discards the build directory -- and nothing else under build/ --
 # under the lock every build of the tree takes (see scripts/build/cmake.sh).
-# The progress report follows the link once scripts/build/progress_report.py
-# exists.
+# The progress report follows the link.
 BUILD='
     set -e
     dir=${BUILD_DIR:-build/pal}
@@ -33,9 +32,7 @@ BUILD='
         flock .build.lock rm -rf "$dir"
     fi
     scripts/build/cmake.sh build ctx objdiff
-    if [ -f scripts/build/progress_report.py ]; then
-        python3 scripts/build/progress_report.py
-    fi
+    python3 scripts/build/progress_report.py
 '
 
 if in_container; then

@@ -44,7 +44,7 @@ import layout  # noqa: E402
 
 MW_DIR = "tools/compilers/mw/3.0-011126"
 LIB_INCLUDE_DIRS = "ps2/include/std;ps2/include/sce"
-CC_FLAGS = ["-opt", "all", "-c", "-Cpp_exceptions", "off", "-RTTI", "off", "-i", "ps2/include"]
+CC_FLAGS = ["-O3,p", "-strings", "readonly", "-c", "-Cpp_exceptions", "off", "-RTTI", "off", "-i", "ps2/include"]
 DRAFT_DIR = Path("build/re/draft")
 CHECK_DIR = Path("build/re/check")
 STT_FUNC = 2

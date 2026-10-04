@@ -1,4 +1,5 @@
 #include "common.h"
+#include "charasetup.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/charasetup", GetCharacterSnd__FP16CUserDataManageriPc);

@@ -356,10 +356,7 @@ public:
      * @address 0x1698E0
      * @size 0x50
      */
-    virtual void SetPosition(float x, float y, float z) {
-        sceVu0FVECTOR position = {x, y, z, 1.0f};
-        SetPosition(position);
-    }
+    virtual void SetPosition(float x, float y, float z);
 
     /**
      * Draws the model and the cloth through the drawing list when the character is to be drawn.

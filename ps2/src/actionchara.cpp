@@ -1,4 +1,5 @@
 #include "common.h"
+#include "actionchara.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", ResetAccele__12CActionCharaFv);

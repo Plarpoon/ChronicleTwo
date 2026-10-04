@@ -11,7 +11,7 @@ set(AS_FLAGS -EL -march=r5900 -mabi=eabi -mno-pdr -non_shared -G0 -I ${INCLUDE_D
 # `-MD` has it write the header dependencies the wrapper turns into a depfile.
 set(MW_CC_DIR ${TOOLS_DIR}/compilers/mw/3.0-011126
     CACHE STRING "Directory holding mwccps2.exe")
-set(CC_FLAGS -opt all -c -Cpp_exceptions off -RTTI off -i ${INCLUDE_DIR})
+set(CC_FLAGS -O3,p -strings readonly -c -Cpp_exceptions off -RTTI off -i ${INCLUDE_DIR})
 set(CC_DEP_FLAGS -MD)
 
 # MWLD, run under wibo, links the executable from every object in

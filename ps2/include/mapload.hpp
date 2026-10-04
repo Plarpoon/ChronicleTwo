@@ -43,7 +43,7 @@ enum FUNC_POINT_TYPE {
     FUNC_POINT_PLIGHT = 4, /**< Lights the surroundings as a point light, script word "plight". */
     FUNC_POINT_ANIME = 5,  /**< Animates a frame of a map piece, script word "anime". */
     FUNC_POINT_EVENT = 6,  /**< Starts an event when the player reaches it, script word "event". */
-    FUNC_POINT_INVENT = 7, /**< Invention spot, script word "invent". */
+    FUNC_POINT_INVENT = 7, /**< Covers a box, script word "invent". */
     FUNC_POINT_SOUND = 8,  /**< Plays a sound effect around it, script word "sound". */
     FUNC_POINT_POS = 9,    /**< Marks a named position, script word "pos". */
     FUNC_POINT_TYPE_NUM,   /**< Number of kinds, and of lists in a function point manager. */
@@ -55,7 +55,7 @@ enum FUNC_POINT_TYPE {
  *
  */
 enum FUNC_EVENT_FLAG {
-    FUNC_EVENT_EVERY = 0x1,          /**< Starts on contact, configuration word "every". */
+    FUNC_EVENT_EVERY = 0x1,          /**< Set by the configuration word "every". */
     FUNC_EVENT_ACTION = 0x2,         /**< Starts only on the action button. */
     FUNC_EVENT_ITEM = 0x4,           /**< Starts only when an item is used. */
     FUNC_EVENT_DOOR = 0x8,           /**< A door, whose point is moved in front of its position. */

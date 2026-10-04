@@ -18,35 +18,6 @@ class mgCDrawPrim;
 
 /**
  *
- * Rectangle given by its top-left corner and its extent.
- *
- */
-struct RECT {
-    s32 x;      /**< Distance of the left edge from the left of the screen. */
-    s32 y;      /**< Distance of the top edge from the top of the screen. */
-    s32 width;  /**< Distance from the left edge to the right edge. */
-    s32 height; /**< Distance from the top edge to the bottom edge. */
-};
-
-STATIC_ASSERT(sizeof(RECT) == 0x10);
-
-/**
- *
- * Colour in the layout of the GS RGBAQ register.
- *
- */
-struct RGBAQ_TYPE {
-    u8 r;  /**< Red. */
-    u8 g;  /**< Green. */
-    u8 b;  /**< Blue. */
-    u8 a;  /**< Alpha; 0x80 is fully opaque. */
-    float q; /**< Q value of the register. */
-} __attribute__((aligned(8)));
-
-STATIC_ASSERT(sizeof(RGBAQ_TYPE) == 0x8);
-
-/**
- *
  * Sizes of the message window's tables.
  *
  */

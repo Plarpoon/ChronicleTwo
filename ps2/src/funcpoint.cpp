@@ -1,4 +1,5 @@
 #include "common.h"
+#include "funcpoint.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", CheckTime__Ffff);

@@ -1,8 +1,27 @@
 #include "common.h"
+#include "mainloop3.hpp"
+#include "hddinstall.hpp"
+
+extern int HddConnect;
+extern int AppInstall;
+extern int FreeSpace;
+extern int sel_hdd;
+extern int now_install;
+extern int error_code;
+extern u_long128 *inst_work;
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop3", FutureMapSelect__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop3", InitHDDMenu__FP1);
+void InitHDDMenu(u_long128 *work) {
+    HddConnect = HddConectCheck(0);
+    AppInstall = CheckAppInstall();
+    int space = CheckInstallSpace();
+    inst_work = work;
+    sel_hdd = HDD_MENU_INSTALL;
+    FreeSpace = space;
+    now_install = 0;
+    error_code = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop3", HDDMenuLoop__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop3", EmergencyMessage__Fi);
 

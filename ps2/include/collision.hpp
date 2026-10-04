@@ -2,6 +2,7 @@
 
 #include "common.h"
 
+#include <cstring>
 #include <libvu0.h>
 
 #include "mg_drawenv.hpp"
@@ -74,7 +75,7 @@ public:
      * @address 0x148A50
      * @size 0x8
      */
-    virtual void CreateBBox();
+    virtual void CreateBBox() {}
 
     /**
      * Reports whether a point lies inside the bounds.
@@ -93,7 +94,7 @@ public:
      * @address 0x148A60
      * @size 0x8
      */
-    virtual int GetMaxY(float *position);
+    virtual int GetMaxY(float *position) { return 0; }
 
     /**
      * Finds where a segment first meets the geometry; the empty box
@@ -122,7 +123,7 @@ public:
      * @address 0x148A40
      * @size 0x10
      */
-    virtual void Copy(CCollision &dest, mgCMemory *memory);
+    virtual void Copy(CCollision &dest, mgCMemory *memory) { dest.bbox = bbox; }
 
     /**
      * Clears the bounds.
@@ -131,7 +132,10 @@ public:
      * @address 0x148A70
      * @size 0x14
      */
-    virtual void Initialize();
+    virtual void Initialize() {
+        unk_00 = 0;
+        memset(&bbox, 0, sizeof(bbox));
+    }
 };
 
 STATIC_ASSERT(sizeof(CCollision) == 0x40);
@@ -187,7 +191,11 @@ public:
      * @address 0x148A00
      * @size 0x3C
      */
-    virtual void Initialize();
+    virtual void Initialize() {
+        CCollision::Initialize();
+        poly = 0;
+        poly_count = 0;
+    }
 
     /**
      * Copies the bounds and triangles into other geometry; the triangles
@@ -276,7 +284,7 @@ public:
      * @address 0x1489F0
      * @size 0x8
      */
-    virtual int Draw(mgCDrawManager *manager);
+    virtual int Draw(mgCDrawManager *manager) { return 0; }
 
     /**
      * Draws nothing, since collision geometry is never seen.
@@ -285,7 +293,7 @@ public:
      * @address 0x1489E0
      * @size 0x8
      */
-    virtual int Draw(u_int *packet, mgCDrawManager *manager);
+    virtual int Draw(u_int *packet, mgCDrawManager *manager) { return 0; }
 };
 
 STATIC_ASSERT(sizeof(CColFrame) == 0x120);

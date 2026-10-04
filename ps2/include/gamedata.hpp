@@ -49,6 +49,7 @@ enum ITEM_USE_TARGET_TYPE {
     ITEM_USE_TARGET_ITEM = 1,    /**< An owned item, a CGameDataUsed. */
     ITEM_USE_TARGET_ROBO = 2,    /**< The ridepod. */
     ITEM_USE_TARGET_MONSTER = 3, /**< The monster transformation. */
+    ITEM_USE_TARGET_NONE = -1,   /**< No target. */
 };
 
 /**
@@ -241,6 +242,13 @@ public:
         void          *data; /**< Target of any kind. */
         CGameDataUsed *item; /**< Target owned item, for ITEM_USE_TARGET_ITEM. */
     } target;                /**< The target itself. */
+
+    /**
+     *
+     * Creates a target that points at nothing.
+     *
+     */
+    CItemUseTarget() { type = ITEM_USE_TARGET_NONE; }
 
     /**
      * Sets the kind of the target and, for a known kind, the target itself.

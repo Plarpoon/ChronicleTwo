@@ -28,6 +28,7 @@ enum MAP_TIME_BAND {
     MAP_TIME_BAND_EVENING = 1, /**< From 17:00 until 21:00. */
     MAP_TIME_BAND_NIGHT = 2,   /**< From 21:00 until 6:00. */
     MAP_TIME_BAND_MORNING = 3, /**< From 6:00 until 9:00. */
+    MAP_TIME_BAND_NUM = 4,     /**< Number of bands, and the number of light sets that follow them one to one. */
 };
 
 /**
@@ -107,16 +108,6 @@ public:
      * @size 0x30
      */
     CMapLightingInfo() { memset(this, 0, sizeof(CMapLightingInfo)); }
-
-    /**
-     *
-     * Copies every value of another lighting set into this one.
-     *
-     * @mangled __as__16CMapLightingInfoFRC16CMapLightingInfo
-     * @address 0x162A50
-     * @size 0x120
-     */
-    CMapLightingInfo &operator=(const CMapLightingInfo &other);
 };
 STATIC_ASSERT(sizeof(CMapLightingInfo) == 0x1D0);
 
@@ -442,7 +433,12 @@ MAP_TIME_BAND GetTimeBand(float time);
  * @address 0x163050
  * @size 0x30
  */
-float mgAbs(float value);
+inline float mgAbs(float value) {
+    if (value < 0.0f) {
+        value = -value;
+    }
+    return value;
+}
 
 /**
  *
@@ -452,4 +448,10 @@ float mgAbs(float value);
  * @address 0x163240
  * @size 0x20
  */
-unsigned int algn16_size(unsigned int size);
+inline unsigned int algn16_size(unsigned int size) {
+    unsigned int units = size >> 4;
+    if (size & 0xF) {
+        units = (size >> 4) + 1;
+    }
+    return units;
+}

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "eventsprite.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", ParabolicInitialVectorY__Fffff);

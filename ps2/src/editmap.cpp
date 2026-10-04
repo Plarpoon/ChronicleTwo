@@ -1,4 +1,5 @@
 #include "common.h"
+#include "editmap.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", Iam__8CEditMapFv);

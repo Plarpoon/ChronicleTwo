@@ -1,4 +1,5 @@
 #include "common.h"
+#include "editevent.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editevent", Reset__10CEditEventFv);

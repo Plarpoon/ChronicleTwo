@@ -1,4 +1,5 @@
 #include "common.h"
+#include "fishingobj.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", SetFishingMode__Fi);

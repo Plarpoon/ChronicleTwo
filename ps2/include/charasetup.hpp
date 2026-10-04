@@ -64,6 +64,16 @@ STATIC_ASSERT(sizeof(ROBO_INFO_DATA) == 0x24);
 extern ROBO_INFO_BODY robo_info_body[11];
 
 /**
+ * Record of the ridepod's files and behaviour that GetRoboPartsInfo
+ * fills and returns.
+ *
+ * @mangled robo_dat
+ * @address 0x1EF7830
+ * @size 0x30
+ */
+extern ROBO_INFO_DATA robo_dat;
+
+/**
  * Writes the path of the sound bank of a main character: Max's chosen by
  * his equipped weapon, Monica's, or the ridepod's from its arm.
  *

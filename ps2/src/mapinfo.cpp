@@ -1,44 +1,821 @@
 #include "common.h"
 #include "mapinfo.hpp"
 
+#include <cmath>
+#include <cstdio>
+#include <cstring>
+#include <libvu0.h>
+
+#include "mg_math.hpp"
+#include "mg_memory.hpp"
+#include "scriptinterpreter.hpp"
+
+// mglib.hpp cannot be included beside mapload.hpp (both declare mgFOG_PARAM).
+extern int mgScreenWidth;
+
+#ifdef NONMATCHING
+static int mapIMG(SPI_STACK *stack, int argument_count);
+static int mapPCP(SPI_STACK *stack, int argument_count);
+static int mapACTIVE_LIGHT_SET(SPI_STACK *stack, int argument_count);
+static int mapLIGHT_SET(SPI_STACK *stack, int argument_count);
+static int mapFOV(SPI_STACK *stack, int argument_count);
+static int mapBGCOLOR(SPI_STACK *stack, int argument_count);
+static int mapBGCOLOR2(SPI_STACK *stack, int argument_count);
+static int mapAMBIENT(SPI_STACK *stack, int argument_count);
+static int mapLIGHT(SPI_STACK *stack, int argument_count);
+static int mapPLIGHT(SPI_STACK *stack, int argument_count);
+static int mapFOG_ENABLE(SPI_STACK *stack, int argument_count);
+static int mapFOG(SPI_STACK *stack, int argument_count);
+static int mapLIGHT_SET_END(SPI_STACK *stack, int argument_count);
+static int mapFLOOR(SPI_STACK *stack, int argument_count);
+static int mapCHARA_POS(SPI_STACK *stack, int argument_count);
+static int mapTIME_FLAG(SPI_STACK *stack, int argument_count);
+static int mapTIME_LIGHT_NUM(SPI_STACK *stack, int argument_count);
+static int mapDEF_FOOT(SPI_STACK *stack, int argument_count);
+static int mapSKY_INFO(SPI_STACK *stack, int argument_count);
+static int mapLENS_FLARE(SPI_STACK *stack, int argument_count);
+static int mapTIME_CFADE(SPI_STACK *stack, int argument_count);
+static int mapALL_SCISSOR(SPI_STACK *stack, int argument_count);
+static int mapCHARA_LIGHT_ADJUST(SPI_STACK *stack, int argument_count);
+static int amapIMG(SPI_STACK *stack, int argument_count);
+static int amapPCP(SPI_STACK *stack, int argument_count);
+
+/**
+ * Tags of a map's configuration script and the routines that read them.
+ */
+static SPI_TAG_PARAM mapinfo_tag[] = {
+    { "IMG", mapIMG },
+    { "PCP", mapPCP },
+    { "ACTIVE_LIGHT_SET", mapACTIVE_LIGHT_SET },
+    { "LIGHT_SET", mapLIGHT_SET },
+    { "FOV", mapFOV },
+    { "BGCOLOR", mapBGCOLOR },
+    { "BGCOLOR2", mapBGCOLOR2 },
+    { "AMBIENT", mapAMBIENT },
+    { "LIGHT", mapLIGHT },
+    { "PLIGHT", mapPLIGHT },
+    { "FOG_ENABLE", mapFOG_ENABLE },
+    { "FOG", mapFOG },
+    { "LIGHT_SET_END", mapLIGHT_SET_END },
+    { "FLOOR", mapFLOOR },
+    { "CHARA_POS", mapCHARA_POS },
+    { "TIME_FLAG", mapTIME_FLAG },
+    { "TIME_LIGHT_NUM", mapTIME_LIGHT_NUM },
+    { "DEF_FOOT", mapDEF_FOOT },
+    { "SKY_INFO", mapSKY_INFO },
+    { "LENS_FLARE", mapLENS_FLARE },
+    { "TIME_CFADE", mapTIME_CFADE },
+    { "ALL_SCISSOR", mapALL_SCISSOR },
+    { "CHARA_LIGHT_ADJUST", mapCHARA_LIGHT_ADJUST },
+    { NULL, NULL },
+};
+
+/**
+ * Tags of a map's additional configuration script and the routines that read them.
+ */
+static SPI_TAG_PARAM add_mapinfo_tag[] = {
+    { "IMG", amapIMG },
+    { "PCP", amapPCP },
+    { NULL, NULL },
+};
+
+/**
+ * Map settings being filled in by the running configuration script.
+ */
+static CMapInfo *MapInfo;
+
+/**
+ * Memory that the copies of the script's names are taken from.
+ */
+static mgCMemory *MapInfoStack;
+
+/**
+ * Index of the next texture pack name the configuration script gives.
+ */
+static int now_img_num;
+
+/**
+ * Index of the next model pack name the configuration script gives.
+ */
+static int now_pcp_num;
+
+/**
+ * Lighting set that the configuration script's lighting tags fill in, or null outside a set.
+ */
+static CMapLightingInfo *LightingInfo;
+#endif
+
 // Code (.text)
+#ifdef NONMATCHING
+void CCameraInfo::Initialize() {
+    int i;
+
+    pos_num = 0;
+    for (i = 0; i < 8; i++) {
+        mgZeroVectorW(pos[i]);
+    }
+
+    rect_num = 4;
+    for (i = 0; i < rect_num; i++) {
+        rect[i] = NULL;
+    }
+
+    draw_info_num = 4;
+    for (i = 0; i < draw_info_num; i++) {
+        draw_info[i].Initialize();
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", Initialize__11CCameraInfoFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", GetDrawInfo__11CCameraInfoFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", Initialize__8CMapInfoFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", GetImgName__8CMapInfoFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", GetPCPName__8CMapInfoFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", GetMapFile__8CMapInfoFPi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", GetAddMapFile__8CMapInfoFPi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", GetLightingInfo__8CMapInfoFi);
+#endif
+
+CCameraDrawInfo *CCameraInfo::GetDrawInfo(int index) {
+    if (index < 0 || index >= draw_info_num) {
+        return NULL;
+    }
+    return &draw_info[index];
+}
+
+void CMapInfo::Initialize() {
+    memset(this, 0, sizeof(CMapInfo));
+    time_light_num = 4;
+    fixed_time = 12.0f;
+    lens_flare = 1;
+}
+
+char *CMapInfo::GetImgName(int index) {
+    if (index < 0 || index >= img_num) {
+        return NULL;
+    }
+    return img_name[index];
+}
+
+char *CMapInfo::GetPCPName(int index) {
+    if (index < 0 || index >= pcp_num) {
+        return NULL;
+    }
+    return pcp_name[index];
+}
+
+char *CMapInfo::GetMapFile(int *size) {
+    *size = map_file_size;
+    return map_file;
+}
+
+char *CMapInfo::GetAddMapFile(int *size) {
+    *size = add_map_file_size;
+    return add_map_file;
+}
+
+CMapLightingInfo *CMapInfo::GetLightingInfo(int index) {
+    if (index < 0 || index >= lighting_info_num) {
+        return NULL;
+    }
+    return &lighting_info[index];
+}
+
+#ifdef NONMATCHING
+/**
+ * Adds a texture pack to the map, keeping a copy of its name.
+ * Reads the IMG tag: the pack's name.
+ * Gives 1 on success, 0 when the list is full or the name is missing.
+ */
+static int mapIMG(SPI_STACK *stack, int argument_count) {
+    if (now_img_num < MapInfo->img_num && argument_count > 0) {
+        char *name = spiGetStackString(stack);
+        if (name == NULL) {
+            return 0;
+        }
+
+        u32 size = strlen(name) + 1;
+        int qwc = size >> 4;
+        if (size & 0xF) {
+            qwc++;
+        }
+        char *copy = (char *)MapInfoStack->Alloc(qwc);
+        strcpy(copy, name);
+        MapInfo->img_name[now_img_num] = copy;
+        now_img_num++;
+        return 1;
+    }
+    return 0;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapIMG__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Adds a model pack to the map, keeping a copy of its name.
+ * Reads the PCP tag: the pack's name.
+ * Gives 1 on success, 0 when the list is full or the name is missing.
+ */
+static int mapPCP(SPI_STACK *stack, int argument_count) {
+    if (now_pcp_num < MapInfo->pcp_num && argument_count > 0) {
+        char *name = spiGetStackString(stack);
+        if (name == NULL) {
+            return 0;
+        }
+
+        u32 size = strlen(name) + 1;
+        int qwc = size >> 4;
+        if (size & 0xF) {
+            qwc++;
+        }
+        char *copy = (char *)MapInfoStack->Alloc(qwc);
+        strcpy(copy, name);
+        MapInfo->pcp_name[now_pcp_num] = copy;
+        now_pcp_num++;
+        return 1;
+    }
+    return 0;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapPCP__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Chooses the lighting set used when lighting does not follow the time of day.
+ * Reads the ACTIVE_LIGHT_SET tag: the set's index.
+ * Always gives 1.
+ */
+static int mapACTIVE_LIGHT_SET(SPI_STACK *stack, int argument_count) {
+    MapInfo->active_light_no = spiGetStackInt(stack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapACTIVE_LIGHT_SET__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Starts the lighting set that the following lighting tags fill in.
+ * Reads the LIGHT_SET tag: the set's index.
+ * Gives 1 when the index names a set, 0 otherwise.
+ */
+static int mapLIGHT_SET(SPI_STACK *stack, int argument_count) {
+    LightingInfo = MapInfo->GetLightingInfo(spiGetStackInt(stack));
+    return LightingInfo != NULL;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapLIGHT_SET__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the projection of the current lighting set to a horizontal field of view of 52 degrees.
+ * Reads the FOV tag; its arguments are not used.
+ * Gives 1 inside a lighting set, 0 otherwise.
+ */
+static int mapFOV(SPI_STACK *stack, int argument_count) {
+    if (LightingInfo == NULL) {
+        return 0;
+    }
+    LightingInfo->projection = 400.0f;
+    LightingInfo->projection = (mgScreenWidth / 2.0f) / tanf(0.45378563f);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapFOV__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the background colour of the current lighting set.
+ * Reads the BGCOLOR tag: red, green and blue, 0 to 255.
+ * Gives 1 inside a lighting set, 0 otherwise.
+ */
+static int mapBGCOLOR(SPI_STACK *stack, int argument_count) {
+    if (LightingInfo == NULL) {
+        return 0;
+    }
+    LightingInfo->bg_color[0] = spiGetStackFloat(&stack[0]);
+    LightingInfo->bg_color[1] = spiGetStackFloat(&stack[1]);
+    LightingInfo->bg_color[2] = spiGetStackFloat(&stack[2]);
+    LightingInfo->bg_color[3] = 128.0f;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapBGCOLOR__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the second background colour of the current lighting set; black takes the first one.
+ * Reads the BGCOLOR2 tag: red, green and blue, 0 to 255.
+ * Gives 1 inside a lighting set, 0 otherwise.
+ */
+static int mapBGCOLOR2(SPI_STACK *stack, int argument_count) {
+    if (LightingInfo == NULL) {
+        return 0;
+    }
+    LightingInfo->bg_color2[0] = spiGetStackFloat(&stack[0]);
+    LightingInfo->bg_color2[1] = spiGetStackFloat(&stack[1]);
+    LightingInfo->bg_color2[2] = spiGetStackFloat(&stack[2]);
+    LightingInfo->bg_color2[3] = 128.0f;
+    if (LightingInfo->bg_color2[0] == 0.0f && LightingInfo->bg_color2[1] == 0.0f &&
+        LightingInfo->bg_color2[2] == 0.0f) {
+        LightingInfo->bg_color2[0] = LightingInfo->bg_color[0];
+        LightingInfo->bg_color2[1] = LightingInfo->bg_color[1];
+        LightingInfo->bg_color2[2] = LightingInfo->bg_color[2];
+        LightingInfo->bg_color2[3] = LightingInfo->bg_color[3];
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapBGCOLOR2__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the ambient light colour of the current lighting set.
+ * Reads the AMBIENT tag: red, green and blue, 0 to 255.
+ * Gives 1 inside a lighting set, 0 otherwise.
+ */
+static int mapAMBIENT(SPI_STACK *stack, int argument_count) {
+    if (LightingInfo == NULL) {
+        return 0;
+    }
+    LightingInfo->ambient[0] = spiGetStackFloat(&stack[0]);
+    LightingInfo->ambient[1] = spiGetStackFloat(&stack[1]);
+    LightingInfo->ambient[2] = spiGetStackFloat(&stack[2]);
+    LightingInfo->ambient[3] = 128.0f;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapAMBIENT__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the direction and, optionally, the colour of one directional light of the current lighting set.
+ * Reads the LIGHT tag: light index (0 to 3), direction x, y, z, then optionally red, green, blue.
+ * Gives 1 on success, 0 outside a lighting set, for a bad index or too few arguments.
+ */
+static int mapLIGHT(SPI_STACK *stack, int argument_count) {
+    sceVu0FVECTOR vector;
+
+    if (LightingInfo == NULL) {
+        return 0;
+    }
+
+    int light = spiGetStackInt(&stack[0]);
+    if (light < 0 || light >= 4) {
+        return 0;
+    }
+    if (argument_count < 4) {
+        return 0;
+    }
+
+    spiGetStackVector(vector, &stack[1]);
+    sceVu0Normalize(vector, vector);
+    LightingInfo->light_dir[0][light] = vector[0];
+    LightingInfo->light_dir[1][light] = vector[1];
+    LightingInfo->light_dir[2][light] = vector[2];
+
+    if (argument_count > 6) {
+        spiGetStackVector(vector, &stack[4]);
+        vector[3] = 0.0f;
+        sceVu0CopyVector(LightingInfo->light_color[light], vector);
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapLIGHT__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets one point light of the current lighting set and switches point lights on.
+ * Reads the PLIGHT tag: light index (0 to 3), power, position x, y, z, colour red, green, blue.
+ * Gives 1 on success, 0 outside a lighting set or for a bad index.
+ */
+static int mapPLIGHT(SPI_STACK *stack, int argument_count) {
+    if (LightingInfo == NULL) {
+        return 0;
+    }
+
+    int light = spiGetStackInt(&stack[0]);
+    if (light < 0 || light >= 4) {
+        return 0;
+    }
+
+    LightingInfo->point_light[light].power = spiGetStackFloat(&stack[1]);
+    spiGetStackVector(LightingInfo->point_light[light].pos, &stack[2]);
+    LightingInfo->point_light[light].pos[3] = 1.0f;
+    spiGetStackVector(LightingInfo->point_light[light].color, &stack[5]);
+    LightingInfo->point_light[light].color[3] = 0.0f;
+    LightingInfo->plight_enable = 1;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapPLIGHT__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Switches the fog of the current lighting set on or off.
+ * Reads the FOG_ENABLE tag: non-zero for on.
+ * Gives 1 inside a lighting set, 0 otherwise.
+ */
+static int mapFOG_ENABLE(SPI_STACK *stack, int argument_count) {
+    if (LightingInfo == NULL) {
+        return 0;
+    }
+    LightingInfo->fog_enable = spiGetStackInt(stack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapFOG_ENABLE__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the fog of the current lighting set; colour and values left out take white, 0 and 255.
+ * Reads the FOG tag: near and far distances, optionally red, green, blue, then optionally two fog values.
+ * Gives 1 inside a lighting set, 0 otherwise.
+ */
+static int mapFOG(SPI_STACK *stack, int argument_count) {
+    if (LightingInfo == NULL) {
+        return 0;
+    }
+
+    LightingInfo->fog.r = 0xFF;
+    LightingInfo->fog.g = 0xFF;
+    LightingInfo->fog.b = 0xFF;
+    LightingInfo->fog.offset = 0.0f;
+    LightingInfo->fog.far_value = 255.0f;
+
+    LightingInfo->fog.near_dist = spiGetStackFloat(&stack[0]);
+    LightingInfo->fog.far_dist = spiGetStackFloat(&stack[1]);
+    SPI_STACK *next = &stack[2];
+    if (argument_count > 2) {
+        LightingInfo->fog.r = spiGetStackInt(&stack[2]);
+        LightingInfo->fog.g = spiGetStackInt(&stack[3]);
+        LightingInfo->fog.b = spiGetStackInt(&stack[4]);
+        next = &stack[5];
+    }
+    if (argument_count > 5) {
+        LightingInfo->fog.offset = spiGetStackFloat(&next[0]);
+        LightingInfo->fog.far_value = spiGetStackFloat(&next[1]);
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapFOG__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Ends the lighting set that the lighting tags fill in.
+ * Reads the LIGHT_SET_END tag, which has no arguments.
+ * Always gives 1.
+ */
+static int mapLIGHT_SET_END(SPI_STACK *stack, int argument_count) {
+    LightingInfo = NULL;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapLIGHT_SET_END__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the map's FLOOR value.
+ * Reads the FLOOR tag: one number.
+ * Always gives 1.
+ */
+static int mapFLOOR(SPI_STACK *stack, int argument_count) {
+    MapInfo->floor = spiGetStackFloat(stack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapFLOOR__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the map's character position.
+ * Reads the CHARA_POS tag: x, y, z.
+ * Always gives 1.
+ */
+static int mapCHARA_POS(SPI_STACK *stack, int argument_count) {
+    spiGetStackVector(MapInfo->chara_pos, stack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapCHARA_POS__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets how the map follows the time of day.
+ * Reads the TIME_FLAG tag: follow the clock, blend lighting, then optionally the fixed hour and its switch.
+ * Always gives 1.
+ */
+static int mapTIME_FLAG(SPI_STACK *stack, int argument_count) {
+    MapInfo->time_enable = spiGetStackInt(&stack[0]);
+    MapInfo->time_light_blend = spiGetStackInt(&stack[1]);
+    SPI_STACK *next = &stack[2];
+    if (argument_count > 2) {
+        MapInfo->fixed_time = spiGetStackFloat(next);
+        next = &stack[3];
+    }
+    if (argument_count > 3) {
+        MapInfo->fixed_time_enable = spiGetStackInt(next);
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapTIME_FLAG__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the number of lighting sets that divide the day.
+ * Reads the TIME_LIGHT_NUM tag: the number of sets.
+ * Always gives 1.
+ */
+static int mapTIME_LIGHT_NUM(SPI_STACK *stack, int argument_count) {
+    MapInfo->time_light_num = spiGetStackInt(stack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapTIME_LIGHT_NUM__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the map's DEF_FOOT value.
+ * Reads the DEF_FOOT tag: one integer.
+ * Always gives 1.
+ */
+static int mapDEF_FOOT(SPI_STACK *stack, int argument_count) {
+    MapInfo->def_foot = spiGetStackInt(stack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapDEF_FOOT__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the map's sky settings.
+ * Reads the SKY_INFO tag: an integer, a number, then optionally the sun path's angle in degrees.
+ * Always gives 1.
+ */
+static int mapSKY_INFO(SPI_STACK *stack, int argument_count) {
+    MapInfo->sky_info = spiGetStackInt(&stack[0]);
+    MapInfo->unk_dc = spiGetStackFloat(&stack[1]);
+    if (argument_count > 2) {
+        MapInfo->sun_angle = mgAngleLimit(spiGetStackFloat(&stack[2]) * 3.1415927f / 180.0f);
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapSKY_INFO__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Switches the map's lens flare on or off.
+ * Reads the LENS_FLARE tag: non-zero for on.
+ * Always gives 1.
+ */
+static int mapLENS_FLARE(SPI_STACK *stack, int argument_count) {
+    MapInfo->lens_flare = spiGetStackInt(stack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapLENS_FLARE__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the map's TIME_CFADE value.
+ * Reads the TIME_CFADE tag: one integer.
+ * Always gives 1.
+ */
+static int mapTIME_CFADE(SPI_STACK *stack, int argument_count) {
+    MapInfo->time_cfade = spiGetStackInt(stack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapTIME_CFADE__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the value passed on when the map's model packs are loaded.
+ * Reads the ALL_SCISSOR tag: one integer.
+ * Always gives 1.
+ */
+static int mapALL_SCISSOR(SPI_STACK *stack, int argument_count) {
+    MapInfo->all_scissor = spiGetStackInt(stack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapALL_SCISSOR__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the map's character lighting adjustment.
+ * Reads the CHARA_LIGHT_ADJUST tag: an integer and three numbers.
+ * Always gives 1.
+ */
+static int mapCHARA_LIGHT_ADJUST(SPI_STACK *stack, int argument_count) {
+    MapInfo->chara_light_adjust = spiGetStackInt(&stack[0]);
+    MapInfo->chara_light_adjust_value[0] = spiGetStackFloat(&stack[1]);
+    MapInfo->chara_light_adjust_value[1] = spiGetStackFloat(&stack[2]);
+    MapInfo->chara_light_adjust_value[2] = spiGetStackFloat(&stack[3]);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", mapCHARA_LIGHT_ADJUST__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+void CMapInfo::LoadMapInfo(char *script, int script_size, mgCMemory *stack) {
+    int i;
+
+    now_img_num = 0;
+    now_pcp_num = 0;
+    LightingInfo = NULL;
+    MapInfo = this;
+    MapInfoStack = stack;
+
+    CScriptInterpreter interpreter;
+    interpreter.SetTag(mapinfo_tag);
+    interpreter.SetScript(script, script_size);
+
+    img_num = 16;
+    for (i = 0; i < img_num; i++) {
+        img_name[i] = NULL;
+    }
+    pcp_num = 16;
+    // The model pack names are cleared up to the texture pack capacity.
+    for (i = 0; i < img_num; i++) {
+        pcp_name[i] = NULL;
+    }
+
+    int qwc = (u32)script_size >> 4;
+    if (script_size & 0xF) {
+        qwc++;
+    }
+    map_file = (char *)stack->Alloc(qwc);
+    memcpy(map_file, script, script_size);
+    map_file_size = script_size;
+
+    lighting_info_num = 16;
+    lighting_info = new (stack->Alloc(lighting_info_num * sizeof(CMapLightingInfo) / 16 + 2))
+        CMapLightingInfo[lighting_info_num];
+
+    interpreter.SetScript(script, script_size);
+    interpreter.Run();
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", LoadMapInfo__8CMapInfoFPciP9mgCMemory);
+#endif
+
+#ifdef NONMATCHING
+// Defined in mapload.hpp.
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", __ct__16CMapLightingInfoFv);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Adds a texture pack to the map in its first free entry, keeping a copy of its name.
+ * Reads the IMG tag of an additional configuration script: the pack's name.
+ * Gives 1 on success, 0 when the list is full or the name is missing.
+ */
+static int amapIMG(SPI_STACK *stack, int argument_count) {
+    char *name = spiGetStackString(stack);
+    char **entry = NULL;
+
+    if (name == NULL) {
+        return 0;
+    }
+
+    for (int i = 0; i < 16; i++) {
+        if (MapInfo->img_name[i] == NULL) {
+            entry = &MapInfo->img_name[i];
+            break;
+        }
+    }
+    if (entry == NULL) {
+        return 0;
+    }
+
+    u32 size = strlen(name) + 1;
+    int qwc = size >> 4;
+    if (size & 0xF) {
+        qwc++;
+    }
+    char *copy = (char *)MapInfoStack->Alloc(qwc);
+    strcpy(copy, name);
+    *entry = copy;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", amapIMG__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Adds a model pack to the map in its first free entry, keeping a copy of its name.
+ * Reads the PCP tag of an additional configuration script: the pack's name.
+ * Gives 1 on success, 0 when the list is full or the name is missing.
+ */
+static int amapPCP(SPI_STACK *stack, int argument_count) {
+    char *name = spiGetStackString(stack);
+    char **entry = NULL;
+
+    if (name == NULL) {
+        return 0;
+    }
+
+    for (int i = 0; i < 16; i++) {
+        if (MapInfo->pcp_name[i] == NULL) {
+            entry = &MapInfo->pcp_name[i];
+            break;
+        }
+    }
+    if (entry == NULL) {
+        return 0;
+    }
+
+    u32 size = strlen(name) + 1;
+    int qwc = size >> 4;
+    if (size & 0xF) {
+        qwc++;
+    }
+    char *copy = (char *)MapInfoStack->Alloc(qwc);
+    strcpy(copy, name);
+    *entry = copy;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", amapPCP__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+void CMapInfo::AddMapInfo(char *script, int script_size, mgCMemory *stack) {
+    MapInfo = this;
+    MapInfoStack = stack;
+
+    CScriptInterpreter interpreter;
+    interpreter.SetTag(add_mapinfo_tag);
+    interpreter.SetScript(script, script_size);
+
+    int qwc = (u32)script_size >> 4;
+    if (script_size & 0xF) {
+        qwc++;
+    }
+    add_map_file = (char *)stack->Alloc(qwc);
+    memcpy(add_map_file, script, script_size);
+    add_map_file_size = script_size;
+
+    interpreter.SetScript(script, script_size);
+    interpreter.Run();
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", AddMapInfo__8CMapInfoFPciP9mgCMemory);
+#endif
+
+#ifdef NONMATCHING
+int CMapInfo::OutputLightData(char *buff) {
+    int length = 0;
+
+    length += sprintf(&buff[length], "MPL_ACTIVE_LIGHT_SET %d;\n", active_light_no);
+    for (int set = 0; set < lighting_info_num; set++) {
+        CMapLightingInfo *info = &lighting_info[set];
+
+        length += sprintf(&buff[length], "MPL_LIGHT_SET %d;\n", set);
+        length += sprintf(&buff[length], " MPL_FOV 52;\n");
+        length += sprintf(&buff[length], " MPL_BGCOLOR %d,%d,%d;\n", (int)info->bg_color[0], (int)info->bg_color[1],
+                       (int)info->bg_color[2]);
+        length += sprintf(&buff[length], " MPL_BGCOLOR2 %d,%d,%d;\n", (int)info->bg_color2[0], (int)info->bg_color2[1],
+                       (int)info->bg_color2[2]);
+        length += sprintf(&buff[length], " MPL_AMBIENT %d,%d,%d;\n", (int)info->ambient[0], (int)info->ambient[1],
+                       (int)info->ambient[2]);
+        for (int light = 0; light < 4; light++) {
+            length += sprintf(&buff[length], " MPL_LIGHT %d,%f,%f,%f,%d,%d,%d,1;\n", light, info->light_dir[0][light],
+                           info->light_dir[1][light], info->light_dir[2][light], (int)info->light_color[light][0],
+                           (int)info->light_color[light][1], (int)info->light_color[light][2]);
+        }
+        length += sprintf(&buff[length], " MPL_FOG_ENABLE %d;\n", info->fog_enable);
+        length += sprintf(&buff[length], " MPL_FOG %f,%f,%d,%d,%d,%d,%d;\n", info->fog.near_dist, info->fog.far_dist, info->fog.r,
+                       info->fog.g, info->fog.b, (int)info->fog.offset, (int)info->fog.far_value);
+        length += sprintf(&buff[length], "MPL_LIGHT_SET_END;\n");
+    }
+    return length;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", OutputLightData__8CMapInfoFPc);
+#endif
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", mapinfo_tag__DATA);

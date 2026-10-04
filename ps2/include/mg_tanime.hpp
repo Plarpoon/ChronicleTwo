@@ -48,6 +48,20 @@ enum {
 
 /**
  *
+ * Texel formats and fixed-point scales a texture-animation record is drawn with.
+ *
+ */
+enum mgTEX_ANIME_CONST {
+    MG_TEX_ANIME_SUBTEXEL = 16,          /**< Sixteenths of a texel in one texel, the unit of every record rectangle. */
+    MG_TEX_ANIME_BPP_INDEXED = 8,        /**< Bits per pixel of a paletted texture whose palette can be copied. */
+    MG_TEX_ANIME_BPP_TRUE_COLOUR = 24,   /**< Lowest bits per pixel drawn as sprites rather than moved in VRAM. */
+    MG_TEX_ANIME_AMPLITUDE_FULL = 10000, /**< Wave amplitude spanning the whole destination rectangle. */
+    MG_TEX_ANIME_FRAME_ALIGN = 64,       /**< Rows a frame buffer's height is rounded up to. */
+    MG_TEX_ANIME_NAME_ALLOC_UNIT = 16,   /**< Bytes in one quadword of a group name allocation. */
+};
+
+/**
+ *
  * Axis-aligned rectangle given by its two inclusive corners.
  *
  */
@@ -61,19 +75,36 @@ public:
 
     /**
      *
+     * Creates a rectangle with every edge at zero.
+     *
+     */
+    mgRect() { Set(0, 0, 0, 0); }
+
+    /**
+     *
+     * Creates a rectangle from its four edges.
+     *
+     */
+    mgRect(T new_left, T new_top, T new_right, T new_bottom) { Set(new_left, new_top, new_right, new_bottom); }
+
+    /**
+     *
      * Sets all four edges of the rectangle.
      *
      * @mangled Set__9mgRect_i_Fiiii
      * @address 0x13EA00
      * @size 0x20
      */
-    void Set(T new_left, T new_top, T new_right, T new_bottom) {
-        left = new_left;
-        top = new_top;
-        right = new_right;
-        bottom = new_bottom;
-    }
+    void Set(T new_left, T new_top, T new_right, T new_bottom);
 };
+
+template <class T>
+void mgRect<T>::Set(T new_left, T new_top, T new_right, T new_bottom) {
+    left = new_left;
+    top = new_top;
+    right = new_right;
+    bottom = new_bottom;
+}
 
 STATIC_ASSERT(sizeof(mgRect<int>) == 0x10);
 

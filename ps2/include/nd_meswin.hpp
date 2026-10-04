@@ -2,6 +2,8 @@
 
 #include "common.h"
 
+#include <cstring>
+
 #include "font.hpp"
 #include "mg_tanime.hpp"
 
@@ -31,6 +33,9 @@ enum {
     MES_ITEM_MAX = 16,      /**< System messages a message can insert into its text. */
     NAME_REGIST_MAX = 8,    /**< Rows of NameRegistTbl. */
     NAME_REGIST_LEN = 11,   /**< Characters of one NameRegistTbl row. */
+    NAME_REGIST_USED = 6,   /**< Rows of NameRegistTbl SetAndGetNameRegistTbl hands out. */
+    NPC_NAME_CHARA_TOP = 8, /**< First scene character slot ClsMes::StepNpcName shows a name for. */
+    NPC_NAME_CHARA_NUM = 56, /**< Scene character slots ClsMes::StepNpcName looks at. */
     MOVIE_CC_MAX = 20,      /**< Captions one movie can show. */
     MOVIE_CC_LEN = 350,     /**< Bytes of one movie caption. */
     WAKU_DATA_MAX = 9,      /**< Rows of waku_data. */
@@ -99,6 +104,7 @@ enum MesCode {
     MES_CODE_COLOR_R = 0xF500,         /**< Sets the red of the text colour to the low byte. */
     MES_CODE_JUSTIFY = 0xF700,         /**< Justifies the line to four times the low byte. */
     MES_CODE_SPACE_W = 0xF800,         /**< Sets the width of a space to the low byte. */
+    MES_CODE_MOVE_X = 0xF900,          /**< Moves the next character right by the low byte. */
     MES_CODE_ITEM_LAST = 0xFBE7,       /**< Inserts the system message of ClsMes::item_mes[15]. */
     MES_CODE_ITEM_FIRST = 0xFBFE,      /**< Inserts the system message of ClsMes::item_mes[0]. */
     MES_CODE_COLOR_DEFAULT = 0xFC00,   /**< Returns to the default text colour. */
@@ -126,6 +132,51 @@ enum MesLineShade {
     MES_SHADE_BRIGHT = 2, /**< Alpha raised to full. */
     MES_SHADE_FAINT = 3,  /**< Black at a quarter alpha. */
     MES_SHADE_HIDDEN = 4, /**< Not drawn. */
+};
+
+/**
+ *
+ * How the selected line shades the lines whose shade is MES_SHADE_AUTO, as
+ * ClsMes::select_shade holds it.
+ *
+ */
+enum MesSelectShade {
+    MES_SELECT_SHADE_NONE = -1,  /**< Selection shades no line. */
+    MES_SELECT_SHADE_DARK = 0,   /**< The other lines draw MES_SHADE_DARK. */
+    MES_SELECT_SHADE_BRIGHT = 1, /**< The selected line draws MES_SHADE_BRIGHT. */
+    MES_SELECT_SHADE_FAINT = 2,  /**< The other lines draw MES_SHADE_FAINT. */
+};
+
+/**
+ *
+ * Drawing setups MySetPrim initialises a primitive builder for.
+ *
+ */
+enum MesPrimSetup {
+    MES_PRIM_SPRITE = 1,     /**< Flat textured sprites with alpha testing. */
+    MES_PRIM_SHADED = 3,     /**< Gouraud-shaded textured primitives. */
+    MES_PRIM_SHADED_2 = 4,   /**< The same setup as MES_PRIM_SHADED. */
+    MES_PRIM_UNTEXTURED = 7, /**< Untextured antialiased primitives. */
+};
+
+/**
+ *
+ * Layers ClsMes::DrawFukidashi draws the speech bubble in.
+ *
+ */
+enum MesFukidashiLayer {
+    MES_FUKIDASHI_OUTLINE = 1, /**< Dark copy drawn offset behind the bubble as its outline. */
+    MES_FUKIDASHI_BODY = 3,    /**< The bubble itself, shaded light grey. */
+};
+
+/**
+ *
+ * Packed RGBA colours the message window's text starts in.
+ *
+ */
+enum MesTextColor {
+    MES_COLOR_DARK = 0x80202020, /**< Dark grey, for text in speech bubbles. */
+    MES_COLOR_GREY = 0x80686A6B, /**< Light grey, for text in menu frames. */
 };
 
 /**
@@ -991,7 +1042,102 @@ public:
      * @address 0x1F38E0
      * @size 0x2C0
      */
-    void Init();
+    void Init() {
+        int i;
+
+        npc_name_mode = 0;
+        char_num = 0;
+        text_w = 0;
+        text_h = 0;
+        page = 0;
+        page_num = 0;
+        for (i = 0; i < MES_PAGE_MAX; i++) {
+            page_chars[i] = 0;
+        }
+        last_x = 0;
+        last_y = 0;
+        fade = 0.0f;
+        open = 1;
+        draw_speed = GetDrawSpeedDef();
+        page_wait = 0;
+        scroll_wait = 0;
+        reveal = 0.0f;
+        reveal_num = 0;
+        page_top = 0;
+        unk_1f4 = 0;
+        InitMesWinTbl();
+        color = def_color;
+        wait = 0;
+        page_time = 0;
+        page_auto_time = 30;
+        mes_no = -1;
+        unk_1e40 = 0;
+        alpha = 0x80;
+        for (i = 0; i < MES_NAME_MAX; i++) {
+            memset(name[i], 0, MES_NAME_LEN);
+        }
+        for (i = 0; i < MES_ITEM_MAX; i++) {
+            item_mes[i] = -1;
+        }
+        for (i = 0; i < MES_VALUE_MAX; i++) {
+            values[i] = 0;
+            value_width[i] = 0;
+        }
+        value = 0;
+        value_sign = 0;
+        value_zero = 1;
+        value_half = 0;
+        value_space = 0;
+        digit_font = 0;
+        space_w = -1;
+        justify_w = -1;
+        select = -1;
+        goal_cursor_x = 0;
+        goal_cursor_y = 0;
+        cursor_x = 0;
+        cursor_y = 0;
+        select_shade = MES_SELECT_SHADE_DARK;
+        cursor_centering = 0;
+        cursor_time = 0;
+        choice_pos[0][0] = -1;
+        choice_pos[0][1] = -1;
+        choice_pos[1][0] = -1;
+        choice_pos[1][1] = -1;
+        select_top = 0;
+        cursor_off_y = 0;
+        voice_on = 0;
+        voice_type = 0;
+        voice_cnt = 0;
+        close_time = 0;
+        scissor_on = 0;
+        scissor.x = 0;
+        scissor.width = 0;
+        scissor.y = 0;
+        scissor.height = 0;
+        for (i = 0; i < MES_LINE_MAX; i++) {
+            line_indent[i] = 0;
+            line_pos[i][0] = 0;
+            line_pos[i][1] = 0;
+            line_pos_on[i] = 0;
+            line_shade[i] = MES_SHADE_AUTO;
+            line_color[i] = 0;
+            equip_on[i] = 0;
+            equip_x[i] = 0;
+            equip_y[i] = 0;
+            line_w[i] = 0;
+            line_alpha[i] = -1;
+            cross_on[i] = 0;
+            cross_x[i] = 0;
+            cross_y[i] = 0;
+            unk_271c[i] = -1;
+            unk_276c[i] = -1;
+            unk_27bc[i] = 0;
+            unk_280c[i] = 0;
+            delta_on[i] = 0;
+            delta_x[i] = 0;
+            delta_y[i] = 0;
+        }
+    }
 };
 
 STATIC_ASSERT(sizeof(ClsMes) == 0x2958);

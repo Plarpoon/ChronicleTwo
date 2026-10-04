@@ -7,6 +7,8 @@
 #    headers, even for a file that never puts anything in them, and splat's
 #    whole-unit files name every section a unit could own; MWLD rejects any
 #    zero-sized input section.
+#    The same pass removes the sections scripts/build/postprocess_object.py
+#    marked `.dead`: the compiler's copies of data a placeholder supplies.
 # 2. Restores the functions MWCC marked for the linker to keep one copy of.
 #    Their symbols are global in what the compiler wrote, but it places them
 #    among the locals, and every objcopy pass rebuilds the table from sh_info
@@ -36,10 +38,12 @@ shift
 remove=$("${MIPS_TOOL_PREFIX}readelf" -SW "$obj" | awk '
   { sub(/^ *\[[ 0-9]+\] +/, "") }
   $2 == "PROGBITS" || $2 == "NOBITS" {
+      if ($1 == ".dead") { dead = 1; next }
       if ($5 ~ /^0+$/) { if (!($1 in full)) empty[$1] = 1 }
       else { full[$1] = 1; delete empty[$1] }
   }
-  END { for (name in empty) printf "--remove-section=%s ", name }')
+  END { if (dead) printf "--remove-section=.dead --remove-section=.rel.dead ";
+        for (name in empty) printf "--remove-section=%s ", name }')
 
 coal=""
 [ -s "$obj.coal" ] && coal="--globalize-symbols=$obj.coal"

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "pbuggy.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/pbuggy", sgInitBuggy__FP11SubGameInfo);

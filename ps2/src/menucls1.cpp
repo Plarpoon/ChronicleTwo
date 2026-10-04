@@ -1,4 +1,5 @@
 #include "common.h"
+#include "menucls1.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", GetHatena__Fv);

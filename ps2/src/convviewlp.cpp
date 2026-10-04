@@ -1,4 +1,5 @@
 #include "common.h"
+#include "convviewlp.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/convviewlp", SVConvViewInit__F13INIT_LOOP_ARG);

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "quest.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/quest", GetQuestData__Fv);

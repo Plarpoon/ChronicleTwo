@@ -204,6 +204,19 @@ def build_cpp(headers_dir, flags):
 # Conversion: that C++ as C declarations
 #
 
+def c_type_name(name):
+    """Flatten nested C++ template arguments into a C identifier."""
+    name = re.sub(r'\b\w+::', '', name)
+    while "<" in name:
+        flattened = re.sub(r'<\s*([^<>]*?)\s*>',
+                           lambda m: '_' + re.sub(r'\W+', '_', m.group(1)) + '_',
+                           name)
+        if flattened == name:
+            break
+        name = flattened
+    return name
+
+
 def declarator(t, name=""):
     """A C declaration of `name` with type `t`, built inside-out the way C's
     declarator syntax nests, so function pointers and arrays come out right."""
@@ -243,8 +256,7 @@ def declarator(t, name=""):
     # m2c's C parser cannot spell a C++ template-id.  CodeWarrior's legacy
     # mangling already gives specializations stable C-compatible names, which
     # are sufficient here because context types only describe ABI shapes.
-    spelled = re.sub(r'<\s*([^<>]+?)\s*>',
-                     lambda m: '_' + re.sub(r'\W+', '_', m.group(1)) + '_', base)
+    spelled = c_type_name(base)
     if spelled != base:
         TEMPLATE_NAMES.add(re.sub(r'[\s\*&]+$', '', spelled).split()[-1].rstrip('*&'))
     return (spelled + " " + name).rstrip()
@@ -349,6 +361,7 @@ def declarations(cursor):
 
 def convert(tu, root):
     enums, fwd, typedefs, records, rest = [], [], [], [], []
+    fwd.append("typedef unsigned char bool;")
     # Opaque project template specializations used by free-function ABIs.
     fwd.append("typedef struct CDataAlloc2_1_ CDataAlloc2_1_;")
     tags = []
@@ -369,15 +382,37 @@ def convert(tu, root):
 
         elif cur.kind in (K.STRUCT_DECL, K.CLASS_DECL, K.UNION_DECL):
             tag = "union" if cur.kind == K.UNION_DECL else "struct"
-            if cur.spelling not in tags:
-                tags.append(cur.spelling)
-                fwd.append("typedef %s %s %s;" % (tag, cur.spelling, cur.spelling))
+            name = c_type_name(cur.spelling)
+            if name not in tags:
+                tags.append(name)
+                fwd.append("typedef %s %s %s;" % (tag, name, name))
             # First definition wins, matching the elision above.
-            if cur.is_definition() and cur.spelling not in defined:
-                defined.add(cur.spelling)
+            if cur.is_definition() and name not in defined:
+                defined.add(name)
                 body = record_fields(cur)
-                records.append("%s %s {\n%s\n};" % (
-                    tag, cur.spelling, "\n".join(body) or "    char _empty;"))
+                record = "%s %s {\n%s\n};" % (
+                    tag, name, "\n".join(body) or "    char _empty;")
+            else:
+                record = None
+            # A member may use an unqualified name for a nested record.
+            # Clang does not expose these records at translation-unit scope.
+            for nested in cur.get_children():
+                if (nested.kind not in (K.STRUCT_DECL, K.CLASS_DECL, K.UNION_DECL)
+                        or not nested.spelling or "(" in nested.spelling):
+                    continue
+                nested_name = c_type_name(nested.spelling)
+                nested_tag = "union" if nested.kind == K.UNION_DECL else "struct"
+                if nested_name not in tags:
+                    tags.append(nested_name)
+                    fwd.append("typedef %s %s %s;" % (nested_tag, nested_name, nested_name))
+                if nested.is_definition() and nested_name not in defined:
+                    defined.add(nested_name)
+                    nested_body = record_fields(nested)
+                    records.append("%s %s {\n%s\n};" % (
+                        nested_tag, nested_name,
+                        "\n".join(nested_body) or "    char _empty;"))
+            if record is not None:
+                records.append(record)
 
         elif cur.kind == K.TYPEDEF_DECL:
             under = cur.underlying_typedef_type
@@ -389,13 +424,22 @@ def convert(tu, root):
             rest.append("%s;" % declarator(cur.type, cur.spelling))
 
         elif cur.kind == K.VAR_DECL:
-            rest.append("extern %s;" % declarator(cur.type, cur.spelling))
+            # C++ permits a variable to share a tag's name; C typedefs do not.
+            if cur.spelling not in tags:
+                rest.append("extern %s;" % declarator(cur.type, cur.spelling))
 
+    template_records = []
     for name in sorted(TEMPLATE_NAMES):
         line = f"typedef struct {name} {name};"
         if line not in fwd:
             fwd.append(line)
-    return "\n".join(enums + fwd + typedefs + records + rest) + "\n"
+        if name.startswith("mgRect_") and name.endswith("_"):
+            element = name[len("mgRect_"):-1]
+            if element in ("int", "float"):
+                template_records.append("struct %s { %s left, top, right, bottom; };" % (name, element))
+        elif name == "mgCObjectStack_CList_EMAP_MESSAGE__":
+            template_records.append("struct %s { unsigned char unk_0[8]; int unk_8; unsigned char unk_c[8]; };" % name)
+    return "\n".join(enums + fwd + typedefs + template_records + records + rest) + "\n"
 
 
 def translate(source, flags, root=None):

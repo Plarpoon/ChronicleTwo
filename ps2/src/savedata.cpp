@@ -1,4 +1,5 @@
 #include "common.h"
+#include "savedata.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", InitSV_CONFIG_OPTION__FP16SV_CONFIG_OPTION);

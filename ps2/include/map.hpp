@@ -101,6 +101,13 @@ STATIC_ASSERT(sizeof(CMapFlagData) == 0x10);
  */
 struct PartsGroupData {
     CMapParts *parts; /**< Placed parts that belongs to the group. */
+
+    /**
+     *
+     * Makes an entry that names no placed parts.
+     *
+     */
+    PartsGroupData() { parts = 0; }
 };
 
 STATIC_ASSERT(sizeof(PartsGroupData) == 0x4);
@@ -783,7 +790,7 @@ public:
      * @address 0x15E0F0
      * @size 0x20
      */
-    void CreateEffect(unsigned int *data, int size, mgCMemory *stack);
+    void CreateEffect(unsigned int *pack, int tex_block, mgCMemory *stack);
 
     /**
      *

@@ -11,7 +11,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/colprim", SetCoord__8CColPrimFP8mgCFrameP8
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/colprim", IsHit__8CColPrimFP6CScenei);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/colprim", IsReversVec__8CColPrimFP8CColPrim);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/colprim", GetReversVec__8CColPrimFPf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/colprim", DebugDraw__8CColPrimFv);
+void CColPrim::DebugDraw() {}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/colprim", Step__8CColPrimFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/colprim", Delete__8CColPrimFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/colprim", Initialize__8CColPrimFv);

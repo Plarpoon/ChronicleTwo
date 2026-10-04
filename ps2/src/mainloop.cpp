@@ -14,8 +14,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", GetMainStack__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", NextLoop__Fi13INIT_LOOP_ARG);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", GetNowLoopNo__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", GetNowInitArg__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", cat_start__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", cat_end__Fv);
+void cat_start() {}
+void cat_end() {}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", SetTextureTable__FiiP9mgCMemory);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", InitPadTable__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", VSyncCallBack__Fi__3);
@@ -31,12 +31,12 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", EventSelect__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", GetFontTexture__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", LoadFontTexture__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", ReLoadFontTexture__Fi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", demQuit__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", demoQuitTimeOut__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", demoAttractInterrupted__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", demoAttractComplete__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", FadeOutForE3__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", TimeLimitCheck__Fv);
+void demQuit() {}
+void demoQuitTimeOut() {}
+void demoAttractInterrupted() {}
+void demoAttractComplete() {}
+void FadeOutForE3() {}
+int TimeLimitCheck() { return 0; }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", InitPauseMenu__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", PauseMenu__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", LoadGameConfig__FPc);

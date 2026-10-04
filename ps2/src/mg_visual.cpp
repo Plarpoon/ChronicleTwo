@@ -37,7 +37,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", SetData6__FiiPPiP1P1P1P1P1);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", SetData7__FiiPPiP1P1P1P1P1);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", CreateFacePacket__12mgCVisualMDTFPUiP7mgCFace);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", CreateRenderInfoPacket__12mgCVisualMDTFPUiPA4_fP13mgRENDER_INFO);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", CreateExtRenderInfoPacket__12mgCVisualMDTFPUiPA4_fP13mgRENDER_INFO);
+int mgCVisualMDT::CreateExtRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_INFO *info) { return 0; }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", Copy__15mgCVisualFixMDTFP9mgCMemory);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", __as__12mgCVisualMDTFRC12mgCVisualMDT);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", SetDrawEnv__FP10mgCDrawEnvP13mgCVisualAttrP10mgCDrawEnv);

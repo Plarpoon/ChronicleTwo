@@ -3,8 +3,14 @@
 #include "common.h"
 
 /**
+ * @file
+ * Declares the transfer of files over the network socket, the device that
+ * paths with the "net:" prefix name; retail keeps only empty stubs.
+ */
+
+/**
  *
- * Reports that the file socket cannot load a file.
+ * Loads a file sent over the network socket; gives the number of bytes loaded, always zero in retail.
  *
  * @mangled LoadFileSocket__FPcPUi
  * @address 0x28D1D0
@@ -14,7 +20,7 @@ int LoadFileSocket(char *path, unsigned int *data);
 
 /**
  *
- * Discards a request to write through the file socket.
+ * Writes a file over the network socket; does nothing in retail.
  *
  * @mangled WriteFileSocket__FPcPUii
  * @address 0x28D1E0

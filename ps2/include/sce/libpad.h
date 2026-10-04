@@ -20,9 +20,19 @@ extern "C" {
 int scePadInit(int mode);
 
 /**
+ * Shuts down the controller library.
+ */
+int scePadEnd(void);
+
+/**
  * Opens one controller port and slot.
  */
 int scePadPortOpen(int port, int slot, void *buffer);
+
+/**
+ * Closes one controller port and slot.
+ */
+int scePadPortClose(int port, int slot);
 
 /**
  * Reads the current data from one controller.

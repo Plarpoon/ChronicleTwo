@@ -105,17 +105,9 @@ struct PAD_STATUS {
     int unk_3C;
     int unk_40;
     int unk_44;
+    int unk_48;
 };
-STATIC_ASSERT(sizeof(PAD_STATUS) == 0x48);
-
-/**
- * Defines the data kept for one controller port.
- */
-struct PAD_DATA {
-    int        unk_00;
-    PAD_STATUS status; /**< Controller state. */
-};
-STATIC_ASSERT(sizeof(PAD_DATA) == 0x4C);
+STATIC_ASSERT(sizeof(PAD_STATUS) == 0x4C);
 
 /**
  * Defines the automatic button repeat state of one controller.
@@ -142,15 +134,37 @@ struct PAD_CAPTURE_FRAME {
 STATIC_ASSERT(sizeof(PAD_CAPTURE_FRAME) == 0x6);
 
 /**
+ * Sizes of the input recording, which fills one megabyte of development
+ * kit memory past the retail console's 32 megabytes.
+ */
+enum {
+    PAD_CAPTURE_BUFFER_SIZE = 0x100000,                                             /**< Bytes reserved for the recording. */
+    PAD_CAPTURE_FRAME_MAX   = PAD_CAPTURE_BUFFER_SIZE / sizeof(PAD_CAPTURE_FRAME), /**< Frames the recording holds. */
+};
+
+/**
+ * Start of the input recording in development kit memory.
+ */
+#define PAD_CAPTURE_BUFFER ((PAD_CAPTURE_FRAME *) 0x3000000)
+
+/**
+ * Scheduling priority shared by the main thread and the controller thread,
+ * whose ready queue SwitchGamePadThread rotates.
+ */
+enum {
+    GAMEPAD_THREAD_PRIORITY = 10, /**< Priority of both threads. */
+};
+
+/**
  * Manages both game controllers: reads them, keeps the previous frame's
  * state to find newly pressed and released buttons, applies automatic
  * repeat and input locks, drives vibration, and records or replays input.
  */
 class CGamePad {
 public:
-    PAD_DATA   pad[2];            /**< Current data of each controller. */
-    PAD_DATA   previous_pad[2];   /**< Data of each controller on the previous frame. */
-    int        unk_130;
+    int        unk_000;
+    PAD_STATUS pad[2];            /**< Current state of each controller. */
+    PAD_STATUS previous_pad[2];   /**< State of each controller on the previous frame. */
     int        unk_134;
     int        unk_138;
     int        unk_13C;

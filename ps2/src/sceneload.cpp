@@ -1,4 +1,5 @@
 #include "common.h"
+#include "sceneload.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneload", LoadMapData__FR17SCN_LOADMAP_INFO2i);

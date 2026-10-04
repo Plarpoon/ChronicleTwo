@@ -1,4 +1,5 @@
 #include "common.h"
+#include "sceneevent.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneevent", UpDateMapInfo__6CSceneFv);

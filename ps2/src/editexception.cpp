@@ -1,4 +1,5 @@
 #include "common.h"
+#include "editexception.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editexception", EditExceptionStep__FiP6CScene);

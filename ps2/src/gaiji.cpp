@@ -1,23 +1,58 @@
 #include "common.h"
+#include "gaiji.hpp"
+#include "dataread.hpp"
+#include "mainloop.hpp"
 
 // Code (.text)
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gaiji", LoadGaijiImg__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gaiji", GetGaijiImgPtr__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gaiji", LoadFontTex2Img__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gaiji", GetFontTex2ImgPtr__Fv);
+/** Optional destination for the second font texture image. */
+static u_char *FontTex_2_Buff;
+/** Buffer holding the language-specific gaiji image. */
+u_char GaijiBuff[0x11800];
 
-// Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gaiji", at_258__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gaiji", at_259__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gaiji", at_260__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gaiji", at_261__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gaiji", at_262__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gaiji", at_263__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gaiji", at_264__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gaiji", at_278__2__DATA);
+int LoadGaijiImg() {
+    int size;
+    switch (LanguageCode) {
+    case LANG_JAPANESE:
+        LoadFile("meswin/jpn/gaiji.img", GaijiBuff, &size);
+        break;
+    case LANG_FRENCH:
+        LoadFile("meswin/eu/fra/gaiji.img", GaijiBuff, &size);
+        break;
+    case LANG_GERMAN:
+        LoadFile("meswin/eu/ger/gaiji.img", GaijiBuff, &size);
+        break;
+    case LANG_ITALIAN:
+        LoadFile("meswin/eu/ita/gaiji.img", GaijiBuff, &size);
+        break;
+    case LANG_SPANISH:
+        LoadFile("meswin/eu/spn/gaiji.img", GaijiBuff, &size);
+        break;
+    case LANG_ENGLISH:
+        goto load_usa;
+    default:
+    load_usa:
+        LoadFile("meswin/usa/gaiji.img", GaijiBuff, &size);
+        break;
+    }
+    return size;
+}
 
-// Small uninitialised data (.sbss)
-INCLUDE_BSS(FontTex_2_Buff, 0x4);
+u_char *GetGaijiImgPtr() {
+    return GaijiBuff;
+}
 
-// Uninitialised data (.bss)
-INCLUDE_BSS(GaijiBuff, 0x11800);
+int LoadFontTex2Img() {
+    if (FontTex_2_Buff == 0) {
+        return 0;
+    }
+    if (LanguageCode != LANG_JAPANESE) {
+        return 0;
+    }
+    int size;
+    LoadFile("meswin/font2.img", FontTex_2_Buff, &size);
+    return size;
+}
+
+u_char *GetFontTex2ImgPtr() {
+    return FontTex_2_Buff;
+}

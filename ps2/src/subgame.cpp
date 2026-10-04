@@ -1,4 +1,5 @@
 #include "common.h"
+#include "subgame.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", InitSubGame__FP6CScene);

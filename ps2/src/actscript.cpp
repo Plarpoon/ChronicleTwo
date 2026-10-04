@@ -1,4 +1,5 @@
 #include "common.h"
+#include "actscript.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/actscript", ParabolicInitialVector__FPfPfPfff);

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "scene.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", f_rand__Fff);

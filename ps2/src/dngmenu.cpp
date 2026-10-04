@@ -1,4 +1,5 @@
 #include "common.h"
+#include "dngmenu.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Initialize__11CDngFreeMapFv);

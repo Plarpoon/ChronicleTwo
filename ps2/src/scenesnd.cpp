@@ -1,4 +1,5 @@
 #include "common.h"
+#include "scenesnd.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", Init__Q26CScene8BGM_INFOFv);

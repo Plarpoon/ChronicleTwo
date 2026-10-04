@@ -1,7 +1,12 @@
 #include "common.h"
 #include "charaviewlp.hpp"
+#include "mainloop.hpp"
 
 // Code (.text)
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/charaviewlp", InitCharaViewerMain__F13INIT_LOOP_ARG);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/charaviewlp", FinishCharaVieweMain__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/charaviewlp", LoopCharaViewerMain__Fv);
+void InitCharaViewerMain(INIT_LOOP_ARG arg) {}
+
+void FinishCharaVieweMain() {}
+
+int LoopCharaViewerMain() {
+    return 1;
+}

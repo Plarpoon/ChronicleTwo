@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-#include "sce/libpkt.h"
+#include <libpkt.h>
 
 #include "mg_drawenv.hpp"
 #include "mg_texture.hpp"
@@ -34,7 +34,7 @@ enum mgPRIM_TYPE {
 
 /**
  * Blend equations that mgCDrawPrim::AlphaBlend selects for the
- * ALPHA register.
+ * ALPHA register; the values are those of mgAlphaMacroID.
  */
 enum mgALPHA_BLEND {
     MG_ALPHA_BLEND_NORMAL = 1,   /**< Blends the source over the frame by source alpha. */
@@ -60,6 +60,40 @@ enum mgDEPTH_TEST {
 enum mgZ_MASK {
     MG_Z_MASK_MASKED = -1, /**< The depth buffer is left unchanged. */
     MG_Z_MASK_WRITE = 1,   /**< Drawn pixels write their depth. */
+};
+
+/**
+ * Codes and bits of the DMA tags, VIF codes and GIF tags that the
+ * primitive builder and draw manager write as 32-bit words.
+ */
+enum mgPACKET_CODE {
+    MG_DMA_CNT = 1 << 28,          /**< DMA tag ID CNT, in the tag's first word: the data follows the tag. */
+    MG_DMA_CALL = 5 << 28,         /**< DMA tag ID CALL, in the tag's first word: calls the packet at the tag's address. */
+    MG_DMA_RET = 6 << 28,          /**< DMA tag ID RET, in the tag's first word: returns to the caller of the packet. */
+    MG_VIF_DIRECT = 0x50 << 24,    /**< VIF DIRECT code: the given quadwords go to the GIF. */
+    MG_GIFTAG_EOP = 1 << 15,       /**< GIF tag end-of-packet bit, in the tag's first word. */
+    MG_GIFTAG_PRE = 1 << 14,       /**< GIF tag bit that writes the PRIM field to the PRIM register, in the tag's second word. */
+    MG_GIFTAG_PRIM_SHIFT = 15,     /**< Position of the GIF tag's PRIM field in the tag's second word. */
+    MG_GIFTAG_NREG_SHIFT = 28,     /**< Position of the GIF tag's NREG field in the tag's second word. */
+    MG_UNCACHED = 0x20000000,      /**< Address bit that selects uncached access to main memory. */
+    MG_VIF_OFFSET = 0x02 << 24,    /**< VIF OFFSET code: sets the VU1 double-buffer offset. */
+    MG_VIF_BASE = 0x03 << 24,      /**< VIF BASE code: sets the VU1 double-buffer base address. */
+    MG_VIF_FLUSHA = 0x13 << 24,    /**< VIF FLUSHA code: waits for the VU program and every GIF path to finish. */
+    MG_VIF_MSCAL = 0x14 << 24,     /**< VIF MSCAL code: starts the VU program at the given address. */
+    MG_VIF_MSCNT = 0x17 << 24,     /**< VIF MSCNT code: continues the VU program from where it stopped. */
+    MG_VIF_UNPACK_V4_32 = 0x6C << 24, /**< VIF UNPACK code for quadwords of four 32-bit values. */
+    MG_VIF_UNPACK_FLG = 1 << 15,   /**< VIF UNPACK bit that makes the address relative to the VU1 double buffer. */
+    MG_VIF_NUM_SHIFT = 16,         /**< Position of the NUM field in a VIF code. */
+};
+
+/**
+ * GS register addresses and values the primitive builder uses that the SDK
+ * header does not name.
+ */
+enum mgGS_CODE {
+    MG_GS_PRMODECONT = 0x1A,  /**< PRMODECONT register: selects whether PRIM or PRMODE holds the attributes. */
+    MG_GS_ZGREATER = 3,       /**< TEST register depth comparison: greater than the stored depth. */
+    MG_GS_PRIM_FST = 1 << 8,  /**< PRIM register bit that takes texture coordinates from UV. */
 };
 
 /**
@@ -379,7 +413,7 @@ public:
 
     /**
      * Selects the blend equation, an mgALPHA_BLEND value, for later
-     * packets.
+     * packets through mgCDrawEnv::SetAlpha.
      *
      * @mangled AlphaBlend__11mgCDrawPrimFi
      * @address 0x135560

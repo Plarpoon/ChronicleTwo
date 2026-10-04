@@ -1,4 +1,5 @@
 #include "common.h"
+#include "editmapeffect.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmapeffect", DrawFireEffect__8CEditMapFi);

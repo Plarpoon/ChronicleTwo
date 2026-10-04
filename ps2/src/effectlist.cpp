@@ -17,7 +17,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", FadeOut__10CFadeInOutFifff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", CrossFade__10CFadeInOutFif);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", CrossFadeIn__10CFadeInOutFiif);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", CrossFadeOut__10CFadeInOutFiif);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", FadeCheck__10CFadeInOutFv);
+int CFadeInOut::FadeCheck() { return this->end; }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", NowFade__10CFadeInOutFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", FadeStep__10CFadeInOutFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", SetCrossTexture__10CFadeInOutFP10mgCTextureP1);

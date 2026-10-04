@@ -1,4 +1,5 @@
 #include "common.h"
+#include "menuchr.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", InitMenuBGReadInfo2__FP17MENU_BGREAD_INFO2);

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "inventmn.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", GetInventUserDataPtr__Fv);

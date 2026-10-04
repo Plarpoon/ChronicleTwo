@@ -4,19 +4,20 @@
 
 #include <libvu0.h>
 
+#include "collision.hpp"
+#include "font.hpp"
+
 /**
  * @file
  * Declares the motion data that drives a model's frames and skin, the queries that test lines,
  * pipes and spheres against collision polygons, and small geometry helpers.
  */
 
-class CCPoly;
 class mgCCamera;
 class mgCFrame;
 class mgCMemory;
 class mgCVisualMDT;
 struct MoveCheckInfo;
-struct RECT;
 
 /**
  *

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "visualmotion.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/visualmotion", Initialize__18mgCVisualMotionMDTFv);

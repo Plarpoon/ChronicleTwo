@@ -1,4 +1,5 @@
 #include "common.h"
+#include "photo.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/photo", GetMesTxt__Fi);

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "gyoracesim.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyoracesim", grGyoRaceSimulate__FP11grRACE_INFO);

@@ -329,13 +329,13 @@ public:
 
     /**
      *
-     * Checks every point of a kind against the conditions and gives back how many passed.
+     * Checks every point of a kind against the conditions and records the results.
      *
      * @mangled Step__14CFuncPointMngrFiP15CFuncPointCheck
      * @address 0x2A1DE0
      * @size 0x10
      */
-    int Step(int type, CFuncPointCheck *check);
+    void Step(int type, CFuncPointCheck *check);
 
     /**
      *

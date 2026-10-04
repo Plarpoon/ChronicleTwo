@@ -1,9 +1,77 @@
 #include "common.h"
+#include "ezbgm.hpp"
+#include "sound.hpp"
+#include <sifrpc.h>
+#include <cstdio>
+
+/** Client connection to the EZBGM IOP server. */
+extern sceSifClientData gCd2;
+/** Command send and response buffer shared with the EZBGM server. */
+extern int sbuff__3[16];
+extern const char at_32[];
+extern const char at_33__2[];
+extern const char at_52[];
+extern const char at_53[];
+extern const char at_54[];
 
 // Code (.text)
+#ifdef NONMATCHING
+int ezBgmInit() {
+    printf(at_32);
+    sceSifInitRpc(0);
+    do {
+        if (sceSifBindRpc(&gCd2, 0x12345, 0) < 0) {
+            printf(at_33__2);
+            for (;;) {}
+        }
+        int wait = 10000;
+        do {
+            wait--;
+        } while (wait >= 0);
+    } while (gCd2.server == 0);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/ezbgm", ezBgmInit__Fv);
+#endif
+
+#ifdef NONMATCHING
+int ezBgm(int command, int argument) {
+    switch (command & EZBGM_COMMAND_MASK) {
+    case EZBGM_PRELOAD:
+        if (sceSifCheckStatRpc(&gCd2)) {
+            printf(at_53);
+            return 0;
+        }
+        sbuff__3[0] = argument;
+        sceSifCallRpc(&gCd2, command, 1, sbuff__3, 0x10, sbuff__3, 0x40, 0, 0);
+        break;
+    case EZBGM_OPEN_FROM_PACK:
+    case EZBGM_UNK_8A00:
+    case EZBGM_OPEN:
+        if (sceSifCheckStatRpc(&gCd2)) {
+            printf(at_52);
+            return 0;
+        }
+        sceSifCallRpc(&gCd2, command, 1, (void *)argument, 0x40, sbuff__3, 0x40, 0, 0);
+        break;
+    default:
+        if (sceSifCheckStatRpc(&gCd2)) {
+            printf(at_54);
+            return 0;
+        }
+        sbuff__3[0] = argument;
+        sceSifCallRpc(&gCd2, command, 0, sbuff__3, 0x10, sbuff__3, 0x40, 0, 0);
+        break;
+    }
+    return sbuff__3[0];
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/ezbgm", ezBgm__Fii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/ezbgm", StreamOpenState__6CSoundFv);
+#endif
+int CSound::StreamOpenState() {
+    return sceSifCheckStatRpc(&gCd2);
+}
 
 // Constants (.rodata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/ezbgm", at_32__DATA);

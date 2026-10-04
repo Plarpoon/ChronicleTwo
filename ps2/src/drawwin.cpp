@@ -1,4 +1,5 @@
 #include "common.h"
+#include "drawwin.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/drawwin", CalcSelectCursorPos__F4RECTPi);

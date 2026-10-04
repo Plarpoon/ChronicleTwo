@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <cstring>
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 /**
  * Holds the 58 characters a password digit can be, leaving out
  * the easily confused l, o, I and O.
@@ -18,7 +18,7 @@ static unsigned int random_seed = 1;
 #endif
 
 // Code (.text)
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 /**
  * Gives the digit value of a password character,
  * or -1 when the character is not a digit.
@@ -38,7 +38,7 @@ static int search_txt(char c)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/password", search_txt__Fc);
 #endif
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 /**
  * Writes a value as eleven base-58 password digits,
  * least significant first, without terminating the text.
@@ -63,7 +63,7 @@ static void ConvLongToTxt(unsigned long value, char* text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/password", ConvLongToTxt__FUlPc);
 #endif
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 /**
  * Reads eleven base-58 password digits back into a value
  * and gives 1, or 0 when a character is not a digit.
@@ -91,7 +91,7 @@ static int ConvTxtToLong(char* text, unsigned long* value)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/password", ConvTxtToLong__FPcPUl);
 #endif
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 int ConvertBinToTxt(u8* data, int size, char* text)
 {
     text[0] = '\0';
@@ -131,7 +131,7 @@ int ConvertBinToTxt(u8* data, int size, char* text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/password", ConvertBinToTxt__FPUciPc);
 #endif
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 int ConvertTxtToBin(char* text, u8* data)
 {
     int length = strlen(text);
@@ -165,7 +165,7 @@ int ConvertTxtToBin(char* text, u8* data)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/password", ConvertTxtToBin__FPcPUc);
 #endif
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 /**
  * Gives the inverted CRC-16/CCITT checksum
  * of a block of bytes.
@@ -196,7 +196,7 @@ static int GetCRC(u8* data, int size)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/password", GetCRC__FPUci);
 #endif
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 /**
  * Advances the scrambling generator
  * and gives its new state.
@@ -210,7 +210,7 @@ static unsigned int random()
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/password", random__Fv);
 #endif
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 /**
  * Stores a checksum of the data and key in the block's last two bytes,
  * then scrambles the rest with it and hides the checksum's low byte among them.
@@ -237,7 +237,7 @@ static void EncodeBinData(u8* data, int size, u8* key, int key_size)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/password", EncodeBinData__FPUciPUci);
 #endif
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 /**
  * Undoes EncodeBinData's scrambling and gives 1 when the stored
  * checksum agrees with the data and the key, otherwise 0.
@@ -267,7 +267,7 @@ static int DecodeBinData(u8* data, int size, u8* key, int key_size)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/password", DecodeBinData__FPUciPUci);
 #endif
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 int EncodePassword(u8* data, int size, u8* key, int key_size, char* text, int text_size)
 {
     if (size % 8 != 0)
@@ -290,7 +290,7 @@ int EncodePassword(u8* data, int size, u8* key, int key_size, char* text, int te
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/password", EncodePassword__FPUciPUciPci);
 #endif
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 int DecodePassword(char* text, u8* data, int size, u8* key, int key_size)
 {
     int length = strlen(text);

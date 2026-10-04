@@ -22,7 +22,7 @@ enum mgInterpolateMode {
 
 /**
  *
- * Where a point lies relative to a triangle, as Check_Point_Poly3 reports it.
+ * Where a point lies relative to a triangle, as the triangle point tests report it.
  *
  */
 enum mgPointPoly3Result {
@@ -31,6 +31,15 @@ enum mgPointPoly3Result {
     MG_POINT_POLY3_EDGE_01 = 2, /**< The point lies on the line through the first and second corners. */
     MG_POINT_POLY3_EDGE_12 = 3, /**< The point lies on the line through the second and third corners. */
     MG_POINT_POLY3_EDGE_20 = 4, /**< The point lies on the line through the third and first corners. */
+};
+
+/**
+ *
+ * Bits of the vector unit's status register that the box clip tests read.
+ *
+ */
+enum mgVu0Status {
+    MG_VU0_STATUS_SIGN_STICKY = 0x80, /**< Set once any result since the last clear was negative. */
 };
 
 /**
@@ -292,15 +301,6 @@ int mgCheckPointPoly3_XYZ(float *point, float *v0, float *v1, float *v2, float *
 int mgCheckPointPoly3_XZ(float *point, float *v0, float *v1, float *v2);
 
 /**
- * Returns where a 2D point lies relative to a 2D triangle, as an mgPointPoly3Result.
- *
- * @mangled Check_Point_Poly3__Fffffffff
- * @address 0x1303C0
- * @size 0x288
- */
-int Check_Point_Poly3(float x, float y, float x0, float y0, float x1, float y1, float x2, float y2);
-
-/**
  * Returns the length of a vector.
  *
  * @mangled mgDistVector__FPf
@@ -380,15 +380,6 @@ void mgUnitMatrix(float (*matrix)[4]);
  * @size 0x18
  */
 void mgZeroMatrix(float (*matrix)[4]);
-
-/**
- * Multiplies a matrix in place by two further matrices.
- *
- * @mangled MulMatrix3__FPA4_fPA4_fPA4_f
- * @address 0x130800
- * @size 0xC4
- */
-void MulMatrix3(float (*matrix)[4], float (*second)[4], float (*third)[4]);
 
 /**
  * Writes the product of two matrices.

@@ -284,7 +284,7 @@ public:
      * Advances the break-away animation, and removes the mark when it ends.
      *
      * @mangled Step__13CEnemyGekirinFv
-     * @address 0x1CB3A0
+     * @address 0x1CB440
      * @size 0x50
      */
     void Step();

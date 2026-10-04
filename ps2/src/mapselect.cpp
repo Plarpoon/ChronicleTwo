@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mapselect.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapselect", mlMAP_NAME_NUM__FP9SPI_STACKi);

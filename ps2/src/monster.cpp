@@ -1,4 +1,5 @@
 #include "common.h"
+#include "monster.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/monster", IsDraw__14CActiveMonsterFi);

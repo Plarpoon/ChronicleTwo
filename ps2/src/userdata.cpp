@@ -1,4 +1,5 @@
 #include "common.h"
+#include "userdata.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetUserDataMan__Fv);

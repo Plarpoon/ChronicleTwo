@@ -1,4 +1,5 @@
 #include "common.h"
+#include "sceneseq.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", InitSplineKey__FP10SPLINE_KEY);

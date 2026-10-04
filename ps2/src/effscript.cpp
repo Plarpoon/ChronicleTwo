@@ -1,4 +1,5 @@
 #include "common.h"
+#include "effscript.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", Initialize__16CEffectScriptManFP9mgCMemoryii);

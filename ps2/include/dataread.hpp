@@ -46,9 +46,12 @@ enum FILE_CACHE_TYPE {
  * index that is read from DATA.HD4 at start-up.
  */
 struct DATA_HEADER {
-    char *name;   /**< File name; an offset into the index until the index is loaded. */
-    int   size;   /**< File size in bytes. */
-    int   sector; /**< Starting sector relative to DATA.DAT. */
+    union {
+        int   name_offset; /**< Offset of the file name from the start of the index, as stored on the disc. */
+        char *name;        /**< File name, once the index has been loaded. */
+    };
+    int size;   /**< File size in bytes. */
+    int sector; /**< Starting sector relative to DATA.DAT. */
 };
 STATIC_ASSERT(sizeof(DATA_HEADER) == 0xC);
 

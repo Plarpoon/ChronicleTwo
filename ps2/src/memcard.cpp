@@ -1,4 +1,5 @@
 #include "common.h"
+#include "memcard.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", CopyMCBrowserName__FiPcPUs);

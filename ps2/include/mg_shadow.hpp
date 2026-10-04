@@ -74,3 +74,12 @@ public:
     virtual int DataAssignMDT(MDT_HEADER *header, mgCMemory *memory, mgCTextureManager *texture_manager);
 };
 STATIC_ASSERT(sizeof(mgCShadowMDT) == 0x50);
+
+/**
+ * Shadow model the scene loader builds for MG_VISUAL_CREATE_SHADOW_FIX_MDT;
+ * it keeps every behaviour of mgCShadowMDT.
+ */
+class mgCShadowFixMDT : public mgCShadowMDT {
+public:
+};
+STATIC_ASSERT(sizeof(mgCShadowFixMDT) == 0x50);

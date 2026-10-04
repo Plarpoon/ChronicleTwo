@@ -1,4 +1,5 @@
 #include "common.h"
+#include "movieviewlp.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movieviewlp", _MOVIE__FP9SPI_STACKi);

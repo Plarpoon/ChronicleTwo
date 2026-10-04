@@ -5,7 +5,7 @@
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", BindPosition__FPfPfff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", ResetPosition__13CDynamicAnimeFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Step__13CDynamicAnimeFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", CheckHit__12CDACollisionFPf);
+int CDACollision::CheckHit(float *position) { return 0; }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetWind__13CDynamicAnimeFfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", ResetWind__13CDynamicAnimeFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetFloor__13CDynamicAnimeFf);

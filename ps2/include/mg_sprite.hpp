@@ -33,6 +33,57 @@ enum mgC3DSpriteMode {
 
 /**
  *
+ * Bits of the draw flags quadword that mgC3DSprite::CreateRenderInfoPacket sends to the VU program.
+ *
+ */
+enum mg3DSpriteDrawFlag {
+    MG_3DSPRITE_FLAG_CLIP = 1 << 0,           /**< The object being drawn needs clipping or scissoring. */
+    MG_3DSPRITE_FLAG_SCISSOR = 1 << 1,        /**< The object being drawn needs scissoring. */
+    MG_3DSPRITE_FLAG_PROGRAM_OPTION = 1 << 2, /**< The frame attributes' program_option is set. */
+    MG_3DSPRITE_FLAG_PROGRAM_MODE = 1 << 3,   /**< The frame attributes' program_mode is set. */
+    MG_3DSPRITE_FLAG_POINT_LIGHT = 1 << 4,    /**< A point light reaches the object being drawn. */
+    MG_3DSPRITE_FLAG_NO_LIGHT = 1 << 5,       /**< The frame is drawn without the scene's lights. */
+};
+
+/**
+ *
+ * Largest number of billboards one batch of an mgC3DSprite packet holds before it is closed.
+ *
+ */
+enum {
+    MG_3DSPRITE_BATCH_MAX = 32, /**< Billboards in a full batch. */
+};
+
+/**
+ *
+ * Packet that mgC3DSprite::CreateRenderInfoPacket builds: the VU program's matrices, lighting and fog, its draw flags and the GS drawing state.
+ *
+ */
+struct mg3DSpriteRenderInfo {
+    u_int dma_tag[4];              /**< DMA tag over the VU data and the program call. */
+    u_int vif_code[4];             /**< VIF NOP, BASE, OFFSET and the UNPACK of the VU data. */
+    sceVu0IVECTOR unk_20[3];
+    u_int unk_50[4];
+    sceVu0FMATRIX local_screen;    /**< Transform from the sprite's local space to GS screen coordinates. */
+    sceVu0FMATRIX local_world;     /**< Transform from the sprite's local space to world space. */
+    u_int unk_e0[11][4];
+    sceVu0FVECTOR fog;             /**< Fog offset, near value, far value and scale. */
+    u_int unk_1a0[4];
+    sceVu0FMATRIX view_screen;     /**< View-to-screen transform with its axes scaled by the local transform's scale. */
+    u_int program_call[4];         /**< VIF MSCAL that starts the VU program. */
+    u_int flags_tag[4];            /**< DMA tag and VIF UNPACK of the draw flags. */
+    u_int flags[4];                /**< Draw flags, from mg3DSpriteDrawFlag. */
+    u_int direct_tag[4];           /**< DMA tag and VIF DIRECT of the GS register writes. */
+    u_int giftag[4];               /**< GIF tag of the GS register writes, in A+D mode. */
+    u_int prmodecont[4];           /**< PRMODECONT write that makes PRMODE hold the primitive attributes. */
+    u_int prmode[4];               /**< PRMODE write of the visual's primitive attributes. */
+    u_int fogcol[4];               /**< FOGCOL write of the fog colour. */
+    u_int ret_tag[4];              /**< DMA tag that returns to the caller. */
+};
+STATIC_ASSERT(sizeof(mg3DSpriteRenderInfo) == 0x280);
+
+/**
+ *
  * Draws one textured, coloured rectangle at a screen position, optionally at a view depth.
  *
  */

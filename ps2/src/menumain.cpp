@@ -1,4 +1,5 @@
 #include "common.h"
+#include "menumain.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuScreenBlackBeltSet__Fi);

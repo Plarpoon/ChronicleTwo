@@ -21,6 +21,19 @@ enum SPI_STACK_TYPE {
 
 /**
  *
+ * Sizes of the storage that the interpreter keeps for searching and reading tags.
+ *
+ */
+enum SPI_LIMIT {
+    SPI_HASH_BUCKET_COUNT = 101,    /**< Number of hash chains of tag names. */
+    SPI_HASH_TAG_MAX = 128,         /**< Number of tags above which the hash chains are not built. */
+    SPI_STACK_SIZE = 64,            /**< Number of arguments one tag may have. */
+    SPI_STRING_BUFF_SIZE = 0x2800,  /**< Number of bytes of string argument text one tag may have. */
+    SPI_TOKEN_SIZE = 0x100,         /**< Number of bytes in the local buffers that hold one word of a text script or the argument types of a binary tag. */
+};
+
+/**
+ *
  * Identifies the kind of an argument in the type list of a tag in a binary script.
  *
  */
@@ -170,9 +183,9 @@ public:
     SPI_TAG_PARAM *tag;                      /**< Tags the interpreter recognises. */
     SPI_TAG_HASH **hash_table;               /**< Hash chains of the tag names, or null to search the tag table in order. */
     u8             unk_34[0xC];
-    SPI_TAG_HASH  *hash_buckets[0x65];       /**< First link of each hash chain. */
+    SPI_TAG_HASH  *hash_buckets[SPI_HASH_BUCKET_COUNT];       /**< First link of each hash chain. */
     u8             unk_1d4[0xC];
-    SPI_TAG_HASH   hash_entries[0x80];       /**< Links of the hash chains, one per tag. */
+    SPI_TAG_HASH   hash_entries[SPI_HASH_TAG_MAX];       /**< Links of the hash chains, one per tag. */
     u8             unk_9e0[0x4F0];
 
     /**

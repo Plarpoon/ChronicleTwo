@@ -1,4 +1,5 @@
 #include "common.h"
+#include "dng_main.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", GetWeaponEffect__Fv);

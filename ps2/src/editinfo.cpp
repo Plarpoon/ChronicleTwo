@@ -1,4 +1,5 @@
 #include "common.h"
+#include "editinfo.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editinfo", Initialize__13CEditInfoMngrFv);

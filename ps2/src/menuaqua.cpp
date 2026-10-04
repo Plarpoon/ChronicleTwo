@@ -1,4 +1,5 @@
 #include "common.h"
+#include "menuaqua.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Get_aquarium_paul_table__Fi);

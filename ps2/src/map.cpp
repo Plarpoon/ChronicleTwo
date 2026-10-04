@@ -79,8 +79,12 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", LoadData__4CMapFPUiPUiPiP9mgCMemory)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", CheckFuncEvent__FP10CFuncPointPfiP12MapEventInfoPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", Draw__4CMapFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", DrawDirect__4CMapFv);
+#ifdef NONMATCHING
+int CObject::Draw() { return 0; }
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", Draw__7CObjectFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", DrawDirect__7CObjectFv);
+#endif
+int CObject::DrawDirect() { return 0; }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", Show__7CObjectFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", SetFarDist__7CObjectFf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", GetFarDist__7CObjectFv);

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "event.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event", LoadNpcTalkMes__FP9mgCMemory);

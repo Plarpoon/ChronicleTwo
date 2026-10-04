@@ -25,6 +25,10 @@ enum mgTEXTURE_CONST {
     MG_TEXTURE_HASH_SIZE = 101,          /**< Chains in the manager's name hash table. */
     MG_TEXTURE_VRAM_FIX_DEFAULT = 0x3FE0, /**< VRAM block address fixed textures grow down from when none is given. */
     MG_TEXTURE_BLOCK_FIX = 0x7FFF,       /**< Block number of the fixed block, whose textures stay resident in VRAM. */
+    MG_TEXTURE_LEVEL_MAX = 4,            /**< Mip levels a texture holds, its base level included. */
+    MG_TEXTURE_CLUT_BLOCKS = 4,          /**< GS blocks of VRAM reserved for the palette of an indexed texture. */
+    MG_TEXTURE_PAGE_BLOCKS = 32,         /**< GS blocks in one VRAM page, the unit a texture's VRAM is rounded up to. */
+    MG_TEXTURE_IMG_GROUP_MAX = 32,       /**< Archive groups an mgCEnterIMGInfo reports. */
 };
 
 /**
@@ -65,7 +69,7 @@ enum TIM2_IMAGE_TYPE {
 struct TM2_head {
     char tag[4];              /**< File signature. */
     char unk_04[0xC];
-    u_int unk_10;
+    u_int total_size;         /**< Bytes of the first picture; its header starts here. */
     u_int unk_14;
     u_int image_size;         /**< Bytes of pixels of the first picture, every mip level included. */
     u_short header_size;      /**< Bytes from the picture header to the picture's pixels. */
@@ -117,7 +121,7 @@ struct mgIMG_HEADER {
     short no_image;  /**< Non-zero to register the picture and reserve its VRAM without its pixels. */
     short unk_32;
     int size;        /**< Byte size of a texture animation script entry. */
-    u_long clamp;    /**< GS CLAMP value the texture is sampled with. */
+    sceGsClamp clamp; /**< GS CLAMP value the texture is sampled with. */
 };
 STATIC_ASSERT(sizeof(mgIMG_HEADER) == 0x40);
 
@@ -127,8 +131,8 @@ STATIC_ASSERT(sizeof(mgIMG_HEADER) == 0x40);
  */
 class mgCEnterIMGInfo {
 public:
-    int block[32];     /**< First texture block of each archive group, or -1 for a group the archive does not use. */
-    int block_num[32]; /**< Texture blocks each archive group spills over, its first block included. */
+    int block[MG_TEXTURE_IMG_GROUP_MAX];     /**< First texture block of each archive group, or -1 for a group the archive does not use. */
+    int block_num[MG_TEXTURE_IMG_GROUP_MAX]; /**< Texture blocks each archive group spills over, its first block included. */
 };
 STATIC_ASSERT(sizeof(mgCEnterIMGInfo) == 0x100);
 
@@ -149,8 +153,8 @@ public:
     int clut_size;           /**< GS blocks the palette occupies, or 0 for a true-colour texture. */
     sceGsTex0 tex0;          /**< GS TEX0 value the texture is drawn with. */
     sceGsTex1 tex1;          /**< GS TEX1 value the texture is sampled with. */
-    u_long clamp;            /**< GS CLAMP value the texture is sampled with. */
-    u_long128 *image[4];     /**< Pixels of each mip level in main memory, or NULL past the last level. */
+    sceGsClamp clamp;        /**< GS CLAMP value the texture is sampled with. */
+    u_long128 *image[MG_TEXTURE_LEVEL_MAX];      /**< Pixels of each mip level in main memory, or NULL past the last level. */
     u_long128 *clut;         /**< Palette in main memory, or NULL for a true-colour texture. */
     int swizzled;            /**< Non-zero when the 8-bit pixels are stored in 32-bit page order. */
     mgCTexture *next;        /**< Following texture of the same texture block. */

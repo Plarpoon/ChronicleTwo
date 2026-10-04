@@ -1,4 +1,5 @@
 #include "common.h"
+#include "dngfloor.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngfloor", Initialize__16CDngFloorManagerFv);

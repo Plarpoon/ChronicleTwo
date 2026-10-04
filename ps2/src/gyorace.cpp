@@ -1,4 +1,5 @@
 #include "common.h"
+#include "gyorace.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyorace", sgInitGyoRace__FP11SubGameInfo);

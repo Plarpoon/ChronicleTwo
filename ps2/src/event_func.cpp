@@ -1,4 +1,5 @@
 #include "common.h"
+#include "event_func.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", __ct__4CEohFv);

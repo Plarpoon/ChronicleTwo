@@ -1,4 +1,5 @@
 #include "common.h"
+#include "menucommon.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucommon", GetRandI__Fi);

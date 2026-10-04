@@ -1,15 +1,27 @@
 #include "common.h"
+#include "hddinstall.hpp"
 
 // Code (.text)
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/hddinstall", HddConectCheck__FPi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/hddinstall", CheckAppInstall__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/hddinstall", CheckInstallSpace__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/hddinstall", MountHDDFileSystem__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/hddinstall", UmountHDDFileSystem__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/hddinstall", CreateInstallThread__FP1i);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/hddinstall", DeleteInstallThread__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/hddinstall", StepInstallThread__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/hddinstall", InstallPause__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/hddinstall", InstallCancel__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/hddinstall", GetInstallProgress__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/hddinstall", UninstallApp__Fv);
+int HddConectCheck(int *state) { return 0; }
+
+int CheckAppInstall() { return 0; }
+
+int CheckInstallSpace() { return 0; }
+
+int MountHDDFileSystem() { return 0; }
+
+int UmountHDDFileSystem() { return 0; }
+
+int CreateInstallThread(u_long128 *work, int work_size) { return 0; }
+
+void DeleteInstallThread() {}
+
+int StepInstallThread() { return 0; }
+
+int InstallPause() { return 0; }
+
+void InstallCancel() {}
+
+float GetInstallProgress() { return 0.0f; }
+
+int UninstallApp() { return 0; }

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "editriver.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editriver", PlaceRiver__8CEditMapFPf);

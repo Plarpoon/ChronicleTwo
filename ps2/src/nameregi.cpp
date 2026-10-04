@@ -1,4 +1,5 @@
 #include "common.h"
+#include "nameregi.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nameregi", SetEventKeyword__FPcPci);

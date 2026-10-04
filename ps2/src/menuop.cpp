@@ -1,4 +1,5 @@
 #include "common.h"
+#include "menuop.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuop", InitMenuReturnMsg__FP9mgCMemory);

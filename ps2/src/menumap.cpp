@@ -1,4 +1,5 @@
 #include "common.h"
+#include "menumap.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumap", _WMAP_POSNUM__FP9SPI_STACKi);

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "editmap2.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", PlaneNormalXZ__FPfPfPfPf);

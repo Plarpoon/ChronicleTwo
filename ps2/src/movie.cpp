@@ -1,4 +1,5 @@
 #include "common.h"
+#include "movie.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", Load__6CMovieFPcPP9mgCMemoryiibbb);

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "dng_event.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", DrawEpisode__20CStartupEpisodeTitleFii);

@@ -11,13 +11,6 @@ float CRandom::nget() {
     return sum - 6.0f;
 }
 
-#ifdef UNMATCHING
 float abs(float value) {
-    if (value < 0.0f) {
-        value = -value;
-    }
-    return value;
+    return value < 0.0f ? -value : value;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/crandom", abs__Ff);
-#endif

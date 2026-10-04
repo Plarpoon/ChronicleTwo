@@ -4,7 +4,6 @@
 #include <cstring>
 
 // Code (.text)
-#ifdef UNMATCHING
 void *MG_ADDRESS_CHECK(void *address, char *where) {
     if (address == NULL) {
         printf("stack over at %s\n", where);
@@ -12,9 +11,6 @@ void *MG_ADDRESS_CHECK(void *address, char *where) {
     }
     return address;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_memory", MG_ADDRESS_CHECK__FPvPc);
-#endif
 
 void *operator new(size_t size, u_long128 *buffer) {
     return buffer;
@@ -35,7 +31,7 @@ void mgCMemory::Init() {
     lock = 0;
 }
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 void mgCMemory::SetHeapMem(u_long128 *buffer, int size) {
     heap = buffer;
     heap_size = size;
@@ -66,7 +62,6 @@ void mgCMemory::ClearHeapMem() {
     SetHeapMem(buffer, size);
 }
 
-#ifdef UNMATCHING
 void mgCMemory::Free(u_long128 *data) {
     mgMEMORY_BLOCK *block;
     mgMEMORY_BLOCK *prev;
@@ -94,11 +89,8 @@ void mgCMemory::Free(u_long128 *data) {
 
     prev->next = found->next;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_memory", Free__9mgCMemoryFP1);
-#endif
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 u_long128 *mgCMemory::StartStackMode(int mode, int size) {
     mgMEMORY_BLOCK *block;
     mgMEMORY_BLOCK *gap_start;
@@ -157,7 +149,7 @@ u_long128 *mgCMemory::StartStackMode(int mode, int size) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_memory", StartStackMode__9mgCMemoryFii);
 #endif
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 void mgCMemory::EndStackMode() {
     if (stack_block != NULL) {
         stack_block->size += stack_used;
@@ -176,7 +168,6 @@ u_long128 *mgCMemory::stAlloc64(int size) {
     return stAlloc(size);
 }
 
-#ifdef UNMATCHING
 u_long128 *mgCMemory::stAllocTest(int size) {
     if (lock) {
         return NULL;
@@ -187,11 +178,8 @@ u_long128 *mgCMemory::stAllocTest(int size) {
     }
     return &stack[stack_used];
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_memory", stAllocTest__9mgCMemoryFi);
-#endif
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 u_long128 *mgCMemory::stAlloc(int size) {
     int used;
 
@@ -214,7 +202,7 @@ u_long128 *mgCMemory::stAlloc(int size) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_memory", stAlloc__9mgCMemoryFi);
 #endif
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 u_long128 *mgCMemory::Alloc(int size) {
     int used;
 
@@ -275,7 +263,7 @@ void mgCMemory::stSetBuffer(u_long128 *buffer, int size) {
     stack_size = size;
 }
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 char *mgCopyString(char *text, mgCMemory *memory) {
     u_int length;
     u_int quadwords;

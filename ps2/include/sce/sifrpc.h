@@ -38,9 +38,19 @@ int sceSifSyncIop(void);
 int sceSifLoadModule(const char *path, int arg_len, const char *args);
 
 /**
+ * Shuts down the EE side of the SIF command service.
+ */
+void sceSifExitCmd(void);
+
+/**
  * Attempts to bind an RPC client to a numbered IOP server.
  */
 int sceSifBindRpc(struct sceSifClientData *client, unsigned int number, unsigned int mode);
+
+/**
+ * Reports whether an RPC client still has a request in progress.
+ */
+int sceSifCheckStatRpc(struct sceSifClientData *client);
 
 /**
  * Sends a synchronous or asynchronous request through a bound RPC client.

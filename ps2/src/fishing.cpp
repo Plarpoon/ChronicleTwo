@@ -1,4 +1,5 @@
 #include "common.h"
+#include "fishing.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", GetFishParam__Fi);

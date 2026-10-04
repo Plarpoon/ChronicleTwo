@@ -1,4 +1,5 @@
 #include "common.h"
+#include "pot.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/pot", CalcReflectionVector__FPfPfPf);

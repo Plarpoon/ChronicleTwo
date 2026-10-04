@@ -1,4 +1,5 @@
 #include "common.h"
+#include "editeff.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", EditSetEffectBuffer__FP9mgCMemory);

@@ -1,17 +1,13 @@
 #include "common.h"
 #include "mg_camera.hpp"
+#include "mg_math.hpp"
 
 #include <libvu0.h>
 
 #include <cmath>
 
-// mg_math has no header yet.
-void mgZeroVector(float *vector);
-void mgAddVector(float *vector, float *add);
-float mgAngleInterpolate(float from, float to, float step, int mode);
-
 // Code (.text)
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 void mgCCamera::Step(int steps) {
     sceVu0FVECTOR dir;
     sceVu0FVECTOR flat;
@@ -155,7 +151,7 @@ void mgCCamera::GetDir(float *dir) {
     dir[2] = ref[2] - pos[2];
 }
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 void mgCCamera::GetCameraMatrix(float (*matrix)[4]) {
     sceVu0FVECTOR dir;
     sceVu0FVECTOR up;
@@ -238,7 +234,7 @@ void mgCCameraFollow::GetFollowNext(float *pos) {
     mgAddVector(pos, follow_offset);
 }
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
 void mgCCameraFollow::Step(int steps) {
     sceVu0FVECTOR next_pos;
     int step;
@@ -280,8 +276,7 @@ void mgCCameraFollow::Step(int steps) {
                 turn = 1.0f;
             }
 
-            // Mode 1 divides the remaining turn by the step count.
-            angle = mgAngleInterpolate(angle, next_angle, turn, 1);
+            angle = mgAngleInterpolate(angle, next_angle, turn, MG_INTERPOLATE_FRACTION);
 
             // An eye that reaches its position in about one step turns at
             // once as well.
@@ -398,25 +393,25 @@ mgCCameraFollow::mgCCameraFollow(float distance, float height, float angle, floa
     mgZeroVector(follow_offset);
 }
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
     // Defined in mg_camera.hpp.
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_camera", Iam__15mgCCameraFollowFv);
 #endif
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
     // Defined in mg_camera.hpp.
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_camera", Suspend__9mgCCameraFv);
 #endif
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
     // Defined in mg_camera.hpp.
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_camera", Resume__9mgCCameraFv);
 #endif
 
-#ifdef UNMATCHING
+#ifdef NONMATCHING
     // Defined in mg_camera.hpp.
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_camera", Iam__9mgCCameraFv);

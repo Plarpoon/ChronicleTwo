@@ -1,4 +1,5 @@
 #include "common.h"
+#include "editmode.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmode", CheckControl__Fv);

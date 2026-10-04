@@ -1,4 +1,5 @@
 #include "common.h"
+#include "villagermngr.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/villagermngr", Init__Q214CVillagerPlace12ProgressInfoFv);

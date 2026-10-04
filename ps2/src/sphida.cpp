@@ -1,4 +1,5 @@
 #include "common.h"
+#include "sphida.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", GetSphidaClubDef__Fi);

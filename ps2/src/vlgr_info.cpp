@@ -1,4 +1,5 @@
 #include "common.h"
+#include "vlgr_info.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/vlgr_info", GetVlgrPlaceInfo__Fi);

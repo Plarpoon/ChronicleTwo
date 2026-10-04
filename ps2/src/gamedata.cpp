@@ -6,7 +6,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetGameDataPt__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", __ct__9CDataItemFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", __ct__11CDataAttachFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", __ct__11CDataWeaponFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetOffsetNo__13CDataRoboPartFv);
+u8 CDataRoboPart::GetOffsetNo() { return this->offset_no; }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", __ct__14CDataBreedFishFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", Initialize__9CGameDataFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", _DATACOMINIT__FP9SPI_STACKi);

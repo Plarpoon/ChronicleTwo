@@ -15,6 +15,7 @@
 #define SCE_GS_PSMCT16 2
 #define SCE_GS_PSMT8 19
 #define SCE_GS_PSMT4 20
+#define SCE_GS_PSMT8H 27
 #define SCE_GS_PSMZ24 49
 
 #define SCE_GS_ZGEQUAL 2
@@ -29,23 +30,38 @@
 #define SCE_GS_TEX0_1 6
 #define SCE_GS_CLAMP_1 8
 #define SCE_GS_XYZF3 12
+#define SCE_GS_PRMODECONT 26
+#define SCE_GS_PRMODE 27
 #define SCE_GS_TEX1_1 20
 #define SCE_GS_TEXA 59
+#define SCE_GS_FOGCOL 61
 #define SCE_GS_TEXFLUSH 63
 #define SCE_GS_SCISSOR_1 64
 #define SCE_GS_ALPHA_1 66
+#define SCE_GS_ALPHA_2 67
 #define SCE_GS_TEST_1 71
+#define SCE_GS_TEST_2 72
 #define SCE_GS_FRAME_1 76
 #define SCE_GS_ZBUF_1 78
+#define SCE_GS_ZBUF_2 79
 #define SCE_GS_BITBLTBUF 80
 #define SCE_GS_TRXPOS 81
 #define SCE_GS_TRXREG 82
 #define SCE_GS_TRXDIR 83
 
 #define SCE_GS_PRIM_LINE 1
+#define SCE_GS_PRIM_TRISTRIP 4
 #define SCE_GS_PRIM_SPRITE 6
 
 #define SCE_GS_ALWAYS 1
+#define SCE_GS_GEQUAL 5
+
+#define SCE_GS_ALPHA_CS 0
+#define SCE_GS_ALPHA_CD 1
+#define SCE_GS_ALPHA_ZERO 2
+#define SCE_GS_ALPHA_AS 0
+#define SCE_GS_ALPHA_AD 1
+#define SCE_GS_ALPHA_FIX 2
 
 #define SCE_GS_LOCAL_LOCAL 2
 
@@ -318,6 +334,15 @@ typedef struct {
 #define SCE_GS_SET_XYZF2(x, y, z, f) \
     ((u_long) (x) | ((u_long) (y) << 16) | ((u_long) (z) << 32) | ((u_long) (f) << 56))
 
+#define SCE_GS_SET_TEST(ate, atst, aref, afail, date, datm, zte, ztst)                       \
+    ((u_long) (ate) | ((u_long) (atst) << 1) | ((u_long) (aref) << 4) |                       \
+     ((u_long) (afail) << 12) | ((u_long) (date) << 14) | ((u_long) (datm) << 15) |           \
+     ((u_long) (zte) << 16) | ((u_long) (ztst) << 17))
+
+#define SCE_GS_SET_ALPHA(a, b, c, d, fix)                                                \
+    ((u_long) (a) | ((u_long) (b) << 2) | ((u_long) (c) << 4) | ((u_long) (d) << 6) | \
+     ((u_long) (fix) << 32))
+
 typedef struct {
     u_long LCM : 1;
     u_long pad1 : 1;
@@ -331,6 +356,18 @@ typedef struct {
     u_long K : 12;
     u_long pad44 : 20;
 } sceGsTex1;
+
+/* The texture wrap register. Tagged as well as typedef'd so that headers which only pass it by
+   value can forward-declare it as a struct. */
+typedef struct sceGsClamp {
+    u_long WMS : 2;
+    u_long WMT : 2;
+    u_long MINU : 10;
+    u_long MAXU : 10;
+    u_long MINV : 10;
+    u_long MAXV : 10;
+    u_long pad44 : 20;
+} sceGsClamp;
 
 typedef struct {
     u_long PRIM : 3;

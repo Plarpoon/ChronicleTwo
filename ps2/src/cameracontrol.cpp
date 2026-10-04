@@ -1,4 +1,5 @@
 #include "common.h"
+#include "cameracontrol.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/cameracontrol", SetFixHeight__15CameraCtrlParamFf);

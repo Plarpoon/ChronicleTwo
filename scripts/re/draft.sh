@@ -4,6 +4,10 @@
 #
 #   scripts/re/draft.sh <unit>             compile the drafts and compare
 #   scripts/re/draft.sh <unit> --promote   also check the unit's game build
+#   scripts/re/draft.sh <unit> --promote-one <symbol>   try one draft and keep it only if exact
+#   scripts/re/draft.sh <unit> --promote-all   try every guarded function once
+# Attempts are reserved in scripts/re/promotion_attempts.tsv before compilation.
+#   scripts/re/draft.sh <unit> --diff <symbol>   one function beside retail's
 #   scripts/re/draft.sh --header ps2/include/<file>   compile one header alone
 set -euo pipefail
 

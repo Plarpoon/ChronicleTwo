@@ -7,6 +7,8 @@
 #include <libpkt.h>
 #include <libvu0.h>
 
+#include "mg_drawenv.hpp"
+
 /**
  * @file
  * Declares the engine's graphics library: GS and DMA setup, the per-frame
@@ -46,26 +48,6 @@ enum mgVU_PROG_ID {
     MG_VU_PROG_3DSPRITE = 2,   /**< Camera-facing sprite microprogram (Vu_prog_3dsp). */
     MG_VU_PROG_USER = 0x100,   /**< First identifier of the table registered with mgSetUserVuProg. */
 };
-
-/**
- * Fog range, colour and the curve terms derived from them, as kept in the
- * global render info.
- */
-struct mgFOG_PARAM {
-    float near_z;              /**< View depth at which the fog starts. */
-    float far_z;               /**< View depth at which the fog is full. */
-    u8 r;                      /**< Red component of the fog colour. */
-    u8 g;                      /**< Green component of the fog colour. */
-    u8 b;                      /**< Blue component of the fog colour. */
-    u8 unk_b;
-    float fog_a;               /**< Constant term of the fog curve derived from the range and fog values. */
-    float far_fog;             /**< Fog value at the far depth. */
-    float near_fog;            /**< Fog value at the near depth. */
-    float fog_b;               /**< Depth-scaled term of the fog curve derived from the range and fog values. */
-    s32 unk_1c;
-    sceVu0FVECTOR curve;       /**< fog_a, far_fog, near_fog and fog_b packed for the microprograms. */
-};
-STATIC_ASSERT(sizeof(mgFOG_PARAM) == 0x30);
 
 /**
  * One deferred depth-buffer sample: a screen position read back at the end

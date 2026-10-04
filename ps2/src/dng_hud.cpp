@@ -1,4 +1,5 @@
 #include "common.h"
+#include "dng_hud.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_hud", SetLevelUpInfo__12CLevelupInfoFiiii);

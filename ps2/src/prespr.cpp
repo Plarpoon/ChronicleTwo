@@ -1,4 +1,5 @@
 #include "common.h"
+#include "prespr.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/prespr", Preset2D__10CPreSpriteFv);

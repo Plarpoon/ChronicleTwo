@@ -1,4 +1,5 @@
 #include "common.h"
+#include "runscript.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", runerror__FPCc);
@@ -31,30 +32,30 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", rsGetStackInt__FP12RS_STACKDAT
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", rsSetStack__FP12RS_STACKDATAi);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_168);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_173);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_183__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_197);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_202);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_223);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_224);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_225);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_275);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_292__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_293__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_300__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_341__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_686);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_687);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_688);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_689);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_690);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_691);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_692);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_693);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_694);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_695);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_696);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_699);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_698);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_697);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_168__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_173__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_183__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_197__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_202__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_223__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_224__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_225__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_275__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_292__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_293__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_300__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_341__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_686__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_687__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_688__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_689__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_690__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_691__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_692__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_693__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_694__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_695__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_696__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_699__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_698__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_697__DATA);

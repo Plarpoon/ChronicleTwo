@@ -30,17 +30,17 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editriver", GetRiverPoly__9CEditGridFP6CCP
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editriver", GetGridBox__9CEditGridFP9mgVu0FBOXPf);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_504);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_505);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_506);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_507);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_590__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_591__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_592__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_593__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_594__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_799__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_504__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_505__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_506__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_507__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_590__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_591__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_592__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_593__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_594__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editriver", at_799__3__DATA);
 
 // Uninitialised data (.bss)
-unsigned char at_733__2[0x10];
-unsigned char at_734[0x10];
+INCLUDE_BSS(at_733__2, 0x10);
+INCLUDE_BSS(at_734, 0x10);

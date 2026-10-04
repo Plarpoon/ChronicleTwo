@@ -343,18 +343,41 @@ public class Populate extends GhidraScript {
         return ns;
     }
 
+    /**
+     * The category holding a class's structure and vtable: /game, then the
+     * class's own namespace path, which is where Ghidra looks for the type of
+     * a member function's `this`.
+     */
+    static CategoryPath classCategory(List<String> path) {
+        CategoryPath cat = GAME;
+        for (String part : path) {
+            cat = cat.extend(part);
+        }
+        return cat;
+    }
+
     /** The placeholder structure for a class: empty until its layout is known. */
     DataType classStruct(List<String> path) {
-        CategoryPath cat = GAME;
-        for (int i = 0; i < path.size() - 1; i++) {
-            cat = cat.extend(path.get(i));
-        }
+        CategoryPath cat = classCategory(path);
         String name = path.get(path.size() - 1);
         DataType dt = dtm.getDataType(cat, name);
         if (dt == null) {
             dt = dtm.addDataType(new StructureDataType(cat, name, 0, dtm),
                 DataTypeConflictHandler.KEEP_HANDLER);
             count("placeholder structs created");
+        }
+        // An empty structure Ghidra made at the root for `this` is the same class.
+        if (path.size() == 1) {
+            DataType stray = dtm.getDataType(CategoryPath.ROOT, name);
+            if (stray instanceof Structure st && st.isNotYetDefined() && stray != dt) {
+                try {
+                    dtm.replaceDataType(stray, dt, false);
+                    count("root placeholders folded");
+                }
+                catch (Exception e) {
+                    printerr("fold " + name + ": " + e);
+                }
+            }
         }
         return dt;
     }
@@ -490,6 +513,10 @@ public class Populate extends GhidraScript {
         String kind = sig.get("kind").getAsString();
         boolean member = !kind.equals("function");
         if (sig.get("class").isJsonArray()) {
+            if (member) {
+                // Before the class namespace exists, so `this` finds this structure.
+                classStruct(pathOf(sig.getAsJsonArray("class")));
+            }
             Namespace ns = namespaceFor(pathOf(sig.getAsJsonArray("class")), member);
             if (!f.getParentNamespace().equals(ns)) {
                 f.setParentNamespace(ns);
@@ -517,7 +544,7 @@ public class Populate extends GhidraScript {
         if (cc == null || cc.equals(Function.UNKNOWN_CALLING_CONVENTION_STRING)) {
             cc = currentProgram.getCompilerSpec().getDefaultCallingConvention().getName();
         }
-        f.updateFunction(cc, ret, params, FunctionUpdateType.DYNAMIC_STORAGE_ALL_PARAMS, true,
+        f.updateFunction(cc, ret, params, FunctionUpdateType.DYNAMIC_STORAGE_FORMAL_PARAMS, true,
             SourceType.USER_DEFINED);
         f.setVarArgs(sig.get("varargs").getAsBoolean());
         String comment = sig.get("demangled").getAsString();
@@ -558,10 +585,7 @@ public class Populate extends GhidraScript {
                 continue;
             }
             classStruct(path);
-            CategoryPath cat = GAME;
-            for (int i = 0; i < path.size() - 1; i++) {
-                cat = cat.extend(path.get(i));
-            }
+            CategoryPath cat = classCategory(path);
             String name = path.get(path.size() - 1) + "_vtable";
             // CodeWarrior's layout: RTTI, the offset of the object holding this
             // vtable pointer, then the virtual functions.

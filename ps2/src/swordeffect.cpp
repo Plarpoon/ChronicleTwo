@@ -14,4 +14,4 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", Initialize__17CSWordAfterEff
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", Copy__17CSWordAfterEffectFR17CSWordAfterEffectP9mgCMemory);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/swordeffect", at_356);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/swordeffect", at_356__DATA);

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "gamedata.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetGameDataPt__Fv);
@@ -72,80 +73,80 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", SetPtr__14CItemUseTargetFiPv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", __sinit_gamedata_cpp);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", etcitem_spectol_table);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", gamedata_tag);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", ItemCmdMsgTbl);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", table_1553);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", etcitem_spectol_table__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", gamedata_tag__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", ItemCmdMsgTbl__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", table_1553__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1018);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1019);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1020);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1021);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1022);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1023);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1024);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1025__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1026);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1027);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1028);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1029);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1030);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1031);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1032);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1033);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1034);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1035);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1036);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1037);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1038);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1039);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1040);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1041);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1048);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1063);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1064__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1065);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1066);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1067);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1068);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1069__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1079);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1283__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1284__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1307__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1308__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1309__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1310__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1311__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1501);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1018__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1019__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1020__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1021__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1022__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1023__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1024__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1025__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1026__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1027__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1028__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1029__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1030__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1031__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1032__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1033__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1034__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1035__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1036__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1037__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1038__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1039__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1040__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1041__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1048__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1063__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1064__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1065__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1066__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1067__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1068__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1069__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1079__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1283__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1284__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1307__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1308__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1309__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1310__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1311__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", at_1501__DATA);
 
 // Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", D_0037AFFC);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", D_0037AFFC__DATA);
 
 // Small initialised data (.sdata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", msg_offsettbl_1363);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamedata", msg_offsettbl_1363__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char gamedata_build_stack[0x4];
-unsigned char comdatapt[0x4];
-unsigned char comdatapt_num[0x4];
-unsigned char SpiWeaponPt[0x4];
-unsigned char SpiItemPt[0x4];
-unsigned char SpiAttach[0x4];
-unsigned char SpiRoboPart[0x4];
-unsigned char SpiFish[0x4];
+INCLUDE_BSS(gamedata_build_stack, 0x4);
+INCLUDE_BSS(comdatapt, 0x4);
+INCLUDE_BSS(comdatapt_num, 0x4);
+INCLUDE_BSS(SpiWeaponPt, 0x4);
+INCLUDE_BSS(SpiItemPt, 0x4);
+INCLUDE_BSS(SpiAttach, 0x4);
+INCLUDE_BSS(SpiRoboPart, 0x4);
+INCLUDE_BSS(SpiFish, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char GameItemDataManage[0x30];
-unsigned char local_com_itemdata[0x4A40];
-unsigned char local_itemdata[0xA20];
-unsigned char local_weapondata[0x2270];
-unsigned char local_attachdata[0x390];
-unsigned char local_robodata[0x990];
-unsigned char local_fishdata[0x190];
-unsigned char local_guarddata[0x50];
-unsigned char local_itemdatano_converttable[0x400];
-unsigned char gamedata_sysword_buffer_1073[0x2800];
-unsigned char filename_1267[0x20];
-unsigned char item_file_path_1288[0x80];
+INCLUDE_BSS(GameItemDataManage, 0x30);
+INCLUDE_BSS(local_com_itemdata, 0x4A40);
+INCLUDE_BSS(local_itemdata, 0xA20);
+INCLUDE_BSS(local_weapondata, 0x2270);
+INCLUDE_BSS(local_attachdata, 0x390);
+INCLUDE_BSS(local_robodata, 0x990);
+INCLUDE_BSS(local_fishdata, 0x190);
+INCLUDE_BSS(local_guarddata, 0x50);
+INCLUDE_BSS(local_itemdatano_converttable, 0x400);
+INCLUDE_BSS(gamedata_sysword_buffer_1073, 0x2800);
+INCLUDE_BSS(filename_1267, 0x20);
+INCLUDE_BSS(item_file_path_1288, 0x80);

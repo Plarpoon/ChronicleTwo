@@ -1,4 +1,5 @@
 #include "common.h"
+#include "gameutil.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", QuatSlerp__FPfPffPf);
@@ -40,26 +41,26 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CalcIntersectionPointLineAndLin
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CalcIntersectionPoint2PAnd2P__FffffffffPfPf);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gameutil", at_966);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gameutil", at_967);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gameutil", at_966__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gameutil", at_967__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char OldSkinFrame[0x4];
-unsigned char vert_845[0x10];
-unsigned char vert_915[0x10];
-unsigned char nml_916[0x4];
+INCLUDE_BSS(OldSkinFrame, 0x4);
+INCLUDE_BSS(vert_845, 0x10);
+INCLUDE_BSS(vert_915, 0x10);
+INCLUDE_BSS(nml_916, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char def_vrtx[0x3200];
-unsigned char def_nml[0x10];
-unsigned char tmp_SkinMatrix_847[0x40];
-unsigned char tmp_SkinMatrix_inv_848[0x40];
-unsigned char tmp_ChrMatrix_849[0x40];
-unsigned char tmp_BaseSkinMatrix_851[0x40];
-unsigned char tmp_BaseSkinMatrix_inv_852[0x40];
-unsigned char tmp_SkinMatrix_917[0x40];
-unsigned char tmp_SkinMatrix_inv_918[0x40];
-unsigned char tmp_ChrMatrix_919[0x40];
-unsigned char tmp_BaseSkinMatrix_921[0x40];
-unsigned char tmp_BaseSkinMatrix_inv_922[0x40];
-unsigned char at_945[0x10];
+INCLUDE_BSS(def_vrtx, 0x3200);
+INCLUDE_BSS(def_nml, 0x10);
+INCLUDE_BSS(tmp_SkinMatrix_847, 0x40);
+INCLUDE_BSS(tmp_SkinMatrix_inv_848, 0x40);
+INCLUDE_BSS(tmp_ChrMatrix_849, 0x40);
+INCLUDE_BSS(tmp_BaseSkinMatrix_851, 0x40);
+INCLUDE_BSS(tmp_BaseSkinMatrix_inv_852, 0x40);
+INCLUDE_BSS(tmp_SkinMatrix_917, 0x40);
+INCLUDE_BSS(tmp_SkinMatrix_inv_918, 0x40);
+INCLUDE_BSS(tmp_ChrMatrix_919, 0x40);
+INCLUDE_BSS(tmp_BaseSkinMatrix_921, 0x40);
+INCLUDE_BSS(tmp_BaseSkinMatrix_inv_922, 0x40);
+INCLUDE_BSS(at_945, 0x10);

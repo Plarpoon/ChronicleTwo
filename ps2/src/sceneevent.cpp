@@ -17,11 +17,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneevent", EffectStep__6CSceneFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneevent", DrawEffect__6CSceneFi);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneevent", col_1003);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneevent", at_1013__4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneevent", col_1003__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneevent", at_1013__4__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneevent", at_858__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneevent", at_958__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneevent", at_959__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneevent", at_1093);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneevent", at_858__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneevent", at_958__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneevent", at_959__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneevent", at_1093__DATA);

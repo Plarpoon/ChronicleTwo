@@ -16,17 +16,17 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneload", __as__17SCN_LOADMAP_INFO2FRC17
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneload", DeleteMap__6CSceneFii);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_820__6);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_820__6__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_885__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_886__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_887__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_888__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_889__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_890__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_958__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_959__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_1116);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_1117__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_1118__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_885__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_886__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_887__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_888__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_889__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_890__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_958__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_959__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_1116__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_1117__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_1118__2__DATA);

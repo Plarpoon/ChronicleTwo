@@ -65,6 +65,10 @@ LINKER_SYMBOLS = {
     "_align_segment", "__data_size", "__bss_size",
 }
 
+# What a datum's placeholder in a game unit's source is called, after the
+# datum's own name (see disassemble.placeholder).
+PLACEHOLDER_SUFFIX = "__DATA"
+
 SUBSEGMENT = re.compile(
     r"^\s*-\s*\{start:\s*(0x[0-9a-fA-F]+),\s*type:\s*([^,}\s]+),\s*name:\s*([^,}\s]+)(.*)\}\s*$")
 VRAM_FIELD = re.compile(r"vram:\s*(0x[0-9a-fA-F]+)")

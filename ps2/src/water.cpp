@@ -1,4 +1,5 @@
 #include "common.h"
+#include "water.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", Step__11CFireRasterFv);
@@ -28,12 +29,12 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", CreateWaterFrame__FiiPfPfP9mgCMemo
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", Initialize__11CWaterFrameFv);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/water", prog_vif_351);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/water", progf_vif_352);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/water", prog_vif_351__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/water", progf_vif_352__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/water", __vt__11CWaterFrame);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/water", __vt__6CWater);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/water", __vt__11CWaterFrame__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/water", __vt__6CWater__DATA);
 
 // Uninitialised data (.bss)
-unsigned char at_287__2[0x10];
+INCLUDE_BSS(at_287__2, 0x10);

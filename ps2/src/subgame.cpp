@@ -31,15 +31,15 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", Close__12sgCPlayVoiceFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", __sinit_subgame_cpp);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/subgame", at_985__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/subgame", at_985__3__DATA);
 
 // Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/subgame", D_0037B078);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/subgame", D_0037B078__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char SubGame[0x4];
-unsigned char MenuOpenFlag[0x4];
-unsigned char ItemOver[0x4];
+INCLUDE_BSS(SubGame, 0x4);
+INCLUDE_BSS(MenuOpenFlag, 0x4);
+INCLUDE_BSS(ItemOver, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char GameInfo[0x30];
+INCLUDE_BSS(GameInfo, 0x30);

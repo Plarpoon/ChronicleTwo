@@ -21,19 +21,19 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event", GetCharacter__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event", __sinit_event_cpp);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/event", vv_984);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/event", vv_984__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/event", at_819__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/event", at_820__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/event", at_1002__4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/event", at_819__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/event", at_820__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/event", at_1002__4__DATA);
 
 // Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/event", D_0037B038);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/event", D_0037B038__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char EventScene[0x4];
-unsigned char cnt_1056[0x4];
+INCLUDE_BSS(EventScene, 0x4);
+INCLUDE_BSS(cnt_1056, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char EventScript[0x60];
+INCLUDE_BSS(EventScript, 0x60);

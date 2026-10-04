@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mg_frame.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", Initialize__12mgCFrameAttrFv);
@@ -72,20 +73,20 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", Draw__9mgCObjectFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", __sinit_mg_frame_cpp);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_frame", at_307);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_frame", at_307__DATA);
 
 // Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_frame", D_0037AFE0);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_frame", D_0037AFE0__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_frame", __vt__8mgCFrame);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_frame", __vt__12mgCFrameBase);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_frame", __vt__9mgCObject);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_frame", __vt__8mgCFrame__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_frame", __vt__12mgCFrameBase__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_frame", __vt__9mgCObject__DATA);
 
 // Uninitialised data (.bss)
-unsigned char at_324[0x10];
-unsigned char at_341[0x10];
-unsigned char at_844[0x10];
-unsigned char dmy_attr[0x90];
-unsigned char at_1118[0x10];
-unsigned char at_1119[0x10];
+INCLUDE_BSS(at_324, 0x10);
+INCLUDE_BSS(at_341, 0x10);
+INCLUDE_BSS(at_844, 0x10);
+INCLUDE_BSS(dmy_attr, 0x90);
+INCLUDE_BSS(at_1118, 0x10);
+INCLUDE_BSS(at_1119, 0x10);

@@ -14,4 +14,4 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/drawwin", DrawVersatileWin_4__FP11mgCDrawP
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/drawwin", DrawDQFukidashi__FP11mgCDrawPrim4RECTiiP10RGBAQ_TYPEii);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/drawwin", data);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/drawwin", data__DATA);

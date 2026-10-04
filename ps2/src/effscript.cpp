@@ -188,47 +188,47 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", SetEffectScript__FP10CRunScrip
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", SetEffectScriptFunc__Fv);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", eff_spt_base_def);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_2311);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_2498__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", ext_func_info__4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", eff_spt_base_def__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_2311__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_2498__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", ext_func_info__4__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_943__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1099__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1100);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1101);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1102__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1103__5);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1104__7);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1127__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1128__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1129__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1143);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1144);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1145);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1336__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1337__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1338__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1339__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1340__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1341__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1655__5);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1705);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_2025__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_3303__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_3304__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_3398);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_3495);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_3536);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_3644);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_3645);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_943__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1099__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1100__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1101__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1102__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1103__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1104__7__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1127__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1128__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1129__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1143__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1144__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1145__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1336__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1337__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1338__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1339__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1340__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1341__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1655__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_1705__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_2025__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_3303__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_3304__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_3398__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_3495__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_3536__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_3644__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effscript", at_3645__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char now_scene[0x4];
-unsigned char EffScriptMan[0x4];
-unsigned char now_script[0x4];
+INCLUDE_BSS(now_scene, 0x4);
+INCLUDE_BSS(EffScriptMan, 0x4);
+INCLUDE_BSS(now_script, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char ext_func__4[0x400];
-unsigned char at_2067[0x10];
+INCLUDE_BSS(ext_func__4, 0x400);
+INCLUDE_BSS(at_2067, 0x10);

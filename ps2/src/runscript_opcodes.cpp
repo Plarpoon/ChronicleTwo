@@ -1,4 +1,5 @@
 #include "common.h"
+#include "runscript_opcodes.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", RunScript__11CMonsterManFi);
@@ -186,27 +187,27 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", SetMonsterScript__FP10
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", SetMonsterExtendTable__Fv);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_1480__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_1481__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_1864);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_2160);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", ext_func_info);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_1480__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_1481__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_1864__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_2160__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", ext_func_info__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_1728);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_1733);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_1784);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_2398__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_2399);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_2580);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_2787);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_3078);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_3079);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_1728__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_1733__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_1784__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_2398__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_2399__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_2580__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_2787__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_3078__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript_opcodes", at_3079__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char nowScene[0x4];
-unsigned char nowMonster[0x4];
-unsigned char LastCInfo2[0x4];
+INCLUDE_BSS(nowScene, 0x4);
+INCLUDE_BSS(nowMonster, 0x4);
+INCLUDE_BSS(LastCInfo2, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char ext_func[0x400];
+INCLUDE_BSS(ext_func, 0x400);

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mg_math.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgFotI4__FPiPf);
@@ -63,8 +64,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgSinf__Ff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgCosf__Ff);
 
 // Small initialised data (.sdata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_math", sin_table_num);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_math", sin_table_unit_1);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_math", sin_table_num__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_math", sin_table_unit_1__DATA);
 
 // Uninitialised data (.bss)
-unsigned char SinTable[0x1000];
+INCLUDE_BSS(SinTable, 0x1000);

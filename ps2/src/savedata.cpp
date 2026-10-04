@@ -49,4 +49,4 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", GetSphidaData__12CSubGameDataFv
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", GetGyoRaceData__12CSubGameDataFv);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/savedata", at_453);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/savedata", at_453__DATA);

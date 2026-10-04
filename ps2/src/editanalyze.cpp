@@ -19,13 +19,13 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editanalyze", CheckLiveChara__FiP8CEditMap
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editanalyze", EditMapInitEvent__FiP8CEditMap);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editanalyze", at_913__6);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editanalyze", at_964__4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editanalyze", at_913__6__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editanalyze", at_964__4__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editanalyze", at_1618__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editanalyze", at_1632__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editanalyze", at_1633__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editanalyze", at_1618__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editanalyze", at_1632__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editanalyze", at_1633__3__DATA);
 
 // Uninitialised data (.bss)
-unsigned char at_1297__4[0x10];
+INCLUDE_BSS(at_1297__4, 0x10);

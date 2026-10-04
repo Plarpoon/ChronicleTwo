@@ -1,4 +1,5 @@
 #include "common.h"
+#include "editctrl.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editctrl", GetUserData__Fv);
@@ -28,79 +29,79 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editctrl", EditDrawEffectChara__FP6CScene)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editctrl", __sinit_editctrl_cpp);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", name_978);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", name_id_982);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1080);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1320);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", name_978__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", name_id_982__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1080__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1320__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_962);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_979__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_980);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_981);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1239);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1240);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1241);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1355);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1356);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1357__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1465__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1466__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1467__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1468__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1759);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1760);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1761);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1762);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1763);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1764);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1765);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1766);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1767);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_962__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_979__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_980__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_981__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1239__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1240__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1241__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1355__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1356__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1357__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1465__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1466__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1467__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1468__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1759__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1760__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1761__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1762__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1763__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1764__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1765__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1766__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1767__DATA);
 
 // Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", D_0037B008);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", D_0037B008__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char LadderMode[0x4];
-unsigned char LadderStep[0x4];
-unsigned char CharaMotionMode[0x4];
-unsigned char CharaMotionModeCnt[0x4];
-unsigned char CharaFallFlag[0x4];
-unsigned char CharaAngleTargetFlag[0x4];
-unsigned char CharaAngleTarget[0x4];
-unsigned char FixCameraFlag[0x4];
-unsigned char FixCameraChgCnt[0x4];
-unsigned char EyeViewCancelOnce[0x4];
-unsigned char ViewMode[0x4];
-unsigned char viewAngleH[0x4];
-unsigned char viewAngleV[0x4];
-unsigned char AddProj[0x4];
-unsigned char ShutterCnt[0x4];
-unsigned char InitEyeViewFlag[0x4];
-unsigned char move_chara[0x4];
-unsigned char HamonCnt_1075[0x4];
-unsigned char init_1076[0x4];
-unsigned char reference_1252[0x4];
-unsigned char init_1253[0x4];
-unsigned char camera_dist_mode_1317[0x4];
-unsigned char init_1318[0x4];
-unsigned char LadderCamera[0x4];
-unsigned char LdrNext[0x4];
-unsigned char LdrRot[0x4];
-unsigned char OldMtnRate[0x4];
-unsigned char LdrSound[0x4];
-unsigned char LdrBtmFoot[0x4];
-unsigned char LdrTopFoot[0x4];
+INCLUDE_BSS(LadderMode, 0x4);
+INCLUDE_BSS(LadderStep, 0x4);
+INCLUDE_BSS(CharaMotionMode, 0x4);
+INCLUDE_BSS(CharaMotionModeCnt, 0x4);
+INCLUDE_BSS(CharaFallFlag, 0x4);
+INCLUDE_BSS(CharaAngleTargetFlag, 0x4);
+INCLUDE_BSS(CharaAngleTarget, 0x4);
+INCLUDE_BSS(FixCameraFlag, 0x4);
+INCLUDE_BSS(FixCameraChgCnt, 0x4);
+INCLUDE_BSS(EyeViewCancelOnce, 0x4);
+INCLUDE_BSS(ViewMode, 0x4);
+INCLUDE_BSS(viewAngleH, 0x4);
+INCLUDE_BSS(viewAngleV, 0x4);
+INCLUDE_BSS(AddProj, 0x4);
+INCLUDE_BSS(ShutterCnt, 0x4);
+INCLUDE_BSS(InitEyeViewFlag, 0x4);
+INCLUDE_BSS(move_chara, 0x4);
+INCLUDE_BSS(HamonCnt_1075, 0x4);
+INCLUDE_BSS(init_1076, 0x4);
+INCLUDE_BSS(reference_1252, 0x4);
+INCLUDE_BSS(init_1253, 0x4);
+INCLUDE_BSS(camera_dist_mode_1317, 0x4);
+INCLUDE_BSS(init_1318, 0x4);
+INCLUDE_BSS(LadderCamera, 0x4);
+INCLUDE_BSS(LdrNext, 0x4);
+INCLUDE_BSS(LdrRot, 0x4);
+INCLUDE_BSS(OldMtnRate, 0x4);
+INCLUDE_BSS(LdrSound, 0x4);
+INCLUDE_BSS(LdrBtmFoot, 0x4);
+INCLUDE_BSS(LdrTopFoot, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char MoveInfo[0x110];
-unsigned char OldFixCameraPos[0x10];
-unsigned char OldCameraPos[0x10];
-unsigned char LadderData[0xD0];
-unsigned char LdrPos[0x10];
-unsigned char StdPos[0x10];
-unsigned char LdrBottomPos[0x10];
-unsigned char LdrTopPos[0x10];
-unsigned char LdrTopWalk[0x10];
-unsigned char LdrCamPos[0x10];
+INCLUDE_BSS(MoveInfo, 0x110);
+INCLUDE_BSS(OldFixCameraPos, 0x10);
+INCLUDE_BSS(OldCameraPos, 0x10);
+INCLUDE_BSS(LadderData, 0xD0);
+INCLUDE_BSS(LdrPos, 0x10);
+INCLUDE_BSS(StdPos, 0x10);
+INCLUDE_BSS(LdrBottomPos, 0x10);
+INCLUDE_BSS(LdrTopPos, 0x10);
+INCLUDE_BSS(LdrTopWalk, 0x10);
+INCLUDE_BSS(LdrCamPos, 0x10);

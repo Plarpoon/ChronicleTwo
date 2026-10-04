@@ -49,4 +49,4 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", FirstDraw__13CEventSprite2Fv
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", Draw__13CEventSprite2Fv);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/eventsprite", at_1069__4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/eventsprite", at_1069__4__DATA);

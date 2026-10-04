@@ -42,7 +42,7 @@ foreach(row IN LISTS unit_rows)
     set(base ${OBJDIFF_DIR}/base/${unit}.cpp.o)
     add_custom_command(
         OUTPUT ${CMAKE_SOURCE_DIR}/${base}
-        COMMAND ${CMAKE_COMMAND} -E env MWCIncludes=${INCLUDE_DIR}
+        COMMAND ${CMAKE_COMMAND} -E env "MWCIncludes=${INCLUDE_DIR}/std;${INCLUDE_DIR}/sce"
                 ${WIBO} ${MW_CC_DIR}/mwccps2.exe ${CC_FLAGS} -lang c++
                 -o ${base} ${source}
         DEPENDS ${CMAKE_SOURCE_DIR}/${source} ${PROJECT_HEADERS}

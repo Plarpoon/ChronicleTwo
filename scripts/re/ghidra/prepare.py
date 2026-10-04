@@ -305,7 +305,7 @@ def sdk_header():
         text = re.sub(r"\\\n", " ", text)
         text = re.sub(r"^\s*#[^\n]*", "", text, flags=re.M)
         text = re.sub(r"^\s*STATIC_ASSERT\([^\n]*", "", text, flags=re.M)
-        text = re.sub(r"__attribute__\s*\(\(.*?\)\)", "", text)
+        text = re.sub(r"__attribute__\s*\(\((?:[^()]|\([^()]*\))*\)\)", "", text)
         # extern "C" blocks and single declarations.
         text = re.sub(r'extern\s+"C"\s*\{', "", text)
         text = re.sub(r"^\}\s*$", "", text, flags=re.M)

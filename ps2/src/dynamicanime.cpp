@@ -1,4 +1,5 @@
 #include "common.h"
+#include "dynamicanime.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", BindPosition__FPfPfff);
@@ -70,55 +71,55 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Load__13CDynamicAnimeFPciP8
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", CheckHit__10CDAColPipeFPf);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", dynmc_tag);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", dynmc_tag__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_816);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_817);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_818);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_819);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_820);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_821);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_822);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_823);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_824);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_825);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_826);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_827);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_828__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_829__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_830__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_831__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_832__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_833__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_834__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_835__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_836__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_837__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_838__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_839__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_840__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_841__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_842__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_855__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_976);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_977);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_978);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_979);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_1025);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_1074);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_816__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_817__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_818__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_819__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_820__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_821__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_822__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_823__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_824__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_825__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_826__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_827__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_828__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_829__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_830__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_831__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_832__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_833__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_834__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_835__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_836__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_837__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_838__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_839__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_840__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_841__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_842__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_855__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_976__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_977__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_978__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_979__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_1025__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_1074__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", __vt__10CDAColPipe);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", __vt__12CDACollision);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", __vt__10CDAColPipe__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", __vt__12CDACollision__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char dynNowDA[0x4];
-unsigned char dynStack[0x4];
-unsigned char dynTopFrame[0x4];
-unsigned char dynFrameCount[0x4];
-unsigned char dynVertexCount[0x4];
-unsigned char dynFixVertexCount[0x4];
-unsigned char dynBindVertexCount[0x4];
-unsigned char dynBBoxCount[0x4];
-unsigned char dynColCount[0x4];
+INCLUDE_BSS(dynNowDA, 0x4);
+INCLUDE_BSS(dynStack, 0x4);
+INCLUDE_BSS(dynTopFrame, 0x4);
+INCLUDE_BSS(dynFrameCount, 0x4);
+INCLUDE_BSS(dynVertexCount, 0x4);
+INCLUDE_BSS(dynFixVertexCount, 0x4);
+INCLUDE_BSS(dynBindVertexCount, 0x4);
+INCLUDE_BSS(dynBBoxCount, 0x4);
+INCLUDE_BSS(dynColCount, 0x4);

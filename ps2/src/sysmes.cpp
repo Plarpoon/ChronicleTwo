@@ -1,4 +1,5 @@
 #include "common.h"
+#include "sysmes.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sysmes", GetSystemMessage__Fv);
@@ -13,27 +14,27 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/sysmes", CreateSystemMes__Fii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sysmes", __sinit_sysmes_cpp);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_482);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_483);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_484);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_485);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_486);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_487);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_488);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_489);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_490);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_491);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_492);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_493);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_494);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_482__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_483__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_484__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_485__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_486__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_487__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_488__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_489__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_490__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_491__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_492__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_493__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_494__DATA);
 
 // Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", D_0037B000);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", D_0037B000__DATA);
 
 // Uninitialised data (.bss)
-unsigned char SystemMesStack[0x30];
-unsigned char SystemMesBuffer[0xD000];
-unsigned char SysMesBuffer[0x13880];
-unsigned char SystemMessage[0x2960];
-unsigned char SystemMessage2[0x2960];
-unsigned char SystemMessage3[0x2960];
+INCLUDE_BSS(SystemMesStack, 0x30);
+INCLUDE_BSS(SystemMesBuffer, 0xD000);
+INCLUDE_BSS(SysMesBuffer, 0x13880);
+INCLUDE_BSS(SystemMessage, 0x2960);
+INCLUDE_BSS(SystemMessage2, 0x2960);
+INCLUDE_BSS(SystemMessage3, 0x2960);

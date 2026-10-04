@@ -48,58 +48,58 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", ParaBlend__FPffPA4_fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", __sinit_fishingobj_cpp);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_975__5);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_985__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_986__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_1797);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_1798);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_975__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_985__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_986__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_1797__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_1798__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_896__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_897__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_898__5);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_899__5);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_900__6);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_901__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_902__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_903__5);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_1503__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_1564);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_896__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_897__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_898__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_899__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_900__6__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_901__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_902__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_903__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_1503__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_1564__DATA);
 
 // Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", D_0037B08C);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", D_0037B08C__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char WaterLevel[0x4];
-unsigned char LineTop[0x4];
-unsigned char LineTopDist[0x4];
-unsigned char CastingLureFlag[0x4];
-unsigned char CastingLureTime[0x4];
-unsigned char AddLineSpeed[0x4];
-unsigned char BattleFlag[0x4];
-unsigned char BattleLineDist[0x4];
-unsigned char ShowHari[0x4];
-unsigned char LureLessFlag[0x4];
-unsigned char NowMode[0x4];
-unsigned char NowFishSpeed[0x4];
-unsigned char NowFishRot[0x4];
-unsigned char ActionChanceNextCnt[0x4];
-unsigned char ActionChanceCnt[0x4];
-unsigned char ActionChanceDir[0x4];
+INCLUDE_BSS(WaterLevel, 0x4);
+INCLUDE_BSS(LineTop, 0x4);
+INCLUDE_BSS(LineTopDist, 0x4);
+INCLUDE_BSS(CastingLureFlag, 0x4);
+INCLUDE_BSS(CastingLureTime, 0x4);
+INCLUDE_BSS(AddLineSpeed, 0x4);
+INCLUDE_BSS(BattleFlag, 0x4);
+INCLUDE_BSS(BattleLineDist, 0x4);
+INCLUDE_BSS(ShowHari, 0x4);
+INCLUDE_BSS(LureLessFlag, 0x4);
+INCLUDE_BSS(NowMode, 0x4);
+INCLUDE_BSS(NowFishSpeed, 0x4);
+INCLUDE_BSS(NowFishRot, 0x4);
+INCLUDE_BSS(ActionChanceNextCnt, 0x4);
+INCLUDE_BSS(ActionChanceCnt, 0x4);
+INCLUDE_BSS(ActionChanceDir, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char RodPoint[0xF0];
-unsigned char RodPointDist[0x50];
-unsigned char SaoFrame[0x20];
-unsigned char SaoDist[0x20];
-unsigned char LinePoint[0xC00];
-unsigned char LurePoint[0x90];
-unsigned char FlyingPoint[0x30];
-unsigned char FishPoint[0x30];
-unsigned char CastingPoint[0x10];
-unsigned char ReleasePoint[0x10];
-unsigned char BattleStartPos[0x10];
-unsigned char LureObj[0x3D0];
-unsigned char UkiObj[0x3D0];
-unsigned char HariObj[0x3D0];
-unsigned char ChanceBarPos[0x10];
+INCLUDE_BSS(RodPoint, 0xF0);
+INCLUDE_BSS(RodPointDist, 0x50);
+INCLUDE_BSS(SaoFrame, 0x20);
+INCLUDE_BSS(SaoDist, 0x20);
+INCLUDE_BSS(LinePoint, 0xC00);
+INCLUDE_BSS(LurePoint, 0x90);
+INCLUDE_BSS(FlyingPoint, 0x30);
+INCLUDE_BSS(FishPoint, 0x30);
+INCLUDE_BSS(CastingPoint, 0x10);
+INCLUDE_BSS(ReleasePoint, 0x10);
+INCLUDE_BSS(BattleStartPos, 0x10);
+INCLUDE_BSS(LureObj, 0x3D0);
+INCLUDE_BSS(UkiObj, 0x3D0);
+INCLUDE_BSS(HariObj, 0x3D0);
+INCLUDE_BSS(ChanceBarPos, 0x10);

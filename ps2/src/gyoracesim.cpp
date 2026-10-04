@@ -26,16 +26,16 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyoracesim", GetRandomNumber__Fff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyoracesim", rand_prob__Fi);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gyoracesim", fish_data);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gyoracesim", fish_data__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gyoracesim", at_1059__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gyoracesim", at_1059__3__DATA);
 
 // Small initialised data (.sdata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gyoracesim", at_483__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gyoracesim", at_483__2__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char jrand[0x4];
+INCLUDE_BSS(jrand, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char ia[0xE0];
+INCLUDE_BSS(ia, 0xE0);

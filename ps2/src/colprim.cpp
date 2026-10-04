@@ -1,5 +1,7 @@
 #include "common.h"
 
+#include "colprim.hpp"
+
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/colprim", SetDamage__8CColPrimFPci);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/colprim", SetCoord__8CColPrimFPff);
@@ -23,4 +25,4 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/colprim", Step__11CColPrimManFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/colprim", Initialize__11CColPrimManFP6CScene);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/colprim", Damage_Param_Table);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/colprim", Damage_Param_Table__DATA);

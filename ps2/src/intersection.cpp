@@ -9,4 +9,4 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/intersection", IntersectionBox__FPfPfP9mgV
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/intersection", mt_test__FP12RS_STACKDATAi);
 
 // Uninitialised data (.bss)
-unsigned char at_161[0x10];
+INCLUDE_BSS(at_161, 0x10);

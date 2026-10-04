@@ -24,44 +24,44 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/nowload", SCElogoFade__FiP9mgCMemory);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nowload", __sinit_nowload_cpp);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_832__7);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_863__5);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_864__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_912__6);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_913__5);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_920__7);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_1003__5);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_1068__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_1069__6);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_832__7__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_863__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_864__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_912__6__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_913__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_920__7__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_1003__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_1068__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", at_1069__6__DATA);
 
 // Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", D_0037B080);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", D_0037B080__DATA);
 
 // Small initialised data (.sdata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", LoopStep);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nowload", LoopStep__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char TheadID__3[0x4];
-unsigned char ProgBarWidth[0x4];
-unsigned char ProgBarWidthStep[0x4];
-unsigned char NextProgBarWidth[0x4];
-unsigned char ProgBarCnt[0x4];
-unsigned char EndFlag[0x4];
-unsigned char cancel_now_loading[0x4];
-unsigned char load_skip_img[0x4];
-unsigned char PauseFlag__2[0x4];
-unsigned char PauseEnableFlag[0x4];
-unsigned char PauseCancelCnt[0x4];
-unsigned char PauseTexb[0x4];
-unsigned char PauseInfo[0x8];
-unsigned char InitFlag[0x4];
-unsigned char SeCoreVol[0x4];
-unsigned char play_time_count[0x4];
-unsigned char wave_status[0x4];
-unsigned char start_vcount[0x4];
+INCLUDE_BSS(TheadID__3, 0x4);
+INCLUDE_BSS(ProgBarWidth, 0x4);
+INCLUDE_BSS(ProgBarWidthStep, 0x4);
+INCLUDE_BSS(NextProgBarWidth, 0x4);
+INCLUDE_BSS(ProgBarCnt, 0x4);
+INCLUDE_BSS(EndFlag, 0x4);
+INCLUDE_BSS(cancel_now_loading, 0x4);
+INCLUDE_BSS(load_skip_img, 0x4);
+INCLUDE_BSS(PauseFlag__2, 0x4);
+INCLUDE_BSS(PauseEnableFlag, 0x4);
+INCLUDE_BSS(PauseCancelCnt, 0x4);
+INCLUDE_BSS(PauseTexb, 0x4);
+INCLUDE_BSS(PauseInfo, 0x8);
+INCLUDE_BSS(InitFlag, 0x4);
+INCLUDE_BSS(SeCoreVol, 0x4);
+INCLUDE_BSS(play_time_count, 0x4);
+INCLUDE_BSS(wave_status, 0x4);
+INCLUDE_BSS(start_vcount, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char ThreadStack__3[0x1000];
-unsigned char LoadInfo[0x40];
-unsigned char SkipImage[0x2800];
-unsigned char bgm_status[0x20];
+INCLUDE_BSS(ThreadStack__3, 0x1000);
+INCLUDE_BSS(LoadInfo, 0x40);
+INCLUDE_BSS(SkipImage, 0x2800);
+INCLUDE_BSS(bgm_status, 0x20);

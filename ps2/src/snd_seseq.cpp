@@ -1,4 +1,5 @@
 #include "common.h"
+#include "snd_seseq.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_seseq", BigToLittle__FPvPvi);
@@ -31,6 +32,6 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_seseq", ProgChg__8sndTrackFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_seseq", PitchBend__8sndTrackFii);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_seseq", at_295__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_seseq", at_296__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_seseq", at_297__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_seseq", at_295__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_seseq", at_296__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_seseq", at_297__2__DATA);

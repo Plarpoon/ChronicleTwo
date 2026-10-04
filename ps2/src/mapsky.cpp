@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mapsky.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapsky", Initialize__7CMapSkyFv);
@@ -16,21 +17,21 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapsky", _SKY_ANIME__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapsky", _SKYB_ANIME__FP9SPI_STACKi);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_387__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", tag__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_387__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", tag__2__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_386);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_457);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_462);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_463);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_464);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_465);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_466);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_467);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_468);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_386__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_457__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_462__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_463__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_464__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_465__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_466__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_467__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapsky", at_468__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char skyInfo[0x4];
-unsigned char skyAnmNum[0x4];
-unsigned char skybAnmNum[0x4];
+INCLUDE_BSS(skyInfo, 0x4);
+INCLUDE_BSS(skyAnmNum, 0x4);
+INCLUDE_BSS(skybAnmNum, 0x4);

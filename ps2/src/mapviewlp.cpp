@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mapviewlp.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapviewlp", MapViewInit__F13INIT_LOOP_ARG);

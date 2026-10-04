@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mg_drawenv.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawenv", __ct__10mgCDrawEnvFv);
@@ -31,4 +32,4 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawenv", SetFogParam__13mgRENDER_INFOF
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawenv", __as__9mgVu0FBOXFR9mgVu0FBOX);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_drawenv", at_184);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_drawenv", at_184__DATA);

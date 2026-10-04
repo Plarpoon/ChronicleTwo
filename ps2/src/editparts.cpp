@@ -1,4 +1,5 @@
 #include "common.h"
+#include "editparts.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editparts", Initialize__14CEditPartsInfoFv);
@@ -31,7 +32,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editparts", CheckColorUpdate__10CEditParts
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editparts", EditPartsCmpColor__FPfPf);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editparts", at_418);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editparts", at_418__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editparts", __vt__10CEditParts);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editparts", __vt__10CEditParts__DATA);

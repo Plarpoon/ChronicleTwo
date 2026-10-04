@@ -74,18 +74,18 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", LoadSndRevInfo__6CSceneFPci);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", LoadSndFileInfo__6CSceneFPci);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1011__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1012__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1013__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1018__6);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1023__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1028__6);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1033__5);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1038__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1132__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1194);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1195);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1766__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1011__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1012__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1013__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1018__6__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1023__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1028__6__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1033__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1038__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1132__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1194__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1195__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1766__2__DATA);
 
 // Small initialised data (.sdata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1615__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenesnd", at_1615__2__DATA);

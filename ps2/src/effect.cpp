@@ -1,4 +1,5 @@
 #include "common.h"
+#include "effect.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", UniformityRand__Fff);
@@ -78,64 +79,64 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", Load__14CEffectManagerFPci);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", SetOrigin__14CEffectManagerFPf);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", effm_tag);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", effm_tag__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_383);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_382__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_566__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_567);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_568);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_569);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_570);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_571__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_572);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_573);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_574__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_575);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_576);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_577);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_578);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_579);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_580);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_581);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_582);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_583__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_584);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_585);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_586__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_587__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_588__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_589__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_590);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_591);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_592);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_593);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_594);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_595);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_596);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_597);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_598);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_599);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_600);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_601);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_602);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_603);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_604);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_605);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_606);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_607);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_608);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_609);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_610);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_611__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_612__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_848__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_383__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_382__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_566__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_567__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_568__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_569__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_570__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_571__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_572__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_573__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_574__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_575__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_576__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_577__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_578__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_579__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_580__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_581__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_582__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_583__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_584__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_585__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_586__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_587__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_588__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_589__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_590__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_591__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_592__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_593__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_594__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_595__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_596__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_597__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_598__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_599__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_600__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_601__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_602__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_603__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_604__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_605__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_606__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_607__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_608__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_609__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_610__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_611__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_612__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/effect", at_848__2__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char g_tmp_effm[0x4];
-unsigned char g_tmp_effc[0x4];
-unsigned char g_eff_entry_flag[0x4];
+INCLUDE_BSS(g_tmp_effm, 0x4);
+INCLUDE_BSS(g_tmp_effc, 0x4);
+INCLUDE_BSS(g_eff_entry_flag, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char g_tmp_eff_name[0x20];
+INCLUDE_BSS(g_tmp_eff_name, 0x20);

@@ -215,12 +215,22 @@ class Resolver:
         return name if offset == 0 else f"{name} + 0x{offset:X}"
 
 
+def placeholder(name):
+    """The name a datum's placeholder goes by in the source and its file.
+
+    A placeholder is an untyped array, so it cannot share its name with the
+    typed declaration a header gives the datum;
+    scripts/build/postprocess_object.py gives the symbol its own name back.
+    """
+    return name + layout.PLACEHOLDER_SUFFIX
+
+
 def data_file(name, start, end, retail, resolve):
     """One datum's assembly, as tools/mwccgap's INCLUDE_RODATA reads it."""
     # `.align 0` stops gas aligning `.word` to four bytes, so a datum that
     # starts off a word boundary still assembles to exactly its extent.
     lines = ['.include "macro.inc"', "", ".section .rodata", ".align 0", "",
-             f"glabel {name}"]
+             f"glabel {placeholder(name)}"]
     data = retail.bytes(start, end)
     address = start
     while address < end:
@@ -282,7 +292,7 @@ def write_unit_files(pieces, retail, resolve, unit):
     for section, run in pieces.unit(unit):
         if section in DATA_SECTIONS:
             for name, start, end in run:
-                write_if_changed(directory / f"{name}.s",
+                write_if_changed(directory / f"{placeholder(name)}.s",
                                  data_file(name, start, end, retail, resolve))
                 count += 1
         elif section == ".init":

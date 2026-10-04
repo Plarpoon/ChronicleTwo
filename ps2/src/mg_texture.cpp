@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mg_texture.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_texture", GetZBufVram__FPi);
@@ -51,19 +52,19 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_texture", PageConv32to8__FiiPUcPUc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_texture", Conv32To8__FiiPUc);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", texflush_dma);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", lut_1246);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", block_table8_1266);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", block_table32_1267);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", texflush_dma__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", lut_1246__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", block_table8_1266__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", block_table32_1267__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", at_497);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", at_629);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", at_866);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", at_867);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", at_868);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", at_869);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", at_884);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", at_497__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", at_629__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", at_866__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", at_867__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", at_868__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", at_869__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_texture", at_884__DATA);
 
 // Uninitialised data (.bss)
-unsigned char conv_work_1306[0x10000];
+INCLUDE_BSS(conv_work_1306, 0x10000);

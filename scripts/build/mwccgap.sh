@@ -48,7 +48,7 @@ fi
 : "${MW_DIR:=tools/compilers/mw/3.0-011126}"
 : "${MIPS_TOOL_PREFIX:=mips-ps2-decompals-}"
 # mwcc's <> search list.
-: "${LIB_INCLUDE_DIRS:=ps2/include}"
+: "${LIB_INCLUDE_DIRS:=ps2/include/std;ps2/include/sce}"
 
 mkdir -p "$(dirname "$obj")"
 

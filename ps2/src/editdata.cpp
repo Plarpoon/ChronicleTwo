@@ -44,35 +44,35 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", __ct__14EditAnalyzeSrcFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", __sinit_editdata_cpp);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", tag__6);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", tag__6__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_713__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_714__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_917__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1131__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1281__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1282__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1290__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1291__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1292__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1293__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1294__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1295__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1296__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1297__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1298__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_713__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_714__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_917__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1131__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1281__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1282__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1290__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1291__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1292__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1293__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1294__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1295__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1296__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1297__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", at_1298__3__DATA);
 
 // Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", D_0037B050);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editdata", D_0037B050__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char init_1273[0x4];
-unsigned char eaAnaSrc[0x4];
-unsigned char eaAnaData[0x4];
-unsigned char eaStack[0x4];
+INCLUDE_BSS(init_1273, 0x4);
+INCLUDE_BSS(eaAnaSrc, 0x4);
+INCLUDE_BSS(eaAnaData, 0x4);
+INCLUDE_BSS(eaStack, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char AnalyzeSrc[0x1040];
-unsigned char buff_1271[0x3000];
-unsigned char Stack_1272[0x30];
+INCLUDE_BSS(AnalyzeSrc, 0x1040);
+INCLUDE_BSS(buff_1271, 0x3000);
+INCLUDE_BSS(Stack_1272, 0x30);

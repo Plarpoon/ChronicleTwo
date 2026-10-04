@@ -71,54 +71,54 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", LoadEditInfo__8CEditMapFPciP9mgC
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", __ct__14CEditPartsInfoFv);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_830__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_988);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_1837__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", emap_tag);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2257);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2278);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_830__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_988__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_1837__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", emap_tag__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2257__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2278__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_346);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_449);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_450);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_451);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_452);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_474__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2072);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2073);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2074);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2075);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2076);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2077);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2078);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2079);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2080);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2081);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2082__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_346__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_449__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_450__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_451__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_452__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_474__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2072__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2073__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2074__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2075__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2076__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2077__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2078__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2079__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2080__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2081__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", at_2082__2__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", __vt__14CEditCollision);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", __vt__8CEditMap);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", __vt__14CEditCollision__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", __vt__8CEditMap__DATA);
 
 // Small initialised data (.sdata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", CEditMapName);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap", CEditMapName__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char emapMap[0x4];
-unsigned char emapInfo[0x4];
-unsigned char emapStack[0x4];
-unsigned char emapIdx[0x4];
-unsigned char emapNowInfo[0x4];
-unsigned char emapRect[0x4];
-unsigned char emapRectNum[0x4];
-unsigned char emapRectIdx[0x4];
-unsigned char emapFixNum[0x4];
-unsigned char emapInitNum[0x4];
-unsigned char emapFixIdx[0x4];
-unsigned char emapInitIdx[0x4];
-unsigned char emapFix[0x4];
-unsigned char emapInit[0x4];
+INCLUDE_BSS(emapMap, 0x4);
+INCLUDE_BSS(emapInfo, 0x4);
+INCLUDE_BSS(emapStack, 0x4);
+INCLUDE_BSS(emapIdx, 0x4);
+INCLUDE_BSS(emapNowInfo, 0x4);
+INCLUDE_BSS(emapRect, 0x4);
+INCLUDE_BSS(emapRectNum, 0x4);
+INCLUDE_BSS(emapRectIdx, 0x4);
+INCLUDE_BSS(emapFixNum, 0x4);
+INCLUDE_BSS(emapInitNum, 0x4);
+INCLUDE_BSS(emapFixIdx, 0x4);
+INCLUDE_BSS(emapInitIdx, 0x4);
+INCLUDE_BSS(emapFix, 0x4);
+INCLUDE_BSS(emapInit, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char at_426[0x10];
+INCLUDE_BSS(at_426, 0x10);

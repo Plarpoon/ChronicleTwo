@@ -1,4 +1,5 @@
 #include "common.h"
+#include "collision.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/collision", InsidePoint__10CCollisionFPf);
@@ -26,6 +27,6 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/collision", GetMaxY__10CCollisionFPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/collision", Initialize__10CCollisionFv);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/collision", __vt__9CColFrame);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/collision", __vt__13CCollisionMDT);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/collision", __vt__10CCollision);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/collision", __vt__9CColFrame__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/collision", __vt__13CCollisionMDT__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/collision", __vt__10CCollision__DATA);

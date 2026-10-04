@@ -33,30 +33,30 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", __ct__11CStarEffectFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", __sinit_editeff_cpp);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", at_1038__6);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", at_1039__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", at_1040__5);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", at_1106__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", at_1107__4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", at_1038__6__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", at_1039__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", at_1040__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", at_1106__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", at_1107__4__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", at_821__5);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", at_821__5__DATA);
 
 // Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", D_0037B070);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", D_0037B070__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", __vt__12CPaintEffect);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", __vt__11CStarEffect);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", __vt__12CPaintEffect__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", __vt__11CStarEffect__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char EffectFlag[0x4];
-unsigned char EffectState[0x4];
-unsigned char PaintEffect[0x4];
+INCLUDE_BSS(EffectFlag, 0x4);
+INCLUDE_BSS(EffectState, 0x4);
+INCLUDE_BSS(PaintEffect, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char _StarEffect[0x300];
-unsigned char CurPartsBuff[0x30];
-unsigned char at_1037__6[0x20];
-unsigned char at_1112__3[0x10];
-unsigned char PlaceAnime[0x1B0];
+INCLUDE_BSS(_StarEffect, 0x300);
+INCLUDE_BSS(CurPartsBuff, 0x30);
+INCLUDE_BSS(at_1037__6, 0x20);
+INCLUDE_BSS(at_1112__3, 0x10);
+INCLUDE_BSS(PlaceAnime, 0x1B0);

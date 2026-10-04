@@ -38,10 +38,10 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_hud", Draw__13CWarningGage2Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_hud", Initialize__12CLockOnModelFP6CScene);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_hud", gekirin_anim);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_hud", gekirin_anim__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_hud", at_1221__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_hud", at_1221__2__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_hud", __vt__12CLockOnModel);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_hud", __vt__12CLockOnModel__DATA);

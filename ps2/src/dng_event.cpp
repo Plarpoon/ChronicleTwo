@@ -81,61 +81,61 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", LoadMonsterFile__Fii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", __sinit_dng_event_cpp);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1082__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1248);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", gatekey_index);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", keydoor_key_index);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", xchg_rot_list);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", tag__5);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1936__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", tag2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1082__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1248__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", gatekey_index__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", keydoor_key_index__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", xchg_rot_list__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", tag__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1936__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", tag2__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1274__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1279__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1466__5);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1467__5);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1468__5);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1645);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1732__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1825__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1826__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1827__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1828__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1829__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1905__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1965__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2159);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2198__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2199__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2200__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2446);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2447);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2448);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2449);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2450__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2451);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2452);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2453);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2454);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2455__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2456);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2529);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1274__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1279__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1466__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1467__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1468__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1645__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1732__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1825__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1826__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1827__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1828__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1829__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1905__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1965__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2159__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2198__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2199__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2200__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2446__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2447__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2448__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2449__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2450__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2451__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2452__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2453__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2454__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2455__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2456__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2529__DATA);
 
 // Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", D_0037B044);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", D_0037B044__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", __vt__9CGeoStone);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", __vt__13CRedMarkModel);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", __vt__9CGeoStone__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", __vt__13CRedMarkModel__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char counter_1489[0x4];
-unsigned char nowTbFloor[0x4];
-unsigned char nowTboxGroup[0x4];
-unsigned char nowTboxItemCnt[0x4];
-unsigned char FLS_FLOOR_ID[0x4];
+INCLUDE_BSS(counter_1489, 0x4);
+INCLUDE_BSS(nowTbFloor, 0x4);
+INCLUDE_BSS(nowTboxGroup, 0x4);
+INCLUDE_BSS(nowTboxItemCnt, 0x4);
+INCLUDE_BSS(FLS_FLOOR_ID, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char at_1348[0x10];
-unsigned char MainMapInfo[0x20];
+INCLUDE_BSS(at_1348, 0x10);
+INCLUDE_BSS(MainMapInfo, 0x20);

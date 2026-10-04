@@ -1,4 +1,5 @@
 #include "common.h"
+#include "object.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/object", GetMatrix__7CObjectFPA4_f);
@@ -19,5 +20,5 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/object", Copy__12CObjectFrameFR12CObjectFr
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/object", Initialize__12CObjectFrameFv);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/object", __vt__12CObjectFrame);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/object", __vt__7CObject);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/object", __vt__12CObjectFrame__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/object", __vt__7CObject__DATA);

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "dataread.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dataread", size_to_sector__Fi);
@@ -42,49 +43,49 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dataread", DivPathName__FPcPcPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dataread", DivPathNameExt__FPcPcPcPc);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", TopDir);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", CurrentDir__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", TopDir__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", CurrentDir__2__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_183);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_190);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_369__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_370);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_438);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_439);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_440);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_441);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_530);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_531);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_532);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_533);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_534);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_564);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_571);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_659);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_660);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_713);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_714);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_183__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_190__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_369__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_370__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_438__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_439__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_440__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_441__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_530__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_531__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_532__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_533__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_534__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_564__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_571__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_659__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_660__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_713__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", at_714__DATA);
 
 // Small initialised data (.sdata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", DefaultFileDev);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dataread", DefaultFileDev__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char header_num[0x4];
-unsigned char packfile_buff[0x4];
-unsigned char data_sector[0x4];
-unsigned char error_cb[0x4];
-unsigned char old_vsync[0x4];
-unsigned char start_vsync[0x4];
-unsigned char CacheAddress[0x4];
-unsigned char NowCacheAddress[0x4];
-unsigned char FileCacheType[0x4];
+INCLUDE_BSS(header_num, 0x4);
+INCLUDE_BSS(packfile_buff, 0x4);
+INCLUDE_BSS(data_sector, 0x4);
+INCLUDE_BSS(error_cb, 0x4);
+INCLUDE_BSS(old_vsync, 0x4);
+INCLUDE_BSS(start_vsync, 0x4);
+INCLUDE_BSS(CacheAddress, 0x4);
+INCLUDE_BSS(NowCacheAddress, 0x4);
+INCLUDE_BSS(FileCacheType, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char header_buff[0x50000];
-unsigned char bg_read_info[0x2400];
-unsigned char at_259[0x100];
-unsigned char at_554[0x10];
-unsigned char at_583[0x100];
-unsigned char FileCache[0x400];
-unsigned char at_845[0x130];
+INCLUDE_BSS(header_buff, 0x50000);
+INCLUDE_BSS(bg_read_info, 0x2400);
+INCLUDE_BSS(at_259, 0x100);
+INCLUDE_BSS(at_554, 0x10);
+INCLUDE_BSS(at_583, 0x100);
+INCLUDE_BSS(FileCache, 0x400);
+INCLUDE_BSS(at_845, 0x130);

@@ -43,39 +43,39 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenevillager", GetGameObjectEvent__6CScen
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenevillager", DrawGameObject__6CSceneFi);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_868__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_991__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_992__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", motion_name);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", GameObjInfo);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_868__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_991__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_992__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", motion_name__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", GameObjInfo__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_815__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1335);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1336);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1337);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1338);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1339__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1441__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1442__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1443__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1444__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1445__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1446__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1447__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1448__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1449__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1464__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1592__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1593__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1594__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1595__5);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1842__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1843__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1844__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1845__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1846__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1847__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_815__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1335__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1336__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1337__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1338__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1339__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1441__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1442__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1443__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1444__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1445__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1446__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1447__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1448__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1449__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1464__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1592__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1593__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1594__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1595__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1842__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1843__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1844__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1845__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1846__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scenevillager", at_1847__2__DATA);
 
 // Uninitialised data (.bss)
-unsigned char at_988__3[0x10];
+INCLUDE_BSS(at_988__3, 0x10);

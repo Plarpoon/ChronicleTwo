@@ -23,15 +23,15 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", PickupCollision__7CSphidaFPfP6CCP
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", DrawMiniMapSymbol__7CSphidaFP14CMiniMapSymbol);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", GolfClubDef);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", GolfClubDef__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_940__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_1088);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_1089__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_1090__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_1138__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_1221__5);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_940__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_1088__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_1089__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_1090__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_1138__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_1221__5__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char Sphida[0x4];
+INCLUDE_BSS(Sphida, 0x4);

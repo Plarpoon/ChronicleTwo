@@ -21,6 +21,10 @@ given the section retail holds that address in:
 A section whose symbol retail does not name -- a compiler-generated one, in a
 decompiled function's future -- is left as the compiler emitted it.
 
+A datum's placeholder is defined under an alias (`layout.PLACEHOLDER_SUFFIX`),
+so that the source can also see the datum's typed declaration; the alias is
+dropped here, before anything is looked up by name.
+
 tools/mwccgap adds a symbol a datum's relocations refer to a second time, and
 a datum that refers to itself carries the assembler's section index rather
 than the object's. Every such duplicate is folded into the symbol the object
@@ -84,6 +88,15 @@ def address_of(name, addresses):
     return address
 
 
+def drop_placeholder_aliases(elf):
+    """Give every placeholder's symbol the name of the datum it stands for."""
+    suffix = layout.PLACEHOLDER_SUFFIX
+    for symbol in elf.symtab.symbols:
+        if symbol.name.endswith(suffix):
+            symbol.name = symbol.name[:-len(suffix)]
+            symbol.st_name = elf.strtab.add_symbol(symbol.name)
+
+
 def fold_duplicates(elf):
     """Keep one symbol per global name; repoint relocations at it."""
     symbols = elf.symtab.symbols
@@ -145,6 +158,7 @@ def main():
 
     elf = Elf(args.object.read_bytes())
     name_sections(elf)
+    drop_placeholder_aliases(elf)
     fold_duplicates(elf)
     renamed = retail_sections(elf, retail_addresses())
 

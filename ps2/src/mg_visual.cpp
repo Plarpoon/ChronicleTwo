@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mg_visual.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", GetScrPad__Fv);
@@ -45,28 +46,28 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", Initialize__13mgCVisualPrimFv)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", Iam__15mgCVisualFixMDTFv);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", giftag);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", set_tex0_dma);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", set_tex0_giftag);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", set_texa_dma);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", set_texa_giftag);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", texflush_dma__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", mat_vif);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", mat_vif_dif);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", mat_vif_d);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", mat_pw);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", mat_vif_d_tex);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", set_data_func__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", prog_vif_730);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", progf_vif_731);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", at_769);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", giftag__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", set_tex0_dma__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", set_tex0_giftag__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", set_texa_dma__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", set_texa_giftag__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", texflush_dma__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", mat_vif__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", mat_vif_dif__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", mat_vif_d__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", mat_pw__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", mat_vif_d_tex__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", set_data_func__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", prog_vif_730__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", progf_vif_731__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", at_769__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", __vt__13mgCVisualPrim);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", __vt__15mgCVisualFixMDT);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", __vt__12mgCVisualMDT);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", __vt__13mgCVisualPrim__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", __vt__15mgCVisualFixMDT__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", __vt__12mgCVisualMDT__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char start_dma[0x4];
-unsigned char buff_id[0x4];
-unsigned char prev_tex[0x4];
+INCLUDE_BSS(start_dma, 0x4);
+INCLUDE_BSS(buff_id, 0x4);
+INCLUDE_BSS(prev_tex, 0x4);

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mdslist.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", AssignMds__9CMapPieceFP8CMdsInfo);
@@ -34,29 +35,29 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", __ct__8CMdsInfoFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", CreateChara__FPUiPcP9mgCMemory);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", pcp_tag);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", pcp_tag__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_729);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_730);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_731);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_732);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_754);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_807);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_828);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_829);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_830);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_729__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_730__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_731__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_732__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_754__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_807__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_828__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_829__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", at_830__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", __vt__8CMdsInfo);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", __vt__9CMapPiece);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", __vt__8CMdsInfo__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", __vt__9CMapPiece__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char now_mds_num[0x4];
-unsigned char max_mds_num[0x4];
-unsigned char pcpMdsList[0x4];
-unsigned char pcpMdsInfo[0x4];
-unsigned char pcpNowMdsInfo[0x4];
-unsigned char pcpStack[0x4];
-unsigned char pcp_file[0x4];
-unsigned char pcpAllScissor[0x4];
+INCLUDE_BSS(now_mds_num, 0x4);
+INCLUDE_BSS(max_mds_num, 0x4);
+INCLUDE_BSS(pcpMdsList, 0x4);
+INCLUDE_BSS(pcpMdsInfo, 0x4);
+INCLUDE_BSS(pcpNowMdsInfo, 0x4);
+INCLUDE_BSS(pcpStack, 0x4);
+INCLUDE_BSS(pcp_file, 0x4);
+INCLUDE_BSS(pcpAllScissor, 0x4);

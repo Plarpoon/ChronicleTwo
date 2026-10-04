@@ -23,14 +23,14 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/visualmotion", Copy__18mgCVisualMotionMDTF
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/visualmotion", Iam__18mgCVisualMotionMDTFv);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/visualmotion", set_data_func);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/visualmotion", prog_vif_532);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/visualmotion", progf_vif_533);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/visualmotion", at_571__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/visualmotion", set_data_func__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/visualmotion", prog_vif_532__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/visualmotion", progf_vif_533__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/visualmotion", at_571__3__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/visualmotion", at_357);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/visualmotion", at_358);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/visualmotion", at_357__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/visualmotion", at_358__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/visualmotion", __vt__18mgCVisualMotionMDT);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/visualmotion", __vt__18mgCVisualMotionMDT__DATA);

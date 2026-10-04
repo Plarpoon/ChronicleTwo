@@ -11,24 +11,24 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/npccfg", GetPartyCharaModelName__Fii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/npccfg", GetPartyNPCData__Fi);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", npc_spitag);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", typetbl_853);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", infocfg_886);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", npc_spitag__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", typetbl_853__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", infocfg_886__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", at_838__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", at_839__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", at_840__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", at_847__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", at_898__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", at_899__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", at_900__5);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", at_901__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", at_838__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", at_839__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", at_840__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", at_847__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", at_898__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", at_899__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", at_900__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/npccfg", at_901__3__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char NpcBaseDataTotalNum[0x4];
-unsigned char npc_spi_count_num[0x4];
+INCLUDE_BSS(NpcBaseDataTotalNum, 0x4);
+INCLUDE_BSS(npc_spi_count_num, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char NpcBaseData[0x2600];
-unsigned char path_885[0x40];
+INCLUDE_BSS(NpcBaseData, 0x2600);
+INCLUDE_BSS(path_885, 0x40);

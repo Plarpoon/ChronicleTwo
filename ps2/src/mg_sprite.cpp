@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mg_sprite.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_sprite", CreateRenderInfoPacket__11mgC3DSpriteFPUiPA4_fP13mgRENDER_INFO);
@@ -20,15 +21,15 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_sprite", Draw__11mgC3DSpriteFPA4_fP14mg
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_sprite", Initialize__11mgC3DSpriteFv);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_sprite", sprite_giftag);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_sprite", prog_vif_291);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_sprite", progf_vif_292);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_sprite", at_298);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_sprite", at_324__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_sprite", sprite_giftag__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_sprite", prog_vif_291__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_sprite", progf_vif_292__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_sprite", at_298__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_sprite", at_324__2__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_sprite", __vt__9mgCSprite);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_sprite", __vt__11mgC3DSprite);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_sprite", __vt__9mgCSprite__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_sprite", __vt__11mgC3DSprite__DATA);
 
 // Uninitialised data (.bss)
-unsigned char at_199[0x10];
+INCLUDE_BSS(at_199, 0x10);

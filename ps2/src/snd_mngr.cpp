@@ -1,4 +1,5 @@
 #include "common.h"
+#include "snd_mngr.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", Create__11CLoopSeMngrFiP9mgCMemory);
@@ -109,53 +110,53 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", __ct__11sndPortInfoFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", __sinit_snd_mngr_cpp);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_732__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_816__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_896);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_897);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_898);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_899);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_900);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1549);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1625);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1626);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1627);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1628);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1629);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1630);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1631);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1632);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1633);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1634);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1635);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1636);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1679);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1680);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_732__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_816__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_896__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_897__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_898__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_899__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_900__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1549__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1625__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1626__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1627__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1628__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1629__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1630__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1631__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1632__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1633__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1634__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1635__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1636__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1679__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1680__DATA);
 
 // Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", D_0037AFF4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", D_0037AFF4__DATA);
 
 // Small initialised data (.sdata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", EnableSndMngr);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", snd_sema_id);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", MasterVol);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", MasterVolFade);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", snd_old_vsync);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1469);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", EnableSndMngr__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", snd_sema_id__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", MasterVol__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", MasterVolFade__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", snd_old_vsync__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1469__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char ReverbType[0x8];
-unsigned char ReverbDepthe[0x8];
-unsigned char init_snd[0x8];
-unsigned char feMasterVol[0x8];
-unsigned char fnowMasterVol[0x8];
-unsigned char fstpMasterVol[0x8];
+INCLUDE_BSS(ReverbType, 0x8);
+INCLUDE_BSS(ReverbDepthe, 0x8);
+INCLUDE_BSS(init_snd, 0x8);
+INCLUDE_BSS(feMasterVol, 0x8);
+INCLUDE_BSS(fnowMasterVol, 0x8);
+INCLUDE_BSS(fstpMasterVol, 0x8);
 
 // Uninitialised data (.bss)
-unsigned char PortInfo[0x29C0];
-unsigned char SeSequencer[0x1600];
-unsigned char PortVolf[0x40];
-unsigned char MicPos[0x10];
-unsigned char MicDir[0x10];
-unsigned char at_1555[0x30];
-unsigned char at_1648[0x10];
+INCLUDE_BSS(PortInfo, 0x29C0);
+INCLUDE_BSS(SeSequencer, 0x1600);
+INCLUDE_BSS(PortVolf, 0x40);
+INCLUDE_BSS(MicPos, 0x10);
+INCLUDE_BSS(MicDir, 0x10);
+INCLUDE_BSS(at_1555, 0x30);
+INCLUDE_BSS(at_1648, 0x10);

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "gamepad.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamepad", Init__8CGamePadFv);
@@ -53,21 +54,21 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamepad", GamePadStep__FPv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamepad", CreateGamePadThread__FP8CGamePad);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamepad", at_248);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamepad", at_904);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamepad", at_909);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamepad", at_910);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamepad", at_248__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamepad", at_904__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamepad", at_909__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamepad", at_910__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char rpad_256[0x4];
-unsigned char init_257[0x4];
-unsigned char cnt_374[0x4];
-unsigned char init_375[0x4];
-unsigned char TheadID[0x4];
-unsigned char GamePad[0x4];
-unsigned char old_vsync__2[0x4];
+INCLUDE_BSS(rpad_256, 0x4);
+INCLUDE_BSS(init_257, 0x4);
+INCLUDE_BSS(cnt_374, 0x4);
+INCLUDE_BSS(init_375, 0x4);
+INCLUDE_BSS(TheadID, 0x4);
+INCLUDE_BSS(GamePad, 0x4);
+INCLUDE_BSS(old_vsync__2, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char pad_dma_buf[0x400];
-unsigned char pad_dma_buf2[0x400];
-unsigned char ThreadStack[0x400];
+INCLUDE_BSS(pad_dma_buf, 0x400);
+INCLUDE_BSS(pad_dma_buf2, 0x400);
+INCLUDE_BSS(ThreadStack, 0x400);

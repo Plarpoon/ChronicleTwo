@@ -19,4 +19,4 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/villagermngr", GetAppearVlgr__13CVillagerM
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/villagermngr", GetTalkRect__13CVillagerMngrFiPf);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/villagermngr", at_513);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/villagermngr", at_513__DATA);

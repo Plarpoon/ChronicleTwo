@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mg_dataset.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_dataset", conv_new_text__FPcPc);
@@ -44,21 +45,21 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_dataset", Draw__9mgCVisualFPUiPA4_fP14m
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_dataset", Draw__9mgCVisualFPA4_fP14mgCDrawManager);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_dataset", at_387);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_dataset", at_550);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_dataset", at_618);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_dataset", at_886);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_dataset", at_387__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_dataset", at_550__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_dataset", at_618__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_dataset", at_886__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_dataset", __vt__15mgCShadowFixMDT);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_dataset", __vt__9mgCVisual);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_dataset", __vt__15mgCShadowFixMDT__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_dataset", __vt__9mgCVisual__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char name_def_276[0x4];
-unsigned char init_277[0x4];
-unsigned char flag_571[0x4];
-unsigned char init_572[0x4];
+INCLUDE_BSS(name_def_276, 0x4);
+INCLUDE_BSS(init_277, 0x4);
+INCLUDE_BSS(flag_571, 0x4);
+INCLUDE_BSS(init_572, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char at_717[0x10];
-unsigned char at_933[0x10];
+INCLUDE_BSS(at_717, 0x10);
+INCLUDE_BSS(at_933, 0x10);

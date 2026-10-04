@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mapinfo.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", Initialize__11CCameraInfoFv);
@@ -40,47 +41,47 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", AddMapInfo__8CMapInfoFPciP9mgCMe
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapinfo", OutputLightData__8CMapInfoFPc);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", mapinfo_tag);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", add_mapinfo_tag);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", mapinfo_tag__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", add_mapinfo_tag__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_360);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_361);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_362);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_363);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_364);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_365);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_366);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_367);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_368);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_369__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_370__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_371);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_372);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_373);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_374);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_375);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_376);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_377);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_378);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_379);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_380);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_381);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_382__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_704);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_705);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_706);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_707);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_708);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_709);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_710);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_711);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_712);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_713__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_360__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_361__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_362__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_363__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_364__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_365__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_366__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_367__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_368__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_369__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_370__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_371__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_372__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_373__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_374__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_375__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_376__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_377__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_378__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_379__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_380__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_381__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_382__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_704__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_705__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_706__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_707__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_708__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_709__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_710__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_711__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_712__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapinfo", at_713__2__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char MapInfo[0x4];
-unsigned char MapInfoStack[0x4];
-unsigned char now_img_num[0x4];
-unsigned char now_pcp_num[0x4];
-unsigned char LightingInfo[0x4];
+INCLUDE_BSS(MapInfo, 0x4);
+INCLUDE_BSS(MapInfoStack, 0x4);
+INCLUDE_BSS(now_img_num, 0x4);
+INCLUDE_BSS(now_pcp_num, 0x4);
+INCLUDE_BSS(LightingInfo, 0x4);

@@ -24,20 +24,20 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", DrawScreenFunc__8CEditMapFP8mgC
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", GetSeSrcVolPan__8CEditMapFPiPfPfi);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap2", at_796__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap2", at_983__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap2", at_796__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap2", at_983__3__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap2", at_1042__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap2", at_1043__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap2", at_1127__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap2", at_1128__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap2", at_1129__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap2", at_1130__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap2", at_1042__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap2", at_1043__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap2", at_1127__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap2", at_1128__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap2", at_1129__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmap2", at_1130__2__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char cnt_482[0x4];
-unsigned char init_483[0x4];
+INCLUDE_BSS(cnt_482, 0x4);
+INCLUDE_BSS(init_483, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char at_1050__2[0x10];
+INCLUDE_BSS(at_1050__2, 0x10);

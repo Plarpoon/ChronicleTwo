@@ -1,0 +1,18 @@
+#pragma once
+
+#include "common.h"
+
+/**
+ * @file
+ * Declares the program entry point, which brings up the hardware and the IOP and runs the game.
+ */
+
+/**
+ * Raises the main thread's priority, initialises the graphics, CD and IOP
+ * modules, runs the main loop, then shuts the hardware down and returns 0.
+ *
+ * @mangled main
+ * @address 0x15D7B0
+ * @size 0x80
+ */
+int main();

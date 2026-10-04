@@ -20,14 +20,14 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/pot", Hold__4CPotFP9CMapParts);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/pot", Init__4CPotFi);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", box_offset);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", iwa0_offset);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", iwa1_offset);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", box_offset__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", iwa0_offset__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", iwa1_offset__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", at_1196);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", at_1323__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", at_1324);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", at_1325__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", at_1326);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", at_1438__4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", at_1196__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", at_1323__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", at_1324__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", at_1325__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", at_1326__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/pot", at_1438__4__DATA);

@@ -100,27 +100,27 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", SetNowMapNo__6CSceneFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", SetNowSubMapNo__6CSceneFi);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", at_1503__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", at_1504__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", at_1503__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", at_1504__3__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", at_853__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", at_1117);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", at_1171);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", at_853__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", at_1117__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", at_1171__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", __vt__6CScene);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", __vt__6CScene__DATA);
 
 // Small initialised data (.sdata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1188);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1242);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1294);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1381);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1692);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1709);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1188__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1242__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1294__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1381__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1692__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1709__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char init_1519[0x4];
+INCLUDE_BSS(init_1519, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char sun_func_1518[0x1C0];
+INCLUDE_BSS(sun_func_1518, 0x1C0);

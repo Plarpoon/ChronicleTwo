@@ -29,42 +29,42 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapjump", InteriorMapJump__FP6CScenei);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapjump", __sinit_mapjump_cpp);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_997__4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_997__4__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_863__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_890__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_891__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_892__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_893__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_894__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_914__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_950__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_1047__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_1091__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_863__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_890__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_891__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_892__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_893__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_894__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_914__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_950__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_1047__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", at_1091__2__DATA);
 
 // Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", D_0037B06C);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapjump", D_0037B06C__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char NowMainMapNo[0x4];
-unsigned char NowSubMapNo[0x4];
-unsigned char NowInteriorMapNo[0x4];
-unsigned char OldInteriorMapNo[0x4];
-unsigned char ScriptBuffer[0x4];
-unsigned char InteriorFlag[0x4];
-unsigned char old_bgm_no[0x4];
+INCLUDE_BSS(NowMainMapNo, 0x4);
+INCLUDE_BSS(NowSubMapNo, 0x4);
+INCLUDE_BSS(NowInteriorMapNo, 0x4);
+INCLUDE_BSS(OldInteriorMapNo, 0x4);
+INCLUDE_BSS(ScriptBuffer, 0x4);
+INCLUDE_BSS(InteriorFlag, 0x4);
+INCLUDE_BSS(old_bgm_no, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char now_script_file[0x40];
-unsigned char MainMapInfo__2[0x20];
-unsigned char SubMapInfo[0x20];
-unsigned char at_912__4[0x80];
-unsigned char old_mapname[0x40];
-unsigned char OldPos[0x10];
-unsigned char OldRot[0x10];
-unsigned char OldCamPos[0x10];
-unsigned char OldCamRef[0x10];
-unsigned char PrevInterior[0x40];
-unsigned char NowInterior[0x40];
-unsigned char OldBgmStatus[0x20];
+INCLUDE_BSS(now_script_file, 0x40);
+INCLUDE_BSS(MainMapInfo__2, 0x20);
+INCLUDE_BSS(SubMapInfo, 0x20);
+INCLUDE_BSS(at_912__4, 0x80);
+INCLUDE_BSS(old_mapname, 0x40);
+INCLUDE_BSS(OldPos, 0x10);
+INCLUDE_BSS(OldRot, 0x10);
+INCLUDE_BSS(OldCamPos, 0x10);
+INCLUDE_BSS(OldCamRef, 0x10);
+INCLUDE_BSS(PrevInterior, 0x40);
+INCLUDE_BSS(NowInterior, 0x40);
+INCLUDE_BSS(OldBgmStatus, 0x20);

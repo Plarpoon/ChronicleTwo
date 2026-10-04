@@ -99,19 +99,19 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", iRand__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", fRand__Ff);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", chill_tex_rect_910);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", gb_tbl_1052);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", thn_tbl);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", thn_uv);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", at_1215__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", at_1216__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", at_3214);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", chill_tex_rect_910__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", gb_tbl_1052__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", thn_tbl__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", thn_uv__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", at_1215__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", at_1216__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", at_3214__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", at_1107__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", at_1981);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", at_2882);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", at_1107__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", at_1981__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_effect", at_2882__DATA);
 
 // Uninitialised data (.bss)
-unsigned char at_1051[0x10];
-unsigned char at_1214__2[0x10];
+INCLUDE_BSS(at_1051, 0x10);
+INCLUDE_BSS(at_1214__2, 0x10);

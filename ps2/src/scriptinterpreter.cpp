@@ -1,4 +1,5 @@
 #include "common.h"
+#include "scriptinterpreter.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", GetLine__9input_strFPciPc);
@@ -27,9 +28,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", CheckChar__Fc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", PreProcess__FR9input_str);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scriptinterpreter", at_215);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scriptinterpreter", at_382);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scriptinterpreter", at_524);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scriptinterpreter", at_215__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scriptinterpreter", at_382__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scriptinterpreter", at_524__DATA);
 
 // Small initialised data (.sdata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scriptinterpreter", at_165);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scriptinterpreter", at_165__DATA);

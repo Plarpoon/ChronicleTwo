@@ -54,58 +54,58 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", CheckNowStateUseThisItem__FP13C
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", __sinit_menucls1_cpp);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", MenuBigNum);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", sn_944);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1415__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", st_bittable_1654);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", MenuBigNum__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", sn_944__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1415__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", st_bittable_1654__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_905__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_906__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_907__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_908__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_909__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_910__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_911__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_912__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_913__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_914__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_915__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_916__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_945__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_946__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_947__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_948__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_949__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_950__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_951__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_952__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_953__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_954__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1104__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1328);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1512__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1513__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1514__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1623__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_905__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_906__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_907__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_908__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_909__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_910__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_911__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_912__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_913__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_914__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_915__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_916__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_945__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_946__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_947__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_948__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_949__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_950__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_951__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_952__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_953__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_954__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1104__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1328__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1512__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1513__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1514__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1623__3__DATA);
 
 // Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", D_0037B028);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", D_0037B028__DATA);
 
 // Small initialised data (.sdata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1371__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1371__2__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char MenuHatena_894[0x4];
-unsigned char init_895[0x4];
-unsigned char MenuHatena_1byte_897[0x4];
-unsigned char init_898[0x4];
-unsigned char at_1433__2[0x4];
-unsigned char MenuUsedItemNo[0x4];
-unsigned char MenuUsedItemType[0x4];
-unsigned char MenuUsedNotErrorCode[0x4];
-unsigned char MenuUsedTarget[0x8];
+INCLUDE_BSS(MenuHatena_894, 0x4);
+INCLUDE_BSS(init_895, 0x4);
+INCLUDE_BSS(MenuHatena_1byte_897, 0x4);
+INCLUDE_BSS(init_898, 0x4);
+INCLUDE_BSS(at_1433__2, 0x4);
+INCLUDE_BSS(MenuUsedItemNo, 0x4);
+INCLUDE_BSS(MenuUsedItemType, 0x4);
+INCLUDE_BSS(MenuUsedNotErrorCode, 0x4);
+INCLUDE_BSS(MenuUsedTarget, 0x8);
 
 // Uninitialised data (.bss)
-unsigned char at_1407__2[0x10];
-unsigned char at_1436__3[0x18];
+INCLUDE_BSS(at_1407__2, 0x10);
+INCLUDE_BSS(at_1436__3, 0x18);

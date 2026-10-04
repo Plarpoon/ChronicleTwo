@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mg_drawprim.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", __ct__11mgCDrawPrimFv);
@@ -54,4 +55,4 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", EndDraw__14mgCDrawManagerFP1
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", AddPacket__14mgCDrawManagerFiP1P1i);
 
 // Uninitialised data (.bss)
-unsigned char at_369[0x10];
+INCLUDE_BSS(at_369, 0x10);

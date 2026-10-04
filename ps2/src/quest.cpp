@@ -19,15 +19,15 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/quest", GetQuestRequestStatus__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/quest", CountKill__12CMonsterBookFii);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/quest", quest_cmd_tag);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/quest", quest_cmd_tag__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/quest", at_878__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/quest", at_879__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/quest", at_880__4);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/quest", at_881__4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/quest", at_878__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/quest", at_879__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/quest", at_880__4__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/quest", at_881__4__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char spi_questman[0x4];
-unsigned char spi_queststack[0x4];
-unsigned char spi_quest_info[0x4];
+INCLUDE_BSS(spi_questman, 0x4);
+INCLUDE_BSS(spi_queststack, 0x4);
+INCLUDE_BSS(spi_quest_info, 0x4);

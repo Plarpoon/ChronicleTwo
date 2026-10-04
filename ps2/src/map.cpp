@@ -1,4 +1,5 @@
 #include "common.h"
+#include "map.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", SetFlag__12CMapFlagDataFii);
@@ -88,26 +89,26 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", GetNearDist__7CObjectFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", Copy__7CObjectFR7CObjectP9mgCMemory);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_327);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_574);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_1352);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_1353);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_1927);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_2008);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_327__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_574__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_1352__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_1353__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_1927__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_2008__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", __vt__4CMap);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", __vt__18CList_P9CMapParts_);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", __vt__23CList_14PartsGroupData_);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", __vt__9CMapWater);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", __vt__4CMap__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", __vt__18CList_P9CMapParts___DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", __vt__23CList_14PartsGroupData___DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", __vt__9CMapWater__DATA);
 
 // Small initialised data (.sdata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", CMapName);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", CMapName__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char init_1249[0x4];
-unsigned char init_1301[0x4];
+INCLUDE_BSS(init_1249, 0x4);
+INCLUDE_BSS(init_1301, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char ft_1248[0xE00];
-unsigned char attr_1300[0x90];
+INCLUDE_BSS(ft_1248, 0xE00);
+INCLUDE_BSS(attr_1300, 0x90);

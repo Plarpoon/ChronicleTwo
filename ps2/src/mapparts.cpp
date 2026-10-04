@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mapparts.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapparts", Initialize__9CMapPartsFv);
@@ -52,9 +53,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapparts", GetCopySize__11CCharacter2Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapparts", SetPosition__11CCharacter2Ffff);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapparts", at_244);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapparts", at_244__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapparts", __vt__15CMapTreasureBox);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapparts", __vt__17CList_9CObjAnime_);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapparts", __vt__9CMapParts);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapparts", __vt__15CMapTreasureBox__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapparts", __vt__17CList_9CObjAnime___DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapparts", __vt__9CMapParts__DATA);

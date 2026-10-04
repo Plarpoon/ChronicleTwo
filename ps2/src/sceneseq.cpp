@@ -215,9 +215,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SePlay__12CSceneObjSeqFii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", ResetDAPosition__12CSceneObjSeqFv);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneseq", ScsCmrSeqCallTbl);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneseq", ScsObjSeqCallTbl);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneseq", ScsCmrSeqCallTbl__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneseq", ScsObjSeqCallTbl__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneseq", at_1527__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneseq", at_2863);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneseq", at_1527__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneseq", at_2863__DATA);

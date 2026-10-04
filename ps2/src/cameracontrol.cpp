@@ -30,10 +30,10 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/cameracontrol", CopyParam__14CCameraContro
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/cameracontrol", Iam__14CCameraControlFv);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/cameracontrol", at_396__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/cameracontrol", at_396__3__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/cameracontrol", __vt__14CCameraControl);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/cameracontrol", __vt__14CCameraControl__DATA);
 
 // Uninitialised data (.bss)
-unsigned char at_373__3[0x10];
+INCLUDE_BSS(at_373__3, 0x10);

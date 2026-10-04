@@ -1,4 +1,5 @@
 #include "common.h"
+#include "sound.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", StopVoice__6CSoundFi);
@@ -40,49 +41,49 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", StreamStandBy__6CSoundFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", TransBdState__6CSoundFi);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_218);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_278);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_279);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_280);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_281__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_282__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_283__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_474);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_475);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_476);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_477);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_564__3);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_576__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_577__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_578__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_595__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_613__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_728);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_733);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_843__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_883);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_884__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_904__2);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_905);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_906);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_907);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_908);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_929);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_930);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_218__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_278__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_279__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_280__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_281__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_282__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_283__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_474__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_475__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_476__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_477__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_564__3__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_576__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_577__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_578__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_595__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_613__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_728__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_733__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_843__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_883__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_884__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_904__2__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_905__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_906__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_907__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_908__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_929__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_930__DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char iopMSINBuffAddr[0x8];
-unsigned char bgm_info[0x8];
-unsigned char iop_bd_addr[0x4];
-unsigned char bd_size_total[0x4];
-unsigned char load_m_flg_351[0x4];
-unsigned char init_352[0x4];
+INCLUDE_BSS(iopMSINBuffAddr, 0x8);
+INCLUDE_BSS(bgm_info, 0x8);
+INCLUDE_BSS(iop_bd_addr, 0x4);
+INCLUDE_BSS(bd_size_total, 0x4);
+INCLUDE_BSS(load_m_flg_351, 0x4);
+INCLUDE_BSS(init_352, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char msinCtx[0x1C];
-unsigned char D_003F3F6C[0x4];
-unsigned char msinBfGrp[0x10];
-unsigned char msinBfCtx[0x80];
-unsigned char msinBf[0x1200];
-unsigned char gBank[0x50];
-unsigned char midi_state[0x1270];
+INCLUDE_BSS(msinCtx, 0x1C);
+INCLUDE_BSS(D_003F3F6C, 0x4);
+INCLUDE_BSS(msinBfGrp, 0x10);
+INCLUDE_BSS(msinBfCtx, 0x80);
+INCLUDE_BSS(msinBf, 0x1200);
+INCLUDE_BSS(gBank, 0x50);
+INCLUDE_BSS(midi_state, 0x1270);

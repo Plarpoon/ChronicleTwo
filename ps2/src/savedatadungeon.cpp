@@ -6,7 +6,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedatadungeon", Initialize__16CSaveDataD
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedatadungeon", SetFloorID__16CSaveDataDungeonFi);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/savedatadungeon", limmit_table);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/savedatadungeon", limmit_table__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/savedatadungeon", at_79);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/savedatadungeon", at_79__DATA);

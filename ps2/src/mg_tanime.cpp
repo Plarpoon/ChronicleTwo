@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mg_tanime.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_tanime", __ct__15mgCTexAnimeDataFv);
@@ -38,42 +39,42 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_tanime", Set__9mgRect_i_Fiiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_tanime", __sinit_mg_tanime_cpp);
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", tex_tag);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", tex_tag__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_831);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_832);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_833);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_834);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_835);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_836);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_837);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_838);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_839);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_840);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_841);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_842);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_843);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_873);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_831__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_832__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_833__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_834__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_835__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_836__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_837__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_838__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_839__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_840__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_841__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_842__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_843__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", at_873__DATA);
 
 // Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", D_0037AFE4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", D_0037AFE4__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", __vt__24CList_15mgCTexAnimeData_);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_tanime", __vt__24CList_15mgCTexAnimeData___DATA);
 
 // Small uninitialised data (.sbss)
-unsigned char mgBugPatch[0x4];
-unsigned char stop_anime__15mgCTextureAnime[0x4];
-unsigned char pTexAnime[0x4];
-unsigned char pLoadTexAnime[0x4];
-unsigned char now_group[0x4];
-unsigned char TexManager[0x4];
-unsigned char TexAnimeStack[0x4];
-unsigned char group_name[0x4];
-unsigned char ta_enable[0x4];
-unsigned char now_texb[0x4];
-unsigned char texBugPatch[0x4];
+INCLUDE_BSS(mgBugPatch, 0x4);
+INCLUDE_BSS(stop_anime__15mgCTextureAnime, 0x4);
+INCLUDE_BSS(pTexAnime, 0x4);
+INCLUDE_BSS(pLoadTexAnime, 0x4);
+INCLUDE_BSS(now_group, 0x4);
+INCLUDE_BSS(TexManager, 0x4);
+INCLUDE_BSS(TexAnimeStack, 0x4);
+INCLUDE_BSS(group_name, 0x4);
+INCLUDE_BSS(ta_enable, 0x4);
+INCLUDE_BSS(now_texb, 0x4);
+INCLUDE_BSS(texBugPatch, 0x4);
 
 // Uninitialised data (.bss)
-unsigned char nowTexData[0x40];
+INCLUDE_BSS(nowTexData, 0x40);

@@ -1,0 +1,37 @@
+{
+	"name": "Dev",
+	"build": {
+		"context": "..",
+		"dockerfile": "../Dockerfile",
+		"target": "dev"
+	},
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "zsh"
+			}
+		}
+  	},
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"installZsh": true,
+			"installOhMyZsh": true,
+			"installOhMyZshConfig": true,
+			"configureZshAsDefaultShell": true,
+			"ohMyZshTheme": "devcontainers"
+		}
+  	},
+	"workspaceMount": "source=${localWorkspaceFolder},target=/chronicletwo,type=bind",
+	"workspaceFolder": "/chronicletwo",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"llvm-vs-code-extensions.vscode-clangd",
+				"ms-python.black-formatter",
+				"cschlosser.doxdocgen",
+				"edwinhuish.better-comments-next",
+				"twxs.cmake"
+			]
+		}
+	},
+}

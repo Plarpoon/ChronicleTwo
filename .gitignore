@@ -1,0 +1,5 @@
+
+# Ignore rom files
+rom/*
+!rom/**/
+!rom/**/*.sha256

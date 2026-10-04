@@ -1,0 +1,1064 @@
+# The main image, as splat splits it.
+name: main
+sha1: 32d26ba8e132a6b65f53212c89803903d0ad7f4d
+options:
+  platform: ps2
+  compiler: MWCCPS2
+  basename: main
+  base_path: ../../..
+  target_path: rom/pal/extracted/iso/SCES_511.90
+  asm_path: ps2/asm/pal
+  src_path: ps2/src
+  build_path: build/pal/splat/main
+  ld_script_path: build/pal/splat/main.ld
+  symbol_addrs_path: [ps2/config/pal/main.symbols.txt]
+  undefined_syms_auto_path: build/pal/splat/main.undefined_syms.txt
+  undefined_funcs_auto_path: build/pal/splat/main.undefined_funcs.txt
+
+  mips_abi_gpr: numeric
+  asm_data_macro: glabel
+  asm_end_label: ""
+  asm_data_end_label: ""
+  asm_nonmatching_label_macro: ""
+  rom_address_padding: True
+  create_data_pads: False
+  create_bss_pads: True
+
+  # A wrong guess makes the build non-matching, so nothing is guessed.
+  rodata_string_guesser_level: 0
+  data_string_guesser_level: 0
+  find_file_boundaries: False
+
+  # A constant belongs to the function that uses it and travels with
+  # it; what no function claims keeps a marker of its own.
+  migrate_rodata_to_functions: True
+  # Every reference file has to assemble on its own, so each carries
+  # macro.inc; including it twice is harmless.
+  generated_s_preamble: ".include \"macro.inc\""
+  asm_inc_header: ".include \"macro.inc\"\n\n.set noat\n.set noreorder\n\n"
+  create_c_files: False
+  # tools/splat_ext/sinit.py: a unit's `__sinit_<file>.cpp` function, which
+  # MWCC emits into `.init` rather than `.text`.
+  extensions_path: tools/splat_ext
+  # ps2/include/macro.inc is written by hand: its `alabel` is
+  # deliberately not global, because a branch to a global label becomes
+  # a relocation mwld and gas disagree about. splat's generated one
+  # makes it global, so it must not overwrite this project's.
+  generate_asm_macros_files: False
+  do_c_func_detection: True
+  disassemble_all: True
+  make_full_disasm_for_code: True
+  section_order: [".text", ".data", ".rodata", ".init", ".ctor", ".vtables", ".rdata", ".sdata", ".sbss", ".bss"]
+
+segments:
+  # Units are in link order. crt0, the Metrowerks runtime (lib/mwcc) and the
+  # SDK, libc, libm and libgcc objects (lib/...) come from libraries; the
+  # rest is the game, compiled by MWCC. A game unit named by a
+  # `__sinit_<name>.cpp` symbol carries that name; the others are named for
+  # what they hold.
+  #
+  # Every unit's sections carry its name: `.data`, `.rodata`, `.sdata`,
+  # `.sbss` and `.bss`, the static initialiser (`.sinit`, linked as `.init`),
+  # its entry in the `__static_init` table (`.ctor`) and its vtables
+  # (`.vtables`). splat writes them all into the unit's one file.
+  - name: main
+    type: code
+    start: 0x80
+    vram: 0x100000
+    bss_size: 0x1be7c80
+    subsegments:
+      - {start: 0x80, type: asmtu, name: crt0}
+      - {start: 0x150, type: asmtu, name: lib/mwcc/fpcmp}
+      - {start: 0x210, type: asmtu, name: lib/mwcc/mwinit}
+      - {start: 0x240, type: asmtu, name: lib/mwcc/CPlusLib}
+      - {start: 0x570, type: asmtu, name: lib/mwcc/New}
+      - {start: 0x650, type: asmtu, name: lib/mwcc/NMWException}
+      - {start: 0xa20, type: asmtu, name: lib/mwcc/global_destructor_chain}
+      - {start: 0xab0, type: asmtu, name: lib/mwcc/MWException}
+      - {start: 0x2210, type: asmtu, name: lib/mwcc/ExceptionPS2}
+      - {start: 0x26b0, type: asmtu, name: lib/sce/libgraph}
+      - {start: 0x4308, type: asmtu, name: lib/sce/libdma}
+      - {start: 0x4dd8, type: asmtu, name: lib/sce/libdev}
+      - {start: 0x66b0, type: asmtu, name: lib/sce/pkt/libgifpk}
+      - {start: 0x69d8, type: asmtu, name: lib/sce/pkt/libvifpk}
+      - {start: 0x6d80, type: asmtu, name: lib/sce/libvu0}
+      - {start: 0x7ad0, type: asmtu, name: lib/sce/libmpeg}
+      - {start: 0xf560, type: asmtu, name: lib/sce/libipu}
+      - {start: 0xfb80, type: asmtu, name: lib/sce/kernl/klib}
+      - {start: 0x10420, type: asmtu, name: lib/sce/kernl/glue}
+      - {start: 0x107f0, type: asmtu, name: lib/sce/kernl/cache}
+      - {start: 0x10a70, type: asmtu, name: lib/sce/kernl/intr}
+      - {start: 0x10de0, type: asmtu, name: lib/sce/kernl/thread}
+      - {start: 0x11140, type: asmtu, name: lib/sce/kernl/deci2}
+      - {start: 0x11320, type: asmtu, name: lib/sce/kernl/tty}
+      - {start: 0x11840, type: asmtu, name: lib/sce/kernl/kprintf}
+      - {start: 0x121b8, type: asmtu, name: lib/sce/kernl/sifcmd}
+      - {start: 0x12900, type: asmtu, name: lib/sce/kernl/sifrpc}
+      - {start: 0x13860, type: asmtu, name: lib/sce/kernl/filestub}
+      - {start: 0x16ef8, type: asmtu, name: lib/sce/kernl/iopheap}
+      - {start: 0x171f8, type: asmtu, name: lib/sce/kernl/eeloadfile}
+      - {start: 0x17f58, type: asmtu, name: lib/sce/kernl/iopreset}
+      - {start: 0x18208, type: asmtu, name: lib/sce/kernl/tlbfunc}
+      - {start: 0x18740, type: asmtu, name: lib/sce/kernl/tlbtrap}
+      - {start: 0x18aa0, type: asmtu, name: lib/sce/kernl/diei}
+      - {start: 0x18b00, type: asmtu, name: lib/sce/kernl/initsys}
+      - {start: 0x18c40, type: asmtu, name: lib/sce/kernl/libosd}
+      - {start: 0x18dc0, type: asmtu, name: lib/sce/kernl/exit}
+      - {start: 0x18ed0, type: asmtu, name: lib/sce/sdr_main}
+      - {start: 0x19200, type: asmtu, name: lib/libm/math/e_atan2}
+      - {start: 0x19538, type: asmtu, name: lib/libm/math/e_pow}
+      - {start: 0x1a260, type: asmtu, name: lib/libm/math/e_rem_pio2}
+      - {start: 0x1a780, type: asmtu, name: lib/libm/math/e_sqrt}
+      - {start: 0x1aa88, type: asmtu, name: lib/libm/math/ef_acos}
+      - {start: 0x1aeb8, type: asmtu, name: lib/libm/math/ef_atan2}
+      - {start: 0x1b1a0, type: asmtu, name: lib/libm/math/ef_rem_pio2}
+      - {start: 0x1b580, type: asmtu, name: lib/libm/math/ef_sqrt}
+      - {start: 0x1b6b8, type: asmtu, name: lib/libm/math/k_cos}
+      - {start: 0x1b908, type: asmtu, name: lib/libm/math/k_rem_pio2}
+      - {start: 0x1c470, type: asmtu, name: lib/libm/math/k_sin}
+      - {start: 0x1c648, type: asmtu, name: lib/libm/math/kf_cos}
+      - {start: 0x1c7a0, type: asmtu, name: lib/libm/math/kf_rem_pio2}
+      - {start: 0x1d0f0, type: asmtu, name: lib/libm/math/kf_sin}
+      - {start: 0x1d1f8, type: asmtu, name: lib/libm/math/kf_tan}
+      - {start: 0x1d490, type: asmtu, name: lib/libm/math/s_atan}
+      - {start: 0x1d8a0, type: asmtu, name: lib/libm/common/s_copysign}
+      - {start: 0x1d8e8, type: asmtu, name: lib/libm/math/s_cos}
+      - {start: 0x1d9f0, type: asmtu, name: lib/libm/math/s_fabs}
+      - {start: 0x1da28, type: asmtu, name: lib/libm/common/s_finite}
+      - {start: 0x1da48, type: asmtu, name: lib/libm/math/s_floor}
+      - {start: 0x1dc20, type: asmtu, name: lib/libm/math/s_isinf}
+      - {start: 0x1dc68, type: asmtu, name: lib/libm/math/s_isnan}
+      - {start: 0x1dca0, type: asmtu, name: lib/libm/common/s_matherr}
+      - {start: 0x1dcc8, type: asmtu, name: lib/libm/common/s_rint}
+      - {start: 0x1dec8, type: asmtu, name: lib/libm/common/s_scalbn}
+      - {start: 0x1e080, type: asmtu, name: lib/libm/math/s_sin}
+      - {start: 0x1e178, type: asmtu, name: lib/libm/math/sf_atan}
+      - {start: 0x1e420, type: asmtu, name: lib/libm/common/sf_copysign}
+      - {start: 0x1e450, type: asmtu, name: lib/libm/math/sf_cos}
+      - {start: 0x1e538, type: asmtu, name: lib/libm/math/sf_fabs}
+      - {start: 0x1e558, type: asmtu, name: lib/libm/math/sf_floor}
+      - {start: 0x1e640, type: asmtu, name: lib/libm/math/sf_isnan}
+      - {start: 0x1e668, type: asmtu, name: lib/libm/common/sf_scalbn}
+      - {start: 0x1e7c8, type: asmtu, name: lib/libm/math/sf_sin}
+      - {start: 0x1e8b8, type: asmtu, name: lib/libm/math/sf_tan}
+      - {start: 0x1e940, type: asmtu, name: lib/libm/math/w_atan2}
+      - {start: 0x1ea58, type: asmtu, name: lib/libm/math/w_pow}
+      - {start: 0x1ee88, type: asmtu, name: lib/libm/math/w_sqrt}
+      - {start: 0x1ef98, type: asmtu, name: lib/libm/math/wf_acos}
+      - {start: 0x1f098, type: asmtu, name: lib/libm/math/wf_atan2}
+      - {start: 0x1f1c0, type: asmtu, name: lib/libm/math/wf_sqrt}
+      - {start: 0x1f2d8, type: asmtu, name: lib/sce/eecdvd}
+      - {start: 0x20ed0, type: asmtu, name: lib/sce/libpad}
+      - {start: 0x22268, type: asmtu, name: lib/sce/libmc}
+      - {start: 0x23ad0, type: asmtu, name: lib/sce/msinput}
+      - {start: 0x23d68, type: asmtu, name: lib/libc/stdlib/abort}
+      - {start: 0x23d88, type: asmtu, name: lib/libc/stdlib/abs}
+      - {start: 0x23da0, type: asmtu, name: lib/libc/stdlib/atof}
+      - {start: 0x23dc0, type: asmtu, name: lib/libc/stdlib/atoi}
+      - {start: 0x23de8, type: asmtu, name: lib/libc/callocr}
+      - {start: 0x23ea8, type: asmtu, name: lib/libc/reent/closer}
+      - {start: 0x23f00, type: asmtu, name: lib/libc/stdlib/dtoa}
+      - {start: 0x252e8, type: asmtu, name: lib/libc/errno/errno}
+      - {start: 0x252f8, type: asmtu, name: lib/libc/stdlib/exit}
+      - {start: 0x253a8, type: asmtu, name: lib/libc/stdio/fflush}
+      - {start: 0x254b0, type: asmtu, name: lib/libc/stdio/findfp}
+      - {start: 0x25708, type: asmtu, name: lib/libc/stdio/fprintf}
+      - {start: 0x25740, type: asmtu, name: lib/libc/freer}
+      - {start: 0x25bd0, type: asmtu, name: lib/libc/reent/fstatr}
+      - {start: 0x25c30, type: asmtu, name: lib/libc/stdio/fvwrite}
+      - {start: 0x26008, type: asmtu, name: lib/libc/stdio/fwalk}
+      - {start: 0x260a0, type: asmtu, name: lib/libc/string/index}
+      - {start: 0x260c0, type: asmtu, name: lib/libc/locale/locale}
+      - {start: 0x261b0, type: asmtu, name: lib/libc/reent/lseekr}
+      - {start: 0x26210, type: asmtu, name: lib/libc/stdio/makebuf}
+      - {start: 0x26360, type: asmtu, name: lib/libc/stdlib/malloc}
+      - {start: 0x26398, type: asmtu, name: lib/libc/stdlib/mallocr}
+      - {start: 0x26d68, type: asmtu, name: lib/libc/stdlib/mbtowc_r}
+      - {start: 0x26da8, type: asmtu, name: lib/libc/machine/r5900/memchr}
+      - {start: 0x26e88, type: asmtu, name: lib/libc/machine/r5900/memcmp}
+      - {start: 0x26f20, type: asmtu, name: lib/libc/machine/r5900/memcpy}
+      - {start: 0x26fd0, type: asmtu, name: lib/libc/machine/r5900/memmove}
+      - {start: 0x270d8, type: asmtu, name: lib/libc/machine/r5900/memset}
+      - {start: 0x27198, type: asmtu, name: lib/libc/stdlib/mlock}
+      - {start: 0x271a8, type: asmtu, name: lib/libc/stdlib/mprec}
+      - {start: 0x281c8, type: asmtu, name: lib/libc/stdio/printf}
+      - {start: 0x28258, type: asmtu, name: lib/libc/stdlib/rand}
+      - {start: 0x28298, type: asmtu, name: lib/libc/reent/readr}
+      - {start: 0x282f8, type: asmtu, name: lib/libc/reent/sbrkr}
+      - {start: 0x28358, type: asmtu, name: lib/libc/signal/signal}
+      - {start: 0x286a8, type: asmtu, name: lib/libc/reent/signalr}
+      - {start: 0x28728, type: asmtu, name: lib/libc/stdio/sprintf}
+      - {start: 0x28800, type: asmtu, name: lib/libc/stdio/stdio}
+      - {start: 0x28970, type: asmtu, name: lib/libc/string/strcasecmp}
+      - {start: 0x28a28, type: asmtu, name: lib/libc/machine/r5900/strcat}
+      - {start: 0x28b58, type: asmtu, name: lib/libc/machine/r5900/strchr}
+      - {start: 0x28ce8, type: asmtu, name: lib/libc/machine/r5900/strcmp}
+      - {start: 0x28e30, type: asmtu, name: lib/libc/machine/r5900/strcpy}
+      - {start: 0x28f48, type: asmtu, name: lib/libc/machine/r5900/strlen}
+      - {start: 0x29080, type: asmtu, name: lib/libc/machine/r5900/strncat}
+      - {start: 0x29230, type: asmtu, name: lib/libc/machine/r5900/strncmp}
+      - {start: 0x293e8, type: asmtu, name: lib/libc/machine/r5900/strncpy}
+      - {start: 0x295a8, type: asmtu, name: lib/libc/string/strrchr}
+      - {start: 0x295f8, type: asmtu, name: lib/libc/string/strstr}
+      - {start: 0x29668, type: asmtu, name: lib/libc/stdlib/strtod}
+      - {start: 0x2a5c0, type: asmtu, name: lib/libc/stdlib/strtol}
+      - {start: 0x2a830, type: asmtu, name: lib/libc/ctype/toupper}
+      - {start: 0x2a850, type: asmtu, name: lib/libc/stdio/vfprintf}
+      - {start: 0x2c170, type: asmtu, name: lib/libc/stdio/vsprintf}
+      - {start: 0x2c1c8, type: asmtu, name: lib/libc/reent/writer}
+      - {start: 0x2c228, type: asmtu, name: lib/libc/stdio/wsetup}
+      - {start: 0x2c340, type: asmtu, name: mg_texture}
+      - {start: 0x2f8c0, type: asmtu, name: mg_math}
+      - {start: 0x31810, type: asmtu, name: mg_camera}
+      - {start: 0x32260, type: asmtu, name: mg_dataset}
+      - {start: 0x34aa0, type: asmtu, name: mg_drawprim}
+      - {start: 0x361e0, type: asmtu, name: mg_frame}
+      - {start: 0x38f60, type: asmtu, name: mg_drawenv}
+      - {start: 0x39fa0, type: asmtu, name: mg_memory}
+      - {start: 0x3a600, type: asmtu, name: mg_shadow}
+      - {start: 0x3b360, type: asmtu, name: mg_sprite}
+      - {start: 0x3c3c0, type: asmtu, name: mg_tanime}
+      - {start: 0x3eaa0, type: asmtu, name: mg_visual}
+      - {start: 0x418d0, type: asmtu, name: mglib}
+      - {start: 0x46750, type: asmtu, name: scriptinterpreter}
+      - {start: 0x47910, type: asmtu, name: collision}
+      - {start: 0x48b10, type: asmtu, name: dataread}
+      - {start: 0x4a6d0, type: asmtu, name: gamepad}
+      - {start: 0x4bd80, type: asmtu, name: gameutil}
+      - {start: 0x51990, type: asmtu, name: nd_meswin}
+      - {start: 0x5d4f0, type: asmtu, name: main}
+      - {start: 0x5d8b0, type: asmtu, name: map}
+      - {start: 0x62100, type: asmtu, name: mapload}
+      - {start: 0x662d0, type: asmtu, name: mapinfo}
+      - {start: 0x676e0, type: asmtu, name: mapparts}
+      - {start: 0x699b0, type: asmtu, name: mdslist}
+      - {start: 0x6ae80, type: asmtu, name: object}
+      - {start: 0x6b5d0, type: asmtu, name: actionchara}
+      - {start: 0x74270, type: asmtu, name: character}
+      - {start: 0x7ac50, type: asmtu, name: dynamicanime}
+      - {start: 0x7d700, type: asmtu, name: outline}
+      - {start: 0x7e300, type: asmtu, name: effectlist}
+      - {start: 0x7f7e0, type: asmtu, name: screeneffect}
+      - {start: 0x80a60, type: asmtu, name: effect}
+      - {start: 0x84770, type: asmtu, name: mapsky}
+      - {start: 0x85790, type: asmtu, name: water}
+      - {start: 0x87520, type: asmtu, name: dbg_font}
+      - {start: 0x88110, type: asmtu, name: runscript}
+      - {start: 0x89eb0, type: asmtu, name: sound}
+      - {start: 0x8c7f0, type: asmtu, name: ezmidi}
+      - {start: 0x8c9f0, type: asmtu, name: snd_seseq}
+      - {start: 0x8daa0, type: asmtu, name: snd_mngr}
+      - {start: 0x91e70, type: asmtu, name: mainloop}
+      - {start: 0x95a80, type: asmtu, name: gamedata}
+      - {start: 0x97c20, type: asmtu, name: sysmes}
+      - {start: 0x98180, type: asmtu, name: userdata}
+      - {start: 0xa34e0, type: asmtu, name: charaviewlp}
+      - {start: 0xa3510, type: asmtu, name: texviewlp}
+      - {start: 0xa3540, type: asmtu, name: mapviewlp}
+      - {start: 0xa3570, type: asmtu, name: wavetable}
+      - {start: 0xa40d0, type: asmtu, name: editcoll}
+      - {start: 0xa5540, type: asmtu, name: editctrl}
+      - {start: 0xa8d00, type: asmtu, name: editdebug}
+      - {start: 0xaaf70, type: asmtu, name: editloop}
+      - {start: 0xb1750, type: asmtu, name: editmap}
+      - {start: 0xb6a00, type: asmtu, name: editparts}
+      - {start: 0xb7480, type: asmtu, name: dng_object}
+      - {start: 0xbb0c0, type: asmtu, name: colprim}
+      - {start: 0xbbe90, type: asmtu, name: dng_debug}
+      - {start: 0xbcf40, type: asmtu, name: dng_status}
+      - {start: 0xbfac0, type: asmtu, name: dng_effect}
+      - {start: 0xca790, type: asmtu, name: dng_hud}
+      - {start: 0xcd1b0, type: asmtu, name: dng_main}
+      - {start: 0xd5de0, type: asmtu, name: automap}
+      - {start: 0xdafe0, type: asmtu, name: monster}
+      - {start: 0xe1b30, type: asmtu, name: runscript_opcodes}
+      - {start: 0xe92e0, type: asmtu, name: prespr}
+      - {start: 0xe9600, type: asmtu, name: maintex}
+      - {start: 0xea3c0, type: asmtu, name: charasetup}
+      - {start: 0xebcf0, type: asmtu, name: dngmenu}
+      - {start: 0xf3df0, type: asmtu, name: editmenu}
+      - {start: 0xff960, type: asmtu, name: inventmn}
+      - {start: 0x10e4e0, type: asmtu, name: menuaqua}
+      - {start: 0x11eb50, type: asmtu, name: menucls1}
+      - {start: 0x121570, type: asmtu, name: menudraw}
+      - {start: 0x134d00, type: asmtu, name: menumain}
+      - {start: 0x1394f0, type: asmtu, name: menusys}
+      - {start: 0x152d70, type: asmtu, name: menucommon}
+      - {start: 0x157770, type: asmtu, name: event}
+      - {start: 0x158460, type: asmtu, name: sceneseq}
+      - {start: 0x160970, type: asmtu, name: event_func}
+      - {start: 0x181b30, type: asmtu, name: eventedit}
+      - {start: 0x185130, type: asmtu, name: scene}
+      - {start: 0x1889f0, type: asmtu, name: sceneload}
+      - {start: 0x189ec8, type: asmtu, name: lib/libgcc/_divdi3}
+      - {start: 0x18a5b8, type: asmtu, name: lib/libgcc/_fixdfdi}
+      - {start: 0x18a618, type: asmtu, name: lib/libgcc/_fixunsdfdi}
+      - {start: 0x18a708, type: asmtu, name: lib/libgcc/_floatdidf}
+      - {start: 0x18a7a0, type: asmtu, name: lib/libgcc/_moddi3}
+      - {start: 0x18ae08, type: asmtu, name: lib/libgcc/_muldi3}
+      - {start: 0x18ae68, type: asmtu, name: lib/libgcc/_udivdi3}
+      - {start: 0x18b438, type: asmtu, name: lib/libgcc/_umoddi3}
+      - {start: 0x18b978, type: asmtu, name: lib/libgcc/dp-bit}
+      - {start: 0x18c670, type: asmtu, name: lib/libgcc/fp-bit}
+      - {start: 0x18d250, type: asmtu, name: filesocket}
+      - {start: 0x18d270, type: asmtu, name: visualmotion}
+      - {start: 0x18ebd0, type: asmtu, name: ezbgm}
+      - {start: 0x18ee10, type: asmtu, name: dng_event}
+      - {start: 0x193f40, type: asmtu, name: eventsprite}
+      - {start: 0x1951e0, type: asmtu, name: menushop}
+      - {start: 0x19a650, type: asmtu, name: editriver}
+      - {start: 0x19c4f0, type: asmtu, name: movie}
+      - {start: 0x19fe70, type: asmtu, name: editmapeffect}
+      - {start: 0x1a0330, type: asmtu, name: funcpoint}
+      - {start: 0x1a2ef0, type: asmtu, name: title}
+      - {start: 0x1a92f0, type: asmtu, name: sndviewlp}
+      - {start: 0x1a9320, type: asmtu, name: editinfo}
+      - {start: 0x1aa070, type: asmtu, name: scenesnd}
+      - {start: 0x1acd50, type: asmtu, name: editdata}
+      - {start: 0x1aef90, type: asmtu, name: menucapt}
+      - {start: 0x1af630, type: asmtu, name: npccfg}
+      - {start: 0x1afae0, type: asmtu, name: menumap}
+      - {start: 0x1b4270, type: asmtu, name: menuchr}
+      - {start: 0x1c42e0, type: asmtu, name: menuop}
+      - {start: 0x1cb7b0, type: asmtu, name: movieviewlp}
+      - {start: 0x1cc3e0, type: asmtu, name: sceneevent}
+      - {start: 0x1cd410, type: asmtu, name: scenevillager}
+      - {start: 0x1d06f0, type: asmtu, name: pot}
+      - {start: 0x1d1ad0, type: asmtu, name: villagermngr}
+      - {start: 0x1d27a0, type: asmtu, name: actscript}
+      - {start: 0x1d6c80, type: asmtu, name: mapselect}
+      - {start: 0x1d8b20, type: asmtu, name: font}
+      - {start: 0x1daf10, type: asmtu, name: occlusion}
+      - {start: 0x1db230, type: asmtu, name: drawwin}
+      - {start: 0x1dd650, type: asmtu, name: gaiji}
+      - {start: 0x1dd7c0, type: asmtu, name: editmode}
+      - {start: 0x1e2e60, type: asmtu, name: intersection}
+      - {start: 0x1e3c90, type: asmtu, name: mapjump}
+      - {start: 0x1e4e60, type: asmtu, name: effscript}
+      - {start: 0x1ede50, type: asmtu, name: sphida}
+      - {start: 0x1f0ed0, type: asmtu, name: cameracontrol}
+      - {start: 0x1f2460, type: asmtu, name: padcontrol}
+      - {start: 0x1f2770, type: asmtu, name: editmap2}
+      - {start: 0x1f4a30, type: asmtu, name: editevent}
+      - {start: 0x1f6350, type: asmtu, name: menusystemdata}
+      - {start: 0x1f6410, type: asmtu, name: memcard}
+      - {start: 0x1fa5b0, type: asmtu, name: swordeffect}
+      - {start: 0x1fb2e0, type: asmtu, name: savedata}
+      - {start: 0x1fc320, type: asmtu, name: savedatadungeon}
+      - {start: 0x1fc570, type: asmtu, name: editexception}
+      - {start: 0x1fddf0, type: asmtu, name: dngfloor}
+      - {start: 0x1ffb60, type: asmtu, name: editeff}
+      - {start: 0x201670, type: asmtu, name: fishing}
+      - {start: 0x209040, type: asmtu, name: subgame}
+      - {start: 0x209a80, type: asmtu, name: gyorace}
+      - {start: 0x20e640, type: asmtu, name: nowload}
+      - {start: 0x20f910, type: asmtu, name: nameregi}
+      - {start: 0x213900, type: asmtu, name: photo}
+      - {start: 0x214e30, type: asmtu, name: fishingobj}
+      - {start: 0x218bf0, type: asmtu, name: pbuggy}
+      - {start: 0x21be50, type: asmtu, name: editanalyze}
+      - {start: 0x21e390, type: asmtu, name: helpmes}
+      - {start: 0x21eb50, type: asmtu, name: vlgr_info}
+      - {start: 0x21fc50, type: asmtu, name: quest}
+      - {start: 0x220110, type: asmtu, name: mainloop3}
+      - {start: 0x220d00, type: asmtu, name: hddinstall}
+      - {start: 0x220dc0, type: asmtu, name: password}
+      - {start: 0x2218d0, type: asmtu, name: crandom}
+      - {start: 0x221c10, type: asmtu, name: gyoracesim}
+      - {start: 0x224b40, type: asmtu, name: convviewlp}
+      - {start: 0x225d00, type: data, name: vutext, dir: main, linker_section: .vutext}
+      - {start: 0x22a3a0, type: .data, name: crt0}
+      - {start: 0x22a400, type: .data, name: lib/mwcc/New}
+      - {start: 0x22a410, type: .data, name: lib/mwcc/NMWException}
+      - {start: 0x22a420, type: .data, name: lib/sce/libgraph}
+      - {start: 0x22a470, type: .data, name: lib/sce/libdma}
+      - {start: 0x22a520, type: .data, name: lib/sce/libdev}
+      - {start: 0x234520, type: .data, name: lib/sce/libvu0}
+      - {start: 0x234550, type: .data, name: lib/sce/libmpeg}
+      - {start: 0x234740, type: .data, name: lib/sce/libipu}
+      - {start: 0x2347c0, type: .data, name: lib/sce/kernl/klib}
+      - {start: 0x2347d0, type: .data, name: lib/sce/kernl/glue}
+      - {start: 0x2347d8, type: .data, name: lib/sce/kernl/intr}
+      - {start: 0x234f80, type: .data, name: lib/sce/kernl/thread}
+      - {start: 0x234f88, type: .data, name: lib/sce/kernl/kprintf}
+      - {start: 0x234f90, type: .data, name: lib/sce/kernl/sifcmd}
+      - {start: 0x234f98, type: .data, name: lib/sce/kernl/sifrpc}
+      - {start: 0x234fa0, type: .data, name: lib/sce/kernl/filestub}
+      - {start: 0x235038, type: .data, name: lib/sce/kernl/iopheap}
+      - {start: 0x235040, type: .data, name: lib/sce/kernl/eeloadfile}
+      - {start: 0x235048, type: .data, name: lib/sce/kernl/tlbfunc}
+      - {start: 0x235688, type: .data, name: lib/sce/kernl/initsys}
+      - {start: 0x2356a0, type: .data, name: lib/sce/kernl/libosd}
+      - {start: 0x235e60, type: .data, name: lib/sce/sdr_main}
+      - {start: 0x235ec0, type: .data, name: lib/sce/eecdvd}
+      - {start: 0x237938, type: .data, name: lib/sce/libpad}
+      - {start: 0x237980, type: .data, name: lib/sce/libmc}
+      - {start: 0x237998, type: .data, name: lib/libc/reent/impure}
+      - {start: 0x237c88, type: .data, name: lib/libc/locale/locale}
+      - {start: 0x237ca0, type: .data, name: lib/libc/stdlib/mallocr}
+      - {start: 0x238100, type: .data, name: mg_texture}
+      - {start: 0x2382b0, type: .data, name: mg_frame}
+      - {start: 0x2382c0, type: .data, name: mg_shadow}
+      - {start: 0x2382e0, type: .data, name: mg_sprite}
+      - {start: 0x238330, type: .data, name: mg_tanime}
+      - {start: 0x2383a0, type: .data, name: mg_visual}
+      - {start: 0x2384c0, type: .data, name: mglib}
+      - {start: 0x238510, type: .data, name: dataread}
+      - {start: 0x238710, type: .data, name: nd_meswin}
+      - {start: 0x2389a0, type: .data, name: mapload}
+      - {start: 0x238d00, type: .data, name: mapinfo}
+      - {start: 0x238de0, type: .data, name: mapparts}
+      - {start: 0x238df0, type: .data, name: mdslist}
+      - {start: 0x238e20, type: .data, name: actionchara}
+      - {start: 0x238ef0, type: .data, name: character}
+      - {start: 0x239070, type: .data, name: dynamicanime}
+      - {start: 0x239150, type: .data, name: outline}
+      - {start: 0x239160, type: .data, name: effectlist}
+      - {start: 0x239170, type: .data, name: effect}
+      - {start: 0x2392f0, type: .data, name: mapsky}
+      - {start: 0x239340, type: .data, name: water}
+      - {start: 0x239360, type: .data, name: mainloop}
+      - {start: 0x2398a0, type: .data, name: gamedata}
+      - {start: 0x239df0, type: .data, name: userdata}
+      - {start: 0x23a8b0, type: .data, name: wavetable}
+      - {start: 0x23a8d0, type: .data, name: editctrl}
+      - {start: 0x23a980, type: .data, name: editdebug}
+      - {start: 0x23ab70, type: .data, name: editloop}
+      - {start: 0x23ac00, type: .data, name: editmap}
+      - {start: 0x23acb0, type: .data, name: editparts}
+      - {start: 0x23acc0, type: .data, name: dng_object}
+      - {start: 0x23af90, type: .data, name: colprim}
+      - {start: 0x23cff0, type: .data, name: dng_debug}
+      - {start: 0x23d090, type: .data, name: dng_status}
+      - {start: 0x23d130, type: .data, name: dng_effect}
+      - {start: 0x23d290, type: .data, name: dng_hud}
+      - {start: 0x23d2d0, type: .data, name: dng_main}
+      - {start: 0x23d4c0, type: .data, name: automap}
+      - {start: 0x241e20, type: .data, name: monster}
+      - {start: 0x251800, type: .data, name: runscript_opcodes}
+      - {start: 0x251db0, type: .data, name: charasetup}
+      - {start: 0x252090, type: .data, name: dngmenu}
+      - {start: 0x252850, type: .data, name: editmenu}
+      - {start: 0x252e60, type: .data, name: inventmn}
+      - {start: 0x253620, type: .data, name: menuaqua}
+      - {start: 0x254600, type: .data, name: menucls1}
+      - {start: 0x254690, type: .data, name: menudraw}
+      - {start: 0x254ed0, type: .data, name: menumain}
+      - {start: 0x255240, type: .data, name: menusys}
+      - {start: 0x255af0, type: .data, name: menucommon}
+      - {start: 0x256100, type: .data, name: event}
+      - {start: 0x256130, type: .data, name: sceneseq}
+      - {start: 0x256270, type: .data, name: event_func}
+      - {start: 0x2584e0, type: .data, name: eventedit}
+      - {start: 0x258540, type: .data, name: scene}
+      - {start: 0x258560, type: .data, name: sceneload}
+      - {start: 0x258580, type: .data, name: visualmotion}
+      - {start: 0x2585d0, type: .data, name: dng_event}
+      - {start: 0x2586a0, type: .data, name: menushop}
+      - {start: 0x258830, type: .data, name: editriver}
+      - {start: 0x258910, type: .data, name: movie}
+      - {start: 0x258930, type: .data, name: title}
+      - {start: 0x258ab0, type: .data, name: editinfo}
+      - {start: 0x258ba0, type: .data, name: editdata}
+      - {start: 0x258bf0, type: .data, name: menucapt}
+      - {start: 0x258c10, type: .data, name: npccfg}
+      - {start: 0x258c50, type: .data, name: menumap}
+      - {start: 0x258d10, type: .data, name: menuchr}
+      - {start: 0x259850, type: .data, name: menuop}
+      - {start: 0x259a10, type: .data, name: movieviewlp}
+      - {start: 0x259a20, type: .data, name: sceneevent}
+      - {start: 0x259a70, type: .data, name: scenevillager}
+      - {start: 0x25a610, type: .data, name: pot}
+      - {start: 0x25a800, type: .data, name: actscript}
+      - {start: 0x25ab20, type: .data, name: mapselect}
+      - {start: 0x25ad00, type: .data, name: font}
+      - {start: 0x25b5f0, type: .data, name: drawwin}
+      - {start: 0x25b740, type: .data, name: editmode}
+      - {start: 0x25b9c0, type: .data, name: mapjump}
+      - {start: 0x25ba00, type: .data, name: effscript}
+      - {start: 0x2613c0, type: .data, name: sphida}
+      - {start: 0x261420, type: .data, name: cameracontrol}
+      - {start: 0x261430, type: .data, name: editmap2}
+      - {start: 0x261450, type: .data, name: editevent}
+      - {start: 0x261460, type: .data, name: memcard}
+      - {start: 0x2616f0, type: .data, name: savedatadungeon}
+      - {start: 0x261700, type: .data, name: editexception}
+      - {start: 0x2617e0, type: .data, name: dngfloor}
+      - {start: 0x2619e0, type: .data, name: editeff}
+      - {start: 0x261a70, type: .data, name: fishing}
+      - {start: 0x2621d0, type: .data, name: gyorace}
+      - {start: 0x2622e0, type: .data, name: nameregi}
+      - {start: 0x262eb0, type: .data, name: photo}
+      - {start: 0x262f20, type: .data, name: fishingobj}
+      - {start: 0x262fa0, type: .data, name: pbuggy}
+      - {start: 0x262fe0, type: .data, name: editanalyze}
+      - {start: 0x263000, type: .data, name: vlgr_info}
+      - {start: 0x2630c0, type: .data, name: quest}
+      - {start: 0x2630f0, type: .data, name: mainloop3}
+      - {start: 0x263100, type: .data, name: password}
+      - {start: 0x263140, type: .data, name: gyoracesim}
+      - {start: 0x263340, type: .data, name: convviewlp}
+      - {start: 0x263500, type: data, name: vudata, dir: main, linker_section: .vudata}
+      - {start: 0x263600, type: .rodata, name: lib/mwcc/CPlusLib}
+      - {start: 0x263630, type: .rodata, name: lib/mwcc/New}
+      - {start: 0x2636b0, type: .rodata, name: lib/mwcc/NMWException}
+      - {start: 0x2636e0, type: .rodata, name: lib/mwcc/MWException}
+      - {start: 0x263888, type: .rodata, name: lib/sce/libgraph}
+      - {start: 0x263db0, type: .rodata, name: lib/sce/libdma}
+      - {start: 0x263dc8, type: .rodata, name: lib/sce/libdev}
+      - {start: 0x264dd8, type: .rodata, name: lib/sce/libmpeg}
+      - {start: 0x2652f0, type: .rodata, name: lib/sce/kernl/thread}
+      - {start: 0x265318, type: .rodata, name: lib/sce/kernl/tty}
+      - {start: 0x265390, type: .rodata, name: lib/sce/kernl/kprintf}
+      - {start: 0x2654f0, type: .rodata, name: lib/sce/kernl/filestub}
+      - {start: 0x265560, type: .rodata, name: lib/sce/kernl/eeloadfile}
+      - {start: 0x265570, type: .rodata, name: lib/sce/kernl/iopreset}
+      - {start: 0x2655a0, type: .rodata, name: lib/sce/kernl/tlbfunc}
+      - {start: 0x265620, type: .rodata, name: lib/sce/sdr_main}
+      - {start: 0x265648, type: .rodata, name: lib/libm/math/e_atan2}
+      - {start: 0x2656f8, type: .rodata, name: lib/libm/math/e_pow}
+      - {start: 0x2658c8, type: .rodata, name: lib/libm/math/e_rem_pio2}
+      - {start: 0x265b18, type: .rodata, name: lib/libm/math/ef_atan2}
+      - {start: 0x265b38, type: .rodata, name: lib/libm/math/ef_rem_pio2}
+      - {start: 0x265ef8, type: .rodata, name: lib/libm/math/k_cos}
+      - {start: 0x265f60, type: .rodata, name: lib/libm/math/k_rem_pio2}
+      - {start: 0x265fd0, type: .rodata, name: lib/libm/math/k_sin}
+      - {start: 0x266040, type: .rodata, name: lib/libm/math/kf_rem_pio2}
+      - {start: 0x266090, type: .rodata, name: lib/libm/math/kf_tan}
+      - {start: 0x2660d8, type: .rodata, name: lib/libm/math/s_atan}
+      - {start: 0x266188, type: .rodata, name: lib/libm/math/s_floor}
+      - {start: 0x266198, type: .rodata, name: lib/libm/common/s_infconst}
+      - {start: 0x2661a0, type: .rodata, name: lib/libm/common/s_lib_ver}
+      - {start: 0x2661a8, type: .rodata, name: lib/libm/common/s_rint}
+      - {start: 0x2661b8, type: .rodata, name: lib/libm/common/s_scalbn}
+      - {start: 0x2661e8, type: .rodata, name: lib/libm/math/sf_atan}
+      - {start: 0x266240, type: .rodata, name: lib/libm/math/w_atan2}
+      - {start: 0x266248, type: .rodata, name: lib/libm/math/w_pow}
+      - {start: 0x266268, type: .rodata, name: lib/libm/math/w_sqrt}
+      - {start: 0x266278, type: .rodata, name: lib/libm/math/wf_acos}
+      - {start: 0x266280, type: .rodata, name: lib/libm/math/wf_atan2}
+      - {start: 0x266288, type: .rodata, name: lib/libm/math/wf_sqrt}
+      - {start: 0x266298, type: .rodata, name: lib/sce/eecdvd}
+      - {start: 0x266590, type: .rodata, name: lib/sce/libpad}
+      - {start: 0x2666e8, type: .rodata, name: lib/sce/libmc}
+      - {start: 0x266770, type: .rodata, name: lib/libc/ctype/ctype_}
+      - {start: 0x266880, type: .rodata, name: lib/libc/stdlib/dtoa}
+      - {start: 0x2668d8, type: .rodata, name: lib/libc/reent/impure}
+      - {start: 0x2668e0, type: .rodata, name: lib/libc/locale/locale}
+      - {start: 0x266928, type: .rodata, name: lib/libc/stdlib/mprec}
+      - {start: 0x266a50, type: .rodata, name: lib/libc/stdlib/strtod}
+      - {start: 0x266b20, type: .rodata, name: lib/libc/stdio/vfprintf}
+      - {start: 0x266d30, type: .rodata, name: mg_texture}
+      - {start: 0x266da0, type: .rodata, name: mg_dataset}
+      - {start: 0x266de0, type: .rodata, name: mg_drawenv}
+      - {start: 0x266e00, type: .rodata, name: mg_memory}
+      - {start: 0x266e58, type: .rodata, name: mg_tanime}
+      - {start: 0x266f40, type: .rodata, name: mglib}
+      - {start: 0x266f80, type: .rodata, name: scriptinterpreter}
+      - {start: 0x266fc0, type: .rodata, name: dataread}
+      - {start: 0x2670f0, type: .rodata, name: gamepad}
+      - {start: 0x267140, type: .rodata, name: gameutil}
+      - {start: 0x267198, type: .rodata, name: nd_meswin}
+      - {start: 0x2674f0, type: .rodata, name: main}
+      - {start: 0x267670, type: .rodata, name: map}
+      - {start: 0x2676b0, type: .rodata, name: mapload}
+      - {start: 0x267bc0, type: .rodata, name: mapinfo}
+      - {start: 0x267e38, type: .rodata, name: mdslist}
+      - {start: 0x267ea0, type: .rodata, name: actionchara}
+      - {start: 0x2680f8, type: .rodata, name: character}
+      - {start: 0x268310, type: .rodata, name: dynamicanime}
+      - {start: 0x268548, type: .rodata, name: effectlist}
+      - {start: 0x268560, type: .rodata, name: effect}
+      - {start: 0x268818, type: .rodata, name: mapsky}
+      - {start: 0x268880, type: .rodata, name: dbg_font}
+      - {start: 0x268990, type: .rodata, name: runscript}
+      - {start: 0x268e30, type: .rodata, name: sound}
+      - {start: 0x2693a0, type: .rodata, name: ezmidi}
+      - {start: 0x2693b8, type: .rodata, name: snd_seseq}
+      - {start: 0x2693e8, type: .rodata, name: snd_mngr}
+      - {start: 0x2694e0, type: .rodata, name: mainloop}
+      - {start: 0x269c00, type: .rodata, name: gamedata}
+      - {start: 0x269eb0, type: .rodata, name: sysmes}
+      - {start: 0x26a048, type: .rodata, name: userdata}
+      - {start: 0x26a480, type: .rodata, name: editctrl}
+      - {start: 0x26a5b0, type: .rodata, name: editdebug}
+      - {start: 0x26ab00, type: .rodata, name: editloop}
+      - {start: 0x26ae98, type: .rodata, name: editmap}
+      - {start: 0x26b000, type: .rodata, name: dng_object}
+      - {start: 0x26bd20, type: .rodata, name: dng_debug}
+      - {start: 0x26bf00, type: .rodata, name: dng_effect}
+      - {start: 0x26bf40, type: .rodata, name: dng_hud}
+      - {start: 0x26bf48, type: .rodata, name: dng_main}
+      - {start: 0x26c788, type: .rodata, name: automap}
+      - {start: 0x26d140, type: .rodata, name: monster}
+      - {start: 0x26d3c0, type: .rodata, name: runscript_opcodes}
+      - {start: 0x26d490, type: .rodata, name: maintex}
+      - {start: 0x26d670, type: .rodata, name: charasetup}
+      - {start: 0x26da00, type: .rodata, name: dngmenu}
+      - {start: 0x26dd00, type: .rodata, name: editmenu}
+      - {start: 0x26e3d8, type: .rodata, name: inventmn}
+      - {start: 0x26f1c0, type: .rodata, name: menuaqua}
+      - {start: 0x26f800, type: .rodata, name: menucls1}
+      - {start: 0x26f938, type: .rodata, name: menudraw}
+      - {start: 0x26fc50, type: .rodata, name: menumain}
+      - {start: 0x270118, type: .rodata, name: menusys}
+      - {start: 0x271280, type: .rodata, name: menucommon}
+      - {start: 0x271a70, type: .rodata, name: event}
+      - {start: 0x271ac0, type: .rodata, name: sceneseq}
+      - {start: 0x271af0, type: .rodata, name: event_func}
+      - {start: 0x2723a0, type: .rodata, name: eventedit}
+      - {start: 0x272890, type: .rodata, name: scene}
+      - {start: 0x2728c0, type: .rodata, name: sceneload}
+      - {start: 0x272920, type: .rodata, name: lib/libgcc/_divdi3}
+      - {start: 0x272a20, type: .rodata, name: lib/libgcc/_moddi3}
+      - {start: 0x272b20, type: .rodata, name: lib/libgcc/_udivdi3}
+      - {start: 0x272c20, type: .rodata, name: lib/libgcc/_umoddi3}
+      - {start: 0x272d20, type: .rodata, name: visualmotion}
+      - {start: 0x272d60, type: .rodata, name: ezbgm}
+      - {start: 0x272e00, type: .rodata, name: dng_event}
+      - {start: 0x273018, type: .rodata, name: eventsprite}
+      - {start: 0x273020, type: .rodata, name: menushop}
+      - {start: 0x2734a8, type: .rodata, name: movie}
+      - {start: 0x2736a8, type: .rodata, name: editmapeffect}
+      - {start: 0x2736d0, type: .rodata, name: funcpoint}
+      - {start: 0x273728, type: .rodata, name: title}
+      - {start: 0x273a98, type: .rodata, name: editinfo}
+      - {start: 0x273c30, type: .rodata, name: scenesnd}
+      - {start: 0x273d40, type: .rodata, name: editdata}
+      - {start: 0x273e60, type: .rodata, name: menucapt}
+      - {start: 0x273f40, type: .rodata, name: npccfg}
+      - {start: 0x273fc8, type: .rodata, name: menumap}
+      - {start: 0x274140, type: .rodata, name: menuchr}
+      - {start: 0x2752e8, type: .rodata, name: menuop}
+      - {start: 0x275a40, type: .rodata, name: movieviewlp}
+      - {start: 0x275af0, type: .rodata, name: sceneevent}
+      - {start: 0x275b38, type: .rodata, name: scenevillager}
+      - {start: 0x275d08, type: .rodata, name: pot}
+      - {start: 0x275d50, type: .rodata, name: villagermngr}
+      - {start: 0x275d70, type: .rodata, name: actscript}
+      - {start: 0x275f90, type: .rodata, name: mapselect}
+      - {start: 0x2761c0, type: .rodata, name: font}
+      - {start: 0x276550, type: .rodata, name: gaiji}
+      - {start: 0x276648, type: .rodata, name: editmode}
+      - {start: 0x2771c0, type: .rodata, name: mapjump}
+      - {start: 0x277240, type: .rodata, name: effscript}
+      - {start: 0x277700, type: .rodata, name: sphida}
+      - {start: 0x2777b8, type: .rodata, name: editmap2}
+      - {start: 0x277808, type: .rodata, name: editevent}
+      - {start: 0x277940, type: .rodata, name: memcard}
+      - {start: 0x277d88, type: .rodata, name: swordeffect}
+      - {start: 0x277d98, type: .rodata, name: savedata}
+      - {start: 0x277db0, type: .rodata, name: savedatadungeon}
+      - {start: 0x277dd8, type: .rodata, name: editexception}
+      - {start: 0x277ea8, type: .rodata, name: dngfloor}
+      - {start: 0x277fc8, type: .rodata, name: editeff}
+      - {start: 0x277fd8, type: .rodata, name: fishing}
+      - {start: 0x278548, type: .rodata, name: subgame}
+      - {start: 0x278550, type: .rodata, name: gyorace}
+      - {start: 0x278858, type: .rodata, name: nowload}
+      - {start: 0x2788e0, type: .rodata, name: nameregi}
+      - {start: 0x278960, type: .rodata, name: photo}
+      - {start: 0x278ca0, type: .rodata, name: fishingobj}
+      - {start: 0x278cf8, type: .rodata, name: pbuggy}
+      - {start: 0x278f50, type: .rodata, name: editanalyze}
+      - {start: 0x278fd0, type: .rodata, name: helpmes}
+      - {start: 0x279000, type: .rodata, name: vlgr_info}
+      - {start: 0x279188, type: .rodata, name: quest}
+      - {start: 0x2791a8, type: .rodata, name: mainloop3}
+      - {start: 0x2793b0, type: .rodata, name: password}
+      - {start: 0x2793c0, type: .rodata, name: gyoracesim}
+      - {start: 0x2793e0, type: .rodata, name: convviewlp}
+      - {start: 0x279700, type: .sinit, name: mg_frame}
+      - {start: 0x279710, type: .sinit, name: mg_tanime}
+      - {start: 0x279740, type: .sinit, name: mglib}
+      - {start: 0x279810, type: .sinit, name: nd_meswin}
+      - {start: 0x279820, type: .sinit, name: dbg_font}
+      - {start: 0x279830, type: .sinit, name: snd_mngr}
+      - {start: 0x279890, type: .sinit, name: mainloop}
+      - {start: 0x279c20, type: .sinit, name: gamedata}
+      - {start: 0x279cc0, type: .sinit, name: sysmes}
+      - {start: 0x279d10, type: .sinit, name: userdata}
+      - {start: 0x279d20, type: .sinit, name: editctrl}
+      - {start: 0x279d60, type: .sinit, name: editloop}
+      - {start: 0x279f80, type: .sinit, name: dng_debug}
+      - {start: 0x279f90, type: .sinit, name: dng_main}
+      - {start: 0x27a460, type: .sinit, name: dngmenu}
+      - {start: 0x27a4f0, type: .sinit, name: editmenu}
+      - {start: 0x27a550, type: .sinit, name: inventmn}
+      - {start: 0x27a5a0, type: .sinit, name: menuaqua}
+      - {start: 0x27a5f0, type: .sinit, name: menucls1}
+      - {start: 0x27a600, type: .sinit, name: menudraw}
+      - {start: 0x27a730, type: .sinit, name: menumain}
+      - {start: 0x27a790, type: .sinit, name: menusys}
+      - {start: 0x27a870, type: .sinit, name: event}
+      - {start: 0x27a880, type: .sinit, name: event_func}
+      - {start: 0x27aab0, type: .sinit, name: eventedit}
+      - {start: 0x27aae0, type: .sinit, name: dng_event}
+      - {start: 0x27aaf0, type: .sinit, name: menushop}
+      - {start: 0x27ab00, type: .sinit, name: title}
+      - {start: 0x27ab80, type: .sinit, name: editdata}
+      - {start: 0x27aba0, type: .sinit, name: menucapt}
+      - {start: 0x27abb0, type: .sinit, name: menumap}
+      - {start: 0x27abe0, type: .sinit, name: menuchr}
+      - {start: 0x27ac80, type: .sinit, name: menuop}
+      - {start: 0x27acc0, type: .sinit, name: movieviewlp}
+      - {start: 0x27acf0, type: .sinit, name: editmode}
+      - {start: 0x27ad00, type: .sinit, name: mapjump}
+      - {start: 0x27ad30, type: .sinit, name: editeff}
+      - {start: 0x27ad70, type: .sinit, name: fishing}
+      - {start: 0x27adf0, type: .sinit, name: subgame}
+      - {start: 0x27ae30, type: .sinit, name: gyorace}
+      - {start: 0x27ae70, type: .sinit, name: nowload}
+      - {start: 0x27aea0, type: .sinit, name: nameregi}
+      - {start: 0x27aeb0, type: .sinit, name: photo}
+      - {start: 0x27aec0, type: .sinit, name: fishingobj}
+      - {start: 0x27af10, type: .sinit, name: pbuggy}
+      - {start: 0x27af60, type: .sinit, name: helpmes}
+      - {start: 0x27afc0, type: .sinit, name: vlgr_info}
+      - {start: 0x27afe0, type: .sinit, name: mainloop3}
+      - {start: 0x27b030, type: .sinit, name: convviewlp}
+      - {start: 0x27b060, type: .data, name: mg_frame, linker_section: .ctor}
+      - {start: 0x27b064, type: .data, name: mg_tanime, linker_section: .ctor}
+      - {start: 0x27b068, type: .data, name: mglib, linker_section: .ctor}
+      - {start: 0x27b06c, type: .data, name: nd_meswin, linker_section: .ctor}
+      - {start: 0x27b070, type: .data, name: dbg_font, linker_section: .ctor}
+      - {start: 0x27b074, type: .data, name: snd_mngr, linker_section: .ctor}
+      - {start: 0x27b078, type: .data, name: mainloop, linker_section: .ctor}
+      - {start: 0x27b07c, type: .data, name: gamedata, linker_section: .ctor}
+      - {start: 0x27b080, type: .data, name: sysmes, linker_section: .ctor}
+      - {start: 0x27b084, type: .data, name: userdata, linker_section: .ctor}
+      - {start: 0x27b088, type: .data, name: editctrl, linker_section: .ctor}
+      - {start: 0x27b08c, type: .data, name: editloop, linker_section: .ctor}
+      - {start: 0x27b090, type: .data, name: dng_debug, linker_section: .ctor}
+      - {start: 0x27b094, type: .data, name: dng_main, linker_section: .ctor}
+      - {start: 0x27b098, type: .data, name: dngmenu, linker_section: .ctor}
+      - {start: 0x27b09c, type: .data, name: editmenu, linker_section: .ctor}
+      - {start: 0x27b0a0, type: .data, name: inventmn, linker_section: .ctor}
+      - {start: 0x27b0a4, type: .data, name: menuaqua, linker_section: .ctor}
+      - {start: 0x27b0a8, type: .data, name: menucls1, linker_section: .ctor}
+      - {start: 0x27b0ac, type: .data, name: menudraw, linker_section: .ctor}
+      - {start: 0x27b0b0, type: .data, name: menumain, linker_section: .ctor}
+      - {start: 0x27b0b4, type: .data, name: menusys, linker_section: .ctor}
+      - {start: 0x27b0b8, type: .data, name: event, linker_section: .ctor}
+      - {start: 0x27b0bc, type: .data, name: event_func, linker_section: .ctor}
+      - {start: 0x27b0c0, type: .data, name: eventedit, linker_section: .ctor}
+      - {start: 0x27b0c4, type: .data, name: dng_event, linker_section: .ctor}
+      - {start: 0x27b0c8, type: .data, name: menushop, linker_section: .ctor}
+      - {start: 0x27b0cc, type: .data, name: title, linker_section: .ctor}
+      - {start: 0x27b0d0, type: .data, name: editdata, linker_section: .ctor}
+      - {start: 0x27b0d4, type: .data, name: menucapt, linker_section: .ctor}
+      - {start: 0x27b0d8, type: .data, name: menumap, linker_section: .ctor}
+      - {start: 0x27b0dc, type: .data, name: menuchr, linker_section: .ctor}
+      - {start: 0x27b0e0, type: .data, name: menuop, linker_section: .ctor}
+      - {start: 0x27b0e4, type: .data, name: movieviewlp, linker_section: .ctor}
+      - {start: 0x27b0e8, type: .data, name: editmode, linker_section: .ctor}
+      - {start: 0x27b0ec, type: .data, name: mapjump, linker_section: .ctor}
+      - {start: 0x27b0f0, type: .data, name: editeff, linker_section: .ctor}
+      - {start: 0x27b0f4, type: .data, name: fishing, linker_section: .ctor}
+      - {start: 0x27b0f8, type: .data, name: subgame, linker_section: .ctor}
+      - {start: 0x27b0fc, type: .data, name: gyorace, linker_section: .ctor}
+      - {start: 0x27b100, type: .data, name: nowload, linker_section: .ctor}
+      - {start: 0x27b104, type: .data, name: nameregi, linker_section: .ctor}
+      - {start: 0x27b108, type: .data, name: photo, linker_section: .ctor}
+      - {start: 0x27b10c, type: .data, name: fishingobj, linker_section: .ctor}
+      - {start: 0x27b110, type: .data, name: pbuggy, linker_section: .ctor}
+      - {start: 0x27b114, type: .data, name: helpmes, linker_section: .ctor}
+      - {start: 0x27b118, type: .data, name: vlgr_info, linker_section: .ctor}
+      - {start: 0x27b11c, type: .data, name: mainloop3, linker_section: .ctor}
+      - {start: 0x27b120, type: .data, name: convviewlp, linker_section: .ctor}
+      - {start: 0x27b130, type: .data, name: lib/mwcc/CPlusLib, linker_section: .vtables}
+      - {start: 0x27b140, type: .data, name: lib/mwcc/New, linker_section: .vtables}
+      - {start: 0x27b150, type: .data, name: lib/mwcc/MWException, linker_section: .vtables}
+      - {start: 0x27b160, type: .data, name: mg_camera, linker_section: .vtables}
+      - {start: 0x27b1b0, type: .data, name: mg_dataset, linker_section: .vtables}
+      - {start: 0x27b240, type: .data, name: mg_frame, linker_section: .vtables}
+      - {start: 0x27b310, type: .data, name: mg_shadow, linker_section: .vtables}
+      - {start: 0x27b360, type: .data, name: mg_sprite, linker_section: .vtables}
+      - {start: 0x27b3d8, type: .data, name: mg_tanime, linker_section: .vtables}
+      - {start: 0x27b3f0, type: .data, name: mg_visual, linker_section: .vtables}
+      - {start: 0x27b4d0, type: .data, name: collision, linker_section: .vtables}
+      - {start: 0x27b590, type: .data, name: map, linker_section: .vtables}
+      - {start: 0x27b688, type: .data, name: mapload, linker_section: .vtables}
+      - {start: 0x27b6b0, type: .data, name: mapparts, linker_section: .vtables}
+      - {start: 0x27b848, type: .data, name: mdslist, linker_section: .vtables}
+      - {start: 0x27b8e0, type: .data, name: object, linker_section: .vtables}
+      - {start: 0x27b9e0, type: .data, name: actionchara, linker_section: .vtables}
+      - {start: 0x27bb00, type: .data, name: character, linker_section: .vtables}
+      - {start: 0x27bc00, type: .data, name: dynamicanime, linker_section: .vtables}
+      - {start: 0x27bc20, type: .data, name: water, linker_section: .vtables}
+      - {start: 0x27bcb8, type: .data, name: wavetable, linker_section: .vtables}
+      - {start: 0x27bcd0, type: .data, name: editmap, linker_section: .vtables}
+      - {start: 0x27bd60, type: .data, name: editparts, linker_section: .vtables}
+      - {start: 0x27bdf0, type: .data, name: dng_hud, linker_section: .vtables}
+      - {start: 0x27be80, type: .data, name: dng_main, linker_section: .vtables}
+      - {start: 0x27bec0, type: .data, name: monster, linker_section: .vtables}
+      - {start: 0x27bff0, type: .data, name: dngmenu, linker_section: .vtables}
+      - {start: 0x27c010, type: .data, name: editmenu, linker_section: .vtables}
+      - {start: 0x27c050, type: .data, name: inventmn, linker_section: .vtables}
+      - {start: 0x27c070, type: .data, name: menuaqua, linker_section: .vtables}
+      - {start: 0x27c270, type: .data, name: menusys, linker_section: .vtables}
+      - {start: 0x27c2d0, type: .data, name: scene, linker_section: .vtables}
+      - {start: 0x27c2e0, type: .data, name: visualmotion, linker_section: .vtables}
+      - {start: 0x27c330, type: .data, name: dng_event, linker_section: .vtables}
+      - {start: 0x27c4c0, type: .data, name: menushop, linker_section: .vtables}
+      - {start: 0x27c500, type: .data, name: funcpoint, linker_section: .vtables}
+      - {start: 0x27c520, type: .data, name: menumap, linker_section: .vtables}
+      - {start: 0x27c540, type: .data, name: menuchr, linker_section: .vtables}
+      - {start: 0x27c5c0, type: .data, name: menuop, linker_section: .vtables}
+      - {start: 0x27c620, type: .data, name: cameracontrol, linker_section: .vtables}
+      - {start: 0x27c650, type: .data, name: editeff, linker_section: .vtables}
+      - {start: 0x27c750, type: .data, name: nameregi, linker_section: .vtables}
+      - {start: 0x27c770, type: rdata, name: rdata, dir: main}
+      - {start: 0x27c780, type: .sdata, name: mg_math}
+      - {start: 0x27c788, type: .sdata, name: mglib}
+      - {start: 0x27c794, type: .sdata, name: scriptinterpreter}
+      - {start: 0x27c798, type: .sdata, name: dataread}
+      - {start: 0x27c79c, type: .sdata, name: map}
+      - {start: 0x27c7a0, type: .sdata, name: effectlist}
+      - {start: 0x27c7a8, type: .sdata, name: snd_mngr}
+      - {start: 0x27c7c8, type: .sdata, name: mainloop}
+      - {start: 0x27c7f0, type: .sdata, name: gamedata}
+      - {start: 0x27c7f8, type: .sdata, name: userdata}
+      - {start: 0x27c830, type: .sdata, name: editdebug}
+      - {start: 0x27c858, type: .sdata, name: editloop}
+      - {start: 0x27c870, type: .sdata, name: editmap}
+      - {start: 0x27c878, type: .sdata, name: dng_object}
+      - {start: 0x27c888, type: .sdata, name: dng_main}
+      - {start: 0x27c898, type: .sdata, name: dngmenu}
+      - {start: 0x27c8dc, type: .sdata, name: editmenu}
+      - {start: 0x27c930, type: .sdata, name: inventmn}
+      - {start: 0x27c990, type: .sdata, name: menuaqua}
+      - {start: 0x27ca18, type: .sdata, name: menucls1}
+      - {start: 0x27ca20, type: .sdata, name: menudraw}
+      - {start: 0x27ca70, type: .sdata, name: menumain}
+      - {start: 0x27cac8, type: .sdata, name: menusys}
+      - {start: 0x27cb60, type: .sdata, name: menucommon}
+      - {start: 0x27cb68, type: .sdata, name: scene}
+      - {start: 0x27cb98, type: .sdata, name: menushop}
+      - {start: 0x27cbc0, type: .sdata, name: movie}
+      - {start: 0x27cbc4, type: .sdata, name: title}
+      - {start: 0x27cbe8, type: .sdata, name: scenesnd}
+      - {start: 0x27cbf0, type: .sdata, name: menumap}
+      - {start: 0x27cbf8, type: .sdata, name: menuchr}
+      - {start: 0x27cc70, type: .sdata, name: menuop}
+      - {start: 0x27cca0, type: .sdata, name: mapselect}
+      - {start: 0x27ccc4, type: .sdata, name: editmode}
+      - {start: 0x27ccc8, type: .sdata, name: editevent}
+      - {start: 0x27cccc, type: .sdata, name: memcard}
+      - {start: 0x27ccd0, type: .sdata, name: dngfloor}
+      - {start: 0x27cce0, type: .sdata, name: fishing}
+      - {start: 0x27cce8, type: .sdata, name: gyorace}
+      - {start: 0x27ccec, type: .sdata, name: nowload}
+      - {start: 0x27ccf0, type: .sdata, name: nameregi}
+      - {start: 0x27cd60, type: .sdata, name: photo}
+      - {start: 0x27cd64, type: .sdata, name: pbuggy}
+      - {start: 0x27cd68, type: .sdata, name: mainloop3}
+      - {start: 0x27cda0, type: .sdata, name: password}
+      - {start: 0x27cda8, type: .sdata, name: gyoracesim}
+      - {start: 0x27ce00, type: .sbss, name: mg_camera, vram: 0x37cd80}
+      - {start: 0x27ce00, type: .sbss, name: mg_dataset, vram: 0x37cd84}
+      - {start: 0x27ce00, type: .sbss, name: mg_tanime, vram: 0x37cd94}
+      - {start: 0x27ce00, type: .sbss, name: mg_visual, vram: 0x37cdc0}
+      - {start: 0x27ce00, type: .sbss, name: mglib, vram: 0x37cdcc}
+      - {start: 0x27ce00, type: .sbss, name: dataread, vram: 0x37cf0c}
+      - {start: 0x27ce00, type: .sbss, name: gamepad, vram: 0x37cf30}
+      - {start: 0x27ce00, type: .sbss, name: gameutil, vram: 0x37cf4c}
+      - {start: 0x27ce00, type: .sbss, name: nd_meswin, vram: 0x37cf74}
+      - {start: 0x27ce00, type: .sbss, name: main, vram: 0x37cf84}
+      - {start: 0x27ce00, type: .sbss, name: map, vram: 0x37cf88}
+      - {start: 0x27ce00, type: .sbss, name: mapload, vram: 0x37cf90}
+      - {start: 0x27ce00, type: .sbss, name: mapinfo, vram: 0x37cfd8}
+      - {start: 0x27ce00, type: .sbss, name: mdslist, vram: 0x37cfec}
+      - {start: 0x27ce00, type: .sbss, name: actionchara, vram: 0x37d00c}
+      - {start: 0x27ce00, type: .sbss, name: character, vram: 0x37d018}
+      - {start: 0x27ce00, type: .sbss, name: dynamicanime, vram: 0x37d08c}
+      - {start: 0x27ce00, type: .sbss, name: screeneffect, vram: 0x37d0b0}
+      - {start: 0x27ce00, type: .sbss, name: effect, vram: 0x37d0d0}
+      - {start: 0x27ce00, type: .sbss, name: mapsky, vram: 0x37d0dc}
+      - {start: 0x27ce00, type: .sbss, name: sound, vram: 0x37d0e8}
+      - {start: 0x27ce00, type: .sbss, name: snd_mngr, vram: 0x37d108}
+      - {start: 0x27ce00, type: .sbss, name: mainloop, vram: 0x37d138}
+      - {start: 0x27ce00, type: .sbss, name: gamedata, vram: 0x37d1d4}
+      - {start: 0x27ce00, type: .sbss, name: userdata, vram: 0x37d1f4}
+      - {start: 0x27ce00, type: .sbss, name: wavetable, vram: 0x37d208}
+      - {start: 0x27ce00, type: .sbss, name: editctrl, vram: 0x37d210}
+      - {start: 0x27ce00, type: .sbss, name: editdebug, vram: 0x37d288}
+      - {start: 0x27ce00, type: .sbss, name: editloop, vram: 0x37d2c0}
+      - {start: 0x27ce00, type: .sbss, name: editmap, vram: 0x37d390}
+      - {start: 0x27ce00, type: .sbss, name: dng_object, vram: 0x37d3c8}
+      - {start: 0x27ce00, type: .sbss, name: dng_status, vram: 0x37d3d0}
+      - {start: 0x27ce00, type: .sbss, name: dng_main, vram: 0x37d3e8}
+      - {start: 0x27ce00, type: .sbss, name: automap, vram: 0x37d4c0}
+      - {start: 0x27ce00, type: .sbss, name: monster, vram: 0x37d4dc}
+      - {start: 0x27ce00, type: .sbss, name: runscript_opcodes, vram: 0x37d4e4}
+      - {start: 0x27ce00, type: .sbss, name: maintex, vram: 0x37d4f0}
+      - {start: 0x27ce00, type: .sbss, name: dngmenu, vram: 0x37d524}
+      - {start: 0x27ce00, type: .sbss, name: editmenu, vram: 0x37d5d8}
+      - {start: 0x27ce00, type: .sbss, name: inventmn, vram: 0x37d754}
+      - {start: 0x27ce00, type: .sbss, name: menuaqua, vram: 0x37d838}
+      - {start: 0x27ce00, type: .sbss, name: menucls1, vram: 0x37d9b8}
+      - {start: 0x27ce00, type: .sbss, name: menudraw, vram: 0x37d9e0}
+      - {start: 0x27ce00, type: .sbss, name: menumain, vram: 0x37db44}
+      - {start: 0x27ce00, type: .sbss, name: menusys, vram: 0x37dc18}
+      - {start: 0x27ce00, type: .sbss, name: menucommon, vram: 0x37de24}
+      - {start: 0x27ce00, type: .sbss, name: event, vram: 0x37de74}
+      - {start: 0x27ce00, type: .sbss, name: event_func, vram: 0x37de7c}
+      - {start: 0x27ce00, type: .sbss, name: eventedit, vram: 0x37dea4}
+      - {start: 0x27ce00, type: .sbss, name: scene, vram: 0x37debc}
+      - {start: 0x27ce00, type: .sbss, name: dng_event, vram: 0x37dec0}
+      - {start: 0x27ce00, type: .sbss, name: menushop, vram: 0x37ded4}
+      - {start: 0x27ce00, type: .sbss, name: movie, vram: 0x37df7c}
+      - {start: 0x27ce00, type: .sbss, name: editmapeffect, vram: 0x37dfc4}
+      - {start: 0x27ce00, type: .sbss, name: funcpoint, vram: 0x37dfc8}
+      - {start: 0x27ce00, type: .sbss, name: title, vram: 0x37dfd4}
+      - {start: 0x27ce00, type: .sbss, name: editinfo, vram: 0x37e104}
+      - {start: 0x27ce00, type: .sbss, name: editdata, vram: 0x37e130}
+      - {start: 0x27ce00, type: .sbss, name: menucapt, vram: 0x37e140}
+      - {start: 0x27ce00, type: .sbss, name: npccfg, vram: 0x37e16c}
+      - {start: 0x27ce00, type: .sbss, name: menumap, vram: 0x37e174}
+      - {start: 0x27ce00, type: .sbss, name: menuchr, vram: 0x37e214}
+      - {start: 0x27ce00, type: .sbss, name: menuop, vram: 0x37e2f4}
+      - {start: 0x27ce00, type: .sbss, name: movieviewlp, vram: 0x37e408}
+      - {start: 0x27ce00, type: .sbss, name: actscript, vram: 0x37e44c}
+      - {start: 0x27ce00, type: .sbss, name: mapselect, vram: 0x37e46c}
+      - {start: 0x27ce00, type: .sbss, name: gaiji, vram: 0x37e4b4}
+      - {start: 0x27ce00, type: .sbss, name: editmode, vram: 0x37e4b8}
+      - {start: 0x27ce00, type: .sbss, name: mapjump, vram: 0x37e558}
+      - {start: 0x27ce00, type: .sbss, name: effscript, vram: 0x37e574}
+      - {start: 0x27ce00, type: .sbss, name: sphida, vram: 0x37e580}
+      - {start: 0x27ce00, type: .sbss, name: editmap2, vram: 0x37e584}
+      - {start: 0x27ce00, type: .sbss, name: memcard, vram: 0x37e58c}
+      - {start: 0x27ce00, type: .sbss, name: editexception, vram: 0x37e5b0}
+      - {start: 0x27ce00, type: .sbss, name: dngfloor, vram: 0x37e5f8}
+      - {start: 0x27ce00, type: .sbss, name: editeff, vram: 0x37e610}
+      - {start: 0x27ce00, type: .sbss, name: fishing, vram: 0x37e61c}
+      - {start: 0x27ce00, type: .sbss, name: subgame, vram: 0x37e7ac}
+      - {start: 0x27ce00, type: .sbss, name: gyorace, vram: 0x37e7b8}
+      - {start: 0x27ce00, type: .sbss, name: nowload, vram: 0x37e830}
+      - {start: 0x27ce00, type: .sbss, name: nameregi, vram: 0x37e87c}
+      - {start: 0x27ce00, type: .sbss, name: photo, vram: 0x37e8c8}
+      - {start: 0x27ce00, type: .sbss, name: fishingobj, vram: 0x37e8ec}
+      - {start: 0x27ce00, type: .sbss, name: pbuggy, vram: 0x37e92c}
+      - {start: 0x27ce00, type: .sbss, name: helpmes, vram: 0x37e9cc}
+      - {start: 0x27ce00, type: .sbss, name: vlgr_info, vram: 0x37e9d8}
+      - {start: 0x27ce00, type: .sbss, name: quest, vram: 0x37ea28}
+      - {start: 0x27ce00, type: .sbss, name: mainloop3, vram: 0x37ea34}
+      - {start: 0x27ce00, type: .sbss, name: gyoracesim, vram: 0x37ea6c}
+      - {start: 0x27ce00, type: .sbss, name: convviewlp, vram: 0x37ea70}
+      - {start: 0x27ce00, type: .bss, name: crt0, vram: 0x37ead5}
+      - {start: 0x27ce00, type: .bss, name: lib/mwcc/global_destructor_chain, vram: 0x37ec48}
+      - {start: 0x27ce00, type: .bss, name: lib/sce/libdev, vram: 0x37ec50}
+      - {start: 0x27ce00, type: .bss, name: lib/sce/libmpeg, vram: 0x37edc0}
+      - {start: 0x27ce00, type: .bss, name: lib/sce/kernl/thread, vram: 0x37efc0}
+      - {start: 0x27ce00, type: .bss, name: lib/sce/kernl/deci2, vram: 0x37f7d0}
+      - {start: 0x27ce00, type: .bss, name: lib/sce/kernl/tty, vram: 0x37f800}
+      - {start: 0x27ce00, type: .bss, name: lib/sce/kernl/kprintf, vram: 0x37fbc0}
+      - {start: 0x27ce00, type: .bss, name: lib/sce/kernl/sifcmd, vram: 0x37fc40}
+      - {start: 0x27ce00, type: .bss, name: lib/sce/kernl/sifrpc, vram: 0x37fec0}
+      - {start: 0x27ce00, type: .bss, name: lib/sce/kernl/filestub, vram: 0x381700}
+      - {start: 0x27ce00, type: .bss, name: lib/sce/kernl/iopheap, vram: 0x382ac0}
+      - {start: 0x27ce00, type: .bss, name: lib/sce/kernl/eeloadfile, vram: 0x382c80}
+      - {start: 0x27ce00, type: .bss, name: lib/sce/kernl/iopreset, vram: 0x382ec0}
+      - {start: 0x27ce00, type: .bss, name: lib/sce/kernl/tlbtrap, vram: 0x382f40}
+      - {start: 0x27ce00, type: .bss, name: lib/sce/sdr_main, vram: 0x384180}
+      - {start: 0x27ce00, type: .bss, name: lib/sce/eecdvd, vram: 0x384340}
+      - {start: 0x27ce00, type: .bss, name: lib/sce/libpad, vram: 0x384600}
+      - {start: 0x27ce00, type: .bss, name: lib/sce/libmc, vram: 0x3848c0}
+      - {start: 0x27ce00, type: .bss, name: mg_texture, vram: 0x385ec0}
+      - {start: 0x27ce00, type: .bss, name: mg_math, vram: 0x395ec0}
+      - {start: 0x27ce00, type: .bss, name: mg_dataset, vram: 0x396ec0}
+      - {start: 0x27ce00, type: .bss, name: mg_drawprim, vram: 0x396ee0}
+      - {start: 0x27ce00, type: .bss, name: mg_frame, vram: 0x396ef0}
+      - {start: 0x27ce00, type: .bss, name: mg_shadow, vram: 0x396fd0}
+      - {start: 0x27ce00, type: .bss, name: mg_sprite, vram: 0x396fe0}
+      - {start: 0x27ce00, type: .bss, name: mg_tanime, vram: 0x396ff0}
+      - {start: 0x27ce00, type: .bss, name: mglib, vram: 0x397030}
+      - {start: 0x27ce00, type: .bss, name: dataread, vram: 0x399880}
+      - {start: 0x27ce00, type: .bss, name: gamepad, vram: 0x3ec3c0}
+      - {start: 0x27ce00, type: .bss, name: gameutil, vram: 0x3ecfc0}
+      - {start: 0x27ce00, type: .bss, name: nd_meswin, vram: 0x3f0460}
+      - {start: 0x27ce00, type: .bss, name: map, vram: 0x3f21d0}
+      - {start: 0x27ce00, type: .bss, name: mapload, vram: 0x3f3060}
+      - {start: 0x27ce00, type: .bss, name: actionchara, vram: 0x3f3390}
+      - {start: 0x27ce00, type: .bss, name: character, vram: 0x3f33a0}
+      - {start: 0x27ce00, type: .bss, name: outline, vram: 0x3f3590}
+      - {start: 0x27ce00, type: .bss, name: effectlist, vram: 0x3f3600}
+      - {start: 0x27ce00, type: .bss, name: effect, vram: 0x3f3670}
+      - {start: 0x27ce00, type: .bss, name: water, vram: 0x3f3690}
+      - {start: 0x27ce00, type: .bss, name: dbg_font, vram: 0x3f36a0}
+      - {start: 0x27ce00, type: .bss, name: sound, vram: 0x3f3f50}
+      - {start: 0x27ce00, type: .bss, name: ezmidi, vram: 0x3f64c0}
+      - {start: 0x27ce00, type: .bss, name: snd_mngr, vram: 0x3f6540}
+      - {start: 0x27ce00, type: .bss, name: mainloop, vram: 0x3fa5a0}
+      - {start: 0x27ce00, type: .bss, name: gamedata, vram: 0x1e95c60}
+      - {start: 0x27ce00, type: .bss, name: sysmes, vram: 0x1ea0f00}
+      - {start: 0x27ce00, type: .bss, name: userdata, vram: 0x1ec93d0}
+      - {start: 0x27ce00, type: .bss, name: editctrl, vram: 0x1ec9530}
+      - {start: 0x27ce00, type: .bss, name: editdebug, vram: 0x1ec9790}
+      - {start: 0x27ce00, type: .bss, name: editloop, vram: 0x1ec97a0}
+      - {start: 0x27ce00, type: .bss, name: editmap, vram: 0x1ecdc20}
+      - {start: 0x27ce00, type: .bss, name: dng_debug, vram: 0x1ecdc30}
+      - {start: 0x27ce00, type: .bss, name: dng_effect, vram: 0x1ecdd10}
+      - {start: 0x27ce00, type: .bss, name: dng_main, vram: 0x1ecdd30}
+      - {start: 0x27ce00, type: .bss, name: monster, vram: 0x1ef7420}
+      - {start: 0x27ce00, type: .bss, name: runscript_opcodes, vram: 0x1ef7430}
+      - {start: 0x27ce00, type: .bss, name: charasetup, vram: 0x1ef7830}
+      - {start: 0x27ce00, type: .bss, name: dngmenu, vram: 0x1ef78e0}
+      - {start: 0x27ce00, type: .bss, name: editmenu, vram: 0x1ef7960}
+      - {start: 0x27ce00, type: .bss, name: inventmn, vram: 0x1ef8230}
+      - {start: 0x27ce00, type: .bss, name: menuaqua, vram: 0x1efb410}
+      - {start: 0x27ce00, type: .bss, name: menucls1, vram: 0x1efba68}
+      - {start: 0x27ce00, type: .bss, name: menudraw, vram: 0x1efba90}
+      - {start: 0x27ce00, type: .bss, name: menumain, vram: 0x1efc3f0}
+      - {start: 0x27ce00, type: .bss, name: menusys, vram: 0x1efc830}
+      - {start: 0x27ce00, type: .bss, name: menucommon, vram: 0x1efd370}
+      - {start: 0x27ce00, type: .bss, name: event, vram: 0x1efd400}
+      - {start: 0x27ce00, type: .bss, name: event_func, vram: 0x1efd460}
+      - {start: 0x27ce00, type: .bss, name: eventedit, vram: 0x1f34080}
+      - {start: 0x27ce00, type: .bss, name: scene, vram: 0x1f34ec0}
+      - {start: 0x27ce00, type: .bss, name: lib/libgcc/dp-bit, vram: 0x1f35080}
+      - {start: 0x27ce00, type: .bss, name: lib/libgcc/fp-bit, vram: 0x1f35098}
+      - {start: 0x27ce00, type: .bss, name: ezbgm, vram: 0x1f350c0}
+      - {start: 0x27ce00, type: .bss, name: dng_event, vram: 0x1f35130}
+      - {start: 0x27ce00, type: .bss, name: menushop, vram: 0x1f35160}
+      - {start: 0x27ce00, type: .bss, name: editriver, vram: 0x1f351a0}
+      - {start: 0x27ce00, type: .bss, name: movie, vram: 0x1f351c0}
+      - {start: 0x27ce00, type: .bss, name: editmapeffect, vram: 0x1f35b80}
+      - {start: 0x27ce00, type: .bss, name: funcpoint, vram: 0x1f35c10}
+      - {start: 0x27ce00, type: .bss, name: title, vram: 0x1f35eb0}
+      - {start: 0x27ce00, type: .bss, name: editdata, vram: 0x1f36080}
+      - {start: 0x27ce00, type: .bss, name: menucapt, vram: 0x1f3a0f0}
+      - {start: 0x27ce00, type: .bss, name: npccfg, vram: 0x1f3a120}
+      - {start: 0x27ce00, type: .bss, name: menumap, vram: 0x1f3c760}
+      - {start: 0x27ce00, type: .bss, name: menuchr, vram: 0x1f3c7e0}
+      - {start: 0x27ce00, type: .bss, name: menuop, vram: 0x1f3cf20}
+      - {start: 0x27ce00, type: .bss, name: movieviewlp, vram: 0x1f3d040}
+      - {start: 0x27ce00, type: .bss, name: scenevillager, vram: 0x1f3d160}
+      - {start: 0x27ce00, type: .bss, name: actscript, vram: 0x1f3d170}
+      - {start: 0x27ce00, type: .bss, name: mapselect, vram: 0x1f3d580}
+      - {start: 0x27ce00, type: .bss, name: font, vram: 0x1f455c0}
+      - {start: 0x27ce00, type: .bss, name: gaiji, vram: 0x1f465f0}
+      - {start: 0x27ce00, type: .bss, name: editmode, vram: 0x1f57df0}
+      - {start: 0x27ce00, type: .bss, name: intersection, vram: 0x1f58250}
+      - {start: 0x27ce00, type: .bss, name: mapjump, vram: 0x1f58260}
+      - {start: 0x27ce00, type: .bss, name: effscript, vram: 0x1f58480}
+      - {start: 0x27ce00, type: .bss, name: cameracontrol, vram: 0x1f58890}
+      - {start: 0x27ce00, type: .bss, name: editmap2, vram: 0x1f588a0}
+      - {start: 0x27ce00, type: .bss, name: editexception, vram: 0x1f588b0}
+      - {start: 0x27ce00, type: .bss, name: editeff, vram: 0x1f588c0}
+      - {start: 0x27ce00, type: .bss, name: fishing, vram: 0x1f58dd0}
+      - {start: 0x27ce00, type: .bss, name: subgame, vram: 0x1f59380}
+      - {start: 0x27ce00, type: .bss, name: gyorace, vram: 0x1f593b0}
+      - {start: 0x27ce00, type: .bss, name: nowload, vram: 0x1f59a00}
+      - {start: 0x27ce00, type: .bss, name: nameregi, vram: 0x1f5d260}
+      - {start: 0x27ce00, type: .bss, name: photo, vram: 0x1f5d370}
+      - {start: 0x27ce00, type: .bss, name: fishingobj, vram: 0x1f5d4b0}
+      - {start: 0x27ce00, type: .bss, name: pbuggy, vram: 0x1f5eed0}
+      - {start: 0x27ce00, type: .bss, name: editanalyze, vram: 0x1f5ef50}
+      - {start: 0x27ce00, type: .bss, name: helpmes, vram: 0x1f5ef60}
+      - {start: 0x27ce00, type: .bss, name: vlgr_info, vram: 0x1f628e0}
+      - {start: 0x27ce00, type: .bss, name: mainloop3, vram: 0x1f644e0}
+      - {start: 0x27ce00, type: .bss, name: gyoracesim, vram: 0x1f645d0}
+      - {start: 0x27ce00, type: .bss, name: convviewlp, vram: 0x1f646b0}
+      - {start: 0x27ce00, type: .bss, name: lib/libc/errno/errno, vram: 0x1f649d0}
+  - [0x27ce00]

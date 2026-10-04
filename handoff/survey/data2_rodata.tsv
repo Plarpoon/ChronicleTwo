@@ -1,0 +1,127 @@
+#section	start	end	unit	confidence	evidence
+.rodata	00366cb0	00366d20	mg_texture	high	part start; 7 locals @497..@884 (7 text-ref, 0 via data table, 0 unref); first @497 ref:text, last @884 ref:text
+.rodata	00366d20	00366d60	mg_dataset	high	4 locals @387..@886 (4 text-ref, 0 via data table, 0 unref); first @387 ref:text, last @886 ref:text
+.rodata	00366d60	00366d80	mg_drawenv	high	1 locals @184..@184 (1 text-ref, 0 via data table, 0 unref, 1 jump tables); first @184 ref:text, last @184 ref:text
+.rodata	00366d80	00366dd8	mg_memory	high	3 locals @166..@288 (3 text-ref, 0 via data table, 0 unref); first @166 ref:text, last @288 ref:text
+.rodata	00366dd8	00366ec0	mg_tanime	high	14 locals @831..@873 (1 text-ref, 13 via data table, 0 unref); first @831 ref:data-table, last @873 ref:text
+.rodata	00366ec0	00366f00	mglib	high	4 locals @715..@1569 (4 text-ref, 0 via data table, 0 unref); first @715 ref:text, last @1569 ref:text
+.rodata	00366f00	00366f40	scriptinterpreter	high	3 locals @215..@524 (3 text-ref, 0 via data table, 0 unref); first @215 ref:text, last @524 ref:text
+.rodata	00366f40	00367070	dataread	high	19 locals @183..@714 (19 text-ref, 0 via data table, 0 unref); first @183 ref:text, last @714 ref:text
+.rodata	00367070	003670c0	gamepad	high	4 locals @248..@910 (4 text-ref, 0 via data table, 0 unref); first @248 ref:text, last @910 ref:text
+.rodata	003670c0	00367118	gameutil	high	2 locals @966..@967 (2 text-ref, 0 via data table, 0 unref); first @966 ref:text, last @967 ref:text
+.rodata	00367118	00367470	nd_meswin	high	63 locals @1124..@4637 (62 text-ref, 0 via data table, 1 unref, 5 jump tables); first @1124 ref:text, last @4637 ref:text
+.rodata	00367470	003675f0	main	high	12 locals @846..@857 (12 text-ref, 0 via data table, 0 unref); first @846 ref:text, last @857 ref:text
+.rodata	003675f0	00367630	map	high	6 locals @327..@2008 (5 text-ref, 1 via data table, 0 unref); first @327 ref:data-table, last @2008 ref:text
+.rodata	00367630	00367b40	mapload	high	85 locals @611..@1544 (22 text-ref, 63 via data table, 0 unref); first @611 ref:data-table, last @1544 ref:text
+.rodata	00367b40	00367db8	mapinfo	high	33 locals @360..@713 (10 text-ref, 23 via data table, 0 unref); first @360 ref:data-table, last @713 ref:text
+.rodata	00367db8	00367e20	mdslist	high	9 locals @729..@830 (5 text-ref, 4 via data table, 0 unref); first @729 ref:data-table, last @830 ref:text
+.rodata	00367e20	00368078	actionchara	high	43 locals @1325..@3389 (43 text-ref, 0 via data table, 0 unref, 1 jump tables); first @1325 ref:text, last @3389 ref:text
+.rodata	00368078	00368290	character	high	43 locals @281..@1571 (4 text-ref, 39 via data table, 0 unref); first @281 ref:data-table, last @1571 ref:text
+.rodata	00368290	003684c8	dynamicanime	high	34 locals @816..@1074 (7 text-ref, 27 via data table, 0 unref); first @816 ref:data-table, last @1074 ref:text
+.rodata	003684c8	003684e0	effectlist	high	2 locals @260..@261 (2 text-ref, 0 via data table, 0 unref); first @260 ref:text, last @261 ref:text
+.rodata	003684e0	00368798	effect	high	50 locals @383..@848 (3 text-ref, 47 via data table, 0 unref, 2 jump tables); first @383 ref:text, last @848 ref:text
+.rodata	00368798	00368800	mapsky	high	9 locals @386..@468 (1 text-ref, 8 via data table, 0 unref); first @386 ref:data-table, last @468 ref:data-table
+.rodata	00368800	00368910	dbg_font	high	3 locals @288..@420 (3 text-ref, 0 via data table, 0 unref, 1 jump tables); first @288 ref:text, last @420 ref:text
+.rodata	00368910	00368db0	runscript	high	27 locals @168..@697 (27 text-ref, 0 via data table, 0 unref, 3 jump tables); first @168 ref:text, last @697 ref:text
+.rodata	00368db0	00369320	sound	high	29 locals @218..@930 (29 text-ref, 0 via data table, 0 unref); first @218 ref:text, last @930 ref:text
+.rodata	00369320	00369338	ezmidi	high	1 locals @33..@33 (1 text-ref, 0 via data table, 0 unref); first @33 ref:text, last @33 ref:text
+.rodata	00369338	00369368	snd_seseq	high	3 locals @295..@297 (3 text-ref, 0 via data table, 0 unref); first @295 ref:text, last @297 ref:text
+.rodata	00369368	00369460	snd_mngr	high	22 locals @732..@1680 (22 text-ref, 0 via data table, 0 unref, 1 jump tables); first @732 ref:text, last @1680 ref:text
+.rodata	00369460	00369b80	mainloop	high	107 locals @1212..@2085 (41 text-ref, 66 via data table, 0 unref, 2 jump tables); first @1212 ref:text, last @2085 ref:text
+.rodata	00369b80	00369e30	gamedata	high	41 locals @1018..@1501 (17 text-ref, 24 via data table, 0 unref, 1 jump tables); first @1018 ref:data-table, last @1501 ref:text
+.rodata	00369e30	00369fc8	sysmes	high	13 locals @482..@494 (13 text-ref, 0 via data table, 0 unref, 1 jump tables); first @482 ref:text, last @494 ref:text
+.rodata	00369fc8	0036a400	userdata	high	83 locals @896..@4442 (8 text-ref, 75 via data table, 0 unref, 1 jump tables); first @896 ref:data-table, last @4442 ref:text
+.rodata	0036a400	0036a530	editctrl	high	23 locals @962..@1767 (23 text-ref, 0 via data table, 0 unref, 1 jump tables); first @962 ref:text, last @1767 ref:text
+.rodata	0036a530	0036aa80	editdebug	high	68 locals @989..@1544 (34 text-ref, 34 via data table, 0 unref, 1 jump tables); first @989 ref:data-table, last @1544 ref:text
+.rodata	0036aa80	0036ae18	editloop	high	61 locals @1032..@2958 (61 text-ref, 0 via data table, 0 unref, 1 jump tables); first @1032 ref:text, last @2958 ref:text
+.rodata	0036ae18	0036af80	editmap	high	17 locals @346..@2082 (5 text-ref, 12 via data table, 0 unref); first @346 ref:data-table, last @2082 ref:data-table
+.rodata	0036af80	0036bca0	dng_object	high	109 locals @961..@1854 (5 text-ref, 104 via data table, 0 unref, 1 jump tables); first @961 ref:text, last @1854 ref:text
+.rodata	0036bca0	0036be80	dng_debug	high	27 locals @871..@1133 (15 text-ref, 12 via data table, 0 unref); first @871 ref:data-table, last @1133 ref:text
+.rodata	0036be80	0036bec0	dng_effect	high	3 locals @1107..@2882 (3 text-ref, 0 via data table, 0 unref, 1 jump tables); first @1107 ref:text, last @2882 ref:text
+.rodata	0036bec0	0036bec8	dng_hud	high	1 locals @1221..@1221 (1 text-ref, 0 via data table, 0 unref); first @1221 ref:text, last @1221 ref:text
+.rodata	0036bec8	0036c708	dng_main	high	120 locals @1016..@3803 (88 text-ref, 32 via data table, 0 unref); first @1016 ref:text, last @3803 ref:text
+.rodata	0036c708	0036d0c0	automap	high	297 locals @778..@2609 (13 text-ref, 284 via data table, 0 unref); first @778 ref:data-table, last @2609 ref:text
+.rodata	0036d0c0	0036d340	monster	high	27 locals @1200..@2809 (20 text-ref, 7 via data table, 0 unref); first @1200 ref:data-table, last @2809 ref:text
+.rodata	0036d340	0036d410	runscript_opcodes	high	9 locals @1728..@3079 (9 text-ref, 0 via data table, 0 unref); first @1728 ref:text, last @3079 ref:text
+.rodata	0036d410	0036d5f0	maintex	high	28 locals @792..@936 (28 text-ref, 0 via data table, 0 unref, 1 jump tables); first @792 ref:text, last @936 ref:text
+.rodata	0036d5f0	0036d980	charasetup	high	54 locals @868..@1304 (36 text-ref, 18 via data table, 0 unref); first @868 ref:text, last @1304 ref:data-table
+.rodata	0036d980	0036dc80	dngmenu	high	59 locals dng_light_circle..@3540 (47 text-ref, 11 via data table, 1 unref); first dng_light_circle ref:text, last @3540 ref:text
+.rodata	0036dc80	0036e358	editmenu	high	113 locals @990..@4368 (111 text-ref, 2 via data table, 0 unref, 1 jump tables); first @990 ref:text, last @4368 ref:text
+.rodata	0036e358	0036f140	inventmn	high	222 locals @1046..@5747 (196 text-ref, 26 via data table, 0 unref, 8 jump tables); first @1046 ref:text, last @5747 ref:text
+.rodata	0036f140	0036f780	menuaqua	high	96 locals @1323..@5500 (54 text-ref, 42 via data table, 0 unref, 6 jump tables); first @1323 ref:text, last @5500 ref:text
+.rodata	0036f780	0036f8b8	menucls1	high	28 locals @905..@1623 (8 text-ref, 20 via data table, 0 unref, 1 jump tables); first @905 ref:text, last @1623 ref:text
+.rodata	0036f8b8	0036fbd0	menudraw	high	36 locals @873..@4935 (25 text-ref, 11 via data table, 0 unref, 2 jump tables); first @873 ref:text, last @4935 ref:text
+.rodata	0036fbd0	00370098	menumain	high	63 locals @1028..@2450 (43 text-ref, 20 via data table, 0 unref, 1 jump tables); first @1028 ref:text, last @2450 ref:text
+.rodata	00370098	00371200	menusys	high	276 locals @919..@9216 (208 text-ref, 68 via data table, 0 unref, 18 jump tables); first @919 ref:data-table, last @9216 ref:text
+.rodata	00371200	003719f0	menucommon	high	169 locals @1162..@2567 (3 text-ref, 166 via data table, 0 unref); first @1162 ref:data-table, last @2567 ref:data-table
+.rodata	003719f0	00371a40	event	high	3 locals @819..@1002 (3 text-ref, 0 via data table, 0 unref); first @819 ref:text, last @1002 ref:text
+.rodata	00371a40	00371a70	sceneseq	high	2 locals @1527..@2863 (2 text-ref, 0 via data table, 0 unref, 1 jump tables); first @1527 ref:text, last @2863 ref:text
+.rodata	00371a70	00372320	event_func	high	108 locals @1080..@10101 (105 text-ref, 3 via data table, 0 unref, 16 jump tables); first @1080 ref:data-table, last @10101 ref:text
+.rodata	00372320	00372810	eventedit	high	58 locals @809..@1403 (50 text-ref, 8 via data table, 0 unref); first @809 ref:text, last @1403 ref:text
+.rodata	00372810	00372840	scene	high	3 locals @853..@1171 (3 text-ref, 0 via data table, 0 unref, 1 jump tables); first @853 ref:text, last @1171 ref:text
+.rodata	00372840	003728a0	sceneload	high	11 locals @885..@1118 (11 text-ref, 0 via data table, 0 unref); first @885 ref:text, last @1118 ref:text
+.rodata	00372ca0	00372ce0	visualmotion	high	part start; 2 locals @357..@358 (2 text-ref, 0 via data table, 0 unref); first @357 ref:text, last @358 ref:text
+.rodata	00372ce0	00372d80	ezbgm	high	5 locals @32..@54 (5 text-ref, 0 via data table, 0 unref); first @32 ref:text, last @54 ref:text
+.rodata	00372d80	00372f98	dng_event	high	30 locals @1274..@2529 (22 text-ref, 8 via data table, 0 unref); first @1274 ref:text, last @2529 ref:text
+.rodata	00372f98	00372fa0	eventsprite	high	1 locals @1069..@1069 (1 text-ref, 0 via data table, 0 unref); first @1069 ref:text, last @1069 ref:text
+.rodata	00372fa0	00373428	menushop	high	84 locals @1206..@2629 (61 text-ref, 23 via data table, 0 unref, 2 jump tables); first @1206 ref:data-table, last @2629 ref:text
+.rodata	00373428	00373628	movie	high	22 locals @318..@1270 (22 text-ref, 0 via data table, 0 unref); first @318 ref:text, last @1270 ref:text
+.rodata	00373628	00373650	editmapeffect	high	2 locals @358..@359 (2 text-ref, 0 via data table, 0 unref); first @358 ref:text, last @359 ref:text
+.rodata	00373650	003736a8	funcpoint	high	2 locals @475..@1118 (2 text-ref, 0 via data table, 0 unref, 2 jump tables); first @475 ref:text, last @1118 ref:text
+.rodata	003736a8	00373a18	title	high	46 locals @991..@2724 (43 text-ref, 3 via data table, 0 unref, 7 jump tables); first @991 ref:text, last @2724 ref:text
+.rodata	00373a18	00373bb0	editinfo	high	29 locals @368..@396 (0 text-ref, 29 via data table, 0 unref); first @368 ref:data-table, last @396 ref:data-table
+.rodata	00373bb0	00373cc0	scenesnd	high	12 locals @1011..@1766 (12 text-ref, 0 via data table, 0 unref); first @1011 ref:text, last @1766 ref:text
+.rodata	00373cc0	00373de0	editdata	high	15 locals @713..@1298 (6 text-ref, 9 via data table, 0 unref); first @713 ref:text, last @1298 ref:data-table
+.rodata	00373de0	00373ec0	menucapt	high	13 locals @852..@906 (5 text-ref, 8 via data table, 0 unref); first @852 ref:data-table, last @906 ref:text
+.rodata	00373ec0	00373f48	npccfg	high	8 locals @838..@901 (6 text-ref, 2 via data table, 0 unref); first @838 ref:text, last @901 ref:text
+.rodata	00373f48	003740c0	menumap	high	32 locals @970..@1938 (22 text-ref, 10 via data table, 0 unref); first @970 ref:data-table, last @1938 ref:text
+.rodata	003740c0	00375268	menuchr	high	297 locals @1078..@5893 (169 text-ref, 128 via data table, 0 unref, 2 jump tables); first @1078 ref:text, last @5893 ref:text
+.rodata	00375268	003759c0	menuop	high	134 locals @1023..@3207 (101 text-ref, 33 via data table, 0 unref, 2 jump tables); first @1023 ref:data-table, last @3207 ref:text
+.rodata	003759c0	00375a70	movieviewlp	high	13 locals @786..@1037 (12 text-ref, 1 via data table, 0 unref); first @786 ref:data-table, last @1037 ref:text
+.rodata	00375a70	00375ab8	sceneevent	high	4 locals @858..@1093 (4 text-ref, 0 via data table, 0 unref); first @858 ref:text, last @1093 ref:text
+.rodata	00375ab8	00375c88	scenevillager	high	26 locals @815..@1847 (17 text-ref, 9 via data table, 0 unref, 1 jump tables); first @815 ref:text, last @1847 ref:text
+.rodata	00375c88	00375cd0	pot	high	6 locals @1196..@1438 (6 text-ref, 0 via data table, 0 unref); first @1196 ref:text, last @1438 ref:text
+.rodata	00375cd0	00375cf0	villagermngr	high	1 locals @513..@513 (1 text-ref, 0 via data table, 0 unref, 1 jump tables); first @513 ref:text, last @513 ref:text
+.rodata	00375cf0	00375f10	actscript	high	33 locals @1118..@2005 (21 text-ref, 12 via data table, 0 unref, 1 jump tables); first @1118 ref:text, last @2005 ref:text
+.rodata	00375f10	00376140	mapselect	high	41 locals @792..@1471 (28 text-ref, 13 via data table, 0 unref); first @792 ref:data-table, last @1471 ref:text
+.rodata	00376140	003764d0	font	high	87 locals @812..@1543 (29 text-ref, 58 via data table, 0 unref, 1 jump tables); first @812 ref:text, last @1543 ref:text
+.rodata	003764d0	003765c8	gaiji	high	8 locals @258..@278 (8 text-ref, 0 via data table, 0 unref, 1 jump tables); first @258 ref:text, last @278 ref:text
+.rodata	003765c8	00377140	editmode	high	112 locals @1067..@2213 (21 text-ref, 91 via data table, 0 unref, 1 jump tables); first @1067 ref:text, last @2213 ref:text
+.rodata	00377140	003771c0	mapjump	high	10 locals @863..@1091 (10 text-ref, 0 via data table, 0 unref); first @863 ref:text, last @1091 ref:text
+.rodata	003771c0	00377680	effscript	high	29 locals @943..@3645 (29 text-ref, 0 via data table, 0 unref, 1 jump tables); first @943 ref:text, last @3645 ref:text
+.rodata	00377680	00377738	sphida	high	6 locals @940..@1221 (6 text-ref, 0 via data table, 0 unref, 3 jump tables); first @940 ref:text, last @1221 ref:text
+.rodata	00377738	00377788	editmap2	high	6 locals @1042..@1130 (6 text-ref, 0 via data table, 0 unref); first @1042 ref:text, last @1130 ref:text
+.rodata	00377788	003778c0	editevent	high	18 locals @888..@1211 (15 text-ref, 3 via data table, 0 unref, 2 jump tables); first @888 ref:text, last @1211 ref:text
+.rodata	003778c0	00377d08	memcard	high	34 locals @808..@2285 (22 text-ref, 12 via data table, 0 unref, 2 jump tables); first @808 ref:data-table, last @2285 ref:text
+.rodata	00377d08	00377d18	swordeffect	high	1 locals @356..@356 (1 text-ref, 0 via data table, 0 unref); first @356 ref:text, last @356 ref:text
+.rodata	00377d18	00377d30	savedata	high	1 locals @453..@453 (1 text-ref, 0 via data table, 0 unref); first @453 ref:text, last @453 ref:text
+.rodata	00377d30	00377d58	savedatadungeon	high	1 locals @79..@79 (1 text-ref, 0 via data table, 0 unref); first @79 ref:text, last @79 ref:text
+.rodata	00377d58	00377e28	editexception	high	12 locals @917..@1386 (12 text-ref, 0 via data table, 0 unref); first @917 ref:text, last @1386 ref:text
+.rodata	00377e28	00377f48	dngfloor	high	21 locals @882..@1469 (4 text-ref, 17 via data table, 0 unref, 1 jump tables); first @882 ref:data-table, last @1469 ref:data-table
+.rodata	00377f48	00377f58	editeff	high	1 locals @821..@821 (1 text-ref, 0 via data table, 0 unref); first @821 ref:text, last @821 ref:text
+.rodata	00377f58	003784c8	fishing	high	93 locals @832..@2674 (44 text-ref, 49 via data table, 0 unref, 2 jump tables); first @832 ref:data-table, last @2674 ref:data-table
+.rodata	003784c8	003784d0	subgame	high	1 locals @985..@985 (1 text-ref, 0 via data table, 0 unref); first @985 ref:text, last @985 ref:text
+.rodata	003784d0	003787d8	gyorace	high	38 locals @903..@1703 (20 text-ref, 18 via data table, 0 unref, 1 jump tables); first @903 ref:data-table, last @1703 ref:text
+.rodata	003787d8	00378860	nowload	high	9 locals @832..@1069 (9 text-ref, 0 via data table, 0 unref); first @832 ref:text, last @1069 ref:text
+.rodata	00378860	003788e0	nameregi	high	12 locals @892..@1748 (10 text-ref, 2 via data table, 0 unref); first @892 ref:data-table, last @1748 ref:text
+.rodata	003788e0	00378c20	photo	high	28 locals @793..@1055 (3 text-ref, 25 via data table, 0 unref); first @793 ref:data-table, last @1055 ref:text
+.rodata	00378c20	00378c78	fishingobj	high	10 locals @896..@1564 (10 text-ref, 0 via data table, 0 unref); first @896 ref:text, last @1564 ref:text
+.rodata	00378c78	00378ed0	pbuggy	high	40 locals @942..@1435 (40 text-ref, 0 via data table, 0 unref); first @942 ref:text, last @1435 ref:text
+.rodata	00378ed0	00378f50	editanalyze	high	3 locals @1618..@1633 (3 text-ref, 0 via data table, 0 unref, 1 jump tables); first @1618 ref:text, last @1633 ref:text
+.rodata	00378f50	00378f80	helpmes	high	2 locals @799..@800 (2 text-ref, 0 via data table, 0 unref); first @799 ref:text, last @800 ref:text
+.rodata	00378f80	00379108	vlgr_info	high	32 locals @214..@557 (11 text-ref, 21 via data table, 0 unref); first @214 ref:text, last @557 ref:text
+.rodata	00379108	00379128	quest	high	4 locals @878..@881 (0 text-ref, 4 via data table, 0 unref); first @878 ref:data-table, last @881 ref:data-table
+.rodata	00379128	00379330	mainloop3	high	27 locals @802..@953 (17 text-ref, 10 via data table, 0 unref); first @802 ref:data-table, last @953 ref:data-table
+.rodata	00379330	00379340	password	high	1 locals @211..@211 (1 text-ref, 0 via data table, 0 unref); first @211 ref:text, last @211 ref:text
+.rodata	00379340	00379360	gyoracesim	high	1 locals @1059..@1059 (1 text-ref, 0 via data table, 0 unref, 1 jump tables); first @1059 ref:text, last @1059 ref:text
+.rodata	00379360	00379680	convviewlp	high	27 locals @1016..@1169 (26 text-ref, 0 via data table, 1 unref); first @1016 ref:text, last @1169 ref:text; trailing zero pad 0x37961b-0x379680 (ALIGN 0x80) to last unit
+# NOTES
+# Method (scripts in ro2/: base.py resolve.py symrun.py build.py emit.py gaps.py verify.py): all 4403 symbols in game .rodata parts A (0x366cb0-0x3728a0) and B (0x372ca0-0x379680) are LOCAL (@N literals/jump tables, plus a few named statics such as dng_light_circle, dngfreemap_num); there are no global rodata symbols, so no gap-global ambiguity exists.
+# Each local's unit = unit (units.tsv text range) of the functions referencing it (HI16/LO16/GPREL16 resolved, 2532 locals directly text-referenced); 1868 locals are referenced only through a data table (e.g. string-pointer arrays in .data/.sdata), resolved via the table's referencing unit AND cross-checked against the symtab local run (locals between two anchors of the same unit); 0 conflicts. Jump tables: every R_MIPS_32 entry inside these ranges points into the owning unit's text (0 violations).
+# Every unit boundary is the address of the first local of the next unit; inter-symbol bytes are all zero padding (only non-symbol gap with size>=16 is the final pad 0x37961b-0x379680, given to convviewlp). No uncovered non-zero bytes.
+# Symtab-run edge locals (run index at a unit boundary, unit settled by referencer + address): @327 0x3675f0 -> map (referenced only by map's .sdata pointer CMapName 0x37c71c, itself used by map text at 0x15d924; it is map's first rodata symbol). Others of this kind lie strictly inside their unit's address range (mapinfo @364, character @284..@306, mapsky @386/@462/@463, mainloop @1828, gamedata @1020/@1040, userdata @1343/@1464, dng_object @1525, dng_main @3727, automap @810..@991, charasetup @1303, menucommon @2171).
+# Data-table locals referenced by two units through a shared table (owner by symtab run + address): @4975..@4980 0x36f648-0x36f680 -> menuaqua (table also used by menumap); @907..@916 0x36f790-0x36f7e0 -> menucls1 (table also used by userdata).
+# Unreferenced locals (owner by symtab run + address, interior so no boundary impact): @4634 0x367448 (nd_meswin), dngfreemap_num 0x36d990 (dngmenu), @1160 0x379550 (convviewlp).
+# Part B start: brief gives libgcc .rodata end = 0x372ca0 (out_lib_data.tsv: _umoddi3 ends 0x372ca0; next local @357 at 0x372ca0 is visualmotion). out_sections_data.tsv row 272 said 0x372ce0, which is wrong; 0x372ca0-0x372ce0 is visualmotion.
+# Verification: coverage 0x125d0 bytes exact, no gaps/overlaps; unit order strictly increasing (116 rows, 116 distinct units); all starts are symbol addresses or part starts; local-reference violations 0 (2532 locals checked), jump-table violations 0; no @N drop >50 inside any unit.
+# Uncertain boundaries: none.

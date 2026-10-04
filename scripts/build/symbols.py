@@ -4,10 +4,13 @@
     symbols.py            write ps2/config/<region>/main.symbols.txt
     symbols.py --check    fail if the checked-in list is out of date
 
-Retail names are kept, respelled only where the assembler could not take
-them: `,`, `<` and `>` become `_`, as does a `.` before a digit. A name the
-table holds more than once (MWCC's `@N` constants, file-local statics) takes
-a `__<n>` suffix from its second appearance on, in symbol-table order.
+Retail names are kept, respelled only where they could not be written as a C
+identifier, which is what tools/mwccgap needs of anything a source file
+names: `,`, `<`, `>`, `.` and `$` become `_`, and MWCC's `@<n>` constants
+become `at_<n>`. A name the table holds more than once (those constants,
+file-local statics) takes a `__<n>` suffix from its second appearance on, in
+symbol-table order. Where several symbols share an address only one is
+listed, so every address has one name.
 """
 
 import argparse
@@ -59,8 +62,9 @@ def read_symbols(path):
 
 
 def normalize(name):
-    name = name.replace(",", "_").replace("<", "_").replace(">", "_")
-    return re.sub(r"\.(?=[0-9])", "_", name)
+    if re.fullmatch(r"@\d+", name):
+        return "at_" + name[1:]
+    return re.sub(r"[,<>.$]", "_", name)
 
 
 def spelled(syms):
@@ -96,8 +100,17 @@ def attributes(sym):
 def symbol_list():
     syms, (lo, hi) = read_symbols(ELF_PATH)
     names = spelled(syms)
+    # One name per address: a function over an object over a bare label, a
+    # sized symbol over an unsized one, and otherwise the first in the table.
+    best = {}
+    for s in syms:
+        if not listed(s, lo, hi):
+            continue
+        rank = (s["type"] != STT_FUNC, s["type"] != STT_OBJECT, s["size"] == 0, s["idx"])
+        if s["value"] not in best or rank < best[s["value"]][0]:
+            best[s["value"]] = (rank, s)
     rows = sorted((s["value"], s["type"] != STT_FUNC, names[s["idx"]], attributes(s))
-                  for s in syms if listed(s, lo, hi))
+                  for _rank, s in best.values())
     return "\n".join(HEADER + [f"{n} = 0x{a:08x}; // {at}" for a, _t, n, at in rows]) + "\n"
 
 

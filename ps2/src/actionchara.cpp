@@ -1,0 +1,143 @@
+#include "common.h"
+
+// Code (.text)
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", ResetAccele__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", ResetAction__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", ResetScript__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", CheckRunEvent__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", SetMaskFlag__12CActionCharaFii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", EntryObject__12CActionCharaFPci);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", CalcCollision__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", EntryBodyCol__12CActionCharaFif);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", EntryDamage2__12CActionCharaFPcPcPcfPcffPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", EntryDamage2__12CActionCharaFP8mgCFrameP8mgCFramePcfPcffPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", AllDeleteDamage__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", GetSwEffectPtr__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", SetSoundInfoCopy__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", SetFadeFlag__12CActionCharaFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", SetFarDist__12CActionCharaFf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", SetNearDist__12CActionCharaFf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", GetCameraDist__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", Show__12CActionCharaFii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", GetShow__12CActionCharaFPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", CheckKeri__12CActionCharaFPci);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", CheckEnemyCatch__12CActionCharaFPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", ThrowItemObject__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", UsedItemAction__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", EntryThrowItem__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RemoveThrowItem__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", GetNowFrameWait__12CActionCharaFPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", GetNowFrame__12CActionCharaFPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", CheckMotionEnd__12CActionCharaFPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", GetMotionStatus__12CActionCharaFPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", GetWaitToFrame__12CActionCharaFPcfPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", SetMotion__12CActionCharaFii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", SetMotion__12CActionCharaFPcii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", ResetMotion__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", Draw__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", DrawDirect__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", DrawShadowDirect__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", DrawEffect__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", StepEffect__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", SearchChara__12CActionCharaFPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", SearchObject__12CActionCharaFPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", ResetParent__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", SetRef__12CActionCharaFP12CActionCharaPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", GetTargetDist__12CActionCharaFP6CScene);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RockOn_TargetSel__FP6CScenei);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", DistCheck_Action2__FP6CSceneffPfiPi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", Check_LockOn__FP6CScenefi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", CollisionCheck__12CActionCharaFPfPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RockOn__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", HumanMoveIF__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", HumanShrowMoveIF__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", HumanTameMoveIF__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", HumanGunMoveIF__12CActionCharaFPcPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RoboWalkMoveIF__12CActionCharaFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RoboTankMoveIF__12CActionCharaFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RoboBikeMoveIF__12CActionCharaFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RoboAirMoveIF__12CActionCharaFii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", MonsterMoveIF__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", GuardEffectSet__FP6CScenePf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", HitEffectSet__FP6CScenePf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", CheckAmuletAvoid__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", CheckEquipSetItem__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", CheckDamage__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", LoadActionFile__12CActionCharaFPciP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", InitScript__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", SetHold__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RunScript__12CActionCharaFP6CSceneP14RUN_SCRIPT_ENV);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", CheckReleaseTimming__12CActionCharaFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", StepParam__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", Step__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", ShadowStep__12CActionCharaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", Initialize__12CActionCharaFP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", Copy__12CActionCharaFR12CActionCharaP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", __as__11CCharacter2FRC11CCharacter2);
+
+// Initialised data (.data)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_1398);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2048);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2543);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2586);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2720);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2818);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2846);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_3289);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_3291);
+
+// Constants (.rodata)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_1325);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_1357);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_1358);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_1394);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_1427);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_1428);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2209);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2210);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2211);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2212);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2213);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2214);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2215);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2216);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2217);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2294);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2295);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2333);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2334);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2420);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2421);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2422);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2423);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2504);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2505);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2506);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2507);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2508);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2509);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2510);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2629);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2630);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2631);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2632);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2633);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2634);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2713);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2714);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_2840);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_3085);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_3262);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_3263);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", at_3389);
+
+// Virtual tables (.vtables)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/actionchara", __vt__12CActionChara);
+
+// Small uninitialised data (.sbss)
+unsigned char old_angle[0x4];
+unsigned char ang_3371[0x4];
+unsigned char init_3372[0x4];
+
+// Uninitialised data (.bss)
+unsigned char at_3107[0x10];

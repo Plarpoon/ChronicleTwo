@@ -1,0 +1,105 @@
+#section	start	end	tu_name	evidence
+.data	32a320	32a380	crt0	UNATTRIBUTED: 0x60 zero bytes at __data_start (after .vutext end), no symbol/reloc refers to them; crt0 or first MW obj padding - low confidence
+.data	32a380	32a390	lib/mwcc/New	_new_handler_func__3std(G, =default_new_handler) 0x32a380, __throws_bad_alloc__3std(G) 0x32a388
+.data	32a390	32a3a0	lib/mwcc/NMWException	thandler__3std(L,=dthandler) 0x32a390, uhandler__3std(L,=duhandler) 0x32a398 (symtab run 16-20)
+.data	32a3a0	32a3f0	lib/sce/libgraph	.data secsyms 38/44/94 (__ps2_libinfo__, gp.6, init_vif_regs.3, init_mp3.3)
+.data	32a3f0	32a4a0	lib/sce/libdma	secsym103 (__ps2_libinfo__,isclr,ststbl,stdtbl,mfdtbl; globals dch, sceDmaDebugMode, sceDmaCurrentEnv)
+.data	32a4a0	3344a0	lib/sce/libdev	secsym121 s_Pool (0xa000)
+.data	3344a0	3344d0	lib/sce/libvu0	secsym222 (S5432, init_vif_regs.126)
+.data	3344d0	3346c0	lib/sce/libmpeg	secsyms 246 (_rix,_ri0,_isDirty,_showCount), 278 (_strmap), 301 (_defIQM,_defNIQM; data-only obj or part of _defStopDMA obj)
+.data	3346c0	334740	lib/sce/libipu	secsym308 (__ps2_libinfo__, iqval, vqval) referenced by sceIpuInit obj
+.data	334740	334750	lib/sce/kernl/klib	secsym315 __ps2_klibinfo__ (unreferenced from klib; symtab-adjacent to klib .text idx316)
+.data	334750	334758	lib/sce/kernl/glue	secsym318 ttyinit, heap_ptr.30
+.data	334758	334f00	lib/sce/kernl/intr	secsym327 srcfile(0x740), eenull, SysEntry
+.data	334f00	334f08	lib/sce/kernl/thread	secsym339 topId
+.data	334f08	334f10	lib/sce/kernl/kprintf	secsym368 count,_putchar
+.data	334f10	334f18	lib/sce/kernl/sifcmd	secsym383 _cmd_init_check
+.data	334f18	334f20	lib/sce/kernl/sifrpc	secsym403 _sceSifInitCheck
+.data	334f20	334fb8	lib/sce/kernl/filestub	secsym426 _sceFs_q(G), _fs_* locals
+.data	334fb8	334fc0	lib/sce/kernl/iopheap	secsym452 _bind
+.data	334fc0	334fc8	lib/sce/kernl/eeloadfile	secsym464 _bind_check,_lfwildcard
+.data	334fc8	335608	lib/sce/kernl/tlbfunc	secsym484 tlbsrc, _kTLBRefillHandler(G), _kDebugHandler(G), SysEntry, kernelTLB, defaultTLB, extendTLB, TLBInfo(G)
+.data	335608	335620	lib/sce/kernl/initsys	secsym544 SysEntry, __sce_sema_id(G), __sce_eh_sema_id(G), _SyscallEntry(G)
+.data	335620	335de0	lib/sce/kernl/libosd	secsym555 osdsrc(0x7a8), SysExecPS2Entry(G)
+.data	335de0	335e40	lib/sce/sdr_main	secsyms 570 (__ps2_libinfo__, sceSd_gEnd_func) + 580 (_sce_sdr_* globals; 2nd libsdr object, data-only)
+.data	335e40	3378b8	lib/sce/eecdvd	secsyms 845/893 (cdvd locals + _sceCd_* globals, stm_status)
+.data	3378b8	337900	lib/sce/libpad	secsym908 (__ps2_libinfo__, isInit, isWarning, PadStateStr, ReqStateStr)
+.data	337900	337918	lib/sce/libmc	secsym927 (__ps2_libinfo__, mcRunCmdNo, semaidRegFunc)
+.data	337918	337c08	lib/libc/reent/impure	DATA-ONLY OBJECT (no .text): secsym1005 impure_data(0x2ec) + _impure_ptr(G) 0x337c04
+.data	337c08	337c20	lib/libc/locale/locale	secsym1011 __mb_cur_max(G), lc_ctype.3, last_lc_ctype.4
+.data	337c20	338080	lib/libc/stdlib/mallocr	secsym1028 __malloc_av_ .. __malloc_current_mallinfo (ends 0x338078, pad); next game local texflush_dma 0x338080
+.rodata	363580	3635b0	lib/mwcc/CPlusLib	@196 "std::exception", local __RTTI__Q23std9exception, @204 "exception" (symtab run 5-7); 0x363480-0x363580 is game .vudata/.dma/.vif (not lib)
+.rodata	3635b0	363630	lib/mwcc/New	@34,@43,@45,@44,@47, local RTTI exception/bad_alloc (run 8-15)
+.rodata	363630	363660	lib/mwcc/NMWException	@47 (2nd) "!std::exception!!std::bad_alloc!!" used by __nw__FUi
+.rodata	363660	363808	lib/mwcc/MWException	@408..@1073 (jump tables, bad_exception strings/RTTI), run 21-37
+.rodata	363808	363d30	lib/sce/libgraph	secsyms 49,65,78,82,89,95
+.rodata	363d30	363d48	lib/sce/libdma	secsym105
+.rodata	363d48	364d58	lib/sce/libdev	secsym134 sceFont8, CHA_DEV_FONT_PIECE_*, fontMask
+.rodata	364d58	365270	lib/sce/libmpeg	secsyms 255,269,279,285,294
+.rodata	365270	365298	lib/sce/kernl/thread	secsym340
+.rodata	365298	365310	lib/sce/kernl/tty	secsym356
+.rodata	365310	365470	lib/sce/kernl/kprintf	secsym370
+.rodata	365470	3654e0	lib/sce/kernl/filestub	secsym431
+.rodata	3654e0	3654f0	lib/sce/kernl/eeloadfile	secsym468
+.rodata	3654f0	365520	lib/sce/kernl/iopreset	secsym478
+.rodata	365520	3655a0	lib/sce/kernl/tlbfunc	secsym489
+.rodata	3655a0	3655c8	lib/sce/sdr_main	secsym574
+.rodata	3655c8	365678	lib/libm/math/e_atan2	secsym584
+.rodata	365678	365848	lib/libm/math/e_pow	secsym600
+.rodata	365848	365a98	lib/libm/math/e_rem_pio2	secsym630
+.rodata	365a98	365ab8	lib/libm/math/ef_atan2	secsym650
+.rodata	365ab8	365e78	lib/libm/math/ef_rem_pio2	secsym662
+.rodata	365e78	365ee0	lib/libm/math/k_cos	secsym682
+.rodata	365ee0	365f50	lib/libm/math/k_rem_pio2	secsym689
+.rodata	365f50	365fc0	lib/libm/math/k_sin	secsym704
+.rodata	365fc0	366010	lib/libm/math/kf_rem_pio2	secsym712
+.rodata	366010	366058	lib/libm/math/kf_tan	secsym725
+.rodata	366058	366108	lib/libm/math/s_atan	secsym732
+.rodata	366108	366118	lib/libm/math/s_floor	secsym753
+.rodata	366118	366120	lib/libm/common/s_infconst	DATA-ONLY OBJECT (no .text): secsym758 __infinity(G)
+.rodata	366120	366128	lib/libm/common/s_lib_ver	DATA-ONLY OBJECT (no .text): secsym765 __fdlib_version(G)
+.rodata	366128	366138	lib/libm/common/s_rint	secsym770 TWO52
+.rodata	366138	366168	lib/libm/common/s_scalbn	secsym776
+.rodata	366168	3661c0	lib/libm/math/sf_atan	secsym785
+.rodata	3661c0	3661c8	lib/libm/math/w_atan2	secsym818
+.rodata	3661c8	3661e8	lib/libm/math/w_pow	secsym822
+.rodata	3661e8	3661f8	lib/libm/math/w_sqrt	secsym826
+.rodata	3661f8	366200	lib/libm/math/wf_acos	secsym830
+.rodata	366200	366208	lib/libm/math/wf_atan2	secsym834
+.rodata	366208	366218	lib/libm/math/wf_sqrt	secsym838
+.rodata	366218	366510	lib/sce/eecdvd	secsyms 855,880,894
+.rodata	366510	366668	lib/sce/libpad	secsym914
+.rodata	366668	3666f0	lib/sce/libmc	secsym933
+.rodata	3666f0	366800	lib/libc/ctype/ctype_	DATA-ONLY OBJECT (no .text): secsym971 _ctype_(G, 0x101)
+.rodata	366800	366858	lib/libc/stdlib/dtoa	secsym973
+.rodata	366858	366860	lib/libc/reent/impure	secsym1006 (referenced only from impure_data)
+.rodata	366860	3668a8	lib/libc/locale/locale	secsym1013 lconv
+.rodata	3668a8	3669d0	lib/libc/stdlib/mprec	secsym1076 p05.27, __mprec_tens/bigtens/tinytens(G)
+.rodata	3669d0	366aa0	lib/libc/stdlib/strtod	secsym1185
+.rodata	366aa0	366cb0	lib/libc/stdio/vfprintf	secsym1196 blanks.12, zeroes.13, strings, switch jump table 0x366b40-0x366cac; next game rodata @497 at 0x366cb0
+.rodata	3728a0	3729a0	lib/libgcc/_divdi3	secsym7927 __clz_tab (OPEN-START: game rodata @1118 ends 0x3728a0)
+.rodata	3729a0	372aa0	lib/libgcc/_moddi3	secsym7941 __clz_tab
+.rodata	372aa0	372ba0	lib/libgcc/_udivdi3	secsym7949 __clz_tab
+.rodata	372ba0	372ca0	lib/libgcc/_umoddi3	secsym7954 __clz_tab; next game local @357 at 0x372ca0
+.bss	37eb00	37ec48	crt0	.bss secsym3 size 0x144 (_args); 0x37ec44-0x37ec48 pad
+.bss	37ec48	37ec50	lib/mwcc/global_destructor_chain	__global_destructor_chain(G) 4 bytes
+.bss	37ec50	37edc0	lib/sce/libdev	secsym142 s_Cons
+.bss	37edc0	37efc0	lib/sce/libmpeg	secsym263 _sprtagdata.24
+.bss	37efc0	37f7d0	lib/sce/kernl/thread	secsym344 stack.6, topSema, topArg
+.bss	37f7d0	37f800	lib/sce/kernl/deci2	secsym351 userarea
+.bss	37f800	37fbc0	lib/sce/kernl/tty	secsym363
+.bss	37fbc0	37fc40	lib/sce/kernl/kprintf	secsym377 linebuf
+.bss	37fc40	37fec0	lib/sce/kernl/sifcmd	secsym395
+.bss	37fec0	381700	lib/sce/kernl/sifrpc	secsym416
+.bss	381700	382ac0	lib/sce/kernl/filestub	secsym444
+.bss	382ac0	382c80	lib/sce/kernl/iopheap	secsym458
+.bss	382c80	382ec0	lib/sce/kernl/eeloadfile	secsym473
+.bss	382ec0	382f40	lib/sce/kernl/iopreset	secsym481
+.bss	382f40	384180	lib/sce/kernl/tlbtrap	secsym540 hstack, EER* register save area
+.bss	384180	384340	lib/sce/sdr_main	secsym577
+.bss	384340	384600	lib/sce/eecdvd	secsyms 872/899
+.bss	384600	3848c0	lib/sce/libpad	secsym922 (contains _gp=0x3846f0, irrelevant)
+.bss	3848c0	385ec0	lib/sce/libmc	secsym946; last local retval 0x385e80 (size unknown); end = next game local conv_work$1306 0x385ec0
+.bss	1f35080	1f35098	lib/libgcc/dp-bit	secsym7962 thenan.3
+.bss	1f35098	1f350c0	lib/libgcc/fp-bit	secsym7968 thenan.3 (true end ~0x1f350a8; next game local sbuff 0x1f350c0)
+.bss	1f649d0	1f649d4	lib/libc/errno/errno	common errno(G) at end of bss (same placement as DC1's lib/libc/errno/errno .bss)

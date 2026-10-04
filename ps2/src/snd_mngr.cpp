@@ -1,0 +1,161 @@
+#include "common.h"
+
+// Code (.text)
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", Create__11CLoopSeMngrFiP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", __ct__15SND_LOOP_SE_SEQFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", Initialize__11CLoopSeMngrFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", Clear__11CLoopSeMngrFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetLoopSe__11CLoopSeMngrFPiUii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", SeLoopPlayStop__11CLoopSeMngrFUiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", SeLoopPlayStop__11CLoopSeMngrFUiiiffi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", Step__11CLoopSeMngrFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", AllSeStop__11CLoopSeMngrFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndGetReverbDepth__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndCreateID__FUii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndGetSeNo__FUi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetPortInfo__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetSeSeq__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetEmptySeSeq__FPi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetPortNo__FUi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetBankNo__FUi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetBankInfo__FUi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetSeInfo__FUii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndInitMngr__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndWaitSema__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSignalSema__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndInitPort__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndInitSeSeq__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetReverb__Fiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndStopVoice__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", SetMasterVol__Fif);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", FadeMasterVol__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetMasterVol__Fif);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndGetMasterVol__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndMasterVolFadeInOut__Fiiff);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetPortVol__Fif);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndGetPortVol__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndTransBdState__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndWaitTransBd__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", CSndStep__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", CSndStepWait__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndStep__Ff);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndFlush__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", SeAllStop_Sub__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSeAllStop__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndGetSeDefVol__FUii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", IsBgmPort__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetCSndPortNo__FiPiPiPi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndLoadSound__FiPUiP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", __ct__13sndCSeSeqDataFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndDeletePort__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetPortBankNo__FUiPiPi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSePlay__FUiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSePlayV__FUiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSePlayVP__FUiiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSePlayVPf__FUiiffi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSePlayVf__FUiifi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSePause__FUii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndGetSeStatus__FUii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndPortSqPause__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndPortSqReplay__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSeCheck__FUii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSePlaySeID__FUiiiiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSeStop__FUiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetSeVol__FUiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetSePan__FUiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetSeVolf__FUiifi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetSePanf__FUiifi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetSePitch__FUiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetMicPos__FPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndGetVolPan__FPfPfPfff);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndGetVolPan__FPfPfPfPfff);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndVolLimit__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSePlayPrKr__FUiiiiiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSeStopPrKr__FUiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetSeVolPrKr__FUiiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetSePanPrKr__FUiiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetSePitchPrKr__FUiiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSePlayPBPrKr__Fiiiiiiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSeStopPBPrKr__Fiiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetSeVolPBPrKr__Fiiiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetSePanPBPrKr__Fiiiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetSePitchPBPrKr__Fiiiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSqPlay__Fiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSqStop__Fii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetSqVol__Fiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSqRePlay__Fii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetLine__FPPcPcPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", SearchSeq__11sndBankInfoFPcPi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", LoadSeInfoTxt__11sndPortInfoFiPciP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", __ct__9sndSeInfoFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", LoadVolInfoTxt__11sndPortInfoFiPci);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndStopSeSeq__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", PlaySeSeq__FUiP13sndCSeSeqDatai);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", StopSeSeq__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", SetVolSeSeq__Fii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndStreamOpenFast__FPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndStreamOpenState__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndStreamStandBy__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndStreamSetVol__Fff);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndStreamPlay__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndStreamPause__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndStreamRePlay__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndStreamGetState__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndStreamClose__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", __ct__9sndCSeSeqFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", __ct__11sndPortInfoFv);
+
+// Static initialiser (.init)
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", __sinit_snd_mngr_cpp);
+
+// Constants (.rodata)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_732__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_816__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_896);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_897);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_898);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_899);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_900);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1549);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1625);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1626);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1627);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1628);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1629);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1630);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1631);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1632);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1633);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1634);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1635);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1636);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1679);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1680);
+
+// Static initialiser table (.ctor)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", D_0037AFF4);
+
+// Small initialised data (.sdata)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", EnableSndMngr);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", snd_sema_id);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", MasterVol);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", MasterVolFade);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", snd_old_vsync);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1469);
+
+// Small uninitialised data (.sbss)
+unsigned char ReverbType[0x8];
+unsigned char ReverbDepthe[0x8];
+unsigned char init_snd[0x8];
+unsigned char feMasterVol[0x8];
+unsigned char fnowMasterVol[0x8];
+unsigned char fstpMasterVol[0x8];
+
+// Uninitialised data (.bss)
+unsigned char PortInfo[0x29C0];
+unsigned char SeSequencer[0x1600];
+unsigned char PortVolf[0x40];
+unsigned char MicPos[0x10];
+unsigned char MicDir[0x10];
+unsigned char at_1555[0x30];
+unsigned char at_1648[0x10];

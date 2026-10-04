@@ -1,0 +1,111 @@
+#include "common.h"
+
+// Code (.text)
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", GetHatena__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", GetMenuBigNum__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMenuBigNum2__FPci);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMenuBigNum__FPci);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", __ct__9CMenuFontFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MenuMesInit__FP6ClsMes);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", __ct__7CDC2MesFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMessData__7CDC2MesFPsPs);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MsgPreset__7CDC2MesFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MsgPreset__7CDC2MesFii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgCursor__7CDC2MesFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", AddMsgCursor2__7CDC2MesFiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", AddMsgCursor__7CDC2MesFiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", CommandMsgCursor__7CDC2MesFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", YesNoCursor__7CDC2MesFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", YesNoCursor2__7CDC2MesFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", GetMsgCursor__7CDC2MesFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", GetMsgItemNo__7CDC2MesFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetFontColor__7CDC2MesFiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetPutPos__7CDC2MesFiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetPutPos__7CDC2MesFPi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetAbsPos__7CDC2MesFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", GetStringDrawWidthDC__7CDC2MesFPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMovePosCenteringGyou__7CDC2MesFiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgItemNo__7CDC2MesFPii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgItemNo__7CDC2MesFPPci);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgVolumeNo__7CDC2MesFPii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgVolumeNo__7CDC2MesFPiPii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgVolumeNoOne__7CDC2MesFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgItemPos__7CDC2MesFPii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MakeMsg__7CDC2MesFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MakeMsg__7CDC2MesFPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MakeMsg__7CDC2MesFP13CGameDataUsed);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MakeMsg__7CDC2MesFP13CGameDataUsedP13CGameDataUsed);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", StepMsg__7CDC2MesFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", DrawMsg__7CDC2MesFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgAlpha__7CDC2MesFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", Initialize__13CMenuMoveItemFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", AttachForm__13CMenuMoveItemFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", CheckMove__13CMenuMoveItemFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMoveItemInfo__13CMenuMoveItemFP19MENU_ITEM_MOVE_INFOPiPi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", CheckRoboShieldKit__FP16CUserDataManagerP13CGameDataUsediPiPi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MenuUseItemCheckFunc__FP13CGameDataUsedP14CItemUseTargeti);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", CheckItemUseEnable__12CMenuItemUseFP13CGameDataUsediPv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", UseItem__12CMenuItemUseFP13CGameDataUsediPv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", UseItem__12CMenuItemUseFP13CGameDataUsedP14CItemUseTarget);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", Initialize__12CMenuItemUseFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", CheckNowStateUseThisItem__FP13CGameDataUsedP14CItemUseTarget);
+
+// Static initialiser (.init)
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", __sinit_menucls1_cpp);
+
+// Initialised data (.data)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", MenuBigNum);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", sn_944);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1415__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", st_bittable_1654);
+
+// Constants (.rodata)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_905__4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_906__4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_907__4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_908__4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_909__4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_910__4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_911__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_912__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_913__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_914__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_915__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_916__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_945__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_946__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_947__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_948__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_949__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_950__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_951__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_952__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_953__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_954__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1104__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1328);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1512__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1513__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1514__3);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1623__3);
+
+// Static initialiser table (.ctor)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", D_0037B028);
+
+// Small initialised data (.sdata)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucls1", at_1371__2);
+
+// Small uninitialised data (.sbss)
+unsigned char MenuHatena_894[0x4];
+unsigned char init_895[0x4];
+unsigned char MenuHatena_1byte_897[0x4];
+unsigned char init_898[0x4];
+unsigned char at_1433__2[0x4];
+unsigned char MenuUsedItemNo[0x4];
+unsigned char MenuUsedItemType[0x4];
+unsigned char MenuUsedNotErrorCode[0x4];
+unsigned char MenuUsedTarget[0x8];
+
+// Uninitialised data (.bss)
+unsigned char at_1407__2[0x10];
+unsigned char at_1436__3[0x18];

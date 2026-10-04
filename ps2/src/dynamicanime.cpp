@@ -1,0 +1,124 @@
+#include "common.h"
+
+// Code (.text)
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", BindPosition__FPfPfff);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", ResetPosition__13CDynamicAnimeFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Step__13CDynamicAnimeFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", CheckHit__12CDACollisionFPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetWind__13CDynamicAnimeFfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", ResetWind__13CDynamicAnimeFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetFloor__13CDynamicAnimeFf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", ResetFloor__13CDynamicAnimeFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", FramePose__13CDynamicAnimeFP8mgCFrameP13DA_FRAME_POSE);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", PreCollision__13CDynamicAnimeFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Initialize__13CDynamicAnimeFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", NewFrameTable__13CDynamicAnimeFiP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", NewVertexTable__13CDynamicAnimeFiP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", NewFixVertexTable__13CDynamicAnimeFiP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", NewDrawFrameTable__13CDynamicAnimeFiP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", NewBindVertexTable__13CDynamicAnimeFiP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", NewBoundingBoxTable__13CDynamicAnimeFiP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", NewCollisionTable__13CDynamicAnimeFiP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetFrame__13CDynamicAnimeFiP8mgCFrame);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", GetFrame__13CDynamicAnimeFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", pGetFramePose__13CDynamicAnimeFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", CheckVertexID__13CDynamicAnimeFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetInitVertex__13CDynamicAnimeFiPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", GetInitVertex__13CDynamicAnimeFiPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetNowVertex__13CDynamicAnimeFiPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetOldVertex__13CDynamicAnimeFiPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", pGetFixVertex__13CDynamicAnimeFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetDrawFrame__13CDynamicAnimeFii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", GetDrawFrame__13CDynamicAnimeFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", pGetBindVertex__13CDynamicAnimeFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", pGetBoundingBox__13CDynamicAnimeFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetCollision__13CDynamicAnimeFiP12CDACollision);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", DrawSub__13CDynamicAnimeFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Copy__13CDynamicAnimeFR13CDynamicAnimeP8mgCFrameP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFRAME_START__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFRAME__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFRAME_END__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynVERTEX_START__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynVERTEX__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynVERTEX_L__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynVERTEX_END__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFIX_VERTEX_START__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFixVertex__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFIX_VERTEX__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFIX_VERTEX_C__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFIX_VERTEX_S__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFIX_VERTEX_END__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", FRAME_POSE_Sub__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFRAME_POSE_L__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFRAME_POSE__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynDRAW_FRAME__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynBIND_VERTEX_START__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynBIND_VERTEX__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynBIND_VERTEX_END__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynBOUNDING_BOX_START__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynBOUNDING_BOX__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynBOUNDING_BOX_END__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynCOLLISION_START__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynCOLLISION__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Initialize__10CDAColPipeFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Initialize__12CDACollisionFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynCOLLISION_END__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynGRAVITY__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynK__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynWind__FP9SPI_STACKi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Load__13CDynamicAnimeFPciP8mgCFrameP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", CheckHit__10CDAColPipeFPf);
+
+// Initialised data (.data)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", dynmc_tag);
+
+// Constants (.rodata)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_816);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_817);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_818);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_819);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_820);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_821);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_822);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_823);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_824);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_825);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_826);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_827);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_828__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_829__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_830__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_831__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_832__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_833__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_834__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_835__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_836__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_837__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_838__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_839__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_840__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_841__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_842__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_855__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_976);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_977);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_978);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_979);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_1025);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", at_1074);
+
+// Virtual tables (.vtables)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", __vt__10CDAColPipe);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", __vt__12CDACollision);
+
+// Small uninitialised data (.sbss)
+unsigned char dynNowDA[0x4];
+unsigned char dynStack[0x4];
+unsigned char dynTopFrame[0x4];
+unsigned char dynFrameCount[0x4];
+unsigned char dynVertexCount[0x4];
+unsigned char dynFixVertexCount[0x4];
+unsigned char dynBindVertexCount[0x4];
+unsigned char dynBBoxCount[0x4];
+unsigned char dynColCount[0x4];

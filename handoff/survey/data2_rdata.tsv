@@ -1,0 +1,158 @@
+section	start	end	unit	confidence	evidence
+.init	379680	379690	mg_frame	high	__sinit_mg_frame.cpp size 0xc + 4 zero pad (ALIGN 16); .mwcats code record matches; ALIGN(0x80) section start
+.init	379690	3796c0	mg_tanime	high	__sinit_mg_tanime.cpp size 0x28 + 8 zero pad (ALIGN 16); .mwcats code record matches
+.init	3796c0	379790	mglib	high	__sinit_mglib.cpp size 0xc8 + 8 zero pad (ALIGN 16); .mwcats code record matches
+.init	379790	3797a0	nd_meswin	high	__sinit_nd_meswin.cpp size 0xc + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	3797a0	3797b0	dbg_font	high	__sinit_dbg_font.cpp size 0xc + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	3797b0	379810	snd_mngr	high	__sinit_snd_mngr.cpp size 0x54 + 12 zero pad (ALIGN 16); .mwcats code record matches
+.init	379810	379ba0	mainloop	high	__sinit_mainloop.cpp size 0x390; .mwcats code record matches
+.init	379ba0	379c40	gamedata	high	__sinit_gamedata.cpp size 0x94 + 12 zero pad (ALIGN 16); .mwcats code record matches
+.init	379c40	379c90	sysmes	high	__sinit_sysmes.cpp size 0x44 + 12 zero pad (ALIGN 16); .mwcats code record matches
+.init	379c90	379ca0	userdata	high	__sinit_userdata.cpp size 0xc + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	379ca0	379ce0	editctrl	high	__sinit_editctrl.cpp size 0x3c + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	379ce0	379f00	editloop	high	__sinit_editloop.cpp size 0x220; .mwcats code record matches
+.init	379f00	379f10	dng_debug	high	__sinit_dng_debug.cpp size 0xc + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	379f10	37a3e0	dng_main	high	__sinit_dng_main.cpp size 0x4d0; .mwcats code record matches
+.init	37a3e0	37a470	dngmenu	high	__sinit_dngmenu.cpp size 0x90; .mwcats code record matches
+.init	37a470	37a4d0	editmenu	high	__sinit_editmenu.cpp size 0x58 + 8 zero pad (ALIGN 16); .mwcats code record matches
+.init	37a4d0	37a520	inventmn	high	__sinit_inventmn.cpp size 0x44 + 12 zero pad (ALIGN 16); .mwcats code record matches
+.init	37a520	37a570	menuaqua	high	__sinit_menuaqua.cpp size 0x44 + 12 zero pad (ALIGN 16); .mwcats code record matches
+.init	37a570	37a580	menucls1	high	__sinit_menucls1.cpp size 0xc + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	37a580	37a6b0	menudraw	high	__sinit_menudraw.cpp size 0x12c + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	37a6b0	37a710	menumain	high	__sinit_menumain.cpp size 0x5c + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	37a710	37a7f0	menusys	high	__sinit_menusys.cpp size 0xe0; .mwcats code record matches
+.init	37a7f0	37a800	event	high	__sinit_event.cpp size 0xc + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	37a800	37aa30	event_func	high	__sinit_event_func.cpp size 0x228 + 8 zero pad (ALIGN 16); .mwcats code record matches
+.init	37aa30	37aa60	eventedit	high	__sinit_eventedit.cpp size 0x2c + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	37aa60	37aa70	dng_event	high	__sinit_dng_event.cpp size 0xc + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	37aa70	37aa80	menushop	high	__sinit_menushop.cpp size 0xc + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	37aa80	37ab00	title	high	__sinit_title.cpp size 0x74 + 12 zero pad (ALIGN 16); .mwcats code record matches
+.init	37ab00	37ab20	editdata	high	__sinit_editdata.cpp size 0x20; .mwcats code record matches
+.init	37ab20	37ab30	menucapt	high	__sinit_menucapt.cpp size 0xc + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	37ab30	37ab60	menumap	high	__sinit_menumap.cpp size 0x2c + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	37ab60	37ac00	menuchr	high	__sinit_menuchr.cpp size 0x94 + 12 zero pad (ALIGN 16); .mwcats code record matches
+.init	37ac00	37ac40	menuop	high	__sinit_menuop.cpp size 0x38 + 8 zero pad (ALIGN 16); .mwcats code record matches
+.init	37ac40	37ac70	movieviewlp	high	__sinit_movieviewlp.cpp size 0x2c + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	37ac70	37ac80	editmode	high	__sinit_editmode.cpp size 0xc + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	37ac80	37acb0	mapjump	high	__sinit_mapjump.cpp size 0x2c + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	37acb0	37acf0	editeff	high	__sinit_editeff.cpp size 0x40; .mwcats code record matches
+.init	37acf0	37ad70	fishing	high	__sinit_fishing.cpp size 0x74 + 12 zero pad (ALIGN 16); .mwcats code record matches
+.init	37ad70	37adb0	subgame	high	__sinit_subgame.cpp size 0x3c + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	37adb0	37adf0	gyorace	high	__sinit_gyorace.cpp size 0x40; .mwcats code record matches
+.init	37adf0	37ae20	nowload	high	__sinit_nowload.cpp size 0x28 + 8 zero pad (ALIGN 16); .mwcats code record matches
+.init	37ae20	37ae30	nameregi	high	__sinit_nameregi.cpp size 0xc + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	37ae30	37ae40	photo	high	__sinit_photo.cpp size 0xc + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	37ae40	37ae90	fishingobj	high	__sinit_fishingobj.cpp size 0x50; .mwcats code record matches
+.init	37ae90	37aee0	pbuggy	high	__sinit_pbuggy.cpp size 0x44 + 12 zero pad (ALIGN 16); .mwcats code record matches
+.init	37aee0	37af40	helpmes	high	__sinit_helpmes.cpp size 0x5c + 4 zero pad (ALIGN 16); .mwcats code record matches
+.init	37af40	37af60	vlgr_info	high	__sinit_vlgr_info.cpp size 0x20; .mwcats code record matches
+.init	37af60	37afb0	mainloop3	high	__sinit_mainloop3.cpp size 0x50; .mwcats code record matches
+.init	37afb0	37afe0	convviewlp	high	__sinit_convviewlp.cpp size 0x2c + 4 zero pad (ALIGN 16); .mwcats code record matches
+.ctor	37afe0	37afe4	mg_frame	high	.p__sinit_mg_frame.cpp = &__sinit_mg_frame.cpp (R_MIPS_32); __static_init=0x37afe0
+.ctor	37afe4	37afe8	mg_tanime	high	.p__sinit_mg_tanime.cpp = &__sinit_mg_tanime.cpp (R_MIPS_32)
+.ctor	37afe8	37afec	mglib	high	.p__sinit_mglib.cpp = &__sinit_mglib.cpp (R_MIPS_32)
+.ctor	37afec	37aff0	nd_meswin	high	.p__sinit_nd_meswin.cpp = &__sinit_nd_meswin.cpp (R_MIPS_32)
+.ctor	37aff0	37aff4	dbg_font	high	.p__sinit_dbg_font.cpp = &__sinit_dbg_font.cpp (R_MIPS_32)
+.ctor	37aff4	37aff8	snd_mngr	high	.p__sinit_snd_mngr.cpp = &__sinit_snd_mngr.cpp (R_MIPS_32)
+.ctor	37aff8	37affc	mainloop	high	.p__sinit_mainloop.cpp = &__sinit_mainloop.cpp (R_MIPS_32)
+.ctor	37affc	37b000	gamedata	high	.p__sinit_gamedata.cpp = &__sinit_gamedata.cpp (R_MIPS_32)
+.ctor	37b000	37b004	sysmes	high	.p__sinit_sysmes.cpp = &__sinit_sysmes.cpp (R_MIPS_32)
+.ctor	37b004	37b008	userdata	high	.p__sinit_userdata.cpp = &__sinit_userdata.cpp (R_MIPS_32)
+.ctor	37b008	37b00c	editctrl	high	.p__sinit_editctrl.cpp = &__sinit_editctrl.cpp (R_MIPS_32)
+.ctor	37b00c	37b010	editloop	high	.p__sinit_editloop.cpp = &__sinit_editloop.cpp (R_MIPS_32)
+.ctor	37b010	37b014	dng_debug	high	.p__sinit_dng_debug.cpp = &__sinit_dng_debug.cpp (R_MIPS_32)
+.ctor	37b014	37b018	dng_main	high	.p__sinit_dng_main.cpp = &__sinit_dng_main.cpp (R_MIPS_32)
+.ctor	37b018	37b01c	dngmenu	high	.p__sinit_dngmenu.cpp = &__sinit_dngmenu.cpp (R_MIPS_32)
+.ctor	37b01c	37b020	editmenu	high	.p__sinit_editmenu.cpp = &__sinit_editmenu.cpp (R_MIPS_32)
+.ctor	37b020	37b024	inventmn	high	.p__sinit_inventmn.cpp = &__sinit_inventmn.cpp (R_MIPS_32)
+.ctor	37b024	37b028	menuaqua	high	.p__sinit_menuaqua.cpp = &__sinit_menuaqua.cpp (R_MIPS_32)
+.ctor	37b028	37b02c	menucls1	high	.p__sinit_menucls1.cpp = &__sinit_menucls1.cpp (R_MIPS_32)
+.ctor	37b02c	37b030	menudraw	high	.p__sinit_menudraw.cpp = &__sinit_menudraw.cpp (R_MIPS_32)
+.ctor	37b030	37b034	menumain	high	.p__sinit_menumain.cpp = &__sinit_menumain.cpp (R_MIPS_32)
+.ctor	37b034	37b038	menusys	high	.p__sinit_menusys.cpp = &__sinit_menusys.cpp (R_MIPS_32)
+.ctor	37b038	37b03c	event	high	.p__sinit_event.cpp = &__sinit_event.cpp (R_MIPS_32)
+.ctor	37b03c	37b040	event_func	high	.p__sinit_event_func.cpp = &__sinit_event_func.cpp (R_MIPS_32)
+.ctor	37b040	37b044	eventedit	high	.p__sinit_eventedit.cpp = &__sinit_eventedit.cpp (R_MIPS_32)
+.ctor	37b044	37b048	dng_event	high	.p__sinit_dng_event.cpp = &__sinit_dng_event.cpp (R_MIPS_32)
+.ctor	37b048	37b04c	menushop	high	.p__sinit_menushop.cpp = &__sinit_menushop.cpp (R_MIPS_32)
+.ctor	37b04c	37b050	title	high	.p__sinit_title.cpp = &__sinit_title.cpp (R_MIPS_32)
+.ctor	37b050	37b054	editdata	high	.p__sinit_editdata.cpp = &__sinit_editdata.cpp (R_MIPS_32)
+.ctor	37b054	37b058	menucapt	high	.p__sinit_menucapt.cpp = &__sinit_menucapt.cpp (R_MIPS_32)
+.ctor	37b058	37b05c	menumap	high	.p__sinit_menumap.cpp = &__sinit_menumap.cpp (R_MIPS_32)
+.ctor	37b05c	37b060	menuchr	high	.p__sinit_menuchr.cpp = &__sinit_menuchr.cpp (R_MIPS_32)
+.ctor	37b060	37b064	menuop	high	.p__sinit_menuop.cpp = &__sinit_menuop.cpp (R_MIPS_32)
+.ctor	37b064	37b068	movieviewlp	high	.p__sinit_movieviewlp.cpp = &__sinit_movieviewlp.cpp (R_MIPS_32)
+.ctor	37b068	37b06c	editmode	high	.p__sinit_editmode.cpp = &__sinit_editmode.cpp (R_MIPS_32)
+.ctor	37b06c	37b070	mapjump	high	.p__sinit_mapjump.cpp = &__sinit_mapjump.cpp (R_MIPS_32)
+.ctor	37b070	37b074	editeff	high	.p__sinit_editeff.cpp = &__sinit_editeff.cpp (R_MIPS_32)
+.ctor	37b074	37b078	fishing	high	.p__sinit_fishing.cpp = &__sinit_fishing.cpp (R_MIPS_32)
+.ctor	37b078	37b07c	subgame	high	.p__sinit_subgame.cpp = &__sinit_subgame.cpp (R_MIPS_32)
+.ctor	37b07c	37b080	gyorace	high	.p__sinit_gyorace.cpp = &__sinit_gyorace.cpp (R_MIPS_32)
+.ctor	37b080	37b084	nowload	high	.p__sinit_nowload.cpp = &__sinit_nowload.cpp (R_MIPS_32)
+.ctor	37b084	37b088	nameregi	high	.p__sinit_nameregi.cpp = &__sinit_nameregi.cpp (R_MIPS_32)
+.ctor	37b088	37b08c	photo	high	.p__sinit_photo.cpp = &__sinit_photo.cpp (R_MIPS_32)
+.ctor	37b08c	37b090	fishingobj	high	.p__sinit_fishingobj.cpp = &__sinit_fishingobj.cpp (R_MIPS_32)
+.ctor	37b090	37b094	pbuggy	high	.p__sinit_pbuggy.cpp = &__sinit_pbuggy.cpp (R_MIPS_32)
+.ctor	37b094	37b098	helpmes	high	.p__sinit_helpmes.cpp = &__sinit_helpmes.cpp (R_MIPS_32)
+.ctor	37b098	37b09c	vlgr_info	high	.p__sinit_vlgr_info.cpp = &__sinit_vlgr_info.cpp (R_MIPS_32)
+.ctor	37b09c	37b0a0	mainloop3	high	.p__sinit_mainloop3.cpp = &__sinit_mainloop3.cpp (R_MIPS_32)
+.ctor	37b0a0	37b0b0	convviewlp	high	.p__sinit_convviewlp.cpp = &__sinit_convviewlp.cpp (R_MIPS_32); __static_init_end=0x37b0a4, then 12 zero bytes pad to ALIGN(16) vtable start
+.vtable	37b0b0	37b0c0	lib/mwcc/CPlusLib	high	Q23std9exception | weak vt; entry->local __RTTI__Q23std9exception (symtab idx 7, CPlusLib run 5-7) + weak __dt__Q23std9exceptionFv in CPlusLib; first referrer CPlusLib (also New, MWException)
+.vtable	37b0c0	37b0d0	lib/mwcc/New	high	Q23std9bad_alloc | weak vt; entry->local __RTTI__Q23std9bad_alloc idx 14 (New run 8-15); dtor/default_new_handler in New; also __nw__FUi (NMWException)
+.vtable	37b0d0	37b0e0	lib/mwcc/MWException	high	Q23std13bad_exception | weak vt; entry->local __RTTI__Q23std13bad_exception idx 26 (MWException run 21-37); refs __dt__/__unexpected only in MWException
+.vtable	37b0e0	37b130	mg_camera	high	15mgCCameraFollow, 9mgCCamera | global vts; all own methods + ctors in mg_camera
+.vtable	37b130	37b1c0	mg_dataset	high	15mgCShadowFixMDT, 9mgCVisual | weak vts; only/first referrer CreateFrameVisual (mg_dataset); weak inline method copies emitted in mg_dataset
+.vtable	37b1c0	37b290	mg_frame	high	8mgCFrame, 12mgCFrameBase, 9mgCObject | mgCFrame/mgCObject key fns + ctors in mg_frame; weak mgCFrameBase referenced only by mgCFrame ctor
+.vtable	37b290	37b2e0	mg_shadow	high	12mgCShadowMDT | key fns CreateRenderInfoPacket/CreatePacket/CreateFace/DataAssignMDT__12mgCShadowMDT in mg_shadow
+.vtable	37b2e0	37b358	mg_sprite	high	9mgCSprite, 11mgC3DSprite | Draw/Initialize/CreatePacket__9mgCSprite and mgC3DSprite methods in mg_sprite
+.vtable	37b358	37b370	mg_tanime	high	24CList<15mgCTexAnimeData> | weak CList vt referenced only by NewTexAnimeData (mg_tanime)
+.vtable	37b370	37b450	mg_visual	high	13mgCVisualPrim, 15mgCVisualFixMDT, 12mgCVisualMDT | mgCVisualPrim/FixMDT/MDT non-inline methods in mg_visual
+.vtable	37b450	37b510	collision	high	9CColFrame, 13CCollisionMDT, 10CCollision | CColFrame/CCollisionMDT/CCollision methods + ctors in collision
+.vtable	37b510	37b608	map	high	4CMap, 18CList<P9CMapParts>, 23CList<14PartsGroupData>, 9CMapWater | CMap methods (19); weak CLists referenced only by map; Initialize__9CMapWaterFv in map
+.vtable	37b608	37b630	mapload	high	17CList<9CMapPiece>, 17CList<9CMapParts> | weak CList<CMapPiece>/<CMapParts> first/only referenced by mapload
+.vtable	37b630	37b7c8	mapparts	high	15CMapTreasureBox, 17CList<9CObjAnime>, 9CMapParts | Initialize__15CMapTreasureBoxFv (key fn; ctor is in map), CMapParts methods, weak CList<CObjAnime> ref only mapparts
+.vtable	37b7c8	37b860	mdslist	high	8CMdsInfo, 9CMapPiece | CMdsInfo method; Initialize__9CMapPieceFv in mdslist
+.vtable	37b860	37b960	object	high	12CObjectFrame, 7CObject | CObjectFrame/CObject methods in object
+.vtable	37b960	37ba80	actionchara	high	12CActionChara | CActionChara methods (22) in actionchara
+.vtable	37ba80	37bb80	character	high	11CCharacter2 | CCharacter2 methods (28) in character
+.vtable	37bb80	37bba0	dynamicanime	high	10CDAColPipe, 12CDACollision | CDAColPipe method + weak CDACollision, referenced only by dynamicanime
+.vtable	37bba0	37bc38	water	high	11CWaterFrame, 6CWater | CWaterFrame/CWater methods + ctors in water
+.vtable	37bc38	37bc50	wavetable	high	10CWaveTable | CWaveTable method + refs in wavetable
+.vtable	37bc50	37bce0	editmap	high	14CEditCollision, 8CEditMap | weak CEditCollision referenced only by editmap; CEditMap key fn DrawSub__8CEditMapFi in editmap (other methods in editmapeffect, editinfo, editmap2)
+.vtable	37bce0	37bd70	editparts	high	10CEditParts | CEditParts methods (6) in editparts
+.vtable	37bd70	37be00	dng_hud	high	12CLockOnModel | CLockOnModel methods in dng_hud (vt referenced by __sinit_dng_main)
+.vtable	37be00	37be40	dng_main	high	12CTreasureBox | weak CTreasureBox vt referenced only by dng_main (one weak entry copy in dng_debug)
+.vtable	37be40	37bf70	monster	high	14CActiveMonster | CActiveMonster own methods (3) in monster
+.vtable	37bf70	37bf90	dngmenu	high	12CMenuTreeMap | CMenuTreeMap method + ref in dngmenu
+.vtable	37bf90	37bfd0	editmenu	high	12CRemovalMenu, 12CMenuGeorama | weak CRemovalMenu ref only editmenu; CMenuGeorama methods in editmenu
+.vtable	37bfd0	37bff0	inventmn	high	11CMenuInvent | CMenuInvent methods in inventmn
+.vtable	37bff0	37c1f0	menuaqua	high	9CFishFood, 9CAquaFish | CFishFood/CAquaFish methods + ctors in menuaqua
+.vtable	37c1f0	37c250	menusys	high	11CItemSelect, 13CMenuItemInfo, 14CBaseMenuClass | CMenuItemInfo methods in menusys; weak CItemSelect/CBaseMenuClass referenced only by menusys
+.vtable	37c250	37c260	scene	high	6CScene | Initialize__6CSceneFv in scene (vt referenced by __sinit_mainloop, menuchr)
+.vtable	37c260	37c2b0	visualmotion	high	18mgCVisualMotionMDT | mgCVisualMotionMDT methods in visualmotion
+.vtable	37c2b0	37c440	dng_event	high	9CGeoStone, 13CRedMarkModel | Initialize__9CGeoStoneFv + CRedMarkModel methods in dng_event
+.vtable	37c440	37c480	menushop	high	14CMenuQuestView, 9CShopMenu | CMenuQuestView/CShopMenu methods + refs in menushop
+.vtable	37c480	37c4a0	funcpoint	high	14CFuncPointMngr, 19CList<10CFuncPoint> | CFuncPointMngr method; weak CList<CFuncPoint> referenced only by funcpoint
+.vtable	37c4a0	37c4c0	menumap	high	13CWorldMapMenu | weak CWorldMapMenu referenced only by menumap
+.vtable	37c4c0	37c540	menuchr	high	12CMosBookMenu, 15CMenuCostumeSel, 14CMenuMosSelect, 15CMenuChrCngMenu | CMosBookMenu method in menuchr; weak CMenuCostumeSel/MosSelect/ChrCngMenu referenced only by menuchr
+.vtable	37c540	37c5a0	menuop	high	14CSaveMenuClass, 11CMenuOption, 11CManualMenu | weak CSaveMenuClass/CMenuOption/CManualMenu referenced only by menuop
+.vtable	37c5a0	37c5d0	cameracontrol	high	14CCameraControl | CCameraControl methods + ref in cameracontrol
+.vtable	37c5d0	37c6d0	editeff	high	12CPaintEffect, 11CStarEffect | CPaintEffect/CStarEffect methods + ctors in editeff
+.vtable	37c6d0	37c6f0	nameregi	high	13CNameRegiMenu | weak CNameRegiMenu referenced only by nameregi
+.rdata	37c6f0	37c700	convviewlp	low	_overlay_group_addresses (=__exception_table_start__/end__, empty exception table) word 0x00100000 with no reloc, __data_end=0x37c6f4, 12 zero bytes pad to .sdata ALIGN(0x80); linker-generated, owned by no unit (DC1 put it in a data-only literals.cpp); attributed to the last unit only to keep coverage
+# NOTES
+# Monotone order is checked per section (.init, .ctor, .vtable, .rdata each restart in unit order). Verified: full coverage 0x379680-0x37c700, no gaps or overlaps, every start is a symbol address, all units are in units.tsv, 0 local-symbol violations (49 local refs: .p__sinit_X -> __sinit_X; 470 local refs made by the sinit functions all fall inside their own unit's symtab run; the 3 runtime vtables point at local __RTTI__ in the assigned lib unit's rodata run).
+# .init: the 49 __sinit_<unit>.cpp map 1:1 by name onto units.tsv, in strictly increasing unit order. Each starts on a 16-byte boundary (ALIGN 16 per function/unit); the zero pad after each one goes to its own unit. The first starts at 0x379680, which is the ALIGN(0x80) after .rodata. No other symbols and no non-zero bytes exist outside the functions. The .mwcats code records cover exactly these 49 functions with matching sizes (14 have flags&1, a tail j).
+# .ctor: 49 x 4-byte .p__sinit_<unit>.cpp, R_MIPS_32 to the sinit, in the same order. __static_init=0x37afe0 and __static_init_end=0x37b0a4 are linker-defined (no symtab-referenced reloc). mwInit (0x100190) loads them with absolute lui/addiu and passes them with a2=a3=0x37c6f0 to __initialize_cpp_rts. The pad 0x37b0a4-0x37b0b0 (12 zero bytes, ALIGN 16) goes to convviewlp.
+# .vtable: alignment is per object: 16 if size >= 0x10, 8 for the 0xc-byte CList/CMdsInfo/CWaveTable/CScene/CFuncPointMngr vtables. Every pad is the minimum the next object needs, so padding gives no unit-boundary information. All pad bytes are zero.
+# .vtable owner rule, consistent for all 75: a global vtable sits in the unit that holds the class's non-inline (key) virtual. A weak (bind 13) vtable sits in the lowest-index unit that references the symbol. No exceptions.
+# Classes whose methods span several units, or whose ctor sits in another unit:
+#   CEditMap: editmap (DrawSub, PreDraw, GetPoly, Step, Iam, Initialize), editmapeffect (DrawEffect, DrawFireEffect, DrawFireRaster, AnimeStep), editinfo (GetEvent), editmap2 (InScreenFunc, DrawScreenFunc, GetSeSrcVolPan). The vtable goes to editmap, because it must lie between editmap's CEditCollision and editparts.
+#   CMapTreasureBox: ctor in map(160), key fn Initialize in mapparts(163). The vtable lies after mapload's CLists, so it is mapparts. mapinfo(162) is the only other candidate and has no evidence.
+#   CMapPiece: Initialize in mdslist(164), the rest is inherited from object. Candidates mdslist or object. mdslist is chosen by the key-fn rule.
+#   mgCSprite: own methods in mg_sprite, one inherited from mg_visual. mgCShadowMDT: own methods in mg_shadow, the rest inherited from mg_visual.
+#   CScene: key fn in scene(221). The vtable is referenced from __sinit_mainloop(181) and menuchr. Candidates range from menusys(215) to visualmotion(234).
+#   CLockOnModel (dng_hud) and CGeoStone (dng_event) are referenced only from __sinit_dng_main.
+#   CTreasureBox (weak): one weak entry copy is in dng_debug(197), but dng_debug cannot own it because it comes before dng_hud. dng_main is the only referrer.
+# Section names: the ELF has one PROGBITS section `main`, so no output-section names survive. The symbol evidence (.p__sinit_* naming, the __static_init/_end bracket, __exception_table_start__/end__ == _overlay_group_addresses) and .mwcats covering the sinits as code match DC1's LCF arrangement: *(.rodata); ALIGN(0x80); <unit>.o(.init)...; __static_init=.; <unit>.o(.ctor)...; __static_init_end=.; ALIGN(16); <unit>.o(.vtables)...; then the overlay table (DC1: literals.cpp.o(.rdata)) and *(.exception)/EXCEPTION. DC1's splat config uses one `{type: rdata, name: rdata}` segment for the whole range, and splat_config.py names the table words RO_<addr>.
+# 0x37c6f0 (.rdata): _overlay_group_addresses is one word, 0x00100000, with no reloc. The exception table is empty here. __data_end=0x37c6f4, followed by 12 zero bytes up to .sdata at 0x37c700 (ALIGN 0x80). No literal pool exists. The word is linker-generated or comes from a data-only object; no unit references it. It is assigned to convviewlp only to keep coverage complete. Alternative: a DC1-style data-only `literals` pseudo-unit.

@@ -1,0 +1,2 @@
+O4p	-O4,p -Cpp_exceptions off -RTTI off
+O3p	-O3,p -Cpp_exceptions off -RTTI off

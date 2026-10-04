@@ -29,9 +29,9 @@ options:
   data_string_guesser_level: 0
   find_file_boundaries: False
 
-  # A constant belongs to the function that uses it and travels with
-  # it; what no function claims keeps a marker of its own.
-  migrate_rodata_to_functions: True
+  # Every datum is a marker of its own in the unit's source, constants
+  # included, so none travels inside a function's file.
+  migrate_rodata_to_functions: False
   # Every reference file has to assemble on its own, so each carries
   # macro.inc; including it twice is harmless.
   generated_s_preamble: ".include \"macro.inc\""
@@ -52,8 +52,9 @@ options:
 
 segments:
   # Units are in link order. crt0, the Metrowerks runtime (lib/mwcc) and the
-  # SDK, libc, libm and libgcc objects (lib/...) come from libraries; the
-  # rest is the game, compiled by MWCC. A game unit named by a
+  # SDK, libc, libm and libgcc objects (lib/...) come from libraries and are
+  # linked from their split assembly (`asmtu`); the rest is the game, compiled
+  # by MWCC from ps2/src (`cpp`). A game unit named by a
   # `__sinit_<name>.cpp` symbol carries that name; the others are named for
   # what they hold.
   #
@@ -207,89 +208,89 @@ segments:
       - {start: 0x2c170, type: asmtu, name: lib/libc/stdio/vsprintf}
       - {start: 0x2c1c8, type: asmtu, name: lib/libc/reent/writer}
       - {start: 0x2c228, type: asmtu, name: lib/libc/stdio/wsetup}
-      - {start: 0x2c340, type: asmtu, name: mg_texture}
-      - {start: 0x2f8c0, type: asmtu, name: mg_math}
-      - {start: 0x31810, type: asmtu, name: mg_camera}
-      - {start: 0x32260, type: asmtu, name: mg_dataset}
-      - {start: 0x34aa0, type: asmtu, name: mg_drawprim}
-      - {start: 0x361e0, type: asmtu, name: mg_frame}
-      - {start: 0x38f60, type: asmtu, name: mg_drawenv}
-      - {start: 0x39fa0, type: asmtu, name: mg_memory}
-      - {start: 0x3a600, type: asmtu, name: mg_shadow}
-      - {start: 0x3b360, type: asmtu, name: mg_sprite}
-      - {start: 0x3c3c0, type: asmtu, name: mg_tanime}
-      - {start: 0x3eaa0, type: asmtu, name: mg_visual}
-      - {start: 0x418d0, type: asmtu, name: mglib}
-      - {start: 0x46750, type: asmtu, name: scriptinterpreter}
-      - {start: 0x47910, type: asmtu, name: collision}
-      - {start: 0x48b10, type: asmtu, name: dataread}
-      - {start: 0x4a6d0, type: asmtu, name: gamepad}
-      - {start: 0x4bd80, type: asmtu, name: gameutil}
-      - {start: 0x51990, type: asmtu, name: nd_meswin}
-      - {start: 0x5d4f0, type: asmtu, name: main}
-      - {start: 0x5d8b0, type: asmtu, name: map}
-      - {start: 0x62100, type: asmtu, name: mapload}
-      - {start: 0x662d0, type: asmtu, name: mapinfo}
-      - {start: 0x676e0, type: asmtu, name: mapparts}
-      - {start: 0x699b0, type: asmtu, name: mdslist}
-      - {start: 0x6ae80, type: asmtu, name: object}
-      - {start: 0x6b5d0, type: asmtu, name: actionchara}
-      - {start: 0x74270, type: asmtu, name: character}
-      - {start: 0x7ac50, type: asmtu, name: dynamicanime}
-      - {start: 0x7d700, type: asmtu, name: outline}
-      - {start: 0x7e300, type: asmtu, name: effectlist}
-      - {start: 0x7f7e0, type: asmtu, name: screeneffect}
-      - {start: 0x80a60, type: asmtu, name: effect}
-      - {start: 0x84770, type: asmtu, name: mapsky}
-      - {start: 0x85790, type: asmtu, name: water}
-      - {start: 0x87520, type: asmtu, name: dbg_font}
-      - {start: 0x88110, type: asmtu, name: runscript}
-      - {start: 0x89eb0, type: asmtu, name: sound}
-      - {start: 0x8c7f0, type: asmtu, name: ezmidi}
-      - {start: 0x8c9f0, type: asmtu, name: snd_seseq}
-      - {start: 0x8daa0, type: asmtu, name: snd_mngr}
-      - {start: 0x91e70, type: asmtu, name: mainloop}
-      - {start: 0x95a80, type: asmtu, name: gamedata}
-      - {start: 0x97c20, type: asmtu, name: sysmes}
-      - {start: 0x98180, type: asmtu, name: userdata}
-      - {start: 0xa34e0, type: asmtu, name: charaviewlp}
-      - {start: 0xa3510, type: asmtu, name: texviewlp}
-      - {start: 0xa3540, type: asmtu, name: mapviewlp}
-      - {start: 0xa3570, type: asmtu, name: wavetable}
-      - {start: 0xa40d0, type: asmtu, name: editcoll}
-      - {start: 0xa5540, type: asmtu, name: editctrl}
-      - {start: 0xa8d00, type: asmtu, name: editdebug}
-      - {start: 0xaaf70, type: asmtu, name: editloop}
-      - {start: 0xb1750, type: asmtu, name: editmap}
-      - {start: 0xb6a00, type: asmtu, name: editparts}
-      - {start: 0xb7480, type: asmtu, name: dng_object}
-      - {start: 0xbb0c0, type: asmtu, name: colprim}
-      - {start: 0xbbe90, type: asmtu, name: dng_debug}
-      - {start: 0xbcf40, type: asmtu, name: dng_status}
-      - {start: 0xbfac0, type: asmtu, name: dng_effect}
-      - {start: 0xca790, type: asmtu, name: dng_hud}
-      - {start: 0xcd1b0, type: asmtu, name: dng_main}
-      - {start: 0xd5de0, type: asmtu, name: automap}
-      - {start: 0xdafe0, type: asmtu, name: monster}
-      - {start: 0xe1b30, type: asmtu, name: runscript_opcodes}
-      - {start: 0xe92e0, type: asmtu, name: prespr}
-      - {start: 0xe9600, type: asmtu, name: maintex}
-      - {start: 0xea3c0, type: asmtu, name: charasetup}
-      - {start: 0xebcf0, type: asmtu, name: dngmenu}
-      - {start: 0xf3df0, type: asmtu, name: editmenu}
-      - {start: 0xff960, type: asmtu, name: inventmn}
-      - {start: 0x10e4e0, type: asmtu, name: menuaqua}
-      - {start: 0x11eb50, type: asmtu, name: menucls1}
-      - {start: 0x121570, type: asmtu, name: menudraw}
-      - {start: 0x134d00, type: asmtu, name: menumain}
-      - {start: 0x1394f0, type: asmtu, name: menusys}
-      - {start: 0x152d70, type: asmtu, name: menucommon}
-      - {start: 0x157770, type: asmtu, name: event}
-      - {start: 0x158460, type: asmtu, name: sceneseq}
-      - {start: 0x160970, type: asmtu, name: event_func}
-      - {start: 0x181b30, type: asmtu, name: eventedit}
-      - {start: 0x185130, type: asmtu, name: scene}
-      - {start: 0x1889f0, type: asmtu, name: sceneload}
+      - {start: 0x2c340, type: cpp, name: mg_texture}
+      - {start: 0x2f8c0, type: cpp, name: mg_math}
+      - {start: 0x31810, type: cpp, name: mg_camera}
+      - {start: 0x32260, type: cpp, name: mg_dataset}
+      - {start: 0x34aa0, type: cpp, name: mg_drawprim}
+      - {start: 0x361e0, type: cpp, name: mg_frame}
+      - {start: 0x38f60, type: cpp, name: mg_drawenv}
+      - {start: 0x39fa0, type: cpp, name: mg_memory}
+      - {start: 0x3a600, type: cpp, name: mg_shadow}
+      - {start: 0x3b360, type: cpp, name: mg_sprite}
+      - {start: 0x3c3c0, type: cpp, name: mg_tanime}
+      - {start: 0x3eaa0, type: cpp, name: mg_visual}
+      - {start: 0x418d0, type: cpp, name: mglib}
+      - {start: 0x46750, type: cpp, name: scriptinterpreter}
+      - {start: 0x47910, type: cpp, name: collision}
+      - {start: 0x48b10, type: cpp, name: dataread}
+      - {start: 0x4a6d0, type: cpp, name: gamepad}
+      - {start: 0x4bd80, type: cpp, name: gameutil}
+      - {start: 0x51990, type: cpp, name: nd_meswin}
+      - {start: 0x5d4f0, type: cpp, name: main}
+      - {start: 0x5d8b0, type: cpp, name: map}
+      - {start: 0x62100, type: cpp, name: mapload}
+      - {start: 0x662d0, type: cpp, name: mapinfo}
+      - {start: 0x676e0, type: cpp, name: mapparts}
+      - {start: 0x699b0, type: cpp, name: mdslist}
+      - {start: 0x6ae80, type: cpp, name: object}
+      - {start: 0x6b5d0, type: cpp, name: actionchara}
+      - {start: 0x74270, type: cpp, name: character}
+      - {start: 0x7ac50, type: cpp, name: dynamicanime}
+      - {start: 0x7d700, type: cpp, name: outline}
+      - {start: 0x7e300, type: cpp, name: effectlist}
+      - {start: 0x7f7e0, type: cpp, name: screeneffect}
+      - {start: 0x80a60, type: cpp, name: effect}
+      - {start: 0x84770, type: cpp, name: mapsky}
+      - {start: 0x85790, type: cpp, name: water}
+      - {start: 0x87520, type: cpp, name: dbg_font}
+      - {start: 0x88110, type: cpp, name: runscript}
+      - {start: 0x89eb0, type: cpp, name: sound}
+      - {start: 0x8c7f0, type: cpp, name: ezmidi}
+      - {start: 0x8c9f0, type: cpp, name: snd_seseq}
+      - {start: 0x8daa0, type: cpp, name: snd_mngr}
+      - {start: 0x91e70, type: cpp, name: mainloop}
+      - {start: 0x95a80, type: cpp, name: gamedata}
+      - {start: 0x97c20, type: cpp, name: sysmes}
+      - {start: 0x98180, type: cpp, name: userdata}
+      - {start: 0xa34e0, type: cpp, name: charaviewlp}
+      - {start: 0xa3510, type: cpp, name: texviewlp}
+      - {start: 0xa3540, type: cpp, name: mapviewlp}
+      - {start: 0xa3570, type: cpp, name: wavetable}
+      - {start: 0xa40d0, type: cpp, name: editcoll}
+      - {start: 0xa5540, type: cpp, name: editctrl}
+      - {start: 0xa8d00, type: cpp, name: editdebug}
+      - {start: 0xaaf70, type: cpp, name: editloop}
+      - {start: 0xb1750, type: cpp, name: editmap}
+      - {start: 0xb6a00, type: cpp, name: editparts}
+      - {start: 0xb7480, type: cpp, name: dng_object}
+      - {start: 0xbb0c0, type: cpp, name: colprim}
+      - {start: 0xbbe90, type: cpp, name: dng_debug}
+      - {start: 0xbcf40, type: cpp, name: dng_status}
+      - {start: 0xbfac0, type: cpp, name: dng_effect}
+      - {start: 0xca790, type: cpp, name: dng_hud}
+      - {start: 0xcd1b0, type: cpp, name: dng_main}
+      - {start: 0xd5de0, type: cpp, name: automap}
+      - {start: 0xdafe0, type: cpp, name: monster}
+      - {start: 0xe1b30, type: cpp, name: runscript_opcodes}
+      - {start: 0xe92e0, type: cpp, name: prespr}
+      - {start: 0xe9600, type: cpp, name: maintex}
+      - {start: 0xea3c0, type: cpp, name: charasetup}
+      - {start: 0xebcf0, type: cpp, name: dngmenu}
+      - {start: 0xf3df0, type: cpp, name: editmenu}
+      - {start: 0xff960, type: cpp, name: inventmn}
+      - {start: 0x10e4e0, type: cpp, name: menuaqua}
+      - {start: 0x11eb50, type: cpp, name: menucls1}
+      - {start: 0x121570, type: cpp, name: menudraw}
+      - {start: 0x134d00, type: cpp, name: menumain}
+      - {start: 0x1394f0, type: cpp, name: menusys}
+      - {start: 0x152d70, type: cpp, name: menucommon}
+      - {start: 0x157770, type: cpp, name: event}
+      - {start: 0x158460, type: cpp, name: sceneseq}
+      - {start: 0x160970, type: cpp, name: event_func}
+      - {start: 0x181b30, type: cpp, name: eventedit}
+      - {start: 0x185130, type: cpp, name: scene}
+      - {start: 0x1889f0, type: cpp, name: sceneload}
       - {start: 0x189ec8, type: asmtu, name: lib/libgcc/_divdi3}
       - {start: 0x18a5b8, type: asmtu, name: lib/libgcc/_fixdfdi}
       - {start: 0x18a618, type: asmtu, name: lib/libgcc/_fixunsdfdi}
@@ -300,72 +301,72 @@ segments:
       - {start: 0x18b438, type: asmtu, name: lib/libgcc/_umoddi3}
       - {start: 0x18b978, type: asmtu, name: lib/libgcc/dp-bit}
       - {start: 0x18c670, type: asmtu, name: lib/libgcc/fp-bit}
-      - {start: 0x18d250, type: asmtu, name: filesocket}
-      - {start: 0x18d270, type: asmtu, name: visualmotion}
-      - {start: 0x18ebd0, type: asmtu, name: ezbgm}
-      - {start: 0x18ee10, type: asmtu, name: dng_event}
-      - {start: 0x193f40, type: asmtu, name: eventsprite}
-      - {start: 0x1951e0, type: asmtu, name: menushop}
-      - {start: 0x19a650, type: asmtu, name: editriver}
-      - {start: 0x19c4f0, type: asmtu, name: movie}
-      - {start: 0x19fe70, type: asmtu, name: editmapeffect}
-      - {start: 0x1a0330, type: asmtu, name: funcpoint}
-      - {start: 0x1a2ef0, type: asmtu, name: title}
-      - {start: 0x1a92f0, type: asmtu, name: sndviewlp}
-      - {start: 0x1a9320, type: asmtu, name: editinfo}
-      - {start: 0x1aa070, type: asmtu, name: scenesnd}
-      - {start: 0x1acd50, type: asmtu, name: editdata}
-      - {start: 0x1aef90, type: asmtu, name: menucapt}
-      - {start: 0x1af630, type: asmtu, name: npccfg}
-      - {start: 0x1afae0, type: asmtu, name: menumap}
-      - {start: 0x1b4270, type: asmtu, name: menuchr}
-      - {start: 0x1c42e0, type: asmtu, name: menuop}
-      - {start: 0x1cb7b0, type: asmtu, name: movieviewlp}
-      - {start: 0x1cc3e0, type: asmtu, name: sceneevent}
-      - {start: 0x1cd410, type: asmtu, name: scenevillager}
-      - {start: 0x1d06f0, type: asmtu, name: pot}
-      - {start: 0x1d1ad0, type: asmtu, name: villagermngr}
-      - {start: 0x1d27a0, type: asmtu, name: actscript}
-      - {start: 0x1d6c80, type: asmtu, name: mapselect}
-      - {start: 0x1d8b20, type: asmtu, name: font}
-      - {start: 0x1daf10, type: asmtu, name: occlusion}
-      - {start: 0x1db230, type: asmtu, name: drawwin}
-      - {start: 0x1dd650, type: asmtu, name: gaiji}
-      - {start: 0x1dd7c0, type: asmtu, name: editmode}
-      - {start: 0x1e2e60, type: asmtu, name: intersection}
-      - {start: 0x1e3c90, type: asmtu, name: mapjump}
-      - {start: 0x1e4e60, type: asmtu, name: effscript}
-      - {start: 0x1ede50, type: asmtu, name: sphida}
-      - {start: 0x1f0ed0, type: asmtu, name: cameracontrol}
-      - {start: 0x1f2460, type: asmtu, name: padcontrol}
-      - {start: 0x1f2770, type: asmtu, name: editmap2}
-      - {start: 0x1f4a30, type: asmtu, name: editevent}
-      - {start: 0x1f6350, type: asmtu, name: menusystemdata}
-      - {start: 0x1f6410, type: asmtu, name: memcard}
-      - {start: 0x1fa5b0, type: asmtu, name: swordeffect}
-      - {start: 0x1fb2e0, type: asmtu, name: savedata}
-      - {start: 0x1fc320, type: asmtu, name: savedatadungeon}
-      - {start: 0x1fc570, type: asmtu, name: editexception}
-      - {start: 0x1fddf0, type: asmtu, name: dngfloor}
-      - {start: 0x1ffb60, type: asmtu, name: editeff}
-      - {start: 0x201670, type: asmtu, name: fishing}
-      - {start: 0x209040, type: asmtu, name: subgame}
-      - {start: 0x209a80, type: asmtu, name: gyorace}
-      - {start: 0x20e640, type: asmtu, name: nowload}
-      - {start: 0x20f910, type: asmtu, name: nameregi}
-      - {start: 0x213900, type: asmtu, name: photo}
-      - {start: 0x214e30, type: asmtu, name: fishingobj}
-      - {start: 0x218bf0, type: asmtu, name: pbuggy}
-      - {start: 0x21be50, type: asmtu, name: editanalyze}
-      - {start: 0x21e390, type: asmtu, name: helpmes}
-      - {start: 0x21eb50, type: asmtu, name: vlgr_info}
-      - {start: 0x21fc50, type: asmtu, name: quest}
-      - {start: 0x220110, type: asmtu, name: mainloop3}
-      - {start: 0x220d00, type: asmtu, name: hddinstall}
-      - {start: 0x220dc0, type: asmtu, name: password}
-      - {start: 0x2218d0, type: asmtu, name: crandom}
-      - {start: 0x221c10, type: asmtu, name: gyoracesim}
-      - {start: 0x224b40, type: asmtu, name: convviewlp}
+      - {start: 0x18d250, type: cpp, name: filesocket}
+      - {start: 0x18d270, type: cpp, name: visualmotion}
+      - {start: 0x18ebd0, type: cpp, name: ezbgm}
+      - {start: 0x18ee10, type: cpp, name: dng_event}
+      - {start: 0x193f40, type: cpp, name: eventsprite}
+      - {start: 0x1951e0, type: cpp, name: menushop}
+      - {start: 0x19a650, type: cpp, name: editriver}
+      - {start: 0x19c4f0, type: cpp, name: movie}
+      - {start: 0x19fe70, type: cpp, name: editmapeffect}
+      - {start: 0x1a0330, type: cpp, name: funcpoint}
+      - {start: 0x1a2ef0, type: cpp, name: title}
+      - {start: 0x1a92f0, type: cpp, name: sndviewlp}
+      - {start: 0x1a9320, type: cpp, name: editinfo}
+      - {start: 0x1aa070, type: cpp, name: scenesnd}
+      - {start: 0x1acd50, type: cpp, name: editdata}
+      - {start: 0x1aef90, type: cpp, name: menucapt}
+      - {start: 0x1af630, type: cpp, name: npccfg}
+      - {start: 0x1afae0, type: cpp, name: menumap}
+      - {start: 0x1b4270, type: cpp, name: menuchr}
+      - {start: 0x1c42e0, type: cpp, name: menuop}
+      - {start: 0x1cb7b0, type: cpp, name: movieviewlp}
+      - {start: 0x1cc3e0, type: cpp, name: sceneevent}
+      - {start: 0x1cd410, type: cpp, name: scenevillager}
+      - {start: 0x1d06f0, type: cpp, name: pot}
+      - {start: 0x1d1ad0, type: cpp, name: villagermngr}
+      - {start: 0x1d27a0, type: cpp, name: actscript}
+      - {start: 0x1d6c80, type: cpp, name: mapselect}
+      - {start: 0x1d8b20, type: cpp, name: font}
+      - {start: 0x1daf10, type: cpp, name: occlusion}
+      - {start: 0x1db230, type: cpp, name: drawwin}
+      - {start: 0x1dd650, type: cpp, name: gaiji}
+      - {start: 0x1dd7c0, type: cpp, name: editmode}
+      - {start: 0x1e2e60, type: cpp, name: intersection}
+      - {start: 0x1e3c90, type: cpp, name: mapjump}
+      - {start: 0x1e4e60, type: cpp, name: effscript}
+      - {start: 0x1ede50, type: cpp, name: sphida}
+      - {start: 0x1f0ed0, type: cpp, name: cameracontrol}
+      - {start: 0x1f2460, type: cpp, name: padcontrol}
+      - {start: 0x1f2770, type: cpp, name: editmap2}
+      - {start: 0x1f4a30, type: cpp, name: editevent}
+      - {start: 0x1f6350, type: cpp, name: menusystemdata}
+      - {start: 0x1f6410, type: cpp, name: memcard}
+      - {start: 0x1fa5b0, type: cpp, name: swordeffect}
+      - {start: 0x1fb2e0, type: cpp, name: savedata}
+      - {start: 0x1fc320, type: cpp, name: savedatadungeon}
+      - {start: 0x1fc570, type: cpp, name: editexception}
+      - {start: 0x1fddf0, type: cpp, name: dngfloor}
+      - {start: 0x1ffb60, type: cpp, name: editeff}
+      - {start: 0x201670, type: cpp, name: fishing}
+      - {start: 0x209040, type: cpp, name: subgame}
+      - {start: 0x209a80, type: cpp, name: gyorace}
+      - {start: 0x20e640, type: cpp, name: nowload}
+      - {start: 0x20f910, type: cpp, name: nameregi}
+      - {start: 0x213900, type: cpp, name: photo}
+      - {start: 0x214e30, type: cpp, name: fishingobj}
+      - {start: 0x218bf0, type: cpp, name: pbuggy}
+      - {start: 0x21be50, type: cpp, name: editanalyze}
+      - {start: 0x21e390, type: cpp, name: helpmes}
+      - {start: 0x21eb50, type: cpp, name: vlgr_info}
+      - {start: 0x21fc50, type: cpp, name: quest}
+      - {start: 0x220110, type: cpp, name: mainloop3}
+      - {start: 0x220d00, type: cpp, name: hddinstall}
+      - {start: 0x220dc0, type: cpp, name: password}
+      - {start: 0x2218d0, type: cpp, name: crandom}
+      - {start: 0x221c10, type: cpp, name: gyoracesim}
+      - {start: 0x224b40, type: cpp, name: convviewlp}
       - {start: 0x225d00, type: data, name: vutext, dir: main, linker_section: .vutext}
       - {start: 0x22a3a0, type: .data, name: crt0}
       - {start: 0x22a400, type: .data, name: lib/mwcc/New}

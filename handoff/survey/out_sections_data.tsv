@@ -1,0 +1,671 @@
+section	start	end	tu_hint	evidence
+.vutext	00325c80	00326350	vu-object(_$INIT_DATA)	symtab run 1413-1441, 28 locals in sec; ; no local funcs
+.vutext	00326350	00326cc0	vu-object(_$INIT_DATA)	symtab run 1442-1482, 40 locals in sec; ; no local funcs
+.vutext	00326cc0	00326cc0	vu-object(.dma.13)	symtab run 1483-1483, 1 locals in sec; ; no local funcs
+.vutext	00326cc0	00326f90	vu-object(_$main)	symtab run 1484-1507, 14 locals in sec; ; no local funcs
+.vutext	00326f90	00329fd0	vu-object(_$NXclipscis_str)	symtab run 1508-1733, 225 locals in sec; ; no local funcs
+.vutext	00329fd0	0032a320	vu-object(_$INIT_DATA)	symtab run 1910-1928, 18 locals in sec; ; no local funcs
+.data	0032a320	0032a390	(unattributed head)	2 globals
+.data	0032a390	0032a3a0	mwcc-runtime(tu@100950)	symtab run 17-20, 2 locals in sec; first local fn duhandler__3stdFv; text-locals 100950-10099c; AMBIGUOUS START: 2 global obj(s) between prev local end 32a320 and 32a390 (_new_handler_func__3std,__throws_bad_alloc__3std)
+.data	0032a3a0	0032a3c0	lib/sce/libgraph[obj@102630]	gcc .data SECTION sym #38; reloc from text obj@102630 (dc1:sceGsResetGraph)
+.data	0032a3c0	0032a3e0	lib/sce/libgraph[obj@1027d0]	gcc .data SECTION sym #44; reloc from text obj@1027d0 (dc1:sceGsResetPath)
+.data	0032a3e0	0032a3f0	lib/sce/libgraph[obj@103b58]	gcc .data SECTION sym #94; reloc from text obj@103b58 (dc1:sceGsExecStoreImage)
+.data	0032a3f0	0032a4a0	lib/sce/libdma[obj@104288]	gcc .data SECTION sym #103; reloc from text obj@104288 (dc1:sceDmaGetChan)
+.data	0032a4a0	003344a0	obj@104d58(sceDevFontDefault)	gcc .data SECTION sym #121; reloc from text obj@104d58 (nodc1)
+.data	003344a0	003344d0	lib/sce/libvu0[obj@106d00]	gcc .data SECTION sym #222; reloc from text obj@106d00 (dc1:sceVu0ApplyMatrix)
+.data	003344d0	00334578	obj@107a50(_motionComp0)	gcc .data SECTION sym #246; reloc from text obj@107a50 (nodc1)
+.data	00334578	00334640	obj@10d080(_type2id)	gcc .data SECTION sym #278; reloc from text obj@10d080 (nodc1)
+.data	00334640	003346c0	lib/sce/libmpeg?:defIQM-data (data-only object)	gcc SECTION sym #301; _defIQM/_defNIQM, no reloc from code to section sym; data-only GCC object
+.data	003346c0	00334740	obj@10f850(setD4_CHCR)	gcc .data SECTION sym #308; reloc from text obj@10f850 (nodc1)
+.data	00334740	00334750	lib/sce/kernl/klib	gcc SECTION sym #315; __ps2_klibinfo__; data-only object (DC1 klib likewise .data only)
+.data	00334750	00334758	lib/sce/kernl/glue[obj@1103a0]	gcc .data SECTION sym #318; reloc from text obj@1103a0 (dc1:sceResetttyinit)
+.data	00334758	00334f00	lib/sce/kernl/intr[obj@1109f0]	gcc .data SECTION sym #327; reloc from text obj@1109f0 (dc1:DisableIntc)
+.data	00334f00	00334f08	lib/sce/kernl/thread[obj@110d60]	gcc .data SECTION sym #339; reloc from text obj@110d60 (dc1:InitThread)
+.data	00334f08	00334f10	lib/sce/kernl/kprintf[obj@1117c0]	gcc .data SECTION sym #368; reloc from text obj@1117c0 (dc1:_printf)
+.data	00334f10	00334f18	lib/sce/kernl/sifcmd[obj@112138]	gcc .data SECTION sym #383; reloc from text obj@112138 (dc1:sceSifGetSreg)
+.data	00334f18	00334f20	lib/sce/kernl/sifrpc[obj@112880]	gcc .data SECTION sym #403; reloc from text obj@112880 (dc1:sceSifInitRpc)
+.data	00334f20	00334fb8	lib/sce/kernl/filestub[obj@1137e0]	gcc .data SECTION sym #426; reloc from text obj@1137e0 (dc1:sceFsInit)
+.data	00334fb8	00334fc0	lib/sce/kernl/iopheap[obj@116e78]	gcc .data SECTION sym #452; reloc from text obj@116e78 (dc1:sceSifInitIopHeap)
+.data	00334fc0	00334fc8	lib/sce/kernl/eeloadfile[obj@117178]	gcc .data SECTION sym #464; reloc from text obj@117178 (dc1:sceSifLoadFileReset)
+.data	00334fc8	00335608	obj@118188(SetTLBHandler)	gcc .data SECTION sym #484; reloc from text obj@118188 (nodc1)
+.data	00335608	00335620	obj@118a80(supplement_crt0)	gcc .data SECTION sym #544; reloc from text obj@118a80 (nodc1)
+.data	00335620	00335de0	obj@118bc0(setup)	gcc .data SECTION sym #555; reloc from text obj@118bc0 (nodc1)
+.data	00335de0	00335df8	lib/sce/sdr_main[obj@118e50]	gcc .data SECTION sym #570; reloc from text obj@118e50 (dc1:sceSdRemoteInit)
+.data	00335df8	00335e40	lib/sce/sdr data-only object (sdr_main companion)	gcc SECTION sym #580; _sce_sdr_gDMA0CB.. globals used by sceSdRemote; second .data SECTION in sdr range, so a separate data-only object
+.data	00335e40	003378b0	lib/sce/eecdvd[obj@11f258]	gcc .data SECTION sym #845; reloc from text obj@11f258 (dc1:sceCdDelayThread)
+.data	003378b0	003378b8	lib/sce/eecdvd[obj@120970]	gcc .data SECTION sym #893; reloc from text obj@120970 (dc1:sceCdStInit)
+.data	003378b8	00337900	lib/sce/libpad[obj@120e50]	gcc .data SECTION sym #908; reloc from text obj@120e50 (dc1:scePadInit)
+.data	00337900	00337918	lib/sce/libmc[obj@1221e8]	gcc .data SECTION sym #927; reloc from text obj@1221e8 (dc1:sceMcInit)
+.data	00337918	00337c08	lib/libc/reent/impure	gcc SECTION sym #1005; impure_data/_impure_ptr; data-only object
+.data	00337c08	00337c20	lib/libc/locale/locale	gcc SECTION sym #1011; __mb_cur_max, lc_ctype.3, last_lc_ctype.4: statics of locale.c (its .rodata lconv owned via reloc)
+.data	00337c20	00338080	lib/libc/stdlib/mallocr[obj@126318]	gcc .data SECTION sym #1028; reloc from text obj@126318 (dc1:_malloc_r)
+.data	00338080	00338230	tu@12c2c0	symtab run 1214-1232, 4 locals in sec; first local fn GetZBufVram__FPi; text-locals 12c2c0-12f83c; AMBIGUOUS START: 7 global obj(s) between prev local end 337c20 and 338080 (__malloc_av_,__malloc_trim_threshold,__malloc_top_pad...)
+.data	00338230	00338240	mg_frame	symtab run 1255-1267, 1 locals in sec @307..@307; sinit; text-locals 136220-137d44
+.data	00338240	00338260	anon(symtab 1272-1273)	symtab run 1272-1273, 2 locals in sec @243..@243; first local fn -; no local funcs
+.data	00338260	003382b0	anon(symtab 1276-1281)	symtab run 1276-1281, 5 locals in sec @298..@324; first local fn -; no local funcs
+.data	003382b0	00338320	mg_tanime	symtab run 1282-1322, 1 locals in sec; sinit; text-locals 13dfd0-13ea00
+.data	00338320	00338440	tu@13ebf0	symtab run 1323-1350, 14 locals in sec @769..@769; first local fn SetPointLight__FPUiPA4_fPA4_f; text-locals 13ebf0-141700
+.data	00338440	00338490	mglib	symtab run 1351-1405, 4 locals in sec @1389..@1538; sinit; text-locals 141870-146614
+.data	00338490	00338710	tu@148cb0	symtab run 1736-1782, 2 locals in sec; first local fn SearchFile__FPc; text-locals 148cb0-14a044
+.data	00338710	00338920	nd_meswin	symtab run 1823-1893, 6 locals in sec @3748..@4185; sinit; no local funcs; AMBIGUOUS START: 1 global obj(s) between prev local end 338690 and 338710 (p)
+.data	00338920	00338c80	tu@163080	symtab run 1940-2118, 3 locals in sec @438..@438; first local fn mapDummy__FP9SPI_STACKi; text-locals 163080-1661dc; AMBIGUOUS START: 1 global obj(s) between prev local end 338890 and 338920 (waku_data)
+.data	00338c80	00338d60	tu@1664a0	symtab run 2119-2183, 2 locals in sec; first local fn mapIMG__FP9SPI_STACKi; text-locals 1664a0-167280
+.data	00338d60	00338d70	anon(symtab 2184-2184)	symtab run 2184-2184, 1 locals in sec @244..@244; first local fn -; no local funcs
+.data	00338d70	00338da0	tu@16a7a0	symtab run 2185-2207, 1 locals in sec; first local fn pcpMDS__FP9SPI_STACKi; text-locals 16a7a0-16adfc
+.data	00338da0	00338e70	tu@16d2f0	symtab run 2208-2270, 9 locals in sec @1398..@3291; first local fn RockOn_TargetSel__FP6CScenei; text-locals 16d2f0-171b34
+.data	00338e70	00338ff0	tu@176a60	symtab run 2271-2394, 3 locals in sec @1575..@1575; first local fn ScanInfoFile__FP11CCharacter2PUiPcP9mgCMemoryP9mgCMemoryP9mgCMemoryiP11CCharacter2i; text-locals 176a60-179e94
+.data	00338ff0	003390d0	tu@17abd0	symtab run 2395-2468, 1 locals in sec; first local fn BindPosition__FPfPfff; text-locals 17abd0-17d338
+.data	003390d0	003390e0	tu@17dd30	symtab run 2469-2478, 1 locals in sec @338..@338; first local fn DrawDivSprite__FP11mgCDrawPrim9mgRect<i>P10mgCTexturePiiiii; text-locals 17dd30-17e280
+.data	003390e0	003390f0	tu@17ef10	symtab run 2479-2491, 1 locals in sec @393..@393; first local fn DivSpriteScreen__FR11mgCDrawPrim; text-locals 17ef10-17f304
+.data	003390f0	00339270	tu@1809e0	symtab run 2496-2599, 1 locals in sec; first local fn UniformityRand__Fff; text-locals 1809e0-184024
+.data	00339270	003392c0	tu@185210	symtab run 2600-2622, 2 locals in sec @387..@387; first local fn LoadSkyPack__FP12MAP_SKY_INFOPci; text-locals 185210-185708
+.data	003392c0	003392e0	anon(symtab 2624-2625)	symtab run 2624-2625, 2 locals in sec; first local fn -; no local funcs
+.data	003392e0	00339820	mainloop	symtab run 2779-2982, 11 locals in sec @1305..@1456; sinit; text-locals 191fe0-1957bc; start moved 339370->3392e0: LoopInit->B,LoopMain->B,LoopExit->B
+.data	00339820	00339d70	gamedata	symtab run 2983-3070, 3 locals in sec; sinit; text-locals 195b60-197ac0; start moved 339b80->339820: etcitem_spectol_table->B
+.data	00339d70	0033a830	userdata	symtab run 3091-3214, 23 locals in sec @3192..@4196; sinit; text-locals 19c2e0-19fd44
+.data	0033a830	0033a850	anon(symtab 3217-3218)	symtab run 3217-3218, 2 locals in sec @251..@256; first local fn -; no local funcs
+.data	0033a850	0033a900	editctrl	symtab run 3221-3297, 4 locals in sec @1080..@1320; sinit; text-locals 1a54c0-1a8a9c
+.data	0033a900	0033aaf0	tu@1a8cd0	symtab run 3298-3404, 16 locals in sec @1219..@1542; first local fn PrintCursor__FPci; text-locals 1a8cd0-1aaee8
+.data	0033aaf0	0033ab80	editloop	symtab run 3405-3572, 5 locals in sec @1045..@3040; sinit; text-locals 1aaef0-1b16c8
+.data	0033ab80	0033ac30	tu@1b57f0	symtab run 3573-3622, 6 locals in sec @830..@2278; first local fn emapEDIT_RIVER__FP9SPI_STACKi; text-locals 1b57f0-1b5ee4
+.data	0033ac30	0033ac40	anon(symtab 3623-3623)	symtab run 3623-3623, 1 locals in sec @418..@418; first local fn -; no local funcs
+.data	0033ac40	0033cf70	anon(symtab 3625-3758)	symtab run 3625-3758, 21 locals in sec @923..@1806; first local fn -; no local funcs
+.data	0033cf70	0033d010	dng_debug	symtab run 3759-3794, 2 locals in sec; sinit; text-locals 1bc2a0-1bce6c; AMBIGUOUS START: 1 global obj(s) between prev local end 33af10 and 33cf70 (Damage_Param_Table)
+.data	0033d010	0033d0b0	tu@1bd360	symtab run 3795-3805, 4 locals in sec @1048..@1059; first local fn DrawActiveItemCursor__Fiif; text-locals 1bd360-1bd7f4
+.data	0033d0b0	0033d210	tu@1bfa40	symtab run 3806-3820, 7 locals in sec @1215..@3214; first local fn trans_effect_rate__Fi; text-locals 1bfa40-1c04fc
+.data	0033d210	0033d250	anon(symtab 3822-3822)	symtab run 3822-3822, 1 locals in sec; first local fn -; no local funcs
+.data	0033d250	00341c60	dng_main	symtab run 3823-4017, 15 locals in sec @1081..@3734; sinit; text-locals 1cd170-1d5c80
+.data	00341c60	003514e0	tu@1d6b00	symtab run 4018-4336, 8 locals in sec @2125..@2299; first local fn _ROOM_FIXED__FP9SPI_STACKi; text-locals 1d6b00-1d6d74; gap globals all resolved to previous TU: PartsInfoData->A,MiniMapInfoData->A
+.data	003514e0	00351780	tu@1deea0	symtab run 4337-4385, 14 locals in sec @1707..@2699; first local fn HitEffectSet__FP6CScenePfi; text-locals 1deea0-1e1a2c; AMBIGUOUS START: 1 global obj(s) between prev local end 341da0 and 3514e0 (base_monster_define)
+.data	00351780	00351d30	tu@1e1b60	symtab run 4386-4582, 5 locals in sec @1480..@2160; first local fn GetStackInt__FP12RS_STACKDATA; text-locals 1e1b60-1e909c
+.data	00351d30	00352010	tu@1eb350	symtab run 4611-4681, 10 locals in sec @919..@1281; first local fn SetupMints__FP6CSceneP16CUserDataManager; text-locals 1eb350-1ebc68
+.data	00352010	003527d0	dngmenu	symtab run 4682-4827, 32 locals in sec @3141..@3141; sinit; text-locals 1edf30-1ef010
+.data	003527d0	00352de0	editmenu	symtab run 4828-5097, 25 locals in sec @2326..@4101; sinit; text-locals 1f3ea0-1fe110
+.data	00352de0	003535a0	inventmn	symtab run 5098-5425, 24 locals in sec @2455..@5173; sinit; text-locals 200b80-20dbdc
+.data	003535a0	003545b0	menuaqua	symtab run 5426-5719, 60 locals in sec @1160..@5230; sinit; text-locals 20e460-21c788
+.data	003545b0	003545f0	menucls1	symtab run 5720-5759, 2 locals in sec @1415..@1415; sinit; no local funcs; AMBIGUOUS START: 1 global obj(s) between prev local end 354578 and 3545b0 (MenuBigNum)
+.data	003545f0	00354610	anon(symtab 5760-5760)	symtab run 5760-5760, 1 locals in sec; first local fn -; no local funcs
+.data	00354610	00354e50	menudraw	symtab run 5761-5946, 32 locals in sec @1790..@5901; sinit; text-locals 2216d0-2315cc
+.data	00354e50	003551c0	menumain	symtab run 5947-6079, 11 locals in sec @1699..@1699; sinit; text-locals 234ff0-2392e8
+.data	003551c0	00355a70	menusys	symtab run 6080-6587, 50 locals in sec @2328..@6480; sinit; text-locals 239470-24ffe8
+.data	00355a70	00356080	tu@252d60	symtab run 6588-6884, 15 locals in sec; first local fn ReCalcBox__FP9mgVu0FBOX9mgVu0FBOX; text-locals 252d60-257668; AMBIGUOUS START: 1 global obj(s) between prev local end 355a60 and 355a70 (menu_item_swap_sndtbl)
+.data	00356080	003560b0	event	symtab run 6885-6892, 1 locals in sec; sinit; no local funcs
+.data	003560b0	003561f0	tu@2583e0	symtab run 6893-6974, 2 locals in sec; first local fn InitSplineKey__FP10SPLINE_KEY; text-locals 2583e0-25efec
+.data	003561f0	00358460	event_func	symtab run 6975-7819, 8 locals in sec @1084..@6800; sinit; text-locals 262cc0-281920
+.data	00358460	003584c0	eventedit	symtab run 7820-7899, 3 locals in sec @1208..@1242; sinit; text-locals 281ab0-282fa0
+.data	003584c0	003584e0	anon(symtab 7902-7912)	symtab run 7902-7912, 2 locals in sec @1503..@1504; first local fn -; no local funcs
+.data	003584e0	00358550	tu@288970	symtab run 7913-7925, 1 locals in sec @820..@820; first local fn LoadMapData__FR17SCN_LOADMAP_INFO2i; text-locals 288970-288f20
+.data	00358550	00358620	dng_event	symtab run 7991-8051, 8 locals in sec @1082..@1936; sinit; text-locals 290c70-292f24
+.data	00358620	003587b0	menushop	symtab run 8053-8193, 10 locals in sec @2470..@2470; sinit; text-locals 295340-295c04
+.data	003587b0	003587f0	anon(symtab 8194-8197)	symtab run 8194-8197, 4 locals in sec @504..@507; first local fn -; no local funcs
+.data	003587f0	00358840	anon(symtab 8198-8204)	symtab run 8198-8204, 5 locals in sec @590..@594; first local fn -; no local funcs
+.data	00358840	00358890	anon(symtab 8205-8205)	symtab run 8205-8205, 1 locals in sec @799..@799; first local fn -; no local funcs
+.data	00358890	003588b0	tu@29d0c0	symtab run 8206-8326, 2 locals in sec @1276..@1287; first local fn defMain__FPv; text-locals 29d0c0-29fdec
+.data	003588b0	00358a30	title	symtab run 8341-8511, 8 locals in sec @1594..@1924; sinit; text-locals 2a2e70-2a8ffc
+.data	00358a30	00358b20	tu@2a94a0	symtab run 8512-8581, 1 locals in sec; first local fn emapEDIT_PARTS_NUM__FP9SPI_STACKi; text-locals 2a94a0-2a9dcc
+.data	00358b20	00358b70	editdata	symtab run 8597-8633, 1 locals in sec; sinit; text-locals 2acdd0-2aedfc
+.data	00358b70	00358b90	menucapt	symtab run 8634-8661, 1 locals in sec; sinit; no local funcs
+.data	00358b90	00358bd0	tu@2af5b0	symtab run 8662-8678, 3 locals in sec; first local fn _NPC_NUM__FP9SPI_STACKi; text-locals 2af5b0-2af734
+.data	00358bd0	00358c90	menumap	symtab run 8679-8766, 7 locals in sec @1072..@1383; sinit; text-locals 2afa60-2b28f8
+.data	00358c90	003597d0	menuchr	symtab run 8767-9210, 44 locals in sec @1372..@5452; sinit; text-locals 2b4330-2c2604; start moved 358d50->358c90: monster_progress_tbl->B
+.data	003597d0	00359990	menuop	symtab run 9211-9426, 9 locals in sec @1315..@2609; sinit; text-locals 2c4430-2ca450
+.data	00359990	003599a0	movieviewlp	symtab run 9427-9465, 1 locals in sec; sinit; text-locals 2cb730-2cb808
+.data	003599a0	003599f0	anon(symtab 9466-9471)	symtab run 9466-9471, 2 locals in sec @1013..@1013; first local fn -; no local funcs
+.data	003599f0	0035a780	tu@2cd390	symtab run 9472-9508, 5 locals in sec @868..@992; first local fn GetChrFileSize__FPUii; text-locals 2cd390-2cf1f0
+.data	0035a780	0035aaa0	tu@2d2720	symtab run 9516-9655, 6 locals in sec @1181..@1774; first local fn ParabolicInitialVector__FPfPfPfff; text-locals 2d2720-2d6a38; AMBIGUOUS START: 3 global obj(s) between prev local end 35a590 and 35a780 (box_offset,iwa0_offset,iwa1_offset)
+.data	0035aaa0	0035b3e0	tu@2d6c00	symtab run 9656-9732, 6 locals in sec; first local fn mlMAP_NAME_NUM__FP9SPI_STACKi; text-locals 2d6c00-2d8930
+.data	0035b3e0	0035b6c0	anon(symtab 9733-9829)	symtab run 9733-9829, 6 locals in sec @1041..@1272; first local fn -; no local funcs; AMBIGUOUS START: 4 global obj(s) between prev local end 35ac78 and 35b3e0 (GaijiDataTbl,FconvCodeTbl,FontGaijiConvTbl...)
+.data	0035b6c0	0035b940	editmode	symtab run 9840-10063, 20 locals in sec @1268..@2188; sinit; text-locals 2dd740-2e299c; AMBIGUOUS START: 1 global obj(s) between prev local end 35b570 and 35b6c0 (data)
+.data	0035b940	0035b980	mapjump	symtab run 10065-10097, 1 locals in sec @997..@997; sinit; text-locals 2e46f0-2e48c4
+.data	0035b980	00361340	tu@2e7c90	symtab run 10098-10271, 3 locals in sec @2311..@2498; first local fn GetEffSptBaseDefPtr__Fi; text-locals 2e7c90-2eddcc; start moved 360f10->35b980: eff_spt_base_def->B
+.data	00361340	003613a0	anon(symtab 10278-10278)	symtab run 10278-10278, 1 locals in sec; first local fn -; no local funcs
+.data	003613a0	003613b0	anon(symtab 10279-10279)	symtab run 10279-10279, 1 locals in sec @396..@396; first local fn -; no local funcs
+.data	003613b0	003613d0	tu@2f26f0	symtab run 10281-10292, 2 locals in sec @796..@983; first local fn PlaneNormalXZ__FPfPfPfPf; text-locals 2f26f0-2f271c
+.data	003613d0	003613e0	tu@2f5c20	symtab run 10294-10316, 1 locals in sec @920..@920; first local fn CheckPlaceBurnParts__FP12GeoFuncParamP12RS_STACKDATAi; text-locals 2f5c20-2f613c
+.data	003613e0	00361670	tu@2f6460	symtab run 10317-10372, 11 locals in sec @838..@2297; first local fn MakeMemoryCardFileName__FiPc; text-locals 2f6460-2f6690
+.data	00361670	00361680	anon(symtab 10375-10375)	symtab run 10375-10375, 1 locals in sec; first local fn -; no local funcs
+.data	00361680	00361760	anon(symtab 10377-10415)	symtab run 10377-10415, 8 locals in sec @1175..@1330; first local fn -; no local funcs
+.data	00361760	00361960	tu@2fdd90	symtab run 10416-10466, 11 locals in sec @886..@1395; first local fn _TREE_MAPINFO__FP9SPI_STACKi; text-locals 2fdd90-2fe4cc
+.data	00361960	003619f0	editeff	symtab run 10467-10481, 5 locals in sec @1038..@1107; sinit; no local funcs
+.data	003619f0	003621f0	fishing	symtab run 10482-10746, 10 locals in sec @993..@1631; sinit; text-locals 3015f0-308f4c
+.data	003621f0	00362260	gyorace	symtab run 10754-10834, 7 locals in sec @1027..@1766; sinit; text-locals 30c940-30cc20; gap globals all resolved to previous TU: fish_name->A,cam_pos->A
+.data	00362260	00362e30	nameregi	symtab run 10870-10949, 26 locals in sec @1153..@1534; sinit; text-locals 30fef0-310c24
+.data	00362e30	00362ea0	photo	symtab run 10950-10995, 2 locals in sec @936..@936; sinit; text-locals 313880-313920
+.data	00362ea0	00362f20	fishingobj	symtab run 10996-11050, 5 locals in sec @975..@1798; sinit; text-locals 314df0-318b70
+.data	00362f20	00362f60	pbuggy	symtab run 11051-11155, 4 locals in sec @1047..@1193; sinit; text-locals 319db0-31bdc8
+.data	00362f60	00362f80	tu@31c020	symtab run 11156-11170, 2 locals in sec @913..@964; first local fn CheckSaku__FP8CEditMapi; text-locals 31c020-31ddd4
+.data	00362f80	00363040	vlgr_info	symtab run 11182-11262, 3 locals in sec; sinit; text-locals 31ec40-31f95c
+.data	00363040	00363070	tu@31fc80	symtab run 11264-11275, 1 locals in sec; first local fn quest_NUM__FP9SPI_STACKi; text-locals 31fc80-31fdf4
+.data	00363070	00363080	mainloop3	symtab run 11276-11331, 1 locals in sec @801..@801; sinit; no local funcs
+.data	00363080	003630c0	tu@320d40	symtab run 11332-11341, 1 locals in sec; first local fn search_txt__Fc; text-locals 320d40-321634
+.data	003630c0	003632c0	tu@321f70	symtab run 11342-11366, 1 locals in sec; first local fn FishDist__FP15RACE_FISH_PARAMP15RACE_FISH_PARAM; text-locals 321f70-324a74
+.data	003632c0	00363480	convviewlp	symtab run 11367-11421, 3 locals in sec @1072..@1074; sinit; text-locals 3253b0-325c60
+.vudata	00363480	00363580	vu-object(_$main)	symtab run 1484-1507, 9 locals in sec; ; no local funcs
+.rodata	00363580	003635b0	mwcc-runtime(anon(symtab 5-7))	symtab run 5-7, 3 locals in sec @196..@204; first local fn -; no local funcs
+.rodata	003635b0	00363630	mwcc-runtime(tu@1004f0)	symtab run 8-15, 7 locals in sec @34..@47; first local fn default_new_handler__3stdFv; text-locals 1004f0-100554
+.rodata	00363630	00363660	mwcc-runtime(anon(symtab 16-16))	symtab run 16-16, 1 locals in sec @47..@47; first local fn -; no local funcs
+.rodata	00363660	00363808	mwcc-runtime(tu@100d40)	symtab run 21-37, 12 locals in sec @408..@1073; first local fn FindExceptionHandler__FP12ThrowContextP13ExceptionInfoPl; text-locals 100d40-10217c
+.rodata	00363808	00363840	lib/sce/libgraph[obj@102838]	gcc .rodata SECTION sym #49; reloc from text obj@102838 (dc1:sceGsSetDefDispEnv)
+.rodata	00363840	00363870	lib/sce/libgraph[obj@102f20]	gcc .rodata SECTION sym #65; reloc from text obj@102f20 (dc1:sceGsPutDrawEnv)
+.rodata	00363870	00363a00	lib/sce/libgraph[obj@103398]	gcc .rodata SECTION sym #78; reloc from text obj@103398 (dc1:sceGsSyncPath)
+.rodata	00363a00	00363b20	lib/sce/libgraph[obj@1036b0]	gcc .rodata SECTION sym #82; reloc from text obj@1036b0 (dc1:sceGsSetDefLoadImage)
+.rodata	00363b20	00363b60	lib/sce/libgraph[obj@1039d8]	gcc .rodata SECTION sym #89; reloc from text obj@1039d8 (dc1:sceGsExecLoadImage)
+.rodata	00363b60	00363d30	lib/sce/libgraph[obj@103b58]	gcc .rodata SECTION sym #95; reloc from text obj@103b58 (dc1:sceGsExecStoreImage)
+.rodata	00363d30	00363d48	lib/sce/libdma[obj@104288]	gcc .rodata SECTION sym #105; reloc from text obj@104288 (dc1:sceDmaGetChan)
+.rodata	00363d48	00364d58	obj@104d58(sceDevFontDefault)	gcc .rodata SECTION sym #134; reloc from text obj@104d58 (nodc1)
+.rodata	00364d58	00365020	obj@107a50(_motionComp0)	gcc .rodata SECTION sym #255; reloc from text obj@107a50 (nodc1)
+.rodata	00365020	00365038	obj@10c6b0(_doCSC)	gcc .rodata SECTION sym #269; reloc from text obj@10c6b0 (nodc1)
+.rodata	00365038	00365080	obj@10d080(_type2id)	gcc .rodata SECTION sym #279; reloc from text obj@10d080 (nodc1)
+.rodata	00365080	00365128	obj@10de88(sceMpegInit)	gcc .rodata SECTION sym #285; reloc from text obj@10de88 (nodc1)
+.rodata	00365128	00365270	obj@10e9d8(_initSeqAgain)	gcc .rodata SECTION sym #294; reloc from text obj@10e9d8 (nodc1)
+.rodata	00365270	00365298	lib/sce/kernl/thread[obj@110d60]	gcc .rodata SECTION sym #340; reloc from text obj@110d60 (dc1:InitThread)
+.rodata	00365298	00365310	lib/sce/kernl/tty[obj@1112a0]	gcc .rodata SECTION sym #356; reloc from text obj@1112a0 (dc1:sceTtyWrite)
+.rodata	00365310	00365470	lib/sce/kernl/kprintf[obj@1117c0]	gcc .rodata SECTION sym #370; reloc from text obj@1117c0 (dc1:_printf)
+.rodata	00365470	003654e0	lib/sce/kernl/filestub[obj@1137e0]	gcc .rodata SECTION sym #431; reloc from text obj@1137e0 (dc1:sceFsInit)
+.rodata	003654e0	003654f0	lib/sce/kernl/eeloadfile[obj@117178]	gcc .rodata SECTION sym #468; reloc from text obj@117178 (dc1:sceSifLoadFileReset)
+.rodata	003654f0	00365520	lib/sce/kernl/iopreset[obj@117ed8]	gcc .rodata SECTION sym #478; reloc from text obj@117ed8 (dc1:sceSifResetIop)
+.rodata	00365520	003655a0	obj@118188(SetTLBHandler)	gcc .rodata SECTION sym #489; reloc from text obj@118188 (nodc1)
+.rodata	003655a0	003655c8	lib/sce/sdr_main[obj@118e50]	gcc .rodata SECTION sym #574; reloc from text obj@118e50 (dc1:sceSdRemoteInit)
+.rodata	003655c8	00365678	lib/libm/math/e_atan2[obj@119180]	gcc .rodata SECTION sym #584; reloc from text obj@119180 (dc1:__ieee754_atan2)
+.rodata	00365678	00365848	obj@1194b8(__ieee754_pow)	gcc .rodata SECTION sym #600; reloc from text obj@1194b8 (nodc1)
+.rodata	00365848	00365a98	lib/libm/math/e_rem_pio2[obj@11a1e0]	gcc .rodata SECTION sym #630; reloc from text obj@11a1e0 (dc1:__ieee754_rem_pio2)
+.rodata	00365a98	00365ab8	lib/libm/math/ef_atan2[obj@11ae38]	gcc .rodata SECTION sym #650; reloc from text obj@11ae38 (dc1:__ieee754_atan2f)
+.rodata	00365ab8	00365e78	lib/libm/math/ef_rem_pio2[obj@11b120]	gcc .rodata SECTION sym #662; reloc from text obj@11b120 (dc1:__ieee754_rem_pio2f)
+.rodata	00365e78	00365ee0	lib/libm/math/k_cos[obj@11b638]	gcc .rodata SECTION sym #682; reloc from text obj@11b638 (dc1:__kernel_cos)
+.rodata	00365ee0	00365f50	lib/libm/math/k_rem_pio2[obj@11b888]	gcc .rodata SECTION sym #689; reloc from text obj@11b888 (dc1:__kernel_rem_pio2)
+.rodata	00365f50	00365fc0	lib/libm/math/k_sin[obj@11c3f0]	gcc .rodata SECTION sym #704; reloc from text obj@11c3f0 (dc1:__kernel_sin)
+.rodata	00365fc0	00366010	lib/libm/math/kf_rem_pio2[obj@11c720]	gcc .rodata SECTION sym #712; reloc from text obj@11c720 (dc1:__kernel_rem_pio2f)
+.rodata	00366010	00366058	lib/libm/math/kf_tan[obj@11d178]	gcc .rodata SECTION sym #725; reloc from text obj@11d178 (dc1:__kernel_tanf)
+.rodata	00366058	00366108	lib/libm/math/s_atan[obj@11d410]	gcc .rodata SECTION sym #732; reloc from text obj@11d410 (dc1:atan)
+.rodata	00366108	00366118	lib/libm/math/s_floor[obj@11d9c8]	gcc .rodata SECTION sym #753; reloc from text obj@11d9c8 (dc1:floor)
+.rodata	00366118	00366120	lib/libm/common/s_infconst	gcc SECTION sym #758; __infinity; data-only object
+.rodata	00366120	00366128	lib/libm/common/s_lib_ver	gcc SECTION sym #765; __fdlib_version; data-only object
+.rodata	00366128	00366138	obj@11dc48(rint)	gcc .rodata SECTION sym #770; reloc from text obj@11dc48 (nodc1)
+.rodata	00366138	00366168	lib/libc/common/s_scalbn[obj@11de48]	gcc .rodata SECTION sym #776; reloc from text obj@11de48 (dc1:scalbn)
+.rodata	00366168	003661c0	lib/libm/math/sf_atan[obj@11e0f8]	gcc .rodata SECTION sym #785; reloc from text obj@11e0f8 (dc1:atanf)
+.rodata	003661c0	003661c8	lib/libm/math/w_atan2[obj@11e8c0]	gcc .rodata SECTION sym #818; reloc from text obj@11e8c0 (dc1:atan2)
+.rodata	003661c8	003661e8	obj@11e9d8(pow)	gcc .rodata SECTION sym #822; reloc from text obj@11e9d8 (nodc1)
+.rodata	003661e8	003661f8	lib/libm/math/w_sqrt[obj@11ee08]	gcc .rodata SECTION sym #826; reloc from text obj@11ee08 (dc1:sqrt)
+.rodata	003661f8	00366200	lib/libm/math/wf_acos[obj@11ef18]	gcc .rodata SECTION sym #830; reloc from text obj@11ef18 (dc1:acosf)
+.rodata	00366200	00366208	lib/libm/math/wf_atan2[obj@11f018]	gcc .rodata SECTION sym #834; reloc from text obj@11f018 (dc1:atan2f)
+.rodata	00366208	00366218	lib/libm/math/wf_sqrt[obj@11f140]	gcc .rodata SECTION sym #838; reloc from text obj@11f140 (dc1:sqrtf)
+.rodata	00366218	003663c8	lib/sce/eecdvd[obj@11f258]	gcc .rodata SECTION sym #855; reloc from text obj@11f258 (dc1:sceCdDelayThread)
+.rodata	003663c8	003663f0	lib/sce/eecdvd[obj@120570]	gcc .rodata SECTION sym #880; reloc from text obj@120570 (dc1:sceCdRead)
+.rodata	003663f0	00366510	lib/sce/eecdvd[obj@120970]	gcc .rodata SECTION sym #894; reloc from text obj@120970 (dc1:sceCdStInit)
+.rodata	00366510	00366668	lib/sce/libpad[obj@120e50]	gcc .rodata SECTION sym #914; reloc from text obj@120e50 (dc1:scePadInit)
+.rodata	00366668	003666f0	lib/sce/libmc[obj@1221e8]	gcc .rodata SECTION sym #933; reloc from text obj@1221e8 (dc1:sceMcInit)
+.rodata	003666f0	00366800	lib/libc/ctype/ctype_	gcc SECTION sym #971; _ctype_ table; data-only object
+.rodata	00366800	00366858	lib/libc/stdlib/dtoa[obj@123e80]	gcc .rodata SECTION sym #973; reloc from text obj@123e80 (dc1:_dtoa_r)
+.rodata	00366858	00366860	lib/libc/reent/impure	gcc SECTION sym #1006; .rodata SECTION adjacent to impure .data in symtab; 8 bytes
+.rodata	00366860	003668a8	lib/libc/locale/locale[obj@126040]	gcc .rodata SECTION sym #1013; reloc from text obj@126040 (dc1:_setlocale_r)
+.rodata	003668a8	003669d0	lib/libc/stdlib/mprec[obj@127128]	gcc .rodata SECTION sym #1076; reloc from text obj@127128 (dc1:_Balloc)
+.rodata	003669d0	00366aa0	lib/libc/stdlib/strtod[obj@1295e8]	gcc .rodata SECTION sym #1185; reloc from text obj@1295e8 (dc1:_strtod_r)
+.rodata	00366aa0	00366cb0	lib/libc/stdio/vfprintf[obj@12a7d0]	gcc .rodata SECTION sym #1196; reloc from text obj@12a7d0 (dc1:vfprintf)
+.rodata	00366cb0	00366d20	tu@12c2c0	symtab run 1214-1232, 7 locals in sec @497..@884; first local fn GetZBufVram__FPi; text-locals 12c2c0-12f83c
+.rodata	00366d20	00366d60	tu@1321e0	symtab run 1238-1253, 4 locals in sec @387..@886; first local fn conv_new_text__FPcPc; text-locals 1321e0-133ef0
+.rodata	00366d60	00366d80	anon(symtab 1268-1268)	symtab run 1268-1268, 1 locals in sec @184..@184; first local fn -; no local funcs
+.rodata	00366d80	00366da0	anon(symtab 1269-1269)	symtab run 1269-1269, 1 locals in sec @166..@166; first local fn -; no local funcs
+.rodata	00366da0	00366dd8	anon(symtab 1270-1271)	symtab run 1270-1271, 2 locals in sec @238..@288; first local fn -; no local funcs
+.rodata	00366dd8	00366ec0	mg_tanime	symtab run 1282-1322, 14 locals in sec @831..@873; sinit; text-locals 13dfd0-13ea00
+.rodata	00366ec0	00366f00	mglib	symtab run 1351-1405, 4 locals in sec @715..@1569; sinit; text-locals 141870-146614
+.rodata	00366f00	00366f40	tu@1476c0	symtab run 1407-1412, 3 locals in sec @215..@524; first local fn SkipSpace__FR9input_str; text-locals 1476c0-147890
+.rodata	00366f40	00367070	tu@148cb0	symtab run 1736-1782, 19 locals in sec @183..@714; first local fn SearchFile__FPc; text-locals 148cb0-14a044
+.rodata	00367070	003670c0	tu@14a890	symtab run 1783-1800, 4 locals in sec @248..@910; first local fn pad_button_read__FP10PAD_STATUSii; text-locals 14a890-14bc90
+.rodata	003670c0	00367118	tu@14bd00	symtab run 1801-1822, 2 locals in sec @966..@967; first local fn QuatSlerp__FPfPffPf; text-locals 14bd00-14d9c8
+.rodata	00367118	00367470	nd_meswin	symtab run 1823-1893, 63 locals in sec @1124..@4637; sinit; no local funcs
+.rodata	00367470	003675f0	tu@15d470	symtab run 1894-1909, 12 locals in sec @846..@857; first local fn VSyncCallBack__Fi; text-locals 15d470-15d7a8
+.rodata	003675f0	00367630	anon(symtab 1929-1939)	symtab run 1929-1939, 6 locals in sec @327..@2008; first local fn -; no local funcs
+.rodata	00367630	00367b40	tu@163080	symtab run 1940-2118, 85 locals in sec @611..@1544; first local fn mapDummy__FP9SPI_STACKi; text-locals 163080-1661dc
+.rodata	00367b40	00367db8	tu@1664a0	symtab run 2119-2183, 33 locals in sec @360..@713; first local fn mapIMG__FP9SPI_STACKi; text-locals 1664a0-167280
+.rodata	00367db8	00367e20	tu@16a7a0	symtab run 2185-2207, 9 locals in sec @729..@830; first local fn pcpMDS__FP9SPI_STACKi; text-locals 16a7a0-16adfc
+.rodata	00367e20	00368078	tu@16d2f0	symtab run 2208-2270, 43 locals in sec @1325..@3389; first local fn RockOn_TargetSel__FP6CScenei; text-locals 16d2f0-171b34
+.rodata	00368078	00368290	tu@176a60	symtab run 2271-2394, 43 locals in sec @281..@1571; first local fn ScanInfoFile__FP11CCharacter2PUiPcP9mgCMemoryP9mgCMemoryP9mgCMemoryiP11CCharacter2i; text-locals 176a60-179e94
+.rodata	00368290	003684c8	tu@17abd0	symtab run 2395-2468, 34 locals in sec @816..@1074; first local fn BindPosition__FPfPfff; text-locals 17abd0-17d338
+.rodata	003684c8	003684e0	tu@17ef10	symtab run 2479-2491, 2 locals in sec @260..@261; first local fn DivSpriteScreen__FR11mgCDrawPrim; text-locals 17ef10-17f304
+.rodata	003684e0	00368798	tu@1809e0	symtab run 2496-2599, 50 locals in sec @382..@848; first local fn UniformityRand__Fff; text-locals 1809e0-184024
+.rodata	00368798	00368800	tu@185210	symtab run 2600-2622, 9 locals in sec @386..@468; first local fn LoadSkyPack__FP12MAP_SKY_INFOPci; text-locals 185210-185708
+.rodata	00368800	00368910	dbg_font	symtab run 2626-2633, 3 locals in sec @288..@420; sinit; text-locals 1874a0-187808
+.rodata	00368910	00368db0	tu@188090	symtab run 2634-2667, 27 locals in sec @168..@699; first local fn runerror__FPCc; text-locals 188090-188278
+.rodata	00368db0	00369320	anon(symtab 2668-2707)	symtab run 2668-2707, 29 locals in sec @218..@930; first local fn -; no local funcs
+.rodata	00369320	00369338	anon(symtab 2708-2711)	symtab run 2708-2711, 1 locals in sec @33..@33; first local fn -; no local funcs
+.rodata	00369338	00369368	tu@18c970	symtab run 2712-2716, 3 locals in sec @295..@297; first local fn BigToLittle__FPvPvi; text-locals 18c970-18ca54
+.rodata	00369368	00369460	snd_mngr	symtab run 2717-2778, 22 locals in sec @732..@1680; sinit; text-locals 18dfd0-191904
+.rodata	00369460	00369b80	mainloop	symtab run 2779-2982, 107 locals in sec @1212..@2085; sinit; text-locals 191fe0-1957bc
+.rodata	00369b80	00369e30	gamedata	symtab run 2983-3070, 41 locals in sec @1018..@1501; sinit; text-locals 195b60-197ac0
+.rodata	00369e30	00369fc8	sysmes	symtab run 3071-3090, 13 locals in sec @482..@494; sinit; no local funcs
+.rodata	00369fc8	0036a400	userdata	symtab run 3091-3214, 83 locals in sec @896..@4442; sinit; text-locals 19c2e0-19fd44
+.rodata	0036a400	0036a530	editctrl	symtab run 3221-3297, 23 locals in sec @962..@1767; sinit; text-locals 1a54c0-1a8a9c
+.rodata	0036a530	0036aa80	tu@1a8cd0	symtab run 3298-3404, 68 locals in sec @989..@1544; first local fn PrintCursor__FPci; text-locals 1a8cd0-1aaee8
+.rodata	0036aa80	0036ae18	editloop	symtab run 3405-3572, 61 locals in sec @1032..@2958; sinit; text-locals 1aaef0-1b16c8
+.rodata	0036ae18	0036af80	tu@1b57f0	symtab run 3573-3622, 17 locals in sec @346..@2082; first local fn emapEDIT_RIVER__FP9SPI_STACKi; text-locals 1b57f0-1b5ee4
+.rodata	0036af80	0036bca0	anon(symtab 3625-3758)	symtab run 3625-3758, 109 locals in sec @961..@1854; first local fn -; no local funcs
+.rodata	0036bca0	0036be80	dng_debug	symtab run 3759-3794, 27 locals in sec @871..@1133; sinit; text-locals 1bc2a0-1bce6c
+.rodata	0036be80	0036bec0	tu@1bfa40	symtab run 3806-3820, 3 locals in sec @1107..@2882; first local fn trans_effect_rate__Fi; text-locals 1bfa40-1c04fc
+.rodata	0036bec0	0036bec8	anon(symtab 3821-3821)	symtab run 3821-3821, 1 locals in sec @1221..@1221; first local fn -; no local funcs
+.rodata	0036bec8	0036c708	dng_main	symtab run 3823-4017, 120 locals in sec @1016..@3803; sinit; text-locals 1cd170-1d5c80
+.rodata	0036c708	0036d0c0	tu@1d6b00	symtab run 4018-4336, 297 locals in sec @778..@2609; first local fn _ROOM_FIXED__FP9SPI_STACKi; text-locals 1d6b00-1d6d74
+.rodata	0036d0c0	0036d340	tu@1deea0	symtab run 4337-4385, 27 locals in sec @1200..@2809; first local fn HitEffectSet__FP6CScenePfi; text-locals 1deea0-1e1a2c
+.rodata	0036d340	0036d410	tu@1e1b60	symtab run 4386-4582, 9 locals in sec @1728..@3079; first local fn GetStackInt__FP12RS_STACKDATA; text-locals 1e1b60-1e909c
+.rodata	0036d410	0036d5c0	anon(symtab 4583-4609)	symtab run 4583-4609, 27 locals in sec @792..@832; first local fn -; no local funcs
+.rodata	0036d5c0	0036d5f0	anon(symtab 4610-4610)	symtab run 4610-4610, 1 locals in sec @936..@936; first local fn -; no local funcs
+.rodata	0036d5f0	0036d980	tu@1eb350	symtab run 4611-4681, 54 locals in sec @868..@1304; first local fn SetupMints__FP6CSceneP16CUserDataManager; text-locals 1eb350-1ebc68
+.rodata	0036d980	0036dc80	dngmenu	symtab run 4682-4827, 59 locals in sec @1018..@3540; sinit; text-locals 1edf30-1ef010
+.rodata	0036dc80	0036e358	editmenu	symtab run 4828-5097, 113 locals in sec @990..@4368; sinit; text-locals 1f3ea0-1fe110
+.rodata	0036e358	0036f140	inventmn	symtab run 5098-5425, 222 locals in sec @1046..@5747; sinit; text-locals 200b80-20dbdc
+.rodata	0036f140	0036f780	menuaqua	symtab run 5426-5719, 96 locals in sec @1323..@5500; sinit; text-locals 20e460-21c788
+.rodata	0036f780	0036f8b8	menucls1	symtab run 5720-5759, 28 locals in sec @905..@1623; sinit; no local funcs
+.rodata	0036f8b8	0036fbd0	menudraw	symtab run 5761-5946, 36 locals in sec @873..@4935; sinit; text-locals 2216d0-2315cc
+.rodata	0036fbd0	00370098	menumain	symtab run 5947-6079, 63 locals in sec @1028..@2450; sinit; text-locals 234ff0-2392e8
+.rodata	00370098	00371200	menusys	symtab run 6080-6587, 276 locals in sec @919..@9216; sinit; text-locals 239470-24ffe8
+.rodata	00371200	003719f0	tu@252d60	symtab run 6588-6884, 169 locals in sec @1162..@2567; first local fn ReCalcBox__FP9mgVu0FBOX9mgVu0FBOX; text-locals 252d60-257668
+.rodata	003719f0	00371a40	event	symtab run 6885-6892, 3 locals in sec @819..@1002; sinit; no local funcs
+.rodata	00371a40	00371a70	tu@2583e0	symtab run 6893-6974, 2 locals in sec @1527..@2863; first local fn InitSplineKey__FP10SPLINE_KEY; text-locals 2583e0-25efec
+.rodata	00371a70	00372320	event_func	symtab run 6975-7819, 108 locals in sec @1080..@10101; sinit; text-locals 262cc0-281920
+.rodata	00372320	00372810	eventedit	symtab run 7820-7899, 58 locals in sec @809..@1403; sinit; text-locals 281ab0-282fa0
+.rodata	00372810	00372820	anon(symtab 7900-7901)	symtab run 7900-7901, 2 locals in sec @853..@1117; first local fn -; no local funcs
+.rodata	00372820	00372840	anon(symtab 7902-7912)	symtab run 7902-7912, 1 locals in sec @1171..@1171; first local fn -; no local funcs
+.rodata	00372840	003728a0	tu@288970	symtab run 7913-7925, 11 locals in sec @885..@1118; first local fn LoadMapData__FR17SCN_LOADMAP_INFO2i; text-locals 288970-288f20
+.rodata	003728a0	003728a0	anon(symtab 7926-7927)	symtab run 7926-7927, 2 locals in sec; first local fn -; no local funcs
+.rodata	003728a0	003729a0	lib/libgcc/_divdi3[obj@289e48]	gcc .rodata SECTION sym #7927; reloc from text obj@289e48 (dc1:__divdi3)
+.rodata	003729a0	00372aa0	lib/libgcc/_moddi3[obj@28a720]	gcc .rodata SECTION sym #7941; reloc from text obj@28a720 (dc1:__moddi3)
+.rodata	00372aa0	00372ba0	lib/libgcc/_udivdi3[obj@28ade8]	gcc .rodata SECTION sym #7949; reloc from text obj@28ade8 (dc1:__udivdi3)
+.rodata	00372ba0	00372ce0	lib/libgcc/_umoddi3[obj@28b3b8]	gcc .rodata SECTION sym #7954; reloc from text obj@28b3b8 (dc1:__umoddi3)
+.rodata	00372ce0	00372d80	anon(symtab 7984-7990)	symtab run 7984-7990, 5 locals in sec @32..@54; first local fn -; no local funcs
+.rodata	00372d80	00372f98	dng_event	symtab run 7991-8051, 30 locals in sec @1274..@2529; sinit; text-locals 290c70-292f24
+.rodata	00372f98	00372fa0	anon(symtab 8052-8052)	symtab run 8052-8052, 1 locals in sec @1069..@1069; first local fn -; no local funcs
+.rodata	00372fa0	00373428	menushop	symtab run 8053-8193, 84 locals in sec @1206..@2629; sinit; text-locals 295340-295c04
+.rodata	00373428	00373628	tu@29d0c0	symtab run 8206-8326, 22 locals in sec @318..@1270; first local fn defMain__FPv; text-locals 29d0c0-29fdec
+.rodata	00373628	00373650	anon(symtab 8327-8330)	symtab run 8327-8330, 2 locals in sec @358..@359; first local fn -; no local funcs
+.rodata	00373650	003736a8	tu@2a0530	symtab run 8331-8340, 2 locals in sec @475..@1118; first local fn CheckOver__FPfPfPf; text-locals 2a0530-2a05c8
+.rodata	003736a8	00373a18	title	symtab run 8341-8511, 46 locals in sec @991..@2724; sinit; text-locals 2a2e70-2a8ffc
+.rodata	00373a18	00373bb0	tu@2a94a0	symtab run 8512-8581, 29 locals in sec @368..@396; first local fn emapEDIT_PARTS_NUM__FP9SPI_STACKi; text-locals 2a94a0-2a9dcc
+.rodata	00373bb0	00373cc0	tu@2aae30	symtab run 8582-8596, 12 locals in sec @1011..@1766; first local fn GetNumber3__FPci; text-locals 2aae30-2ac7f0
+.rodata	00373cc0	00373de0	editdata	symtab run 8597-8633, 15 locals in sec @713..@1298; sinit; text-locals 2acdd0-2aedfc
+.rodata	00373de0	00373ec0	menucapt	symtab run 8634-8661, 13 locals in sec @852..@906; sinit; no local funcs
+.rodata	00373ec0	00373f48	tu@2af5b0	symtab run 8662-8678, 8 locals in sec @838..@901; first local fn _NPC_NUM__FP9SPI_STACKi; text-locals 2af5b0-2af734
+.rodata	00373f48	003740c0	menumap	symtab run 8679-8766, 32 locals in sec @970..@1938; sinit; text-locals 2afa60-2b28f8
+.rodata	003740c0	00375268	menuchr	symtab run 8767-9210, 297 locals in sec @1078..@5893; sinit; text-locals 2b4330-2c2604
+.rodata	00375268	003759c0	menuop	symtab run 9211-9426, 134 locals in sec @1023..@3207; sinit; text-locals 2c4430-2ca450
+.rodata	003759c0	00375a70	movieviewlp	symtab run 9427-9465, 13 locals in sec @786..@1037; sinit; text-locals 2cb730-2cb808
+.rodata	00375a70	00375ab8	anon(symtab 9466-9471)	symtab run 9466-9471, 4 locals in sec @858..@1093; first local fn -; no local funcs
+.rodata	00375ab8	00375c88	tu@2cd390	symtab run 9472-9508, 26 locals in sec @815..@1847; first local fn GetChrFileSize__FPUii; text-locals 2cd390-2cf1f0
+.rodata	00375c88	00375cd0	anon(symtab 9509-9514)	symtab run 9509-9514, 6 locals in sec @1196..@1438; first local fn -; no local funcs
+.rodata	00375cd0	00375cf0	anon(symtab 9515-9515)	symtab run 9515-9515, 1 locals in sec @513..@513; first local fn -; no local funcs
+.rodata	00375cf0	00375f10	tu@2d2720	symtab run 9516-9655, 33 locals in sec @1118..@2005; first local fn ParabolicInitialVector__FPfPfPfff; text-locals 2d2720-2d6a38
+.rodata	00375f10	00376140	tu@2d6c00	symtab run 9656-9732, 41 locals in sec @792..@1471; first local fn mlMAP_NAME_NUM__FP9SPI_STACKi; text-locals 2d6c00-2d8930
+.rodata	00376140	003764d0	anon(symtab 9733-9829)	symtab run 9733-9829, 87 locals in sec @812..@1543; first local fn -; no local funcs
+.rodata	003764d0	003765c8	anon(symtab 9830-9839)	symtab run 9830-9839, 8 locals in sec @258..@278; first local fn -; no local funcs
+.rodata	003765c8	00377140	editmode	symtab run 9840-10063, 112 locals in sec @1067..@2213; sinit; text-locals 2dd740-2e299c
+.rodata	00377140	003771c0	mapjump	symtab run 10065-10097, 10 locals in sec @863..@1091; sinit; text-locals 2e46f0-2e48c4
+.rodata	003771c0	00377680	tu@2e7c90	symtab run 10098-10271, 29 locals in sec @943..@3645; first local fn GetEffSptBaseDefPtr__Fi; text-locals 2e7c90-2eddcc
+.rodata	00377680	00377738	anon(symtab 10272-10277)	symtab run 10272-10277, 6 locals in sec @940..@1221; first local fn -; no local funcs
+.rodata	00377738	00377788	tu@2f26f0	symtab run 10281-10292, 6 locals in sec @1042..@1130; first local fn PlaneNormalXZ__FPfPfPfPf; text-locals 2f26f0-2f271c
+.rodata	00377788	003778c0	tu@2f5c20	symtab run 10294-10316, 18 locals in sec @888..@1211; first local fn CheckPlaceBurnParts__FP12GeoFuncParamP12RS_STACKDATAi; text-locals 2f5c20-2f613c
+.rodata	003778c0	00377d08	tu@2f6460	symtab run 10317-10372, 34 locals in sec @808..@2285; first local fn MakeMemoryCardFileName__FiPc; text-locals 2f6460-2f6690
+.rodata	00377d08	00377d18	anon(symtab 10373-10373)	symtab run 10373-10373, 1 locals in sec @356..@356; first local fn -; no local funcs
+.rodata	00377d18	00377d30	anon(symtab 10374-10374)	symtab run 10374-10374, 1 locals in sec @453..@453; first local fn -; no local funcs
+.rodata	00377d30	00377d58	anon(symtab 10376-10376)	symtab run 10376-10376, 1 locals in sec @79..@79; first local fn -; no local funcs
+.rodata	00377d58	00377e28	anon(symtab 10377-10415)	symtab run 10377-10415, 12 locals in sec @917..@1386; first local fn -; no local funcs
+.rodata	00377e28	00377f48	tu@2fdd90	symtab run 10416-10466, 21 locals in sec @882..@1469; first local fn _TREE_MAPINFO__FP9SPI_STACKi; text-locals 2fdd90-2fe4cc
+.rodata	00377f48	00377f58	editeff	symtab run 10467-10481, 1 locals in sec @821..@821; sinit; no local funcs
+.rodata	00377f58	003784c8	fishing	symtab run 10482-10746, 93 locals in sec @832..@2674; sinit; text-locals 3015f0-308f4c
+.rodata	003784c8	003784d0	subgame	symtab run 10747-10753, 1 locals in sec @985..@985; sinit; no local funcs
+.rodata	003784d0	003787d8	gyorace	symtab run 10754-10834, 38 locals in sec @903..@1703; sinit; text-locals 30c940-30cc20
+.rodata	003787d8	00378860	nowload	symtab run 10835-10869, 9 locals in sec @832..@1069; sinit; text-locals 30e5d0-30e960
+.rodata	00378860	003788e0	nameregi	symtab run 10870-10949, 12 locals in sec @892..@1748; sinit; text-locals 30fef0-310c24
+.rodata	003788e0	00378c20	photo	symtab run 10950-10995, 28 locals in sec @793..@1055; sinit; text-locals 313880-313920
+.rodata	00378c20	00378c78	fishingobj	symtab run 10996-11050, 10 locals in sec @896..@1564; sinit; text-locals 314df0-318b70
+.rodata	00378c78	00378ed0	pbuggy	symtab run 11051-11155, 40 locals in sec @942..@1435; sinit; text-locals 319db0-31bdc8
+.rodata	00378ed0	00378f50	tu@31c020	symtab run 11156-11170, 3 locals in sec @1618..@1633; first local fn CheckSaku__FP8CEditMapi; text-locals 31c020-31ddd4
+.rodata	00378f50	00378f80	helpmes	symtab run 11171-11181, 2 locals in sec @799..@800; sinit; text-locals 31e3a0-31e3ac
+.rodata	00378f80	00379108	vlgr_info	symtab run 11182-11262, 32 locals in sec @214..@557; sinit; text-locals 31ec40-31f95c
+.rodata	00379108	00379128	tu@31fc80	symtab run 11264-11275, 4 locals in sec @878..@881; first local fn quest_NUM__FP9SPI_STACKi; text-locals 31fc80-31fdf4
+.rodata	00379128	00379330	mainloop3	symtab run 11276-11331, 27 locals in sec @802..@953; sinit; no local funcs
+.rodata	00379330	00379340	tu@320d40	symtab run 11332-11341, 1 locals in sec @211..@211; first local fn search_txt__Fc; text-locals 320d40-321634
+.rodata	00379340	00379360	tu@321f70	symtab run 11342-11366, 1 locals in sec @1059..@1059; first local fn FishDist__FP15RACE_FISH_PARAMP15RACE_FISH_PARAM; text-locals 321f70-324a74
+.rodata	00379360	00379680	convviewlp	symtab run 11367-11421, 27 locals in sec @1016..@1169; sinit; text-locals 3253b0-325c60
+.init	00379680	00379690	mg_frame	symtab run 1255-1267, 1 locals in sec; sinit; text-locals 136220-137d44
+.init	00379690	003796c0	mg_tanime	symtab run 1282-1322, 1 locals in sec; sinit; text-locals 13dfd0-13ea00
+.init	003796c0	00379790	mglib	symtab run 1351-1405, 1 locals in sec; sinit; text-locals 141870-146614
+.init	00379790	003797a0	nd_meswin	symtab run 1823-1893, 1 locals in sec; sinit; no local funcs
+.init	003797a0	003797b0	dbg_font	symtab run 2626-2633, 1 locals in sec; sinit; text-locals 1874a0-187808
+.init	003797b0	00379810	snd_mngr	symtab run 2717-2778, 1 locals in sec; sinit; text-locals 18dfd0-191904
+.init	00379810	00379ba0	mainloop	symtab run 2779-2982, 1 locals in sec; sinit; text-locals 191fe0-1957bc
+.init	00379ba0	00379c40	gamedata	symtab run 2983-3070, 1 locals in sec; sinit; text-locals 195b60-197ac0
+.init	00379c40	00379c90	sysmes	symtab run 3071-3090, 1 locals in sec; sinit; no local funcs
+.init	00379c90	00379ca0	userdata	symtab run 3091-3214, 1 locals in sec; sinit; text-locals 19c2e0-19fd44
+.init	00379ca0	00379ce0	editctrl	symtab run 3221-3297, 1 locals in sec; sinit; text-locals 1a54c0-1a8a9c
+.init	00379ce0	00379f00	editloop	symtab run 3405-3572, 1 locals in sec; sinit; text-locals 1aaef0-1b16c8
+.init	00379f00	00379f10	dng_debug	symtab run 3759-3794, 1 locals in sec; sinit; text-locals 1bc2a0-1bce6c
+.init	00379f10	0037a3e0	dng_main	symtab run 3823-4017, 1 locals in sec; sinit; text-locals 1cd170-1d5c80
+.init	0037a3e0	0037a470	dngmenu	symtab run 4682-4827, 1 locals in sec; sinit; text-locals 1edf30-1ef010
+.init	0037a470	0037a4d0	editmenu	symtab run 4828-5097, 1 locals in sec; sinit; text-locals 1f3ea0-1fe110
+.init	0037a4d0	0037a520	inventmn	symtab run 5098-5425, 1 locals in sec; sinit; text-locals 200b80-20dbdc
+.init	0037a520	0037a570	menuaqua	symtab run 5426-5719, 1 locals in sec; sinit; text-locals 20e460-21c788
+.init	0037a570	0037a580	menucls1	symtab run 5720-5759, 1 locals in sec; sinit; no local funcs
+.init	0037a580	0037a6b0	menudraw	symtab run 5761-5946, 1 locals in sec; sinit; text-locals 2216d0-2315cc
+.init	0037a6b0	0037a710	menumain	symtab run 5947-6079, 1 locals in sec; sinit; text-locals 234ff0-2392e8
+.init	0037a710	0037a7f0	menusys	symtab run 6080-6587, 1 locals in sec; sinit; text-locals 239470-24ffe8
+.init	0037a7f0	0037a800	event	symtab run 6885-6892, 1 locals in sec; sinit; no local funcs
+.init	0037a800	0037aa30	event_func	symtab run 6975-7819, 1 locals in sec; sinit; text-locals 262cc0-281920
+.init	0037aa30	0037aa60	eventedit	symtab run 7820-7899, 1 locals in sec; sinit; text-locals 281ab0-282fa0
+.init	0037aa60	0037aa70	dng_event	symtab run 7991-8051, 1 locals in sec; sinit; text-locals 290c70-292f24
+.init	0037aa70	0037aa80	menushop	symtab run 8053-8193, 1 locals in sec; sinit; text-locals 295340-295c04
+.init	0037aa80	0037ab00	title	symtab run 8341-8511, 1 locals in sec; sinit; text-locals 2a2e70-2a8ffc
+.init	0037ab00	0037ab20	editdata	symtab run 8597-8633, 1 locals in sec; sinit; text-locals 2acdd0-2aedfc
+.init	0037ab20	0037ab30	menucapt	symtab run 8634-8661, 1 locals in sec; sinit; no local funcs
+.init	0037ab30	0037ab60	menumap	symtab run 8679-8766, 1 locals in sec; sinit; text-locals 2afa60-2b28f8
+.init	0037ab60	0037ac00	menuchr	symtab run 8767-9210, 1 locals in sec; sinit; text-locals 2b4330-2c2604
+.init	0037ac00	0037ac40	menuop	symtab run 9211-9426, 1 locals in sec; sinit; text-locals 2c4430-2ca450
+.init	0037ac40	0037ac70	movieviewlp	symtab run 9427-9465, 1 locals in sec; sinit; text-locals 2cb730-2cb808
+.init	0037ac70	0037ac80	editmode	symtab run 9840-10063, 1 locals in sec; sinit; text-locals 2dd740-2e299c
+.init	0037ac80	0037acb0	mapjump	symtab run 10065-10097, 1 locals in sec; sinit; text-locals 2e46f0-2e48c4
+.init	0037acb0	0037acf0	editeff	symtab run 10467-10481, 1 locals in sec; sinit; no local funcs
+.init	0037acf0	0037ad70	fishing	symtab run 10482-10746, 1 locals in sec; sinit; text-locals 3015f0-308f4c
+.init	0037ad70	0037adb0	subgame	symtab run 10747-10753, 1 locals in sec; sinit; no local funcs
+.init	0037adb0	0037adf0	gyorace	symtab run 10754-10834, 1 locals in sec; sinit; text-locals 30c940-30cc20
+.init	0037adf0	0037ae20	nowload	symtab run 10835-10869, 1 locals in sec; sinit; text-locals 30e5d0-30e960
+.init	0037ae20	0037ae30	nameregi	symtab run 10870-10949, 1 locals in sec; sinit; text-locals 30fef0-310c24
+.init	0037ae30	0037ae40	photo	symtab run 10950-10995, 1 locals in sec; sinit; text-locals 313880-313920
+.init	0037ae40	0037ae90	fishingobj	symtab run 10996-11050, 1 locals in sec; sinit; text-locals 314df0-318b70
+.init	0037ae90	0037aee0	pbuggy	symtab run 11051-11155, 1 locals in sec; sinit; text-locals 319db0-31bdc8
+.init	0037aee0	0037af40	helpmes	symtab run 11171-11181, 1 locals in sec; sinit; text-locals 31e3a0-31e3ac
+.init	0037af40	0037af60	vlgr_info	symtab run 11182-11262, 1 locals in sec; sinit; text-locals 31ec40-31f95c
+.init	0037af60	0037afb0	mainloop3	symtab run 11276-11331, 1 locals in sec; sinit; no local funcs
+.init	0037afb0	0037afe0	convviewlp	symtab run 11367-11421, 1 locals in sec; sinit; text-locals 3253b0-325c60
+.ctor	0037afe0	0037afe4	mg_frame	symtab run 1255-1267, 1 locals in sec; sinit; text-locals 136220-137d44
+.ctor	0037afe4	0037afe8	mg_tanime	symtab run 1282-1322, 1 locals in sec; sinit; text-locals 13dfd0-13ea00
+.ctor	0037afe8	0037afec	mglib	symtab run 1351-1405, 1 locals in sec; sinit; text-locals 141870-146614
+.ctor	0037afec	0037aff0	nd_meswin	symtab run 1823-1893, 1 locals in sec; sinit; no local funcs
+.ctor	0037aff0	0037aff4	dbg_font	symtab run 2626-2633, 1 locals in sec; sinit; text-locals 1874a0-187808
+.ctor	0037aff4	0037aff8	snd_mngr	symtab run 2717-2778, 1 locals in sec; sinit; text-locals 18dfd0-191904
+.ctor	0037aff8	0037affc	mainloop	symtab run 2779-2982, 1 locals in sec; sinit; text-locals 191fe0-1957bc
+.ctor	0037affc	0037b000	gamedata	symtab run 2983-3070, 1 locals in sec; sinit; text-locals 195b60-197ac0
+.ctor	0037b000	0037b004	sysmes	symtab run 3071-3090, 1 locals in sec; sinit; no local funcs
+.ctor	0037b004	0037b008	userdata	symtab run 3091-3214, 1 locals in sec; sinit; text-locals 19c2e0-19fd44
+.ctor	0037b008	0037b00c	editctrl	symtab run 3221-3297, 1 locals in sec; sinit; text-locals 1a54c0-1a8a9c
+.ctor	0037b00c	0037b010	editloop	symtab run 3405-3572, 1 locals in sec; sinit; text-locals 1aaef0-1b16c8
+.ctor	0037b010	0037b014	dng_debug	symtab run 3759-3794, 1 locals in sec; sinit; text-locals 1bc2a0-1bce6c
+.ctor	0037b014	0037b018	dng_main	symtab run 3823-4017, 1 locals in sec; sinit; text-locals 1cd170-1d5c80
+.ctor	0037b018	0037b01c	dngmenu	symtab run 4682-4827, 1 locals in sec; sinit; text-locals 1edf30-1ef010
+.ctor	0037b01c	0037b020	editmenu	symtab run 4828-5097, 1 locals in sec; sinit; text-locals 1f3ea0-1fe110
+.ctor	0037b020	0037b024	inventmn	symtab run 5098-5425, 1 locals in sec; sinit; text-locals 200b80-20dbdc
+.ctor	0037b024	0037b028	menuaqua	symtab run 5426-5719, 1 locals in sec; sinit; text-locals 20e460-21c788
+.ctor	0037b028	0037b02c	menucls1	symtab run 5720-5759, 1 locals in sec; sinit; no local funcs
+.ctor	0037b02c	0037b030	menudraw	symtab run 5761-5946, 1 locals in sec; sinit; text-locals 2216d0-2315cc
+.ctor	0037b030	0037b034	menumain	symtab run 5947-6079, 1 locals in sec; sinit; text-locals 234ff0-2392e8
+.ctor	0037b034	0037b038	menusys	symtab run 6080-6587, 1 locals in sec; sinit; text-locals 239470-24ffe8
+.ctor	0037b038	0037b03c	event	symtab run 6885-6892, 1 locals in sec; sinit; no local funcs
+.ctor	0037b03c	0037b040	event_func	symtab run 6975-7819, 1 locals in sec; sinit; text-locals 262cc0-281920
+.ctor	0037b040	0037b044	eventedit	symtab run 7820-7899, 1 locals in sec; sinit; text-locals 281ab0-282fa0
+.ctor	0037b044	0037b048	dng_event	symtab run 7991-8051, 1 locals in sec; sinit; text-locals 290c70-292f24
+.ctor	0037b048	0037b04c	menushop	symtab run 8053-8193, 1 locals in sec; sinit; text-locals 295340-295c04
+.ctor	0037b04c	0037b050	title	symtab run 8341-8511, 1 locals in sec; sinit; text-locals 2a2e70-2a8ffc
+.ctor	0037b050	0037b054	editdata	symtab run 8597-8633, 1 locals in sec; sinit; text-locals 2acdd0-2aedfc
+.ctor	0037b054	0037b058	menucapt	symtab run 8634-8661, 1 locals in sec; sinit; no local funcs
+.ctor	0037b058	0037b05c	menumap	symtab run 8679-8766, 1 locals in sec; sinit; text-locals 2afa60-2b28f8
+.ctor	0037b05c	0037b060	menuchr	symtab run 8767-9210, 1 locals in sec; sinit; text-locals 2b4330-2c2604
+.ctor	0037b060	0037b064	menuop	symtab run 9211-9426, 1 locals in sec; sinit; text-locals 2c4430-2ca450
+.ctor	0037b064	0037b068	movieviewlp	symtab run 9427-9465, 1 locals in sec; sinit; text-locals 2cb730-2cb808
+.ctor	0037b068	0037b06c	editmode	symtab run 9840-10063, 1 locals in sec; sinit; text-locals 2dd740-2e299c
+.ctor	0037b06c	0037b070	mapjump	symtab run 10065-10097, 1 locals in sec; sinit; text-locals 2e46f0-2e48c4
+.ctor	0037b070	0037b074	editeff	symtab run 10467-10481, 1 locals in sec; sinit; no local funcs
+.ctor	0037b074	0037b078	fishing	symtab run 10482-10746, 1 locals in sec; sinit; text-locals 3015f0-308f4c
+.ctor	0037b078	0037b07c	subgame	symtab run 10747-10753, 1 locals in sec; sinit; no local funcs
+.ctor	0037b07c	0037b080	gyorace	symtab run 10754-10834, 1 locals in sec; sinit; text-locals 30c940-30cc20
+.ctor	0037b080	0037b084	nowload	symtab run 10835-10869, 1 locals in sec; sinit; text-locals 30e5d0-30e960
+.ctor	0037b084	0037b088	nameregi	symtab run 10870-10949, 1 locals in sec; sinit; text-locals 30fef0-310c24
+.ctor	0037b088	0037b08c	photo	symtab run 10950-10995, 1 locals in sec; sinit; text-locals 313880-313920
+.ctor	0037b08c	0037b090	fishingobj	symtab run 10996-11050, 1 locals in sec; sinit; text-locals 314df0-318b70
+.ctor	0037b090	0037b094	pbuggy	symtab run 11051-11155, 1 locals in sec; sinit; text-locals 319db0-31bdc8
+.ctor	0037b094	0037b098	helpmes	symtab run 11171-11181, 1 locals in sec; sinit; text-locals 31e3a0-31e3ac
+.ctor	0037b098	0037b09c	vlgr_info	symtab run 11182-11262, 1 locals in sec; sinit; text-locals 31ec40-31f95c
+.ctor	0037b09c	0037b0a0	mainloop3	symtab run 11276-11331, 1 locals in sec; sinit; no local funcs
+.ctor	0037b0a0	0037b0b0	convviewlp	symtab run 11367-11421, 1 locals in sec; sinit; text-locals 3253b0-325c60
+.sdata	0037c700	0037c708	tu@1303c0	symtab run 1233-1237, 2 locals in sec; first local fn Check_Point_Poly3__Fffffffff; text-locals 1303c0-1308c4
+.sdata	0037c708	0037c714	mglib	symtab run 1351-1405, 3 locals in sec; sinit; text-locals 141870-146614
+.sdata	0037c714	0037c718	anon(symtab 1406-1406)	symtab run 1406-1406, 1 locals in sec @165..@165; first local fn -; no local funcs
+.sdata	0037c718	0037c71c	tu@148cb0	symtab run 1736-1782, 1 locals in sec; first local fn SearchFile__FPc; text-locals 148cb0-14a044
+.sdata	0037c71c	0037c720	anon(symtab 1929-1939)	symtab run 1929-1939, 1 locals in sec; first local fn -; no local funcs
+.sdata	0037c720	0037c728	tu@17ef10	symtab run 2479-2491, 1 locals in sec @589..@589; first local fn DivSpriteScreen__FR11mgCDrawPrim; text-locals 17ef10-17f304
+.sdata	0037c728	0037c750	snd_mngr	symtab run 2717-2778, 6 locals in sec @1469..@1469; sinit; text-locals 18dfd0-191904
+.sdata	0037c750	0037c770	mainloop	symtab run 2779-2982, 4 locals in sec @973..@1474; sinit; text-locals 191fe0-1957bc; AMBIGUOUS START: 1 global obj(s) between prev local end 37c746 and 37c750 (MainThreadPriority)
+.sdata	0037c770	0037c778	gamedata	symtab run 2983-3070, 1 locals in sec; sinit; text-locals 195b60-197ac0
+.sdata	0037c778	0037c7b0	userdata	symtab run 3091-3214, 7 locals in sec @4695..@4695; sinit; text-locals 19c2e0-19fd44
+.sdata	0037c7b0	0037c7d8	tu@1a8cd0	symtab run 3298-3404, 5 locals in sec @1059..@1226; first local fn PrintCursor__FPci; text-locals 1a8cd0-1aaee8
+.sdata	0037c7d8	0037c7f0	editloop	symtab run 3405-3572, 4 locals in sec @2346..@2352; sinit; text-locals 1aaef0-1b16c8
+.sdata	0037c7f0	0037c7f8	tu@1b57f0	symtab run 3573-3622, 1 locals in sec; first local fn emapEDIT_RIVER__FP9SPI_STACKi; text-locals 1b57f0-1b5ee4
+.sdata	0037c7f8	0037c808	anon(symtab 3625-3758)	symtab run 3625-3758, 2 locals in sec @1804..@1805; first local fn -; no local funcs
+.sdata	0037c808	0037c818	dng_main	symtab run 3823-4017, 2 locals in sec @2044..@2046; sinit; text-locals 1cd170-1d5c80
+.sdata	0037c818	0037c85c	dngmenu	symtab run 4682-4827, 9 locals in sec @3043..@3164; sinit; text-locals 1edf30-1ef010
+.sdata	0037c85c	0037c8b0	editmenu	symtab run 4828-5097, 13 locals in sec @1828..@4152; sinit; text-locals 1f3ea0-1fe110
+.sdata	0037c8b0	0037c910	inventmn	symtab run 5098-5425, 13 locals in sec @2562..@4494; sinit; text-locals 200b80-20dbdc
+.sdata	0037c910	0037c998	menuaqua	symtab run 5426-5719, 19 locals in sec @5309..@5309; sinit; text-locals 20e460-21c788
+.sdata	0037c998	0037c9a0	menucls1	symtab run 5720-5759, 1 locals in sec @1371..@1371; sinit; no local funcs
+.sdata	0037c9a0	0037c9f0	menudraw	symtab run 5761-5946, 13 locals in sec @1788..@4442; sinit; text-locals 2216d0-2315cc
+.sdata	0037c9f0	0037ca48	menumain	symtab run 5947-6079, 10 locals in sec @1514..@1867; sinit; text-locals 234ff0-2392e8
+.sdata	0037ca48	0037cae0	menusys	symtab run 6080-6587, 31 locals in sec @1232..@9055; sinit; text-locals 239470-24ffe8
+.sdata	0037cae0	0037cae8	tu@252d60	symtab run 6588-6884, 2 locals in sec @2092..@2092; first local fn ReCalcBox__FP9mgVu0FBOX9mgVu0FBOX; text-locals 252d60-257668
+.sdata	0037cae8	0037cb18	anon(symtab 7902-7912)	symtab run 7902-7912, 6 locals in sec; first local fn -; no local funcs
+.sdata	0037cb18	0037cb40	menushop	symtab run 8053-8193, 6 locals in sec; sinit; text-locals 295340-295c04
+.sdata	0037cb40	0037cb44	tu@29d0c0	symtab run 8206-8326, 1 locals in sec @468..@468; first local fn defMain__FPv; text-locals 29d0c0-29fdec
+.sdata	0037cb44	0037cb68	title	symtab run 8341-8511, 7 locals in sec @2646..@2646; sinit; text-locals 2a2e70-2a8ffc
+.sdata	0037cb68	0037cb70	tu@2aae30	symtab run 8582-8596, 1 locals in sec @1615..@1615; first local fn GetNumber3__FPci; text-locals 2aae30-2ac7f0
+.sdata	0037cb70	0037cb78	menumap	symtab run 8679-8766, 1 locals in sec @1343..@1343; sinit; text-locals 2afa60-2b28f8
+.sdata	0037cb78	0037cbf0	menuchr	symtab run 8767-9210, 19 locals in sec @2288..@4158; sinit; text-locals 2b4330-2c2604
+.sdata	0037cbf0	0037cc20	menuop	symtab run 9211-9426, 7 locals in sec @1616..@2342; sinit; text-locals 2c4430-2ca450
+.sdata	0037cc20	0037cc44	tu@2d6c00	symtab run 9656-9732, 5 locals in sec @1125..@1377; first local fn mlMAP_NAME_NUM__FP9SPI_STACKi; text-locals 2d6c00-2d8930
+.sdata	0037cc44	0037cc48	editmode	symtab run 9840-10063, 1 locals in sec; sinit; text-locals 2dd740-2e299c
+.sdata	0037cc48	0037cc50	tu@2f5c20	symtab run 10294-10316, 1 locals in sec; first local fn CheckPlaceBurnParts__FP12GeoFuncParamP12RS_STACKDATAi; text-locals 2f5c20-2f613c
+.sdata	0037cc50	0037cc60	tu@2fdd90	symtab run 10416-10466, 2 locals in sec @938..@938; first local fn _TREE_MAPINFO__FP9SPI_STACKi; text-locals 2fdd90-2fe4cc; AMBIGUOUS START: 1 global obj(s) between prev local end 37cc4c and 37cc50 (NowProgramLoopNo)
+.sdata	0037cc60	0037cc68	fishing	symtab run 10482-10746, 1 locals in sec @1444..@1444; sinit; text-locals 3015f0-308f4c
+.sdata	0037cc68	0037cc6c	gyorace	symtab run 10754-10834, 1 locals in sec; sinit; text-locals 30c940-30cc20
+.sdata	0037cc6c	0037cc70	nowload	symtab run 10835-10869, 1 locals in sec; sinit; text-locals 30e5d0-30e960
+.sdata	0037cc70	0037cce0	nameregi	symtab run 10870-10949, 18 locals in sec @1081..@2031; sinit; text-locals 30fef0-310c24
+.sdata	0037cce0	0037cce4	photo	symtab run 10950-10995, 1 locals in sec; sinit; text-locals 313880-313920
+.sdata	0037cce4	0037cce8	pbuggy	symtab run 11051-11155, 1 locals in sec; sinit; text-locals 319db0-31bdc8
+.sdata	0037cce8	0037cd20	mainloop3	symtab run 11276-11331, 7 locals in sec @804..@884; sinit; no local funcs
+.sdata	0037cd20	0037cd28	tu@320d40	symtab run 11332-11341, 1 locals in sec; first local fn search_txt__Fc; text-locals 320d40-321634
+.sdata	0037cd28	0037cd80	tu@321f70	symtab run 11342-11366, 1 locals in sec @483..@483; first local fn FishDist__FP15RACE_FISH_PARAMP15RACE_FISH_PARAM; text-locals 321f70-324a74
+.sbss	0037cd80	0037cd84	(unattributed head)	1 globals
+.sbss	0037cd84	0037cd94	tu@1321e0	symtab run 1238-1253, 4 locals in sec; first local fn conv_new_text__FPcPc; text-locals 1321e0-133ef0; AMBIGUOUS START: 1 global obj(s) between prev local end 37cd80 and 37cd84 (StopCamera__9mgCCamera)
+.sbss	0037cd94	0037cdc0	mg_tanime	symtab run 1282-1322, 10 locals in sec; sinit; text-locals 13dfd0-13ea00
+.sbss	0037cdc0	0037ce88	tu@13ebf0	symtab run 1323-1350, 3 locals in sec; first local fn SetPointLight__FPUiPA4_fPA4_f; text-locals 13ebf0-141700
+.sbss	0037ce88	0037cf0c	mglib	symtab run 1351-1405, 28 locals in sec; sinit; text-locals 141870-146614; AMBIGUOUS START: 35 global obj(s) between prev local end 37cdcc and 37ce88 (mgAntialiasing,mgFrameRate,mgNowFrameRate...)
+.sbss	0037cf0c	0037cf30	tu@148cb0	symtab run 1736-1782, 9 locals in sec; first local fn SearchFile__FPc; text-locals 148cb0-14a044
+.sbss	0037cf30	0037cf4c	tu@14a890	symtab run 1783-1800, 7 locals in sec; first local fn pad_button_read__FP10PAD_STATUSii; text-locals 14a890-14bc90
+.sbss	0037cf4c	0037cf84	tu@14bd00	symtab run 1801-1822, 4 locals in sec; first local fn QuatSlerp__FPfPffPf; text-locals 14bd00-14d9c8
+.sbss	0037cf84	0037cf88	tu@15d470	symtab run 1894-1909, 1 locals in sec; first local fn VSyncCallBack__Fi; text-locals 15d470-15d7a8; AMBIGUOUS START: 4 global obj(s) between prev local end 37cf74 and 37cf84 (MesAbsDrawOff,MovieCCCnt,MovieCCW...)
+.sbss	0037cf88	0037cf90	anon(symtab 1929-1939)	symtab run 1929-1939, 2 locals in sec; first local fn -; no local funcs
+.sbss	0037cf90	0037cfd8	tu@163080	symtab run 1940-2118, 18 locals in sec; first local fn mapDummy__FP9SPI_STACKi; text-locals 163080-1661dc
+.sbss	0037cfd8	0037cfec	tu@1664a0	symtab run 2119-2183, 5 locals in sec; first local fn mapIMG__FP9SPI_STACKi; text-locals 1664a0-167280
+.sbss	0037cfec	0037d00c	tu@16a7a0	symtab run 2185-2207, 8 locals in sec; first local fn pcpMDS__FP9SPI_STACKi; text-locals 16a7a0-16adfc
+.sbss	0037d00c	0037d018	tu@16d2f0	symtab run 2208-2270, 3 locals in sec; first local fn RockOn_TargetSel__FP6CScenei; text-locals 16d2f0-171b34
+.sbss	0037d018	0037d08c	tu@176a60	symtab run 2271-2394, 29 locals in sec; first local fn ScanInfoFile__FP11CCharacter2PUiPcP9mgCMemoryP9mgCMemoryP9mgCMemoryiP11CCharacter2i; text-locals 176a60-179e94
+.sbss	0037d08c	0037d0b0	tu@17abd0	symtab run 2395-2468, 9 locals in sec; first local fn BindPosition__FPfPfff; text-locals 17abd0-17d338
+.sbss	0037d0b0	0037d0c0	anon(symtab 2492-2493)	symtab run 2492-2493, 2 locals in sec @205..@206; first local fn -; no local funcs
+.sbss	0037d0c0	0037d0d0	anon(symtab 2494-2495)	symtab run 2494-2495, 2 locals in sec @283..@292; first local fn -; no local funcs
+.sbss	0037d0d0	0037d0dc	tu@1809e0	symtab run 2496-2599, 3 locals in sec; first local fn UniformityRand__Fff; text-locals 1809e0-184024
+.sbss	0037d0dc	0037d0e8	tu@185210	symtab run 2600-2622, 3 locals in sec; first local fn LoadSkyPack__FP12MAP_SKY_INFOPci; text-locals 185210-185708
+.sbss	0037d0e8	0037d108	anon(symtab 2668-2707)	symtab run 2668-2707, 5 locals in sec; first local fn -; no local funcs
+.sbss	0037d108	0037d154	snd_mngr	symtab run 2717-2778, 6 locals in sec; sinit; text-locals 18dfd0-191904
+.sbss	0037d154	0037d1d4	mainloop	symtab run 2779-2982, 31 locals in sec; sinit; text-locals 191fe0-1957bc; AMBIGUOUS START: 7 global obj(s) between prev local end 37d138 and 37d154 (read_buffer,SystemSND_ID,DebugFlag...)
+.sbss	0037d1d4	0037d1f4	gamedata	symtab run 2983-3070, 3 locals in sec; sinit; text-locals 195b60-197ac0
+.sbss	0037d1f4	0037d208	userdata	symtab run 3091-3214, 4 locals in sec @5773..@5773; sinit; text-locals 19c2e0-19fd44; gap globals all resolved to previous TU: SpiWeaponPt->A,SpiItemPt->A,SpiAttach->A,SpiRoboPart->A,SpiFish->A
+.sbss	0037d208	0037d210	anon(symtab 3215-3216)	symtab run 3215-3216, 2 locals in sec; first local fn -; no local funcs
+.sbss	0037d210	0037d288	editctrl	symtab run 3221-3297, 30 locals in sec; sinit; text-locals 1a54c0-1a8a9c
+.sbss	0037d288	0037d2c0	tu@1a8cd0	symtab run 3298-3404, 14 locals in sec; first local fn PrintCursor__FPci; text-locals 1a8cd0-1aaee8
+.sbss	0037d2c0	0037d390	editloop	symtab run 3405-3572, 51 locals in sec; sinit; text-locals 1aaef0-1b16c8
+.sbss	0037d390	0037d3c8	tu@1b57f0	symtab run 3573-3622, 14 locals in sec; first local fn emapEDIT_RIVER__FP9SPI_STACKi; text-locals 1b57f0-1b5ee4
+.sbss	0037d3c8	0037d3d0	anon(symtab 3625-3758)	symtab run 3625-3758, 2 locals in sec; first local fn -; no local funcs
+.sbss	0037d3d0	0037d3f0	tu@1bd360	symtab run 3795-3805, 6 locals in sec; first local fn DrawActiveItemCursor__Fiif; text-locals 1bd360-1bd7f4
+.sbss	0037d3f0	0037d4c0	dng_main	symtab run 3823-4017, 27 locals in sec; sinit; text-locals 1cd170-1d5c80; AMBIGUOUS START: 2 global obj(s) between prev local end 37d3e5 and 37d3f0 (MainBuffer,BuffReadData)
+.sbss	0037d4c0	0037d4dc	tu@1d6b00	symtab run 4018-4336, 7 locals in sec; first local fn _ROOM_FIXED__FP9SPI_STACKi; text-locals 1d6b00-1d6d74
+.sbss	0037d4dc	0037d4e4	tu@1deea0	symtab run 4337-4385, 2 locals in sec; first local fn HitEffectSet__FP6CScenePfi; text-locals 1deea0-1e1a2c
+.sbss	0037d4e4	0037d524	tu@1e1b60	symtab run 4386-4582, 2 locals in sec; first local fn GetStackInt__FP12RS_STACKDATA; text-locals 1e1b60-1e909c
+.sbss	0037d524	0037d5d8	dngmenu	symtab run 4682-4827, 36 locals in sec @3040..@3478; sinit; text-locals 1edf30-1ef010; AMBIGUOUS START: 13 global obj(s) between prev local end 37d4f0 and 37d524 (TEX_ShadowTexture,TEX_SystenFrame,TEX_SystenFrame2...)
+.sbss	0037d5d8	0037d754	editmenu	symtab run 4828-5097, 80 locals in sec @1556..@4150; sinit; text-locals 1f3ea0-1fe110
+.sbss	0037d754	0037d838	inventmn	symtab run 5098-5425, 43 locals in sec @1788..@5642; sinit; text-locals 200b80-20dbdc
+.sbss	0037d838	0037d9b8	menuaqua	symtab run 5426-5719, 84 locals in sec; sinit; text-locals 20e460-21c788
+.sbss	0037d9b8	0037d9e0	menucls1	symtab run 5720-5759, 5 locals in sec @1433..@1433; sinit; no local funcs
+.sbss	0037d9e0	0037db68	menudraw	symtab run 5761-5946, 58 locals in sec @1400..@5917; sinit; text-locals 2216d0-2315cc; AMBIGUOUS START: 4 global obj(s) between prev local end 37d9cc and 37d9e0 (MenuUsedItemNo,MenuUsedItemType,MenuUsedNotErrorCode...)
+.sbss	0037db68	0037dc18	menumain	symtab run 5947-6079, 28 locals in sec @1697..@2209; sinit; text-locals 234ff0-2392e8; AMBIGUOUS START: 9 global obj(s) between prev local end 37db44 and 37db68 (MenuMainScene,MenuActiveSaveData,MenuUserDataManPtr...)
+.sbss	0037dc18	0037de28	menusys	symtab run 6080-6587, 89 locals in sec @1385..@9093; sinit; text-locals 239470-24ffe8
+.sbss	0037de28	0037de78	tu@252d60	symtab run 6588-6884, 18 locals in sec; first local fn ReCalcBox__FP9mgVu0FBOX9mgVu0FBOX; text-locals 252d60-257668; AMBIGUOUS START: 1 global obj(s) between prev local end 37de24 and 37de28 (MenuSePlayUsedFlag)
+.sbss	0037de78	0037de80	event	symtab run 6885-6892, 1 locals in sec; sinit; no local funcs; AMBIGUOUS START: 1 global obj(s) between prev local end 37de71 and 37de78 (EventScene)
+.sbss	0037de80	0037dea4	event_func	symtab run 6975-7819, 3 locals in sec; sinit; text-locals 262cc0-281920; AMBIGUOUS START: 1 global obj(s) between prev local end 37de7c and 37de80 (EventMarker)
+.sbss	0037dea4	0037debc	eventedit	symtab run 7820-7899, 6 locals in sec; sinit; text-locals 281ab0-282fa0
+.sbss	0037debc	0037dec0	anon(symtab 7902-7912)	symtab run 7902-7912, 1 locals in sec; first local fn -; no local funcs
+.sbss	0037dec0	0037ded4	dng_event	symtab run 7991-8051, 5 locals in sec; sinit; text-locals 290c70-292f24
+.sbss	0037ded4	0037df7c	menushop	symtab run 8053-8193, 34 locals in sec @1581..@1831; sinit; text-locals 295340-295c04
+.sbss	0037df7c	0037dfc4	tu@29d0c0	symtab run 8206-8326, 18 locals in sec; first local fn defMain__FPv; text-locals 29d0c0-29fdec
+.sbss	0037dfc4	0037dfc8	anon(symtab 8327-8330)	symtab run 8327-8330, 1 locals in sec; first local fn -; no local funcs
+.sbss	0037dfc8	0037dfd4	tu@2a0530	symtab run 8331-8340, 3 locals in sec; first local fn CheckOver__FPfPfPf; text-locals 2a0530-2a05c8
+.sbss	0037dfd4	0037e104	title	symtab run 8341-8511, 70 locals in sec; sinit; text-locals 2a2e70-2a8ffc
+.sbss	0037e104	0037e130	tu@2a94a0	symtab run 8512-8581, 11 locals in sec; first local fn emapEDIT_PARTS_NUM__FP9SPI_STACKi; text-locals 2a94a0-2a9dcc
+.sbss	0037e130	0037e140	editdata	symtab run 8597-8633, 4 locals in sec; sinit; text-locals 2acdd0-2aedfc
+.sbss	0037e140	0037e16c	menucapt	symtab run 8634-8661, 11 locals in sec; sinit; no local funcs
+.sbss	0037e16c	0037e174	tu@2af5b0	symtab run 8662-8678, 2 locals in sec; first local fn _NPC_NUM__FP9SPI_STACKi; text-locals 2af5b0-2af734
+.sbss	0037e174	0037e22c	menumap	symtab run 8679-8766, 36 locals in sec @1218..@1764; sinit; text-locals 2afa60-2b28f8
+.sbss	0037e22c	0037e2f4	menuchr	symtab run 8767-9210, 42 locals in sec @1650..@3440; sinit; text-locals 2b4330-2c2604; AMBIGUOUS START: 5 global obj(s) between prev local end 37e212 and 37e22c (MorattaStack,MenuLoadInfo,MenuCharaChangeBase_Tex...)
+.sbss	0037e2f4	0037e408	menuop	symtab run 9211-9426, 55 locals in sec @1306..@3091; sinit; text-locals 2c4430-2ca450
+.sbss	0037e408	0037e450	movieviewlp	symtab run 9427-9465, 16 locals in sec; sinit; text-locals 2cb730-2cb808
+.sbss	0037e450	0037e46c	tu@2d2720	symtab run 9516-9655, 7 locals in sec; first local fn ParabolicInitialVector__FPfPfPfff; text-locals 2d2720-2d6a38; AMBIGUOUS START: 1 global obj(s) between prev local end 37e449 and 37e450 (nowScene)
+.sbss	0037e46c	0037e4b4	tu@2d6c00	symtab run 9656-9732, 16 locals in sec; first local fn mlMAP_NAME_NUM__FP9SPI_STACKi; text-locals 2d6c00-2d8930
+.sbss	0037e4b4	0037e4b8	anon(symtab 9830-9839)	symtab run 9830-9839, 1 locals in sec; first local fn -; no local funcs; AMBIGUOUS START: 1 global obj(s) between prev local end 37e4b0 and 37e4b4 (BossBattleSelFlag)
+.sbss	0037e4b8	0037e558	editmode	symtab run 9840-10063, 40 locals in sec; sinit; text-locals 2dd740-2e299c
+.sbss	0037e558	0037e57c	mapjump	symtab run 10065-10097, 7 locals in sec; sinit; text-locals 2e46f0-2e48c4
+.sbss	0037e57c	0037e584	tu@2e7c90	symtab run 10098-10271, 1 locals in sec; first local fn GetEffSptBaseDefPtr__Fi; text-locals 2e7c90-2eddcc; AMBIGUOUS START: 2 global obj(s) between prev local end 37e574 and 37e57c (now_scene,EffScriptMan)
+.sbss	0037e584	0037e58c	tu@2f26f0	symtab run 10281-10292, 2 locals in sec; first local fn PlaneNormalXZ__FPfPfPfPf; text-locals 2f26f0-2f271c; AMBIGUOUS START: 1 global obj(s) between prev local end 37e580 and 37e584 (Sphida)
+.sbss	0037e58c	0037e5b0	tu@2f6460	symtab run 10317-10372, 8 locals in sec; first local fn MakeMemoryCardFileName__FiPc; text-locals 2f6460-2f6690
+.sbss	0037e5b0	0037e5f8	anon(symtab 10377-10415)	symtab run 10377-10415, 18 locals in sec; first local fn -; no local funcs
+.sbss	0037e5f8	0037e610	tu@2fdd90	symtab run 10416-10466, 6 locals in sec; first local fn _TREE_MAPINFO__FP9SPI_STACKi; text-locals 2fdd90-2fe4cc
+.sbss	0037e610	0037e61c	editeff	symtab run 10467-10481, 3 locals in sec; sinit; no local funcs
+.sbss	0037e61c	0037e7ac	fishing	symtab run 10482-10746, 98 locals in sec; sinit; text-locals 3015f0-308f4c
+.sbss	0037e7ac	0037e7b8	subgame	symtab run 10747-10753, 3 locals in sec; sinit; no local funcs
+.sbss	0037e7b8	0037e830	gyorace	symtab run 10754-10834, 21 locals in sec; sinit; text-locals 30c940-30cc20
+.sbss	0037e830	0037e87c	nowload	symtab run 10835-10869, 18 locals in sec; sinit; text-locals 30e5d0-30e960
+.sbss	0037e87c	0037e8c8	nameregi	symtab run 10870-10949, 13 locals in sec @1621..@1693; sinit; text-locals 30fef0-310c24
+.sbss	0037e8c8	0037e8ec	photo	symtab run 10950-10995, 9 locals in sec; sinit; text-locals 313880-313920
+.sbss	0037e8ec	0037e92c	fishingobj	symtab run 10996-11050, 16 locals in sec; sinit; text-locals 314df0-318b70
+.sbss	0037e92c	0037e9cc	pbuggy	symtab run 11051-11155, 40 locals in sec; sinit; text-locals 319db0-31bdc8
+.sbss	0037e9cc	0037e9d8	helpmes	symtab run 11171-11181, 3 locals in sec; sinit; text-locals 31e3a0-31e3ac
+.sbss	0037e9d8	0037ea28	vlgr_info	symtab run 11182-11262, 20 locals in sec; sinit; text-locals 31ec40-31f95c
+.sbss	0037ea28	0037ea34	tu@31fc80	symtab run 11264-11275, 3 locals in sec; first local fn quest_NUM__FP9SPI_STACKi; text-locals 31fc80-31fdf4
+.sbss	0037ea34	0037ea6c	mainloop3	symtab run 11276-11331, 14 locals in sec; sinit; no local funcs
+.sbss	0037ea6c	0037ea70	tu@321f70	symtab run 11342-11366, 1 locals in sec; first local fn FishDist__FP15RACE_FISH_PARAMP15RACE_FISH_PARAM; text-locals 321f70-324a74
+.sbss	0037ea70	0037ead5	convviewlp	symtab run 11367-11421, 14 locals in sec; sinit; text-locals 3253b0-325c60
+.bss	0037ead5	0037eb00	(unattributed head)	0 globals
+.bss	0037eb00	0037ec50	crt0	symtab run 3-4, 2 locals in sec; first local fn -; no local funcs
+.bss	0037ec50	0037edc0	obj@104d58(sceDevFontDefault)	gcc .bss SECTION sym #142; reloc from text obj@104d58 (nodc1)
+.bss	0037edc0	0037efc0	obj@107a50(_motionComp0)	gcc .bss SECTION sym #263; reloc from text obj@107a50 (nodc1)
+.bss	0037efc0	0037f7d0	lib/sce/kernl/thread[obj@110d60]	gcc .bss SECTION sym #344; reloc from text obj@110d60 (dc1:InitThread)
+.bss	0037f7d0	0037f800	lib/sce/kernl/deci2[obj@1110c0]	gcc .bss SECTION sym #351; reloc from text obj@1110c0 (dc1:sceDeci2Open)
+.bss	0037f800	0037fbc0	lib/sce/kernl/tty[obj@1112a0]	gcc .bss SECTION sym #363; reloc from text obj@1112a0 (dc1:sceTtyWrite)
+.bss	0037fbc0	0037fc40	lib/sce/kernl/kprintf[obj@1117c0]	gcc .bss SECTION sym #377; reloc from text obj@1117c0 (dc1:_printf)
+.bss	0037fc40	0037fec0	lib/sce/kernl/sifcmd[obj@112138]	gcc .bss SECTION sym #395; reloc from text obj@112138 (dc1:sceSifGetSreg)
+.bss	0037fec0	00381700	lib/sce/kernl/sifrpc[obj@112880]	gcc .bss SECTION sym #416; reloc from text obj@112880 (dc1:sceSifInitRpc)
+.bss	00381700	00382ac0	lib/sce/kernl/filestub[obj@1137e0]	gcc .bss SECTION sym #444; reloc from text obj@1137e0 (dc1:sceFsInit)
+.bss	00382ac0	00382c80	lib/sce/kernl/iopheap[obj@116e78]	gcc .bss SECTION sym #458; reloc from text obj@116e78 (dc1:sceSifInitIopHeap)
+.bss	00382c80	00382ec0	lib/sce/kernl/eeloadfile[obj@117178]	gcc .bss SECTION sym #473; reloc from text obj@117178 (dc1:sceSifLoadFileReset)
+.bss	00382ec0	00382f40	lib/sce/kernl/iopreset[obj@117ed8]	gcc .bss SECTION sym #481; reloc from text obj@117ed8 (dc1:sceSifResetIop)
+.bss	00382f40	00384180	obj@1186c0(_kTLBException)	gcc .bss SECTION sym #540; reloc from text obj@1186c0 (nodc1)
+.bss	00384180	00384340	lib/sce/sdr_main[obj@118e50]	gcc .bss SECTION sym #577; reloc from text obj@118e50 (dc1:sceSdRemoteInit)
+.bss	00384340	003845d8	lib/sce/eecdvd[obj@11f258]	gcc .bss SECTION sym #872; reloc from text obj@11f258 (dc1:sceCdDelayThread)
+.bss	003845d8	00384600	lib/sce/eecdvd[obj@120970]	gcc .bss SECTION sym #899; reloc from text obj@120970 (dc1:sceCdStInit)
+.bss	00384600	003848c0	lib/sce/libpad[obj@120e50]	gcc .bss SECTION sym #922; reloc from text obj@120e50 (dc1:scePadInit)
+.bss	003848c0	00385ec0	lib/sce/libmc[obj@1221e8]	gcc .bss SECTION sym #946; reloc from text obj@1221e8 (dc1:sceMcInit)
+.bss	00385ec0	00395ec0	tu@12c2c0	symtab run 1214-1232, 1 locals in sec; first local fn GetZBufVram__FPi; text-locals 12c2c0-12f83c
+.bss	00395ec0	00396ec0	tu@1303c0	symtab run 1233-1237, 1 locals in sec; first local fn Check_Point_Poly3__Fffffffff; text-locals 1303c0-1308c4
+.bss	00396ec0	00396ee0	tu@1321e0	symtab run 1238-1253, 2 locals in sec @717..@933; first local fn conv_new_text__FPcPc; text-locals 1321e0-133ef0
+.bss	00396ee0	00396ef0	anon(symtab 1254-1254)	symtab run 1254-1254, 1 locals in sec @369..@369; first local fn -; no local funcs
+.bss	00396ef0	00396fd0	mg_frame	symtab run 1255-1267, 6 locals in sec @324..@1119; sinit; text-locals 136220-137d44
+.bss	00396fd0	00396fe0	tu@13a580	symtab run 1274-1275, 1 locals in sec @353..@353; first local fn SetShadowData__FPUiPA4_f; text-locals 13a580-13a62c
+.bss	00396fe0	00396ff0	anon(symtab 1276-1281)	symtab run 1276-1281, 1 locals in sec @199..@199; first local fn -; no local funcs
+.bss	00396ff0	00398580	mg_tanime	symtab run 1282-1322, 1 locals in sec; sinit; text-locals 13dfd0-13ea00
+.bss	00398580	00399880	mglib	symtab run 1351-1405, 8 locals in sec @863..@863; sinit; text-locals 141870-146614; AMBIGUOUS START: 7 global obj(s) between prev local end 397024 and 398580 (mgGiftagAD,mgRenderInfo,mgBackColor...)
+.bss	00399880	003ec3c0	tu@148cb0	symtab run 1736-1782, 7 locals in sec @259..@845; first local fn SearchFile__FPc; text-locals 148cb0-14a044
+.bss	003ec3c0	003ecfc0	tu@14a890	symtab run 1783-1800, 3 locals in sec; first local fn pad_button_read__FP10PAD_STATUSii; text-locals 14a890-14bc90
+.bss	003ecfc0	003f21d0	tu@14bd00	symtab run 1801-1822, 13 locals in sec @945..@945; first local fn QuatSlerp__FPfPffPf; text-locals 14bd00-14d9c8
+.bss	003f21d0	003f3060	anon(symtab 1929-1939)	symtab run 1929-1939, 2 locals in sec; first local fn -; no local funcs; AMBIGUOUS START: 5 global obj(s) between prev local end 3f0460 and 3f21d0 (NameRegistTbl,MovieCCFont,MovieCCStart...)
+.bss	003f3060	003f3390	tu@163080	symtab run 1940-2118, 6 locals in sec; first local fn mapDummy__FP9SPI_STACKi; text-locals 163080-1661dc
+.bss	003f3390	003f33a0	tu@16d2f0	symtab run 2208-2270, 1 locals in sec @3107..@3107; first local fn RockOn_TargetSel__FP6CScenei; text-locals 16d2f0-171b34
+.bss	003f33a0	003f3590	tu@176a60	symtab run 2271-2394, 3 locals in sec; first local fn ScanInfoFile__FP11CCharacter2PUiPcP9mgCMemoryP9mgCMemoryP9mgCMemoryiP11CCharacter2i; text-locals 176a60-179e94
+.bss	003f3590	003f3600	tu@17dd30	symtab run 2469-2478, 7 locals in sec @299..@399; first local fn DrawDivSprite__FP11mgCDrawPrim9mgRect<i>P10mgCTexturePiiiii; text-locals 17dd30-17e280
+.bss	003f3600	003f3670	tu@17ef10	symtab run 2479-2491, 7 locals in sec @392..@588; first local fn DivSpriteScreen__FR11mgCDrawPrim; text-locals 17ef10-17f304
+.bss	003f3670	003f3690	tu@1809e0	symtab run 2496-2599, 1 locals in sec; first local fn UniformityRand__Fff; text-locals 1809e0-184024
+.bss	003f3690	003f3f50	anon(symtab 2623-2623)	symtab run 2623-2623, 1 locals in sec @287..@287; first local fn -; no local funcs
+.bss	003f3f50	003f64c0	anon(symtab 2668-2707)	symtab run 2668-2707, 6 locals in sec; first local fn -; no local funcs; AMBIGUOUS START: 1 global obj(s) between prev local end 3f36a0 and 3f3f50 (JisFont)
+.bss	003f64c0	003f6540	anon(symtab 2708-2711)	symtab run 2708-2711, 3 locals in sec; first local fn -; no local funcs
+.bss	003f6540	003faf50	snd_mngr	symtab run 2717-2778, 7 locals in sec @1555..@1648; sinit; text-locals 18dfd0-191904
+.bss	003faf50	01e95c90	mainloop	symtab run 2779-2982, 21 locals in sec @1529..@1529; sinit; text-locals 191fe0-1957bc; AMBIGUOUS START: 3 global obj(s) between prev local end 3fa5a0 and 3faf50 (GamePad,PadCtrl,DebugInfo)
+.bss	01e95c90	01ea0f00	gamedata	symtab run 2983-3070, 11 locals in sec; sinit; text-locals 195b60-197ac0; AMBIGUOUS START: 1 global obj(s) between prev local end 1e95c58 and 1e95c90 (GameItemDataManage)
+.bss	01ea0f00	01ec93d0	sysmes	symtab run 3071-3090, 5 locals in sec; sinit; no local funcs; start moved 1ea0f30->1ea0f00: SystemMesStack->B
+.bss	01ec93d0	01ec9530	userdata	symtab run 3091-3214, 3 locals in sec @2061..@2061; sinit; text-locals 19c2e0-19fd44
+.bss	01ec9530	01ec9790	editctrl	symtab run 3221-3297, 10 locals in sec; sinit; text-locals 1a54c0-1a8a9c; gap globals all resolved to previous TU: BattleParamater->A
+.bss	01ec9790	01ec97a0	tu@1a8cd0	symtab run 3298-3404, 1 locals in sec @1237..@1237; first local fn PrintCursor__FPci; text-locals 1a8cd0-1aaee8
+.bss	01ec97a0	01ecdc20	editloop	symtab run 3405-3572, 27 locals in sec @949..@3041; sinit; text-locals 1aaef0-1b16c8
+.bss	01ecdc20	01ecdc30	tu@1b57f0	symtab run 3573-3622, 1 locals in sec @426..@426; first local fn emapEDIT_RIVER__FP9SPI_STACKi; text-locals 1b57f0-1b5ee4
+.bss	01ecdc30	01ecdd10	dng_debug	symtab run 3759-3794, 1 locals in sec; sinit; text-locals 1bc2a0-1bce6c
+.bss	01ecdd10	01ee5210	tu@1bfa40	symtab run 3806-3820, 2 locals in sec @1051..@1214; first local fn trans_effect_rate__Fi; text-locals 1bfa40-1c04fc; AMBIGUOUS START: 1 global obj(s) between prev local end 1ecdce8 and 1ecdd10 (dbinfo)
+.bss	01ee5210	01ef7420	dng_main	symtab run 3823-4017, 11 locals in sec @941..@2001; sinit; text-locals 1cd170-1d5c80; AMBIGUOUS START: 45 global obj(s) between prev local end 1ecdd30 and 1ee5210 (BuffPaketList,BuffPaketData,BuffStageMain...)
+.bss	01ef7420	01ef7430	tu@1deea0	symtab run 4337-4385, 1 locals in sec @1704..@1704; first local fn HitEffectSet__FP6CScenePfi; text-locals 1deea0-1e1a2c
+.bss	01ef7430	01ef7830	tu@1e1b60	symtab run 4386-4582, 1 locals in sec; first local fn GetStackInt__FP12RS_STACKDATA; text-locals 1e1b60-1e909c
+.bss	01ef7830	01ef78e0	tu@1eb350	symtab run 4611-4681, 3 locals in sec; first local fn SetupMints__FP6CSceneP16CUserDataManager; text-locals 1eb350-1ebc68
+.bss	01ef78e0	01ef7960	dngmenu	symtab run 4682-4827, 5 locals in sec @3142..@3142; sinit; text-locals 1edf30-1ef010
+.bss	01ef7960	01ef8230	editmenu	symtab run 4828-5097, 24 locals in sec @1826..@3304; sinit; text-locals 1f3ea0-1fe110
+.bss	01ef8230	01efb410	inventmn	symtab run 5098-5425, 12 locals in sec @2776..@5474; sinit; text-locals 200b80-20dbdc
+.bss	01efb410	01efba68	menuaqua	symtab run 5426-5719, 15 locals in sec @2473..@4433; sinit; text-locals 20e460-21c788
+.bss	01efba68	01efbb60	menucls1	symtab run 5720-5759, 2 locals in sec @1407..@1436; sinit; no local funcs; AMBIGUOUS START: 1 global obj(s) between prev local end 1efba40 and 1efba68 (MenuDCMsg)
+.bss	01efbb60	01efc3f0	menudraw	symtab run 5761-5946, 30 locals in sec @900..@4496; sinit; text-locals 2216d0-2315cc; AMBIGUOUS START: 2 global obj(s) between prev local end 1efba84 and 1efbb60 (menu_limmit_displayflag,MenuMesForm)
+.bss	01efc3f0	01efc830	menumain	symtab run 5947-6079, 8 locals in sec @2351..@2351; sinit; text-locals 234ff0-2392e8
+.bss	01efc830	01efd370	menusys	symtab run 6080-6587, 33 locals in sec @1557..@7688; sinit; text-locals 239470-24ffe8
+.bss	01efd370	01efd400	tu@252d60	symtab run 6588-6884, 1 locals in sec; first local fn ReCalcBox__FP9mgVu0FBOX9mgVu0FBOX; text-locals 252d60-257668
+.bss	01efd400	01f10210	event	symtab run 6885-6892, 1 locals in sec; sinit; no local funcs; AMBIGUOUS START: 1 global obj(s) between prev local end 1efd390 and 1efd400 (MenuCommandAnalyzeInfo)
+.bss	01f10210	01f34080	event_func	symtab run 6975-7819, 10 locals in sec; sinit; text-locals 262cc0-281920; AMBIGUOUS START: 12 global obj(s) between prev local end 1efd454 and 1f10210 (EdEventInfo,EventObjHandleMother,esMother...)
+.bss	01f34080	01f34ec0	eventedit	symtab run 7820-7899, 3 locals in sec; sinit; text-locals 281ab0-282fa0
+.bss	01f34ec0	01f35080	anon(symtab 7902-7912)	symtab run 7902-7912, 1 locals in sec; first local fn -; no local funcs
+.bss	01f35080	01f35098	lib/libgcc/dp-bit[obj@28b8f8]	gcc .bss SECTION sym #7962; reloc from text obj@28b8f8 (dc1:__pack_d)
+.bss	01f35098	01f350c0	lib/libgcc/fp-bit[obj@28c5f0]	gcc .bss SECTION sym #7968; reloc from text obj@28c5f0 (dc1:__pack_f)
+.bss	01f350c0	01f35130	anon(symtab 7984-7990)	symtab run 7984-7990, 2 locals in sec; first local fn -; no local funcs
+.bss	01f35130	01f35160	dng_event	symtab run 7991-8051, 2 locals in sec @1348..@1348; sinit; text-locals 290c70-292f24
+.bss	01f35160	01f351a0	menushop	symtab run 8053-8193, 2 locals in sec; sinit; text-locals 295340-295c04
+.bss	01f351a0	01f351c0	anon(symtab 8198-8204)	symtab run 8198-8204, 2 locals in sec @733..@734; first local fn -; no local funcs
+.bss	01f351c0	01f35b80	tu@29d0c0	symtab run 8206-8326, 7 locals in sec @344..@349; first local fn defMain__FPv; text-locals 29d0c0-29fdec
+.bss	01f35b80	01f35c10	anon(symtab 8327-8330)	symtab run 8327-8330, 1 locals in sec; first local fn -; no local funcs
+.bss	01f35c10	01f35eb0	tu@2a0530	symtab run 8331-8340, 4 locals in sec; first local fn CheckOver__FPfPfPf; text-locals 2a0530-2a05c8
+.bss	01f35eb0	01f36080	title	symtab run 8341-8511, 10 locals in sec; sinit; text-locals 2a2e70-2a8ffc
+.bss	01f36080	01f3a0f0	editdata	symtab run 8597-8633, 3 locals in sec; sinit; text-locals 2acdd0-2aedfc
+.bss	01f3a0f0	01f3a120	menucapt	symtab run 8634-8661, 1 locals in sec; sinit; no local funcs
+.bss	01f3a120	01f3c760	tu@2af5b0	symtab run 8662-8678, 2 locals in sec; first local fn _NPC_NUM__FP9SPI_STACKi; text-locals 2af5b0-2af734
+.bss	01f3c760	01f3c990	menumap	symtab run 8679-8766, 3 locals in sec; sinit; text-locals 2afa60-2b28f8
+.bss	01f3c990	01f3cf20	menuchr	symtab run 8767-9210, 33 locals in sec @1083..@5482; sinit; text-locals 2b4330-2c2604; AMBIGUOUS START: 4 global obj(s) between prev local end 1f3c7e0 and 1f3c990 (MenuCharaBuild2,MenuActionChara,MenuActionCharaBuffer...)
+.bss	01f3cf20	01f3d040	menuop	symtab run 9211-9426, 6 locals in sec; sinit; text-locals 2c4430-2ca450
+.bss	01f3d040	01f3d160	movieviewlp	symtab run 9427-9465, 6 locals in sec; sinit; text-locals 2cb730-2cb808
+.bss	01f3d160	01f3d180	tu@2cd390	symtab run 9472-9508, 1 locals in sec @988..@988; first local fn GetChrFileSize__FPUii; text-locals 2cd390-2cf1f0
+.bss	01f3d180	01f3d580	tu@2d2720	symtab run 9516-9655, 1 locals in sec; first local fn ParabolicInitialVector__FPfPfPfff; text-locals 2d2720-2d6a38; AMBIGUOUS START: 1 global obj(s) between prev local end 1f3d170 and 1f3d180 (action_info)
+.bss	01f3d580	01f455c0	tu@2d6c00	symtab run 9656-9732, 3 locals in sec; first local fn mlMAP_NAME_NUM__FP9SPI_STACKi; text-locals 2d6c00-2d8930
+.bss	01f455c0	01f465f0	anon(symtab 9733-9829)	symtab run 9733-9829, 4 locals in sec @784..@1466; first local fn -; no local funcs
+.bss	01f465f0	01f57df0	anon(symtab 9830-9839)	symtab run 9830-9839, 1 locals in sec; first local fn -; no local funcs
+.bss	01f57df0	01f58250	editmode	symtab run 9840-10063, 22 locals in sec @1148..@2064; sinit; text-locals 2dd740-2e299c
+.bss	01f58250	01f58260	anon(symtab 10064-10064)	symtab run 10064-10064, 1 locals in sec @161..@161; first local fn -; no local funcs
+.bss	01f58260	01f58480	mapjump	symtab run 10065-10097, 12 locals in sec @912..@912; sinit; text-locals 2e46f0-2e48c4
+.bss	01f58480	01f58890	tu@2e7c90	symtab run 10098-10271, 2 locals in sec @2067..@2067; first local fn GetEffSptBaseDefPtr__Fi; text-locals 2e7c90-2eddcc
+.bss	01f58890	01f588a0	anon(symtab 10280-10280)	symtab run 10280-10280, 1 locals in sec @373..@373; first local fn -; no local funcs
+.bss	01f588a0	01f588b0	tu@2f26f0	symtab run 10281-10292, 1 locals in sec @1050..@1050; first local fn PlaneNormalXZ__FPfPfPfPf; text-locals 2f26f0-2f271c
+.bss	01f588b0	01f588c0	anon(symtab 10377-10415)	symtab run 10377-10415, 1 locals in sec @1328..@1328; first local fn -; no local funcs
+.bss	01f588c0	01f58dd0	editeff	symtab run 10467-10481, 4 locals in sec @1037..@1112; sinit; no local funcs
+.bss	01f58dd0	01f59380	fishing	symtab run 10482-10746, 15 locals in sec @1681..@1689; sinit; text-locals 3015f0-308f4c; AMBIGUOUS START: 1 global obj(s) between prev local end 1f58c20 and 1f58dd0 (PlaceAnime)
+.bss	01f59380	01f59700	subgame	symtab run 10747-10753, 1 locals in sec; sinit; no local funcs
+.bss	01f59700	01f59a00	gyorace	symtab run 10754-10834, 11 locals in sec @1765..@1776; sinit; text-locals 30c940-30cc20; AMBIGUOUS START: 3 global obj(s) between prev local end 1f593b0 and 1f59700 (fish_game_data,RaceInfo,old_prog)
+.bss	01f59a00	01f5d2b0	nowload	symtab run 10835-10869, 4 locals in sec; sinit; text-locals 30e5d0-30e960
+.bss	01f5d2b0	01f5d370	nameregi	symtab run 10870-10949, 5 locals in sec @1171..@1755; sinit; text-locals 30fef0-310c24; AMBIGUOUS START: 1 global obj(s) between prev local end 1f5d25c and 1f5d2b0 (Nameregi_Target)
+.bss	01f5d370	01f5d4b0	photo	symtab run 10950-10995, 2 locals in sec; sinit; text-locals 313880-313920
+.bss	01f5d4b0	01f5eed0	fishingobj	symtab run 10996-11050, 15 locals in sec; sinit; text-locals 314df0-318b70
+.bss	01f5eed0	01f5ef50	pbuggy	symtab run 11051-11155, 5 locals in sec; sinit; text-locals 319db0-31bdc8
+.bss	01f5ef50	01f5ef60	tu@31c020	symtab run 11156-11170, 1 locals in sec @1297..@1297; first local fn CheckSaku__FP8CEditMapi; text-locals 31c020-31ddd4
+.bss	01f5ef60	01f628e0	helpmes	symtab run 11171-11181, 3 locals in sec; sinit; text-locals 31e3a0-31e3ac
+.bss	01f628e0	01f644e0	vlgr_info	symtab run 11182-11262, 2 locals in sec; sinit; text-locals 31ec40-31f95c
+.bss	01f644e0	01f645d0	mainloop3	symtab run 11276-11331, 5 locals in sec; sinit; no local funcs
+.bss	01f645d0	01f646b0	tu@321f70	symtab run 11342-11366, 1 locals in sec; first local fn FishDist__FP15RACE_FISH_PARAMP15RACE_FISH_PARAM; text-locals 321f70-324a74
+.bss	01f646b0	01f64a00	convviewlp	symtab run 11367-11421, 7 locals in sec; sinit; text-locals 3253b0-325c60

@@ -1,0 +1,39 @@
+#include "common.h"
+
+// Code (.text)
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", Step__11CFireRasterFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", SetTexture__11CFireRasterFP10mgCTexture);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", Draw__11CFireRasterFPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", Initialize__11CFireRasterFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", Init__14CThunderEffectFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", Hamon__6CWaterFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", SetVertex__6CWaterFPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", Shake__6CWaterFiif);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", Shake__11CWaterFrameFfff);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", GetWater__11CWaterFrameFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", SetSize__6CWaterFiiP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", SetParam__6CWaterFffff);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", SetColor__6CWaterFUcUcUcUc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", __ct__6CWaterFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", CreateRenderInfoPacket__6CWaterFPUiPA4_fP13mgRENDER_INFO);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", Draw__6CWaterFPUiPA4_fP14mgCDrawManager);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", CreatePacket__6CWaterFP14mgCDrawManager);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", SetTexture__11CWaterFrameFP10mgCTexture);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", Step__11CWaterFrameFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", SetParam__11CWaterFrameFffff);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", SetColor__11CWaterFrameFUcUcUcUc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", Shake__11CWaterFrameFiif);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", CreatePacket__11CWaterFrameFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", CreateWaterFrame__FiiPfPfP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", Initialize__11CWaterFrameFv);
+
+// Initialised data (.data)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/water", prog_vif_351);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/water", progf_vif_352);
+
+// Virtual tables (.vtables)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/water", __vt__11CWaterFrame);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/water", __vt__6CWater);
+
+// Uninitialised data (.bss)
+unsigned char at_287__2[0x10];

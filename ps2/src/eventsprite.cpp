@@ -1,0 +1,52 @@
+#include "common.h"
+
+// Code (.text)
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", ParabolicInitialVectorY__Fffff);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", CalcPosParabolicJump__FPfPfPffff);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", Draw__7CMarkerFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", Set__7CMarkerFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", Init__7CMarkerFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetName__12CEventSpriteFPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetDraw__12CEventSpriteFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetGet__12CEventSpriteFiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetPut__12CEventSpriteFiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetMove__12CEventSpriteFiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetFade__12CEventSpriteFii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetColor__12CEventSpriteFiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", Step__12CEventSpriteFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", Draw__12CEventSpriteFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", Init__12CEventSpriteFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetName__18CEventSpriteMotherFiPc);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetDraw__18CEventSpriteMotherFii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetGet__18CEventSpriteMotherFiiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetPut__18CEventSpriteMotherFiiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetMove__18CEventSpriteMotherFiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetFade__18CEventSpriteMotherFiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetColor__18CEventSpriteMotherFiiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", Step__18CEventSpriteMotherFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", Draw__18CEventSpriteMotherFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", Set__18CEventSpriteMotherFii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", Init__18CEventSpriteMotherFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", __ct__13CEventSprite2Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", Initialize__13CEventSprite2Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetTexture__13CEventSprite2FPci);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetDrawFlag__13CEventSprite2Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetSpriteType__13CEventSprite2Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetPosition__13CEventSprite2FPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetColor__13CEventSprite2FPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetPutSize__13CEventSprite2Fii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetUvSize__13CEventSprite2Fiiii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetScale__13CEventSprite2Fff);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", GetScale__13CEventSprite2FPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", GetPosition__13CEventSprite2FPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", GetColor__13CEventSprite2FPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", GetType__13CEventSprite2Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetAlphaBlend__13CEventSprite2Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", SetRotZ__13CEventSprite2Ff);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", GetRotZ__13CEventSprite2Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", NormalDraw__13CEventSprite2Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", FirstDraw__13CEventSprite2Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/eventsprite", Draw__13CEventSprite2Fv);
+
+// Constants (.rodata)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/eventsprite", at_1069__4);

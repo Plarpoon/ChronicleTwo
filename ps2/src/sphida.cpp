@@ -1,0 +1,37 @@
+#include "common.h"
+
+// Code (.text)
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", GetSphidaClubDef__Fi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", DPrimEnterSprite__FP11mgCDrawPrimiiiiffff);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", Initialize__8CPowGageFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", Step__8CPowGageFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", Draw__8CPowGageFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", InitSphida__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", GetSphidaPtr__Fv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", __ct__7CSphidaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", Initialize__7CSphidaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", SetUp__7CSphidaFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", s17_SetUp__7CSphidaFi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", Omake_SetUp__7CSphidaFii);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", Step__7CSphidaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", InitStatusSprite__7CSphidaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", DrawStatusSprite__7CSphidaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", DrawParCounter__7CSphidaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", Draw__7CSphidaFv);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", SetCollisionModel__7CSphidaFP10MDS_HEADERP9mgCMemory);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", PickupCollision__7CSphidaFPfP6CCPoly9mgVu0FBOXi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", DrawMiniMapSymbol__7CSphidaFP14CMiniMapSymbol);
+
+// Initialised data (.data)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", GolfClubDef);
+
+// Constants (.rodata)
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_940__4);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_1088);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_1089__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_1090__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_1138__2);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sphida", at_1221__5);
+
+// Small uninitialised data (.sbss)
+unsigned char Sphida[0x4];

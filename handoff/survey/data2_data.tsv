@@ -1,0 +1,113 @@
+#section	start	end	unit	confidence	evidence
+.data	00338080	00338230	mg_texture	high	4 locals (texflush_dma..block_table32$1267) ref only by mg_texture
+.data	00338230	00338240	mg_frame	high	1 locals (@307..@307) ref only by mg_frame
+.data	00338240	00338260	mg_shadow	high	2 locals (prog_vif$208..@243) ref only by mg_shadow
+.data	00338260	003382b0	mg_sprite	high	5 locals (sprite_giftag..@324) ref only by mg_sprite
+.data	003382b0	00338320	mg_tanime	high	1 locals (tex_tag..tex_tag) ref only by mg_tanime
+.data	00338320	00338440	mg_visual	high	14 locals (giftag..@769) ref only by mg_visual; global set_data_func: inside mg_visual local run; refs only mg_visual
+.data	00338440	00338490	mglib	high	4 locals (dimx$281..@1538) ref only by mglib
+.data	00338490	00338690	dataread	high	2 locals (TopDir..CurrentDir) ref only by dataread
+.data	00338690	00338920	nd_meswin	high	6 locals (@3748..data$4206) ref only by nd_meswin; global p: refs only nd_meswin (ClsMes::DrawFukidashi*); follows dataread CurrentDir, precedes nd_meswin @3748; global waku_data: refs only nd_meswin (CalcWindow*/DrawMesWin, 24); ends exactly at mapload @438
+.data	00338920	00338c80	mapload	high	3 locals (@438..cfg_tag) ref only by mapload
+.data	00338c80	00338d60	mapinfo	high	2 locals (mapinfo_tag..add_mapinfo_tag) ref only by mapinfo
+.data	00338d60	00338d70	mapparts	high	1 locals (@244..@244) ref only by mapparts
+.data	00338d70	00338da0	mdslist	high	1 locals (pcp_tag..pcp_tag) ref only by mdslist
+.data	00338da0	00338e70	actionchara	high	9 locals (@1398..@3291) ref only by actionchara
+.data	00338e70	00338ff0	character	high	3 locals (tag..@1575) ref only by character
+.data	00338ff0	003390d0	dynamicanime	high	1 locals (dynmc_tag..dynmc_tag) ref only by dynamicanime
+.data	003390d0	003390e0	outline	high	1 locals (@338..@338) ref only by outline
+.data	003390e0	003390f0	effectlist	high	1 locals (@393..@393) ref only by effectlist
+.data	003390f0	00339270	effect	high	1 locals (effm_tag..effm_tag) ref only by effect
+.data	00339270	003392c0	mapsky	high	2 locals (@387..tag) ref only by mapsky
+.data	003392c0	003392e0	water	high	2 locals (prog_vif$351..progf_vif$352) ref only by water
+.data	003392e0	00339820	mainloop	high	11 locals (pad_table..tag) ref only by mainloop; global LoopInit: refs only mainloop; global LoopMain: refs only mainloop; global LoopExit: refs only mainloop
+.data	00339820	00339d70	gamedata	high	3 locals (gamedata_tag..table$1553) ref only by gamedata; global etcitem_spectol_table: refs only gamedata SetItemSpectolPoint
+.data	00339d70	0033a830	userdata	high	23 locals (mos_henge_param..subgame1$5788) ref only by userdata
+.data	0033a830	0033a850	wavetable	high	2 locals (@251..@256) ref only by wavetable
+.data	0033a850	0033a900	editctrl	high	4 locals (name$978..@1320) ref only by editctrl
+.data	0033a900	0033aaf0	editdebug	high	16 locals (SelMax..@1542) ref only by editdebug
+.data	0033aaf0	0033ab80	editloop	high	5 locals (@1045..@3040) ref only by editloop
+.data	0033ab80	0033ac30	editmap	high	6 locals (@830..@2278) ref only by editmap
+.data	0033ac30	0033ac40	editparts	high	1 locals (@418..@418) ref only by editparts
+.data	0033ac40	0033af10	dng_object	high	21 locals (@923..@1806) ref only by dng_object
+.data	0033af10	0033cf70	colprim	high	global Damage_Param_Table: refs only colprim CColPrim::SetDamage; between dng_object and dng_debug locals
+.data	0033cf70	0033d010	dng_debug	high	2 locals (command_str..command_int) ref only by dng_debug
+.data	0033d010	0033d0b0	dng_status	high	4 locals (@1048..@1059) ref only by dng_status
+.data	0033d0b0	0033d210	dng_effect	high	7 locals (chill_tex_rect$910..@3214) ref only by dng_effect
+.data	0033d210	0033d250	dng_hud	high	1 locals (gekirin_anim..gekirin_anim) ref only by dng_hud
+.data	0033d250	0033d440	dng_main	high	15 locals (@1081..@3734) ref only by dng_main
+.data	0033d440	00341da0	automap	high	8 locals (symbol_table..@2299) ref only by automap; global PartsInfoData: refs only automap (12); global MiniMapInfoData: refs only automap
+.data	00341da0	00351780	monster	med	14 locals (dung_progtxt_notlift_mons..mos_data_anlyze_tag) ref only by monster; global base_monster_define: refs monster GetMonsterTable/CMonsterMan::GetReferPtr2 (+dng_debug,dng_main earlier units, excluded by order); alt automap (no refs)
+.data	00351780	00351d30	runscript_opcodes	high	5 locals (@1480..ext_func_info) ref only by runscript_opcodes
+.data	00351d30	00352010	charasetup	high	10 locals (@919..fname_tbl2$1298) ref only by charasetup; global robo_info_body: inside charasetup local run; refs only charasetup
+.data	00352010	003527d0	dngmenu	high	32 locals (markOffsetTable$1092..@3141) ref only by dngmenu
+.data	003527d0	00352de0	editmenu	high	25 locals (old_menuparts_pos..@4101) ref only by editmenu
+.data	00352de0	003535a0	inventmn	high	24 locals (scoop_table..NewComer$5648) ref only by inventmn
+.data	003535a0	00354580	menuaqua	high	60 locals (aquafish_mixTable..pl_s$5699) ref only by menuaqua; global Mitouroku: inside menuaqua local run; refs menuaqua(+menumap)
+.data	00354580	00354610	menucls1	high	3 locals (sn$944..st_bittable$1654) ref only by menucls1; global MenuBigNum: refs menucls1 GetMenuBigNum (+userdata, earlier unit); its R_MIPS_32 string pointers @907-@916 sit in menucls1 rodata between menucls1 @906 and @945 (menucls1 @N sequence)
+.data	00354610	00354e50	menudraw	high	32 locals (spectol_break_pos..@5901) ref only by menudraw
+.data	00354e50	003551c0	menumain	high	11 locals (light$1062..monster_table) ref only by menumain; global menu_basedgRef: inside menumain run; global menu_basedgCamPos: inside menumain run
+.data	003551c0	00355a70	menusys	med	50 locals (WepStatusInfoStrTable..imgtbl$8945) ref only by menusys; global menu_item_swap_sndtbl: refs menusys (4 funcs) +inventmn,menushop (outside window); alt menucommon (no refs)
+.data	00355a70	00356080	menucommon	high	15 locals (sort_table..menu_execommand_analyze_tag) ref only by menucommon
+.data	00356080	003560b0	event	high	1 locals (vv$984..vv$984) ref only by event
+.data	003560b0	003561f0	sceneseq	high	2 locals (ScsCmrSeqCallTbl..ScsObjSeqCallTbl) ref only by sceneseq
+.data	003561f0	00358460	event_func	high	8 locals (@1084..ext_func_info) ref only by event_func
+.data	00358460	003584c0	eventedit	high	3 locals (@1208..@1242) ref only by eventedit
+.data	003584c0	003584e0	scene	high	2 locals (@1503..@1504) ref only by scene
+.data	003584e0	00358500	sceneload	high	1 locals (@820..@820) ref only by sceneload
+.data	00358500	00358550	visualmotion	high	4 locals (set_data_func..@571) ref only by visualmotion
+.data	00358550	00358620	dng_event	high	8 locals (@1082..tag2) ref only by dng_event
+.data	00358620	003587b0	menushop	high	10 locals (dony_shoplist..@2470) ref only by menushop
+.data	003587b0	00358890	editriver	high	10 locals (@504..@799) ref only by editriver
+.data	00358890	003588b0	movie	high	2 locals (@1276..@1287) ref only by movie
+.data	003588b0	00358a30	title	high	8 locals (MC_ICON_Data..infomsg$2664) ref only by title
+.data	00358a30	00358b20	editinfo	high	1 locals (emap_tag..emap_tag) ref only by editinfo
+.data	00358b20	00358b70	editdata	high	1 locals (tag..tag) ref only by editdata
+.data	00358b70	00358b90	menucapt	high	1 locals (chap_voice$851..chap_voice$851) ref only by menucapt
+.data	00358b90	00358bd0	npccfg	high	3 locals (npc_spitag..infocfg$886) ref only by npccfg
+.data	00358bd0	00358c90	menumap	high	7 locals (menu_wmap_analyze_tag..@1383) ref only by menumap
+.data	00358c90	003597d0	menuchr	high	44 locals (tbl$992..tbl$5848) ref only by menuchr; global monster_progress_tbl: refs only menuchr (24)
+.data	003597d0	00359990	menuop	high	9 locals (manual_boot_event_no..b$2715) ref only by menuop
+.data	00359990	003599a0	movieviewlp	high	1 locals (tag_movie..tag_movie) ref only by movieviewlp
+.data	003599a0	003599f0	sceneevent	high	2 locals (col$1003..@1013) ref only by sceneevent
+.data	003599f0	0035a590	scenevillager	high	5 locals (@868..GameObjInfo) ref only by scenevillager
+.data	0035a590	0035a780	pot	high	global box_offset: refs only pot CBPot::SetObject2; between scenevillager and actscript locals; global iwa0_offset: refs only pot; global iwa1_offset: refs only pot
+.data	0035a780	0035aaa0	actscript	high	6 locals (@1181..ext_func_info) ref only by actscript
+.data	0035aaa0	0035ac80	mapselect	high	6 locals (map_sel_type..SedSelData) ref only by mapselect
+.data	0035ac80	0035b570	font	high	6 locals (@1041..@1272) ref only by font; global GaijiDataTbl: refs only font (GetGaijiW/H, DrawGaiji_sub); global FconvCodeTbl: refs only font; global FontGaijiConvTbl: refs only font; global alphabetical_chara_tbl: refs only font
+.data	0035b570	0035b6c0	drawwin	high	global data: refs only drawwin DrawVersatileWin_* (352)
+.data	0035b6c0	0035b940	editmode	high	20 locals (@1268..@2188) ref only by editmode
+.data	0035b940	0035b980	mapjump	high	1 locals (@997..@997) ref only by mapjump
+.data	0035b980	00361340	effscript	high	3 locals (@2311..ext_func_info) ref only by effscript; global eff_spt_base_def: refs only effscript
+.data	00361340	003613a0	sphida	high	1 locals (GolfClubDef..GolfClubDef) ref only by sphida
+.data	003613a0	003613b0	cameracontrol	high	1 locals (@396..@396) ref only by cameracontrol
+.data	003613b0	003613d0	editmap2	high	2 locals (@796..@983) ref only by editmap2
+.data	003613d0	003613e0	editevent	high	1 locals (@920..@920) ref only by editevent
+.data	003613e0	00361670	memcard	high	11 locals (cosbit_table..@2297) ref only by memcard
+.data	00361670	00361680	savedatadungeon	high	1 locals (limmit_table..limmit_table) ref only by savedatadungeon
+.data	00361680	00361760	editexception	high	8 locals (@1175..@1330) ref only by editexception
+.data	00361760	00361960	dngfloor	high	11 locals (@886..@1395) ref only by dngfloor
+.data	00361960	003619f0	editeff	high	5 locals (@1038..@1107) ref only by editeff
+.data	003619f0	00362150	fishing	high	10 locals (lure_file..tag) ref only by fishing
+.data	00362150	00362260	gyorace	high	7 locals (@1027..@1766) ref only by gyorace; global fish_name: refs only gyorace sgInitGyoRace; global cam_pos: refs only gyorace (12)
+.data	00362260	00362e30	nameregi	high	26 locals (Sfida_default_Name..gettbl0$2012) ref only by nameregi
+.data	00362e30	00362ea0	photo	high	2 locals (mes_txt..@936) ref only by photo
+.data	00362ea0	00362f20	fishingobj	high	5 locals (@975..@1798) ref only by fishingobj
+.data	00362f20	00362f60	pbuggy	high	4 locals (@1047..@1193) ref only by pbuggy
+.data	00362f60	00362f80	editanalyze	high	2 locals (@913..@964) ref only by editanalyze
+.data	00362f80	00363040	vlgr_info	high	3 locals (ni_tag..gi_tag) ref only by vlgr_info
+.data	00363040	00363070	quest	high	1 locals (quest_cmd_tag..quest_cmd_tag) ref only by quest
+.data	00363070	00363080	mainloop3	high	1 locals (@801..@801) ref only by mainloop3
+.data	00363080	003630c0	password	high	1 locals (txt_table..txt_table) ref only by password
+.data	003630c0	003632c0	gyoracesim	high	1 locals (fish_data..fish_data) ref only by gyoracesim
+.data	003632c0	00363480	convviewlp	high	3 locals (@1072..@1074) ref only by convviewlp
+# NOTES
+# Method: scripts in scratchpad/d2 (load.py, anal.py, assign.py, gen.py, verify.py). Reloc targets resolved from relocs_fixed.txt (HI16/LO16 pairs, GPREL16, R_MIPS_32); referrer unit = units.tsv unit of the referencing text address, __sinit_<unit> for .init, or the containing data object (resolved recursively). 787 symbols in 0x338080-0x363480: 758 locals + 29 globals. Every local is referenced by exactly one unit (no multi-unit locals); range starts are the first symbol of each unit's run; trailing padding stays with the preceding unit.
+# Verification: full coverage 0x338080-0x363480, no gaps/overlaps; unit order non-decreasing; 758 locals checked, 0 violations; 0 nonzero bytes and 0 relocations outside symbol extents. 0x363440-0x363480 is the zero pad at section end (kept in convviewlp).
+# 102 rows, one per unit (102 units present). Game units with no .data in this section (inferred from the ranges): mg_math, mg_camera, mg_dataset, mg_drawprim, mg_drawenv, mg_memory, scriptinterpreter, collision, gamepad, gameutil, main, map, object, screeneffect, dbg_font, runscript, sound, ezmidi, snd_seseq, snd_mngr, sysmes, charaviewlp, texviewlp, mapviewlp, editcoll, prespr, maintex, filesocket, ezbgm, eventsprite, editmapeffect, funcpoint, sndviewlp, scenesnd, villagermngr, occlusion, gaiji, intersection, padcontrol, menusystemdata, swordeffect, savedata, subgame, nowload, helpmes, hddinstall, crandom.
+# Uncertain (med) boundaries:
+#  0x341da0 base_monster_define (0xf740, between automap @2299 and monster dung_progtxt_notlift_mons): assigned monster (refs GetMonsterTable__Fi, CMonsterMan::GetReferPtr2); dng_debug and dng_main also reference it but are earlier than automap, so the order excludes them. Alternative: automap (ends at 0x341da0, no refs). No padding or content evidence; the object holds no pointers.
+#  0x355a60 menu_item_swap_sndtbl (0x10, between the last menusys local and menucommon sort_table): assigned menusys (4 referencing functions in CMenuKeyFunc/CMenuItemInfo); alternative menucommon (no refs). It is also referenced by inventmn and menushop, which are outside the order window.
+# Other globals in gaps that were resolved with high confidence (all single referrer unit within the order window): p, waku_data -> nd_meswin; LoopInit/Main/Exit -> mainloop; etcitem_spectol_table -> gamedata; Damage_Param_Table -> colprim (the only colprim .data); PartsInfoData, MiniMapInfoData -> automap; MenuBigNum -> menucls1 (its string pointers @907-@916 are menucls1 rodata locals); monster_progress_tbl -> menuchr; box_offset, iwa0_offset, iwa1_offset -> pot (pot has no .data locals); GaijiDataTbl, FconvCodeTbl, FontGaijiConvTbl, alphabetical_chara_tbl -> font (not gaiji: they precede font's locals); data -> drawwin (drawwin has no locals); eff_spt_base_def -> effscript; fish_name, cam_pos -> gyorace (not subgame).
+# Every "anon(symtab ...)" and AMBIGUOUS START group of out_sections_data.tsv is resolved here: its locals are referenced by functions of exactly one units.tsv unit (e.g. @244 mapparts, @251/@256 wavetable, @418 editparts, gekirin_anim dng_hud, @1503/@1504 scene, mons_attr_tbl* via mons_attr_list dng_object, RootHokanTable* via their pointer table dngmenu).
+# No owner left undetermined.

@@ -1,0 +1,12 @@
+# The build context is the sources and the tools. The disc image, what is
+# extracted or split from it and the build tree are mounted instead, and
+# copying them would make the context several gigabytes.
+.git
+rom
+build
+ps2/asm
+ps2/re
+tools/ghidra
+.build.lock
+**/__pycache__
+**/.DS_Store

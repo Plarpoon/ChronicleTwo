@@ -1,0 +1,147 @@
+#section	start	end	unit	confidence	evidence
+.sdata	0037c700	0037c708	mg_math	high	2 locals anchored by referencing functions
+.sdata	0037c708	0037c714	mglib	high	3 locals anchored by referencing functions
+.sdata	0037c714	0037c718	scriptinterpreter	high	1 locals anchored by referencing functions
+.sdata	0037c718	0037c71c	dataread	high	1 locals anchored by referencing functions
+.sdata	0037c71c	0037c720	map	high	1 locals anchored by referencing functions
+.sdata	0037c720	0037c728	effectlist	high	1 locals anchored by referencing functions
+.sdata	0037c728	0037c748	snd_mngr	high	6 locals anchored by referencing functions
+.sdata	0037c748	0037c770	mainloop	low	4 locals anchored by referencing functions, 1 globals; gap globals: between snd_mngr @1469 and mainloop @973; only referrer is main (159, outside candidate range); name affinity to mainloop; alt snd_mngr
+.sdata	0037c770	0037c778	gamedata	high	1 locals anchored by referencing functions
+.sdata	0037c778	0037c7b0	userdata	high	7 locals anchored by referencing functions, 1 globals
+.sdata	0037c7b0	0037c7d8	editdebug	high	5 locals anchored by referencing functions
+.sdata	0037c7d8	0037c7f0	editloop	high	4 locals anchored by referencing functions
+.sdata	0037c7f0	0037c7f8	editmap	high	1 locals anchored by referencing functions
+.sdata	0037c7f8	0037c808	dng_object	high	2 locals anchored by referencing functions
+.sdata	0037c808	0037c818	dng_main	high	2 locals anchored by referencing functions
+.sdata	0037c818	0037c85c	dngmenu	high	9 locals anchored by referencing functions
+.sdata	0037c85c	0037c8b0	editmenu	high	13 locals anchored by referencing functions
+.sdata	0037c8b0	0037c910	inventmn	high	13 locals anchored by referencing functions
+.sdata	0037c910	0037c998	menuaqua	high	19 locals anchored by referencing functions
+.sdata	0037c998	0037c9a0	menucls1	high	1 locals anchored by referencing functions
+.sdata	0037c9a0	0037c9f0	menudraw	high	13 locals anchored by referencing functions
+.sdata	0037c9f0	0037ca48	menumain	high	10 locals anchored by referencing functions, 3 globals
+.sdata	0037ca48	0037cae0	menusys	high	31 locals anchored by referencing functions, 1 globals
+.sdata	0037cae0	0037cae8	menucommon	high	2 locals anchored by referencing functions
+.sdata	0037cae8	0037cb18	scene	high	6 locals anchored by referencing functions
+.sdata	0037cb18	0037cb40	menushop	high	6 locals anchored by referencing functions
+.sdata	0037cb40	0037cb44	movie	high	1 locals anchored by referencing functions
+.sdata	0037cb44	0037cb68	title	high	7 locals anchored by referencing functions
+.sdata	0037cb68	0037cb70	scenesnd	high	1 locals anchored by referencing functions
+.sdata	0037cb70	0037cb78	menumap	high	1 locals anchored by referencing functions
+.sdata	0037cb78	0037cbf0	menuchr	high	19 locals anchored by referencing functions
+.sdata	0037cbf0	0037cc20	menuop	high	7 locals anchored by referencing functions
+.sdata	0037cc20	0037cc44	mapselect	high	5 locals anchored by referencing functions
+.sdata	0037cc44	0037cc48	editmode	high	1 locals anchored by referencing functions
+.sdata	0037cc48	0037cc4c	editevent	high	1 locals anchored by referencing functions
+.sdata	0037cc4c	0037cc50	memcard	med	no locals, 1 globals; gap globals: between editevent MenuInfo and dngfloor @938; memcard is the only referrer inside candidate range editevent..dngfloor (others dngmenu, menumain); alt any of menusystemdata..editexception
+.sdata	0037cc50	0037cc60	dngfloor	high	2 locals anchored by referencing functions
+.sdata	0037cc60	0037cc68	fishing	high	1 locals anchored by referencing functions
+.sdata	0037cc68	0037cc6c	gyorace	high	1 locals anchored by referencing functions
+.sdata	0037cc6c	0037cc70	nowload	high	1 locals anchored by referencing functions
+.sdata	0037cc70	0037cce0	nameregi	high	18 locals anchored by referencing functions
+.sdata	0037cce0	0037cce4	photo	high	1 locals anchored by referencing functions
+.sdata	0037cce4	0037cce8	pbuggy	high	1 locals anchored by referencing functions
+.sdata	0037cce8	0037cd20	mainloop3	high	7 locals anchored by referencing functions
+.sdata	0037cd20	0037cd28	password	high	1 locals anchored by referencing functions
+.sdata	0037cd28	0037cd80	gyoracesim	high	1 locals anchored by referencing functions
+.sbss	0037cd80	0037cd84	mg_camera	high	no locals, 2 globals; gap globals: mgCCamera static member; GPREL refs from mg_camera; DC1 StopCamera__7CCamera likewise first in .sbss; section-start label aliasing StopCamera__9mgCCamera
+.sbss	0037cd84	0037cd94	mg_dataset	high	4 locals anchored by referencing functions
+.sbss	0037cd94	0037cdc0	mg_tanime	high	10 locals anchored by referencing functions, 1 globals
+.sbss	0037cdc0	0037cdcc	mg_visual	high	3 locals anchored by referencing functions
+.sbss	0037cdcc	0037cf0c	mglib	high	28 locals anchored by referencing functions, 36 globals; gap globals: globals 0x37cdcc-0x37ce88 referenced mostly/only by mglib; DC1 mglib.cpp defines DmaCH1/2/8 and screen vars; mglib locals follow directly
+.sbss	0037cf0c	0037cf30	dataread	high	9 locals anchored by referencing functions
+.sbss	0037cf30	0037cf4c	gamepad	high	7 locals anchored by referencing functions
+.sbss	0037cf4c	0037cf74	gameutil	high	4 locals anchored by referencing functions
+.sbss	0037cf74	0037cf84	nd_meswin	med	no locals, 4 globals; gap globals: MesAbsDrawOff/MovieCC* referenced only by nd_meswin; nd_meswin MovieCC* bss globals likewise follow gameutil locals; alt gameutil (DC1 defines MesAbsDrawOff in gameutil.cpp, which held message-window code)
+.sbss	0037cf84	0037cf88	main	high	1 locals anchored by referencing functions
+.sbss	0037cf88	0037cf90	map	high	2 locals anchored by referencing functions
+.sbss	0037cf90	0037cfd8	mapload	high	18 locals anchored by referencing functions
+.sbss	0037cfd8	0037cfec	mapinfo	high	5 locals anchored by referencing functions
+.sbss	0037cfec	0037d00c	mdslist	high	8 locals anchored by referencing functions
+.sbss	0037d00c	0037d018	actionchara	high	3 locals anchored by referencing functions
+.sbss	0037d018	0037d08c	character	high	29 locals anchored by referencing functions
+.sbss	0037d08c	0037d0b0	dynamicanime	high	9 locals anchored by referencing functions
+.sbss	0037d0b0	0037d0d0	screeneffect	high	4 locals anchored by referencing functions
+.sbss	0037d0d0	0037d0dc	effect	high	3 locals anchored by referencing functions
+.sbss	0037d0dc	0037d0e8	mapsky	high	3 locals anchored by referencing functions
+.sbss	0037d0e8	0037d108	sound	high	5 locals anchored by referencing functions, 1 globals
+.sbss	0037d108	0037d138	snd_mngr	high	6 locals anchored by referencing functions
+.sbss	0037d138	0037d1d4	mainloop	high	31 locals anchored by referencing functions, 8 globals; gap globals: 7 globals 0x37d138-0x37d154: mainloop references all of them, snd_mngr none
+.sbss	0037d1d4	0037d1f4	gamedata	high	3 locals anchored by referencing functions, 5 globals; gap globals: SpiWeaponPt..SpiFish referenced only by gamedata
+.sbss	0037d1f4	0037d208	userdata	high	4 locals anchored by referencing functions
+.sbss	0037d208	0037d210	wavetable	high	2 locals anchored by referencing functions
+.sbss	0037d210	0037d288	editctrl	high	30 locals anchored by referencing functions
+.sbss	0037d288	0037d2c0	editdebug	high	14 locals anchored by referencing functions
+.sbss	0037d2c0	0037d390	editloop	high	51 locals anchored by referencing functions, 1 globals
+.sbss	0037d390	0037d3c8	editmap	high	14 locals anchored by referencing functions
+.sbss	0037d3c8	0037d3d0	dng_object	high	2 locals anchored by referencing functions
+.sbss	0037d3d0	0037d3e8	dng_status	high	6 locals anchored by referencing functions
+.sbss	0037d3e8	0037d4c0	dng_main	high	27 locals anchored by referencing functions, 23 globals; gap globals: MainBuffer/BuffReadData: dng_main is heaviest and only in-range referrer
+.sbss	0037d4c0	0037d4dc	automap	high	7 locals anchored by referencing functions
+.sbss	0037d4dc	0037d4e4	monster	high	2 locals anchored by referencing functions
+.sbss	0037d4e4	0037d4f0	runscript_opcodes	high	2 locals anchored by referencing functions, 1 globals
+.sbss	0037d4f0	0037d524	maintex	high	no locals, 13 globals; gap globals: 13 TEX_* globals: maintex references every one (texture load table); only common in-range referrer
+.sbss	0037d524	0037d5d8	dngmenu	high	36 locals anchored by referencing functions, 4 globals
+.sbss	0037d5d8	0037d754	editmenu	high	80 locals anchored by referencing functions
+.sbss	0037d754	0037d838	inventmn	high	43 locals anchored by referencing functions
+.sbss	0037d838	0037d9b8	menuaqua	high	84 locals anchored by referencing functions, 3 globals
+.sbss	0037d9b8	0037d9e0	menucls1	high	5 locals anchored by referencing functions, 4 globals; gap globals: MenuUsed*: menucls1 referrer of all 4 and __sinit_menucls1 initialises MenuUsedTarget
+.sbss	0037d9e0	0037db44	menudraw	high	58 locals anchored by referencing functions, 11 globals
+.sbss	0037db44	0037dc18	menumain	high	28 locals anchored by referencing functions, 18 globals; gap globals: MenuMain*/Menu*Ptr: menumain references all 9, only in-range referrer
+.sbss	0037dc18	0037de24	menusys	high	89 locals anchored by referencing functions, 13 globals
+.sbss	0037de24	0037de74	menucommon	med	18 locals anchored by referencing functions, 2 globals; gap globals: refs menumain, menuaqua, menucommon; menucommon only in-range referrer (menusys does not reference); alt menusys
+.sbss	0037de74	0037de7c	event	high	1 locals anchored by referencing functions, 1 globals; gap globals: event is only in-range referrer (event_func is later than following event local)
+.sbss	0037de7c	0037dea4	event_func	high	3 locals anchored by referencing functions, 7 globals; gap globals: __sinit_event_func initialises it; event_func refs
+.sbss	0037dea4	0037debc	eventedit	high	6 locals anchored by referencing functions
+.sbss	0037debc	0037dec0	scene	high	1 locals anchored by referencing functions
+.sbss	0037dec0	0037ded4	dng_event	high	5 locals anchored by referencing functions
+.sbss	0037ded4	0037df7c	menushop	high	34 locals anchored by referencing functions
+.sbss	0037df7c	0037dfc4	movie	high	18 locals anchored by referencing functions
+.sbss	0037dfc4	0037dfc8	editmapeffect	high	1 locals anchored by referencing functions
+.sbss	0037dfc8	0037dfd4	funcpoint	high	3 locals anchored by referencing functions
+.sbss	0037dfd4	0037e104	title	high	70 locals anchored by referencing functions, 3 globals
+.sbss	0037e104	0037e130	editinfo	high	11 locals anchored by referencing functions
+.sbss	0037e130	0037e140	editdata	high	4 locals anchored by referencing functions
+.sbss	0037e140	0037e16c	menucapt	high	11 locals anchored by referencing functions
+.sbss	0037e16c	0037e174	npccfg	high	2 locals anchored by referencing functions
+.sbss	0037e174	0037e214	menumap	high	36 locals anchored by referencing functions
+.sbss	0037e214	0037e2f4	menuchr	high	42 locals anchored by referencing functions, 6 globals; gap globals: menuchr heaviest/only in-range referrer of all 5 (MorattaStack..MenuCharaChangeStar_Tex)
+.sbss	0037e2f4	0037e408	menuop	high	55 locals anchored by referencing functions
+.sbss	0037e408	0037e44c	movieviewlp	high	16 locals anchored by referencing functions
+.sbss	0037e44c	0037e46c	actscript	high	7 locals anchored by referencing functions, 1 globals; gap globals: refs actscript (in range) and actionchara; mirrors runscript_opcodes nowScene/LastCInfo2 pattern preceding actscript LastCInfo2
+.sbss	0037e46c	0037e4b4	mapselect	high	16 locals anchored by referencing functions, 2 globals; gap globals: mapselect only in-range referrer
+.sbss	0037e4b4	0037e4b8	gaiji	high	1 locals anchored by referencing functions
+.sbss	0037e4b8	0037e558	editmode	high	40 locals anchored by referencing functions
+.sbss	0037e558	0037e574	mapjump	high	7 locals anchored by referencing functions
+.sbss	0037e574	0037e580	effscript	high	1 locals anchored by referencing functions, 2 globals; gap globals: now_scene/EffScriptMan referenced only by effscript
+.sbss	0037e580	0037e584	sphida	high	no locals, 1 globals; gap globals: name affinity and sphida referrer (event_func outside range)
+.sbss	0037e584	0037e58c	editmap2	high	2 locals anchored by referencing functions
+.sbss	0037e58c	0037e5b0	memcard	high	8 locals anchored by referencing functions, 1 globals
+.sbss	0037e5b0	0037e5f8	editexception	high	18 locals anchored by referencing functions
+.sbss	0037e5f8	0037e610	dngfloor	high	6 locals anchored by referencing functions
+.sbss	0037e610	0037e61c	editeff	high	3 locals anchored by referencing functions
+.sbss	0037e61c	0037e7ac	fishing	high	98 locals anchored by referencing functions, 1 globals
+.sbss	0037e7ac	0037e7b8	subgame	high	3 locals anchored by referencing functions
+.sbss	0037e7b8	0037e830	gyorace	high	21 locals anchored by referencing functions, 7 globals
+.sbss	0037e830	0037e87c	nowload	high	18 locals anchored by referencing functions
+.sbss	0037e87c	0037e8c8	nameregi	high	13 locals anchored by referencing functions
+.sbss	0037e8c8	0037e8ec	photo	high	9 locals anchored by referencing functions
+.sbss	0037e8ec	0037e92c	fishingobj	high	16 locals anchored by referencing functions
+.sbss	0037e92c	0037e9cc	pbuggy	high	40 locals anchored by referencing functions
+.sbss	0037e9cc	0037e9d8	helpmes	high	3 locals anchored by referencing functions
+.sbss	0037e9d8	0037ea28	vlgr_info	high	20 locals anchored by referencing functions
+.sbss	0037ea28	0037ea34	quest	high	3 locals anchored by referencing functions
+.sbss	0037ea34	0037ea6c	mainloop3	high	14 locals anchored by referencing functions
+.sbss	0037ea6c	0037ea70	gyoracesim	high	1 locals anchored by referencing functions
+.sbss	0037ea70	0037ead5	convviewlp	high	14 locals anchored by referencing functions
+# NOTES
+# Method: locals assigned to the unit of the functions referencing them (GPREL16, plus HI16/LO16 and __sinit_* code mapped to its unit); 8 unreferenced locals anchored by symtab-run index (HIRA/KATA_TABLE* are reached only via R_MIPS_32 from nameregi's .data NameRegistFont_Table). Globals strictly between two locals of the same unit are fixed by monotone order (93 such). Remaining 96 globals resolved per boundary below. Scripts: small/*.py (final.py, verify.py).
+# Verification: full coverage of 0x37c700-0x37cd80 and 0x37cd80-0x37ead5, no gaps/overlaps, unit order non-decreasing, all starts are symbol addresses; 1739 local objects, 0 locals outside the range of their referencing unit; no GP reference targets the unnamed 0x37ea90-0x37eac0 hole (left inside convviewlp, whose symtab run brackets it).
+# UNCERTAIN .sdata 0x37c748 MainThreadPriority (low): candidates snd_mngr or mainloop (between snd_mngr @1469 end 0x37c746 and mainloop @973 0x37c750); only referrer is unit main (outside range); chosen mainloop by name; alt snd_mngr (boundary would move to 0x37c750).
+# UNCERTAIN .sdata 0x37cc4c NowProgramLoopNo (med): candidates editevent..dngfloor; referrers dngmenu, menumain, memcard; chosen memcard (only in-range referrer); alt editevent / menusystemdata / swordeffect / savedata / savedatadungeon / editexception / dngfloor.
+# UNCERTAIN .sdata trailing zero pad 0x37cd30-0x37cd80 assigned to gyoracesim (last unit with content); alt convviewlp (last unit in link order) if the pad is treated as end-of-section alignment.
+# UNCERTAIN .sbss 0x37cf74-0x37cf84 MesAbsDrawOff, MovieCCCnt, MovieCCW, MovieCCH (med): candidates gameutil..main; all referenced only by nd_meswin, and nd_meswin's MovieCC* .bss globals similarly follow gameutil's .bss locals; alt gameutil (DC1 defines MesAbsDrawOff in gameutil.cpp, where message-window code lived).
+# UNCERTAIN .sbss 0x37de24 MenuSePlayUsedFlag (med): candidates menusys or menucommon; referrers menumain, menuaqua, menucommon; chosen menucommon; alt menusys (boundary at 0x37de28).
+# Notable resolved (high): 0x37cd80 StopCamera__9mgCCamera/_fbss -> mg_camera; 0x37cdcc-0x37ce88 mg* screen/DMA/GS-register globals -> mglib; 0x37d138-0x37d154 read_buffer..MasterDebugCode -> mainloop (snd_mngr references none); 0x37d1e0 Spi* -> gamedata; 0x37d3e8 MainBuffer/BuffReadData -> dng_main; 0x37d4f0-0x37d524 TEX_* -> maintex (references all 13); 0x37d9cc MenuUsed* -> menucls1 (__sinit_menucls1 inits MenuUsedTarget); 0x37db44 Menu*Ptr -> menumain; 0x37de74 EventScene -> event; 0x37de7c EventMarker -> event_func (__sinit_event_func); 0x37e214 MorattaStack.. -> menuchr; 0x37e44c nowScene -> actscript; 0x37e4b0 BossBattleSelFlag -> mapselect; 0x37e574 now_scene/EffScriptMan -> effscript; 0x37e580 Sphida -> sphida.
+# Owner undetermined: none.

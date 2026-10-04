@@ -1,0 +1,160 @@
+#start	end	tu_name	name_source	confidence	evidence
+100000	1000d0	crt0	dc1	high	asm crt0; .text SECTION idx2 size 0xc8 (_start/ENTRYPOINT 0x100008,_exit 0x1000b8,_root 0x1000c0); 8 bytes pad to 0x1000d0
+1000d0	100190	lib/mwcc/fpcmp	invented	low	_dpfne.._dpfge wrappers calling libgcc dpcmp; no locals; DC1 had _dpf* glued after crt0 and mwInit elsewhere (separate obj)
+100190	1001c0	lib/mwcc/mwinit	invented	low	mwInit only (calls __initialize_cpp_rts); DC1 had mwInit with mwOverlayInit/mwBload/mwLoadOverlay (stripped here)
+1001c0	1004f0	lib/mwcc/CPlusLib	invented	low	__construct_array,__construct_new_array,__dl__FPv + vague exception dtor/what; symtab run 5-7 (@196,@204,own __RTTI exception local) rodata 0x363580-0x3635a2; start vs mwInit unproven
+1004f0	1005d0	lib/mwcc/New	invented	med	default_new_handler(L)+vague bad_alloc dtor/what; symtab run 8-15 (@34..@47, 2nd local __RTTI exception); owns .data _new_handler_func/__throws_bad_alloc
+1005d0	1009a0	lib/mwcc/NMWException	invented	low	__nw__FUi(@47 dup of New TU @47 => different TU),__throw_catch_compare,unexpected,terminate,duhandler(L),dthandler(L); run 16-20 incl thandler/uhandler .data; __nw__FUi may be its own TU
+1009a0	100a30	lib/mwcc/global_destructor_chain	invented	low	__register_global_object (bss __global_destructor_chain 0x37ec48) + __initialize_cpp_rts (no locals; grouping guessed)
+100a30	102190	lib/mwcc/MWException	invented	med	__Decode*Number,__end__catch,__ThrowHandler(refs locals FindExceptionHandler etc),__unexpected,..,NextAction,FindExceptionRecord, vague bad_exception dtor/what; run 21-37, @408..@1073 monotone rodata 0x363660-0x363806; start (Decode/__end__catch vs global_destructor) unproven
+102190	102630	lib/mwcc/ExceptionPS2	invented	low	__TransferControl,__throw,__SkipUnwindInfo,__FindExceptionTable,__SetupFrameInfo,__PopStackFrame: platform-specific frame helpers, no locals; split from MWException because vague what__bad_exception (0x102180) ends that TU
+102630	104288	lib/sce/libgraph	dc1	high	17 GCC obj(s) (.text secsym boundaries); funcs: sceGsResetGraph sceGsGetGParam sceGsResetPath sceGsSetDefDispEnv sceGsPutDispEnv sceGszbufaddr ...(+12)
+104288	104d58	lib/sce/libdma	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: memclr(L) sceDmaGetChan sceDmaReset sceDmaDebug sceDmaPutEnv sceDmaGetEnv ...(+11)
+104d58	106630	lib/sce/libdev	invented	med	SCE libdev (sceDevCons*/sceDevFont*, chaMem*) - not in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: sceDevFontDefault(L) sceDevFontIdle(L) sceDevFontSetColor(L) sceDevConsInit sceDevConsOpen sceDevConsClose ...(+27)
+106630	106958	lib/sce/pkt/libgifpk	dc1	high	11 GCC obj(s) (.text secsym boundaries); funcs: sceGifPkInit sceGifPkReset sceGifPkTerminate sceGifPkCnt sceGifPkRef sceGifPkEnd ...(+5)
+106958	106d00	lib/sce/pkt/libvifpk	dc1	high	13 GCC obj(s) (.text secsym boundaries); funcs: sceVif1PkInit sceVif1PkReset sceVif1PkTerminate sceVif1PkCnt sceVif1PkCall sceVif1PkEnd ...(+7)
+106d00	107a50	lib/sce/libvu0	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: sceVu0ApplyMatrix sceVu0MulMatrix sceVu0OuterProduct sceVu0InnerProduct sceVu0Normalize sceVu0TransposeMatrix ...(+36)
+107a50	10f4e0	lib/sce/libmpeg	invented	med	SCE libmpeg (sceMpeg*, _ipuVdec/_doCSC/_sysbit/demux internals, _defStopDMA used by sceMpegCreate) - not in DC1; 7 GCC obj(s) (.text secsym boundaries); funcs: _motionComp0(L) _getAllRefs _getRef0 _doMC(L) _rix_000 _ri0_000 ...(+135)
+10f4e0	10fb00	lib/sce/libipu	invented	med	SCE libipu (sceIpuStopDMA/RestartDMA/Sync, sceIpuInit + iqval/vqval/__ps2_libinfo__) - not in DC1; 2 GCC obj(s) (.text secsym boundaries); funcs: setD3_CHCR(L) setD4_CHCR(L) sceIpuStopDMA sceIpuRestartDMA sceIpuSync setD4_CHCR(L) ...(+1)
+10fb00	1103a0	lib/sce/kernl/klib	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: RFU000_FullReset ResetEE SetGsCrt RFU003 _Exit RFU005 ...(+132)
+1103a0	110770	lib/sce/kernl/glue	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: sceResetttyinit VSync VSync2 write read open ...(+10)
+110770	1109f0	lib/sce/kernl/cache	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _sceSDC SyncDCache iSyncDCache _sceIDC InvalidDCache iInvalidDCache
+1109f0	110d60	lib/sce/kernl/intr	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: QueryIntrContext DisableIntc EnableIntc DisableDmac EnableDmac iEnableIntc ...(+8)
+110d60	1110c0	lib/sce/kernl/thread	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: topThread(L) InitThread iWakeupThread iRotateThreadReadyQueue iSuspendThread
+1110c0	1112a0	lib/sce/kernl/deci2	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: sceDeci2Open sceDeci2Close sceDeci2ReqSend sceDeci2Poll sceDeci2ExRecv sceDeci2ExSend ...(+4)
+1112a0	1117c0	lib/sce/kernl/tty	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: QueueInit(L) QueuePeekWriteDone(L) QueuePeekReadDone(L) sceTtyHandler(L) sceTtyWrite sceTtyRead ...(+1)
+1117c0	112138	lib/sce/kernl/kprintf	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: kputchar(L) deci2Putchar(L) serialPutchar(L) ftoi(L) printfloat(L) _printf ...(+2)
+112138	112880	lib/sce/kernl/sifcmd	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _set_sreg(L) _change_addr(L) sceSifGetSreg sceSifSetSreg sceSifGetDataTable sceSifInitCmd ...(+10)
+112880	1137e0	lib/sce/kernl/sifrpc	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: sceSifInitRpc sceSifExitRpc _sceRpcGetPacket(L) _sceRpcFreePacket(L) _sceRpcGetFPacket(L) _sceRpcGetFPacket2(L) ...(+16)
+1137e0	116e78	lib/sce/kernl/filestub	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _sceFsIobSemaMK(L) new_iob(L) get_iob(L) _sceFs_Rcv_Intr(L) _sceFsSemInit(L) _sceFsWaitS(L) ...(+34)
+116e78	117178	lib/sce/kernl/iopheap	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: sceSifInitIopHeap sceSifAllocIopHeap sceSifAllocSysMemory sceSifFreeSysMemory sceSifFreeIopHeap sceSifLoadIopHeap
+117178	117ed8	lib/sce/kernl/eeloadfile	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _lf_bind(L) _lf_version(L) sceSifLoadFileReset _sceSifLoadModuleBuffer(L) sceSifStopModule sceSifUnloadModule ...(+12)
+117ed8	118188	lib/sce/kernl/iopreset	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: sceSifResetIop sceSifIsAliveIop sceSifSyncIop sceSifRebootIop
+118188	1186c0	lib/sce/kernl/tlbfunc	invented	med	libkernl obj (SetTLBHandler..InitTLB32MB, data tlbsrc/kernelTLB/defaultTLB); SCE/ps2sdk-style file name, not in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: SetTLBHandler SetDebugHandler Copy(L) kCopy(L) GetEntryAddress(L) setup(L) ...(+13)
+1186c0	118a20	lib/sce/kernl/tlbtrap	invented	low	libkernl asm obj (_kTLBException/_kExitTLBHandler/_kDebugException, bss hstack/EER*); name guessed; 1 GCC obj(s) (.text secsym boundaries); funcs: _kTLBException _kExitTLBHandler _kDebugException
+118a20	118a80	lib/sce/kernl/diei	invented	low	libkernl obj DIntr/EIntr; name guessed; 1 GCC obj(s) (.text secsym boundaries); funcs: DIntr EIntr
+118a80	118bc0	lib/sce/kernl/initsys	invented	low	libkernl obj _InitSys/_setup/supplement_crt0(L); name guessed; 1 GCC obj(s) (.text secsym boundaries); funcs: supplement_crt0(L) kFindAddress(L) FindAddress(L) GetSystemCallTableEntry(L) setup(L) _setup ...(+1)
+118bc0	118d40	lib/sce/kernl/libosd	invented	low	libkernl obj InitExecPS2/PatchIsNeeded(L), data osdsrc/SysExecPS2Entry; name guessed; 1 GCC obj(s) (.text secsym boundaries); funcs: setup(L) Copy(L) kCopy(L) GetEntryAddress(L) PatchIsNeeded(L) InitExecPS2
+118d40	118e50	lib/sce/kernl/exit	invented	low	libkernl obj TerminateLibrary(L)/ExecPS2/LoadExecPS2/Exit/ExecOSD wrappers (klib has _Exit/_ExecPS2 stubs); name guessed; 1 GCC obj(s) (.text secsym boundaries); funcs: TerminateLibrary(L) ExecPS2 LoadExecPS2 Exit ExecOSD
+118e50	119180	lib/sce/sdr_main	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: sceSdRemoteInit sceSdTransToIOP sceSdCallBack sceSdRemote
+119180	1194b8	lib/libm/math/e_atan2	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __ieee754_atan2
+1194b8	11a1e0	lib/libm/math/e_pow	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: __ieee754_pow
+11a1e0	11a700	lib/libm/math/e_rem_pio2	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __ieee754_rem_pio2
+11a700	11aa08	lib/libm/math/e_sqrt	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __ieee754_sqrt
+11aa08	11ae38	lib/libm/math/ef_acos	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __ieee754_acosf
+11ae38	11b120	lib/libm/math/ef_atan2	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __ieee754_atan2f
+11b120	11b500	lib/libm/math/ef_rem_pio2	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __ieee754_rem_pio2f
+11b500	11b638	lib/libm/math/ef_sqrt	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __ieee754_sqrtf
+11b638	11b888	lib/libm/math/k_cos	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __kernel_cos
+11b888	11c3f0	lib/libm/math/k_rem_pio2	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __kernel_rem_pio2
+11c3f0	11c5c8	lib/libm/math/k_sin	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __kernel_sin
+11c5c8	11c720	lib/libm/math/kf_cos	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __kernel_cosf
+11c720	11d070	lib/libm/math/kf_rem_pio2	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __kernel_rem_pio2f
+11d070	11d178	lib/libm/math/kf_sin	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __kernel_sinf
+11d178	11d410	lib/libm/math/kf_tan	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __kernel_tanf
+11d410	11d820	lib/libm/math/s_atan	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: atan
+11d820	11d868	lib/libm/common/s_copysign	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: copysign
+11d868	11d970	lib/libm/math/s_cos	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: cos
+11d970	11d9a8	lib/libm/math/s_fabs	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: fabs
+11d9a8	11d9c8	lib/libm/common/s_finite	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: finite
+11d9c8	11dba0	lib/libm/math/s_floor	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: floor
+11dba0	11dbe8	lib/libm/math/s_isinf	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: isinf
+11dbe8	11dc20	lib/libm/math/s_isnan	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: isnan
+11dc20	11dc48	lib/libm/common/s_matherr	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: matherr
+11dc48	11de48	lib/libm/common/s_rint	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: rint
+11de48	11e000	lib/libm/common/s_scalbn	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: scalbn
+11e000	11e0f8	lib/libm/math/s_sin	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: sin
+11e0f8	11e3a0	lib/libm/math/sf_atan	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: atanf
+11e3a0	11e3d0	lib/libm/common/sf_copysign	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: copysignf
+11e3d0	11e4b8	lib/libm/math/sf_cos	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: cosf
+11e4b8	11e4d8	lib/libm/math/sf_fabs	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: fabsf
+11e4d8	11e5c0	lib/libm/math/sf_floor	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: floorf
+11e5c0	11e5e8	lib/libm/math/sf_isnan	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: isnanf
+11e5e8	11e748	lib/libm/common/sf_scalbn	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: scalbnf
+11e748	11e838	lib/libm/math/sf_sin	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: sinf
+11e838	11e8c0	lib/libm/math/sf_tan	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: tanf
+11e8c0	11e9d8	lib/libm/math/w_atan2	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: atan2
+11e9d8	11ee08	lib/libm/math/w_pow	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: pow
+11ee08	11ef18	lib/libm/math/w_sqrt	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: sqrt
+11ef18	11f018	lib/libm/math/wf_acos	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: acosf
+11f018	11f140	lib/libm/math/wf_atan2	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: atan2f
+11f140	11f258	lib/libm/math/wf_sqrt	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: sqrtf
+11f258	120e50	lib/sce/eecdvd	dc1	high	6 GCC obj(s) (.text secsym boundaries); funcs: CB_DelayTh(L) sceCdDelayThread sceCdCallback _sceCd_cd_callback _Cdvd_cbLoop sceCdInitEeCB ...(+29)
+120e50	1221e8	lib/sce/libpad	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _send_to_iop(L) scePadInit scePadInit2(L) scePadEnd scePadPortOpen scePadPortClose ...(+24)
+1221e8	123a50	lib/sce/libmc	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: sceMcInit sceMcEnd _lmcGetClientPtr sceMcChangeThreadPriority sceMcGetSlotMax sceMcOpen ...(+22)
+123a50	123ce8	lib/sce/msinput	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: sceMSIn_Init sceMSIn_ATick sceMSIn_Load put_message(L) sceMSIn_PutMsg sceMSIn_PutExcMsg ...(+1)
+123ce8	123d08	lib/libc/stdlib/abort	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: abort
+123d08	123d20	lib/libc/stdlib/abs	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: abs
+123d20	123d40	lib/libc/stdlib/atof	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: atof
+123d40	123d68	lib/libc/stdlib/atoi	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: atoi
+123d68	123e28	lib/libc/callocr	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _calloc_r
+123e28	123e80	lib/libc/reent/closer	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _close_r
+123e80	125268	lib/libc/stdlib/dtoa	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: quorem(L) _dtoa_r
+125268	125278	lib/libc/errno/errno	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __errno
+125278	125328	lib/libc/stdlib/exit	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: exit
+125328	125430	lib/libc/stdio/fflush	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: fflush
+125430	125688	lib/libc/stdio/findfp	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: std(L) __sfmoreglue __sfp _cleanup_r _cleanup __sinit
+125688	1256c0	lib/libc/stdio/fprintf	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: fprintf
+1256c0	125b50	lib/libc/freer	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _free_r _malloc_trim_r
+125b50	125bb0	lib/libc/reent/fstatr	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _fstat_r
+125bb0	125f88	lib/libc/stdio/fvwrite	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __sfvwrite
+125f88	126020	lib/libc/stdio/fwalk	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _fwalk
+126020	126040	lib/libc/string/index	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: index
+126040	126130	lib/libc/locale/locale	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _setlocale_r _localeconv_r setlocale localeconv
+126130	126190	lib/libc/reent/lseekr	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _lseek_r
+126190	1262e0	lib/libc/stdio/makebuf	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __smakebuf
+1262e0	126318	lib/libc/stdlib/malloc	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: malloc free
+126318	126ce8	lib/libc/stdlib/mallocr	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: malloc_extend_top(L) _malloc_r
+126ce8	126d28	lib/libc/stdlib/mbtowc_r	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _mbtowc_r
+126d28	126e08	lib/libc/machine/r5900/memchr	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: memchr
+126e08	126ea0	lib/libc/machine/r5900/memcmp	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: memcmp
+126ea0	126f50	lib/libc/machine/r5900/memcpy	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: memcpy
+126f50	127058	lib/libc/machine/r5900/memmove	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: memmove
+127058	127118	lib/libc/machine/r5900/memset	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: memset
+127118	127128	lib/libc/stdlib/mlock	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __malloc_lock __malloc_unlock
+127128	128148	lib/libc/stdlib/mprec	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _Balloc _Bfree _multadd _s2b _hi0bits _lo0bits ...(+11)
+128148	1281d8	lib/libc/stdio/printf	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _printf_r printf
+1281d8	128218	lib/libc/stdlib/rand	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: srand rand
+128218	128278	lib/libc/reent/readr	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _read_r
+128278	1282d8	lib/libc/reent/sbrkr	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _sbrk_r
+1282d8	128628	lib/libc/signal/signal	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _init_signal_r _signal_r _raise_r __sigtramp_r raise signal ...(+2)
+128628	1286a8	lib/libc/reent/signalr	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _kill_r _getpid_r
+1286a8	128780	lib/libc/stdio/sprintf	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _sprintf_r sprintf
+128780	1288f0	lib/libc/stdio/stdio	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __sread __swrite __sseek __sclose
+1288f0	1289a8	lib/libc/string/strcasecmp	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: strcasecmp
+1289a8	128ad8	lib/libc/machine/r5900/strcat	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: strcat
+128ad8	128c68	lib/libc/machine/r5900/strchr	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: strchr
+128c68	128db0	lib/libc/machine/r5900/strcmp	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: strcmp
+128db0	128ec8	lib/libc/machine/r5900/strcpy	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: strcpy
+128ec8	129000	lib/libc/machine/r5900/strlen	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: strlen
+129000	1291b0	lib/libc/machine/r5900/strncat	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: strncat
+1291b0	129368	lib/libc/machine/r5900/strncmp	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: strncmp
+129368	129528	lib/libc/machine/r5900/strncpy	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: strncpy
+129528	129578	lib/libc/string/strrchr	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: strrchr
+129578	1295e8	lib/libc/string/strstr	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: strstr
+1295e8	12a540	lib/libc/stdlib/strtod	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _strtod_r strtod strtodf
+12a540	12a7b0	lib/libc/stdlib/strtol	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _strtol_r strtol
+12a7b0	12a7d0	lib/libc/ctype/toupper	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: toupper
+12a7d0	12c0f0	lib/libc/stdio/vfprintf	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __sprint(L) __sbprintf(L) vfprintf _vfprintf_r cvt(L) exponent(L)
+12c0f0	12c148	lib/libc/stdio/vsprintf	invented	med	newlib/libgcc source file name for these funcs (dir per DC1 convention), not present in DC1; 1 GCC obj(s) (.text secsym boundaries); funcs: vsprintf
+12c148	12c1a8	lib/libc/reent/writer	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: _write_r
+12c1a8	12c2c0	lib/libc/stdio/wsetup	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __swsetup
+289e48	28a538	lib/libgcc/_divdi3	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __divdi3
+28a538	28a598	lib/libgcc/_fixdfdi	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __fixdfdi
+28a598	28a688	lib/libgcc/_fixunsdfdi	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __fixunsdfdi
+28a688	28a720	lib/libgcc/_floatdidf	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __floatdidf
+28a720	28ad88	lib/libgcc/_moddi3	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __moddi3
+28ad88	28ade8	lib/libgcc/_muldi3	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __muldi3
+28ade8	28b3b8	lib/libgcc/_udivdi3	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __udivdi3
+28b3b8	28b8f8	lib/libgcc/_umoddi3	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __umoddi3
+28b8f8	28c5f0	lib/libgcc/dp-bit	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __pack_d __unpack_d _fpadd_parts(L) dpadd dpsub dpmul ...(+9)
+28c5f0	28d1d0	lib/libgcc/fp-bit	dc1	high	1 GCC obj(s) (.text secsym boundaries); funcs: __pack_f __unpack_f _fpadd_parts(L) fpadd fpsub fpmul ...(+9)
+# NOTES
+# - GCC objects: 191 .text SECTION syms in slice (+ idx2 = crt0) = exact object starts; every FUNC in 0x102630-0x12c2c0 / 0x289e48-0x28d1d0 falls inside one. Bundled per SCE library (libgraph 17 objs, libdev, gifpk 11, vifpk 13, libmpeg 7, libipu 2, sdr 1(+1 data-only), eecdvd 5, libpad, libmc, msinput); libkernl kept per object (DC1 convention: lib/sce/kernl/<obj>); libc/libm/libgcc one unit per object.
+# - DATA-ONLY objects (no .text, so not in this file; see out_lib_data.tsv): lib/libc/reent/impure (.data 0x337918, .rodata 0x366858), lib/libc/ctype/ctype_ (.rodata 0x3666f0), lib/libm/common/s_infconst (.rodata 0x366118), lib/libm/common/s_lib_ver (.rodata 0x366120); also a data-only libsdr obj (.data secsym580) and probably a libmpeg one (.data secsym301 _defIQM/_defNIQM), both folded into their bundled SCE unit.
+# - r5900 vs string dir for libc: objects carrying $L local labels == exactly DC1's machine/r5900 set, plus strchr and strncat -> r5900; index/strrchr/strstr have none -> string/.
+# - libm here contains copysign/finite/isinf/isnan/rint/scalbn/copysignf/isnanf/scalbnf (DC1 had some of these under lib/libc/...); named lib/libm/<newlib dir>/<file>. Order is alphabetical by file name incl. data-only s_infconst/s_lib_ver, confirming the file names. s_rint dir (common vs math) unverified.
+# - libmpeg/libipu split at 0x10f4e0: _defStopDMA/_defRestartDMA (0x10f4c0 obj) are referenced by sceMpegCreate -> libmpeg; sceIpu* objs carry libipu __ps2_libinfo__.
+# - New kernl objects vs DC1 (newer SDK): tlbfunc, tlbtrap, diei, initsys, libosd, exit -- names guessed from contents (tlbsrc/osdsrc data, ps2sdk-style naming); boundaries exact.
+# - MW runtime (0x100000-0x102630) boundaries derived from: duplicate local names (__RTTI__Q23std9exception x3, @47 x2) prove >=4 TUs; symtab runs 5-7 / 8-15 / 16-20 / 21-37; rodata order; vague-linkage what__ funcs at TU ends; heuristic 4 (__ThrowHandler refs MWException locals). Firm: 0x1004f0 (A|New), 0x1005d0 (New|next, @47 dup). Soft: 0x1000d0/0x100190/0x1001c0 (no locals; DC1 placed _dpf* right after crt0 and mwInit with overlay funcs elsewhere => separate objs), 0x1009a0/0x100a30 (global-only funcs __register_global_object/__initialize_cpp_rts/__Decode*), 0x102190 (only the vague-at-end heuristic). All lib/mwcc names are invented.
+# - relocs.txt addresses are +0x100000 (handled). Section boundaries for data: see out_lib_data.tsv.

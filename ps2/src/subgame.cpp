@@ -22,37 +22,34 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", sgDrawSubGameCharaShadow__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", sgDrawSubGameChara__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", sgDrawSubGameEffect__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", sgDrawSubGameSystem__Fv);
-void sgCPlayVoice::Open(s32 arg0) {
-    if ((*(s32 *)((u8 *)this + 0x0)) > 0) {
-        this->Close();
+void sgCPlayVoice::Open(s32 file) {
+    if (step > SG_PLAY_VOICE_IDLE) {
+        Close();
     }
-    (*(s32 *)((u8 *)this + 0x0)) = 1;
-    (*(s32 *)((u8 *)this + 0x4)) = arg0;
-    (*(s32 *)((u8 *)this + 0x8)) = 0;
+    step = SG_PLAY_VOICE_OPEN;
+    file_no = file;
+    play = 0;
 }
-void sgCPlayVoice::SetVol(float arg0, float arg1) {
-    float var_f12;
-    float var_f13;
-
-    var_f12 = arg0;
-    var_f13 = arg1;
-    if (var_f12 < 0.0f) {
-        var_f12 = 0.0f;
+void sgCPlayVoice::SetVol(float left, float right) {
+    float left_volume = left;
+    float right_volume = right;
+    if (left_volume < 0.0f) {
+        left_volume = 0.0f;
     }
-    if (!(var_f12 <= 1.0f)) {
-        var_f12 = 1.0f;
+    if (!(left_volume <= 1.0f)) {
+        left_volume = 1.0f;
     }
-    (*(float *)((u8 *)this + 0x10)) = var_f12;
-    if (var_f13 < 0.0f) {
-        var_f13 = var_f12;
+    vol_l = left_volume;
+    if (right_volume < 0.0f) {
+        right_volume = left_volume;
     }
-    if (!(var_f13 <= 1.0f)) {
-        var_f13 = 1.0f;
+    if (!(right_volume <= 1.0f)) {
+        right_volume = 1.0f;
     }
-    (*(float *)((u8 *)this + 0xc)) = var_f13;
+    vol_r = right_volume;
 }
 void sgCPlayVoice::Play(void) {
-    (*(s32 *)((u8 *)this + 0x8)) = 1;
+    play = 1;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", Step__12sgCPlayVoiceFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", Close__12sgCPlayVoiceFv);

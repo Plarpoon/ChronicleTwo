@@ -1,5 +1,6 @@
 #include "common.h"
 #include "menushop.hpp"
+#include "quest.hpp"
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", GetDonyShopLineUp__FPiPi);
@@ -27,7 +28,18 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", MenuShopInit__FP9mgCMemoryPii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", MenuShopKey__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", MenuShopDraw__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", UnderMsg__14CMenuQuestViewFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", SelectMax__14CMenuQuestViewFv);
+extern CQuestManager *QuestMan;
+extern s8 Menu_Memo_ViewMode;
+int CMenuQuestView::SelectMax() {
+    s8 mode = Menu_Memo_ViewMode;
+    if (mode == 0) {
+        return QuestMan->num;
+    }
+    if (mode == 1) {
+        return 0x35;
+    }
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", InitEnd__14CMenuQuestViewFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", KeyStep__14CMenuQuestViewFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", MenuNPCQuestViewInit__FP9mgCMemoryPii);

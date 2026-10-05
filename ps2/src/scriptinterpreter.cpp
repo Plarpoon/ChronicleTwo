@@ -8,11 +8,9 @@
 // The inline members of the header are called here, never expanded.
 #pragma dont_inline on
 
+static int  SkipSpace(input_str &in);
+static u8   CheckChar(char c);
 static void PreProcess(input_str &in);
-#ifdef NONMATCHING
-static int SkipSpace(input_str &in);
-static int CheckChar(char c);
-#endif
 
 // Code (.text)
 int input_str::GetLine(char *line, int line_size, char *terminator) {
@@ -513,18 +511,29 @@ static int SkipSpace(input_str &in) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", SkipSpace__FR9input_str);
 #endif
-#ifdef NONMATCHING
+
 /**
- * Tells whether a character is part of a word: gives 0 for a space, tab or
- * line break and 1 for anything else.
- *
+ * Tells whether a character is part of a word: gives 0 for
+ * a space, a tab or a line break and 1 for anything else.
  */
-static int CheckChar(char c) {
-    return c != '\r' && c != '\n' && c != '\t' && c != ' ';
+static u8 CheckChar(char c) {
+    int space = 0;
+
+    if (c == ' ') {
+        space = 1;
+    }
+    if (c == '\t') {
+        space = 1;
+    }
+    if (c == '\n') {
+        space = 1;
+    }
+    if (c == '\r') {
+        space = 1;
+    }
+    return (space != 0) ^ 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", CheckChar__Fc);
-#endif
+
 #ifdef NONMATCHING
 /**
  * Overwrites the line comments and block comments of a text script with

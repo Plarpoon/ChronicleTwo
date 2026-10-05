@@ -288,64 +288,62 @@ int CScriptInterpreter::GetArgBin() {
     return count;
 }
 
-#ifdef NONMATCHING
 int CScriptInterpreter::GetArg() {
-    char text[SPI_TOKEN_SIZE];
+    char      text[SPI_TOKEN_SIZE];
     SPI_STACK argument;
-    char *value_text;
-    char *next;
-    int count;
-    int more;
-    int quoted;
-    int length;
-    int c;
-    int following;
-    int i;
-    int type;
-    int invalid;
-    int non_numeric;
-    char quotes;
+    int       c;
+    int       following;
+    int       length;
+    int       i;
+    char     *value_text;
+    int       count;
+    int       more;
+    int       type;
+    int       quotes;
+    int       invalid;
+    int       non_numeric;
 
-    count = 0;
     if (!SkipSpace(*this)) {
         return 0;
     }
+    count = 0;
     more = 1;
     do {
         if (!SkipSpace(*this)) {
             return count;
         }
 
-        // Gather the text of one argument, up to a comma or semicolon outside quotes.
-        quoted = 0;
+        // Gather the text of one argument, up to a comma or semicolon outside
+        // quotes; while this runs, i is non-zero inside quotes.
         length = 0;
+        i = 0;
         for (;;) {
             if (!get(&c)) {
                 return count;
             }
             if (c == '"') {
-                quoted ^= 1;
+                i = !i;
             }
-            if (quoted) {
-                if (!(c & 0x80)) {
-                    if (c == '\\') {
-                        if (!get(&following)) {
-                            back();
-                        } else if (following == '"') {
-                            c = '"';
-                        } else {
-                            back();
+            if (i) {
+                if (c & 0x80) {
+                    if (c < 0xA1 || c > 0xDF) {
+                        // The lead byte of a two-byte Shift-JIS character.
+                        text[length++] = c;
+                        if (!get(&c)) {
+                            return count;
                         }
                     }
-                } else if (c < 0xA1 || c > 0xDF) {
-                    // The lead byte of a two-byte Shift-JIS character.
-                    text[length++] = c;
-                    if (!get(&c)) {
-                        return count;
+                } else if (c == '\\') {
+                    if (!get(&following)) {
+                        back();
+                    } else if (following != '"') {
+                        back();
+                    } else {
+                        c = following;
                     }
                 }
             }
-            if (!quoted) {
+            if (!i) {
                 if (c == ',') {
                     break;
                 }
@@ -357,7 +355,7 @@ int CScriptInterpreter::GetArg() {
             text[length++] = c;
         }
         if (length == 0 && c == ';') {
-            return count;
+            break;
         }
         text[length] = '\0';
         count++;
@@ -365,20 +363,23 @@ int CScriptInterpreter::GetArg() {
         // Tell the kind of the argument from its text.
         i = 0;
         type = SPI_STACK_TYPE_INT;
+        quotes = 0;
         invalid = 0;
-        quotes = text[0] == '"';
         non_numeric = 0;
-        if (text[length - 1] == '"') {
-            text[length - 1] = '\0';
+        if (text[0] == '"') {
+            quotes++;
+        }
+        if (text[(u32)length - 1] == '"') {
+            text[(u32)length - 1] = '\0';
             quotes++;
         }
         for (; text[i] != '\0'; i++) {
+            char ch = text[i];
             if (quotes == 0) {
-                if (text[i] == '.') {
+                if (quotes == 0 && ch == '.') {
                     type = SPI_STACK_TYPE_FLOAT;
                 }
-                if (CheckChar(text[i]) && text[i] != '-' && text[i] != '.' &&
-                    (text[i] < '0' || text[i] > '9')) {
+                if (CheckChar(ch) && text[i] != '-' && text[i] != '.' && (text[i] < '0' || text[i] > '9')) {
                     non_numeric = 1;
                 }
                 if (!CheckChar(text[i])) {
@@ -407,13 +408,12 @@ int CScriptInterpreter::GetArg() {
         if (type == SPI_STACK_TYPE_STRING) {
             // The text inside the quotes is kept in the string buffer.
             value_text = &text[1];
-            next = string_buff_next;
-            if (next + strlen(value_text) + 1 > string_buff + string_buff_size) {
+            if (string_buff_next + strlen(value_text) + 1 > string_buff + string_buff_size) {
                 printf("SPI string buffer over!!\n");
                 argument.value.string = NULL;
             } else {
-                argument.value.string = next;
-                strcpy(next, value_text);
+                argument.value.string = string_buff_next;
+                strcpy(string_buff_next, value_text);
                 string_buff_next += strlen(value_text) + 1;
             }
         }
@@ -427,14 +427,7 @@ int CScriptInterpreter::GetArg() {
     } while (more);
     return count;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", GetArg__18CScriptInterpreterFv);
-#endif
-#ifdef NONMATCHING
-// Defined in scriptinterpreter.hpp.
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", back__9input_strFv);
-#endif
+
 #ifdef NONMATCHING
 int CScriptInterpreter::SearchCommand(int *tag_index) {
     char name[SPI_TOKEN_SIZE];

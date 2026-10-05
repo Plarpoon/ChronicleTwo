@@ -1,6 +1,5 @@
 #include "common.h"
 #include "nd_meswin.hpp"
-#include <cstring>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", MySetPrim__FP11mgCDrawPrimii);
@@ -14,7 +13,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", SetDrawSpeed__6ClsMesFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetDrawSpeedDef__6ClsMesFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetCaptionOff__6ClsMesFv);
 s32 ClsMes::GetPageAutoFlg(void) {
-    return (*(s32 *)((u8 *)this + 0x1dc));
+    return page_auto;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetScrPosFromChar__FP11CCharacter2Pi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetStrWidth__6ClsMesFPc);
@@ -25,31 +24,31 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", CalcMesWinXYFromFukidashiXY__6
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", CalcFukidashiXY__6ClsMesFPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", AutoSet__6ClsMesFPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetBuffMesIdPtr__FPcii);
-void ClsMes::SetHalfFontWPercent(float arg0) {
-    if (arg0 < 0.0f) {
-        (*(float *)((u8 *)this + 0xd0)) = 0.55f;
+void ClsMes::SetHalfFontWPercent(float percent) {
+    if (percent < 0.0f) {
+        half_font_w_percent = 0.55f;
         return;
     }
-    (*(float *)((u8 *)this + 0xd0)) = arg0;
+    half_font_w_percent = percent;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", __ct__6ClsMesFv);
-void ClsMes::SetBuff(s16 * arg0) {
-    (*(s16 * *)((u8 *)this + 0x294c)) = arg0;
+void ClsMes::SetBuff(s16 *buffer) {
+    buff = buffer;
 }
-void ClsMes::SetBuff_system(s16 * arg0) {
-    (*(s16 * *)((u8 *)this + 0x2950)) = arg0;
+void ClsMes::SetBuff_system(s16 *buffer) {
+    buff_system = buffer;
 }
-void ClsMes::SetDefColor(u32 arg0) {
-    (*(s32 *)((u8 *)this + 0x1e28)) = arg0;
-    (*(s32 *)((u8 *)this + 0x1e2c)) = (*(s32 *)((u8 *)this + 0x1e28));
+void ClsMes::SetDefColor(u32 rgba) {
+    def_color = rgba;
+    color = def_color;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", Preset__6ClsMesFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", SetWindowMode__6ClsMesFi);
 s32 ClsMes::GetWindowMode(void) {
-    return (*(s32 *)((u8 *)this + 0x138));
+    return window_mode;
 }
-void ClsMes::SetWindowBgOpaqueFlg(s32 arg0) {
-    (*(s32 *)((u8 *)this + 0x13c)) = arg0;
+void ClsMes::SetWindowBgOpaqueFlg(s32 opaque) {
+    bg_opaque = opaque;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", StepNpcName__6ClsMesFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", StepNormal__6ClsMesFv);
@@ -72,15 +71,15 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", SetMesWinTbl__6ClsMesFiss);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", CalcSpaceW__6ClsMesFiiPUs);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", MakeMesWinTbl__6ClsMesFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", MakeMesWinTbl__6ClsMesFPc);
-s32 GetItemNoFromFontNo(s32 arg0) {
-    s32 temp_v1;
-    s32 var_v0;
+s32 GetItemNoFromFontNo(s32 font_code) {
+    s32 symbol;
+    s32 item_no;
 
-    temp_v1 = (arg0 - 0x8000) - 0x7B00;
-    var_v0 = 1;
-    if (temp_v1 != 0xFE) {
-        var_v0 = 2;
-        switch (temp_v1) {                          /* irregular */
+    symbol = (font_code - 0x8000) - 0x7B00;
+    item_no = 1;
+    if (symbol != 0xFE) {
+        item_no = 2;
+        switch (symbol) {
         case 0xE7:
             return 0x10;
         case 0xE8:
@@ -110,22 +109,21 @@ s32 GetItemNoFromFontNo(s32 arg0) {
         case 0xFC:
             return 3;
         case 0xFD:
-            /* Duplicate return node #32. Try simplifying control flow for better match */
-            return var_v0;
+            return item_no;
         default:
             return -1;
         }
     } else {
-        return var_v0;
+        return item_no;
     }
 }
 void ClsMes::AddYokoHaba(s32 index, s32 value) {
     if (value < 0) return;
-    *(s32 *)((index << 2) + (s32)this + 0x258C) += value;
+    line_w[index] += value;
 }
-void ClsMes::SetYokoHaba(s32 arg0, s32 arg1) {
-    if (arg1 >= 0) {
-        *(s32 *) ((arg0 << 2) + (s32) this + 0x258C) = arg1;
+void ClsMes::SetYokoHaba(s32 index, s32 width) {
+    if (width >= 0) {
+        line_w[index] = width;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", AddPage__6ClsMesFii);
@@ -141,12 +139,12 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", CalcRectScale__F4RECTfP4RECT);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", SetSelectCursorPos__6ClsMesF4RECT);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", DrawYesNo__FP11mgCDrawPrimiiiiP10RGBAQ_TYPE);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetPos_AbsPosSet__F4RECTiiiPiPi);
-float CalcAutoPosSet(float a, float b, float c, float d) {
-    float t = b - a;
-    t -= c;
-    t *= d;
-    t += a;
-    return t;
+float CalcAutoPosSet(float min, float max, float size, float ratio) {
+    float position = max - min;
+    position -= size;
+    position *= ratio;
+    position += min;
+    return position;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", RgbqToUint__FUi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetFontColor__6ClsMesFiPi);
@@ -169,21 +167,21 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", DrawMesWin__6ClsMesFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", Parametric__FPfPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", Quadratic__FfffPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", CalcIntersectionPointSphereAndLine__FPffPfPfPfPf);
-s32 CheckPosInOutForArea(float *arg0, float *arg1, float *arg2) {
-    float a;
-    float b;
-    float low;
-    s32 i;
+s32 CheckPosInOutForArea(float *corner_a, float *corner_b, float *pos) {
+    float first;
+    float second;
+    float lower;
+    s32 axis;
 
-    for (i = 0; i < 3; i++) {
-        a = arg0[i];
-        b = arg1[i];
-        low = (a < b) ? a : b;
-        if (arg2[i] < low) {
+    for (axis = 0; axis < 3; axis++) {
+        first = corner_a[axis];
+        second = corner_b[axis];
+        lower = (first < second) ? first : second;
+        if (pos[axis] < lower) {
             return 0;
         }
-        a = (a > b) ? a : b;
-        if (a < arg2[i]) {
+        first = (first > second) ? first : second;
+        if (first < pos[axis]) {
             return 0;
         }
     }
@@ -192,16 +190,15 @@ s32 CheckPosInOutForArea(float *arg0, float *arg1, float *arg2) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", CalcMoveNextPos__FPfPffPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", InitMovieCC__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", MyStrCpyLineFeed__FPcPc);
-void GetNextLineTop(s8 **arg0) {
-    s8 *var_a2;
-
-    var_a2 = (s8 *) (*arg0);
-loop_1:
-    if (*var_a2 != 0xA) {
-        var_a2 += 1;
-        goto loop_1;
+void GetNextLineTop(char **text) {
+    char *next = *text;
+    while (true) {
+        if (*next == '\n') {
+            break;
+        }
+        next++;
     }
-    *arg0 = var_a2 + 1;
+    *text = next + 1;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetTopAddress__FPcii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", MovieCCAnalyze__FPcii);

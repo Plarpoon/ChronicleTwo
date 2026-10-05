@@ -1447,7 +1447,7 @@ public:
     s16 tex_block;            /**< Texture block of the texture. */
     mgCTexture *tex;          /**< Texture the effect is drawn with. */
     u8 end;                   /**< Non-zero once the effect has ended. */
-    u8 type;                  /**< Kind of effect, or 0xFF for none. */
+    s8 type;                  /**< Kind of effect, or -1 for none. */
     u8 run;                   /**< Non-zero while the effect runs. */
     s16 info_num;             /**< Number of entries in info. */
     MENU_EFFECT_INFO *info;   /**< Particles. */

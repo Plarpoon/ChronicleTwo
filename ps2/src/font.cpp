@@ -1,7 +1,6 @@
 #include "common.h"
 #include "font.hpp"
 #include <cstring>
-#include <cstdio>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", GetGaijiW__Fi);
@@ -17,29 +16,28 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", GetKanjiTopNo__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", GetHalfFontNum__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", CheckKanjiFont__5CFontFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", CheckHalfFont__5CFontFi);
-void CFont::SetDrawSize(s32 arg0, s32 arg1) {
-    (*(s32 *)((u8 *)this + 0xa4)) = arg0;
-    (*(s32 *)((u8 *)this + 0xa8)) = arg1;
+void CFont::SetDrawSize(s32 width, s32 height) {
+    draw_w = width;
+    draw_h = height;
 }
-void CFont::SetClearance(s32 arg0, s32 arg1) {
-    (*(s32 *)((u8 *)this + 0x9c)) = arg0;
-    (*(s32 *)((u8 *)this + 0xa0)) = arg1;
+void CFont::SetClearance(s32 width, s32 height) {
+    clearance_w = width;
+    clearance_h = height;
 }
-void CFont::SetPos(s32 arg0, s32 arg1) {
-    (*(s32 *)((u8 *)this + 0x94)) = arg0;
-    (*(s32 *)((u8 *)this + 0x98)) = arg1;
+void CFont::SetPos(s32 x, s32 y) {
+    pos_x = x;
+    pos_y = y;
 }
 void CFont::SetColor(s32 r, s32 g, s32 b, s32 a) {
-    u8 *p = (u8 *)this;
-    p[0x88] = r;
-    p[0x89] = g;
-    p[0x8A] = b;
-    p[0x8B] = a;
+    color.r = r;
+    color.g = g;
+    color.b = b;
+    color.a = a;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", SetColor__5CFontF10RGBAQ_TYPE);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", SetColor__5CFontFUi);
-void CFont::SetFuchi(s32 arg0) {
-    (*(s32 *)((u8 *)this + 0x80)) = arg0;
+void CFont::SetFuchi(s32 style) {
+    fuchi = style;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", SetStr__5CFontFPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", GetGaijiFontNo__FPc);
@@ -61,51 +59,51 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", MySetTex__FPcP11mgCDrawPrim);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", MySetTex__FiP11mgCDrawPrim);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", DrawGaiji_sub__FP11mgCDrawPrimiii10RGBAQ_TYPEi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", DrawGaiji__5CFontFP11mgCDrawPrimiii);
-void UpDateWH(s32 *arg0, s32 *arg1, s32 arg2, s32 arg3) {
-    if (*arg0 < arg2) {
-        *arg0 = arg2;
+void UpDateWH(s32 *width, s32 *height, s32 new_width, s32 new_height) {
+    if (*width < new_width) {
+        *width = new_width;
     }
-    if (*arg1 < arg3) {
-        *arg1 = arg3;
+    if (*height < new_height) {
+        *height = new_height;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", CalcDrawWH__5CFontFPcPiPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", DrawDirect__5CFontFPcii);
-void CFont::Preset(s32 arg0) {
-    switch (arg0) {
+void CFont::Preset(s32 preset) {
+    switch (preset) {
     case 0:
     case 1:
         this->SetColor(0x80202020U);
-        this->SetFuchi(2);
+        SetFuchi(FUCHI_SHADOW_BLACK);
         break;
     case 2:
     case 3:
         this->SetColor(0x80686A6BU);
-        this->SetFuchi(8);
+        SetFuchi(FUCHI_OUTLINE_THICK);
         break;
     case 4:
         this->SetColor(0x80686A6BU);
-        this->SetFuchi(5);
+        SetFuchi(FUCHI_SHADOW_BLACK_WIDE);
         break;
     }
 }
 void CFont::Init(void) {
-    memset(this, 0, 0x80);
-    this->SetFuchi(3);
-    (*(u8 *)((u8 *)this + 0x8b)) = 0x80;
-    (*(u8 *)((u8 *)this + 0x8a)) = 0x80;
-    (*(u8 *)((u8 *)this + 0x89)) = 0x80;
-    (*(u8 *)((u8 *)this + 0x88)) = 0x80;
-    (*(s32 *)((u8 *)this + 0x90)) = 0x80;
-    (*(s32 *)((u8 *)this + 0x98)) = 0;
-    (*(s32 *)((u8 *)this + 0x94)) = 0;
-    (*(s32 *)((u8 *)this + 0x9c)) = 0xF;
-    (*(s32 *)((u8 *)this + 0xa0)) = 0x18;
-    (*(s32 *)((u8 *)this + 0xa4)) = 0x10;
-    (*(s32 *)((u8 *)this + 0xa8)) = 0x14;
-    (*(s32 *)((u8 *)this + 0xac)) = 0;
-    (*(s32 *)((u8 *)this + 0xb0)) = 0;
-    (*(s32 *)((u8 *)this + 0xb4)) = 0;
+    memset(str, 0, sizeof(str));
+    SetFuchi(FUCHI_OUTLINE);
+    color.a = 0x80;
+    color.b = 0x80;
+    color.g = 0x80;
+    color.r = 0x80;
+    alpha = 0x80;
+    pos_y = 0;
+    pos_x = 0;
+    clearance_w = 15;
+    clearance_h = 24;
+    draw_w = 16;
+    draw_h = 20;
+    mini = 0;
+    unk_b0 = 0.0f;
+    unk_b4 = 0.0f;
 }
 
 // Initialised data (.data)

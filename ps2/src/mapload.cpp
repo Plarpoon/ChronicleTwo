@@ -1,17 +1,24 @@
 #include "common.h"
 #include "mapload.hpp"
 
+#include <cmath>
 #include <cstring>
 #include <libvu0.h>
 
+#include "collision.hpp"
 #include "map.hpp"
 #include "mapinfo.hpp"
 #include "mapparts.hpp"
 #include "mdslist.hpp"
 #include "mg_math.hpp"
 #include "mg_memory.hpp"
+#include "mg_visual.hpp"
 #include "object.hpp"
 #include "scriptinterpreter.hpp"
+#include "water.hpp"
+
+// The inline members of the header are called here, never expanded.
+#pragma dont_inline on
 
 /** Non-zero when loading an additional map into the current map. */
 extern int mapAddMode;
@@ -47,10 +54,59 @@ static mgCMemory *mapStack;
 
 /**
  *
- * Non-zero while function points of the map script go to the current map part rather than the map.
+ * Far distance of the part being placed.
  *
  */
-static int mapPtsFunc;
+static float mapFarDist;
+
+/**
+ *
+ * Fade flag of the part being placed.
+ *
+ */
+static int mapFarAlpha;
+
+/**
+ *
+ * Visibility of the part being placed.
+ *
+ */
+static int mapShow;
+
+/**
+ *
+ * Level of detail that the map script is giving pieces to.
+ *
+ */
+static int mapLOD_ID;
+
+/**
+ *
+ * Current fixed camera entry.
+ *
+ */
+static int mapCameraInfoIdx;
+
+/**
+ *
+ * Next collision shape of the current camera.
+ *
+ */
+static int mapCameraRectIdx;
+
+/**
+ *
+ * Index of the function point being built.
+ *
+ */
+static int mapFuncPointIdx;
+
+/**
+ *
+ * Function point currently being configured.
+ *
+ */
+static CFuncPoint *mapNowFuncPoint;
 
 /**
  *
@@ -61,10 +117,230 @@ static int mapMatIdx;
 
 /**
  *
- * Level of detail that the map script is giving pieces to.
+ * Non-zero while function points of the map script go to the current map part rather than the map.
  *
  */
-static int mapLOD_ID;
+static int mapPtsFunc;
+
+/**
+ *
+ * Non-zero after reserving configuration function points.
+ *
+ */
+static int ReserveFuncFlag;
+
+/**
+ *
+ * Next water surface slot filled by the configuration script.
+ *
+ */
+static int WaterIndex;
+
+/**
+ *
+ * Water surface currently being configured.
+ *
+ */
+static CWaterFrame *cfgWater;
+
+static int cfgDRAW_OFF_RECT(SPI_STACK *stack, int argument_count);
+static int cfgFUNC_DATA(SPI_STACK *stack, int argument_count);
+static int cfgFUNC_DATA_END(SPI_STACK *stack, int argument_count);
+static int cfgFUNC_EVENT_DATA(SPI_STACK *stack, int argument_count);
+static int cfgOCCLUSION_PLANE(SPI_STACK *stack, int argument_count);
+static int cfgWATER_DRAW(SPI_STACK *stack, int argument_count);
+static int cfgWATER_DRAW_NUM(SPI_STACK *stack, int argument_count);
+static int cfgWATER_PARAM(SPI_STACK *stack, int argument_count);
+static int cfgWATER_POS(SPI_STACK *stack, int argument_count);
+static int cfgWATER_SHAKE(SPI_STACK *stack, int argument_count);
+static int cfgWATER_SURFACE_END(SPI_STACK *stack, int argument_count);
+static int cfgWATER_SURFACE_NUM(SPI_STACK *stack, int argument_count);
+static int cfgWATER_SURFACE_START(SPI_STACK *stack, int argument_count);
+static int cfgWATER_VERTEX(SPI_STACK *stack, int argument_count);
+static int mapCAMERA_INFO(SPI_STACK *stack, int argument_count);
+static int mapCAMERA_INFO_END(SPI_STACK *stack, int argument_count);
+static int mapDummy(SPI_STACK *stack, int argument_count);
+static int mapFAR_CLIP(SPI_STACK *stack, int argument_count);
+static int mapFIX_CAMERA(SPI_STACK *stack, int argument_count);
+static int mapFIX_CAMERA_END(SPI_STACK *stack, int argument_count);
+static int mapFIX_CAMERA_OFF_GROUP(SPI_STACK *stack, int argument_count);
+static int mapFIX_CAMERA_POS(SPI_STACK *stack, int argument_count);
+static int mapFIX_CAMERA_POS2(SPI_STACK *stack, int argument_count);
+static int mapFIX_CAMERA_RECT(SPI_STACK *stack, int argument_count);
+static int mapFUNC_ANIME_DATA(SPI_STACK *stack, int argument_count);
+static int mapFUNC_DATA(SPI_STACK *stack, int argument_count);
+static int mapFUNC_DATA_END(SPI_STACK *stack, int argument_count);
+static int mapFUNC_EFFECT_NAME(SPI_STACK *stack, int argument_count);
+static int mapFUNC_EVENT_DATA(SPI_STACK *stack, int argument_count);
+static int mapFUNC_FIRE_DATA(SPI_STACK *stack, int argument_count);
+static int mapFUNC_FLAG(SPI_STACK *stack, int argument_count);
+static int mapFUNC_INVENT_DATA(SPI_STACK *stack, int argument_count);
+static int mapFUNC_NAME(SPI_STACK *stack, int argument_count);
+static int mapFUNC_PLIGHT_DATA(SPI_STACK *stack, int argument_count);
+static int mapFUNC_POINT(SPI_STACK *stack, int argument_count);
+static int mapFUNC_POINT_END(SPI_STACK *stack, int argument_count);
+static int mapFUNC_POS(SPI_STACK *stack, int argument_count);
+static int mapFUNC_SOUND_DATA(SPI_STACK *stack, int argument_count);
+static int mapLIGHT_FLAG(SPI_STACK *stack, int argument_count);
+static int mapLOD_BLEND(SPI_STACK *stack, int argument_count);
+static int mapLOD_END(SPI_STACK *stack, int argument_count);
+static int mapLOD_PIECE(SPI_STACK *stack, int argument_count);
+static int mapLOD_START(SPI_STACK *stack, int argument_count);
+static int mapMAP_FAR_CLIP(SPI_STACK *stack, int argument_count);
+static int mapMAP_PARTS(SPI_STACK *stack, int argument_count);
+static int mapMAP_PARTS_END(SPI_STACK *stack, int argument_count);
+static int mapMOVE_FLAG(SPI_STACK *stack, int argument_count);
+static int mapPARTS(SPI_STACK *stack, int argument_count);
+static int mapPARTS_END(SPI_STACK *stack, int argument_count);
+static int mapPARTS_GROUP(SPI_STACK *stack, int argument_count);
+static int mapPARTS_NAME(SPI_STACK *stack, int argument_count);
+static int mapPARTS_POS(SPI_STACK *stack, int argument_count);
+static int mapPARTS_ROT(SPI_STACK *stack, int argument_count);
+static int mapPARTS_SCALE(SPI_STACK *stack, int argument_count);
+static int mapPIECE(SPI_STACK *stack, int argument_count);
+static int mapPIECE_COL_TYPE(SPI_STACK *stack, int argument_count);
+static int mapPIECE_END(SPI_STACK *stack, int argument_count);
+static int mapPIECE_MATERIAL(SPI_STACK *stack, int argument_count);
+static int mapPIECE_MATERIAL_END(SPI_STACK *stack, int argument_count);
+static int mapPIECE_MATERIAL_START(SPI_STACK *stack, int argument_count);
+static int mapPIECE_NAME(SPI_STACK *stack, int argument_count);
+static int mapPIECE_POS(SPI_STACK *stack, int argument_count);
+static int mapPIECE_ROT(SPI_STACK *stack, int argument_count);
+static int mapPIECE_SCALE(SPI_STACK *stack, int argument_count);
+static int mapPIECE_TIME(SPI_STACK *stack, int argument_count);
+static int map_MAP_INFO_TOP(SPI_STACK *stack, int argument_count);
+
+/**
+ * Tags recognized by the map script loader.
+ */
+static SPI_TAG_PARAM map_tag[] = {
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"d", mapDummy},
+    {"PARTS", mapPARTS},
+    {"FAR_CLIP", mapFAR_CLIP},
+    {"LIGHT_FLAG", mapLIGHT_FLAG},
+    {"MOVE_FLAG", mapMOVE_FLAG},
+    {"LOD_START", mapLOD_START},
+    {"LOD_BLEND", mapLOD_BLEND},
+    {"LOD_PIECE", mapLOD_PIECE},
+    {"LOD_END", mapLOD_END},
+    {"PIECE", mapPIECE},
+    {"PIECE_POS", mapPIECE_POS},
+    {"PIECE_NAME", mapPIECE_NAME},
+    {"PIECE_ROT", mapPIECE_ROT},
+    {"PIECE_SCALE", mapPIECE_SCALE},
+    {"PIECE_MATERIAL_START", mapPIECE_MATERIAL_START},
+    {"PIECE_MATERIAL", mapPIECE_MATERIAL},
+    {"PIECE_MATERIAL_END", mapPIECE_MATERIAL_END},
+    {"PIECE_COL_TYPE", mapPIECE_COL_TYPE},
+    {"PIECE_TIME", mapPIECE_TIME},
+    {"PIECE_END", mapPIECE_END},
+    {"PARTS_END", mapPARTS_END},
+    {"MAP_PARTS", mapMAP_PARTS},
+    {"MAP_FAR_CLIP", mapMAP_FAR_CLIP},
+    {"PARTS_NAME", mapPARTS_NAME},
+    {"PARTS_GROUP", mapPARTS_GROUP},
+    {"PARTS_POS", mapPARTS_POS},
+    {"PARTS_ROT", mapPARTS_ROT},
+    {"PARTS_SCALE", mapPARTS_SCALE},
+    {"MAP_PARTS_END", mapMAP_PARTS_END},
+    {"_MAP_INFO_TOP", map_MAP_INFO_TOP},
+    {"CAMERA_INFO", mapCAMERA_INFO},
+    {"FIX_CAMERA", mapFIX_CAMERA},
+    {"FIX_CAMERA_POS", mapFIX_CAMERA_POS},
+    {"FIX_CAMERA_POS2", mapFIX_CAMERA_POS2},
+    {"FIX_CAMERA_OFF_GROUP", mapFIX_CAMERA_OFF_GROUP},
+    {"FIX_CAMERA_RECT", mapFIX_CAMERA_RECT},
+    {"FIX_CAMERA_END", mapFIX_CAMERA_END},
+    {"CAMERA_INFO_END", mapCAMERA_INFO_END},
+    {"FUNC_POINT", mapFUNC_POINT},
+    {"FUNC_DATA", mapFUNC_DATA},
+    {"FUNC_NAME", mapFUNC_NAME},
+    {"FUNC_FLAG", mapFUNC_FLAG},
+    {"FUNC_FIRE_DATA", mapFUNC_FIRE_DATA},
+    {"FUNC_EFFECT_NAME", mapFUNC_EFFECT_NAME},
+    {"FUNC_FIRE_DATA", mapFUNC_EFFECT_NAME},
+    {"FUNC_PLIGHT_DATA", mapFUNC_PLIGHT_DATA},
+    {"FUNC_ANIME_DATA", mapFUNC_ANIME_DATA},
+    {"FUNC_INVENT_DATA", mapFUNC_INVENT_DATA},
+    {"FUNC_EVENT_DATA", mapFUNC_EVENT_DATA},
+    {"FUNC_POS", mapFUNC_POS},
+    {"FUNC_DATA_END", mapFUNC_DATA_END},
+    {"FUNC_POINT_END", mapFUNC_POINT_END},
+    {"FUNC_SOUND_DATA", mapFUNC_SOUND_DATA},
+    {NULL, NULL},
+};
+
+/**
+ * Tags recognized by the map configuration script loader.
+ */
+static SPI_TAG_PARAM cfg_tag[] = {
+    {"DRAW_OFF_RECT", cfgDRAW_OFF_RECT},
+    {"OCCLUSION_PLANE", cfgOCCLUSION_PLANE},
+    {"FUNC_DATA", cfgFUNC_DATA},
+    {"FUNC_NAME", mapFUNC_NAME},
+    {"FUNC_EVENT_DATA", cfgFUNC_EVENT_DATA},
+    {"FUNC_POS", mapFUNC_POS},
+    {"FUNC_DATA", cfgFUNC_DATA_END},
+    {"WATER_SURFACE_NUM", cfgWATER_SURFACE_NUM},
+    {"WATER_SURFACE_START", cfgWATER_SURFACE_START},
+    {"WATER_VERTEX", cfgWATER_VERTEX},
+    {"WATER_POS", cfgWATER_POS},
+    {"WATER_PARAM", cfgWATER_PARAM},
+    {"WATER_SHAKE", cfgWATER_SHAKE},
+    {"WATER_SURFACE_END", cfgWATER_SURFACE_END},
+    {"WATER_DRAW_NUM", cfgWATER_DRAW_NUM},
+    {"WATER_DRAW", cfgWATER_DRAW},
+    {NULL, NULL},
+};
+STATIC_ASSERT(sizeof(cfg_tag) == 0x88);
+
+/**
+ *
+ * Name of the placement being built.
+ *
+ */
+static char mapPlacePartsName[0x100];
+
+/**
+ *
+ * Name of the part to place.
+ *
+ */
+static char mapMapPartsName[0x100];
 #endif
 
 // Code (.text)
@@ -876,89 +1152,1406 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPIECE_MATERIAL_START__FP9SPI_
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", SetMaterial__9CMapPieceFP13PieceMateriali);
 #endif
+#ifdef NONMATCHING
+// Defined inline in mapload.hpp.
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", __ct__13PieceMaterialFv);
+#endif
+
+#ifdef NONMATCHING
+// Defined inline in mapload.hpp.
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", Initialize__13PieceMaterialFv);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the next material colour override of the current piece.
+ */
+static int mapPIECE_MATERIAL(SPI_STACK *stack, int argument_count) {
+    CMapPiece     *piece;
+    PieceMaterial *material;
+    mgCFrame      *frame;
+    char          *name;
+
+    if (mapNowMapPiece == NULL) {
+        return 0;
+    }
+    piece = mapNowMapPiece->pGetData();
+    if (piece == NULL) {
+        return 0;
+    }
+    material = piece->GetMaterial(mapMatIdx++);
+    if (material == NULL) {
+        return 0;
+    }
+    frame = piece->GetFrame();
+    name = spiGetStackString(stack++);
+    if (name == NULL || frame == NULL) {
+        return 0;
+    }
+    material->frame = frame->SearchFrame(name);
+    if (material->frame == NULL) {
+        return 0;
+    }
+    material->material_no = spiGetStackInt(stack++);
+    material->material = material->frame->GetMaterial(material->material_no);
+    material->color[0] = spiGetStackFloat(stack++);
+    material->color[1] = spiGetStackFloat(stack++);
+    material->color[2] = spiGetStackFloat(stack++);
+    material->color[3] = spiGetStackFloat(stack++);
+    material->unk_c = spiGetStackInt(stack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPIECE_MATERIAL__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+mgMaterial *mgCFrame::GetMaterial(int index) {
+    mgMaterial *material;
+
+    material = NULL;
+    if (visual != NULL) {
+        material = visual->GetMaterial(index);
+    }
+    return material;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", GetMaterial__8mgCFrameFi);
+#endif
+
+#ifdef NONMATCHING
+// Defined inline in object.hpp.
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", GetFrame__12CObjectFrameFv);
+#endif
+
 s32 mapPIECE_MATERIAL_END(SPI_STACK *stack, int argc) {
     return 1;
 }
+#ifdef NONMATCHING
+/**
+ * Sets the collision kind and optional parameter of the current piece.
+ */
+static int mapPIECE_COL_TYPE(SPI_STACK *stack, int argument_count) {
+    CMapPiece *piece;
+
+    if (mapNowMapPiece == NULL) {
+        return 0;
+    }
+    piece = mapNowMapPiece->pGetData();
+    piece->col_type = spiGetStackInt(stack++);
+    if (argument_count > 1) {
+        piece->col_param = spiGetStackInt(stack);
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPIECE_COL_TYPE__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the interval of the day during which the current piece appears.
+ */
+static int mapPIECE_TIME(SPI_STACK *stack, int argument_count) {
+    CMapPiece *piece;
+    float      start;
+    float      end;
+
+    if (mapNowMapPiece == NULL) {
+        return 0;
+    }
+    piece = mapNowMapPiece->pGetData();
+    start = spiGetStackFloat(stack++);
+    end = spiGetStackFloat(stack);
+    piece->SetTimeBand(start, end);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPIECE_TIME__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Appends the completed piece to the current part.
+ */
+static int mapPIECE_END(SPI_STACK *stack, int argument_count) {
+    CMapParts *parts;
+
+    if (mapNowMapParts == NULL || mapNowMapPiece == NULL) {
+        return 0;
+    }
+    parts = mapNowMapParts->pGetData();
+    if (parts == NULL) {
+        return 0;
+    }
+    parts->AddPiece(mapNowMapPiece);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPIECE_END__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Appends the completed part to the map and builds its bounds.
+ */
+static int mapPARTS_END(SPI_STACK *stack, int argument_count) {
+    if (mapNowMapParts == NULL) {
+        return 0;
+    }
+    mapMap->AddParts(mapNowMapParts);
+    mapPtsFunc = 0;
+    mapNowMapParts->pGetData()->CreateBoundBox();
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPARTS_END__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Starts a named placement with default position, scale and visibility.
+ */
+static int mapMAP_PARTS(SPI_STACK *stack, int argument_count) {
+    char *name;
+
+    name = spiGetStackString(stack++);
+    mapNowMapParts = NULL;
+    if (name == NULL) {
+        return 0;
+    }
+    strcpy(mapPlacePartsName, name);
+    mgZeroVector(mapPos);
+    mgZeroVector(mapRot);
+    mapScale[3] = 0.0f;
+    mapScale[2] = 1.0f;
+    mapScale[1] = 1.0f;
+    mapScale[0] = 1.0f;
+    mapFarDist = -1.0f;
+    mapShow = 1;
+    mapFarAlpha = 0;
+    if (argument_count > 1) {
+        mapShow = spiGetStackInt(stack);
+    }
+    mapMapPartsName[0] = 0;
+    mapMapPartsGroupName[0] = 0;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapMAP_PARTS__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the far distance and fading of the part being placed.
+ */
+static int mapMAP_FAR_CLIP(SPI_STACK *stack, int argument_count) {
+    mapFarDist = spiGetStackFloat(stack++);
+    mapFarAlpha = spiGetStackInt(stack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapMAP_FAR_CLIP__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Selects the source part for the placement.
+ */
+static int mapPARTS_NAME(SPI_STACK *stack, int argument_count) {
+    char *name;
+
+    name = spiGetStackString(stack);
+    if (name == NULL) {
+        return 0;
+    }
+    strcpy(mapMapPartsName, name);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPARTS_NAME__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Selects the group that the placement joins.
+ */
+static int mapPARTS_GROUP(SPI_STACK *stack, int argument_count) {
+    char *name;
+
+    name = spiGetStackString(stack);
+    if (name == NULL) {
+        return 0;
+    }
+    strcpy(mapMapPartsGroupName, name);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPARTS_GROUP__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the position of the placement.
+ */
+static int mapPARTS_POS(SPI_STACK *stack, int argument_count) {
+    spiGetStackVector(mapPos, stack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPARTS_POS__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the angles of the placement.
+ */
+static int mapPARTS_ROT(SPI_STACK *stack, int argument_count) {
+    spiGetStackVector(mapRot, stack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPARTS_ROT__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the scale of the placement.
+ */
+static int mapPARTS_SCALE(SPI_STACK *stack, int argument_count) {
+    spiGetStackVector(mapScale, stack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPARTS_SCALE__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Places the selected part and applies its name, distance and group.
+ */
+static int mapMAP_PARTS_END(SPI_STACK *stack, int argument_count) {
+    CMapParts *parts;
+
+    parts = mapMap->PlaceParts(mapMapPartsName, mapPos, mapRot, mapScale, mapStack);
+    if (parts == NULL) {
+        return 0;
+    }
+    parts->SetName(mapPlacePartsName);
+    if (mapFarDist > 0.0f) {
+        parts->far_dist = mapFarDist;
+        parts->fade = mapFarAlpha;
+    }
+    parts->show = mapShow;
+    if (mapMapPartsGroupName[0] != 0) {
+        parts->group_no = mapMap->AddPartsGroup(mapMapPartsGroupName, parts, mapStack);
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapMAP_PARTS_END__FP9SPI_STACKi);
+#endif
+
 s32 map_MAP_INFO_TOP(SPI_STACK *stack, int argc) {
     return 1;
 }
+#ifdef NONMATCHING
+/**
+ * Allocates the fixed camera information table for the map.
+ */
+static int mapCAMERA_INFO(SPI_STACK *stack, int argument_count) {
+    int          camera_count;
+    CCameraInfo *camera_info;
+
+    if (IsAddMode() != 0) {
+        return 1;
+    }
+    camera_count = spiGetStackInt(stack);
+    if (camera_count < 0) {
+        return 0;
+    }
+    camera_info = new (mapStack->Alloc(algn16_size(camera_count * sizeof(CCameraInfo)) + 2)) CCameraInfo[camera_count];
+    mapMap->SetCameraInfoTable(camera_info, camera_count);
+    mapCameraInfoIdx = 0;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapCAMERA_INFO__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+// Defined inline in mapinfo.hpp.
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", __ct__11CCameraInfoFv);
+#endif
+
+#ifdef NONMATCHING
+// Defined inline in mapload.hpp.
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", __ct__15CCameraDrawInfoFv);
+#endif
+
+#ifdef NONMATCHING
+// Defined inline in mapload.hpp.
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", Initialize__15CCameraDrawInfoFv);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Begins the collision shapes of the current fixed camera.
+ */
+static int mapFIX_CAMERA(SPI_STACK *stack, int argument_count) {
+    if (IsAddMode() != 0) {
+        return 1;
+    }
+    mapCameraRectIdx = 0;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFIX_CAMERA__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the first position of the current fixed camera.
+ */
+static int mapFIX_CAMERA_POS(SPI_STACK *stack, int argument_count) {
+    CCameraInfo *camera_info;
+
+    if (IsAddMode() != 0) {
+        return 1;
+    }
+    camera_info = mapMap->GetCameraInfo(mapCameraInfoIdx);
+    if (camera_info == NULL) {
+        return 0;
+    }
+    spiGetStackVector(camera_info->pos[0], stack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFIX_CAMERA_POS__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets an indexed position of the current fixed camera.
+ */
+static int mapFIX_CAMERA_POS2(SPI_STACK *stack, int argument_count) {
+    CCameraInfo *camera_info;
+    int          position_index;
+
+    if (IsAddMode() != 0) {
+        return 1;
+    }
+    camera_info = mapMap->GetCameraInfo(mapCameraInfoIdx);
+    if (camera_info == NULL) {
+        return 0;
+    }
+    position_index = spiGetStackInt(stack);
+    if (position_index < 0 || position_index >= 8) {
+        return 0;
+    }
+    spiGetStackVector(camera_info->pos[position_index], &stack[1]);
+    camera_info->pos_num = position_index + 1 >= camera_info->pos_num ? position_index + 1 : camera_info->pos_num;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFIX_CAMERA_POS2__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Assigns a part group and its draw setting to the current fixed camera.
+ */
+static int mapFIX_CAMERA_OFF_GROUP(SPI_STACK *stack, int argument_count) {
+    CCameraInfo     *camera_info;
+    CCameraDrawInfo *draw_info;
+    char            *group_name;
+    int              draw_index;
+
+    if (IsAddMode() != 0) {
+        return 1;
+    }
+    draw_index = spiGetStackInt(stack);
+    camera_info = mapMap->GetCameraInfo(mapCameraInfoIdx);
+    if (camera_info == NULL) {
+        return 0;
+    }
+    draw_info = camera_info->GetDrawInfo(draw_index);
+    if (draw_info == NULL) {
+        return 0;
+    }
+    group_name = spiGetStackString(&stack[1]);
+    if (group_name == NULL) {
+        return 0;
+    }
+    if (group_name[0] == '\0') {
+        return 1;
+    }
+    draw_info->unk_4 = spiGetStackInt(&stack[2]);
+    draw_info->group_no = mapMap->SearchPartsGroupNo(group_name);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFIX_CAMERA_OFF_GROUP__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Adds a collision shape marking where the current fixed camera applies.
+ */
+static int mapFIX_CAMERA_RECT(SPI_STACK *stack, int argument_count) {
+    CCameraInfo  *camera_info;
+    CColFrame    *frame;
+    CCollision   *collision;
+    char         *shape_name;
+    SPI_STACK    *shape_data;
+    sceVu0FVECTOR transform;
+
+    if (IsAddMode() != 0) {
+        return 1;
+    }
+    camera_info = mapMap->GetCameraInfo(mapCameraInfoIdx);
+    if (camera_info == NULL) {
+        return 0;
+    }
+    shape_name = spiGetStackString(stack);
+    shape_data = &stack[1];
+    if (shape_name == NULL) {
+        return 0;
+    }
+    frame = new (mapStack->Alloc(algn16_size(sizeof(CColFrame)) + 2)) CColFrame;
+    collision = NULL;
+    if (strcmp(shape_name, "box") == 0) {
+        collision = new (mapStack->Alloc(algn16_size(sizeof(CCollision)) + 2)) CCollision;
+        spiGetStackVector(collision->bbox.min, shape_data);
+        collision->bbox.min[3] = 1.0f;
+        spiGetStackVector(collision->bbox.max, &shape_data[3]);
+        collision->bbox.max[3] = 1.0f;
+        shape_data += 6;
+        if (frame != NULL) {
+            if (argument_count >= 8) {
+                spiGetStackVector(transform, shape_data);
+                shape_data += 3;
+                frame->SetPosition(transform);
+            }
+            if (argument_count >= 11) {
+                spiGetStackVector(transform, shape_data);
+                shape_data += 3;
+                frame->SetRotation(transform);
+            }
+            if (argument_count >= 14) {
+                spiGetStackVector(transform, shape_data);
+                frame->SetScale(transform);
+            }
+        }
+    }
+    if (frame != NULL) {
+        frame->SetCollision(collision);
+    }
+    if (mapCameraRectIdx < camera_info->rect_num) {
+        camera_info->rect[mapCameraRectIdx] = frame;
+        mapCameraRectIdx++;
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFIX_CAMERA_RECT__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+// Defined inline in collision.hpp.
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", SetCollision__9CColFrameFP10CCollision);
+#endif
+
+#ifdef NONMATCHING
+// Defined inline in collision.hpp.
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", __ct__10CCollisionFv);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Advances to the next fixed camera information entry.
+ */
+static int mapFIX_CAMERA_END(SPI_STACK *stack, int argument_count) {
+    if (IsAddMode() != 0) {
+        return 1;
+    }
+    mapCameraInfoIdx++;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFIX_CAMERA_END__FP9SPI_STACKi);
+#endif
+
 s32 mapCAMERA_INFO_END(SPI_STACK *stack, s32 argument_count) {
     if (IsAddMode() != 0) {
         return 1;
     }
     return 1;
 }
+#ifdef NONMATCHING
+/**
+ * Begins the function points of the map script.
+ */
+static int mapFUNC_POINT(SPI_STACK *stack, int argument_count) {
+    spiGetStackInt(stack);
+    mapFuncPointIdx = 0;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_POINT__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Adds a function point of the script's named kind to the map or current part.
+ */
+static int mapFUNC_DATA(SPI_STACK *stack, int argument_count) {
+    char *kind;
+    int   type;
+
+    mapNowFuncPoint = NULL;
+    kind = spiGetStackString(stack);
+    if (kind == NULL) {
+        return 0;
+    }
+    if (strcmp(kind, "effect") == 0) {
+        type = FUNC_POINT_EFFECT;
+    } else if (strcmp(kind, "fire") == 0) {
+        type = FUNC_POINT_FIRE;
+    } else if (strcmp(kind, "flare") == 0) {
+        type = FUNC_POINT_FLARE;
+    } else if (strcmp(kind, "plight") == 0) {
+        type = FUNC_POINT_PLIGHT;
+    } else if (strcmp(kind, "anime") == 0) {
+        type = FUNC_POINT_ANIME;
+    } else if (strcmp(kind, "invent") == 0) {
+        type = FUNC_POINT_INVENT;
+    } else if (strcmp(kind, "event") == 0) {
+        type = FUNC_POINT_EVENT;
+        mapMap->parts_event = 1;
+    } else if (strcmp(kind, "sound") == 0) {
+        type = FUNC_POINT_SOUND;
+    } else if (strcmp(kind, "pos") == 0) {
+        type = FUNC_POINT_POS;
+    } else {
+        return 0;
+    }
+
+    if (mapPtsFunc != 0) {
+        if (mapNowMapParts == NULL) {
+            return 0;
+        }
+        mapNowFuncPoint = mapNowMapParts->pGetData()->func_point_mngr.Add(type, mapStack);
+    } else {
+        mapNowFuncPoint = mapMap->func_point.Add(type, mapStack);
+    }
+    if (mapNowFuncPoint == NULL) {
+        return 0;
+    }
+    mapNowFuncPoint->type = type;
+    mapNowFuncPoint->enable = spiGetStackInt(&stack[1]);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_DATA__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Copies the current function point's search name into map memory.
+ */
+static int mapFUNC_NAME(SPI_STACK *stack, int argument_count) {
+    char *name;
+    char *copy;
+
+    if (mapNowFuncPoint == NULL) {
+        return 0;
+    }
+    name = spiGetStackString(stack);
+    if (name == NULL) {
+        return 0;
+    }
+    copy = (char *)mapStack->Alloc(algn16_size(strlen(name) + 1));
+    if (copy != NULL) {
+        strcpy(copy, name);
+    }
+    mapNowFuncPoint->name = copy;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_NAME__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the current function point's flags and hours of operation.
+ */
+static int mapFUNC_FLAG(SPI_STACK *stack, int argument_count) {
+    if (mapNowFuncPoint == NULL) {
+        return 0;
+    }
+    mapNowFuncPoint->unk_c = spiGetStackInt(&stack[0]);
+    mapNowFuncPoint->unk_8 = spiGetStackInt(&stack[1]);
+    mapNowFuncPoint->start = spiGetStackFloat(&stack[2]);
+    mapNowFuncPoint->end = spiGetStackFloat(&stack[3]);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_FLAG__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the colour and drawing settings of a fire or flare function point.
+ */
+static int mapFUNC_FIRE_DATA(SPI_STACK *stack, int argument_count) {
+    sceVu0FVECTOR color;
+
+    if (mapNowFuncPoint == NULL) {
+        return 0;
+    }
+    spiGetStackVector(color, stack);
+    if (color[2] + (color[0] + color[1]) == 0.0f) {
+        color[0] = 128.0f;
+        color[1] = 90.0f;
+        color[2] = 38.0f;
+    } else {
+        sceVu0ScaleVector(color, color, 128.0f);
+    }
+    color[3] = 128.0f;
+    *(u_long128 *)mapNowFuncPoint->fire.color = *(u_long128 *)color;
+    mapNowFuncPoint->fire.unk_30 = spiGetStackInt(&stack[3]) == 0;
+    if (argument_count >= 5) {
+        mapNowFuncPoint->fire.unk_34 = spiGetStackInt(&stack[4]);
+    }
+    if (argument_count >= 6) {
+        mapNowFuncPoint->fire.unk_38 = spiGetStackInt(&stack[5]);
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_FIRE_DATA__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the current point light's colour, range and optional flicker settings.
+ */
+static int mapFUNC_PLIGHT_DATA(SPI_STACK *stack, int argument_count) {
+    sceVu0FVECTOR color;
+    float         max_color;
+
+    if (mapNowFuncPoint == NULL) {
+        return 0;
+    }
+    mapNowFuncPoint->plight.power = spiGetStackFloat(stack);
+    spiGetStackVector(color, &stack[1]);
+    sceVu0ScaleVector(color, color, 0.5f);
+    color[3] = 0.0f;
+    if (color[0] <= color[1]) {
+        max_color = color[1] <= color[2] ? color[2] : color[1];
+    } else {
+        max_color = color[0] <= color[2] ? color[2] : color[0];
+    }
+    mapNowFuncPoint->plight.range = 0.25f * (mapNowFuncPoint->plight.power * sqrt(max_color));
+    *(u_long128 *)mapNowFuncPoint->plight.color = *(u_long128 *)color;
+    mapNowFuncPoint->plight.unk_38 = spiGetStackInt(&stack[4]);
+    if (argument_count >= 6) {
+        mapNowFuncPoint->plight.unk_3c = spiGetStackInt(&stack[5]);
+    }
+    if (argument_count >= 7) {
+        mapNowFuncPoint->plight.unk_40 = spiGetStackInt(&stack[6]);
+    }
+    if (argument_count >= 8) {
+        mapNowFuncPoint->plight.unk_44 = spiGetStackInt(&stack[7]);
+    }
+    if (argument_count >= 9) {
+        mapNowFuncPoint->plight.unk_48 = spiGetStackInt(&stack[8]);
+    }
+    if (argument_count >= 10) {
+        mapNowFuncPoint->plight.flicker_type = spiGetStackInt(&stack[9]);
+    }
+    if (argument_count >= 11) {
+        mapNowFuncPoint->plight.flicker_depth = spiGetStackFloat(&stack[10]);
+    }
+    if (argument_count >= 12) {
+        mapNowFuncPoint->plight.flicker_period = spiGetStackFloat(&stack[11]);
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_PLIGHT_DATA__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the strings, parameters and optional flags of an animation point.
+ */
+static int mapFUNC_ANIME_DATA(SPI_STACK *stack, int argument_count) {
+    CFuncPoint::AnimeData *anime;
+
+    if (mapNowFuncPoint == NULL) {
+        return 0;
+    }
+    anime = &mapNowFuncPoint->anime;
+    anime->parts_name = mgCopyString(spiGetStackString(&stack[0]), mapStack);
+    anime->piece_name = mgCopyString(spiGetStackString(&stack[1]), mapStack);
+    anime->frame_name = mgCopyString(spiGetStackString(&stack[2]), mapStack);
+    anime->unk_2c = spiGetStackInt(&stack[3]);
+    anime->unk_30 = spiGetStackInt(&stack[4]);
+    spiGetStackVector(anime->param, &stack[5]);
+    spiGetStackVector(anime->unk_50, &stack[8]);
+    spiGetStackVector(anime->unk_60, &stack[11]);
+    anime->unk_34 = 0;
+    if (argument_count >= 15) {
+        anime->unk_34 = spiGetStackInt(&stack[14]);
+    }
+    if (argument_count >= 16) {
+        anime->unk_36 = spiGetStackInt(&stack[15]);
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_ANIME_DATA__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the box and angle covered by an invention function point.
+ */
+static int mapFUNC_INVENT_DATA(SPI_STACK *stack, int argument_count) {
+    CFuncPoint::InventData *invent;
+
+    if (mapNowFuncPoint == NULL) {
+        return 0;
+    }
+    invent = &mapNowFuncPoint->invent;
+    invent->unk_20 = spiGetStackInt(&stack[0]);
+    spiGetStackVector(invent->box.min, &stack[1]);
+    invent->box.min[3] = 1.0f;
+    spiGetStackVector(invent->box.max, &stack[4]);
+    invent->box.max[3] = 1.0f;
+    invent->unk_24 = spiGetStackInt(&stack[7]);
+    invent->unk_28 = spiGetStackFloat(&stack[8]);
+    invent->angle = (3.1415927f * spiGetStackFloat(&stack[9])) / 180.0f;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_INVENT_DATA__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the event kind, event parameters and optional interaction flags of a point.
+ */
+static int mapFUNC_EVENT_DATA(SPI_STACK *stack, int argument_count) {
+    CFuncPoint::EventData *event;
+    char                  *kind;
+    char                  *name;
+    u32                    flag;
+
+    if (mapNowFuncPoint == NULL) {
+        return 0;
+    }
+    kind = spiGetStackString(&stack[0]);
+    event = &mapNowFuncPoint->event;
+    flag = 0;
+    event->event_no = spiGetStackInt(&stack[1]);
+    event->point_no = spiGetStackInt(&stack[2]);
+    event->unk_2c = spiGetStackInt(&stack[3]);
+    event->unk_30 = spiGetStackInt(&stack[4]);
+    event->unk_34 = spiGetStackInt(&stack[5]);
+    if (kind != NULL) {
+        if (strcmp(kind, "door") == 0) {
+            flag = FUNC_EVENT_UNK_100 | FUNC_EVENT_DOOR | FUNC_EVENT_ACTION;
+        } else if (strcmp(kind, "ed_door") == 0) {
+            flag = FUNC_EVENT_UNK_100 | FUNC_EVENT_ED_DOOR | FUNC_EVENT_DOOR | FUNC_EVENT_ACTION;
+        } else if (strcmp(kind, "lddr_b") == 0) {
+            flag = FUNC_EVENT_LADDER_BOTTOM;
+            event->event_no = 1;
+        } else if (strcmp(kind, "lddr_t") == 0) {
+            flag = FUNC_EVENT_LADDER_TOP;
+            event->event_no = 1;
+        } else if (strcmp(kind, "close_door") == 0) {
+            flag = FUNC_EVENT_CLOSE_DOOR | FUNC_EVENT_DOOR | FUNC_EVENT_ACTION;
+        } else if (strcmp(kind, "t_box") == 0) {
+            flag = FUNC_EVENT_TREASURE_BOX | FUNC_EVENT_ACTION;
+            event->event_no = 1;
+        } else if (strcmp(kind, "book") == 0) {
+            flag = FUNC_EVENT_BOOK | FUNC_EVENT_ACTION;
+        }
+    }
+    event->flag = flag;
+    if (argument_count >= 7) {
+        name = spiGetStackString(&stack[6]);
+        if (name != NULL) {
+            if (strlen(name) >= 16) {
+                strncpy(event->unk_38, name, 15);
+                event->unk_38[15] = '\0';
+            } else {
+                strcpy(event->unk_38, name);
+            }
+        }
+    }
+    if (argument_count >= 8) {
+        if (spiGetStackInt(&stack[7]) != 0) {
+            event->flag |= FUNC_EVENT_ACTION;
+        }
+    }
+    if (argument_count >= 9) {
+        if (spiGetStackInt(&stack[8]) != 0) {
+            event->flag |= FUNC_EVENT_ITEM;
+        }
+    }
+    if (argument_count >= 10) {
+        if (spiGetStackInt(&stack[9]) != 0) {
+            event->flag |= FUNC_EVENT_UNK_100;
+        } else {
+            event->flag &= ~FUNC_EVENT_UNK_100;
+        }
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_EVENT_DATA__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets a sound function point's effect, distance parameters and line endpoints.
+ */
+static int mapFUNC_SOUND_DATA(SPI_STACK *stack, int argument_count) {
+    CFuncPoint::SoundData *sound;
+
+    if (mapNowFuncPoint == NULL) {
+        return 0;
+    }
+    sound = &mapNowFuncPoint->sound;
+    sound->se_no = spiGetStackInt(&stack[0]);
+    sound->unk_24 = spiGetStackFloat(&stack[1]);
+    sound->unk_28 = spiGetStackFloat(&stack[2]);
+    sound->unk_2c = (float)spiGetStackInt(&stack[3]);
+    sound->shape = spiGetStackInt(&stack[4]);
+    spiGetStackVector(sound->start, &stack[5]);
+    spiGetStackVector(sound->end, &stack[8]);
+    sound->end[3] = 1.0f;
+    sound->start[3] = 1.0f;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_SOUND_DATA__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Resolves the current effect point's effect and reserves its frame bound.
+ */
+static int mapFUNC_EFFECT_NAME(SPI_STACK *stack, int argument_count) {
+    char *name;
+    char *copy;
+    int   index;
+
+    if (mapNowFuncPoint == NULL) {
+        return 0;
+    }
+    name = spiGetStackString(stack);
+    if (name == NULL) {
+        return 0;
+    }
+    copy = (char *)mapStack->Alloc(algn16_size(strlen(name) + 1));
+    if (copy != NULL) {
+        strcpy(copy, name);
+    }
+    mapNowFuncPoint->effect.name = copy;
+    index = mapMap->SaerchEffectIndex(copy);
+    if (index >= 0) {
+        mapNowFuncPoint->effect.index = index;
+        mapNowFuncPoint->frame.SetBound(new (mapStack->Alloc(algn16_size(sizeof(mgCFrame::BoundInfo)) + 2)) mgCFrame::BoundInfo);
+    } else {
+        mapNowFuncPoint->type = FUNC_POINT_NONE;
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_EFFECT_NAME__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+// Defined inline in mg_frame.hpp.
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", SetBound__8mgCFrameFPQ28mgCFrame9BoundInfo);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Places the function point and adjusts the size and approach offset of event points.
+ */
+static int mapFUNC_POS(SPI_STACK *stack, int argument_count) {
+    sceVu0FVECTOR position;
+    sceVu0FVECTOR rotation;
+    sceVu0FVECTOR scale;
+    sceVu0FVECTOR offset;
+    sceVu0FMATRIX matrix;
+    CFuncPoint   *point;
+    int           scale_y;
+    int           scale_z;
+
+    if (mapNowFuncPoint == NULL) {
+        return 0;
+    }
+    spiGetStackVector(position, &stack[0]);
+    position[3] = 1.0f;
+    spiGetStackVector(rotation, &stack[3]);
+    rotation[3] = 0.0f;
+    spiGetStackVector(scale, &stack[6]);
+    scale[3] = 0.0f;
+    mapNowFuncPoint->SetPosition(position);
+    rotation[0] = mgAngleLimit(rotation[0]);
+    rotation[1] = mgAngleLimit(rotation[1]);
+    rotation[2] = mgAngleLimit(rotation[2]);
+    mapNowFuncPoint->SetRotation(rotation);
+    mapNowFuncPoint->SetScale(scale);
+    point = mapNowFuncPoint;
+    if (point->type == FUNC_POINT_EVENT) {
+        if (point->event.flag & (FUNC_EVENT_LADDER_TOP | FUNC_EVENT_LADDER_BOTTOM)) {
+            if (scale[0] <= 1.1f && scale[1] <= 1.1f && scale[2] <= 1.1f) {
+                scale[2] = 25.0f;
+                scale[1] = 25.0f;
+                scale[0] = 25.0f;
+            }
+        } else if (point->event.flag & FUNC_EVENT_TREASURE_BOX) {
+            scale[2] = 20.0f;
+            scale[1] = 20.0f;
+            scale[0] = 20.0f;
+        } else {
+            scale_y = (int)(0.1f + scale[1]);
+            scale_z = (int)(0.1f + scale[2]);
+            if ((int)(0.1f + scale[0]) == 1 && scale_y == 1 && scale_z == 1) {
+                scale[2] = 15.0f;
+                scale[1] = 15.0f;
+                scale[0] = 15.0f;
+            }
+        }
+        point->SetScale(scale);
+        mgZeroVector(offset);
+        if (point->event.flag & FUNC_EVENT_DOOR) {
+            offset[0] = -2.0f;
+            offset[2] = -12.0f;
+        }
+        mgUnitMatrix(matrix);
+        sceVu0RotMatrixY(matrix, matrix, rotation[1]);
+        sceVu0ApplyMatrix(offset, matrix, offset);
+        mgAddVector(position, offset);
+        mapNowFuncPoint->SetPosition(position);
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_POS__FP9SPI_STACKi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", SetScale__10CFuncPointFPf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", SetRotation__10CFuncPointFPf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", SetPosition__10CFuncPointFPf);
+#endif
+
+void CFuncPoint::SetScale(float *scale) {
+    *(u_long128 *)this->scale = *(u_long128 *)scale;
+    frame.SetScale(scale);
+}
+
+void CFuncPoint::SetRotation(float *rotation) {
+    *(u_long128 *)this->rotation = *(u_long128 *)rotation;
+    frame.SetRotation(rotation);
+}
+
+void CFuncPoint::SetPosition(float *position) {
+    *(u_long128 *)this->position = *(u_long128 *)position;
+    frame.SetPosition(position);
+}
+
+#ifdef NONMATCHING
+/**
+ * Ends the current function point and advances the script's point index.
+ */
+static int mapFUNC_DATA_END(SPI_STACK *stack, int argument_count) {
+    mapNowFuncPoint = NULL;
+    mapFuncPointIdx++;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_DATA_END__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Rebuilds the status flags of the map or current part's function point manager.
+ */
+static int mapFUNC_POINT_END(SPI_STACK *stack, int argument_count) {
+    CFuncPointMngr *manager;
+
+    if (mapPtsFunc != 0) {
+        if (mapNowMapParts == NULL) {
+            return 0;
+        }
+        manager = &mapNowMapParts->pGetData()->func_point_mngr;
+    } else {
+        manager = &mapMap->func_point;
+    }
+    manager->UpdateStatus();
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_POINT_END__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+void CMap::LoadMapFile(char *script, int size, mgCMemory *stack, int add_mode) {
+    mapStack = stack;
+    mapAddMode = add_mode;
+    mapMap = this;
+    mapNowMapParts = NULL;
+    mapNowMapPiece = NULL;
+    mapCameraInfoIdx = 0;
+    mapCameraRectIdx = 0;
+    mapFuncPointIdx = 0;
+    mapNowFuncPoint = NULL;
+    mapPtsFunc = 0;
+    SetPieceLoadSkip(0);
+
+    CScriptInterpreter interpreter;
+    interpreter.SetTag(map_tag);
+    interpreter.SetScript(script, size);
+    interpreter.Run();
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", LoadMapFile__4CMapFPciP9mgCMemoryi);
+#endif
+
 void CMap::SetPieceLoadSkip(s32 skip) {
     piece_load_skip = skip;
 }
+#ifdef NONMATCHING
+/**
+ * Adds a draw-off area and the box selecting the parts it hides.
+ */
+static int cfgDRAW_OFF_RECT(SPI_STACK *stack, int argument_count) {
+    mgVu0FBOX area;
+    mgVu0FBOX parts_box;
+
+    spiGetStackVector(area.min, &stack[0]);
+    spiGetStackVector(area.max, &stack[3]);
+    spiGetStackVector(parts_box.min, &stack[6]);
+    spiGetStackVector(parts_box.max, &stack[9]);
+    mapMap->CreateDrawRect(mapStack, &area, &parts_box, 0);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgDRAW_OFF_RECT__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Adds an occlusion plane from four corners of the configuration script.
+ */
+static int cfgOCCLUSION_PLANE(SPI_STACK *stack, int argument_count) {
+    sceVu0FVECTOR corner[4];
+    int           index;
+
+    for (index = 0; index < 4; index++) {
+        spiGetStackVector(corner[index], stack);
+        corner[index][3] = 1.0f;
+        stack += 3;
+    }
+    mapMap->CreateOcclusion(corner);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgOCCLUSION_PLANE__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Takes an event function point from the map's reserved configuration points.
+ */
+static int cfgFUNC_DATA(SPI_STACK *stack, int argument_count) {
+    char *kind;
+
+    if (ReserveFuncFlag == 0) {
+        mapMap->func_point.Reserve(64, mapStack);
+        ReserveFuncFlag = 1;
+    }
+    kind = spiGetStackString(stack);
+    if (kind == NULL) {
+        return 0;
+    }
+    if (strcmp(kind, "event") == 0) {
+        mapMap->parts_event = 1;
+        mapNowFuncPoint = mapMap->func_point.AddFromReserve(FUNC_POINT_EVENT);
+        return mapNowFuncPoint != NULL;
+    }
+    return 0;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgFUNC_DATA__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the trigger parameters of the current configuration point.
+ */
+static int cfgFUNC_EVENT_DATA(SPI_STACK *stack, int argument_count) {
+    char *kind;
+
+    if (mapNowFuncPoint == NULL) {
+        return 0;
+    }
+    mapNowFuncPoint->event.point_no = spiGetStackInt(stack);
+    if (argument_count >= 2) {
+        kind = spiGetStackString(&stack[1]);
+        mapNowFuncPoint->event.event_no = 0;
+        if (kind != NULL) {
+            if (strcmp(kind, "every") == 0) {
+                mapNowFuncPoint->event.flag = FUNC_EVENT_EVERY;
+            } else if (strcmp(kind, "action") == 0) {
+                mapNowFuncPoint->event.flag = FUNC_EVENT_ACTION;
+            } else if (strcmp(kind, "check") == 0) {
+                mapNowFuncPoint->event.flag = FUNC_EVENT_ACTION;
+                mapNowFuncPoint->event.event_no = 1;
+            } else if (strcmp(kind, "item") == 0) {
+                mapNowFuncPoint->event.flag = FUNC_EVENT_ITEM;
+                mapNowFuncPoint->event.event_no = 1;
+            } else if (strcmp(kind, "invent") == 0) {
+                mapNowFuncPoint->event.flag = FUNC_EVENT_ACTION;
+                mapNowFuncPoint->event.event_no = 2;
+            } else {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgFUNC_EVENT_DATA__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Ends the current configuration function point.
+ */
+static int cfgFUNC_DATA_END(SPI_STACK *stack, int argument_count) {
+    mapNowFuncPoint = NULL;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgFUNC_DATA_END__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Allocates and empties the map's table of water surfaces.
+ */
+static int cfgWATER_SURFACE_NUM(SPI_STACK *stack, int argument_count) {
+    int index;
+
+    mapMap->water_surface_num = spiGetStackInt(stack);
+    if (mapMap->water_surface_num > 0) {
+        mapMap->water_surface = new (mapStack->Alloc(algn16_size(mapMap->water_surface_num * sizeof(CWaterFrame *)) + 2)) CWaterFrame *[mapMap->water_surface_num];
+        if (mapMap->water_surface == NULL) {
+            mapMap->water_surface_num = 0;
+        }
+        for (index = 0; index < mapMap->water_surface_num; index++) {
+            mapMap->water_surface[index] = NULL;
+        }
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgWATER_SURFACE_NUM__FP9SPI_STACKi);
+#endif
+
 s32 cfgWATER_SURFACE_START(SPI_STACK *stack, int argc) {
     return 1;
 }
+#ifdef NONMATCHING
+/**
+ * Creates the current water surface from its grid size and two corners.
+ */
+static int cfgWATER_VERTEX(SPI_STACK *stack, int argument_count) {
+    int           rows;
+    int           columns;
+    sceVu0FVECTOR min;
+    sceVu0FVECTOR max;
+
+    rows = spiGetStackInt(&stack[0]);
+    columns = spiGetStackInt(&stack[1]);
+    spiGetStackVector(min, &stack[2]);
+    spiGetStackVector(max, &stack[5]);
+    max[3] = 1.0f;
+    min[3] = 1.0f;
+    cfgWater = CreateWaterFrame(rows, columns, min, max, mapStack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgWATER_VERTEX__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Moves the current water surface to the configuration position.
+ */
+static int cfgWATER_POS(SPI_STACK *stack, int argument_count) {
+    sceVu0FVECTOR position;
+
+    if (cfgWater == NULL) {
+        return 0;
+    }
+    spiGetStackVector(position, stack);
+    cfgWater->SetPosition(position);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgWATER_POS__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the current water surface's ripple and microprogram constants.
+ */
+static int cfgWATER_PARAM(SPI_STACK *stack, int argument_count) {
+    float speed;
+    float damping;
+    float param_48;
+    float param_4c;
+
+    speed = spiGetStackFloat(&stack[0]);
+    damping = spiGetStackFloat(&stack[1]);
+    param_48 = spiGetStackFloat(&stack[2]);
+    param_4c = spiGetStackFloat(&stack[3]);
+    cfgWater->SetParam(speed, damping, param_48, param_4c);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgWATER_PARAM__FP9SPI_STACKi);
+#endif
+
 s32 cfgWATER_SHAKE(SPI_STACK *stack, int argc) {
     return 1;
 }
+#ifdef NONMATCHING
+/**
+ * Stores the current water surface in the next map slot.
+ */
+static int cfgWATER_SURFACE_END(SPI_STACK *stack, int argument_count) {
+    if (WaterIndex >= mapMap->water_surface_num) {
+        return 0;
+    }
+    mapMap->water_surface[WaterIndex] = cfgWater;
+    cfgWater = NULL;
+    WaterIndex++;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgWATER_SURFACE_END__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Allocates the map's water draw slots and their placed-parts tables.
+ */
+static int cfgWATER_DRAW_NUM(SPI_STACK *stack, int argument_count) {
+    int index;
+
+    mapMap->water_num = spiGetStackInt(stack);
+    if (mapMap->water_num < 0) {
+        return 0;
+    }
+    mapMap->water = new (mapStack->Alloc(algn16_size(mapMap->water_num * sizeof(CMapWater)) + 2)) CMapWater[mapMap->water_num];
+    for (index = 0; index < mapMap->water_num; index++) {
+        mapMap->water[index].Initialize();
+        mapMap->water[index].parts_max = 16;
+        mapMap->water[index].parts = new (mapStack->Alloc(algn16_size(mapMap->water[index].parts_max * sizeof(CMapParts *)) + 2)) CMapParts *[mapMap->water[index].parts_max];
+        mapMap->water[index].Clear();
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgWATER_DRAW_NUM__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+CMapWater::CMapWater() {
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", __ct__9CMapWaterFv);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Attaches a water surface to a draw slot with parts or camera-follow axes.
+ */
+static int cfgWATER_DRAW(SPI_STACK *stack, int argument_count) {
+    sceVu0FVECTOR position;
+    CMapWater    *water;
+    char         *parts_name;
+    int           surface;
+    int           index;
+
+    surface = spiGetStackInt(&stack[0]);
+    if (surface < 0 || surface >= mapMap->water_surface_num) {
+        return 0;
+    }
+    water = NULL;
+    for (index = 0; index < mapMap->water_num; index++) {
+        if (mapMap->water[index].frame == NULL) {
+            water = &mapMap->water[index];
+            break;
+        }
+    }
+    if (water == NULL) {
+        return 0;
+    }
+    water->frame = mapMap->water_surface[surface];
+    parts_name = spiGetStackString(&stack[1]);
+    if (parts_name != NULL && parts_name[0] != '\0') {
+        if (strncmp(parts_name, "#follow", 7) == 0) {
+            water->follow[0] = parts_name[7] - '0';
+            water->follow[1] = parts_name[8] - '0';
+            water->follow[2] = parts_name[9] - '0';
+        } else {
+            water->parts_name = mgCopyString(parts_name, mapStack);
+        }
+    }
+    if (argument_count >= 5) {
+        spiGetStackVector(position, &stack[2]);
+        water->SetPosition(position);
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgWATER_DRAW__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+void CMap::LoadCfgFile(char *script, int size, mgCMemory *stack) {
+    mapMap = this;
+    mapStack = stack;
+    ReserveFuncFlag = 0;
+    WaterIndex = 0;
+    cfgWater = NULL;
+
+    CScriptInterpreter interpreter;
+    interpreter.SetTag(cfg_tag);
+    interpreter.SetScript(script, size);
+    interpreter.Run();
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", LoadCfgFile__4CMapFPciP9mgCMemory);
+#endif
+
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mapload", at_438__2__DATA);

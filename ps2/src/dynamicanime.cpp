@@ -2,10 +2,173 @@
 #include "dynamicanime.hpp"
 #include <cstdio>
 
+#include <cstring>
+
+#include "mg_frame.hpp"
+#include "mg_math.hpp"
+#include "mg_memory.hpp"
+#include "mglib.hpp"
+#include "scriptinterpreter.hpp"
+
+#ifdef NONMATCHING
+static CDynamicAnime *dynNowDA; /**< Animation receiving the script tags. */
+static mgCMemory     *dynStack; /**< Storage used by the script tables. */
+static mgCFrame      *dynTopFrame; /**< Root frame used to resolve script frame names. */
+static int           dynFrameCount; /**< Next frame table entry to fill. */
+static int           dynVertexCount; /**< Next simulated vertex to load. */
+static int           dynFixVertexCount; /**< Fixed vertex script counter. */
+static int           dynBindVertexCount; /**< Next bind vertex entry to fill. */
+static int           dynBBoxCount; /**< Next bounding box entry to fill. */
+static int           dynColCount; /**< Next collision volume entry to fill. */
+#endif
+
 // Code (.text)
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", BindPosition__FPfPfff);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", ResetPosition__13CDynamicAnimeFv);
+/**
+ * Moves two vertices towards their prescribed separation, sharing the correction by rate.
+ */
+static void BindPosition(float *a, float *b, float length, float rate) {
+    sceVu0FVECTOR  difference;
+    sceVu0FVECTOR  correction_a;
+    sceVu0FVECTOR  correction_b;
+    float          distance;
+    float          error;
+
+    sceVu0SubVector(difference, a, b);
+    distance = mgDistVector(difference);
+    error = distance - length;
+    sceVu0ScaleVector(correction_a, difference, ((1.0f - rate) * error) / distance);
+    sceVu0ScaleVector(correction_b, difference, (rate * error) / distance);
+    mgSubVector(a, correction_a);
+    mgAddVector(b, correction_b);
+}
+
+void CDynamicAnime::ResetPosition() {
+    sceVu0FMATRIX  matrix;
+    int            i;
+
+    if (top_frame != NULL) {
+        top_frame->GetLWMatrix(matrix);
+        mgApplyMatrixN(now_vertex, matrix, init_vertex, vertex_num);
+    }
+    for (i = 0; i < vertex_num; i++) {
+        mgZeroVector(velocity[i]);
+        *(u_long128 *)old_vertex[i] = *(u_long128 *)now_vertex[i];
+    }
+}
+
+#ifdef NONMATCHING
+void CDynamicAnime::Step() {
+    sceVu0FMATRIX   matrix;
+    sceVu0FVECTOR   pull;
+    sceVu0FVECTOR   max;
+    sceVu0FVECTOR   min;
+    sceVu0FVECTOR   wind;
+    DA_FIX_VERTEX  *fixed;
+    DA_BIND_VERTEX *bound;
+    CDACollision   *volume;
+    mgCFrame       *fixed_frame;
+    float           stiffness;
+    float           friction;
+    int             hit;
+    int             i;
+    int             j;
+    int             iteration;
+
+    if (vertex_num <= 0) {
+        return;
+    }
+    stiffness = k;
+    if (top_frame != NULL) {
+        top_frame->GetLWMatrix(matrix);
+    } else {
+        stiffness = 0.0f;
+    }
+    if (stiffness > 0.0f) {
+        mgApplyMatrixN(world_init_vertex, matrix, init_vertex, vertex_num);
+    }
+    for (i = 0; i < vertex_num; i++) {
+        mgAddVector(velocity[i], gravity);
+        velocity[i][3] = 0.0f;
+        mgAddVector(now_vertex[i], velocity[i]);
+    }
+    for (iteration = 0; iteration < 6; iteration++) {
+        for (i = 0; i < bind_vertex_num; i++) {
+            bound = &bind_vertex[i];
+            BindPosition(now_vertex[bound->vertex_id[0]], now_vertex[bound->vertex_id[1]], bound->length, bound->rate);
+        }
+        for (i = 0; i < vertex_num; i++) {
+            fixed = &fix_vertex[i];
+            if (fixed->weight >= 1.0f) {
+                fixed_frame = GetFrame(fixed->frame_id);
+                if (fixed_frame == NULL) {
+                    return;
+                }
+                fixed_frame->GetWorldPosition(now_vertex[i], fixed->position);
+            }
+        }
+    }
+    sceVu0CopyVector(max, now_vertex[0]);
+    sceVu0CopyVector(min, now_vertex[0]);
+    PreCollision();
+    for (i = 0; i < vertex_num; i++) {
+        sceVu0SubVector(velocity[i], now_vertex[i], old_vertex[i]);
+        *(u_long128 *)old_vertex[i] = *(u_long128 *)now_vertex[i];
+        fixed = &fix_vertex[i];
+        if (fixed->weight < 1.0f && fixed->weight > 0.0f) {
+            fixed_frame = GetFrame(fixed->frame_id);
+            if (fixed_frame != NULL) {
+                fixed_frame->GetWorldPosition(pull, fixed->position);
+                mgSubVector(pull, now_vertex[i]);
+                sceVu0ScaleVector(pull, pull, fixed->weight);
+                mgAddVector(now_vertex[i], pull);
+                sceVu0ScaleVector(pull, pull, fixed->velocity_rate);
+                mgSubVector(velocity[i], pull);
+            }
+        }
+        friction = 1.0f;
+        hit = 0;
+        if (fixed->weight < 1.0f) {
+            for (j = 0; j < collision_num; j++) {
+                volume = collision[j];
+                if (volume != NULL) {
+                    hit |= volume->CheckHit(now_vertex[i]);
+                    if (friction > volume->friction) {
+                        friction = volume->friction;
+                    }
+                }
+            }
+            if (hit != 0) {
+                sceVu0ScaleVector(velocity[i], velocity[i], friction);
+            }
+        }
+        if (floor_enable != 0) {
+            if (now_vertex[i][1] < floor_y) {
+                now_vertex[i][1] = floor_y;
+                sceVu0ScaleVector(velocity[i], velocity[i], 0.3f);
+            }
+        }
+        if (wind_power != 0.0f) {
+            wind_seed = wind_seed * 0x10DCD + 1;
+            wind_gust += 0.5f * ((float)wind_seed / -2147483648.0f - 0.5f);
+            if (wind_gust > 1.0f) {
+                wind_gust = 1.0f;
+            }
+            if (wind_gust < 0.0f) {
+                wind_gust = 0.0f;
+            }
+            sceVu0ScaleVector(wind, wind_dir, wind_scale * (wind_power * wind_gust));
+            mgAddVector(velocity[i], wind);
+        }
+        mgVectorMaxMin(max, min, max, min, now_vertex[i]);
+    }
+    for (i = 0; i < frame_num; i++) {
+        FramePose(frame[i], &frame_pose[i]);
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Step__13CDynamicAnimeFv);
+#endif
+
 int CDACollision::CheckHit(float *position) { return 0; }
 void CDynamicAnime::SetWind(float power, float *direction) {
     wind_power = power;
@@ -21,65 +184,1223 @@ void CDynamicAnime::SetFloor(float height) {
 void CDynamicAnime::ResetFloor(void) {
     floor_enable = 0;
 }
+#ifdef NONMATCHING
+void CDynamicAnime::FramePose(mgCFrame *frame, DA_FRAME_POSE *pose) {
+    sceVu0FMATRIX  matrix;
+    sceVu0FMATRIX  bone_parent_matrix;
+    sceVu0FMATRIX  corner_parent_matrix;
+    sceVu0FVECTOR  origin;
+    sceVu0FVECTOR  end;
+    sceVu0FVECTOR  across;
+    sceVu0FVECTOR  along;
+    float         *v0;
+    float         *v1;
+    float         *v2;
+    float         *v3;
+    int            cross_axis;
+    int            along_axis;
+    int            across_axis;
+    int            first_axis;
+    int            second_axis;
+
+    if (frame == NULL) {
+        return;
+    }
+    across_axis = 0;
+    cross_axis = 1;
+    along_axis = 2;
+    first_axis = 2;
+    second_axis = 0;
+    switch (pose->type) {
+    case DA_FRAME_POSE_BONE_YX:
+        cross_axis = 2;
+        first_axis = 0;
+        along_axis = 1;
+        second_axis = 1;
+        // The same construction with the long axis along y.
+    case DA_FRAME_POSE_BONE:
+        v0 = now_vertex[pose->vertex_id[0]];
+        v1 = now_vertex[pose->vertex_id[1]];
+        v2 = now_vertex[pose->vertex_id[2]];
+        v3 = now_vertex[pose->vertex_id[3]];
+        sceVu0AddVector(origin, v0, v1);
+        sceVu0ScaleVector(origin, origin, 0.5f);
+        sceVu0AddVector(end, v2, v3);
+        sceVu0ScaleVector(end, end, 0.5f);
+        sceVu0SubVector(along, v1, v0);
+        sceVu0Normalize(matrix[along_axis], along);
+        matrix[along_axis][3] = 0.0f;
+        sceVu0SubVector(across, end, origin);
+        sceVu0Normalize(matrix[across_axis], across);
+        matrix[across_axis][3] = 0.0f;
+        sceVu0OuterProduct(matrix[cross_axis], matrix[first_axis], matrix[second_axis]);
+        matrix[cross_axis][3] = 0.0f;
+        sceVu0OuterProduct(matrix[first_axis], matrix[second_axis], matrix[cross_axis]);
+        sceVu0Normalize(matrix[first_axis], matrix[first_axis]);
+        sceVu0CopyVector(matrix[3], origin);
+        matrix[3][3] = 1.0f;
+        if (pose->local != 0 && frame->parent != NULL) {
+            frame->parent->GetLWMatrix(bone_parent_matrix);
+            mgInversMatrix(bone_parent_matrix, bone_parent_matrix);
+            mgMulMatrix(matrix, bone_parent_matrix, matrix);
+        }
+        frame->SetTransMatrix(matrix);
+        return;
+    case DA_FRAME_POSE_B_CDLR:
+        v0 = now_vertex[pose->vertex_id[0]];
+        v1 = now_vertex[pose->vertex_id[1]];
+        v2 = now_vertex[pose->vertex_id[2]];
+        v3 = now_vertex[pose->vertex_id[3]];
+        sceVu0SubVector(matrix[0], v1, v0);
+        matrix[0][3] = 0.0f;
+        sceVu0Normalize(matrix[0], matrix[0]);
+        sceVu0SubVector(along, v2, v3);
+        along[3] = 0.0f;
+        sceVu0Normalize(matrix[2], along);
+        sceVu0OuterProduct(matrix[1], matrix[2], matrix[0]);
+        matrix[1][3] = 0.0f;
+        sceVu0CopyVector(matrix[3], v0);
+        matrix[3][3] = 1.0f;
+        if (pose->local != 0 && frame->parent != NULL) {
+            frame->parent->GetLWMatrix(corner_parent_matrix);
+            mgInversMatrix(corner_parent_matrix, corner_parent_matrix);
+            mgMulMatrix(matrix, corner_parent_matrix, matrix);
+        }
+        frame->SetTransMatrix(matrix);
+        break;
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", FramePose__13CDynamicAnimeFP8mgCFrameP13DA_FRAME_POSE);
+#endif
+
+#ifdef NONMATCHING
+void CDynamicAnime::PreCollision() {
+    CDACollision *volume;
+    int           i;
+
+    for (i = 0; i < collision_num; i++) {
+        volume = collision[i];
+        if (volume != NULL) {
+            volume->frame = GetFrame(volume->frame_id);
+            if (volume->frame != NULL) {
+                volume->frame->GetLWMatrix(volume->lw_matrix);
+                mgInversMatrix(volume->inverse_matrix, volume->lw_matrix);
+            }
+        }
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", PreCollision__13CDynamicAnimeFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Initialize__13CDynamicAnimeFv);
+#endif
+
+void CDynamicAnime::Initialize() {
+    top_frame = NULL;
+    frame_num = 0;
+    frame = NULL;
+    frame_pose = NULL;
+    vertex_num = 0;
+    init_vertex = NULL;
+    now_vertex = NULL;
+    old_vertex = NULL;
+    velocity = NULL;
+    fix_vertex_num = 0;
+    fix_vertex = NULL;
+    draw_frame_num = 0;
+    draw_frame = NULL;
+    bind_vertex_num = 0;
+    bind_vertex = NULL;
+    bbox_num = 0;
+    bbox = NULL;
+    collision_num = 0;
+    collision = NULL;
+    mgZeroVector(gravity);
+    gravity[1] = -0.6f;
+    k = 0.0f;
+    wind_power = 0.0f;
+    mgZeroVector(wind_dir);
+    wind_seed = 0x1E69D;
+    wind_gust = 0.0f;
+    wind_scale = 1.0f;
+    floor_enable = 0;
+    floor_y = -100000.0f;
+}
+
+#ifdef NONMATCHING
+void CDynamicAnime::NewFrameTable(int num, mgCMemory *stack) {
+    u_int  size;
+    u_int  blocks;
+    int    i;
+
+    frame_num = num;
+    size = frame_num * sizeof(mgCFrame *);
+    blocks = size >> 4;
+    if (size & 0xF) {
+        blocks++;
+    }
+    frame = (mgCFrame **)stack->Alloc(blocks);
+    size = frame_num * sizeof(DA_FRAME_POSE);
+    blocks = size >> 4;
+    if (size & 0xF) {
+        blocks++;
+    }
+    frame_pose = (DA_FRAME_POSE *)stack->Alloc(blocks);
+    for (i = 0; i < frame_num; i++) {
+        frame[i] = NULL;
+        memset(&frame_pose[i], 0, sizeof(DA_FRAME_POSE));
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", NewFrameTable__13CDynamicAnimeFiP9mgCMemory);
+#endif
+
+#ifdef NONMATCHING
+void CDynamicAnime::NewVertexTable(int num, mgCMemory *stack) {
+    u_int  size;
+    u_int  blocks;
+    int    i;
+
+    vertex_num = num;
+    size = vertex_num * sizeof(sceVu0FVECTOR);
+    blocks = size >> 4;
+    if (size & 0xF) {
+        blocks++;
+    }
+    init_vertex = (sceVu0FVECTOR *)stack->Alloc(blocks);
+    size = vertex_num * sizeof(sceVu0FVECTOR);
+    blocks = size >> 4;
+    if (size & 0xF) {
+        blocks++;
+    }
+    now_vertex = (sceVu0FVECTOR *)stack->Alloc(blocks);
+    size = vertex_num * sizeof(sceVu0FVECTOR);
+    blocks = size >> 4;
+    if (size & 0xF) {
+        blocks++;
+    }
+    old_vertex = (sceVu0FVECTOR *)stack->Alloc(blocks);
+    size = vertex_num * sizeof(sceVu0FVECTOR);
+    blocks = size >> 4;
+    if (size & 0xF) {
+        blocks++;
+    }
+    velocity = (sceVu0FVECTOR *)stack->Alloc(blocks);
+    size = vertex_num * sizeof(sceVu0FVECTOR);
+    blocks = size >> 4;
+    if (size & 0xF) {
+        blocks++;
+    }
+    world_init_vertex = (sceVu0FVECTOR *)stack->Alloc(blocks);
+    for (i = 0; i < vertex_num; i++) {
+        mgZeroVector(init_vertex[i]);
+        mgZeroVector(now_vertex[i]);
+        mgZeroVector(old_vertex[i]);
+        mgZeroVector(velocity[i]);
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", NewVertexTable__13CDynamicAnimeFiP9mgCMemory);
+#endif
+
+#ifdef NONMATCHING
+void CDynamicAnime::NewFixVertexTable(int num, mgCMemory *stack) {
+    u_int  size;
+    u_int  blocks;
+    int    i;
+
+    fix_vertex_num = num;
+    size = fix_vertex_num * sizeof(DA_FIX_VERTEX);
+    blocks = size >> 4;
+    if (size & 0xF) {
+        blocks++;
+    }
+    fix_vertex = (DA_FIX_VERTEX *)stack->Alloc(blocks);
+    for (i = 0; i < vertex_num; i++) {
+        memset(&fix_vertex[i], 0, sizeof(DA_FIX_VERTEX));
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", NewFixVertexTable__13CDynamicAnimeFiP9mgCMemory);
+#endif
+
+#ifdef NONMATCHING
+void CDynamicAnime::NewDrawFrameTable(int num, mgCMemory *stack) {
+    u_int  size;
+    u_int  blocks;
+    int    i;
+
+    draw_frame_num = num;
+    size = draw_frame_num * sizeof(int);
+    blocks = size >> 4;
+    if (size & 0xF) {
+        blocks++;
+    }
+    draw_frame = (int *)stack->Alloc(blocks);
+    for (i = 0; i < draw_frame_num; i++) {
+        draw_frame[i] = -1;
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", NewDrawFrameTable__13CDynamicAnimeFiP9mgCMemory);
+#endif
+
+#ifdef NONMATCHING
+void CDynamicAnime::NewBindVertexTable(int num, mgCMemory *stack) {
+    u_int  size;
+    u_int  blocks;
+    int    i;
+
+    bind_vertex_num = num;
+    size = bind_vertex_num * sizeof(DA_BIND_VERTEX);
+    blocks = size >> 4;
+    if (size & 0xF) {
+        blocks++;
+    }
+    bind_vertex = (DA_BIND_VERTEX *)stack->Alloc(blocks);
+    for (i = 0; i < bind_vertex_num; i++) {
+        memset(&bind_vertex[i], 0, sizeof(DA_BIND_VERTEX));
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", NewBindVertexTable__13CDynamicAnimeFiP9mgCMemory);
+#endif
+
+#ifdef NONMATCHING
+void CDynamicAnime::NewBoundingBoxTable(int num, mgCMemory *stack) {
+    u_int  size;
+    u_int  blocks;
+    int    i;
+
+    bbox_num = num;
+    size = bbox_num * sizeof(DA_BOUNDING_BOX);
+    blocks = size >> 4;
+    if (size & 0xF) {
+        blocks++;
+    }
+    bbox = (DA_BOUNDING_BOX *)stack->Alloc(blocks);
+    for (i = 0; i < bind_vertex_num; i++) {
+        memset(&bbox[i], 0, sizeof(DA_BOUNDING_BOX));
+        bbox[i].frame_id = -1;
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", NewBoundingBoxTable__13CDynamicAnimeFiP9mgCMemory);
+#endif
+
+#ifdef NONMATCHING
+void CDynamicAnime::NewCollisionTable(int num, mgCMemory *stack) {
+    u_int  size;
+    u_int  blocks;
+    int    i;
+
+    collision_num = num;
+    size = collision_num * sizeof(CDACollision *);
+    blocks = size >> 4;
+    if (size & 0xF) {
+        blocks++;
+    }
+    collision = (CDACollision **)stack->Alloc(blocks);
+    for (i = 0; i < collision_num; i++) {
+        collision[i] = NULL;
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", NewCollisionTable__13CDynamicAnimeFiP9mgCMemory);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetFrame__13CDynamicAnimeFiP8mgCFrame);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", GetFrame__13CDynamicAnimeFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", pGetFramePose__13CDynamicAnimeFi);
+#endif
+
+void CDynamicAnime::SetFrame(int index, mgCFrame *frame) {
+    if (index < 0 || index >= frame_num) {
+        return;
+    }
+    this->frame[index] = frame;
+}
+
+mgCFrame *CDynamicAnime::GetFrame(int index) {
+    if (index < 0 || index >= frame_num) {
+        return NULL;
+    }
+    return frame[index];
+}
+
+DA_FRAME_POSE *CDynamicAnime::pGetFramePose(int index) {
+    if (index < 0 || index >= frame_num) {
+        return NULL;
+    }
+    return &frame_pose[index];
+}
+
+#ifdef NONMATCHING
+int CDynamicAnime::CheckVertexID(int index) {
+    return index >= 0 && index < vertex_num;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", CheckVertexID__13CDynamicAnimeFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetInitVertex__13CDynamicAnimeFiPf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", GetInitVertex__13CDynamicAnimeFiPf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetNowVertex__13CDynamicAnimeFiPf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetOldVertex__13CDynamicAnimeFiPf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", pGetFixVertex__13CDynamicAnimeFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetDrawFrame__13CDynamicAnimeFii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", GetDrawFrame__13CDynamicAnimeFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", pGetBindVertex__13CDynamicAnimeFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", pGetBoundingBox__13CDynamicAnimeFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetCollision__13CDynamicAnimeFiP12CDACollision);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", DrawSub__13CDynamicAnimeFi);
+#endif
+
+void CDynamicAnime::SetInitVertex(int index, float *position) {
+    if (CheckVertexID(index) != 0) {
+        *(u_long128 *)init_vertex[index] = *(u_long128 *)position;
+    }
+}
+
+void CDynamicAnime::GetInitVertex(int index, float *out_position) {
+    if (CheckVertexID(index) != 0) {
+        *(u_long128 *)out_position = *(u_long128 *)init_vertex[index];
+    }
+}
+
+void CDynamicAnime::SetNowVertex(int index, float *position) {
+    if (CheckVertexID(index) != 0) {
+        *(u_long128 *)now_vertex[index] = *(u_long128 *)position;
+    }
+}
+
+void CDynamicAnime::SetOldVertex(int index, float *position) {
+    if (CheckVertexID(index) != 0) {
+        *(u_long128 *)old_vertex[index] = *(u_long128 *)position;
+    }
+}
+
+DA_FIX_VERTEX *CDynamicAnime::pGetFixVertex(int index) {
+    if (index < 0 || index >= fix_vertex_num) {
+        return NULL;
+    }
+    return &fix_vertex[index];
+}
+
+void CDynamicAnime::SetDrawFrame(int index, int frame_id) {
+    if (index < 0 || index >= draw_frame_num) {
+        return;
+    }
+    this->draw_frame[index] = frame_id;
+}
+
+mgCFrame *CDynamicAnime::GetDrawFrame(int index) {
+    if (index < 0 || index >= draw_frame_num) {
+        return NULL;
+    }
+    return GetFrame(draw_frame[index]);
+}
+
+DA_BIND_VERTEX *CDynamicAnime::pGetBindVertex(int index) {
+    if (index < 0 || index >= bind_vertex_num) {
+        return NULL;
+    }
+    return &bind_vertex[index];
+}
+
+DA_BOUNDING_BOX *CDynamicAnime::pGetBoundingBox(int index) {
+    if (index < 0 || index >= bbox_num) {
+        return NULL;
+    }
+    return &bbox[index];
+}
+
+void CDynamicAnime::SetCollision(int index, CDACollision *collision) {
+    if (index < 0 || index >= collision_num) {
+        return;
+    }
+    this->collision[index] = collision;
+}
+
+int CDynamicAnime::DrawSub(int direct) {
+    int  total;
+    int  i;
+
+    total = 0;
+    for (i = 0; i < draw_frame_num; i++) {
+        if (direct != 0) {
+            total += mgDrawDirect(GetDrawFrame(i));
+        } else {
+            total += mgDraw(GetDrawFrame(i));
+        }
+    }
+    return total;
+}
+
+#ifdef NONMATCHING
+void CDynamicAnime::Copy(CDynamicAnime &dest, mgCFrame *top_frame, mgCMemory *stack) {
+    u_int  size;
+    u_int  blocks;
+    int    i;
+
+    dest = *this;
+    dest.top_frame = top_frame;
+    if (top_frame == NULL) {
+        return;
+    }
+    if (frame_num > 0 && frame != NULL) {
+        size = frame_num * sizeof(mgCFrame *);
+        blocks = size >> 4;
+        if (size & 0xF) {
+            blocks++;
+        }
+        dest.frame = new (stack->Alloc(blocks + 2)) mgCFrame *[frame_num];
+        if (dest.frame == NULL) {
+            return;
+        }
+        for (i = 0; i < frame_num; i++) {
+            dest.frame[i] = NULL;
+            if (frame[i] != NULL) {
+                dest.frame[i] = top_frame->GetFrame(top_frame->SearchFrameID(frame[i]->name));
+            }
+        }
+    }
+    if (vertex_num > 0) {
+        size = vertex_num * sizeof(sceVu0FVECTOR);
+        blocks = size >> 4;
+        if (size & 0xF) {
+            blocks++;
+        }
+        dest.init_vertex = new (stack->Alloc(blocks + 2)) sceVu0FVECTOR[vertex_num];
+        size = vertex_num * sizeof(sceVu0FVECTOR);
+        blocks = size >> 4;
+        if (size & 0xF) {
+            blocks++;
+        }
+        dest.now_vertex = new (stack->Alloc(blocks + 2)) sceVu0FVECTOR[vertex_num];
+        size = vertex_num * sizeof(sceVu0FVECTOR);
+        blocks = size >> 4;
+        if (size & 0xF) {
+            blocks++;
+        }
+        dest.old_vertex = new (stack->Alloc(blocks + 2)) sceVu0FVECTOR[vertex_num];
+        size = vertex_num * sizeof(sceVu0FVECTOR);
+        blocks = size >> 4;
+        if (size & 0xF) {
+            blocks++;
+        }
+        dest.velocity = new (stack->Alloc(blocks + 2)) sceVu0FVECTOR[vertex_num];
+        size = vertex_num * sizeof(sceVu0FVECTOR);
+        blocks = size >> 4;
+        if (size & 0xF) {
+            blocks++;
+        }
+        dest.world_init_vertex = new (stack->Alloc(blocks + 2)) sceVu0FVECTOR[vertex_num];
+        for (i = 0; i < vertex_num; i++) {
+            *(u_long128 *)dest.init_vertex[i] = *(u_long128 *)init_vertex[i];
+            *(u_long128 *)dest.now_vertex[i] = *(u_long128 *)now_vertex[i];
+            *(u_long128 *)dest.old_vertex[i] = *(u_long128 *)old_vertex[i];
+            *(u_long128 *)dest.velocity[i] = *(u_long128 *)velocity[i];
+            *(u_long128 *)dest.world_init_vertex[i] = *(u_long128 *)world_init_vertex[i];
+        }
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Copy__13CDynamicAnimeFR13CDynamicAnimeP8mgCFrameP9mgCMemory);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Allocates the script frame and pose tables.
+ */
+static int dynFRAME_START(SPI_STACK *stack, int count) {
+    dynNowDA->NewFrameTable(spiGetStackInt(stack), dynStack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFRAME_START__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Adds the named model frame to the animation frame table.
+ */
+static int dynFRAME(SPI_STACK *stack, int count) {
+    char     *name;
+    mgCFrame *frame;
+
+    name = spiGetStackString(stack);
+    if (name == NULL) {
+        return 0;
+    }
+    frame = dynTopFrame->SearchFrame(name);
+    if (frame == NULL) {
+        printf("not found %s\n", name);
+    }
+    dynNowDA->SetFrame(dynFrameCount++, frame);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFRAME__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Finishes the frame table.
+ */
+static int dynFRAME_END(SPI_STACK *stack, int count) {
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFRAME_END__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Allocates the simulated vertex tables.
+ */
+static int dynVERTEX_START(SPI_STACK *stack, int count) {
+    dynNowDA->NewVertexTable(spiGetStackInt(stack), dynStack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynVERTEX_START__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Loads a vertex offset from a frame world position.
+ */
+static int dynVERTEX(SPI_STACK *stack, int count) {
+    sceVu0FVECTOR  offset;
+    sceVu0FVECTOR  position;
+    mgCFrame      *frame;
+    int            frame_id;
+
+    frame_id = spiGetStackInt(stack);
+    spiGetStackVector(offset, stack + 1);
+    frame = dynNowDA->GetFrame(frame_id);
+    if (frame != NULL) {
+        frame->GetWorldPosition0(position);
+        position[0] += offset[0];
+        position[1] += offset[1];
+        position[2] += offset[2];
+        position[3] = 1.0f;
+        dynNowDA->SetInitVertex(dynVertexCount++, position);
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynVERTEX__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Loads a vertex given in the space of a frame.
+ */
+static int dynVERTEX_L(SPI_STACK *stack, int count) {
+    sceVu0FVECTOR  local;
+    sceVu0FVECTOR  position;
+    mgCFrame      *frame;
+    int            frame_id;
+
+    frame_id = spiGetStackInt(stack);
+    spiGetStackVector(local, stack + 1);
+    frame = dynNowDA->GetFrame(frame_id);
+    if (frame != NULL) {
+        local[3] = 1.0f;
+        frame->GetWorldPosition(position, local);
+        position[3] = 1.0f;
+        dynNowDA->SetInitVertex(dynVertexCount++, position);
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynVERTEX_L__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Starts the current and previous positions at the loaded vertices.
+ */
+static int dynVERTEX_END(SPI_STACK *stack, int count) {
+    sceVu0FVECTOR  position;
+    int            vertex_num;
+    int            i;
+
+    vertex_num = dynNowDA->vertex_num;
+    for (i = 0; i < vertex_num; i++) {
+        dynNowDA->GetInitVertex(i, position);
+        dynNowDA->SetOldVertex(i, position);
+        dynNowDA->SetNowVertex(i, position);
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynVERTEX_END__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Allocates a fix record for every simulated vertex.
+ */
+static int dynFIX_VERTEX_START(SPI_STACK *stack, int count) {
+    spiGetStackInt(stack);
+    dynNowDA->NewFixVertexTable(dynNowDA->vertex_num, dynStack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFIX_VERTEX_START__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Builds the frame-local attachment point for a fixed vertex.
+ */
+static DA_FIX_VERTEX *dynFixVertex(SPI_STACK *stack, int count) {
+    sceVu0FMATRIX  matrix;
+    sceVu0FVECTOR  position;
+    DA_FIX_VERTEX *fixed;
+    mgCFrame      *frame;
+    int            frame_id;
+    int            vertex_id;
+
+    frame_id = spiGetStackInt(stack);
+    vertex_id = spiGetStackInt(stack + 1);
+    fixed = dynNowDA->pGetFixVertex(vertex_id);
+    fixed->frame_id = frame_id;
+    if (fixed == NULL) {
+        return NULL;
+    }
+    frame = dynNowDA->GetFrame(fixed->frame_id);
+    if (frame != NULL && dynNowDA->CheckVertexID(vertex_id) != 0) {
+        dynNowDA->GetInitVertex(vertex_id, position);
+        position[3] = 1.0f;
+        frame->GetInverseMatrix(matrix);
+        sceVu0ApplyMatrix(fixed->position, matrix, position);
+        fixed->position[3] = 1.0f;
+        fixed->weight = 1.0f;
+        fixed->velocity_rate = 0.0f;
+        fixed->unk_1c = 1.0f;
+        return fixed;
+    }
+    fixed->frame_id = -1;
+    return NULL;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFixVertex__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the attachment weight and response of a fixed vertex.
+ */
+static int dynFIX_VERTEX(SPI_STACK *stack, int count) {
+    DA_FIX_VERTEX *fixed;
+    SPI_STACK     *parameter;
+
+    fixed = dynFixVertex(stack, count);
+    parameter = stack + 2;
+    if (fixed == NULL) {
+        return 0;
+    }
+    if (count >= 3) {
+        fixed->weight = spiGetStackFloat(parameter++);
+    }
+    if (count >= 4) {
+        fixed->unk_1c = spiGetStackFloat(parameter);
+    }
+    fixed->velocity_rate = 0.0f;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFIX_VERTEX__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the attachment weight and response of a fixed vertex.
+ */
+static int dynFIX_VERTEX_C(SPI_STACK *stack, int count) {
+    DA_FIX_VERTEX *fixed;
+    SPI_STACK     *parameter;
+
+    fixed = dynFixVertex(stack, count);
+    parameter = stack + 2;
+    if (fixed == NULL) {
+        return 0;
+    }
+    if (count >= 3) {
+        fixed->weight = spiGetStackFloat(parameter++);
+    }
+    if (count >= 4) {
+        fixed->unk_1c = spiGetStackFloat(parameter);
+    }
+    fixed->velocity_rate = 1.0f;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFIX_VERTEX_C__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the attachment weight and response of a fixed vertex.
+ */
+static int dynFIX_VERTEX_S(SPI_STACK *stack, int count) {
+    DA_FIX_VERTEX *fixed;
+    SPI_STACK     *parameter;
+
+    fixed = dynFixVertex(stack, count);
+    parameter = stack + 2;
+    if (fixed == NULL) {
+        return 0;
+    }
+    if (count >= 3) {
+        fixed->weight = spiGetStackFloat(parameter++);
+    }
+    if (count >= 4) {
+        fixed->unk_1c = spiGetStackFloat(parameter);
+    }
+    fixed->velocity_rate = -1.0f;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFIX_VERTEX_S__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Finishes the fixed vertex table.
+ */
+static int dynFIX_VERTEX_END(SPI_STACK *stack, int count) {
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFIX_VERTEX_END__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Reads a frame pose kind and the four vertices that determine its transform.
+ */
+static DA_FRAME_POSE *FRAME_POSE_Sub(SPI_STACK *stack, int count) {
+    DA_FRAME_POSE *pose;
+    char          *kind;
+    SPI_STACK     *vertex;
+    int            i;
+
+    pose = dynNowDA->pGetFramePose(spiGetStackInt(stack));
+    kind = spiGetStackString(stack + 1);
+    vertex = stack + 2;
+    if (pose == NULL || kind == NULL) {
+        return NULL;
+    }
+    pose->type = DA_FRAME_POSE_NONE;
+    if (strcmp(kind, "bone") == 0) {
+        if (count < 6) {
+            return NULL;
+        }
+        pose->type = DA_FRAME_POSE_BONE;
+        pose->vertex_num = 4;
+    } else if (strcmp(kind, "bone_yx") == 0) {
+        if (count < 6) {
+            return NULL;
+        }
+        pose->type = DA_FRAME_POSE_BONE_YX;
+        pose->vertex_num = 4;
+    } else if (strcmp(kind, "b_cdlr") == 0) {
+        if (count < 6) {
+            return NULL;
+        }
+        pose->type = DA_FRAME_POSE_B_CDLR;
+        pose->vertex_num = 4;
+    } else {
+        return NULL;
+    }
+    pose->vertex_id = (int *)dynStack->Alloc(1);
+    for (i = 0; i < pose->vertex_num; i++) {
+        pose->vertex_id[i] = spiGetStackInt(vertex++);
+        if (dynNowDA->CheckVertexID(pose->vertex_id[i]) == 0) {
+            printf("error vertex no %d!!\n", pose->vertex_id[i]);
+            pose->type = DA_FRAME_POSE_NONE;
+            return NULL;
+        }
+    }
+    return pose;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", FRAME_POSE_Sub__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets whether the frame pose is relative to its parent.
+ */
+static int dynFRAME_POSE_L(SPI_STACK *stack, int count) {
+    DA_FRAME_POSE *pose;
+    mgCFrame      *frame;
+
+    pose = FRAME_POSE_Sub(stack, count);
+    frame = dynNowDA->GetFrame(spiGetStackInt(stack));
+    if (pose == NULL || frame == NULL) {
+        return 0;
+    }
+    pose->local = 1;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFRAME_POSE_L__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets whether the frame pose is relative to its parent.
+ */
+static int dynFRAME_POSE(SPI_STACK *stack, int count) {
+    DA_FRAME_POSE *pose;
+    mgCFrame      *frame;
+
+    pose = FRAME_POSE_Sub(stack, count);
+    frame = dynNowDA->GetFrame(spiGetStackInt(stack));
+    if (pose == NULL || frame == NULL) {
+        return 0;
+    }
+    pose->local = 0;
+    frame->DeleteParent();
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynFRAME_POSE__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Reads the list of frames drawn by the animation.
+ */
+static int dynDRAW_FRAME(SPI_STACK *stack, int count) {
+    int  i;
+
+    dynNowDA->NewDrawFrameTable(count, dynStack);
+    for (i = 0; i < count; i++) {
+        dynNowDA->SetDrawFrame(i, spiGetStackInt(stack++));
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynDRAW_FRAME__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Allocates the bindvertex table.
+ */
+static int dynBIND_VERTEX_START(SPI_STACK *stack, int count) {
+    dynNowDA->NewBindVertexTable(spiGetStackInt(stack), dynStack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynBIND_VERTEX_START__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Binds a pair of vertices at their loaded separation.
+ */
+static int dynBIND_VERTEX(SPI_STACK *stack, int count) {
+    sceVu0FVECTOR   a;
+    sceVu0FVECTOR   b;
+    DA_BIND_VERTEX *bound;
+    int             vertex_a;
+    int             vertex_b;
+
+    bound = dynNowDA->pGetBindVertex(dynBindVertexCount++);
+    if (bound == NULL) {
+        return 0;
+    }
+    vertex_a = spiGetStackInt(stack);
+    vertex_b = spiGetStackInt(stack + 1);
+    if (dynNowDA->CheckVertexID(vertex_a) == 0 || dynNowDA->CheckVertexID(vertex_b) == 0) {
+        printf("error vertex no %d-%d!!!\n", vertex_a, vertex_b);
+        return 0;
+    }
+    bound->rate = 0.5f;
+    if (count >= 3) {
+        bound->rate = spiGetStackFloat(stack + 2);
+        if (bound->rate > 1.0f || bound->rate < 0.0f) {
+            bound->rate = 0.5f;
+        }
+    }
+    bound->vertex_id[0] = vertex_a;
+    bound->vertex_id[1] = vertex_b;
+    dynNowDA->GetInitVertex(vertex_a, a);
+    dynNowDA->GetInitVertex(vertex_b, b);
+    bound->length = mgDistVector(a, b);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynBIND_VERTEX__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Finishes the bindvertex table.
+ */
+static int dynBIND_VERTEX_END(SPI_STACK *stack, int count) {
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynBIND_VERTEX_END__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Allocates the boundingbox table.
+ */
+static int dynBOUNDING_BOX_START(SPI_STACK *stack, int count) {
+    dynNowDA->NewBoundingBoxTable(spiGetStackInt(stack), dynStack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynBOUNDING_BOX_START__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Reads a frame index and the vectors of a bounding box.
+ */
+static int dynBOUNDING_BOX(SPI_STACK *stack, int count) {
+    DA_BOUNDING_BOX *box;
+    SPI_STACK       *parameter;
+
+    box = dynNowDA->pGetBoundingBox(dynBBoxCount++);
+    if (box == NULL) {
+        return 0;
+    }
+    parameter = stack + 1;
+    box->frame_id = spiGetStackInt(stack);
+    if (count >= 4) {
+        spiGetStackVector(box->unk_0, parameter);
+        parameter += 3;
+        *(u_long128 *)box->unk_10 = *(u_long128 *)box->unk_0;
+    }
+    if (count >= 7) {
+        spiGetStackVector(box->unk_10, parameter);
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynBOUNDING_BOX__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Finishes the boundingbox table.
+ */
+static int dynBOUNDING_BOX_END(SPI_STACK *stack, int count) {
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynBOUNDING_BOX_END__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Allocates the collision table.
+ */
+static int dynCOLLISION_START(SPI_STACK *stack, int count) {
+    dynNowDA->NewCollisionTable(spiGetStackInt(stack), dynStack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynCOLLISION_START__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Creates the pipe collision volume described by a script tag.
+ */
+static int dynCOLLISION(SPI_STACK *stack, int count) {
+    char       *kind;
+    CDAColPipe *pipe;
+
+    kind = spiGetStackString(stack);
+    if (kind == NULL) {
+        return 0;
+    }
+    if (strcmp(kind, "pipe") == 0) {
+        pipe = new (dynStack->Alloc(16)) CDAColPipe;
+        if (pipe == NULL) {
+            return 0;
+        }
+        pipe->frame_id = spiGetStackInt(stack + 1);
+        spiGetStackVector(pipe->center, stack + 2);
+        spiGetStackVector(pipe->radius, stack + 5);
+        pipe->axis = spiGetStackInt(stack + 8);
+        if (count >= 10) {
+            pipe->friction = spiGetStackFloat(stack + 9);
+        }
+        dynNowDA->SetCollision(dynColCount++, pipe);
+        return 1;
+    }
+    return 0;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynCOLLISION__FP9SPI_STACKi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Initialize__10CDAColPipeFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Initialize__12CDACollisionFv);
+#endif
+
+void CDAColPipe::Initialize() {
+    axis = 0;
+    mgZeroVector(center);
+    mgZeroVector(radius);
+    friction = 0.8f;
+}
+
+void CDACollision::Initialize() {
+    mgZeroVector(center);
+    mgZeroVector(radius);
+    friction = 0.8f;
+}
+
+#ifdef NONMATCHING
+/**
+ * Finishes the collision table.
+ */
+static int dynCOLLISION_END(SPI_STACK *stack, int count) {
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynCOLLISION_END__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the velocity added to the vertices each step.
+ */
+static int dynGRAVITY(SPI_STACK *stack, int count) {
+    spiGetStackVector(dynNowDA->gravity, stack);
+    dynNowDA->gravity[3] = 0.0f;
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynGRAVITY__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the stiffness parameter of the animation.
+ */
+static int dynK(SPI_STACK *stack, int count) {
+    dynNowDA->k = spiGetStackFloat(stack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynK__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Sets the scale applied to the animation wind.
+ */
+static int dynWind(SPI_STACK *stack, int count) {
+    dynNowDA->wind_scale = spiGetStackFloat(stack);
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynWind__FP9SPI_STACKi);
+#endif
+
+#ifdef NONMATCHING
+/**
+ * Tags understood by the dynamic animation script loader.
+ */
+static SPI_TAG_PARAM dynmc_tag[] = {
+    { "FRAME_START", dynFRAME_START },
+    { "FRAME", dynFRAME },
+    { "FRAME_END", dynFRAME_END },
+    { "VERTEX_START", dynVERTEX_START },
+    { "VERTEX", dynVERTEX },
+    { "VERTEX_L", dynVERTEX_L },
+    { "VERTEX_END", dynVERTEX_END },
+    { "FIX_VERTEX_START", dynFIX_VERTEX_START },
+    { "FIX_VERTEX", dynFIX_VERTEX },
+    { "FIX_VERTEX_C", dynFIX_VERTEX_C },
+    { "FIX_VERTEX_S", dynFIX_VERTEX_S },
+    { "FIX_VERTEX_END", dynFIX_VERTEX_END },
+    { "FRAME_POSE", dynFRAME_POSE },
+    { "FRAME_POSE_L", dynFRAME_POSE_L },
+    { "DRAW_FRAME", dynDRAW_FRAME },
+    { "BIND_VERTEX_START", dynBIND_VERTEX_START },
+    { "BIND_VERTEX", dynBIND_VERTEX },
+    { "BIND_VERTEX_END", dynBIND_VERTEX_END },
+    { "BOUNDING_BOX_START", dynBOUNDING_BOX_START },
+    { "BOUNDING_BOX", dynBOUNDING_BOX },
+    { "BOUNDING_BOX_END", dynBOUNDING_BOX_END },
+    { "COLLISION_START", dynCOLLISION_START },
+    { "COLLISION", dynCOLLISION },
+    { "COLLISION_END", dynCOLLISION_END },
+    { "GRAVITY", dynGRAVITY },
+    { "K", dynK },
+    { "WIND", dynWind },
+    { NULL, NULL },
+};
+
+void CDynamicAnime::Load(char *script, int size, mgCFrame *top_frame, mgCMemory *stack) {
+    sceVu0FVECTOR  position;
+    sceVu0FVECTOR  rotation;
+    sceVu0FVECTOR  scale;
+
+    Initialize();
+    dynStack = stack;
+    dynNowDA = this;
+    dynTopFrame = top_frame;
+    dynFrameCount = 0;
+    dynVertexCount = 0;
+    dynFixVertexCount = 0;
+    dynBindVertexCount = 0;
+    dynBBoxCount = 0;
+    dynColCount = 0;
+    if (top_frame != NULL) {
+        this->top_frame = top_frame;
+        dynTopFrame->GetPosition(position);
+        dynTopFrame->GetRotation(rotation);
+        dynTopFrame->GetScale(scale);
+        dynTopFrame->SetPosition(0.0f, 0.0f, 0.0f);
+        dynTopFrame->SetRotation(0.0f, 0.0f, 0.0f);
+        dynTopFrame->SetScale(1.0f, 1.0f, 1.0f);
+
+        CScriptInterpreter interpreter;
+
+        interpreter.SetTag(dynmc_tag);
+        interpreter.SetScript(script, size);
+        interpreter.Run();
+        dynTopFrame->SetPosition(position);
+        dynTopFrame->SetRotation(rotation);
+        dynTopFrame->SetScale(scale);
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Load__13CDynamicAnimeFPciP8mgCFrameP9mgCMemory);
+#endif
+
+#ifdef NONMATCHING
+int CDAColPipe::CheckHit(float *position) {
+    sceVu0FVECTOR  displacement;
+    sceVu0FVECTOR  local;
+    float          axial_position;
+
+    position[3] = 1.0f;
+    sceVu0ApplyMatrix(local, inverse_matrix, position);
+    sceVu0SubVector(displacement, local, center);
+    displacement[0] /= radius[0];
+    displacement[1] /= radius[1];
+    displacement[2] /= radius[2];
+    if (displacement[axis] > 1.0f) {
+        return 0;
+    }
+    if (displacement[axis] >= -1.0f) {
+        displacement[axis] = 0.0f;
+        if (mgDistVector(displacement) < 1.0f) {
+            sceVu0Normalize(displacement, displacement);
+            displacement[0] *= radius[0];
+            displacement[1] *= radius[1];
+            displacement[2] *= radius[2];
+            axial_position = local[axis];
+            sceVu0AddVector(local, center, displacement);
+            local[axis] = axial_position;
+            local[3] = 1.0f;
+            sceVu0ApplyMatrix(position, lw_matrix, local);
+            return 1;
+        }
+    }
+    return 0;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", CheckHit__10CDAColPipeFPf);
+#endif
+
+
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dynamicanime", dynmc_tag__DATA);

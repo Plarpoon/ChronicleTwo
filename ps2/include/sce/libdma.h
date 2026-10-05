@@ -17,11 +17,17 @@ typedef struct {
     u_long TAG : 16;
 } sceDmaChcr;
 
-/* Only the control register is declared: it is the one field anything reconstructed so far
-   reaches, and the rest of the channel would be a claim about the SDK rather than a reading of
-   the game. */
+/**
+ * DMA channel registers used to control a transfer.
+ */
 typedef struct {
     sceDmaChcr chcr;
+    u_char unk_08[8];
+    void *madr; /**< Main-memory address of the transfer. */
+    u_char unk_14[12];
+    u_int qwc; /**< Number of quadwords to transfer. */
+    u_char unk_24[0x5C];
+    void *sadr; /**< Scratchpad address of the transfer. */
 } sceDmaChan;
 
 /**

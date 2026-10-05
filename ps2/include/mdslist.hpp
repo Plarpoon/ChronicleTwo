@@ -157,6 +157,13 @@ STATIC_ASSERT(sizeof(CIMGList) == 0x8);
  */
 class CMdsListSet {
 public:
+    /**
+     *
+     * Creates empty model pack and texture image lists.
+     *
+     */
+    CMdsListSet() { Initialize(); }
+
     s32      mds_list_num; /**< Number of slots in mds_list. */
     u8       unk_4[0xC];
     CMdsList mds_list[8];  /**< Loaded pack files. */

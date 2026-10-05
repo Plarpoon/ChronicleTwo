@@ -98,3 +98,12 @@ speed%[3] (+0xC..0x14 -> 0x2C..0x34), int affinity (+0x18). Type name is not ret
 
 ## First game
 No equivalent in Dark Cloud 1 (no fish race).
+
+## C++ draft status
+- `GetPaseRatio`, `GetFishData`, and `rnd` compile with byte-identical MWCC output.
+- `GetRaceDivisionLength`, `GetCourseR`, `irn55`, `init_rnd`, `irnd`, `nrnd`,
+  `GetRandomNumber`, and `rand_prob` have typed C++ drafts under `NONMATCHING`.
+  Their first promotion attempts did not match, so the default build keeps their
+  retail assembly.
+- The generator draft uses the documented 56-element state array. Its first
+  promotion attempt reached 95.71% for `init_rnd`, but that is not an exact match.

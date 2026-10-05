@@ -13,9 +13,9 @@
  *
  */
 enum SPI_STACK_TYPE {
-    SPI_STACK_TYPE_STRING = 0,     /**< A quoted text argument. */
-    SPI_STACK_TYPE_INT = 1,        /**< A signed decimal integer argument. */
-    SPI_STACK_TYPE_FLOAT = 2,      /**< A decimal floating-point argument. */
+    SPI_STACK_TYPE_STRING = 0,     /**< A string argument. */
+    SPI_STACK_TYPE_INT = 1,        /**< A signed integer argument. */
+    SPI_STACK_TYPE_FLOAT = 2,      /**< A floating-point argument. */
     SPI_STACK_TYPE_INVALID = 0xFF, /**< An argument that could not be read as any kind of value. */
 };
 
@@ -26,7 +26,7 @@ enum SPI_STACK_TYPE {
  */
 enum SPI_LIMIT {
     SPI_HASH_BUCKET_COUNT = 101,    /**< Number of hash chains of tag names. */
-    SPI_HASH_TAG_MAX = 128,         /**< Number of tags above which the hash chains are not built. */
+    SPI_HASH_TAG_MAX = 128,         /**< Number of tags at which the hash chains are no longer built. */
     SPI_STACK_SIZE = 64,            /**< Number of arguments one tag may have. */
     SPI_STRING_BUFF_SIZE = 0x2800,  /**< Number of bytes of string argument text one tag may have. */
     SPI_TOKEN_SIZE = 0x100,         /**< Number of bytes in the local buffers that hold one word of a text script or the argument types of a binary tag. */
@@ -147,7 +147,7 @@ typedef int (*SPI_TAG_FUNCTION)(SPI_STACK *stack, int argument_count);
  *
  */
 struct SPI_TAG_PARAM {
-    char            *name;     /**< Upper-case word that names the tag in the script. */
+    char            *name;     /**< Name of the tag, compared case-sensitively; in a text script it begins with a letter from 'A' to 'Z'. */
     SPI_TAG_FUNCTION function; /**< Routine called with the arguments of the tag, or null to ignore it. */
 };
 STATIC_ASSERT(sizeof(SPI_TAG_PARAM) == 0x8);

@@ -590,3 +590,6 @@ object	Draw__12CObjectFrameFv	checker
 object	DrawDirect__12CObjectFrameFv	checker
 object	Copy__12CObjectFrameFR12CObjectFrameP9mgCMemory	checker
 object	Initialize__12CObjectFrameFv	checker
+wavetable	__ct__10CWaveTableFv	checker
+wavetable	__dt__10CWaveTableFv	checker
+wavetable	GetEffect__10CWaveTableFv	checker

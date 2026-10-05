@@ -540,14 +540,12 @@ static u8 CheckChar(char c) {
     return (space != 0) ^ 1;
 }
 
-#ifdef NONMATCHING
 /**
- * Overwrites the line comments and block comments of a text script with
- * spaces, so that the parser passes over them.
- *
+ * Overwrites the line comments and block comments of a text
+ * script with spaces, so that the parser passes over them.
  */
 static void PreProcess(input_str &in) {
-    char *text = in.buffer;
+    u8 *text = (u8 *)in.buffer;
     int i = 0;
 
     while (i < in.size) {
@@ -573,9 +571,6 @@ static void PreProcess(input_str &in) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", PreProcess__FR9input_str);
-#endif
 
 // Constants (.rodata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scriptinterpreter", at_215__DATA);

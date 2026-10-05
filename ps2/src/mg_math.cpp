@@ -964,28 +964,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgShadowMatrix__FPA4_fPfPfPf);
 #endif
 #ifdef NONMATCHING
 void mgApplyMatrixN(float (*out)[4], float (*matrix)[4], float (*in)[4], int count) {
-    // The next input is loaded ahead of each store, so one vector past the run is read.
-    asm {
-        addi $7, $7, -1
-        lqc2 $vf16, 0x0($6)
-        lqc2 $vf10, 0x0($5)
-        lqc2 $vf11, 0x10($5)
-        lqc2 $vf12, 0x20($5)
-        lqc2 $vf13, 0x30($5)
-    }
-row:
-    asm {
-        vmulax.xyzw $ACC, $vf10, $vf16x
-        vmadday.xyzw $ACC, $vf11, $vf16y
-        vmaddaz.xyzw $ACC, $vf12, $vf16z
-        vmaddw.xyzw $vf17, $vf13, $vf16w
-        addi $7, $7, -1
-        addi $4, $4, 0x10
-        addi $6, $6, 0x10
-        sqc2 $vf17, -0x10($4)
-        lqc2 $vf16, 0x0($6)
-        bgez $7, row
-        vnop
+    for (int i = 0; i < count; i++) {
+        sceVu0ApplyMatrix(out[i], matrix, in[i]);
     }
 }
 #else
@@ -993,42 +973,22 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgApplyMatrixN__FPA4_fPA4_fPA4_f
 #endif
 #ifdef NONMATCHING
 void mgApplyMatrixN_MaxMin(float (*out)[4], float (*matrix)[4], float (*in)[4], int count, float *max, float *min) {
-    // The first vector seeds both bounds; the next input is loaded ahead of each store.
-    asm {
-        addi $7, $7, -1
-        lqc2 $vf16, 0x0($6)
-        lqc2 $vf10, 0x0($5)
-        lqc2 $vf11, 0x10($5)
-        lqc2 $vf12, 0x20($5)
-        lqc2 $vf13, 0x30($5)
-        vmulax.xyzw $ACC, $vf10, $vf16x
-        vmadday.xyzw $ACC, $vf11, $vf16y
-        vmaddaz.xyzw $ACC, $vf12, $vf16z
-        vmaddw.xyzw $vf17, $vf13, $vf16w
-        addi $7, $7, -1
-        addi $4, $4, 0x10
-        addi $6, $6, 0x10
-        sqc2 $vf17, -0x10($4)
-        lqc2 $vf16, 0x0($6)
-        vaddx.xyzw $vf20, $vf17, $vf0x
-        vaddx.xyzw $vf21, $vf17, $vf0x
+    if (count <= 0) {
+        return;
     }
-row:
-    asm {
-        vmulax.xyzw $ACC, $vf10, $vf16x
-        vmadday.xyzw $ACC, $vf11, $vf16y
-        vmaddaz.xyzw $ACC, $vf12, $vf16z
-        vmaddw.xyzw $vf17, $vf13, $vf16w
-        addi $7, $7, -1
-        addi $4, $4, 0x10
-        addi $6, $6, 0x10
-        sqc2 $vf17, -0x10($4)
-        lqc2 $vf16, 0x0($6)
-        vmax.xyzw $vf20, $vf20, $vf17
-        bgez $7, row
-        vmini.xyzw $vf21, $vf21, $vf17
-        sqc2 $vf20, 0x0($8)
-        sqc2 $vf21, 0x0($9)
+    sceVu0ApplyMatrix(out[0], matrix, in[0]);
+    sceVu0CopyVector(max, out[0]);
+    sceVu0CopyVector(min, out[0]);
+    for (int i = 1; i < count; i++) {
+        sceVu0ApplyMatrix(out[i], matrix, in[i]);
+        for (int axis = 0; axis < 4; axis++) {
+            if (out[i][axis] > max[axis]) {
+                max[axis] = out[i][axis];
+            }
+            if (out[i][axis] < min[axis]) {
+                min[axis] = out[i][axis];
+            }
+        }
     }
 }
 #else
@@ -1036,30 +996,20 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgApplyMatrixN_MaxMin__FPA4_fPA4
 #endif
 #ifdef NONMATCHING
 void mgVectorMinMaxN(float *max, float *min, float (*vectors)[4], int count) {
-    // The first vector seeds both bounds and the count following it are folded in.
-    asm {
-        addi $7, $7, -1
-        lqc2 $vf10, 0x0($6)
-        vmove.xyzw $vf11, $vf10
-        lqc2 $vf16, 0x10($6)
-        vnop
-        vnop
-        vnop
+    if (count <= 0) {
+        return;
     }
-row:
-    asm {
-        vmax.xyzw $vf10, $vf10, $vf16
-        vmini.xyzw $vf11, $vf11, $vf16
-        addi $7, $7, -1
-        addi $6, $6, 0x10
-        lqc2 $vf16, 0x0($6)
-        vnop
-        bgez $7, row
-        vnop
-        vnop
-        vnop
-        sqc2 $vf10, 0x0($4)
-        sqc2 $vf11, 0x0($5)
+    sceVu0CopyVector(max, vectors[0]);
+    sceVu0CopyVector(min, vectors[0]);
+    for (int i = 1; i < count; i++) {
+        for (int axis = 0; axis < 4; axis++) {
+            if (vectors[i][axis] > max[axis]) {
+                max[axis] = vectors[i][axis];
+            }
+            if (vectors[i][axis] < min[axis]) {
+                min[axis] = vectors[i][axis];
+            }
+        }
     }
 }
 #else

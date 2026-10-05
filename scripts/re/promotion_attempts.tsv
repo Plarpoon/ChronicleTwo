@@ -544,3 +544,7 @@ menucapt	MenuChapterDraw__Fv	checker
 menucapt	MenuChapterKey__Fv	checker
 menucapt	MenuChapterInit__FP9mgCMemoryPiii	checker
 menucapt	__sinit_menucapt_cpp	manual full-build attempt: typed MenuChapterStack default, linker unresolved ctor symbol
+outline	DrawDivSprite4__FP11mgCDrawPrim9mgRect_i_P10mgCTexturePiii	checker
+outline	DrawDivSprite__FP11mgCDrawPrim9mgRect_i_P10mgCTexturePiiiii	checker
+outline	Draw__12COutLineDrawFff	checker
+outline	Draw__12COutLineDrawFPfff	checker

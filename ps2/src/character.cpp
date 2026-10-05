@@ -1264,7 +1264,7 @@ void CCharacter2::Initialize() {
     base_scale[2] = 1.0f;
     base_scale[1] = 1.0f;
     base_scale[0] = 1.0f;
-    unk_A0 = 0;
+    move_accel = 0;
     alpha = 1.0f;
     mgUnitMatrix(entry_matrix);
     CObjectFrame::frame = NULL;
@@ -3105,7 +3105,7 @@ void CCharacter2::Copy(CCharacter2 &dest, mgCMemory *memory) {
         dest.velocity[component] = velocity[component];
         dest.base_scale[component] = base_scale[component];
     }
-    dest.unk_A0 = unk_A0;
+    dest.move_accel = move_accel;
     for (row = 0; row < 4; row++) {
         for (component = 0; component < 4; component++) {
             dest.entry_matrix[row][component] = entry_matrix[row][component];

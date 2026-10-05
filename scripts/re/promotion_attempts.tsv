@@ -424,3 +424,5 @@ editexception	InitNpcCameraReaction__Fv	checker
 editexception	CreatePoint__13CGeyserEffectFv	checker
 editexception	Create__13CGeyserEffectFv	checker
 editexception	__ct__13CGeyserEffectFv	checker
+screeneffect	LensFlare__FPiPfiPcPc	checker
+screeneffect	DepthOfField__FiPfP10mgCTexturef	checker

@@ -6,12 +6,12 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", SetPos__15CRocketLauncherFPfP
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Step__15CRocketLauncherFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Draw__15CRocketLauncherFv);
 void CRocketLauncher::Initialize(void) {
-    (*(s32 *)((u8 *)this + 0x0)) = -1;
-    (*(s32 *)((u8 *)this + 0x150)) = 0;
-    (*(s32 *)((u8 *)this + 0x154)) = 0;
-    (*(s32 *)((u8 *)this + 0x174)) = 0;
-    (*(s32 *)((u8 *)this + 0x160)) = -1;
-    (*(s32 *)((u8 *)this + 0x164)) = 0;
+    target_chara = -1;
+    trail_len = 0;
+    trail_index = 0;
+    state = SHOT_STATE_FREE;
+    col_prim_id = -1;
+    draw_flags = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Get__18CRocketLauncherManFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Draw__18CRocketLauncherManFv);
@@ -21,74 +21,74 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Initialize__18CRocketLauncher
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Set__11CMachineGunFPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Step__11CMachineGunFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", SetPos__9CLaserGunFPfPfPf);
-void CLaserGun::SetVisualCode(s32 arg0) {
-    (*(s16 *)((u8 *)this + 0x108)) = (s16) arg0;
-    if (arg0 == 0) {
-        (*(s32 *)((u8 *)this + 0xfc)) = 0x3DCCCCCD;
-        (*(s32 *)((u8 *)this + 0x100)) = 0x3DCCCCCD;
-        (*(s32 *)((u8 *)this + 0x104)) = 0x3F000000;
-        (*(s32 *)((u8 *)this + 0x110)) = 0x42800000;
-        (*(s32 *)((u8 *)this + 0x114)) = 0x43000000;
-        (*(s32 *)((u8 *)this + 0x118)) = 0x42800000;
+void CLaserGun::SetVisualCode(s32 code) {
+    visual_code = (s16) code;
+    if (code == 0) {
+        scale = 0.1f;
+        scale_add = 0.1f;
+        scale_max = 0.5f;
+        color[0] = 64.0f;
+        color[1] = 128.0f;
+        color[2] = 64.0f;
     }
-    if (arg0 == 1) {
-        (*(s32 *)((u8 *)this + 0xfc)) = 0x3E4CCCCD;
-        (*(s32 *)((u8 *)this + 0x100)) = 0x3ECCCCCD;
-        (*(s32 *)((u8 *)this + 0x104)) = 0x3F4CCCCD;
-        (*(s32 *)((u8 *)this + 0xdc)) = 0x41F00000;
-        (*(s32 *)((u8 *)this + 0x110)) = 0x42800000;
-        (*(s32 *)((u8 *)this + 0x114)) = 0x42800000;
-        (*(s32 *)((u8 *)this + 0x118)) = 0x43000000;
+    if (code == 1) {
+        scale = 0.2f;
+        scale_add = 0.4f;
+        scale_max = 0.8f;
+        speed = 30.0f;
+        color[0] = 64.0f;
+        color[1] = 64.0f;
+        color[2] = 128.0f;
     }
-    if (arg0 == 2) {
-        (*(s32 *)((u8 *)this + 0xfc)) = 0x3E4CCCCD;
-        (*(s32 *)((u8 *)this + 0x100)) = 0x3ECCCCCD;
-        (*(s32 *)((u8 *)this + 0x104)) = 0x3FB33333;
-        (*(s32 *)((u8 *)this + 0xdc)) = 0x41700000;
-        (*(s32 *)((u8 *)this + 0xe0)) = 0x40A00000;
-        (*(s32 *)((u8 *)this + 0xe4)) = 0x42200000;
-        (*(s32 *)((u8 *)this + 0x110)) = 0x43000000;
-        (*(s32 *)((u8 *)this + 0x114)) = 0x42000000;
-        (*(s32 *)((u8 *)this + 0x118)) = 0x43000000;
+    if (code == 2) {
+        scale = 0.2f;
+        scale_add = 0.4f;
+        scale_max = 1.4f;
+        speed = 15.0f;
+        speed_add = 5.0f;
+        speed_max = 40.0f;
+        color[0] = 128.0f;
+        color[1] = 32.0f;
+        color[2] = 128.0f;
     }
-    if (arg0 == 3) {
-        (*(s32 *)((u8 *)this + 0xfc)) = 0x3E4CCCCD;
-        (*(s32 *)((u8 *)this + 0x100)) = 0x3E4CCCCD;
-        (*(s32 *)((u8 *)this + 0x104)) = 0x3F19999A;
-        (*(s32 *)((u8 *)this + 0xdc)) = 0;
-        (*(s32 *)((u8 *)this + 0xe0)) = 0x40000000;
-        (*(s32 *)((u8 *)this + 0xe4)) = 0x420C0000;
-        (*(s32 *)((u8 *)this + 0xf0)) = 0;
-        (*(s32 *)((u8 *)this + 0xf4)) = 0x1869F;
-        (*(s32 *)((u8 *)this + 0xf8)) = 0x4B;
-        (*(s32 *)((u8 *)this + 0x110)) = 0;
-        (*(s32 *)((u8 *)this + 0x114)) = 0x43000000;
-        (*(s32 *)((u8 *)this + 0x118)) = 0x43000000;
+    if (code == 3) {
+        scale = 0.2f;
+        scale_add = 0.2f;
+        scale_max = 0.6f;
+        speed = 0.0f;
+        speed_add = 2.0f;
+        speed_max = 35.0f;
+        homing_delay = 0;
+        homing_time = 99999;
+        life = 75;
+        color[0] = 0.0f;
+        color[1] = 128.0f;
+        color[2] = 128.0f;
     }
-    if (arg0 == 4) {
-        (*(s32 *)((u8 *)this + 0xfc)) = 0x3ECCCCCD;
-        (*(s32 *)((u8 *)this + 0x100)) = 0x3ECCCCCD;
-        (*(s32 *)((u8 *)this + 0x104)) = 0x3FE66666;
-        (*(s32 *)((u8 *)this + 0xdc)) = 0x41200000;
-        (*(s32 *)((u8 *)this + 0xe0)) = 0x40A00000;
-        (*(s32 *)((u8 *)this + 0xe4)) = 0x41F00000;
-        (*(s32 *)((u8 *)this + 0xf0)) = 0;
-        (*(s32 *)((u8 *)this + 0xf4)) = 5;
-        (*(s32 *)((u8 *)this + 0xf8)) = 0x4B;
-        (*(s32 *)((u8 *)this + 0x110)) = 0x43000000;
-        (*(s32 *)((u8 *)this + 0x114)) = 0x42800000;
-        (*(s32 *)((u8 *)this + 0x118)) = 0;
+    if (code == 4) {
+        scale = 0.4f;
+        scale_add = 0.4f;
+        scale_max = 1.8f;
+        speed = 10.0f;
+        speed_add = 5.0f;
+        speed_max = 30.0f;
+        homing_delay = 0;
+        homing_time = 5;
+        life = 75;
+        color[0] = 128.0f;
+        color[1] = 64.0f;
+        color[2] = 0.0f;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Step__9CLaserGunFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Draw__9CLaserGunFv);
 void CLaserGun::Initialize(void) {
-    (*(s32 *)((u8 *)this + 0x0)) = -1;
-    (*(s32 *)((u8 *)this + 0xd0)) = 0;
-    (*(s32 *)((u8 *)this + 0xd4)) = 0;
-    (*(s32 *)((u8 *)this + 0x120)) = 0;
-    (*(s32 *)((u8 *)this + 0xe8)) = -1;
-    (*(s32 *)((u8 *)this + 0xec)) = 0;
+    target_chara = -1;
+    trail_len = 0;
+    trail_index = 0;
+    state = SHOT_STATE_FREE;
+    col_prim_id = -1;
+    draw_flags = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Get__12CLaserGunManFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Draw__12CLaserGunManFv);
@@ -100,25 +100,25 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Step__9CPullItemFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", IsGet__9CPullItemFPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", SetItem__9CPullItemFPfPfi);
 void CPullItem::Clear(void) {
-    (*(s8 *)((u8 *)this + 0x74)) = -1;
-    (*(s32 *)((u8 *)this + 0x7c)) = 0;
+    wire_index = -1;
+    state = PULL_ITEM_STATE_FREE;
 }
 void CPullItem::Initialize(void) {
-    (*(s32 *)((u8 *)this + 0x7c)) = 0;
-    (*(s16 *)((u8 *)this + 0x42)) = 0;
-    (*(s16 *)((u8 *)this + 0x30)) = 0;
-    (*(s16 *)((u8 *)this + 0x32)) = 0;
-    (*(s16 *)((u8 *)this + 0x34)) = 32;
-    (*(s16 *)((u8 *)this + 0x36)) = 32;
-    (*(s16 *)((u8 *)this + 0x50)) = 0;
-    (*(s16 *)((u8 *)this + 0x44)) = 0;
+    state = PULL_ITEM_STATE_FREE;
+    wait_time = 0;
+    tex_u = 0;
+    tex_v = 0;
+    tex_w = 32;
+    tex_h = 32;
+    can_get = 0;
+    anim_frame = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", GetList__16CPullItemManagerFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Clear__16CPullItemManagerFv);
-void CRoboVoiceSystem::SetStatus(s32 arg0, s32 arg1) {
-    (*(s16 *)((u8 *)this + 0x0)) = 1;
-    (*(s32 *)((u8 *)this + 0xc)) = arg0;
-    (*(s16 *)((u8 *)this + 0x10)) = arg1;
+void CRoboVoiceSystem::SetStatus(s32 voice, s32 value) {
+    status = 1;
+    voice_no = voice;
+    unk_10 = value;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", StartVoiceSystem__16CRoboVoiceSystemFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", StopVoice__16CRoboVoiceSystemFi);

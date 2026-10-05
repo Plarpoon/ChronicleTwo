@@ -7,48 +7,48 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", DrawEpisode__20CStartupEpisode
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", Switch__20CStartupEpisodeTitleFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", Step__20CStartupEpisodeTitleFv);
 void CStartupEpisodeTitle::Initialize(void) {
-    (*(s32 *)((u8 *)this + 0x14)) = 0;
-    (*(s16 *)((u8 *)this + 0x0)) = 0;
-    (*(s16 *)((u8 *)this + 0x2)) = 0;
+    mes = NULL;
+    state = 0;
+    wait = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", Draw__18MessageTaskManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", Step__18MessageTaskManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", Print__18MessageTaskManagerFPciii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", Clear__18MessageTaskManagerFv);
 void MessageTaskManager::Initialize(void) {
-    (*(s32 *)((u8 *)this + 0x4)) = 0;
-    (*(s32 *)((u8 *)this + 0x368)) = 0;
-    (*(s32 *)((u8 *)this + 0x0)) = 0;
-    (*(s32 *)((u8 *)this + 0x8)) = 0;
-    (*(s8 *)((u8 *)this + 0x8c)) = 0;
-    (*(s16 *)((u8 *)this + 0x8e)) = 0;
-    (*(s16 *)((u8 *)this + 0x92)) = 8;
-    (*(s32 *)((u8 *)this + 0x94)) = 0;
-    (*(s32 *)((u8 *)this + 0x98)) = 0;
-    (*(s8 *)((u8 *)this + 0x11c)) = 0;
-    (*(s16 *)((u8 *)this + 0x11e)) = 0;
-    (*(s16 *)((u8 *)this + 0x122)) = 8;
-    (*(s32 *)((u8 *)this + 0x124)) = 0;
-    (*(s32 *)((u8 *)this + 0x128)) = 0;
-    (*(s8 *)((u8 *)this + 0x1ac)) = 0;
-    (*(s16 *)((u8 *)this + 0x1ae)) = 0;
-    (*(s16 *)((u8 *)this + 0x1b2)) = 8;
-    (*(s32 *)((u8 *)this + 0x1b4)) = 0;
-    (*(s32 *)((u8 *)this + 0x1b8)) = 0;
-    (*(s8 *)((u8 *)this + 0x23c)) = 0;
-    (*(s16 *)((u8 *)this + 0x23e)) = 0;
-    (*(s16 *)((u8 *)this + 0x242)) = 8;
-    (*(s32 *)((u8 *)this + 0x244)) = 0;
-    (*(s32 *)((u8 *)this + 0x248)) = 0;
-    (*(s8 *)((u8 *)this + 0x2cc)) = 0;
-    (*(s16 *)((u8 *)this + 0x2ce)) = 0;
-    (*(s16 *)((u8 *)this + 0x2d2)) = 8;
-    (*(s32 *)((u8 *)this + 0x2d4)) = 0;
-    (*(s32 *)((u8 *)this + 0x2d8)) = 0;
-    (*(s8 *)((u8 *)this + 0x35c)) = 0;
-    (*(s16 *)((u8 *)this + 0x35e)) = 0;
-    (*(s16 *)((u8 *)this + 0x362)) = 8;
-    (*(s32 *)((u8 *)this + 0x364)) = 0;
+    mes = NULL;
+    top = NULL;
+    flag = 0;
+    task[0].message = NULL;
+    task[0].priority = 0;
+    task[0].time = 0;
+    task[0].slot = 8;
+    task[0].next = NULL;
+    task[1].message = NULL;
+    task[1].priority = 0;
+    task[1].time = 0;
+    task[1].slot = 8;
+    task[1].next = NULL;
+    task[2].message = NULL;
+    task[2].priority = 0;
+    task[2].time = 0;
+    task[2].slot = 8;
+    task[2].next = NULL;
+    task[3].message = NULL;
+    task[3].priority = 0;
+    task[3].time = 0;
+    task[3].slot = 8;
+    task[3].next = NULL;
+    task[4].message = NULL;
+    task[4].priority = 0;
+    task[4].time = 0;
+    task[4].slot = 8;
+    task[4].next = NULL;
+    task[5].message = NULL;
+    task[5].priority = 0;
+    task[5].time = 0;
+    task[5].slot = 8;
+    task[5].next = NULL;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", Draw__13CRedMarkModelFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", Step__13CRedMarkModelFv);
@@ -82,7 +82,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", CheckEvent__19CTreasureBoxMana
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", GetGateKeyIndex__Fii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", GetKeyDoorIndex__Fii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", Lamb2WolfManager__Fv);
-void LoopSoundManager(s32 arg0) {
+void LoopSoundManager(s32 sound_id) {
+    (void)sound_id;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", BattleSoundManager__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", StatusWarningSnd__Fv);

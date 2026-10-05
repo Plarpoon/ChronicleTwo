@@ -18,12 +18,12 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Step__14CChillAfterHitFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", LocalTransWorldPrimPos__FPA4_iPffff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Draw__14CChillAfterHitFv);
 void CFireAfterHit::Initialize(void) {
-    (*(s32 *)((u8 *)this + 0x0)) = 0;
-    (*(s32 *)((u8 *)this + 0x4)) = 0;
-    (*(s32 *)((u8 *)this + 0x8)) = 0;
-    (*(s32 *)((u8 *)this + 0xc)) = 0;
-    memset(&(*(s32 *)((u8 *)this + 0x10)), 0, 0x2A0);
-    memset(&(*(s32 *)((u8 *)this + 0x2b0)), 0, 0x690);
+    active = 0;
+    flame_num = 0;
+    time = 0;
+    rate = 0.0f;
+    memset(flame, 0, sizeof(flame));
+    memset(trail, 0, sizeof(trail));
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", SetPos__13CFireAfterHitFPffi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Step__13CFireAfterHitFv);
@@ -36,44 +36,44 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", SetPos__8CThunderFPfff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Draw__8CThunderFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Step__8CThunderFv);
 void CThunder::Initialize(void) {
-    (*(s8 *)((u8 *)this + 0xdb0)) = 0;
-    (*(s8 *)((u8 *)this + 0xdb1)) = 0;
-    (*(void * *)((u8 *)this + 0xf4)) = &(*(s32 *)((u8 *)this + 0x110));
+    active = 0;
+    live_num = 0;
+    frame.attr = &attr;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Draw__12CSparcEffectFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Step__12CSparcEffectFv);
 void CSparcEffect::Initialize(void) {
-    (*(s8 *)((u8 *)this + 0xa9)) = 0;
+    state = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", SetPrim__12CMiniEffPrimFPfi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Draw__12CMiniEffPrimFP10CPreSprite);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Step__12CMiniEffPrimFv);
 void CMiniEffPrim::Initialize(void) {
-    (*(s8 *)((u8 *)this + 0x10)) = 0;
+    state = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", CreatPrim__15CMiniEffPrimManFPfi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Draw__15CMiniEffPrimManFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Step__15CMiniEffPrimManFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Initialize__15CMiniEffPrimManFv);
-void CPalletAnime::SetAnim(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5) {
-    (*(s16 *)((u8 *)this + 0x0)) = arg0;
-    (*(s16 *)((u8 *)this + 0x2)) = arg1;
-    (*(s16 *)((u8 *)this + 0x4)) = arg2;
-    (*(s16 *)((u8 *)this + 0x6)) = arg3;
-    (*(s16 *)((u8 *)this + 0xa)) = arg4;
-    (*(s16 *)((u8 *)this + 0x8)) = 0;
-    (*(s16 *)((u8 *)this + 0xc)) = arg5;
+void CPalletAnime::SetAnim(s16 red, s16 green, s16 blue, s16 pulse_num, s16 duration, s16 repeats) {
+    this->red = red;
+    this->green = green;
+    this->blue = blue;
+    this->pulse_num = pulse_num;
+    this->duration = duration;
+    elapsed = 0;
+    this->repeats = repeats;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", CreatPallet__12CPalletAnimeFPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Step__12CPalletAnimeFv);
 void CPalletAnime::Initialize(void) {
-    (*(s16 *)((u8 *)this + 0xa)) = 0;
-    (*(s16 *)((u8 *)this + 0x8)) = 0;
+    duration = 0;
+    elapsed = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Draw__17CHealingEffectManFP9mgCCamera);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Step__17CHealingEffectManFv);
-void CHealingEffectMan::SetMode(s32 arg0) {
-    (*(s16 *)((u8 *)this + 0x314)) = arg0;
+void CHealingEffectMan::SetMode(s32 mode) {
+    this->mode = mode;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Set__17CHealingEffectManFPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Initialize__17CHealingEffectManFv);
@@ -84,12 +84,12 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", CreatPointList__16CSWordAfter
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", AddPoint__16CSWordAfterImageFPfPff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Step__16CSWordAfterImageFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Initialize__16CSWordAfterImageFP9mgCMemoryii);
-void CAfterWire::SetMode(s32 arg0) {
-    (*(s32 *)((u8 *)this + 0x0)) = arg0;
-    (*(s16 *)((u8 *)this + 0x116)) = 0;
-    (*(s16 *)((u8 *)this + 0x118)) = 0;
-    (*(s16 *)((u8 *)this + 0x112)) = 0;
-    (*(s16 *)((u8 *)this + 0x114)) = 0;
+void CAfterWire::SetMode(s32 mode) {
+    this->mode = mode;
+    write_index = 0;
+    newest = 0;
+    point_num = 0;
+    oldest = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", SetPos__10CAfterWireFPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", DrawWire__10CAfterWireFPA4_f);
@@ -97,18 +97,15 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", StepWire__10CAfterWireFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", SethitEffect__15CHitEffectImageFPfPfffffii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Step__15CHitEffectImageFv);
 void CHitEffectImage::Draw(void) {
-    s32 temp_a1;
-
-    if ((*(s32 *)((u8 *)this + 0x28)) > 0) {
-        temp_a1 = (*(s32 *)((u8 *)this + 0x44));
-        switch (temp_a1) {                          /* irregular */
-        case 0:
+    if (live_num > 0) {
+        switch (kind) {
+        case HIT_EFFECT_BOARD:
             this->DrawBord();
             return;
-        case 1:
+        case HIT_EFFECT_SPARK_SHORT:
             this->DrawSpark(3.0f);
             return;
-        case 2:
+        case HIT_EFFECT_SPARK_LONG:
             this->DrawSpark(9.0f);
             break;
         }
@@ -140,44 +137,36 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Draw__15BattleEffectManFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Initialize__14CWeaponElementFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Set__14CWeaponElementFPA4_fPffif);
 void CWeaponElement::Step(void) {
-    s16 temp_v1;
-
-    if (*(s16 *) ((u8 *) this + 0x5AC) != 0) {
-        temp_v1 = *(s16 *) ((u8 *) this + 0x5A4);
-        switch (temp_v1) {
-        case 1:
+    if (on != 0) {
+        switch (kind) {
+        case WEAPON_ELEMENT_COLD:
         default:
             this->Step_Cold();
             return;
-        case 3:
+        case WEAPON_ELEMENT_WIND:
             this->Step_Wind();
             return;
-        case 0:
+        case WEAPON_ELEMENT_FIRE:
             this->Step_Fire();
             return;
-        case 2:
+        case WEAPON_ELEMENT_THUNDER:
             this->Step_Thunder();
             break;
         }
     }
 }
 void CWeaponElement::Draw(void) {
-    s16 temp_v1;
-
-    if (*(s16 *) ((u8 *) this + 0x5AC) != 0) {
-        temp_v1 = *(s16 *) ((u8 *) this + 0x5A4);
-        switch (temp_v1) {
-        case 1:
+        case WEAPON_ELEMENT_COLD:
         default:
             this->Draw_Cold();
             return;
-        case 3:
+        case WEAPON_ELEMENT_WIND:
             this->Draw_Wind();
             return;
-        case 0:
+        case WEAPON_ELEMENT_FIRE:
             this->Draw_Fire();
             return;
-        case 2:
+        case WEAPON_ELEMENT_THUNDER:
             this->Draw_Thunder();
             break;
         }
@@ -197,11 +186,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Step_Thunder__14CWeaponElemen
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Draw_Thunder__14CWeaponElementFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", CreatSmoothPass__FPA4_fPA4_fiiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", unitRotation__FP8mgCFrameff);
-s32 iRand(s32 arg0) {
-    return (s32) (((float) arg0 * (float) rand()) / 2.1474836e9f);
+s32 iRand(s32 limit) {
+    return (s32) (((float) limit * (float) rand()) / 2.1474836e9f);
 }
-float fRand(float arg0) {
-    return (arg0 * (float) rand()) / 2.1474836e9f;
+float fRand(float limit) {
+    return (limit * (float) rand()) / 2.1474836e9f;
 }
 
 // Initialised data (.data)

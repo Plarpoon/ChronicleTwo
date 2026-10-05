@@ -60,7 +60,7 @@ class CommitPayloadTests(unittest.TestCase):
         self.assertLessEqual(len(result["content"]), 2000)
         self.assertIn("… and", result["content"])
         self.assertTrue(result["content"].startswith(
-            "[0000000](<https://github.com/TheMoonPeople/ChronicleTwo/commit/" + "0" * 40 + ">) @everyone"))
+            "• [`0000000`](<https://github.com/TheMoonPeople/ChronicleTwo/commit/" + "0" * 40 + ">) @everyone"))
         self.assertNotIn("commit to master", result["content"])
         self.assertNotRegex(result["content"], r"(?<!<)https?://")
         self.assertNotIn("evil.example", result["content"])
@@ -83,7 +83,7 @@ class CommitPayloadTests(unittest.TestCase):
         self.assertIn("<https://example.com/notes>", content)
         self.assertIn("<https://example.org/update>\\).", content)
         self.assertTrue(content.startswith(
-            "[aaaaaaa](<https://github.com/TheMoonPeople/ChronicleTwo/commit/" + "a" * 40 + ">) See "))
+            "• [`aaaaaaa`](<https://github.com/TheMoonPeople/ChronicleTwo/commit/" + "a" * 40 + ">) See "))
         self.assertNotRegex(content, r"(?<!<)https?://")
 
 

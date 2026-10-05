@@ -42,9 +42,10 @@ def commit_line(commit, repository):
     sha = str(commit.get("id", ""))
     raw_subject = clipped(str(commit.get("message", "")).split("\n", 1)[0], 110)
     subject = subject_text(raw_subject) or "(no message)"
-    prefix = (f"[{sha[:7]}](<https://github.com/{repository}/commit/{sha}>) "
-              if SAFE_SHA.fullmatch(sha) and SAFE_REPOSITORY.fullmatch(repository) else "")
-    return f"{prefix}{subject}"
+    prefix = (f"[`{sha[:7]}`](<https://github.com/{repository}/commit/{sha}>) "
+              if SAFE_SHA.fullmatch(sha) and SAFE_REPOSITORY.fullmatch(repository)
+              else f"`{sha[:7]}` " if SAFE_SHA.fullmatch(sha) else "")
+    return f"• {prefix}{subject}"
 
 
 def payload(event):

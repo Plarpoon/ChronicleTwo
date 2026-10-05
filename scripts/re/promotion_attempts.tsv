@@ -460,3 +460,6 @@ sysmes	GetSystemMesBuffer__Fv	checker
 sysmes	LoadSystemMes__Fv	checker
 sysmes	GetSystemMessage__Fi	checker
 sysmes	GetSystemMessage__Fv	checker
+editcoll	ClipBoxXZ__FPfPfPfPf	checker
+editcoll	OverlapPoly3XZ__14CEditCollisionFPA4_fPfP9mgVu0FBOX	checker
+editcoll	ApplyMatrix__14CEditCollisionFPA4_f	checker

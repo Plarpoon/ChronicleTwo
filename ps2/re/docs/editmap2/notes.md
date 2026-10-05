@@ -28,3 +28,21 @@ All data symbols are compiler-generated, so no `extern` is declared:
   `GroundBalance(int)`. Unrelated to `CEditMap` field offset 0x1050 (`balance_moved`).
 - `at_796__4` (.data 0x10), `at_983__3` (.data 0xA), `at_1042..1043`, `at_1127..1130` (.rodata):
   function-local initialised arrays / float literals.
+
+## PlaneNormalXZ matching status
+The retail body is ten instructions: three `lqc2` loads, two VU0 zeroing
+subtractions, two XZ subtractions, `vopmula.xyz`, `vopmsub.xyz`, and one
+`sqc2` store. `decompile.sh PlaneNormalXZ__FPfPfPfPf` reports each VU0
+instruction as unsupported rather than C expressions. The available
+`libvu0.h` exposes callable SDK functions, including `sceVu0OuterProduct`;
+a call introduces an ABI boundary and cannot reproduce this inline body.
+Scalar C++ likewise emits scalar FPU instructions instead of the required
+COP2 opcodes. The function therefore remains an inline-assembly match, not
+a decompiled C++ match.
+
+To return it to undecompiled status, replace its whole source definition with
+`INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", PlaneNormalXZ__FPfPfPfPf);`
+and run the normal `scripts/build/cmake.sh` setup/build path. The split must
+regenerate the per-symbol assembly under `ps2/asm`; changing that generated
+file by hand is inappropriate. Then check the marker's object with `diff.sh`
+and verify both PS2 builds.

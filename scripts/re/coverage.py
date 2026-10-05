@@ -15,6 +15,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 REPORT = ROOT / "progress/report.json"
 SOURCES = ROOT / "ps2/src"
+MATCHINGS = ROOT / "ps2/asm/pal/matchings"
 ASM = re.compile(r"\bINCLUDE_ASM\([^,]+,\s*([A-Za-z_][A-Za-z_0-9]*)\s*\)")
 
 
@@ -50,7 +51,9 @@ def rows(report: dict) -> list[tuple[str, str, str]]:
             if symbol.startswith(".L"):
                 continue
             match = function.get("fuzzy_match_percent")
-            if match == 100.0:
+            # A switch jump table can split a matching function into local
+            # label rows, leaving the function's report row without a score.
+            if match == 100.0 or (MATCHINGS / name / f"{symbol}.s").is_file():
                 status = "matched"
             elif match is not None:
                 status = "fuzzy"

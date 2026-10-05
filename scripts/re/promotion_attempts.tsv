@@ -567,3 +567,5 @@ maintex	MainTextureInterface__FP9mgCMemoryP6CScene	checker
 maintex	calcWeaponParamWhp__FP14CActiveMonsterP8CColPrim	checker
 maintex	calcWeaponParam2__Fii	checker
 maintex	SetSwordBlurEffect__FP11CCharacter2P9mgCMemoryi	checker
+dng_status	DrawActiveItemCursor__Fiif	checker
+dng_status	DrawStatusBord__Fv	checker

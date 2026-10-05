@@ -75,6 +75,11 @@ int ChangeThreadPriority(int thread_id, int priority);
  */
 void Exit(int status);
 
+/**
+ * Terminates the current EE process with the supplied status.
+ */
+void Exit__2(int status);
+
 #ifdef __cplusplus
 }
 #endif

@@ -18,13 +18,11 @@ commits = load("discord_commits")
 
 
 class ProgressPayloadTests(unittest.TestCase):
-    def test_pal_has_overall_and_game_fields(self):
+    def test_pal_has_only_overall_field(self):
         report = {
             "measures": {"matched_code_percent": 20, "fuzzy_match_percent": 30,
                          "matched_functions": 2, "total_functions": 5},
-            "categories": [{"id": "game", "measures": {
-                "matched_code_percent": 25, "fuzzy_match_percent": 50,
-                "matched_functions": 1, "total_functions": 3}}],
+            "categories": [],
             "units": [
                 {"metadata": {"progress_categories": ["game"]},
                  "functions": [{"fuzzy_match_percent": 50}]},
@@ -35,10 +33,9 @@ class ProgressPayloadTests(unittest.TestCase):
         result = progress.payload(report)
         self.assertEqual(result["allowed_mentions"], {"parse": []})
         self.assertEqual(result["embeds"][0]["title"], "Dark Chronicle PAL")
-        overall, game = result["embeds"][0]["fields"]
+        self.assertEqual(len(result["embeds"][0]["fields"]), 1)
+        overall = result["embeds"][0]["fields"][0]
         self.assertIn("Fuzzy **10.00%** (2)", overall["value"])
-        self.assertIn("Fuzzy **25.00%** (1)", game["value"])
-        self.assertIn("Other **50.00%** (1)", game["value"])
 
     def test_emoji_stays_within_discord_limit(self):
         event = {"commits": [{"id": f"{i:040x}", "message": "😀" * 200}

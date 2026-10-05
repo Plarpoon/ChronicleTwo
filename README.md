@@ -1,5 +1,12 @@
 # Chronicle Two
 
+[![PAL Progress]](https://decomp.dev/TheMoonPeople/ChronicleTwo/pal)
+
+[PAL Progress]: https://decomp.dev/TheMoonPeople/ChronicleTwo/pal.svg?mode=shield&label=PAL&measure=matched_code_percent
+[progress_link]: https://decomp.dev/TheMoonPeople/ChronicleTwo/
+
+[<img src="https://decomp.dev/TheMoonPeople/ChronicleTwo/pal.svg?w=512&h=256" width="512" height="256" alt="PAL decompilation progress">][progress_link]
+
 Chronicle Two is a decompilation project (and eventual port) of Dark
 Chronicle/Dark Cloud 2 for the PlayStation 2.
 
@@ -20,6 +27,8 @@ artifact, which [decomp.dev](https://decomp.dev/) reads after the repository is
 registered at [decomp.dev/manage/new](https://decomp.dev/manage/new). The
 workflow also posts a summary to Discord's `#progress` channel. A separate
 workflow posts commits from `master` to Discord, independently of the build.
+The report has one Overall measure covering game translation units; SDK and
+runtime library units are excluded.
 
 Configure these GitHub Actions settings for the repository:
 

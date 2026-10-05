@@ -5,8 +5,8 @@
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", Create__11CLoopSeMngrFiP9mgCMemory);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", __ct__15SND_LOOP_SE_SEQFv);
 void CLoopSeMngr::Initialize(void) {
-    (*(s32 *)((u8 *)this + 0x0)) = 0;
-    (*(s32 *)((u8 *)this + 0x4)) = 0;
+    loop_se_num = 0;
+    loop_se = NULL;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", Clear__11CLoopSeMngrFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetLoopSe__11CLoopSeMngrFPiUii);
@@ -15,18 +15,18 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", SeLoopPlayStop__11CLoopSeMngrFU
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", Step__11CLoopSeMngrFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", AllSeStop__11CLoopSeMngrFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndGetReverbDepth__Fi);
-u32 sndCreateID(u32 a, s32 b) {
-    return (a & 0xFFFF0000) | (b & 0xFFFF);
+u32 sndCreateID(u32 snd_id, s32 se_no) {
+    return (snd_id & 0xFFFF0000) | (se_no & 0xFFFF);
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndGetSeNo__FUi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetPortInfo__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetSeSeq__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetEmptySeSeq__FPi);
-u32 GetPortNo(u32 arg0) {
-    return (arg0 >> 24) & 0xFF;
+u32 GetPortNo(u32 sound_id) {
+    return (sound_id >> 24) & 0xFF;
 }
-u32 GetBankNo(u32 arg0) {
-    return (arg0 >> 16) & 0xFF;
+u32 GetBankNo(u32 sound_id) {
+    return (sound_id >> 16) & 0xFF;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetBankInfo__FUi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetSeInfo__FUii);
@@ -59,14 +59,14 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndLoadSound__FiPUiP9mgCMemory)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", __ct__13sndCSeSeqDataFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndDeletePort__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", GetPortBankNo__FUiPiPi);
-void sndSePlay(u32 a, s32 b, s32 c) {
-    sndSePlaySeID(a, b, -1, -1, 0x40, 0x2000, c);
+void sndSePlay(u32 snd_id, s32 se_no, s32 voice) {
+    sndSePlaySeID(snd_id, se_no, -1, -1, 0x40, 0x2000, voice);
 }
-void sndSePlayV(u32 a, s32 b, s32 c, s32 d) {
-    sndSePlaySeID(a, b, -1, c, 0x40, 0x2000, d);
+void sndSePlayV(u32 snd_id, s32 se_no, s32 vol, s32 voice) {
+    sndSePlaySeID(snd_id, se_no, -1, vol, 0x40, 0x2000, voice);
 }
-void sndSePlayVP(u32 a, s32 b, s32 c, s32 d, s32 e) {
-    sndSePlaySeID(a, b, -1, c, d, 0x2000, e);
+void sndSePlayVP(u32 snd_id, s32 se_no, s32 vol, s32 pan, s32 voice) {
+    sndSePlaySeID(snd_id, se_no, -1, vol, pan, 0x2000, voice);
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSePlayVPf__FUiiffi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSePlayVf__FUiifi);

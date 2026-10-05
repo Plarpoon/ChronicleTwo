@@ -1,0 +1,30 @@
+# editmap2 notes
+
+## What the unit owns
+- No class or struct is owned by editmap2 (`build/re/class_units.tsv` has no row for it).
+- 19 of its 21 functions are `CEditMap` members; all 19 are already declared (with `@mangled`)
+  in `ps2/include/editmap.hpp`, owned by editmap. `ps2/include/editmap2.hpp` therefore only
+  includes `editmap.hpp`.
+- Types used by the unit, all declared elsewhere: `CEditMap`, `EP_PLACE_INFO` (editmap.hpp,
+  0x48), `CEditParts`/`CEditPartsInfo` (editparts.hpp), `InScreenFuncInfo` (mapparts.hpp, 0xC),
+  `mgCFrame`, `mgVu0FBOX`, `CEditCollision` (editcoll.hpp).
+
+## File-local functions (static, define in editmap2.cpp, not in the header)
+Both are LOCAL in `build/re/local_symbols.tsv` and called only from this unit.
+- `PlaneNormalXZ(float *out, float *p0, float *p1, float *p2)` @ 0x002F26F0: VU0 outer product
+  of (p1 - p0) and (p2 - p0), stored to `out` (lqc2/vsub/vopmula/vopmsub/sqc2). Will need the
+  VU0 inline asm form (see the first game's mg_math / docs/MWCC.md). Called by
+  `CEditMap::GetEditPartsAlt(CEditPartsInfo*, float*, float, CEditParts**, int)`.
+- `int CheckFenceChain(CEditParts *a, CEditParts *b)` @ 0x002F3C60: returns 1 when both parts
+  have bound spheres that overlap (`CMapParts::GetBoundSphere`, distance <= sum of radii at
+  `[3]`) and any pair of their fence end points (`CEditParts::GetFenceSide(float*, float*)`) is
+  closer than 5.0; else 0. Null parts return 0. Called by `CEditMap::PaintFence(CEditParts*)`.
+
+## Data
+All data symbols are compiler-generated, so no `extern` is declared:
+- `cnt_482`, `init_483` (.sbss, 4 bytes each): function-local static counter and its init guard
+  in `CheckEditParts(..., EP_PLACE_INFO*, CEditParts**, int)`; `cnt = (cnt + 1) % 10`.
+- `at_1050__2` (.bss 0x10): local static read as a 64-bit value at the top of
+  `GroundBalance(int)`. Unrelated to `CEditMap` field offset 0x1050 (`balance_moved`).
+- `at_796__4` (.data 0x10), `at_983__3` (.data 0xA), `at_1042..1043`, `at_1127..1130` (.rodata):
+  function-local initialised arrays / float literals.

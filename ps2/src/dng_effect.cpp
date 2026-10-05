@@ -156,6 +156,8 @@ void CWeaponElement::Step(void) {
     }
 }
 void CWeaponElement::Draw(void) {
+    if (on != 0) {
+        switch (kind) {
         case WEAPON_ELEMENT_COLD:
         default:
             this->Draw_Cold();

@@ -401,6 +401,14 @@ typedef struct {
             u_long a : 8;
             u_long q : 32;
         } bits;
+
+        struct {
+            u_char red;   /**< Red colour channel. */
+            u_char green; /**< Green colour channel. */
+            u_char blue;  /**< Blue colour channel. */
+            u_char alpha; /**< Alpha channel. */
+            u_int q;      /**< Packed Q value. */
+        } bytes;
     };
 } sceGsRgbaq;
 

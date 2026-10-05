@@ -35,17 +35,17 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucommon", CalcMenu1__FfPfffi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucommon", CalcMenu1__FiPiiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucommon", CalcMenuAdd__FPiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucommon", CalcMenuAdd__FPfff);
-s32 CalcMenuAdd2(s32 *arg0, s32 arg1, s32 arg2) {
-    if (arg0 == NULL) {
+s32 CalcMenuAdd2(s32 *value, s32 delta, s32 limit) {
+    if (value == NULL) {
         return -1;
     }
-    if ((arg1 < 0) && ((*arg0 + arg1) < arg2)) {
+    if ((delta < 0) && ((*value + delta) < limit)) {
         return 1;
     }
-    if ((arg1 > 0) && (arg2 < (*arg0 + arg1))) {
+    if ((delta > 0) && (limit < (*value + delta))) {
         return 1;
     }
-    *arg0 += arg1;
+    *value += delta;
     return 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucommon", GetNumberKeta__Fi);

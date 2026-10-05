@@ -11,9 +11,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", modby0error__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", print__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", __ct__10CRunScriptFv);
 void CRunScript::DeleteProgram(void) {
-    (*(s32 *)((u8 *)this + 0x3c)) = 0;
-    (*(s32 *)((u8 *)this + 0x40)) = 0;
-    (*(s32 *)((u8 *)this + 0x44)) = 0;
+    end = 0;
+    skip_wait = 0;
+    prog = NULL;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", check_stack__10CRunScriptFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", push__10CRunScriptF12RS_STACKDATA);
@@ -31,8 +31,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", resume__10CRunScriptFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", run__10CRunScriptFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", check_program__10CRunScriptFi);
 void CRunScript::skip(void) {
-    *(s32 *) ((u8 *) this + 0x40) = 1;
-    this->resume();
+    skip_wait = 1;
+    resume();
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", exe__10CRunScriptFP8vmcode_t);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", rsGetStackInt__FP12RS_STACKDATA);

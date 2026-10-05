@@ -5,11 +5,11 @@
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Initialize__11CDngFreeMapFv);
 void CDngFreeMap::InitTexture(void) {
-    (*(s32 *)((u8 *)this + 0xd8)) = 0;
-    (*(s32 *)((u8 *)this + 0xdc)) = 0;
-    (*(s32 *)((u8 *)this + 0xe0)) = 0;
-    (*(s32 *)((u8 *)this + 0xd4)) = 0;
-    (*(s16 *)((u8 *)this + 0xd0)) = -1;
+    map_tex = NULL;
+    last_tex = NULL;
+    koma_tex = NULL;
+    name_tex = NULL;
+    tex_block = -1;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", SetUserGlid__11CDngFreeMapFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", CalcGlidPutPos__11CDngFreeMapFP9GLID_INFORfRfi);

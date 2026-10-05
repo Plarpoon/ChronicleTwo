@@ -4,20 +4,20 @@
 
 // Code (.text)
 void CEditInfoMngr::Initialize(void) {
-    (*(s32 *)((u8 *)this + 0x0)) = 0;
-    (*(CEditPartsInfo * *)((u8 *)this + 0x4)) = 0;
-    (*(s32 *)((u8 *)this + 0x8)) = 0;
-    (*(ePlaceData * *)((u8 *)this + 0xc)) = 0;
-    (*(s32 *)((u8 *)this + 0x10)) = 0;
-    (*(s32 *)((u8 *)this + 0x14)) = 0;
+    parts_info_num = 0;
+    parts_info = NULL;
+    fix_parts_num = 0;
+    fix_parts = NULL;
+    init_parts_num = 0;
+    init_parts = NULL;
 }
-void CEditInfoMngr::SetePartsInfoTable(CEditPartsInfo * arg0, s32 arg1) {
-    (*(s32 *)((u8 *)this + 0x0)) = arg1;
-    (*(CEditPartsInfo * *)((u8 *)this + 0x4)) = arg0;
+void CEditInfoMngr::SetePartsInfoTable(CEditPartsInfo *table, s32 num) {
+    parts_info_num = num;
+    parts_info = table;
 }
-void CEditInfoMngr::SeteFixPartsTable(ePlaceData * arg0, s32 arg1) {
-    (*(s32 *)((u8 *)this + 0x8)) = arg1;
-    (*(ePlaceData * *)((u8 *)this + 0xc)) = arg0;
+void CEditInfoMngr::SeteFixPartsTable(ePlaceData *table, s32 num) {
+    fix_parts_num = num;
+    fix_parts = table;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editinfo", GetePartsInfo__13CEditInfoMngrFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editinfo", GetePartsInfo__13CEditInfoMngrFPc);

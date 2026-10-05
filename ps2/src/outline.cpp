@@ -19,8 +19,8 @@ void COutLineDraw::Initialize() {
     hide_edge = 0;
     next = NULL;
 }
-void COutLineDraw::SetFrame(mgCFrame * arg0) {
-    (*(mgCFrame * *)((u8 *)this + 0x34)) = arg0;
+void COutLineDraw::SetFrame(mgCFrame *new_frame) {
+    frame = new_frame;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/outline", Draw__12COutLineDrawFPfff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/outline", Draw__12COutLineDrawFff);

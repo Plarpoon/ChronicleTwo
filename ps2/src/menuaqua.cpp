@@ -11,22 +11,22 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", GetUseableEsaNo__FPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", GetEsaInfo__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Generate__7CBubbleFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Generate__7CBubbleFPf);
-void CBubble::SetTexture(mgCTexture * arg0, s32 arg1, s32 arg2) {
-    (*(mgCTexture * *)((u8 *)this + 0x28)) = arg0;
-    (*(s16 *)((u8 *)this + 0x2c)) = arg1;
-    (*(s16 *)((u8 *)this + 0x2e)) = arg2;
+void CBubble::SetTexture(mgCTexture *image, s32 u, s32 v) {
+    texture = image;
+    tex_u = u;
+    tex_v = v;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Step__7CBubbleFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Draw__7CBubbleFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Initialize__7CBubbleFP9mgCMemoryPfif);
 void CBubble::RunOff(void) {
-    (*(s8 *)((u8 *)this + 0x1)) = 0;
-    (*(s32 *)((u8 *)this + 0x4)) = 0;
+    active = 0;
+    generated = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", GetChildFishNo__Fii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", SetFishAdjustScale__Fiiff);
 void CAquaFishActionParam::Initialize(void) {
-    memset(this, 0, 0x40);
+    memset(this, 0, sizeof(*this));
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", __ct__9CAquaFishFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Initialize__9CAquaFishFv);
@@ -46,10 +46,10 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", NextThink__9CAquaFishFiP16NEXT_
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", ParamStep__9CAquaFishFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", FishDraw__9CAquaFishFv);
 void CAquaFishEff::Initialize(void) {
-    (*(s32 *)((u8 *)this + 0x0)) = 0;
-    (*(s32 *)((u8 *)this + 0x4)) = 0;
-    (*(s16 *)((u8 *)this + 0x8)) = 0;
-    (*(s32 *)((u8 *)this + 0xc)) = 0;
+    fish = NULL;
+    texture = NULL;
+    type = 0;
+    timer = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", StartFishEffect__12CAquaFishEffFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Step__12CAquaFishEffFv);

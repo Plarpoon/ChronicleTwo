@@ -5,11 +5,11 @@
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetGameDataPt__Fv);
 CDataItem::CDataItem(void) {
-    (*(s32 *)((u8 *)this + 0x4)) = 0;
-    (*(s32 *)((u8 *)this + 0x0)) = 0;
-    (*(s16 *)((u8 *)this + 0xa)) = 0;
-    (*(s16 *)((u8 *)this + 0xc)) = 0;
-    (*(s16 *)((u8 *)this + 0xe)) = 0;
+    use_flags = 0;
+    status_flags = 0;
+    value[0] = 0;
+    value[1] = 0;
+    value[2] = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", __ct__11CDataAttachFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", __ct__11CDataWeaponFv);
@@ -51,12 +51,10 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetAttachData__9CGameDataFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetRoboData__9CGameDataFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetFishData__9CGameDataFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetGuardData__9CGameDataFi);
-u8 CGameData::GetDataType(s32 arg0) {
-    u8 *temp_v0;
-
-    temp_v0 = (u8 *) (this->GetCommonData(arg0));
-    if (temp_v0 != NULL) {
-        return *temp_v0;
+u8 CGameData::GetDataType(s32 item_no) {
+    CDataCommon *common = GetCommonData(item_no);
+    if (common != NULL) {
+        return common->type;
     }
     return 0U;
 }
@@ -68,19 +66,17 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetRoboPartInfoData__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetBreedFishInfoData__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetItemFileName__Fii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetItemFilePath__Fii);
-u8 GetItemDataType(s32 a) {
-    return ((CGameData *) &GameItemDataManage)->GetDataType(a);
+u8 GetItemDataType(s32 item_no) {
+    return GameItemDataManage.GetDataType(item_no);
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetItemDataAttribute__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", ConvertUsedItemType__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetItemMessageNo__Fii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetItemMessage__Fi);
-s16 GetItemIconNo(s32 arg0) {
-    struct temp_v0_champs_14f01f *temp_v0;
-
-    temp_v0 = (struct temp_v0_champs_14f01f *) ((&GameItemDataManage)->GetCommonData(arg0));
-    if (temp_v0 != NULL) {
-        return (*(s16 *)((u8 *)temp_v0 + 0x6));
+s16 GetItemIconNo(s32 item_no) {
+    CDataCommon *common = GameItemDataManage.GetCommonData(item_no);
+    if (common != NULL) {
+        return common->icon_no;
     }
     return -1;
 }
@@ -90,14 +86,14 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetMenuCommandMsg__FiPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", CheckItemEquip__Fii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", SearchItemByName__FPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetRidePodCore__Fi);
-void Init_USEITEM_EFFECT(USEITEM_EFFECT * arg0) {
-    (*(s16 *)((u8 *)arg0 + 0x8)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x0)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x4)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x18)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x14)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x10)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0xc)) = 0;
+void Init_USEITEM_EFFECT(USEITEM_EFFECT *effect) {
+    effect->target_flags = 0;
+    effect->use_flags = 0;
+    effect->status_flags = 0;
+    effect->value[3] = 0;
+    effect->value[2] = 0;
+    effect->value[1] = 0;
+    effect->value[0] = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", GetUsedItemAfterEffect__FiP14USEITEM_EFFECT);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamedata", SetPtr__14CItemUseTargetFiPv);

@@ -2,7 +2,7 @@
 #include "menumain.hpp"
 
 // Code (.text)
-void MenuScreenBlackBeltSet(s32 arg0) {
+void MenuScreenBlackBeltSet(s32 enable) {
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", GetMenuLoopType__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", CheckTrushMenu__Fv);
@@ -23,11 +23,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", DisablePadReset__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuMainInit__FP13MENU_INIT_ARG);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuMainExit__Fv);
 s32 MenuMainLoop(void) {
-    s32 temp_s0;
-
-    temp_s0 = MenuMainKey();
+    s32 next_mode = MenuMainKey();
     MenuMainDraw();
-    return temp_s0;
+    return next_mode;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuMainKey__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuMainDraw__Fv);
@@ -49,16 +47,16 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", CheckEventDay__FPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MakeMenuTopic__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", DrawMenuTopic__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuInternInit__FP9mgCMemoryii);
-void CMenuInter::Initialize(s32 arg0) {
-    (*(s16 *)((u8 *)this + 0x10)) = 1;
-    (*(s32 *)((u8 *)this + 0x0)) = 0;
-    (*(s32 *)((u8 *)this + 0x4)) = 6;
-    (*(s32 *)((u8 *)this + 0xc)) = 0;
-    (*(s8 *)((u8 *)this + 0x12)) = 0;
-    (*(s8 *)((u8 *)this + 0x13)) = 30;
-    (*(s8 *)((u8 *)this + 0x14)) = 1;
-    (*(s32 *)((u8 *)this + 0x8)) = -1;
-    (*(s8 *)((u8 *)this + 0x15)) = 0;
+void CMenuInter::Initialize(s32 unused) {
+    step = 1;
+    select_no = 0;
+    select_num = 6;
+    mode_list = NULL;
+    bg_read_step = 0;
+    bg_read_wait = 30;
+    cursor_jump = 1;
+    next_mode = -1;
+    help_update = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuCommonBaseDataEnter__FP9mgCMemoryPUiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuBaseTextureReEnter__Fv);

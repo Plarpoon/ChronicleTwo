@@ -7,13 +7,13 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmode", EditModeControlLock__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmode", EditModeControlUnLock__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmode", SetHelpMes__Fiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmode", GetUserData__Fv__3);
-float ConvColor(float arg0) {
-    return arg0 / 128.0f;
+float ConvColor(float component) {
+    return component / 128.0f;
 }
-int ConvColorV(float *c) {
-    c[0] /= 128.0f;
-    c[1] /= 128.0f;
-    c[2] /= 128.0f;
+void ConvColorV(float *color) {
+    color[0] /= 128.0f;
+    color[1] /= 128.0f;
+    color[2] /= 128.0f;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmode", emSearchColorCode__FPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmode", emGetPenkiItemNo__Fi);

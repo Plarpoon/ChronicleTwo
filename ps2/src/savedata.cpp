@@ -30,37 +30,37 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", AddTourCountEtc__9CSaveDataFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", GetTourCountEtc__9CSaveDataFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", FinishTour__9CSaveDataFv);
 void CSphidaData::Initialize(void) {
-    memset(this, 0, 6216);
+    memset(this, 0, sizeof(*this));
 }
-void CSphidaData::SetHorl(s32 arg0) {
-    (*(s16 *)((u8 *)this + 0x1478)) = arg0;
+void CSphidaData::SetHorl(s32 hole) {
+    now_hole = hole;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", SetHorlScore__11CSphidaDataFii);
 s16 CSphidaData::GetNowHorl(void) {
-    return (*(s16 *)((u8 *)this + 0x1478));
+    return now_hole;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", GetHorlScore__11CSphidaDataFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", ClearPlayerScore__11CSphidaDataFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", EnterScore__11CSphidaDataFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", GetPlayerData__11CSphidaDataFi);
 void CSphidaData::InitPlay(void) {
-    *(s16 *) ((u8 *) this + 0x1478) = 0;
-    memset((u8 *) this + 0x1448, 0, 0x30);
-    memset((u8 *) this + 0x147C, 0, 0x1C);
+    now_hole = 0;
+    memset(hole_score, 0, sizeof(hole_score) + sizeof(unk_145A));
+    memset(player_name, 0, sizeof(player_name));
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", IsUsed__12GYORACE_DATAFv);
 void GYORACE_DATA::Init(void) {
-    memset(this, 0, 0xA0);
+    memset(this, 0, sizeof(*this));
 }
 void CGyoRaceData::Initialize(void) {
-    memset(this, 0, 0x2C28);
+    memset(this, 0, sizeof(*this));
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", SearchSpace__12CGyoRaceDataFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", SearchSpaceData__12CGyoRaceDataFPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", GetData__12CGyoRaceDataFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", __ct__12CSubGameDataFv);
 void CSubGameData::Initialize(void) {
-    memset(this, 0, 21616);
+    memset(this, 0, sizeof(*this));
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", PlayEnable__12CSubGameDataFii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", GetSphidaData__12CSubGameDataFv);

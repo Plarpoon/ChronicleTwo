@@ -377,24 +377,13 @@ void mgCSprite::Initialize() {
     attr.z_test = MG_DEPTH_TEST_ALWAYS;
 }
 
-#ifdef NONMATCHING
 void mgCSprite::SetColor(int r, int g, int b, int a) {
-    color.bits.r = r;
-    color.bits.g = g;
-    color.bits.b = b;
-    color.bits.a = a;
-    color.bits.q = 0;
+    color.bytes.red = r;
+    color.bytes.green = g;
+    color.bytes.blue = b;
+    color.bytes.alpha = a;
+    color.bytes.q = 0;
 }
-#else
-void mgCSprite::SetColor(s32 r, s32 g, s32 b, s32 a) {
-    u8 *color = (u8 *)this + 0x70;
-    color[0] = r;
-    color[1] = g;
-    color[2] = b;
-    color[3] = a;
-    *(s32 *)((char *)this + 0x74) = 0;
-}
-#endif
 
 #ifdef NONMATCHING
 u_int mgCSprite::CreatePacket(mgCDrawManager *manager) {

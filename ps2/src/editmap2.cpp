@@ -2,27 +2,27 @@
 #include "editmap2.hpp"
 
 // Code (.text)
-void PlaneNormalXZ(float *a0, float *a1, float *a2, float *a3) {
+void PlaneNormalXZ(float *normal, float *first, float *second, float *third) {
     asm {
-        lqc2 vf15, 0(a1)
+        lqc2 vf15, 0(first)
         vsub.xyzw vf10, vf10, vf10
-        lqc2 vf16, 0(a2)
+        lqc2 vf16, 0(second)
         vsub.xyzw vf11, vf11, vf11
-        lqc2 vf17, 0(a3)
+        lqc2 vf17, 0(third)
         vsub.xz vf10, vf16, vf15
         vsub.xz vf11, vf17, vf15
         vopmula.xyz ACC, vf10, vf11
         vopmsub.xyz vf12, vf11, vf10
-        sqc2 vf12, 0(a0)
+        sqc2 vf12, 0(normal)
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", GetEditPartsAlt__8CEditMapFP14CEditPartsInfoPffPP10CEditPartsi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", CheckEditParts__8CEditMapFP14CEditPartsInfoPffP13EP_PLACE_INFOPP10CEditPartsi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", CheckEditPartsOnRiver__8CEditMapFP14CEditPartsInfoPff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", CheckRiverParts__8CEditMapFPf);
-s32 CEditMap::CheckNormalPlaceParts(s32 arg0) {
-    void *parts = this->GetePlaceParts(arg0);
-    return this->CheckNormalPlaceParts((CEditParts *)parts);
+s32 CEditMap::CheckNormalPlaceParts(s32 place_no) {
+    CEditParts *parts = GetePlaceParts(place_no);
+    return CheckNormalPlaceParts(parts);
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", CheckNormalPlaceParts__8CEditMapFP10CEditParts);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", CheckLiveNPC__8CEditMapFii);

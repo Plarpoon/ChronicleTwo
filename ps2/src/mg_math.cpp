@@ -508,54 +508,54 @@ static int Check_Point_Poly3(float x, float y, float x0, float y0, float x1, flo
     return MG_POINT_POLY3_OUTSIDE;
 }
 #else
-s32 Check_Point_Poly3(float arg0, float arg1, float arg2, float arg3, float arg4, float arg5, float arg6, float arg7) {
-    float temp_f1;
-    float temp_f4;
-    float temp_f6;
-    float var_f0;
-    float var_f0_2;
-    float var_f0_3;
-    float var_f0_4;
+s32 Check_Point_Poly3(float x, float y, float x0, float y0, float x1, float y1, float x2, float y2) {
+    float edge_20;
+    float edge_12;
+    float edge_01;
+    float min_x;
+    float max_x;
+    float min_y;
+    float max_y;
 
-    var_f0 = (arg2 < arg4) ? ((arg2 < arg6) ? arg2 : arg6) : ((arg4 < arg6) ? arg4 : arg6);
-    if (!(var_f0 <= arg0)) {
-        return 0;
+    min_x = (x0 < x1) ? ((x0 < x2) ? x0 : x2) : ((x1 < x2) ? x1 : x2);
+    if (!(min_x <= x)) {
+        return MG_POINT_POLY3_OUTSIDE;
     }
-    var_f0_2 = (arg2 > arg4) ? ((arg2 > arg6) ? arg2 : arg6) : ((arg4 > arg6) ? arg4 : arg6);
-    if (!(arg0 <= var_f0_2)) {
-        return 0;
+    max_x = (x0 > x1) ? ((x0 > x2) ? x0 : x2) : ((x1 > x2) ? x1 : x2);
+    if (!(x <= max_x)) {
+        return MG_POINT_POLY3_OUTSIDE;
     }
-    var_f0_3 = (arg3 < arg5) ? ((arg3 < arg7) ? arg3 : arg7) : ((arg5 < arg7) ? arg5 : arg7);
-    if (!(var_f0_3 <= arg1)) {
-        return 0;
+    min_y = (y0 < y1) ? ((y0 < y2) ? y0 : y2) : ((y1 < y2) ? y1 : y2);
+    if (!(min_y <= y)) {
+        return MG_POINT_POLY3_OUTSIDE;
     }
-    var_f0_4 = (arg3 > arg5) ? ((arg3 > arg7) ? arg3 : arg7) : ((arg5 > arg7) ? arg5 : arg7);
-    if (!(arg1 <= var_f0_4)) {
-        return 0;
+    max_y = (y0 > y1) ? ((y0 > y2) ? y0 : y2) : ((y1 > y2) ? y1 : y2);
+    if (!(y <= max_y)) {
+        return MG_POINT_POLY3_OUTSIDE;
     }
-    temp_f6 = ((arg4 - arg2) * (arg1 - arg3)) - ((arg5 - arg3) * (arg0 - arg2));
-    temp_f4 = ((arg6 - arg4) * (arg1 - arg5)) - ((arg7 - arg5) * (arg0 - arg4));
-    temp_f1 = ((arg2 - arg6) * (arg1 - arg7)) - ((arg3 - arg7) * (arg0 - arg6));
-    if (temp_f6 == 0.0f) {
-        return 2;
+    edge_01 = ((x1 - x0) * (y - y0)) - ((y1 - y0) * (x - x0));
+    edge_12 = ((x2 - x1) * (y - y1)) - ((y2 - y1) * (x - x1));
+    edge_20 = ((x0 - x2) * (y - y2)) - ((y0 - y2) * (x - x2));
+    if (edge_01 == 0.0f) {
+        return MG_POINT_POLY3_EDGE_01;
     }
-    if (temp_f4 == 0.0f) {
-        return 3;
+    if (edge_12 == 0.0f) {
+        return MG_POINT_POLY3_EDGE_12;
     }
-    if (temp_f1 == 0.0f) {
-        return 4;
+    if (edge_20 == 0.0f) {
+        return MG_POINT_POLY3_EDGE_20;
     }
-    if (!(temp_f6 <= 0.0f) && !(temp_f4 <= 0.0f) && !(temp_f1 <= 0.0f)) {
-        return 1;
+    if (!(edge_01 <= 0.0f) && !(edge_12 <= 0.0f) && !(edge_20 <= 0.0f)) {
+        return MG_POINT_POLY3_INSIDE;
     }
-    if (temp_f6 < 0.0f) {
-        if (temp_f4 < 0.0f) {
-            if (temp_f1 < 0.0f) {
-                return 1;
+    if (edge_01 < 0.0f) {
+        if (edge_12 < 0.0f) {
+            if (edge_20 < 0.0f) {
+                return MG_POINT_POLY3_INSIDE;
             }
         }
     }
-    return 0;
+    return MG_POINT_POLY3_OUTSIDE;
 }
 #endif
 float mgDistVector(float *vector) {

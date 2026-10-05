@@ -7,7 +7,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", GetWeaponEffect__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", memoryInit__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", InitDungeonMain__F13INIT_LOOP_ARG);
 void MoveCheckInfo::Initialize(void) {
-    memset(this, 0, 0x110);
+    memset(this, 0, sizeof(*this));
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", Initialize__13CRedMarkModelFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", __as__9mgCCameraFRC9mgCCamera);

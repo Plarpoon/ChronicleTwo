@@ -8,14 +8,14 @@
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", GetSphidaClubDef__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", DPrimEnterSprite__FP11mgCDrawPrimiiiiffff);
 void CPowGage::Initialize(void) {
-    (*(s32 *)((u8 *)this + 0x4)) = 0;
-    (*(s32 *)((u8 *)this + 0x0)) = 0;
-    (*(s32 *)((u8 *)this + 0x8)) = 0;
-    (*(s32 *)((u8 *)this + 0xc)) = 0;
-    (*(s32 *)((u8 *)this + 0x10)) = 2;
-    (*(s32 *)((u8 *)this + 0x14)) = -10;
-    (*(s32 *)((u8 *)this + 0x1c)) = -1;
-    (*(s32 *)((u8 *)this + 0x20)) = 0;
+    pos_y = 0.0f;
+    pos_x = 0.0f;
+    texture = NULL;
+    power = 0.0f;
+    safe_level = 2;
+    code = -10;
+    state = -1;
+    reverse = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", Step__8CPowGageFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", Draw__8CPowGageFv);

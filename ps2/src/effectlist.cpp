@@ -10,33 +10,33 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", Step__11CEffectListFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", CreatePacket__11CEffectListFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", CreatePacket__14CEffectManagerFP11mgC3DSprite);
 void CFadeInOut::Initialize(void) {
-    (*(s32 *)((u8 *)this + 0xc)) = 0;
-    (*(s32 *)((u8 *)this + 0x8)) = 0;
-    (*(s32 *)((u8 *)this + 0x4)) = 0;
-    (*(s32 *)((u8 *)this + 0x0)) = 0;
-    (*(s32 *)((u8 *)this + 0x10)) = 0;
-    (*(s32 *)((u8 *)this + 0x18)) = 0;
-    (*(s32 *)((u8 *)this + 0x14)) = 0;
-    (*(s32 *)((u8 *)this + 0x20)) = 0;
-    (*(s32 *)((u8 *)this + 0x28)) = 0;
-    (*(s32 *)((u8 *)this + 0x2c)) = 0;
+    alpha = 0.0f;
+    b = 0.0f;
+    g = 0.0f;
+    r = 0.0f;
+    mode = 0;
+    speed = 0.0f;
+    end = 0;
+    cross = 0;
+    cross_texture = NULL;
+    blur_alpha = 0;
 }
 void CFadeInOut::ResetFade(void) {
-    (*(s32 *)((u8 *)this + 0x10)) = 0;
-    (*(s32 *)((u8 *)this + 0xc)) = 0;
-    (*(s32 *)((u8 *)this + 0x20)) = 0;
+    mode = 0;
+    alpha = 0.0f;
+    cross = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", FadeIn__10CFadeInOutFifff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", FadeIn__10CFadeInOutFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", FadeOut__10CFadeInOutFifff);
-void CFadeInOut::CrossFade(int a, float b) {
-    this->CrossFadeIn(0, a, b);
+void CFadeInOut::CrossFade(int duration, float alpha) {
+    CrossFadeIn(0, duration, alpha);
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", CrossFadeIn__10CFadeInOutFiif);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", CrossFadeOut__10CFadeInOutFiif);
 int CFadeInOut::FadeCheck() { return this->end; }
 s32 CFadeInOut::NowFade(void) {
-    return (*(s32 *)((u8 *)this + 0x10)) != 0;
+    return mode != 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", FadeStep__10CFadeInOutFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", SetCrossTexture__10CFadeInOutFP10mgCTextureP1);

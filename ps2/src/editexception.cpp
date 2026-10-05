@@ -16,7 +16,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editexception", CreatePoint__13CGeyserEffe
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editexception", CreatePacket__13CGeyserEffectFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editexception", InitGeyserEffect__FiP6CSceneiP9mgCMemory);
 CGeyserEffectPoint::CGeyserEffectPoint(void) {
-    (*(s32 *)((u8 *)this + 0x28)) = 0;
+    active = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editexception", __ct__13CGeyserEffectFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editexception", StepGeyserEffect__FP6CScene);

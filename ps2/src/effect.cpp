@@ -16,9 +16,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", __dt__11CEffectCtrlFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", Ctrl__11CEffectCtrlFP7CEffecti);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", Initialize__11CEffectCtrlFv);
 void CEffectCtrl::Run(void) {
-    (*(s32 *)((u8 *)this + 0x10)) = 1;
-    (*(s32 *)((u8 *)this + 0x50)) = 0;
-    (*(s32 *)((u8 *)this + 0x64)) = 0;
+    run = 1;
+    repeat_timer = 0;
+    repeat_cnt = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", SetOrigin__11CEffectCtrlFPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", __as__11CEffectCtrlFRC11CEffectCtrl);
@@ -72,9 +72,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", __GRAVITY__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", __ct__14CEffectManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", Initialize__14CEffectManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", EntryEffCtrls__14CEffectManagerFP7CEffectiP11CEffectCtrli);
-void CEffectManager::SetEffectNums(s32 arg0, s32 arg1) {
-    (*(s32 *)((u8 *)this + 0x24)) = arg0;
-    (*(s32 *)((u8 *)this + 0x2c)) = arg1;
+void CEffectManager::SetEffectNums(s32 particle_count, s32 emitter_count) {
+    effect_num = particle_count;
+    ctrl_num = emitter_count;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", Ctrl__14CEffectManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", Step__14CEffectManagerFi);

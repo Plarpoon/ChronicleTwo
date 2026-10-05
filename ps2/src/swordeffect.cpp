@@ -11,9 +11,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", StartEffect__17CSWordAfterEf
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", AddPoint__17CSWordAfterEffectFPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", Step__17CSWordAfterEffectFv);
 void CSWordAfterEffect::Clear(void) {
-    (*(s32 *)((u8 *)this + 0x88)) = 0;
-    (*(s32 *)((u8 *)this + 0x4)) = 0;
-    (*(s32 *)((u8 *)this + 0x0)) = 0;
+    active = 0;
+    frame1 = NULL;
+    frame0 = NULL;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", Initialize__17CSWordAfterEffectFP9mgCMemoryii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", Copy__17CSWordAfterEffectFR17CSWordAfterEffectP9mgCMemory);

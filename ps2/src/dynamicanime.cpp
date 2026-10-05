@@ -7,19 +7,19 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", BindPosition__FPfPfff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", ResetPosition__13CDynamicAnimeFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Step__13CDynamicAnimeFv);
 int CDACollision::CheckHit(float *position) { return 0; }
-void CDynamicAnime::SetWind(float arg0, float *arg1) {
-    *(float *) ((u8 *) this + 0x68) = arg0;
-    sceVu0Normalize((float *) ((u8 *) this + 0x70), arg1);
+void CDynamicAnime::SetWind(float power, float *direction) {
+    wind_power = power;
+    sceVu0Normalize(wind_dir, direction);
 }
 void CDynamicAnime::ResetWind(void) {
-    (*(s32 *)((u8 *)this + 0x68)) = 0;
+    wind_power = 0.0f;
 }
-void CDynamicAnime::SetFloor(float arg0) {
-    (*(s32 *)((u8 *)this + 0x88)) = 1;
-    (*(float *)((u8 *)this + 0x8c)) = arg0;
+void CDynamicAnime::SetFloor(float height) {
+    floor_enable = 1;
+    floor_y = height;
 }
 void CDynamicAnime::ResetFloor(void) {
-    (*(s32 *)((u8 *)this + 0x88)) = 0;
+    floor_enable = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", FramePose__13CDynamicAnimeFP8mgCFrameP13DA_FRAME_POSE);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", PreCollision__13CDynamicAnimeFv);

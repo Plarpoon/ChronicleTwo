@@ -1668,74 +1668,71 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", GetCPolyAttr__FP13MoveCheckInfo
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CheckWidth__FP6CCPolyiPffPfi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CheckWidthPipe__FP6CCPolyiPffPfi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CreateCharaCPoly__FP6CCPolyiPfPfff);
-float LinerInterpolation(float arg0, float arg1, float arg2) {
-    return arg0 + (arg2 * (arg1 - arg0));
+float LinerInterpolation(float from, float to, float rate) {
+    return from + (rate * (to - from));
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", LinerInterpolationI__Fiiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", RollPos__FPfPffPf);
-s32 CheckPosInOutForRect(RECT *arg0, s32 arg1, s32 arg2) {
-    s32 temp_v1;
-    s32 temp_v1_2;
-
-    temp_v1_2 = (s32) ((*(s32 *)((u8 *)arg0 + 0x0)));
-    if (arg1 < temp_v1_2) {
+s32 CheckPosInOutForRect(RECT *rect, s32 x, s32 y) {
+    s32 left = rect->x;
+    if (x < left) {
         return 0;
     }
-    if ((temp_v1_2 + (*(s32 *)((u8 *)arg0 + 0x8))) < arg1) {
+    if ((left + rect->width) < x) {
         return 0;
     }
-    temp_v1 = (s32) ((*(s32 *)((u8 *)arg0 + 0x4)));
-    if (arg2 < temp_v1) {
+    s32 top = rect->y;
+    if (y < top) {
         return 0;
     }
-    return (temp_v1 + (*(s32 *)((u8 *)arg0 + 0xc))) >= arg2;
+    return (top + rect->height) >= y;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", GetDisPosToRect__FP4RECTii);
-s32 CheckPosInOutFor2P(float arg0, float arg1, float arg2, float arg3, float arg4, float arg5) {
-    float var_f0;
-    float var_f14;
-    float var_f15;
-    float var_f1;
-    s32 var_v0;
+s32 CheckPosInOutFor2P(float x0, float y0, float x1, float y1, float x, float y) {
+    float min_x;
+    float max_x;
+    float max_y;
+    float min_y;
+    s32 outside;
 
-    var_f14 = arg2;
-    var_f15 = arg3;
-    var_f0 = var_f14;
-    if (arg0 < var_f14) {
-        var_f0 = arg0;
+    max_x = x1;
+    max_y = y1;
+    min_x = max_x;
+    if (x0 < max_x) {
+        min_x = x0;
     } else {
-        var_f14 = arg0;
+        max_x = x0;
     }
-    var_f1 = var_f15;
-    if (arg1 < var_f15) {
-        var_f1 = arg1;
+    min_y = max_y;
+    if (y0 < max_y) {
+        min_y = y0;
     } else {
-        var_f15 = arg1;
+        max_y = y0;
     }
-    if (arg4 < var_f0) {
+    if (x < min_x) {
         return 0;
     }
-    if (var_f14 < arg4) {
+    if (max_x < x) {
         return 0;
     }
-    if (arg5 < var_f1) {
+    if (y < min_y) {
         return 0;
     }
-    var_v0 = 1;
-    if (!(var_f15 < arg5)) {
-        var_v0 = 0;
+    outside = 1;
+    if (!(max_y < y)) {
+        outside = 0;
     }
-    return var_v0 ^ 1;
+    return outside ^ 1;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CalcIntersectionPointLineAndLine__FffffffffPfPf);
-s32 CalcIntersectionPoint2PAnd2P(float arg0, float arg1, float arg2, float arg3, float arg4, float arg5, float arg6, float arg7, float *arg8, float *arg9) {
-    if (CalcIntersectionPointLineAndLine(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) == 0) {
+s32 CalcIntersectionPoint2PAnd2P(float ax0, float ay0, float ax1, float ay1, float bx0, float by0, float bx1, float by1, float *out_x, float *out_y) {
+    if (CalcIntersectionPointLineAndLine(ax0, ay0, ax1, ay1, bx0, by0, bx1, by1, out_x, out_y) == 0) {
         return 0;
     }
-    if (CheckPosInOutFor2P(arg0, arg1, arg2, arg3, *arg8, *arg9) == 0) {
+    if (CheckPosInOutFor2P(ax0, ay0, ax1, ay1, *out_x, *out_y) == 0) {
         return 0;
     }
-    return CheckPosInOutFor2P(arg4, arg5, arg6, arg7, *arg8, *arg9) != 0;
+    return CheckPosInOutFor2P(bx0, by0, bx1, by1, *out_x, *out_y) != 0;
 }
 
 // Constants (.rodata)

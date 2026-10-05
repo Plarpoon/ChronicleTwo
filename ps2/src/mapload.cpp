@@ -913,7 +913,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFIX_CAMERA_RECT__FP9SPI_STACK
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", SetCollision__9CColFrameFP10CCollision);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", __ct__10CCollisionFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFIX_CAMERA_END__FP9SPI_STACKi);
-s32 mapCAMERA_INFO_END(SPI_STACK *arg0, s32 arg1) {
+s32 mapCAMERA_INFO_END(SPI_STACK *stack, s32 argument_count) {
     if (IsAddMode() != 0) {
         return 1;
     }
@@ -938,8 +938,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", SetPosition__10CFuncPointFPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_DATA_END__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_POINT_END__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", LoadMapFile__4CMapFPciP9mgCMemoryi);
-void CMap::SetPieceLoadSkip(s32 a) {
-    *(s32 *) ((u8 *) this + 0xCA8) = a;
+void CMap::SetPieceLoadSkip(s32 skip) {
+    piece_load_skip = skip;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgDRAW_OFF_RECT__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgOCCLUSION_PLANE__FP9SPI_STACKi);

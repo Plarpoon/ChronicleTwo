@@ -40,7 +40,9 @@ void mgDrawDirectStart(void) {
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgDrawDirect2__FP8mgCFrame);
 void mgDrawDirectEnd(void) {
-    if ((s32) ddraw_size > 0) sceVif1PkReserve(mgVif1Packet, ddraw_size * 4);
+    if ((s32)ddraw_size > 0) {
+        sceVif1PkReserve(mgVif1Packet, ddraw_size * 4);
+    }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgGetDrawRect__FP8mgCFrameP9mgVu0FBOX);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgBeginDrawShadow__FP10mgCTextureP10mgCTexture);
@@ -48,8 +50,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgEndDrawShadow__FP10mgCTextureP10
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgSetRenderInfo__Ffff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgSetProjection__Ff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgGetProjection__Fv);
-void mgSetBackGround(float *arg0) {
-    sceVu0CopyVector(mgBackColor, arg0);
+void mgSetBackGround(float *color) {
+    sceVu0CopyVector(mgBackColor, color);
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgSetBackGround__Fffff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgInitLighting__Fv);
@@ -59,34 +61,35 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgSetLight__FPA4_fPA4_f);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgGetLight__FPA4_fPA4_f);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgSetLight__FiPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgSetAmbient__FPf);
-void mgGetAmbient(float *arg0) {
-    (&mgRenderInfo)->GetAmbient(arg0);
+void mgGetAmbient(float *ambient) {
+    mgRenderInfo.GetAmbient(ambient);
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgSetPlight__FiPfPfff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgSetPlight__FiP13mgPOINT_LIGHT);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgGetPlight__FiP13mgPOINT_LIGHT);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgResetPlight__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgSetViewMatrix__FPA4_fPf);
-void mgSetDropShadowMatrix(float *arg0, float *arg1, float *arg2) {
-    (&mgRenderInfo)->SetDropShadowMatrix(arg0, arg1, arg2);
+void mgSetDropShadowMatrix(float *light, float *position, float *normal) {
+    mgRenderInfo.SetDropShadowMatrix(light, position, normal);
 }
-void mgFogEnable(s32 arg0) {
-    (&mgRenderInfo)->FogEnable(arg0);
+void mgFogEnable(s32 enabled) {
+    mgRenderInfo.FogEnable(enabled);
 }
 s32 mgGetFogEnable(void) {
-    return (&mgRenderInfo)->GetFogEnable();
+    return mgRenderInfo.GetFogEnable();
 }
-void mgPlightEnable(s32 arg0) {
-    (&mgRenderInfo)->PlightEnable(arg0);
+void mgPlightEnable(s32 enabled) {
+    mgRenderInfo.PlightEnable(enabled);
 }
 s32 mgGetPlightEnable(void) {
-    return (&mgRenderInfo)->GetPlightEnable();
+    return mgRenderInfo.GetPlightEnable();
 }
-void mgSetFogParam(float a, float b, u8 c, u8 d, u8 e, float f, float g) {
-    (&mgRenderInfo)->SetFogParam(a, b, c, d, e, f, g);
+void mgSetFogParam(float near_dist, float far_dist, u8 r, u8 g, u8 b, float far_value, float near_value) {
+    mgRenderInfo.SetFogParam(near_dist, far_dist, r, g, b, far_value, near_value);
 }
-void mgSetFogParam(mgFOG_PARAM *arg0) {
-    (&mgRenderInfo)->SetFogParam((*(float *)((u8 *)arg0 + 0x0)), (*(float *)((u8 *)arg0 + 0x4)), (*(u8 *)((u8 *)arg0 + 0x8)), (*(u8 *)((u8 *)arg0 + 0x9)), (*(u8 *)((u8 *)arg0 + 0xa)), (*(float *)((u8 *)arg0 + 0x10)), (*(float *)((u8 *)arg0 + 0x14)));
+void mgSetFogParam(mgFOG_PARAM *fog) {
+    mgRenderInfo.SetFogParam(fog->near_dist, fog->far_dist, fog->r, fog->g, fog->b,
+                             fog->far_value, fog->near_value);
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgGetFogParam__FP11mgFOG_PARAM);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgSetAllScissorFlag__Fi);

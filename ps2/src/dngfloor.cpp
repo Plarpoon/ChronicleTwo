@@ -3,12 +3,11 @@
 
 // Code (.text)
 void CDngFloorManager::Initialize(void) {
-    u8 *p = (u8 *)this;
-    *(u8 *)p = 0;
-    *(s32 *)(p + 4) = 0;
-    *(s32 *)(p + 8) = 0;
-    *(s16 *)(p + 0xC) = 0;
-    *(s16 *)(p + 0xE) = 0;
+    dng_no = 0;
+    glid_info = NULL;
+    glid_num = 0;
+    glid_w = 0;
+    glid_h = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngfloor", _TREE_MAPINFO__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngfloor", _GLID_INFO__FP9SPI_STACKi);

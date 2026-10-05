@@ -1,5 +1,6 @@
 #include "common.h"
 #include "runscript_opcodes.hpp"
+#include "monster.hpp"
 #include <cstdio>
 
 // Code (.text)
@@ -107,8 +108,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_ROT__FP12RS_STACK
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_NEXT_ROT__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_NEXT_POS__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _CHK_MOVE_END__FP12RS_STACKDATAi);
-s32 _RESET_MOVE(RS_STACKDATA *a, s32 b) {
-    *(s32 *) ((u8 *) nowMonster + 0x1480) = 0;
+s32 _RESET_MOVE(RS_STACKDATA *stack, s32 argument_count) {
+    nowMonster->move_speed = 0.0f;
     return 1;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _GET_TARGET_POS__FP12RS_STACKDATAi);
@@ -134,9 +135,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_ACT_STATUS__FP12R
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_INT_FLAG__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_DEAD_START__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_DEAD_OFF__FP12RS_STACKDATAi);
-s32 _SET_SHROW_END(RS_STACKDATA *arg0, s32 arg1) {
-    if (arg1 != 0) return 0;
-    *(s16 *)((u8 *)nowMonster + 0x730) = 0;
+s32 _SET_SHROW_END(RS_STACKDATA *stack, s32 argument_count) {
+    if (argument_count != 0) return 0;
+    nowMonster->catch_state = 0;
     return 1;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_MOS__FP12RS_STACKDATAi);

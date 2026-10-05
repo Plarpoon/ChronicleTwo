@@ -5,7 +5,7 @@
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneload", LoadMapData__FR17SCN_LOADMAP_INFO2i);
 void SCN_LOADMAP_INFO2::Initialize(void) {
-    memset(this, 0, 0x1A8);
+    memset(this, 0, sizeof(*this));
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneload", LoadChara__6CSceneFiPUiPcP9mgCMemoryP9mgCMemoryP9mgCMemoryii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneload", DeleteChara__6CSceneFi);

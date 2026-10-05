@@ -15,40 +15,40 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", GetViBufDataSize__6CMovieFv);
 s32 CMovie::GetViBufTagSize(void) {
     return 0x1010;
 }
-s32 CMovie::GetMpegWorkSize(s32 arg0, s32 arg1) {
-    s32 var_v0;
-    s32 temp_v1;
+s32 CMovie::GetMpegWorkSize(s32 width, s32 height) {
+    s32 half_work_units;
+    s32 pixel_work_units;
 
-    temp_v1 = arg0 * arg1 * 9;
-    var_v0 = temp_v1 >> 1;
-    if (temp_v1 < 0) {
-        var_v0 = (s32) (temp_v1 + 1) >> 1;
+    pixel_work_units = width * height * 9;
+    half_work_units = pixel_work_units >> 1;
+    if (pixel_work_units < 0) {
+        half_work_units = (s32) (pixel_work_units + 1) >> 1;
     }
-    return var_v0 + 0x1768;
+    return half_work_units + 0x1768;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", GetReadBufSize__6CMovieFv);
-s32 CMovie::GetTagProgSize(s32 arg0, s32 arg1) {
-    s32 temp_v0;
-    s32 var_v0;
-    s32 temp_v1;
-    s32 var_v0_2;
-    s32 var_v1;
+s32 CMovie::GetTagProgSize(s32 width, s32 height) {
+    s32 macroblocks;
+    s32 tag_pages;
+    s32 tag_bytes_rounded;
+    s32 macroblock_columns;
+    s32 macroblock_groups;
 
-    var_v0_2 = arg0 >> 4;
-    if (arg0 < 0) {
-        var_v0_2 = (s32) (arg0 + 0xF) >> 4;
+    macroblock_columns = width >> 4;
+    if (width < 0) {
+        macroblock_columns = (s32) (width + 0xF) >> 4;
     }
-    temp_v0 = var_v0_2 * arg1;
-    var_v1 = temp_v0 >> 4;
-    if (temp_v0 < 0) {
-        var_v1 = (s32) (temp_v0 + 0xF) >> 4;
+    macroblocks = macroblock_columns * height;
+    macroblock_groups = macroblocks >> 4;
+    if (macroblocks < 0) {
+        macroblock_groups = (s32) (macroblocks + 0xF) >> 4;
     }
-    temp_v1 = (((var_v1 * 6) + 0x6E) * 4) + 0x3F;
-    var_v0 = temp_v1 >> 6;
-    if (temp_v1 < 0) {
-        var_v0 = (s32) (temp_v1 + 0x3F) >> 6;
+    tag_bytes_rounded = (((macroblock_groups * 6) + 0x6E) * 4) + 0x3F;
+    tag_pages = tag_bytes_rounded >> 6;
+    if (tag_bytes_rounded < 0) {
+        tag_pages = (s32) (tag_bytes_rounded + 0x3F) >> 6;
     }
-    return var_v0 << 8;
+    return tag_pages << 8;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", videoDecCreate__6CMovieFP8VideoDecPUciP1P1iP9TimeStampi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", videoDecSetStream__6CMovieFP8VideoDeciiPFP7sceMpegP13sceMpegCbDataPv_iPv);
@@ -69,17 +69,17 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", pcmCallback__FP7sceMpegP16sceMpegC
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", vblankHandler__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", handler_endimage__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", voBufCreate__FP5VoBufP6VoDataP5VoTagi);
-void voBufReset(VoBuf * arg0) {
-    (*(s32 *)((u8 *)arg0 + 0xc)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x10)) = 0;
+void voBufReset(VoBuf *buffer) {
+    buffer->write = 0;
+    buffer->count = 0;
 }
-s32 voBufIsFull(VoBuf *arg0) {
-    return (*(s32 *)((u8 *)arg0 + 0x10)) == *(s32 *) ((u8 *) arg0 + 0x14);
+s32 voBufIsFull(VoBuf *buffer) {
+    return buffer->count == buffer->size;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", voBufIncCount__FP5VoBuf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", voBufGetData__FP5VoBuf);
-s32 voBufIsEmpty(VoBuf *b) {
-    return (*(s32 *)((u8 *)b + 0x10)) == 0;
+s32 voBufIsEmpty(VoBuf *buffer) {
+    return buffer->count == 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", voBufGetTag__FP5VoBuf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", voBufDecCount__FP5VoBuf);
@@ -114,8 +114,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", audioDecPause__FP8AudioDec);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", audioDecResume__FP8AudioDec);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", audioDecStart__FP8AudioDec);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", audioDecReset__FP8AudioDec);
-s32 audioDecIsPreset(AudioDec *arg0) {
-    return (*(s32 *)((u8 *)arg0 + 0x54)) >= (*(s32 *)((u8 *)arg0 + 0x48));
+s32 audioDecIsPreset(AudioDec *decoder) {
+    return decoder->total_bytes_sent >= decoder->iop_buff_size;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", audioDecSendToIOP__FP8AudioDec);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", iopGetArea__FPiPiPiPiP8AudioDeci);
@@ -126,8 +126,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", changeInputVolume__FUi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", startDisplay__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", switchThread__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", videoDecSetState__FP8VideoDecUi);
-s32 videoDecGetState(VideoDec * arg0) {
-    return (*(s32 *)((u8 *)arg0 + 0xa8));
+s32 videoDecGetState(VideoDec *decoder) {
+    return decoder->state;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", decBs0__FP8VideoDec);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", setImageTag__FPUiPviii);

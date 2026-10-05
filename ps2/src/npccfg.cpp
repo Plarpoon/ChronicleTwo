@@ -34,8 +34,8 @@ static int _NPC_NUM(SPI_STACK *stack, int argument_count) {
     return 1;
 }
 #else
-s32 _NPC_NUM(SPI_STACK *arg0, s32 arg1) {
-    NpcBaseDataTotalNum = spiGetStackInt(arg0);
+s32 _NPC_NUM(SPI_STACK *stack, s32 argument_count) {
+    NpcBaseDataTotalNum = spiGetStackInt(stack);
     return 1;
 }
 #endif

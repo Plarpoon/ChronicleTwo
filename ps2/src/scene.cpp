@@ -3,20 +3,20 @@
 #include <cstdlib>
 
 // Code (.text)
-float f_rand(float arg0, float arg1) {
-    return arg0 + (((arg1 - arg0) * (float) rand()) / 2147483648.0f);
+float f_rand(float min_value, float max_value) {
+    return min_value + (((max_value - min_value) * (float) rand()) / 2147483648.0f);
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", i_rand__Fii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", InitVector__FPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", RandXYinViewArea__FfffPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", Birth__7CRippleFPf);
 s32 CRipple::Step(void) {
-    if ((*(s32 *)((u8 *)this + 0x0)) == 0) {
+    if (active == 0) {
         return 0;
     }
-    (*(s32 *)((u8 *)this + 0x24)) += 1;
-    if ((*(s32 *)((u8 *)this + 0x24)) >= (*(s32 *)((u8 *)this + 0x28))) {
-        (*(s32 *)((u8 *)this + 0x0)) = 0;
+    count++;
+    if (count >= life) {
+        active = 0;
         return -1;
     }
     return 1;
@@ -34,7 +34,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", Init__9CRainDropFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", SetCharNo__5CRainFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", ParticleBirth__5CRainFPfi);
 void CRain::Stop(void) {
-    (*(s32 *)((u8 *)this + 0x0)) = 0;
+    active = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", Start__5CRainFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", Step__5CRainFv);
@@ -42,12 +42,12 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", Init__5CRainFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", DrawScreenRain__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", Draw__5CRainFv);
 void CSceneData::Initialize(void) {
-    (*(s32 *)((u8 *)this + 0x0)) = 0;
-    (*(s8 *)((u8 *)this + 0x8)) = 0;
-    (*(s32 *)((u8 *)this + 0x30)) = 0;
-    (*(s32 *)((u8 *)this + 0x28)) = -1;
-    (*(s32 *)((u8 *)this + 0x2c)) = 0;
-    (*(s32 *)((u8 *)this + 0x4)) = 0;
+    status = 0;
+    name[0] = 0;
+    stack = NULL;
+    tex_block = -1;
+    tex_block_num = 0;
+    type = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", AssignData__15CSceneCharacterFP11CCharacter2Pc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", Initialize__15CSceneCharacterFv);

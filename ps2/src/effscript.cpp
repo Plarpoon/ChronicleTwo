@@ -13,13 +13,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", ClearBaseFromLevel__16CEffectS
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", GetBaseChara__16CEffectScriptManFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", GetBaseChara__16CEffectScriptManFPc);
 s32 CEffectScriptMan::GetNotUsedTexb(void) {
-    s32 temp_v1;
-
-    temp_v1 = (*(s32 *)((u8 *)this + 0x18));
-    if (temp_v1 >= (*(s32 *)((u8 *)this + 0x14))) {
+    s32 used = texb_used;
+    if (used >= texb_num) {
         return -1;
     }
-    return (*(s32 *)((u8 *)this + 0x10)) + temp_v1;
+    return texb_start + used;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", AddTexb__16CEffectScriptManFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", BuildBase__16CEffectScriptManFiP1iP1iP9mgCMemoryi);
@@ -29,12 +27,10 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", BuildPack__16CEffectScriptManF
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", GetNeedFilePath__16CEffectScriptManFiPcPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", GetNeedFilePath__16CEffectScriptManFPcPcPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", CreateEffSpt__16CEffectScriptManFiii);
-s32 CEffectScriptMan::CreateEffSpt(s8 *arg0, s32 arg1, s32 arg2) {
-    struct temp_v0_champs *temp_v0;
-
-    temp_v0 = (struct temp_v0_champs *) (this->CreateEffSpt(this->SearchBaseNo(arg0), arg1, arg2));
-    if (temp_v0 != NULL) {
-        return (*(s32 *)((u8 *)temp_v0 + 0xac));
+s32 CEffectScriptMan::CreateEffSpt(char *name, s32 user_id, s32 use_slot) {
+    _EFF_SCRIPT *effect = CreateEffSpt(SearchBaseNo(name), user_id, use_slot);
+    if (effect != NULL) {
+        return effect->slot;
     }
     return -1;
 }
@@ -154,7 +150,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", _SPT_ADD_POS__FP12RS_STACKDATA
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", _SPT_ADD_ROTZ__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", _SPT_ADD_COLOR__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", _SPT_WORLD_ROT__FP12RS_STACKDATAi);
-s32 _SPT_SET_LIFE(RS_STACKDATA *stack, int argc) {
+s32 _SPT_SET_LIFE(RS_STACKDATA *stack, int argument_count) {
     return 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", _SPT_SET_VELO_POS__FP12RS_STACKDATAi);
@@ -186,13 +182,13 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", _MON_SE_STOP2__FP12RS_STACKDAT
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", _SET_LIGHT_FLAG__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", _SCN_GET_CHR_ENTOBJ_POS__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", _CREATE_DAMAGE__FP12RS_STACKDATAi);
-s32 _DELETE_DAMAGE(RS_STACKDATA *stack, int argc) {
+s32 _DELETE_DAMAGE(RS_STACKDATA *stack, int argument_count) {
     return 0;
 }
-s32 _DMG_SET_POS(RS_STACKDATA *stack, int argc) {
+s32 _DMG_SET_POS(RS_STACKDATA *stack, int argument_count) {
     return 0;
 }
-s32 _DMG_SET_FRONT_VECT(RS_STACKDATA *stack, int argc) {
+s32 _DMG_SET_FRONT_VECT(RS_STACKDATA *stack, int argument_count) {
     return 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", _DMG_SET_DAMAGE__FP12RS_STACKDATAi);

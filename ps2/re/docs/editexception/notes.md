@@ -1,5 +1,15 @@
 # editexception: reverse-engineering notes
 
+## Draft and matching status
+Named, typed C++ definitions for `InitNpcCameraReaction`, `InitS51Thunder`,
+`StepFirePowder`, `CGeyserEffect::Create`, `Step`, `GetEmpty`, `CreatePoint`, and
+`StepGeyserEffect` reproduce the retail image and are promoted. The
+`CGeyserEffect` constructor also compiles to matching instructions, but its
+single linked-image promotion attempt produced duplicate `mgCVisual` and
+`mgC3DSprite` definitions from the header's inline virtual functions; it
+remains guarded by `NONMATCHING` with the original assembly in the game build.
+The other seven assembly functions still require typed C++ drafts.
+
 Special-case effects for edit (Georama) maps and the S51 dungeon floor. No first-game
 counterpart was found in `/home/adubbz/development/chronicle`.
 

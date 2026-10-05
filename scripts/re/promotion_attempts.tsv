@@ -415,3 +415,12 @@ npccfg	_NPC_INFO__FP9SPI_STACKi	checker
 npccfg	LoadNPCCfg__Fv	checker
 mainloop3	InitHDDMenu__FP1	checker
 outline	Initialize__12COutLineDrawFv	checker
+editexception	StepGeyserEffect__FP6CScene	checker
+editexception	GetEmpty__13CGeyserEffectFv	checker
+editexception	Step__13CGeyserEffectFv	checker
+editexception	StepFirePowder__FP6CScene	checker
+editexception	InitS51Thunder__Fv	checker
+editexception	InitNpcCameraReaction__Fv	checker
+editexception	CreatePoint__13CGeyserEffectFv	checker
+editexception	Create__13CGeyserEffectFv	checker
+editexception	__ct__13CGeyserEffectFv	checker

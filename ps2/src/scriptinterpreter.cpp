@@ -89,13 +89,12 @@ void CScriptInterpreter::PushStack(SPI_STACK argument) {
     stack_count++;
 }
 
-#ifdef NONMATCHING
 int CScriptInterpreter::GetNextTAG(int call) {
-    char string_storage[SPI_STRING_BUFF_SIZE];
+    char      string_storage[SPI_STRING_BUFF_SIZE];
     SPI_STACK arguments[SPI_STACK_SIZE];
-    int index;
-    int c;
-    int argument_count;
+    int       index;
+    int       c;
+    int       argument_count;
 
     if (tag == NULL) {
         return -1;
@@ -106,38 +105,32 @@ int CScriptInterpreter::GetNextTAG(int call) {
         if (!SearchCommand(&index)) {
             return -1;
         }
-        if (binary) {
-            argument_count = GetArgBin();
-            if (index < tag_count && index >= 0 && call && tag[index].function != NULL) {
-                tag[index].function(stack, argument_count);
+        if (!binary) {
+            if (index >= tag_count || index < 0) {
+                // An unknown tag is passed over up to its semicolon.
+                for (;;) {
+                    if (!get(&c)) {
+                        break;
+                    }
+                    if (c == ';') {
+                        break;
+                    }
+                }
+                continue;
             }
-            return index;
-        }
-        if (index < tag_count && index >= 0) {
             argument_count = GetArg();
             if (call && tag[index].function != NULL) {
                 tag[index].function(stack, argument_count);
             }
-            return index;
+        } else {
+            argument_count = GetArgBin();
+            if (index < tag_count && index >= 0 && call && tag[index].function != NULL) {
+                tag[index].function(stack, argument_count);
+            }
         }
-        // An unknown tag is passed over up to its semicolon.
-        while (get(&c) && c != ';') {
-        }
+        return index;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", GetNextTAG__18CScriptInterpreterFi);
-#endif
-#ifdef NONMATCHING
-// Defined in scriptinterpreter.hpp.
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", SetStack__18CScriptInterpreterFP9SPI_STACKi);
-#endif
-#ifdef NONMATCHING
-// Defined in scriptinterpreter.hpp.
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", SetStringBuff__18CScriptInterpreterFPci);
-#endif
 
 void CScriptInterpreter::Run() {
     while (GetNextTAG(1) >= 0) {

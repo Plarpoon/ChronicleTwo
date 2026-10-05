@@ -1,42 +1,738 @@
 #include "common.h"
 #include "runscript.hpp"
 
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+static void runerror(const char *message);
+static void stkoverflow();
+static int  chk_int(RS_STACKDATA data, funcdata *function);
+static int  is_true(RS_STACKDATA data);
+static void divby0error();
+static void modby0error();
+static void print(RS_STACKDATA *data, int count);
+
 // Code (.text)
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", runerror__FPCc);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", stkoverflow__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", chk_int__F12RS_STACKDATAP8funcdata);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", is_true__F12RS_STACKDATA);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", divby0error__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", modby0error__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", print__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", __ct__10CRunScriptFv);
+/**
+ * Reports a runtime error and stops the game.
+ */
+static void runerror(const char *message) {
+    fprintf(stderr, "RUNTIME ERROR: %s\n", message);
+    exit(-1);
+}
+
+/**
+ * Reports operand stack exhaustion.
+ */
+static void stkoverflow() {
+    runerror("stack overflow");
+}
+
+/**
+ * Reads an integer operand, stopping the game for other types.
+ */
+static int chk_int(RS_STACKDATA data, funcdata *function) {
+    if (data.type == RS_INT) {
+        return data.i;
+    }
+
+    fprintf(stderr, "RUNTIME ERROR: %s: operand is not integer\n", function->name);
+    exit(-1);
+    return 0;
+}
+
+/**
+ * Tests whether a value is other than integer zero.
+ */
+static int is_true(RS_STACKDATA data) {
+    return !(data.type == RS_INT && data.i == 0);
+}
+
+/**
+ * Reports division by zero.
+ */
+static void divby0error() {
+    runerror("Divide by 0");
+}
+
+/**
+ * Reports remainder by zero.
+ */
+static void modby0error() {
+    runerror("Modulo by 0");
+}
+
+/**
+ * Prints script values and flushes each one to the output stream.
+ */
+static void print(RS_STACKDATA *data, int count) {
+    int index;
+
+    for (index = 0; index < count; index++, data++) {
+        if (data->type == RS_INT) {
+            printf("%d", data->i);
+        } else if (data->type == RS_STR) {
+            printf("%s", data->s);
+        } else if (data->type == RS_FLOAT) {
+            printf("%f", data->f);
+        }
+
+        fflush(stdout);
+    }
+}
+
+CRunScript::CRunScript() {
+    sp = stack;
+    stack_end = stack;
+    call_sp = call;
+    call_end = call;
+    pc = NULL;
+    ext_func_num = 0;
+    stack_num = 0;
+    call_num = 0;
+    skip_wait = 0;
+    version = RS_VERSION_1;
+    DeleteProgram();
+}
+
 void CRunScript::DeleteProgram(void) {
     end = 0;
     skip_wait = 0;
     prog = NULL;
 }
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", check_stack__10CRunScriptFv);
+void CRunScript::check_stack() {
+    if (sp >= stack_end) {
+        stkoverflow();
+    }
+}
+
+#ifdef NONMATCHING
+void CRunScript::push(RS_STACKDATA value) {
+    RS_STACKDATA *slot;
+
+    check_stack();
+    slot = sp++;
+    slot->type = value.type;
+    slot->f = value.f;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", push__10CRunScriptF12RS_STACKDATA);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", push_int__10CRunScriptFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", push_str__10CRunScriptFPc);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", push_ptr__10CRunScriptFP12RS_STACKDATA);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", push_float__10CRunScriptFf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", pop__10CRunScriptFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", call_func__10CRunScriptFP8funcdataP8vmcode_t);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", ret_func__10CRunScriptFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", ext__10CRunScriptFP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", load__10CRunScriptFP14RS_PROG_HEADERP12RS_STACKDATAiP11RS_CALLDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", ext_func__10CRunScriptFPPFP12RS_STACKDATAi_ii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", resume__10CRunScriptFv);
+#endif
+
+void CRunScript::push_int(int value) {
+    check_stack();
+    sp->type = RS_INT;
+    sp++->i = value;
+}
+
+void CRunScript::push_str(char *string) {
+    check_stack();
+    sp->type = RS_STR;
+    sp++->s = string;
+}
+
+void CRunScript::push_ptr(RS_STACKDATA *pointer) {
+    check_stack();
+    sp->type = RS_PTR;
+    sp++->p = pointer;
+}
+
+void CRunScript::push_float(float value) {
+    check_stack();
+    sp->type = RS_FLOAT;
+    sp++->f = value;
+}
+
+RS_STACKDATA CRunScript::pop() {
+    return *--sp;
+}
+
+vmcode_t *CRunScript::call_func(funcdata *callee, vmcode_t *return_pc) {
+    if (call_sp >= call_end) {
+        printf("\202\261\202\352\210\310\217\343\212\326\220\224\214\304\202\321\217\157\202\265"
+               "\202\252\202\305\202\253\202\334\202\271\202\361\201\102\n");
+        exit(-2);
+    }
+
+    call_sp->ret = return_pc;
+    call_sp->func = func;
+    call_sp->frame = frame;
+    frame = sp - callee->arg;
+    sp = frame + callee->local;
+    func = callee;
+    call_sp++;
+    memset(frame + func->arg, 0, (func->local - func->arg) * sizeof(RS_STACKDATA));
+    check_stack();
+    return (vmcode_t *) (code + (int) callee->addr);
+}
+
+vmcode_t *CRunScript::ret_func() {
+    call_sp--;
+    frame = call_sp->frame;
+    func = call_sp->func;
+    return call_sp->ret;
+}
+
+void CRunScript::ext(RS_STACKDATA *args, int argc) {
+    if (args->i < 0 || args->i >= ext_func_num) {
+        printf("not found ext %d\n", args->i);
+    } else if (ext_func_table[args->i] == NULL) {
+        printf("not found ext %d\n", args->i);
+    } else if ((*ext_func_table[args->i])(args + 1, argc - 1) == 0) {
+        printf("illegal function call ext %d\n", args->i);
+    }
+}
+
+void CRunScript::load(RS_PROG_HEADER *prog, RS_STACKDATA *stack, int stack_num, RS_CALLDATA *call, int call_num) {
+    this->stack = stack;
+    this->stack_num = stack_num;
+    this->call = call;
+    this->call_num = call_num;
+    this->stack_end = this->stack + stack_num;
+    this->call_end = this->call + call_num;
+    this->prog = prog;
+    this->code = (char *) prog + prog->code;
+
+    if (strncmp(this->prog->magic, "SB2", 3) == 0) {
+        version = RS_VERSION_2;
+        global = this->stack;
+        this->stack += this->prog->global_num;
+        this->stack_num -= this->prog->global_num;
+        memset(global, 0, this->prog->global_num * sizeof(RS_STACKDATA));
+    }
+}
+
+void CRunScript::ext_func(int (**table)(RS_STACKDATA *, int), int count) {
+    ext_func_table = table;
+    ext_func_num = count;
+}
+
+void CRunScript::resume() {
+    if (pc) {
+        exe(pc);
+    }
+}
+
+#ifdef NONMATCHING
+int CRunScript::run(int no) {
+    RS_PROGDATA    *entry;
+    int             i;
+    RS_PROG_HEADER *header;
+    vmcode_t       *start;
+
+    if (prog == NULL) {
+        return -1;
+    }
+
+    sp = stack;
+    call_sp = call;
+    func = NULL;
+
+    if (no < 0) {
+        func = (funcdata *) ((char *) prog + prog->main);
+    } else {
+        header = prog;
+        entry = (RS_PROGDATA *) ((char *) header + header->prog);
+
+        for (i = 0; i < header->prog_num; i++, entry++) {
+            if (entry->no == no) {
+                func = (funcdata *) ((char *) header + entry->func);
+                break;
+            }
+        }
+    }
+
+    if (func == NULL) {
+        printf("not found program %d\n", no);
+        return -1;
+    }
+
+    frame = sp - func->arg;
+    sp = frame + func->local;
+    check_stack();
+    memset(frame + func->arg, 0, (func->local - func->arg) * sizeof(RS_STACKDATA));
+    start = (vmcode_t *) (code + (int) func->addr);
+    end = 0;
+    skip_wait = 0;
+    skip_end_count = 0;
+    exe(start);
+    return !end;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", run__10CRunScriptFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", check_program__10CRunScriptFi);
+#endif
+
+int CRunScript::check_program(int no) {
+    RS_PROGDATA    *entry;
+    int             i;
+    RS_PROG_HEADER *header;
+
+    header = prog;
+    entry = (RS_PROGDATA *) ((char *) header + header->prog);
+
+    for (i = 0; i < header->prog_num; i++, entry++) {
+        if (entry->no == no) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
 void CRunScript::skip(void) {
     skip_wait = 1;
     resume();
 }
+#ifdef NONMATCHING
+void CRunScript::exe(vmcode_t *entry) {
+    RS_STACKDATA  value;
+    RS_STACKDATA  rhs;
+    RS_STACKDATA  lhs;
+    RS_STACKDATA *target;
+    float         rhs_f;
+    float         lhs_f;
+    int           rhs_i;
+    int           lhs_i;
+
+    pc = entry;
+
+    for (;;) {
+        switch (pc->op) {
+            case RS_OP_LOAD:
+                switch (pc->arg2) {
+                    case RS_ADDR_LOCAL:
+                        push(*(frame + pc->arg1));
+                        break;
+                    case RS_ADDR_GLOBAL:
+                        push(*(global + pc->arg1));
+                        break;
+                    case RS_ADDR_LOCAL_INDEX:
+                        push(*(frame + pc->arg1 + chk_int(pop(), func)));
+                        break;
+                    case RS_ADDR_POINTER_INDEX:
+                        push(*(frame[pc->arg1].p + chk_int(pop(), func)));
+                        break;
+                    case RS_ADDR_LOCAL_FLOAT:
+                        (frame + pc->arg1)->type = RS_FLOAT;
+                        push(*(frame + pc->arg1));
+                        break;
+                    case RS_ADDR_GLOBAL_FLOAT:
+                        (global + pc->arg1)->type = RS_FLOAT;
+                        push(*(global + pc->arg1));
+                        break;
+                    case RS_ADDR_LOCAL_INDEX_FLOAT:
+                        rhs_i = chk_int(pop(), func);
+                        (frame + pc->arg1 + rhs_i)->type = RS_FLOAT;
+                        push(*(frame + pc->arg1 + rhs_i));
+                        break;
+                    case RS_ADDR_POINTER_INDEX_FLOAT:
+                        rhs_i = chk_int(pop(), func);
+                        (frame[pc->arg1].p + rhs_i)->type = RS_FLOAT;
+                        push(*(frame[pc->arg1].p + rhs_i));
+                        break;
+                }
+
+                break;
+            case RS_OP_LOAD_ADDR:
+                switch (pc->arg2) {
+                    case RS_ADDR_LOCAL:
+                        push_ptr(frame + pc->arg1);
+                        break;
+                    case RS_ADDR_GLOBAL:
+                        push_ptr(global + pc->arg1);
+                        break;
+                    case RS_ADDR_LOCAL_INDEX:
+                        push_ptr(frame + pc->arg1 + chk_int(pop(), func));
+                        break;
+                    case RS_ADDR_POINTER_INDEX:
+                        push_ptr(frame[pc->arg1].p + chk_int(pop(), func));
+                        break;
+                    case RS_ADDR_LOCAL_FLOAT:
+                        push_ptr(frame + pc->arg1);
+                        break;
+                    case RS_ADDR_GLOBAL_FLOAT:
+                        push_ptr(global + pc->arg1);
+                        break;
+                    case RS_ADDR_LOCAL_INDEX_FLOAT:
+                        push_ptr(frame + pc->arg1 + chk_int(pop(), func));
+                        break;
+                    case RS_ADDR_POINTER_INDEX_FLOAT:
+                        push_ptr(frame[pc->arg1].p + chk_int(pop(), func));
+                        break;
+                }
+
+                break;
+            case RS_OP_STORE:
+                value = pop();
+                target = pop().p;
+                target->type = value.type;
+                target->f = value.f;
+                push(value);
+                break;
+            case RS_OP_PUSH_CONST:
+                switch (pc->arg1) {
+                    case RS_CONST_INT:
+                        push_int(pc->arg2);
+                        break;
+                    case RS_CONST_STR:
+                        push_str(code + pc->arg2);
+                        break;
+                    case RS_CONST_FLOAT:
+                        push_float(*(float *)&pc->arg2);
+                        break;
+                }
+
+                break;
+            case RS_OP_POP:
+                sp--;
+                break;
+            case RS_OP_JMP:
+                if (!skip_wait) {
+                    pc = (vmcode_t *) (code + (int) pc->arg1);
+                    continue;
+                }
+
+                break;
+            case RS_OP_JMP_TRUE:
+                if (!skip_wait) {
+                    if (is_true(pop())) {
+                        if (pc->arg2) {
+                            push_int(1);
+                        }
+
+                        pc = (vmcode_t *) (code + (int) pc->arg1);
+                        continue;
+                    }
+                }
+
+                break;
+            case RS_OP_JMP_FALSE:
+                if (!skip_wait) {
+                    if (!is_true(pop())) {
+                        if (pc->arg2) {
+                            push_int(0);
+                        }
+
+                        pc = (vmcode_t *) (code + (int) pc->arg1);
+                        continue;
+                    }
+                }
+
+                break;
+            case RS_OP_CMP:
+                rhs = pop();
+                lhs = pop();
+
+                if (lhs.type == RS_INT && rhs.type == RS_INT) {
+                    rhs_i = rhs.i;
+                    lhs_i = lhs.i;
+
+                    switch (pc->arg1) {
+                        case RS_CMP_EQ:
+                            push_int(rhs_i == lhs_i);
+                            break;
+                        case RS_CMP_NE:
+                            push_int(rhs_i != lhs_i);
+                            break;
+                        case RS_CMP_LT:
+                            push_int(lhs_i < rhs_i);
+                            break;
+                        case RS_CMP_LE:
+                            push_int(lhs_i <= rhs_i);
+                            break;
+                        case RS_CMP_GT:
+                            push_int(lhs_i > rhs_i);
+                            break;
+                        case RS_CMP_GE:
+                            push_int(lhs_i >= rhs_i);
+                            break;
+                    }
+                } else {
+                    if (lhs.type == RS_FLOAT && rhs.type == RS_FLOAT) {
+                        rhs_f = rhs.f;
+                        lhs_f = lhs.f;
+                    } else if (lhs.type == RS_INT && rhs.type == RS_FLOAT) {
+                        rhs_f = rhs.f;
+                        lhs_f = lhs.i;
+                    } else if (lhs.type == RS_FLOAT && rhs.type == RS_INT) {
+                        rhs_f = rhs.i;
+                        lhs_f = lhs.f;
+                    } else {
+                        fprintf(stderr, "RUNTIME ERROR at _CMP: %s: operand is not number\n", func->name);
+                        exit(-1);
+                    }
+
+                    switch (pc->arg1) {
+                        case RS_CMP_EQ:
+                            push_int(rhs_f == lhs_f);
+                            break;
+                        case RS_CMP_NE:
+                            push_int(rhs_f != lhs_f);
+                            break;
+                        case RS_CMP_LT:
+                            push_int(lhs_f < rhs_f);
+                            break;
+                        case RS_CMP_LE:
+                            push_int(lhs_f <= rhs_f);
+                            break;
+                        case RS_CMP_GT:
+                            push_int(lhs_f > rhs_f);
+                            break;
+                        case RS_CMP_GE:
+                            push_int(lhs_f >= rhs_f);
+                            break;
+                    }
+                }
+
+                break;
+            case RS_OP_ADD:
+                rhs = pop();
+                lhs = pop();
+
+                if (lhs.type == RS_INT && rhs.type == RS_INT) {
+                    push_int(lhs.i + rhs.i);
+                } else if (lhs.type == RS_FLOAT && rhs.type == RS_FLOAT) {
+                    push_float(lhs.f + rhs.f);
+                } else if (lhs.type == RS_INT && rhs.type == RS_FLOAT) {
+                    push_float(lhs.i + rhs.f);
+                } else if (lhs.type == RS_FLOAT && rhs.type == RS_INT) {
+                    push_float(lhs.f + rhs.i);
+                } else {
+                    fprintf(stderr, "RUNTIME ERROR at _ADD: %s: operand is not number\n", func->name);
+                    exit(-1);
+                }
+
+                break;
+            case RS_OP_SUB:
+                rhs = pop();
+                lhs = pop();
+
+                if (lhs.type == RS_INT && rhs.type == RS_INT) {
+                    push_int(lhs.i - rhs.i);
+                } else if (lhs.type == RS_FLOAT && rhs.type == RS_FLOAT) {
+                    push_float(lhs.f - rhs.f);
+                } else if (lhs.type == RS_INT && rhs.type == RS_FLOAT) {
+                    push_float(lhs.i - rhs.f);
+                } else if (lhs.type == RS_FLOAT && rhs.type == RS_INT) {
+                    push_float(lhs.f - rhs.i);
+                } else {
+                    fprintf(stderr, "RUNTIME ERROR at _SUB: %s: operand is not number\n", func->name);
+                    exit(-1);
+                }
+
+                break;
+            case RS_OP_MUL:
+                rhs = pop();
+                lhs = pop();
+
+                if (lhs.type == RS_INT && rhs.type == RS_INT) {
+                    push_int(lhs.i * rhs.i);
+                } else if (lhs.type == RS_FLOAT && rhs.type == RS_FLOAT) {
+                    push_float(lhs.f * rhs.f);
+                } else if (lhs.type == RS_INT && rhs.type == RS_FLOAT) {
+                    push_float(lhs.i * rhs.f);
+                } else if (lhs.type == RS_FLOAT && rhs.type == RS_INT) {
+                    push_float(lhs.f * rhs.i);
+                } else {
+                    fprintf(stderr, "RUNTIME ERROR _MUL: %s: operand is not number\n", func->name);
+                    exit(-1);
+                }
+
+                break;
+            case RS_OP_DIV:
+                rhs = pop();
+
+                if (rhs.i == 0) {
+                    divby0error();
+                }
+
+                lhs = pop();
+
+                if (lhs.type == RS_INT && rhs.type == RS_INT) {
+                    push_int(lhs.i / rhs.i);
+                } else if (lhs.type == RS_FLOAT && rhs.type == RS_FLOAT) {
+                    push_float(lhs.f / rhs.f);
+                } else if (lhs.type == RS_INT && rhs.type == RS_FLOAT) {
+                    push_float(lhs.i / rhs.f);
+                } else if (lhs.type == RS_FLOAT && rhs.type == RS_INT) {
+                    push_float(lhs.f / rhs.i);
+                } else {
+                    fprintf(stderr, "RUNTIME ERROR at _DIV: %s: operand is not number\n", func->name);
+                    exit(-1);
+                }
+
+                break;
+            case RS_OP_MOD:
+                rhs_i = chk_int(pop(), func);
+
+                if (rhs_i == 0) {
+                    modby0error();
+                }
+
+                push_int(chk_int(pop(), func) % rhs_i);
+                break;
+            case RS_OP_AND:
+                rhs_i = chk_int(pop(), func);
+                push_int(rhs_i & chk_int(pop(), func));
+                break;
+            case RS_OP_OR:
+                rhs_i = chk_int(pop(), func);
+                push_int(rhs_i | chk_int(pop(), func));
+                break;
+            case RS_OP_NEG:
+                rhs = pop();
+
+                if (rhs.type == RS_INT) {
+                    push_int(-rhs.i);
+                } else if (rhs.type == RS_FLOAT) {
+                    push_float(-rhs.f);
+                } else {
+                    fprintf(stderr, "RUNTIME ERROR at _INVT: %s: operand is not number\n", func->name);
+                    exit(-1);
+                }
+
+                break;
+            case RS_OP_SIN:
+                rhs = pop();
+
+                if (rhs.type == RS_INT) {
+                    push_float(sinf(rhs.i));
+                } else if (rhs.type == RS_FLOAT) {
+                    push_float(sinf(rhs.f));
+                } else {
+                    fprintf(stderr, "RUNTIME ERROR at _SIN: %s: operand is not number\n", func->name);
+                    exit(-1);
+                }
+
+                break;
+            case RS_OP_COS:
+                rhs = pop();
+
+                if (rhs.type == RS_INT) {
+                    push_float(cosf(rhs.i));
+                } else if (rhs.type == RS_FLOAT) {
+                    push_float(cosf(rhs.f));
+                } else {
+                    fprintf(stderr, "RUNTIME ERROR at _COS: %s: operand is not number\n", func->name);
+                    exit(-1);
+                }
+
+                break;
+            case RS_OP_NOT:
+                rhs = pop();
+
+                if (rhs.type == RS_INT) {
+                    push_int(!rhs.i);
+                } else {
+                    fprintf(stderr, "RUNTIME ERROR: %s: \220\256\220\224\202\305\202\310\202\242\203\111"
+                                    "\203\171\203\211\203\223\203\150\n",
+                            func->name);
+                    exit(-1);
+                }
+
+                break;
+            case RS_OP_ITOF:
+                rhs = pop();
+
+                if (rhs.type == RS_INT) {
+                    push_float(rhs.i);
+                } else if (rhs.type == RS_FLOAT) {
+                    push_float(rhs.f);
+                } else {
+                    fprintf(stderr, "RUNTIME ERROR at _ITOF: %s: operand is not number\n", func->name);
+                    exit(-1);
+                }
+
+                break;
+            case RS_OP_FTOI:
+                rhs = pop();
+
+                if (rhs.type == RS_INT) {
+                    push_int((int) rhs.i);
+                } else if (rhs.type == RS_FLOAT) {
+                    push_int((int) rhs.f);
+                } else {
+                    fprintf(stderr, "RUNTIME ERROR at _FTOI: %s: operand is not number\n", func->name);
+                    exit(-1);
+                }
+
+                break;
+            case RS_OP_PRINT:
+                sp -= pc->arg1;
+                print(sp, pc->arg1);
+                break;
+            case RS_OP_EXT:
+                sp -= pc->arg1;
+
+                if (!skip_wait) {
+                    ext(sp, pc->arg1);
+                }
+
+                break;
+            case RS_OP_END:
+                end = 1;
+                pc = NULL;
+                return;
+            case RS_OP_CALL:
+                pc = call_func((funcdata *) (code + (int) pc->arg2), pc);
+                pc--;
+                break;
+            case RS_OP_RET:
+                value = pop();
+
+                if (call_sp != call) {
+                    sp = frame;
+                    pc = ret_func();
+                } else {
+                    result = value.i;
+                    push(value);
+                    pc = NULL;
+                    end = 1;
+                    return;
+                }
+
+                push(value);
+                break;
+            case RS_OP_WAIT:
+                if (!skip_wait) {
+                    pc++;
+                    return;
+                }
+
+                break;
+            case RS_OP_SKIP_END:
+                skip_end_count++;
+                if (skip_wait) {
+                    skip_wait = 0;
+                    pc++;
+                    return;
+                }
+
+                break;
+        }
+
+        pc++;
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", exe__10CRunScriptFP8vmcode_t);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", rsGetStackInt__FP12RS_STACKDATA);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", rsSetStack__FP12RS_STACKDATAi);
+#endif
+
+int rsGetStackInt(RS_STACKDATA *data) {
+    if (data->type == RS_FLOAT) {
+        return (int)data->f;
+    }
+    return data->i;
+}
+
+void rsSetStack(RS_STACKDATA *data, int value) {
+    if (data->type == RS_PTR) {
+        data->p->i = value;
+    }
+}
+
 
 // Constants (.rodata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/runscript", at_168__DATA);

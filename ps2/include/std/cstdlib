@@ -11,5 +11,6 @@ double atof(const char *text);
 int atoi(const char *text);
 void abort(void);
 void free(void *storage);
+void exit(int status);
 void exit__2(int status);
 }

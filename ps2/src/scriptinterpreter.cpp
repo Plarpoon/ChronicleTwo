@@ -428,23 +428,22 @@ int CScriptInterpreter::GetArg() {
     return count;
 }
 
-#ifdef NONMATCHING
 int CScriptInterpreter::SearchCommand(int *tag_index) {
-    char name[SPI_TOKEN_SIZE];
+    char          name[SPI_TOKEN_SIZE];
     SPI_TAG_HASH *link;
-    s16 index;
-    int length;
-    int c;
-    int i;
+    s16           index;
+    int           length;
+    int           c;
+    int           i;
 
     if (binary) {
-        if (position < size) {
-            index = *(s16 *)&buffer[position];
-            position += 2;
-            *tag_index = index;
-            return index >= 0;
+        if (position >= size) {
+            return 0;
         }
-        return 0;
+        index = *(s16 *)&buffer[position];
+        position += 2;
+        *tag_index = index;
+        return index >= 0;
     }
 
     if (!SkipSpace(*this)) {
@@ -456,39 +455,38 @@ int CScriptInterpreter::SearchCommand(int *tag_index) {
             return 0;
         }
         if (!CheckChar(c) || c == ';') {
+            // The semicolon ends the arguments, so it is read again by GetArg.
+            if (c == ';') {
+                back();
+            }
             break;
         }
         name[length++] = c;
     }
-    // The semicolon ends the arguments, so it is read again by GetArg.
-    if (c == ';') {
-        back();
-    }
     name[length] = '\0';
 
-    if (name[0] >= 'A' && name[0] <= 'Z') {
-        if (hash_table == NULL) {
-            for (i = 0; i < tag_count; i++) {
-                if (strcmp(tag[i].name, name) == 0) {
-                    *tag_index = i;
-                    return 1;
-                }
+    if (name[0] < 'A' || name[0] > 'Z') {
+        *tag_index = -1;
+        return 1;
+    }
+    if (hash_table != NULL) {
+        for (link = hash_table[hash(name)]; link != NULL; link = link->next) {
+            if (strcmp(name, link->name) == 0) {
+                *tag_index = link->index;
+                return 1;
             }
-        } else {
-            for (link = hash_table[hash(name)]; link != NULL; link = link->next) {
-                if (strcmp(name, link->name) == 0) {
-                    *tag_index = link->index;
-                    return 1;
-                }
+        }
+    } else {
+        for (i = 0; i < tag_count; i++) {
+            if (strcmp(tag[i].name, name) == 0) {
+                *tag_index = i;
+                return 1;
             }
         }
     }
     *tag_index = -1;
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", SearchCommand__18CScriptInterpreterFPi);
-#endif
 
 /**
  * Moves a reader past spaces, tabs and line breaks;

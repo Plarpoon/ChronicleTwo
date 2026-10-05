@@ -10,9 +10,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMenuBigNum__FPci);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", __ct__9CMenuFontFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MenuMesInit__FP6ClsMes);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", __ct__7CDC2MesFv);
-void CDC2Mes::SetMessData(s16 *arg0, s16 *arg1) {
-    ((ClsMes *) this)->SetBuff_system(arg0);
-    ((ClsMes *) this)->SetBuff(arg1);
+void CDC2Mes::SetMessData(s16 *buff_system, s16 *buff) {
+    SetBuff_system(buff_system);
+    SetBuff(buff);
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MsgPreset__7CDC2MesFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MsgPreset__7CDC2MesFii);
@@ -25,17 +25,15 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", YesNoCursor2__7CDC2MesFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", GetMsgCursor__7CDC2MesFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", GetMsgItemNo__7CDC2MesFi);
 void CDC2Mes::SetFontColor(s32 r, s32 g, s32 b, s32 a) {
-    this->SetDefColor(r | (g << 8 | (a << 24 | b << 16)));
+    SetDefColor(r | (g << 8 | (a << 24 | b << 16)));
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetPutPos__7CDC2MesFiiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetPutPos__7CDC2MesFPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetAbsPos__7CDC2MesFi);
-s32 CDC2Mes::GetStringDrawWidthDC(s8 *arg0) {
-    s32 temp_v0;
-
-    temp_v0 = (s32) (((ClsMes *) this)->GetStrWidth(arg0));
-    if (temp_v0 >= 0) {
-        return temp_v0;
+s32 CDC2Mes::GetStringDrawWidthDC(char *str) {
+    s32 width = GetStrWidth(str);
+    if (width >= 0) {
+        return width;
     }
     return 0;
 }
@@ -46,9 +44,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgVolumeNo__7CDC2MesFPii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgVolumeNo__7CDC2MesFPiPii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgVolumeNoOne__7CDC2MesFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgItemPos__7CDC2MesFPii);
-void CDC2Mes::MakeMsg(s32 arg0) {
-    *(s16 *) ((u8 *) this + 0x295E) = arg0;
-    *(u8 *) ((u8 *) this + 0x2980) = 0;
+void CDC2Mes::MakeMsg(s32 message_no) {
+    mes_no = message_no;
+    str[0] = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MakeMsg__7CDC2MesFPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MakeMsg__7CDC2MesFP13CGameDataUsed);
@@ -66,12 +64,12 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", CheckItemUseEnable__12CMenuItem
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", UseItem__12CMenuItemUseFP13CGameDataUsediPv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", UseItem__12CMenuItemUseFP13CGameDataUsedP14CItemUseTarget);
 void CMenuItemUse::Initialize(void) {
-    (*(s32 *)((u8 *)this + 0x0)) = 0;
-    (*(s32 *)((u8 *)this + 0x4)) = 0;
-    *(s32 *) ((u8 *) this + 0x18) = 0;
+    item_no = 0;
+    target_type = 0;
+    unk_18 = 0;
 }
-s32 CheckNowStateUseThisItem(CGameDataUsed *arg0, CItemUseTarget *arg1) {
-    return MenuUseItemCheckFunc(arg0, arg1, 0);
+s32 CheckNowStateUseThisItem(CGameDataUsed *item, CItemUseTarget *target) {
+    return MenuUseItemCheckFunc(item, target, 0);
 }
 
 // Static initialiser (.init)

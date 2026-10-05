@@ -1,24 +1,22 @@
 #include "common.h"
 #include "sceneseq.hpp"
-#include <cstring>
-#include <cmath>
 
 // Code (.text)
-void InitSplineKey(SPLINE_KEY * arg0) {
-    (*(s32 *)((u8 *)arg0 + 0x0)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x4)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x8)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x14)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x20)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x2c)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0xc)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x18)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x24)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x30)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x10)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x1c)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x28)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x34)) = 0;
+void InitSplineKey(SPLINE_KEY * key) {
+    key->frame = 0;
+    key->length = 0;
+    key->a[0] = 0;
+    key->b[0] = 0;
+    key->c[0] = 0;
+    key->d[0] = 0;
+    key->a[1] = 0;
+    key->b[1] = 0;
+    key->c[1] = 0;
+    key->d[1] = 0;
+    key->a[2] = 0;
+    key->b[2] = 0;
+    key->c[2] = 0;
+    key->d[2] = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", __ct__9C3DSplineFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Initialize__9C3DSplineFv);
@@ -32,17 +30,17 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", InsCameraPas__10CCameraPasFiPfP
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SetCameraPas__10CCameraPasFiPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", GetCameraPas__10CCameraPasFiPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", DelCameraPas__10CCameraPasFi);
-s32 CCameraPas::SetFrame(s32 arg0) {
-    (*(s32 *)((u8 *)this + 0x204)) = arg0;
+s32 CCameraPas::SetFrame(s32 frame_count) {
+    frame = frame_count;
     return 0;
 }
 s32 CCameraPas::GetFrame(void) {
-    return (*(s32 *)((u8 *)this + 0x204));
+    return frame;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Initialize__10CCameraPasFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Setup__10CCameraPasFv);
 void CCameraPas::Run(void) {
-    (*(s32 *)((u8 *)this + 0x940)) = 1;
+    run = 1;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Step__10CCameraPasFPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", CheckEnd__10CCameraPasFv);
@@ -57,11 +55,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", InsCharaPas__9CCharaPasFiPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SetCharaPas__9CCharaPasFiPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", GetCharaPas__9CCharaPasFiPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", DelCharaPas__9CCharaPasFi);
-void CCharaPas::SetFrame(s32 arg0) {
-    (*(s32 *)((u8 *)this + 0x100)) = arg0;
+void CCharaPas::SetFrame(s32 frame_count) {
+    frame = frame_count;
 }
 s32 CCharaPas::GetFrame(void) {
-    return (*(s32 *)((u8 *)this + 0x100));
+    return frame;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsPRDelay__FP12_SEN_CMR_SEQP12CSceneCmrSeq);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsSetPos__FP12_SEN_CMR_SEQP12CSceneCmrSeq);
@@ -80,28 +78,28 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsMoveAHD2__FP12_SEN_CMR_SEQP1
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsSetSyncObj__FP12_SEN_CMR_SEQP12CSceneCmrSeq);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsReleaseSyncObj__FP12_SEN_CMR_SEQP12CSceneCmrSeq);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsAHDSlowing__FP12_SEN_CMR_SEQP12CSceneCmrSeq);
-s32 scsAHDKeep(_SEN_CMR_SEQ * arg0, CSceneCmrSeq * arg1) {
-    (*(_SEN_CMR_SEQ * *)((u8 *)arg1 + 0x34)) = arg0;
-    return 0;
+s32 scsAHDKeep(_SEN_CMR_SEQ * sequence, CSceneCmrSeq * owner) {
+    owner->ahd_keep = sequence;
+    return SCENE_SEQ_NEXT;
 }
 s32 scsAHDReturn(_SEN_CMR_SEQ *sequence, CSceneCmrSeq *owner) {
-    return 2;
+    return SCENE_SEQ_RETURN;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsInitPas__FP12_SEN_CMR_SEQP12CSceneCmrSeq);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsSetPasFrm__FP12_SEN_CMR_SEQP12CSceneCmrSeq);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsAddPas__FP12_SEN_CMR_SEQP12CSceneCmrSeq);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsStartPas__FP12_SEN_CMR_SEQP12CSceneCmrSeq);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsPRSlowing__FP12_SEN_CMR_SEQP12CSceneCmrSeq);
-s32 scsPRKeep(_SEN_CMR_SEQ * arg0, CSceneCmrSeq * arg1) {
-    (*(_SEN_CMR_SEQ * *)((u8 *)arg1 + 0x30)) = arg0;
-    return 0;
+s32 scsPRKeep(_SEN_CMR_SEQ * sequence, CSceneCmrSeq * owner) {
+    owner->pr_keep = sequence;
+    return SCENE_SEQ_NEXT;
 }
 s32 scsPRReturn(_SEN_CMR_SEQ *sequence, CSceneCmrSeq *owner) {
-    return 2;
+    return SCENE_SEQ_RETURN;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsFadeDelay__FP12_SEN_CMR_SEQP12CSceneCmrSeq);
 s32 scsFadeInit(_SEN_CMR_SEQ *sequence, CSceneCmrSeq *owner) {
-    return 0;
+    return SCENE_SEQ_NEXT;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsFadeIn__FP12_SEN_CMR_SEQP12CSceneCmrSeq);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsFadeOut__FP12_SEN_CMR_SEQP12CSceneCmrSeq);
@@ -111,7 +109,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsQuake2__FP12_SEN_CMR_SEQP12C
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsCharaDelay__FP12_SEN_CMR_SEQP12CSceneCmrSeq);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsCharaAttach__FP12_SEN_CMR_SEQP12CSceneCmrSeq);
 s32 scsDummy(_SEN_CMR_SEQ *sequence, CSceneCmrSeq *owner) {
-    return 1;
+    return SCENE_SEQ_WAIT;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", InitSceneCmrSeq__FP12_SEN_CMR_SEQ);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", __ct__12CSceneCmrSeqFv);
@@ -119,9 +117,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", ZeroInitialize__12CSceneCmrSeqF
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Initialize__12CSceneCmrSeqFP12_SEN_CMR_SEQi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Clear__12CSceneCmrSeqFv);
 s32 CSceneCmrSeq::CheckEnd(void) {
-    s32 *p = (s32 *) this;
-    if (p[2] == 0) {
-        if (p[4] == 0 && p[6] == 0 && p[8] == 0) {
+    if (pr_seq == 0) {
+        if (ahd_seq == 0 && fade_seq == 0 && quake_seq == 0) {
             return 1;
         }
     }
@@ -135,19 +132,17 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SearchNextFadeSeq__12CSceneCmrS
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SearchNextQuakeSeq__12CSceneCmrSeqFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SearchNextCharaSeq__12CSceneCmrSeqFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", GetNextSeq__12CSceneCmrSeqFP12_SEN_CMR_SEQi);
-void CSceneCmrSeq::PRDelay(s32 arg0) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextPrSeq());
-    if (temp_v0 != NULL) {
-        if (arg0 > 0) {
-            arg0 = (arg0 * 50) / 60;
-            if (arg0 <= 0) {
-                arg0 = 1;
+void CSceneCmrSeq::PRDelay(s32 frames) {
+    _SEN_CMR_SEQ *command = SearchNextPrSeq();
+    if (command != NULL) {
+        if (frames > 0) {
+            frames = (frames * 50) / 60;
+            if (frames <= 0) {
+                frames = 1;
             }
         }
-        *temp_v0 = 1;
-        temp_v0[12] = arg0;
+        command->cmd = SCENE_CMR_CMD_PR_DELAY;
+        command->frame = frames;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SetPos__12CSceneCmrSeqFPf);
@@ -157,162 +152,142 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Move2__12CSceneCmrSeqFPfPfiif);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", MoveRef__12CSceneCmrSeqFPfi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", MovePos__12CSceneCmrSeqFPfi);
 void CSceneCmrSeq::InitPas(void) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextPrSeq());
-    if (temp_v0 != NULL) {
-        *temp_v0 = 8;
+    _SEN_CMR_SEQ *command = SearchNextPrSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_CMR_CMD_INIT_PAS;
     }
 }
-void CSceneCmrSeq::SetPasFrm(s32 arg0) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextPrSeq());
-    if (temp_v0 != NULL) {
-        if (arg0 > 0) {
-            arg0 = (arg0 * 50) / 60;
-            if (arg0 <= 0) {
-                arg0 = 1;
+void CSceneCmrSeq::SetPasFrm(s32 frames) {
+    _SEN_CMR_SEQ *command = SearchNextPrSeq();
+    if (command != NULL) {
+        if (frames > 0) {
+            frames = (frames * 50) / 60;
+            if (frames <= 0) {
+                frames = 1;
             }
         }
-        *temp_v0 = 0x9;
-        temp_v0[12] = arg0;
+        command->cmd = SCENE_CMR_CMD_SET_PAS_FRM;
+        command->frame = frames;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", AddPas__12CSceneCmrSeqFPfPf);
 void CSceneCmrSeq::StartPas(void) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextPrSeq());
-    if (temp_v0 != NULL) {
-        *temp_v0 = 0xB;
+    _SEN_CMR_SEQ *command = SearchNextPrSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_CMR_CMD_START_PAS;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", PRSlowing__12CSceneCmrSeqFfi);
 void CSceneCmrSeq::PRKeep(void) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextPrSeq());
-    if (temp_v0 != NULL) {
-        *temp_v0 = 0xD;
+    _SEN_CMR_SEQ *command = SearchNextPrSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_CMR_CMD_PR_KEEP;
     }
 }
 void CSceneCmrSeq::PRReturn(void) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextPrSeq());
-    if (temp_v0 != NULL) {
-        *temp_v0 = 0xE;
+    _SEN_CMR_SEQ *command = SearchNextPrSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_CMR_CMD_PR_RETURN;
     }
 }
-void CSceneCmrSeq::AHDDelay(s32 arg0) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextAhdSeq());
-    if (temp_v0 != NULL) {
-        if (arg0 > 0) {
-            arg0 = (arg0 * 50) / 60;
-            if (arg0 <= 0) {
-                arg0 = 1;
+void CSceneCmrSeq::AHDDelay(s32 frames) {
+    _SEN_CMR_SEQ *command = SearchNextAhdSeq();
+    if (command != NULL) {
+        if (frames > 0) {
+            frames = (frames * 50) / 60;
+            if (frames <= 0) {
+                frames = 1;
             }
         }
-        *temp_v0 = 0xf;
-        temp_v0[12] = arg0;
+        command->cmd = SCENE_CMR_CMD_AHD_DELAY;
+        command->frame = frames;
     }
 }
-void CSceneCmrSeq::SetAngle(float f) {
-    int *p = (int *)this->SearchNextAhdSeq();
-    if (p) { p[0] = 0x10; *(float *)(p + 12) = f; }
+void CSceneCmrSeq::SetAngle(float angle) {
+    _SEN_CMR_SEQ *command = SearchNextAhdSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_CMR_CMD_SET_ANGLE;
+        command->value = angle;
+    }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SetHeight__12CSceneCmrSeqFf);
-void CSceneCmrSeq::SetDist(float f) {
-    int *p = (int *)this->SearchNextAhdSeq();
-    if (p) { p[0] = 0x12; *(float *)(p + 12) = f; }
+void CSceneCmrSeq::SetDist(float distance) {
+    _SEN_CMR_SEQ *command = SearchNextAhdSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_CMR_CMD_SET_DIST;
+        command->value = distance;
+    }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SetAHD__12CSceneCmrSeqFfff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", MoveAHD__12CSceneCmrSeqFfffi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", MoveAHD2__12CSceneCmrSeqFfffiif);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SetSyncObj__12CSceneCmrSeqFiPffffiPc);
 void CSceneCmrSeq::ReleaseSyncObj(void) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextAhdSeq());
-    if (temp_v0 != NULL) {
-        *temp_v0 = 0x17;
+    _SEN_CMR_SEQ *command = SearchNextAhdSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_CMR_CMD_RELEASE_SYNC_OBJ;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", AHDSlowing__12CSceneCmrSeqFfi);
 void CSceneCmrSeq::AHDKeep(void) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextAhdSeq());
-    if (temp_v0 != NULL) {
-        *temp_v0 = 0x19;
+    _SEN_CMR_SEQ *command = SearchNextAhdSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_CMR_CMD_AHD_KEEP;
     }
 }
 void CSceneCmrSeq::AHDReturn(void) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextAhdSeq());
-    if (temp_v0 != NULL) {
-        *temp_v0 = 0x1A;
+    _SEN_CMR_SEQ *command = SearchNextAhdSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_CMR_CMD_AHD_RETURN;
     }
 }
-void CSceneCmrSeq::FadeDelay(s32 arg0) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextFadeSeq());
-    if (temp_v0 != NULL) {
-        if (arg0 > 0) {
-            arg0 = (arg0 * 50) / 60;
-            if (arg0 <= 0) {
-                arg0 = 1;
+void CSceneCmrSeq::FadeDelay(s32 frames) {
+    _SEN_CMR_SEQ *command = SearchNextFadeSeq();
+    if (command != NULL) {
+        if (frames > 0) {
+            frames = (frames * 50) / 60;
+            if (frames <= 0) {
+                frames = 1;
             }
         }
-        *temp_v0 = 0x1b;
-        temp_v0[12] = arg0;
+        command->cmd = SCENE_CMR_CMD_FADE_DELAY;
+        command->frame = frames;
     }
 }
 void CSceneCmrSeq::FadeInit(void) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextFadeSeq());
-    if (temp_v0 != NULL) {
-        *temp_v0 = 0x1C;
+    _SEN_CMR_SEQ *command = SearchNextFadeSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_CMR_CMD_FADE_INIT;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", FadeIn__12CSceneCmrSeqFifff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", FadeOut__12CSceneCmrSeqFifff);
-void CSceneCmrSeq::QuakeDelay(s32 arg0) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextQuakeSeq());
-    if (temp_v0 != NULL) {
-        if (arg0 > 0) {
-            arg0 = (arg0 * 50) / 60;
-            if (arg0 <= 0) {
-                arg0 = 1;
+void CSceneCmrSeq::QuakeDelay(s32 frames) {
+    _SEN_CMR_SEQ *command = SearchNextQuakeSeq();
+    if (command != NULL) {
+        if (frames > 0) {
+            frames = (frames * 50) / 60;
+            if (frames <= 0) {
+                frames = 1;
             }
         }
-        *temp_v0 = 0x1f;
-        temp_v0[12] = arg0;
+        command->cmd = SCENE_CMR_CMD_QUAKE_DELAY;
+        command->frame = frames;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Quake__12CSceneCmrSeqFPfi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Quake2__12CSceneCmrSeqFPfi);
-void CSceneCmrSeq::CharaDelay(s32 arg0) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextCharaSeq());
-    if (temp_v0 != NULL) {
-        if (arg0 > 0) {
-            arg0 = (arg0 * 50) / 60;
-            if (arg0 <= 0) {
-                arg0 = 1;
+void CSceneCmrSeq::CharaDelay(s32 frames) {
+    _SEN_CMR_SEQ *command = SearchNextCharaSeq();
+    if (command != NULL) {
+        if (frames > 0) {
+            frames = (frames * 50) / 60;
+            if (frames <= 0) {
+                frames = 1;
             }
         }
-        *temp_v0 = 0x22;
-        temp_v0[12] = arg0;
+        command->cmd = SCENE_CMR_CMD_CHARA_DELAY;
+        command->frame = frames;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", CharaAttach__12CSceneCmrSeqFifi);
@@ -360,8 +335,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", __ct__12CSceneObjSeqFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", ZeroInitialize__12CSceneObjSeqFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Initialize__12CSceneObjSeqFP12_SEN_OBJ_SEQi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Clear__12CSceneObjSeqFv);
-void CSceneObjSeq::SetEohNo(s32 arg0) {
-    (*(s32 *)((u8 *)this + 0x64)) = arg0;
+void CSceneObjSeq::SetEohNo(s32 eoh_no) {
+    this->eoh_no = eoh_no;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SearchSeq__12CSceneObjSeqFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", GetNextSeq__12CSceneObjSeqFP12_SEN_OBJ_SEQ);
@@ -373,237 +348,204 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SearchNextColSeq__12CSceneObjSe
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SearchNextScaleSeq__12CSceneObjSeqFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SearchNextSeSeq__12CSceneObjSeqFv);
 s32 CSceneObjSeq::CheckEnd(void) {
-    s32 *p = (s32 *) this;
-    if (p[2] == 0) {
-        if (p[4] == 0 && p[6] == 0 && p[8] == 0 && p[10] == 0 && p[12] == 0 && p[14] == 0) {
+    if (pos_seq == 0) {
+        if (rot_seq == 0 && mot_seq == 0 && anm_seq == 0 && col_seq == 0 && scale_seq == 0 && se_seq == 0) {
             return 1;
         }
     }
     return 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Play__12CSceneObjSeqFv);
-void CSceneObjSeq::PosDelay(s32 arg0) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextPosSeq());
-    if (temp_v0 != NULL) {
-        if (arg0 > 0) {
-            arg0 = (arg0 * 50) / 60;
-            if (arg0 <= 0) {
-                arg0 = 1;
+void CSceneObjSeq::PosDelay(s32 frames) {
+    _SEN_OBJ_SEQ *command = SearchNextPosSeq();
+    if (command != NULL) {
+        if (frames > 0) {
+            frames = (frames * 50) / 60;
+            if (frames <= 0) {
+                frames = 1;
             }
         }
-        *temp_v0 = 0x1;
-        temp_v0[8] = arg0;
+        command->cmd = SCENE_OBJ_CMD_POS_DELAY;
+        command->frame = frames;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SetPos__12CSceneObjSeqFPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Move__12CSceneObjSeqFPfii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Move2__12CSceneObjSeqFPfiif);
 void CSceneObjSeq::InitPas(void) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextPosSeq());
-    if (temp_v0 != NULL) {
-        *temp_v0 = 5;
+    _SEN_OBJ_SEQ *command = SearchNextPosSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_OBJ_CMD_INIT_PAS;
     }
 }
-void CSceneObjSeq::SetPasFrm(s32 arg0) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextPosSeq());
-    if (temp_v0 != NULL) {
-        if (arg0 > 0) {
-            arg0 = (arg0 * 50) / 60;
-            if (arg0 <= 0) {
-                arg0 = 1;
+void CSceneObjSeq::SetPasFrm(s32 frames) {
+    _SEN_OBJ_SEQ *command = SearchNextPosSeq();
+    if (command != NULL) {
+        if (frames > 0) {
+            frames = (frames * 50) / 60;
+            if (frames <= 0) {
+                frames = 1;
             }
         }
-        *temp_v0 = 0x6;
-        temp_v0[8] = arg0;
+        command->cmd = SCENE_OBJ_CMD_SET_PAS_FRM;
+        command->frame = frames;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", AddPas__12CSceneObjSeqFPf);
-void CSceneObjSeq::StartPas(s32 arg0) {
-    struct temp_v0_champs_ce64ab *temp_v0;
-
-    temp_v0 = (struct temp_v0_champs_ce64ab *) (this->SearchNextPosSeq());
-    if (temp_v0 != NULL) {
-        (*(s32 *)((u8 *)temp_v0 + 0x0)) = 8;
-        (*(s32 *)((u8 *)temp_v0 + 0x20)) = arg0;
+void CSceneObjSeq::StartPas(s32 grounded) {
+    _SEN_OBJ_SEQ *command = SearchNextPosSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_OBJ_CMD_START_PAS;
+        command->grounded = grounded;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Jump__12CSceneObjSeqFPffi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SetEohFramePos__12CSceneObjSeqFiPciPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", AddPos__12CSceneObjSeqFPfi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", AttachCamera__12CSceneObjSeqFfi);
-void CSceneObjSeq::RotDelay(s32 arg0) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextRotSeq());
-    if (temp_v0 != NULL) {
-        if (arg0 > 0) {
-            arg0 = (arg0 * 50) / 60;
-            if (arg0 <= 0) {
-                arg0 = 1;
+void CSceneObjSeq::RotDelay(s32 frames) {
+    _SEN_OBJ_SEQ *command = SearchNextRotSeq();
+    if (command != NULL) {
+        if (frames > 0) {
+            frames = (frames * 50) / 60;
+            if (frames <= 0) {
+                frames = 1;
             }
         }
-        *temp_v0 = 0xd;
-        temp_v0[8] = arg0;
+        command->cmd = SCENE_OBJ_CMD_ROT_DELAY;
+        command->frame = frames;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SetRot__12CSceneObjSeqFPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Rotation__12CSceneObjSeqFPfi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Rotation2__12CSceneObjSeqFPfiif);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", Reference__12CSceneObjSeqFPfi);
-void CSceneObjSeq::MotionDelay(s32 arg0) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextMotSeq());
-    if (temp_v0 != NULL) {
-        if (arg0 > 0) {
-            arg0 = (arg0 * 50) / 60;
-            if (arg0 <= 0) {
-                arg0 = 1;
+void CSceneObjSeq::MotionDelay(s32 frames) {
+    _SEN_OBJ_SEQ *command = SearchNextMotSeq();
+    if (command != NULL) {
+        if (frames > 0) {
+            frames = (frames * 50) / 60;
+            if (frames <= 0) {
+                frames = 1;
             }
         }
-        *temp_v0 = 0x12;
-        temp_v0[8] = arg0;
+        command->cmd = SCENE_OBJ_CMD_MOTION_DELAY;
+        command->frame = frames;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SetMotion__12CSceneObjSeqFPcif);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", NextMotion__12CSceneObjSeqFPcif);
 void CSceneObjSeq::MotionWait(void) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextMotSeq());
-    if (temp_v0 != NULL) {
-        *temp_v0 = 0x15;
+    _SEN_OBJ_SEQ *command = SearchNextMotSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_OBJ_CMD_MOTION_WAIT;
     }
 }
 void CSceneObjSeq::SetMotionTrg(void) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextMotSeq());
-    if (temp_v0 != NULL) {
-        *temp_v0 = 0x16;
+    _SEN_OBJ_SEQ *command = SearchNextMotSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_OBJ_CMD_MOTION_TRG;
     }
 }
 void CSceneObjSeq::MotionTrgWait(void) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextMotSeq());
-    if (temp_v0 != NULL) {
-        *temp_v0 = 0x17;
+    _SEN_OBJ_SEQ *command = SearchNextMotSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_OBJ_CMD_MOTION_TRG_WAIT;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SetStep__12CSceneObjSeqFf);
-void CSceneObjSeq::SetChengeStep(float f) {
-    int *p = (int *)this->SearchNextMotSeq();
-    if (p) { p[0] = 0x19; *(float *)(p + 8) = f; }
+void CSceneObjSeq::SetChengeStep(float step) {
+    _SEN_OBJ_SEQ *command = SearchNextMotSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_OBJ_CMD_SET_MOT_CHANGE_STEP;
+        command->value = step;
+    }
 }
 void CSceneObjSeq::ResetMotion(void) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextMotSeq());
-    if (temp_v0 != NULL) {
-        *temp_v0 = 0x1A;
+    _SEN_OBJ_SEQ *command = SearchNextMotSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_OBJ_CMD_RESET_MOTION;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SetMotionNowTime__12CSceneObjSeqFf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SetMotionWaitTime__12CSceneObjSeqFf);
 void CSceneObjSeq::NormalDrive(void) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextMotSeq());
-    if (temp_v0 != NULL) {
-        *temp_v0 = 0x1D;
+    _SEN_OBJ_SEQ *command = SearchNextMotSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_OBJ_CMD_NORMAL_DRIVE;
     }
 }
-void CSceneObjSeq::TexAnimeDelay(s32 arg0) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextAnmSeq());
-    if (temp_v0 != NULL) {
-        if (arg0 > 0) {
-            arg0 = (arg0 * 50) / 60;
-            if (arg0 <= 0) {
-                arg0 = 1;
+void CSceneObjSeq::TexAnimeDelay(s32 frames) {
+    _SEN_OBJ_SEQ *command = SearchNextAnmSeq();
+    if (command != NULL) {
+        if (frames > 0) {
+            frames = (frames * 50) / 60;
+            if (frames <= 0) {
+                frames = 1;
             }
         }
-        *temp_v0 = 0x1e;
-        temp_v0[8] = arg0;
+        command->cmd = SCENE_OBJ_CMD_TEX_ANIME_DELAY;
+        command->frame = frames;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", TexAnime__12CSceneObjSeqFPci);
-void CSceneObjSeq::ColorDelay(s32 arg0) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextColSeq());
-    if (temp_v0 != NULL) {
-        if (arg0 > 0) {
-            arg0 = (arg0 * 50) / 60;
-            if (arg0 <= 0) {
-                arg0 = 1;
+void CSceneObjSeq::ColorDelay(s32 frames) {
+    _SEN_OBJ_SEQ *command = SearchNextColSeq();
+    if (command != NULL) {
+        if (frames > 0) {
+            frames = (frames * 50) / 60;
+            if (frames <= 0) {
+                frames = 1;
             }
         }
-        *temp_v0 = 0x20;
-        temp_v0[8] = arg0;
+        command->cmd = SCENE_OBJ_CMD_COLOR_DELAY;
+        command->frame = frames;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SetColor__12CSceneObjSeqFPfi);
-void CSceneObjSeq::ScaleDelay(s32 arg0) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextScaleSeq());
-    if (temp_v0 != NULL) {
-        if (arg0 > 0) {
-            arg0 = (arg0 * 50) / 60;
-            if (arg0 <= 0) {
-                arg0 = 1;
+void CSceneObjSeq::ScaleDelay(s32 frames) {
+    _SEN_OBJ_SEQ *command = SearchNextScaleSeq();
+    if (command != NULL) {
+        if (frames > 0) {
+            frames = (frames * 50) / 60;
+            if (frames <= 0) {
+                frames = 1;
             }
         }
-        *temp_v0 = 0x22;
-        temp_v0[8] = arg0;
+        command->cmd = SCENE_OBJ_CMD_SCALE_DELAY;
+        command->frame = frames;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", SetScale__12CSceneObjSeqFPfi);
-void CSceneObjSeq::SeDelay(s32 arg0) {
-    s32 *temp_v0;
-
-    temp_v0 = (s32 *) (this->SearchNextSeSeq());
-    if (temp_v0 != NULL) {
-        if (arg0 > 0) {
-            arg0 = (arg0 * 50) / 60;
-            if (arg0 <= 0) {
-                arg0 = 1;
+void CSceneObjSeq::SeDelay(s32 frames) {
+    _SEN_OBJ_SEQ *command = SearchNextSeSeq();
+    if (command != NULL) {
+        if (frames > 0) {
+            frames = (frames * 50) / 60;
+            if (frames <= 0) {
+                frames = 1;
             }
         }
-        *temp_v0 = 0x24;
-        temp_v0[8] = arg0;
+        command->cmd = SCENE_OBJ_CMD_SE_DELAY;
+        command->frame = frames;
     }
 }
-void CSceneObjSeq::SePlay(s32 arg0, s32 arg1) {
-    struct temp_v0_champs *temp_v0;
-
-    temp_v0 = (struct temp_v0_champs *) (this->SearchNextSeSeq());
-    if (temp_v0 != NULL) {
-        (*(s32 *)((u8 *)temp_v0 + 0x0)) = 0x25;
-        (*(s32 *)((u8 *)temp_v0 + 0x20)) = arg0;
-        (*(s32 *)((u8 *)temp_v0 + 0x24)) = arg1;
+void CSceneObjSeq::SePlay(s32 sound_id, s32 sound_no) {
+    _SEN_OBJ_SEQ *command = SearchNextSeSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_OBJ_CMD_SE_PLAY;
+        command->no = sound_id;
+        command->se_no = sound_no;
     }
 }
 void CSceneObjSeq::ResetDAPosition(void) {
-    s32 *temp_v0;
-    s32 *temp_v0_2;
-
-    temp_v0 = (s32 *) (this->SearchNextSeSeq());
-    if (temp_v0 != NULL) {
-        *temp_v0 = 0x26;
+    _SEN_OBJ_SEQ *command = SearchNextSeSeq();
+    if (command != NULL) {
+        command->cmd = SCENE_OBJ_CMD_RESET_DA_POSITION;
     }
-    temp_v0_2 = (s32 *) (this->SearchNextMotSeq());
-    if (temp_v0_2 != NULL) {
-        *temp_v0_2 = 0x26;
+    _SEN_OBJ_SEQ *motion_command = SearchNextMotSeq();
+    if (motion_command != NULL) {
+        motion_command->cmd = SCENE_OBJ_CMD_RESET_DA_POSITION;
     }
 }
 

@@ -580,6 +580,7 @@ struct _SEN_OBJ_SEQ {
         int frame;        /**< Number of frames the command lasts. */
         float value;      /**< Motion step or time, jump height or camera distance the command sets. */
         int no;           /**< Event object handle, motion flags, sound number or texture animation switch. */
+        int grounded;     /**< Whether path movement keeps the object on the ground. */
     };
     union {
         int mode;         /**< Ease shape (a SceneSeqEase), or 1 to keep a moved object on the ground. */

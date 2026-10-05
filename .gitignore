@@ -23,6 +23,9 @@ tools/ghidra
 /objdiff.json
 /progress/
 
+# Private retail assets used by CI and local progress reports
+/.private/
+
 # m2c context
 ctx.c
 

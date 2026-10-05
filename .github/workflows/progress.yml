@@ -1,0 +1,130 @@
+name: Progress report
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    # Only trusted master runs receive the private checkout. Pull requests
+    # trigger this workflow but cannot use the retail binary.
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+    env:
+      HAS_PRIVATE: ${{ secrets.PRIVATE_REPO_TOKEN != '' && vars.PRIVATE_REPOSITORY != '' }}
+      PRIVATE_REPOSITORY: ${{ vars.PRIVATE_REPOSITORY }}
+    steps:
+      - name: Explain missing private access
+        if: env.HAS_PRIVATE != 'true'
+        run: echo '::notice::Set PRIVATE_REPOSITORY and PRIVATE_REPO_TOKEN to generate progress.'
+
+      - name: Check out source
+        if: env.HAS_PRIVATE == 'true'
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Check out build submodule
+        if: env.HAS_PRIVATE == 'true'
+        run: git submodule update --init tools/mwccgap
+
+      - name: Check out private assets
+        if: env.HAS_PRIVATE == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.PRIVATE_REPOSITORY }}
+          path: .private
+          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
+          lfs: false
+
+      - name: Fetch PAL executable and verify checksum
+        if: env.HAS_PRIVATE == 'true'
+        run: |
+          git lfs version
+          git -C .private lfs install --local
+          git -C .private lfs pull --include='rom/pal/extracted/iso/SCES_511.90' --exclude=''
+          scripts/host/overlay_private.sh .private
+          rm -rf .private
+
+      - name: Build toolchain image
+        if: env.HAS_PRIVATE == 'true'
+        run: docker build -t chronicletwo_dev --target dev .
+
+      - name: Build and generate objdiff report
+        if: env.HAS_PRIVATE == 'true'
+        run: |
+          docker run --rm \
+            -v "$PWD:/chronicletwo" -w /chronicletwo -e HOME=/tmp \
+            chronicletwo_dev sh -ec '
+              scripts/build/cmake.sh elf objdiff
+              python3 scripts/build/progress_report.py
+            '
+
+      - name: Summarize progress
+        if: env.HAS_PRIVATE == 'true'
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+
+          measures = json.loads(Path('progress/report.json').read_text())['measures']
+          print('| Region | Code matched | Functions matched | Bytes matched |')
+          print('| --- | ---: | ---: | ---: |')
+          print('| PAL | %.4f%% | %s / %s | %s / %s |' % (
+              measures['matched_code_percent'],
+              measures['matched_functions'], measures['total_functions'],
+              measures['matched_code'], measures['total_code']))
+          PY
+
+      # decomp.dev reads this artifact after the repository is registered.
+      - name: Upload PAL report for decomp.dev
+        if: env.HAS_PRIVATE == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pal_report
+          path: progress/report.json
+          if-no-files-found: error
+
+  discord:
+    needs: report
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    env:
+      HAS_DISCORD: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
+    steps:
+      - name: Check out source
+        if: env.HAS_DISCORD == 'true'
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Download PAL report
+        if: env.HAS_DISCORD == 'true'
+        id: download
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: pal_report
+          path: reports/pal_report
+
+      - name: Prepare progress message
+        if: env.HAS_DISCORD == 'true' && steps.download.outcome == 'success'
+        run: |
+          python3 .github/scripts/discord_progress.py \
+            --pal reports/pal_report/report.json \
+            "$RUNNER_TEMP/discord-progress.json"
+
+      - name: Send progress to Discord
+        if: env.HAS_DISCORD == 'true' && steps.download.outcome == 'success'
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl --fail-with-body --show-error --silent --retry 3 \
+            -H 'Content-Type: application/json' \
+            --data-binary "@$RUNNER_TEMP/discord-progress.json" \
+            "$DISCORD_WEBHOOK_URL"

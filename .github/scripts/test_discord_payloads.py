@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+"""Focused checks for the Discord webhook payload generators."""
+
+import importlib.util
+import unittest
+from pathlib import Path
+
+
+def load(name):
+    spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name(f"{name}.py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+progress = load("discord_progress")
+commits = load("discord_commits")
+
+
+class ProgressPayloadTests(unittest.TestCase):
+    def test_pal_has_overall_and_game_fields(self):
+        report = {
+            "measures": {"matched_code_percent": 20, "fuzzy_match_percent": 30,
+                         "matched_functions": 2, "total_functions": 5},
+            "categories": [{"id": "game", "measures": {
+                "matched_code_percent": 25, "fuzzy_match_percent": 50,
+                "matched_functions": 1, "total_functions": 3}}],
+            "units": [
+                {"metadata": {"progress_categories": ["game"]},
+                 "functions": [{"fuzzy_match_percent": 50}]},
+                {"metadata": {"progress_categories": []},
+                 "functions": [{"fuzzy_match_percent": 40}]},
+            ],
+        }
+        result = progress.payload(report)
+        self.assertEqual(result["allowed_mentions"], {"parse": []})
+        self.assertEqual(result["embeds"][0]["title"], "Dark Chronicle PAL")
+        overall, game = result["embeds"][0]["fields"]
+        self.assertIn("Fuzzy **10.00%** (2)", overall["value"])
+        self.assertIn("Fuzzy **25.00%** (1)", game["value"])
+        self.assertIn("Other **50.00%** (1)", game["value"])
+
+    def test_emoji_stays_within_discord_limit(self):
+        event = {"commits": [{"id": f"{i:040x}", "message": "😀" * 200}
+                             for i in range(40)]}
+        result = commits.payload(event)
+        self.assertLessEqual(commits.discord_length(result["content"]), 2000)
+
+
+class CommitPayloadTests(unittest.TestCase):
+    def test_many_commits_are_bounded_and_only_safe_links_are_used(self):
+        event = {
+            "repository": {"full_name": "TheMoonPeople/ChronicleTwo"},
+            "ref": "refs/heads/master",
+            "commits": [
+                {"id": f"{i:040x}", "message": "@everyone *change* " + "x" * 300,
+                 "author": {"name": "Test Author"},
+                 "url": "https://evil.example/ignored"}
+                for i in range(40)
+            ],
+        }
+        result = commits.payload(event)
+        self.assertLessEqual(len(result["content"]), 2000)
+        self.assertIn("… and", result["content"])
+        self.assertIn("https://github.com/TheMoonPeople/ChronicleTwo/commit/", result["content"])
+        self.assertNotIn("evil.example", result["content"])
+        self.assertIn(r"\*change\*", result["content"])
+        self.assertIn("Test Author", result["content"])
+        self.assertEqual(result["allowed_mentions"], {"parse": []})
+
+    def test_empty_event_and_invalid_sha(self):
+        empty = commits.payload({"commits": []})
+        self.assertIn("No commits", empty["content"])
+        invalid = commits.payload({"repository": {"full_name": "owner/repo"},
+                                   "commits": [{"id": "not-a-sha", "message": "Hello"}]})
+        self.assertNotIn("https://", invalid["content"])
+
+
+if __name__ == "__main__":
+    unittest.main()

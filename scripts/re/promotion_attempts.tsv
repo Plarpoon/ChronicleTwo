@@ -686,3 +686,14 @@ mapselect	GetMapNameInfo__Fi	checker
 mapselect	LoadMapName__FiP1	checker
 mapselect	mlMAP_NAME__FP9SPI_STACKi	checker
 mapselect	mlMAP_NAME_NUM__FP9SPI_STACKi	checker
+mapsky	_SKYB_ANIME__FP9SPI_STACKi	checker
+mapsky	_SKY_ANIME__FP9SPI_STACKi	checker
+mapsky	_SKY_BG__FP9SPI_STACKi	checker
+mapsky	_SKYB_MDS__FP9SPI_STACKi	checker
+mapsky	_SUN_MDS__FP9SPI_STACKi	checker
+mapsky	_SKY_MDS__FP9SPI_STACKi	checker
+mapsky	_SKY_IMG__FP9SPI_STACKi	checker
+mapsky	LoadSkyPack__FP12MAP_SKY_INFOPci	checker
+mapsky	LoadPack__7CMapSkyFPUiiP9mgCMemory	checker
+mapsky	DrawSky__7CMapSkyFPfPfPfiPfPf	checker
+mapsky	DrawSkyBack__7CMapSkyFPfPfPf	checker

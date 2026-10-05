@@ -496,21 +496,27 @@ int CScriptInterpreter::SearchCommand(int *tag_index) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", SearchCommand__18CScriptInterpreterFPi);
 #endif
-#ifdef NONMATCHING
+
 /**
- * Moves a reader past spaces, tabs and line breaks; gives non-zero when text
- * remains to be read.
- *
+ * Moves a reader past spaces, tabs and line breaks;
+ * gives 1 when text remains to be read and 0 at its end.
  */
 static int SkipSpace(input_str &in) {
-    while (in.position < in.size && !CheckChar(in.buffer[in.position])) {
-        in.position++;
+    char *buffer = in.buffer;
+    int   position = in.position;
+
+    while (position < in.size) {
+        if (CheckChar(buffer[position])) {
+            break;
+        }
+        position++;
     }
-    return in.position < in.size;
+    in.position = position;
+    if (position >= in.size) {
+        return 0;
+    }
+    return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", SkipSpace__FR9input_str);
-#endif
 
 /**
  * Tells whether a character is part of a word: gives 0 for

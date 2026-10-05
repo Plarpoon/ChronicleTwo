@@ -2,6 +2,7 @@
 
 #include "common.h"
 #include "gamepad.hpp"
+#include "sound.hpp"
 
 /**
  * @file
@@ -18,6 +19,7 @@ class CSubGameData;
 class CPadControl;
 class mgCMemory;
 class mgCTexture;
+
 
 /**
  * Modes the main loop can run, as LoopNo holds them and as they index
@@ -207,6 +209,11 @@ extern u_long128 *read_buffer;
  * Sound bank number of the system sound effects, or -1 when they failed to load.
  */
 extern int SystemSND_ID;
+
+/**
+ * Sound controller shared by the game loops and chapter menu.
+ */
+extern CSound CSnd;
 
 /**
  * Non-zero while the debug features are on.

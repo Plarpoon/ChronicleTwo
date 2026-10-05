@@ -1,12 +1,18 @@
-# The build context is the sources and the tools. The disc image, what is
-# extracted or split from it and the build tree are mounted instead, and
-# copying them would make the context several gigabytes.
-.git
-rom
-build
-ps2/asm
-ps2/re
-tools/ghidra
+# The toolchain image uses a mounted checkout for builds. Exclude retail and
+# generated data from the image context and the Dockerfile's COPY stage.
+rom/
+.private/
+ps2/asm/
+ps2/re/
+ps2/build/
+port/build/
+build/
+progress/
+objdiff.json
 .build.lock
-**/__pycache__
+**/__pycache__/
 **/.DS_Store
+.git/
+.codex/
+.claude/
+tools/ghidra/

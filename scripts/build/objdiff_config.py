@@ -26,7 +26,6 @@ def config(build_dir):
             "target_path": f"{build_dir}/objdiff/target/{unit}.s.o",
             "base_path": f"{build_dir}/objdiff/base/{unit}.cpp.o",
             "metadata": {
-                "progress_categories": ["game"],
                 "source_path": lay.source(unit),
             },
         })
@@ -42,7 +41,6 @@ def config(build_dir):
             "ps2/asm/**/*.s",
             "ps2/config/*/*.{yaml,txt}",
         ],
-        "progress_categories": [{"id": "game", "name": "Game"}],
         "options": {"demangler": "codewarrior", "functionRelocDiffs": "none"},
         "name": "chronicletwo",
         "units": units,

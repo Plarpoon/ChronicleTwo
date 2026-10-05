@@ -2,8 +2,8 @@
 
 ## Scope and completion gate
 
-The game-unit inventory is `progress/report.json` (149 translation units, 7,830
-functions at the current baseline). SDK and runtime units remain assembly as
+The game-unit inventory is `progress/report.json` (149 translation units, 6,872
+functions after excluding internal `.L` branch labels). SDK and runtime units remain assembly as
 required by `AGENTS.md`. Run `python3 scripts/re/coverage.py` after a full build
 to count exact matches, guarded C++ drafts, and functions with assembly only.
 

@@ -45,6 +45,10 @@ def rows(report: dict) -> list[tuple[str, str, str]]:
         guarded = guarded_symbols(source.read_text()) if source.exists() else set()
         for function in unit["functions"]:
             symbol = function["name"]
+            # Progress also lists internal branch targets emitted as local labels.
+            # They are part of their containing function, not separate work items.
+            if symbol.startswith(".L"):
+                continue
             match = function.get("fuzzy_match_percent")
             if match == 100.0:
                 status = "matched"

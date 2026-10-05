@@ -19,7 +19,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", GetMapFlag__9CSaveDataFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", InitBitCtrl__9CSaveDataFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", SetBitCtrl__9CSaveDataFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", ResetBitCtrl__9CSaveDataFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", GetBitCtrl__9CSaveDataFv);
+u8 CSaveData::GetBitCtrl() { return this->bit_ctrl; }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", GetItem__9CSaveDataFii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", ForceBootTour__9CSaveDataFii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/savedata", CheckEventDay__9CSaveDataFi);

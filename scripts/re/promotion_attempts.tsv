@@ -426,3 +426,8 @@ editexception	Create__13CGeyserEffectFv	checker
 editexception	__ct__13CGeyserEffectFv	checker
 screeneffect	LensFlare__FPiPfiPcPc	checker
 screeneffect	DepthOfField__FiPfP10mgCTexturef	checker
+movie	GetReadBufSize__6CMovieFv	checker
+movie	GetViBufDataSize__6CMovieFv	checker
+movie	GetVoBufDataSize__6CMovieFv	checker
+memcard	GetFuncNo__18CMemoryCardManagerFv	checker
+savedata	GetBitCtrl__9CSaveDataFv	checker

@@ -10,8 +10,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", SwitchThread__6CMovieFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", Term__6CMovieFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", EndCheck__6CMovieFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", IsStarted__6CMovieFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", GetVoBufDataSize__6CMovieFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", GetViBufDataSize__6CMovieFv);
+int CMovie::GetVoBufDataSize() { return 0x1C0000; }
+int CMovie::GetViBufDataSize() { return 0x80000; }
 s32 CMovie::GetViBufTagSize(void) {
     return 0x1010;
 }
@@ -26,7 +26,7 @@ s32 CMovie::GetMpegWorkSize(s32 width, s32 height) {
     }
     return half_work_units + 0x1768;
 }
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", GetReadBufSize__6CMovieFv);
+int CMovie::GetReadBufSize() { return 0x50050; }
 s32 CMovie::GetTagProgSize(s32 width, s32 height) {
     s32 macroblocks;
     s32 tag_pages;

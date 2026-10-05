@@ -75,7 +75,7 @@ void CMemoryCardManager::SetFuncNo(s32 operation) {
         search_wait = 11;
     }
 }
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", GetFuncNo__18CMemoryCardManagerFv);
+int CMemoryCardManager::GetFuncNo() { return this->func_no; }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", CheckMaxUniqueCounter__18CMemoryCardManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", GetUpdateFile__18CMemoryCardManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", CheckDataFileNum__18CMemoryCardManagerFv);

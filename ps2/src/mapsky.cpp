@@ -4,62 +4,50 @@
 
 // Code (.text)
 void CMapSky::Initialize(void) {
-    s32 var_a1;
-    s32 var_a2;
-    s32 var_a2_2;
-    s32 var_a3;
-    struct temp_a3_champs_4de5e1 *temp_a3;
-    struct temp_t0_champs_4de5e1 *temp_t0;
-
-    var_a2 = 0;
-    var_a3 = 0;
-    do {
-        temp_t0 = (struct temp_t0_champs_4de5e1 *) ((u8 *) this + var_a3);
-        var_a2 += 1;
-        (*(s32 *)((u8 *)temp_t0 + 0x0)) = 0;
-        (*(s32 *)((u8 *)temp_t0 + 0x30)) = 0;
-        var_a3 += 4;
-        (*(s32 *)((u8 *)temp_t0 + 0x60)) = 0;
-        (*(s32 *)((u8 *)temp_t0 + 0x40)) = 0;
-        (*(s32 *)((u8 *)temp_t0 + 0x10)) = 0;
-        (*(s32 *)((u8 *)temp_t0 + 0x50)) = 0;
-        (*(s32 *)((u8 *)temp_t0 + 0x20)) = 0;
-        (*(s32 *)((u8 *)temp_t0 + 0x70)) = -1;
-    } while (var_a2 < 4);
-    var_a1 = 0;
-    var_a2_2 = 0;
-    do {
-        temp_a3 = (struct temp_a3_champs_4de5e1 *) ((u8 *) this + var_a2_2);
-        var_a1 += 8;
-        (*(s32 *)((u8 *)temp_a3 + 0x88)) = 0;
-        (*(s32 *)((u8 *)temp_a3 + 0x8c)) = 0;
-        var_a2_2 += 0x40;
-        (*(s32 *)((u8 *)temp_a3 + 0x90)) = 0;
-        (*(s32 *)((u8 *)temp_a3 + 0x94)) = 0;
-        (*(s32 *)((u8 *)temp_a3 + 0x98)) = 0;
-        (*(s32 *)((u8 *)temp_a3 + 0x9c)) = 0;
-        (*(s32 *)((u8 *)temp_a3 + 0xa0)) = 0;
-        (*(s32 *)((u8 *)temp_a3 + 0xa4)) = 0;
-        (*(s32 *)((u8 *)temp_a3 + 0xa8)) = 0;
-        (*(s32 *)((u8 *)temp_a3 + 0xac)) = 0;
-        (*(s32 *)((u8 *)temp_a3 + 0xb0)) = 0;
-        (*(s32 *)((u8 *)temp_a3 + 0xb4)) = 0;
-        (*(s32 *)((u8 *)temp_a3 + 0xb8)) = 0;
-        (*(s32 *)((u8 *)temp_a3 + 0xbc)) = 0;
-        (*(s32 *)((u8 *)temp_a3 + 0xc0)) = 0;
-        (*(s32 *)((u8 *)temp_a3 + 0xc4)) = 0;
-    } while (var_a1 < 0x10);
-    (*(s32 *)((u8 *)this + 0x80)) = 0;
-    (*(s32 *)((u8 *)this + 0x84)) = 0;
+    for (int band = 0; band < 4; band++) {
+        sky[band] = NULL;
+        skyb[band] = NULL;
+        sun[band] = NULL;
+        skyb_rot[band] = 0.0f;
+        sky_rot[band] = 0.0f;
+        skyb_rot_speed[band] = 0.0f;
+        sky_rot_speed[band] = 0.0f;
+        tex_block[band] = -1;
+    }
+    for (int frame = 0; frame < 16; frame += 8) {
+        anime[frame + 0].frame = NULL;
+        anime[frame + 0].speed = 0.0f;
+        anime[frame + 1].frame = NULL;
+        anime[frame + 1].speed = 0.0f;
+        anime[frame + 2].frame = NULL;
+        anime[frame + 2].speed = 0.0f;
+        anime[frame + 3].frame = NULL;
+        anime[frame + 3].speed = 0.0f;
+        anime[frame + 4].frame = NULL;
+        anime[frame + 4].speed = 0.0f;
+        anime[frame + 5].frame = NULL;
+        anime[frame + 5].speed = 0.0f;
+        anime[frame + 6].frame = NULL;
+        anime[frame + 6].speed = 0.0f;
+        anime[frame + 7].frame = NULL;
+        anime[frame + 7].speed = 0.0f;
+    }
+    bg = NULL;
+    bg_visual = NULL;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapsky", DrawSkyBack__7CMapSkyFPfPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapsky", DrawSky__7CMapSkyFPfPfPfiPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapsky", LoadPack__7CMapSkyFPUiiP9mgCMemory);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapsky", LoadSkyPack__FP12MAP_SKY_INFOPci);
-s32 CheckSkyID(s32 i) {
-    s32 r;
-    if (i < 0 || i >= 4) r = 0; else r = 1;
-    return r;
+/**
+ *
+ * Checks whether a sky time band index is in range.
+ *
+ */
+s32 CheckSkyID(s32 sky_id) {
+    s32 valid;
+    if (sky_id < 0 || sky_id >= 4) valid = 0; else valid = 1;
+    return valid;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapsky", _SKY_IMG__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapsky", _SKY_MDS__FP9SPI_STACKi);

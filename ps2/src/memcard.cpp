@@ -11,19 +11,19 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", MakeCheckDigit__FiPci);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", __ct__18CMemoryCardManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", Initialize__18CMemoryCardManagerFP9mgCMemory);
 void CMemoryCardManager::InitSaveFileInfoTable(void) {
-    s32 var_s0;
-    s32 var_s1;
-    u8 *temp_s2;
+    s32 entry_no;
+    s32 entry_offset;
+    CMemoryCardManager *entry_base;
 
-    var_s1 = 0;
-    var_s0 = 0;
+    entry_offset = 0;
+    entry_no = 0;
     do {
-        temp_s2 = (u8 *) this + var_s1;
-        memset(temp_s2 + 0x80, 0, 0x40);
-        var_s0 += 1;
-        *(s8 *) (temp_s2 + 0xA0) = 0;
-        var_s1 += 0x40;
-    } while (var_s0 < 0x11);
+        entry_base = (CMemoryCardManager *)((u8 *)this + entry_offset);
+        memset(&entry_base->dir_table[0], 0, sizeof(MC_DIR_ENTRY));
+        entry_no += 1;
+        entry_base->dir_table[0].name[0] = 0;
+        entry_offset += sizeof(MC_DIR_ENTRY);
+    } while (entry_no < 17);
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", GetOpenAttribute__18CMemoryCardManagerFPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", InitError__18CMemoryCardManagerFv);
@@ -32,47 +32,47 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", FinishForMC__18CMemoryCardManage
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", SetBuff_Album__18CMemoryCardManagerFPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", SetIconData__18CMemoryCardManagerFP12MC_ICON_DATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", GetIconDataSize__18CMemoryCardManagerFv);
-s32 CMemoryCardManager::GetSaveDataSize(s32 arg0) {
-    s32 var_v0;
+s32 CMemoryCardManager::GetSaveDataSize(s32 type) {
+    s32 size;
 
-    var_v0 = 0;
-    if (arg0 == 0) {
-        var_v0 = (this->GetIconDataSize() + 0x19A) << 0xA;
+    size = 0;
+    if (type == MC_SIZE_SAVE_TOTAL) {
+        size = (GetIconDataSize() + 0x19A) << 0xA;
     }
-    if (arg0 == 1) {
-        var_v0 = 0x659C0;
+    if (type == MC_SIZE_SAVE_FILE) {
+        size = sizeof(SAVEDATA_FORMAT);
     }
-    if (arg0 == 2) {
-        var_v0 = 0x64CB0;
+    if (type == MC_SIZE_ALBUM_FILE) {
+        size = 0x64CB0;
     }
-    if (arg0 == 3) {
-        var_v0 = this->GetIconDataSize() << 0xA;
+    if (type == MC_SIZE_ICONS) {
+        size = GetIconDataSize() << 0xA;
     }
-    if (arg0 == 4) {
-        var_v0 = (this->GetIconDataSize() << 0xA) + 0x654B0;
+    if (type == MC_SIZE_ALBUM_TOTAL) {
+        size = (GetIconDataSize() << 0xA) + 0x654B0;
     }
-    if (arg0 == 5) {
-        var_v0 = this->GetIconDataSize() + 0x199;
+    if (type == MC_SIZE_SAVE_KB) {
+        size = GetIconDataSize() + 0x199;
     }
-    if (arg0 == 6) {
-        var_v0 = 0x20800;
+    if (type == MC_SIZE_UNK_6) {
+        size = 0x20800;
     }
-    if (arg0 == 7) {
-        var_v0 = 0x5470;
+    if (type == MC_SIZE_OMAKE_FILE) {
+        size = sizeof(CSubGameData);
     }
-    if (arg0 == 8) {
-        var_v0 = (this->GetIconDataSize() << 0xA) + 0x5C70;
+    if (type == MC_SIZE_OMAKE_TOTAL) {
+        size = (GetIconDataSize() << 0xA) + 0x5C70;
     }
-    if (arg0 == 9) {
-        var_v0 = this->GetIconDataSize() + 0x1B;
+    if (type == MC_SIZE_OMAKE_KB) {
+        size = GetIconDataSize() + 0x1B;
     }
-    return var_v0;
+    return size;
 }
-void CMemoryCardManager::SetFuncNo(s32 arg0) {
-    (*(s32 *)((u8 *)this + 0x50)) = arg0;
-    (*(s32 *)((u8 *)this + 0x58)) = 0;
-    if (arg0 == 1) {
-        (*(s32 *)((u8 *)this + 0x90c)) = 0xB;
+void CMemoryCardManager::SetFuncNo(s32 operation) {
+    func_no = operation;
+    step = 0;
+    if (operation == MC_FUNC_IDLE) {
+        search_wait = 11;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", GetFuncNo__18CMemoryCardManagerFv);

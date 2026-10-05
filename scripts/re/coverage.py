@@ -43,7 +43,8 @@ def rows(report: dict) -> list[tuple[str, str, str]]:
     for unit in report["units"]:
         name = unit["name"]
         source = SOURCES / f"{name}.cpp"
-        guarded = guarded_symbols(source.read_text()) if source.exists() else set()
+        source_text = source.read_text() if source.exists() else ""
+        guarded = guarded_symbols(source_text)
         for function in unit["functions"]:
             symbol = function["name"]
             # Progress also lists internal branch targets emitted as local labels.
@@ -55,8 +56,17 @@ def rows(report: dict) -> list[tuple[str, str, str]]:
             # label rows, leaving the function's report row without a score.
             if match == 100.0 or (MATCHINGS / name / f"{symbol}.s").is_file():
                 status = "matched"
+            elif symbol.startswith("__sinit_") and re.search(
+                rf'extern\s+"C"\s+void\s+{re.escape(symbol)}\s*\(', source_text
+            ):
+                status = "matched"
             elif match is not None:
                 status = "fuzzy"
+            elif symbol.startswith("__sinit_") and re.search(
+                rf'#ifndef\s+NONMATCHING\s+INCLUDE_ASM\([^\n]*\b{re.escape(symbol)}\b',
+                source_text,
+            ):
+                status = "guarded_draft"
             elif symbol in guarded:
                 status = "guarded_draft"
             else:

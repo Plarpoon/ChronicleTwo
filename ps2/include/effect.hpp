@@ -207,13 +207,8 @@ public:
     int                rep_rand_count;         /**< Samples averaged when the frames between batches are randomised by regularity. */
     int                repeat_num;             /**< Batches spawned before the emitter stops, or -1 to never stop. */
     int                repeat_cnt;             /**< Batches spawned so far. */
-    u32                unk_68;
-    u32                unk_6c;
     sceVu0FVECTOR      pos;                    /**< Spawn position, relative to the origin. */
     EFFECT_RAND_TYPE   pos_rand_type;          /**< How the spawn position is randomised. */
-    u32                unk_84;
-    u32                unk_88;
-    u32                unk_8c;
     sceVu0FVECTOR      pos_rand;               /**< Per-axis range the spawn position is randomised over. */
     int                pos_rand_count;         /**< Samples averaged when the spawn position is randomised by regularity. */
     EFFECT_CHANGE_TYPE move_type[3];           /**< Curve applied to each axis of the particles' position. */
@@ -236,7 +231,6 @@ public:
     int                move_p1_rand_count;     /**< Samples averaged when the position curve amounts are randomised by regularity. */
     int                move_p2_rand_count;     /**< Samples averaged when the position curve timings are randomised by regularity. */
     EFFECT_CHANGE_TYPE scale_type[3];          /**< Curve applied to the particles' width and height scales. */
-    u32                unk_17c;
     sceVu0FVECTOR      scale;                  /**< Width and height scale of the particles spawned. */
     sceVu0FVECTOR      svelo;                  /**< Scale added to the particles every frame. */
     sceVu0FVECTOR      scale_p1;               /**< Amount of the scale curves. */
@@ -272,13 +266,9 @@ public:
     mgCTexture        *texture;                /**< Texture the particles are drawn with. */
     int                tex_get_type;           /**< Zero to give each particle one random rectangle, otherwise to step every particle through all of them over its life. */
     int                gravity;                /**< Non-zero to pull the particles towards the gravity point. */
-    u32                unk_2e8;
-    u32                unk_2ec;
     sceVu0FVECTOR      gravity_pos;            /**< Point the particles are pulled towards, relative to the origin. */
     float              gravity_accel;          /**< Strength of the pull, multiplied by gravity_mass and divided by the squared distance. */
     float              gravity_mass;           /**< Second factor of the pull's strength. */
-    u32                unk_308;
-    u32                unk_30c;
 
     /**
      *

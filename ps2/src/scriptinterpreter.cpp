@@ -76,15 +76,12 @@ char *spiGetStackString(SPI_STACK *stack) {
     }
 }
 
-#ifdef NONMATCHING
 void spiGetStackVector(float *vector, SPI_STACK *stack) {
-    vector[0] = spiGetStackFloat(&stack[0]);
-    vector[1] = spiGetStackFloat(&stack[1]);
-    vector[2] = spiGetStackFloat(&stack[2]);
+    vector[0] = spiGetStackFloat(stack++);
+    vector[1] = spiGetStackFloat(stack++);
+    vector[2] = spiGetStackFloat(stack++);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", spiGetStackVector__FPfP9SPI_STACK);
-#endif
+
 #ifdef NONMATCHING
 void CScriptInterpreter::PushStack(SPI_STACK argument) {
     if (stack_count < stack_size) {

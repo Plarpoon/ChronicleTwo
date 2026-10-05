@@ -19,7 +19,11 @@ given the section retail holds that address in:
   no padding is added between pieces; a function keeps the compiler's.
 
 A section whose symbol retail does not name -- a compiler-generated one, in a
-decompiled function's future -- is left as the compiler emitted it.
+decompiled function's future -- is left as the compiler emitted it, but for
+the alignment of a `.rodata` one: retail has every compiler-generated literal
+of `.rodata` on a multiple of eight, and this compiler gives one of four
+bytes or fewer, such as the string "BIN", a multiple of four, so its
+alignment is raised to eight.
 
 A datum's placeholder is defined under an alias (`layout.PLACEHOLDER_SUFFIX`),
 so that the source can also see the datum's typed declaration; the alias is
@@ -69,6 +73,9 @@ R_MIPS_LO16 = 6
 R_MIPS_GPREL16 = 7
 
 DEAD = ".dead"
+
+# The least alignment retail gives a compiler-generated literal of `.rodata`.
+RODATA_ALIGNMENT = 8
 
 FLAGS = {
     ".text": SHF_ALLOC | SHF_EXECINSTR,
@@ -403,6 +410,11 @@ def main():
         section.sh_flags = FLAGS[name]
         if name not in CODE:
             section.sh_addralign = 1
+
+    for index, section in enumerate(elf.sections):
+        if (index not in renamed and section.name == ".rodata" and section.sh_flags & SHF_ALLOC
+                and section.sh_addralign < RODATA_ALIGNMENT):
+            section.sh_addralign = RODATA_ALIGNMENT
 
     for record in elf.relocations:
         if record.sh_info in renamed:

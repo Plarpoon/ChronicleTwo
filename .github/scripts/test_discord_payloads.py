@@ -45,7 +45,7 @@ class ProgressPayloadTests(unittest.TestCase):
 
 
 class CommitPayloadTests(unittest.TestCase):
-    def test_many_commits_are_bounded_and_show_only_subjects(self):
+    def test_many_commits_are_bounded_with_masked_hash_links(self):
         event = {
             "repository": {"full_name": "TheMoonPeople/ChronicleTwo"},
             "ref": "refs/heads/master",
@@ -59,10 +59,9 @@ class CommitPayloadTests(unittest.TestCase):
         result = commits.payload(event)
         self.assertLessEqual(len(result["content"]), 2000)
         self.assertIn("… and", result["content"])
-        self.assertTrue(result["content"].startswith("`0000000` @everyone"))
-        self.assertNotIn("TheMoonPeople/ChronicleTwo", result["content"])
+        self.assertTrue(result["content"].startswith(
+            "[0000000](<https://github.com/TheMoonPeople/ChronicleTwo/commit/" + "0" * 40 + ">) @everyone"))
         self.assertNotIn("commit to master", result["content"])
-        self.assertNotIn("https://github.com/", result["content"])
         self.assertNotRegex(result["content"], r"(?<!<)https?://")
         self.assertNotIn("evil.example", result["content"])
         self.assertIn(r"\*change\*", result["content"])
@@ -83,8 +82,8 @@ class CommitPayloadTests(unittest.TestCase):
         content = commits.payload(event)["content"]
         self.assertIn("<https://example.com/notes>", content)
         self.assertIn("<https://example.org/update>\\).", content)
-        self.assertTrue(content.startswith("`aaaaaaa` See "))
-        self.assertNotIn("https://github.com/", content)
+        self.assertTrue(content.startswith(
+            "[aaaaaaa](<https://github.com/TheMoonPeople/ChronicleTwo/commit/" + "a" * 40 + ">) See "))
         self.assertNotRegex(content, r"(?<!<)https?://")
 
 

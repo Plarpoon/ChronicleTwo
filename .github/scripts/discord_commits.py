@@ -9,6 +9,7 @@ from pathlib import Path
 
 MAX_CONTENT = 2000
 MAX_COMMITS = 12
+SAFE_REPOSITORY = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 SAFE_SHA = re.compile(r"^[0-9a-fA-F]{7,64}$")
 URL = re.compile(r"https?://[^\s<>]+")
 MARKDOWN = re.compile(r"([\\`*_~|>\[\]()])")
@@ -37,19 +38,21 @@ def clipped(value, limit):
     return value if len(value) <= limit else value[:limit - 1].rstrip() + "…"
 
 
-def commit_line(commit):
+def commit_line(commit, repository):
     sha = str(commit.get("id", ""))
     raw_subject = clipped(str(commit.get("message", "")).split("\n", 1)[0], 110)
     subject = subject_text(raw_subject) or "(no message)"
-    prefix = f"`{sha[:7]}` " if SAFE_SHA.fullmatch(sha) else ""
+    prefix = (f"[{sha[:7]}](<https://github.com/{repository}/commit/{sha}>) "
+              if SAFE_SHA.fullmatch(sha) and SAFE_REPOSITORY.fullmatch(repository) else "")
     return f"{prefix}{subject}"
 
 
 def payload(event):
+    repository = str(event.get("repository", {}).get("full_name", ""))
     commits = event.get("commits") or []
     lines = []
     for commit in commits[:MAX_COMMITS]:
-        line = commit_line(commit)
+        line = commit_line(commit, repository)
         if discord_length("\n".join((*lines, line))) > MAX_CONTENT:
             break
         lines.append(line)

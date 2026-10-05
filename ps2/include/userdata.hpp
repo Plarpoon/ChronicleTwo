@@ -58,6 +58,15 @@ enum CHARA_STATUS_ATTR {
 
 /**
  *
+ * Flags recording special properties of a fish in its owned-item data.
+ *
+ */
+enum BREEDFISH_FLAGS {
+    BREEDFISH_FLAG_ELECTRIC = 0x2, /**< Marks an electric fish, which is never rubbish. */
+};
+
+/**
+ *
  * What an attachment made by spectrumising came from, as ATTACH_USED::spectol_type holds it.
  *
  */
@@ -840,8 +849,8 @@ STATIC_ASSERT(sizeof(CHARA_DATA) == 0x38C);
 struct ROBO_DATA {
     u8            unk_0[2];
     char          name[0x1A];     /**< Name of the ridepod. */
-    u8            voice_unit;     /**< Non-zero once the voice unit is fitted. */
-    u8            voice_flag;     /**< Non-zero while the ridepod's voice is on. */
+    s8            voice_unit;     /**< Non-zero once the voice unit is fitted. */
+    s8            voice_flag;     /**< Non-zero while the ridepod's voice is on. */
     u8            unk_1e[2];
     COMMON_GAGE   hp;             /**< Energy gauge. */
     COMMON_GAGE   abs;            /**< Absorption gauge. */

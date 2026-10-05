@@ -11,8 +11,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetRate__11COMMON_GAGEFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", SetFillRate__11COMMON_GAGEFf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", AddPoint__11COMMON_GAGEFf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", AddRate__11COMMON_GAGEFf);
-float GetCommonGageRate(COMMON_GAGE *arg0) {
-    if (arg0 != NULL) return arg0->GetRate();
+float GetCommonGageRate(COMMON_GAGE *gage) {
+    if (gage != NULL) return gage->GetRate();
     return 0.0f;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", CalcBreedFishParam__FP14BREEDFISH_USED);
@@ -39,11 +39,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetUseCapacity__13CGameDataUsed
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", AddFishHp__13CGameDataUsedFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", Boiled__13CGameDataUsedFv);
 u8 CGameDataUsed::IsActiveSet(void) {
-    struct temp_v0_champs_3a34f9 *temp_v0;
-
-    temp_v0 = (struct temp_v0_champs_3a34f9 *) (GetCommonItemData((s32) (*(s16 *)((u8 *)this + 0x2))));
-    if (temp_v0 != NULL) {
-        return (*(s32 *)((u8 *)temp_v0 + 0x1c));
+    CDataCommon *item = GetCommonItemData(item_no);
+    if (item != NULL) {
+        return item->active_set;
     }
     return 0U;
 }
@@ -60,8 +58,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetWHp__13CGameDataUsedFPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", IsRepair__13CGameDataUsedFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", Repair__13CGameDataUsedFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetEnableRepairItemNo__13CGameDataUsedFv);
-s32 CGameDataUsed::IsEnableUseRepair(s32 arg0) {
-    return arg0 == this->GetEnableRepairItemNo();
+s32 CGameDataUsed::IsEnableUseRepair(s32 item_no) {
+    return item_no == GetEnableRepairItemNo();
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetRoboInfoType__13CGameDataUsedFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetRoboJointName__13CGameDataUsedFPc);
@@ -70,23 +68,17 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", IsBroken__13CGameDataUsedFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", IsLevelUp__13CGameDataUsedFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", LevelUp__13CGameDataUsedFv);
 s32 CGameDataUsed::IsTrush(void) {
-    s32 var_s0;
-    s32 var_v0;
-    struct temp_v0_champs *temp_v0;
-
-    var_s0 = 0;
-    temp_v0 = (struct temp_v0_champs *) (GetCommonItemData((s32) (*(s16 *)((u8 *)this + 0x2))));
-    if ((temp_v0 != NULL) && ((*(s32 *)((u8 *)temp_v0 + 0x24)) & 1)) {
-        var_s0 = 1;
+    s32 is_rubbish = 0;
+    CDataCommon *item = GetCommonItemData(item_no);
+    if (item != NULL && (item->attribute & ITEM_ATTRIBUTE_TRUSH)) {
+        is_rubbish = 1;
     }
-    var_v0 = var_s0;
-    if ((*(s16 *)((u8 *)this + 0x0)) == 6) {
-        if ((*(u16 *)((u8 *)this + 0x48)) & 2) {
-            var_s0 = 0;
+    if (used_type == USED_ITEM_TYPE_FISH) {
+        if (data.fish.flags & BREEDFISH_FLAG_ELECTRIC) {
+            is_rubbish = 0;
         }
-        var_v0 = var_s0;
     }
-    return var_v0;
+    return is_rubbish;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", IsSpectolTrans__13CGameDataUsedFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", ToSpectolTrans__13CGameDataUsedFP13CGameDataUsedi);
@@ -97,14 +89,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", IsFishingRod__13CGameDataUsedFv
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetActiveElem__13CGameDataUsedFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetAttackType__13CGameDataUsedFv);
 s8 CGameDataUsed::GetModelNo(void) {
-    struct temp_v0_champs_54f1f6 *temp_v0;
-
-    if ((*(s16 *)((u8 *)this + 0x0)) == 3) {
-        temp_v0 = (struct temp_v0_champs_54f1f6 *) (GetWeaponInfoData((s32) (*(s16 *)((u8 *)this + 0x2))));
-        if (temp_v0 != NULL) {
-            return (*(s8 *)((u8 *)temp_v0 + 0x49));
+    if (used_type == USED_ITEM_TYPE_WEAPON) {
+        CDataWeapon *weapon = GetWeaponInfoData(item_no);
+        if (weapon != NULL) {
+            return weapon->model_no;
         }
-        /* Duplicate return node #4. Try simplifying control flow for better match */
         return -1;
     }
     return -1;
@@ -121,16 +110,16 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", CopyDataWeapon__13CGameDataUsed
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", CopyDataAttach__13CGameDataUsedFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", CopyDataItem__13CGameDataUsedFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", CopyDataFish__13CGameDataUsedFi);
-s32 CGameDataUsed::CopyDataGiftBox(s32 arg0) {
-    if (GetItemInfoData(arg0) == 0) {
+s32 CGameDataUsed::CopyDataGiftBox(s32 item_no) {
+    if (GetItemInfoData(item_no) == NULL) {
         return 0;
     }
-    (*(s16 *)((u8 *)this + 0x0)) = 7;
-    (*(s16 *)((u8 *)this + 0x2)) = (s16) arg0;
-    (*(s8 *)((u8 *)this + 0x4)) = GetItemDataType(arg0);
-    (*(s16 *)((u8 *)this + 0x14)) = 0;
-    (*(s16 *)((u8 *)this + 0x12)) = 0;
-    (*(s16 *)((u8 *)this + 0x10)) = 0;
+    used_type = USED_ITEM_TYPE_GIFT_BOX;
+    this->item_no = item_no;
+    item_type = GetItemDataType(item_no);
+    data.giftbox.item_no[2] = 0;
+    data.giftbox.item_no[1] = 0;
+    data.giftbox.item_no[0] = 0;
     return 1;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", CopyDataItem__13CGameDataUsedFP13CGameDataUsed);
@@ -145,29 +134,24 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", RefreshParam__13CFishAquariumFv
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetShiledKitLimmit__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", AddPoint__9ROBO_DATAFf);
 s32 ROBO_DATA::GetDefenceVol(void) {
-    return *(s16 *) ((u8 *) this + 0xD0) + (*(u16 *) ((u8 *) this + 0x1E8) << 2);
+    return parts[1].data.robopart.defence + (shield_kit_num << 2);
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetMonsterBaseInfo__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetMonsterHengeParam__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetAttackVol__16MOS_CHANGE_PARAMFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetDefenceVol__16MOS_CHANGE_PARAMFi);
 s32 MOS_CHANGE_PARAM::CheckClassChange(void) {
-    s16 temp_a1;
-
-    temp_a1 = (*(s16 *)((u8 *)this + 0x4));
-    if (temp_a1 >= 3) {
+    if (class_level >= 3) {
         return 0;
     }
-    return temp_a1 < (*(s16 *)((u8 *)this + 0x2)) / 25;
+    return class_level < level / 25;
 }
 s32 MOS_CHANGE_PARAM::GetDegreeLevel(void) {
-    s32 var_v0;
-
-    var_v0 = (*(s16 *)((u8 *)this + 0x2)) / 6;
-    if (var_v0 > 0xF) {
-        var_v0 = 0xF;
+    s32 degree = level / 6;
+    if (degree > 15) {
+        degree = 15;
     }
-    return var_v0;
+    return degree;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", LevelUp__16MOS_CHANGE_PARAMFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", Initialize__11CMonsterBoxFv);
@@ -181,27 +165,27 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", __ct__14CFishingRecordFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetFishRecord__14CFishingRecordFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", CheckRecordFish__14CFishingRecordFiff);
 void CFishingTournament::Initialize(void) {
-    memset(this, 0, 112);
+    memset(this, 0, sizeof(*this));
 }
 void CFishingTournament::ResetRecord(void) {
-    memset(&(*(s32 *)((u8 *)this + 0x20)), 0, 80);
+    memset(entry, 0, sizeof(entry));
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", EntryFish__18CFishingTournamentFiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", EntryRemain__18CFishingTournamentFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetRecord__18CFishingTournamentFi);
-void CFishingTournament::SetRank(s32 arg0) {
-    if (arg0 < 0) {
-        arg0 = 0;
+void CFishingTournament::SetRank(s32 rank) {
+    if (rank < 0) {
+        rank = 0;
     }
-    if (arg0 > 0x64) {
-        arg0 = 0x64;
+    if (rank > 100) {
+        rank = 100;
     }
-    (*(s16 *)((u8 *)this + 0x4)) = (s16) arg0;
+    this->rank = rank;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", SortRecord__18CFishingTournamentFv);
 s32 CFishingTournament::CalcTopWeight(void) {
     this->SortRecord();
-    return (*(s16 *)((u8 *)this + 0x34)) + ((*(s16 *)((u8 *)this + 0x24)) + (*(s16 *)((u8 *)this + 0x2c)));
+    return entry[2].weight + (entry[0].weight + entry[1].weight);
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", Initialize__16CUserDataManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", RefreshParam__16CUserDataManagerFv);
@@ -240,22 +224,20 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", SetActiveChrNo__16CUserDataMana
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", SetRoboName__16CUserDataManagerFPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetRoboName__16CUserDataManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetRoboNameDefault__16CUserDataManagerFv);
-void CUserDataManager::SetVoiceUnit(s32 arg0) {
-    (*(s8 *)((u8 *)this + 0x467c)) = (s8) arg0;
-    if (arg0 != 0) {
+void CUserDataManager::SetVoiceUnit(s32 fitted) {
+    robo_data.voice_unit = fitted;
+    if (fitted != 0) {
         this->SetRoboVoiceFlag(1);
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", CheckVoiceUnit__16CUserDataManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", SetRoboVoiceFlag__16CUserDataManagerFi);
 s32 CUserDataManager::CheckRoboVoiceFlag(void) {
-    s32 var_v0;
-
-    var_v0 = (*(s8 *)((u8 *)this + 0x467c)) != 0;
-    if (var_v0 != 0) {
-        var_v0 = (*(s8 *)((u8 *)this + 0x467d)) != 0;
+    s32 enabled = robo_data.voice_unit != 0;
+    if (enabled != 0) {
+        enabled = robo_data.voice_flag != 0;
     }
-    return var_v0 & 0xFF;
+    return enabled & 0xFF;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", AddRoboAbs__16CUserDataManagerFf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetRoboAbs__16CUserDataManagerFv);
@@ -273,11 +255,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", AllWeaponRepair__16CUserDataMan
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", RefreshNPCStatus__16CUserDataManagerFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetFishingRodNo__16CUserDataManagerFv);
 s32 CUserDataManager::NowFishingStyle(void) {
-    CGameDataUsed *temp_a0;
-
-    temp_a0 = (CGameDataUsed *) (&(*(s32 *)((u8 *)this + 0x40b8)));
-    if (temp_a0 != NULL) {
-        return temp_a0->IsFishingRod();
+    CGameDataUsed *rod = &chara_data[0].equip[0];
+    if (rod != NULL) {
+        return rod->IsFishingRod();
     }
     return 0;
 }
@@ -291,23 +271,23 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetFishRecord__16CUserDataManag
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetRodStatus__16CUserDataManagerFPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", AddFp__16CUserDataManagerFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", SetChrEquip__16CUserDataManagerFiP13CGameDataUsed);
-s32 CUserDataManager::SetChrEquip(s32 arg0, s32 arg1) {
-    CGameDataUsed *temp_v0;
+s32 CUserDataManager::SetChrEquip(s32 chara, s32 item_no) {
+    CGameDataUsed *item;
 
-    if (arg1 <= 0) {
+    if (item_no <= 0) {
         return 0;
     }
-    if ((arg0 < 0) || (arg0 > 2)) {
+    if ((chara < 0) || (chara > 2)) {
         return 0;
     }
-    if (this->SearchEquip(arg0, arg1) != 0) {
+    if (this->SearchEquip(chara, item_no) != 0) {
         return 0;
     }
-    temp_v0 = (CGameDataUsed *) (this->SearchItemOnItemBrd(arg1, 1));
-    if (temp_v0 == NULL) {
+    item = this->SearchItemOnItemBrd(item_no, 1);
+    if (item == NULL) {
         return 0;
     }
-    this->SetChrEquip(arg0, temp_v0);
+    this->SetChrEquip(chara, item);
     return 1;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", SetChrEquipDirect__16CUserDataManagerFii);
@@ -321,34 +301,27 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", SearchSpaceUsedDataPtr__16CUser
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", SearchActiveItemTableSpace__16CUserDataManagerFii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", SearchItemOnItemBrd__16CUserDataManagerFii);
 s32 CUserDataManager::GetNumStackOverBoard(void) {
-    s32 var_s0;
-    u8 *var_s1;
-    s32 var_s2;
-
-    var_s0 = 0;
-    var_s1 = (u8 *) (this->GetUsedDataPtr(GetNowBagMax(0)));
-    for (var_s2 = 0; var_s2 < this->GetItemBoardOverNum(); var_s2++, var_s1 += 0x6C) {
-        if ((*(s16 *)((u8 *)var_s1 + 0x2)) > 1) {
-            var_s0 += 1;
+    s32 count = 0;
+    CGameDataUsed *item = GetUsedDataPtr(GetNowBagMax(0));
+    for (s32 index = 0; index < GetItemBoardOverNum(); index++, item++) {
+        if (item->item_no > 1) {
+            count += 1;
         }
     }
-    return var_s0;
+    return count;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", SearchAllHaveItem__16CUserDataManagerFi);
-s32 CUserDataManager::FishInAquarium(CGameDataUsed *arg0, s32 arg1) {
-    CFishAquarium *temp_s0;
-    s32 temp_v0;
-
-    temp_s0 = (CFishAquarium *) (&(*(CFishAquarium *)((u8 *)this + 0x4958)));
-    if ((arg1 < 0) || (arg1 > 2)) {
+s32 CUserDataManager::FishInAquarium(CGameDataUsed *fish, s32 tank) {
+    CFishAquarium *aquarium = &this->aquarium;
+    if ((tank < 0) || (tank > 2)) {
         return 0;
     }
-    temp_v0 = (s32) (temp_s0->SearchAqua1NotUsed(0));
-    if ((temp_v0 < 0) || (arg0 == NULL)) {
+    s32 space = aquarium->SearchAqua1NotUsed(0);
+    if ((space < 0) || (fish == NULL)) {
         return 0;
     }
-    temp_s0->FishIntoAquarium(arg1, temp_v0, arg0);
-    arg0->Init();
+    aquarium->FishIntoAquarium(tank, space, fish);
+    fish->Init();
     return 1;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", CheckElectricFish__16CUserDataManagerFv);
@@ -376,7 +349,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetEquipTablePtr__16CBattleChar
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", SetChrNo__16CBattleCharaInfoFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetMonsterID__16CBattleCharaInfoFv);
 s16 CBattleCharaInfo::GetNowNPC(void) {
-    return (*(s16 *)((u8 *)this + 0x4));
+    return now_npc;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", UseNPCPoint__16CBattleCharaInfoFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetActiveItemInfo__16CBattleCharaInfoFi);
@@ -391,72 +364,54 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetNowWhp__16CBattleCharaInfoFi
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetWhpNowVol__16CBattleCharaInfoFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", SetMagicSwordPow__16CBattleCharaInfoFii);
 s16 CBattleCharaInfo::GetMagicSwordElem(void) {
-    s16 var_v0;
-
-    var_v0 = -1;
-    if (!((*(s16 *)((u8 *)this + 0x0)) == 1)) {
-        return var_v0;
+    s16 element = -1;
+    if (!(chr_no == USER_CHARA_MONICA)) {
+        return element;
     }
-    var_v0 = (*(s16 *)((u8 *)this + 0x18));
-
-    return var_v0;
+    element = magic_sword_elem;
+    return element;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetMagicSwordPow__16CBattleCharaInfoFv);
 s16 CBattleCharaInfo::GetMagicSwordCounterNow(void) {
-    if ((*(s16 *)((u8 *)this + 0x0)) != 1) {
+    if (chr_no != USER_CHARA_MONICA) {
         return 0;
     }
-    return (*(s16 *)((u8 *)this + 0x1a));
+    return magic_sword_num;
 }
 s32 CBattleCharaInfo::GetMagicSwordCounterMax(void) {
-    s16 temp_v0;
-    s32 temp_v1;
-    s32 var_v0;
-    s32 var_v0_2;
-    struct temp_a1_champs_334560 *temp_a1;
-
-    temp_a1 = (struct temp_a1_champs_334560 *) ((*(s32 *)((u8 *)this + 0x30)));
-    if (temp_a1 == NULL) {
+    CGameDataUsed *weapon = equip;
+    if (weapon == NULL) {
         return 0;
     }
-    if ((*(s16 *)((u8 *)this + 0x0)) != 1) {
+    if (chr_no != USER_CHARA_MONICA) {
         return 0;
     }
-    if (temp_a1 == NULL) {
+    if (weapon == NULL) {
         return 0;
     }
-    temp_v0 = (s16) ((*(s32 *)((u8 *)temp_a1 + 0x24)));
-    temp_v1 = temp_v0 - 0x20;
-    if (temp_v0 < 0x20) {
+    s16 power = weapon->data.weapon.status[1];
+    if (power < 32) {
         return 0;
     }
-    var_v0_2 = temp_v1 >> 4;
-    if (temp_v1 < 0) {
-        var_v0_2 = (s32) (temp_v1 + 0xF) >> 4;
+    s32 max_charges = (power - 32) / 16 + 3;
+    if (max_charges > 7) {
+        max_charges = 7;
     }
-    var_v0 = var_v0_2 + 3;
-    if (var_v0 > 7) {
-        var_v0 = 7;
-    }
-    return var_v0;
+    return max_charges;
 }
 void CBattleCharaInfo::ClearMagicSwordPow(void) {
-    (*(s16 *)((u8 *)this + 0x18)) = -1;
-    (*(s16 *)((u8 *)this + 0x1a)) = 0;
-    (*(s16 *)((u8 *)this + 0x1c)) = 0;
-    (*(s16 *)((u8 *)this + 0x1e)) = 0;
-    (*(s16 *)((u8 *)this + 0x20)) = 0;
-    (*(s16 *)((u8 *)this + 0x22)) = 0;
-    (*(s16 *)((u8 *)this + 0x24)) = 0;
-    (*(s16 *)((u8 *)this + 0x26)) = 0;
-    (*(s16 *)((u8 *)this + 0x28)) = 0;
+    magic_sword_elem = -1;
+    magic_sword_num = 0;
+    for (s32 i = 0; i < 7; i++) {
+        magic_sword_pow[i] = 0;
+    }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", AddAbs__16CBattleCharaInfoFifPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", AddAbsRate__16CBattleCharaInfoFifPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetNowAbs__16CBattleCharaInfoFiPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", LevelUpWeapon__16CBattleCharaInfoFP13CGameDataUsed);
 s16 CBattleCharaInfo::GetDefenceVol(void) {
-    return (*(s16 *)((u8 *)this + 0x6c));
+    return defence;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", AddHp_Point__16CBattleCharaInfoFff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", AddHp_Rate__16CBattleCharaInfoFfif);
@@ -472,60 +427,59 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", SetRandamCircleStatus__FiRf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", StatusParamStep__16CBattleCharaInfoFPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", Step__16CBattleCharaInfoFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetBattleCharaInfo__Fv);
-void ConvertItemAttrToCharaAttr(s32 arg0, s32 *arg1, s32 *arg2) {
-    s32 var_v1;
-    s32 var_a3;
-
-    var_v1 = 0;
-    var_a3 = 0;
-    if (arg0 & 0x10000) {
-        var_v1 |= 1;
+void ConvertItemAttrToCharaAttr(s32 attr, s32 *add, s32 *cure) {
+    s32 add_attr = 0;
+    s32 cure_attr = 0;
+    if (attr & 0x10000) {
+        add_attr |= CHARA_STATUS_POISON;
     }
-    if (arg0 & 0x100000) {
-        var_v1 |= 2;
+    if (attr & 0x100000) {
+        add_attr |= CHARA_STATUS_UNK_2;
     }
-    if (arg0 & 0x40000) {
-        var_v1 |= 4;
+    if (attr & 0x40000) {
+        add_attr |= CHARA_STATUS_UNK_4;
     }
-    if (arg0 & 0x4000) {
-        var_v1 |= 8;
+    if (attr & 0x4000) {
+        add_attr |= CHARA_STATUS_UNK_8;
     }
-    if (arg0 & 0x400000) {
-        var_v1 |= 0x10;
+    if (attr & 0x400000) {
+        add_attr |= CHARA_STATUS_POWER;
     }
-    if (arg0 & 0x02000000) {
-        var_v1 |= 0x20;
+    if (attr & 0x02000000) {
+        add_attr |= CHARA_STATUS_UNK_20;
     }
-    if (arg0 & 0x08000000) {
-        var_v1 |= 0x40;
+    if (attr & 0x08000000) {
+        add_attr |= CHARA_STATUS_UNK_40;
     }
-    if (arg0 & 0x20000) {
-        var_a3 |= 1;
+    if (attr & 0x20000) {
+        cure_attr |= CHARA_STATUS_POISON;
     }
-    if (arg0 & 0x200000) {
-        var_a3 |= 2;
+    if (attr & 0x200000) {
+        cure_attr |= CHARA_STATUS_UNK_2;
     }
-    if (arg0 & 0x80000) {
-        var_a3 |= 4;
+    if (attr & 0x80000) {
+        cure_attr |= CHARA_STATUS_UNK_4;
     }
-    if (arg0 & 0x8000) {
-        var_a3 |= 8;
+    if (attr & 0x8000) {
+        cure_attr |= CHARA_STATUS_UNK_8;
     }
-    if (arg0 & 0x04000000) {
-        var_a3 |= 0x20;
+    if (attr & 0x04000000) {
+        cure_attr |= CHARA_STATUS_UNK_20;
     }
-    if (arg0 & 0x10000000) {
-        var_a3 |= 0x40;
+    if (attr & 0x10000000) {
+        cure_attr |= CHARA_STATUS_UNK_40;
     }
-    if (arg1 != NULL) {
-        *arg1 = var_v1;
+    if (add != NULL) {
+        *add = add_attr;
     }
-    if (arg2 != NULL) {
-        *arg2 = var_a3;
+    if (cure != NULL) {
+        *cure = cure_attr;
     }
 }
-s32 CheckBadStatus(s32 arg0) {
-    if ((arg0 & 1) || (arg0 & 2) || (arg0 & 4) || (arg0 & 8) || (arg0 & 0x20) || (arg0 & 0x40)) {
+s32 CheckBadStatus(s32 attr) {
+    if ((attr & CHARA_STATUS_POISON) || (attr & CHARA_STATUS_UNK_2) ||
+        (attr & CHARA_STATUS_UNK_4) || (attr & CHARA_STATUS_UNK_8) ||
+        (attr & CHARA_STATUS_UNK_20) || (attr & CHARA_STATUS_UNK_40)) {
         return 1;
     }
     return 0;

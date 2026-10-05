@@ -82,23 +82,15 @@ void spiGetStackVector(float *vector, SPI_STACK *stack) {
     vector[2] = spiGetStackFloat(stack++);
 }
 
-#ifdef NONMATCHING
 void CScriptInterpreter::PushStack(SPI_STACK argument) {
-    if (stack_count < stack_size) {
-        stack[stack_count] = argument;
-        stack_count++;
-    } else {
+    if (stack_count >= stack_size) {
         printf("SPI stack over!!\n");
+        return;
     }
+    stack[stack_count] = argument;
+    stack_count++;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", PushStack__18CScriptInterpreterF9SPI_STACK);
-#endif
-#ifdef NONMATCHING
-// Defined in scriptinterpreter.hpp.
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", __as__9SPI_STACKFRC9SPI_STACK);
-#endif
+
 #ifdef NONMATCHING
 int CScriptInterpreter::GetNextTAG(int call) {
     char string_storage[SPI_STRING_BUFF_SIZE];

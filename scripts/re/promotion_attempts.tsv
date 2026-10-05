@@ -552,3 +552,7 @@ editcoll	DeleteVerticalPoly__14CEditCollisionFv	checker
 editcoll	ApplyMatrix__14CEditCollisionFPA4_f	checker
 editcoll	AreaXZ__14CEditCollisionFv	checker
 editcoll	ClipBoxXZ__FPfPfPfPf	checker
+mainloop3	__sinit_mainloop3_cpp	checker
+mainloop3	EmergencyMessage__Fi	checker
+mainloop3	HDDMenuLoop__Fv	checker
+mainloop3	FutureMapSelect__Fv	checker

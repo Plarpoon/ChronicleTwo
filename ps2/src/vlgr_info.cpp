@@ -1,5 +1,7 @@
 #include "common.h"
 #include "vlgr_info.hpp"
+#include <cstring>
+#include <cstdio>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/vlgr_info", GetVlgrPlaceInfo__Fi);
@@ -14,7 +16,15 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/vlgr_info", niPLACE__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/vlgr_info", niNOON_PLACE__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/vlgr_info", niNIGHT_PLACE__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/vlgr_info", niNPC_INFO_NUM__FP9SPI_STACKi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/vlgr_info", __ct__13CVillagerInfoFv);
+CVillagerInfo::CVillagerInfo(void) {
+    (*(s32 *)((u8 *)this + 0x0)) = -1;
+    (*(s32 *)((u8 *)this + 0x4)) = 0;
+    (*(s32 *)((u8 *)this + 0x8)) = 0;
+    (*(s32 *)((u8 *)this + 0x10)) = 0;
+    (*(s32 *)((u8 *)this + 0xc)) = 0;
+    (*(s32 *)((u8 *)this + 0x18)) = -1;
+    (*(s32 *)((u8 *)this + 0x14)) = -1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/vlgr_info", niNPC_INFO__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/vlgr_info", LoadNPCInfo__FPciP9mgCMemory);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/vlgr_info", LoadPlaceInfo__FPciP9mgCMemory);

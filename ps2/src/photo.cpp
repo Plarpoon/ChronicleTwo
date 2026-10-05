@@ -8,7 +8,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/photo", InitPhotoTitle__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/photo", InitTakePhoto__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/photo", LoadTakePhoto__FiP9mgCMemoryP1);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/photo", StartTakePhoto__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/photo", EndTakePhoto__Fv);
+void EndTakePhoto() {
+    InitTakePhoto();
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/photo", NowTakePhoto__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/photo", IsEnablePhotoMenu__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/photo", HidePhoto__Fv);

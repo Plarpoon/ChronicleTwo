@@ -1,15 +1,26 @@
 #include "common.h"
 #include "dynamicanime.hpp"
+#include <cstdio>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", BindPosition__FPfPfff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", ResetPosition__13CDynamicAnimeFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Step__13CDynamicAnimeFv);
 int CDACollision::CheckHit(float *position) { return 0; }
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetWind__13CDynamicAnimeFfPf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", ResetWind__13CDynamicAnimeFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", SetFloor__13CDynamicAnimeFf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", ResetFloor__13CDynamicAnimeFv);
+void CDynamicAnime::SetWind(float arg0, float *arg1) {
+    *(float *) ((u8 *) this + 0x68) = arg0;
+    sceVu0Normalize((float *) ((u8 *) this + 0x70), arg1);
+}
+void CDynamicAnime::ResetWind(void) {
+    (*(s32 *)((u8 *)this + 0x68)) = 0;
+}
+void CDynamicAnime::SetFloor(float arg0) {
+    (*(s32 *)((u8 *)this + 0x88)) = 1;
+    (*(float *)((u8 *)this + 0x8c)) = arg0;
+}
+void CDynamicAnime::ResetFloor(void) {
+    (*(s32 *)((u8 *)this + 0x88)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", FramePose__13CDynamicAnimeFP8mgCFrameP13DA_FRAME_POSE);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", PreCollision__13CDynamicAnimeFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Initialize__13CDynamicAnimeFv);

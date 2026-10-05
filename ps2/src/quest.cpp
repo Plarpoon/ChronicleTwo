@@ -1,9 +1,13 @@
 #include "common.h"
 #include "quest.hpp"
+#include <cstring>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/quest", GetQuestData__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/quest", Initialize__13CQuestManagerFv);
+void CQuestManager::Initialize(void) {
+    (*(s32 *)((u8 *)this + 0x0)) = 0;
+    (*(s32 *)((u8 *)this + 0x4)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/quest", GetQuestInfo__13CQuestManagerFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/quest", quest_NUM__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/quest", quest_NEW__FP9SPI_STACKi);

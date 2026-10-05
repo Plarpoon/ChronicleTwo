@@ -1,17 +1,34 @@
 #include "common.h"
 #include "inventmn.hpp"
+#include <cstring>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", GetInventUserDataPtr__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", Init_USER_PICTURE_INFO__FP17USER_PICTURE_INFO);
+void Init_USER_PICTURE_INFO(USER_PICTURE_INFO *arg0) {
+    if (arg0 != NULL) {
+        (*(s8 *)((u8 *)arg0 + 0x0)) = 0;
+        (*(s8 *)((u8 *)arg0 + 0x1)) = 0;
+        (*(s16 *)((u8 *)arg0 + 0x2)) = -1;
+        (*(s16 *)((u8 *)arg0 + 0x4)) = -1;
+        (*(s16 *)((u8 *)arg0 + 0x8)) = -1;
+        (*(s16 *)((u8 *)arg0 + 0x6)) = -1;
+        (*(s16 *)((u8 *)arg0 + 0xa)) = 0;
+    }
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", Copy_USER_PICTURE_INFO__FP17USER_PICTURE_INFOP17USER_PICTURE_INFO);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", PictureSeiton__FP17USER_PICTURE_INFOPci);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", AttachPictTex__FiPP10mgCTextureP17USER_PICTURE_INFOi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", CheckPhotoDataNoNeed__FP17USER_PICTURE_INFOiPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", IsTakePhoto__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", Initialize__13CDC2AlbumDataFv);
+void CDC2AlbumData::Initialize(void) {
+    memset(this, 0, 0x64CB0);
+    this->RelateAlbumPicData();
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", RelateAlbumPicData__13CDC2AlbumDataFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", DeletePhotoData__13CDC2AlbumDataFi);
+void CDC2AlbumData::DeletePhotoData(s32 i) {
+    if (i < 0 || i >= 0x32) return;
+    Init_USER_PICTURE_INFO((USER_PICTURE_INFO *)this->GetAlbumPhotoInfo(i));
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", GetAlbumPhotoInfo__13CDC2AlbumDataFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", Initialize__15CInventUserDataFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", ResetAddress__15CInventUserDataFv);
@@ -26,7 +43,16 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", SetNetaFlag__15CInventUserDataF
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", CheckNetaFlagHavePhoto__15CInventUserDataFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", CountNeta__15CInventUserDataFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", CountScoop__15CInventUserDataFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", AddShutterNum__15CInventUserDataFi);
+s32 CInventUserData::AddShutterNum(s32 arg0) {
+    (*(s32 *)((u8 *)this + 0x0)) += arg0;
+    if ((*(s32 *)((u8 *)this + 0x0)) > 0x1869F) {
+        (*(s32 *)((u8 *)this + 0x0)) = 0x1869F;
+    }
+    if ((*(s32 *)((u8 *)this + 0x0)) < 0) {
+        (*(s32 *)((u8 *)this + 0x0)) = 0;
+    }
+    return (*(s32 *)((u8 *)this + 0x0));
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", GetNowHavePictureNum__15CInventUserDataFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", GetPictureNum__15CInventUserDataFPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", CalcPhotoExp__15CInventUserDataFv);
@@ -43,7 +69,14 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", InitScoopString__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", _SCOOP_STR__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", AnalyzeScoopString__FP9mgCMemoryPci);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", GetScoopInfo__17CScoopDataManagerFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", SetViewFlag__17CScoopDataManagerFii);
+void CScoopDataManager::SetViewFlag(s32 arg0, s32 arg1) {
+    s8 *temp_v0;
+
+    temp_v0 = (s8 *) (this->GetScoopInfo(arg0));
+    if (temp_v0 != NULL) {
+        *temp_v0 = (s8) arg1;
+    }
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", KnowScoop__17CScoopDataManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", CheckScoop__17CScoopDataManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", GetScoopTotal__17CScoopDataManagerFPi);

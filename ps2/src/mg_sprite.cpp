@@ -386,7 +386,14 @@ void mgCSprite::SetColor(int r, int g, int b, int a) {
     color.bits.q = 0;
 }
 #else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_sprite", SetColor__9mgCSpriteFiiii);
+void mgCSprite::SetColor(s32 r, s32 g, s32 b, s32 a) {
+    u8 *color = (u8 *)this + 0x70;
+    color[0] = r;
+    color[1] = g;
+    color[2] = b;
+    color[3] = a;
+    *(s32 *)((char *)this + 0x74) = 0;
+}
 #endif
 
 #ifdef NONMATCHING

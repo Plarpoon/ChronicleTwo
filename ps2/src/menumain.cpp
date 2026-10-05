@@ -2,7 +2,8 @@
 #include "menumain.hpp"
 
 // Code (.text)
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuScreenBlackBeltSet__Fi);
+void MenuScreenBlackBeltSet(s32 arg0) {
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", GetMenuLoopType__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", CheckTrushMenu__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", menu_GetSaveDataDungeon__Fv);
@@ -21,7 +22,13 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", SetMenuKeyCtrlEnv__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", DisablePadReset__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuMainInit__FP13MENU_INIT_ARG);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuMainExit__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuMainLoop__Fv);
+s32 MenuMainLoop(void) {
+    s32 temp_s0;
+
+    temp_s0 = MenuMainKey();
+    MenuMainDraw();
+    return temp_s0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuMainKey__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuMainDraw__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", NextMenuInit__FiP9mgCMemoryPi);
@@ -42,7 +49,17 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", CheckEventDay__FPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MakeMenuTopic__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", DrawMenuTopic__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuInternInit__FP9mgCMemoryii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", Initialize__10CMenuInterFi);
+void CMenuInter::Initialize(s32 arg0) {
+    (*(s16 *)((u8 *)this + 0x10)) = 1;
+    (*(s32 *)((u8 *)this + 0x0)) = 0;
+    (*(s32 *)((u8 *)this + 0x4)) = 6;
+    (*(s32 *)((u8 *)this + 0xc)) = 0;
+    (*(s8 *)((u8 *)this + 0x12)) = 0;
+    (*(s8 *)((u8 *)this + 0x13)) = 30;
+    (*(s8 *)((u8 *)this + 0x14)) = 1;
+    (*(s32 *)((u8 *)this + 0x8)) = -1;
+    (*(s8 *)((u8 *)this + 0x15)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuCommonBaseDataEnter__FP9mgCMemoryPUiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuBaseTextureReEnter__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", InitEnd__10CMenuInterFv);

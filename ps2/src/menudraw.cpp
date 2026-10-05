@@ -1,9 +1,13 @@
 #include "common.h"
 #include "menudraw.hpp"
+#include <cstring>
+#include <cstdio>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", AttachMessageForm__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Init_MENUFORM_MAKEBRD_INFO__FP21MENUFORM_MAKEBRD_INFO);
+void Init_MENUFORM_MAKEBRD_INFO(MENUFORM_MAKEBRD_INFO * arg0) {
+    memset(arg0, 0, 44);
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", GetMenuItemIconTexGetXY__FiR9mgRect_i_);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", GetMenuItemIconTexInfo__Fii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", ConvMGIRECTtoINTtbl__F9mgRect_i_Pi);
@@ -68,11 +72,22 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", GetPartInfo__16CMenuPosDataForm
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", SetPartDrawFlag__16CMenuPosDataFormFPcb);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Func_MallocPartEffectInfo__FP18MENUFORMPARTS_TYPEP9mgCMemoryi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Func_SetPartEffectInfo__FP25MENU_PARTS_EFFECT_STRUCT1UiPs);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", SetActionCharaPtr__16CMenuPosDataFormFP12CActionCharaii);
+void CMenuPosDataForm::SetActionCharaPtr(CActionChara *a, s32 b, s32 c) {
+    *(CActionChara **) ((u8 *) this + 0x38) = a;
+    *(s16 *) ((u8 *) this + 0x34) = b;
+    *(s16 *) ((u8 *) this + 0x36) = c;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", SetRGBACalcParam__16CMenuPosDataFormFiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", FormFadeIn__16CMenuPosDataFormFii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", FormFadeOut__16CMenuPosDataFormFii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", SetNumber__16CMenuPosDataFormFPci);
+void CMenuPosDataForm::SetNumber(s8 *arg0, s32 arg1) {
+    struct temp_v0_champs *temp_v0;
+
+    temp_v0 = (struct temp_v0_champs *) (this->GetPartInfo(arg0));
+    if (temp_v0 != NULL) {
+        (*(s32 *)((u8 *)temp_v0 + 0x34)) = arg1;
+    }
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", SetPartRGBA__16CMenuPosDataFormFPciiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", GetPutPosXY__16CMenuPosDataFormFPcRiRi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", GetPutPosXY__16CMenuPosDataFormFPcRfRf);
@@ -85,16 +100,39 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", MenuItemBrdFrameDraw__FiiRiiiii
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", MenuItemBrdDraw__FPf9mgRect_i_Riiiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", MenuItemModeItemDraw__FRi9mgRect_i_PfP18MENUFORMPARTS_TYPEP10mgCTexture9mgRect_i_i);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", MenuFormStep__16CMenuPosDataFormFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", CheckMoveEnd__16CMenuPosDataFormFii);
+s32 CMenuPosDataForm::CheckMoveEnd(s32 arg0, s32 arg1) {
+    s32 var_v0;
+
+    var_v0 = 0;
+    if ((*(float *)((u8 *)this + 0xc)) == (float) arg0) {
+        var_v0 = 1;
+        if ((*(float *)((u8 *)this + 0x10)) != (float) arg1) {
+            var_v0 = 0;
+        }
+    }
+    return var_v0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", CheckMoveEnd__16CMenuPosDataFormFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", SetAction__16CMenuPosDataFormFPc);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", SetNextMovePos__16CMenuPosDataFormFPii);
+void CMenuPosDataForm::SetNextMovePos(s32 *arg0, s32 arg1) {
+    *(s8 *) ((u8 *) this + 0x20) = arg1;
+    *(s32 *) ((u8 *) this + 0x24) = arg0[0];
+    *(s32 *) ((u8 *) this + 0x28) = arg0[1];
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", GetNextMovePos__16CMenuPosDataFormFPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Menu3DivideTextureDraw__FP11mgCDrawPrim9mgRect_i_Psi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", MenuFormDrawNormal__16CMenuPosDataFormFiiffRi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", MenuFormDraw__16CMenuPosDataFormFiiRi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", MenuFormDraw__16CMenuPosDataFormFRi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Initialize__14CPosDataManageFv);
+void CPosDataManage::Initialize(void) {
+    (*(s32 *)((u8 *)this + 0x0)) = 0;
+    (*(s16 *)((u8 *)this + 0x4)) = 0;
+    (*(s32 *)((u8 *)this + 0x10)) = 0;
+    (*(s16 *)((u8 *)this + 0x14)) = 0;
+    (*(s32 *)((u8 *)this + 0x18)) = 0;
+    (*(s16 *)((u8 *)this + 0x1c)) = 0;
+    (*(s8 *)((u8 *)this + 0x1e)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", GetTexGetInfo__14CPosDataManageFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", GetTexGetInfo__14CPosDataManageFPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", GetTexGetInfoTblNo__14CPosDataManageFPc);
@@ -119,7 +157,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", FormReLink2__14CPosDataManageFP
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", FormStep__14CPosDataManageFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", MenuDrawParamStep__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", FormDraw__14CPosDataManageFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", ClearPos__14CPosDataManageFv);
+void CPosDataManage::ClearPos(void) {
+    this->EtcTblClear(0, (s32) (*(u16 *)((u8 *)this + 0x4)));
+    this->TexGetInfoClear(0, (s32) (*(u16 *)((u8 *)this + 0x14)));
+    this->FormInfoClear(0, (s32) (*(u16 *)((u8 *)this + 0x1c)));
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", AttachCommonTexInfo__18CMenuPosDataManageFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", StepMainMenuIconMove__18CMenuPosDataManageFPiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", CheckItemUseVariable__FP13CGameDataUsedP14CItemUseTarget);
@@ -131,8 +173,16 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", CheckItemBoardFunc_MenuIconDraw
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", MenuItemBrdScrlBarStep__Fiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Func_MenuItemBrdPosStep__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", GetPosMenuItemBrdKoma__18CMenuPosDataManageFPiii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", GetPosMenuItemOnItemBrd__18CMenuPosDataManageFPiii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", GetPosMenuItemBrdForEffect__18CMenuPosDataManageFPiii);
+void CMenuPosDataManage::GetPosMenuItemOnItemBrd(s32 *pos, s32 a, s32 b) {
+    this->GetPosMenuItemBrdKoma(pos, a, b);
+    pos[0] += 4;
+    pos[1] += 4;
+}
+void CMenuPosDataManage::GetPosMenuItemBrdForEffect(s32 *pos, s32 a, s32 b) {
+    this->GetPosMenuItemOnItemBrd(pos, a, b);
+    pos[0] += 0x12;
+    pos[1] += 0x15;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Func_MenuItemIconSetEffectOne__FP18MENUFORMPARTS_TYPE);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", MenuItemBrdItemIconEffectMalloc__FP9mgCMemoryP18MENUFORMPARTS_TYPEi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", MallocPallet__18CMenuPosDataManageFP9mgCMemory);
@@ -141,26 +191,54 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", InitializeCMenuPosDataManage__1
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", MenuCapture__FiP9mgCMemoryi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", SetBGFrameForMenu__FiPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", MenuFrameImageDraw__FP11mgCDrawPrimP10mgCTexture9mgRect_f_9mgRect_i_iii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Initialize__13CRepairEffectFv);
+void CRepairEffect::Initialize(void) {
+    (*(s8 *)((u8 *)this + 0x0)) = 0;
+    (*(s32 *)((u8 *)this + 0x18)) = 0;
+    (*(s32 *)((u8 *)this + 0x1c)) = 0;
+    (*(s32 *)((u8 *)this + 0x20)) = 0;
+    (*(s32 *)((u8 *)this + 0x4)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Generate__13CRepairEffectFP9mgCMemoryi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Step__13CRepairEffectFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Draw__13CRepairEffectFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Initialize__14CRepairManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", SetStack__14CRepairManagerFP9mgCMemoryi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Clear__14CRepairManagerFv);
+void CRepairManager::Clear(void) {
+    this->Initialize();
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", LoadDataBG__14CRepairManagerFP9mgCMemory);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", CheckDataBG__14CRepairManagerFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", SetRepairData__14CRepairManagerFP9mgCMemoryiPUi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", GeneratePoly__14CRepairManagerFPfi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Generate__14CRepairManagerFii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", IsRunModel__14CRepairManagerFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", IsRun__14CRepairManagerFv);
+s32 CRepairManager::IsRunModel(void) { return *(s32 *) ((u8 *) this + 0x1B0) != 0; }
+s32 CRepairManager::IsRun(void) {
+    s32 i;
+    s32 running;
+
+    running = 0;
+    for (i = 0; i < 8; i++) {
+        if (*(s32 *) ((u8 *) this + i * 4 + 4) != 0) {
+            running = 1;
+        }
+    }
+    if (this->IsRunModel() != 0) {
+        running = 1;
+    }
+    return running;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Step__14CRepairManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Draw__14CRepairManagerFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Initialize__14CLevelUpEffectFv);
+void CLevelUpEffect::Initialize(void) {
+    (*(s8 *)((u8 *)this + 0x0)) = 0;
+    (*(s32 *)((u8 *)this + 0x24)) = 0;
+    (*(s32 *)((u8 *)this + 0x20)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Generate__14CLevelUpEffectFP10mgCTextureiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Generate__14CLevelUpEffectFP10mgCTextureiP11CCharacter2);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", IsRun__14CLevelUpEffectFv);
+u8 CLevelUpEffect::IsRun(void) {
+    return (*(s8 *)((u8 *)this + 0x0));
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Step__14CLevelUpEffectFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Draw__14CLevelUpEffectFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Initialize__21CLevelUpEffectManagerFv);
@@ -187,12 +265,23 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", StepFishBoiledEffect__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", DrawFishBoiledEffect__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", SetEffectSpectolBreak__FP9mgCMemoryP11CMenuEffecti);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", SetEffectSpectolFusion__FP9mgCMemoryPP11CMenuEffectP13CGameDataUsedi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Initialize__11CMenuEffectFv);
+void CMenuEffect::Initialize(void) {
+    (*(s16 *)((u8 *)this + 0x0)) = 0;
+    (*(s32 *)((u8 *)this + 0x4)) = 0;
+    (*(s8 *)((u8 *)this + 0x9)) = -1;
+    (*(s8 *)((u8 *)this + 0xa)) = 0;
+    (*(s16 *)((u8 *)this + 0xc)) = 0;
+    (*(s32 *)((u8 *)this + 0x10)) = 0;
+    (*(s16 *)((u8 *)this + 0x34)) = 128;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", PresetEffect__11CMenuEffectFP9mgCMemoryP10mgCTextureiPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", SetMemory__11CMenuEffectFP9mgCMemory);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", SetTexInfo__11CMenuEffectFP10mgCTexturePi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", SetBaseInfo__11CMenuEffectFPiiii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", EffectStart__11CMenuEffectFv);
+void CMenuEffect::EffectStart(void) {
+    (*(s8 *)((u8 *)this + 0xa)) = 1;
+    (*(s16 *)((u8 *)this + 0x36)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", PresetInfoAll__11CMenuEffectFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", PresetInfo__11CMenuEffectFP16MENU_EFFECT_INFOii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Step__11CMenuEffectFv);

@@ -1,5 +1,6 @@
 #include "common.h"
 #include "menucls1.hpp"
+#include <cstring>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", GetHatena__Fv);
@@ -9,7 +10,10 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMenuBigNum__FPci);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", __ct__9CMenuFontFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MenuMesInit__FP6ClsMes);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", __ct__7CDC2MesFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMessData__7CDC2MesFPsPs);
+void CDC2Mes::SetMessData(s16 *arg0, s16 *arg1) {
+    ((ClsMes *) this)->SetBuff_system(arg0);
+    ((ClsMes *) this)->SetBuff(arg1);
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MsgPreset__7CDC2MesFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MsgPreset__7CDC2MesFii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgCursor__7CDC2MesFi);
@@ -20,11 +24,21 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", YesNoCursor__7CDC2MesFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", YesNoCursor2__7CDC2MesFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", GetMsgCursor__7CDC2MesFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", GetMsgItemNo__7CDC2MesFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetFontColor__7CDC2MesFiiii);
+void CDC2Mes::SetFontColor(s32 r, s32 g, s32 b, s32 a) {
+    this->SetDefColor(r | (g << 8 | (a << 24 | b << 16)));
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetPutPos__7CDC2MesFiiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetPutPos__7CDC2MesFPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetAbsPos__7CDC2MesFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", GetStringDrawWidthDC__7CDC2MesFPc);
+s32 CDC2Mes::GetStringDrawWidthDC(s8 *arg0) {
+    s32 temp_v0;
+
+    temp_v0 = (s32) (((ClsMes *) this)->GetStrWidth(arg0));
+    if (temp_v0 >= 0) {
+        return temp_v0;
+    }
+    return 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMovePosCenteringGyou__7CDC2MesFiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgItemNo__7CDC2MesFPii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgItemNo__7CDC2MesFPPci);
@@ -32,7 +46,10 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgVolumeNo__7CDC2MesFPii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgVolumeNo__7CDC2MesFPiPii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgVolumeNoOne__7CDC2MesFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", SetMsgItemPos__7CDC2MesFPii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MakeMsg__7CDC2MesFi);
+void CDC2Mes::MakeMsg(s32 arg0) {
+    *(s16 *) ((u8 *) this + 0x295E) = arg0;
+    *(u8 *) ((u8 *) this + 0x2980) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MakeMsg__7CDC2MesFPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MakeMsg__7CDC2MesFP13CGameDataUsed);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MakeMsg__7CDC2MesFP13CGameDataUsedP13CGameDataUsed);
@@ -48,8 +65,14 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MenuUseItemCheckFunc__FP13CGame
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", CheckItemUseEnable__12CMenuItemUseFP13CGameDataUsediPv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", UseItem__12CMenuItemUseFP13CGameDataUsediPv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", UseItem__12CMenuItemUseFP13CGameDataUsedP14CItemUseTarget);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", Initialize__12CMenuItemUseFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", CheckNowStateUseThisItem__FP13CGameDataUsedP14CItemUseTarget);
+void CMenuItemUse::Initialize(void) {
+    (*(s32 *)((u8 *)this + 0x0)) = 0;
+    (*(s32 *)((u8 *)this + 0x4)) = 0;
+    *(s32 *) ((u8 *) this + 0x18) = 0;
+}
+s32 CheckNowStateUseThisItem(CGameDataUsed *arg0, CItemUseTarget *arg1) {
+    return MenuUseItemCheckFunc(arg0, arg1, 0);
+}
 
 // Static initialiser (.init)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", __sinit_menucls1_cpp);

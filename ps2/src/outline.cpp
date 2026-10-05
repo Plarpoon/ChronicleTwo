@@ -19,7 +19,9 @@ void COutLineDraw::Initialize() {
     hide_edge = 0;
     next = NULL;
 }
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/outline", SetFrame__12COutLineDrawFP8mgCFrame);
+void COutLineDraw::SetFrame(mgCFrame * arg0) {
+    (*(mgCFrame * *)((u8 *)this + 0x34)) = arg0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/outline", Draw__12COutLineDrawFPfff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/outline", Draw__12COutLineDrawFff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/outline", DrawDivSprite__FP11mgCDrawPrim9mgRect_i_P10mgCTexturePiiiii);

@@ -10,7 +10,13 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", EditPaintEffect__FP10CEditPartsP
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", EditPEffectStep__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", EditPEffectDraw__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", EditGetPEffectState__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", EditPEffectEndCheck__Fv);
+s32 EditPEffectEndCheck(void) {
+    if (EditGetPEffectState() == 3) {
+        EditInitPlaceEffect();
+        return 3;
+    }
+    return (EditGetPEffectState() == 0) ^ 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", ParamInit__11CStarEffectFPfi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", Step__11CStarEffectFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", Draw__11CStarEffectFv);
@@ -27,7 +33,13 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", Step__11CPlaceAnimeFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", Step2__11CPlaceAnimeFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", Draw__11CPlaceAnimeFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", EditGetPlaceAnimeState__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", EditPlaceAnimeEndCheck__Fv);
+s32 EditPlaceAnimeEndCheck(void) {
+    if (EditGetPlaceAnimeState() == 3) {
+        EditInitPlaceAnime();
+        return 3;
+    }
+    return (EditGetPlaceAnimeState() == 0) ^ 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", __ct__11CStarEffectFv);
 
 // Static initialiser (.init)

@@ -1,5 +1,6 @@
 #include "common.h"
 #include "fishingobj.hpp"
+#include <cstdlib>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", SetFishingMode__Fi);
@@ -10,7 +11,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", GetActiveHariObj__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", GetActiveUkiObj__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", ExtendLine__Ff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", GetNowLineLength__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", GetMinLineLength__Fv);
+float GetMinLineLength(void) {
+    return 25.0f;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", InitRodPoint__FP8mgCFrameP8mgCFrame);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", GetTriPose__FPA4_fPA4_fPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", GetHariPos__FPfPf);
@@ -26,7 +29,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", CatchLine__FPff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", SlowLineVelo__Ff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", ResetLineVelo__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", ResetLine__FPf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", GetNextChanceCnt__Fv);
+s32 GetNextChanceCnt(void) {
+    return (rand() % 80) + 0x3C;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", InitFishBattle__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", EndFishBattle__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", CheckRodActionChance__FiPi);

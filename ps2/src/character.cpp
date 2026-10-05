@@ -1,5 +1,7 @@
 #include "common.h"
 #include "character.hpp"
+#include <cstring>
+#include <cstdio>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/character", SetPosition__11CCharacter2FPf);

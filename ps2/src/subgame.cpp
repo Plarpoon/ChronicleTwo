@@ -22,9 +22,38 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", sgDrawSubGameCharaShadow__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", sgDrawSubGameChara__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", sgDrawSubGameEffect__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", sgDrawSubGameSystem__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", Open__12sgCPlayVoiceFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", SetVol__12sgCPlayVoiceFff);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", Play__12sgCPlayVoiceFv);
+void sgCPlayVoice::Open(s32 arg0) {
+    if ((*(s32 *)((u8 *)this + 0x0)) > 0) {
+        this->Close();
+    }
+    (*(s32 *)((u8 *)this + 0x0)) = 1;
+    (*(s32 *)((u8 *)this + 0x4)) = arg0;
+    (*(s32 *)((u8 *)this + 0x8)) = 0;
+}
+void sgCPlayVoice::SetVol(float arg0, float arg1) {
+    float var_f12;
+    float var_f13;
+
+    var_f12 = arg0;
+    var_f13 = arg1;
+    if (var_f12 < 0.0f) {
+        var_f12 = 0.0f;
+    }
+    if (!(var_f12 <= 1.0f)) {
+        var_f12 = 1.0f;
+    }
+    (*(float *)((u8 *)this + 0x10)) = var_f12;
+    if (var_f13 < 0.0f) {
+        var_f13 = var_f12;
+    }
+    if (!(var_f13 <= 1.0f)) {
+        var_f13 = 1.0f;
+    }
+    (*(float *)((u8 *)this + 0xc)) = var_f13;
+}
+void sgCPlayVoice::Play(void) {
+    (*(s32 *)((u8 *)this + 0x8)) = 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", Step__12sgCPlayVoiceFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/subgame", Close__12sgCPlayVoiceFv);
 

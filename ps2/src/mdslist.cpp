@@ -4,21 +4,50 @@
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", AssignMds__9CMapPieceFP8CMdsInfo);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", GetPoly__9CMapPieceFiP6CCPolyR9mgVu0FBOXi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", SetTimeBand__9CMapPieceFff);
+void CMapPiece::SetTimeBand(float arg0, float arg1) {
+    (*(float *)((u8 *)this + 0x94)) = arg0;
+    (*(float *)((u8 *)this + 0x98)) = arg1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", GetMaterial__9CMapPieceFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", Step__9CMapPieceFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", GetBoundBox__9CMapPieceFP9mgVu0FBOX);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", DrawSub__9CMapPieceFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", Copy__9CMapPieceFR9CMapPieceP9mgCMemory);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", Initialize__9CMapPieceFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", Initialize__8CMdsInfoFv);
+void CMdsInfo::Initialize(void) {
+    (*(s32 *)((u8 *)this + 0x0)) = 0;
+    (*(s32 *)((u8 *)this + 0x4)) = 0;
+    (*(s32 *)((u8 *)this + 0x8)) = 0;
+    (*(s32 *)((u8 *)this + 0xc)) = 0;
+    (*(s32 *)((u8 *)this + 0x10)) = 0xBF800000;
+    (*(s32 *)((u8 *)this + 0x14)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", SearchMdsList__11CMdsListSetFPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", GetMdsList__11CMdsListSetFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", SearchMDS__11CMdsListSetFPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", LoadPCPFile__11CMdsListSetFPcPUiP9mgCMemoryi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", DeleteMdsList__11CMdsListSetFPc);
+s32 CMdsListSet::DeleteMdsList(s8 *arg0) {
+    struct temp_v0_champs *temp_v0;
+
+    temp_v0 = (struct temp_v0_champs *) (this->SearchMdsList(arg0));
+    if (temp_v0 == NULL) {
+        return 0;
+    }
+    (*(s32 *)((u8 *)temp_v0 + 0x0)) = 0;
+    (*(s32 *)((u8 *)temp_v0 + 0x4)) = 0;
+    (*(s32 *)((u8 *)temp_v0 + 0x8)) = 0;
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", LoadIMGFile__11CMdsListSetFPcP15mgCEnterIMGInfoP9mgCMemory);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", DeleteIMG__11CMdsListSetFPc);
+void CMdsListSet::DeleteIMG(s8 *arg0) {
+    struct temp_v0_champs_05c0e1 *temp_v0;
+
+    temp_v0 = (struct temp_v0_champs_05c0e1 *) (this->SearchIMGList(arg0));
+    if (temp_v0 != NULL) {
+        (*(s32 *)((u8 *)temp_v0 + 0x0)) = 0;
+        (*(s32 *)((u8 *)temp_v0 + 0x4)) = 0;
+    }
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", SearchIMGList__11CMdsListSetFPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", GetTextureBlockNo__11CMdsListSetFiPii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", Initialize__11CMdsListSetFv);

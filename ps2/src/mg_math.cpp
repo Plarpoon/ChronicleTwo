@@ -508,7 +508,55 @@ static int Check_Point_Poly3(float x, float y, float x0, float y0, float x1, flo
     return MG_POINT_POLY3_OUTSIDE;
 }
 #else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", Check_Point_Poly3__Fffffffff);
+s32 Check_Point_Poly3(float arg0, float arg1, float arg2, float arg3, float arg4, float arg5, float arg6, float arg7) {
+    float temp_f1;
+    float temp_f4;
+    float temp_f6;
+    float var_f0;
+    float var_f0_2;
+    float var_f0_3;
+    float var_f0_4;
+
+    var_f0 = (arg2 < arg4) ? ((arg2 < arg6) ? arg2 : arg6) : ((arg4 < arg6) ? arg4 : arg6);
+    if (!(var_f0 <= arg0)) {
+        return 0;
+    }
+    var_f0_2 = (arg2 > arg4) ? ((arg2 > arg6) ? arg2 : arg6) : ((arg4 > arg6) ? arg4 : arg6);
+    if (!(arg0 <= var_f0_2)) {
+        return 0;
+    }
+    var_f0_3 = (arg3 < arg5) ? ((arg3 < arg7) ? arg3 : arg7) : ((arg5 < arg7) ? arg5 : arg7);
+    if (!(var_f0_3 <= arg1)) {
+        return 0;
+    }
+    var_f0_4 = (arg3 > arg5) ? ((arg3 > arg7) ? arg3 : arg7) : ((arg5 > arg7) ? arg5 : arg7);
+    if (!(arg1 <= var_f0_4)) {
+        return 0;
+    }
+    temp_f6 = ((arg4 - arg2) * (arg1 - arg3)) - ((arg5 - arg3) * (arg0 - arg2));
+    temp_f4 = ((arg6 - arg4) * (arg1 - arg5)) - ((arg7 - arg5) * (arg0 - arg4));
+    temp_f1 = ((arg2 - arg6) * (arg1 - arg7)) - ((arg3 - arg7) * (arg0 - arg6));
+    if (temp_f6 == 0.0f) {
+        return 2;
+    }
+    if (temp_f4 == 0.0f) {
+        return 3;
+    }
+    if (temp_f1 == 0.0f) {
+        return 4;
+    }
+    if (!(temp_f6 <= 0.0f) && !(temp_f4 <= 0.0f) && !(temp_f1 <= 0.0f)) {
+        return 1;
+    }
+    if (temp_f6 < 0.0f) {
+        if (temp_f4 < 0.0f) {
+            if (temp_f1 < 0.0f) {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 #endif
 float mgDistVector(float *vector) {
     asm {

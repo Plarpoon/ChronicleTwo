@@ -2,9 +2,42 @@
 #include "funcpoint.hpp"
 
 // Code (.text)
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", CheckTime__Ffff);
+s32 CheckTime(float arg0, float arg1, float arg2) {
+    /* L'ordre des declarations decide de l'attribution des registres chez
+     * MWCC. Celui-ci n'est pas celui de m2c : il a ete trouve en enumerant
+     * les ordres possibles, et c'est le seul qui rende les octets du disque.
+     * */
+    s32 var_v0;
+
+    if (!(arg2 <= arg1)) {
+        if (arg0 < arg1) {
+            return 0;
+        }
+        var_v0 = 1;
+        if (arg0 < arg2) {
+            var_v0 = 0;
+        }
+        return var_v0 ^ 1;
+    }
+    if (!(arg1 <= arg2)) {
+        if (!(arg0 < arg1)) {
+            /* Duplicate return node #12. Try simplifying control flow for better match */
+            return 1;
+        }
+        if (!(arg0 < arg2)) {
+            return 0;
+        }
+        /* Duplicate return node #12. Try simplifying control flow for better match */
+        return 1;
+    }
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", LimitTime__Ff);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", SubTime__Fff);
+float SubTime(float a, float b) {
+    float t = LimitTime(a - b);
+    if (t <= 12.0f) return t;
+    return 24.0f - t;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", Initialize__10CFuncPointFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", Check__10CFuncPointFP15CFuncPointCheck);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", CheckOver__FPfPfPf);
@@ -20,15 +53,58 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", __ct__19CList_10CFuncPoint_Fv)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", GetReserve__14CFuncPointMngrFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", AddFromReserve__14CFuncPointMngrFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", GetNum__14CFuncPointMngrFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", GetEventNum__14CFuncPointMngrFi);
+s32 CFuncPointMngr::GetEventNum(s32 arg0) {
+    s32 var_s0;
+    struct var_v0_champs *var_v0;
+
+    var_s0 = 0;
+    this->GetStart(6);
+    var_v0 = (struct var_v0_champs *) (this->Get());
+    if (var_v0 != NULL) {
+        do {
+            if ((*(s32 *)((u8 *)var_v0 + 0x20)) & arg0) {
+                var_s0 += 1;
+            }
+            var_v0 = (struct var_v0_champs *) (this->Get());
+        } while (var_v0 != NULL);
+    }
+    this->GetEnd();
+    return var_s0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", EnableFuncNum__14CFuncPointMngrFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", GetStart__14CFuncPointMngrFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", Get__14CFuncPointMngrFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", GetEnd__14CFuncPointMngrFv);
+void CFuncPointMngr::GetEnd(void) {
+    (*(s32 *)((u8 *)this + 0x2c)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", Search__14CFuncPointMngrFPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", GetLight__14CFuncPointMngrFPfP10CFuncPointiP15CFuncPointChecki);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", Step__14CFuncPointMngrFiP15CFuncPointCheck);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", UpdateFlag__14CFuncPointMngrFiP15CFuncPointCheck);
+void CFuncPointMngr::Step(s32 i, CFuncPointCheck *c) { this->UpdateFlag(i, c); }
+s32 CFuncPointMngr::UpdateFlag(s32 arg0, CFuncPointCheck *arg1) {
+    CFuncPoint *temp_v0;
+    CFuncPoint *temp_v0_2;
+    CFuncPoint *var_s0;
+    s32 temp_v0_3;
+    s32 var_s1;
+
+    this->GetStart(arg0);
+    var_s1 = 0;
+    temp_v0 = (CFuncPoint *) (this->Get());
+    var_s0 = (CFuncPoint *) (temp_v0);
+    if (temp_v0 != NULL) {
+        do {
+            temp_v0_3 = (s32) (var_s0->Check(arg1));
+            (*(s32 *)((u8 *)var_s0 + 0x1b0)) = temp_v0_3;
+            if (temp_v0_3 != 0) {
+                var_s1 += 1;
+            }
+            temp_v0_2 = (CFuncPoint *) (this->Get());
+            var_s0 = (CFuncPoint *) (temp_v0_2);
+        } while (temp_v0_2 != NULL);
+    }
+    this->GetEnd();
+    return var_s1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", UpdateStatus__14CFuncPointMngrFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", Copy__14CFuncPointMngrFR14CFuncPointMngrP9mgCMemory);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", Initialize__14CFuncPointMngrFv);

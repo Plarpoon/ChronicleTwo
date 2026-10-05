@@ -1,5 +1,7 @@
 #include "common.h"
 #include "menucommon.hpp"
+#include <cstring>
+#include <cstdio>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucommon", GetRandI__Fi);
@@ -33,7 +35,19 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucommon", CalcMenu1__FfPfffi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucommon", CalcMenu1__FiPiiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucommon", CalcMenuAdd__FPiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucommon", CalcMenuAdd__FPfff);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucommon", CalcMenuAdd2__FPiii);
+s32 CalcMenuAdd2(s32 *arg0, s32 arg1, s32 arg2) {
+    if (arg0 == NULL) {
+        return -1;
+    }
+    if ((arg1 < 0) && ((*arg0 + arg1) < arg2)) {
+        return 1;
+    }
+    if ((arg1 > 0) && (arg2 < (*arg0 + arg1))) {
+        return 1;
+    }
+    *arg0 += arg1;
+    return 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucommon", GetNumberKeta__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucommon", GetDispVolumeForFloat__Ff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucommon", GetFloatCommaValue__Ff);

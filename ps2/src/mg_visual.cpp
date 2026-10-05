@@ -14,7 +14,26 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", Initialize__13mgCVisualAttrFv)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", __ct__13mgCVisualAttrFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", GetTextureManager__9mgCVisualFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", SetDrawEnvGifTag__9mgCVisualFP1P13mgRENDER_INFOP10mgCDrawEnv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", Initialize__12mgCVisualMDTFv);
+void mgCVisualMDT::Initialize(void) {
+    (*(s32 *)((u8 *)this + 0x20)) = 0;
+    (*(s32 *)((u8 *)this + 0x30)) = 0;
+    (*(s32 *)((u8 *)this + 0x24)) = 0;
+    (*(s32 *)((u8 *)this + 0x34)) = 0;
+    (*(s32 *)((u8 *)this + 0x28)) = 0;
+    (*(s32 *)((u8 *)this + 0x38)) = 0;
+    (*(s32 *)((u8 *)this + 0x2c)) = 0;
+    (*(s32 *)((u8 *)this + 0x3c)) = 0;
+    (*(s32 *)((u8 *)this + 0x40)) = 0;
+    (*(s32 *)((u8 *)this + 0x44)) = 0;
+    (*(s32 *)((u8 *)this + 0x48)) = 0;
+    (*(s32 *)((u8 *)this + 0x0)) = 0;
+    (*(s32 *)((u8 *)this + 0x4)) = 0;
+    (*(s32 *)((u8 *)this + 0x8)) = 0;
+    (*(s32 *)((u8 *)this + 0x14)) = 0;
+    (*(s32 *)((u8 *)this + 0x10)) = 0;
+    (*(s32 *)((u8 *)this + 0x10)) = 60;
+    (*(s32 *)((u8 *)this + 0x14)) = 180;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", CopyMaterial__FP10mgMaterialP13MDT_MATERIAL_P17mgCTextureManager);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", CopyMDTData__12mgCVisualMDTFP10MDT_HEADERP9mgCMemory);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", CopyMDTDataPointer__12mgCVisualMDTFP10MDT_HEADERP9mgCMemory);

@@ -1,5 +1,6 @@
 #include "common.h"
 #include "effect.hpp"
+#include <cstring>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", UniformityRand__Fff);
@@ -14,7 +15,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", __ct__11CEffectCtrlFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", __dt__11CEffectCtrlFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", Ctrl__11CEffectCtrlFP7CEffecti);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", Initialize__11CEffectCtrlFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", Run__11CEffectCtrlFv);
+void CEffectCtrl::Run(void) {
+    (*(s32 *)((u8 *)this + 0x10)) = 1;
+    (*(s32 *)((u8 *)this + 0x50)) = 0;
+    (*(s32 *)((u8 *)this + 0x64)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", SetOrigin__11CEffectCtrlFPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", __as__11CEffectCtrlFRC11CEffectCtrl);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", __BUFFER_SIZE__FP9SPI_STACKi);
@@ -67,7 +72,10 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", __GRAVITY__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", __ct__14CEffectManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", Initialize__14CEffectManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", EntryEffCtrls__14CEffectManagerFP7CEffectiP11CEffectCtrli);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", SetEffectNums__14CEffectManagerFii);
+void CEffectManager::SetEffectNums(s32 arg0, s32 arg1) {
+    (*(s32 *)((u8 *)this + 0x24)) = arg0;
+    (*(s32 *)((u8 *)this + 0x2c)) = arg1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", Ctrl__14CEffectManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", Step__14CEffectManagerFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", Draw__14CEffectManagerFv);

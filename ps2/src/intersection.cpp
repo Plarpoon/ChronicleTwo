@@ -7,7 +7,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/intersection", IntersectionPipePoly3__FPfP
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/intersection", IntersectionSpherePoly3__FPfPA4_fPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/intersection", IntersectionBox__FPfPfP9mgVu0FBOXPA4_f);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/intersection", IntersectionBox__FPfPfP9mgVu0FBOXPA4_fPA4_f);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/intersection", mt_test__FP12RS_STACKDATAi);
+s32 mt_test(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
 
 // Uninitialised data (.bss)
 INCLUDE_BSS(at_161, 0x10);

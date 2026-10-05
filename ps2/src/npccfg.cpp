@@ -34,7 +34,10 @@ static int _NPC_NUM(SPI_STACK *stack, int argument_count) {
     return 1;
 }
 #else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/npccfg", _NPC_NUM__FP9SPI_STACKi);
+s32 _NPC_NUM(SPI_STACK *arg0, s32 arg1) {
+    NpcBaseDataTotalNum = spiGetStackInt(arg0);
+    return 1;
+}
 #endif
 #ifdef NONMATCHING
 /**

@@ -1,5 +1,6 @@
 #include "common.h"
 #include "menusys.hpp"
+#include <cstring>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", DrawTrushMenuMessage__Fv);
@@ -36,11 +37,23 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", SetPreCmdTrush__FP14CBaseMenuCla
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", SetPreCmdSpectolBreak__FP14CBaseMenuClassiP16CMenuPosDataFormP13CGameDataUsedP13CGameDataUsed);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", SetPreCmdGiftBoxSelect__FP14CBaseMenuClassP13CGameDataUsed);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", CheckFishCondition__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", Initialize__15CMENU_USERPARAMFv);
+void CMENU_USERPARAM::Initialize(void) {
+    (*(s32 *)((u8 *)this + 0x4)) = 0;
+    (*(s32 *)((u8 *)this + 0x0)) = 0;
+    (*(s32 *)((u8 *)this + 0x8)) = 0;
+    (*(s32 *)((u8 *)this + 0xc)) = 0;
+    (*(s32 *)((u8 *)this + 0x10)) = 0;
+    (*(s32 *)((u8 *)this + 0x14)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", AttachInfo__15CMENU_USERPARAMFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", Initialize__17MENU_ASKMODE_PARAFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", __ct__17MENU_ASKMODE_PARAFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", Set__18MENU_SWAPITEM_INFOFiiii);
+void MENU_SWAPITEM_INFO::Set(s32 a, s32 b, s32 c, s32 d) {
+    *(s16 *) ((u8 *) this + 2) = a;
+    *(s16 *) ((u8 *) this + 4) = b;
+    *(s16 *) ((u8 *) this + 6) = c;
+    *(s16 *) this = d;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", IsEnableChangeRoboParts__FP13CGameDataUsed);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", SetSpectolInfo__FP13CGameDataUsedP13CGameDataUsed);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", InitSpectol__Fv);
@@ -62,10 +75,21 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", AttachFuncData__12CMenuKeyFuncFv
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", GetActiveCharaNo__12CMenuKeyFuncFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuPosStep__12CMenuKeyFuncFPiPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuSetPos__12CMenuKeyFuncFii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuPosStop__12CMenuKeyFuncFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuPosPlay__12CMenuKeyFuncFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", SetMoveMethod__12CMenuKeyFuncFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", SetWakuMoveMethod__12CMenuKeyFuncFi);
+void CMenuKeyFunc::MenuPosStop(void) {
+    *(u8 *)(*(u8 **)((u8 *)this + 0x138) + 3) = 1;
+    *(u8 *)(*(u8 **)((u8 *)this + 0x13C) + 3) = 1;
+}
+void CMenuKeyFunc::MenuPosPlay(void) {
+    *(*(u8 **) ((u8 *) this + 0x138) + 3) = 0;
+    *(*(u8 **) ((u8 *) this + 0x13C) + 3) = 0;
+}
+void CMenuKeyFunc::SetMoveMethod(s32 arg0) {
+    *(u8 *) (*(u8 **) ((u8 *) this + 0x138) + 0x20) = arg0;
+    this->SetWakuMoveMethod(arg0);
+}
+void CMenuKeyFunc::SetWakuMoveMethod(s32 arg0) {
+    *(u8 *) (*(u8 **) ((u8 *) this + 0x13C) + 0x20) = arg0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", GetItemPos__12CMenuKeyFuncFPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", SetWakuType__12CMenuKeyFuncFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", SetWakuWH__12CMenuKeyFuncFiii);
@@ -78,14 +102,29 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", EnableSwapNowPos__12CMenuKeyFunc
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", GetItemAll__12CMenuKeyFuncFP13CGameDataUsedP18MENU_SWAPITEM_INFO);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", GetItemCommandMsg__FP13CGameDataUsedP17MENU_ASKMODE_PARAii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", GetItemCommandMsg__FP13CGameDataUsedPiPUiPsPsii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", SelDataInit__12CMenuKeyFuncFv);
+void CMenuKeyFunc::SelDataInit(void) {
+    (*(s32 *)((u8 *)this + 0x4)) = 0;
+    (*(s32 *)((u8 *)this + 0x8)) = 0;
+    (*(s32 *)((u8 *)this + 0x78)) = (*(s32 *)((u8 *)this + 0x70));
+    (*(s32 *)((u8 *)this + 0x7c)) = (*(s32 *)((u8 *)this + 0x74));
+    (*(s8 *)((u8 *)this + 0x2)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", CheckSelectKey__12CMenuKeyFuncFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", CheckLRKey__12CMenuKeyFuncFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuCheckPushButton__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", ConvertCheckPushButton__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", CheckPushButton__12CMenuKeyFuncFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", CheckAnalogKey__12CMenuKeyFuncFiPf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", CheckKeyInput__12CMenuKeyFuncFv);
+u8 CMenuKeyFunc::CheckKeyInput(void) {
+    if ((*(u8 *)((u8 *)this + 0x1)) == 0) {
+        (*(s32 *)((u8 *)this + 0x4)) = 0;
+        (*(s32 *)((u8 *)this + 0x8)) = 0;
+    }
+    if ((*(s32 *)((u8 *)this + 0x4)) != 0) {
+        (*(u8 *)((u8 *)this + 0x2)) = 1;
+    }
+    return (*(u8 *)((u8 *)this + 0x2));
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", GetDebugInputKey__12CMenuKeyFuncFRiRi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuSwapItem__12CMenuKeyFuncFP13CGameDataUsedP18MENU_SWAPITEM_INFOib);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", GetGameDataUsedForSWAPINFO__FP18MENU_SWAPITEM_INFO);
@@ -96,7 +135,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", menu_inputkey_limmit_check_line_
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", menu_inputkey_limmit_check_glid__12CMenuKeyFuncFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", CheckMoveSelect__12CMenuKeyFuncFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", FadeOutMenuBGMVol__12CMenuKeyFuncFii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", FadeInMenuBGMVol__12CMenuKeyFuncFi);
+void CMenuKeyFunc::FadeInMenuBGMVol(s32 arg0) {
+    (*(s32 *)((u8 *)this + 0x154)) = arg0;
+    (*(s16 *)((u8 *)this + 0x158)) = (*(s32 *)((u8 *)this + 0x150));
+    (*(s16 *)((u8 *)this + 0x15a)) = 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", StepMenuBGM__12CMenuKeyFuncFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", CheckEnableHaveItemNum__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuEquipCameraSetEnv__FP12CActionCharaP9mgCCameraii);
@@ -138,7 +181,12 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuItemCharaActWepInfoDraw__FP1
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuItemCharaViewCheck__FP10CHARA_DATAii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuPosFormValueSetCharaRobo__FP9ROBO_DATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuPosFormValueSetMonster__FP16MOS_CHANGE_PARAMP10CHARA_DATA);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", CheckBuildUp__FP13CGameDataUsedPiPiPi);
+s32 CheckBuildUp(CGameDataUsed *arg0, s32 *arg1, s32 *arg2, s32 *arg3) {
+    if (arg0 != NULL) {
+        return arg0->IsBuildUp(arg1, arg2, arg3);
+    }
+    return 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", BuildUpWeaponTrans__FP13CGameDataUsedi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", BuildUpWeaponNameBoardDraw__FP11mgCDrawPrimffi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuWeaponBuildUpDraw__FRi);

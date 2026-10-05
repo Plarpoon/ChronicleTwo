@@ -4,7 +4,9 @@
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", GetDonyShopLineUp__FPiPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", CheckSyojiHin__5CShopFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", CheckRobotCore__Fv);
+void CheckRobotCore(void) {
+    (GetUserDataMan())->CheckRobotCore();
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", CheckEventItem__5CShopFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", GetPrice__5CShopFP13CGameDataUsedPiPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", CheckMoney__5CShopFv);

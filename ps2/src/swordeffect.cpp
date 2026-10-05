@@ -10,7 +10,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", SetTexture__17CSWordAfterEff
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", StartEffect__17CSWordAfterEffectFP8mgCFrameP8mgCFrameiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", AddPoint__17CSWordAfterEffectFPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", Step__17CSWordAfterEffectFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", Clear__17CSWordAfterEffectFv);
+void CSWordAfterEffect::Clear(void) {
+    (*(s32 *)((u8 *)this + 0x88)) = 0;
+    (*(s32 *)((u8 *)this + 0x4)) = 0;
+    (*(s32 *)((u8 *)this + 0x0)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", Initialize__17CSWordAfterEffectFP9mgCMemoryii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", Copy__17CSWordAfterEffectFR17CSWordAfterEffectP9mgCMemory);
 

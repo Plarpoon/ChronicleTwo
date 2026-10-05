@@ -2,13 +2,29 @@
 #include "cameracontrol.hpp"
 
 // Code (.text)
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/cameracontrol", SetFixHeight__15CameraCtrlParamFf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/cameracontrol", SetFixDist__15CameraCtrlParamFf);
+void CameraCtrlParam::SetFixHeight(float arg0) {
+    (*(float *)((u8 *)this + 0x14)) = arg0;
+    (*(float *)((u8 *)this + 0x18)) = arg0;
+    (*(float *)((u8 *)this + 0x8)) = arg0;
+    (*(float *)((u8 *)this + 0xc)) = arg0;
+    (*(float *)((u8 *)this + 0x1c)) = arg0;
+    (*(float *)((u8 *)this + 0x20)) = arg0;
+}
+void CameraCtrlParam::SetFixDist(float arg0) {
+    *(float *) ((u8 *) this + 4) = arg0;
+    *(float *) this = arg0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/cameracontrol", __ct__14CCameraControlFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/cameracontrol", GetActiveParam__14CCameraControlFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/cameracontrol", SetRotCameraCancel__14CCameraControlFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/cameracontrol", BitSetRotCameraCancel__14CCameraControlFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/cameracontrol", BitResetRotCameraCancel__14CCameraControlFi);
+void CCameraControl::SetRotCameraCancel(s32 mask) {
+    rot_cancel = mask;
+}
+void CCameraControl::BitSetRotCameraCancel(s32 mask) {
+    rot_cancel |= mask;
+}
+void CCameraControl::BitResetRotCameraCancel(s32 mask) {
+    rot_cancel &= ~mask;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/cameracontrol", InitStatus__14CCameraControlFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/cameracontrol", ControlOn__14CCameraControlFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/cameracontrol", ControlOff__14CCameraControlFv);

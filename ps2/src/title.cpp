@@ -1,4 +1,6 @@
 #include "common.h"
+#include <cstdio>
+#include <cstdlib>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", title_init_rand__Fv);
@@ -23,7 +25,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", CalcPushAlpha__FiPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleMCCheckInit__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleMCCheckKey__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleMCCheckDraw__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", DCTitleStep__Fi);
+s32 DCTitleStep(s32 phase) {
+    return 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleCopyRightInit__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleCopyRightStep__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleCopyRightDraw__Fv);

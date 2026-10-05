@@ -1,26 +1,34 @@
 #include "common.h"
 #include "wavetable.hpp"
+
+#include <cstdlib>
+#include <libvu0.h>
+
 #include "mg_drawprim.hpp"
 #include "mg_texture.hpp"
 #include "mglib.hpp"
 
-#include <cstdlib>
-#include <cstring>
-
 // Code (.text)
-#ifdef NONMATCHING
 CWaveTable::CWaveTable() {
-    memset(height, 0, sizeof(height));
+    int row;
+    int col;
+
+    for (row = 0; row < WAVE_TABLE_DIM; row++) {
+        for (col = 0; col < WAVE_TABLE_DIM; col++) {
+            height[1][row][col] = 0.0f;
+            height[0][row][col] = 0.0f;
+        }
+    }
+
     current = 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/wavetable", __ct__10CWaveTableFv);
-#endif
+
 #ifdef NONMATCHING
 CWaveTable::~CWaveTable() {}
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/wavetable", __dt__10CWaveTableFv);
 #endif
+
 #ifdef NONMATCHING
 void CWaveTable::CreateTexture(mgCTexture *output_texture) {
     if (output_texture == NULL || output_texture->bpp < 24) {
@@ -82,25 +90,31 @@ void CWaveTable::CreateTexture(mgCTexture *output_texture) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/wavetable", CreateTexture__10CWaveTableFP10mgCTexture);
 #endif
-#ifdef NONMATCHING
+
 void CWaveTable::GetEffect() {
-    static int step_count;
-    if (step_count == 0) {
-        for (int disturbance = 0; disturbance < 4; ++disturbance) {
-            int column = rand() % (WAVE_TABLE_DIM - 2) + 1;
-            int row = rand() % (WAVE_TABLE_DIM - 2) + 1;
-            height[current][row][column] +=
-                0.04f * (static_cast<float>(rand()) / 2147483648.0f - 0.5f);
+    static int cnt = 0;
+    int        i;
+    int        col;
+    int        row;
+
+    // Every fifth step drops four random disturbances onto the surface.
+    if (cnt == 0) {
+        for (i = 0; i < 4; i++) {
+            col = rand() % 22 + 1;
+            row = rand() % 22 + 1;
+            height[current][row][col] += (rand() / 2147483648.0f - 0.5f) * 0.04f;
         }
     }
-    ++step_count;
-    if (step_count >= 5) step_count = 0;
+
+    cnt++;
+    if (cnt > 4) {
+        cnt = 0;
+    }
+
     Effect();
     current = 1 - current;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/wavetable", GetEffect__10CWaveTableFv);
-#endif
+
 #ifdef NONMATCHING
 void CWaveTable::Effect() {
     const int previous = 1 - current;
@@ -133,7 +147,3 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/wavetable", at_256__DATA);
 
 // Virtual tables (.vtables)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/wavetable", __vt__10CWaveTable__DATA);
-
-// Small uninitialised data (.sbss)
-INCLUDE_BSS(cnt_302, 0x4);
-INCLUDE_BSS(init_303, 0x4);

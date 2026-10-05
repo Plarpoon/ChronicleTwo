@@ -2430,7 +2430,7 @@ void IsEventRun() {
     }
     memset(&data, 0, sizeof(data));
     if (DngMainScene->GetMapEvent(pos, button, &data)) {
-        DngMainScene->RunEvent(data.event.unk_28, &data);
+        DngMainScene->RunEvent(data.event.point_no, &data);
         return;
     }
     if (DngMainScene->map_event_no) {

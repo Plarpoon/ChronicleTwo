@@ -249,7 +249,7 @@ extern CGamePad GamePad;
 extern CGamePad GamePad__2;
 
 /**
- * Logical button and stick table built over GamePad.
+ * Logical button and stick table built over GamePad__2.
  */
 extern CPadControl PadCtrl;
 

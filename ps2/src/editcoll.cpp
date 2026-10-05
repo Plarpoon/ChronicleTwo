@@ -1,17 +1,38 @@
 #include "common.h"
 #include "editcoll.hpp"
+
+#include <libvu0.h>
+
 #include "mg_math.hpp"
 #include "mg_memory.hpp"
 
 // Code (.text)
-#ifdef NONMATCHING
 int ClipBoxXZ(float *max_a, float *min_a, float *max_b, float *min_b) {
-    return max_a[0] >= min_b[0] && max_a[2] >= min_b[2] &&
-           max_b[0] >= min_a[0] && max_b[2] >= min_a[2];
+    register int status;
+
+    // Only the sign flags of the two subtractions matter: any negative component means apart.
+    asm {
+        lqc2 $vf10, 0x0($4)
+        lqc2 $vf11, 0x0($5)
+        lqc2 $vf1, 0x0($6)
+        lqc2 $vf2, 0x0($7)
+        vnop
+        vnop
+        vnop
+        ctc2.ni $0, $vi16
+        vsub.xz $vf25, $vf10, $vf2
+        vsub.xz $vf25, $vf1, $vf11
+        vnop
+        vnop
+        vnop
+        vnop
+        vnop
+        cfc2.ni status, $vi16
+    }
+
+    return (status & MG_VU0_STATUS_SIGN_STICKY) == 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editcoll", ClipBoxXZ__FPfPfPfPf);
-#endif
+
 #ifdef NONMATCHING
 float OverlapPoly3AreaXZ(float (*clipped)[4], float (*clipper)[4], mgVu0FBOX *box) {
     float vertices[2][7][4];
@@ -83,6 +104,7 @@ float OverlapPoly3AreaXZ(float (*clipped)[4], float (*clipper)[4], mgVu0FBOX *bo
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editcoll", OverlapPoly3AreaXZ__FPA4_fPA4_fP9mgVu0FBOX);
 #endif
+
 #ifdef NONMATCHING
 void CEditCollision::Copy(CEditCollision &dest, int area_kind, mgCMemory *memory) {
     int count = 0;
@@ -108,6 +130,7 @@ void CEditCollision::Copy(CEditCollision &dest, int area_kind, mgCMemory *memory
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editcoll", Copy__14CEditCollisionFR14CEditCollisioniP9mgCMemory);
 #endif
+
 #ifdef NONMATCHING
 float CEditCollision::AreaXZ() {
     float total_area = 0.0f;
@@ -127,41 +150,72 @@ float CEditCollision::AreaXZ() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editcoll", AreaXZ__14CEditCollisionFv);
 #endif
-#ifdef NONMATCHING
+
 int CEditCollision::OverlapPoly3XZ(float (*triangle)[4], float *area, mgVu0FBOX *box) {
-    if (poly == NULL) return 0;
-    float tri_max[4], tri_min[4];
+    sceVu0FVECTOR tri_max;
+    sceVu0FVECTOR tri_min;
+    mgVu0FBOX     overlap_box;
+    sceVu0FVECTOR poly_max;
+    sceVu0FVECTOR poly_min;
+    CCPoly       *p;
+    float         overlap;
+    float         total;
+    int           overlap_count;
+    int           i;
+
+    p = poly;
+    if (p == NULL) {
+        return 0;
+    }
+
     mgVectorMaxMin(tri_max, tri_min, triangle[0], triangle[1], triangle[2]);
-    if (area != NULL) *area = 0.0f;
+
+    if (area != NULL) {
+        *area = 0.0f;
+    }
+
     if (box != NULL) {
         mgZeroVectorW(box->max);
         mgZeroVectorW(box->min);
     }
-    if (!ClipBoxXZ(tri_max, tri_min, bbox.max, bbox.min)) return 0;
-    float total = 0.0f;
-    int positive_count = 0;
-    for (int i = 0; i < poly_count; ++i) {
-        float poly_max[4], poly_min[4];
-        mgVectorMaxMin(poly_max, poly_min, poly[i].vertex[0], poly[i].vertex[1], poly[i].vertex[2]);
-        if (!ClipBoxXZ(tri_max, tri_min, poly_max, poly_min)) continue;
-        mgVu0FBOX overlap_box;
-        float overlap = OverlapPoly3AreaXZ(triangle, poly[i].vertex, &overlap_box);
-        if (overlap < 0.0f) overlap = -overlap;
-        total += overlap;
-        if (overlap > 0.0f) {
-            if (box != NULL) {
-                if (positive_count == 0) *box = overlap_box;
-                else mgBoxMaxMin(box, &overlap_box);
+
+    if (!ClipBoxXZ(tri_max, tri_min, bbox.max, bbox.min)) {
+        return 0;
+    }
+
+    total = 0.0f;
+    overlap_count = 0;
+    for (i = 0; i < poly_count; i++, p++) {
+        mgVectorMaxMin(poly_max, poly_min, p->vertex[0], p->vertex[1], p->vertex[2]);
+        if (ClipBoxXZ(tri_max, tri_min, poly_max, poly_min)) {
+            overlap = OverlapPoly3AreaXZ(triangle, p->vertex, &overlap_box);
+            overlap = overlap < 0.0f ? -overlap : overlap;
+            total += overlap;
+
+            if (overlap > 0.0) {
+                if (box != NULL) {
+                    if (overlap_count == 0) {
+                        *box = overlap_box;
+                    } else {
+                        mgBoxMaxMin(box, &overlap_box);
+                    }
+                }
+                overlap_count++;
             }
-            positive_count++;
         }
     }
-    if (area != NULL) *area = total;
-    return total > 0.0f;
+
+    if (area != NULL) {
+        *area = total;
+    }
+
+    if (total > 0.0f) {
+        return 1;
+    }
+
+    return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editcoll", OverlapPoly3XZ__14CEditCollisionFPA4_fPfP9mgVu0FBOX);
-#endif
+
 #ifdef NONMATCHING
 float CEditCollision::OverlapXZ(CEditCollision &other, float (*matrix)[4], mgVu0FBOX *box) {
     float total = 0.0f;
@@ -185,6 +239,7 @@ float CEditCollision::OverlapXZ(CEditCollision &other, float (*matrix)[4], mgVu0
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editcoll", OverlapXZ__14CEditCollisionFR14CEditCollisionPA4_fP9mgVu0FBOX);
 #endif
+
 #ifdef NONMATCHING
 int CEditCollision::OverlapPoly3XZ(float (*triangle)[4], float (*matrix)[4], float *area) {
     if (poly == NULL) return 0;
@@ -209,24 +264,36 @@ int CEditCollision::OverlapPoly3XZ(float (*triangle)[4], float (*matrix)[4], flo
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editcoll", OverlapPoly3XZ__14CEditCollisionFPA4_fPA4_fPf);
 #endif
-#ifdef NONMATCHING
+
 void CEditCollision::ApplyMatrix(float (*matrix)[4]) {
-    if (poly == NULL) return;
-    for (int index = 0; index < poly_count; ++index) {
-        CCPoly &triangle = poly[index];
-        mgApplyMatrixN(triangle.vertex, matrix, triangle.vertex, 3);
-        for (int corner = 0; corner < 3; ++corner) {
-            float height = triangle.vertex[corner][1];
-            triangle.vertex[corner][1] = static_cast<int>(height + (height < 0.0f ? -0.5f : 0.5f));
-        }
-        mgPlaneNormal(triangle.normal, triangle.vertex[0], triangle.vertex[1], triangle.vertex[2]);
-        sceVu0Normalize(triangle.normal, triangle.normal);
+    CCPoly *p;
+    int     i;
+    int     j;
+
+    p = poly;
+    if (p == NULL) {
+        return;
     }
+
+    for (i = 0; i < poly_count; i++, p++) {
+        mgApplyMatrixN(p->vertex, matrix, p->vertex, 3);
+
+        // Heights are rounded to the nearest whole unit.
+        for (j = 0; j < 3; j++) {
+            if (p->vertex[j][1] > 0.0f) {
+                p->vertex[j][1] = (int)(p->vertex[j][1] + 0.5f);
+            } else {
+                p->vertex[j][1] = (int)(p->vertex[j][1] - 0.5f);
+            }
+        }
+
+        mgPlaneNormal(p->normal, p->vertex[0], p->vertex[1], p->vertex[2]);
+        sceVu0Normalize(p->normal, p->normal);
+    }
+
     CreateBBox();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editcoll", ApplyMatrix__14CEditCollisionFPA4_f);
-#endif
+
 #ifdef NONMATCHING
 void CEditCollision::DeleteVerticalPoly() {
     if (poly == NULL) return;
@@ -247,6 +314,7 @@ void CEditCollision::DeleteVerticalPoly() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editcoll", DeleteVerticalPoly__14CEditCollisionFv);
 #endif
+
 #ifdef NONMATCHING
 int CEditCollision::PickupVerticalPoly() {
     if (poly == NULL) return 0;

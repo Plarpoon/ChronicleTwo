@@ -468,7 +468,7 @@ void mgPreEndDraw(mgCDrawManager *manager);
 
 /**
  * Has a draw manager reload the textures of one texture block into the
- * frame's packet.
+ * frame's packet, returning zero when that block is not drawn.
  *
  * @mangled mgEndDrawReloadTexture__FiP14mgCDrawManager
  * @address 0x142BD0

@@ -5,19 +5,61 @@
 #include "snd_mngr.hpp"
 #include "nd_meswin.hpp"
 #include "mg_texture.hpp"
+#include "dataread.hpp"
+#include "mg_memory.hpp"
+#include <cstdio>
+#include <cstring>
 
 extern HELP_MES_INFO HelpMesInfo;
 extern int ShowOffOnce;
 extern int WindowMode;
 extern ClsMes HelpMes;
+extern int LanguageCode;
+extern char HelpMesBuff[0x1000];
+extern int InitFlag__2;
 
 
 // Code (.text)
+#ifdef NONMATCHING
+void LoadHelpMes(u_long128 *buffer) {
+    char path[76];
+    int size;
+    sprintf(path, "etc/help%d.mes", LanguageCode);
+    if (LoadFile2(path, buffer, &size, 0) != 0) {
+        if (size > sizeof(HelpMesBuff)) {
+            printf("HMes Buffer Over!!(%d/%dbyte)", size, sizeof(HelpMesBuff));
+            return;
+        }
+        memcpy(HelpMesBuff, buffer, size);
+        InitFlag__2 = 1;
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/helpmes", LoadHelpMes__FP1);
+#endif
 HELP_MES_INFO *GetHepMesInfo() {
     return &HelpMesInfo;
 }
+#ifdef NONMATCHING
+void CreateHelpMes(int tex_no) {
+    if (!InitFlag__2) return;
+    HelpMes.Init();
+    HelpMes.Preset(4);
+    HelpMes.SetWindowMode(0);
+    HelpMes.SetBuff((short *)HelpMesBuff);
+    HelpMes.texture_block = tex_no;
+    ShowOffOnce = 0;
+    HelpMesInfo.show = 0;
+    HelpMesInfo.created = 0;
+    HelpMesInfo.time = 0;
+    HelpMesInfo.mes_no = -1;
+    HelpMesInfo.x = 0;
+    HelpMesInfo.y = 0;
+    HelpMesInfo.fukidashi_pos = -1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/helpmes", CreateHelpMes__Fi);
+#endif
 #ifdef NONMATCHING
 void StepHelpMes() {
     HELP_MES_INFO *info = GetHepMesInfo();
@@ -127,7 +169,20 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/helpmes", ShowErrorHelpMes__Fii);
 #endif
 
 // Static initialiser (.init)
+#ifdef NONMATCHING
+void __sinit_helpmes_cpp() {
+    new ((u_long128 *)&HelpMes) ClsMes;
+    HelpMesInfo.time = 0;
+    HelpMesInfo.mes_no = -1;
+    HelpMesInfo.fukidashi_pos = -1;
+    HelpMesInfo.show = 0;
+    HelpMesInfo.y = 0;
+    HelpMesInfo.x = 0;
+    HelpMesInfo.created = 0;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/helpmes", __sinit_helpmes_cpp);
+#endif
 
 // Constants (.rodata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/helpmes", at_799__6__DATA);

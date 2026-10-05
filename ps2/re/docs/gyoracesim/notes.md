@@ -107,3 +107,12 @@ No equivalent in Dark Cloud 1 (no fish race).
   retail assembly.
 - The generator draft uses the documented 56-element state array. Its first
   promotion attempt reached 95.71% for `init_rnd`, but that is not an exact match.
+- Typed `NONMATCHING` drafts now cover all remaining race functions: the seed
+  hash and simulation entry, progress interpolation, fish stepping, collision
+  ordering, lane battles, division setup, figure modification, character
+  bonus, and parameter randomization. `FishModifyParam` needed direct assembly
+  analysis because m2c could not resolve its six-way tactics jump table.
+- `RndFishParam` matched byte for byte and passed isolated whole-image
+  promotion. The remaining new drafts failed their first isolated promotion
+  and retain retail assembly in the default build. The full default build
+  remained byte-identical after the promotion.

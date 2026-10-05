@@ -59,3 +59,12 @@ edit.hpp, unrelated).
   so the default build keeps their retail assembly.
 - The `ClsMes` field at offset `0x22A4` is named `texture_block` in the header;
   `DrawHelpMes` reloads it before drawing the window.
+- `LoadHelpMes`, `CreateHelpMes`, and `__sinit_helpmes_cpp` now have typed drafts
+  behind `NONMATCHING`. The first isolated promotions of `LoadHelpMes` and
+  `CreateHelpMes` differed from retail. The `__sinit` draft compiles under
+  `NONMATCHING`, but the isolated promotion cannot locate the unmangled
+  initializer in the C++ source, so its retail assembly remains selected.
+- `CreateHelpMes` can express the bulk of its reset with `ClsMes::Init()`,
+  which is defined inline in the class header. Its first promotion differed
+  by 0x68 bytes in `.text`, so the exact inline setup and ordering still need
+  further matching work.

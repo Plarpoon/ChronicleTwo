@@ -61,20 +61,24 @@ Returns 0 when not active, else 1.
 `SetClearance(20,20)`; drawn with `DrawDirect(buf, 16, 72)`. CFont has no constructor call
 in `__sinit`, only `Init`.
 
-## Staged draft status
-The first source batch implements `dngGetDebugInfo`, `dngDebugInit`,
-`dngDebugStart`, `dngDebugExit`, and `__sinit_dng_debug_cpp` as typed C++ behind
-`NONMATCHING`. `command_int` is treated as a flat integer table with two
-entries per debug-menu command. The remaining functions are still supplied by
-assembly. Every named function in the unit was run through `decompile.sh`
-before this batch; subsequent work on the longer drawing, key, and enemy
-reload functions remains pending. The isolated draft comparison matched
-`dngGetDebugInfo`, `dngDebugInit`, and `dngDebugExit`; all three passed linked
-promotion and are now active. `dngDebugStart` differed in 9 of 60 words and
-remains guarded after one promotion attempt. The initializer draft compiles
-but `mwccgap` could not locate its unmangled local symbol during its single
-promotion attempt, so it also remains guarded. All five attempts are recorded
-in `scripts/re/promotion_attempts.tsv`.
+## Draft and promotion status
+All twelve named functions have typed C++ implementations. `command_int` is
+treated as a flat integer table with two entries per debug-menu command.
+Every function was run through `decompile.sh`; the Ghidra export clarified
+the irregular jump table in `dngDebugKey` and the monster target fields in
+`DrawSystemParamInfo2`.
+
+`dngGetDebugInfo`, `dngDebugInit`, `dngDebugExit`, and `DrawDebugWindow`
+passed linked-image promotion and are active. `CTreasureBox::Initialize`
+also compared exactly in the isolated draft, but its single promotion attempt
+failed because the header supplied an inline definition. The header now gives
+this unit a declaration so the guarded out-of-line draft compiles; a later
+matching pass can revisit that promotion. `dngDebugStart` and the other five
+large drafts differ from retail and remain behind `NONMATCHING`. The static
+initializer draft compiles, but `mwccgap` cannot locate its unmangled local
+symbol for promotion. Each symbol had one recorded promotion attempt in
+`scripts/re/promotion_attempts.tsv`. The default full build remains byte
+identical to retail.
 
 ## dngDebugDraw
 Reloads texture 0x6C, draws a translucent box (14,70)-(260,332), then prints the list; on

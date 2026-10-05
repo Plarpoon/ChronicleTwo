@@ -657,3 +657,10 @@ dng_main	Initialize__13CRedMarkModelFv	manual
 dng_main	__as__9mgCCameraFRC9mgCCamera	manual
 dng_main	__ct__14CActiveMonsterFv	manual
 dng_main	DngStep__Fv	checker
+dng_debug	DrawDebugWindow__Fv	checker
+dng_debug	DrawSystemParamInfo2__Fv	checker
+dng_debug	DrawSystemParamInfo__Fv	checker
+dng_debug	DBGCMD_ReloadEnemy__Fii	checker
+dng_debug	Initialize__12CTreasureBoxFv	checker
+dng_debug	dngDebugKey__Fv	checker
+dng_debug	dngDebugDraw__Fv	checker

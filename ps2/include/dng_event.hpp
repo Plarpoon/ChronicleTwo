@@ -488,11 +488,16 @@ public:
      * @address 0x1BC6F0
      * @size 0x20
      */
-    virtual void Initialize() {
+    virtual void Initialize()
+#ifndef DNG_DEBUG_SOURCE
+    {
         state = TREASURE_BOX_STATE_NONE;
         lid_open = 0.0f;
         flags = 1;
     }
+#else
+    ;
+#endif
 
     /**
      * Draws the box with its lid opened, when the camera is within 1000 units.

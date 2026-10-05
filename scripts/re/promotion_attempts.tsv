@@ -562,3 +562,8 @@ map	GetNearDist__7CObjectFv	checker
 map	Copy__7CObjectFR7CObjectP9mgCMemory	checker
 map	GetPlaceParts__4CMapFi	checker
 map	__ct__9CMapPartsFv	checker
+maintex	GetTextureInfo__FP6CScene	checker
+maintex	MainTextureInterface__FP9mgCMemoryP6CScene	checker
+maintex	calcWeaponParamWhp__FP14CActiveMonsterP8CColPrim	checker
+maintex	calcWeaponParam2__Fii	checker
+maintex	SetSwordBlurEffect__FP11CCharacter2P9mgCMemoryi	checker

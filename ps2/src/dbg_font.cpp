@@ -8,39 +8,27 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dbg_font", SjisToSerno__FUl);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dbg_font", ascii2serno__FUc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dbg_font", __ct__11dbgCJISFontFv);
 void dbgCJISFont::Initialize(void) {
-    (*(s32 *)((u8 *)this + 0xc)) = -1;
-    (*(s32 *)((u8 *)this + 0x8)) = -1;
-    (*(s32 *)((u8 *)this + 0x4)) = -1;
-    (*(s32 *)((u8 *)this + 0x0)) = -1;
-    (*(s8 *)((u8 *)this + 0x50)) = 0;
-    (*(s8 *)((u8 *)this + 0x30)) = 0;
-    (*(s8 *)((u8 *)this + 0x10)) = 0;
-    (*(s32 *)((u8 *)this + 0x74)) = 0;
-    (*(s32 *)((u8 *)this + 0x70)) = 0;
-    (*(s32 *)((u8 *)this + 0x7c)) = 16;
-    (*(s32 *)((u8 *)this + 0x78)) = 16;
-    (*(s8 *)((u8 *)this + 0x88)) = 0;
-    (*(s32 *)((u8 *)this + 0x894)) = 128;
-    (*(s32 *)((u8 *)this + 0x890)) = 128;
-    (*(s32 *)((u8 *)this + 0x88c)) = 128;
-    (*(s32 *)((u8 *)this + 0x888)) = 128;
-    (*(s32 *)((u8 *)this + 0x898)) = 0;
-    (*(s32 *)((u8 *)this + 0x8a4)) = 0;
-    (*(s32 *)((u8 *)this + 0x8a0)) = 0;
-    (*(s32 *)((u8 *)this + 0x89c)) = 0;
-    (*(s32 *)((u8 *)this + 0x8a8)) = 64;
-    (*(s32 *)((u8 *)this + 0x8ac)) = 0;
+    texture_id[DBG_FONT_SHEET_FULL_WIDTH_0] = texture_id[DBG_FONT_SHEET_FULL_WIDTH_1] = texture_id[DBG_FONT_SHEET_HALF_WIDTH] = loaded_texture_id = -1;
+    texture_name[DBG_FONT_SHEET_FULL_WIDTH_0][0] = texture_name[DBG_FONT_SHEET_FULL_WIDTH_1][0] = texture_name[DBG_FONT_SHEET_HALF_WIDTH][0] = 0;
+    x = y = 0;
+    char_width = char_height = 16;
+    buffer[0] = 0;
+    color[0] = color[1] = color[2] = color[3] = 128;
+    back_enable = 0;
+    back_color[0] = back_color[1] = back_color[2] = 0;
+    back_color[3] = 64;
+    shadow_enable = 0;
 }
-void dbgCJISFont::InitTexture(s32 arg0, s8 *arg1, s32 arg2, s8 *arg3, s32 arg4, s8 *arg5) {
-    (*(s32 *)((u8 *)this + 0x0)) = arg0;
-    (*(s32 *)((u8 *)this + 0x4)) = arg2;
-    (*(s32 *)((u8 *)this + 0x8)) = arg4;
-    strcpy(&(*(s8 *)((u8 *)this + 0x10)), arg1);
-    strcpy(&(*(s8 *)((u8 *)this + 0x30)), arg3);
-    strcpy(&(*(s8 *)((u8 *)this + 0x50)), arg5);
+void dbgCJISFont::InitTexture(s32 full0_id, s8 *full0_name, s32 full1_id, s8 *full1_name, s32 half_id, s8 *half_name) {
+    texture_id[DBG_FONT_SHEET_FULL_WIDTH_0] = full0_id;
+    texture_id[DBG_FONT_SHEET_FULL_WIDTH_1] = full1_id;
+    texture_id[DBG_FONT_SHEET_HALF_WIDTH] = half_id;
+    strcpy(texture_name[DBG_FONT_SHEET_FULL_WIDTH_0], full0_name);
+    strcpy(texture_name[DBG_FONT_SHEET_FULL_WIDTH_1], full1_name);
+    strcpy(texture_name[DBG_FONT_SHEET_HALF_WIDTH], half_name);
 }
 void dbgCJISFont::Clear(void) {
-    (*(s8 *)((u8 *)this + 0x88)) = 0;
+    buffer[0] = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dbg_font", __putc__11dbgCJISFontFUl);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dbg_font", PrintDirect__11dbgCJISFontFiiPce);

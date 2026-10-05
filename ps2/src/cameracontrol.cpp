@@ -2,17 +2,17 @@
 #include "cameracontrol.hpp"
 
 // Code (.text)
-void CameraCtrlParam::SetFixHeight(float arg0) {
-    (*(float *)((u8 *)this + 0x14)) = arg0;
-    (*(float *)((u8 *)this + 0x18)) = arg0;
-    (*(float *)((u8 *)this + 0x8)) = arg0;
-    (*(float *)((u8 *)this + 0xc)) = arg0;
-    (*(float *)((u8 *)this + 0x1c)) = arg0;
-    (*(float *)((u8 *)this + 0x20)) = arg0;
+void CameraCtrlParam::SetFixHeight(float height) {
+    max_height = height;
+    min_height = height;
+    near_height = height;
+    far_height = height;
+    rest_max_height = height;
+    rest_min_height = height;
 }
-void CameraCtrlParam::SetFixDist(float arg0) {
-    *(float *) ((u8 *) this + 4) = arg0;
-    *(float *) this = arg0;
+void CameraCtrlParam::SetFixDist(float distance) {
+    max_dist = distance;
+    min_dist = distance;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/cameracontrol", __ct__14CCameraControlFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/cameracontrol", GetActiveParam__14CCameraControlFv);

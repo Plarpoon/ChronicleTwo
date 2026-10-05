@@ -1174,18 +1174,18 @@ int GetPackFileNum(u_int *pack) {
     return count;
 }
 #else
-s32 GetPackFileNum(u32 *arg0) {
-    s32 sp38;
-    s8 *sp3C;
-    s32 var_s0;
+s32 GetPackFileNum(u32 *pack) {
+    s32 file_size;
+    s8 *file_name;
+    s32 count;
 
-    var_s0 = 0;
+    count = 0;
 loop_1:
-    if (GetPackFile(arg0, var_s0, &sp3C, &sp38) != 0) {
-        var_s0 += 1;
+    if (GetPackFile(pack, count, &file_name, &file_size) != 0) {
+        count += 1;
         goto loop_1;
     }
-    return var_s0;
+    return count;
 }
 #endif
 

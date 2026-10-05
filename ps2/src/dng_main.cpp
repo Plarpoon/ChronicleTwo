@@ -1,18 +1,22 @@
 #include "common.h"
 #include "dng_main.hpp"
+#include <cstring>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", GetWeaponEffect__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", memoryInit__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", InitDungeonMain__F13INIT_LOOP_ARG);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", Initialize__13MoveCheckInfoFv);
+void MoveCheckInfo::Initialize(void) {
+    memset(this, 0, 0x110);
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", Initialize__13CRedMarkModelFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", __as__9mgCCameraFRC9mgCCamera);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", __ct__14CActiveMonsterFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", CommonStageClassInit__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", CommonClassInit__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", EntryEventScript__Fi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", FinishDungeonMain__Fv);
+void FinishDungeonMain(void) {
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", LoopDungeonMain__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", DngMainDraw__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", DngStep__Fv);

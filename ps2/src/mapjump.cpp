@@ -1,5 +1,6 @@
 #include "common.h"
 #include "mapjump.hpp"
+#include <cstring>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapjump", GetMainMapNo__Fv);

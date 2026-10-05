@@ -1,5 +1,6 @@
 #include "common.h"
 #include "memcard.hpp"
+#include <cstring>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", CopyMCBrowserName__FiPcPUs);
@@ -9,7 +10,21 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", MakeMemoryCardAlbumName__FPci);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", MakeCheckDigit__FiPci);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", __ct__18CMemoryCardManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", Initialize__18CMemoryCardManagerFP9mgCMemory);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", InitSaveFileInfoTable__18CMemoryCardManagerFv);
+void CMemoryCardManager::InitSaveFileInfoTable(void) {
+    s32 var_s0;
+    s32 var_s1;
+    u8 *temp_s2;
+
+    var_s1 = 0;
+    var_s0 = 0;
+    do {
+        temp_s2 = (u8 *) this + var_s1;
+        memset(temp_s2 + 0x80, 0, 0x40);
+        var_s0 += 1;
+        *(s8 *) (temp_s2 + 0xA0) = 0;
+        var_s1 += 0x40;
+    } while (var_s0 < 0x11);
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", GetOpenAttribute__18CMemoryCardManagerFPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", InitError__18CMemoryCardManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", InitForMC__18CMemoryCardManagerFv);
@@ -17,8 +32,49 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", FinishForMC__18CMemoryCardManage
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", SetBuff_Album__18CMemoryCardManagerFPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", SetIconData__18CMemoryCardManagerFP12MC_ICON_DATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", GetIconDataSize__18CMemoryCardManagerFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", GetSaveDataSize__18CMemoryCardManagerFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", SetFuncNo__18CMemoryCardManagerFi);
+s32 CMemoryCardManager::GetSaveDataSize(s32 arg0) {
+    s32 var_v0;
+
+    var_v0 = 0;
+    if (arg0 == 0) {
+        var_v0 = (this->GetIconDataSize() + 0x19A) << 0xA;
+    }
+    if (arg0 == 1) {
+        var_v0 = 0x659C0;
+    }
+    if (arg0 == 2) {
+        var_v0 = 0x64CB0;
+    }
+    if (arg0 == 3) {
+        var_v0 = this->GetIconDataSize() << 0xA;
+    }
+    if (arg0 == 4) {
+        var_v0 = (this->GetIconDataSize() << 0xA) + 0x654B0;
+    }
+    if (arg0 == 5) {
+        var_v0 = this->GetIconDataSize() + 0x199;
+    }
+    if (arg0 == 6) {
+        var_v0 = 0x20800;
+    }
+    if (arg0 == 7) {
+        var_v0 = 0x5470;
+    }
+    if (arg0 == 8) {
+        var_v0 = (this->GetIconDataSize() << 0xA) + 0x5C70;
+    }
+    if (arg0 == 9) {
+        var_v0 = this->GetIconDataSize() + 0x1B;
+    }
+    return var_v0;
+}
+void CMemoryCardManager::SetFuncNo(s32 arg0) {
+    (*(s32 *)((u8 *)this + 0x50)) = arg0;
+    (*(s32 *)((u8 *)this + 0x58)) = 0;
+    if (arg0 == 1) {
+        (*(s32 *)((u8 *)this + 0x90c)) = 0xB;
+    }
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", GetFuncNo__18CMemoryCardManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", CheckMaxUniqueCounter__18CMemoryCardManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", GetUpdateFile__18CMemoryCardManagerFv);
@@ -31,7 +87,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", Step__18CMemoryCardManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", GetVersion__18CMemoryCardManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", SearchMcType__18CMemoryCardManagerFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", Write__18CMemoryCardManagerFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", Convert__18CMemoryCardManagerFv);
+s32 CMemoryCardManager::Convert(void) {
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", MakeDir__18CMemoryCardManagerFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", GetCostumeList__FUliPs);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/memcard", SaveToMc__18CMemoryCardManagerFi);

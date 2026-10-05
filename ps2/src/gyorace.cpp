@@ -5,7 +5,9 @@
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyorace", sgInitGyoRace__FP11SubGameInfo);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyorace", sgLoopGyoRace__FP11SubGameInfo);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyorace", AutoCam__FP11SubGameInfo);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyorace", sgMapDrawGyoRace__FP11SubGameInfo);
+s32 sgMapDrawGyoRace(SubGameInfo * arg0) {
+    return 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyorace", sgCharaDrawGyoRace__FP11SubGameInfo);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyorace", DivSpriteScreen__FR11mgCDrawPrim__2);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyorace", sgEffectDrawGyoRace__FP11SubGameInfo);

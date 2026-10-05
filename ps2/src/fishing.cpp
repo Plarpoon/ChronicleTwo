@@ -49,7 +49,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", CheckCasting__FP6CScenePfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", GetRandamNumber__Ffff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", GetUkiWaitTime__FP9FISH_DATAP6CScenePfii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", GetUkiPokeTime__FP9FISH_DATA);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", GetUkiPullTime__FP9FISH_DATA);
+s32 GetUkiPullTime(FISH_DATA * arg0) {
+    return 30;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", FishLoadBG__FP9FISH_DATAP1);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", LineTensionStep__FP9FISH_DATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", GetAppearFish__FiPfP10FISH_PLACEi);

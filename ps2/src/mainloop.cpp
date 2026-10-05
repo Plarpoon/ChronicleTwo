@@ -1,10 +1,14 @@
 #include "common.h"
 #include "mainloop.hpp"
+#include <cstring>
+#include <cstdio>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", GetDebugFont__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", GetCaptureMode__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", GetSystemSndID__Fv);
+s32 GetSystemSndID(void) {
+    return SystemSND_ID;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", GetMainScene__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", GetSaveData__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", GetSubGameSaveData__Fv);

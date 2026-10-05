@@ -1,5 +1,6 @@
 #include "common.h"
 #include "nd_meswin.hpp"
+#include <cstring>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", MySetPrim__FP11mgCDrawPrimii);
@@ -12,7 +13,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", DrawFukidashi__6ClsMesFiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", SetDrawSpeed__6ClsMesFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetDrawSpeedDef__6ClsMesFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetCaptionOff__6ClsMesFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetPageAutoFlg__6ClsMesFv);
+s32 ClsMes::GetPageAutoFlg(void) {
+    return (*(s32 *)((u8 *)this + 0x1dc));
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetScrPosFromChar__FP11CCharacter2Pi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetStrWidth__6ClsMesFPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetStrWidth__6ClsMesFi);
@@ -22,15 +25,32 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", CalcMesWinXYFromFukidashiXY__6
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", CalcFukidashiXY__6ClsMesFPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", AutoSet__6ClsMesFPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetBuffMesIdPtr__FPcii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", SetHalfFontWPercent__6ClsMesFf);
+void ClsMes::SetHalfFontWPercent(float arg0) {
+    if (arg0 < 0.0f) {
+        (*(float *)((u8 *)this + 0xd0)) = 0.55f;
+        return;
+    }
+    (*(float *)((u8 *)this + 0xd0)) = arg0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", __ct__6ClsMesFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", SetBuff__6ClsMesFPs);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", SetBuff_system__6ClsMesFPs);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", SetDefColor__6ClsMesFUi);
+void ClsMes::SetBuff(s16 * arg0) {
+    (*(s16 * *)((u8 *)this + 0x294c)) = arg0;
+}
+void ClsMes::SetBuff_system(s16 * arg0) {
+    (*(s16 * *)((u8 *)this + 0x2950)) = arg0;
+}
+void ClsMes::SetDefColor(u32 arg0) {
+    (*(s32 *)((u8 *)this + 0x1e28)) = arg0;
+    (*(s32 *)((u8 *)this + 0x1e2c)) = (*(s32 *)((u8 *)this + 0x1e28));
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", Preset__6ClsMesFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", SetWindowMode__6ClsMesFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetWindowMode__6ClsMesFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", SetWindowBgOpaqueFlg__6ClsMesFi);
+s32 ClsMes::GetWindowMode(void) {
+    return (*(s32 *)((u8 *)this + 0x138));
+}
+void ClsMes::SetWindowBgOpaqueFlg(s32 arg0) {
+    (*(s32 *)((u8 *)this + 0x13c)) = arg0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", StepNpcName__6ClsMesFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", StepNormal__6ClsMesFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", Step__6ClsMesFv);
@@ -42,7 +62,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", SetAndGetNameRegistTbl__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", MakeMesWinTbl_value__6ClsMesFPiPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", MakeMesWinTbl_value__6ClsMesFiPiPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", MakeMesWinTbl_str__6ClsMesFPcPiPi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", MakeMesWinTbl_str__6ClsMesFiPiPi);
+void ClsMes::MakeMesWinTbl_str(int i, int *a2, int *a3) { this->MakeMesWinTbl_str((char*)this + i*50 + 0x1E59, a2, a3); }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", MakeMesWinTbl_item__6ClsMesFiPiPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetMesWidth_system__6ClsMesFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetTextLineDataTop__6ClsMesFi);
@@ -52,9 +72,62 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", SetMesWinTbl__6ClsMesFiss);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", CalcSpaceW__6ClsMesFiiPUs);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", MakeMesWinTbl__6ClsMesFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", MakeMesWinTbl__6ClsMesFPc);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetItemNoFromFontNo__Fi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", AddYokoHaba__6ClsMesFii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", SetYokoHaba__6ClsMesFii);
+s32 GetItemNoFromFontNo(s32 arg0) {
+    s32 temp_v1;
+    s32 var_v0;
+
+    temp_v1 = (arg0 - 0x8000) - 0x7B00;
+    var_v0 = 1;
+    if (temp_v1 != 0xFE) {
+        var_v0 = 2;
+        switch (temp_v1) {                          /* irregular */
+        case 0xE7:
+            return 0x10;
+        case 0xE8:
+            return 0xF;
+        case 0xE9:
+            return 0xE;
+        case 0xEA:
+            return 0xD;
+        case 0xEB:
+            return 0xC;
+        case 0xEC:
+            return 0xB;
+        case 0xED:
+            return 0xA;
+        case 0xEE:
+            return 9;
+        case 0xEF:
+            return 8;
+        case 0xF0:
+            return 7;
+        case 0xF1:
+            return 6;
+        case 0xF2:
+            return 5;
+        case 0xFB:
+            return 4;
+        case 0xFC:
+            return 3;
+        case 0xFD:
+            /* Duplicate return node #32. Try simplifying control flow for better match */
+            return var_v0;
+        default:
+            return -1;
+        }
+    } else {
+        return var_v0;
+    }
+}
+void ClsMes::AddYokoHaba(s32 index, s32 value) {
+    if (value < 0) return;
+    *(s32 *)((index << 2) + (s32)this + 0x258C) += value;
+}
+void ClsMes::SetYokoHaba(s32 arg0, s32 arg1) {
+    if (arg1 >= 0) {
+        *(s32 *) ((arg0 << 2) + (s32) this + 0x258C) = arg1;
+    }
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", AddPage__6ClsMesFii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", NeedMesWinWH__6ClsMesFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", NeedMesWinWH__6ClsMesFPc);
@@ -68,7 +141,13 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", CalcRectScale__F4RECTfP4RECT);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", SetSelectCursorPos__6ClsMesF4RECT);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", DrawYesNo__FP11mgCDrawPrimiiiiP10RGBAQ_TYPE);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetPos_AbsPosSet__F4RECTiiiPiPi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", CalcAutoPosSet__Fffff);
+float CalcAutoPosSet(float a, float b, float c, float d) {
+    float t = b - a;
+    t -= c;
+    t *= d;
+    t += a;
+    return t;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", RgbqToUint__FUi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetFontColor__6ClsMesFiPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetGyouAlpha__6ClsMesFi);
@@ -90,11 +169,40 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", DrawMesWin__6ClsMesFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", Parametric__FPfPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", Quadratic__FfffPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", CalcIntersectionPointSphereAndLine__FPffPfPfPfPf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", CheckPosInOutForArea__FPfPfPf);
+s32 CheckPosInOutForArea(float *arg0, float *arg1, float *arg2) {
+    float a;
+    float b;
+    float low;
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        a = arg0[i];
+        b = arg1[i];
+        low = (a < b) ? a : b;
+        if (arg2[i] < low) {
+            return 0;
+        }
+        a = (a > b) ? a : b;
+        if (a < arg2[i]) {
+            return 0;
+        }
+    }
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", CalcMoveNextPos__FPfPffPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", InitMovieCC__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", MyStrCpyLineFeed__FPcPc);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetNextLineTop__FPPc);
+void GetNextLineTop(s8 **arg0) {
+    s8 *var_a2;
+
+    var_a2 = (s8 *) (*arg0);
+loop_1:
+    if (*var_a2 != 0xA) {
+        var_a2 += 1;
+        goto loop_1;
+    }
+    *arg0 = var_a2 + 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetTopAddress__FPcii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", MovieCCAnalyze__FPcii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", MovieCCDraw__Fv);

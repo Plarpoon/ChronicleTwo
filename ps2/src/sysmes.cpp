@@ -7,7 +7,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/sysmes", GetSystemMessage__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sysmes", LoadSystemMes__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sysmes", GetSystemMesBuffer__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sysmes", GetSysMesBuffer__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sysmes", CreateSystemMes__Fv);
+void CreateSystemMes(void) {
+    CreateSystemMes(0, 0);
+    CreateSystemMes(1, 0);
+    CreateSystemMes(2, 0);
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sysmes", CreateSystemMes__Fii);
 
 // Static initialiser (.init)

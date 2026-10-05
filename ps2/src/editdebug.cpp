@@ -1,5 +1,6 @@
 #include "common.h"
 #include "editdebug.hpp"
+#include <cstdio>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdebug", EditDebugInit__Fv);
@@ -7,9 +8,13 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdebug", EditDebugMode__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdebug", EditDebugStart__FiP9mgCMemory);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdebug", PrintCursor__FPci);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdebug", EditDebugLoop__FP6CSceneP13EditDebugInfo);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdebug", EditDebugEnd__Fv);
+void EditDebugEnd(void) {
+    EditDebugInit();
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdebug", InitLightingEdit__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdebug", EndLightingEdit__Fv);
+void EndLightingEdit(void) {
+    InitLightingEdit();
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdebug", IsLightingEditMode__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdebug", LightingEdit__FP6CScene);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdebug", tagGyoFish__FP9SPI_STACKi);

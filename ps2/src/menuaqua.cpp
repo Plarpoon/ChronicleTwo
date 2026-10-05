@@ -1,5 +1,7 @@
 #include "common.h"
 #include "menuaqua.hpp"
+#include <cstring>
+#include <cstdio>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Get_aquarium_paul_table__Fi);
@@ -9,14 +11,23 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", GetUseableEsaNo__FPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", GetEsaInfo__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Generate__7CBubbleFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Generate__7CBubbleFPf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", SetTexture__7CBubbleFP10mgCTextureii);
+void CBubble::SetTexture(mgCTexture * arg0, s32 arg1, s32 arg2) {
+    (*(mgCTexture * *)((u8 *)this + 0x28)) = arg0;
+    (*(s16 *)((u8 *)this + 0x2c)) = arg1;
+    (*(s16 *)((u8 *)this + 0x2e)) = arg2;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Step__7CBubbleFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Draw__7CBubbleFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Initialize__7CBubbleFP9mgCMemoryPfif);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", RunOff__7CBubbleFv);
+void CBubble::RunOff(void) {
+    (*(s8 *)((u8 *)this + 0x1)) = 0;
+    (*(s32 *)((u8 *)this + 0x4)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", GetChildFishNo__Fii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", SetFishAdjustScale__Fiiff);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Initialize__20CAquaFishActionParamFv);
+void CAquaFishActionParam::Initialize(void) {
+    memset(this, 0, 0x40);
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", __ct__9CAquaFishFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Initialize__9CAquaFishFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", SetLiveParam__9CAquaFishFP13CGameDataUsed);
@@ -34,7 +45,12 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", MoveActionBattle__9CAquaFishFv)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", NextThink__9CAquaFishFiP16NEXT_THINK_PARAM);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", ParamStep__9CAquaFishFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", FishDraw__9CAquaFishFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Initialize__12CAquaFishEffFv);
+void CAquaFishEff::Initialize(void) {
+    (*(s32 *)((u8 *)this + 0x0)) = 0;
+    (*(s32 *)((u8 *)this + 0x4)) = 0;
+    (*(s16 *)((u8 *)this + 0x8)) = 0;
+    (*(s32 *)((u8 *)this + 0xc)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", StartFishEffect__12CAquaFishEffFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Step__12CAquaFishEffFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Draw__12CAquaFishEffFv);

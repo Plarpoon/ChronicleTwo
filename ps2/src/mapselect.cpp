@@ -19,7 +19,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapselect", InitMapSelect__FP9mgCMemory);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapselect", MapTypeSelect__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapselect", MapSelect__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapselect", MapSelectLoop__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapselect", InitSaveDataEdit__FP9mgCMemory);
+void InitSaveDataEdit(mgCMemory * arg0) {
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapselect", SaveDataEditLoop__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapselect", EventViewLoop__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapselect", LoadEventViewData__FP1P9mgCMemory);

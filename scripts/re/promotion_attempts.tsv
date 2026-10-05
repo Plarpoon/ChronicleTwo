@@ -414,3 +414,4 @@ npccfg	GetPartyCharaMessage__Fiii	checker
 npccfg	_NPC_INFO__FP9SPI_STACKi	checker
 npccfg	LoadNPCCfg__Fv	checker
 mainloop3	InitHDDMenu__FP1	checker
+outline	Initialize__12COutLineDrawFv	checker

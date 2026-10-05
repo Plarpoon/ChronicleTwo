@@ -1,5 +1,7 @@
 #include "common.h"
 #include "font.hpp"
+#include <cstring>
+#include <cstdio>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", GetGaijiW__Fi);
@@ -15,13 +17,30 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", GetKanjiTopNo__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", GetHalfFontNum__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", CheckKanjiFont__5CFontFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", CheckHalfFont__5CFontFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", SetDrawSize__5CFontFii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", SetClearance__5CFontFii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", SetPos__5CFontFii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", SetColor__5CFontFiiii);
+void CFont::SetDrawSize(s32 arg0, s32 arg1) {
+    (*(s32 *)((u8 *)this + 0xa4)) = arg0;
+    (*(s32 *)((u8 *)this + 0xa8)) = arg1;
+}
+void CFont::SetClearance(s32 arg0, s32 arg1) {
+    (*(s32 *)((u8 *)this + 0x9c)) = arg0;
+    (*(s32 *)((u8 *)this + 0xa0)) = arg1;
+}
+void CFont::SetPos(s32 arg0, s32 arg1) {
+    (*(s32 *)((u8 *)this + 0x94)) = arg0;
+    (*(s32 *)((u8 *)this + 0x98)) = arg1;
+}
+void CFont::SetColor(s32 r, s32 g, s32 b, s32 a) {
+    u8 *p = (u8 *)this;
+    p[0x88] = r;
+    p[0x89] = g;
+    p[0x8A] = b;
+    p[0x8B] = a;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", SetColor__5CFontF10RGBAQ_TYPE);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", SetColor__5CFontFUi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", SetFuchi__5CFontFi);
+void CFont::SetFuchi(s32 arg0) {
+    (*(s32 *)((u8 *)this + 0x80)) = arg0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", SetStr__5CFontFPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", GetGaijiFontNo__FPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", GetGaijiLen__FUs);
@@ -42,11 +61,52 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", MySetTex__FPcP11mgCDrawPrim);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", MySetTex__FiP11mgCDrawPrim);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", DrawGaiji_sub__FP11mgCDrawPrimiii10RGBAQ_TYPEi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", DrawGaiji__5CFontFP11mgCDrawPrimiii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", UpDateWH__FPiPiii);
+void UpDateWH(s32 *arg0, s32 *arg1, s32 arg2, s32 arg3) {
+    if (*arg0 < arg2) {
+        *arg0 = arg2;
+    }
+    if (*arg1 < arg3) {
+        *arg1 = arg3;
+    }
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", CalcDrawWH__5CFontFPcPiPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", DrawDirect__5CFontFPcii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", Preset__5CFontFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", Init__5CFontFv);
+void CFont::Preset(s32 arg0) {
+    switch (arg0) {
+    case 0:
+    case 1:
+        this->SetColor(0x80202020U);
+        this->SetFuchi(2);
+        break;
+    case 2:
+    case 3:
+        this->SetColor(0x80686A6BU);
+        this->SetFuchi(8);
+        break;
+    case 4:
+        this->SetColor(0x80686A6BU);
+        this->SetFuchi(5);
+        break;
+    }
+}
+void CFont::Init(void) {
+    memset(this, 0, 0x80);
+    this->SetFuchi(3);
+    (*(u8 *)((u8 *)this + 0x8b)) = 0x80;
+    (*(u8 *)((u8 *)this + 0x8a)) = 0x80;
+    (*(u8 *)((u8 *)this + 0x89)) = 0x80;
+    (*(u8 *)((u8 *)this + 0x88)) = 0x80;
+    (*(s32 *)((u8 *)this + 0x90)) = 0x80;
+    (*(s32 *)((u8 *)this + 0x98)) = 0;
+    (*(s32 *)((u8 *)this + 0x94)) = 0;
+    (*(s32 *)((u8 *)this + 0x9c)) = 0xF;
+    (*(s32 *)((u8 *)this + 0xa0)) = 0x18;
+    (*(s32 *)((u8 *)this + 0xa4)) = 0x10;
+    (*(s32 *)((u8 *)this + 0xa8)) = 0x14;
+    (*(s32 *)((u8 *)this + 0xac)) = 0;
+    (*(s32 *)((u8 *)this + 0xb0)) = 0;
+    (*(s32 *)((u8 *)this + 0xb4)) = 0;
+}
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/font", GaijiDataTbl__DATA);

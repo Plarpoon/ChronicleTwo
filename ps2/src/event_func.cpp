@@ -1,8 +1,19 @@
 #include "common.h"
 #include "event_func.hpp"
+#include <cstring>
+#include <cstdio>
 
 // Code (.text)
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", __ct__4CEohFv);
+CEoh::CEoh(void) {
+    (*(s32 *)((u8 *)this + 0x0)) = -1;
+    (*(s32 *)((u8 *)this + 0x4)) = -1;
+    (*(s32 *)((u8 *)this + 0x8)) = 1;
+    (*(s32 *)((u8 *)this + 0xc)) = 0;
+    (*(s32 *)((u8 *)this + 0xc)) = 0;
+    (*(s32 *)((u8 *)this + 0xc)) = 0;
+    (*(s32 *)((u8 *)this + 0xc)) = 0;
+    (*(s32 *)((u8 *)this + 0xc)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", Set__4CEohFiP7CObjecti);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", Set__4CEohFiiP11CCharacter2);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", Set__4CEohFiP13CEventSprite2);
@@ -70,24 +81,68 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", GetArgInt__FP8ARG_DATA);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", GetArgFloat__FP8ARG_DATA);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", GetArgString__FP8ARG_DATA);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", GetArgVector__FPfP8ARG_DATA);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", Initialize__7CRasterFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", SetParam__7CRasterFfff);
+void CRaster::Initialize(void) {
+    (*(s32 *)((u8 *)this + 0x0)) = 0;
+    (*(s32 *)((u8 *)this + 0x8)) = 0;
+    (*(s32 *)((u8 *)this + 0x4)) = 0;
+    (*(s32 *)((u8 *)this + 0x10)) = 0;
+    (*(s32 *)((u8 *)this + 0xc)) = 0;
+    (*(s32 *)((u8 *)this + 0x18)) = 0;
+    (*(s32 *)((u8 *)this + 0x14)) = 0;
+    (*(s32 *)((u8 *)this + 0x20)) = 0;
+    (*(s32 *)((u8 *)this + 0x1c)) = 0;
+    (*(s32 *)((u8 *)this + 0x24)) = -1;
+    (*(s32 *)((u8 *)this + 0x28)) = 0;
+}
+void CRaster::SetParam(float arg0, float arg1, float arg2) {
+    *(float *) ((u8 *) this + 4) = arg0;
+    *(float *) ((u8 *) this + 0xC) = arg1;
+    *(float *) ((u8 *) this + 0x14) = arg2;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", StartRaster__7CRasterFfffi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", StopRaster__7CRasterFfffi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", StepRaster__7CRasterFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", DrawRaster__7CRasterFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", Initialize__13CScreenEffectFv);
+void CScreenEffect::Initialize(void) {
+    ((CRaster *) this)->Initialize();
+    (*(s32 *)((u8 *)this + 0x2c)) = 0;
+    (*(s32 *)((u8 *)this + 0x30)) = 0;
+    (*(s32 *)((u8 *)this + 0x34)) = 0;
+    (*(s32 *)((u8 *)this + 0x38)) = 0;
+    (*(s32 *)((u8 *)this + 0x3c)) = 0;
+    (*(s32 *)((u8 *)this + 0x40)) = 0;
+    (*(s32 *)((u8 *)this + 0x44)) = 0;
+    (*(s32 *)((u8 *)this + 0x48)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", Step__13CScreenEffectFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", Draw__13CScreenEffectFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", InitRaster__13CScreenEffectFfff);
+void CScreenEffect::InitRaster(float arg0, float arg1, float arg2) {
+    ((CRaster *) this)->Initialize();
+    ((CRaster *) this)->SetParam(arg0, arg1, arg2);
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", StartRaster__13CScreenEffectFfffi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", StopRaster__13CScreenEffectFfffi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", SetSepiaTexture__13CScreenEffectFP10mgCTextureP1);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", CaptureSepiaScreen__13CScreenEffectFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", SetSepiaFlag__13CScreenEffectFi);
+void CScreenEffect::SetSepiaFlag(s32 arg0) {
+    if ((*(s32 *)((u8 *)this + 0x2c)) != 0) {
+        (*(s32 *)((u8 *)this + 0x30)) = arg0;
+        return;
+    }
+    (*(s32 *)((u8 *)this + 0x30)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", SetMonoFlashTexture__13CScreenEffectFPP10mgCTexturePP1);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", CaptureMonoFlashScreen__13CScreenEffectFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", SetMonoFlashFlag__13CScreenEffectFii);
+void CScreenEffect::SetMonoFlashFlag(s32 arg0, s32 arg1) {
+    if (((*(s32 *)((u8 *)this + 0x34)) != 0) || ((*(s32 *)((u8 *)this + 0x38)) != 0)) {
+        (*(s32 *)((u8 *)this + 0x3c)) = arg0;
+    } else {
+        (*(s32 *)((u8 *)this + 0x3c)) = 0;
+    }
+    (*(s32 *)((u8 *)this + 0x40)) = arg1;
+    (*(s32 *)((u8 *)this + 0x44)) = 0;
+    (*(s32 *)((u8 *)this + 0x48)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", InitWorldCoord__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", GetLocalFlag__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", SetLocalFlag__Fii);
@@ -107,11 +162,15 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", InitDramaScene__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", CancelDramaScene__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", EdEventMenuExit__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", EdEventLoopInit__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", EdSetBrokenObject__Fv);
+void EdSetBrokenObject(void) {
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", ResetMesFileBuffAll__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", EdEventMapInit__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", EdEventTermination__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", EdEventEnd__Fv);
+void EdEventEnd(void) {
+    ResetMesFileBuffAll();
+    EventSeqInit();
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", GetObjSeq__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_PADON__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_PADDOWN__FP12RS_STACKDATAi);
@@ -140,7 +199,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _LOAD_MOTION__FP12RS_STACKDAT
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _MAP_JUMP__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_RAIN__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _DEL_EXT_MOTION__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_MARKER__FP12RS_STACKDATAi);
+s32 _SET_MARKER(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_WORLD_COORD__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _FINISH__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_DUN_WORLD_COORD__FP12RS_STACKDATAi);
@@ -155,7 +216,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GOTO_SELECT_PARTY__FP12RS_ST
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_LOADBG_FILE__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_LOADBG_FILE_MONS_TALK__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _CHECK_LOADBG_FILE__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_TB_ITEMNO__FP12RS_STACKDATAi);
+s32 _GET_TB_ITEMNO(RS_STACKDATA *stack, int argc) {
+    return 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_TB_STATUS__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_TB_ANGLE__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ADD_ITEM__FP12RS_STACKDATAi);
@@ -165,13 +228,21 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_ITEM_SPACE__FP12RS_STACK
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", GetConfigCaptionOff__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", LoadMovie__FPcP9mgCMemoryb);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _LOAD_MOVIE__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _INIT_LOCAL_CNT__FP12RS_STACKDATAi);
+s32 _INIT_LOCAL_CNT(RS_STACKDATA *arg0, s32 arg1) {
+    InitLocalCnt();
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_CROSSFADE__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_ADJUST_POLYGON_SCALE__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_TIME__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_ACTIVE_LIGHT__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_PAKU_ANIM__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _RESET_PAKU_ANIM__FP12RS_STACKDATAi);
+s32 _RESET_PAKU_ANIM(RS_STACKDATA *arg0, s32 arg1) {
+    PakuAnimEohNo = -1;
+    memset(&PakuAnimName, 0, 0x40);
+    memset(&PakuAnimName2, 0, 0x40);
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _TRG_PAKU_ANIM__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _RESET_CAMERA__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_ACTIVE_CHR_NO__FP12RS_STACKDATAi);
@@ -179,7 +250,12 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_ACTIVE_CHR_NO__FP12RS_ST
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _DNG_SET_FLOOR_ID__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _DNG_GET_FLOOR_ID__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_PAKU_MOTION__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _RESET_PAKU_MOTION__FP12RS_STACKDATAi);
+s32 _RESET_PAKU_MOTION(RS_STACKDATA *arg0, s32 arg1) {
+    PakuMotionEohNo = -1;
+    memset(&PakuMotionName, 0, 0x40);
+    memset(&PakuMotionName2, 0, 0x40);
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _TRG_PAKU_MOTION__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_BG_COLOR__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GOTO_DNG_MAP__FP12RS_STACKDATAi);
@@ -221,19 +297,30 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_OLD_MAP_NO__FP12RS_STACK
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_OLD_SUBMAP_NO__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_RAIN_CHARA_NO__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_EDIT_PARTS_POS__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_CONTENTS_POS__FP12RS_STACKDATAi);
+s32 _GET_CONTENTS_POS(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_BPOT_POS__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_BPOT_STATUS__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_PERSON_STATUS__FP12RS_STACKDATAi);
+s32 _GET_PERSON_STATUS(RS_STACKDATA *stack, int argc) {
+    return 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_CONTROL_CHRID__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_CAMERA_NEXT_REF__FP12RS_STACKDATAi__2);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GOTO_MENU__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_MENU_STATUS__FP12RS_STACKDATAi);
+s32 _GET_MENU_STATUS(RS_STACKDATA *stack, int argc) {
+    return 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _LOAD_EQUIP__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_EQUIP_ITEMNO__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_TIME_STEP_ENABLE__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_DOOR_MATERIAL__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _INIT_DRAMA_SCENE__FP12RS_STACKDATAi);
+s32 _SET_DOOR_MATERIAL(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _INIT_DRAMA_SCENE(RS_STACKDATA *arg0, s32 arg1) {
+    InitDramaScene();
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_ACTIVE_CMRID__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_BEFORE_CMRID__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _DNGMAP_LOAD__FP12RS_STACKDATAi);
@@ -273,7 +360,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _CHECK_INVENT_ITEM__FP12RS_ST
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_AI__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _CHECK_INVENT_PHOTO__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_PHOTO_NUM__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_CONTENTS_ETC__FP12RS_STACKDATAi);
+s32 _SET_CONTENTS_ETC(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_STATUS__FP12RS_STACKDATAi__2);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GOTO_SUBGAME__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_GYORACE_ETC__FP12RS_STACKDATAi);
@@ -376,25 +465,63 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_CAMERA_SPEED__FP12RS_STA
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _CAMERA_STEP__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_BEFORE_CAMERA_POS__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_BEFORE_CAMERA_REF__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_INIT__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_SYNC_CHARA__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_SET_POS__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_MOVE__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_MOVE_STEP__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_ROT_REF__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_ROT_ANGLE__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_CLEAR_ROT__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_WAIT_ROT__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_ROT_MOVE__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_SET_ROT__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_DELAY_ROT__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_MOTION_TRG__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_MOTION_PLAY__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_MOTION_STOP__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_MOTION_NEXT__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_ANIME_TRG__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_ANIME__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_SE_PLAY__FP12RS_STACKDATAi);
+s32 _ASQ_INIT(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_SYNC_CHARA(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_SET_POS(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_MOVE(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_MOVE_STEP(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_ROT_REF(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_ROT_ANGLE(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_CLEAR_ROT(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_WAIT_ROT(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_ROT_MOVE(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_SET_ROT(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_DELAY_ROT(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_MOTION_TRG(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_MOTION_PLAY(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_MOTION_STOP(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_MOTION_NEXT(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_ANIME_TRG(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_ANIME(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
+s32 _ASQ_SE_PLAY(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _IMG_SET_DRAW__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _IMG_SET_GET__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _IMG_SET_PUT__FP12RS_STACKDATAi);
@@ -491,7 +618,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _OBJS_SE_DELAY__FP12RS_STACKD
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _OBJS_SE_PLAY__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _OBJS_RESET_DA_POSITION__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _OBJS_NORMAL_DRIVE__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ASQ_CHECK__FP12RS_STACKDATAi);
+s32 _ASQ_CHECK(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SND_INIT_PORT__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SND_LOAD_SOUND__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_SND_ID__FP12RS_STACKDATAi);
@@ -523,16 +652,24 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _INIT_SE_SRC__FP12RS_STACKDAT
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _INIT_SE_ENV__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _INIT_SE_BAS__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _LOAD_SE_SRC__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _LOAD_SE_FOOT__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _LOAD_SE_DOOR__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _LOAD_SE_BOX__FP12RS_STACKDATAi);
+s32 _LOAD_SE_FOOT(RS_STACKDATA *stack, int argc) {
+    return 0;
+}
+s32 _LOAD_SE_DOOR(RS_STACKDATA *stack, int argc) {
+    return 0;
+}
+s32 _LOAD_SE_BOX(RS_STACKDATA *stack, int argc) {
+    return 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _LOAD_SE_BATTLE__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SND_DELETE_PORT__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _FADE_IN_BGM__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _FADE_OUT_BGM__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _STOP_ENV_BGM__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_BGM_VOL__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SND_SET_REVERB__FP12RS_STACKDATAi);
+s32 _SND_SET_REVERB(RS_STACKDATA *stack, int argc) {
+    return 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SND_SET_ENV_VOL__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _STREAM_SILENT_CHECK__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _AUTO_CHANGE_ENV__FP12RS_STACKDATAi);
@@ -639,7 +776,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SPHIDA_SET_NOW_HOLE__FP12RS_
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SPHIDA_GET_NOW_HOLE__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SPHIDA_SET_SCORE__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SPHIDA_GET_SCORE__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _TEST__FP12RS_STACKDATAi);
+s32 _TEST(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _MT_TEST__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ZERO_VECTOR__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _NORMAL_VECTOR__FP12RS_STACKDATAi__2);
@@ -671,7 +810,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _CTRLC_MOVE_CAMERA__FP12RS_ST
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _CTRLC_SET_ROT_CANCEL__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _CTRLC_MOVE_RANGE__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_NEAR_TBOX_POS__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _CONV_CHRNO_S2L__FP12RS_STACKDATAi);
+s32 _CONV_CHRNO_S2L(RS_STACKDATA *stack, int argc) {
+    return 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SWE_INIT__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SWE_SET_COLOR__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SWE_SET_TEXTURE__FP12RS_STACKDATAi);
@@ -680,7 +821,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_CHARA_TYPE__FP12RS_STACK
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_EVENT_DATA__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _DNG_SET_PREV_FLOOR__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _DNG_GET_PREV_FLOOR__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _DNG_SET_FAST_FLOOR__FP12RS_STACKDATAi);
+s32 _DNG_SET_FAST_FLOOR(RS_STACKDATA *stack, int argc) {
+    return 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_FLOOR_INFO__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_FLOOR_INFO__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_NEXT_FLOOR__FP12RS_STACKDATAi);
@@ -714,7 +857,10 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_PULL_ITEM__FP12RS_STACKD
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _MENU_CHARA_CHENGE__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_EVENT_INFO_SNDID__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_PARTS_POS__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _CANCEL_DRAMA_SCENE__FP12RS_STACKDATAi);
+s32 _CANCEL_DRAMA_SCENE(RS_STACKDATA *arg0, s32 arg1) {
+    CancelDramaScene();
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_RNDC_MOT_NOWT__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_CHARA_MOT_NOWT__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _CHARA_NORMAL_DRIVE__FP12RS_STACKDATAi);
@@ -781,8 +927,15 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _DNG_CHECK_BOSS_MAP__FP12RS_S
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _DNG_RUN_EVENT__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _CHECK_ENABLE_CHARA_CHANGE__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _INIT_SEPIA__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _START_SEPIA__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _END_SEPIA__FP12RS_STACKDATAi);
+s32 _START_SEPIA(RS_STACKDATA *arg0, s32 arg1) {
+    (&EventScreenEffect)->CaptureSepiaScreen();
+    (&EventScreenEffect)->SetSepiaFlag(1);
+    return 1;
+}
+s32 _END_SEPIA(RS_STACKDATA *arg0, s32 arg1) {
+    (&EventScreenEffect)->SetSepiaFlag(0);
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _COPY_MONS2SCNCHR__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", __ct__7CObjectFRC7CObject);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _UNLOCK_STACK__FP12RS_STACKDATAi);
@@ -793,7 +946,10 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SEARCH_CHARA_NO__FP12RS_STAC
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_NEAR_RANDOM_STONE_POS__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _INIT_MONO_FLASH__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _START_MONO_FLASH__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _END_MONO_FLASH__FP12RS_STACKDATAi);
+s32 _END_MONO_FLASH(RS_STACKDATA *arg0, s32 arg1) {
+    (&EventScreenEffect)->SetMonoFlashFlag(0, 0);
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _DELETE_VILLAGER__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _DNG_SET_WEATHER__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_CHARA_MAXHP__FP12RS_STACKDATAi);

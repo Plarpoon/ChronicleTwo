@@ -1,9 +1,16 @@
 #include "common.h"
 #include "dngmenu.hpp"
+#include <cstring>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Initialize__11CDngFreeMapFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", InitTexture__11CDngFreeMapFv);
+void CDngFreeMap::InitTexture(void) {
+    (*(s32 *)((u8 *)this + 0xd8)) = 0;
+    (*(s32 *)((u8 *)this + 0xdc)) = 0;
+    (*(s32 *)((u8 *)this + 0xe0)) = 0;
+    (*(s32 *)((u8 *)this + 0xd4)) = 0;
+    (*(s16 *)((u8 *)this + 0xd0)) = -1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", SetUserGlid__11CDngFreeMapFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", CalcGlidPutPos__11CDngFreeMapFP9GLID_INFORfRfi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", CheckIsViewMove__11CDngFreeMapFiiRfRf);

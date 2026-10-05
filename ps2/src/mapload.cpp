@@ -440,7 +440,9 @@ static int mapDummy(SPI_STACK *stack, int argument_count) {
     return 1;
 }
 #else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapDummy__FP9SPI_STACKi);
+s32 mapDummy(SPI_STACK *stack, int argc) {
+    return 1;
+}
 #endif
 
 #ifdef NONMATCHING
@@ -453,7 +455,9 @@ static int IsAddMode() {
     return mapAddMode;
 }
 #else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", IsAddMode__Fv);
+s32 IsAddMode(void) {
+    return mapAddMode;
+}
 #endif
 
 #ifdef NONMATCHING
@@ -879,7 +883,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", Initialize__13PieceMaterialFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPIECE_MATERIAL__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", GetMaterial__8mgCFrameFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", GetFrame__12CObjectFrameFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPIECE_MATERIAL_END__FP9SPI_STACKi);
+s32 mapPIECE_MATERIAL_END(SPI_STACK *stack, int argc) {
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPIECE_COL_TYPE__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPIECE_TIME__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPIECE_END__FP9SPI_STACKi);
@@ -892,7 +898,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPARTS_POS__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPARTS_ROT__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapPARTS_SCALE__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapMAP_PARTS_END__FP9SPI_STACKi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", map_MAP_INFO_TOP__FP9SPI_STACKi);
+s32 map_MAP_INFO_TOP(SPI_STACK *stack, int argc) {
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapCAMERA_INFO__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", __ct__11CCameraInfoFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", __ct__15CCameraDrawInfoFv);
@@ -905,7 +913,12 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFIX_CAMERA_RECT__FP9SPI_STACK
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", SetCollision__9CColFrameFP10CCollision);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", __ct__10CCollisionFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFIX_CAMERA_END__FP9SPI_STACKi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapCAMERA_INFO_END__FP9SPI_STACKi);
+s32 mapCAMERA_INFO_END(SPI_STACK *arg0, s32 arg1) {
+    if (IsAddMode() != 0) {
+        return 1;
+    }
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_POINT__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_DATA__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_NAME__FP9SPI_STACKi);
@@ -925,18 +938,24 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", SetPosition__10CFuncPointFPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_DATA_END__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", mapFUNC_POINT_END__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", LoadMapFile__4CMapFPciP9mgCMemoryi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", SetPieceLoadSkip__4CMapFi);
+void CMap::SetPieceLoadSkip(s32 a) {
+    *(s32 *) ((u8 *) this + 0xCA8) = a;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgDRAW_OFF_RECT__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgOCCLUSION_PLANE__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgFUNC_DATA__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgFUNC_EVENT_DATA__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgFUNC_DATA_END__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgWATER_SURFACE_NUM__FP9SPI_STACKi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgWATER_SURFACE_START__FP9SPI_STACKi);
+s32 cfgWATER_SURFACE_START(SPI_STACK *stack, int argc) {
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgWATER_VERTEX__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgWATER_POS__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgWATER_PARAM__FP9SPI_STACKi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgWATER_SHAKE__FP9SPI_STACKi);
+s32 cfgWATER_SHAKE(SPI_STACK *stack, int argc) {
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgWATER_SURFACE_END__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", cfgWATER_DRAW_NUM__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", __ct__9CMapWaterFv);

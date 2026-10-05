@@ -1,5 +1,6 @@
 #include "common.h"
 #include "editloop.hpp"
+#include <cstring>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editloop", GetUserData__Fv__2);
@@ -35,8 +36,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editloop", EditDataSave__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editloop", EditDataLoad__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editloop", KeepEditAnalyze__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editloop", EditAnalyzeChanged__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editloop", LoadComVillaager__Fv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editloop", LoadMap__Fv);
+void LoadComVillaager(void) {
+}
+void LoadMap(void) {
+    LoadComVillaager();
+}
 
 // Static initialiser (.init)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editloop", __sinit_editloop_cpp);

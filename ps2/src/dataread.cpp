@@ -1174,7 +1174,19 @@ int GetPackFileNum(u_int *pack) {
     return count;
 }
 #else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dataread", GetPackFileNum__FPUi);
+s32 GetPackFileNum(u32 *arg0) {
+    s32 sp38;
+    s8 *sp3C;
+    s32 var_s0;
+
+    var_s0 = 0;
+loop_1:
+    if (GetPackFile(arg0, var_s0, &sp3C, &sp38) != 0) {
+        var_s0 += 1;
+        goto loop_1;
+    }
+    return var_s0;
+}
 #endif
 
 #ifdef NONMATCHING

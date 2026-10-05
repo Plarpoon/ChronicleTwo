@@ -1,5 +1,6 @@
 #include "common.h"
 #include "runscript_opcodes.hpp"
+#include <cstdio>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", RunScript__11CMonsterManFi);
@@ -12,7 +13,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", GetStackVector__FPfPP1
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", SetStackVector__FPfPP12RS_STACKDATA);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SQRT__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ATAN2F__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ND_TEST__FP12RS_STACKDATAi);
+s32 _ND_TEST(RS_STACKDATA *stack, int argc) {
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _GET_TARGET_ROT__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _GET_MONSTER_INDEX__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_MONSTER_LIFE__FP12RS_STACKDATAi);
@@ -104,7 +107,10 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_ROT__FP12RS_STACK
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_NEXT_ROT__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_NEXT_POS__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _CHK_MOVE_END__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _RESET_MOVE__FP12RS_STACKDATAi);
+s32 _RESET_MOVE(RS_STACKDATA *a, s32 b) {
+    *(s32 *) ((u8 *) nowMonster + 0x1480) = 0;
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _GET_TARGET_POS__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _GET_TARGET_DIST__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _GET_TARGET_ANGLE__FP12RS_STACKDATAi);
@@ -128,7 +134,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_ACT_STATUS__FP12R
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_INT_FLAG__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_DEAD_START__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_DEAD_OFF__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_SHROW_END__FP12RS_STACKDATAi);
+s32 _SET_SHROW_END(RS_STACKDATA *arg0, s32 arg1) {
+    if (arg1 != 0) return 0;
+    *(s16 *)((u8 *)nowMonster + 0x730) = 0;
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_MOS__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _CHECK_MOS_END__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _NOW_MOS_WAIT__FP12RS_STACKDATAi);
@@ -139,8 +149,12 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _GET_USER_MONS_ID__FP1
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _GET_PRIORITY__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _CREATE_MONSTER__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_CLIP_DIST__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_COLLISION__FP12RS_STACKDATAi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_GRAVITY__FP12RS_STACKDATAi);
+s32 _SET_COLLISION(RS_STACKDATA *stack, int argc) {
+    return 0;
+}
+s32 _SET_GRAVITY(RS_STACKDATA *stack, int argc) {
+    return 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_ATTRIB__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _GET_SCALE__FP12RS_STACKDATAi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _GET_MONS_WIDTH__FP12RS_STACKDATAi);

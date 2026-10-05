@@ -2,13 +2,39 @@
 #include "actionchara.hpp"
 
 // Code (.text)
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", ResetAccele__12CActionCharaFv);
+void CActionChara::ResetAccele(void) {
+    (*(s32 *)((u8 *)this + 0x788)) = 0;
+    (*(s32 *)((u8 *)this + 0x784)) = 0;
+    (*(s32 *)((u8 *)this + 0x780)) = 0;
+    (*(s32 *)((u8 *)this + 0x790)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", ResetAction__12CActionCharaFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", ResetScript__12CActionCharaFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", CheckRunEvent__12CActionCharaFv);
+s32 CActionChara::CheckRunEvent(void) {
+    s32 b = *(s8 *) ((u8 *) this + 0x76C);
+    if (*(s16 *) ((u8 *) this + 0x71C) != 0) {
+        b = 0;
+    }
+    return b;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", SetMaskFlag__12CActionCharaFii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", EntryObject__12CActionCharaFPci);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", CalcCollision__12CActionCharaFv);
+void CActionChara::CalcCollision(void) {
+    mgCFrame **var_s0;
+    mgCFrame *temp_a0;
+    s32 var_s1;
+
+    var_s1 = 0;
+    var_s0 = (mgCFrame **) (&(*(s32 *)((u8 *)this + 0xc00)));
+    do {
+        temp_a0 = (mgCFrame *) (*var_s0);
+        if (temp_a0 != NULL) {
+            temp_a0->GetWorldPosition0((float *) (((mgCFrame **) ((u8 *) var_s0 + 0x10))));
+        }
+        var_s1 += 1;
+        var_s0 += 8;
+    } while (var_s1 < 8);
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", EntryBodyCol__12CActionCharaFif);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", EntryDamage2__12CActionCharaFPcPcPcfPcffPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", EntryDamage2__12CActionCharaFP8mgCFrameP8mgCFramePcfPcffPc);

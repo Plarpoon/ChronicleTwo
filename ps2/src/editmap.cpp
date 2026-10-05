@@ -1,11 +1,23 @@
 #include "common.h"
 #include "editmap.hpp"
+#include <cstring>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", Iam__8CEditMapFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", Initialize__8CEditMapFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", ClearGrid__8CEditMapFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", ClearHouse__8CEditMapFv);
+void CEditMap::ClearHouse(void) {
+    s32 var_s0;
+    s32 var_s1;
+
+    var_s1 = 0;
+    var_s0 = 0;
+    do {
+        memset((u8 *) this + var_s1 + 0xD48, 0, 0x10);
+        var_s0 += 1;
+        var_s1 += 0x10;
+    } while (var_s0 < 0x20);
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", ClearAllParts__8CEditMapFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", InitialPlaceParts__8CEditMapFP9CEditData);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", GetPoly__8CEditMapFiP6CCPolyR9mgVu0FBOXi);
@@ -25,9 +37,26 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", GetRotMatrix__8CEditMapFPA4_fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", GetEditAngle90__8CEditMapFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", GetEditAngle__8CEditMapFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", ConvEditAngle__8CEditMapFf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", AngleLimit__8CEditMapFi);
+s32 CEditMap::AngleLimit(s32 a) {
+    a = a % 24;
+    if (a < 0) a += 24;
+    return a;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", GetEditPos__8CEditMapFPfPf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", CmpEditAlt__8CEditMapFff);
+s32 CEditMap::CmpEditAlt(float arg0, float arg1) {
+    float temp_f1;
+    s32 var_v0;
+
+    temp_f1 = arg0 - arg1;
+    if (!(temp_f1 <= 0.5f)) {
+        return -1;
+    }
+    var_v0 = 1;
+    if (!(temp_f1 < -0.5f)) {
+        var_v0 = 0;
+    }
+    return var_v0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", GetEditAlt__8CEditMapFf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", GetGridPos__8CEditMapFPfPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", GetMatrix__8CEditMapFPA4_fPfi);
@@ -43,7 +72,13 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", PlaceBurnParts__8CEditMapFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", BurnEditParts__8CEditMapFPQ28CEditMap10RemoveInfo);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", PlaceEditParts__8CEditMapFPcPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", PlaceEditParts__8CEditMapFiP13EP_PLACE_INFOPfPfPi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", PlaceRiverParts__8CEditMapFPf);
+s32 CEditMap::PlaceRiverParts(float *arg0) {
+    if (this->CheckRiverParts(arg0) != 0) {
+        this->PlaceRiver(arg0);
+        return 1;
+    }
+    return 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", CreatePlaceLog__8CEditMapFiP13EP_PLACE_INFO);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", GetNearParts__8CEditMapFP14CEditPartsInfoPffPP10CEditPartsi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", GetNearParts__8CEditMapFR9mgVu0FBOXPP10CEditPartsi);

@@ -1,9 +1,12 @@
 #include "common.h"
 #include "sceneload.hpp"
+#include <cstring>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneload", LoadMapData__FR17SCN_LOADMAP_INFO2i);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneload", Initialize__17SCN_LOADMAP_INFO2Fv);
+void SCN_LOADMAP_INFO2::Initialize(void) {
+    memset(this, 0, 0x1A8);
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneload", LoadChara__6CSceneFiPUiPcP9mgCMemoryP9mgCMemoryP9mgCMemoryii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneload", DeleteChara__6CSceneFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneload", CopyChara__6CSceneFiiP9mgCMemory);

@@ -12,10 +12,44 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", EndCheck__6CMovieFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", IsStarted__6CMovieFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", GetVoBufDataSize__6CMovieFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", GetViBufDataSize__6CMovieFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", GetViBufTagSize__6CMovieFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", GetMpegWorkSize__6CMovieFii);
+s32 CMovie::GetViBufTagSize(void) {
+    return 0x1010;
+}
+s32 CMovie::GetMpegWorkSize(s32 arg0, s32 arg1) {
+    s32 var_v0;
+    s32 temp_v1;
+
+    temp_v1 = arg0 * arg1 * 9;
+    var_v0 = temp_v1 >> 1;
+    if (temp_v1 < 0) {
+        var_v0 = (s32) (temp_v1 + 1) >> 1;
+    }
+    return var_v0 + 0x1768;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", GetReadBufSize__6CMovieFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", GetTagProgSize__6CMovieFii);
+s32 CMovie::GetTagProgSize(s32 arg0, s32 arg1) {
+    s32 temp_v0;
+    s32 var_v0;
+    s32 temp_v1;
+    s32 var_v0_2;
+    s32 var_v1;
+
+    var_v0_2 = arg0 >> 4;
+    if (arg0 < 0) {
+        var_v0_2 = (s32) (arg0 + 0xF) >> 4;
+    }
+    temp_v0 = var_v0_2 * arg1;
+    var_v1 = temp_v0 >> 4;
+    if (temp_v0 < 0) {
+        var_v1 = (s32) (temp_v0 + 0xF) >> 4;
+    }
+    temp_v1 = (((var_v1 * 6) + 0x6E) * 4) + 0x3F;
+    var_v0 = temp_v1 >> 6;
+    if (temp_v1 < 0) {
+        var_v0 = (s32) (temp_v1 + 0x3F) >> 6;
+    }
+    return var_v0 << 8;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", videoDecCreate__6CMovieFP8VideoDecPUciP1P1iP9TimeStampi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", videoDecSetStream__6CMovieFP8VideoDeciiPFP7sceMpegP13sceMpegCbDataPv_iPv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", videoDecDelete__6CMovieFP8VideoDec);
@@ -23,7 +57,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", videoDecFlush__6CMovieFP8VideoDec)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", defMain__FPv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", videoDecMain__FPv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", stepMain__FPv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", mpegError__FP7sceMpegP18sceMpegCbDataErrorPv);
+s32 mpegError(sceMpeg *mpeg, sceMpegCbDataError *error, void *user) {
+    return 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", mpegNodata__FP7sceMpegP13sceMpegCbDataPv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", mpegStopDMA__FP7sceMpegP13sceMpegCbDataPv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", mpegRestartDMA__FP7sceMpegP13sceMpegCbDataPv);
@@ -33,11 +69,18 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", pcmCallback__FP7sceMpegP16sceMpegC
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", vblankHandler__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", handler_endimage__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", voBufCreate__FP5VoBufP6VoDataP5VoTagi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", voBufReset__FP5VoBuf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", voBufIsFull__FP5VoBuf);
+void voBufReset(VoBuf * arg0) {
+    (*(s32 *)((u8 *)arg0 + 0xc)) = 0;
+    (*(s32 *)((u8 *)arg0 + 0x10)) = 0;
+}
+s32 voBufIsFull(VoBuf *arg0) {
+    return (*(s32 *)((u8 *)arg0 + 0x10)) == *(s32 *) ((u8 *) arg0 + 0x14);
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", voBufIncCount__FP5VoBuf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", voBufGetData__FP5VoBuf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", voBufIsEmpty__FP5VoBuf);
+s32 voBufIsEmpty(VoBuf *b) {
+    return (*(s32 *)((u8 *)b + 0x10)) == 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", voBufGetTag__FP5VoBuf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", voBufDecCount__FP5VoBuf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", getFIFOindex__FP5ViBufPv);
@@ -71,7 +114,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", audioDecPause__FP8AudioDec);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", audioDecResume__FP8AudioDec);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", audioDecStart__FP8AudioDec);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", audioDecReset__FP8AudioDec);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", audioDecIsPreset__FP8AudioDec);
+s32 audioDecIsPreset(AudioDec *arg0) {
+    return (*(s32 *)((u8 *)arg0 + 0x54)) >= (*(s32 *)((u8 *)arg0 + 0x48));
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", audioDecSendToIOP__FP8AudioDec);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", iopGetArea__FPiPiPiPiP8AudioDeci);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", sendToIOP2area__FiiiiPUciPUci);
@@ -81,7 +126,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", changeInputVolume__FUi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", startDisplay__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", switchThread__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", videoDecSetState__FP8VideoDecUi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", videoDecGetState__FP8VideoDec);
+s32 videoDecGetState(VideoDec * arg0) {
+    return (*(s32 *)((u8 *)arg0 + 0xa8));
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", decBs0__FP8VideoDec);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", setImageTag__FPUiPviii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", videoDecBeginPut__FP8VideoDecPPUcPiPPUcPi);

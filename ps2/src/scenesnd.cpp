@@ -1,5 +1,7 @@
 #include "common.h"
 #include "scenesnd.hpp"
+#include <cstring>
+#include <cstdio>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", Init__Q26CScene8BGM_INFOFv);
@@ -9,22 +11,43 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", InitSeSrc__6CSceneFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", InitSeEnv__6CSceneFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", InitSeBattle__6CSceneFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", InitSeBas__6CSceneFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", SeAllStop__6CSceneFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", SoundAllStop__6CSceneFv);
+void CScene::SeAllStop(void) {
+    this->StopSeSrc();
+    sndSeAllStop(-1);
+    this->InitLooSeMngr();
+}
+void CScene::SoundAllStop(void) {
+    this->StopBGM(0);
+    this->InitBGM();
+    this->SeAllStop();
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", InitLooSeMngr__6CSceneFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", GetActiveBgmInfo__6CSceneFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", PlayBGM__6CSceneFiif);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", PauseBGM__6CSceneFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", RePlayBGM__6CSceneFv);
+void CScene::PauseBGM(void) {
+    void *info = (void *)this->GetActiveBgmInfo();
+    s32 status = *(s32 *)((char *)info + 0x20);
+    if (status >= 0) sndSePause(*(u32 *)((char *)info + 4), status);
+}
+void CScene::RePlayBGM(void) {
+    int *p = (int *)this->GetActiveBgmInfo();
+    if (p[8] >= 0) sndSePlay(p[1], p[8], 0);
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", StopBGM__6CSceneFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", SetVolBGM__6CSceneFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", GetVolBGM__6CSceneFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", GetBGMState__6CSceneFv);
+int CScene::GetVolBGM(void) {
+    return *(int *)((char *)this->GetActiveBgmInfo() + 0x10);
+}
+int CScene::GetBGMState(void) { void *p=(void *)this->GetActiveBgmInfo(); return sndGetSeStatus(*(unsigned int *)((char *)p+4), *(int *)((char *)p+0x20)); }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", SetVolfBGM__6CSceneFf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", GetVolfBGM__6CSceneFv);
+float CScene::GetVolfBGM(void) {
+    return *(float *)((char *)this->GetActiveBgmInfo() + 0x14);
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", FadeOutBGM__6CSceneFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", FadeInBGM__6CSceneFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", AutoChangeBGMVol__6CSceneFi);
+void CScene::AutoChangeBGMVol(int arg0) {
+    *(int *)((char *)this->GetActiveBgmInfo() + 0x24) = arg0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", GetActiveBgmStatus__6CSceneFPQ26CScene10BGM_STATUS);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", SetActiveBgmStatus__6CSceneFPQ26CScene10BGM_STATUS);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", PlayEnvBGM__6CSceneFif);
@@ -41,13 +64,21 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", GetSeSrcFile__6CSceneFPci);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", GetSeEnvFile__6CSceneFPci);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", GetSeBaseFile__6CSceneFPci);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", GetSeBattleFile__6CSceneFPci);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", CheckLoadBGM__6CSceneFi);
+s32 CScene::CheckLoadBGM(s32 arg0) {
+    struct temp_v0_champs *temp_v0;
+
+    temp_v0 = (struct temp_v0_champs *) (this->GetActiveBgmInfo());
+    if (arg0 < 0) {
+        return 0;
+    }
+    return arg0 != (*(s32 *)((u8 *)temp_v0 + 0x8));
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", CheckLoadSeSrc__6CSceneFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", CheckLoadSeEnv__6CSceneFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", CheckLoadSeBattle__6CSceneFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", CheckLoadSeBase__6CSceneFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", SearchSndDataID__6CSceneFi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", GetDefBgmNo__6CSceneFi);
+int CScene::GetDefBgmNo(int id) { short *p=(short *)this->SearchSndDataID(id); if(p!=0) return p[1]; return -1; }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", GetDefEventSeFile__6CSceneFiPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", LoadSound__6CSceneFiP1);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", LoadBGM__6CSceneFiP1);

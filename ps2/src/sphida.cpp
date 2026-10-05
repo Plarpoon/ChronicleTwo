@@ -1,13 +1,27 @@
 #include "common.h"
 #include "sphida.hpp"
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", GetSphidaClubDef__Fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", DPrimEnterSprite__FP11mgCDrawPrimiiiiffff);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", Initialize__8CPowGageFv);
+void CPowGage::Initialize(void) {
+    (*(s32 *)((u8 *)this + 0x4)) = 0;
+    (*(s32 *)((u8 *)this + 0x0)) = 0;
+    (*(s32 *)((u8 *)this + 0x8)) = 0;
+    (*(s32 *)((u8 *)this + 0xc)) = 0;
+    (*(s32 *)((u8 *)this + 0x10)) = 2;
+    (*(s32 *)((u8 *)this + 0x14)) = -10;
+    (*(s32 *)((u8 *)this + 0x1c)) = -1;
+    (*(s32 *)((u8 *)this + 0x20)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", Step__8CPowGageFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", Draw__8CPowGageFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", InitSphida__Fv);
+void InitSphida(void) {
+    Sphida = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", GetSphidaPtr__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", __ct__7CSphidaFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", Initialize__7CSphidaFv);

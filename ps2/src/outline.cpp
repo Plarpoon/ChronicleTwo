@@ -1,9 +1,27 @@
 #include "common.h"
 #include "outline.hpp"
 
+#include "mg_math.hpp"
+
 // Code (.text)
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/outline", Initialize__12COutLineDrawFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/outline", SetFrame__12COutLineDrawFP8mgCFrame);
+void COutLineDraw::Initialize() {
+    mgZeroVector(unk_10.max);
+    mgZeroVector(unk_10.min);
+    frame = NULL;
+    texture = NULL;
+    width = 0.0f;
+    depth_from_pos = 0;
+    color[0] = 80.0f;
+    color[1] = 60.0f;
+    color[2] = 0.0f;
+    color[3] = 128.0f;
+    enable = 1;
+    hide_edge = 0;
+    next = NULL;
+}
+void COutLineDraw::SetFrame(mgCFrame * arg0) {
+    (*(mgCFrame * *)((u8 *)this + 0x34)) = arg0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/outline", Draw__12COutLineDrawFPfff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/outline", Draw__12COutLineDrawFff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/outline", DrawDivSprite__FP11mgCDrawPrim9mgRect_i_P10mgCTexturePiiiii);

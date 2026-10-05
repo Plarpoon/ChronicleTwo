@@ -1668,14 +1668,75 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", GetCPolyAttr__FP13MoveCheckInfo
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CheckWidth__FP6CCPolyiPffPfi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CheckWidthPipe__FP6CCPolyiPffPfi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CreateCharaCPoly__FP6CCPolyiPfPfff);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", LinerInterpolation__Ffff);
+float LinerInterpolation(float arg0, float arg1, float arg2) {
+    return arg0 + (arg2 * (arg1 - arg0));
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", LinerInterpolationI__Fiiii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", RollPos__FPfPffPf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CheckPosInOutForRect__FP4RECTii);
+s32 CheckPosInOutForRect(RECT *arg0, s32 arg1, s32 arg2) {
+    s32 temp_v1;
+    s32 temp_v1_2;
+
+    temp_v1_2 = (s32) ((*(s32 *)((u8 *)arg0 + 0x0)));
+    if (arg1 < temp_v1_2) {
+        return 0;
+    }
+    if ((temp_v1_2 + (*(s32 *)((u8 *)arg0 + 0x8))) < arg1) {
+        return 0;
+    }
+    temp_v1 = (s32) ((*(s32 *)((u8 *)arg0 + 0x4)));
+    if (arg2 < temp_v1) {
+        return 0;
+    }
+    return (temp_v1 + (*(s32 *)((u8 *)arg0 + 0xc))) >= arg2;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", GetDisPosToRect__FP4RECTii);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CheckPosInOutFor2P__Fffffff);
+s32 CheckPosInOutFor2P(float arg0, float arg1, float arg2, float arg3, float arg4, float arg5) {
+    float var_f0;
+    float var_f14;
+    float var_f15;
+    float var_f1;
+    s32 var_v0;
+
+    var_f14 = arg2;
+    var_f15 = arg3;
+    var_f0 = var_f14;
+    if (arg0 < var_f14) {
+        var_f0 = arg0;
+    } else {
+        var_f14 = arg0;
+    }
+    var_f1 = var_f15;
+    if (arg1 < var_f15) {
+        var_f1 = arg1;
+    } else {
+        var_f15 = arg1;
+    }
+    if (arg4 < var_f0) {
+        return 0;
+    }
+    if (var_f14 < arg4) {
+        return 0;
+    }
+    if (arg5 < var_f1) {
+        return 0;
+    }
+    var_v0 = 1;
+    if (!(var_f15 < arg5)) {
+        var_v0 = 0;
+    }
+    return var_v0 ^ 1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CalcIntersectionPointLineAndLine__FffffffffPfPf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CalcIntersectionPoint2PAnd2P__FffffffffPfPf);
+s32 CalcIntersectionPoint2PAnd2P(float arg0, float arg1, float arg2, float arg3, float arg4, float arg5, float arg6, float arg7, float *arg8, float *arg9) {
+    if (CalcIntersectionPointLineAndLine(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) == 0) {
+        return 0;
+    }
+    if (CheckPosInOutFor2P(arg0, arg1, arg2, arg3, *arg8, *arg9) == 0) {
+        return 0;
+    }
+    return CheckPosInOutFor2P(arg4, arg5, arg6, arg7, *arg8, *arg9) != 0;
+}
 
 // Constants (.rodata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gameutil", at_966__DATA);

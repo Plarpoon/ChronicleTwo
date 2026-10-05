@@ -1,5 +1,6 @@
 #include "common.h"
 #include "sound.hpp"
+#include <cstdio>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", StopVoice__6CSoundFi);

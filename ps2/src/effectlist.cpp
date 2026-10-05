@@ -9,16 +9,35 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", GetEffectVisual__11CEffectLis
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", Step__11CEffectListFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", CreatePacket__11CEffectListFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", CreatePacket__14CEffectManagerFP11mgC3DSprite);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", Initialize__10CFadeInOutFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", ResetFade__10CFadeInOutFv);
+void CFadeInOut::Initialize(void) {
+    (*(s32 *)((u8 *)this + 0xc)) = 0;
+    (*(s32 *)((u8 *)this + 0x8)) = 0;
+    (*(s32 *)((u8 *)this + 0x4)) = 0;
+    (*(s32 *)((u8 *)this + 0x0)) = 0;
+    (*(s32 *)((u8 *)this + 0x10)) = 0;
+    (*(s32 *)((u8 *)this + 0x18)) = 0;
+    (*(s32 *)((u8 *)this + 0x14)) = 0;
+    (*(s32 *)((u8 *)this + 0x20)) = 0;
+    (*(s32 *)((u8 *)this + 0x28)) = 0;
+    (*(s32 *)((u8 *)this + 0x2c)) = 0;
+}
+void CFadeInOut::ResetFade(void) {
+    (*(s32 *)((u8 *)this + 0x10)) = 0;
+    (*(s32 *)((u8 *)this + 0xc)) = 0;
+    (*(s32 *)((u8 *)this + 0x20)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", FadeIn__10CFadeInOutFifff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", FadeIn__10CFadeInOutFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", FadeOut__10CFadeInOutFifff);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", CrossFade__10CFadeInOutFif);
+void CFadeInOut::CrossFade(int a, float b) {
+    this->CrossFadeIn(0, a, b);
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", CrossFadeIn__10CFadeInOutFiif);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", CrossFadeOut__10CFadeInOutFiif);
 int CFadeInOut::FadeCheck() { return this->end; }
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", NowFade__10CFadeInOutFv);
+s32 CFadeInOut::NowFade(void) {
+    return (*(s32 *)((u8 *)this + 0x10)) != 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", FadeStep__10CFadeInOutFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", SetCrossTexture__10CFadeInOutFP10mgCTextureP1);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", CaptureScreen__10CFadeInOutFv);

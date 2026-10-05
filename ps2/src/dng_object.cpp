@@ -5,7 +5,14 @@
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", SetPos__15CRocketLauncherFPfPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Step__15CRocketLauncherFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Draw__15CRocketLauncherFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Initialize__15CRocketLauncherFv);
+void CRocketLauncher::Initialize(void) {
+    (*(s32 *)((u8 *)this + 0x0)) = -1;
+    (*(s32 *)((u8 *)this + 0x150)) = 0;
+    (*(s32 *)((u8 *)this + 0x154)) = 0;
+    (*(s32 *)((u8 *)this + 0x174)) = 0;
+    (*(s32 *)((u8 *)this + 0x160)) = -1;
+    (*(s32 *)((u8 *)this + 0x164)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Get__18CRocketLauncherManFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Draw__18CRocketLauncherManFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Step__18CRocketLauncherManFv);
@@ -14,10 +21,75 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Initialize__18CRocketLauncher
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Set__11CMachineGunFPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Step__11CMachineGunFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", SetPos__9CLaserGunFPfPfPf);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", SetVisualCode__9CLaserGunFi);
+void CLaserGun::SetVisualCode(s32 arg0) {
+    (*(s16 *)((u8 *)this + 0x108)) = (s16) arg0;
+    if (arg0 == 0) {
+        (*(s32 *)((u8 *)this + 0xfc)) = 0x3DCCCCCD;
+        (*(s32 *)((u8 *)this + 0x100)) = 0x3DCCCCCD;
+        (*(s32 *)((u8 *)this + 0x104)) = 0x3F000000;
+        (*(s32 *)((u8 *)this + 0x110)) = 0x42800000;
+        (*(s32 *)((u8 *)this + 0x114)) = 0x43000000;
+        (*(s32 *)((u8 *)this + 0x118)) = 0x42800000;
+    }
+    if (arg0 == 1) {
+        (*(s32 *)((u8 *)this + 0xfc)) = 0x3E4CCCCD;
+        (*(s32 *)((u8 *)this + 0x100)) = 0x3ECCCCCD;
+        (*(s32 *)((u8 *)this + 0x104)) = 0x3F4CCCCD;
+        (*(s32 *)((u8 *)this + 0xdc)) = 0x41F00000;
+        (*(s32 *)((u8 *)this + 0x110)) = 0x42800000;
+        (*(s32 *)((u8 *)this + 0x114)) = 0x42800000;
+        (*(s32 *)((u8 *)this + 0x118)) = 0x43000000;
+    }
+    if (arg0 == 2) {
+        (*(s32 *)((u8 *)this + 0xfc)) = 0x3E4CCCCD;
+        (*(s32 *)((u8 *)this + 0x100)) = 0x3ECCCCCD;
+        (*(s32 *)((u8 *)this + 0x104)) = 0x3FB33333;
+        (*(s32 *)((u8 *)this + 0xdc)) = 0x41700000;
+        (*(s32 *)((u8 *)this + 0xe0)) = 0x40A00000;
+        (*(s32 *)((u8 *)this + 0xe4)) = 0x42200000;
+        (*(s32 *)((u8 *)this + 0x110)) = 0x43000000;
+        (*(s32 *)((u8 *)this + 0x114)) = 0x42000000;
+        (*(s32 *)((u8 *)this + 0x118)) = 0x43000000;
+    }
+    if (arg0 == 3) {
+        (*(s32 *)((u8 *)this + 0xfc)) = 0x3E4CCCCD;
+        (*(s32 *)((u8 *)this + 0x100)) = 0x3E4CCCCD;
+        (*(s32 *)((u8 *)this + 0x104)) = 0x3F19999A;
+        (*(s32 *)((u8 *)this + 0xdc)) = 0;
+        (*(s32 *)((u8 *)this + 0xe0)) = 0x40000000;
+        (*(s32 *)((u8 *)this + 0xe4)) = 0x420C0000;
+        (*(s32 *)((u8 *)this + 0xf0)) = 0;
+        (*(s32 *)((u8 *)this + 0xf4)) = 0x1869F;
+        (*(s32 *)((u8 *)this + 0xf8)) = 0x4B;
+        (*(s32 *)((u8 *)this + 0x110)) = 0;
+        (*(s32 *)((u8 *)this + 0x114)) = 0x43000000;
+        (*(s32 *)((u8 *)this + 0x118)) = 0x43000000;
+    }
+    if (arg0 == 4) {
+        (*(s32 *)((u8 *)this + 0xfc)) = 0x3ECCCCCD;
+        (*(s32 *)((u8 *)this + 0x100)) = 0x3ECCCCCD;
+        (*(s32 *)((u8 *)this + 0x104)) = 0x3FE66666;
+        (*(s32 *)((u8 *)this + 0xdc)) = 0x41200000;
+        (*(s32 *)((u8 *)this + 0xe0)) = 0x40A00000;
+        (*(s32 *)((u8 *)this + 0xe4)) = 0x41F00000;
+        (*(s32 *)((u8 *)this + 0xf0)) = 0;
+        (*(s32 *)((u8 *)this + 0xf4)) = 5;
+        (*(s32 *)((u8 *)this + 0xf8)) = 0x4B;
+        (*(s32 *)((u8 *)this + 0x110)) = 0x43000000;
+        (*(s32 *)((u8 *)this + 0x114)) = 0x42800000;
+        (*(s32 *)((u8 *)this + 0x118)) = 0;
+    }
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Step__9CLaserGunFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Draw__9CLaserGunFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Initialize__9CLaserGunFv);
+void CLaserGun::Initialize(void) {
+    (*(s32 *)((u8 *)this + 0x0)) = -1;
+    (*(s32 *)((u8 *)this + 0xd0)) = 0;
+    (*(s32 *)((u8 *)this + 0xd4)) = 0;
+    (*(s32 *)((u8 *)this + 0x120)) = 0;
+    (*(s32 *)((u8 *)this + 0xe8)) = -1;
+    (*(s32 *)((u8 *)this + 0xec)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Get__12CLaserGunManFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Draw__12CLaserGunManFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Step__12CLaserGunManFv);
@@ -27,11 +99,27 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Draw__9CPullItemFP10mgCTextur
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Step__9CPullItemFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", IsGet__9CPullItemFPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", SetItem__9CPullItemFPfPfi);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Clear__9CPullItemFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Initialize__9CPullItemFv);
+void CPullItem::Clear(void) {
+    (*(s8 *)((u8 *)this + 0x74)) = -1;
+    (*(s32 *)((u8 *)this + 0x7c)) = 0;
+}
+void CPullItem::Initialize(void) {
+    (*(s32 *)((u8 *)this + 0x7c)) = 0;
+    (*(s16 *)((u8 *)this + 0x42)) = 0;
+    (*(s16 *)((u8 *)this + 0x30)) = 0;
+    (*(s16 *)((u8 *)this + 0x32)) = 0;
+    (*(s16 *)((u8 *)this + 0x34)) = 32;
+    (*(s16 *)((u8 *)this + 0x36)) = 32;
+    (*(s16 *)((u8 *)this + 0x50)) = 0;
+    (*(s16 *)((u8 *)this + 0x44)) = 0;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", GetList__16CPullItemManagerFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Clear__16CPullItemManagerFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", SetStatus__16CRoboVoiceSystemFii);
+void CRoboVoiceSystem::SetStatus(s32 arg0, s32 arg1) {
+    (*(s16 *)((u8 *)this + 0x0)) = 1;
+    (*(s32 *)((u8 *)this + 0xc)) = arg0;
+    (*(s16 *)((u8 *)this + 0x10)) = arg1;
+}
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", StartVoiceSystem__16CRoboVoiceSystemFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", StopVoice__16CRoboVoiceSystemFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Step__16CRoboVoiceSystemFv);

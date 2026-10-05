@@ -569,3 +569,9 @@ maintex	calcWeaponParam2__Fii	checker
 maintex	SetSwordBlurEffect__FP11CCharacter2P9mgCMemoryi	checker
 dng_status	DrawActiveItemCursor__Fiif	checker
 dng_status	DrawStatusBord__Fv	checker
+dng_debug	dngGetDebugInfo__Fv	checker
+dng_debug	dngDebugInit__Fv	checker
+dng_debug	DrawDebugWindow__Fv	checker
+dng_debug	__sinit_dng_debug_cpp	checker
+dng_debug	dngDebugExit__Fv	checker
+dng_debug	Initialize__12CTreasureBoxFv	checker

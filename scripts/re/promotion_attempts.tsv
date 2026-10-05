@@ -616,3 +616,15 @@ sound	StreamGetState__6CSoundFi	checker
 sound	StreamGetLevel__6CSoundFi	checker
 sound	StreamStandBy__6CSoundFi	checker
 sound	TransBdState__6CSoundFi	checker
+mg_frame	GetWorldPosition0__8mgCFrameFPf	checker
+mg_frame	GetWorldDir__8mgCFrameFPfPf	checker
+mg_frame	SetRotation__8mgCFrameFPf	checker
+mg_frame	SetRotation__8mgCFrameFfff	checker
+mg_frame	SetRotType__8mgCFrameFi	checker
+mg_frame	__as__8mgCFrameFR8mgCFrame	checker
+mg_frame	Draw__8mgCFrameFv	checker
+mg_frame	ChangeParam__9mgCObjectFv	checker
+mg_frame	UseParam__9mgCObjectFv	checker
+mg_frame	DrawDirect__9mgCObjectFv	checker
+mg_frame	Draw__9mgCObjectFv	checker
+mg_frame	__sinit_mg_frame_cpp	checker

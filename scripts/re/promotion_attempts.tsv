@@ -486,4 +486,9 @@ dng_main	IsEventRun__Fv	checker
 dng_main	DngMainDraw__Fv	checker
 dng_main	LoopDungeonMain__Fv	checker
 dng_main	DebugMainDraw__Fv	checker
+dng_main	InitDungeonMain__F13INIT_LOOP_ARG	manual
+dng_main	Initialize__13MoveCheckInfoFv	manual
+dng_main	Initialize__13CRedMarkModelFv	manual
+dng_main	__as__9mgCCameraFRC9mgCCamera	manual
+dng_main	__ct__14CActiveMonsterFv	manual
 dng_main	DngStep__Fv	checker

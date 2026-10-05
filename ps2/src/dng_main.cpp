@@ -230,7 +230,6 @@ void memoryInit() {
     }
     BuffReadData = MainBuffer->stAlloc64(200000);
 }
-#ifdef NONMATCHING
 void InitDungeonMain(INIT_LOOP_ARG arg) {
     SetCurrentDir(NULL);
     memoryInit();
@@ -384,7 +383,7 @@ void InitDungeonMain(INIT_LOOP_ARG arg) {
     DngMess->push_button = 0;
     DngMess->draw_speed_def = 0;
     DngMess->draw_speed = 0;
-    DngMess->unk_22a4 = 0x58;
+    DngMess->texture_block = 0x58;
     if (LanguageCode > 0 && LanguageCode < 6) {
         DngMess->value_half = 1;
     }
@@ -396,13 +395,13 @@ void InitDungeonMain(INIT_LOOP_ARG arg) {
     DngMess2->font_w = 16;
     DngMess2->push_button = 0;
     DngMess2->draw_speed_def = 0;
-    DngMess2->unk_22a4 = 0x58;
+    DngMess2->texture_block = 0x58;
     StartupEpisodeTitle.Initialize();
     StartupEpisodeTitle.mes = DngMess2;
     EventMess = new (MainBuffer->Alloc(algn16_size(sizeof(ClsMes)) + 2)) ClsMes;
     EventMess->Preset(0);
     EventMess->SetBuff_system(GetSystemMesBuffer());
-    EventMess->unk_22a4 = 0x58;
+    EventMess->texture_block = 0x58;
     MainBuffer->Align64();
     char  path[64];
     int   size;
@@ -413,11 +412,11 @@ void InitDungeonMain(INIT_LOOP_ARG arg) {
     EventMess->SetBuff(mes_buff);
     MainBuffer->stAlloc64((size / 64 + 1) * 64 / 16);
     DngMainScene->AssignMessage(0, EventMess, NULL);
-    GetSystemMessage()->unk_22a4 = 0x58;
+    GetSystemMessage()->texture_block = 0x58;
     DngMainScene->AssignMessage(1, GetSystemMessage(), NULL);
     MonsterMess = new (MainBuffer->Alloc(algn16_size(sizeof(ClsMes)) + 2)) ClsMes;
     MonsterMess->Preset(2);
-    MonsterMess->unk_22a4 = 0x58;
+    MonsterMess->texture_block = 0x58;
     NowLoadingBarStep();
     mgCTextureManager *tex_man = &mgTexManager;
 
@@ -671,13 +670,6 @@ void InitDungeonMain(INIT_LOOP_ARG arg) {
     NowLoadingBarSteEnd();
     DeleteNowLoading();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", InitDungeonMain__F13INIT_LOOP_ARG);
-#endif
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", Initialize__13MoveCheckInfoFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", Initialize__13CRedMarkModelFv);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", __as__9mgCCameraFRC9mgCCamera);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", __ct__14CActiveMonsterFv);
 void CommonStageClassInit() {
     int i;
 
@@ -2374,8 +2366,7 @@ void IsEventRun() {
         max = info->GetMaxHp_i();
 
         if ((max > info->GetNowHp_i() || attr) && AutoMapGen.healing_point.CheckHealingTime()) {
-            float frames = 0.0f;
-            info->AddHp_Point(9999.0f, frames);
+            info->AddHp_Point(9999.0f, 0.0f);
             info->SetAttr(0x6F, 1);
             FxScriptMan->CreateEffSpt("\x92\xca\x8f\xed\x89\xf1\x95\x9c", 0, 0);
             FxScriptMan->SetScriptTargetId(0, -1, -1);
@@ -2953,7 +2944,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3802__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3803__DATA);
 
 // Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", __vt__12CTreasureBox__DATA);
 
 // Small initialised data (.sdata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_2044__DATA);

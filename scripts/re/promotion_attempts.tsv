@@ -620,3 +620,8 @@ dbg_font	ascii2serno__FUc	checker
 dbg_font	SjisToSerno__FUl	checker
 dbg_font	SjisToJis__FUl	checker
 nowload	__sinit_nowload_cpp	manual
+dng_debug	__sinit_dng_debug_cpp	checker
+dng_debug	dngDebugExit__Fv	checker
+dng_debug	dngDebugStart__Fv	checker
+dng_debug	dngDebugInit__Fv	checker
+dng_debug	dngGetDebugInfo__Fv	checker

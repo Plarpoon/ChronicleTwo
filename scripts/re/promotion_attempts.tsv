@@ -907,3 +907,12 @@ editctrl	EditDrawShadowChara__FP6CScene	checker
 editctrl	EditDrawChara__FP6CScene	checker
 editctrl	EditDrawEffectChara__FP6CScene	checker
 editctrl	__sinit_editctrl_cpp	checker
+gyorace	Jikkyou__FP11SubGameInfo	checker
+gyorace	sgSysDrawGyoRace__FP11SubGameInfo	checker
+gyorace	sgEffectDrawGyoRace__FP11SubGameInfo	checker
+gyorace	DivSpriteScreen__FR11mgCDrawPrim__2	checker
+gyorace	sgCharaDrawGyoRace__FP11SubGameInfo	checker
+gyorace	AutoCam__FP11SubGameInfo	checker
+gyorace	sgLoopGyoRace__FP11SubGameInfo	checker
+gyorace	sgInitGyoRace__FP11SubGameInfo	checker
+gyorace	__sinit_gyorace_cpp	manual	2026-10-06	failed: generated initializer uses __sinit_gyorace.cpp while retail ctor table requires __sinit_gyorace_cpp; retained assembly

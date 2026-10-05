@@ -1,6 +1,5 @@
 #include "common.h"
 #include "editriver.hpp"
-#include <cstring>
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editriver", PlaceRiver__8CEditMapFPf);
@@ -20,66 +19,74 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editriver", Get__9CEditGridFii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editriver", GetFast__9CEditGridFii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editriver", GetLPos__9CEditGridFPiff);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editriver", GetWPos__9CEditGridFPfii);
-s32 CEditGrid::SetRiver(float x, float y) {
-    s32 p[2];
-    s32 r;
-    if (this->GetLPos(p, x, y)) r = this->SetRiver(p[0], p[1]); else r = 0;
-    return r;
+s32 CEditGrid::SetRiver(float x, float z) {
+    s32 grid_pos[2];
+    s32 result;
+    if (GetLPos(grid_pos, x, z)) {
+        result = SetRiver(grid_pos[0], grid_pos[1]);
+    } else {
+        result = 0;
+    }
+    return result;
 }
-s32 CEditGrid::ResetRiver(float x, float y) {
-    s32 p[2];
-    s32 r;
-    if (this->GetLPos(p, x, y)) r = this->ResetRiver(p[0], p[1]); else r = 0;
-    return r;
+s32 CEditGrid::ResetRiver(float x, float z) {
+    s32 grid_pos[2];
+    s32 result;
+    if (GetLPos(grid_pos, x, z)) {
+        result = ResetRiver(grid_pos[0], grid_pos[1]);
+    } else {
+        result = 0;
+    }
+    return result;
 }
-s32 CEditGrid::SetRiver(s32 arg0, s32 arg1) {
-    s32 *temp_v0;
+s32 CEditGrid::SetRiver(s32 x, s32 z) {
+    CGridData *cell;
 
-    temp_v0 = (s32 *) (this->Get(arg0, arg1));
-    if (temp_v0 == NULL) {
+    cell = Get(x, z);
+    if (cell == NULL) {
         return 0;
     }
-    *temp_v0 = 1;
-    this->UpdateRiver(arg0, arg1);
-    this->UpdateRiver(arg0 - 1, arg1);
-    this->UpdateRiver(arg0 + 1, arg1);
-    this->UpdateRiver(arg0, arg1 + 1);
-    this->UpdateRiver(arg0, arg1 - 1);
-    this->UpdateRiver(arg0 - 1, arg1 - 1);
-    this->UpdateRiver(arg0 + 1, arg1 - 1);
-    this->UpdateRiver(arg0 + 1, arg1 + 1);
-    this->UpdateRiver(arg0 - 1, arg1 + 1);
+    cell->river = 1;
+    UpdateRiver(x, z);
+    UpdateRiver(x - 1, z);
+    UpdateRiver(x + 1, z);
+    UpdateRiver(x, z + 1);
+    UpdateRiver(x, z - 1);
+    UpdateRiver(x - 1, z - 1);
+    UpdateRiver(x + 1, z - 1);
+    UpdateRiver(x + 1, z + 1);
+    UpdateRiver(x - 1, z + 1);
     return 1;
 }
-s32 CEditGrid::ResetRiver(s32 arg0, s32 arg1) {
-    s32 *temp_v0;
+s32 CEditGrid::ResetRiver(s32 x, s32 z) {
+    CGridData *cell;
 
-    temp_v0 = (s32 *) (this->Get(arg0, arg1));
-    if (temp_v0 == NULL) {
+    cell = Get(x, z);
+    if (cell == NULL) {
         return 0;
     }
-    if (*temp_v0 == 0) {
+    if (cell->river == 0) {
         return 0;
     }
-    *temp_v0 = 0;
-    this->UpdateRiver(arg0, arg1);
-    this->UpdateRiver(arg0 - 1, arg1);
-    this->UpdateRiver(arg0 + 1, arg1);
-    this->UpdateRiver(arg0, arg1 + 1);
-    this->UpdateRiver(arg0, arg1 - 1);
-    this->UpdateRiver(arg0 - 1, arg1 - 1);
-    this->UpdateRiver(arg0 + 1, arg1 - 1);
-    this->UpdateRiver(arg0 + 1, arg1 + 1);
-    this->UpdateRiver(arg0 - 1, arg1 + 1);
+    cell->river = 0;
+    UpdateRiver(x, z);
+    UpdateRiver(x - 1, z);
+    UpdateRiver(x + 1, z);
+    UpdateRiver(x, z + 1);
+    UpdateRiver(x, z - 1);
+    UpdateRiver(x - 1, z - 1);
+    UpdateRiver(x + 1, z - 1);
+    UpdateRiver(x + 1, z + 1);
+    UpdateRiver(x - 1, z + 1);
     return 1;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editriver", UpdateRiver__9CEditGridFii);
-s32 CEditGrid::River(s32 arg0, s32 arg1) {
-    s32 *temp_v0;
+s32 CEditGrid::River(s32 x, s32 z) {
+    CGridData *cell;
 
-    temp_v0 = (s32 *) (this->Get(arg0, arg1));
-    if (temp_v0 != NULL) {
-        return *temp_v0;
+    cell = Get(x, z);
+    if (cell != NULL) {
+        return cell->river;
     }
     return 0;
 }

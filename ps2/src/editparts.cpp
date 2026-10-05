@@ -4,16 +4,13 @@
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editparts", Initialize__14CEditPartsInfoFv);
 s32 CEditPartsInfo::GetPartsType(void) {
-    s32 temp_v1;
-
-    temp_v1 = (*(s32 *)((u8 *)this + 0x4));
-    if (temp_v1 & 0x40) {
+    if (attr & EDIT_PARTS_ATR_TYPE_ONE) {
         return 1;
     }
-    if (temp_v1 & 0x80) {
-        return 0xB;
+    if (attr & EDIT_PARTS_ATR_RIVER) {
+        return EDIT_PARTS_TYPE_RIVER;
     }
-    return (*(s32 *)((u8 *)this + 0x24));
+    return parts_type;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editparts", CreateBox__14CEditPartsInfoFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editparts", GetPartsHeight__14CEditPartsInfoFv);
@@ -30,11 +27,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editparts", GetLocalPos__10CEditPartsFPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editparts", UpDatePosition__10CEditPartsFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editparts", GetInfoID__10CEditPartsFv);
 s32 CEditParts::GetLiveNPC(void) {
-    struct temp_v0_champs_2c6891 *temp_v0;
-
-    temp_v0 = (struct temp_v0_champs_2c6891 *) ((*(s32 *)((u8 *)this + 0x328)));
-    if (temp_v0 != NULL) {
-        return (*(s32 *)((u8 *)temp_v0 + 0x4));
+    CEditHouse *part_house = house;
+    if (part_house != NULL) {
+        return part_house->npc_no[0];
     }
     return -1;
 }
@@ -45,8 +40,10 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editparts", GetFenceSide__10CEditPartsFPfP
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editparts", GetWallPlane__10CEditPartsFiPQ210CEditParts8WallInfo);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editparts", GetWallGroupNum__10CEditPartsFv);
 s32 CEditParts::GetPartsType(void) {
-    void *p = this->info;
-    if (p != 0) return ((CEditPartsInfo *)p)->GetPartsType();
+    CEditPartsInfo *part_info = info;
+    if (part_info != NULL) {
+        return part_info->GetPartsType();
+    }
     return -1;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editparts", Copy__10CEditPartsFR9CMapPartsP9mgCMemory);

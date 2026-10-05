@@ -34,6 +34,7 @@ class mgCMemory;
 enum EditPartsAtr {
     EDIT_PARTS_ATR_GROUND = 0x7,    /**< Bits that GROUND_PARTS sets; a part with all three is ground that holds a placement grid. */
     EDIT_PARTS_ATR_BLOCK  = 0x30,   /**< Bits that BLOCK_PARTS sets. */
+    EDIT_PARTS_ATR_TYPE_ONE = 0x40, /**< Bit that makes GetPartsType return type 1. */
     EDIT_PARTS_ATR_RIVER  = 0x80,   /**< Bit that RIVER_PARTS sets; the part is a piece of river laid on the grid. */
     EDIT_PARTS_ATR_FENCE  = 0x130,  /**< Bits that FENCE_PARTS sets; a part with all of them is a fence. */
     EDIT_PARTS_ATR_BURN   = 0x1000, /**< Bit marking a part that can burn. */

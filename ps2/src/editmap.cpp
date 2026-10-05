@@ -7,16 +7,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", Iam__8CEditMapFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", Initialize__8CEditMapFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", ClearGrid__8CEditMapFv);
 void CEditMap::ClearHouse(void) {
-    s32 var_s0;
-    s32 var_s1;
-
-    var_s1 = 0;
-    var_s0 = 0;
+    s32 house_no = 0;
     do {
-        memset((u8 *) this + var_s1 + 0xD48, 0, 0x10);
-        var_s0 += 1;
-        var_s1 += 0x10;
-    } while (var_s0 < 0x20);
+        memset(&house[house_no], 0, sizeof(CEditHouse));
+        house_no++;
+    } while (house_no < EDIT_MAP_HOUSE_MAX);
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", ClearAllParts__8CEditMapFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", InitialPlaceParts__8CEditMapFP9CEditData);
@@ -37,25 +32,24 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", GetRotMatrix__8CEditMapFPA4_fi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", GetEditAngle90__8CEditMapFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", GetEditAngle__8CEditMapFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", ConvEditAngle__8CEditMapFf);
-s32 CEditMap::AngleLimit(s32 a) {
-    a = a % 24;
-    if (a < 0) a += 24;
-    return a;
+s32 CEditMap::AngleLimit(s32 angle) {
+    angle = angle % EDIT_ANGLE_MAX;
+    if (angle < 0) {
+        angle += EDIT_ANGLE_MAX;
+    }
+    return angle;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", GetEditPos__8CEditMapFPfPf);
-s32 CEditMap::CmpEditAlt(float arg0, float arg1) {
-    float temp_f1;
-    s32 var_v0;
-
-    temp_f1 = arg0 - arg1;
-    if (!(temp_f1 <= 0.5f)) {
+s32 CEditMap::CmpEditAlt(float alt, float base_alt) {
+    float difference = alt - base_alt;
+    if (!(difference <= 0.5f)) {
         return -1;
     }
-    var_v0 = 1;
-    if (!(temp_f1 < -0.5f)) {
-        var_v0 = 0;
+    s32 result = 1;
+    if (!(difference < -0.5f)) {
+        result = 0;
     }
-    return var_v0;
+    return result;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", GetEditAlt__8CEditMapFf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", GetGridPos__8CEditMapFPfPfPf);
@@ -72,9 +66,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", PlaceBurnParts__8CEditMapFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", BurnEditParts__8CEditMapFPQ28CEditMap10RemoveInfo);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", PlaceEditParts__8CEditMapFPcPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", PlaceEditParts__8CEditMapFiP13EP_PLACE_INFOPfPfPi);
-s32 CEditMap::PlaceRiverParts(float *arg0) {
-    if (this->CheckRiverParts(arg0) != 0) {
-        this->PlaceRiver(arg0);
+s32 CEditMap::PlaceRiverParts(float *pos) {
+    if (CheckRiverParts(pos) != 0) {
+        PlaceRiver(pos);
         return 1;
     }
     return 0;

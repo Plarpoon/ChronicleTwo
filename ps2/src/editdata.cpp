@@ -4,27 +4,27 @@
 
 // Code (.text)
 void EditAnalyzeDataSrc::Init(void) {
-    (*(s32 *)((u8 *)this + 0x0)) = 0;
-    (*(s16 *)((u8 *)this + 0x4)) = 0;
-    (*(s16 *)((u8 *)this + 0x6)) = 0;
-    (*(s8 *)((u8 *)this + 0x8)) = -1;
-    (*(s8 *)((u8 *)this + 0x9)) = -1;
-    (*(s8 *)((u8 *)this + 0xa)) = -1;
-    (*(s8 *)((u8 *)this + 0xb)) = -1;
-    (*(s8 *)((u8 *)this + 0xc)) = -1;
-    (*(s8 *)((u8 *)this + 0xd)) = -1;
-    (*(s8 *)((u8 *)this + 0xe)) = -1;
-    (*(s8 *)((u8 *)this + 0xf)) = -1;
-    (*(s32 *)((u8 *)this + 0x10)) = -1;
-    (*(s32 *)((u8 *)this + 0x14)) = 0;
-    (*(s32 *)((u8 *)this + 0x18)) = 0;
+    message = NULL;
+    percent = 0;
+    geo_floor = 0;
+    con_no[0] = -1;
+    con_no[1] = -1;
+    con_no[2] = -1;
+    con_no[3] = -1;
+    con_no[4] = -1;
+    con_no[5] = -1;
+    con_no[6] = -1;
+    con_no[7] = -1;
+    unk_10 = -1;
+    on_parts = NULL;
+    off_parts = NULL;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", Init__14EditAnalyzeSrcFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", GetAnalyzeDataSrc__Fii);
 void CEditData::Initialize(void) {
-    memset(this, 0, 0x5510);
-    this->InitPlaceData();
-    memset((u8 *) this + 0x5040, 0, 0xD0);
+    memset(this, 0, sizeof(*this));
+    InitPlaceData();
+    memset(&analyze, 0, sizeof(analyze));
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", InitPlaceData__9CEditDataFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", SaveData__8CEditMapFP9CEditData);
@@ -41,43 +41,39 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", GetAnalyzeData__9CEditDataFii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", GetAnalyzeSrc__9CEditDataFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", GetAnalyzePercent__9CEditDataFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", GetAnalyzeFlag__9CEditDataFiiPiPi);
-s32 CEditData::GetAnalyzeFlag(s32 arg0, s32 arg1) {
-    /* Les emplacements de pile portent la taille que le commerce leur donne,
-     * lue sur l'ecart entre deux adresses prises, et ils sont declares dans
-     * l'ordre croissant de leur decalage : MWCC attribue la pile dans l'ordre
-     * des declarations, m2c les ecrit a l'envers. Deux entiers a la place de
-     * ces tableaux rendaient un cadre de la moitie, et l'ordre de m2c les
-     * echangeait. */
-    s32 sp10[8];
-    s32 sp30[8];
-    return this->GetAnalyzeFlag(arg0, arg1, sp10, sp30);
+s32 CEditData::GetAnalyzeFlag(s32 map_no, s32 data_no) {
+    s32 condition_numbers[EDIT_ANALYZE_CON_NO_MAX];
+    s32 condition_flags[EDIT_ANALYZE_CON_NO_MAX];
+    return GetAnalyzeFlag(map_no, data_no, condition_numbers, condition_flags);
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", dbgSetContintionFlag__9CEditDataFiii);
-void CEditData::dbgSetAnalyzeFlag(s32 arg0, s32 arg1, s32 arg2) {
-    u8 *data;
-    s32 i;
-
-    data = (u8 *) this->GetAnalyzeData(arg0, arg1);
-    if (data == NULL) {
+void CEditData::dbgSetAnalyzeFlag(s32 map_no, s32 data_no, s32 flag) {
+    EditAnalyzeDataSrc *request = GetAnalyzeData(map_no, data_no);
+    if (request == NULL) {
         return;
     }
-    for (i = 0; i < 8; i++) {
-        s8 flag = (s8) data[8 + i];
-        if (flag < 0) {
+    for (s32 i = 0; i < EDIT_ANALYZE_CON_NO_MAX; i++) {
+        s8 condition_no = request->con_no[i];
+        if (condition_no < 0) {
             break;
         }
-        this->dbgSetContintionFlag(arg0, flag, arg2);
+        dbgSetContintionFlag(map_no, condition_no, flag);
     }
 }
-void CEditData::dbgSetAllContintionFlag(int a, int b) {
-    char *q;
-    int i = 0;
+void CEditData::dbgSetAllContintionFlag(int map_no, int flag) {
+    int condition_no = 0;
     do {
-        q = (char *)this + i;
-        q[0x5050] = b; q[0x5051] = b; q[0x5052] = b; q[0x5053] = b;
-        q[0x5054] = b; q[0x5055] = b; q[0x5056] = b; q[0x5057] = b;
-        i += 8;
-    } while (i < 64);
+        s8 *conditions = &analyze.condition[condition_no];
+        conditions[0] = flag;
+        conditions[1] = flag;
+        conditions[2] = flag;
+        conditions[3] = flag;
+        conditions[4] = flag;
+        conditions[5] = flag;
+        conditions[6] = flag;
+        conditions[7] = flag;
+        condition_no += 8;
+    } while (condition_no < EDIT_ANALYZE_CONDITION_MAX);
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", dbgGetContintionFlag__9CEditDataFiiPc);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", LoadEditAnalyzeData__FiP1);
@@ -91,13 +87,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", eaOFF_PARTS__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", eaPERCENT__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", eaEND_ANALYZE__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", eaEND_GEO_ANALYZE__FP9SPI_STACKi);
-s32 GetMaxPolyn(s32 arg0) {
-    s32 var_v0;
-
-    var_v0 = 0xFA0;
-    if (arg0 != 4) {
-        var_v0 = 0x1770;
-        switch (arg0) {                             /* irregular */
+s32 GetMaxPolyn(s32 map_no) {
+    s32 max_polygons = 0xFA0;
+    if (map_no != 4) {
+        max_polygons = 0x1770;
+        switch (map_no) {
         case 0:
             return 0xFA0;
         case 1:
@@ -105,22 +99,19 @@ s32 GetMaxPolyn(s32 arg0) {
         case 2:
             return 0x1770;
         case 3:
-            /* Duplicate return node #10. Try simplifying control flow for better match */
-            return var_v0;
+            return max_polygons;
         default:
             return 0;
         }
     } else {
-        return var_v0;
+        return max_polygons;
     }
 }
-s32 GetMaxDrawMem(s32 arg0) {
-    s32 var_v0;
-
-    var_v0 = 0xBB80;
-    if (arg0 != 4) {
-        var_v0 = 0xD2F0;
-        switch (arg0) {                             /* irregular */
+s32 GetMaxDrawMem(s32 map_no) {
+    s32 max_draw_memory = 0xBB80;
+    if (map_no != 4) {
+        max_draw_memory = 0xD2F0;
+        switch (map_no) {
         case 0:
             return 0xBB80;
         case 1:
@@ -128,13 +119,12 @@ s32 GetMaxDrawMem(s32 arg0) {
         case 2:
             return 0xD2F0;
         case 3:
-            /* Duplicate return node #10. Try simplifying control flow for better match */
-            return var_v0;
+            return max_draw_memory;
         default:
             return 0;
         }
     } else {
-        return var_v0;
+        return max_draw_memory;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", __ct__14EditAnalyzeSrcFv);

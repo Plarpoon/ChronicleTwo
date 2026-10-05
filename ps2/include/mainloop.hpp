@@ -1,6 +1,9 @@
 #pragma once
 
 #include "common.h"
+
+#include <cstring>
+
 #include "gamepad.hpp"
 #include "sound.hpp"
 
@@ -139,6 +142,11 @@ struct DEBUG_INFO {
     int georama_debug; /**< Non-zero to lift the georama placement conditions. */
     int param_off;     /**< Non-zero to hide the parameter display. */
     int invent_debug;  /**< 1 to show the invention debug display. */
+
+    /**
+     * Starts with every debug switch disabled.
+     */
+    DEBUG_INFO() { memset(this, 0, sizeof(DEBUG_INFO)); }
 };
 STATIC_ASSERT(sizeof(DEBUG_INFO) == 0x14);
 

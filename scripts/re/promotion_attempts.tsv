@@ -1620,3 +1620,6 @@ water	SetColor__11CWaterFrameFUcUcUcUc	checker
 water	Shake__11CWaterFrameFiif	checker
 water	CreatePacket__11CWaterFrameFv	checker
 water	Initialize__11CWaterFrameFv	checker
+gameutil	CreateCharaCPoly__FP6CCPolyiPfPfff	checker
+gameutil	LinerInterpolationI__Fiiii	checker
+gameutil	GetDisPosToRect__FP4RECTii	checker

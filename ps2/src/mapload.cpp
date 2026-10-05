@@ -499,9 +499,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", Initialize__17CList_9CMapParts_F
 #endif
 
 #ifdef NONMATCHING
-CObject::CObject() {
-    Initialize();
-}
+// Defined in map.hpp.
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapload", __ct__7CObjectFv);
 #endif

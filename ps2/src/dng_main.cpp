@@ -107,7 +107,6 @@ int  EventScriptSetup(SYSTEM_SCRIPT_INFO *script);
 int  ChangeSetUnit(int dir);
 void InitEyeCamera(CActionChara *chara);
 int  IsRunDeadEvent(CActionChara *chara);
-extern int debug_no[7];
 extern int debug_cursor;
 extern int debug_mons_no;
 extern int debug_mons_cur;
@@ -160,7 +159,6 @@ CLaserGunMan           LaserGun;
 CCharacter2            LaserGunModel;
 CPullItem              PullItem[72];
 static NowLoadingInfo  nowload;
-INCLUDE_BSS(at_941__2, 0x10);
 static CWaveTable      WaveTable;
 mgCFrame              *SparcModel[3];
 static CSwordLuminous  SwordLuminous;
@@ -170,12 +168,6 @@ CThunder         thunder[6];
 CTornado         tornado[6];
 CChillAfterHit   chillAfterHit[6];
 CFireAfterHit    fireAfterHit[6];
-INCLUDE_BSS(debug_event_stack_1106, 0x30);
-INCLUDE_BSS(stack_1823, 0x30);
-INCLUDE_BSS(at_1994, 0x10);
-INCLUDE_BSS(at_2001, 0x10);
-INCLUDE_BSS(chk_pos_2870, 0x10);
-static sceVu0FVECTOR   backup_pos;
 
 // Code (.text)
 CWeaponElement *GetWeaponEffect() {
@@ -2602,6 +2594,9 @@ void CheckStatusError() {
         MainChara->damage_req = ACTION_DAMAGE_REQ_DEAD;
     }
 }
+
+static sceVu0FVECTOR backup_pos;
+
 void InitEyeCamera(CActionChara *chara) {
     CBattleCharaInfo *info = GetBattleCharaInfo();
     sceVu0FVECTOR     rot;
@@ -2722,6 +2717,8 @@ static void EyeCamera(mgCCamera *camera, CCharacter2 *chara, int mode) {
     camera->SetPos(pos);
     camera->SetRef(ref);
 }
+int debug_no[7] = {100, 0, 1, 0, 0, 0, 0};
+
 void DebugMainDraw() {
     if (DngStatus.debug_window) {
         mgTexManager.ReloadTexture(0x6C, (sceVif1Packet *) NULL);
@@ -2809,45 +2806,14 @@ void DBGCMD_RunScript(int no) {
 }
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_2994__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", cam_table_3000__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", cam_table_dist_3001__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", debug_no__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3734__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3336__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3337__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3496__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3589__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3602__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3727__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3728__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3729__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3730__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3731__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3732__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3733__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3791__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3792__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3793__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3794__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3795__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3796__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3797__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3798__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3799__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3800__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3801__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3802__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3803__DATA);
 
 // Virtual tables (.vtables)
 
 // Small initialised data (.sdata)
 
 // Small uninitialised data (.sbss)
-INCLUDE_BSS(init_1107, 0x4);
 INCLUDE_BSS(init_1824, 0x4);
 INCLUDE_BSS(water_cnt_2619, 0x4);
 INCLUDE_BSS(init_2620, 0x4);

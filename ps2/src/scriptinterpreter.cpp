@@ -219,7 +219,6 @@ void CScriptInterpreter::SetScript(char *script, int script_size) {
     }
 }
 
-#ifdef NONMATCHING
 CScriptInterpreter::CScriptInterpreter() {
     buffer = NULL;
     size = 0;
@@ -228,14 +227,7 @@ CScriptInterpreter::CScriptInterpreter() {
     stack = NULL;
     tag = NULL;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", __ct__18CScriptInterpreterFv);
-#endif
-#ifdef NONMATCHING
-// Defined in scriptinterpreter.hpp.
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", __ct__9input_strFv);
-#endif
+
 #ifdef NONMATCHING
 int CScriptInterpreter::GetArgBin() {
     s8 types[SPI_TOKEN_SIZE];

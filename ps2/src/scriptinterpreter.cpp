@@ -5,6 +5,9 @@
 #include <cstdlib>
 #include <cstring>
 
+// The inline members of the header are called here, never expanded.
+#pragma dont_inline on
+
 static void PreProcess(input_str &in);
 #ifdef NONMATCHING
 static int SkipSpace(input_str &in);
@@ -12,13 +15,12 @@ static int CheckChar(char c);
 #endif
 
 // Code (.text)
-#ifdef NONMATCHING
 int input_str::GetLine(char *line, int line_size, char *terminator) {
     char crlf[] = "\r\n";
-    int length;
-    int count;
-    int found;
-    int c;
+    int  length;
+    int  count;
+    int  found;
+    int  c;
 
     if (terminator == NULL) {
         terminator = crlf;
@@ -42,14 +44,7 @@ int input_str::GetLine(char *line, int line_size, char *terminator) {
     line[count] = '\0';
     return found;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", GetLine__9input_strFPciPc);
-#endif
-#ifdef NONMATCHING
-// Defined in scriptinterpreter.hpp.
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", get__9input_strFPi);
-#endif
+
 int spiGetStackInt(SPI_STACK *stack) {
     switch (stack->type) {
     case SPI_STACK_TYPE_INT:
@@ -60,6 +55,7 @@ int spiGetStackInt(SPI_STACK *stack) {
         return 0;
     }
 }
+
 float spiGetStackFloat(SPI_STACK *stack) {
     switch (stack->type) {
     case SPI_STACK_TYPE_INT:
@@ -70,6 +66,7 @@ float spiGetStackFloat(SPI_STACK *stack) {
         return 0.0f;
     }
 }
+
 #ifdef NONMATCHING
 char *spiGetStackString(SPI_STACK *stack) {
     if (stack->type != SPI_STACK_TYPE_STRING) {
@@ -155,10 +152,12 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", SetStack__18CScriptInt
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", SetStringBuff__18CScriptInterpreterFPci);
 #endif
+
 void CScriptInterpreter::Run() {
     while (GetNextTAG(1) >= 0) {
     }
 }
+
 int CScriptInterpreter::hash(char *name) {
     u8 value = 0;
 
@@ -167,6 +166,7 @@ int CScriptInterpreter::hash(char *name) {
     }
     return value;
 }
+
 #ifdef NONMATCHING
 void CScriptInterpreter::SetTag(SPI_TAG_PARAM *tags) {
     SPI_TAG_PARAM *param;
@@ -215,6 +215,7 @@ void CScriptInterpreter::SetTag(SPI_TAG_PARAM *tags) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", SetTag__18CScriptInterpreterFP13SPI_TAG_PARAM);
 #endif
+
 void CScriptInterpreter::SetScript(char *script, int script_size) {
     buffer = script;
     size = script_size;
@@ -229,6 +230,7 @@ void CScriptInterpreter::SetScript(char *script, int script_size) {
         PreProcess(*this);
     }
 }
+
 #ifdef NONMATCHING
 CScriptInterpreter::CScriptInterpreter() {
     buffer = NULL;

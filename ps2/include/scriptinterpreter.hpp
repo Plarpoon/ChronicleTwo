@@ -76,7 +76,7 @@ public:
     int get(int *c) {
         *c = (u8)buffer[position];
         position++;
-        return position <= size;
+        return size >= position;
     }
 
     /**

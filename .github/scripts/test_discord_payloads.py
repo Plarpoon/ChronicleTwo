@@ -60,6 +60,7 @@ class CommitPayloadTests(unittest.TestCase):
         self.assertLessEqual(len(result["content"]), 2000)
         self.assertIn("… and", result["content"])
         self.assertIn("https://github.com/TheMoonPeople/ChronicleTwo/commit/", result["content"])
+        self.assertNotRegex(result["content"], r"(?<!<)https?://")
         self.assertNotIn("evil.example", result["content"])
         self.assertIn(r"\*change\*", result["content"])
         self.assertIn("Test Author", result["content"])
@@ -79,6 +80,8 @@ class CommitPayloadTests(unittest.TestCase):
         content = commits.payload(event)["content"]
         self.assertIn("<https://example.com/notes>", content)
         self.assertIn("<https://example.org/update>\\).", content)
+        self.assertRegex(content, r"<https://github.com/TheMoonPeople/ChronicleTwo/commit/a{40}>")
+        self.assertNotRegex(content, r"(?<!<)https?://")
 
 
 if __name__ == "__main__":

@@ -51,7 +51,7 @@ def commit_line(commit, repository):
     author = clipped(plain((commit.get("author") or {}).get("name", "")), 50)
     detail = f"{subject} — {author}" if author else subject
     if SAFE_REPOSITORY.fullmatch(repository) and SAFE_SHA.fullmatch(sha):
-        return f"• [`{sha[:7]}`](https://github.com/{repository}/commit/{sha}) {detail}"
+        return f"• `{sha[:7]}` <https://github.com/{repository}/commit/{sha}> {detail}"
     return f"• {detail}"
 
 

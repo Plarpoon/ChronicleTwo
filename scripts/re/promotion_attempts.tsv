@@ -599,3 +599,8 @@ editdebug	EditDebugMode__Fv	checker
 editdebug	EditDebugStart__FiP9mgCMemory	checker
 editdebug	InitLightingEdit__Fv	checker
 editdebug	IsLightingEditMode__Fv	checker
+editdebug	PrintCursor__FPci	checker
+editdebug	LoadGyorace__Fv	checker
+editdebug	tagGyoFish__FP9SPI_STACKi	checker
+editdebug	LightingEdit__FP6CScene	checker
+editdebug	EditDebugLoop__FP6CSceneP13EditDebugInfo	checker

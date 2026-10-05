@@ -66,7 +66,7 @@ public:
      * @address 0x1647D0
      * @size 0x34
      */
-    CCollision() { Initialize(); }
+    CCollision() { CCollision::Initialize(); }
 
     /**
      * Recomputes the bounds from the geometry; the empty box has none.

@@ -2,20 +2,7 @@
 #include "editmap2.hpp"
 
 // Code (.text)
-void PlaneNormalXZ(float *normal, float *first, float *second, float *third) {
-    asm {
-        lqc2 vf15, 0(first)
-        vsub.xyzw vf10, vf10, vf10
-        lqc2 vf16, 0(second)
-        vsub.xyzw vf11, vf11, vf11
-        lqc2 vf17, 0(third)
-        vsub.xz vf10, vf16, vf15
-        vsub.xz vf11, vf17, vf15
-        vopmula.xyz ACC, vf10, vf11
-        vopmsub.xyz vf12, vf11, vf10
-        sqc2 vf12, 0(normal)
-    }
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", PlaneNormalXZ__FPfPfPfPf);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", GetEditPartsAlt__8CEditMapFP14CEditPartsInfoPffPP10CEditPartsi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", CheckEditParts__8CEditMapFP14CEditPartsInfoPffP13EP_PLACE_INFOPP10CEditPartsi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", CheckEditPartsOnRiver__8CEditMapFP14CEditPartsInfoPff);

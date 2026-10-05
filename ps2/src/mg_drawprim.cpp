@@ -268,15 +268,7 @@ void mgCDrawPrim::Data4(float *data) {
     dst[3] = (int)(data[3] * 16.0f);
 }
 #else
-void mgCDrawPrim::Data4(float *src) {
-    float *dst = *(float **) ((u8 *) this + 0xDC);
-    *(float **) ((u8 *) this + 0xDC) = dst + 4;
-    asm {
-        lqc2 vf1, 0(src)
-        vftoi4.xyzw vf1, vf1
-        sqc2 vf1, 0(dst)
-    }
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", Data4__11mgCDrawPrimFPf);
 #endif
 
 #ifdef NONMATCHING
@@ -318,17 +310,7 @@ void mgCDrawPrim::Vertex(float *pos) {
     Vertex4((int)(pos[0] * 16.0f), (int)(pos[1] * 16.0f), (int)pos[2]);
 }
 #else
-void mgCDrawPrim::Vertex(float *src) {
-    s32 v[4];
-    s32 *dst = v;
-    asm {
-        lqc2 vf10, 0(src)
-        vftoi4.xy vf10, vf10
-        vftoi0.z vf10, vf10
-        sqc2 vf10, 0(dst)
-    }
-    this->Vertex4(v[0], v[1], v[2]);
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", Vertex__11mgCDrawPrimFPf);
 #endif
 
 #ifdef NONMATCHING
@@ -367,16 +349,7 @@ void mgCDrawPrim::Color(float *color) {
     Color((int)color[0], (int)color[1], (int)color[2], (int)color[3]);
 }
 #else
-void mgCDrawPrim::Color(float *src) {
-    s32 v[4];
-    s32 *dst = v;
-    asm {
-        lqc2 vf10, 0(src)
-        vftoi0.xyzw vf10, vf10
-        sqc2 vf10, 0(dst)
-    }
-    this->Color(v[0], v[1], v[2], v[3]);
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", Color__11mgCDrawPrimFPf);
 #endif
 
 void mgCDrawPrim::TextureCrd4(int u, int v) {

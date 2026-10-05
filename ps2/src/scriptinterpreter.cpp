@@ -67,16 +67,15 @@ float spiGetStackFloat(SPI_STACK *stack) {
     }
 }
 
-#ifdef NONMATCHING
 char *spiGetStackString(SPI_STACK *stack) {
-    if (stack->type != SPI_STACK_TYPE_STRING) {
+    switch (stack->type) {
+    case SPI_STACK_TYPE_STRING:
+        return stack->value.string;
+    default:
         return NULL;
     }
-    return stack->value.string;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", spiGetStackString__FP9SPI_STACK);
-#endif
+
 #ifdef NONMATCHING
 void spiGetStackVector(float *vector, SPI_STACK *stack) {
     vector[0] = spiGetStackFloat(&stack[0]);

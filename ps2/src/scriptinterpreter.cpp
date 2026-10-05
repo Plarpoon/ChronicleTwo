@@ -230,14 +230,13 @@ CScriptInterpreter::CScriptInterpreter() {
     tag = NULL;
 }
 
-#ifdef NONMATCHING
 int CScriptInterpreter::GetArgBin() {
-    s8 types[SPI_TOKEN_SIZE];
+    s8        types[SPI_TOKEN_SIZE];
     SPI_STACK argument;
-    int count;
-    int i;
-    int padding;
-    int length;
+    int       count;
+    int       i;
+    int       padding;
+    int       length;
 
     count = *(s16 *)&buffer[position];
     position += 2;
@@ -246,15 +245,15 @@ int CScriptInterpreter::GetArgBin() {
     }
 
     for (i = 0; i < count; i++) {
-        switch (buffer[position++]) {
-        case SPI_BINARY_ARG_TYPE_STRING:
-            types[i] = SPI_STACK_TYPE_STRING;
+        switch ((u8)buffer[position++]) {
+        case SPI_BINARY_ARG_TYPE_INT:
+            types[i] = SPI_STACK_TYPE_INT;
             break;
         case SPI_BINARY_ARG_TYPE_FLOAT:
             types[i] = SPI_STACK_TYPE_FLOAT;
             break;
-        case SPI_BINARY_ARG_TYPE_INT:
-            types[i] = SPI_STACK_TYPE_INT;
+        case SPI_BINARY_ARG_TYPE_STRING:
+            types[i] = SPI_STACK_TYPE_STRING;
             break;
         }
     }
@@ -268,6 +267,14 @@ int CScriptInterpreter::GetArgBin() {
     for (i = 0; i < count; i++) {
         argument.type = types[i];
         switch (argument.type) {
+        case SPI_STACK_TYPE_INT:
+            argument.value.integer = *(int *)&buffer[position];
+            position += 4;
+            break;
+        case SPI_STACK_TYPE_FLOAT:
+            argument.value.real = *(float *)&buffer[position];
+            position += 4;
+            break;
         case SPI_STACK_TYPE_STRING:
             argument.value.string = &buffer[position];
             length = strlen(argument.value.string) + 1;
@@ -277,22 +284,12 @@ int CScriptInterpreter::GetArgBin() {
             }
             position += length;
             break;
-        case SPI_STACK_TYPE_FLOAT:
-            argument.value.real = *(float *)&buffer[position];
-            position += 4;
-            break;
-        case SPI_STACK_TYPE_INT:
-            argument.value.integer = *(int *)&buffer[position];
-            position += 4;
-            break;
         }
         PushStack(argument);
     }
     return count;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", GetArgBin__18CScriptInterpreterFv);
-#endif
+
 #ifdef NONMATCHING
 int CScriptInterpreter::GetArg() {
     char text[SPI_TOKEN_SIZE];

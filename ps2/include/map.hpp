@@ -203,7 +203,7 @@ public:
      * @address 0x1631B0
      * @size 0x50
      */
-    CObject();
+    CObject() { Initialize(); }
 
     /**
      *

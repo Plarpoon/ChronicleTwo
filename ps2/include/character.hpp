@@ -251,6 +251,14 @@ public:
     s32                   poly_num[2];                                  /**< Polygon counts that the info file gives. */
     float                 body_width;                                   /**< Width of the body. */
     float                 body_height;                                  /**< Height of the body, used for framing and scaling. */
+
+    float GetBodyWidth() {
+        return body_width;
+    }
+
+    float GetBodyHeight() {
+        return body_height;
+    }
     float                 body_depth;                                   /**< Depth of the body. */
     s32                   load_size;                                    /**< Bytes of the model memory that loading the character took. */
     s32                   copy_size;                                    /**< Bytes that a copy of the character takes; zero or below to take load_size. */

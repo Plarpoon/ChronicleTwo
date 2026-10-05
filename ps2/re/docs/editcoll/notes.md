@@ -1,9 +1,13 @@
 # editcoll: reverse-engineering notes
 
 ## Draft status
-`ClipBoxXZ`, `AreaXZ`, `ApplyMatrix`, and `DeleteVerticalPoly` have typed C++
-drafts that compile with MWCC. Their first isolated promotion attempts differed
-from retail, so the matching build continues to use their `INCLUDE_ASM` branches.
+All ten functions have named, typed C++ drafts that compile with MWCC. Each had
+one isolated promotion attempt; every candidate differed from retail and remains
+behind `NONMATCHING`, with `INCLUDE_ASM` selected by the matching build. Of the
+six later drafts, `Copy` retained the retail section layout but differed by 0x114
+bytes in `.text`. The other five changed the linked layout, so their whole-image
+checks reported widespread differences; the per-function draft comparison also
+reports differences for each of them.
 
 Header: `ps2/include/editcoll.hpp`. No first-game counterpart (`CEditCollision` does not exist in
 `/home/adubbz/development/chronicle`); the base classes `CCollision`/`CCollisionMDT`/`CCPoly` are in

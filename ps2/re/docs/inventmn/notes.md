@@ -1,0 +1,155 @@
+# inventmn: reverse-engineering notes
+
+Invention menu ("Invent"): camera photos, ideas ("neta", id < 1000) and scoops (id >= 1000),
+the memory-card album, invention recipes and the menu page class. No first-game counterpart
+(Dark Cloud 1 has no camera/invention system).
+
+## Header dependencies
+`inventmn.hpp` includes, for by-value types:
+- `menusys.hpp`   -> `CBaseMenuClass` (base of `CMenuInvent`; size 0x110, vptr at 0x10C,
+  `__vt__14CBaseMenuClass` has the same six slots).
+- `userdata.hpp`  -> `CGameDataUsed` (member at 0x168; size 0x6C from `MenuUserParam` stride 0x6C
+  in `SearchNowPosItemExist` and the 0x1D4 next field).
+- `memcard.hpp`   -> `MC_ICON_DATA` (array of 3 at 0x1D4; 0x28 each, `SetIconData` memcpys 3x0x28).
+- `menudraw.hpp`  -> `MENUFORM_MAKEBRD_INFO` (0x2C, `Init_MENUFORM_MAKEBRD_INFO` memsets 0x2C).
+`CInventUserData`, `CScoopDataManager`, `USER_PICTURE_INFO`, `INVENT_CREATED_ITEM` and `SCOOP_INFO` are
+declared in `userdata.hpp` (functions still here): CUserDataManager holds CInventUserData by value and
+this header needs userdata/menusys/memcard, so keeping them here made an include cycle. All includes are
+now at the top. Header order (acyclic, each includes only what it needs by value): gamedata < userdata < menusys < savedata < memcard < inventmn.
+`CInventUserData() { Initialize(); }` is the inline constructor CUserDataManager's constructor runs.
+
+## Globals
+Every data symbol of the unit is LOCAL in retail (`local_symbols.tsv`), so the header has no
+`extern`s; declare them `static` in the `.cpp`. What they are:
+- `InventUserDataPtr` CInventUserData*, `InventAlbumPtr` CDC2AlbumData*, `InventManagePt`
+  CInventDataManage* (points at `InventManageMan`, a CInventDataManage, 8 bytes),
+  `MCManagerPtr` CMemoryCardManager*, `CMenuInventPt` CMenuInvent*.
+- `pict_seiton_case` s8: sort key PictureSeiton uses next (0 neta_id, 1 map_no, 2 npc_no,
+  3 monster_no), cycles 0..3.
+- `scoop_table` SCOOP_DATA[53] (.data 0x424). `menu_scoop_str_tag` SPI_TAG_PARAM[2] ("STR"),
+  `pic_tag` SPI_TAG_PARAM[3] (PIC_INFO, PIC_NAME), `invent_teigi_func` SPI_TAG_PARAM[3]
+  (DATATABLESET, DATASET); each list ends with a null entry.
+- `scoop_str_stack`, `PicNameStack` mgCMemory*; `pic_name_info_top` PIC_NAME_INFO*,
+  `pic_name_info_num`, `pic_name_info_num_count` short (size 2). Entries with neta_id 30000
+  are dropped from the count.
+- `inventSpiDataTblTop` INVENT_DATA_INFO* (write cursor during DATASET), `invent_num_counter`
+  short. `InventTeigiStack` mgCMemory (recipe memory). `MenuInventStack`,
+  `MenuInventCharaStack`, `MenuInventMCStack` mgCMemory (initialised by `__sinit`).
+- `NetaMemoStr` 0x800, `NetaMemoID` short[0x200], `NetaMemoStrNum` short: idea-notebook lines.
+- `InventInNetaEffect` CStarDust* (array from `__construct_new_array(.., 0xC, n)`),
+  `InventInNetaEffectFlag`/`Num` s8, `InventInNetaEffectNum4` short.
+- `Tex_Hatsumei` mgCTexture* (invention memo texture), `InventSubDataReadBGInfo`,
+  `rec_board_offset_xtbl` int[10], `invent_color_tbl` u8 RGBA rows used by Gradation*,
+  `invent_grade_fff` (.sdata 8 bytes), `debug_invent_*` debug state,
+  `menu_invent_command_info_*` command-window state.
+- Strings (Shift-JIS) are useful: forms "inv_bg","itembrd","ネタ板","makebrd","カードリスト",
+  "cardlist","Album_sw","Album_Big","neta0..2","neta0name..2","recbrd","poly_chr0/1",
+  "invent_okeff","DLOAD","kakudai_pic"/"pic"; scripts "MSG考察モード","NextToThink",
+  "MSG発明製作モード","NextToCardList","NextToAlbumView","NextToPhotoView","picmodeonly",
+  "ALBUM_OFF","FORMSWAP0/1","INIT_END"; files "inv_bg.img","edmenu.img","invent.cfg",
+  "inv_com.cfg","inv6.lst","menu/inv6.lst","neta2.lst"; "neta%d" texture names.
+
+## Local (static) functions
+_SCOOP_STR, _PIC_INFO, _PIC_NAME, CheckPhotoFlag, _INVENT_DATATABLESET, _INVENT_DATASET,
+neta_sort, MakeMsgNetaName, PictureMemoOne, MenuInventDebugKey, MenuInventDebugDraw,
+MenuInventPushKey. Not in the header. Signatures: SPI tags `int f(SPI_STACK *, int)`;
+`int CheckPhotoFlag()`; `int neta_sort(int,int,int,int*)`;
+`void MakeMsgNetaName(CDC2Mes*, CMenuPosDataForm*, USER_PICTURE_INFO*, int*, int)`;
+`void PictureMemoOne(float,float,int)`; `int MenuInventDebugKey()`; `void MenuInventDebugDraw()`;
+`int MenuInventPushKey(int,int)`.
+
+## USER_PICTURE_INFO (0x18; stride in every photo array)
+0 u8 used; 1 u8 is_new (PhotoCheckEnd clears; DrawTakePhoto sets 0/1 both to 1);
+2 map_no (SearchMapNo in DngMainDraw; GetMapTitle); 4 npc_no (GetNPCName; 0x104 special);
+6 monster_no (GetMonsterName); 8 s16 never read meaningfully (init/copy -1);
+A neta_id (<=0 none, <1000 idea, >=1000 scoop); C..13 never touched except by memcpy;
+14 pixel pointer (copied to mgCTexture::image[0], a u_long128*; PictureSeiton takes the base
+as char*, so typed char*; cast when assigning). Init sets 0,0,-1,-1,-1(8),-1(6),0.
+
+The compiled `Init_USER_PICTURE_INFO` stores these seven fields separately and leaves the
+pixel pointer and unused bytes alone. `CDC2AlbumData::DeletePhotoData` accepts slots 0..49
+and clears their metadata through this initializer. `CInventUserData::AddShutterNum`
+clamps the running shutter count to 0..99999. `CScoopDataManager::SetViewFlag` changes
+the first byte (`known`) only when `GetScoopInfo` finds the requested scoop.
+
+## CInventUserData (save data + 0x251D0; CUserDataManager + 0x7F30)
+0 shutter_num (AddShutterNum clamps 0..99999); 4 level (= CalcPhotoExp/100; GetLevel +1);
+8 short neta_id[0x200]; 0x408 USER_PICTURE_INFO photo[30]; 0x6D8 INVENT_CREATED_ITEM[0x100]
+(Initialize zeroes both shorts; only item_id is read); 0xAD8 CScoopDataManager
+(`ScoopMan` = savedata + 0x25CA8, CShopMenu passes userdata + 0x8A08); 0xCD8..0xD60 unseen;
+0xD60 photo_work[30][0x2000] (Initialize memsets 0x3C000).
+0x3CD60..0x3CE60 unseen (unk_3cd60). Size 0x3CE60 is inferred from the containing
+CUserDataManager: its next field (party_member) is at 0x44D90 = 0x7F30 + 0x3CE60 and nothing
+there touches the 0x100 bytes in between; no inventmn code reaches past 0x3CD60.
+CScoopDataManager: SCOOP_INFO[0x80] (index <= 0x7F, total loop 0x80); size not asserted
+(the 0x88 bytes after it may belong to it).
+TranslateInventUserData: source (older save, buffer + 0x25250) has 12-byte created-item
+records; copies the first two shorts of each of 128 into 4-byte records of the destination.
+Called from CMemoryCardManager::LoadFromMc when the version string matches an older one.
+Photographed-ideas list lives in CUserDataManager + 0x44DD0 (short[0x200]), not here.
+
+## CDC2AlbumData (0x64CB0: Initialize memset, GetSaveDataSize)
+0 char photo_work[50][0x2000]; 0x64000 USER_PICTURE_INFO[50]; 0x644B0..0x64CB0 unseen.
+
+## SCOOP_DATA (0x14; table 53 rows)
+0 scoop_id, 2 flag_no (CheckBitFlagMenu), 4 s8 info_no (CScoopDataManager index), 8 char* text
+(set by STR tag), C and 10 zeroed by InitScoopString, never read here.
+
+## CInventDataManage (8; InventManageMan size 8)
+0 short num; 4 INVENT_DATA_INFO* table. Constructed by hand on the stack in CheckInventItem
+and CheckItemTable (no constructor).
+INVENT_DATA_INFO (0x24, stride in GetInventDataInfoByItemID): 0 item_id (-1 unset), 2 neta[3],
+8 INVENT_MATERIAL*, C material_num ((argc-9)/2), 10 short read from DATASET, 14/18/1C model
+position (passed to the created model's vfunc 0x14), 20 scale (CMenuInvent 0x5E8).
+DATASET float order: arg -> 0x20, then 0x14, 0x18, 0x1C.
+INVENT_MATERIAL (4): short item_id, u8 num.
+HowMuchZairyouMakeItem result: int count, then {int item, int need}[4].
+CheckInventEnable returns item_id or -1 (short), sets *near_match when >= 2 ideas match.
+Struct names INVENT_DATA_INFO, INVENT_MATERIAL, INVENT_CREATED_ITEM, SCOOP_DATA, SCOOP_INFO,
+PIC_NAME_INFO are not retail (no symbol); chosen from the accessor names.
+
+## CMenuInvent (0xF30, operator new 0xF30 in MenuInventInit; base CBaseMenuClass)
+Constructor is inline (MenuInventInit): CBaseMenuClass ctor, vptr = __vt__11CMenuInvent at
+0x10C, CGameDataUsed ctor at 0x168, mgCMemory::Init at 0x398/0x53C/0xD48, field inits.
+Vtable order (= base): IsCreateObject(int,int), IsMakeObject(int,int), IsAskExtend(int,int),
+ItemCmdAfter(int, ITEMCMD_RET_PARA*), InitEnd(), ExitEnd(). The int virtuals return int.
+Mode is the base's short at 0x14 (INVENT_MENU_MODE). 0, 2, 5, 6 named from the scripts run in
+PrepareNextMode; 3 from SearchNowPosItemExist (MenuUserParam items) / NextDifferentMode;
+4 and 8 also occur (NextDifferentMode) but their page is not established.
+Offsets:
+- 0x110 photo_only (=1 when MenuCommonInfo+0x50 == 10; runs "picmodeonly"), 0x112 short.
+- 0x114/118 card cursor/top, 0x11C/120 item, 0x124/128 photo, 0x12C/130 album, 0x134/138 notebook
+  (ExitEnd stores all ten and 0x392 into CMenuSystemData 0x20..0x3E).
+- 0x13C MENUFORM_MAKEBRD_INFO (CalcMakeBrd, CalcCommonBrdDrawInfo).
+- 0x1D4 MC_ICON_DATA[3] (names strcpy'd from at_5011..5013; GetPackFile fills data/size).
+- 0x258 album_enable (GetNumSameItem(0x165) > 0; "ALBUM_OFF" otherwise).
+- 0x25C/0x260 photo board scroll / scroll bar (CalcTex), 0x264 float[30][2] slot positions
+  (x = (i&1)*0x58+8, y = (i/2)*0x36+0x68), 0x358 notebook scroll.
+- 0x370 float[4] zero vector, 0x380.. 128.0 x3, 0x394 u_int* sound data for MenuSePlay.
+- 0x398 mgCMemory (MenuDataAnalyze), 0x3C8 mgCTexture*[30], 0x440 mgCTexture*[50] (AttachPictTex),
+  0x508 s8[50] album flags (-1 empty).
+- 0x53C mgCMemory chara memory (0x558/0x560 written as mgCMemory fields in LoadCharaCheck).
+- 0x574 CActionChara* model of built item, 0x57C = &recipe->material, 0x580 build stage,
+  0x582 built item id, 0x5E4..0x5F0 floats of the bob animation (0x5E8 scale).
+- 0x60C neta_select_num, 0x610 int[3] index, 0x61C s8[3] type (0 photo, 1 notebook), 0x61F s8[3],
+  0x622 s8[3]; 0x628 = 40.0.
+- 0x630 MENU_BGREAD_INFO-like pointer (GetReadBGInfo), 0x634 load stage (0,1,2,-1),
+  0x638 CActionChara* (built in LoadCharaCheck), 0x63C CActionChara*, 0x648 = -0.628.
+- 0x650..0x68C floats set in MenuInventInit; 0x670/0x680 two float[4].
+- 0x690 int[50][2]: `menu_randam_line_draw_postbl` points here (GenarateRandamLine writes 50
+  points). 0x820..0xD48 no access found.
+- 0xD48 mgCMemory (IsCreateObject), 0xD78/0xD7C ints (album memory-card progress).
+- 0xEAC gradation mode, 0xEB0 int, 0xEB4..0xEB6 flags.
+- 0xEB8..0xF28 forms/parts from AttachFormInfo (see header); 0xEFC, 0xF0C, 0xF2C not touched.
+  Part pointers (GetPartInfo results) typed void* pending menudraw's part type.
+
+## CStarDust
+Owned by menudraw; its inline constructor (`this[10] = 0`) is emitted in inventmn at 0x2082C0
+for `__construct_new_array` in PhotoNetaEnter. Size 0xC.
+
+## Unresolved
+- Meaning of most unk_ fields of CMenuInvent; mode values 4 and 8.
+- Exact sizes of CInventUserData and CScoopDataManager.
+- MenuInventInit third parameter unused in what Ghidra shows.
+- LevelCheck / CheckMakeItem / LoadAnalyzeInventFile / GetPhotoNameStr look bool-returning in
+  Ghidra; declared int.

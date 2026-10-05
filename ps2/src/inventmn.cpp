@@ -4,15 +4,15 @@
 
 // Code (.text)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", GetInventUserDataPtr__Fv);
-void Init_USER_PICTURE_INFO(USER_PICTURE_INFO *arg0) {
-    if (arg0 != NULL) {
-        (*(s8 *)((u8 *)arg0 + 0x0)) = 0;
-        (*(s8 *)((u8 *)arg0 + 0x1)) = 0;
-        (*(s16 *)((u8 *)arg0 + 0x2)) = -1;
-        (*(s16 *)((u8 *)arg0 + 0x4)) = -1;
-        (*(s16 *)((u8 *)arg0 + 0x8)) = -1;
-        (*(s16 *)((u8 *)arg0 + 0x6)) = -1;
-        (*(s16 *)((u8 *)arg0 + 0xa)) = 0;
+void Init_USER_PICTURE_INFO(USER_PICTURE_INFO *photo) {
+    if (photo != NULL) {
+        photo->used = 0;
+        photo->is_new = 0;
+        photo->map_no = -1;
+        photo->npc_no = -1;
+        photo->unk_8 = -1;
+        photo->monster_no = -1;
+        photo->neta_id = 0;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", Copy_USER_PICTURE_INFO__FP17USER_PICTURE_INFOP17USER_PICTURE_INFO);
@@ -25,9 +25,9 @@ void CDC2AlbumData::Initialize(void) {
     this->RelateAlbumPicData();
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", RelateAlbumPicData__13CDC2AlbumDataFv);
-void CDC2AlbumData::DeletePhotoData(s32 i) {
-    if (i < 0 || i >= 0x32) return;
-    Init_USER_PICTURE_INFO((USER_PICTURE_INFO *)this->GetAlbumPhotoInfo(i));
+void CDC2AlbumData::DeletePhotoData(int index) {
+    if (index < 0 || index >= 50) return;
+    Init_USER_PICTURE_INFO(this->GetAlbumPhotoInfo(index));
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", GetAlbumPhotoInfo__13CDC2AlbumDataFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", Initialize__15CInventUserDataFv);
@@ -43,15 +43,15 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", SetNetaFlag__15CInventUserDataF
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", CheckNetaFlagHavePhoto__15CInventUserDataFi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", CountNeta__15CInventUserDataFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", CountScoop__15CInventUserDataFv);
-s32 CInventUserData::AddShutterNum(s32 arg0) {
-    (*(s32 *)((u8 *)this + 0x0)) += arg0;
-    if ((*(s32 *)((u8 *)this + 0x0)) > 0x1869F) {
-        (*(s32 *)((u8 *)this + 0x0)) = 0x1869F;
+s32 CInventUserData::AddShutterNum(int add) {
+    shutter_num += add;
+    if (shutter_num > 99999) {
+        shutter_num = 99999;
     }
-    if ((*(s32 *)((u8 *)this + 0x0)) < 0) {
-        (*(s32 *)((u8 *)this + 0x0)) = 0;
+    if (shutter_num < 0) {
+        shutter_num = 0;
     }
-    return (*(s32 *)((u8 *)this + 0x0));
+    return shutter_num;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", GetNowHavePictureNum__15CInventUserDataFv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", GetPictureNum__15CInventUserDataFPi);
@@ -69,12 +69,10 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", InitScoopString__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", _SCOOP_STR__FP9SPI_STACKi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", AnalyzeScoopString__FP9mgCMemoryPci);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", GetScoopInfo__17CScoopDataManagerFi);
-void CScoopDataManager::SetViewFlag(s32 arg0, s32 arg1) {
-    s8 *temp_v0;
-
-    temp_v0 = (s8 *) (this->GetScoopInfo(arg0));
-    if (temp_v0 != NULL) {
-        *temp_v0 = (s8) arg1;
+void CScoopDataManager::SetViewFlag(int scoop_id, int flag) {
+    SCOOP_INFO *scoop = GetScoopInfo(scoop_id);
+    if (scoop != NULL) {
+        scoop->known = flag;
     }
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", KnowScoop__17CScoopDataManagerFv);

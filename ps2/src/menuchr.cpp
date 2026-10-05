@@ -2,11 +2,11 @@
 #include "menuchr.hpp"
 
 // Code (.text)
-void InitMenuBGReadInfo2(MENU_BGREAD_INFO2 * arg0) {
-    (*(s8 *)((u8 *)arg0 + 0x70)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x74)) = 0;
-    (*(s8 *)((u8 *)arg0 + 0x0)) = 0;
-    (*(s8 *)((u8 *)arg0 + 0x20)) = 0;
+void InitMenuBGReadInfo2(MENU_BGREAD_INFO2 *info) {
+    info->reading = 0;
+    info->chara = NULL;
+    info->name[0] = 0;
+    info->path[0] = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", MenuLoadFileCheck__FPP17MENU_BGREAD_INFO2);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", MenuBGReadInfo2Malloc__FP9mgCMemoryPi);
@@ -77,25 +77,13 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", DrawMainCharaBG__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", MenuNPCModelLoad__FP9mgCMemoryii);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", MenuNPCLoadCheck__FP12CActionCharaP9mgCMemoryi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", UpdateCostumeList__15CMenuCostumeSelFiUl);
-s32 CosutmeSelDefaultSet(s32 arg0, s16 *arg1) {
-    s32 var_a2;
-    s32 var_v0;
-
-    var_v0 = 0;
-    var_a2 = 0;
-loop_1:
-    if (arg0 == *(arg1 + var_a2)) {
-        return var_v0;
+s32 CosutmeSelDefaultSet(s32 costume_id, s16 *costume_list) {
+    for (int index = 0; index < 5; index++) {
+        if (costume_id == costume_list[index]) {
+            return index;
+        }
     }
-    /* m2c compte les pas de pointeur en octets ; MWCC les met a
-    * l'echelle du type pointe. Le pas est donc ecrit en elements,
-    * et le commerce rend la meme constante. */
-    var_v0 += 1;
-    var_a2 += 1;
-    if (var_v0 >= 5) {
-        return 0;
-    }
-    goto loop_1;
+    return 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", LoadMenuData__15CMenuCostumeSelFP9mgCMemoryPi);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", KeyStep__15CMenuCostumeSelFv);
@@ -105,18 +93,18 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", MenuCostumeKey__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", MenuCostumeDraw__Fv);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", GetMonsterBaseInfoForMonsterMemoIndex__Fi);
 void CMosBookMenu::InitMonsterInfo(void) {
-    (*(s8 *)((u8 *)this + 0x7ec)) = 0;
-    (*(s8 *)((u8 *)this + 0x82c)) = 0;
-    (*(s8 *)((u8 *)this + 0x86c)) = 0;
-    (*(s32 *)((u8 *)this + 0x904)) = 0;
-    (*(s32 *)((u8 *)this + 0x908)) = 0;
-    (*(s32 *)((u8 *)this + 0x90c)) = 0;
-    (*(s32 *)((u8 *)this + 0x910)) = 0;
-    (*(s32 *)((u8 *)this + 0x914)) = 0;
-    (*(s8 *)((u8 *)this + 0x918)) = 0;
-    (*(s8 *)((u8 *)this + 0x939)) = 0;
-    (*(s8 *)((u8 *)this + 0x95a)) = 0;
-    (*(s8 *)((u8 *)this + 0x8ac)) = 0;
+    area_name[0] = 0;
+    name[0] = 0;
+    type_name[0] = 0;
+    hp = 0;
+    abs = 0;
+    kill_num = 0;
+    strong_bit = 0;
+    weak_bit = 0;
+    drop_item[0][0] = 0;
+    drop_item[1][0] = 0;
+    drop_item[2][0] = 0;
+    weak_name[0] = 0;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", SetMonsterInfo__12CMosBookMenuFP16BASE_MONSTER_TBL);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", InitEnd__12CMosBookMenuFv);

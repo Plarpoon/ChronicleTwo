@@ -1772,7 +1772,6 @@ int RunMainEvent() {
     }
     return DngStatus.mode;
 }
-#ifdef NONMATCHING
 int DngMainKey() {
     DngMainScene->GetCamera(DngMainScene->active_camera);
     if (DebugPause && !DebugFlag) {
@@ -1813,11 +1812,12 @@ int DngMainKey() {
             }
         }
         if (GamePad.Down2(0x10)) {
-            sceVu0FVECTOR pos;
             float         size = 20.0f;
+            sceVu0FVECTOR pos;
 
             MainChara->GetPosition(pos);
             tornado[0].SetPos(pos, size, fRand(255.0f));
+            size = 1.0f;
         }
         if (GamePad.On2(2)) {
             BattleAreaScene->SetStatusBar(1, 0.02f);
@@ -1868,11 +1868,14 @@ int DngMainKey() {
     MainChara->GetPosition(mark);
     mark[1] += 1.3f * MainChara->GetBodyHeight();
     RedMarkModel->SetPosition(mark);
-    int *run = &DngMainScene->event_run;
+    SYSTEM_SCRIPT_INFO *script;
 
-    if (*run) {
-        *run = 0;
-        BattleAreaScene->script.event_no = DngMainScene->event_no;
+    if (DngMainScene->event_run) {
+        int no;
+
+        DngMainScene->event_run = 0;
+        script = &BattleAreaScene->script;
+        script->event_no = no = DngMainScene->event_no;
     }
     CSphida *sphida = GetSphidaPtr();
 
@@ -1889,8 +1892,9 @@ int DngMainKey() {
             return 0;
         }
     }
-    int                 unit = -1;
-    SYSTEM_SCRIPT_INFO *script = &BattleAreaScene->script;
+    int unit = -1;
+
+    script = &BattleAreaScene->script;
 
     if (script->event_no != -1) {
         StartupEpisodeTitle.Switch(0);
@@ -2028,7 +2032,7 @@ int DngMainKey() {
         int          n;
 
         for (n = 0;; n++) {
-            if (cam_table[n] == DngUserData->active_chr_no) {
+            if (cam_table[n] == DngUserData->GetActiveChrNo()) {
                 camera->GetActiveParam()->min_dist = cam_table_dist[n][0];
                 camera->GetActiveParam()->max_dist = cam_table_dist[n][1];
                 break;
@@ -2078,7 +2082,10 @@ int DngMainKey() {
                         MainCamera.Rotate(-(0.1308997f * rate));
                     }
                     if (screen[0] < 32) {
-                        MainCamera.Rotate(-(0.1308997f * (((float) screen[0] - 32.0f) / 128.0f)));
+                        float rate = (float) screen[0] - 32.0f;
+
+                        rate /= 128.0f;
+                        MainCamera.Rotate(-(0.1308997f * rate));
                     }
                 } else {
                     sceVu0FVECTOR diff;
@@ -2324,9 +2331,6 @@ int DngMainKey() {
     }
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", DngMainKey__Fv);
-#endif
 void IsEventRun() {
     sceVu0FVECTOR     pos;
     CSceneEventData   data;

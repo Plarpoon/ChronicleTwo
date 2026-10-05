@@ -65,7 +65,7 @@ class CommitPayloadTests(unittest.TestCase):
         self.assertNotRegex(result["content"], r"(?<!<)https?://")
         self.assertNotIn("evil.example", result["content"])
         self.assertIn(r"\*change\*", result["content"])
-        self.assertNotIn("Test Author", result["content"])
+        self.assertIn(" — Test Author", result["content"])
         self.assertEqual(result["allowed_mentions"], {"parse": []})
 
     def test_empty_event_and_invalid_sha(self):

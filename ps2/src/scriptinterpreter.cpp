@@ -555,11 +555,3 @@ static void PreProcess(input_str &in) {
         }
     }
 }
-
-// Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scriptinterpreter", at_215__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scriptinterpreter", at_382__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scriptinterpreter", at_524__DATA);
-
-// Small initialised data (.sdata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scriptinterpreter", at_165__DATA);

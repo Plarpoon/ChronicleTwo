@@ -2784,7 +2784,7 @@ public:
      * @address 0x1A1030
      * @size 0x28
      */
-    s16 GetMagicSwordCounterNow();
+    int GetMagicSwordCounterNow();
 
     /**
      * Gives how many magic sword charges Monica's weapon can hold.
@@ -2919,7 +2919,7 @@ public:
      * @address 0x1A18E0
      * @size 0x44
      */
-    u16 GetAttr();
+    int GetAttr();
 
     /**
      * Makes the shown health jump to the real health.
@@ -2937,7 +2937,7 @@ public:
      * @address 0x1A1CB0
      * @size 0x38C
      */
-    u16 StatusParamStep(int *damage);
+    int StatusParamStep(int *damage);
 
     /**
      * Steps the energy drain and the shown health.

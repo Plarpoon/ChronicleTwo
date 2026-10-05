@@ -529,6 +529,16 @@ public:
     CColFrame *col_frame;   /**< Collision model of a box ("tbox_a.mds"). */
     s32 near_box;           /**< Box that the player last stood at, or -1 for none. */
 
+    void Initialize() {
+        for (int i = 0; i < 24; i++) {
+            box[i].Initialize();
+        }
+        unk_A90 = 0;
+        model = NULL;
+        col_frame = NULL;
+        near_box = -1;
+    }
+
     /**
      * Gives every box the box model and its lid.
      *

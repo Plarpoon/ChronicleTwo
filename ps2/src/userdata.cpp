@@ -372,7 +372,7 @@ s16 CBattleCharaInfo::GetMagicSwordElem(void) {
     return element;
 }
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", GetMagicSwordPow__16CBattleCharaInfoFv);
-s16 CBattleCharaInfo::GetMagicSwordCounterNow(void) {
+int CBattleCharaInfo::GetMagicSwordCounterNow(void) {
     if (chr_no != USER_CHARA_MONICA) {
         return 0;
     }

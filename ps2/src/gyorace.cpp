@@ -114,7 +114,7 @@ INCLUDE_BSS(old_fish_rank, 0x20);
 INCLUDE_BSS(game_data, 0x20);
 INCLUDE_BSS(old_ambient, 0x10);
 INCLUDE_BSS(BuffTextureData, 0x30);
-INCLUDE_BSS(BuffWorkData, 0x30);
+static INCLUDE_BSS(BuffWorkData, 0x30);
 INCLUDE_BSS(camera0, 0x70);
 INCLUDE_BSS(fish_inf, 0x110);
 INCLUDE_BSS(at_1765__2, 0x10);

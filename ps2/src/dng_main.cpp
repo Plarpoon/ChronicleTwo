@@ -799,7 +799,6 @@ void EntryEventScript(int no) {
 }
 void FinishDungeonMain(void) {
 }
-#ifdef NONMATCHING
 int LoopDungeonMain() {
     int key;
     int mode;
@@ -953,10 +952,6 @@ int LoopDungeonMain() {
     }
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", LoopDungeonMain__Fv);
-#endif
-#ifdef NONMATCHING
 void DngMainDraw() {
     mgCTextureManager *tex_man = &mgTexManager;
     SV_CONFIG_OPTION  *config;
@@ -1476,10 +1471,6 @@ void DngMainDraw() {
     dngDebugDraw();
     DrawDebugWindow();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", DngMainDraw__Fv);
-#endif
-#ifdef NONMATCHING
 void DngStep() {
     SV_CONFIG_OPTION *config = &DngSaveData->config;
     DNG_BATTLE_AREA  *area;
@@ -1771,9 +1762,6 @@ void DngStep() {
         DngMainScene->TimeStep(1.0f);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", DngStep__Fv);
-#endif
 int RunMainEvent() {
     switch (EventLoop()) {
     case EVENT_REQUEST_END:
@@ -2739,7 +2727,6 @@ static void EyeCamera(mgCCamera *camera, CCharacter2 *chara, int mode) {
     camera->SetPos(pos);
     camera->SetRef(ref);
 }
-#ifdef NONMATCHING
 void DebugMainDraw() {
     if (DngStatus.debug_window) {
         mgTexManager.ReloadTexture(0x6C, (sceVif1Packet *) NULL);
@@ -2810,9 +2797,6 @@ void DebugMainDraw() {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", DebugMainDraw__Fv);
-#endif
 void DBGCMD_RunScript(int no) {
     mgCMemory *stack;
 

@@ -483,3 +483,7 @@ dng_main	memoryInit__Fv	checker
 dng_main	EyeCamera__FP9mgCCameraP11CCharacter2i__2	checker
 dng_main	CommonStageClassInit__Fv	checker
 dng_main	IsEventRun__Fv	checker
+dng_main	DngMainDraw__Fv	checker
+dng_main	LoopDungeonMain__Fv	checker
+dng_main	DebugMainDraw__Fv	checker
+dng_main	DngStep__Fv	checker

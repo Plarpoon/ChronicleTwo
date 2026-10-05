@@ -155,54 +155,56 @@ int CScriptInterpreter::hash(char *name) {
     return value;
 }
 
-#ifdef NONMATCHING
 void CScriptInterpreter::SetTag(SPI_TAG_PARAM *tags) {
+    u8            *storage;
     SPI_TAG_PARAM *param;
-    SPI_TAG_HASH *entry;
-    SPI_TAG_HASH **chain;
-    SPI_TAG_HASH *link;
-    int i;
+    int            i;
+    int            chain;
+    SPI_TAG_HASH  *link;
+    SPI_TAG_PARAM *scan;
+    SPI_TAG_HASH  *entry;
 
     tag = tags;
     tag_count = 0;
-    for (param = tag; param->name != NULL && param->name[0] != '\0'; param++) {
+    for (scan = tag, tag_count = 0; scan->name != NULL && scan->name[0] != '\0'; scan++) {
         tag_count++;
     }
 
     hash_table = NULL;
     if (tag_count < SPI_HASH_TAG_MAX) {
-        hash_table = hash_buckets;
+        // The first links of the chains, and then the links of the tags, are
+        // taken in turn from one run of storage.
+        storage = (u8 *)hash_buckets;
+        hash_table = (SPI_TAG_HASH **)storage;
+        storage += sizeof(hash_buckets) + sizeof(unk_1d4);
         for (i = 0; i < SPI_HASH_BUCKET_COUNT; i++) {
             hash_table[i] = NULL;
         }
 
-        entry = hash_entries;
         param = tag;
-        for (i = 0; i < tag_count; i++) {
+        for (i = 0; i < tag_count; i++, param++) {
+            entry = (SPI_TAG_HASH *)storage;
+            storage += sizeof(SPI_TAG_HASH);
             entry->next = NULL;
             entry->name = param->name;
             entry->index = i;
 
-            // Each entry is appended at the tail of its chain.
-            chain = &hash_table[hash(param->name)];
-            if (*chain == NULL) {
-                *chain = entry;
+            // Each link is appended at the tail of its chain.
+            chain = hash(param->name);
+            link = hash_table[chain];
+            if (link == NULL) {
+                hash_table[chain] = entry;
             } else {
-                for (link = *chain; link != NULL; link = link->next) {
+                for (; link != NULL; link = link->next) {
                     if (link->next == NULL) {
                         link->next = entry;
                         break;
                     }
                 }
             }
-            entry++;
-            param++;
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scriptinterpreter", SetTag__18CScriptInterpreterFP13SPI_TAG_PARAM);
-#endif
 
 void CScriptInterpreter::SetScript(char *script, int script_size) {
     buffer = script;

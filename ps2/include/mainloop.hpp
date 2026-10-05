@@ -245,6 +245,9 @@ extern int MasterDebugCode;
  */
 extern CGamePad GamePad;
 
+/** Controller instance used by the game's main loop and pause screen. */
+extern CGamePad GamePad__2;
+
 /**
  * Logical button and stick table built over GamePad.
  */

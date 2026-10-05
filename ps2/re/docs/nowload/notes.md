@@ -78,3 +78,25 @@ Every data symbol of the unit is in local_symbols.tsv, so the header has no exte
   later. Fades the "moji" texture (UV 0,0x144-0x200,0x180) over 23 frames.
 - PauseLoop's two "unreachable blocks" in Ghidra are just the signed /2 rounding of constants.
 - Pad buttons 0x15 (pause/start) and 0x16 (skip) are CPadControl button ids; no enum exists yet.
+
+## Remaining draft implementations
+`NowLoadingLoop` constructs a texture rectangle, draws the progress bar and
+loading image each thread step, advances the bar toward its requested width,
+and yields until `DeleteNowLoading` requests termination. `CreateNowLoading`
+copies the memory settings, loads the language image, enters its texture, and
+starts the priority-10 thread with a 0x1000-byte stack. `PauseLoop` captures
+the frame on its first step, pauses sound in two phases, dims the captured
+frame according to the save option, draws the skip image when permitted, and
+exits on the pause or skip button. `SCElogoFade` configures packet and texture
+memory, runs language selection on fade-in, then draws the logo for 23 frames.
+The draft build creates `__sinit_nowload_cpp` from the typed `LoadInfo` global;
+its retail initializer also clears the two words of `PauseInfo`.
+
+## Matching trial
+The complete unit compiles in draft mode with all 19 functions present: 11
+instruction matches and eight differences. Four new runtime drafts received
+one isolated promotion trial each; each remains guarded because its typed
+dependencies are available only in the draft branch. The generated static
+initializer matches in the grouped draft. Its single normal-build promotion
+trial failed at mwccgap's source lookup for `__sinit_nowload_cpp`, so the
+assembly initializer remains selected. The normal full build is byte-identical.

@@ -75,6 +75,14 @@ class CommitPayloadTests(unittest.TestCase):
                                    "commits": [{"id": "not-a-sha", "message": "Hello"}]})
         self.assertNotIn("https://", invalid["content"])
 
+    def test_commit_subject_links_suppress_previews(self):
+        event = {"repository": {"full_name": "TheMoonPeople/ChronicleTwo"},
+                 "commits": [{"id": "a" * 40,
+                              "message": "See https://example.com/notes, [more](https://example.org/update)."}]}
+        content = commits.payload(event)["content"]
+        self.assertIn("<https://example.com/notes>", content)
+        self.assertIn("<https://example.org/update>\\).", content)
+
 
 if __name__ == "__main__":
     unittest.main()

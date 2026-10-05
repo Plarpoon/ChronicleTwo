@@ -11,6 +11,8 @@ MAX_CONTENT = 2000
 MAX_COMMITS = 12
 SAFE_REPOSITORY = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 SAFE_SHA = re.compile(r"^[0-9a-fA-F]{7,64}$")
+URL = re.compile(r"https?://[^\s<>]+")
+MARKDOWN = re.compile(r"([\\`*_~|>\[\]()])")
 
 
 def discord_length(value):
@@ -20,7 +22,22 @@ def discord_length(value):
 def plain(value):
     """Keep one display line and prevent source text from changing Markdown."""
     line = " ".join(str(value or "").split())
-    return re.sub(r"([\\`*_~|>\[\]()])", r"\\\1", line)
+    return MARKDOWN.sub(r"\\\1", line)
+
+
+def subject_text(value):
+    """Suppress previews for links written in a commit subject."""
+    line = " ".join(str(value or "").split())
+    parts = []
+    previous = 0
+    for match in URL.finditer(line):
+        parts.append(MARKDOWN.sub(r"\\\1", line[previous:match.start()]))
+        url = match.group().rstrip(".,;!?)]")
+        parts.append(f"<{url}>")
+        parts.append(MARKDOWN.sub(r"\\\1", match.group()[len(url):]))
+        previous = match.end()
+    parts.append(MARKDOWN.sub(r"\\\1", line[previous:]))
+    return "".join(parts)
 
 
 def clipped(value, limit):
@@ -29,7 +46,8 @@ def clipped(value, limit):
 
 def commit_line(commit, repository):
     sha = str(commit.get("id", ""))
-    subject = clipped(plain(str(commit.get("message", "")).split("\n", 1)[0]) or "(no message)", 110)
+    raw_subject = clipped(str(commit.get("message", "")).split("\n", 1)[0], 110)
+    subject = subject_text(raw_subject) or "(no message)"
     author = clipped(plain((commit.get("author") or {}).get("name", "")), 50)
     detail = f"{subject} — {author}" if author else subject
     if SAFE_REPOSITORY.fullmatch(repository) and SAFE_SHA.fullmatch(sha):

@@ -19,8 +19,10 @@ class mgCMemory;
 class sndCSeSeqData;
 
 /**
+ *
  * Game sound ports that sound banks are loaded into, as named by the game's
  * port volume settings.
+ *
  */
 enum sndPORT {
     SND_PORT_BGM = 0,     /**< Background music; its sequences are played on the voice-capable driver port. */
@@ -35,7 +37,9 @@ enum sndPORT {
 };
 
 /**
+ *
  * How a sound effect entry of a bank's sound effect table is played.
+ *
  */
 enum sndSE_TYPE {
     SND_SE_TYPE_NONE = 0,  /**< No sound; the entry names a file that is not in the bank. */
@@ -45,7 +49,9 @@ enum sndSE_TYPE {
 };
 
 /**
+ *
  * Centre value for sound-effect pitch bend.
+ *
  */
 // clang-format off
 enum sndSE_CENTER {
@@ -54,7 +60,9 @@ enum sndSE_CENTER {
 // clang-format on
 
 /**
+ *
  * Playback state of the sequence of a sound port.
+ *
  */
 enum sndSQ_STATE {
     SND_SQ_STATE_STOP = 0,       /**< No sequence is playing. */
@@ -64,7 +72,9 @@ enum sndSQ_STATE {
 };
 
 /**
+ *
  * Reverb types, as named in a bank's sound effect and volume tables.
+ *
  */
 enum sndREVERB_TYPE {
     SND_REVERB_OFF = 0,      /**< No reverb. */
@@ -81,8 +91,10 @@ enum sndREVERB_TYPE {
 };
 
 /**
+ *
  * Looping sound effect kept sounding by a CLoopSeMngr for as long as it is
  * requested again within a number of frames.
+ *
  */
 struct SND_LOOP_SE_SEQ {
     u32 se_id;     /**< Sound ID with the sound effect number, or -1 when the entry is free. */
@@ -105,8 +117,10 @@ struct SND_LOOP_SE_SEQ {
 STATIC_ASSERT(sizeof(SND_LOOP_SE_SEQ) == 0x14);
 
 /**
+ *
  * Manager of looping sound effects that keep playing while they are
  * requested every frame, and stop by themselves once requests cease.
+ *
  */
 class CLoopSeMngr {
 public:
@@ -200,8 +214,10 @@ public:
 STATIC_ASSERT(sizeof(CLoopSeMngr) == 0x8);
 
 /**
+ *
  * Entry of a bank's sound effect table, describing how one sound effect
  * number is played.
+ *
  */
 struct sndSeInfo {
     int unk_0;
@@ -224,8 +240,10 @@ struct sndSeInfo {
 STATIC_ASSERT(sizeof(sndSeInfo) == 0xC);
 
 /**
+ *
  * Sound bank loaded into a port: its sound effect table, the names of its
  * driver sequences and its sound-effect sequences.
+ *
  */
 class sndBankInfo {
 public:
@@ -280,8 +298,10 @@ public:
 STATIC_ASSERT(sizeof(sndBankInfo) == 0x1C);
 
 /**
+ *
  * Sound-effect sequence started on a port, recording which sound effect it
  * plays so that it can be found again.
+ *
  */
 struct sndPortSeSeq {
     s16 seseq_no; /**< Index of the sound-effect sequence player, or -1 when the entry is free. */
@@ -299,8 +319,10 @@ struct sndPortSeSeq {
 STATIC_ASSERT(sizeof(sndPortSeSeq) == 0x8);
 
 /**
+ *
  * Game sound port: the sound driver ports it plays on, the banks loaded into
  * it, the state of its driver sequence and its sound-effect sequences.
+ *
  */
 class sndPortInfo {
 public:

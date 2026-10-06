@@ -81,26 +81,56 @@ static inline void SetFormPoint(CMenuPosDataForm *form, int x, int y) {
     form->y = (float)y;
 }
 
+/**
+ *
+ * Stores a destination point for menu movement.
+ *
+ */
 struct MovePoint {
-    int x;
-    int y;
+    int x; /**< Horizontal coordinate of the destination. */
+    int y; /**< Vertical coordinate of the destination. */
 };
 
+/**
+ *
+ * Stores menu pages reached by the page keys.
+ *
+ */
 struct MenuKeyPageTable {
-    int next[2];
+    int next[2]; /**< Page destinations for the two page keys. */
 };
+/**
+ *
+ * Pairs names used for a menu area.
+ *
+ */
 struct AreaNameItems {
-    char *name[2];
+    char *name[2]; /**< Names for the two area entries. */
 };
+/**
+ *
+ * Stores the two coordinates of a menu board.
+ *
+ */
 struct BoardPosition {
-    int value[2];
+    int value[2]; /**< Horizontal and vertical board coordinates. */
 };
+/**
+ *
+ * Stores menu widths for supported languages.
+ *
+ */
 struct LanguageWidths {
-    int value[9];
+    int value[9]; /**< Width values indexed by language. */
 };
+/**
+ *
+ * Pairs a monster name with its message.
+ *
+ */
 struct MonsterTableEntry {
-    short nameNo;
-    short messageNo;
+    short nameNo; /**< Message number for the monster name. */
+    short messageNo; /**< Message number for the monster description. */
 };
 
 extern CMenuInter *CMenuInterPt;

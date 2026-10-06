@@ -800,8 +800,13 @@ void CFuncPointMngr::UpdateStatus() {
         GetEnd();
     }
 }
+/**
+ *
+ * Raw settings copied between function points.
+ *
+ */
 struct FuncPointSettings {
-    int word[0x14];
+    int word[0x14]; /**< Settings words. */
 };
 
 int CFuncPointMngr::Copy(CFuncPointMngr &dest, mgCMemory *stack) {

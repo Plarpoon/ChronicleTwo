@@ -36,8 +36,8 @@
 #include <cstdlib>
 
 extern "C" int fptosi(float);
-extern "C" void *__ct__11mgCDrawPrimFv(void *);
-extern "C" void *__ct__12mgCFrameAttrFv(void *);
+extern "C" mgCDrawPrim *__ct__11mgCDrawPrimFv(mgCDrawPrim *);
+extern "C" mgCFrameAttr *__ct__12mgCFrameAttrFv(mgCFrameAttr *);
 extern char at_2882[];
 extern char at_1107__2[];
 extern int chill_tex_rect_910[6][3];
@@ -1976,7 +1976,67 @@ void CMapEffect_Sprite::Step(mgCCamera *camera) {
         life -= 1;
     }
 }
+#ifdef NONMATCHING
+void CMapEffect_Sprite::Draw(mgCCamera *camera, CPreSprite *prim) {
+    if (life <= 0) {
+        return;
+    }
+    sceVu0FVECTOR draw_pos;
+    sceVu0CopyVector(draw_pos, pos);
+    draw_pos[1] += 10.0f * (bob_height * sinf(bob_angle));
+    int alpha = 0x10;
+    int u = 0;
+    int v = 0xA1;
+    int span = 0x5E;
+    float draw_size = 100.0f;
+    if (type == MAP_EFFECT_D01) {
+        if (life < 0x40) {
+            alpha = fptosi(0.25f * (float)life);
+        } else if (life_max - life < 0x40) {
+            alpha = fptosi(0.25f * (float)(life_max - life));
+        }
+    }
+    if (type == MAP_EFFECT_D02) {
+        alpha = 0x80;
+        if (life < 0x14) {
+            alpha = life * 6;
+        }
+        u = 0x20;
+        v = 0;
+        span = 0x1F;
+        draw_size = 5.0f;
+    }
+    if (type == MAP_EFFECT_D03) {
+        if (life < 0x40) {
+            alpha = fptosi(0.25f * (float)life);
+        } else if (life_max - life < 0x40) {
+            alpha = fptosi(0.25f * (float)(life_max - life));
+        }
+        alpha = fptosi((float)alpha * 3.0f);
+    }
+    int corner0[4];
+    int corner1[4];
+    if (mgTransWorldPrim3DSprite(corner0, corner1, draw_pos, draw_size, draw_size, 0) != 0) {
+        int top_right[4] = {corner1[0], corner0[1], corner0[2], corner0[3]};
+        int bottom_left[4] = {corner0[0], corner1[1], corner1[2], corner1[3]};
+        prim->Color(0x80, 0x80, 0x80, alpha);
+        prim->TextureCrd(u, v);
+        prim->Vertex4(corner0);
+        prim->TextureCrd(u + span, v);
+        prim->Vertex4(top_right);
+        prim->TextureCrd(u, v + span);
+        prim->Vertex4(bottom_left);
+        prim->TextureCrd(u, v + span);
+        prim->Vertex4(bottom_left);
+        prim->TextureCrd(u + span, v);
+        prim->Vertex4(top_right);
+        prim->TextureCrd(u + span, v + span);
+        prim->Vertex4(corner1);
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Draw__17CMapEffect_SpriteFP9mgCCameraP10CPreSprite);
+#endif
 void CMapEffectsManeger::Init_LightBoll(mgCMemory *memory, int count) {
     sprite_num = count;
     u32 blocks;
@@ -2363,7 +2423,37 @@ void CWeaponElement::Draw(void) {
         }
     }
 }
+#ifdef NONMATCHING
+void CWeaponElement::Init_Cold(float *position) {
+    count = fptosi(power * 12.0f) + 2;
+    if (count > WEAPON_ELEMENT_SPARK_MAX) {
+        count = WEAPON_ELEMENT_SPARK_MAX;
+    }
+    spawn_budget = fptosi(power * 10.0f) + 5;
+    spawn_delay_max = 12 - fptosi(power * 6.0f);
+    spawn_delay = 0;
+    bolt_count = 4;
+    spread *= power * 0.4f + 0.8f;
+    scale = power * 0.7f + 0.5f;
+    for (int i = 0; i < WEAPON_ELEMENT_SPARK_MAX; ++i) {
+        shrink[i] = 0.0f;
+        alpha[i] = 0.0f;
+    }
+    for (int i = 0; i < count; ++i) {
+        size[i] = (float)rand() * 6.0f / 2.1474836e9f + 3.0f;
+        shrink[i] = 1.0f;
+        alpha[i] = (float)rand() * 48.0f / 2.1474836e9f + 1.0f;
+        fading[i] = 0;
+        offset[i][0] = (spread * (float)rand() * 2.0f) / 2.1474836e9f - spread;
+        offset[i][1] = spread / 2.0f + spread * (float)rand() / 2.1474836e9f;
+        offset[i][2] = (spread * (float)rand() * 2.0f) / 2.1474836e9f - spread;
+        offset[i][3] = 1.0f;
+        frame[i] = fptosi((float)rand() * 5.0f / 2.1474836e9f) * 0x30;
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Init_Cold__14CWeaponElementFPf);
+#endif
 void CWeaponElement::Step_Cold(void) {
     int dead;
     int i;
@@ -2473,7 +2563,39 @@ void CWeaponElement::Draw_Cold(void) {
     }
     prim.End();
 }
+#ifdef NONMATCHING
+void CWeaponElement::Init_Wind(float *position) {
+    count = fptosi(power * 10.0f) + 1;
+    spawn_budget = fptosi(power * 20.0f) + 10;
+    spawn_delay_max = 8 - fptosi(power * 4.0f);
+    spawn_delay = 0;
+    bolt_count = 4;
+    spread *= power * 0.4f + 0.8f;
+    scale = 0.5f + 1.3f * (power * 0.7f);
+    for (int i = 0; i < WEAPON_ELEMENT_SPARK_MAX; ++i) {
+        shrink[i] = 0.0f;
+        alpha[i] = 0.0f;
+    }
+    for (int i = 0; i < count; ++i) {
+        size[i] = 2.0f + 4.0f * (float)rand() / 2.1474836e9f;
+        shrink[i] = 1.0f;
+        alpha[i] = 1.0f + 48.0f * (float)rand() / 2.1474836e9f;
+        fading[i] = 0;
+        offset[i][0] = 2.0f * spread * (float)rand() / 2.1474836e9f - spread;
+        offset[i][1] = 2.0f * spread * (float)rand() / 2.1474836e9f - spread;
+        offset[i][2] = 2.0f * spread * (float)rand() / 2.1474836e9f - spread;
+        offset[i][3] = 1.0f;
+        sceVu0CopyVector(velocity[i], offset[i]);
+        sceVu0Normalize(velocity[i], velocity[i]);
+        sceVu0ScaleVector(velocity[i], velocity[i], 0.3f * (float)rand() / 2.1474836e9f);
+        spin[i] = 2.0f * 3.1415927f * (float)rand() / 2.1474836e9f - 3.1415927f;
+        spin_speed[i] = 0.09817477f + 0.19634955f * (float)rand() / 2.1474836e9f;
+        frame[i] = fptosi(5.0f * (float)rand() / 2.1474836e9f) * 0x30;
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Init_Wind__14CWeaponElementFPf);
+#endif
 void CWeaponElement::Step_Wind(void) {
     int dead;
     int i;
@@ -2595,7 +2717,38 @@ void CWeaponElement::Draw_Wind(void) {
     }
     prim.End();
 }
+#ifdef NONMATCHING
+void CWeaponElement::Init_Fire(float *position) {
+    count = fptosi(power * 12.0f) + 2;
+    if (count > WEAPON_ELEMENT_SPARK_MAX) {
+        count = WEAPON_ELEMENT_SPARK_MAX;
+    }
+    spawn_budget = fptosi(power * 10.0f) + 5;
+    spawn_delay_max = 6 - fptosi(power * 3.0f);
+    spawn_delay = 0;
+    bolt_count = 4;
+    spread *= power * 0.4f + 0.8f;
+    scale = 0.5f + power * 0.7f;
+    sceVu0CopyVector(fire_pos, position);
+    for (int i = 0; i < WEAPON_ELEMENT_SPARK_MAX; ++i) {
+        shrink[i] = 0.0f;
+        alpha[i] = 0.0f;
+    }
+    for (int i = 0; i < count; ++i) {
+        size[i] = 2.0f + 6.0f * (float)rand() / 2.1474836e9f;
+        shrink[i] = 1.0f;
+        alpha[i] = 1.0f + 48.0f * (float)rand() / 2.1474836e9f;
+        fading[i] = 0;
+        offset[i][0] = 2.0f * spread * (float)rand() / 2.1474836e9f - spread;
+        offset[i][1] = 2.0f * spread * (float)rand() / 2.1474836e9f - spread;
+        offset[i][2] = 2.0f * spread * (float)rand() / 2.1474836e9f - spread;
+        offset[i][3] = 1.0f;
+        frame[i] = fptosi(5.0f * (float)rand() / 2.1474836e9f) * 0x30;
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Init_Fire__14CWeaponElementFPf);
+#endif
 void CWeaponElement::Step_Fire(void) {
     int dead;
     int i;
@@ -2705,7 +2858,44 @@ void CWeaponElement::Draw_Fire(void) {
     }
     prim.End();
 }
+#ifdef NONMATCHING
+void CWeaponElement::Init_Thunder(float *position) {
+    count = fptosi(power * 18.0f) + 6;
+    bolt_count = fptosi(power * 7.0f) + 1;
+    if (count > WEAPON_ELEMENT_SPARK_MAX) {
+        count = WEAPON_ELEMENT_SPARK_MAX;
+    }
+    if (bolt_count > WEAPON_ELEMENT_BOLT_MAX) {
+        bolt_count = WEAPON_ELEMENT_BOLT_MAX;
+    }
+    spread *= power * 0.4f + 0.8f;
+    for (int i = 0; i < count; ++i) {
+        velocity[i][0] = 8.0f * (float)rand() / 2.1474836e9f - 4.0f;
+        velocity[i][1] = 8.0f * (float)rand() / 2.1474836e9f - 4.0f;
+        velocity[i][2] = 8.0f * (float)rand() / 2.1474836e9f - 4.0f;
+        sceVu0FVECTOR direction;
+        sceVu0FVECTOR radius;
+        sceVu0Normalize(direction, velocity[i]);
+        sceVu0ScaleVectorXYZ(radius, direction, spread);
+        offset[i][0] = position[0] + velocity[i][0] + radius[0] * (float)rand() / 2.1474836e9f;
+        offset[i][1] = position[1] + velocity[i][1] + radius[1] * (float)rand() / 2.1474836e9f;
+        offset[i][2] = position[2] + velocity[i][2] + radius[2] * (float)rand() / 2.1474836e9f;
+        offset[i][3] = 1.0f;
+        sceVu0ScaleVectorXYZ(velocity[i], direction, 0.3f * (float)rand() / 2.1474836e9f);
+        size[i] = 0.5f + 2.5f * (float)rand() / 2.1474836e9f;
+        shrink[i] = 1.0f;
+        alpha[i] = 96.0f + (float)fptosi(64.0f * (float)rand() / 2.1474836e9f);
+    }
+    for (int i = 0; i < bolt_count; ++i) {
+        bolt_head[i] = fptosi((float)count * (float)rand() / 2.1474836e9f);
+        bolt_tail[i] = fptosi((float)count * (float)rand() / 2.1474836e9f);
+        bolt_timer[i] = fptosi(6.0f * (float)rand() / 2.1474836e9f) * 3 + 3;
+        bolt_frame[i] = fptosi(4.0f * (float)rand() / 2.1474836e9f);
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Init_Thunder__14CWeaponElementFPf);
+#endif
 void CWeaponElement::Step_Thunder(void) {
     int dead;
     int i;

@@ -8,8 +8,13 @@
 #include "menusys.hpp"
 #include "userdata.hpp"
 
+/**
+ *
+ * Three bytes of invention discovery flags.
+ *
+ */
 struct InventFoundFlags {
-    u8 flag[3];
+    u8 flag[3]; /**< Flags marking discovered inventions. */
 };
 STATIC_ASSERT(sizeof(InventFoundFlags) == 3);
 
@@ -108,16 +113,31 @@ struct INVENT_MATERIAL_LIST {
 };
 STATIC_ASSERT(sizeof(INVENT_MATERIAL_LIST) == 0x8);
 
+/**
+ *
+ * Materials required to make an invented item.
+ *
+ */
 struct MakeItemNeeds {
+    /**
+     *
+     * One material and the quantity required.
+     *
+     */
     struct Need {
-        int item_id;
-        int amount;
+        int item_id; /**< Required item. */
+        int amount;  /**< Number required. */
     };
-    int num;
-    Need need[4];
+    int num;      /**< Number of entries in need. */
+    Need need[4]; /**< Materials required. */
 };
 STATIC_ASSERT(sizeof(MakeItemNeeds) == 0x24);
 
+/**
+ *
+ * One invention recipe and the material list used to build it.
+ *
+ */
 struct INVENT_DATA_INFO {
     short            item_id;      /**< Item the invention produces, or -1 for an unset row. */
     short            neta_id[3];   /**< Ideas that combine into the invention. */

@@ -14,6 +14,7 @@
 // Small uninitialised data (.sbss)
 static volatile int vcount__2;
 extern int MainThreadPriority;
+extern "C" int VSyncCallBack__Fi__2(int);
 extern const unsigned char at_846__DATA[];
 extern const unsigned char at_847__DATA[];
 extern const unsigned char at_848__DATA[];
@@ -32,17 +33,17 @@ extern const unsigned char at_857__DATA[];
  * Vertical-blank interrupt handler: counts the frame and re-enables
  * interrupts before returning.
  */
+#ifdef NONMATCHING
 extern "C" int VSyncCallBack__Fi__2(int) {
-    vcount__2++;
+    ++vcount__2;
     if (vcount__2 < 0) {
         vcount__2 = 0;
     }
-    asm {
-        sync
-        ei
-    }
     return 0;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/main", VSyncCallBack__Fi__2);
+#endif
 
 /**
  * Sets up a default double buffer, clears both buffers to the given colour

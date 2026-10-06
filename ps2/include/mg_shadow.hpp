@@ -18,8 +18,10 @@ struct FACES_ID;
 struct MDT_HEADER;
 
 /**
+ *
  * MDT model drawn as a cast shadow: its faces are sent as untextured
  * triangles, transformed by the scene's shadow projection.
+ *
  */
 class mgCShadowMDT : public mgCVisualMDT {
 public:
@@ -76,8 +78,10 @@ public:
 STATIC_ASSERT(sizeof(mgCShadowMDT) == 0x50);
 
 /**
+ *
  * Shadow model the scene loader builds for MG_VISUAL_CREATE_SHADOW_FIX_MDT;
  * it keeps every behaviour of mgCShadowMDT.
+ *
  */
 class mgCShadowFixMDT : public mgCShadowMDT {
 public:

@@ -17,7 +17,14 @@
 #include "mapjump.hpp"
 #include <cstring>
 
-struct ScriptPathBuffer { char text[0x80]; };
+/**
+ *
+ * Path of a script used when changing maps.
+ *
+ */
+struct ScriptPathBuffer {
+    char text[0x80]; /**< Script path text. */
+};
 extern int NowMainMapNo;
 extern int NowSubMapNo;
 extern int NowInteriorMapNo;

@@ -35,82 +35,142 @@ struct fish_prize_record;
 #include <cmath>
 #include <cstring>
 
+/**
+ *
+ * Describes the fish growth and parameter changes caused by food.
+ *
+ */
 struct aqua_food_info {
-    short item_no;
-    signed char growth;
-    signed char add_param3;
-    signed char add_param0;
-    signed char add_param1;
-    signed char add_param2;
+    short item_no; /**< Item number of the food. */
+    signed char growth; /**< Growth change from the food. */
+    signed char add_param3; /**< Change to fish parameter three. */
+    signed char add_param0; /**< Change to fish parameter zero. */
+    signed char add_param1; /**< Change to fish parameter one. */
+    signed char add_param2; /**< Change to fish parameter two. */
     signed char unk_7;
-    u16 add_timer;
+    u16 add_timer; /**< Duration added by the food. */
 };
 
+/**
+ *
+ * References the horizontal and height data of an aquarium grid cell.
+ *
+ */
 struct aqua_grid_cell {
-    float *xz;
-    float *y;
+    float *xz; /**< Horizontal position data. */
+    float *y; /**< Height data. */
 };
 
+/**
+ *
+ * Views four floating-point values as a single 128-bit value.
+ *
+ */
 union aqua_quad {
-    float v[4];
-    u_long128 quad;
+    float v[4]; /**< Four floating-point components. */
+    u_long128 quad; /**< Combined 128-bit representation. */
 };
 
+/**
+ *
+ * Stores four floating-point components for aquarium geometry.
+ *
+ */
 struct aqua_vector {
-    float v[4];
+    float v[4]; /**< Four vector components. */
 };
 
+/**
+ *
+ * Records the parents and offspring of a fish breeding combination.
+ *
+ */
 struct fish_breed_pair {
-    signed char first_parent;
-    signed char second_parent;
-    signed char child;
+    signed char first_parent; /**< First parent fish type. */
+    signed char second_parent; /**< Second parent fish type. */
+    signed char child; /**< Resulting fish type. */
 };
 
 STATIC_ASSERT(sizeof(fish_breed_pair) == 3);
 
 extern fish_breed_pair aquafish_mixTable[171];
 
+/**
+ *
+ * Associates a fish item with its image and sex-dependent colours.
+ *
+ */
 struct aqua_fish_info {
-    short item_no;
+    short item_no; /**< Fish item number. */
     u8 unk_2[2];
-    const char *img_path;
-    signed char color_male;
-    signed char color_female;
+    const char *img_path; /**< Path to the fish image. */
+    signed char color_male; /**< Colour index for a male fish. */
+    signed char color_female; /**< Colour index for a female fish. */
     u8 unk_a[2];
 };
 
+/**
+ *
+ * Tracks the cursor and first visible row of a race list.
+ *
+ */
 struct gyorace_list_select {
-    int cursor;
-    int top;
+    int cursor; /**< Selected list row. */
+    int top; /**< First visible list row. */
 };
 
+/**
+ *
+ * Stores data indices for the six racers.
+ *
+ */
 struct gyoracer_index_data {
-    short data_index[6];
+    short data_index[6]; /**< Data index for each racer. */
 };
 
+/**
+ *
+ * Stores tactic numbers for the six racers.
+ *
+ */
 struct gyoracer_tactics_data {
-    short tactics_no[6];
+    short tactics_no[6]; /**< Tactic number for each racer. */
 };
 
+/**
+ *
+ * Groups the prize records for a fish contest.
+ *
+ */
 struct fish_prize_group {
-      int prize_count;
+      int prize_count; /**< Number of prizes in the group. */
       int unk_4[8];
       u8 unk_24[0x1C];
-      fish_prize_record *prizes;
+      fish_prize_record *prizes; /**< Prize records for the group. */
 };
 
+/**
+ *
+ * Stores prize information for three ranks.
+ *
+ */
 struct fish_prize_record {
       int unk_0;
-      FISH_PRIZE_INFO rank[3];
+      FISH_PRIZE_INFO rank[3]; /**< Prize information for each rank. */
 };
 
 extern CAquaFishEff *AquaFishEff[];
 
 extern CBubble *AquaFishBubble[6];
 
+/**
+ *
+ * Stores a spherical collision point in the aquarium.
+ *
+ */
 struct aqua_col_point {
-    float pos[4];
-    float radius;
+    float pos[4]; /**< Centre position of the collision point. */
+    float radius; /**< Collision radius. */
     u8 unk_14[0xC];
 };
 
@@ -166,28 +226,25 @@ extern "C" int AQUA_TITLE_Y;
 extern "C" int AQUA_TITLE_W;
 
 extern "C" int AQUA_TITLE_H;
-
 extern "C" void Initialize__11CCharacter2Fv(void *character);
 
-extern "C" void Init__13CGameDataUsedFv(CGameDataUsed *item);
 
-extern "C" void mgGetAmbient__FPf(float *color);
 
-extern "C" void mgSetAmbient__FPf(float *color);
 
-extern "C" int EnterIMGFile__17mgCTextureManagerFPUciP9mgCMemoryP15mgCEnterIMGInfo(void *, u8 *,
-                                                                                   int, void *,
-                                                                                   void *);
 
-extern "C" int __ct__11mgCDrawPrimFv(void *);
 
 extern "C" mgCCameraFollow *Camera__2;
 
+/**
+ *
+ * Stores the aquarium lighting state for restoration.
+ *
+ */
 struct aqua_light_env {
-    float light_dir[4][4];
-    float light_color[4][4];
-    mgPOINT_LIGHT plight;
-    int plight_enable;
+    float light_dir[4][4]; /**< Directions of the active lights. */
+    float light_color[4][4]; /**< Colours of the active lights. */
+    mgPOINT_LIGHT plight; /**< Point-light settings. */
+    int plight_enable; /**< Whether the point light is enabled. */
 };
 
 extern CScene *AquaScene;
@@ -204,8 +261,13 @@ extern "C" aqua_vector at_2742__2;
 extern "C" char at_2871[];
 extern "C" char at_2874[];
 
+/**
+ *
+ * Stores bubble counts for the three aquarium groups.
+ *
+ */
 struct aqua_bubble_counts {
-    int num[3];
+    int num[3]; /**< Bubble count for each group. */
 };
 
 extern "C" aqua_bubble_counts at_2935;
@@ -246,8 +308,13 @@ extern "C" aqua_vector at_4352;
 extern "C" aqua_vector at_4363__2;
 extern "C" aqua_vector at_4364__2;
 
+/**
+ *
+ * Stores the four corners of an aquarium wall.
+ *
+ */
 struct aqua_wall_quad {
-    float v[4][4];
+    float v[4][4]; /**< Position of each wall corner. */
 };
 
 extern "C" aqua_wall_quad at_4369__2;
@@ -268,10 +335,15 @@ extern s8 menu_max_tbl_3720[3];
 extern s8 menu_id_tbl_3721[3][6];
 extern s8 another_aquarium_Notbl_3642[3][2];
 
+/**
+ *
+ * Stores the position and width of a fish parameter icon.
+ *
+ */
 struct aqua_param_icon {
-    s16 x;
-    s16 y;
-    s16 w;
+    s16 x; /**< Horizontal icon position. */
+    s16 y; /**< Vertical icon position. */
+    s16 w; /**< Icon width. */
 };
 
 extern u8 xtbl_2468[5];
@@ -287,11 +359,8 @@ extern u8 chrtbl_2503[][4][2];
 extern aqua_param_icon get_paraxtbl_2494[][10];
 extern int *Aquarium_NameregistBlock;
 
-extern "C" void GetPos__9mgCCameraFPf(mgCCamera *camera, float *pos);
 
-extern "C" void mgSetViewMatrix__FPA4_fPf(float (*matrix)[4], float *pos);
 
-extern "C" void mgTransWorldScreen__FPiPf(int *out, float *pos);
 
 enum {
     short_flag_tour_count = 0x15,
@@ -326,7 +395,6 @@ static int GetFishPath(int item_no, char *out);
 
 static aqua_food_info *GetEsaInfo(int item_no);
 
-extern "C" void __ct__8CAquaMesFv(CAquaMes *mes);
 
 extern int Aqua_SpSndID;
 extern CDC2Mes *GyoraceFishMes;
@@ -397,11 +465,6 @@ extern char *GyoraceExeCfgBuffer;
 
 extern int GyoraceExeCfgBufferSize;
 
-extern "C" void *__construct_new_array(void *, void *(*)(void *), void *, unsigned int, int);
-
-extern "C" void *__ct__13CGameDataUsedFv(void *item);
-
-extern "C" int __ct__18CScriptInterpreterFv(void *interpreter);
 
 extern mgCTexture *Tex_Aqualium;
 
@@ -476,18 +539,12 @@ extern s16 GyoraceFishSelectNo;
 
 extern "C" char at_2873[];
 
-extern "C" void DrawFishParam__FiiP10mgCTextureP13CGameDataUsed(int x, int y, mgCTexture *texture,
-                                                                CGameDataUsed *fish);
 
 extern gyorace_list_select GyoraceFishHaveListSelect;
 
 extern fish_prize_record *save_fish_prize_list;
 
 extern FISH_PRIZE_INFO fish_save_present[4][3];
-
-extern "C" int
-EnterIMGFile__17mgCTextureManagerFPUciP9mgCMemoryP15mgCEnterIMGInfo(void *self, u8 *data, int size,
-                                                                    void *memory, void *info);
 
 static int local_aquarium_limmit_check(float *pos, float radius, int checkY, float height);
 
@@ -688,35 +745,33 @@ void CBubble::Step() {
     }
 }
 void CBubble::Draw() {
-    u8 storage[0x120];
+    if (active == 0) {
+        return;
+    }
+    mgCDrawPrim prim;
     int left[4];
     int right[4];
     unsigned int index;
     AQUA_BUBBLE *particle;
-
-    if (active == 0) {
-        return;
-    }
-    __ct__11mgCDrawPrimFv((mgCDrawPrim *)storage);
-    SetSpriteEnv((mgCDrawPrim *)storage, 4);
-    ((mgCDrawPrim *)storage)->Coord(1);
-    ((mgCDrawPrim *)storage)->DepthTestEnable(1);
-    ((mgCDrawPrim *)storage)->Begin(6);
-    ((mgCDrawPrim *)storage)->Texture(texture);
+    SetSpriteEnv(&prim, 4);
+    prim.Coord(1);
+    prim.DepthTestEnable(1);
+    prim.Begin(6);
+    prim.Texture(texture);
     index = 0;
     for (; index < bubble_num; index++) {
         particle = &bubble[index];
 
         if (particle->state != 2 &&
             mgTransWorldPrim3DSprite(left, right, particle->pos, 0.4f, 0.4f, 0) != 0) {
-            ((mgCDrawPrim *)storage)->Color(0x80, 0x80, 0x80, fptosi(particle->alpha));
-            ((mgCDrawPrim *)storage)->TextureCrd(tex_u, tex_v);
-            ((mgCDrawPrim *)storage)->Vertex4(left);
-            ((mgCDrawPrim *)storage)->TextureCrd(tex_u + 0x10, tex_v + 0x10);
-            ((mgCDrawPrim *)storage)->Vertex4(right);
+            prim.Color(0x80, 0x80, 0x80, fptosi(particle->alpha));
+            prim.TextureCrd(tex_u, tex_v);
+            prim.Vertex4(left);
+            prim.TextureCrd(tex_u + 0x10, tex_v + 0x10);
+            prim.Vertex4(right);
         }
     }
-    ((mgCDrawPrim *)storage)->End();
+    prim.End();
 }
 void CBubble::Initialize(mgCMemory *memory, float *start_pos, int count, float top) {
     unsigned int bytes;
@@ -802,7 +857,7 @@ void CAquaFish::Initialize() {
     think_mode = 0;
     think_timer = GetRandI(0x29) + 0xA;
     if (data != NULL) {
-        Init__13CGameDataUsedFv(data);
+        data->Init();
     }
     data = NULL;
     pair_no = -1;
@@ -853,9 +908,9 @@ void CAquaFish::GetPosition2D(int *out) {
     if (Camera__2 != NULL) {
         Camera__2->GetCameraMatrix(view);
         Camera__2->GetPos(camera_pos);
-        mgSetViewMatrix__FPA4_fPf(view, camera_pos);
+        mgSetViewMatrix(view, camera_pos);
         GetPosition(screen);
-        mgTransWorldScreen__FPiPf(screen_int, screen);
+        mgTransWorldScreen(screen_int, screen);
         sceVu0ITOF4Vector(screen, screen_int);
         out[0] = fptosi(screen[0]);
         out[1] = fptosi(screen[1]);
@@ -1391,14 +1446,14 @@ void CAquaFish::FishDraw() {
         float saved[4];
         aqua_vector bright;
 
-        mgGetAmbient__FPf(saved);
+        mgGetAmbient(saved);
         bright = at_1471__2;
         if (hp < 0x1E && flash_count < 0xB) {
             bright.v[0] = 172.0f;
-            mgSetAmbient__FPf(bright.v);
+            mgSetAmbient(bright.v);
         }
         DrawDirect();
-        mgSetAmbient__FPf(saved);
+        mgSetAmbient(saved);
     }
 }
 void CAquaFishEff::Initialize(void) {
@@ -1486,7 +1541,7 @@ void CAquaFishEff::Draw() {
     }
 }
 CFishFood::CFishFood() {
-    CCharacter2::Initialize();
+    Initialize__11CCharacter2Fv(this);
     mgZeroVector(spin);
     pos[0] = 0.0f;
     pos[1] = 0.0f;
@@ -2179,8 +2234,7 @@ int FishIMGReplace(u_long128 *data, CCharacter2 *character, int item_no, BREEDFI
             texture_buffer = *(u8 **)(character_bytes + 0x2C4);
             mgTexManager.DeleteBlock(*(int *)(character_bytes + 0x2E4));
             memcpy(texture_buffer, data, size);
-            EnterIMGFile__17mgCTextureManagerFPUciP9mgCMemoryP15mgCEnterIMGInfo(
-                &mgTexManager, texture_buffer, *(int *)(character_bytes + 0x2E4), NULL, NULL);
+            mgTexManager.EnterIMGFile(texture_buffer, *(int *)(character_bytes + 0x2E4), NULL, NULL);
         }
         SetCurrentDir(saved_dir);
     }
@@ -2352,25 +2406,13 @@ void DrawFishParam(int x, int y, mgCTexture *tex, CGameDataUsed *data) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", DrawFishParam__FiiP10mgCTextureP13CGameDataUsed);
 #endif
-extern "C" CAquarium *__ct__9CAquariumFv(CAquarium *self) {
-    mgCMemory *pool;
+extern "C" CAquarium *__ct__9CAquariumFv(CAquarium *self);
+CAquarium::CAquarium() {
     int i;
-    ((mgCMemory *)((u8 *)self + 0x8))->Init();
-    ((mgCMemory *)((u8 *)self + 0x70))->Init();
-    ((mgCMemory *)((u8 *)self + 0xC8))->Init();
-    __ct__8CAquaMesFv((CAquaMes *)((u8 *)self + 0xFC));
-    ((mgCMemory *)((u8 *)self + 0x160))->Init();
-    pool = (mgCMemory *)self->fish_stack;
-    do {
-        pool->Init();
-        pool++;
-    } while ((u8 *)pool < (u8 *)self->fish);
-    ((mgCMemory *)((u8 *)self + 0x394))->Init();
     for (i = 0; i < 13; i++) {
-        self->tex_block[i] = -1;
+        tex_block[i] = -1;
     }
-    self->Clear();
-    return self;
+    Clear();
 }
 void CAquarium::Clear() {
     int i;
@@ -5023,9 +5065,8 @@ void MenuGyoraceFishSelDraw(void) {
     PrimQuad(MenuFrameTex, dest, source, 0x80, 0x80, 0x80, 0x80);
     if (Tex_Aqualium != 0) {
         tex_manager->ReloadTexture(GyoraceFishSelTexBk, (sceVif1Packet *)0);
-        DrawFishParam__FiiP10mgCTextureP13CGameDataUsed(((int)mgScreenWidth - 0x14A >> 1) + 10,
-                                                        mgScreenHeight - 0x8E, Tex_Aqualium,
-                                                        GyoraceFish);
+        DrawFishParam(((int)mgScreenWidth - 0x14A >> 1) + 10, mgScreenHeight - 0x8E, Tex_Aqualium,
+                      GyoraceFish);
     }
     if (GyoraceFishSelectMode != 0) {
         tex_manager->ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *)0);
@@ -5118,10 +5159,7 @@ static int _GYORACE_LISTNUM(SPI_STACK *stack, int arg_count) {
         blocks = ((unsigned int)count * sizeof(CGameDataUsed)) >> 4;
     }
 
-    spi_gyorace_data->fish[race_class] = (CGameDataUsed *)
-        __construct_new_array(operator new[](count *(int)sizeof(CGameDataUsed) + 0x10,
-                                             (u_long128 *)spi_gyorace_stack->Alloc(blocks + 2)),
-                              __ct__13CGameDataUsedFv, 0, sizeof(CGameDataUsed), count);
+    spi_gyorace_data->fish[race_class] = new ((u_long128 *)spi_gyorace_stack->Alloc(blocks + 2)) CGameDataUsed[count];
     spi_nowanalyze_gyorace_data = spi_gyorace_data->fish[race_class];
     spi_gyorace_counter = 0;
     return 1;
@@ -5148,34 +5186,32 @@ static int _GYORACE_DATA(SPI_STACK *stack, int arg_count) {
     spi_gyorace_counter += 1;
     return 1;
 }
-extern "C" int LoadData__16CGyoraceFishDataFP9mgCMemoryP1(CGyoraceFishData *self, mgCMemory *memory,
-                                                          void *buffer) {
+int CGyoraceFishData::LoadData(mgCMemory *memory, u_long128 *buffer) {
     char saved_dir[0x80];
     char path[0x40];
-    u8 interpreter[0xEDC];
     int size;
 
     if (memory == NULL) {
         return 0;
     }
-    self->fish[0] = NULL;
-    self->fish[1] = NULL;
-    self->fish[2] = NULL;
-    self->fish[3] = NULL;
-    self->fish_num[0] = 0;
-    self->fish_num[1] = 0;
-    self->fish_num[2] = 0;
-    self->fish_num[3] = 0;
-    spi_gyorace_data = self;
+    fish[0] = NULL;
+    fish[1] = NULL;
+    fish[2] = NULL;
+    fish[3] = NULL;
+    fish_num[0] = 0;
+    fish_num[1] = 0;
+    fish_num[2] = 0;
+    fish_num[3] = 0;
+    spi_gyorace_data = this;
     spi_gyorace_stack = memory;
     GetCurrentDir(saved_dir);
     SetCurrentDir(NULL);
     sprintf(path, at_4825, LanguageCode);
     if (LoadFile2(path, buffer, &size, 0) != 0) {
-        __ct__18CScriptInterpreterFv(interpreter);
-        ((CScriptInterpreter *)interpreter)->SetTag(gyorace_tag);
-        ((CScriptInterpreter *)interpreter)->SetScript((char *)buffer, size);
-        ((CScriptInterpreter *)interpreter)->Run();
+        CScriptInterpreter interpreter;
+        interpreter.SetTag(gyorace_tag);
+        interpreter.SetScript((char *)buffer, size);
+        interpreter.Run();
     }
     SetCurrentDir(saved_dir);
     return 1;
@@ -5261,7 +5297,6 @@ int LoadFishPrize(int goods_type) {
 #pragma optimization_level reset
 int LoadFishPrize(int goods_type, mgCMemory *pool) {
     u8 buffer[0x2800];
-    u8 interpreter[0xEDC];
     int size;
     void *script;
 
@@ -5273,10 +5308,10 @@ int LoadFishPrize(int goods_type, mgCMemory *pool) {
     }
     if (LoadFile2(filename_4899[FishTournamentGoodsType], script, &size, 0) != 0) {
         fish_prize_buildstack = pool;
-        __ct__18CScriptInterpreterFv(interpreter);
-        ((CScriptInterpreter *)interpreter)->SetTag(gyoprize_tag);
-        ((CScriptInterpreter *)interpreter)->SetScript((char *)script, size);
-        ((CScriptInterpreter *)interpreter)->Run();
+        CScriptInterpreter interpreter;
+        interpreter.SetTag(gyoprize_tag);
+        interpreter.SetScript((char *)script, size);
+        interpreter.Run();
     }
     RefreshFishPrize();
     return 1;

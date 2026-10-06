@@ -149,7 +149,7 @@ float GetCommonGageRate(COMMON_GAGE *gage) {
     return 0.0f;
 }
 int CalcBreedFishParam(BREEDFISH_USED *fish) {
-    u16 *param = (u16 *)((u8 *)fish + 0x26);
+    u16 *param = fish->param;
     int total = 0;
     int i;
     for (i = 0; i < 5; i++) {
@@ -332,8 +332,8 @@ int CGameDataUsed::GetActiveSetNum(void) {
 int CGameDataUsed::AddNum(int count, int clear) {
     int num;
     CDataCommon *record;
-    CGameDataUsed *stacked = (CGameDataUsed *)this;
-    CGameDataUsed *attachment = (CGameDataUsed *)this;
+    CGameDataUsed *stacked = this;
+    CGameDataUsed *attachment = this;
 
     if (item_no <= 0) {
         return 0;
@@ -378,7 +378,7 @@ int CGameDataUsed::GetUseCapacity() {
 }
 int CGameDataUsed::AddFishHp(int amount) {
     if (used_type == 6) {
-        CGameDataUsed *fish = (CGameDataUsed *)this;
+        CGameDataUsed *fish = this;
         int hp = fish->data.fish.hp + amount;
         if (hp < 0) {
             hp = 0;
@@ -392,7 +392,7 @@ int CGameDataUsed::AddFishHp(int amount) {
     return 0;
 }
 int CGameDataUsed::Boiled() {
-    CGameDataUsed *fish = (CGameDataUsed *)this;
+    CGameDataUsed *fish = this;
     char converted[0x40];
     char text[0x40];
     int value;
@@ -424,7 +424,7 @@ void CGameDataUsed::SetName(char *name) {
             buffer = this->data.weapon.name;
             break;
         case 5:
-            buffer = &((CGameDataUsed *)this)->data.robopart.name[0];
+            buffer = &data.robopart.name[0];
             break;
         case 6:
             buffer = this->data.fish.name;
@@ -517,7 +517,7 @@ char *CGameDataUsed::GetName(int name_type) {
 }
 #pragma divbyzerocheck reset
 void CGameDataUsed::TransToPassword(char *data, int length) {
-    CGameDataUsed *item = (CGameDataUsed *)this;
+    CGameDataUsed *item = this;
     PackedFishBuffer buffer;
     signed char *src;
     int i;
@@ -551,7 +551,7 @@ void CGameDataUsed::TransToPassword(char *data, int length) {
     }
 }
 void CGameDataUsed::TransToData(char *data, int length) {
-    CGameDataUsed *item = (CGameDataUsed *)this;
+    CGameDataUsed *item = this;
     PackedFishBuffer buffer;
     signed char *dst;
     int i;
@@ -607,14 +607,14 @@ int CGameDataUsed::RemainFusion() {
 }
 int CGameDataUsed::AddFusionPoint(int points) {
     int total;
-    CGameDataUsed *weapon = (CGameDataUsed *)this;
+    CGameDataUsed *weapon = this;
 
     if (used_type == 3) {
         total = weapon->data.weapon.fusion_point + points;
         if (total < 0) {
             total = 0;
         }
-        if (((CGameDataUsed *)weapon)->IsFishingRod()) {
+        if (weapon->IsFishingRod()) {
             if (total >= 9999) {
                 total = 9999;
             }
@@ -626,7 +626,7 @@ int CGameDataUsed::AddFusionPoint(int points) {
     }
         return 0;
 }
-int CGameDataUsed::GetEffectReadType(char **effect_name, char **hit_name, int *points) {
+int CGameDataUsed::GetEffectReadType(char **effect, char **sound, int *power) {
     int elem;
 
     if (used_type == 3) {
@@ -634,14 +634,14 @@ int CGameDataUsed::GetEffectReadType(char **effect_name, char **hit_name, int *p
         GetWeaponInfoData(item_no);
         if (weapon_type == 4) {
             elem = this->GetActiveElem();
-            if (effect_name != NULL) {
-                *effect_name = magic_str_1462[elem * 2];
+            if (effect != NULL) {
+                *effect = magic_str_1462[elem * 2];
     }
-            if (hit_name != NULL) {
-                *hit_name = magic_str_1462[elem * 2 + 1];
+            if (sound != NULL) {
+                *sound = magic_str_1462[elem * 2 + 1];
             }
-            if (points != NULL) {
-                *points = *(short *)((elem << 1) + (int)this + 0x26);
+            if (power != NULL) {
+                *power = data.weapon.attribute[elem];
             }
             return elem;
         }
@@ -1058,7 +1058,7 @@ void CGameDataUsed::GetStatusParam(short *param) {
             param[8] = data.weapon.attribute[6];
             param[9] = data.weapon.attribute[7];
         } else if (used_type == 2) {
-            CGameDataUsed *attachment = (CGameDataUsed *)this;
+            CGameDataUsed *attachment = this;
             param[0] = attachment->data.attach.status[0];
             param[1] = attachment->data.attach.status[1];
             param[2] = attachment->data.attach.attribute[0];
@@ -1169,7 +1169,7 @@ int CGameDataUsed::IsFishingRod() {
     return 0;
 }
 int CGameDataUsed::GetActiveElem() {
-    CGameDataUsed *weapon = (CGameDataUsed *)this;
+    CGameDataUsed *weapon = this;
     int best;
     int i;
 
@@ -1326,7 +1326,7 @@ void CGameDataUsed::TimeCheck(int elapsed) {
     int time_left;
 
     if (used_type == 6) {
-        CGameDataUsed *fish = (CGameDataUsed *)this;
+        CGameDataUsed *fish = this;
         time_left = (int)(fish->data.fish.timer - elapsed);
         if (time_left < 0) {
             time_left = 0;
@@ -1346,7 +1346,7 @@ int CGameDataUsed::GetGiftBoxItemNum() {
     return count;
 }
 int CGameDataUsed::SetGiftBoxItem(int item_no, int slot) {
-    CGameDataUsed *box = (CGameDataUsed *)this;
+    CGameDataUsed *box = this;
     int result;
     int i;
 
@@ -1448,7 +1448,7 @@ int CGameDataUsed::CopyDataWeapon(int item_no) {
 }
 int CGameDataUsed::CopyDataAttach(int new_item_no) {
     CDataAttach *data = (CDataAttach *)GameItemDataManage.GetAttachData(new_item_no);
-    CGameDataUsed *attachment = (CGameDataUsed *)this;
+    CGameDataUsed *attachment = this;
 
     if (data == NULL) {
         return 0;
@@ -1501,7 +1501,7 @@ int CGameDataUsed::CopyDataItem(int item_no) {
     return 1;
 }
 int CGameDataUsed::CopyDataFish(int item_no) {
-    CGameDataUsed *fish = (CGameDataUsed *)this;
+    CGameDataUsed *fish = this;
     CDataBreedFish *record;
     char *message;
     float value;
@@ -1704,16 +1704,13 @@ int CFishAquarium::GetAquariumFishNum(int tank) {
 }
 int CFishAquarium::CheckHaigouTankSex(CGameDataUsed *fish) {
     int i = 0;
-    int offset;
     if (fish == 0) {
         return 0;
     }
 
-    offset = 0;
-    for (; i < 2; i++, offset += sizeof(CGameDataUsed)) {
-        CFishAquarium *shifted = (CFishAquarium *)((u8 *)this + offset);
-        if (shifted->breed_tank[0].item_no > 0 &&
-            *(s8 *)&shifted->breed_tank[0].data.fish.sex == *(s8 *)&fish->data.fish.sex) {
+    for (; i < 2; i++) {
+        if (breed_tank[i].item_no > 0 &&
+            (s8)breed_tank[i].data.fish.sex == (s8)fish->data.fish.sex) {
             return 0;
         }
     }
@@ -1983,14 +1980,12 @@ int CFishingTournament::EntryFish(int entrant, int fish, int weight) {
 int CFishingTournament::EntryRemain() {
     int used = 0;
     int i = 0;
-    int offset = 0;
 
     do {
-        if (((CFishingTournament *)((u8 *)this + offset))->entry[0].item_no > 0) {
+        if (entry[i].item_no > 0) {
             used += 1;
         }
         i += 1;
-        offset += sizeof(FISH_TOURNAMENT_ENTRY);
     } while (i < 10);
     return 10 - used;
 }
@@ -2013,8 +2008,7 @@ void CFishingTournament::SortRecord() {
     FISH_TOURNAMENT_ENTRY temp;
     int i = 0;
     do {
-        int offset = i * 8;
-        FISH_TOURNAMENT_ENTRY *slot = (FISH_TOURNAMENT_ENTRY *)((u8 *)this + offset + 0x20);
+        FISH_TOURNAMENT_ENTRY *slot = &entry[i];
         if (slot->item_no > 0) {
             int j = i;
             if (j < 10) {
@@ -2028,7 +2022,6 @@ void CFishingTournament::SortRecord() {
                         break;
                     }
                     j++;
-                    offset += 8;
                 } while (j < 10);
             }
         }
@@ -2574,10 +2567,9 @@ float CUserDataManager::GetRoboAbs() {
 }
 int CUserDataManager::CheckCapacity() {
     int i = 0;
-    int offset = 0;
 
-    for (; i < 150; i++, offset += sizeof(CGameDataUsed)) {
-        CGameDataUsed *item = (CGameDataUsed *)((u8 *)used_data + offset);
+    for (; i < 150; i++) {
+        CGameDataUsed *item = &used_data[i];
         if (item->item_type == 11) {
             CDataItem *info = GetItemInfoData(item->item_no);
             if (info != 0) {
@@ -2725,10 +2717,9 @@ int CUserDataManager::UseNpcAbility(int npc_no, int ability_no, int consume) {
 }
 void CUserDataManager::AllWeaponRepair() {
     int i = 0;
-    int offset = 0;
 
-    for (; i < 150; i++, offset += sizeof(CGameDataUsed)) {
-        CGameDataUsed *item = (CGameDataUsed *)((u8 *)used_data + offset);
+    for (; i < 150; i++) {
+        CGameDataUsed *item = &used_data[i];
         if (item->used_type == 5) {
             item->Repair(999);
         }

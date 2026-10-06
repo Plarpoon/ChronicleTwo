@@ -154,3 +154,6 @@ whoever decompiles them should give them inline bodies.
   CThunder 0x1A0..0x1AF; CSwordLuminous 0xC; CSWordAfterImage 0x18..0x1F, 0x5C.
 - Whether CThunder's virtual calls on its own `frame` member come from code like `((mgCFrame *)this)->...`
   or a pointer; needs matching work.
+
+## Element and map ball drafts
+`CWeaponElement::Init_Cold`, `Init_Wind`, and `Init_Fire` reset the size and blend arrays, then seed sparks from the charged power and spread. Wind also normalizes and scales each spark velocity and sets spin. Thunder seeds velocities, offsets and bolt endpoints separately; the bolt count caps at 16. `CMapEffect_Sprite::Draw` fades floor balls by remaining life, projects a billboard, and emits two textured triangles. These five guarded C++ drafts compile and retain retail assembly while instruction differences remain.

@@ -116,3 +116,6 @@ No equivalent in Dark Cloud 1 (no fish race).
   promotion. The remaining new drafts failed their first isolated promotion
   and retain retail assembly in the default build. The full default build
   remained byte-identical after the promotion.
+
+## StepGyoRace draft
+`StepGyoRace` records the first completed step of each fish as a fractional goal time, assigns a current rank by position each step, resolves collisions and lane battles, then assigns final ranks by goal time. It records up to `after_goal_step + 1` further steps and returns the next step index. The guarded C++ draft compiles; the assembly fallback remains active.

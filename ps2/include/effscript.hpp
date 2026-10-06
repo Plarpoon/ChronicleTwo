@@ -35,7 +35,9 @@ class CScene;
 #define EFF_SPT_BASE_DEF_NUM 219
 
 /**
+ *
  * Kinds of resource that an effect definition row loads besides its script.
+ *
  */
 // clang-format off
 enum EffSptBaseType {
@@ -47,7 +49,9 @@ enum EffSptBaseType {
 // clang-format on
 
 /**
+ *
  * States that a running effect can be paused in.
+ *
  */
 // clang-format off
 enum EffSptState {
@@ -61,7 +65,9 @@ enum EffSptState {
 // clang-format on
 
 /**
+ *
  * Names one effect, the resource it is built on and its compiled script.
+ *
  */
 struct EFF_SPT_BASE_DEF {
     char name[0x20];   /**< Name that effects are started by; empty in the end row. */
@@ -73,7 +79,9 @@ struct EFF_SPT_BASE_DEF {
 STATIC_ASSERT(sizeof(EFF_SPT_BASE_DEF) == 0x64);
 
 /**
+ *
  * Loaded effect base: the model or texture and the script that running effects are started from.
+ *
  */
 struct EFF_SPT_BASE {
     int          base_no; /**< Row of the effect definition table. */
@@ -88,7 +96,9 @@ struct EFF_SPT_BASE {
 STATIC_ASSERT(sizeof(EFF_SPT_BASE) == 0x1C);
 
 /**
+ *
  * Billboard sprite of a running effect, with the velocities and accelerations that move it.
+ *
  */
 struct _ES_SPRITE {
     int           draw_flag; /**< Nonzero to draw the sprite. */
@@ -124,7 +134,9 @@ struct _ES_SPRITE {
 STATIC_ASSERT(sizeof(_ES_SPRITE) == 0x110);
 
 /**
+ *
  * Value slot that a running effect's script and its starter share, holding an integer or a float.
+ *
  */
 union EFF_SPT_VALUE {
     int   i; /**< Value as an integer. */
@@ -132,8 +144,10 @@ union EFF_SPT_VALUE {
 };
 
 /**
+ *
  * Running effect: its script interpreter, its characters and sprites, and the state that
  * the script works on.
+ *
  */
 struct _EFF_SCRIPT {
     u_long128    *work;                              /**< Work memory block that holds the effect. */
@@ -169,8 +183,10 @@ struct _EFF_SCRIPT {
 STATIC_ASSERT(sizeof(_EFF_SCRIPT) == 0x150);
 
 /**
+ *
  * Loads effect bases and runs the scripted effects started from them, keeping every
  * running effect in a list and in a table of slots by owner.
+ *
  */
 class CEffectScriptMan {
 public:

@@ -35,7 +35,14 @@
 #include "intersection.hpp"
 #include <cstdlib>
 
-struct Vec4 { float v[4]; };
+/**
+ *
+ * Four floating point components copied as one fishing vector.
+ *
+ */
+struct Vec4 {
+    float v[4]; /**< Vector components. */
+};
 extern FISHING_ROD_DATA RodData;
 extern FISH_DATA FishData;
 extern mgCMemory *fpStack;

@@ -63,7 +63,6 @@ extern mgCMemory *spi_MovieStack;
 #include "scriptinterpreter.hpp"
 #include "snd_mngr.hpp"
 
-// File-local data supplied by the retail assembly while data migration is pending.
 extern CGamePad GamePad__2;
 extern CScene *MovieScene;
 extern CMovie *MovieView;

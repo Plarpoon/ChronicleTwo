@@ -70,6 +70,11 @@ struct mg3DSpriteRenderHead {
     sceVu0FVECTOR fog;             /**< Fog offset, near value, far value and scale. */
 };
 
+/**
+ *
+ * VU and GS commands appended to the sprite's render packet.
+ *
+ */
 struct mg3DSpriteRenderTail {
     u_int unk_00[4];
     sceVu0FMATRIX view_screen;     /**< View-to-screen transform with its axes scaled by the local transform's scale. */
@@ -84,9 +89,14 @@ struct mg3DSpriteRenderTail {
     u_int ret_tag[4];              /**< DMA tag that returns to the caller. */
 };
 
+/**
+ *
+ * Complete packet used to draw a three dimensional sprite.
+ *
+ */
 struct mg3DSpriteRenderInfo {
-    mg3DSpriteRenderHead head;
-    mg3DSpriteRenderTail tail;
+    mg3DSpriteRenderHead head; /**< Packet header and transform data. */
+    mg3DSpriteRenderTail tail; /**< VU and GS commands following the header. */
 };
 STATIC_ASSERT(sizeof(mg3DSpriteRenderInfo) == 0x280);
 

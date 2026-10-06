@@ -10,9 +10,11 @@
  */
 
 /**
+ *
  * Lines of the dungeon debug menu, in the order in which the menu lists
  * them. Each line has a value that the pad changes and that the menu's
  * accept button acts on.
+ *
  */
 enum DNG_DEBUG_COMMAND {
     DNG_DEBUG_CMD_RUN_EVENT    = 0,  /**< Runs the event script whose number is the line's value. */
@@ -31,9 +33,11 @@ enum DNG_DEBUG_COMMAND {
 };
 
 /**
+ *
  * State of the dungeon debug menu and the settings it keeps between the
  * times that it is open. The dungeon reads it after the menu closes to run
  * the command that the menu chose.
+ *
  */
 struct DNG_DEBUG_INFO {
     s16   active;           /**< Non-zero while the menu is open. */

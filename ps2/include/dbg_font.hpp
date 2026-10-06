@@ -9,7 +9,9 @@
  */
 
 /**
+ *
  * Glyph serial numbers that pick the glyph sheet a character is drawn from.
+ *
  */
 // clang-format off
 enum DbgFontSerno {
@@ -24,7 +26,9 @@ enum DbgFontSerno {
 // clang-format on
 
 /**
+ *
  * Index of a glyph sheet in dbgCJISFont's texture tables.
+ *
  */
 // clang-format off
 enum DbgFontSheet {
@@ -37,9 +41,11 @@ enum DbgFontSheet {
 // clang-format on
 
 /**
+ *
  * Draws debug text one glyph at a time from 64x64-cell glyph sheets,
  * with an optional box and black outline behind each glyph, following
  * embedded tab, newline and toggle sequences.
+ *
  */
 class dbgCJISFont {
 public:

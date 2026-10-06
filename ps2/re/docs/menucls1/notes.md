@@ -149,3 +149,10 @@ the item number), 4 `int target_type` (UseItem stores `target->type`), 0x8..0x17
   (CItemUseTarget, 8). Read in menusys (SetItemEffect, MenuItemCommandSelect).
 - Skipped (local or compiler-generated): MenuHatena_894, init_895, MenuHatena_1byte_897, init_898,
   sn_944, st_bittable_1654, at_* literals.
+
+## Guarded item-use draft
+`MenuUseItemCheckFunc` has a guarded C++ draft covering all four target paths and their
+item-specific branches. The ridepod item comparison is `&robo_data.parts[2]`; the character
+branch reads the type of `equip[0]`; item 0x1AA uses `weapon.attribute[1]` as its recovery
+amount. The status loop counts one possible effect even when multiple bits change. Retail
+assembly remains the default until object-code matching is complete.

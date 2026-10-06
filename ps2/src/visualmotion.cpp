@@ -45,19 +45,29 @@ void mgCVisualMotionMDT::Initialize(void) {
 extern const char at_357[];
 extern const char at_358[];
 
+/**
+ *
+ * Header of a vertex weight block in motion data.
+ *
+ */
 struct VertexWeightBlock {
-    u_int frame_id;
-    int bone_id;
+    u_int frame_id; /**< Frame to which the weights belong. */
+    int bone_id;    /**< Bone that weights the vertices. */
     u_int unk_08[2];
-    u_int count;
-    u_int next;
+    u_int count; /**< Number of weight entries. */
+    u_int next;  /**< Offset of the next block. */
     u_int unk_18[2];
 };
 
+/**
+ *
+ * Weight of one vertex for a bone in motion data.
+ *
+ */
 struct VertexWeightEntry {
-    u_int vertex_id;
+    u_int vertex_id; /**< Vertex that receives the weight. */
     u_int unk_04[3];
-    float weight;
+    float weight; /**< Bone's influence on the vertex. */
     u_int unk_14[3];
 };
 
@@ -236,9 +246,14 @@ int mgCVisualMotionMDT::DataAssignMotionMDT(MDT_HEADER *header, mgCVMotionData *
     }
     return 1;
 }
+/**
+ *
+ * Header for the vertex streams written to a motion packet.
+ *
+ */
 struct mgVertexBatchHeader {
-    int stream_count[3];
-    int type;
+    int stream_count[3]; /**< Number of entries in each vertex stream. */
+    int type; /**< Vertex batch type. */
 };
 u_long128 *SetData0(int count, int type, int **index, u_long128 *packet, u_long128 *vertex, u_long128 *normal, u_long128 *uv, u_long128 *colour, mgVertexWeight *weight) {
     mgVertexBatchHeader *header = (mgVertexBatchHeader *)packet;
@@ -754,22 +769,37 @@ extern "C" void *__vt__12mgCVisualMDT[];
 extern "C" void *__vt__15mgCVisualFixMDT[];
 extern "C" void *__vt__18mgCVisualMotionMDT[];
 extern "C" void *__nw__FUiP1(u_int, void *);
+/**
+ *
+ * Fields copied while duplicating a motion visual.
+ *
+ */
 struct MotionCopyFields {
-    u_char pad[0x1C];
-    void **vptr;
-    u_char model_data[0x30];
-    mgCFrame **frame;
-    int frame_id;
-    float (*base_matrix)[4][4];
-    u_char pad_5C[4];
-    mgVu0FBOX base_box;
-    int bone[32];
-    int weight_num;
-    mgVertexWeight *weight;
+    u_char unk_0[0x1C];
+    void **vptr; /**< Virtual method table pointer. */
+    u_char model_data[0x30]; /**< Model data copied from the source visual. */
+    mgCFrame **frame; /**< Frames of the visual. */
+    int frame_id; /**< Frame number of the visual. */
+    float (*base_matrix)[4][4]; /**< Base matrices of the frames. */
+    u_char unk_5c[4];
+    mgVu0FBOX base_box; /**< Bounds of the visual. */
+    int bone[32]; /**< Bone indices. */
+    int weight_num; /**< Number of vertex weights. */
+    mgVertexWeight *weight; /**< Vertex weights. */
 };
+/**
+ *
+ * Base storage of a motion visual used during copying.
+ *
+ */
 struct MotionMDTBase {
-    u_char pad[0x1C];
+    u_char unk_0[0x1C];
 };
+/**
+ *
+ * Virtual interface used to initialize a copied motion visual.
+ *
+ */
 struct MotionMDTVirtual : MotionMDTBase {
     virtual void v0();
     virtual void v1();
@@ -783,11 +813,21 @@ struct MotionMDTVirtual : MotionMDTBase {
     virtual void v9();
     virtual void Initialize();
 };
+/**
+ *
+ * Four colour components copied with a motion visual.
+ *
+ */
 struct MotionColor {
-    float value[4];
+    float value[4]; /**< Colour components. */
 };
+/**
+ *
+ * Bone weight slots copied with a motion visual.
+ *
+ */
 struct MotionWeightSlots {
-    int slot[4][8];
+    int slot[4][8]; /**< Weight slot indices. */
 };
 mgCVisual *mgCVisualMotionMDT::Copy(mgCMemory *memory) {
     MotionCopyFields *copy;

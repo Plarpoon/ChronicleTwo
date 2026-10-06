@@ -342,7 +342,62 @@ static void CollisionFish(RACE_FISH_PARAM *fish, int count) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyoracesim", CollisionFish__FP15RACE_FISH_PARAMi);
 #endif
+#ifdef NONMATCHING
+int StepGyoRace(RACE_FISH_PARAM *fish, grRACE_INFO *race) {
+    int finished[6];
+    for (int i = 0; i < 6; ++i) {
+        race->rank[i] = 0;
+        race->goal_time[i] = 0.0f;
+    }
+    int step;
+    for (step = 0; step < race->step_max; ++step) {
+        for (int i = 0; i < race->fish_num; ++i) {
+            finished[i] = StepFish(step, &fish[i]);
+            if (finished[i] != 0 && race->goal_time[i] == 0.0f) {
+                race->goal_time[i] = (float)step - (fish[i].pos - 16.0f) / fish[i].velocity;
+            }
+        }
+        for (int i = 0; i < race->fish_num; ++i) {
+            int ahead = 0;
+            for (int j = 0; j < race->fish_num; ++j) {
+                if (i != j && fish[i].pos < fish[j].pos) {
+                    ++ahead;
+                }
+            }
+            fish[i].rank = ahead + 1;
+        }
+        CollisionFish(fish, race->fish_num);
+        LaneBattleStep(fish, race->fish_num);
+        int all_finished = 1;
+        for (int i = 0; i < race->fish_num; ++i) {
+            if (finished[i] == 0) {
+                all_finished = 0;
+            }
+        }
+        if (all_finished != 0) {
+            break;
+        }
+    }
+    for (int i = 0; i < race->fish_num; ++i) {
+        int ahead = 0;
+        for (int j = 0; j < race->fish_num; ++j) {
+            if (i != j && race->goal_time[i] > race->goal_time[j]) {
+                ++ahead;
+            }
+        }
+        race->rank[i] = ahead + 1;
+    }
+    int next_step = step + 1;
+    for (int i = 0; i <= race->after_goal_step && next_step < race->step_max; ++i, ++next_step) {
+        for (int j = 0; j < race->fish_num; ++j) {
+            StepFish(next_step, &fish[j]);
+        }
+    }
+    return next_step;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyoracesim", StepGyoRace__FP15RACE_FISH_PARAMP11grRACE_INFO);
+#endif
 
 int GetRaceDivision(float distance) {
     int division;

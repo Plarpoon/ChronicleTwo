@@ -326,6 +326,11 @@ public:
      *
      */
     struct BoundCorners { float v[32]; };
+    /**
+     *
+     * Bounding box and sphere of a frame in its local space.
+     *
+     */
     struct BoundInfo {
         sceVu0FVECTOR corner[8]; /**< Eight corners of the bounding box, each with w of 1. */
         sceVu0FVECTOR max;       /**< Maximum corner of the bounding box. */

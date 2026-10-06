@@ -15,8 +15,10 @@ class mgCFrame;
 class mgCTexture;
 
 /**
+ *
  * One outline attached to a frame of a character, kept in the character's
  * list of outlines and drawn in place of that frame.
+ *
  */
 class COutLineDraw {
 public:

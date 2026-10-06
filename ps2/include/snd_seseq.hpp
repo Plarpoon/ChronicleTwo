@@ -12,8 +12,10 @@
 class mgCMemory;
 
 /**
+ *
  * MIDI status bytes, with the channel nibble cleared, that a sound-effect
  * sequence handles.
+ *
  */
 enum sndMIDI_STATUS {
     SND_MIDI_NOTE_OFF = 0x80,    /**< Note off: key, velocity. */
@@ -26,14 +28,18 @@ enum sndMIDI_STATUS {
 };
 
 /**
+ *
  * MIDI meta event types the sequence loader recognises.
+ *
  */
 enum sndMIDI_META {
     SND_MIDI_META_END_OF_TRACK = 0x2F, /**< End of track: stops loading. */
 };
 
 /**
+ *
  * MIDI controller numbers a sound-effect sequence acts on.
+ *
  */
 enum sndMIDI_CTRL {
     SND_MIDI_CTRL_VOLUME = 7,      /**< Track volume. */
@@ -43,7 +49,9 @@ enum sndMIDI_CTRL {
 };
 
 /**
+ *
  * Values of the loop marker controller.
+ *
  */
 enum sndMIDI_LOOP {
     SND_MIDI_LOOP_START = 0, /**< Marks the event the sequence loops back to. */
@@ -51,8 +59,10 @@ enum sndMIDI_LOOP {
 };
 
 /**
+ *
  * One channel event of a sound-effect sequence, as converted from a
  * Standard MIDI File track.
+ *
  */
 struct sndSeSeqEvent {
     s16 delta;  /**< Ticks to wait after the previous event. */
@@ -63,8 +73,10 @@ struct sndSeSeqEvent {
 STATIC_ASSERT(sizeof(sndSeSeqEvent) == 0x6);
 
 /**
+ *
  * Sounding note of a sequence track, kept so that it can be stopped and
  * have its volume, pan and pitch updated.
+ *
  */
 struct sndSeSeqVoice {
     s8 active; /**< Non-zero while the note is playing. */
@@ -80,8 +92,10 @@ struct sndSeSeqVoice {
 STATIC_ASSERT(sizeof(sndSeSeqVoice) == 0x4);
 
 /**
+ *
  * Sound-effect sequence converted from a format 0 Standard MIDI File:
  * its event list and playback rate.
+ *
  */
 class sndCSeSeqData {
 public:
@@ -121,8 +135,10 @@ public:
 STATIC_ASSERT(sizeof(sndCSeSeqData) == 0x10);
 
 /**
+ *
  * Channel state of a sound-effect sequence: controller values and the
  * note it is sounding.
+ *
  */
 class sndTrack {
 public:
@@ -221,8 +237,10 @@ public:
 STATIC_ASSERT(sizeof(sndTrack) == 0x10);
 
 /**
+ *
  * Player of one sound-effect sequence on a sound port, driving each MIDI
  * channel of the sequence as a track of sound effects.
+ *
  */
 class sndCSeSeq {
 public:

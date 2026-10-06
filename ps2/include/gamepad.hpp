@@ -9,7 +9,9 @@
  */
 
 /**
+ *
  * Steps of a controller's setup, as PAD_STATUS::phase holds them.
+ *
  */
 // clang-format off
 enum PadSetupPhase {
@@ -24,7 +26,9 @@ enum PadSetupPhase {
 
 // clang-format on
 /**
+ *
  * Controller types that scePadInfoMode and the controller's data report.
+ *
  */
 // clang-format off
 enum PadTerminalId {
@@ -40,7 +44,9 @@ enum PadTerminalId {
 
 // clang-format on
 /**
+ *
  * Bits of a controller's button word, one per button.
+ *
  */
 // clang-format off
 enum PadButton {
@@ -64,7 +70,9 @@ enum PadButton {
 
 // clang-format on
 /**
+ *
  * Vibration actuators of a DualShock, as CGamePad::SetVibration selects them.
+ *
  */
 // clang-format off
 enum PadMotor {
@@ -74,7 +82,9 @@ enum PadMotor {
 
 // clang-format on
 /**
+ *
  * Input recording modes, as CGamePad::capture_mode holds them.
+ *
  */
 // clang-format off
 enum PadCaptureMode {
@@ -87,8 +97,10 @@ enum PadCaptureMode {
 #pragma cpp_extensions on
 // clang-format on
 /**
+ *
  * Defines the state of one controller: its buttons, sticks, setup
  * progress and vibration.
+ *
  */
 struct PAD_STATUS {
     int button;              /**< Pressed buttons. @see PadButton */
@@ -118,7 +130,9 @@ STATIC_ASSERT(sizeof(PAD_STATUS) == 0x4C);
 #pragma pop
 
 /**
+ *
  * Defines the automatic button repeat state of one controller.
+ *
  */
 struct PAD_REPEAT {
     int enabled;           /**< Buttons with automatic repeat. @see PadButton */
@@ -130,7 +144,9 @@ struct PAD_REPEAT {
 STATIC_ASSERT(sizeof(PAD_REPEAT) == 0x188);
 
 /**
+ *
  * Defines one frame of recorded first-controller input.
+ *
  */
 struct PAD_CAPTURE_FRAME {
     u16 button;  /**< Pressed buttons. @see PadButton */
@@ -164,9 +180,11 @@ enum {
 };
 
 /**
+ *
  * Manages both game controllers: reads them, keeps the previous frame's
  * state to find newly pressed and released buttons, applies automatic
  * repeat and input locks, drives vibration, and records or replays input.
+ *
  */
 class CGamePad {
 public:

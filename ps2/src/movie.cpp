@@ -58,8 +58,13 @@ extern int stepMainExitFlag;
 extern VoBuf voBuf;
 extern AudioDec audioDec;
 extern u8 _0_buf[2048];
+/**
+ *
+ * Memory pools used by movie playback.
+ *
+ */
 struct MoviePools {
-    mgCMemory *pool[6];
+    mgCMemory *pool[6]; /**< Movie playback pools. */
 };
 extern MoviePools at_344;
 extern MoviePools at_349;
@@ -489,45 +494,43 @@ int pcmCallback(sceMpeg *mpeg, sceMpegCbDataStr *str, void *user) {
     return result;
 }
 #pragma global_optimizer off
+#ifdef NONMATCHING
 int vblankHandler(int irq) {
     if (isCountVblank) {
         VoTag *tag = voBufGetTag(&voBuf);
-        if (tag == 0) {
+        if (tag == NULL) {
             frd++;
-            asm {
-                sync
-                ei
+        } else {
+            if (Cb == 0 && tag->status == VO_TAG_STATUS_READY) {
+                sceDmaSend(DmaCH2, tag->v[0]);
+                tag->status = VO_TAG_STATUS_FIRST;
+            } else if (Cb == 1 && tag->status == VO_TAG_STATUS_FIRST) {
+                sceDmaSend(DmaCH2, tag->v[1]);
+                tag->status = VO_TAG_STATUS_FREE;
+                isFrameEnd = 1;
             }
-            return 0;
+            Cb ^= 1;
         }
-        if (Cb == 0 && tag->status == 2) {
-            sceDmaSend(DmaCH2, tag->v[0]);
-            tag->status = 1;
-        } else if (Cb == 1 && tag->status == 1) {
-            sceDmaSend(DmaCH2, tag->v[1]);
-            tag->status = 0;
-            isFrameEnd = 1;
-        }
-        Cb ^= 1;
     }
-    asm {
-        sync
-        ei
-    }
+    EIntr();
     return 0;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", vblankHandler__Fi);
+#endif
 #pragma global_optimizer reset
+#ifdef NONMATCHING
 int handler_endimage(int irq) {
     if (isFrameEnd) {
         voBufDecCount(&voBuf);
         isFrameEnd = 0;
     }
-    asm {
-        sync
-        ei
-    }
+    EIntr();
     return 0;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", handler_endimage__Fi);
+#endif
 void voBufCreate(VoBuf *buf, VoData *data, VoTag *tags, int count) {
     buf->data = data;
     buf->tag = tags;

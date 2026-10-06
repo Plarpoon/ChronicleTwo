@@ -14,9 +14,31 @@
 #include <cstdio>
 #include <cstring>
 
-union CopyVector { float f[4]; u_long128 word; };
-struct CopyEventName { char text[16]; };
-struct CopyEventWords { int value[16]; };
+/**
+ *
+ * Scene event vector viewed as floats or a quadword.
+ *
+ */
+union CopyVector {
+    float f[4]; /**< Floating point components. */
+    u_long128 word; /**< The same components as one quadword. */
+};
+/**
+ *
+ * Name copied into a scene event record.
+ *
+ */
+struct CopyEventName {
+    char text[16]; /**< Event name. */
+};
+/**
+ *
+ * Integer words copied into a scene event record.
+ *
+ */
+struct CopyEventWords {
+    int value[16]; /**< Event data words. */
+};
 extern float col_1003[4][4];
 extern float at_1013__4[4];
 extern char at_858__3[];

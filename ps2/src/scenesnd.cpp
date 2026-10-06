@@ -21,8 +21,13 @@ extern char at_1132__4[];
 extern char at_1194[];
 extern char at_1195[];
 extern char at_1766__2[];
+/**
+ *
+ * Pair of characters used to break a line of scene text.
+ *
+ */
 struct LineBreakPair {
-    s8 chars[2];
+    s8 chars[2]; /**< Line break characters. */
 };
 extern LineBreakPair at_1615__2;
 
@@ -134,7 +139,32 @@ void CScene::InitLooSeMngr() {
 CScene::BGM_INFO *CScene::GetActiveBgmInfo() {
     return &bgm[bgm_no];
 }
+#ifdef NONMATCHING
+void CScene::PlayBGM(int play_no, int volume, float scale) {
+    if (skip_play_bgm != 0) {
+        skip_play_bgm = 0;
+        return;
+    }
+    BGM_INFO *info = GetActiveBgmInfo();
+    if (info->play_no != play_no) {
+        StopBGM(info->play_no);
+    }
+    info->vol = volume;
+    info->volf = scale;
+    if (info->vol < 0) {
+        info->vol = sndGetSeDefVol(info->snd_id, play_no);
+    }
+    int limited = sndVolLimit(fptosi((float)info->vol * scale));
+    if (limited < 0) {
+        limited = 1;
+    }
+    sndSePlayV(info->snd_id, play_no, limited, 0);
+    info->play_no = play_no;
+    info->time_vol = 0;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", PlayBGM__6CSceneFiif);
+#endif
 void CScene::PauseBGM(void) {
     BGM_INFO *info = GetActiveBgmInfo();
     if (info->play_no >= 0) {
@@ -788,7 +818,7 @@ void CScene::SePlayFoot(int ground, int foot, float *position) {
     sndGetVolPan(&volume, &pan, position, near_distance, far_distance);
     sndSePlayVPf(se_base_id, foot + ground * 2, volume, pan, 0);
 }
-extern "C" char *GetLine__FPPcPcPc__2(char **lines, char *cursor, char *end) {
+static char *GetLine(char **lines, char *cursor, char *end) {
     LineBreakPair line_break = at_1615__2;
     int line_index;
     int length;
@@ -853,7 +883,7 @@ void CScene::LoadSndFileInfo(char *src, int size) {
     columns[i] = NULL;
     snd_file_num = 0;
     while (cursor < end) {
-        cursor = GetLine__FPPcPcPc__2(columns, cursor, end);
+        cursor = GetLine(columns, cursor, end);
         if ((s8)columns[0][0] >= '0' && (s8)columns[0][0] < ':') {
             int id = atoi(columns[0]);
             SND_FILE_INFO *entry = &snd_file[snd_file_num++];

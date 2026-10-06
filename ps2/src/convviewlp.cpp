@@ -15,7 +15,6 @@
 #include "snd_mngr.hpp"
 #include <libmc.h>
 
-// File-local data supplied by the retail assembly while data migration is pending.
 extern CScene *MovieScene__2;
 extern SAVE_CONVERT_WORK *SAVEDATA_BUFFER;
 extern mgCMemory buf0_816, buf1_819, dbuf0_822, dbuf1_825;

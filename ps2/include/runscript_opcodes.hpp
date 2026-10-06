@@ -15,8 +15,10 @@ class CActiveMonster;
 class mgCMemory;
 
 /**
+ *
  * Pairs one external function a monster script can call with the number
  * the script calls it by.
+ *
  */
 struct RS_EXTFUNC_INFO {
     int (*func)(RS_STACKDATA *, int); /**< External function to run; null ends the list. */

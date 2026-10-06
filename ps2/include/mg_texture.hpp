@@ -18,8 +18,10 @@ class mgCTextureAnime;
 struct sceVif1Packet;
 
 /**
+ *
  * Block numbers and table sizes of the texture manager that the code
  * spells as constants.
+ *
  */
 enum mgTEXTURE_CONST {
     MG_TEXTURE_HASH_SIZE = 101,          /**< Chains in the manager's name hash table. */
@@ -32,7 +34,9 @@ enum mgTEXTURE_CONST {
 };
 
 /**
+ *
  * Filtering modes mgCTexture::Bilinear sets in a texture's TEX1.
+ *
  */
 enum mgTEXTURE_FILTER {
     MG_TEXTURE_FILTER_NEAREST = 0, /**< Point sampling, and nearest mip level for mip-mapped textures. */
@@ -41,8 +45,10 @@ enum mgTEXTURE_FILTER {
 };
 
 /**
+ *
  * Archive formats GetIMGVersion recognises from the first three bytes
  * of an IMG texture archive.
+ *
  */
 enum mgIMG_VERSION {
     MG_IMG_VERSION_NONE = 0, /**< Not an IMG archive. */
@@ -52,7 +58,9 @@ enum mgIMG_VERSION {
 };
 
 /**
+ *
  * Pixel formats of a TIM2 picture, as TM2_head::image_type holds them.
+ *
  */
 enum TIM2_IMAGE_TYPE {
     TIM2_RGB16 = 1,  /**< Sixteen-bit colour. */
@@ -63,8 +71,10 @@ enum TIM2_IMAGE_TYPE {
 };
 
 /**
+ *
  * A TIM2 image as the texture manager reads it: the file header followed
  * directly by the first picture's header and its mip-map header.
+ *
  */
 struct TM2_PICTURE {
     u_int total_size;         /**< Bytes of the first picture; its header starts here. */
@@ -87,6 +97,11 @@ struct TM2_PICTURE {
     int mip_sizes[1];
 };
 #pragma cpp_extensions on
+/**
+ *
+ * TIM2 file header followed by the first picture's metadata.
+ *
+ */
 struct TM2_head {
     char tag[4];              /**< File signature. */
     char unk_04[0xC];
@@ -114,8 +129,10 @@ struct TM2_head {
 #pragma cpp_extensions reset
 
 /**
+ *
  * Leading header of an IMG texture archive; the entries follow at offset
  * 0x10.
+ *
  */
 struct mgIMG_FILE_HEADER {
     char tag[4];  /**< "IMG", "IM2" or "IM3". @see mgIMG_VERSION */
@@ -126,7 +143,9 @@ struct mgIMG_FILE_HEADER {
 STATIC_ASSERT(sizeof(mgIMG_FILE_HEADER) == 0x10);
 
 /**
+ *
  * One picture entry of an IMG or IM2 texture archive.
+ *
  */
 struct mgIMG1_HEADER {
     char name[0x20]; /**< Name the picture is registered under. */
@@ -136,13 +155,19 @@ struct mgIMG1_HEADER {
 STATIC_ASSERT(sizeof(mgIMG1_HEADER) == 0x30);
 
 /**
- * One entry of an IM3 texture archive, which is also the form
- * mgGetIMGHeader gives the entries of every IMG version in.
+ *
+ * Copy of an IMG entry's picture name.
+ *
  */
 struct IMG_HEADER_NAME {
-    char bytes[0x20];
+    char bytes[0x20]; /**< Name bytes. */
 };
 
+/**
+ *
+ * One entry of an IM3 texture archive, also returned for entries of other IMG versions.
+ *
+ */
 struct mgIMG_HEADER {
     union {
     char name[0x20]; /**< Name the picture is registered under; a leading '#' marks a texture animation script. */
@@ -163,8 +188,10 @@ struct mgIMG_HEADER {
 STATIC_ASSERT(sizeof(mgIMG_HEADER) == 0x40);
 
 /**
+ *
  * Texture blocks each group of an IM3 archive was entered into, as
  * EnterIMGFile reports them.
+ *
  */
 class mgCEnterIMGInfo {
 public:
@@ -174,9 +201,11 @@ public:
 STATIC_ASSERT(sizeof(mgCEnterIMGInfo) == 0x100);
 
 /**
+ *
  * One texture known to the manager: its size and format, the GS register
  * values it is drawn with, where its pixels and palette are in main memory,
  * and its link in its texture block's list.
+ *
  */
 class mgCTexture {
 public:
@@ -231,9 +260,11 @@ public:
 STATIC_ASSERT(sizeof(mgCTexture) == 0x70);
 
 /**
+ *
  * One texture block: the list of textures entered into it, which are placed
  * in VRAM and uploaded together, and the texture animation that plays on
  * them.
+ *
  */
 class mgCTextureBlock {
 public:
@@ -281,8 +312,10 @@ public:
 STATIC_ASSERT(sizeof(mgCTextureBlock) == 0x10);
 
 /**
+ *
  * Link of the texture manager's name hash table, chaining the textures
  * whose names hash alike.
+ *
  */
 struct mgTEXTURE_HASH {
     mgCTexture *texture;  /**< Texture the link refers to. */
@@ -291,10 +324,12 @@ struct mgTEXTURE_HASH {
 STATIC_ASSERT(sizeof(mgTEXTURE_HASH) == 8);
 
 /**
+ *
  * Registry of every texture the game has entered: pools of textures and
  * hash links taken from an mgCMemory, the texture blocks they are grouped
  * into, and the VRAM layout the blocks are uploaded into, with fixed
  * textures allocated downwards from the top.
+ *
  */
 class mgCTextureManager {
 public:

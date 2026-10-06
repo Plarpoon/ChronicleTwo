@@ -153,6 +153,10 @@ No texture: 5 qw. Texture and !(flags&1): 7 qw. Otherwise 10 qw. Sets `prev_tex`
 - GetScrPad -> `u_int*`; SendDMA(void* dst, int qwc): DMA ch8 (fromSPR), MADR = dst & 0x0FFFFFFF,
   SADR = scratchpad half, then toggles buff_id. CreateFacePacket/Prim RenderInfo write into the
   scratchpad when the packet address has top nibble 2, and flush through SendDMA every 0x514 words.
+  A guarded C++ draft sets the channel registers and alternates the scratchpad
+  buffers. It waits with `sceDmaSync` when the previous transfer is pending;
+  retail waits on the COP0 DMA completion condition, so the draft does not
+  match the handwritten instruction sequence.
 - mgSetPkTEX0(p, tex0, tex1[, texa]): writes TEX1 (reg 0x14) first, then TEX0 (6) [, TEXA 0x3B];
   returns 4 / 5. mgSetPkTexFlush_TagCnt returns 3 (writes only when p != NULL).
 - SetPointLight(p, m0, m1): VIF UNPACK 8 qw to 0x2D, both 4x4 matrices; returns 9. What each

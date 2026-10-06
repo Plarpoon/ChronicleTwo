@@ -13,7 +13,9 @@
 class CScene;
 
 /**
+ *
  * Stages of the loading-screen thread, as its loop step holds them.
+ *
  */
 // clang-format off
 enum NowLoadingStep {
@@ -25,8 +27,10 @@ enum NowLoadingStep {
 // clang-format on
 
 /**
+ *
  * Settings a loop gives the loading screen: the texture block its image is
  * entered into, the memory the image is loaded into, and how many steps fill the bar.
+ *
  */
 struct NowLoadingInfo {
     int       tex_block;  /**< Texture block the loading image is entered into, reloaded and deleted from. */
@@ -48,8 +52,10 @@ struct NowLoadingInfo {
 STATIC_ASSERT(sizeof(NowLoadingInfo) == 0x3C);
 
 /**
+ *
  * What a loop tells the pause screen when it pauses: whether the running event
  * can be skipped, and the scene whose music resumes afterwards.
+ *
  */
 struct PAUSE_INFO {
     int     event_skip; /**< Non-zero while a skippable event runs, offering the skip button. */

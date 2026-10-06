@@ -13,6 +13,7 @@
 #include "mg_math.hpp"
 #include "mg_memory.hpp"
 
+
 // Code (.text)
 int CCollision::InsidePoint(float *point) {
     return mgClipBoxVertex(point, bbox.max, bbox.min) != 0;
@@ -140,95 +141,27 @@ int CCollisionMDT::GetMaxY(float *position) {
     return found;
 }
 
+#ifdef NONMATCHING
 int CCollisionMDT::PickUpNearPoly(CCPoly *out, const mgVu0FBOX &box, int max) {
-    float query_max[4];
-    float query_min[4];
-    float poly_max[4];
-    float poly_min[4];
-    int i;
-    int num;
-    CCPoly *p;
-
-    if (poly == 0) {
+    if (poly == NULL || !mgClipBox((float *)box.max, (float *)box.min, bbox.max, bbox.min)) {
         return 0;
     }
 
-    if (box.min[0] > bbox.max[0]) {
-        return 0;
-    }
-
-    if (box.min[1] > bbox.max[1]) {
-        return 0;
-    }
-
-    if (box.min[2] > bbox.max[2]) {
-        return 0;
-    }
-
-    if (box.max[0] < bbox.min[0]) {
-        return 0;
-    }
-
-    if (box.max[1] < bbox.min[1]) {
-        return 0;
-    }
-
-    if (box.max[2] < bbox.min[2]) {
-        return 0;
-    }
-
-    i = 0;
-    num = 0;
-
-    query_max[0] = *(const volatile float *)&box.max[0];
-    query_max[1] = box.max[1];
-    query_max[2] = box.max[2];
-    query_max[3] = 1.0f;
-    query_min[0] = box.min[0];
-    query_min[1] = box.min[1];
-    query_min[2] = box.min[2];
-    query_min[3] = 1.0f;
-
-    {
-        register float *held_min;
-        register float *held_max;
-        held_max = query_max;
-        held_min = query_min;
-
-        asm {
-            lqc2 $vf10, 0x0(held_max)
-            lqc2 $vf11, 0x0(held_min)
+    int count = 0;
+    for (int i = 0; i < poly_count; i++) {
+        sceVu0FVECTOR poly_max;
+        sceVu0FVECTOR poly_min;
+        mgVectorMaxMin(poly_max, poly_min, poly[i].vertex[0], poly[i].vertex[1], poly[i].vertex[2]);
+        if (mgClipBox((float *)box.max, (float *)box.min, poly_max, poly_min)) {
+            out[count++] = poly[i];
+            if (count >= max) break;
         }
     }
-
-    p = poly;
-    for (; i < poly_count; i++, p++) {
-        mgVectorMaxMin(poly_max, poly_min, p->vertex[0], p->vertex[1], p->vertex[2]);
-
-        if (mgClipBox(query_max, query_min, poly_max, poly_min) != 0) {
-            max--;
-            num++;
-            *(u_long128 *)out->vertex[0] = *(u_long128 *)p->vertex[0];
-            *(u_long128 *)out->vertex[1] = *(u_long128 *)p->vertex[1];
-            *(u_long128 *)out->vertex[2] = *(u_long128 *)p->vertex[2];
-            out->ground_kind = p->ground_kind;
-            out->foot_sound = p->foot_sound;
-            out->area_kind = p->area_kind;
-            out->ignore_mask = p->ignore_mask;
-            out->parts_no = p->parts_no;
-            out->unk_4a = p->unk_4a;
-            out->unk_4c = p->unk_4c;
-            *(u_long128 *)out->normal = *(u_long128 *)p->normal;
-            out++;
-
-            if (max < 1) {
-                break;
-            }
-        }
-    }
-
-    return num;
+    return count;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/collision", PickUpNearPoly__13CCollisionMDTFP6CCPolyRC9mgVu0FBOXi);
+#endif
 
 int CCollision::Intersection(float *from, float *to, float *hit) {
     return 0;
@@ -255,144 +188,72 @@ int CColFrame::InsidePoint(float *point) {
  * transforms trance_normal makes.
  */
 #pragma force_active on
-static void pre_trance_normal(float (*matrix)[4]) {
-    asm {
-        lqc2 $vf10, 0x0($4)
-        lqc2 $vf11, 0x10($4)
-        lqc2 $vf12, 0x20($4)
-        lqc2 $vf13, 0x30($4)
-    }
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/collision", pre_trance_normal__FPA4_f);
 
 /**
  * Transforms a triangle's corners in place by the matrix pre_trance_normal
  * loaded, and writes the unnormalised normal of the transformed triangle.
  */
-static void trance_normal(float *v0, float *v1, float *v2, float *normal) {
-    asm {
-        lqc2 $vf16, 0x0($4)
-        lqc2 $vf17, 0x10($4)
-        lqc2 $vf18, 0x20($4)
-        vmulax.xyzw $ACC, $vf10, $vf16x
-        vmadday.xyzw $ACC, $vf11, $vf16y
-        vmaddaz.xyzw $ACC, $vf12, $vf16z
-        vmaddw.xyzw $vf16, $vf13, $vf16w
-        vmulax.xyzw $ACC, $vf10, $vf17x
-        vmadday.xyzw $ACC, $vf11, $vf17y
-        vmaddaz.xyzw $ACC, $vf12, $vf17z
-        vmaddw.xyzw $vf17, $vf13, $vf17w
-        vmulax.xyzw $ACC, $vf10, $vf18x
-        vmadday.xyzw $ACC, $vf11, $vf18y
-        vmaddaz.xyzw $ACC, $vf12, $vf18z
-        vmaddw.xyzw $vf18, $vf13, $vf18w
-        vsub.xyzw $vf20, $vf17, $vf16
-        vsub.xyzw $vf21, $vf18, $vf16
-        sqc2 $vf16, 0x0($4)
-        sqc2 $vf17, 0x0($5)
-        sqc2 $vf18, 0x0($6)
-        vnop
-        vopmula.xyz $ACC, $vf20, $vf21
-        vopmsub.xyz $vf22, $vf21, $vf20
-        sqc2 $vf22, 0x0($7)
-    }
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/collision", trance_normal__FPfPfPfPf);
 
 #pragma force_active reset
-int CColFrame::PickUpNearPoly(CCPoly *out, const mgVu0FBOX &box, int max) {
-    sceVu0FVECTOR corner[8];
-    sceVu0FVECTOR local_corner[8];
-    sceVu0FVECTOR low_max;
-    sceVu0FVECTOR low_min;
-    sceVu0FVECTOR high_max;
-    sceVu0FVECTOR high_min;
-    sceVu0FVECTOR min;
-    sceVu0FVECTOR max_corner;
-    sceVu0FMATRIX lw_matrix;
-    sceVu0FMATRIX inverse_matrix;
-    mgVu0FBOX     local_box;
-    int           num;
-    int           picked;
-    CColFrame    *frame;
+#ifdef NONMATCHING
+void pre_trance_normal(float (*matrix)[4]);
+void trance_normal(float *v0, float *v1, float *v2, float *normal);
 
-    num = 0;
+int CColFrame::PickUpNearPoly(CCPoly *out, const mgVu0FBOX &box, int max) {
     if (flags == COL_FRAME_FLAG_NO_CHILDREN) {
         return 0;
     }
-
-    if (collision != 0 && (flags & COL_FRAME_FLAG_SELF)) {
-        GetLWMatrix(lw_matrix);
-        GetInverseMatrix(inverse_matrix);
-
-        *(u_long128 *)min = *(u_long128 *)box.min;
-        *(u_long128 *)max_corner = *(u_long128 *)box.max;
-
-        corner[0][0] = min[0];
-        corner[0][1] = min[1];
-        corner[0][2] = min[2];
-        corner[0][3] = 1.0f;
-        corner[1][0] = max_corner[0];
-        corner[1][1] = min[1];
-        corner[1][2] = min[2];
-        corner[1][3] = 1.0f;
-        corner[2][0] = min[0];
-        corner[2][1] = max_corner[1];
-        corner[2][2] = min[2];
-        corner[2][3] = 1.0f;
-        corner[3][0] = max_corner[0];
-        corner[3][1] = max_corner[1];
-        corner[3][2] = min[2];
-        corner[3][3] = 1.0f;
-        corner[4][0] = min[0];
-        corner[4][1] = min[1];
-        corner[4][2] = max_corner[2];
-        corner[4][3] = 1.0f;
-        corner[5][0] = max_corner[0];
-        corner[5][1] = min[1];
-        corner[5][2] = max_corner[2];
-        corner[5][3] = 1.0f;
-        corner[6][0] = min[0];
-        corner[6][1] = max_corner[1];
-        corner[6][2] = max_corner[2];
-        corner[6][3] = 1.0f;
-        corner[7][0] = max_corner[0];
-        corner[7][1] = max_corner[1];
-        corner[7][2] = max_corner[2];
-        corner[7][3] = 1.0f;
-
-        mgApplyMatrixN(local_corner, inverse_matrix, corner, 8);
-        mgVectorMaxMin(low_max, low_min, local_corner[0], local_corner[1], local_corner[2], local_corner[3]);
-        mgVectorMaxMin(high_max, high_min, local_corner[4], local_corner[5], local_corner[6], local_corner[7]);
-        mgVectorMaxMin(local_box.max, local_box.min, low_max, high_max, low_min, high_min);
-
-        num = collision->PickUpNearPoly(out, local_box, max);
-
-        pre_trance_normal(lw_matrix);
-        for (int i = 0; i < num; i++, out++) {
-            trance_normal(out->vertex[0], out->vertex[1], out->vertex[2], out->normal);
+    int count = 0;
+    if (collision != NULL && (flags & COL_FRAME_FLAG_SELF)) {
+        sceVu0FMATRIX world;
+        sceVu0FMATRIX inverse;
+        GetLWMatrix(world);
+        GetInverseMatrix(inverse);
+        sceVu0FVECTOR corners[8];
+        for (int i = 0; i < 8; i++) {
+            corners[i][0] = (i & 1) ? box.max[0] : box.min[0];
+            corners[i][1] = (i & 2) ? box.max[1] : box.min[1];
+            corners[i][2] = (i & 4) ? box.max[2] : box.min[2];
+            corners[i][3] = 1.0f;
+        }
+        sceVu0FVECTOR transformed[8];
+        mgApplyMatrixN(transformed, inverse, corners, 8);
+        mgVu0FBOX local_box;
+        sceVu0FVECTOR max0, min0, max1, min1;
+        mgVectorMaxMin(max0, min0, transformed[0], transformed[1], transformed[2], transformed[3]);
+        mgVectorMaxMin(max1, min1, transformed[4], transformed[5], transformed[6], transformed[7]);
+        mgVectorMaxMin(local_box.max, local_box.min, max0, max1, min0, min1);
+        count = collision->PickUpNearPoly(out, local_box, max);
+        pre_trance_normal(world);
+        for (int i = 0; i < count; i++) {
+            trance_normal(out[i].vertex[0], out[i].vertex[1], out[i].vertex[2], out[i].normal);
         }
     }
-
-    max -= num;
-    if (max <= 0) {
-        return num;
+    int rest = max - count;
+    if (rest <= 0) {
+        return count;
     }
-    if (!(flags & COL_FRAME_FLAG_NO_CHILDREN)) {
-        for (frame = (CColFrame *)child; frame != 0; frame = (CColFrame *)frame->brother) {
-            if (!(flags & COL_FRAME_FLAG_UNK_4)) {
-                picked = frame->PickUpNearPoly(out, box, max);
-                out += picked;
-                num += picked;
-                max -= picked;
-
-                if (max < 1) {
+    if ((flags & COL_FRAME_FLAG_NO_CHILDREN) == 0) {
+        CColFrame *node = (CColFrame *)child;
+        while (node != NULL) {
+            if ((flags & COL_FRAME_FLAG_UNK_4) == 0) {
+                int added = node->PickUpNearPoly(out + count, box, rest);
+                count += added;
+                rest -= added;
+                if (rest <= 0) {
                     break;
                 }
             }
+            node = (CColFrame *)node->brother;
         }
     }
-
-    return num;
+    return count;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/collision", PickUpNearPoly__9CColFrameFP6CCPolyRC9mgVu0FBOXi);
+#endif
 
 int CCollision::PickUpNearPoly(CCPoly *poly, const mgVu0FBOX &box, int max) {
     return 0;

@@ -16,10 +16,23 @@
 #include "occlusion.hpp"
 #include "mapparts.hpp"
 
-struct SphereVec { float v[3]; float w; };
+/**
+ *
+ * Centre and radius of a bounding sphere.
+ *
+ */
+struct SphereVec {
+    float v[3]; /**< Centre coordinates. */
+    float w;    /**< Radius. */
+};
+/**
+ *
+ * Map part vector viewed as floats or a quadword.
+ *
+ */
 union PartsVector {
-    float values[4];
-    u_long128 quad;
+    float values[4]; /**< Floating point components. */
+    u_long128 quad;   /**< The same components as one quadword. */
 };
 extern char at_244[];
 #include <cmath>
@@ -34,28 +47,38 @@ extern char at_244[];
 #include "mglib.hpp"
 #include "occlusion.hpp"
 
+/**
+ *
+ * List node that tracks animation of a map part.
+ *
+ */
 struct PartsAnimeNode {
-    PartsAnimeNode *next;
-    PartsAnimeNode *prev;
-    u_char pad_08[8];
-    CFuncPoint *func_point;
-    int frame;
-    int piece;
-    int parts;
-    int stop;
-    int back;
-    u_char pad_28[0x18];
-    void **vptr;
-    u_char pad_44[0xC];
+    PartsAnimeNode *next; /**< Following animation node. */
+    PartsAnimeNode *prev; /**< Previous animation node. */
+    u_char unk_08[8];
+    CFuncPoint *func_point; /**< Function point tied to the animation. */
+    int frame; /**< Current animation frame. */
+    int piece; /**< Piece index. */
+    int parts; /**< Part index. */
+    int stop;  /**< Whether animation stops. */
+    int back;  /**< Whether animation runs backward. */
+    u_char unk_28[0x18];
+    void **vptr; /**< Virtual method table pointer. */
+    u_char unk_44[0xC];
 };
+/**
+ *
+ * List node holding one map piece.
+ *
+ */
 struct PartsPieceNode {
-    PartsPieceNode *next;
-    PartsPieceNode *prev;
-    u_char pad_08[8];
-    void **piece_vptr;
-    u_char pad_14[0xAC];
-    void **vptr;
-    u_char pad_C4[0xC];
+    PartsPieceNode *next; /**< Following piece node. */
+    PartsPieceNode *prev; /**< Previous piece node. */
+    u_char unk_08[8];
+    void **piece_vptr; /**< Virtual method table of the piece. */
+    u_char unk_14[0xAC];
+    void **vptr; /**< Virtual method table of the list node. */
+    u_char unk_c4[0xC];
 };
 extern "C" void *__vt__17CList_9CMapPiece_[];
 extern "C" void *__vt__9mgCObject[];

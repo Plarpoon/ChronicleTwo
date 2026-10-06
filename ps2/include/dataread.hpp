@@ -10,8 +10,10 @@
  */
 
 /**
+ *
  * Identifies the device a file path names with its prefix, which decides
  * how the file is opened and read.
+ *
  */
 enum FILE_DEV {
     FILE_DEV_DEFAULT = -1, /**< No prefix; the current default device applies. */
@@ -22,8 +24,10 @@ enum FILE_DEV {
 };
 
 /**
+ *
  * Selects what LoadFile2 does with the file it finds: read it whole,
  * only report its size, or leave it open for a background read.
+ *
  */
 enum LOAD_FILE_MODE {
     LOAD_FILE_READ = 0, /**< Read the whole file into the buffer. */
@@ -32,8 +36,10 @@ enum LOAD_FILE_MODE {
 };
 
 /**
+ *
  * Selects the direction the file cache hands out memory in from the
  * address it was given, or that the cache is disabled.
+ *
  */
 enum FILE_CACHE_TYPE {
     FILE_CACHE_NONE = 0, /**< The cache is disabled. */
@@ -42,8 +48,10 @@ enum FILE_CACHE_TYPE {
 };
 
 /**
+ *
  * Locates one file inside DATA.DAT, as a record of the
  * index that is read from DATA.HD4 at start-up.
+ *
  */
 struct DATA_HEADER {
     union {
@@ -56,8 +64,10 @@ struct DATA_HEADER {
 STATIC_ASSERT(sizeof(DATA_HEADER) == 0xC);
 
 /**
+ *
  * Tracks one file queued for reading in the background
  * while the game keeps running.
+ *
  */
 struct BG_READ_INFO {
     int        busy;      /**< Whether the queue slot is allocated. */
@@ -76,8 +86,10 @@ struct BG_READ_INFO {
 STATIC_ASSERT(sizeof(BG_READ_INFO) == 0x120);
 
 /**
+ *
  * Holds one file kept in the file cache, so a later
  * load of the same name is copied from memory.
+ *
  */
 struct FILE_CACHE {
     u_long128 *address;   /**< Where the file's data is cached; null for a free entry. */
@@ -89,8 +101,10 @@ struct FILE_CACHE {
 STATIC_ASSERT(sizeof(FILE_CACHE) == 0x40);
 
 /**
+ *
  * Describes one file in a pack. A first name byte of zero ends the table,
  * and every offset counts from the start of the entry itself.
+ *
  */
 struct PACK_ENTRY {
     char name[64]; /**< Null-terminated file name; empty ends the table. */

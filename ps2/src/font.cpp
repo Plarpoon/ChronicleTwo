@@ -11,14 +11,29 @@
 
 extern "C" void __ct__11mgCDrawPrimFv(void *);
 
+/**
+ *
+ * Character codes for the external glyphs.
+ *
+ */
 struct GaijiCodeTable {
-    u16 code[24];
+    u16 code[24]; /**< External glyph codes. */
 };
+/**
+ *
+ * Wide character codes for the half-width kana glyphs.
+ *
+ */
 struct HankakuKanaWideTable {
-    u16 code[63];
+    u16 code[63]; /**< Wide kana codes. */
 };
+/**
+ *
+ * Single byte character codes for the half-width kana glyphs.
+ *
+ */
 struct HankakuKanaTable {
-    u8 code[63];
+    u8 code[63]; /**< Single byte kana codes. */
 };
 extern mgRect<int> at_784__2;
 extern char at_812__3[];
@@ -73,11 +88,11 @@ int GetGaijiH(int code) {
     }
     return 0;
 }
-extern "C" RECT GetRectFontTex__FiPi(int code, int *page) {
-    int font = code;
-    if (code >= 0xFDE0 && code < 0xFDF8) {
+RECT GetRectFontTex(int font_no, int *tex_no) {
+    int font = font_no;
+    if (font_no >= 0xFDE0 && font_no < 0xFDF8) {
         if ((LanguageCode == 2 || LanguageCode == 3 || LanguageCode == 4) || LanguageCode == 5) {
-            font = (u16)GetFontNoFromFontGaijiCode((u16)code);
+            font = (u16)GetFontNoFromFontGaijiCode((u16)font_no);
         }
     }
     struct {
@@ -90,15 +105,15 @@ extern "C" RECT GetRectFontTex__FiPi(int code, int *page) {
         return *(RECT *)&rect;
     }
     if (font < 0x260) {
-        *page = 0;
+        *tex_no = 0;
     } else if (font < 0x4C0) {
-        *page = 1;
+        *tex_no = 1;
         font -= 0x260;
     } else if (font < 0x720) {
-        *page = 2;
+        *tex_no = 2;
         font -= 0x4C0;
     } else if (font < 0x980) {
-        *page = 3;
+        *tex_no = 3;
         font -= 0x720;
     } else {
         return *(RECT *)&rect;

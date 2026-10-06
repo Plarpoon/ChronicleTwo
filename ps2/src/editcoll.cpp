@@ -17,31 +17,20 @@ struct CollisionRow {
 #include "mg_memory.hpp"
 
 // Code (.text)
+#ifdef NONMATCHING
 int ClipBoxXZ(float *max_a, float *min_a, float *max_b, float *min_b) {
-    register int status;
-
-    // Only the sign flags of the two subtractions matter: any negative component means apart.
-    asm {
-        lqc2 $vf10, 0x0($4)
-        lqc2 $vf11, 0x0($5)
-        lqc2 $vf1, 0x0($6)
-        lqc2 $vf2, 0x0($7)
-        vnop
-        vnop
-        vnop
-        ctc2.ni $0, $vi16
-        vsub.xz $vf25, $vf10, $vf2
-        vsub.xz $vf25, $vf1, $vf11
-        vnop
-        vnop
-        vnop
-        vnop
-        vnop
-        cfc2.ni status, $vi16
+    // VU0's sticky sign flag rejects the boxes when either X or Z gap is negative.
+    if (max_a[0] - min_b[0] < 0.0f || max_a[2] - min_b[2] < 0.0f) {
+        return 0;
     }
-
-    return (status & MG_VU0_STATUS_SIGN_STICKY) == 0;
+    if (max_b[0] - min_a[0] < 0.0f || max_b[2] - min_a[2] < 0.0f) {
+        return 0;
+    }
+    return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/editcoll", ClipBoxXZ__FPfPfPfPf);
+#endif
 #pragma global_optimizer reset
 
 #ifdef NONMATCHING

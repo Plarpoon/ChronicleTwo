@@ -116,7 +116,15 @@ int CEditEvent::StartEvent(CSceneEventData *event_data) {
 extern "C" char at_1133__5[], at_1134__4[], at_1135__4[], at_1136__3[], at_1137__3[], at_1138__3[], at_1139[], at_916__4[];
 extern "C" u_long128 at_920__4;
 extern "C" MENU_INIT_ARG *MenuInfo__2;
-union EditEventNames { char *name[4]; u_long128 qw; };
+/**
+ *
+ * Four edit event names stored in one quadword.
+ *
+ */
+union EditEventNames {
+    char *name[4]; /**< Event names. */
+    u_long128 qw;  /**< The same pointers as one quadword. */
+};
 extern "C" int PreLoadSync__Fv();
 
 static inline void close_message(ClsMes *message) {

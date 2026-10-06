@@ -33,6 +33,7 @@ extern float MicPos[4];
 extern float MicDir[4];
 extern "C" int WaitSema(int id);
 extern "C" int SignalSema(int id);
+extern "C" int fptosi(float value);
 static sndPortInfo *GetPortInfo(int port);
 static sndSeInfo *GetSeInfo(u32 snd_id, int index);
 static sndCSeSeq *GetSeSeq(int seq_id);
@@ -1205,7 +1206,22 @@ void sndSetSeVolf(unsigned int snd_id, int se_no, float vol, int voice) {
     sndSetSeVol(snd_id, se_no, volume, voice);
 }
 
+#ifdef NONMATCHING
+void sndSetSePanf(unsigned int snd_id, int se_no, float pan, int voice) {
+    int position = fptosi(64.0f * pan) + 64;
+    int in_range = position < 128;
+    if (position < 0) {
+        position = 0;
+        in_range = 1;
+    }
+    if (!in_range) {
+        position = 127;
+    }
+    sndSetSePan(snd_id, se_no, position, voice);
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetSePanf__FUiifi);
+#endif
 
 void sndSetSePitch(unsigned int snd_id, int se_no, int pitch, int voice) {
     sndPortInfo *info;

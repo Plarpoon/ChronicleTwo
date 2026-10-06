@@ -30,16 +30,31 @@ extern char at_713[];
 extern char at_714[];
 
 extern "C" void Exit__2(int);
+/**
+ *
+ * File path buffer viewed as text or aligned quadwords.
+ *
+ */
 union dataread_path {
-    u_long128 quadwords[16];
-    char text[256];
+    u_long128 quadwords[16]; /**< Aligned storage for the path. */
+    char text[256];          /**< Path text. */
 };
+/**
+ *
+ * Aligned storage for a file path prefix.
+ *
+ */
 struct dataread_prefix {
-    u_long128 quadword[1];
+    u_long128 quadword[1]; /**< Prefix bytes. */
 };
+/**
+ *
+ * File path prefix viewed as text or aligned storage.
+ *
+ */
 union dataread_prefix_text {
-    dataread_prefix init;
-    char text[16];
+    dataread_prefix init; /**< Aligned prefix value. */
+    char text[16];        /**< Prefix text. */
 };
 extern dataread_path at_259;
 extern dataread_path at_845;

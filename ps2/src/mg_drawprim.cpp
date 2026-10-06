@@ -1,6 +1,4 @@
 #include "common.h"
-// mglib.hpp cannot be included beside mg_drawenv.hpp while both declare mgFOG_PARAM; these are
-// the mglib declarations this unit uses.
 #include "mg_drawprim.hpp"
 #include "mg_memory.hpp"
 #include "mglib.hpp"
@@ -227,25 +225,31 @@ void mgCDrawPrim::End2() {
     }
 }
 
-void mgCDrawPrim::Data0(float *src) {
-    u_char *dst = (u_char *)command_write;
-    command_write = (u_long *)(dst + 0x10);
-    asm {
-        lqc2 vf1, 0(src)
-        vftoi0.xyzw vf1, vf1
-        sqc2 vf1, 0(dst)
+#ifdef NONMATCHING
+void mgCDrawPrim::Data0(float *data) {
+    int converted[4];
+    for (int i = 0; i < 4; i++) {
+        converted[i] = (int)data[i];
+    }
+    *(u_long128 *)command_write = *(u_long128 *)converted;
+    command_write += 2;
 }
-}
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", Data0__11mgCDrawPrimFPf);
+#endif
 
-void mgCDrawPrim::Data4(float *src) {
-    float *dst = (float *)command_write;
-    command_write = (u_long *)(dst + 4);
-    asm {
-        lqc2 vf1, 0(src)
-        vftoi4.xyzw vf1, vf1
-        sqc2 vf1, 0(dst)
+#ifdef NONMATCHING
+void mgCDrawPrim::Data4(float *data) {
+    int converted[4];
+    for (int i = 0; i < 4; i++) {
+        converted[i] = (int)(data[i] * 16.0f);
+    }
+    *(u_long128 *)command_write = *(u_long128 *)converted;
+    command_write += 2;
 }
-}
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", Data4__11mgCDrawPrimFPf);
+#endif
 
 void mgCDrawPrim::Data(int *data) {
     u_long128 quad = *(u_long128 *)data;
@@ -275,17 +279,13 @@ void mgCDrawPrim::Vertex(float x, float y, float z) {
 }
 
 #pragma global_optimizer off
+#ifdef NONMATCHING
 void mgCDrawPrim::Vertex(float *pos) {
-    int xyz[4];
-    int *dst = xyz;
-    asm {
-        lqc2 vf10, 0(pos)
-        vftoi4.xy vf10, vf10
-        vftoi0.z vf10, vf10
-        sqc2 vf10, 0(dst)
+    Vertex4((int)(pos[0] * 16.0f), (int)(pos[1] * 16.0f), (int)pos[2]);
 }
-    Vertex4(xyz[0], xyz[1], xyz[2]);
-}
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", Vertex__11mgCDrawPrimFPf);
+#endif
 #pragma global_optimizer reset
 
 void mgCDrawPrim::Vertex4(int x, int y, int z) {
@@ -311,16 +311,13 @@ void mgCDrawPrim::Color(int r, int g, int b, int a) {
 }
 
 #pragma global_optimizer off
+#ifdef NONMATCHING
 void mgCDrawPrim::Color(float *color) {
-    int rgba[4];
-    int *dst = rgba;
-    asm {
-        lqc2 vf10, 0(color)
-        vftoi0.xyzw vf10, vf10
-        sqc2 vf10, 0(dst)
+    Color((int)color[0], (int)color[1], (int)color[2], (int)color[3]);
 }
-    Color(rgba[0], rgba[1], rgba[2], rgba[3]);
-}
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", Color__11mgCDrawPrimFPf);
+#endif
 #pragma global_optimizer reset
 
 void mgCDrawPrim::TextureCrd4(int u, int v) {

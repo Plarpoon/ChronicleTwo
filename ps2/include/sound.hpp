@@ -10,7 +10,9 @@
  */
 
 /**
+ *
  * Limits of the MIDI ports the sound driver addresses.
+ *
  */
 // clang-format off
 enum MidiPortLimit {
@@ -23,7 +25,9 @@ enum MidiPortLimit {
 
 // clang-format on
 /**
+ *
  * Directions a port's banks are laid out in sound processor memory.
+ *
  */
 // clang-format off
 enum SpuAllocDirection {
@@ -33,7 +37,9 @@ enum SpuAllocDirection {
 
 // clang-format on
 /**
+ *
  * One volume fade the sequencer advances once a frame.
+ *
  */
 struct MIDI_FADE {
     s32   active;        /**< Non-zero while the fade runs. */
@@ -45,9 +51,11 @@ struct MIDI_FADE {
 STATIC_ASSERT(sizeof(MIDI_FADE) == 0x10);
 
 /**
+ *
  * What the sound driver holds for one MIDI port: the banks loaded into the
  * sound processor for it, the sequences loaded beside them, the ports that
  * share its memory, and its fades.
+ *
  */
 struct MIDI_PORT {
     s32       unk_00;
@@ -73,7 +81,9 @@ struct MIDI_PORT {
 STATIC_ASSERT(sizeof(MIDI_PORT) == 0x124);
 
 /**
+ *
  * What the sound driver holds for the sequencer, one record per port.
+ *
  */
 struct MIDI_STATE {
     MIDI_PORT port[MIDI_PORT_COUNT]; /**< State of each port. */
@@ -82,9 +92,11 @@ struct MIDI_STATE {
 STATIC_ASSERT(sizeof(MIDI_STATE) == 0x1240);
 
 /**
+ *
  * The bank a load hands to the sequencer: its number within the port, where
  * its header and body sit in IOP memory and where the body goes in the sound
  * processor.
+ *
  */
 struct MIDI_BANK {
     s32   bank_no;     /**< Index of the bank within the port's banks. */
@@ -98,8 +110,10 @@ struct MIDI_BANK {
 STATIC_ASSERT(sizeof(MIDI_BANK) == 0x44);
 
 /**
+ *
  * One buffer of MIDI messages queued for the MIDI stream input module,
  * copied across to the IOP once a frame.
+ *
  */
 struct MSIN_BUFFER {
     s32 size;            /**< Size of the buffer in bytes. */
@@ -110,7 +124,9 @@ struct MSIN_BUFFER {
 STATIC_ASSERT(sizeof(MSIN_BUFFER) == 0x200);
 
 /**
+ *
  * Names sent to the stream server when opening an audio file in a pack.
+ *
  */
 struct STREAM_PACK_REQUEST {
     char name[52];      /**< Name of the audio file within the pack. */
@@ -120,8 +136,10 @@ struct STREAM_PACK_REQUEST {
 STATIC_ASSERT(sizeof(STREAM_PACK_REQUEST) == 0x40);
 
 /**
+ *
  * The sound driver the whole game plays through. It holds nothing of its
  * own: every call reaches the sound processor or an IOP server behind it.
+ *
  */
 class CSound {
 public:

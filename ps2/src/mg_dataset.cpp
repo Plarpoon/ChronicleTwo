@@ -1081,7 +1081,15 @@ void mgCMDTBuilder::SetData(float *vector) {
 #pragma schedule reset
 
 #pragma schedule off
-union mgVec4Bits { float f[4]; u_int u[4]; };
+/**
+ *
+ * Four vector components viewed as floats or unsigned words.
+ *
+ */
+union mgVec4Bits {
+    float f[4]; /**< Floating point components. */
+    u_int u[4]; /**< The same components as unsigned words. */
+};
 extern u_char at_933[];
 #pragma global_optimizer off
 void mgCMDTBuilder::SetData(float x, float y, float z, float w) {

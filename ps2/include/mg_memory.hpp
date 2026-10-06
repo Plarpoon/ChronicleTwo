@@ -11,8 +11,10 @@
 class mgCMemory;
 
 /**
+ *
  * Ways StartStackMode picks the free gap in the heap that becomes the
  * stack region.
+ *
  */
 enum mgSTACK_MODE {
     MG_STACK_MODE_FIRST = 1,   /**< First gap with room for at least one quadword after the header. */
@@ -21,8 +23,10 @@ enum mgSTACK_MODE {
 };
 
 /**
+ *
  * Header that precedes every block in an mgCMemory heap, linking the
  * blocks in address order.
+ *
  */
 struct mgMEMORY_BLOCK {
     u_long128 *data;      /**< Start of the block's contents, directly after this header. */
@@ -33,8 +37,10 @@ struct mgMEMORY_BLOCK {
 STATIC_ASSERT(sizeof(mgMEMORY_BLOCK) == 0x10);
 
 /**
+ *
  * Quadword memory manager over one buffer, either as a block heap or as a
  * linear stack region allocated from the start of a buffer.
+ *
  */
 class mgCMemory {
 public:

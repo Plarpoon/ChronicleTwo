@@ -2250,7 +2250,46 @@ int TitleHDDInstallKey() {
     }
     return 0;
 }
+#ifdef NONMATCHING
+void DrawMenuDl(int x, int y, int width, int alpha, float progress) {
+    mgCDrawPrim prim;
+    SetSpriteEnv(&prim, 0);
+    prim.Begin(6);
+    prim.Texture(HDDDlBar);
+    prim.Color(0x80, 0x80, 0x80, alpha);
+    mgRect<int> bar_uv(0x74, 0, 0xC, 0xC);
+    mgRect<int> progress_uv(0x6D, 1, 6, 0xA);
+    mgRect<int> bar(x + 4, y + 0x2E, width - 0xA, 0xE);
+    PrimQuad(&prim, bar, bar_uv);
+    prim.End();
+    prim.Begin(6);
+    int fill_width = fptosi(((float)width - (float)(table_2611[0][2] - 0x14 + table_2611[1][4]) - 2.0f) * progress);
+    if (progress < 1.0f) {
+        prim.Color(0x80, 0x80, 0x80, alpha);
+    } else {
+        prim.Color(0x40, 0x94, 0x40, alpha);
+    }
+    mgRect<int> fill(x + 0x17, y + 0x2F, fill_width, 0xA);
+    PrimQuad(&prim, fill, progress_uv);
+    prim.End();
+    prim.Bilinear(0);
+    prim.Begin(6);
+    for (int i = 0; i < 3; ++i) {
+        short *row = table_2611[i];
+        int height = row[3];
+        prim.Color(0, 0, 0, alpha >> 2);
+        mgRect<int> shadow(x + 4, y + 4, width, height);
+        Menu3DivideTextureDraw(&prim, shadow, row, 1);
+        prim.Color(0x80, 0x80, 0x80, alpha);
+        mgRect<int> panel(x, y, width, height);
+        Menu3DivideTextureDraw(&prim, panel, row, 1);
+        y += height;
+    }
+    prim.End();
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", DrawMenuDl__Fiiiif);
+#endif
 void TitleHDDInstallDraw() {
     union { CMenuFont font; };
     mgCTextureManager *textures = &mgTexManager;

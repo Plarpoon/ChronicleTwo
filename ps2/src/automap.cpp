@@ -20,6 +20,7 @@
 
 enum { kMiniMapInfoCount = 18, kHealingCooldown = 0x708, kStepUp = 1, kStepDown = 2, kStepRight = 4, kStepLeft = 8, kTermRightMargin = 21, kDoorPartsBegin = 0xE8, kDoorPartsEnd = 0xF0, kDoorPartsLast = kDoorPartsEnd - 1 };
 extern MINIMAP_SYMBOL_INFO symbol_table[];
+extern "C" int fptosi(float value);
 extern int cax;
 extern int cay;
 extern CAutoMapGen * auto_map;
@@ -51,9 +52,14 @@ int _ROOM_RATE(SPI_STACK *stack, int argCount);
 int _RD(SPI_STACK *stack, int argCount);
 int _ROOM_END(SPI_STACK *stack, int argCount);
 
+/**
+ *
+ * Grid position of a linked dungeon room.
+ *
+ */
 struct ROOM_LINK_POINT {
-    int x;
-    int y;
+    int x; /**< Horizontal grid position. */
+    int y; /**< Vertical grid position. */
 };
 
 // Code (.text)
@@ -128,8 +134,77 @@ void CMiniMapSymbol::DrawSymbolClose() {
         blink_cnt = 0;
     }
 }
+#ifdef NONMATCHING
+void CMiniMapSymbol::DrawSymbol(float *pos, int symbol) {
+    if (BattleAreaScene->boss_map != 0) {
+        return;
+    }
+    sceVu0FVECTOR relative;
+    sceVu0SubVector(relative, pos, center);
+    int screen_x = x + fptosi(16.0f * (relative[0] / cell_w));
+    int screen_y = y + fptosi(16.0f * (relative[2] / cell_d));
+    int col = fptosi((pos[0] + 0.5f * cell_w) / cell_w);
+    int row = fptosi((pos[2] + 0.5f * cell_d) / cell_d);
+    int visible = grid != NULL && grid[row * grid_w + col].visible != 0;
+    if (BattleAreaScene->minimap_reveal & MINIMAP_REVEAL_ROOMS) {
+        visible = 1;
+    }
+    for (MINIMAP_SYMBOL_INFO *entry = symbol_table; entry->symbol != -1; ++entry) {
+        if (entry->symbol != symbol) {
+            continue;
+        }
+        if ((entry->need_visible != 0 && visible == 0) ||
+            (entry->blink != 0 && blink_cnt >= 16)) {
+            return;
+        }
+        prim.Color(entry->r, entry->g, entry->b, 0x80);
+        prim.SetIStretch(screen_x - entry->w / 2 + 8, screen_y - entry->h / 2 + 8,
+                         entry->w, entry->w, 0xBA, 0xF6, 10, 10);
+        return;
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/automap", DrawSymbol__14CMiniMapSymbolFPfi);
+#endif
+#ifdef NONMATCHING
+void CMiniMapSymbol::DrawSymbol_Chara(CCharacter2 *chara) {
+    if (chara == NULL || BattleAreaScene->boss_map != 0) {
+        return;
+    }
+    sceVu0FVECTOR position;
+    sceVu0FVECTOR rotation;
+    chara->GetPosition(position);
+    chara->GetRotation(rotation);
+    sceVu0SubVector(position, position, center);
+    int px = x + fptosi(16.0f * (position[0] / cell_w)) + 8;
+    int py = y + fptosi(16.0f * (position[2] / cell_d)) + 8;
+    CPreSprite sprite;
+    sprite.Initialize(NULL, NULL);
+    sprite.Preset2D();
+    sprite.Begin(4);
+    sprite.Color(0x80, 0x80, 0x80, 0x60);
+    sprite.Texture(TEX_SystenFrame);
+    sprite.SetScirror(x - w / 2, y - h / 2, w, h);
+    float sine = sinf(rotation[1]);
+    float cosine = cosf(rotation[1]);
+    sprite.TextureCrd(0xC4, 0xF2);
+    sprite.Vertex(px + fptosi(-7.0f * sine + 6.0f * cosine),
+                  py + fptosi(-6.0f * sine - 7.0f * cosine), 0);
+    sprite.TextureCrd(0xD0, 0xF2);
+    sprite.Vertex(px + fptosi(-7.0f * sine - 6.0f * cosine),
+                  py + fptosi(6.0f * sine - 7.0f * cosine), 0);
+    sprite.TextureCrd(0xC4, 0x100);
+    sprite.Vertex(px + fptosi(7.0f * sine + 6.0f * cosine),
+                  py + fptosi(-6.0f * sine + 7.0f * cosine), 0);
+    sprite.TextureCrd(0xD0, 0x100);
+    sprite.Vertex(px + fptosi(7.0f * sine - 6.0f * cosine),
+                  py + fptosi(6.0f * sine + 7.0f * cosine), 0);
+    sprite.SetScirror(0, 0, mgScreenWidth - 1, mgScreenHeight - 1);
+    sprite.End();
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/automap", DrawSymbol_Chara__14CMiniMapSymbolFP11CCharacter2);
+#endif
 #ifdef NONMATCHING
 void CMiniMapSymbol::Draw(float *pos) {
     float part_pos[4];

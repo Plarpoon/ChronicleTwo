@@ -17,16 +17,26 @@ class mgCTexture;
 
 /**
  *
- * Trail left behind a weapon swing, built from a ring of point pairs recorded from two frames and smoothed into a strip.
+ * Four floating point values used by the weapon trail.
  *
  */
 struct SWordFloat4 {
-    float values[4];
+    float values[4]; /**< Four floating point components. */
 };
+/**
+ *
+ * Pair of floating point values used by the weapon trail.
+ *
+ */
 struct SWordFloat2 {
-    float values[2];
+    float values[2]; /**< Two floating point components. */
 };
 
+/**
+ *
+ * Records and draws the fading trail left by a weapon swing.
+ *
+ */
 class CSWordAfterEffect {
 public:
     mgCFrame      *frame0;      /**< Frame whose world position is recorded into the first ring each step. */

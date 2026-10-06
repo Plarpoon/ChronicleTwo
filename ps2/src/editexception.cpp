@@ -56,15 +56,20 @@ extern int GeyserEffectTexb;
 extern mgCFrame *GeyserFrame;
 extern int GeyserRndSeed;
 
+/**
+ *
+ * GS TEST register fields used by the edit map effects.
+ *
+ */
 struct EditGsTest {
-    u_long ATE : 1;
-    u_long ATST : 3;
-    u_long AREF : 8;
-    u_long AFAIL : 2;
-    u_long DATE : 1;
-    u_long DATM : 1;
-    u_long ZTE : 1;
-    u_long ZTST : 2;
+    u_long ATE : 1;   /**< Alpha test enable. */
+    u_long ATST : 3;  /**< Alpha test mode. */
+    u_long AREF : 8;  /**< Alpha reference value. */
+    u_long AFAIL : 2; /**< Action when alpha test fails. */
+    u_long DATE : 1;  /**< Destination alpha test enable. */
+    u_long DATM : 1;  /**< Destination alpha test mode. */
+    u_long ZTE : 1;   /**< Depth test enable. */
+    u_long ZTST : 2;  /**< Depth test mode. */
     u_long rest : 45;
 };
 STATIC_ASSERT(sizeof(EditGsTest) == 8);

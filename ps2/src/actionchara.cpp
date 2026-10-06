@@ -52,8 +52,24 @@ extern char at_1427[];
 extern char at_1428[];
 extern CScene *nowScene__2;
 void GuardEffectSet(CScene *scene, float *point);
-union ActionVector { float f[4]; int i[4]; u_long128 qw; };
-struct ThrowItemTable { int item_no[19]; };
+/**
+ *
+ * Four action values viewed as floats, integers or one quadword.
+ *
+ */
+union ActionVector {
+    float f[4];    /**< Floating point values. */
+    int i[4];      /**< Integer values. */
+    u_long128 qw;  /**< Quadword value. */
+};
+/**
+ *
+ * Item numbers that a character can throw.
+ *
+ */
+struct ThrowItemTable {
+    int item_no[19]; /**< Item numbers. */
+};
 extern ThrowItemTable at_1398;
 extern CMonsterMan *ActiveMonster;
 extern float at_3289[4];
@@ -394,7 +410,7 @@ int CActionChara::GetShow(char *name) {
             } while (current != NULL);
         }
     } else {
-        show = ((CObject *)this)->show;
+        show = this->CObject::show;
     }
     return show;
 }

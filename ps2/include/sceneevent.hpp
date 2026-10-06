@@ -17,14 +17,34 @@
 
 /**
  *
+ * Pair of floating point values in the scene event data.
+ *
+ */
+struct EventFloat2 { float v[2]; /**< Floating point values. */ };
+/**
+ *
+ * Four floating point values in the scene event data.
+ *
+ */
+struct EventFloat4 { float v[4]; /**< Floating point values. */ };
+/**
+ *
+ * Pair of quadwords in the scene event data.
+ *
+ */
+struct EventVector2 { u_long128 v[2]; /**< Quadword values. */ };
+/**
+ *
+ * Four quadwords in the scene event data.
+ *
+ */
+struct EventVector4 { u_long128 v[4]; /**< Quadword values. */ };
+
+/**
+ *
  * Event the player has reached, with the settings, placement and owner of the point that starts it.
  *
  */
-struct EventFloat2 { float v[2]; };
-struct EventFloat4 { float v[4]; };
-struct EventVector2 { u_long128 v[2]; };
-struct EventVector4 { u_long128 v[4]; };
-
 #pragma push
 #pragma cpp_extensions on
 struct CSceneEventData {

@@ -1423,7 +1423,25 @@ public:
      * Creates the list of the items that can be chosen, placed at the bottom of the screen.
      *
      */
+#ifdef NONMATCHING
+    CItemSelect() {
+        list_rect.Set(0.0f, 0.0f, 0.0f, 0.0f);
+        item_rect.Set(0.0f, 0.0f, 0.0f, 0.0f);
+        alpha_step = 0;
+        alpha = 0;
+        bg_alpha = 0;
+        item_num = 0;
+        cursor_y = 0.0f;
+        cursor_x = 0.0f;
+        scroll = 0.0f;
+        texture = NULL;
+        top_line = 0;
+        cursor = 0;
+        line_num = 1.0f;
+    }
+#else
     CItemSelect();
+#endif
 
     /**
      *

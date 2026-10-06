@@ -30,7 +30,9 @@ struct sceGsClamp;
 template <typename T> class mgRect;
 
 /**
+ *
  * Display sizes mgInit can set the screen to, as GetScreenSize maps them.
+ *
  */
 enum mgSCREEN_MODE {
     MG_SCREEN_MODE_512X448 = 0, /**< 512 by 448 pixels; also used for any unknown mode. */
@@ -40,7 +42,9 @@ enum mgSCREEN_MODE {
 };
 
 /**
+ *
  * Identifiers of the VU1 microprograms that mgSendVuProg can load.
+ *
  */
 enum mgVU_PROG_ID {
     MG_VU_PROG_MAIN = 0,       /**< Main model microprogram (Vu_prog0). */
@@ -75,8 +79,10 @@ extern u_long128 Vu_prog_sdw[];
 extern u_long128 Vu_prog_3dsp[];
 
 /**
+ *
  * One deferred depth-buffer sample: a screen position read back at the end
  * of the frame and the nearest depth found around it.
+ *
  */
 struct MG_PICKZ {
     int enable; /**< Non-zero to sample this position when the frame ends. */

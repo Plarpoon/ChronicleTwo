@@ -15,9 +15,14 @@ const int kTerritoryRadiusOffset = 0x270;
 const int kTerritoryHeightOffset = 0x274;
 const int kNoTerritoryFlags = 0xAC2;
 
+/**
+ *
+ * Edit part position viewed as four floats or a quadword.
+ *
+ */
 union EditPartsPosition {
-    float f[4];
-    u_long128 qw;
+    float f[4]; /**< Position components. */
+    u_long128 qw; /**< The same position as one quadword. */
 };
 extern EditPartsPosition at_418;
 
@@ -152,7 +157,7 @@ void CEditParts::SetPosition(float x, float y, float z) {
     pos[0] = x;
     pos[1] = y;
     pos[2] = z;
-    ((mgCObject *)this)->SetPosition(pos);
+    SetPosition(pos);
 }
 void CEditParts::GetPosition(float *pos) {
     GetLocalPos(pos);
@@ -231,7 +236,7 @@ int CEditParts::GetFenceSide(float *end_a, float *end_b) {
     if (info == 0) {
         return 0;
     }
-    ((CMapParts *)this)->GetLWMatrix(matrix);
+    CMapParts::GetLWMatrix(matrix);
     *(u_long128 *)point_a = *(u_long128 *)info->area3_box.max;
     *(u_long128 *)point_b = *(u_long128 *)info->area3_box.min;
     point_b[3] = 1.0f;
@@ -323,7 +328,7 @@ int CEditParts::CheckTerritory(CEditParts *other) {
     if (other->info->attr & kNoTerritoryFlags) {
         return 0;
     }
-    ((CMapParts *)this)->GetLWMatrix(matrix);
+    CMapParts::GetLWMatrix(matrix);
     ((CMapParts *)other)->GetLWMatrix(other_matrix);
     sceVu0ApplyMatrix(center, matrix, info->territory_center);
     sceVu0ApplyMatrix(other_center, other_matrix,

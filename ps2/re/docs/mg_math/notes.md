@@ -117,3 +117,6 @@ helpers in `chronicle/ps2/include/mathutil.hpp` / `src/mathutil.cpp` (`VectorMax
 ## Current guarded drafts
 
 The seven remaining `INCLUDE_ASM` functions all have C++ drafts behind `NONMATCHING`. `mgApplyMatrixN`, `mgApplyMatrixN_MaxMin`, and `mgVectorMinMaxN` now use typed C++ loops instead of inline assembly in their guarded branches. The loops apply matrices to each vector and update four-component bounds; the default build continues to use retail assembly. Prior isolated promotion attempts for all seven functions are recorded in `scripts/re/promotion_attempts.tsv`, so a later source refinement does not create a second promotion attempt under the one-attempt rule.
+
+## Matrix loop drafts
+The three vector loop functions now have guarded C++ representations of the VU0 matrix transform and four-component extrema operations. These compile but differ from the retail handwritten VU0 instruction streams; the assembly fallbacks remain active. The supported callers pass a positive count.

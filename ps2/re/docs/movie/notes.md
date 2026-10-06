@@ -5,6 +5,13 @@ The unit is Sony's EE MPEG streaming sample (PSS -> IPU video + PCM audio to SPU
 structs follow the sample's conventions (snake_cased) where the code's use matches them.
 No first-game counterpart (Dark Cloud 1 headers have no movie player).
 
+`vblankHandler` sends the two frame DMA chains on alternating vblanks and marks
+the frame free after the second transfer. If no frame is ready it increments
+`frd`. `handler_endimage` decrements the queued frame count when `isFrameEnd`
+was set by that second transfer. Both handlers reenable interrupts before
+returning zero. Guarded drafts are present; existing unrelated unresolved
+`sceGifPkReserve`/`sceGifPkRef` declarations prevent a unit draft check.
+
 ## Linkage
 - Every non-member function (`defMain` ... `isAudioOK`, 0x29D0C0-0x29FDC0) is LOCAL in retail
   (`build/re/local_symbols.tsv`) -> `static` in `movie.cpp`, not in the header.

@@ -17,8 +17,10 @@ class CGamePad;
 #define PAD_CTRL_ANALOG_MAX 32
 
 /**
+ *
  * When a logical button reports its controller buttons, held in the
  * PAD_CTRL_TRIGGER_MASK bits of PAD_CTRL_BTN::config.
+ *
  */
 // clang-format off
 enum PadCtrlTrigger {
@@ -31,8 +33,10 @@ enum PadCtrlTrigger {
 // clang-format on
 
 /**
+ *
  * Stick axes a logical stick axis can read, as PAD_CTRL_ANALOG::axis holds
  * them.
+ *
  */
 // clang-format off
 enum PadCtrlAxis {

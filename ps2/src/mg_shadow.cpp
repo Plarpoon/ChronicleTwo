@@ -246,7 +246,7 @@ int mgCShadowMDT::DataAssignMDT(MDT_HEADER *header, mgCMemory *memory,
     // A shadow needs neither normals nor texture coordinates.
     header->uv_num = 0;
     header->normal_num = 0;
-    ((mgCVisualMDT *)this)->CopyMDTData(header, memory);
+    mgCVisualMDT::CopyMDTData(header, memory);
     face_group = 0;
     u_char *table = (u_char *)header + header->faces_ofs;
     FACES_ID *cursor = (FACES_ID *)(table + 0x10);

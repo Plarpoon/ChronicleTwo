@@ -1,5 +1,13 @@
 # mg_drawprim: reverse-engineering notes
 
+`Data0` converts all four floats in its input vector to integers with VU0
+`vftoi0` and appends the resulting quadword to the packet. `Data4` uses
+`vftoi4`, which scales each component by 16 before conversion.
+`Vertex(float *)` applies the same four-bit scale only to x and y, converts
+z without scaling, then delegates to `Vertex4(int, int, int)`.
+`Color(float *)` converts four components without scaling and delegates to
+`Color(int, int, int, int)`.
+
 Classes: `mgCDrawPrim` (42 functions), `mgCDrawManager` (9 functions). No vtables, no statics,
 no non-member functions. Only data: `at_369` (0x10 BSS, compiler-generated, left alone).
 No first-game equivalent: the first game's headers have no draw-prim or draw-manager class.

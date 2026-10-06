@@ -22,7 +22,9 @@ class mgCFrame;
 #define DAMAGE_ELEMENT_MAX 8
 
 /**
+ *
  * Shapes that a damage parameter row gives its collision primitive.
+ *
  */
 // clang-format off
 enum DamageShape {
@@ -34,7 +36,9 @@ enum DamageShape {
 // clang-format on
 
 /**
+ *
  * Sides of the battle that a collision primitive can hurt.
+ *
  */
 // clang-format off
 enum DamageTarget {
@@ -46,8 +50,10 @@ enum DamageTarget {
 // clang-format on
 
 /**
+ *
  * Kinds of attack that a damage parameter row names, which choose the hit reaction, the hit
  * sound and the attacker's weapon wear.
+ *
  */
 // clang-format off
 enum DamageKind {
@@ -68,7 +74,9 @@ enum DamageKind {
 // clang-format on
 
 /**
+ *
  * Ways in which a collision primitive takes its position each step.
+ *
  */
 // clang-format off
 enum ColPrimCoordType {
@@ -79,8 +87,10 @@ enum ColPrimCoordType {
 // clang-format on
 
 /**
+ *
  * Describes one named attack: the shape it hits with, whom it hurts, how much damage, element
  * and status effects it deals, and how the target reacts.
+ *
  */
 struct DAMAGE_PARAM {
     char name[0x10];                       /**< Name by which attacks and scripts look up the row. */
@@ -106,8 +116,10 @@ struct DAMAGE_PARAM {
 STATIC_ASSERT(sizeof(DAMAGE_PARAM) == 0x48);
 
 /**
+ *
  * A sphere or line that deals an attack's damage to the characters it touches,
  * following given positions or model frames until it is deleted or its time runs out.
+ *
  */
 class CColPrim {
 public:
@@ -256,8 +268,10 @@ public:
 STATIC_ASSERT(sizeof(CColPrim) == 0x110);
 
 /**
+ *
  * Holds every collision primitive of the dungeon, hands out free ones and
  * tests and steps them together.
+ *
  */
 class CColPrimMan {
 public:

@@ -80,7 +80,7 @@ struct grRACE_INFO {
     grFISH_PARAM     fish[6];         /**< Racing figures of each entrant. */
     int              step_max;        /**< Number of simulation steps that each progress record holds. */
     grRACE_PROGRESS *progress[6];     /**< Progress record of each entrant, step_max steps long. */
-    int              after_goal_step; /**< Number of steps simulated after every fish has reached the goal. */
+    int              after_goal_step; /**< Last extra step index after every fish reaches the goal, counted from zero. */
     int              rank[6];         /**< Place of each entrant in the race, from 1. */
     float            goal_time[6];    /**< Simulation step, with its fraction, at which each entrant reached the goal. */
 };

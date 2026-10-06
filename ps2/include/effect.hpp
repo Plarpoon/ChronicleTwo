@@ -51,26 +51,46 @@ enum EFFECT_ALPHA_BLEND {
 
 /**
  *
- * Everything that describes one particle when an emitter spawns it: its life, size, motion, scale, alpha and texture.
+ * Curves of the three position axes or the width and height of a particle.
  *
  */
 struct EffectTypeTriple {
-    EFFECT_CHANGE_TYPE first;
-    EFFECT_CHANGE_TYPE second;
-    EFFECT_CHANGE_TYPE third;
+    EFFECT_CHANGE_TYPE x; /**< Curve of the X position axis or width scale. */
+    EFFECT_CHANGE_TYPE y; /**< Curve of the Y position axis or height scale. */
+    EFFECT_CHANGE_TYPE z; /**< Curve of the Z position axis. */
 
+    /**
+     *
+     * Creates a triple whose components will be set separately.
+     *
+     */
     EffectTypeTriple() {}
+    /**
+     *
+     * Copies all three component curve types.
+     *
+     */
     EffectTypeTriple(const EffectTypeTriple &other)
-        : first(other.first), second(other.second), third(other.third) {}
+        : x(other.x), y(other.y), z(other.z) {}
 };
 
+/**
+ *
+ * Rectangle used to place an effect sprite.
+ *
+ */
 struct EffectRect {
-    int left;
-    int top;
-    int right;
-    int bottom;
+    int left;   /**< Left edge. */
+    int top;    /**< Top edge. */
+    int right;  /**< Right edge. */
+    int bottom; /**< Bottom edge. */
 };
 
+/**
+ *
+ * Playback parameters of one effect particle.
+ *
+ */
 struct EFFECT_PARAM {
     int                life;             /**< Frames the particle lives for. */
     float              width;            /**< Unscaled width of the particle's sprite. */

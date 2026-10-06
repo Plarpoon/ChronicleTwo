@@ -14,7 +14,9 @@
 class mgCMemory;
 
 /**
+ *
  * Progress of the video decoder thread, kept in VideoDec::state.
+ *
  */
 enum VideoDecState {
     VIDEO_DEC_STATE_NORMAL = 0, /**< Decoding is under way. */
@@ -23,7 +25,9 @@ enum VideoDecState {
 };
 
 /**
+ *
  * Playback state of the movie's audio stream, kept in AudioDec::state.
+ *
  */
 enum AudioDecState {
     AUDIO_DEC_STATE_HEADER = 0, /**< Collecting the stream header. */
@@ -33,7 +37,9 @@ enum AudioDecState {
 };
 
 /**
+ *
  * Display state of one decoded frame, kept in VoTag::status.
+ *
  */
 enum VoTagStatus {
     VO_TAG_STATUS_FREE = 0,  /**< The frame has been shown on both vblanks and may be reused. */
@@ -42,8 +48,10 @@ enum VoTagStatus {
 };
 
 /**
+ *
  * Presentation and decoding times of the video data at one position of the
  * bit-stream buffer.
+ *
  */
 struct TimeStamp {
     long pts; /**< Presentation time stamp, or -1 when unset. */
@@ -54,7 +62,9 @@ struct TimeStamp {
 STATIC_ASSERT(sizeof(TimeStamp) == 0x18);
 
 /**
+ *
  * One quadword of a DMA chain, viewed as a whole or as two doublewords.
+ *
  */
 union QWORD {
     u_long128 q; /**< Whole quadword. */
@@ -63,8 +73,10 @@ union QWORD {
 STATIC_ASSERT(sizeof(QWORD) == 0x10);
 
 /**
+ *
  * Ring of 2048-byte bit-stream blocks fed to the IPU through a DMA chain,
  * with the time stamps of the video data it holds.
+ *
  */
 struct ViBuf {
     u_long128 *data;  /**< Bit-stream blocks. */
@@ -86,8 +98,10 @@ struct ViBuf {
 STATIC_ASSERT(sizeof(ViBuf) == 0x60);
 
 /**
+ *
  * MPEG video decoder: the library decoder, its bit-stream ring and the
  * interrupt handlers that display its output.
+ *
  */
 struct VideoDec {
     sceMpeg mpeg;         /**< Library decoder state. */
@@ -100,7 +114,9 @@ struct VideoDec {
 STATIC_ASSERT(sizeof(VideoDec) == 0xB8);
 
 /**
+ *
  * Pixels of one decoded 512x448 frame, in 32-bit macroblock order.
+ *
  */
 struct VoData {
     u_int v[512 * 448]; /**< Decoded pixels. */
@@ -108,8 +124,10 @@ struct VoData {
 STATIC_ASSERT(sizeof(VoData) == 0xE0000);
 
 /**
+ *
  * Display record of one decoded frame: its state and the GIF DMA chains
  * that upload it on each of the two vblanks it is shown for.
+ *
  */
 struct VoTag {
     volatile int status; /**< Display state, a VoTagStatus. */
@@ -119,7 +137,9 @@ struct VoTag {
 STATIC_ASSERT(sizeof(VoTag) == 0x48);
 
 /**
+ *
  * Ring of decoded frames between the decoder thread and the vblank handler.
+ *
  */
 struct VoBuf {
     VoData *data;       /**< Frame pixel buffers, accessed uncached. */
@@ -132,8 +152,10 @@ struct VoBuf {
 STATIC_ASSERT(sizeof(VoBuf) == 0x18);
 
 /**
+ *
  * Movie file opened either through CD streaming or through the host file
  * system.
+ *
  */
 struct StrFile {
     sceCdlFILE fp; /**< Disc location of the file, when streamed from CD. */
@@ -146,8 +168,10 @@ struct StrFile {
 STATIC_ASSERT(sizeof(StrFile) == 0x34);
 
 /**
+ *
  * Ring buffer of PSS data read from the file and waiting to be
  * demultiplexed.
+ *
  */
 struct ReadBuf {
     u_char data[0x50000]; /**< Ring storage. */
@@ -157,8 +181,10 @@ struct ReadBuf {
 };
 
 /**
+ *
  * PCM audio streamer: an EE ring buffer of demultiplexed audio sent to an
  * IOP ring buffer that the SPU plays from.
+ *
  */
 struct AudioDec {
     int state;            /**< Playback state, an AudioDecState. */
@@ -179,8 +205,10 @@ struct AudioDec {
 STATIC_ASSERT(sizeof(AudioDec) == 0x5C);
 
 /**
+ *
  * Movie player: owns the work buffers, the thread stacks and the threads
  * that read, decode and display one movie.
+ *
  */
 class CMovie {
 public:

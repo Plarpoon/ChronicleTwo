@@ -636,8 +636,13 @@ CList<mgCTexAnimeData> *mgCTextureAnime::NewTexAnimeGroupData(int group, mgCMemo
 }
 #pragma global_optimizer reset
 
+/**
+ *
+ * Four colour channels used by a texture animation.
+ *
+ */
 struct mgTexAnimeColor {
-    u_char channel[4];
+    u_char channel[4]; /**< Colour channels. */
 };
 int mgCTextureAnime::EnterTexAnime(mgCTexAnimeData *data, mgCMemory *stack) {
     CList<mgCTexAnimeData> *node = NewTexAnimeGroupData(data->group, stack);

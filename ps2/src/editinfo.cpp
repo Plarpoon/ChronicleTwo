@@ -10,11 +10,16 @@
 
 extern CEditPartsInfo *emapNowInfo__2;
 extern mgCMemory *emapStack__2;
+/**
+ *
+ * Rectangle of the edit map with its part type and endpoint positions.
+ *
+ */
 struct EditMapRect {
-    int type;
+    int type; /**< Part type assigned to the rectangle. */
     int unk_04[3];
-    float start[4];
-    float end[4];
+    float start[4]; /**< First endpoint. */
+    float end[4];   /**< Second endpoint. */
 };
 
 extern EditMapRect *emapRect__2;

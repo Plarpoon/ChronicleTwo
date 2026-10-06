@@ -2,9 +2,14 @@
 
 #include "common.h"
 
+/**
+ *
+ * A dungeon event vector viewed as floats or a quadword.
+ *
+ */
 union DngEventVector {
-    float f[4];
-    u_long128 qw;
+    float f[4];   /**< Four floating point components. */
+    u_long128 qw; /**< The same components as one quadword. */
 };
 
 #include <libvu0.h>

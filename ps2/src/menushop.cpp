@@ -1205,9 +1205,14 @@ void CShopMenu::CalcTex() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", CalcTex__9CShopMenuFv);
 #endif
+/**
+ *
+ * Position or offset of a shop menu cursor.
+ *
+ */
 struct CursorPoint {
-    int x;
-    int y;
+    int x; /**< Horizontal coordinate. */
+    int y; /**< Vertical coordinate. */
 };
 extern CursorPoint at_1831__2;
 extern CursorPoint t_offxy_1832;
@@ -1536,14 +1541,16 @@ void CMenuQuestView::UnderMsg(int type) {
     QuestMenuMes->SetPutPos(position);
     QuestMenuMes->SetWindowMode(4);
 }
+/** Current request or photo-scoop memo mode. */
 extern s8 Menu_Memo_ViewMode;
+/** Request list shown by the quest memo. */
 extern CQuestManager *QuestMan;
 int CMenuQuestView::SelectMax() {
-    if (Menu_Memo_ViewMode == 0) {
+    if (Menu_Memo_ViewMode == QUEST_VIEW_MODE_QUEST) {
         return QuestMan->num;
     }
-    if (Menu_Memo_ViewMode == 1) {
-        return 0x35;
+    if (Menu_Memo_ViewMode == QUEST_VIEW_MODE_SCOOP) {
+        return QUEST_VIEW_SCOOP_COUNT;
     }
     return 1;
 }
@@ -1848,8 +1855,207 @@ int MenuNPCQuestViewKey() {
 extern int menu_debug_flag;
 extern s8 randam_checktbl[];
 extern short tbl_2469[7][12];
+extern short at_2470[12];
 extern char at_2629__2[];
+#ifdef NONMATCHING
+void MenuNPCQuestViewDraw() {
+    if (Tex_QuestMemo == NULL) return;
+    mgTexManager.ReloadTexture(Tex_QuestMemo->block, (sceVif1Packet *)NULL);
+    mgCDrawPrim *prim = GetMenuPrim();
+    SetSpriteEnv(prim, 0);
+    mgRect<int> tile(0x180, 0, 0x80, 0x80);
+    DrawMenuTilePattern(prim, Tex_QuestMemo, QuestTilePatternXY[0], QuestTilePatternXY[0], tile, 0, NULL);
+    SetSpriteEnv(prim, 0);
+    prim->Begin(6);
+    prim->Texture(Tex_QuestMemo);
+    mgRect<int> panel(0, 0xBA, 0x184, 0x146);
+    mgRect<int> row(0, 0xB4, 0x138, 6);
+    prim->Color(0, 0, 0, 0x30);
+    PrimQuad(prim, 66.0f, 60.0f, panel);
+    prim->Color(0x80, 0x80, 0x80, 0x80);
+    PrimQuad(prim, 60.0f, 54.0f, panel);
+    prim->End();
+    mgRect<int> clip(0, 0x52, mgScreenWidth - 1, 0x142);
+    SetMenuScissor(clip);
+    CMenuFont fonts[16];
+    int y = fptosi(QuestListTopY);
+    int drawn = 0;
+    if (Menu_Memo_ViewMode == QUEST_VIEW_MODE_QUEST) {
+        for (int index = 0; index < MenuQuestView->SelectMax() + 1; ++index, y += 0x22) {
+            if (y + 0x22 < 0x52) continue;
+            if (y >= 0x143) break;
+            prim->Begin(6);
+            prim->Texture(Tex_QuestMemo);
+            prim->Color(0x80, 0x80, 0x80, 0x80);
+            PrimQuad(prim, 118.0f, (float)(y - 2), row);
+            QUEST_INFO *info = QuestMan->GetQuestInfo(index);
+            QUEST_PLAY_DATA *progress = QuestDataPtr->GetPlayQuestData(index);
+            if (info == NULL || progress == NULL) { prim->End(); break; }
+            mgRect<int> mark(progress->accepted == 1 && progress->cleared == 0 ? 0x3A : 0x48,
+                             0x30, 0xE, 0xE);
+            PrimQuad(prim, 124.0f, (float)(y + 0xB), mark);
+            mgRect<int> state(0x3A, progress->cleared ? 0 : 0x18, 0x1C, 0x18);
+            PrimQuad(prim, 376.0f, (float)(y + 5), state);
+            prim->End();
+            CMenuFont *font = &fonts[drawn++];
+            font->SetColor(0x80132333);
+            font->SetFuchi(2);
+            font->SetStr(progress->accepted ? info->name : GetHatena());
+            font->SetPos(0x90, y + 8);
+        }
+    }
+    if (Menu_Memo_ViewMode == QUEST_VIEW_MODE_SCOOP) {
+        CInventUserData *invent = GetInventUserDataPtr();
+        if (invent == NULL) return;
+        char photo_name[0x80];
+        for (int index = 0; index < MenuQuestView->SelectMax() + 1; ++index, y += 0x22) {
+            if (y + 0x22 < 0x52) continue;
+            if (y >= 0x143) break;
+            prim->Begin(6);
+            prim->Texture(Tex_QuestMemo);
+            prim->Color(0x80, 0x80, 0x80, 0x80);
+            PrimQuad(prim, 118.0f, (float)(y - 2), row);
+            SCOOP_DATA *scoop = GetScoopDataTableIndex(index);
+            if (scoop == NULL) { prim->End(); continue; }
+            SCOOP_INFO *info = ScoopMan->GetScoopInfo(scoop->scoop_id);
+            if (info == NULL) { prim->End(); break; }
+            mgRect<int> mark(info->known == 1 && info->obtained == 0 ? 0x3A : 0x48, 0x30, 0xE, 0xE);
+            PrimQuad(prim, 124.0f, (float)(y + 0xB), mark);
+            bool seen = info->obtained || invent->CheckNetaFlag(scoop->scoop_id) >= 0 ||
+                        invent->CheckNetaFlagHavePhoto(scoop->scoop_id) >= 0;
+            mgRect<int> state(0x3A, seen ? 0 : 0x18, 0x1C, 0x18);
+            PrimQuad(prim, 376.0f, (float)(y + 5), state);
+            if (info->obtained) {
+                mgRect<int> random((char)randam_checktbl[index] * 0x28 + 0x56, 0x18, 0x28, 0x1E);
+                PrimQuad(prim, 370.0f, (float)(y + 3), random);
+            }
+            prim->End();
+            CMenuFont *font = &fonts[drawn++];
+            font->SetColor(0x80132333);
+            font->SetFuchi(2);
+            if (info->known) { GetPhotoNameStr(scoop->scoop_id, photo_name); font->SetStr(photo_name); }
+            else font->SetStr(GetHatena());
+            font->SetPos(0x90, y + 8);
+        }
+    }
+    mgTexManager.ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *)NULL);
+    for (int index = 0; index < drawn; ++index) {
+        fonts[index].DrawDirect(fonts[index].str, fonts[index].pos_x, fonts[index].pos_y);
+    }
+    ResetMenuScissor();
+    mgTexManager.ReloadTexture(Tex_QuestMemo->block, (sceVif1Packet *)NULL);
+    prim->Begin(6);
+    prim->Texture(Tex_QuestMemo);
+    prim->Color(0x80, 0x80, 0x80, 0x80);
+    mgRect<int> rail(500, 0x104, 0xC, 0xFC);
+    PrimQuad(prim, 412.0f, 75.0f, rail);
+    mgRect<int> bar(0x19E, fptosi(QuestScrlBarY), 8, 10);
+    mgRect<int> cap(0x3A, 0x3E, 8, 10);
+    PrimQuad(prim, bar, cap);
+    bar.top += 10;
+    bar.bottom = fptosi(QuestScrlBarH - 20.0f);
+    cap.Set(0x3A, 0x48, 8, 10);
+    PrimQuad(prim, bar, cap);
+    bar.top += bar.bottom;
+    bar.bottom = 10;
+    cap.Set(0x3A, 0x52, 8, 10);
+    PrimQuad(prim, bar, cap);
+    prim->End();
+    mgCTexture *cursor = mgTexManager.GetTexture(at_2629__2, -1);
+    if (cursor != NULL && !QuestViewCommentFlag) {
+        mgTexManager.ReloadTexture(cursor->block, (sceVif1Packet *)NULL);
+        MenuCursorDraw(cursor, QuestCursorPos, 0.0f, 0x80);
+    }
+    if (QuestViewCommentFlag) {
+        DrawMenuFillBox(0x30, 0, 0, 0);
+        mgTexManager.ReloadTexture(Tex_QuestMemo->block, (sceVif1Packet *)NULL);
+        short heights[7];
+        for (int i = 0; i < 7; ++i) heights[i] = at_2470[i];
+        if (QuestReactionCommentGyouNum > 1) heights[5] += 0x18;
+        if (Menu_Memo_ViewMode == QUEST_VIEW_MODE_SCOOP) {
+            heights[3] -= 8;
+            heights[4] = 0;
+            heights[5] = 0;
+        }
+        int x = (mgScreenWidth - 0x18C) >> 1;
+        int height = -0xC;
+        for (int i = 0; i < 7; ++i) height += heights[i];
+        DrawMenuFillBox((float)(x + 6), 125.0f, 384.0f, (float)height, 0x56, 0, 0, 0);
+        SetSpriteEnv(prim, 0);
+        prim->Begin(6);
+        prim->Texture(Tex_QuestMemo);
+        prim->Color(0x80, 0x80, 0x80, 0x80);
+        int part_y = 0x78;
+        for (int i = 0; i < 7; ++i) {
+            mgRect<int> part(x, part_y, 0x18C, heights[i]);
+            Menu3DivideTextureDraw(prim, part, tbl_2469[i], 1);
+            part_y += heights[i];
+        }
+        prim->End();
+        mgTexManager.ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *)NULL);
+        if (QuestCommentMes[2] != NULL) {
+            int center = mgScreenWidth >> 1;
+            QuestCommentMes[0]->SetMovePosCenteringGyou(0, center, 0x86);
+            QuestCommentMes[1]->SetPutPos(fptosi(QuestCommentWinX), 0xA8, -1, -1);
+            QuestCommentMes[2]->SetMovePosCenteringGyou(0, center, 0xFE);
+            if (QuestReactionCommentGyouNum > 1) QuestCommentMes[2]->SetMovePosCenteringGyou(1, center, 0x116);
+            for (int i = 0; i < 3; ++i) { QuestCommentMes[i]->StepMsg(); QuestCommentMes[i]->DrawMsg(); }
+        }
+    }
+    if (QuestMenuMes != NULL) {
+        mgTexManager.ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *)NULL);
+        QuestMenuMes->StepMsg();
+        QuestMenuMes->DrawMsg();
+    }
+    mgTexManager.ReloadTexture(Tex_QuestMemo->block, (sceVif1Packet *)NULL);
+    mgRect<int> title(0x56, 0, 0x92, 0x18);
+    PrimQuad(Tex_QuestMemo, 26.0f, 22.0f, title, 0x80, 0x80, 0x80, 0x80);
+    if (menu_debug_flag) {
+        CMenuFont font;
+        DrawMenuFillBox(0x40, 0, 0, 0);
+        int debug_y = 100;
+        char line[0x100];
+        char photo_name[0x80];
+        if (Menu_Memo_ViewMode == QUEST_VIEW_MODE_QUEST) {
+            for (int index = menu_debug_questselect; index < MenuQuestView->SelectMax(); ++index) {
+                QUEST_INFO *info = QuestMan->GetQuestInfo(index);
+                QUEST_PLAY_DATA *progress = QuestDataPtr->GetPlayQuestData(index);
+                memset(line, ' ', 0x18);
+                strcpy(line + 0x18, info->name);
+                if (index == menu_debug_questselect) line[1] = '>';
+                line[6] = '['; line[8] = ':'; line[10] = ']';
+                line[7] = progress->accepted ? 'o' : 'x';
+                line[9] = progress->cleared ? 'o' : 'x';
+                font.SetStr(line);
+                font.SetPos(0x42, debug_y);
+                font.DrawDirect(font.str, font.pos_x, font.pos_y);
+                debug_y += 0x18;
+            }
+        }
+        if (Menu_Memo_ViewMode == QUEST_VIEW_MODE_SCOOP) {
+            for (int index = menu_debug_questselect; index < menu_debug_questselect + 0xC && index < 0x35; ++index) {
+                SCOOP_DATA *scoop = GetScoopDataTableIndex(index);
+                if (scoop == NULL) break;
+                SCOOP_INFO *info = ScoopMan->GetScoopInfo(scoop->scoop_id);
+                if (info == NULL) return;
+                memset(line, ' ', 0x18);
+                if (index == menu_debug_questselect) line[1] = '>';
+                line[6] = '['; line[8] = ':'; line[10] = ']';
+                GetPhotoNameStr(scoop->scoop_id, photo_name);
+                strcpy(line + 0x18, photo_name);
+                line[7] = info->known ? 'o' : 'x';
+                line[9] = info->obtained ? 'o' : 'x';
+                font.SetStr(line);
+                font.SetPos(0x42, debug_y);
+                font.DrawDirect(font.str, font.pos_x, font.pos_y);
+                debug_y += 0x18;
+            }
+        }
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", MenuNPCQuestViewDraw__Fv);
+#endif
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", dony_shoplist__DATA);

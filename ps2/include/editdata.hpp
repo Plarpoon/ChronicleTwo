@@ -68,9 +68,11 @@ class CEditParts;
 #define EDIT_DATA_COLOR_MAX 4
 
 /**
+ *
  * One request of a town's analysis: the conditions it needs, the share of
  * the town's future it is worth, and the map parts it shows and hides,
  * filled in by the ANALYZE, CON_NO, PERCENT, ON_PARTS and OFF_PARTS tags.
+ *
  */
 class EditAnalyzeDataSrc {
 public:
@@ -96,8 +98,10 @@ public:
 STATIC_ASSERT(sizeof(EditAnalyzeDataSrc) == 0x1C);
 
 /**
+ *
  * Analysis of one Georama map read from its GEO_ANALYZE block: the names
  * of its conditions and the requests made from them.
+ *
  */
 class EditAnalyzeSrc {
 public:
@@ -129,8 +133,10 @@ public:
 STATIC_ASSERT(sizeof(EditAnalyzeSrc) == 0x340);
 
 /**
+ *
  * Part placed in a saved town layout: which part it is, where it stands,
  * how it is turned and painted and which house it has.
+ *
  */
 struct EditDataParts {
     s32 id;                                /**< Definition ID of the part, or 0 for an unused entry. */
@@ -154,8 +160,10 @@ struct EditDataParts {
 STATIC_ASSERT(sizeof(EditDataParts) == 0x24);
 
 /**
+ *
  * Header the saved bytes of a river grid start with, followed by one byte for
  * each cell.
+ *
  */
 struct EditDataGrid {
     u8  num_x;     /**< Number of cells along the X axis. */
@@ -167,7 +175,9 @@ struct EditDataGrid {
 STATIC_ASSERT(sizeof(EditDataGrid) == 0x18);
 
 /**
+ *
  * House of a saved town layout, recording a villager who lives in it.
+ *
  */
 struct EditDataHouse {
     s16 npc_no;      /**< First villager who lives in the house. */
@@ -186,8 +196,10 @@ struct EditDataHouse {
 STATIC_ASSERT(sizeof(EditDataHouse) == 0x10);
 
 /**
+ *
  * Analysis state of one town: which conditions hold and which requests and
  * conditions the player has been told about.
+ *
  */
 struct EditDataAnalyze {
     u8 data_open[EDIT_ANALYZE_DATA_MAX];           /**< Non-zero for each request the player has been told about. */
@@ -208,9 +220,11 @@ struct EditDataAnalyze {
 STATIC_ASSERT(sizeof(EditDataAnalyze) == 0xD0);
 
 /**
+ *
  * Saved layout of one Georama town, kept in the save data for each map:
  * its placed parts, houses, placement log and river grids, the culture
  * points the layout earned and the state of the town's analysis.
+ *
  */
 class CEditData {
 public:

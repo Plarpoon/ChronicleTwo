@@ -24,20 +24,29 @@
 #include <cmath>
 #include <cstring>
 
+/**
+ *
+ * Screen positions used to anchor message elements.
+ *
+ */
 struct message_anchor_table {
-    float point[19][2];
+    float point[19][2]; /**< Anchor coordinates. */
 };
 
+/**
+ *
+ * Message draw primitive and its backing storage.
+ *
+ */
 union message_draw_prim {
-    mgCDrawPrim prim;
-    u8 storage[0x120];
+    mgCDrawPrim prim; /**< Draw primitive over the storage. */
+    u8 storage[0x120]; /**< Backing storage. */
 };
 
 extern "C" void
 __ct__11mgCDrawPrimFv(void *self);
 
 extern "C" int fptosi(float value);
-extern "C" int sndSePlay__FUiii(unsigned int, int, int);
 
 extern "C" u8 at_4574[];
 
@@ -133,7 +142,6 @@ const int mes_space = 0xFF02;
 
 const int mes_page_break = 0xFF03;
 
-extern "C" int GetHalfFontNo__Fc(int ch);
 
 extern char at_2109[];
 
@@ -445,11 +453,11 @@ int ClsMes::GetStrWidth(char *text) {
                 }
                 index += 2;
             } else {
-                font_number = GetHalfFontNo__Fc((s8)*cursor);
+                font_number = GetHalfFontNo((s8)*cursor);
                 if (font_number == -2) {
                     index++;
                 } else if (0 <= font_number) {
-                    if (font_number == GetHalfFontNo__Fc(' ')) {
+                    if (font_number == GetHalfFontNo(' ')) {
                         width += font_w / 2;
                     } else {
                         width += fptosi((float)font_w * half_font_w_percent);
@@ -1291,11 +1299,11 @@ int ClsMes::MyTextureMake_sub() {
     if (voice_on != 0 && draw_speed > 0.0f) {
         if (reveal_num % 3 == 0) {
             if (voice_type == 1) {
-                sndSePlay__FUiii(SystemSND_ID, 7, voice_cnt % 2);
+                sndSePlay(SystemSND_ID, 7, voice_cnt % 2);
             } else if (voice_type == 2) {
-                sndSePlay__FUiii(SystemSND_ID, 6, voice_cnt % 2);
+                sndSePlay(SystemSND_ID, 6, voice_cnt % 2);
             } else {
-                sndSePlay__FUiii(SystemSND_ID, 5, voice_cnt % 2);
+                sndSePlay(SystemSND_ID, 5, voice_cnt % 2);
             }
             voice_cnt += 1;
         }
@@ -1394,7 +1402,7 @@ void ClsMes::MakeMesWinTbl_value(int *x, int *y) {
         for (i = 0; i < length; i++) {
             font_no = -1;
             if (value_half != 0) {
-                font_no = GetHalfFontNo__Fc(text[i]);
+                font_no = GetHalfFontNo(text[i]);
             } else {
                 if (text[i] == '+') {
                     font_no = GetFontNo(at_2111);
@@ -1464,7 +1472,7 @@ void ClsMes::MakeMesWinTbl_value(int value_no, int *x, int *y) {
         for (i = 0; i < length; i++) {
             font_no = -1;
             if (value_half != 0) {
-                font_no = GetHalfFontNo__Fc(text[i]);
+                font_no = GetHalfFontNo(text[i]);
             } else {
                 if (text[i] == '+') {
                     font_no = GetFontNo(at_2111);
@@ -1530,7 +1538,7 @@ void ClsMes::MakeMesWinTbl_str(char *str, int *x, int *y) {
         handled = 0;
         if (strncmp(&str[position], "//", 2) == 0) {
             position += 2;
-            while (GetHalfFontNo__Fc(str[position]) != -2) {
+            while (GetHalfFontNo(str[position]) != -2) {
                 position++;
             }
             position++;
@@ -1806,7 +1814,7 @@ void ClsMes::MakeMesWinTbl_str(char *str, int *x, int *y) {
                         position += 6;
                         *y = 0;
                     } else {
-                        font_no = GetHalfFontNo__Fc(str[position]);
+                        font_no = GetHalfFontNo(str[position]);
                         if (font_no == -2) {
                             SetMesWinTbl(MES_CODE_NEWLINE, *x, *y);
                             *x = 0;
@@ -1814,7 +1822,7 @@ void ClsMes::MakeMesWinTbl_str(char *str, int *x, int *y) {
                             *y += font_h;
                         } else if (CheckHalfFont(font_no) != 0) {
                             SetMesWinTbl(font_no, *x, *y);
-                            if (font_no == GetHalfFontNo__Fc(' ')) {
+                            if (font_no == GetHalfFontNo(' ')) {
                                 *x += font_w / 2;
                             } else {
                                 *x += (int)(font_w * half_font_w_percent);
@@ -1844,7 +1852,9 @@ void ClsMes::MakeMesWinTbl_str(char *str, int *x, int *y) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", MakeMesWinTbl_str__6ClsMesFPcPiPi);
 #endif
-void ClsMes::MakeMesWinTbl_str(int i, int *a2, int *a3) { this->MakeMesWinTbl_str((char*)this + i*50 + 0x1E59, a2, a3); }
+void ClsMes::MakeMesWinTbl_str(int name_no, int *x, int *y) {
+    MakeMesWinTbl_str(name[name_no], x, y);
+}
 int ClsMes::MakeMesWinTbl_item(int ref_code, int *x, int *y) {
     u16 *cursor;
     int code;
@@ -1943,9 +1953,9 @@ int ClsMes::MakeMesWinTbl_item(int ref_code, int *x, int *y) {
                         name_char = *name;
                         while (name_char != mes_newline && name_char != mes_end) {
                             SetMesWinTbl(name_char, *x, *y);
-                            if (((CFont *)this)->CheckKanjiFont(name_char) != 0) {
+                            if (CFont::CheckKanjiFont(name_char) != 0) {
                                 *x = *x + font_w;
-                            } else if (((CFont *)this)->CheckKanjiFont(name[1]) != 0) {
+                            } else if (CFont::CheckKanjiFont(name[1]) != 0) {
                                 *x = *x + font_w;
                             } else {
                                 *x = *x + font_w;
@@ -1974,16 +1984,16 @@ int ClsMes::MakeMesWinTbl_item(int ref_code, int *x, int *y) {
                     *x += (code - 0x8000) - 0x7900;
                 } else {
                     SetMesWinTbl(code, *x, *y);
-                    if (((CFont *)this)->CheckHalfFont(code) != 0) {
-                        if (code == GetHalfFontNo__Fc(0x20)) {
+                    if (CFont::CheckHalfFont(code) != 0) {
+                        if (code == GetHalfFontNo(0x20)) {
                             *x = *x + font_w / 2;
                         } else {
                             *x = *x + fptosi((float)font_w * half_font_w_percent);
                         }
-                        ((CFont *)this)->CheckKanjiFont(*cursor);
-                    } else if (((CFont *)this)->CheckKanjiFont(code) != 0) {
+                        CFont::CheckKanjiFont(*cursor);
+                    } else if (CFont::CheckKanjiFont(code) != 0) {
                         *x += font_w;
-                    } else if (((CFont *)this)->CheckKanjiFont(*cursor) != 0) {
+                    } else if (CFont::CheckKanjiFont(*cursor) != 0) {
                         *x += font_w;
                     } else {
                         *x += font_w;
@@ -1992,7 +2002,45 @@ int ClsMes::MakeMesWinTbl_item(int ref_code, int *x, int *y) {
         }
     }
 }
+#ifdef NONMATCHING
+int ClsMes::GetMesWidth_system(int message) {
+    if (message < 0 || buff_system == NULL) return -1;
+    unsigned short *text = (unsigned short *)GetTextLineDataTop_system(message);
+    if (text == NULL) return -1;
+
+    int width = 0;
+    int max_width = 0;
+    for (;;) {
+        unsigned short code = *text++;
+        if (code == MES_CODE_NEWLINE) {
+            if (width > max_width) max_width = width;
+            width = 0;
+        } else if (code == MES_CODE_END) {
+            return width > max_width ? width : max_width;
+        } else if (code >= 0xFAEA && code <= 0xFAF9) {
+            int name_width = GetStrWidth(0xFAF9 - code);
+            if (name_width != -1) width += name_width;
+        } else if (code >= 0xFFA0) {
+            width += fptosi(font_w * half_font_w_percent);
+        } else if (code >= 0xFDE0 && code < 0xFDF8) {
+            int half_width = fptosi(font_w * half_font_w_percent);
+            width += GetFontGaijiHankaku(code) ? half_width : fptosi(2.0f * font_w * half_font_w_percent);
+        } else if (code >= 0xFD00 && code < 0xFD32) {
+            width += GetGaijiW(code);
+        } else if (code >= MES_CODE_MOVE_X && code < 0xFA00) {
+            width += code - MES_CODE_MOVE_X;
+        } else if (CheckHalfFont(code)) {
+            width += code == GetHalfFontNo(' ') ? font_w / 2 : fptosi(font_w * half_font_w_percent);
+        } else if (CheckKanjiFont(code) || CheckKanjiFont(*text)) {
+            width += font_w;
+        } else {
+            width += font_w;
+        }
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetMesWidth_system__6ClsMesFi);
+#endif
 short *ClsMes::GetTextLineDataTop(int line_id) {
     short *table = buff;
     int i = 0;
@@ -2123,7 +2171,7 @@ int ClsMes::CalcSpaceW(int width, int char_width, unsigned short *text) {
                    (code < MES_CODE_COLOR_A || code >= 0xF600) &&
                    code != MES_CODE_VOICE_1 && code != MES_CODE_VOICE_0 && code != MES_CODE_VOICE_2) {
             if (CheckHalfFont(code) != 0) {
-                if (code == GetHalfFontNo__Fc(' ')) {
+                if (code == GetHalfFontNo(' ')) {
                     used_width += char_width / 2;
                 } else {
                     used_width += (int)(char_width * half_font_w_percent);
@@ -2236,7 +2284,7 @@ int ClsMes::MakeMesWinTbl(int mes_no) {
             } else if (MakeMesWinTbl_item(code, &x, &y) == 0) {
                 SetMesWinTbl(code, x, y);
                 if (CheckHalfFont(code) != 0) {
-                    if (code == GetHalfFontNo__Fc(' ')) {
+                    if (code == GetHalfFontNo(' ')) {
                         x += font_w / 2;
                     } else {
                         x += (int)(font_w * half_font_w_percent);
@@ -2454,7 +2502,7 @@ void ClsMes::NeedMesWinWH(int mes_no) {
             } else if (code >= MES_CODE_GAIJI && code < 0xFD32) {
                 AddYokoHaba(line, GetGaijiW(code));
             } else if (CheckHalfFont(code) != 0) {
-                if (code == GetHalfFontNo__Fc(' ')) {
+                if (code == GetHalfFontNo(' ')) {
                     AddYokoHaba(line, font_w / 2);
                 } else {
                     AddYokoHaba(line, (int)(font_w * half_font_w_percent));
@@ -2802,9 +2850,9 @@ void ClsMes::NeedMesWinWH(char *text) {
                     position += 6;
                     page++;
                 } else {
-                    half_font = GetHalfFontNo__Fc((s8)*cursor);
+                    half_font = GetHalfFontNo((s8)*cursor);
                     if (CheckHalfFont(half_font) != 0) {
-                        if (half_font == GetHalfFontNo__Fc(' ')) {
+                        if (half_font == GetHalfFontNo(' ')) {
                             AddYokoHaba(line, font_w / 2);
                         } else {
                             AddYokoHaba(line, fptosi((float)font_w * half_font_w_percent));
@@ -3311,7 +3359,39 @@ void ClsMes::DrawFont() {
     prim.End();
 }
 #pragma divbyzerocheck reset
+#ifdef NONMATCHING
+void ClsMes::SetGoalCursorXY() {
+    if (select < 0) return;
+
+    if (window_mode == MES_WIN_YESNO) {
+        int x = choice_pos[select][0];
+        if (x < 0 || choice_pos[select][1] < 0) return;
+        goal_cursor_x = fptosi((float)(x - 20) - draw_off_x);
+        goal_cursor_y = fptosi((float)choice_pos[select][1] - draw_off_y);
+        return;
+    }
+
+    goal_cursor_x = text_x - 40 - font_w / 2;
+    goal_cursor_y = font_h * select + text_y + cursor_off_y + draw_h / 2 - 12;
+    int dx;
+    int dy;
+    CalcCenteringXY(&dx, &dy);
+    goal_cursor_x += dx;
+    goal_cursor_y += dy;
+
+    if (line_indent_on && cursor_centering) {
+        int count = 0;
+        while (count < MES_LINE_MAX && line_w[count] >= 0) count++;
+        int widest = 0;
+        for (int i = select_top; i < count; i++) {
+            if (line_w[i] > widest) widest = line_w[i];
+        }
+        goal_cursor_x += (text_w - widest) / 2;
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", SetGoalCursorXY__6ClsMesFv);
+#endif
 void ClsMes::StepSelectCursor(int steps) {
     int i;
 

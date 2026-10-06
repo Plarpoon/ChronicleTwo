@@ -11,8 +11,10 @@
  */
 
 /**
+ *
  * Primitive builder preset for 2D sprites, with helpers that write
  * textured rectangles, the scissor area and the blend equation.
+ *
  */
 class CPreSprite : public mgCDrawPrim {
 public:

@@ -78,3 +78,6 @@ Header: `ps2/include/editcoll.hpp`. No first-game counterpart (`CEditCollision` 
 ## Globals
 None: the unit has no data symbols (no INCLUDE_RODATA/INCLUDE_BSS). Float literals (0.5, 0.01,
 0.1) are in .rodata/.sdata of the functions themselves.
+
+## ClipBoxXZ draft
+The guarded scalar draft returns overlap when neither X nor Z projection has a negative separating gap. It compiles and differs from the retail VU0 status-flag implementation; the assembly fallback remains active.

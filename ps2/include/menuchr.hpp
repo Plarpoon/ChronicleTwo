@@ -1199,8 +1199,13 @@ int MonsterBookKey();
  */
 void MonsterBookDraw();
 
+/**
+ *
+ * State of the menus' background model loading.
+ *
+ */
 struct MENU_LOAD_INFO {
-    signed char mode;
+    signed char mode; /**< Current loading mode. */
     signed char unk_1;
     signed char unk_2;
     signed char unk_3;

@@ -107,10 +107,18 @@ Text tokens: "END" stops, "REVERBE" (SeInfo) / "REVERB" (VolInfo) lines, lines s
 digit are entries. Columns (SeInfo): 0 se no, 4 file name (SearchSeq), 5 prog, 6 key, 7 flag.
 
 ## GetCSndPortNo table (game port -> driver port, sequence port, initial volume)
+
 0 -> 0, 0, -; 1 -> 15, -1, 256; 2 -> 1, 1, -; 3 -> 10, -1, 256; 4 -> 14, 2, 256; 5 -> 13, -1, 256;
 6 -> 12, -1, 256; 7 -> 9, -1, 256; 8 -> 11, -1, 256; 9 -> 8, -1, 256; 10 -> 7, -1, 256;
 11 -> 3, 3, -; other -> fails. Jump table `at_816__2`.
 sndLoadSound loads "sq" sequences only for game ports 0, 11, 2, 4.
+
+## sndSetSePanf
+
+`sndSetSePanf` scales the floating pan by 64, converts it with `fptosi`, adds 64,
+and clamps the result to 0..127 before forwarding to `sndSetSePan`. Its guarded
+C++ draft compiles but currently differs from retail in register allocation and
+the comparison register, so the retail assembly remains the game build.
 
 ## Enums
 - sndPORT: names from retail globals `SndPortVol_Ob/Base/Event/Enemy` (ports 1/3/4/5 via

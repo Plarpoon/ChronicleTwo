@@ -8,9 +8,11 @@
  */
 
 /**
+ *
  * Steps a linear congruential seed to make random values that follow
  * a normal distribution, for small random changes to the fish of the
  * fish race.
+ *
  */
 class CRandom {
 public:

@@ -20,7 +20,9 @@ class mgCDrawManager;
 struct MDS_HEADER;
 
 /**
+ *
  * Bits of CColFrame::flags that choose which geometry a query visits.
+ *
  */
 // clang-format off
 enum ColFrameFlag {
@@ -32,8 +34,10 @@ enum ColFrameFlag {
 // clang-format on
 
 /**
+ *
  * Stores a collision triangle, its plane normal, and the surface
  * attributes it was given by its material.
+ *
  */
 struct CCPoly {
     sceVu0FVECTOR vertex[3];   /**< Corners of the triangle. */
@@ -50,9 +54,11 @@ struct CCPoly {
 STATIC_ASSERT(sizeof(CCPoly) == 0x50);
 
 /**
+ *
  * Provides the common query interface and bounds for collision
  * geometry; on its own it is an empty box that only answers whether a
  * point lies inside it.
+ *
  */
 class CCollision {
 public:
@@ -141,8 +147,10 @@ public:
 STATIC_ASSERT(sizeof(CCollision) == 0x40);
 
 /**
+ *
  * Implements collision queries over the triangles built from an MDT
  * model.
+ *
  */
 class CCollisionMDT : public CCollision {
 public:
@@ -211,8 +219,10 @@ public:
 STATIC_ASSERT(sizeof(CCollisionMDT) == 0x50);
 
 /**
+ *
  * Places collision geometry in the frame hierarchy, so that queries
  * made in world space reach the geometry of the frame and its children.
+ *
  */
 class CColFrame : public mgCFrame {
 public:

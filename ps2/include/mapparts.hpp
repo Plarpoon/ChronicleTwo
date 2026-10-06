@@ -31,8 +31,10 @@ class mgCMemory;
 #define MAP_PARTS_COLOR_MAX 4
 
 /**
+ *
  * Asks which screen function point lies in front of the camera, and
  * receives the nearest one found.
+ *
  */
 struct InScreenFuncInfo {
     float range;  /**< Distance from the camera within which a function point counts. */
@@ -43,9 +45,11 @@ struct InScreenFuncInfo {
 STATIC_ASSERT(sizeof(InScreenFuncInfo) == 0xC);
 
 /**
+ *
  * Places one part of a map in the world: a named group of model pieces that
  * share one frame, together with the function points (lights, animations,
  * treasure chests and screen targets) that come with the part.
+ *
  */
 class CMapParts : public CObject {
 public:
@@ -463,8 +467,10 @@ public:
 STATIC_ASSERT(sizeof(CMapParts) == 0x310);
 
 /**
+ *
  * Treasure chest that a function point of a map or map part places, holding
  * the item it gives and the flag that records it was opened.
+ *
  */
 class CMapTreasureBox : public CCharacter2 {
 public:

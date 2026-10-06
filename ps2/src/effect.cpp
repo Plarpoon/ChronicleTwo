@@ -461,9 +461,9 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
                 break;
         }
         sceVu0AddVector(param.pos, param.pos, origin);
-        param.move_type[0] = move_type.first;
-        param.move_type[1] = move_type.second;
-        param.move_type[2] = move_type.third;
+        param.move_type[0] = move_type.x;
+        param.move_type[1] = move_type.y;
+        param.move_type[2] = move_type.z;
         sceVu0CopyVector(param.velo_mul, velo_mul);
         sceVu0CopyVector(param.acc_mul, acc_mul);
         switch (velo_rand_type) {
@@ -526,9 +526,9 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
                 param.move_p2[2] = RegularityRand(move_p2[2], move_p2_rand[2], move_p2_rand_count);
                 break;
         }
-        param.scale_type[0] = scale_type.first;
-        param.scale_type[1] = scale_type.second;
-        param.scale_type[2] = scale_type.third;
+        param.scale_type[0] = scale_type.x;
+        param.scale_type[1] = scale_type.y;
+        param.scale_type[2] = scale_type.z;
         switch (scale_rand_type) {
             case EFFECT_RAND_NONE:
                 sceVu0CopyVector(param.scale, scale);
@@ -689,9 +689,9 @@ void CEffectCtrl::Initialize(void) {
     rep_rand_count = 1;
     repeat_cnt = 0;
     repeat_num = -1;
-    move_type.first = EFFECT_CHANGE_NONE;
-    move_type.second = EFFECT_CHANGE_NONE;
-    move_type.third = EFFECT_CHANGE_NONE;
+    move_type.x = EFFECT_CHANGE_NONE;
+    move_type.y = EFFECT_CHANGE_NONE;
+    move_type.z = EFFECT_CHANGE_NONE;
     pos[0] = 0;
     pos[1] = 0;
     pos[2] = 0;
@@ -750,9 +750,9 @@ void CEffectCtrl::Initialize(void) {
     move_p2_rand[2] = 0;
     move_p2_rand[3] = 1.0f;
     move_p2_rand_count = 1;
-    scale_type.first = EFFECT_CHANGE_NONE;
-    scale_type.second = EFFECT_CHANGE_NONE;
-    scale_type.third = EFFECT_CHANGE_NONE;
+    scale_type.x = EFFECT_CHANGE_NONE;
+    scale_type.y = EFFECT_CHANGE_NONE;
+    scale_type.z = EFFECT_CHANGE_NONE;
     scale[0] = 1.0f;
     scale[1] = 1.0f;
     scale[2] = 1.0f;
@@ -867,9 +867,9 @@ CEffectCtrl &CEffectCtrl::operator=(const CEffectCtrl &other) {
     pos_rand_type = other.pos_rand_type;
     sceVu0CopyVector((float *)pos_rand, (float *)other.pos_rand);
     pos_rand_count = other.pos_rand_count;
-    this->move_type.first = other.move_type.first;
-    this->move_type.second = other.move_type.second;
-    this->move_type.third = other.move_type.third;
+    this->move_type.x = other.move_type.x;
+    this->move_type.y = other.move_type.y;
+    this->move_type.z = other.move_type.z;
     sceVu0CopyVector((float *)velo, (float *)other.velo);
     sceVu0CopyVector((float *)acc, (float *)other.acc);
     sceVu0CopyVector((float *)velo_mul, (float *)other.velo_mul);
@@ -888,9 +888,9 @@ CEffectCtrl &CEffectCtrl::operator=(const CEffectCtrl &other) {
     acc_rand_count = other.acc_rand_count;
     move_p1_rand_count = other.move_p1_rand_count;
     move_p2_rand_count = other.move_p2_rand_count;
-    this->scale_type.first = other.scale_type.first;
-    this->scale_type.second = other.scale_type.second;
-    this->scale_type.third = other.scale_type.third;
+    this->scale_type.x = other.scale_type.x;
+    this->scale_type.y = other.scale_type.y;
+    this->scale_type.z = other.scale_type.z;
     sceVu0CopyVector((float *)scale, (float *)other.scale);
     sceVu0CopyVector((float *)svelo, (float *)other.svelo);
     sceVu0CopyVector((float *)scale_p1, (float *)other.scale_p1);
@@ -1056,9 +1056,9 @@ int __ACC_MUL(SPI_STACK *args, int arg_count) {
     return 1;
 }
 int __MOVE_TYPE(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->move_type.first = (EFFECT_CHANGE_TYPE)spiGetStackInt(args++);
-    g_tmp_effc->move_type.second = (EFFECT_CHANGE_TYPE)spiGetStackInt(args++);
-    g_tmp_effc->move_type.third = (EFFECT_CHANGE_TYPE)spiGetStackInt(args);
+    g_tmp_effc->move_type.x = (EFFECT_CHANGE_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->move_type.y = (EFFECT_CHANGE_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->move_type.z = (EFFECT_CHANGE_TYPE)spiGetStackInt(args);
     return 1;
 }
 int __MOVE_P1(SPI_STACK *args, int arg_count) {
@@ -1090,8 +1090,8 @@ int __MOVE_P2_RAND(SPI_STACK *args, int arg_count) {
     return 1;
 }
 int __SCALE_TYPE(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->scale_type.first = (EFFECT_CHANGE_TYPE)spiGetStackInt(args++);
-    g_tmp_effc->scale_type.second = (EFFECT_CHANGE_TYPE)spiGetStackInt(args);
+    g_tmp_effc->scale_type.x = (EFFECT_CHANGE_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->scale_type.y = (EFFECT_CHANGE_TYPE)spiGetStackInt(args);
     return 1;
 }
 int __SCALE(SPI_STACK *args, int arg_count) {

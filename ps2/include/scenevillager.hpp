@@ -11,8 +11,10 @@
  */
 
 /**
+ *
  * Status bits of a scene character slot, above the SCENE_DATA_STATUS bits,
  * that decide how the slot's character and its shadow are drawn.
+ *
  */
 enum SCENE_CHARA_STATUS {
     SCENE_CHARA_NO_SHADOW   = 1 << 3, /**< The character's shadow is not drawn. */
@@ -25,8 +27,10 @@ enum SCENE_CHARA_STATUS {
 };
 
 /**
+ *
  * Scene character slots set aside for villagers and for the game objects of
  * a map, and the counts of each range.
+ *
  */
 enum SCENE_VILLAGER_SLOT {
     SCENE_VILLAGER_SLOT_TOP       = 8,    /**< First slot of the villagers of the main map. */
@@ -42,7 +46,9 @@ enum SCENE_VILLAGER_SLOT {
 };
 
 /**
+ *
  * Memory stacks of a scene that villagers are loaded into.
+ *
  */
 enum SCENE_VILLAGER_STACK {
     SCENE_STACK_VILLAGER     = 2, /**< Stack of the villagers of the main map. */
@@ -50,8 +56,10 @@ enum SCENE_VILLAGER_STACK {
 };
 
 /**
+ *
  * Motions a villager plays, numbered as the motion names a villager's
  * character holds them under.
+ *
  */
 enum VILLAGER_MOTION {
     VILLAGER_MOTION_NONE       = -1, /**< No motion. */
@@ -68,7 +76,9 @@ enum VILLAGER_MOTION {
 };
 
 /**
+ *
  * Kinds of game object placed on a map, each loaded as two characters.
+ *
  */
 enum GAMEOBJ_TYPE {
     GAMEOBJ_TYPE_NONE      = 0, /**< Ends the game object table. */
@@ -83,7 +93,9 @@ enum GAMEOBJ_TYPE {
 #define GAMEOBJ_PLACE_MAX 4
 
 /**
+ *
  * Place of one game object on its map.
+ *
  */
 struct GAMEOBJ_PLACE {
     float pos[3]; /**< Position of the game object on the map. */
@@ -93,8 +105,10 @@ struct GAMEOBJ_PLACE {
 STATIC_ASSERT(sizeof(GAMEOBJ_PLACE) == 0x10);
 
 /**
+ *
  * Entry of the game object table, giving the kind of game object a map
  * shows and the places it shows it at.
+ *
  */
 struct GAMEOBJ_INFO {
     s32           map_no;                   /**< Number of the map the game object is on; below zero ends the table. */

@@ -56,12 +56,22 @@ extern char at_978__4[];
 extern s8 diff_conditiontable_1102[2][7];
 extern u16 check_bittable_1123[3][6];
 extern u16 cbit_1158[4][5];
+/**
+ *
+ * Room option entries used by the dungeon floor script.
+ *
+ */
 struct RoomOptions {
-    MENU_SPI_ANALYZE_STRUCT1 entries[5];
+    MENU_SPI_ANALYZE_STRUCT1 entries[5]; /**< Room option entries. */
 };
+/**
+ *
+ * Room direction values viewed as integers or quadwords.
+ *
+ */
 union RoomDirections {
-    int v[4][3];
-    u_long128 q[3];
+    int v[4][3]; /**< Direction values. */
+    u_long128 q[3]; /**< The same values as quadwords. */
 };
 extern RoomOptions at_886__4;
 extern RoomDirections at_1395__4;

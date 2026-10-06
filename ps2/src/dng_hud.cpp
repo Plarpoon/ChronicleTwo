@@ -1,4 +1,3 @@
-extern "C" void *__ct__11mgCDrawPrimFv(void *);
 #include "common.h"
 #include "mg_drawprim.hpp"
 #include "automap.hpp"
@@ -40,6 +39,7 @@ extern "C" void *__ct__11mgCDrawPrimFv(void *);
 #include "character.hpp"
 #include "nd_meswin.hpp"
 
+extern "C" mgCDrawPrim *__ct__11mgCDrawPrimFv(mgCDrawPrim *);
 extern "C" int fptosi(float);
 extern int gekirin_anim[16];
 extern "C" const char at_1221__2[];

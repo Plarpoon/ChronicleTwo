@@ -130,6 +130,11 @@ Seen in `menu_inputkey_limmit_check_line/glid`:
   meaning was not established.
 
 ## CItemSelect (heap object, `ItemSelectPtr`)
+- `MenuItemSelectInit` attaches the caller's remaining stack, constructs the list in 0x47
+  quadwords, sets its two screen rectangles, attaches the menu texture, and starts the background
+  read. Modes 9 and 0x16 read separate menu files into the stack; the size is rounded up to
+  quadwords before the message window is preset. The constructor and function drafts are guarded
+  by `NONMATCHING`, leaving the retail assembly path intact.
 - Built inline in MenuItemSelectInit: base ctor, vptr, two `mgRect<float>::Set(0,0,0,0)` (see the mgRect note),
   then the field clears, then `Set(120, mgScreenHeight-0x10A, 0, 200)` and `Set(list.x+20, list.y+370, 44, 55)`,
   then line_num = 1.0, CheckEnableHaveItemNum and SetPtrList. The header does not declare the ctor (no symbol).
@@ -172,3 +177,12 @@ Only non-local symbols get externs (the rest are `static` in the .cpp per `local
 ## First game
 The first game has no counterpart to any of these classes (no CBaseMenuClass, CMenuKeyFunc or item menu
 classes in `chronicle/ps2/include`).
+# Build-up weapon transfer
+
+`BuildUpWeaponTrans` changes an owned weapon to a new item number and type,
+retaining its absorption gauge percentage as the next weapon's level-up
+requirement replaces the maximum. It resets the weapon level, adds ten percent
+of the next weapon's base status and attribute values, combines special ability
+bits, limits parameters, and sets save bit 0x31. It replaces the custom name
+only when the old name still equals the old item's default message. A guarded
+C++ draft compiles but differs from retail.

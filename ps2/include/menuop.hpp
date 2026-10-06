@@ -8,8 +8,13 @@
 #include "scenesnd.hpp"
 #include "memcard.hpp"
 
+/**
+ *
+ * Icon files stored with a memory card save.
+ *
+ */
 struct SaveIconSet {
-    MC_ICON_DATA file[3];
+    MC_ICON_DATA file[3]; /**< Save icon images. */
 };
 
 STATIC_ASSERT(sizeof(SaveIconSet) == 0x78);

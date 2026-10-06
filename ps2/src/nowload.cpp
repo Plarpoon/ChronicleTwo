@@ -18,7 +18,17 @@
 #include <cstring>
 #include <cstdio>
 
+/**
+ *
+ * Pause information initialized without an active scene or event skip.
+ *
+ */
 struct PauseState : PAUSE_INFO {
+    /**
+     *
+     * Clears the pause scene and event skip state.
+     *
+     */
     PauseState() {
         scene = NULL;
         event_skip = 0;
@@ -153,7 +163,14 @@ void NowLoadingLoop(void *unused) {
 void CancelNowLoading() {
     cancel_now_loading = 1;
 }
-struct LoadingMemoryWords { float words[12]; };
+/**
+ *
+ * Twelve words of loading screen data copied as floats.
+ *
+ */
+struct LoadingMemoryWords {
+    float words[12]; /**< Loading screen words. */
+};
 void CreateNowLoading(NowLoadingInfo *info) {
     char name[0x40];
     char path[0x40];

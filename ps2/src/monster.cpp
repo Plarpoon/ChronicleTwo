@@ -66,7 +66,6 @@ extern s8 init_2105;
 extern SPI_TAG_PARAM mos_data_anlyze_tag[];
 extern CUserDataManager *DngUserData;
 extern CEffectScriptMan *FxScriptMan;
-extern "C" int DrawSymbol__14CMiniMapSymbolFPfi(CMiniMapSymbol *, float *, int);
 extern "C" CCameraControl *GetCamera__6CSceneFi(CScene *, int);
 extern "C" void SethitEffect__15CHitEffectImageFPfPfffffii(CHitEffectImage *, float *, float *, float, float, float, float, int, int);
 float SearchArea(CScene *scene, float *from, float *to, float range);
@@ -103,7 +102,7 @@ void CActiveMonster::CheckStatusAttr() {
                 }
                 damage = old_life - life;
                 if (damage > 0) {
-                    ((CCharacter2 *)this)->GetEntryObjectPos(0, 0, pos);
+                    GetEntryObjectPos(0, 0, pos);
                     pos[1] += body_height;
                     HitScoreSet(pos, 0, damage);
                 }
@@ -720,7 +719,7 @@ void CMonsterMan::DrawMiniMapSymbol(CMiniMapSymbol *symbol) {
                     symbol_no = 8;
                 }
                 active[i]->GetPosition(pos);
-                DrawSymbol__14CMiniMapSymbolFPfi(symbol, pos, symbol_no);
+                symbol->DrawSymbol(pos, symbol_no);
             }
         }
     }
@@ -1139,7 +1138,7 @@ void GuardEffectSet(CScene *scene, float *point, int play_script) {
     const float &power = power_value;
     float spread = 50.0f;
     float gravity = 0.1f;
-    SethitEffect__15CHitEffectImageFPfPfffffii(hit, pos, dir.f, spread, speed, power, gravity, 30, 32);
+    hit->SethitEffect(pos, dir.f, spread, speed, power, gravity, 30, 32);
     hit->kind = 1;
 
     if (BattleFX.flush == NULL) {

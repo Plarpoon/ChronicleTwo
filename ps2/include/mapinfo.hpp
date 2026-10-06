@@ -19,9 +19,11 @@ class CMapLightingInfo;
 class CCameraDrawInfo;
 
 /**
+ *
  * Describes one fixed-camera area of a map: the camera positions it
  * offers, the collision shapes that mark where it applies, and the
  * map part groups shown while it is in use.
+ *
  */
 class CCameraInfo {
 public:
@@ -62,9 +64,11 @@ public:
 STATIC_ASSERT(sizeof(CCameraInfo) == 0xD0);
 
 /**
+ *
  * Holds the settings that a map's configuration script gives: the
  * texture and model packs to load, the lighting sets, the time-of-day
  * behaviour, the sky and the character lighting.
+ *
  */
 class CMapInfo {
 public:

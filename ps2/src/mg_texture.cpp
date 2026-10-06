@@ -1292,7 +1292,6 @@ int mgCTextureManager::ReloadTexture(int block, u_int *packet) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_texture", ReloadTexture__17mgCTextureManagerFiPUi);
 #endif
 #pragma schedule off
-// sceGsTex0::operator= is the compiler-generated copy assignment of the SDK type (sce/libgraph.h).
 sceGsTex0 &sceGsTex0::operator=(const sceGsTex0 &src) {
     value = src.value;
     return *this;

@@ -15,8 +15,10 @@ class CEditMap;
 class CEditParts;
 
 /**
+ *
  * Georama maps that have a town analysis, numbered as their saved layouts
  * and analysis scripts are.
+ *
  */
 enum EditAnalyzeMap {
     EDIT_ANALYZE_MAP_SHARLOT     = 0, /**< Town analysed by AnalyzeSharlot. */

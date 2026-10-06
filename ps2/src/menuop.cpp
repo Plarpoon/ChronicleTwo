@@ -37,13 +37,23 @@ extern "C" void LocalFunc_AdjustScrlBar__FPP18MENUFORMPARTS_TYPEPiPiiffi(MENUFOR
                                                                          float, int);
 extern "C" void StepMainMenuIconMove__18CMenuPosDataManageFPiii(void *, void *, int, int);
 
+/**
+ *
+ * Pairs two integer values used by menu operations.
+ *
+ */
 struct IntPair {
-    int a;
-    int b;
+    int a; /**< First value in the pair. */
+    int b; /**< Second value in the pair. */
 };
+/**
+ *
+ * Stores a position on the menu screen.
+ *
+ */
 struct ScreenPos {
-    float x;
-    float y;
+    float x; /**< Horizontal screen coordinate. */
+    float y; /**< Vertical screen coordinate. */
 };
 extern signed char MovieViewFlag;
 extern signed char init_1254;
@@ -135,6 +145,8 @@ extern CScene::BGM_STATUS SubGameDataBgm;
 extern "C" void *__vt__14CSaveMenuClass[];
 mgCMemory SaveMenuStack;
 extern CDC2Mes *SaveFileList[13];
+extern char *space_2549;
+extern char init_2550;
 extern char *b_2715[3];
 extern char at_2764[];
 extern char at_2765[];
@@ -985,27 +997,27 @@ int CMenuOption::KeyStep(void) {
                 MenuCommonInfo->SetMoveMethod(2);
                 cursor_jump = 1;
                 mode = 0;
-                ((CBaseMenuClass *)this)->ExeScript(at_1648__2);
+                CBaseMenuClass::ExeScript(at_1648__2);
                 if (MenuArg.open_type == MENU_OPEN_OPTION) {
-                    ((CBaseMenuClass *)this)->ExeScript(at_1649);
+                    CBaseMenuClass::ExeScript(at_1649);
                     this->step = 1;
                     mode = 1;
                 }
             }
-            if (this->step == 1 && ((CBaseMenuClass *)this)->FadeCheckMenu() != 0) {
+            if (this->step == 1 && CBaseMenuClass::FadeCheckMenu() != 0) {
                 this->step = 0;
                 mode = 0;
             }
             break;
         case 2:
             if (MenuArg.open_type == MENU_OPEN_OPTION) {
-                if (((CBaseMenuClass *)this)->FadeCheckMenu() != 0) {
+                if (CBaseMenuClass::FadeCheckMenu() != 0) {
                     return 1;
                 }
                 break;
             }
             if (frameEnd != 0) {
-                ((CBaseMenuClass *)this)->ExeScript(at_1428__4);
+                CBaseMenuClass::ExeScript(at_1428__4);
                 if (MenuConfigPtr != NULL) {
                     printf(at_1650__3, MenuConfigPtr->eye_reverse);
                     printf(at_1651__2, MenuConfigPtr->unk_37);
@@ -1078,12 +1090,12 @@ int CMenuOption::KeyStep(void) {
                     MenuCommonInfo->SetMoveMethod(-1);
                     MenuCommonInfo->SetWakuType(-1);
                     if (MenuArg.open_type == MENU_OPEN_OPTION) {
-                        ((CBaseMenuClass *)this)->ExeScript(at_1652__2);
+                        CBaseMenuClass::ExeScript(at_1652__2);
                     } else {
                         MenuMainFrameModeSet(9, 0);
                         ReturnMenuIntern(0);
                         MenuCommonInfo->SetWakuType(-1);
-                        ((CBaseMenuClass *)this)->ExeScript(at_1429__3);
+                        CBaseMenuClass::ExeScript(at_1429__3);
                     }
                     break;
             }
@@ -1448,7 +1460,27 @@ int MenuOptionKey() {
 void MenuOptionDraw() {
     MenuPosData->FormDraw();
 }
+#ifdef NONMATCHING
+void LocalFunc_AdjustScrlBar(MENUFORMPARTS_TYPE **parts, int *pos, int *size,
+                             int top, float line_num, float show_num, int jump) {
+    if (parts[0] == NULL || parts[1] == NULL || parts[2] == NULL) {
+        return;
+    }
+    float visible = ((float)size[1] / line_num) * show_num;
+    parts[1]->h = visible - parts[0]->h - parts[2]->h;
+    size[1] = fptosi((float)size[1] - visible);
+    float remaining = line_num - show_num;
+    if (remaining < 1.0f) {
+        remaining = 1.0f;
+    }
+    CalcMenu1((float)pos[1] + ((float)size[1] / remaining) * (float)top,
+              &parts[0]->y, 4.0f, 0.0f, jump);
+    parts[1]->y = parts[0]->y + parts[0]->h;
+    parts[2]->y = parts[1]->y + parts[1]->h;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuop", LocalFunc_AdjustScrlBar__FPP18MENUFORMPARTS_TYPEPiPiiffi);
+#endif
 void CSaveMenuClass::SetDlInfoMsg(int load, int show) {
     int message_no = 0xC08;
     if (load == 1) {
@@ -2262,7 +2294,102 @@ int CSaveMenuClass::KeyStep(void) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuop", KeyStep__14CSaveMenuClassFv);
 #endif
+#ifdef NONMATCHING
+void SaveFileListDraw(int &tex_block, float *pos, int alpha) {
+    if (alpha <= 0 || Tex_SaveFile == NULL) {
+        return;
+    }
+    mgRect<int> panel(0, 0x42, 0x17E, 0x4A);
+    mgRect<int> marker(0, 0x8C, 0xEA, 6);
+    if (LanguageCode > 0) {
+        panel.right = 0x1CA;
+        marker.right = 0x14A;
+    }
+    MenuReloadTexture(tex_block, SaveMenuPtr->tex_block[1]);
+    mgCDrawPrim *prim = GetMenuPrim();
+    SetSpriteEnv(prim, 0);
+    prim->Begin(6);
+    prim->Texture(Tex_SaveFile);
+    prim->Color(0x80, 0x80, 0x80, alpha);
+    for (int i = 0; i < 13; ++i) {
+        float row_y = pos[1] + 80.0f * (float)i;
+        prim->Color(0, 0, 0, alpha / 3);
+        PrimQuad(prim, 3.0f + pos[0], 3.0f + row_y, panel);
+        prim->Color(0x80, 0x80, 0x80, alpha);
+        PrimQuad(prim, pos[0], row_y, panel);
+        if (MemoryCardPtr->file_info[i].state != 0) {
+            PrimQuad(prim, pos[0] + 120.0f, row_y + 34.0f, marker);
+        }
+    }
+    prim->End();
+    int centre = fptosi(pos[0] + (float)(LanguageCode > 0 ? 0x11A : 0xE0));
+    CMenuFont font;
+    font.SetClearance(0xE, 0x14);
+    MenuReloadTexture(tex_block, MenuArg.mes_tex_block);
+    for (int i = 0; i < 13; ++i) {
+        float row_y = pos[1] + 80.0f * (float)i;
+        CDC2Mes *mes = SaveFileList[i];
+        SAVEDATA_INFO *info = &MemoryCardPtr->file_info[i];
+        mes->line_pos[6][0] = fptosi(pos[0] + 18.0f);
+        mes->line_pos[6][1] = fptosi(row_y + 18.0f);
+        mes->line_pos_on[6] = 1;
+        if (row_y + 18.0f < 100.0f || row_y + 18.0f > (float)mgScreenHeight) {
+            continue;
+        }
+        if (info->state == 0) {
+            mes->SetMovePosCenteringGyou(1, centre - 4, fptosi(row_y + 24.0f));
+        } else {
+            mes->line_pos[7][0] = fptosi(pos[0] + 520.0f);
+            mes->line_pos[7][1] = fptosi(row_y + 40.0f);
+            mes->line_pos_on[7] = 1;
+            u64 minutes = info->play_time / 50 / 60;
+            u64 hours = minutes / 60;
+            minutes %= 60;
+            int tens = (hours % 100) / 10;
+            if (info->play_time / 50 >= 0x36E070) {
+                hours = 999;
+                tens = 9;
+                minutes = 59;
+            }
+            if (init_2550 == 0) {
+                init_2550 = 1;
+                space_2549 = at_2603;
+            }
+            char time_text[128];
+            char prefix[64];
+            char digit[64];
+            if (CheckNowEurope() != 0) {
+                if (hours / 100 == 0) strcpy(prefix, space_2549);
+                else sprintf(prefix, at_1905__3, (int)(hours / 100));
+                if (tens == 0 && hours / 100 == 0) strcat(prefix, space_2549);
+                else {
+                    sprintf(digit, at_1905__3, tens % 10);
+                    strcat(prefix, digit);
+                }
+                sprintf(time_text, at_2604, prefix, (int)(hours % 10),
+                        (int)(minutes / 10), (int)(minutes % 10));
+            } else {
+                if (hours / 100 == 0) strcpy(time_text, space_2549);
+                else strcpy(time_text, GetMenuBigNum((int)(hours / 100)));
+                if (tens == 0 && hours / 100 == 0) strcat(time_text, space_2549);
+                else strcat(time_text, GetMenuBigNum(tens));
+                strcat(time_text, GetMenuBigNum((int)(hours % 10)));
+                strcat(time_text, at_2605);
+                strcat(time_text, GetMenuBigNum((int)(minutes / 10)));
+                strcat(time_text, GetMenuBigNum((int)minutes));
+            }
+            font.DrawDirect(time_text, fptosi(pos[0] + 22.0f), fptosi(row_y + 42.0f));
+            mes->SetMovePosCenteringGyou(2, centre, fptosi(row_y + 11.0f));
+            mes->SetMovePosCenteringGyou(3, centre + 13, fptosi(row_y + 42.0f));
+        }
+        mes->SetMsgAlpha(alpha);
+        mes->StepMsg();
+        mes->DrawMsg();
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuop", SaveFileListDraw__FRiPfi);
+#endif
 void SetMCIconData(u_int *pack, int slot) {
     SaveIconSet icons = at_2609__2;
     for (int i = 0; i < 3; i++) {

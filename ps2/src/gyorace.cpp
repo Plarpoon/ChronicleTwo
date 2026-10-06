@@ -29,10 +29,15 @@
 #undef sceVu0ApplyMatrix
 extern "C" void sceVu0ApplyMatrix(float *, float *, float *);
 
+/**
+ *
+ * Race vector viewed as floats, integers or a quadword.
+ *
+ */
 union RaceVector {
-    float f[4];
-    int v[4];
-    u_long128 q;
+    float f[4]; /**< Floating point components. */
+    int v[4];   /**< Integer components. */
+    u_long128 q; /**< The same components as a quadword. */
 };
 extern RaceVector at_1765__2;
 extern RaceVector at_1766__3;
@@ -42,10 +47,15 @@ extern float ras_off_1762;
 extern signed char init_1763;
 
 struct CHitEffectImage;
+/**
+ *
+ * Texture flags stored in a race frame's image data.
+ *
+ */
 struct RaceFrameTexture {
     u_char pad_00[0x3C];
     u_char low : 2;
-    u_char swizzled : 1;
+    u_char swizzled : 1; /**< Whether indexed pixels use swizzled page order. */
     u_char high : 5;
     u_char pad_3D[0x33];
 };

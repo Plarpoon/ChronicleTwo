@@ -49,6 +49,8 @@ void sceGifPkReset(sceGifPacket *packet);
 u_int *sceGifPkTerminate(sceGifPacket *packet);
 u_int *sceGifPkEnd(sceGifPacket *packet, int pce, int irq, int pad);
 void sceGifPkCnt(sceGifPacket *packet, int pce, int irq, int pad);
+u_int *sceGifPkReserve(sceGifPacket *packet, int count);
+void sceGifPkRef(sceGifPacket *packet, u_long128 *address, int count, int pce, int irq, int pad);
 void sceGifPkOpenGifTag(sceGifPacket *packet, u_long128 giftag);
 void sceGifPkCloseGifTag(sceGifPacket *packet);
 void sceGifPkAddGsAD(sceGifPacket *packet, int reg, u_long data);

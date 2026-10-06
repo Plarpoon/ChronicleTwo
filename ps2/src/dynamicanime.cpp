@@ -36,20 +36,25 @@ static inline u_int align16_blocks(u_int size) {
 }
 
 // Code (.text)
-extern "C" void BindPosition__FPfPfff(float *pointA, float *pointB, float length, float weight) {
+/**
+ *
+ * Pulls two bound points toward their target separation.
+ *
+ */
+void BindPosition(float *a, float *b, float length, float rate) {
     float delta[4];
     float pull_a[4];
     float pull_b[4];
     float distance;
     float excess;
 
-    sceVu0SubVector(delta, pointA, pointB);
+    sceVu0SubVector(delta, a, b);
     distance = mgDistVector(delta);
     excess = distance - length;
-    sceVu0ScaleVector(pull_a, delta, (1.0f - weight) * excess / distance);
-    sceVu0ScaleVector(pull_b, delta, weight * excess / distance);
-    mgSubVector(pointA, pull_a);
-    mgAddVector(pointB, pull_b);
+    sceVu0ScaleVector(pull_a, delta, (1.0f - rate) * excess / distance);
+    sceVu0ScaleVector(pull_b, delta, rate * excess / distance);
+    mgSubVector(a, pull_a);
+    mgAddVector(b, pull_b);
 }
 void CDynamicAnime::ResetPosition(void) {
     float matrix[4][4];
@@ -102,7 +107,7 @@ void CDynamicAnime::Step() {
     for (iteration = 0; iteration < 6; iteration++) {
         for (i = 0; i < bind_vertex_num; i++) {
             bound = &bind_vertex[i];
-            BindPosition__FPfPfff(now_vertex[bound->vertex_id[0]], now_vertex[bound->vertex_id[1]], bound->length, bound->rate);
+            BindPosition(now_vertex[bound->vertex_id[0]], now_vertex[bound->vertex_id[1]], bound->length, bound->rate);
         }
         for (i = 0; i < vertex_num; i++) {
             fixed = &fix_vertex[i];

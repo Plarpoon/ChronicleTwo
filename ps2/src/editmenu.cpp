@@ -34,7 +34,14 @@
 #include "editanalyze.hpp"
 #include "common.h"
 
+extern "C" int fptosi(float value);
+
 enum { kBitFlagGekkaView = 0x2BE, kBitFlagCulture = 0x208 };
+/**
+ *
+ * Identifies actions returned while removing a georama part.
+ *
+ */
 enum RemovalAction {
     REMOVAL_ACTION_NONE = -1,
     REMOVAL_ACTION_BACK = 0x32,
@@ -62,21 +69,31 @@ void MakeMsgPartsItemInfo(CDC2Mes *mes, CEditPartsInfo *info, MENUFORM_MAKEBRD_I
 void InitDownLoadAnaunce(mgCMemory *memory);
 void CheckMenuLine(int *selected, int *top, int count, int visible);
 
+/**
+ *
+ * Stores four georama coordinates as floats or one quadword.
+ *
+ */
 struct GeoramaVector {
     union {
-        float f[4];
-        u_long128 qw;
+        float f[4]; /**< Four floating-point vector components. */
+        u_long128 qw; /**< Combined 128-bit vector representation. */
     };
 };
 
+/**
+ *
+ * Links a downloadable georama item to its name and category.
+ *
+ */
 struct DownLoadEntry {
-      signed char kind;
+      signed char kind; /**< Download entry category. */
       u8 unk_1[3];
-      char *name;
+      char *name; /**< Display name of the download entry. */
       u8 unk_8;
-      signed char has_extra;
+      signed char has_extra; /**< Whether the entry carries extra data. */
       u8 unk_a[2];
-      DownLoadEntry *next;
+      DownLoadEntry *next; /**< Next entry in the download list. */
 
       DownLoadEntry() {
           kind = 0;
@@ -86,17 +103,27 @@ struct DownLoadEntry {
           has_extra = 0;
       }
 };
+/**
+ *
+ * Stores the screen rectangle for a download item.
+ *
+ */
 struct DownLoadRect {
-    short x;
-    short y;
-    short w;
-    short h;
+    short x; /**< Horizontal rectangle position. */
+    short y; /**< Vertical rectangle position. */
+    short w; /**< Rectangle width. */
+    short h; /**< Rectangle height. */
 };
+/**
+ *
+ * Tracks a staged Geostone count animation.
+ *
+ */
 struct GeoStoneDmyCnt {
-      int step;
-      int remaining_steps;
-      int frames;
-      GeoStoneDmyCnt *next;
+      int step; /**< Current animation step. */
+      int remaining_steps; /**< Steps left in the animation. */
+      int frames; /**< Frames elapsed in the current step. */
+      GeoStoneDmyCnt *next; /**< Next count animation entry. */
 
       GeoStoneDmyCnt() {
           frames = 0;
@@ -105,6 +132,11 @@ struct GeoStoneDmyCnt {
           next = NULL;
       }
 };
+/**
+ *
+ * Views a window colour as channels or an RGBAQ value.
+ *
+ */
 union WinColor {
     struct {
         u_long r : 8;
@@ -113,21 +145,36 @@ union WinColor {
         u_long a : 8;
         u_long q : 32;
     } bits;
-    RGBAQ_TYPE rgbaq;
+    RGBAQ_TYPE rgbaq; /**< Combined colour and Q value. */
 };
+/**
+ *
+ * Tracks whether each georama request condition has been met.
+ *
+ */
 struct GeoRequestCheck {
-    int con_no[16][8];
-    int con_flag[16][8];
-    int met[16];
+    int con_no[16][8]; /**< Condition numbers for each request. */
+    int con_flag[16][8]; /**< Flags for each request condition. */
+    int met[16]; /**< Completion state of each request. */
 };
 STATIC_ASSERT(sizeof(GeoRequestCheck) == 0x440);
+/**
+ *
+ * Tracks the selected and first visible row of a georama list.
+ *
+ */
 struct GeoramaListState16 {
-    short selected;
-    short top;
+    short selected; /**< Selected list row. */
+    short top; /**< First visible list row. */
 };
+/**
+ *
+ * Stores list positions for the georama menu.
+ *
+ */
 struct MenuGeoramaSystemInfo {
       u8 unk_0[0x50];
-      GeoramaListState16 list_state[7];
+      GeoramaListState16 list_state[7]; /**< Position and selection of each list. */
 };
 
 extern "C" char at_990__3[14];
@@ -262,6 +309,8 @@ extern short MenuEditAnalyzeDataSrcListLimmitNum;
 extern float MenuEditAnalyzeDataSrcListH;
 extern float MenuEditAnalyzeDataSrcListH_Move;
 extern float MenuEditAnalyzeDataSrcListHTable[16];
+extern float menu_georama_title_pos[2];
+extern float MakeBoardDrawInfo[];
 extern short GeoramaReqMakeManner;
 extern signed char GeoramaReqMakeFlag;
 extern int DownLoadMesAlpha;
@@ -2626,7 +2675,58 @@ int CMenuGeorama::IsMakeObject(int buttons_held, int buttons_pressed) {
     }
     return 0;
 }
+#ifdef NONMATCHING
+void CMenuGeorama::CalcCursorPosition() {
+    if (MenuPosData == NULL) return;
+    CMenuPosDataForm *forms[9] = {title_form, list_form[0], list_form[1], list_form[2],
+                                   NULL, list_form[4], NULL, list_form[6], free_color_form};
+    int x = 0;
+    int y = 0;
+    CMenuPosDataForm *form = forms[key_arg_no];
+    if (form != NULL) {
+        switch (key_arg_no) {
+        case 0:
+            MenuCommonInfo->SetWakuType(0);
+            MenuCommonInfo->SetWakuWH(0, 84, 38);
+            x = fptosi(menu_georama_title_pos[0]);
+            y = fptosi(menu_georama_title_pos[1]);
+            break;
+        case 1:
+        case 2:
+        case 5:
+        case 7:
+            form->GetPutPosXY(NULL, x, y);
+            x -= 6;
+            y = fptosi((float)y + (43.0f + 24.0f * (list_info[view_mode].select - list_info[view_mode].top)));
+            break;
+        case 3:
+            form->GetPutPosXY(NULL, x, y);
+            x -= 6;
+            y = fptosi((float)y + (40.0f + 24.0f * (paint_select - paint_top)));
+            break;
+        case 8: {
+            char part_name[32];
+            sprintf(part_name, at_3329, free_color_select);
+            form->GetPutPosXY(part_name, x, y);
+            x -= 26;
+            y -= 12;
+            break;
+        }
+        }
+    }
+    if (mode == 6) {
+        x = fptosi(-50.0f + MakeBoardDrawInfo[make_cursor * 2]);
+        y = fptosi(MakeBoardDrawInfo[make_cursor * 2 + 1]);
+    }
+    if (MenuGeoramaCursorForceSetFlag) {
+        MenuCommonInfo->MenuSetPos(x, y);
+        MenuGeoramaCursorForceSetFlag = 0;
+    }
+    MenuCommonInfo->MenuPosStep(&x, NULL);
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmenu", CalcCursorPosition__12CMenuGeoramaFv);
+#endif
 void CMenuGeorama::CalcTex() {
     char name[32];
     int i;
@@ -3357,7 +3457,40 @@ int MenuGeoramaCheckPointPush(CMenuGeorama *menu, int keys, int pushed) {
     }
     return 0;
 }
+#ifdef NONMATCHING
+int MenuGeoramaAnalyzeSelect(CMenuGeorama *menu, int keys, int pushed) {
+    int old_top = menu->top;
+    int max = menu->GetNowViewModeMax(GEORAMA_VIEW_ANALYZE);
+    int step = 0;
+    if ((keys & 1) || (keys & 0x10)) step--;
+    if ((keys & 2) || (keys & 0x20)) step++;
+    menu->select += step;
+    if (menu->select < 0) menu->select = 0;
+    if (menu->select > max) menu->select = max;
+
+    MenuEditAnalyzeDataSrcListH_Move = MenuEditAnalyzeDataSrcListHTable[menu->select];
+    if (MenuEditAnalyzeDataSrcListH_Move > MenuEditAnalyzeDataSrcListH) {
+        MenuEditAnalyzeDataSrcListH_Move = MenuEditAnalyzeDataSrcListH;
+    }
+    menu->list_target_y[GEORAMA_VIEW_ANALYZE] = 50.0f + menu->analyze_form->y - MenuEditAnalyzeDataSrcListH_Move;
+    float &y = menu->list_pos[GEORAMA_VIEW_ANALYZE][1];
+    y += (menu->list_target_y[GEORAMA_VIEW_ANALYZE] - y) / 4.0f;
+    if (abs(fptosi(y - menu->list_target_y[GEORAMA_VIEW_ANALYZE])) <= 0) {
+        y = menu->list_target_y[GEORAMA_VIEW_ANALYZE];
+    }
+    menu->top = menu->select;
+    menu->SetGeoListInfo(menu->view_mode, menu->select, menu->top);
+    if (old_top != menu->top) {
+        GeoramaReqMakeManner = old_top < menu->top;
+        GeoramaReqMakeFlag = 1;
+        MenuSePlay(0);
+    }
+    if (pushed & 2) menu->ReturnSelectMode(0);
+    return 0;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmenu", MenuGeoramaAnalyzeSelect__FP12CMenuGeoramaii);
+#endif
 int MenuGeoramaPaintSelect(CMenuGeorama *menu, int keys, int pushed) {
     int done = 0;
     int step = 0;
@@ -3897,7 +4030,71 @@ int CRemovalMenu::KeyStep() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmenu", KeyStep__12CRemovalMenuFv);
 #endif
+#ifdef NONMATCHING
+void MenuRemovalInit(mgCMemory *stack, int *arg) {
+    int size;
+    MenuGeoramaStack.stSetBuffer(stack->stGetTop(), stack->stGetRest());
+    MenuCapture(MenuCommonInfo->tex_block[0], &MenuGeoramaStack, 1);
+    MenuMainImageDataEnter(MenuCommonInfo->tex_block[1]);
+    MenuDrawEnv->camera.SetRef(0.0f, 0.0f, 0.0f);
+    MenuDrawEnv->camera.SetPos(0.0f, 0.0f, 500.0f);
+    MenuMainMapInfo = (CEditMap *)MenuMainScene->GetMap(MenuMainScene->active_map);
+
+    RemovalMenuPtr = new (MenuGeoramaStack.Alloc(0x152)) CRemovalMenu;
+    HouseInfoSelectMoveInit = 1;
+    Tex_Georama = NULL;
+    HouseInfoCursorAlphaOnOff = 0;
+    HouseInfoCursorAlpha = 0;
+    HouseInfoSelectLine = 0;
+    HouseInfoSelectSelect = 0;
+    HouseInfoFormGrobal = NULL;
+    MenuDataAnalyze((char *)GetMenuMainPosCfgBuffer(&size), size, &MenuGeoramaStack);
+    RemovalMenuPtr->data_stack.stSetBuffer(MenuGeoramaStack.stGetTop(), 0x1180);
+    MenuGeoramaStack.Alloc(0x1180);
+    MenuCommonInfo->AttachFuncData();
+    RemovalMenuPtr->place_no = MenuArg.param[0];
+    if (MenuMainMapInfo != NULL) {
+        HousePartsID = RemovalMenuPtr->place_no;
+        RemovalMenuPtr->parts = MenuMainMapInfo->GetePlaceParts(RemovalMenuPtr->place_no);
+        if (RemovalMenuPtr->parts != NULL) {
+            RemovalMenuPtr->parts_info = RemovalMenuPtr->parts->info;
+            if (RemovalMenuPtr->parts_info->id == 0x49) {
+                RemovalMenuPtr->special_house = 1;
+            }
+        }
+        if (RemovalMenuPtr->parts != NULL) {
+            RemovalMenuPtr->house = RemovalMenuPtr->parts->house;
+            if (RemovalMenuPtr->house != NULL) {
+                RemovalMenuPtr->first_npc = RemovalMenuPtr->house->npc_no[0];
+            }
+        }
+    }
+    HouseDrawInfo = RemovalMenuPtr->house;
+    SetEditMenuEnv();
+    CMenuPosDataForm *form = MenuPosData->GetFormInfo(at_4367);
+    if (form != NULL) {
+        form->draw_flag = 0;
+    }
+    form = MenuPosData->GetFormInfo(at_4368);
+    if (form != NULL) {
+        form->draw_flag = 0;
+    }
+    MenuPosData->AttachCommonTexInfo();
+    MenuPosData->InitDrawList();
+    MenuPosData->ResetTextureInfoAll();
+    AttachMessageForm();
+    MenuMesForm[0]->draw_flag = 0;
+    MenuMesForm[1]->draw_flag = 0;
+    MenuCommonReadData(&MenuGeoramaStack, fname_1013, 0);
+    MenuGeoramaStack.Align64();
+    if (MenuCommonInfo->cursor_form != NULL) {
+        MenuCommonInfo->cursor_form->draw_flag = 0;
+    }
+    MenuArg.result[0] = 0;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmenu", MenuRemovalInit__FP9mgCMemoryPi);
+#endif
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmenu", Initialize__19CCharaFrameMatchingFv);
 int MenuRemovalKey() {
     return RemovalMenuPtr->KeyStep();

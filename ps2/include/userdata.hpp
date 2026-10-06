@@ -1286,9 +1286,6 @@ struct PARTY_CHARA_INFO {
 };
 STATIC_ASSERT(sizeof(PARTY_CHARA_INFO) == 0xC);
 
-// CInventUserData and its records are declared here, not in inventmn.hpp, because CUserDataManager holds
-// CInventUserData by value and inventmn.hpp needs this header's types.
-
 /**
  *
  * One photo taken with the camera: what it shows and where its pixels are.

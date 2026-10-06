@@ -93,6 +93,7 @@ enum {
     SHOP_PRICE_MAX = 0x200,       /**< Item numbers the price list covers. */
     SHOP_LIST_LINE = 6,           /**< Lines of goods the shop list shows at once. */
     QUEST_VIEW_PHOTO_MAX = 0x1E,  /**< Photo album slots the quest viewer reads. */
+    QUEST_VIEW_SCOOP_COUNT = 0x35, /**< Number of selectable photo scoops. */
 };
 
 /**

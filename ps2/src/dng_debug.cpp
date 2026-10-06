@@ -106,7 +106,26 @@ void dngDebugInit() {
     dbFont.Init();
     dbFont.SetClearance(20, 20);
 }
+#ifdef NONMATCHING
+void dngDebugStart() {
+    dbinfo.active = 1;
+    dbinfo.command = -1;
+    dbinfo.first_enemy_load = 1;
+    command_int[DNG_DEBUG_CMD_DEBUG_CAMERA * 2] = DebugInfo.debug_camera;
+    command_int[DNG_DEBUG_CMD_CHARA_MOVE * 2] = DebugInfo.chara_move;
+    command_int[DNG_DEBUG_CMD_LOCK_ON_MODE * 2] = BattleAreaScene->lock_on_mode;
+    command_int[DNG_DEBUG_CMD_SOUND_FLAG * 2] = dbinfo.sound_flag;
+    command_int[DNG_DEBUG_CMD_MONSTER_TALK * 2] = dbinfo.monster_talk;
+    command_int[DNG_DEBUG_CMD_EFFECT_ID * 2] = dbinfo.effect_id;
+    command_int[DNG_DEBUG_CMD_EFFECT_VOL * 2] = fptosi(dbinfo.effect_vol);
+    GamePad__2.SetAutoRepeat(0xF000, 15, 4);
+    GamePad__2.SetAutoRepeat(0x5000, 8, 1);
+    dbinfo.saved_pause_flag = BattleAreaScene->pause_flag;
+    BattleAreaScene->pause_flag = 15;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_debug", dngDebugStart__Fv);
+#endif
 void dngDebugDraw(void) {
     union { CPreSprite sprite; };
     char text[0x800];

@@ -19,8 +19,10 @@ class mgCTextureManager;
 class mgCDrawManager;
 
 /**
+ *
  * GS primitive types that a primitive builder begins with, as the
  * PRIM register's type field takes them.
+ *
  */
 enum mgPRIM_TYPE {
     MG_PRIM_POINT = 0,          /**< Separate points. */
@@ -33,8 +35,10 @@ enum mgPRIM_TYPE {
 };
 
 /**
+ *
  * Blend equations that mgCDrawPrim::AlphaBlend selects for the
  * ALPHA register; the values are those of mgAlphaMacroID.
+ *
  */
 enum mgALPHA_BLEND {
     MG_ALPHA_BLEND_NORMAL = 1,   /**< Blends the source over the frame by source alpha. */
@@ -45,8 +49,10 @@ enum mgALPHA_BLEND {
 };
 
 /**
+ *
  * Depth comparisons that mgCDrawPrim::DepthTest selects for the
  * TEST register.
+ *
  */
 enum mgDEPTH_TEST {
     MG_DEPTH_TEST_ALWAYS = -1, /**< Every pixel passes. */
@@ -55,7 +61,9 @@ enum mgDEPTH_TEST {
 };
 
 /**
+ *
  * Depth buffer write modes that mgCDrawPrim::ZMask takes.
+ *
  */
 enum mgZ_MASK {
     MG_Z_MASK_MASKED = -1, /**< The depth buffer is left unchanged. */
@@ -63,8 +71,10 @@ enum mgZ_MASK {
 };
 
 /**
+ *
  * Codes and bits of the DMA tags, VIF codes and GIF tags that the
  * primitive builder and draw manager write as 32-bit words.
+ *
  */
 enum mgPACKET_CODE {
     MG_DMA_CNT = 1 << 28,          /**< DMA tag ID CNT, in the tag's first word: the data follows the tag. */
@@ -87,8 +97,10 @@ enum mgPACKET_CODE {
 };
 
 /**
+ *
  * GS register addresses and values the primitive builder uses that the SDK
  * header does not name.
+ *
  */
 enum mgGS_CODE {
     MG_GS_PRMODECONT = 0x1A,  /**< PRMODECONT register: selects whether PRIM or PRMODE holds the attributes. */
@@ -97,8 +109,10 @@ enum mgGS_CODE {
 };
 
 /**
+ *
  * One packet registered with the draw manager: a shared setup packet and
  * the object's own packet, both called from the frame's DMA chain.
+ *
  */
 struct mgSORT_PACKET {
     u_long128 *common;   /**< Packet called before this one unless the previous packet called the same one. */
@@ -110,8 +124,10 @@ struct mgSORT_PACKET {
 STATIC_ASSERT(sizeof(mgSORT_PACKET) == 0x10);
 
 /**
+ *
  * Builds a packet of GS register writes for 2D or 3D primitives drawn
  * directly, keeping the drawing state that heads each packet.
+ *
  */
 class mgCDrawPrim {
 public:
@@ -549,8 +565,10 @@ public:
 STATIC_ASSERT(sizeof(mgCDrawPrim) == 0x120);
 
 /**
+ *
  * Collects the frame's object packets by texture group and sends them,
  * group by group in draw order, after reloading each group's textures.
+ *
  */
 class mgCDrawManager {
 public:

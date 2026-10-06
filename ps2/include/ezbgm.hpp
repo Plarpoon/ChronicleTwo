@@ -9,8 +9,10 @@
  */
 
 /**
+ *
  * Command words of the EZBGM server that change how a request's argument
  * is exchanged; the low four bits of a command word carry the channel.
+ *
  */
 // clang-format off
 enum EzBgmCommand {

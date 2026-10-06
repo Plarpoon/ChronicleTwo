@@ -122,3 +122,6 @@ CheckLoad*/IsActive/DeleteSky/CheckDrawChara/GetNowVillagerTime return compare r
 (P1); LoadBGM passes it to LoadFile2 and LoadBGMPack (`unsigned int *`), so the body casts.
 `InScreenFunc` returns `CFuncPoint *` (a function-local static `sun_func`, 0x1C0, or NULL).
 `monster.hpp` can now declare `int CheckPhoto(CScene::InScreenCharaInfo *)` by including this header.
+
+## PlayBGM draft
+`PlayBGM` consumes `skip_play_bgm` once. It stops the previous play number when changing songs, resolves a negative requested volume from the bank default, clamps a negative limited volume to 1, starts the sound at voice 0, and clears `time_vol`. The guarded C++ draft compiles; isolated comparison differs, so the retail assembly remains active.

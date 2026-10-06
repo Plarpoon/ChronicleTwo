@@ -74,12 +74,48 @@ extern "C" char at_1965__2[];
 extern SPI_TAG_PARAM tag__5[];
 extern SPI_TAG_PARAM tag2[];
 extern char at_1348[];
-extern "C" void *__ct__11mgCDrawPrimFv(void *);
 extern char at_2529[];
 static MapJumpMapInfo MainMapInfo;
 
 // Code (.text)
+#ifdef NONMATCHING
+void CStartupEpisodeTitle::DrawEpisode(int mes_tex_block, int frame_tex_block) {
+    if (mes == NULL || state == 0) {
+        return;
+    }
+    mgTexManager.ReloadTexture(mes_tex_block, (sceVif1Packet *)NULL);
+    mes->DrawMesWin();
+    mgTexManager.ReloadTexture(frame_tex_block, (sceVif1Packet *)NULL);
+    CPreSprite sprite;
+    sprite.Initialize(NULL, NULL);
+    sprite.Preset2D();
+    sprite.Coord(0);
+    sprite.TextureMapEnable(1);
+    sprite.Begin(6);
+    sprite.Texture(TEX_SystenFrame2);
+    int y = mgScreenHeight - 0x38;
+    sprite.Color(0x80, 0x80, 0x80, fptosi(128.0f * alpha));
+    sprite.SetIRect(0x16, y, 10, 8, 0x62, 0x38);
+    int fill_width = fptosi((float)width * alpha);
+    sprite.SetIStretch(0x20, y, fill_width, 8, 0x6C, 0x38, 10, 8);
+    sprite.SetIRect(fill_width + 0x20, y, 10, 8, 0x76, 0x38);
+    y = mgScreenHeight - 0x34;
+    int half = width / 2;
+    int revealed = fptosi(154.0f * reveal);
+    if (LanguageCode == 3) {
+        sprite.SetScirror(half + 0x92 - revealed, y, revealed, 0xE);
+        sprite.SetIRect(half - 8, y, 0x48, 0xE, 0, 0x24);
+    } else {
+        sprite.SetScirror(half + 0x69 - revealed, y, revealed, 0xE);
+        sprite.SetIRect(half - 0x31, y, 0x48, 0xE, 0, 0x24);
+        sprite.SetIRect(half + 0x17, y, 0x52, 0xE, 0, 0x32);
+    }
+    sprite.SetScirror(0, 0, mgScreenWidth - 1, mgScreenHeight - 1);
+    sprite.End();
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", DrawEpisode__20CStartupEpisodeTitleFii);
+#endif
 void CStartupEpisodeTitle::Switch(int on) {
     char *title;
     ClsMes *current;
@@ -348,12 +384,12 @@ void CRedMarkModel::Draw(void) {
     float saved_position[4];
 
     if (draw_request != 0) {
-        ((CObjectFrame *)this)->GetPosition(position);
-        ((CObjectFrame *)this)->GetPosition(saved_position);
+        GetPosition(position);
+        GetPosition(saved_position);
         position[1] += 2.0f * sinf(angle);
-        ((CObjectFrame *)this)->SetPosition(position);
-        ((CObjectFrame *)this)->CObjectFrame::DrawDirect();
-        ((CObjectFrame *)this)->SetPosition(saved_position);
+        SetPosition(position);
+        CObjectFrame::DrawDirect();
+        SetPosition(saved_position);
         draw_request = 0;
     }
 }
@@ -371,23 +407,23 @@ void CGeoStone::GeoDraw(float *view_pos) {
     float draw_position[4];
 
     if (this->flag != 0) {
-        ((CObjectFrame *)this)->GetPosition(home_position);
-        ((CObjectFrame *)this)->GetPosition(draw_position);
+        GetPosition(home_position);
+        GetPosition(draw_position);
         if (mgDistVector(view_pos, draw_position) < 1000.0f || this->anime == 0) {
             if (this->anime != 0) {
                 draw_position[1] += 3.0f * sinf(this->angle);
             }
-            ((CObjectFrame *)this)->SetPosition(draw_position);
-            ((CCharacter2 *)this)->CCharacter2::DrawDirect();
+            SetPosition(draw_position);
+            CCharacter2::DrawDirect();
         }
-        ((CObjectFrame *)this)->SetPosition(home_position);
+        SetPosition(home_position);
     }
 }
 void CGeoStone::DrawMiniMapSymbol(CMiniMapSymbol *symbol_drawer) {
     float position[4];
 
     if (this->flag != 0) {
-        ((CTreasureBox *)this)->GetPosition(position);
+        GetPosition(position);
         (symbol_drawer)->DrawSymbol(position, 3);
     }
 }
@@ -405,7 +441,7 @@ void CGeoStone::GeoStep(void) {
     float next;
 
     if (this->flag != 0) {
-        ((CCharacter2 *)this)->CCharacter2::Step();
+        CCharacter2::Step();
         this->angle += 0.05235988f;
         next = this->angle;
         if (!(next <= 3.1415927f)) {
@@ -419,7 +455,7 @@ int CGeoStone::CheckEvent(float *pos) {
     if (this->flag == 0) {
         return 0;
     }
-    ((CTreasureBox *)this)->GetPosition(position);
+    GetPosition(position);
     position[1] -= 20.0f;
     if (mgDistVector(pos, position) <= 30.0f) {
         return 1;
@@ -1371,13 +1407,11 @@ TRESURE_BOX_ITEM *PickupRandomItem(TRESURE_BOX_FLOOR_INFO *table, int floor_inde
         }
     }
 }
-extern "C" int CheckArea__19CTreasureBoxManagerFPff(CTreasureBoxManager *manager, float *pos, float radius);
-
 int CheckObjectPutArea(float *pos) {
     float position[4];
     CMapParts *object;
 
-    if (!CheckArea__19CTreasureBoxManagerFPff(*(CTreasureBoxManager **)&DngMainScene->battle_area.treasure_box, pos, 40.0f)) {
+    if (!DngMainScene->battle_area.treasure_box->CheckArea(pos, 40.0f)) {
         return 0;
     }
     if (!RandomCircle.CheckArea(pos, 40.0f)) {
@@ -1448,7 +1482,146 @@ void AutoSetTreasureBox(int id, float *position, float power) {
     (DngMainScene->battle_area.treasure_box)->PutTreasureBox(-1, position, power, 0x41, id, 1, -1, 0);
 }
 extern char at_2159[];
+#ifdef NONMATCHING
+void AutoSetTreasureBox() {
+    CTreasureBoxManager *boxes = DngMainScene->battle_area.treasure_box;
+    int stage = DngSaveDataDungeon->stage_id;
+    int floor = DngSaveDataDungeon->floor_id[stage];
+    sceVu0FVECTOR event_pos;
+    float event_extra;
+    GetDungeonEventPoint(event_pos, &event_extra, DUNGEON_EVENT_POINT_WAY_20);
+    event_pos[3] = 1.0f;
+    mgCMemory memory;
+    memory.Init();
+    char path[0x40];
+    int size;
+    sprintf(path, at_2159, stage + 1);
+    LoadFile(path, BuffReadData, &size);
+    memory.stSetBuffer(&BuffReadData[(size + 15) / 16 + 1], 0x4000);
+    TRESURE_BOX_FLOOR_INFO *table =
+        (TRESURE_BOX_FLOOR_INFO *)operator new(sizeof(TRESURE_BOX_FLOOR_INFO), memory.Alloc(0x1A43));
+    CreatTresuarBoxInfo(table, (char *)BuffReadData, size);
+    PickupRandomItemCheckMax(table, floor);
+    for (int i = 0; i < 8; ++i) {
+        sceVu0FVECTOR pos;
+        while (1) {
+            if (SearchMapFlatPosition(pos, &AutoMapGen) == 0 ||
+                mgDistVector(event_pos, pos) <= 320.0f || boxes->CheckArea(pos, 60.0f) == 0) {
+                continue;
+            }
+            int item0 = 0;
+            int num0 = 1;
+            int item1 = -1;
+            int num1 = 1;
+            int flags;
+            float rot = 2.0f * 3.1415927f * (float)rand() / 2.1474836e9f - 3.1415927f;
+            if (i < 2) {
+                item0 = i == 0 ? 0x132 : 0x131;
+                flags = 0x41;
+            } else {
+                int roll = iRand(100);
+                flags = roll >= 97 ? 4 : roll >= 93 ? 2 : 1;
+                int appearance = iRand(3);
+                flags |= appearance == 2 ? 0x20 : appearance == 1 ? 0x10 : 8;
+                roll = iRand(100);
+                flags |= roll >= 97 ? 0x80 : roll >= 95 ? 0x200 : 0x40;
+                TRESURE_BOX_ITEM *item;
+                if (flags & TREASURE_BOX_FLAG_TWO_ITEMS) {
+                    item = PickupRandomItem(table, floor, 60);
+                    item0 = item->item_no;
+                    num0 = item->num;
+                    item = PickupRandomItem(table, floor, -50);
+                    item1 = item->item_no;
+                    num1 = item->num;
+                    rot = ScanEyePoint(pos);
+                } else {
+                    int rank = flags & 2 ? -30 : (iRand(100) + iRand(100)) / 2;
+                    item = PickupRandomItem(table, floor, rank);
+                    item0 = item->item_no;
+                    num0 = item->num;
+                }
+            }
+            if (num0 >= 3 && num0 < 10) num0 += iRand(3) - 1;
+            if (num0 >= 10) num0 = fptosi(0.5f + 0.8f * (float)num0 + fRand(0.4f * (float)num0));
+            if (num1 >= 3 && num1 < 10) num1 += iRand(3) - 1;
+            if (num1 >= 10) num1 = fptosi(0.5f + 0.8f * (float)num1 + fRand(0.4f * (float)num1));
+            boxes->PutTreasureBox(-1, pos, rot, flags, item0, num0, item1, num1);
+            break;
+        }
+    }
+    for (int i = 0; i < ActiveMonster->locate.num; ++i) {
+        int monster = ActiveMonster->locate.monster_id[i];
+        if (monster < 0xF5 || monster >= 0x10D) continue;
+        sceVu0FVECTOR pos;
+        while (SearchMapFlatPosition(pos, &AutoMapGen) == 0 ||
+               mgDistVector(event_pos, pos) <= 320.0f || CheckObjectPutArea(pos) == 0) {}
+        float rot = 2.0f * 3.1415927f * (float)rand() / 2.1474836e9f - 3.1415927f;
+        boxes->PutTreasureBox(-1, pos, rot, 0x101, monster,
+                              ActiveMonster->locate.param[i], -1, 0);
+    }
+    int circles = iRand(100) >= 76 ? 1 : 0;
+    if (iRand(100) >= 81) ++circles;
+    if (iRand(100) >= 91) ++circles;
+    for (int i = 0; i < circles; ++i) {
+        sceVu0FVECTOR pos;
+        int failed = 0;
+        while (1) {
+            if (SearchMapFlatPosition(pos, &AutoMapGen) == 0) break;
+            if (mgDistVector(event_pos, pos) <= 320.0f) continue;
+            if (CheckObjectPutArea(pos) != 0) {
+                RandomCircle.SetCircle(pos);
+                break;
+            }
+            if (++failed >= 101) break;
+        }
+    }
+    int geostone = DngMainScene->battle_area.floor_manager.IsGeoStone(floor);
+    if (geostone != 0 &&
+        (DngSaveDataDungeon->GetFloorInfoPtr(stage, floor)->flag & DNG_FLOOR_FLAG_GEOSTONE_FOUND)) {
+        geostone = 0;
+    }
+    if (geostone != 0) {
+        sceVu0FVECTOR pos;
+        while (SearchMapFlatPosition(pos, &AutoMapGen) != 0) {
+            if (CheckObjectPutArea(pos) != 0 && mgDistVector(event_pos, pos) > 320.0f) {
+                pos[3] = 1.0f;
+                pos[1] += 20.0f;
+                GeoStone.SetPosition(pos);
+                GeoStone.angle = 0.0f;
+                GeoStone.flag = 1;
+                GeoStone.anime = 1;
+                if (AutoMapGen.gio_parts != NULL) AutoMapGen.gio_parts->SetPosition(pos);
+                break;
+            }
+        }
+    }
+    for (int i = 0; i < 12 && AutoMapGen.random_stone[i] != NULL; ++i) {
+        sceVu0FVECTOR pos;
+        while (SearchMapFlatPosition(pos, &AutoMapGen) != 0) {
+            if (CheckObjectPutArea(pos) != 0 && mgDistVector(event_pos, pos) > 320.0f) {
+                AutoMapGen.random_stone[i]->SetPosition(pos);
+                break;
+            }
+        }
+    }
+    if (AutoMapGen.door_room >= 0) {
+        sceVu0FVECTOR pos;
+        while (SearchMapFlatPosition(pos, &AutoMapGen) != 0) {
+            if (CheckObjectPutArea(pos) == 0 || mgDistVector(event_pos, pos) <= 320.0f) continue;
+            int col = fptosi((pos[0] + 0.5f * AutoMapGen.cell_w) / AutoMapGen.cell_w);
+            int row = fptosi((pos[2] + 0.5f * AutoMapGen.cell_d) / AutoMapGen.cell_d);
+            AUTOMAP_ROOM *room = &AutoMapGen.room[AutoMapGen.door_room];
+            if (col < room->x || col >= room->x + room->w ||
+                row < room->y || row >= room->y + room->h) {
+                boxes->PutTreasureBox(-1, pos, 0.0f, 1, GetKeyDoorIndex(stage, floor), 1, -1, 0);
+                break;
+            }
+        }
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", AutoSetTreasureBox__Fv);
+#endif
 #ifdef NONMATCHING
 int _FLS(SPI_STACK *stack, int argc) {
     FLS_FLOOR_ID = spiGetStackInt(stack++);

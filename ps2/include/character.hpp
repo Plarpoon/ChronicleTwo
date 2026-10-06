@@ -39,7 +39,9 @@ struct mgIMG_FILE_HEADER;
 #define CHARA_ENTRY_EFFECT_MAX 8
 
 /**
+ *
  * Playback flags of a motion, as CCharacter2::SetMotion takes them.
+ *
  */
 // clang-format off
 enum CharaMotionFlag {
@@ -51,7 +53,9 @@ enum CharaMotionFlag {
 // clang-format on
 
 /**
+ *
  * States of the motion that a character plays, as CCharacter2::GetMotionStatus gives them.
+ *
  */
 // clang-format off
 enum CharaMotionStatus {
@@ -65,7 +69,9 @@ enum CharaMotionStatus {
 // clang-format on
 
 /**
+ *
  * States of a motion sequence that a character plays.
+ *
  */
 // clang-format off
 enum CharaSeqState {
@@ -79,7 +85,9 @@ enum CharaSeqState {
 // clang-format on
 
 /**
+ *
  * How one step of a motion sequence ends, as CHRINFO_SEQ::type holds it.
+ *
  */
 // clang-format off
 enum ChrInfoSeqType {
@@ -93,7 +101,9 @@ enum ChrInfoSeqType {
 // clang-format on
 
 /**
+ *
  * What a sound entry of a motion plays, as CHRINFO_SE::kind holds it.
+ *
  */
 // clang-format off
 enum ChrInfoSeKind {
@@ -107,7 +117,9 @@ enum ChrInfoSeKind {
 // clang-format on
 
 /**
+ *
  * Flags of CCharacter2::dynamic_anime_flags.
+ *
  */
 // clang-format off
 enum CharaDynamicAnimeFlag {
@@ -117,7 +129,9 @@ enum CharaDynamicAnimeFlag {
 // clang-format on
 
 /**
+ *
  * Names one motion of a character and the frames of its motion data that it plays.
+ *
  */
 struct CHRINFO_KEY_SET {
     char  name[0x24];  /**< Name that the motion is set by; empty in the entry that ends the list. */
@@ -129,7 +143,9 @@ struct CHRINFO_KEY_SET {
 STATIC_ASSERT(sizeof(CHRINFO_KEY_SET) == 0x30);
 
 /**
+ *
  * One step of a motion sequence: the motion it plays and how it ends.
+ *
  */
 struct CHRINFO_SEQ {
     char  name[0x22];   /**< Name of the motion that the step plays; empty in the entry that ends the sequence. */
@@ -142,7 +158,9 @@ struct CHRINFO_SEQ {
 STATIC_ASSERT(sizeof(CHRINFO_SEQ) == 0x2C);
 
 /**
+ *
  * Names one motion sequence of a character and heads its steps.
+ *
  */
 struct CHRINFO_SEQ_HEADER {
     char                name[0x24]; /**< Name that the sequence is set by. */
@@ -154,7 +172,9 @@ struct CHRINFO_SEQ_HEADER {
 STATIC_ASSERT(sizeof(CHRINFO_SEQ_HEADER) == 0x30);
 
 /**
+ *
  * One sound that a motion plays on a frame, or loops over a range of frames.
+ *
  */
 struct CHRINFO_SE {
     float frame;     /**< Frame that plays the sound, or the first frame that a looping sound plays on. */
@@ -168,7 +188,9 @@ struct CHRINFO_SE {
 STATIC_ASSERT(sizeof(CHRINFO_SE) == 0x10);
 
 /**
+ *
  * Effect playback data with the character frame and motion that attach it to the model.
+ *
  */
 struct CHARA_EFFECT_MANAGER : public CEffectManager {
     CEffectCtrl  *emitter_pool;    /**< Emitter pool allocated with the character. */
@@ -186,7 +208,9 @@ struct CHARA_EFFECT_MANAGER : public CEffectManager {
 STATIC_ASSERT(sizeof(CHARA_EFFECT_MANAGER) == 0x1F0);
 
 /**
+ *
  * One effect that a character's info file loads, with the motion that starts it.
+ *
  */
 struct CHRINFO_EFFECT {
     char            name[0x20];   /**< Name of the effect. */
@@ -197,7 +221,9 @@ struct CHRINFO_EFFECT {
 STATIC_ASSERT(sizeof(CHRINFO_EFFECT) == 0x28);
 
 /**
+ *
  * One IMG archive that an effect of a character entered, kept so that it is entered once.
+ *
  */
 struct CHRINFO_EFFECT_IMAGE {
     u8                   *data;       /**< Copy of the archive. */
@@ -208,7 +234,9 @@ struct CHRINFO_EFFECT_IMAGE {
 STATIC_ASSERT(sizeof(CHRINFO_EFFECT_IMAGE) == 0x28);
 
 /**
+ *
  * A frame of the character's model named as a place to put objects.
+ *
  */
 struct CHARA_ENTRY_OBJECT {
     mgCFrame *frame;   /**< Frame of the model; NULL for a free slot. */
@@ -220,7 +248,9 @@ struct CHARA_ENTRY_OBJECT {
 STATIC_ASSERT(sizeof(CHARA_ENTRY_OBJECT) == 0x10);
 
 /**
+ *
  * An effect that the motion playing started, with whether it runs yet.
+ *
  */
 struct CHARA_ENTRY_EFFECT {
     CHARA_EFFECT_MANAGER *effect; /**< Effect to run. */
@@ -231,8 +261,10 @@ struct CHARA_ENTRY_EFFECT {
 STATIC_ASSERT(sizeof(CHARA_ENTRY_EFFECT) == 0xC);
 
 /**
+ *
  * Index of each frame of one model that matches a frame of another model,
  * pairing the frames that are posed together.
+ *
  */
 class CCharaFrameMatching {
 public:
@@ -258,6 +290,11 @@ public:
 
 STATIC_ASSERT(sizeof(CCharaFrameMatching) == 0xC);
 
+/**
+ *
+ * Sound banks and playback settings attached to a character.
+ *
+ */
 struct CHARA_SOUND_INFO {
     u32          foot_se_bank;       /**< Sound bank of the footstep sounds. */
     s32          foot_sound_id;      /**< Footstep set of the ground; below zero for none. */
@@ -274,7 +311,9 @@ struct CHARA_SOUND_INFO {
 STATIC_ASSERT(sizeof(CHARA_SOUND_INFO) == 0x28);
 
 /**
+ *
  * One level of detail of a character: the model drawn beyond a distance.
+ *
  */
 class CCharaLOD {
 public:
@@ -298,8 +337,10 @@ public:
 STATIC_ASSERT(sizeof(CCharaLOD) == 0x18);
 
 /**
+ *
  * A character of the world: a skinned model with motions, a shadow model, motion sequences,
  * motion sounds and effects, cloth and hair, outlines and levels of detail.
+ *
  */
 class CCharacter2 : public CObjectFrame {
 public:

@@ -21,80 +21,6 @@ extern u_char at_1119[];
 
 static mgCFrameAttr dmy_attr;
 
-/**
- *
- * Scales the first three rows of a matrix component-wise by a vector and copies its last row.
- *
- */
-static inline void ScaleMatrix(sceVu0FMATRIX out, sceVu0FMATRIX in, sceVu0FVECTOR scale) {
-    register float *by = &scale[0];
-    register float *src = &in[0][0];
-    register float *dst = &out[0][0];
-
-    asm {
-        lqc2    vf10, 0(by)
-        lqc2    vf1, 0(src)
-        lqc2    vf2, 16(src)
-        lqc2    vf3, 32(src)
-        lqc2    vf4, 48(src)
-        vmul    vf1, vf1, vf10
-        vmul    vf2, vf2, vf10
-        vmul    vf3, vf3, vf10
-        vmulw   vf4, vf4, vf0
-        sqc2    vf1, 0(dst)
-        sqc2    vf2, 16(dst)
-        sqc2    vf3, 32(dst)
-        sqc2    vf4, 48(dst)
-    }
-}
-
-/**
- *
- * Multiplies two matrices and stores the product into two destinations.
- *
- */
-static inline void MulMatrixTwice(sceVu0FMATRIX out0, sceVu0FMATRIX out1, sceVu0FMATRIX left, sceVu0FMATRIX right) {
-    register float *l = &left[0][0];
-    register float *r = &right[0][0];
-    register float *o0 = &out0[0][0];
-    register float *o1 = &out1[0][0];
-
-    asm {
-        lqc2    vf5, 0(r)
-        lqc2    vf1, 0(l)
-        lqc2    vf2, 16(l)
-        lqc2    vf3, 32(l)
-        lqc2    vf4, 48(l)
-        vmulax  ACC, vf1, vf5
-        vmadday ACC, vf2, vf5
-        vmaddaz ACC, vf3, vf5
-        vmaddw  vf20, vf4, vf5
-        lqc2    vf6, 16(r)
-        lqc2    vf7, 32(r)
-        lqc2    vf8, 48(r)
-        vmulax  ACC, vf1, vf6
-        vmadday ACC, vf2, vf6
-        vmaddaz ACC, vf3, vf6
-        vmaddw  vf21, vf4, vf6
-        vmulax  ACC, vf1, vf7
-        vmadday ACC, vf2, vf7
-        vmaddaz ACC, vf3, vf7
-        vmaddw  vf22, vf4, vf7
-        vmulax  ACC, vf1, vf8
-        vmadday ACC, vf2, vf8
-        vmaddaz ACC, vf3, vf8
-        vmaddw  vf23, vf4, vf8
-        sqc2    vf20, 0(o0)
-        sqc2    vf21, 16(o0)
-        sqc2    vf22, 32(o0)
-        sqc2    vf23, 48(o0)
-        sqc2    vf20, 0(o1)
-        sqc2    vf21, 16(o1)
-        sqc2    vf22, 32(o1)
-        sqc2    vf23, 48(o1)
-    }
-}
-
 // Code (.text)
 void mgCFrameAttr::Initialize() {
     memset(this, 0, sizeof(mgCFrameAttr));
@@ -178,89 +104,7 @@ static void QuatToMat(float *quaternion, float (*matrix)[4]) {
  * registers vf10-vf17, and gets the box around them.
  *
  */
-static asm void test1(float (*corners)[4], float (*left)[4], float (*right)[4], float *out_max, float *out_min) {
-    lqc2    vf11, 0(a1)
-    lqc2    vf12, 16(a1)
-    lqc2    vf13, 32(a1)
-    lqc2    vf14, 48(a1)
-    lqc2    vf5, 0(a2)
-    lqc2    vf6, 16(a2)
-    lqc2    vf7, 32(a2)
-    lqc2    vf8, 48(a2)
-    vmulax  ACC, vf11, vf5
-    vmadday ACC, vf12, vf5
-    vmaddaz ACC, vf13, vf5
-    vmaddw  vf1, vf14, vf5
-    vmulax  ACC, vf11, vf6
-    vmadday ACC, vf12, vf6
-    vmaddaz ACC, vf13, vf6
-    vmaddw  vf2, vf14, vf6
-    vmulax  ACC, vf11, vf7
-    vmadday ACC, vf12, vf7
-    vmaddaz ACC, vf13, vf7
-    vmaddw  vf3, vf14, vf7
-    vmulax  ACC, vf11, vf8
-    vmadday ACC, vf12, vf8
-    vmaddaz ACC, vf13, vf8
-    vmaddw  vf4, vf14, vf8
-    lqc2    vf10, 0(a0)
-    lqc2    vf11, 16(a0)
-    lqc2    vf12, 32(a0)
-    lqc2    vf13, 48(a0)
-    lqc2    vf14, 64(a0)
-    lqc2    vf15, 80(a0)
-    lqc2    vf16, 96(a0)
-    lqc2    vf17, 112(a0)
-    vmulax  ACC, vf1, vf10
-    vmadday ACC, vf2, vf10
-    vmaddaz ACC, vf3, vf10
-    vmaddw  vf10, vf4, vf10
-    vmulax  ACC, vf1, vf11
-    vmadday ACC, vf2, vf11
-    vmaddaz ACC, vf3, vf11
-    vmaddw  vf11, vf4, vf11
-    vmulax  ACC, vf1, vf12
-    vmadday ACC, vf2, vf12
-    vmaddaz ACC, vf3, vf12
-    vmaddw  vf12, vf4, vf12
-    vmax    vf18, vf10, vf11
-    vmini   vf19, vf10, vf11
-    vmulax  ACC, vf1, vf13
-    vmadday ACC, vf2, vf13
-    vmaddaz ACC, vf3, vf13
-    vmaddw  vf13, vf4, vf13
-    vmax    vf18, vf18, vf12
-    vmini   vf19, vf19, vf12
-    vmulax  ACC, vf1, vf14
-    vmadday ACC, vf2, vf14
-    vmaddaz ACC, vf3, vf14
-    vmaddw  vf14, vf4, vf14
-    vmax    vf18, vf18, vf13
-    vmini   vf19, vf19, vf13
-    vmulax  ACC, vf1, vf15
-    vmadday ACC, vf2, vf15
-    vmaddaz ACC, vf3, vf15
-    vmaddw  vf15, vf4, vf15
-    vmax    vf18, vf18, vf14
-    vmini   vf19, vf19, vf14
-    vmulax  ACC, vf1, vf16
-    vmadday ACC, vf2, vf16
-    vmaddaz ACC, vf3, vf16
-    vmaddw  vf16, vf4, vf16
-    vmax    vf18, vf18, vf15
-    vmini   vf19, vf19, vf15
-    vmulax  ACC, vf1, vf17
-    vmadday ACC, vf2, vf17
-    vmaddaz ACC, vf3, vf17
-    vmaddw  vf17, vf4, vf17
-    vmax    vf18, vf18, vf16
-    vmini   vf19, vf19, vf16
-    vmax    vf18, vf18, vf17
-    vmini   vf19, vf19, vf17
-    sqc2    vf18, 0(a3)
-    jr      ra
-    sqc2    vf19, 0(t0)
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", test1__FPA4_fPA4_fPA4_fPfPf);
 // clang-format on
 // clang-format off
 /**
@@ -269,57 +113,7 @@ static asm void test1(float (*corners)[4], float (*left)[4], float (*right)[4], 
  * the screen-space box around them.
  *
  */
-static asm void test2(float *out_max, float *out_min) {
-    vabs.w  vf20, vf10
-    vabs.w  vf21, vf11
-    vabs.w  vf22, vf12
-    vabs.w  vf23, vf13
-    vabs.w  vf24, vf14
-    vabs.w  vf25, vf15
-    vabs.w  vf26, vf16
-    vabs.w  vf27, vf17
-    vdiv    Q, vf0w, vf20w
-    vwaitq
-    vmulq.xy vf10, vf10, Q
-    vdiv    Q, vf0w, vf21w
-    vwaitq
-    vmulq.xy vf11, vf11, Q
-    vdiv    Q, vf0w, vf22w
-    vmax    vf1, vf10, vf11
-    vmini   vf2, vf10, vf11
-    vwaitq
-    vmulq.xy vf12, vf12, Q
-    vdiv    Q, vf0w, vf23w
-    vwaitq
-    vmulq.xy vf13, vf13, Q
-    vdiv    Q, vf0w, vf24w
-    vmax    vf3, vf12, vf13
-    vmini   vf4, vf12, vf13
-    vwaitq
-    vmulq.xy vf14, vf14, Q
-    vdiv    Q, vf0w, vf25w
-    vwaitq
-    vmulq.xy vf15, vf15, Q
-    vdiv    Q, vf0w, vf26w
-    vmax    vf5, vf14, vf15
-    vmini   vf6, vf14, vf15
-    vwaitq
-    vmulq.xy vf16, vf16, Q
-    vdiv    Q, vf0w, vf27w
-    vwaitq
-    vmulq.xy vf17, vf17, Q
-    vmax    vf10, vf1, vf3
-    vmini   vf11, vf2, vf4
-    vmax    vf7, vf16, vf17
-    vmini   vf8, vf16, vf17
-    vmax    vf12, vf5, vf7
-    vmini   vf13, vf6, vf8
-    vmax    vf14, vf10, vf12
-    vmini   vf15, vf11, vf13
-    sqc2    vf14, 0(a0)
-    jr      ra
-    sqc2    vf15, 0(a1)
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", test2__FPfPf);
 // clang-format on
 int mgInsideScreen(mgVu0FBOX *box) {
     sceVu0FMATRIX matrix;
@@ -349,127 +143,33 @@ int mgInsideScreen(float (*corners)[4], float (*matrix)[4]) {
     return mgInsideScreen(corners, matrix, max, min);
 }
 #pragma global_optimizer off
+#ifdef NONMATCHING
 int mgInsideScreen(float (*corners)[4], float (*matrix)[4], float *out_max, float *out_min) {
+    sceVu0FMATRIX screen_matrix;
+    sceVu0MulMatrix(screen_matrix, mgRenderInfo.world_screen_rel, matrix);
 
-    mgRENDER_INFO *info = &mgRenderInfo;
-    float(*view)[4] = info->world_screen_rel;
-    asm {
-        lqc2 vf11, 0x0(view)
-        lqc2 vf12, 0x10(view)
-        lqc2 vf13, 0x20(view)
-        lqc2 vf14, 0x30(view)
-        lqc2 vf5, 0x0(matrix)
-        lqc2 vf6, 0x10(matrix)
-        lqc2 vf7, 0x20(matrix)
-        lqc2 vf8, 0x30(matrix)
-        vmulax.xyzw ACC, vf11, vf5x
-        vmadday.xyzw ACC, vf12, vf5y
-        vmaddaz.xyzw ACC, vf13, vf5z
-        vmaddw.xyzw vf1, vf14, vf5w
-        vmulax.xyzw ACC, vf11, vf6x
-        vmadday.xyzw ACC, vf12, vf6y
-        vmaddaz.xyzw ACC, vf13, vf6z
-        vmaddw.xyzw vf2, vf14, vf6w
-        vmulax.xyzw ACC, vf11, vf7x
-        vmadday.xyzw ACC, vf12, vf7y
-        vmaddaz.xyzw ACC, vf13, vf7z
-        vmaddw.xyzw vf3, vf14, vf7w
-        vmulax.xyzw ACC, vf11, vf8x
-        vmadday.xyzw ACC, vf12, vf8y
-        vmaddaz.xyzw ACC, vf13, vf8z
-        vmaddw.xyzw vf4, vf14, vf8w
-        lqc2 vf10, 0x0(corners)
-        lqc2 vf11, 0x10(corners)
-        lqc2 vf12, 0x20(corners)
-        lqc2 vf13, 0x30(corners)
-        lqc2 vf14, 0x40(corners)
-        lqc2 vf15, 0x50(corners)
-        lqc2 vf16, 0x60(corners)
-        lqc2 vf17, 0x70(corners)
-        vmulax.xyzw ACC, vf1, vf10x
-        vmadday.xyzw ACC, vf2, vf10y
-        vmaddaz.xyzw ACC, vf3, vf10z
-        vmaddw.xyzw vf10, vf4, vf10w
-        vmulax.xyzw ACC, vf1, vf11x
-        vmadday.xyzw ACC, vf2, vf11y
-        vmaddaz.xyzw ACC, vf3, vf11z
-        vabs.w vf20, vf10
-        vmaddw.xyzw vf11, vf4, vf11w
-        vdiv Q, vf0w, vf20w
-        vabs.w vf21, vf11
-        vwaitq
-        vmulq.xy vf10, vf10, Q
-        vdiv Q, vf0w, vf21w
-        vmulax.xyzw ACC, vf1, vf12x
-        vmadday.xyzw ACC, vf2, vf12y
-        vmaddaz.xyzw ACC, vf3, vf12z
-        vmaddw.xyzw vf12, vf4, vf12w
-        vmulax.xyzw ACC, vf1, vf13x
-        vwaitq
-        vmulq.xy vf11, vf11, Q
-        vabs.w vf22, vf12
-        vmadday.xyzw ACC, vf2, vf13y
-        vmaddaz.xyzw ACC, vf3, vf13z
-        vmaddw.xyzw vf13, vf4, vf13w
-        vdiv Q, vf0w, vf22w
-        vmulax.xyzw ACC, vf1, vf14x
-        vmadday.xyzw ACC, vf2, vf14y
-        vabs.w vf23, vf13
-        vmaddaz.xyzw ACC, vf3, vf14z
-        vmaddw.xyzw vf14, vf4, vf14w
-        vmax.xyzw vf30, vf10, vf11
-        vmini.xyzw vf31, vf10, vf11
-        vmulq.xy vf12, vf12, Q
-        vdiv Q, vf0w, vf23w
-        vabs.w vf24, vf14
-        vmulax.xyzw ACC, vf1, vf15x
-        vmadday.xyzw ACC, vf2, vf15y
-        vmaddaz.xyzw ACC, vf3, vf15z
-        vmaddw.xyzw vf15, vf4, vf15w
-        vmax.xyzw vf30, vf30, vf12
-        vmini.xyzw vf31, vf31, vf12
-        vmulq.xy vf13, vf13, Q
-        vdiv Q, vf0w, vf24w
-        vabs.w vf25, vf15
-        vmulax.xyzw ACC, vf1, vf16x
-        vmadday.xyzw ACC, vf2, vf16y
-        vmaddaz.xyzw ACC, vf3, vf16z
-        vmaddw.xyzw vf16, vf4, vf16w
-        vmax.xyzw vf30, vf30, vf13
-        vmini.xyzw vf31, vf31, vf13
-        vmulq.xy vf14, vf14, Q
-        vdiv Q, vf0w, vf25w
-        vabs.w vf26, vf16
-        vmulax.xyzw ACC, vf1, vf17x
-        vmadday.xyzw ACC, vf2, vf17y
-        vmaddaz.xyzw ACC, vf3, vf17z
-        vmaddw.xyzw vf17, vf4, vf17w
-        vmax.xyzw vf30, vf30, vf14
-        vmini.xyzw vf31, vf31, vf14
-        vmulq.xy vf15, vf15, Q
-        vdiv Q, vf0w, vf26w
-        vabs.w vf27, vf17
-        vnop
-        vmax.xyzw vf30, vf30, vf15
-        vmini.xyzw vf31, vf31, vf15
-        vnop
-        vwaitq
-        vmulq.xy vf16, vf16, Q
-        vdiv Q, vf0w, vf27w
-        vnop
-        vmax.xyzw vf30, vf30, vf16
-        vmini.xyzw vf31, vf31, vf16
-        vnop
-        vnop
-        vwaitq
-        vmulq.xy vf17, vf17, Q
-        vmax.xyzw vf30, vf30, vf17
-        vmini.xyzw vf31, vf31, vf17
-        sqc2 vf30, 0x0(out_max)
-        sqc2 vf31, 0x0(out_min)
+    for (int i = 0; i < 8; i++) {
+        sceVu0FVECTOR transformed;
+        sceVu0ApplyMatrix(transformed, screen_matrix, corners[i]);
+        float depth = transformed[3];
+        if (depth < 0.0f) depth = -depth;
+        transformed[0] /= depth;
+        transformed[1] /= depth;
+        if (i == 0) {
+            sceVu0CopyVector(out_max, transformed);
+            sceVu0CopyVector(out_min, transformed);
+        } else {
+            for (int axis = 0; axis < 4; axis++) {
+                if (out_max[axis] < transformed[axis]) out_max[axis] = transformed[axis];
+                if (out_min[axis] > transformed[axis]) out_min[axis] = transformed[axis];
+            }
+        }
     }
-    return mgClipBoxW(out_max, out_min, info->screen_box_max, info->screen_box_min);
+    return mgClipBoxW(out_max, out_min, mgRenderInfo.screen_box_max, mgRenderInfo.screen_box_min);
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", mgInsideScreen__FPA4_fPA4_fPfPf);
+#endif
 #pragma global_optimizer reset
 
 void mgCObject::SetPosition(float *position) {
@@ -792,92 +492,76 @@ void mgCFrame::ClearChildFlag() {
 #pragma schedule reset
 
 #pragma global_optimizer off
+#ifdef NONMATCHING
 void mgCFrame::GetLocalMatrix(float (*matrix)[4]) {
-    float savedTranslation[4];
-    if (use_srt != 0) {
-        float *scaleVec;
-        float *stored;
-        stored = (float *)trans_matrix;
-        scaleVec = scale;
-        asm {
-            lqc2 vf10, 0x0(scaleVec)
-            lqc2 vf1, 0x0(stored)
-            lqc2 vf2, 0x10(stored)
-            lqc2 vf3, 0x20(stored)
-            lqc2 vf4, 0x30(stored)
-            vmul.xyzw vf1, vf1, vf10
-            vmul.xyzw vf2, vf2, vf10
-            vmul.xyzw vf3, vf3, vf10
-            vmulw.xyzw vf4, vf4, vf0w
-            sqc2 vf1, 0x0(matrix)
-            sqc2 vf2, 0x10(matrix)
-            sqc2 vf3, 0x20(matrix)
-            sqc2 vf4, 0x30(matrix)
-        }
-        if (rot_type & 2) {
-            sceVu0CopyVector(savedTranslation, matrix[3]);
-            mgZeroVectorW(matrix[3]);
-        }
-        if (rot_type & 1) {
-            if (rotation[0] != 0.0f) {
-                sceVu0RotMatrixX(matrix, matrix, rotation[0]);
-            }
-            if (rotation[1] != 0.0f) {
-                sceVu0RotMatrixY(matrix, matrix, rotation[1]);
-            }
-            if (rotation[2] != 0.0f) {
-                sceVu0RotMatrixZ(matrix, matrix, rotation[2]);
-            }
-        }
-        if (rot_type & 2) {
-            sceVu0AddVector(matrix[3], savedTranslation, position);
-            matrix[3][3] = 1.0f;
-            return;
-        }
-        sceVu0AddVector(matrix[3], matrix[3], position);
-        matrix[3][3] = 1.0f;
+    if (!use_srt) {
+        sceVu0CopyMatrix(matrix, trans_matrix);
         return;
     }
-    sceVu0CopyMatrix(matrix, trans_matrix);
+
+    for (int row = 0; row < 3; row++) {
+        for (int component = 0; component < 4; component++) {
+            matrix[row][component] = trans_matrix[row][component] * scale[component];
+        }
+    }
+    sceVu0CopyVector(matrix[3], trans_matrix[3]);
+    sceVu0FVECTOR translation;
+    if (rot_type & MG_FRAME_ROT_LOCAL_ORIGIN) {
+        sceVu0CopyVector(translation, matrix[3]);
+        mgZeroVectorW(matrix[3]);
+    }
+    if (rot_type & MG_FRAME_ROT_APPLY) {
+        if (rotation[0] != 0.0f) sceVu0RotMatrixX(matrix, matrix, rotation[0]);
+        if (rotation[1] != 0.0f) sceVu0RotMatrixY(matrix, matrix, rotation[1]);
+        if (rotation[2] != 0.0f) sceVu0RotMatrixZ(matrix, matrix, rotation[2]);
+    }
+    if (rot_type & MG_FRAME_ROT_LOCAL_ORIGIN) {
+        sceVu0AddVector(matrix[3], translation, position);
+    } else {
+        sceVu0AddVector(matrix[3], matrix[3], position);
+    }
+    matrix[3][3] = 1.0f;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", GetLocalMatrix__8mgCFrameFPA4_f);
+#endif
 #pragma global_optimizer reset
 
 #pragma global_optimizer off
-void mgCFrame::GetBBoardMatrix(int mode, float (*matrix)[4], mgRENDER_INFO *info) {
-    float position[4];
-    float toEye[4];
-    float scale[4];
-    float world[4][4];
-    float pitch[4][4];
+#ifdef NONMATCHING
+void mgCFrame::GetBBoardMatrix(int mode, float (*matrix)[4], mgRENDER_INFO *render_info) {
+    sceVu0FMATRIX world;
     GetLWMatrix(world);
-    scale[0] = mgDistVector(world[0]);
-    scale[1] = mgDistVector(world[0]);
-    scale[2] = mgDistVector(world[0]);
-    *(u_long128 *)position = *(u_long128 *)world[3];
+    sceVu0FVECTOR dimensions;
+    dimensions[0] = mgDistVector(world[0]);
+    dimensions[1] = mgDistVector(world[0]);
+    dimensions[2] = mgDistVector(world[0]);
+    dimensions[3] = 1.0f;
+
     sceVu0UnitMatrix(matrix);
     if (mode & 2) {
-        sceVu0SubVector(matrix[2], info->camera_pos, position);
+        sceVu0SubVector(matrix[2], render_info->camera_pos, world[3]);
         matrix[2][1] = 0.0f;
         matrix[2][3] = 0.0f;
         sceVu0Normalize(matrix[2], matrix[2]);
         matrix[0][0] = matrix[2][2];
         matrix[0][2] = -matrix[2][0];
-        matrix[2][0] = matrix[2][0];
-        matrix[2][2] = matrix[2][2];
     }
     if (mode & 1) {
+        sceVu0FMATRIX pitch;
         sceVu0UnitMatrix(pitch);
-        sceVu0SubVector(toEye, info->camera_pos, position);
-        sceVu0Normalize(toEye, toEye);
-        float eyeY = toEye[1];
-        toEye[3] = 0.0f;
-        toEye[1] = 0.0f;
-        float horizontal = mgDistVector(toEye);
+        sceVu0FVECTOR direction;
+        sceVu0SubVector(direction, render_info->camera_pos, world[3]);
+        sceVu0Normalize(direction, direction);
+        float rise = direction[1];
+        direction[1] = 0.0f;
+        direction[3] = 0.0f;
+        float horizontal = mgDistVector(direction);
         pitch[1][1] = horizontal;
+        pitch[1][2] = -rise;
+        pitch[2][1] = rise;
         pitch[2][2] = horizontal;
-        pitch[1][2] = -eyeY;
-        pitch[2][1] = eyeY;
-        sceVu0SubVector(matrix[2], info->camera_pos, position);
+        sceVu0SubVector(matrix[2], render_info->camera_pos, world[3]);
         matrix[2][1] = 0.0f;
         matrix[2][3] = 0.0f;
         sceVu0Normalize(matrix[2], matrix[2]);
@@ -885,185 +569,81 @@ void mgCFrame::GetBBoardMatrix(int mode, float (*matrix)[4], mgRENDER_INFO *info
         matrix[0][2] = -matrix[2][0];
         mgMulMatrix(matrix, matrix, pitch);
     }
-    float *scaleVec = scale;
-    asm {
-        lqc2 vf10, 0(scaleVec)
-        lqc2 vf1, 0x0(matrix)
-        lqc2 vf2, 0x10(matrix)
-        lqc2 vf3, 0x20(matrix)
-        lqc2 vf4, 0x30(matrix)
-        vmul.xyzw vf1, vf1, vf10
-        vmul.xyzw vf2, vf2, vf10
-        vmul.xyzw vf3, vf3, vf10
-        vmulw.xyzw vf4, vf4, vf0w
-        sqc2 vf1, 0x0(matrix)
-        sqc2 vf2, 0x10(matrix)
-        sqc2 vf3, 0x20(matrix)
-        sqc2 vf4, 0x30(matrix)
+    for (int row = 0; row < 3; row++) {
+        for (int axis = 0; axis < 4; axis++) matrix[row][axis] *= dimensions[axis];
     }
-    matrix[3][0] = position[0];
-    matrix[3][1] = position[1];
-    matrix[3][2] = position[2];
+    matrix[3][0] = world[3][0];
+    matrix[3][1] = world[3][1];
+    matrix[3][2] = world[3][2];
     sceVu0CopyMatrix(lw_matrix, matrix);
     changed = 0;
     ClearChildFlag();
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", GetBBoardMatrix__8mgCFrameFiPA4_fP13mgRENDER_INFO);
+#endif
 #pragma global_optimizer reset
 
 #pragma optimization_level 3
 #pragma global_optimizer off
+#ifdef NONMATCHING
 void mgCFrame::GetLWMatrix(float (*matrix)[4]) {
-    float parent_matrix[4][4];
-    float local_matrix[4][4];
-    if (reference != 0) {
-        changed = 1;
-    }
-    if (changed == 0) {
-        mgCFrame *frame = parent;
-        if (frame == NULL) {
+    if (reference) changed = 1;
+    if (!changed) {
+        mgCFrame *ancestor = parent;
+        while (ancestor != NULL && !ancestor->changed) ancestor = ancestor->parent;
+        if (ancestor == NULL) {
             sceVu0CopyMatrix(matrix, lw_matrix);
             return;
         }
-        mgCFrame *node = frame;
-        while (node != NULL) {
-            if (node->changed != 0) {
-                break;
-            }
-            frame = node->parent;
-            if (frame == NULL) {
-                sceVu0CopyMatrix(matrix, lw_matrix);
-                return;
-            }
-            node = frame;
-        }
     }
-    ClearChildFlag();
-    GetLocalMatrix(local_matrix);
-    if (parent == NULL) {
-        sceVu0CopyMatrix(lw_matrix, local_matrix);
-        sceVu0CopyMatrix(matrix, lw_matrix);
-        changed = 0;
-    } else {
-        parent->GetLWMatrix(parent_matrix);
-        float(*b)[4];
-        float(*a)[4];
-        float(*dst)[4];
-        a = parent_matrix;
-        b = local_matrix;
-        dst = lw_matrix;
-        asm {
-            lqc2 vf5, 0(b)
-            lqc2 vf1, 0(a)
-            lqc2 vf2, 0x10(a)
-            lqc2 vf3, 0x20(a)
-            lqc2 vf4, 0x30(a)
-            vmulax.xyzw ACC, vf1, vf5x
-            vmadday.xyzw ACC, vf2, vf5y
-            vmaddaz.xyzw ACC, vf3, vf5z
-            vmaddw.xyzw vf20, vf4, vf5w
-            lqc2 vf6, 0x10(b)
-            lqc2 vf7, 0x20(b)
-            lqc2 vf8, 0x30(b)
-            vmulax.xyzw ACC, vf1, vf6x
-            vmadday.xyzw ACC, vf2, vf6y
-            vmaddaz.xyzw ACC, vf3, vf6z
-            vmaddw.xyzw vf21, vf4, vf6w
-            vmulax.xyzw ACC, vf1, vf7x
-            vmadday.xyzw ACC, vf2, vf7y
-            vmaddaz.xyzw ACC, vf3, vf7z
-            vmaddw.xyzw vf22, vf4, vf7w
-            vmulax.xyzw ACC, vf1, vf8x
-            vmadday.xyzw ACC, vf2, vf8y
-            vmaddaz.xyzw ACC, vf3, vf8z
-            vmaddw.xyzw vf23, vf4, vf8w
-            sqc2 vf20, 0(dst)
-            sqc2 vf21, 0x10(dst)
-            sqc2 vf22, 0x20(dst)
-            sqc2 vf23, 0x30(dst)
-            sqc2 vf20, 0(matrix)
-            sqc2 vf21, 0x10(matrix)
-            sqc2 vf22, 0x20(matrix)
-            sqc2 vf23, 0x30(matrix)
-        }
 
-        changed = 0;
+    ClearChildFlag();
+    sceVu0FMATRIX local;
+    GetLocalMatrix(local);
+    if (parent == NULL) {
+        sceVu0CopyMatrix(lw_matrix, local);
+    } else {
+        sceVu0FMATRIX parent_matrix;
+        parent->GetLWMatrix(parent_matrix);
+        sceVu0MulMatrix(lw_matrix, parent_matrix, local);
     }
+    sceVu0CopyMatrix(matrix, lw_matrix);
+    changed = 0;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", GetLWMatrix__8mgCFrameFPA4_f);
+#endif
 
 #pragma optimization_level reset
 
 #pragma global_optimizer reset
 
 #pragma global_optimizer off
+#ifdef NONMATCHING
 void mgCFrame::GetLWMatrixTopBottom(float (*matrix)[4]) {
-    float parentMatrix[4][4];
-    float localMatrix[4][4];
-    if (reference != 0) {
+    if (reference) {
         GetLWMatrix(matrix);
         return;
     }
-    if (changed == 0) {
-        mgCFrame *parentFrame = (mgCFrame *)parent;
-        if (parentFrame == 0) {
-            sceVu0CopyMatrix(matrix, lw_matrix);
-            return;
-        }
-        if (parentFrame->changed == 0) {
-            sceVu0CopyMatrix(matrix, lw_matrix);
-            return;
-        }
+    if (!changed && (parent == NULL || !parent->changed)) {
+        sceVu0CopyMatrix(matrix, lw_matrix);
+        return;
     }
     ClearChildFlag();
-    GetLocalMatrix(localMatrix);
-    mgCFrame *parent = this->parent;
-    if (parent == 0) {
-        sceVu0CopyMatrix(lw_matrix, localMatrix);
-        sceVu0CopyMatrix(matrix, lw_matrix);
+    sceVu0FMATRIX local;
+    GetLocalMatrix(local);
+    if (parent == NULL) {
+        sceVu0CopyMatrix(lw_matrix, local);
     } else {
-        sceVu0CopyMatrix(parentMatrix, parent->lw_matrix);
-        float(*b)[4];
-        float(*a)[4];
-        float(*dst)[4];
-        a = parentMatrix;
-        b = localMatrix;
-        dst = lw_matrix;
-        asm {
-            lqc2 vf5, 0(b)
-            lqc2 vf1, 0(a)
-            lqc2 vf2, 0x10(a)
-            lqc2 vf3, 0x20(a)
-            lqc2 vf4, 0x30(a)
-            vmulax.xyzw ACC, vf1, vf5x
-            vmadday.xyzw ACC, vf2, vf5y
-            vmaddaz.xyzw ACC, vf3, vf5z
-            vmaddw.xyzw vf20, vf4, vf5w
-            lqc2 vf6, 0x10(b)
-            lqc2 vf7, 0x20(b)
-            lqc2 vf8, 0x30(b)
-            vmulax.xyzw ACC, vf1, vf6x
-            vmadday.xyzw ACC, vf2, vf6y
-            vmaddaz.xyzw ACC, vf3, vf6z
-            vmaddw.xyzw vf21, vf4, vf6w
-            vmulax.xyzw ACC, vf1, vf7x
-            vmadday.xyzw ACC, vf2, vf7y
-            vmaddaz.xyzw ACC, vf3, vf7z
-            vmaddw.xyzw vf22, vf4, vf7w
-            vmulax.xyzw ACC, vf1, vf8x
-            vmadday.xyzw ACC, vf2, vf8y
-            vmaddaz.xyzw ACC, vf3, vf8z
-            vmaddw.xyzw vf23, vf4, vf8w
-            sqc2 vf20, 0(dst)
-            sqc2 vf21, 0x10(dst)
-            sqc2 vf22, 0x20(dst)
-            sqc2 vf23, 0x30(dst)
-            sqc2 vf20, 0(matrix)
-            sqc2 vf21, 0x10(matrix)
-            sqc2 vf22, 0x20(matrix)
-            sqc2 vf23, 0x30(matrix)
-        }
+        sceVu0MulMatrix(lw_matrix, parent->lw_matrix, local);
     }
+    sceVu0CopyMatrix(matrix, lw_matrix);
     changed = 0;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", GetLWMatrixTopBottom__8mgCFrameFPA4_f);
+#endif
 #pragma global_optimizer reset
 
 void mgCFrame::GetInverseMatrix(float (*matrix)[4]) {
@@ -1376,116 +956,7 @@ void mgCFrame::SetAttrParamDraw(int value, int recurse) {
 }
 
 
-int mgCFrame::Draw(unsigned int *packet) {
-    sceVu0FMATRIX  lw;
-    sceVu0FVECTOR  box_max;
-    sceVu0FVECTOR  box_min;
-    sceVu0FMATRIX  axes;
-    sceVu0FVECTOR  center;
-    mgRENDER_INFO *info;
-    mgLIGHT_INFO  *light_info;
-    mgCFrame      *frame;
-    float          scale_x;
-    float          scale_y;
-    float          scale_z;
-    float          radius;
-    int            count;
-    int            visible;
-    int            draw_child;
-    int            i;
-
-    count = 0;
-    info = &mgRenderInfo;
-    if (attr == NULL) {
-        GetLWMatrixTopBottom(lw);
-    } else {
-        if (this->attr->billboard != MG_FRAME_BILLBOARD_NONE) {
-            GetBBoardMatrix(this->attr->billboard, lw, info);
-        } else {
-            GetLWMatrixTopBottom(lw);
-        }
-
-        while (attr != NULL && (this->attr->draw & MG_FRAME_DRAW_VISIBLE)) {
-            if (visual == NULL) { break; }
-            if (!this->attr->no_cull && bound != NULL) {
-                // The frame is skipped when its box lies behind the near plane or off screen, and
-                // drawn with clipping when the box leaves the GS drawing range.
-                test1(bound->corner, info->world_screen_rel, lw, box_max, box_min);
-                if (box_max[3] < info->clip_min[2]) { break; }
-                {
-                    test2(box_max, box_min);
-                    if (!mgClipBoxW(box_max, box_min, info->screen_box_max, info->screen_box_min)) { break; }
-                    {
-                        if (mgClipInBoxW(box_max, box_min, info->gs_box_max, info->gs_box_min)) {
-                            info->clip = 0;
-                            info->scissor = 0;
-                        } else {
-                            info->clip = 1;
-                            if (this->attr->program_mode & 2) {
-                                info->scissor = this->attr->clip_enable != 0;
-                            } else {
-                                info->scissor = (this->attr->clip_enable != 0) | info->all_scissor;
-                            }
-                        }
-                    }
-                }
-            }
-
-            {
-                info->attr = attr;
-                sceVu0CopyVector(info->object_color, this->attr->color);
-                info->plight_hit = 0;
-                if (info->plight_enable && this->attr->point_light && !this->attr->no_light && bound != NULL) {
-                    // The bounding sphere is moved into the world, its radius scaled by the
-                    // longest of the matrix's first three columns, and tested against each
-                    // point light's reach.
-                    sceVu0TransposeMatrix(axes, lw);
-                    scale_x = mgDistVector(axes[0]);
-                    scale_y = mgDistVector(axes[1]);
-                    scale_z = mgDistVector(axes[2]);
-                    if (scale_x > scale_y) {
-                        scale_x = scale_x > scale_z ? scale_x : scale_z;
-                    } else {
-                        scale_y = scale_y > scale_z ? scale_y : scale_z;
-                        scale_x = scale_y;
-                    }
-                    radius = bound->radius * scale_x;
-                    sceVu0CopyVector(center, bound->center);
-                    center[3] = 1.0f;
-                    sceVu0ApplyMatrix(center, lw, center);
-                    light_info = info->GetpLightInfo();
-                    for (i = 0; i < 4; i++) {
-                        if (light_info->point_light[i].power > 0.0f) {
-                            float reach = radius + light_info->point_light[i].range;
-                            float distance = mgDistVector(light_info->point_light[i].pos, center);
-                            if (reach > distance) {
-                                info->plight_hit = 1;
-                                break;
-                            }
-                        }
-                    }
-                }
-                count += visual->Draw(packet, lw, NULL);
-                break;
-            }
-        }
-
-        if (this->attr->draw & MG_FRAME_DRAW_SKIP_CHILDREN) {
-            return count;
-        }
-    }
-
-    for (frame = child; frame != NULL; frame = frame->brother) {
-        draw_child = 1;
-        if (frame->attr != NULL && (frame->attr->draw & MG_FRAME_DRAW_SKIP_BY_PARENT)) {
-            draw_child = 0;
-        }
-        if (draw_child) {
-            count += frame->Draw(&packet[count * 4]);
-        }
-    }
-    return count;
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", Draw__8mgCFrameFPUi);
 
 
 
@@ -1493,222 +964,7 @@ int mgCFrame::Draw(unsigned int *packet) {
 
 
 #pragma global_optimizer off
-int mgCFrame::GetDrawRect(mgVu0FBOX *rect, mgCDrawManager *manager) {
-    sceVu0FMATRIX   lw;
-    sceVu0FVECTOR   rect_max;
-    sceVu0FVECTOR   rect_min;
-    sceVu0FMATRIX   screen_matrix;
-    mgVu0FBOX       child_rect;
-    mgCFrameAttr   *draw_attr;
-    int             visible;
-    mgRENDER_INFO  *info;
-    mgCFrame       *frame;
-    register float *lo;
-    register float *hi;
-    register float *matrix;
-    register float *corners;
-    float           left;
-    float           top;
-    int             billboard;
-    int             draw_child;
-    register u_long128 *copy_min;
-    register u_long128 copy_value;
-    register u_long128 *copy_max;
-
-    if (manager == NULL) {
-        manager = &mgDrawManager;
-    }
-    info = manager->render_info;
-    copy_max = (u_long128 *)rect_max;
-    copy_value = *(u_long128 *)at_1118;
-    *copy_max = copy_value;
-    copy_min = (u_long128 *)rect_min;
-    *copy_min = *(u_long128 *)at_1119;
-
-    draw_attr = attr;
-    if (draw_attr == NULL) {
-        draw_attr = &dmy_attr;
-    }
-
-    billboard = MG_FRAME_BILLBOARD_NONE;
-    if (attr != NULL) {
-        billboard = this->attr->billboard;
-    }
-    if (billboard != MG_FRAME_BILLBOARD_NONE) {
-        GetBBoardMatrix(billboard, lw, info);
-    } else {
-        GetLWMatrixTopBottom(lw);
-    }
-
-    visible = 0;
-    if (draw_attr->draw & MG_FRAME_DRAW_VISIBLE) {
-        visible = 1;
-    }
-    if (visual == NULL || bound == NULL) {
-        visible = 0;
-    }
-
-    do {
-        if (!visible) break;
-        mgMulMatrix(screen_matrix, info->world_screen_rel, lw);
-        corners = &bound->corner[0][0];
-        matrix = &screen_matrix[0][0];
-        hi = rect_max;
-        lo = rect_min;
-
-        // Each corner goes through the screen transform and is divided through by the magnitude
-        // of its w, and the box around the results is kept.
-        asm {
-            lqc2    vf10, 0(corners)
-            lqc2    vf11, 16(corners)
-            lqc2    vf12, 32(corners)
-            lqc2    vf13, 48(corners)
-            lqc2    vf14, 64(corners)
-            lqc2    vf15, 80(corners)
-            lqc2    vf16, 96(corners)
-            lqc2    vf17, 112(corners)
-            lqc2    vf1, 0(matrix)
-            lqc2    vf2, 16(matrix)
-            lqc2    vf3, 32(matrix)
-            lqc2    vf4, 48(matrix)
-            vmulax  ACC, vf1, vf10
-            vmadday ACC, vf2, vf10
-            vmaddaz ACC, vf3, vf10
-            vmaddw  vf10, vf4, vf10
-            vmulax  ACC, vf1, vf11
-            vmadday ACC, vf2, vf11
-            vmaddaz ACC, vf3, vf11
-            vabs.w  vf20, vf10
-            vnop
-            vnop
-            vmaddw  vf11, vf4, vf11
-            vdiv    Q, vf0w, vf20w
-            vnop
-            vnop
-            vabs.w  vf21, vf11
-            vnop
-            vnop
-            vwaitq
-            vmulq.xy vf10, vf10, Q
-            vdiv    Q, vf0w, vf21w
-            vmulax  ACC, vf1, vf12
-            vmadday ACC, vf2, vf12
-            vmaddaz ACC, vf3, vf12
-            vmaddw  vf12, vf4, vf12
-            vmulax  ACC, vf1, vf13
-            vwaitq
-            vmulq.xy vf11, vf11, Q
-            vabs.w  vf22, vf12
-            vmadday ACC, vf2, vf13
-            vmaddaz ACC, vf3, vf13
-            vmaddw  vf13, vf4, vf13
-            vdiv    Q, vf0w, vf22w
-            vmulax  ACC, vf1, vf14
-            vmadday ACC, vf2, vf14
-            vabs.w  vf23, vf13
-            vmaddaz ACC, vf3, vf14
-            vmaddw  vf14, vf4, vf14
-            vmax    vf30, vf10, vf11
-            vmini   vf31, vf10, vf11
-            vwaitq
-            vmulq.xy vf12, vf12, Q
-            vdiv    Q, vf0w, vf23w
-            vabs.w  vf24, vf14
-            vmulax  ACC, vf1, vf15
-            vmadday ACC, vf2, vf15
-            vmaddaz ACC, vf3, vf15
-            vmaddw  vf15, vf4, vf15
-            vmax    vf30, vf30, vf12
-            vmini   vf31, vf31, vf12
-            vwaitq
-            vmulq.xy vf13, vf13, Q
-            vdiv    Q, vf0w, vf24w
-            vabs.w  vf25, vf15
-            vmulax  ACC, vf1, vf16
-            vmadday ACC, vf2, vf16
-            vmaddaz ACC, vf3, vf16
-            vmaddw  vf16, vf4, vf16
-            vmax    vf30, vf30, vf13
-            vmini   vf31, vf31, vf13
-            vwaitq
-            vmulq.xy vf14, vf14, Q
-            vdiv    Q, vf0w, vf25w
-            vabs.w  vf26, vf16
-            vmulax  ACC, vf1, vf17
-            vmadday ACC, vf2, vf17
-            vmaddaz ACC, vf3, vf17
-            vmaddw  vf17, vf4, vf17
-            vmax    vf30, vf30, vf14
-            vmini   vf31, vf31, vf14
-            vwaitq
-            vmulq.xy vf15, vf15, Q
-            vdiv    Q, vf0w, vf26w
-            vabs.w  vf27, vf17
-            vnop
-            vmax    vf30, vf30, vf15
-            vmini   vf31, vf31, vf15
-            vnop
-            vwaitq
-            vmulq.xy vf16, vf16, Q
-            vdiv    Q, vf0w, vf27w
-            vnop
-            vmax    vf30, vf30, vf16
-            vmini   vf31, vf31, vf16
-            vnop
-            vnop
-            vwaitq
-            vmulq.xy vf17, vf17, Q
-            vmax    vf30, vf30, vf17
-            vmini   vf31, vf31, vf17
-            sqc2    vf30, 0(hi)
-            sqc2    vf31, 0(lo)
-        }
-
-        // The box counts only when it overlaps the screen, whose coordinates are relative to its
-        // centre, and does not lie behind the near plane; it is then moved to screen coordinates.
-        visible = 0;
-        left = 0.5f * -mgScreenWidth;
-        top = 0.5f * -mgScreenHeight;
-        float right = left + mgScreenWidth;
-        float bottom = top + mgScreenHeight;
-        if (rect_min[0] <= right && rect_max[0] >= left &&
-            rect_min[1] <= bottom && rect_max[1] >= top && rect_max[3] >= info->clip_min[2]) {
-            visible = 1;
-            rect_min[0] += mgScreenWidth / 2;
-            rect_max[0] += mgScreenWidth / 2;
-            rect_min[1] += mgScreenHeight / 2;
-            rect_max[1] += mgScreenHeight / 2;
-        }
-    } while (0);
-
-    if (visible) {
-        sceVu0CopyVector(rect->max, rect_max);
-        sceVu0CopyVector(rect->min, rect_min);
-    }
-    if (draw_attr->draw & MG_FRAME_DRAW_SKIP_CHILDREN) {
-        return visible;
-    }
-
-    for (frame = child; frame != NULL; frame = frame->brother) {
-        draw_child = 1;
-        if (frame->attr != NULL && (frame->attr->draw & MG_FRAME_DRAW_SKIP_BY_PARENT)) {
-            draw_child = 0;
-        }
-        if (draw_child && frame->GetDrawRect(&child_rect, NULL)) {
-            if (!visible) {
-                sceVu0CopyVector(rect_max, child_rect.max);
-                sceVu0CopyVector(rect_min, child_rect.min);
-            } else {
-                mgVectorMaxMin(rect_max, rect_min, rect_max, rect_min, child_rect.max, child_rect.min);
-            }
-            visible = 1;
-        }
-    }
-
-    sceVu0CopyVector(rect->max, rect_max);
-    sceVu0CopyVector(rect->min, rect_min);
-    return visible;
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", GetDrawRect__8mgCFrameFP9mgVu0FBOXP14mgCDrawManager);
 #pragma global_optimizer reset
 
 mgCFrame &mgCFrame::operator=(mgCFrame &other) {

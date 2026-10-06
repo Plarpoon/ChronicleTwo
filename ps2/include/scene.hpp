@@ -45,8 +45,10 @@ class mgCMemory;
 #define RAIN_DROP_TRAIL_NUM 8
 
 /**
+ *
  * Kinds of data a scene keeps in slots, selecting which list of slots a
  * scene's status and type functions work on.
+ *
  */
 enum SCENE_DATA_KIND {
     SCENE_DATA_CHARA   = 1, /**< Character slots. */
@@ -59,8 +61,10 @@ enum SCENE_DATA_KIND {
 };
 
 /**
+ *
  * Status flags of a scene data slot shared by every kind of slot; the
  * higher bits are given meanings by the code that uses each kind.
+ *
  */
 enum SCENE_DATA_STATUS {
     SCENE_DATA_LOADED   = 1 << 0, /**< The slot's data has finished loading into its memory stack. */
@@ -69,7 +73,9 @@ enum SCENE_DATA_STATUS {
 };
 
 /**
+ *
  * Kinds of rain drop, telling how far from the camera a drop falls.
+ *
  */
 enum RAIN_DROP_TYPE {
     RAIN_DROP_NEAR = 0, /**< Falls close to the camera and leaves ripples when it lands. */
@@ -124,7 +130,9 @@ float RandXYinViewArea(float min_dist, float max_dist, float angle, float *x, fl
 void DrawScreenRain();
 
 /**
+ *
  * Ripple that spreads and fades on the ground where rain lands.
+ *
  */
 class CRipple {
 public:
@@ -184,8 +192,10 @@ public:
 STATIC_ASSERT(sizeof(CRipple) == 0x30);
 
 /**
+ *
  * Splash particle thrown up where rain lands, falling back under gravity
  * until it drops below the height it started at.
+ *
  */
 class CParticle {
 public:
@@ -246,8 +256,10 @@ public:
 STATIC_ASSERT(sizeof(CParticle) == 0x50);
 
 /**
+ *
  * One falling rain drop, drawn as a streak through the positions it held
  * over the last few frames.
+ *
  */
 class CRainDrop {
 public:
@@ -306,8 +318,10 @@ public:
 STATIC_ASSERT(sizeof(CRainDrop) == 0xB0);
 
 /**
+ *
  * Rain falling around the camera: near and far drops, ripples on the
  * ground, splashes off a character, and streaks drawn over the screen.
+ *
  */
 class CRain {
 public:
@@ -396,8 +410,10 @@ public:
 STATIC_ASSERT(sizeof(CRain) == 0xABF0);
 
 /**
+ *
  * Slot in which a scene keeps one piece of named data, with its status and
  * the memory and texture blocks it was loaded into.
+ *
  */
 class CSceneData {
 public:
@@ -422,7 +438,9 @@ public:
 STATIC_ASSERT(sizeof(CSceneData) == 0x34);
 
 /**
+ *
  * Slot in which a scene keeps one character.
+ *
  */
 class CSceneCharacter : public CSceneData {
 public:
@@ -454,7 +472,9 @@ public:
 STATIC_ASSERT(sizeof(CSceneCharacter) == 0x40);
 
 /**
+ *
  * Slot in which a scene keeps one map.
+ *
  */
 class CSceneMap : public CSceneData {
 public:
@@ -484,7 +504,9 @@ public:
 STATIC_ASSERT(sizeof(CSceneMap) == 0x38);
 
 /**
+ *
  * Slot in which a scene keeps one set of messages.
+ *
  */
 class CSceneMessage : public CSceneData {
 public:
@@ -514,7 +536,9 @@ public:
 STATIC_ASSERT(sizeof(CSceneMessage) == 0x38);
 
 /**
+ *
  * Slot in which a scene keeps one camera.
+ *
  */
 class CSceneCamera : public CSceneData {
 public:
@@ -544,7 +568,9 @@ public:
 STATIC_ASSERT(sizeof(CSceneCamera) == 0x38);
 
 /**
+ *
  * Slot in which a scene keeps one sky.
+ *
  */
 class CSceneSky : public CSceneData {
 public:
@@ -574,7 +600,9 @@ public:
 STATIC_ASSERT(sizeof(CSceneSky) == 0x38);
 
 /**
+ *
  * Slot in which a scene keeps one game object, held as a character.
+ *
  */
 class CSceneGameObj : public CSceneCharacter {
 public:
@@ -592,7 +620,9 @@ public:
 STATIC_ASSERT(sizeof(CSceneGameObj) == 0x40);
 
 /**
+ *
  * Slot in which a scene keeps one effect script manager.
+ *
  */
 class CSceneEffect : public CSceneData {
 public:

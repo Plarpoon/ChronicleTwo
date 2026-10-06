@@ -66,26 +66,23 @@ static u_long128 *(*set_data_func[8])(int, int, int **, u_long128 *, u_long128 *
 u_int *GetScrPad(void) {
     return (u_int *)(buff_id ? 0x70002000 : 0x70000000);
 }
-void SendDMA(void *data, int size) {
-    u_int mask = 0xFFFFFFF;
-    data = (void *)((u_int)data & mask);
-    if (start_dma != 0) {
-        asm {
-        wait:
-            nop
-            bc0f wait
-            nop
-        }
+#ifdef NONMATCHING
+void SendDMA(void *packet, int size) {
+    if (start_dma) {
+        sceDmaSync(DmaCH8, 0, 0);
         start_dma = 0;
     }
-    *(int *)0x1000E010 = 0x100;
-    DmaCH8->sadr = (u_int)GetScrPad() & mask;
-    DmaCH8->madr = (int)data;
+    *(volatile u_int *)0x1000E010 = 0x100;
+    DmaCH8->sadr = (u_int)GetScrPad() & 0x0FFFFFFF;
+    DmaCH8->madr = (u_int)packet & 0x0FFFFFFF;
     DmaCH8->qwc = size;
     DmaCH8->chcr.STR = 1;
     start_dma = 1;
-    buff_id = (u_char)((buff_id != 0) ^ 1);
+    buff_id = !buff_id;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", SendDMA__FPvi);
+#endif
 #pragma global_optimizer off
 int mgSetPkTEX0(u_int *packet, unsigned long tex0, unsigned long tex1) {
     *(u_long128 *)packet = *(u_long128 *)&set_tex0_dma;
@@ -332,7 +329,7 @@ void mgCVisualMDT::CopyMDTData(MDT_HEADER *header, mgCMemory *memory) {
     }
 }
 void mgCVisualMDT::CopyMDTDataPointer(MDT_HEADER *header, mgCMemory *memory) {
-    mgCTextureManager *textures = ((mgCVisual *)this)->GetTextureManager();
+    mgCTextureManager *textures = GetTextureManager();
     int vertex_address = (int)header + header->vertex_ofs;
     int normal_address = (int)header + header->normal_ofs;
     int colour_address = (int)header + header->colour_ofs;
@@ -548,7 +545,7 @@ int mgCVisualMDT::Draw(u_int *tag, float (*matrix)[4], mgCDrawManager *draw_mana
 }
 u_int mgCVisualMDT::CreatePacket(mgCDrawManager *manager) {
     mgCVisualMDT *model = this;
-    ((mgCVisual *)this)->GetTextureManager();
+    GetTextureManager();
     mgCMemory *packet_memory;
     mgCMemory *data_memory;
     mgFACE_GROUP *node;
@@ -615,7 +612,7 @@ u_int mgCVisualMDT::CreatePacket(mgCDrawManager *manager) {
     return start & 0xFFFFFFF;
 }
 u_int mgCVisualFixMDT::CreatePacket(mgCDrawManager *manager) {
-    ((mgCVisual *)this)->GetTextureManager();
+    GetTextureManager();
     mgCMemory *packet_memory;
     mgCMemory *data_memory;
     mgFACE_GROUP *node;

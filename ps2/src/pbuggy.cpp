@@ -34,10 +34,15 @@ int TakeBomb(void);
 int ThrowBomb(float *velocity);
 int NowPutBomb(void);
 extern "C" int fptosi(float value);
+/**
+ *
+ * Sprite state embedded in an effect script object.
+ *
+ */
 struct EffectScriptSpriteState {
     u_char padding[0x30];
-    u_char sprite[0x1C];
-    void *sprite_vtable;
+    u_char sprite[0x1C]; /**< Sprite state bytes. */
+    void *sprite_vtable; /**< Sprite virtual method table. */
 };
 extern void *__vt__9mgCVisual[];
 extern void *__vt__11mgC3DSprite[];
@@ -116,9 +121,14 @@ extern char at_1304__9[];
 extern char at_1305__6[];
 extern char at_1306__7[];
 extern char at_1307__7[];
+/**
+ *
+ * Buggy effect vector viewed as floats or a quadword.
+ *
+ */
 union BuggyQuad {
-    float values[4];
-    u_long128 quadword;
+    float values[4]; /**< Floating point components. */
+    u_long128 quadword; /**< The same components as one quadword. */
 };
 extern "C" BuggyQuad at_1193;
 extern "C" BuggyQuad at_1074__4;

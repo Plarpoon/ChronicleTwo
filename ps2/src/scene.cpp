@@ -233,7 +233,46 @@ int CParticle::Step(void) {
     pos[2] += speed[2];
     return 1;
 }
+#ifdef NONMATCHING
+void CParticle::Draw() {
+    if (!active) return;
+    mgCDrawPrim prim;
+    prim.Initialize(NULL, NULL);
+    prim.AlphaBlendEnable(1);
+    prim.AlphaBlend(1);
+    prim.AlphaTestEnable(1);
+    prim.AlphaTest(1, 0);
+    prim.DepthTestEnable(0);
+    prim.ZMask(-1);
+    prim.Bilinear(0);
+    prim.TextureMapEnable(0);
+    prim.Coord(1);
+    prim.Shading(1);
+    prim.DepthTestEnable(1);
+    prim.DepthTest(1);
+    prim.AlphaBlend(2);
+    prim.AntiAliasing(1);
+    prim.Begin(0);
+
+    CScene *scene = GetMainScene();
+    mgCCamera *camera = scene->GetCamera(scene->active_camera);
+    if (camera != NULL) {
+        sceVu0FVECTOR camera_pos;
+        camera->GetPos(camera_pos);
+        float dx = pos[0] - camera_pos[0];
+        float dz = pos[2] - camera_pos[2];
+        float opacity = 128.0f + (-0.42666668f * sqrtf(dx * dx + dz * dz));
+        if (!(opacity <= 0.0f)) {
+            prim.Color(128, 128, 128, fptosi(opacity));
+            int vertex[4];
+            if (mgTransWorldPrim(vertex, pos)) prim.Vertex4(vertex);
+            prim.End();
+        }
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", Draw__9CParticleFv);
+#endif
 void CParticle::Init(void) {
     active = 0;
     InitVector(pos);

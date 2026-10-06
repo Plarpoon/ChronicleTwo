@@ -28,14 +28,54 @@
 #include "mg_math.hpp"
 #include <cmath>
 
-struct GridOverCode { int value[4]; };
-struct ModelTriple { CActionChara *model[3]; };
-struct ItemNameList1 { char *name[1]; };
-struct ItemNameList5 { char *name[5]; };
-struct CursorPos { int x; int y; };
-struct RecordBoardMsgTypes { int v[5]; };
-struct GradationSteps { int v[3]; };
-struct GradeRows { signed char v[2]; };
+/**
+ *
+ * Stores four grid overlay codes for the inventory display.
+ *
+ */
+struct GridOverCode { int value[4]; /**< Code for each grid overlay. */ };
+/**
+ *
+ * Groups three character models used by the inventory menu.
+ *
+ */
+struct ModelTriple { CActionChara *model[3]; /**< Character model in each slot. */ };
+/**
+ *
+ * Holds one item name for the inventory display.
+ *
+ */
+struct ItemNameList1 { char *name[1]; /**< Item name. */ };
+/**
+ *
+ * Holds five item names for the inventory display.
+ *
+ */
+struct ItemNameList5 { char *name[5]; /**< Item name in each slot. */ };
+/**
+ *
+ * Stores an inventory cursor position.
+ *
+ */
+struct CursorPos { int x; /**< Horizontal cursor coordinate. */ int y; /**< Vertical cursor coordinate. */ };
+/**
+ *
+ * Stores message types for record board entries.
+ *
+ */
+struct RecordBoardMsgTypes { int v[5]; /**< Message type for each entry. */ };
+/**
+ *
+ * Stores three steps of a menu colour gradation.
+ *
+ */
+struct GradationSteps { int v[3]; /**< Value for each gradation step. */ };
+/**
+ *
+ * Stores the grade assigned to two rows.
+ *
+ */
+struct GradeRows { signed char v[2]; /**< Grade for each row. */ };
 extern CMenuInvent *CMenuInventPt;
 extern CInventUserData *InventUserDataPtr;
 extern CDC2AlbumData *InventAlbumPtr;
@@ -93,7 +133,12 @@ enum { K_COMMAND_OPEN_MEMO = 100 };
 enum { K_COMMAND_CLOSE_MEMO = 105 };
 enum { K_COMMAND_QUIT = 110 };
 extern char at_1046__2[];
-struct NetaFoundFlags { s8 flag[3]; };
+/**
+ *
+ * Tracks whether each of three invention ideas was found.
+ *
+ */
+struct NetaFoundFlags { s8 flag[3]; /**< Found flag for each idea. */ };
 extern NetaFoundFlags at_1965;
 extern char at_2124__2[];
 extern char at_2125__3[];
@@ -157,11 +202,21 @@ extern char at_2734__2[];
 extern char at_2735__2[];
 extern char at_2736[];
 extern char at_2737[];
-struct FoundSlots { int v[3]; };
+/**
+ *
+ * Marks the three invention idea slots that match a recipe.
+ *
+ */
+struct FoundSlots { int v[3]; /**< Match flag for each idea slot. */ };
 extern FoundSlots at_2776;
 extern CursorPos at_3202;
+/**
+ *
+ * Stores four inventory cursor coordinates.
+ *
+ */
 struct InventCursorPos {
-    int pos[4];
+    int pos[4]; /**< Coordinates used by the inventory cursor. */
 } __attribute__((aligned(16)));
 extern InventCursorPos at_3201;
 extern s8 wakutype_3203[];
@@ -172,7 +227,12 @@ extern char at_3260__2[];
 extern char at_3261[];
 extern char at_3262__2[];
 extern char at_3263__2[];
-struct ItemNameList2 { char *name[2]; };
+/**
+ *
+ * Holds two item names for the inventory display.
+ *
+ */
+struct ItemNameList2 { char *name[2]; /**< Item name in each slot. */ };
 extern ItemNameList2 at_3317;
 extern CMemoryCardManager *MCManagerPtr;
 extern s8 ActiveSlot_3949;
@@ -221,6 +281,11 @@ extern char at_3866__2[];
 extern char at_3867__2[];
 extern char at_3868__2[];
 extern char at_3869[];
+/**
+ *
+ * Selects the confirmation prompt shown for an inventory action.
+ *
+ */
 enum INVENT_ASK_MODE {
     INVENT_ASK_COMMAND = 0,
     INVENT_ASK_ZOOM = 1,
@@ -231,8 +296,13 @@ enum INVENT_ASK_MODE {
     INVENT_ASK_FROM_ALBUM = 6,
     INVENT_ASK_DELETE_ALL = 7
 };
+/**
+ *
+ * Stores the positions of item board pieces.
+ *
+ */
 struct ItemBoardKoma {
-    int pos[10];
+    int pos[10]; /**< Position for each board piece. */
 };
 extern ItemBoardKoma at_3306;
 extern char at_3348__2[];
@@ -241,15 +311,35 @@ extern char at_3350__2[];
 extern char at_3351[];
 extern char at_3352[];
 extern char at_3353[];
-struct NetaClipRange { float top; float bottom; };
-struct ScreenPoint { int xy[2]; };
+/**
+ *
+ * Defines the vertical clipping range for invention ideas.
+ *
+ */
+struct NetaClipRange { float top; /**< Upper clipping boundary. */ float bottom; /**< Lower clipping boundary. */ };
+/**
+ *
+ * Stores a point on the inventory screen.
+ *
+ */
+struct ScreenPoint { int xy[2]; /**< Horizontal and vertical screen coordinates. */ };
 extern ScreenPoint at_3363;
 extern NetaClipRange at_3379;
 extern CursorPos at_3509;
 extern ScreenPoint at_4493;
-struct MenuColor { u8 rgba[4]; };
+/**
+ *
+ * Stores an inventory menu colour.
+ *
+ */
+struct MenuColor { u8 rgba[4]; /**< Red, green, blue, and alpha channels. */ };
 extern MenuColor at_4494;
-struct NetaEffectTarget { float x; float y; };
+/**
+ *
+ * Stores the target position of an invention effect.
+ *
+ */
+struct NetaEffectTarget { float x; /**< Horizontal target coordinate. */ float y; /**< Vertical target coordinate. */ };
 extern NetaEffectTarget at_4638;
 extern char at_4775[];
 extern char at_5066[];
@@ -264,7 +354,12 @@ extern char at_5556[];
 extern char at_5557[];
 extern char at_5558[];
 extern char at_5559[];
-struct CardListTops { int top[2]; };
+/**
+ *
+ * Stores the first visible row of two card lists.
+ *
+ */
+struct CardListTops { int top[2]; /**< First visible row for each list. */ };
 extern CardListTops at_5642;
 extern char *NewComer_5648[];
 extern int digit_tbl3_5641[];
@@ -273,7 +368,12 @@ extern char at_5743[];
 extern char at_5744[];
 extern char at_5745[];
 extern char at_5746[];
-struct NetaNameBlank { char text[2]; };
+/**
+ *
+ * Holds the blank marker used for an invention name.
+ *
+ */
+struct NetaNameBlank { char text[2]; /**< Blank name marker. */ };
 extern NetaNameBlank at_4470;
 
 extern signed char pict_seiton_case;
@@ -284,6 +384,11 @@ extern char at_5153[];
 extern char at_5154[];
 extern char at_5155[];
 extern char at_5156[];
+/**
+ *
+ * Maps inventory commands to their message numbers.
+ *
+ */
 enum INVENT_COMMAND_MSG {
     INVENT_CMD_ZOOM = 0x1518,
     INVENT_CMD_DELETE = 0x1519,
@@ -293,10 +398,15 @@ enum INVENT_COMMAND_MSG {
     INVENT_CMD_SET_BOARD = 0x151D,
     INVENT_CMD_DELETE_ALL = 0x151E
 };
+/**
+ *
+ * Defines the commands available in an inventory mode.
+ *
+ */
 struct InventCommandList {
-    int enable;
-    int cmd_num;
-    int cmd[5];
+    int enable; /**< Whether the command list is enabled. */
+    int cmd_num; /**< Number of available commands. */
+    int cmd[5]; /**< Command codes for this mode. */
 };
 extern InventCommandList modecmdtbl_3636[12];
 extern InventCommandList *menu_invent_command_info_ptr;
@@ -2061,7 +2171,54 @@ void CMenuInvent::GradationSet(int mode) {
             return;
     }
 }
+#ifdef NONMATCHING
+void CMenuInvent::GradationStep() {
+    if (invent_okeff_form == NULL) {
+        return;
+    }
+    if (gradation_mode == 1) {
+        bool advance = false;
+        for (int i = 0; i < 2; i++) {
+            MENUFORMPARTS_TYPE *part = invent_okeff_form->GetPartInfo(invent_grade_fff[i]);
+            if (at_2639.v[2] >= unk_eb0) {
+                part->h = (float)unk_eb0;
+                if (i == 0) {
+                    part->y = 224.0f - part->h;
+                }
+                advance = true;
+            }
+        }
+        if (advance) {
+            unk_eb0 += 4;
+        }
+    } else if (gradation_mode == 3) {
+        for (int i = 0; i < 2; i++) {
+            MENUFORMPARTS_TYPE *part = invent_okeff_form->GetPartInfo(invent_grade_fff[i]);
+            for (int effect_index = 0; effect_index < 2; effect_index++) {
+                int row = (i == 1) ^ (effect_index == 1);
+                for (int channel = 0; channel < 3; channel++) {
+                    float current = part->effect[effect_index].param[channel];
+                    float target = (float)invent_color_tbl[create_step][row][channel];
+                    int value = (int)current;
+                    if (current < target) {
+                        value = (int)(current + 2.0f);
+                    } else if (current > target) {
+                        value = (int)(current - 2.0f);
+                    }
+                    if (value < 0) {
+                        value = 0;
+                    } else if (value > 255) {
+                        value = 255;
+                    }
+                    part->effect[effect_index].param[channel] = (float)value;
+                }
+            }
+        }
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", GradationStep__11CMenuInventFv);
+#endif
 void CMenuInvent::InitEnd() {
     BG_READ_INFO *read_info;
 
@@ -2149,7 +2306,12 @@ int CMenuInvent::ItemCmdAfter(int command, ITEMCMD_RET_PARA *para) {
 
 
 extern CGamePad GamePad__2;
-struct PathPrefix { u_long128 chunk[4]; };
+/**
+ *
+ * Stores the path prefix used for an inventory asset.
+ *
+ */
+struct PathPrefix { u_long128 chunk[4]; /**< Four quadwords containing the prefix. */ };
 extern PathPrefix at_2913;
 extern char at_3113[];
 extern char at_3114[];
@@ -2732,17 +2894,104 @@ void CMenuInvent::CalcMakeBrd(int message_index) {
         CalcCommonBrdDrawInfo(&makebrd_form->x, &make_board, MenuDCMsg[message_index]);
     }
 }
-extern "C" int EnableSelectMaxCardList__11CMenuInventFv(CMenuInvent *objet) {
-    int var_v0;
+int CMenuInvent::EnableSelectMaxCardList() {
+    int count;
 
-    var_v0 = InventUserDataPtr->GetHatsumeiNum() + 1;
-    if (var_v0 < 5) {
-        var_v0 = 5;
+    count = InventUserDataPtr->GetHatsumeiNum() + 1;
+    if (count < 5) {
+        count = 5;
     }
-    return var_v0;
+    return count;
 }
 
+#ifdef NONMATCHING
+void CMenuInvent::CalcCursorPosition() {
+    if (photo_only == 2) {
+        MenuCommonInfo->SetWakuType(-1);
+        return;
+    }
+    if (photo_only == 1) {
+        MenuCommonInfo->SetWakuType(-1);
+    }
+
+    int pos[2] = {at_3201.pos[0], at_3201.pos[1]};
+    int offset[2] = {at_3202.x, at_3202.y};
+    int width;
+    int height;
+    char name[32];
+    sprintf(name, at_3257, key_arg_no);
+    MenuPosData->GetEtcTblValue(name, width, height);
+    sprintf(name, at_3258, key_arg_no);
+    MenuPosData->GetEtcTblValue(name, offset[0], offset[1]);
+    MenuCommonInfo->SetWakuWH(wakutype_3203[key_arg_no], width, height);
+    MenuCommonInfo->SetWakuType(wakutype_3203[key_arg_no]);
+
+    switch (key_arg_no) {
+    case 0:
+    case 4:
+    case 6:
+        GetNetaBoardCursorPosition(card_cursor, pos);
+        if (neta_board_form != NULL) {
+            pos[1] = (int)(108.0f + (4.0f + neta_board_form->y) +
+                           (float)((card_cursor / 2 - card_top) * 0x36));
+        }
+        pos[0] += 3;
+        pos[1] += 2;
+        break;
+    case 1:
+    case 7:
+        album_sw_form->GetPutPosXY(at_3259, pos[0], pos[1]);
+        break;
+    case 2:
+        pos[0] = (int)(card_list_form->x - 40.0f);
+        pos[1] = (photo_cursor - photo_top) * 0x2E + 0x48;
+        if (photo_only == 6) {
+            int index = icon_data[1].name[0x1C];
+            pos[0] = (int)(-50.0f + MakeBoardDrawInfo[index * 2]);
+            pos[1] = (int)MakeBoardDrawInfo[index * 2 + 1];
+        }
+        break;
+    case 3:
+        MenuPosData->GetPosMenuItemOnItemBrd(pos, item_cursor, 1);
+        pos[0] -= 8;
+        pos[1] -= 10;
+        break;
+    case 5:
+        sprintf(name, at_3260__2, album_cursor - album_top * 2);
+        album_big_form->GetPutPosXY(name, pos[0], pos[1]);
+        break;
+    case 8:
+        neta_board_form->GetPutPosXY(at_3261, pos[0], pos[1]);
+        break;
+    case 11:
+        neta_memo_form->GetPutPosXY(at_3262__2, pos[0], pos[1]);
+        break;
+    case 10:
+        neta_board_form->GetPutPosXY(at_3263__2, pos[0], pos[1]);
+        break;
+    case 9:
+        GetNetaMemoCursorPosition((int)icon_data[2].data - icon_data[2].size, pos);
+        pos[0] -= 0x20;
+        break;
+    }
+
+    MenuItemCommandDir = -1;
+    if (photo_only == 4 || (photo_only == 12 && unk_112 == 0)) {
+        SetItemCmdMsgPos(&pos[0]);
+    }
+    if (photo_only == 5 || photo_only == 4 || photo_only == 12 ||
+        photo_only == 9 || photo_only == 14) {
+        MenuCommonInfo->SetWakuType(-1);
+    }
+    MenuCommonInfo->MenuPosStep(pos, offset);
+    if (unk_eb6 != 0) {
+        MenuCommonInfo->MenuSetPos(pos[0], pos[1]);
+        unk_eb6 = 0;
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", CalcCursorPosition__11CMenuInventFv);
+#endif
 int CMenuInvent::IsMakeObject(int keys, int button) {
     switch (step) {
     case 0: {

@@ -29,8 +29,10 @@ class mgCMemory;
 #define EDIT_HOUSE_NPC_MAX 3
 
 /**
+ *
  * Attribute bits of an edit part's definition, set by the commands of the
  * edit information script.
+ *
  */
 enum EditPartsAtr {
     EDIT_PARTS_ATR_GROUND = 0x7,    /**< Bits that GROUND_PARTS sets; a part with all three is ground that holds a placement grid. */
@@ -42,15 +44,19 @@ enum EditPartsAtr {
 };
 
 /**
+ *
  * Kind of edit part, as the definition's parts_type gives it or as its
  * attributes override it.
+ *
  */
 enum EditPartsType {
     EDIT_PARTS_TYPE_RIVER = 11, /**< Piece of river. */
 };
 
 /**
+ *
  * How a placed edit part stands in the town.
+ *
  */
 enum EditPartsState {
     EDIT_PARTS_STATE_NONE   = 0, /**< Not placed. */
@@ -59,8 +65,10 @@ enum EditPartsState {
 };
 
 /**
+ *
  * One material an edit part needs to be built: an item and how many of
  * it are used.
+ *
  */
 struct EditPartsMaterial {
     s32 item_no; /**< Item used as the material; 0 or below for none. */
@@ -70,9 +78,11 @@ struct EditPartsMaterial {
 STATIC_ASSERT(sizeof(EditPartsMaterial) == 0x8);
 
 /**
+ *
  * Defines one kind of part the town editor can place: its names, cost,
  * attributes, the map part that models it, and the collision and extent
  * the editor tests placements against.
+ *
  */
 class CEditPartsInfo {
 public:
@@ -195,7 +205,9 @@ public:
 STATIC_ASSERT(sizeof(CEditPartsInfo) == 0x280);
 
 /**
+ *
  * House a placed building gives, recording the villagers who live in it.
+ *
  */
 class CEditHouse {
 public:
@@ -222,15 +234,19 @@ public:
 STATIC_ASSERT(sizeof(CEditHouse) == 0x10);
 
 /**
+ *
  * Part placed in the town by the editor: a map part made from an edit
  * part's definition, standing on a ground part of the map, which may have
  * a house of villagers.
+ *
  */
 class CEditParts : public CMapParts {
 public:
     /**
+     *
      * Plane, centre and extent of one wall of a part, which other parts
      * can be put against.
+     *
      */
     struct WallInfo {
         sceVu0FVECTOR plane;  /**< Plane of the wall: normal in XYZ, distance from the origin in W. */

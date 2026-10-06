@@ -45,7 +45,15 @@
 extern CScene *nowScene;
 extern ACTION_DAMAGE *LastCInfo2;
 extern int (*ext_func[256])(RS_STACKDATA *, int);
-union ScriptVector { float f[4]; u_long128 qw; };
+/**
+ *
+ * Script vector viewed as four floats or a quadword.
+ *
+ */
+union ScriptVector {
+    float f[4]; /**< Floating point components. */
+    u_long128 qw; /**< The same components as one quadword. */
+};
 extern ScriptVector at_1480__2;
 extern ScriptVector at_1481__2;
 extern ScriptVector at_1864;
@@ -60,7 +68,15 @@ extern char at_2580[17];
 extern char at_2787[13];
 extern char at_3078[];
 extern char at_3079[];
-struct RangeEntry { float distance; int id; };
+/**
+ *
+ * Distance and identifier of a script range entry.
+ *
+ */
+struct RangeEntry {
+    float distance; /**< Range distance. */
+    int id; /**< Entry identifier. */
+};
 extern "C" int fptosi(float);
 extern "C" int fptoui(float);
 

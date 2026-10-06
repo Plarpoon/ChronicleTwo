@@ -1685,8 +1685,13 @@ void DngStep() {
         if (BTsuboCol->hit_num) {
             sceVu0FVECTOR hit;
             sceVu0FVECTOR velo;
+            /**
+             *
+             * Four components copied into the hit position.
+             *
+             */
             struct VEC4 {
-                float v[4];
+                float v[4]; /**< Vector components. */
             };
             *(VEC4 *) hit = *(VEC4 *) BTsuboCol->hit_vec;
             velo[0] = 0.0f;

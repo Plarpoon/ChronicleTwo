@@ -34,16 +34,44 @@ extern char at_871__3[];
 extern char at_872__3[];
 extern char at_1150[];
 extern char at_1000__3[], at_1001__3[], at_1002__3[], at_1003__3[], at_1004__3[], at_1005__3[], at_1006__2[], at_1007__2[], at_1008__3[], at_1009__2[], at_1010__2[], at_1011__2[], at_1012__2[], at_1013__2[], at_1014__2[], at_1015__2[], at_1016__3[], at_1017__3[], at_1018__4[];
-struct SetupPartStack { int stacks[5]; };
+/**
+ *
+ * Memory stack slots used while setting up character parts.
+ *
+ */
+struct SetupPartStack {
+    int stacks[5]; /**< Stack slots for the parts. */
+};
 extern SetupPartStack at_919__3;
 extern int mem_table[4][7];
 extern char at_1149[];
 int SetupMints(CScene *scene, CUserDataManager *user_data);
 int SetupMonica(CScene *scene, CUserDataManager *user_data);
 int SetupMonster(CScene *scene, CUserDataManager *user_data);
-struct SetupNameTable4 { char *names[4]; };
-struct SetupNameTable3 { char *names[3]; };
-struct SetupNameTable6 { char *names[6]; };
+/**
+ *
+ * Four resource names used by character setup.
+ *
+ */
+struct SetupNameTable4 {
+    char *names[4]; /**< Resource names. */
+};
+/**
+ *
+ * Three resource names used by character setup.
+ *
+ */
+struct SetupNameTable3 {
+    char *names[3]; /**< Resource names. */
+};
+/**
+ *
+ * Six resource names used by character setup.
+ *
+ */
+struct SetupNameTable6 {
+    char *names[6]; /**< Resource names. */
+};
 extern SetupNameTable6 at_1216__4;
 extern char at_1268[], at_1269[], at_1270[], at_1271[], at_1272[], at_1273[], at_1274[], at_1275[], at_1276[], at_1277[];
 extern SetupNameTable4 at_1110;
@@ -76,7 +104,14 @@ int SetupMonster(CScene *scene, CUserDataManager *user_data);
 extern int mem_table[4][7];
 extern char r_robo_pname_1282[4][16];
 extern char fname_1290[64];
-struct SetupPartOrder { int parts[4]; };
+/**
+ *
+ * Order of the four parts used by character setup.
+ *
+ */
+struct SetupPartOrder {
+    int parts[4]; /**< Part order. */
+};
 extern SetupPartOrder at_1281__2;
 extern char *fname_tbl_1291[6];
 extern char *fname_tbl2_1298[6];

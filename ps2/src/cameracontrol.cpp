@@ -13,9 +13,14 @@
 
 #include <cmath>
 
+/**
+ *
+ * Camera control vector viewed as floats or a quadword.
+ *
+ */
 union camera_control_vector {
-    float values[4];
-    u_long128 quadword;
+    float values[4];  /**< Floating point components. */
+    u_long128 quadword; /**< The same components as a quadword. */
 };
 
 extern "C" camera_control_vector at_373__3;

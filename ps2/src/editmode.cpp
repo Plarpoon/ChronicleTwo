@@ -411,16 +411,26 @@ void EndEditMode(CScene *scene, float *cursor_pos) {
     EditInitPlaceAnime();
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Colour components and item number requested for part painting.
+ *
+ */
 struct PaintParams {
-    int red;
-    int green;
-    int blue;
-    int item;
+    int red;   /**< Red component. */
+    int green; /**< Green component. */
+    int blue;  /**< Blue component. */
+    int item;  /**< Paint item number. */
 };
+/**
+ *
+ * Red, green and blue components of a paint shade.
+ *
+ */
 struct PaintShade {
-    int red;
-    int green;
-    int blue;
+    int red;   /**< Red component. */
+    int green; /**< Green component. */
+    int blue;  /**< Blue component. */
 };
 int StartEditModeFromMenu(CScene *scene, int mode, int *params) {
     scene->GetMap(scene->active_map);
@@ -528,7 +538,7 @@ static void StackUndoData(UNDO_DATA *data) {
     *(mgVec4 *)UndoData.pos = *(mgVec4 *)data->pos;
     *(mgVec4 *)UndoData.rot = *(mgVec4 *)data->rot;
 }
-extern "C" void StartEditPutWall__FPQ210CEditParts8WallInfo(CEditParts::WallInfo *wall) {
+void StartEditPutWall(CEditParts::WallInfo *wall) {
     mgZeroVector(WallPutPos);
     *(mgVec4 *)WallInfo.plane = *(mgVec4 *)wall->plane;
     *(mgVec4 *)WallInfo.center = *(mgVec4 *)wall->center;

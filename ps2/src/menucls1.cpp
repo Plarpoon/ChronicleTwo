@@ -269,22 +269,18 @@ void MenuMesInit(ClsMes *mes) {
         *(int *)&mes->unk_b4 = 0;
     }
 }
-extern "C" void *__ct__6ClsMesFv(void *);
-extern "C" void Set__9mgRect_i_Fiiii(void *, int, int, int, int);
-extern "C" CDC2Mes *__ct__7CDC2MesFv(CDC2Mes *window) {
-    __ct__6ClsMesFv(window);
-    Set__9mgRect_i_Fiiii(&window->scissor, 0, 0, 0, 0);
-    window->msg_change = 0;
-    window->cursor = -1;
-    window->text_off_x = -1;
-    window->text_off_y = -1;
-    window->mes_no = -1;
-    window->cursor_on = 1;
-    window->put_centering = 0;
-    window->scissor_on = 0;
-    Set__9mgRect_i_Fiiii(&window->scissor, 0, 0, 0x200, 0x19F);
-    memset(window->str, 0, 0xC1);
-    return window;
+CDC2Mes::CDC2Mes() {
+    scissor.Set(0, 0, 0, 0);
+    msg_change = 0;
+    cursor = -1;
+    text_off_x = -1;
+    text_off_y = -1;
+    mes_no = -1;
+    cursor_on = 1;
+    put_centering = 0;
+    scissor_on = 0;
+    scissor.Set(0, 0, 0x200, 0x19F);
+    memset(str, 0, 0xC1);
 }
 void CDC2Mes::SetMessData(short *buff_system, short *buff) {
     SetBuff_system(buff_system);
@@ -883,7 +879,173 @@ int CheckRoboShieldKit(CUserDataManager *manager, CGameDataUsed *item, int apply
 }
 extern u32 st_bittable_1654[7];
 
+#ifdef NONMATCHING
+int MenuUseItemCheckFunc(CGameDataUsed *item, CItemUseTarget *target, int use) {
+    if (item == NULL || target == NULL) return 0;
+    USEITEM_EFFECT effect;
+    if (!GetUsedItemAfterEffect(item->item_no, &effect)) return 0;
+    int possible = 0;
+    int applied = 0;
+    int se = -1;
+    CScene *scene = GetMainScene();
+    CUserDataManager *user = GetUserDataMan();
+    if (scene == NULL || user == NULL) return 0;
+    MenuUsedItemType = effect.use_flags;
+    MenuUsedItemNo = item->item_no;
+    MenuUsedNotErrorCode = 0;
+    bool can_heal = !(scene->battle_area.pause_flag & 4);
+    int party = user->GetNowPartyMember();
+
+    if (target->type == ITEM_USE_TARGET_MONSTER) {
+        if (can_heal) {
+            user->GetMonsterBajjiDataPtrMosId(user->monster_id);
+            CHARA_DATA *chara = user->GetCharaDataPtr(1);
+            if ((effect.use_flags & 0x100) && chara != NULL && chara->hp.now < chara->hp.max) {
+                ++possible;
+                if (use) {
+                    chara->hp.AddPoint((float)effect.value[applied++]);
+                    se = 10;
+                }
+            }
+        }
+    } else if (target->type == ITEM_USE_TARGET_ROBO) {
+        if (effect.target_flags & 8) {
+            ROBO_DATA *robo = (ROBO_DATA *)target->target.data;
+            if (MenuUsedItemNo == 0x17D) {
+                if (user->robo_data.AddPoint(0.0f) < 1.0f && can_heal) {
+                    ++possible;
+                    if (use) { user->robo_data.AddPoint(150.0f); ++applied; se = 9; }
+                }
+            } else if (can_heal && (effect.use_flags & 0x400) && robo->hp.now < robo->hp.max) {
+                ++possible;
+                if (use) { robo->hp.now = robo->hp.max; ++applied; se = 10; }
+            }
+        }
+    } else if (target->type == ITEM_USE_TARGET_ITEM) {
+        CGameDataUsed *dest = target->target.item;
+        if (dest != NULL && dest->item_no > 0 && (effect.target_flags & 0x20)) {
+            if (MenuUsedItemNo == 0x127) {
+                if (dest->used_type == 3 && !dest->IsLevelUp() && dest->IsFishingRod() != 1) {
+                    ++possible;
+                    if (use) { dest->LevelUp(); ++applied; se = 0x1E; }
+                }
+            } else if (MenuUsedItemNo == 0x1A7) {
+                se = CheckRoboShieldKit(user, dest, use, &possible, &applied);
+            } else if (MenuUsedItemNo == 0x17D) {
+                if (dest == &user->robo_data.parts[2] && user->robo_data.AddPoint(0.0f) < 1.0f && can_heal) {
+                    ++possible;
+                    if (use) { user->robo_data.AddPoint(150.0f); ++applied; se = 9; }
+                }
+            } else {
+                if ((effect.use_flags & 0x400) && dest->IsRepair() && dest->IsEnableUseRepair(MenuUsedItemNo)) {
+                    ++possible;
+                    if (use) {
+                        int amount = dest->item_type == 0xD ? (int)(dest->data.robopart.gage1.max / 2.0f) : 999;
+                        dest->Repair(amount);
+                        ++applied;
+                        se = 9;
+                    }
+                }
+                if ((effect.use_flags & 0x1000) && dest->data.robopart.gage1.now < dest->data.robopart.gage1.max) {
+                    ++possible;
+                    if (use) { dest->data.robopart.gage1.now = dest->data.robopart.gage1.max; ++applied; se = 10; }
+                }
+            }
+        }
+    } else if (target->type == ITEM_USE_TARGET_CHARA) {
+        if ((effect.target_flags & 0x16) != 0) {
+            CHARA_DATA *chara = (CHARA_DATA *)target->target.data;
+            COMMON_GAGE *hp = &chara->hp;
+            bool empty = hp->GetRate() <= 0.0f;
+            bool blocked = (chara->status_attr & 0x40) && (effect.status_flags & 0x10);
+            if (!empty || !(effect.status_flags & 0x10)) {
+                if (!blocked) {
+                    if (((MenuUsedItemNo == 0x184 && chara->equip[0].item_type == 1) ||
+                         (MenuUsedItemNo == 0x185 && chara->equip[0].item_type == 3)) && (u16)chara->defence < 0x80) {
+                        ++possible;
+                        if (use) { chara->defence += 4; if ((u16)chara->defence > 0x80) chara->defence = 0x80; ++applied; se = 10; }
+                    }
+                    if (MenuUsedItemNo == 0x128 && hp->max < 255.0f) {
+                        ++possible;
+                        if (use) { hp->max += 8.0f; if (hp->max > 255.0f) hp->max = 255.0f; ++applied; se = 10; }
+                    }
+                }
+                if (can_heal) {
+                    if (MenuUsedItemNo == 0x111) {
+                        if (empty) {
+                            ++possible;
+                            if (use) { hp->SetFillRate(1.0f); chara->status_attr = 0; scene->battle_area.unk_98 |= 0x80; ++applied; se = 10; }
+                        }
+                    } else if (!blocked || item->item_no == 0x110) {
+                        CHARA_DATA *max = user->GetCharaDataPtr(0);
+                        CHARA_DATA *monica = user->GetCharaDataPtr(1);
+                        user->GetMonsterBajjiDataPtrMosId(user->monster_id);
+                        if (MenuUsedItemNo == 0x10F) {
+                            if ((!max->hp.CheckFill() && max->hp.GetRate() > 0.0f) ||
+                                ((party & 2) && !monica->hp.CheckFill() && monica->hp.GetRate() > 0.0f)) {
+                                ++possible;
+                                if (use) {
+                                    if (max->hp.GetRate() > 0.0f) max->hp.SetFillRate(1.0f);
+                                    if (monica->hp.GetRate() > 0.0f) monica->hp.SetFillRate(1.0f);
+                                    scene->battle_area.unk_98 |= 0x80; ++applied; se = 10;
+                                }
+                            }
+                        } else if (MenuUsedItemNo == 0x1AA) {
+                            if (!empty && hp->GetRate() < 1.0f) {
+                                ++possible;
+                                if (use) { hp->AddPoint((float)item->data.weapon.attribute[1]); scene->battle_area.unk_98 |= 0x80; ++applied; se = 10; }
+                            }
+                        } else if (MenuUsedItemNo != 0x124 || (!empty && hp->now < hp->max)) {
+                            if ((effect.use_flags & 0x100) && !empty && hp->now < hp->max) {
+                                ++possible;
+                                if (use) { hp->AddPoint((float)effect.value[applied++]); scene->battle_area.unk_98 |= 0x80; se = 10; }
+                            }
+                            int add = 0, cure = 0;
+                            ConvertItemAttrToCharaAttr(effect.use_flags, &add, &cure);
+                            if ((add || cure) && GetNowLoopNo() != 1) {
+                                bool available = false, changed = false, cured = false;
+                                for (int i = 0; i < 7; ++i) {
+                                    u32 bit = st_bittable_1654[i];
+                                    if (add && !(chara->status_attr & bit) && (u32)add == bit) {
+                                        available = true;
+                                        if (use) {
+                                            chara->status_attr |= add; changed = true;
+                                            if (bit & 0x10) chara->status_time[0] = 0x2EE;
+                                            if (bit & 2) chara->status_time[1] = 0x2EE;
+                                            if (bit & 8) chara->status_time[2] = 0x2EE;
+                                            if (bit & 0x20) chara->status_time[2] = 0x2EE;
+                                        }
+                                    }
+                                }
+                                for (int i = 0; i < 7; ++i) {
+                                    u32 bit = st_bittable_1654[i];
+                                    if (cure && (chara->status_attr & bit) && (cure & bit)) {
+                                        available = true;
+                                        if (use) { chara->status_attr &= ~cure; changed = true; cured = true; }
+                                    }
+                                }
+                                if (cured) se = 10;
+                                if (available) ++possible;
+                                if (use && changed) {
+                                    scene->battle_area.unk_98 |= 0x80;
+                                    if (se < 0) sndSePlay(scene->se_base_id, 0x56, 0);
+                                    ++applied;
+                                }
+                            }
+                        }
+                    } else {
+                        MenuUsedNotErrorCode = 1;
+                    }
+                }
+            }
+        }
+    }
+    if (applied) { item->DeleteNum(1); MenuSePlay(se); }
+    return use ? (use == 1 ? applied : 0) : possible;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MenuUseItemCheckFunc__FP13CGameDataUsedP14CItemUseTargeti);
+#endif
 int CMenuItemUse::CheckItemUseEnable(CGameDataUsed *item, int kind, void *ptr) {
     int target_data[2];
     if (item == NULL || ptr == NULL) {

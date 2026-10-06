@@ -1814,7 +1814,7 @@ void MenuReloadCLUT(int no);
  * @address 0x223FF0
  * @size 0x20
  */
-void DrawMenuFillBox(int r, int g, int b, int a);
+void DrawMenuFillBox(int alpha, int red, int green, int blue);
 
 /**
  *
@@ -1824,7 +1824,7 @@ void DrawMenuFillBox(int r, int g, int b, int a);
  * @address 0x224010
  * @size 0xF0
  */
-void DrawMenuFillBox(float x, float y, float w, float h, int r, int g, int b, int a);
+void DrawMenuFillBox(float x, float y, float w, float h, int alpha, int red, int green, int blue);
 
 /**
  *
@@ -1834,7 +1834,7 @@ void DrawMenuFillBox(float x, float y, float w, float h, int r, int g, int b, in
  * @address 0x224100
  * @size 0xF0
  */
-void DrawMenuFillBox(mgCDrawPrim *prim, float x, float y, float w, float h, int r, int g, int b, int a);
+void DrawMenuFillBox(mgCDrawPrim *prim, float x, float y, float w, float h, int alpha, int red, int green, int blue);
 
 /**
  *

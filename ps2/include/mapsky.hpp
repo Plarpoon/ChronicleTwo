@@ -14,9 +14,11 @@ class mgCVisualMDT;
 class mgCMemory;
 
 /**
+ *
  * Holds what a sky pack's configuration script (info.cfg) names: for each
  * of the four time bands a texture pack and the sky, back sky and sun
  * models, plus the background model and the frames that turn by themselves.
+ *
  */
 struct MAP_SKY_INFO {
     char  img_name[4][32];        /**< Texture pack of each time band, from the SKY_IMG tag. */
@@ -36,9 +38,11 @@ struct MAP_SKY_INFO {
 STATIC_ASSERT(sizeof(MAP_SKY_INFO) == 0x740);
 
 /**
+ *
  * Draws the sky around the camera: a background model, then for each
  * time band whose lighting is in use a back sky, a sun or moon and a sky,
  * each with its own texture pack and slowly turning about the vertical axis.
+ *
  */
 class CMapSky {
 public:

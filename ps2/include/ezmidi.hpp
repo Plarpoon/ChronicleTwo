@@ -8,8 +8,10 @@
  */
 
 /**
+ *
  * Bits of an EZMIDI command word that change how its argument and response
  * are exchanged with the IOP server.
+ *
  */
 enum EzMidiCommandFlag {
     EZMIDI_ARGUMENT_BLOCK = 0x1000, /**< The argument is the EE address of a 64-byte block sent in place of the argument word. */

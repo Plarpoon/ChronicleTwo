@@ -18,9 +18,14 @@ const int parts_list_max = 0x200;
 
 extern float at_964__4[4];
 extern float at_1297__4[4];
+/**
+ *
+ * Four house information identifiers stored as a quadword.
+ *
+ */
 union HouseInfoIds {
-    int id[4];
-    u_long128 qw;
+    int id[4]; /**< House information identifiers. */
+    u_long128 qw; /**< The same identifiers as one quadword. */
 };
 
 extern "C" HouseInfoIds at_913__6;

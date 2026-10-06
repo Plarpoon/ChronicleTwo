@@ -17,7 +17,7 @@
 #include <cmath>
 
 void ParaBlend(float *out, float t, float (*points)[4], int count);
-extern "C" void BindPosition__FPfPfff__2(float *point0, float *point1, float length, float rate);
+static void BindPosition(float *point0, float *point1, float length, float rate);
 
 extern "C" void __ct__11mgCDrawPrimFv(void *prim);
 
@@ -27,8 +27,22 @@ const int kRodTipIndex = 48;
 const int kRodNearTipIndex = 36;
 const int kSaoWeaponFrameIndex = 7;
 
-struct TriAxis { int v[3]; };
-struct Matrix4 { float m[4][4]; };
+/**
+ *
+ * Three integer axis values used by the fishing line.
+ *
+ */
+struct TriAxis {
+    int v[3]; /**< Axis values. */
+};
+/**
+ *
+ * Four by four transform matrix used by fishing objects.
+ *
+ */
+struct Matrix4 {
+    float m[4][4]; /**< Matrix rows. */
+};
 
 extern FISH_POINT LinePoint[64];
 extern FISH_POINT FlyingPoint;
@@ -270,7 +284,31 @@ void InitRodPoint(mgCFrame *reference, mgCFrame *rod) {
     ShowHari = 1;
 }
 static void GetTriPose(sceVu0FMATRIX pose, sceVu0FVECTOR points[3], int axes[3]);
+#ifdef NONMATCHING
+static void GetTriPose(sceVu0FMATRIX pose, sceVu0FVECTOR points[3], int axes[3]) {
+    sceVu0FVECTOR vertices[3];
+    memcpy(vertices, points, sizeof(vertices));
+
+    int first = fptosi((float)(axes[0] < 0 ? -axes[0] : axes[0]));
+    int second = fptosi((float)(axes[1] < 0 ? -axes[1] : axes[1]));
+    int third = fptosi((float)(axes[2] < 0 ? -axes[2] : axes[2]));
+
+    sceVu0SubVector(pose[first], vertices[1], vertices[0]);
+    sceVu0Normalize(pose[first], pose[first]);
+    mgPlaneNormal(pose[third], vertices[0], vertices[1], vertices[2]);
+    sceVu0Normalize(pose[third], pose[third]);
+    sceVu0OuterProduct(pose[second], pose[third], pose[first]);
+    sceVu0Normalize(pose[0], pose[0]);
+    sceVu0Normalize(pose[1], pose[1]);
+    sceVu0Normalize(pose[2], pose[2]);
+
+    if (axes[0] < 0) sceVu0ScaleVector(pose[first], pose[first], -1.0f);
+    if (axes[1] < 0) sceVu0ScaleVector(pose[second], pose[second], -1.0f);
+    if (axes[2] < 0) sceVu0ScaleVector(pose[third], pose[third], -1.0f);
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", GetTriPose__FPA4_fPA4_fPi);
+#endif
 void GetHariPos(float *pos, float *old_pos) {
     *(u_long128 *)pos = *(u_long128 *)LinePoint[kLinePointNum - 1].pos;
     *(u_long128 *)old_pos = *(u_long128 *)LinePoint[kLinePointNum - 1].old_pos;
@@ -287,9 +325,9 @@ void SetShowHari(int value) {
 }
 int GetShowHari(void) {
     float pos[4];
-    float velo[4];
+    float old_pos[4];
 
-    GetHariPos(pos, velo);
+    GetHariPos(pos, old_pos);
     float limit = GetWaterLevel();
     limit -= 3.0f;
     if (pos[1] < limit) {
@@ -584,7 +622,7 @@ static void BindFishObj() {
             if (i >= 59) rate = 0.52f;
             float length = 5.0f;
             if (i == LineTop) length = LineTopDist;
-            BindPosition__FPfPfff__2(LinePoint[i].pos, LinePoint[i + 1].pos, length, rate);
+            BindPosition(LinePoint[i].pos, LinePoint[i + 1].pos, length, rate);
         }
         if (CastingLureFlag != 0) {
             *(u_long128 *)LinePoint[63].pos = *(u_long128 *)FlyingPoint.pos;
@@ -592,11 +630,11 @@ static void BindFishObj() {
         if (LureLessFlag == 0) {
             float length_value = 0.0f;
             const float &length = length_value;
-            BindPosition__FPfPfff__2(LinePoint[63].pos, hari->point[0].pos, length, 0.45f);
+            BindPosition(LinePoint[63].pos, hari->point[0].pos, length, 0.45f);
         }
         hari->BindStep();
         if (uki != 0) {
-            BindPosition__FPfPfff__2(LinePoint[60].pos, uki->point[0].pos, 0.0f, 0.4f);
+            BindPosition(LinePoint[60].pos, uki->point[0].pos, 0.0f, 0.4f);
             uki->BindStep();
         }
         top = &LinePoint[LineTop];
@@ -684,9 +722,9 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
     // Keep the rod's four moving masses spaced between its fixed joints and tip.
     for (int pass = 0; pass < 2; pass++) {
         if (BattleFlag != 0) {
-            BindPosition__FPfPfff__2((RodPoint + kRodTipIndex), FishPoint.pos, BattleLineDist, 0.2f);
+            BindPosition((RodPoint + kRodTipIndex), FishPoint.pos, BattleLineDist, 0.2f);
         } else {
-            BindPosition__FPfPfff__2((RodPoint + kRodTipIndex), LinePoint[LineTop].pos, 0.0f, 0.8f);
+            BindPosition((RodPoint + kRodTipIndex), LinePoint[LineTop].pos, 0.0f, 0.8f);
         }
         for (int i = 3; i >= 2; i--) {
             sceVu0FVECTOR across;
@@ -890,18 +928,18 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", RodStep__FP6CSceneP1);
 #endif
-extern "C" void BindPosition__FPfPfff__2(float *a, float *b, float length, float rate) {
+static void BindPosition(float *point0, float *point1, float length, float rate) {
     float delta[4];
     float move_a[4];
     float move_b[4];
 
-    sceVu0SubVector(delta, a, b);
+    sceVu0SubVector(delta, point0, point1);
     float dist = mgDistVector(delta);
     float excess = dist - length;
     sceVu0ScaleVector(move_a, delta, ((1.0f - rate) * excess) / dist);
     sceVu0ScaleVector(move_b, delta, (rate * excess) / dist);
-    mgSubVector(a, move_a);
-    mgAddVector(b, move_b);
+    mgSubVector(point0, move_a);
+    mgAddVector(point1, move_b);
 }
 void DrawFishingLine(void) {
     float start[4];
@@ -1298,7 +1336,7 @@ void CFishObj::FloatPoint(float level) {
 void CFishObj::BindStep() {
     for (int i = 0; i < bind_num; i++) {
         FISH_BIND *constraint = &bind[i];
-        BindPosition__FPfPfff__2(constraint->point0->pos, constraint->point1->pos, constraint->length, constraint->rate);
+        BindPosition(constraint->point0->pos, constraint->point1->pos, constraint->length, constraint->rate);
     }
 }
 void CFishObj::Correct(CCPoly *poly, int poly_num, float damping) {

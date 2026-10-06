@@ -15,7 +15,9 @@ class mgCMemory;
 struct USER_PICTURE_INFO;
 
 /**
+ *
  * Steps of the camera mode, as TakePhotoMode holds them.
+ *
  */
 // clang-format off
 enum TakePhotoState {
@@ -29,7 +31,9 @@ enum TakePhotoState {
 // clang-format on
 
 /**
+ *
  * Messages of the camera mode, indexing the per-language message table.
+ *
  */
 // clang-format off
 enum PhotoMessage {

@@ -42,12 +42,22 @@ extern int (*ext_func__3[256])(RS_STACKDATA *, int);
 extern float at_1181__3[4];
 extern float at_1417__3[4];
 extern int at_1597__2[4];
+/**
+ *
+ * Names of cannon objects selected by the action script.
+ *
+ */
 struct CanonObjectNames {
-    char *name[4][2];
+    char *name[4][2]; /**< Names grouped by cannon variant. */
 };
 extern CanonObjectNames at_1645__2;
+/**
+ *
+ * RGB colours used by the action script's rings.
+ *
+ */
 struct RingColors {
-    int rgb[4][3];
+    int rgb[4][3]; /**< Red, green and blue components of each ring colour. */
 };
 extern RingColors at_1774;
 extern RS_EXTFUNC_INFO ext_func_info__3[];
@@ -84,14 +94,34 @@ extern char at_1729__2[];
 extern char at_1730__2[];
 extern char at_2004__4[];
 extern char at_2005__3[];
-struct AccumeSlot { mgCFrame *effect; char pad_4[0x28C]; int clear[32]; int mode; int unk_314; int unk_318; float scale; int unk_320; int unk_324; };
+/**
+ *
+ * Accumulation effect state accessed by action script commands.
+ *
+ */
+struct AccumeSlot {
+    mgCFrame *effect; /**< Effect frame. */
+    char unk_4[0x28C];
+    int clear[32];
+    int mode; /**< Effect mode. */
+    int unk_314;
+    int unk_318;
+    float scale; /**< Effect scale. */
+    int unk_320;
+    int unk_324;
+};
 extern "C" int fptosi(float);
 extern "C" int fptoui(float);
 void ParabolicInitialVector(float *result, float *from, float *to, float gravity, float flight_time);
 
+/**
+ *
+ * Action script vector viewed as floats or one quadword.
+ *
+ */
 union ScriptVector {
-    float value[4];
-    u_long128 quadword;
+    float value[4]; /**< Floating point components. */
+    u_long128 quadword; /**< The same components as one quadword. */
 };
 
 extern "C" void RemoveThrowItem__12CActionCharaFv(void *chara);
@@ -99,40 +129,30 @@ extern "C" int GetModelNo__13CGameDataUsedFv(void *data);
 
 // Code (.text)
 
-extern "C" {
-static int GetStackInt__FP12RS_STACKDATA__3(RS_STACKDATA *slot) {
+static int GetStackInt(RS_STACKDATA *slot) {
     if (slot->type == 1) {
         return (int)slot->f;
     }
     return slot->i;
 }
-}
-extern "C" {
-static float GetStackFloat__FP12RS_STACKDATA__3(RS_STACKDATA *slot) {
+static float GetStackFloat(RS_STACKDATA *slot) {
     if (slot->type == 0) {
         return (float)slot->i;
     }
     return *(float *)&slot->i;
 }
-}
-extern "C" {
-static char *GetStackString__FP12RS_STACKDATA__3(RS_STACKDATA *slot) {
+static char *GetStackString(RS_STACKDATA *slot) {
     return (char *)slot->i;
 }
-}
-extern "C" {
-static void SetStack__FP12RS_STACKDATAi__3(RS_STACKDATA *slot, int value) {
+static void SetStack(RS_STACKDATA *slot, int value) {
     if (slot->type == 3) {
         ((RS_STACKDATA *)slot->i)->i = value;
     }
 }
-}
-extern "C" {
-static void SetStack__FP12RS_STACKDATAf__3(RS_STACKDATA *slot, float value) {
+static void SetStack(RS_STACKDATA *slot, float value) {
     if (slot->type == 3) {
         *(float *)&((RS_STACKDATA *)slot->i)->i = value;
     }
-}
 }
 int _INIT_SCRIPT(RS_STACKDATA *stack, int argc) {
     action_info.chara->ResetScript();
@@ -142,35 +162,35 @@ int _PROG_SET(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
     }
-    action_info.chara->prog = GetStackInt__FP12RS_STACKDATA__3(stack);
+    action_info.chara->prog = GetStackInt(stack);
     return 1;
 }
 int _PROG_GET(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
     }
-    SetStack__FP12RS_STACKDATAi__3(stack, action_info.chara->prog);
+    SetStack(stack, action_info.chara->prog);
     return 1;
 }
 int _GET_ATTK_TYPE(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
     }
-    SetStack__FP12RS_STACKDATAi__3(stack, action_info.chara->attack_type);
+    SetStack(stack, action_info.chara->attack_type);
     return 1;
 }
 int _GET_MOVE_TYPE(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
     }
-    SetStack__FP12RS_STACKDATAi__3(stack, action_info.chara->move_type);
+    SetStack(stack, action_info.chara->move_type);
     return 1;
 }
 int _SET_MOVE_SPEED(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
     }
-    float speed = GetStackFloat__FP12RS_STACKDATA__3(stack);
+    float speed = GetStackFloat(stack);
     if (speed <= 0.0f) {
         speed = 3.0f;
     }
@@ -181,14 +201,14 @@ int _SET_PALLET(RS_STACKDATA *stack, int argc) {
     if (argc < 5 || argc > 6) {
         return 0;
     }
-    int red = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    int green = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    int blue = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    int pulses = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    int duration = GetStackInt__FP12RS_STACKDATA__3(stack++);
+    int red = GetStackInt(stack++);
+    int green = GetStackInt(stack++);
+    int blue = GetStackInt(stack++);
+    int pulses = GetStackInt(stack++);
+    int duration = GetStackInt(stack++);
     int repeats = 0;
     if (argc == 6) {
-        repeats = GetStackInt__FP12RS_STACKDATA__3(stack);
+        repeats = GetStackInt(stack);
     }
     action_info.chara->pallet[0].SetAnim(red, green, blue, pulses, duration, repeats);
     return 1;
@@ -197,24 +217,24 @@ int _CHECK_EQUIP(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
     }
-    int slot = GetStackInt__FP12RS_STACKDATA__3(stack++);
+    int slot = GetStackInt(stack++);
     CGameDataUsed *equip = DngUserData->GetCharaDataPtr(action_info.chara->chara_type)->equip;
-    SetStack__FP12RS_STACKDATAi__3(stack, equip[slot].item_no);
+    SetStack(stack, equip[slot].item_no);
     return 1;
 }
-extern "C" int _CAMERA_QUAKE__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
+static int _CAMERA_QUAKE(RS_STACKDATA *stack, int argc) {
     DNG_BATTLE_AREA *area = &nowScene__2->battle_area;
     if (area == NULL) {
         return 0;
     }
-    float power = GetStackFloat__FP12RS_STACKDATA__3(stack++);
-    int duration = GetStackInt__FP12RS_STACKDATA__3(stack);
+    float power = GetStackFloat(stack++);
+    int duration = GetStackInt(stack);
     area->quake_power = power;
     area->quake_step = area->quake_power / (float)duration;
     area->quake_count = duration;
     return 1;
 }
-extern "C" int _CHECK_PAUSE__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
+static int _CHECK_PAUSE(RS_STACKDATA *stack, int argc) {
     DNG_BATTLE_AREA *pause;
 
     if (argc != 2) {
@@ -224,7 +244,7 @@ extern "C" int _CHECK_PAUSE__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc)
     if (pause == NULL) {
         return 0;
     }
-    SetStack__FP12RS_STACKDATAi__3(stack, pause->pause_flag & GetStackInt__FP12RS_STACKDATA__3(stack++));
+    SetStack(stack, static_cast<int>(pause->pause_flag & GetStackInt(stack++)));
     return 1;
 }
 int _GET_STATUS_ATTR(RS_STACKDATA *stack, int argc) {
@@ -232,15 +252,15 @@ int _GET_STATUS_ATTR(RS_STACKDATA *stack, int argc) {
         return 0;
     }
     int attributes = GetBattleCharaInfo()->GetAttr();
-    SetStack__FP12RS_STACKDATAi__3(stack, attributes);
+    SetStack(stack, attributes);
     return 1;
 }
 int _SE_PLAY(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
     }
-    int requested_bank = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    int sound = GetStackInt__FP12RS_STACKDATA__3(stack);
+    int requested_bank = GetStackInt(stack++);
+    int sound = GetStackInt(stack);
     int bank = -1;
     if (requested_bank == -1) {
         bank = action_info.chara->sound_info.se_bank;
@@ -255,9 +275,9 @@ int _SE_LOOP_PLAY(RS_STACKDATA *stack, int argc) {
     if (argc != 3) {
         return 0;
     }
-    int requested_bank = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    int sound = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    int loop = GetStackInt__FP12RS_STACKDATA__3(stack);
+    int requested_bank = GetStackInt(stack++);
+    int sound = GetStackInt(stack++);
+    int loop = GetStackInt(stack);
     int bank = -1;
     if (requested_bank == -1) {
         bank = action_info.chara->sound_info.se_bank;
@@ -276,7 +296,7 @@ int _GET_SHOT_TYPE(RS_STACKDATA *stack, int argc) {
         return 0;
     }
     int attack_type = GetBattleCharaInfo()->equip[1].GetAttackType();
-    SetStack__FP12RS_STACKDATAi__3(stack, attack_type);
+    SetStack(stack, attack_type);
     return 1;
 }
 int _GET_MONS_ID(RS_STACKDATA *stack, int argc) {
@@ -287,7 +307,7 @@ int _GET_MONS_ID(RS_STACKDATA *stack, int argc) {
     if (DngUserData->GetActiveChrNo() == USER_CHARA_MONSTER) {
         monster_id = GetBattleCharaInfo()->GetMonsterID();
     }
-    SetStack__FP12RS_STACKDATAi__3(stack, monster_id);
+    SetStack(stack, monster_id);
 }
 int _GET_FRONT_VEC(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR front;
@@ -295,43 +315,43 @@ int _GET_FRONT_VEC(RS_STACKDATA *stack, int argc) {
         return 0;
     }
     sceVu0CopyVector(front, action_info.chara->front_vec);
-    SetStack__FP12RS_STACKDATAf__3(stack++, front[0]);
-    SetStack__FP12RS_STACKDATAf__3(stack++, front[1]);
-    SetStack__FP12RS_STACKDATAf__3(stack, front[2]);
+    SetStack(stack++, front[0]);
+    SetStack(stack++, front[1]);
+    SetStack(stack, front[2]);
 }
-extern "C" int _GET_PADON__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
+static int _GET_PADON(RS_STACKDATA *stack, int argc) {
     if (argc <= 0) {
         return 0;
     }
-    SetStack__FP12RS_STACKDATAi__3(stack, GamePad__2.GetPadOn());
+    SetStack(stack, GamePad__2.GetPadOn());
     return 1;
 }
-extern "C" int _GET_PADDOWN__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
+static int _GET_PADDOWN(RS_STACKDATA *stack, int argc) {
     if (argc <= 0) {
         return 0;
     }
-    SetStack__FP12RS_STACKDATAi__3(stack, GamePad__2.GetPadDown());
+    SetStack(stack, GamePad__2.GetPadDown());
     return 1;
 }
-extern "C" int _GET_PADUP__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
+static int _GET_PADUP(RS_STACKDATA *stack, int argc) {
     if (argc <= 0) {
         return 0;
     }
-    SetStack__FP12RS_STACKDATAi__3(stack, GamePad__2.GetPadUp());
+    SetStack(stack, GamePad__2.GetPadUp());
     return 1;
 }
 int _GET_BTN(RS_STACKDATA *stack, int argc) {
     if (argc <= 0) {
         return 0;
     }
-    SetStack__FP12RS_STACKDATAi__3(stack, PadCtrl.Btn(GetStackInt__FP12RS_STACKDATA__3(stack++)));
+    SetStack(stack, PadCtrl.Btn(GetStackInt(stack++)));
     return 1;
 }
 int _GET_PAD_HISTORY(RS_STACKDATA *stack, int argc) {
     if (argc <= 0) {
         return 0;
     }
-    SetStack__FP12RS_STACKDATAi__3(stack, action_info.chara->pad_history);
+    SetStack(stack, static_cast<int>(action_info.chara->pad_history));
     return 1;
 }
 int _RESET_PAD_HISTORY(RS_STACKDATA *stack, int argc) {
@@ -339,7 +359,7 @@ int _RESET_PAD_HISTORY(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 int _GET_ACUMU_PAD(RS_STACKDATA *stack, int argc) {
-    SetStack__FP12RS_STACKDATAi__3(stack, action_info.chara->acumu_pad);
+    SetStack(stack, action_info.chara->acumu_pad);
     return 1;
 }
 int _RESET_ACUMU_PAD(RS_STACKDATA *stack, int argc) {
@@ -372,12 +392,12 @@ int _RUN_HOLD_MOVE(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
     }
-    char *first = GetStackString__FP12RS_STACKDATA__3(stack++);
-    action_info.chara->HumanGunMoveIF(first, GetStackString__FP12RS_STACKDATA__3(stack));
+    char *first = GetStackString(stack++);
+    action_info.chara->HumanGunMoveIF(first, GetStackString(stack));
     return 1;
 }
 int _RUN_ROBO_MOVE(RS_STACKDATA *stack, int argc) {
-    int input = GetStackInt__FP12RS_STACKDATA__3(stack);
+    int input = GetStackInt(stack);
     switch (action_info.chara->move_type) {
         case 1:
         case 4:
@@ -400,29 +420,29 @@ int _RUN_ROBO_MOVE(RS_STACKDATA *stack, int argc) {
 int _SET_MENU_FLAG(RS_STACKDATA *stack, int argc) {
     if (argc != 1)
         return 0;
-    action_info.chara->menu_flag = (s8)GetStackInt__FP12RS_STACKDATA__3(stack);
+    action_info.chara->menu_flag = (s8)GetStackInt(stack);
     return 1;
 }
-extern "C" int _GET_POS__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
+static int _GET_POS(RS_STACKDATA *stack, int argc) {
     float pos[4];
     if (argc != 3) {
         return 0;
     }
     action_info.chara->GetPosition(pos);
-    SetStack__FP12RS_STACKDATAf__3(stack++, pos[0]);
-    SetStack__FP12RS_STACKDATAf__3(stack++, pos[1]);
-    SetStack__FP12RS_STACKDATAf__3(stack, pos[2]);
+    SetStack(stack++, pos[0]);
+    SetStack(stack++, pos[1]);
+    SetStack(stack, pos[2]);
     return 1;
 }
-extern "C" int _GET_ROT__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
+static int _GET_ROT(RS_STACKDATA *stack, int argc) {
     float rot[4];
     if (argc != 3) {
         return 0;
     }
     action_info.chara->GetRotation(rot);
-    SetStack__FP12RS_STACKDATAf__3(stack++, rot[0]);
-    SetStack__FP12RS_STACKDATAf__3(stack++, rot[1]);
-    SetStack__FP12RS_STACKDATAf__3(stack, rot[2]);
+    SetStack(stack++, rot[0]);
+    SetStack(stack++, rot[1]);
+    SetStack(stack, rot[2]);
     return 1;
 }
 int _CHECK_FRONT_KEY(RS_STACKDATA *stack, int argc) {
@@ -444,7 +464,7 @@ int _CHECK_FRONT_KEY(RS_STACKDATA *stack, int argc) {
     stick[1] = 0.0f;
     sceVu0Normalize(stick, stick);
     sceVu0Normalize(facing, facing);
-    SetStack__FP12RS_STACKDATAf__3(stack, sceVu0InnerProduct(facing, stick));
+    SetStack(stack, sceVu0InnerProduct(facing, stick));
     return 1;
 }
 int _CHECK_BACK_KEY(RS_STACKDATA *stack, int argc) {
@@ -453,7 +473,7 @@ int _CHECK_BACK_KEY(RS_STACKDATA *stack, int argc) {
         return 0;
     }
     if (action_info.chara->lock_on == 0) {
-        SetStack__FP12RS_STACKDATAi__3(stack, 0);
+        SetStack(stack, 0);
         return 1;
     }
     action_info.chara->GetRotation(rot);
@@ -467,10 +487,10 @@ int _CHECK_BACK_KEY(RS_STACKDATA *stack, int argc) {
         back += 6.2831855f;
     }
     if (x != 0.0f && z != 0.0f && mgAngleCmp(back, atan2f(x, z), 1.2566371f) == 0) {
-        SetStack__FP12RS_STACKDATAi__3(stack, 1);
+        SetStack(stack, 1);
         return 1;
     }
-    SetStack__FP12RS_STACKDATAi__3(stack, 0);
+    SetStack(stack, 0);
     return 1;
 }
 int _SET_BLOW_ANGLE(RS_STACKDATA *stack, int argc) {
@@ -489,12 +509,12 @@ int _SET_BLOW_MOVE(RS_STACKDATA *stack, int argc) {
     if (argc > 4) {
         return 0;
     }
-    action_info.chara->add_speed = GetStackFloat__FP12RS_STACKDATA__3(stack++);
-    action_info.chara->add_decel = GetStackFloat__FP12RS_STACKDATA__3(stack++);
-    action_info.chara->add_time = GetStackInt__FP12RS_STACKDATA__3(stack++);
+    action_info.chara->add_speed = GetStackFloat(stack++);
+    action_info.chara->add_decel = GetStackFloat(stack++);
+    action_info.chara->add_time = GetStackInt(stack++);
     float yaw = 0.0f;
     if (argc == 4) {
-        yaw = 0.017453292f * GetStackFloat__FP12RS_STACKDATA__3(stack);
+        yaw = 0.017453292f * GetStackFloat(stack);
     }
     action_info.chara->GetRotation(rot);
     yaw += rot[1];
@@ -511,32 +531,32 @@ int _SET_BLOW_MOVE(RS_STACKDATA *stack, int argc) {
     sceVu0CopyVector(action_info.chara->add_vec, dir);
     return 1;
 }
-extern "C" int _BLOW_START__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
+static int _BLOW_START(RS_STACKDATA *stack, int argc) {
     if (argc != 3) {
         return 0;
     }
-    action_info.chara->blow_speed = GetStackFloat__FP12RS_STACKDATA__3(stack++);
+    action_info.chara->blow_speed = GetStackFloat(stack++);
     action_info.chara->blow_speed =
         action_info.chara->blow_speed * action_info.chara->blow_rate;
-    action_info.chara->blow_decel = GetStackFloat__FP12RS_STACKDATA__3(stack++);
-    action_info.chara->blow_time = GetStackInt__FP12RS_STACKDATA__3(stack);
+    action_info.chara->blow_decel = GetStackFloat(stack++);
+    action_info.chara->blow_time = GetStackInt(stack);
     return 1;
 }
-extern "C" int _SET_DMG2__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
+static int _SET_DMG2(RS_STACKDATA *stack, int argc) {
     if (argc < 8 || argc > 9) {
         return 0;
     }
-    char *first = GetStackString__FP12RS_STACKDATA__3(stack++);
-    char *second = GetStackString__FP12RS_STACKDATA__3(stack++);
-    char *attack = GetStackString__FP12RS_STACKDATA__3(stack++);
-    float damage = 2.0f * GetStackFloat__FP12RS_STACKDATA__3(stack++);
-    float rate = GetStackFloat__FP12RS_STACKDATA__3(stack++);
-    char *hitEffect = GetStackString__FP12RS_STACKDATA__3(stack++);
-    float knockback = GetStackFloat__FP12RS_STACKDATA__3(stack++);
-    float lift = GetStackFloat__FP12RS_STACKDATA__3(stack++);
+    char *first = GetStackString(stack++);
+    char *second = GetStackString(stack++);
+    char *attack = GetStackString(stack++);
+    float damage = 2.0f * GetStackFloat(stack++);
+    float rate = GetStackFloat(stack++);
+    char *hitEffect = GetStackString(stack++);
+    float knockback = GetStackFloat(stack++);
+    float lift = GetStackFloat(stack++);
     char *extra = NULL;
     if (argc == 9) {
-        extra = GetStackString__FP12RS_STACKDATA__3(stack);
+        extra = GetStackString(stack);
     }
     LastCInfo2__2 = (ACTION_DAMAGE *)action_info.chara->EntryDamage2(
         first, second, attack, damage, hitEffect, knockback, lift, extra);
@@ -547,26 +567,26 @@ extern "C" int _SET_DMG2__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
     LastCInfo2__2->power_rate = rate;
     return 1;
 }
-extern "C" int _SET_OBJ__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
+static int _SET_OBJ(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
     }
-    int number = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    char *name = GetStackString__FP12RS_STACKDATA__3(stack);
+    int number = GetStackInt(stack++);
+    char *name = GetStackString(stack);
     if (action_info.chara->EntryObject(name, number) == 0) {
         printf(at_1211, name);
         return 0;
     }
     return 1;
 }
-extern "C" int _SET_BODY__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
+static int _SET_BODY(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
     }
-    int number = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    return action_info.chara->EntryBodyCol(number, 2.0f * GetStackFloat__FP12RS_STACKDATA__3(stack)) != 0;
+    int number = GetStackInt(stack++);
+    return action_info.chara->EntryBodyCol(number, 2.0f * GetStackFloat(stack)) != 0;
 }
-extern "C" int _SW_EFFECT__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
+static int _SW_EFFECT(RS_STACKDATA *stack, int argc) {
     if (argc < 9 || argc > 10) {
         return 0;
     }
@@ -574,24 +594,24 @@ extern "C" int _SW_EFFECT__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
     if (effect == NULL) {
         return 0;
     }
-    int slot = GetStackInt__FP12RS_STACKDATA__3(stack++);
+    int slot = GetStackInt(stack++);
     if (slot < 0 || slot > 2) {
         return 0;
     }
     if (action_info.chara->sword_effect[slot] == NULL) {
         return 0;
     }
-    char *name = GetStackString__FP12RS_STACKDATA__3(stack++);
-    float start = GetStackFloat__FP12RS_STACKDATA__3(stack++);
-    float end = GetStackFloat__FP12RS_STACKDATA__3(stack++);
-    char *first = GetStackString__FP12RS_STACKDATA__3(stack++);
-    char *second = GetStackString__FP12RS_STACKDATA__3(stack++);
-    int flag_a = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    int flag_b = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    int flag_c = GetStackInt__FP12RS_STACKDATA__3(stack++);
+    char *name = GetStackString(stack++);
+    float start = GetStackFloat(stack++);
+    float end = GetStackFloat(stack++);
+    char *first = GetStackString(stack++);
+    char *second = GetStackString(stack++);
+    int flag_a = GetStackInt(stack++);
+    int flag_b = GetStackInt(stack++);
+    int flag_c = GetStackInt(stack++);
     char *extra = NULL;
     if (argc == 10) {
-        extra = GetStackString__FP12RS_STACKDATA__3(stack);
+        extra = GetStackString(stack);
     }
     effect->sword_no = slot;
     effect->motion = name;
@@ -608,13 +628,13 @@ extern "C" int _SW_EFFECT__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 int _SET_SND(RS_STACKDATA *stack, int argc) {
-    int sound_id = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    char *motion = GetStackString__FP12RS_STACKDATA__3(stack++);
-    float start_time = GetStackFloat__FP12RS_STACKDATA__3(stack++);
-    float end_time = GetStackFloat__FP12RS_STACKDATA__3(stack++);
+    int sound_id = GetStackInt(stack++);
+    char *motion = GetStackString(stack++);
+    float start_time = GetStackFloat(stack++);
+    float end_time = GetStackFloat(stack++);
     char *wait = NULL;
     if (argc > 4) {
-        wait = GetStackString__FP12RS_STACKDATA__3(stack);
+        wait = GetStackString(stack);
     }
     for (int i = 0; i < 10; i++) {
         if (action_info.chara->sound[i].se_no == -1) {
@@ -637,8 +657,8 @@ int _SET_ACCUME_FX(RS_STACKDATA *stack, int argc) {
     if (action_info.chara->accume_effect == NULL) {
         return 0;
     }
-    int index = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    int effect_no = GetStackInt__FP12RS_STACKDATA__3(stack);
+    int index = GetStackInt(stack++);
+    int effect_no = GetStackInt(stack);
     mgCFrame *effect = action_info.chara->object[index].frame;
     if (effect == 0) {
         return 0;
@@ -655,7 +675,7 @@ int _SET_ACCUME_FLAG(RS_STACKDATA *stack, int argc) {
     if (action_info.chara->accume_effect == NULL) {
         return 0;
     }
-    int mode = GetStackInt__FP12RS_STACKDATA__3(stack);
+    int mode = GetStackInt(stack);
     switch (mode) {
         case 1: {
             int i;
@@ -702,22 +722,22 @@ int _GET_MONSTER_NOWSTS(RS_STACKDATA *stack, int argc) {
             status = monster->now_status;
         }
     }
-    SetStack__FP12RS_STACKDATAi__3(stack, status);
+    SetStack(stack, status);
     return 1;
 }
 int _SET_MURDEROUS(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
     }
-    action_info.chara->murderous = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    action_info.chara->murderous_time = GetStackInt__FP12RS_STACKDATA__3(stack);
+    action_info.chara->murderous = GetStackInt(stack++);
+    action_info.chara->murderous_time = GetStackInt(stack);
     return 1;
 }
 int _GET_TRG_DISTANCE(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
     }
-    SetStack__FP12RS_STACKDATAf__3(stack, action_info.chara->GetTargetDist(nowScene__2));
+    SetStack(stack, action_info.chara->GetTargetDist(nowScene__2));
     return 1;
 }
 
@@ -729,8 +749,8 @@ int _SET_TRG_ANGLE(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
     }
-    radius = GetStackFloat__FP12RS_STACKDATA__3(stack++);
-    rotation_divisor = GetStackFloat__FP12RS_STACKDATA__3(stack);
+    radius = GetStackFloat(stack++);
+    rotation_divisor = GetStackFloat(stack);
     int target_no = action_info.chara->target_no;
     if (target_no == -1) {
         return 1;
@@ -755,21 +775,21 @@ int _SET_GUARD_FLAG(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
     }
-    action_info.chara->guard_flag = GetStackInt__FP12RS_STACKDATA__3(stack);
+    action_info.chara->guard_flag = GetStackInt(stack);
     return 1;
 }
-extern "C" int _SET_MUTEKI__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
+static int _SET_MUTEKI(RS_STACKDATA *stack, int argc) {
     if (argc != 1)
         return 0;
-    action_info.chara->muteki_time = GetStackInt__FP12RS_STACKDATA__3(stack);
+    action_info.chara->muteki_time = GetStackInt(stack);
     return 1;
 }
 int _CHECK_HAND_OBJ(RS_STACKDATA *stack, int argc) {
-    SetStack__FP12RS_STACKDATAi__3(stack, action_info.chara->hold_type);
+    SetStack(stack, action_info.chara->hold_type);
     return 1;
 }
 int _SET_ITEM_USED(RS_STACKDATA *stack, int argc) {
-    SetStack__FP12RS_STACKDATAi__3(stack, action_info.chara->UsedItemAction());
+    SetStack(stack, action_info.chara->UsedItemAction());
     return 1;
 }
 int _THROW_HAND_OBJECT(RS_STACKDATA *stack, int argc) {
@@ -777,14 +797,14 @@ int _THROW_HAND_OBJECT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 int _CHECK_CATCH(RS_STACKDATA *stack, int argc) {
-    char *name = GetStackString__FP12RS_STACKDATA__3(stack++);
+    char *name = GetStackString(stack++);
     if (argc == 1) {
         action_info.chara->CheckEnemyCatch(name);
     }
     if (argc == 3) {
-        int target = GetStackInt__FP12RS_STACKDATA__3(stack++);
+        int target = GetStackInt(stack++);
         name = (char *)action_info.chara->CheckKeri(name, target);
-        SetStack__FP12RS_STACKDATAi__3(stack, (int)name);
+        SetStack(stack, (int)name);
     }
     return 1;
 }
@@ -796,7 +816,7 @@ int _RELEASE_OBJ(RS_STACKDATA *stack, int argc) {
     float offset[4];
     int throw_it = 0;
     if (argc == 1) {
-        throw_it = GetStackInt__FP12RS_STACKDATA__3(stack);
+        throw_it = GetStackInt(stack);
     }
     DNG_BATTLE_AREA *input;
     if (nowScene__2 != NULL && (input = &nowScene__2->battle_area) != NULL &&
@@ -1021,13 +1041,13 @@ int _SET_SHOT(RS_STACKDATA *stack, int argc) {
     if (argc < 4 || argc > 5) {
         return 0;
     }
-    int object_no = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    GetStackString__FP12RS_STACKDATA__3(stack++);
-    GetStackInt__FP12RS_STACKDATA__3(stack++);
-    int wait = GetStackInt__FP12RS_STACKDATA__3(stack++);
+    int object_no = GetStackInt(stack++);
+    GetStackString(stack++);
+    GetStackInt(stack++);
+    int wait = GetStackInt(stack++);
     float scale = 1.0f;
     if (argc == 5) {
-        scale = GetStackFloat__FP12RS_STACKDATA__3(stack);
+        scale = GetStackFloat(stack);
     }
     CBattleCharaInfo *info = GetBattleCharaInfo();
     int chara = info->chr_no;
@@ -1099,7 +1119,7 @@ int _SET_SPECIAL_SHOT(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
     }
-    char *objectName = GetStackString__FP12RS_STACKDATA__3(stack);
+    char *objectName = GetStackString(stack);
     CBattleCharaInfo *info = GetBattleCharaInfo();
     if (info->GetMagicSwordCounterNow() <= 0) {
         return 1;
@@ -1146,7 +1166,7 @@ int _SHOT(RS_STACKDATA *stack, int argc) {
     int whp;
 
     CBattleCharaInfo *info = GetBattleCharaInfo();
-    int left = GetStackInt__FP12RS_STACKDATA__3(stack);
+    int left = GetStackInt(stack);
     if (action_info.chara->shot_wait > 0) {
         return 1;
     }
@@ -1322,14 +1342,14 @@ int _GET_OBJECT_POS(RS_STACKDATA *stack, int argc) {
         return 0;
     }
     RS_STACKDATA *next = stack + 1;
-    mgCFrame *object = action_info.chara->SearchObject(GetStackString__FP12RS_STACKDATA__3(stack));
+    mgCFrame *object = action_info.chara->SearchObject(GetStackString(stack));
     if (object == 0) {
         return 0;
     }
     object->GetWorldPosition0(pos);
-    SetStack__FP12RS_STACKDATAf__3(next++, pos[0]);
-    SetStack__FP12RS_STACKDATAf__3(next++, pos[1]);
-    SetStack__FP12RS_STACKDATAf__3(next, pos[2]);
+    SetStack(next++, pos[0]);
+    SetStack(next++, pos[1]);
+    SetStack(next, pos[2]);
     return 1;
 }
 int _SET_DIR_GUN(RS_STACKDATA *stack, int argc) {
@@ -1344,7 +1364,7 @@ int _GET_NOW_HP_RATE(RS_STACKDATA *stack, int argc) {
     CBattleCharaInfo *info = GetBattleCharaInfo();
     int now_hp = info->GetNowHp_i();
     int rate = now_hp / info->GetMaxHp_i();
-    SetStack__FP12RS_STACKDATAf__3(stack, (float)rate);
+    SetStack(stack, (float)rate);
     return 1;
 }
 #pragma divbyzerocheck reset
@@ -1357,16 +1377,16 @@ int _GET_ACTION_CODE(RS_STACKDATA *stack, int argc) {
         return 0;
     }
     argc = GetModelNo__13CGameDataUsedFv(GetBattleCharaInfo()->GetEquipTablePtr(0));
-    SetStack__FP12RS_STACKDATAi__3(stack, argc);
+    SetStack(stack, argc);
     return 1;
 }
 int _GET_ATTK_POINT(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
     }
-    int index = GetStackInt__FP12RS_STACKDATA__3(stack++);
+    int index = GetStackInt(stack++);
     BATTLE_WEAPON_PARAM *slots = GetBattleCharaInfo()->weapon_param;
-    SetStack__FP12RS_STACKDATAi__3(stack, slots[index].status[0]);
+    SetStack(stack, slots[index].status[0]);
     return 1;
 }
 int _GET_RING_COLOR(RS_STACKDATA *stack, int argc) {
@@ -1382,12 +1402,12 @@ int _GET_RING_COLOR(RS_STACKDATA *stack, int argc) {
         return 0;
     }
     RingColors colors = at_1774;
-    SetStack__FP12RS_STACKDATAi__3(stack++, colors.rgb[type][0]);
-    SetStack__FP12RS_STACKDATAi__3(stack++, colors.rgb[type][1]);
-    SetStack__FP12RS_STACKDATAi__3(stack, colors.rgb[type][2]);
+    SetStack(stack++, colors.rgb[type][0]);
+    SetStack(stack++, colors.rgb[type][1]);
+    SetStack(stack, colors.rgb[type][2]);
     return 1;
 }
-extern "C" int _SET_MOS__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
+static int _SET_MOS(RS_STACKDATA *stack, int argc) {
     char *motion = NULL;
     char *charaName = NULL;
     int flag = 0;
@@ -1397,16 +1417,16 @@ extern "C" int _SET_MOS__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
         return 0;
     }
     if (argc > 0) {
-        motion = GetStackString__FP12RS_STACKDATA__3(stack++);
+        motion = GetStackString(stack++);
     }
     if (argc >= 2) {
-        speed = GetStackFloat__FP12RS_STACKDATA__3(stack++);
+        speed = GetStackFloat(stack++);
     }
     if (argc >= 3) {
-        flag = GetStackInt__FP12RS_STACKDATA__3(stack++);
+        flag = GetStackInt(stack++);
     }
     if (argc == 4) {
-        charaName = GetStackString__FP12RS_STACKDATA__3(stack);
+        charaName = GetStackString(stack);
     }
     if (motion == NULL) {
         return 0;
@@ -1424,63 +1444,63 @@ extern "C" int _SET_MOS__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
     }
     return 1;
 }
-extern "C" int _CHECK_MOS_END__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
+static int _CHECK_MOS_END(RS_STACKDATA *stack, int argc) {
     float result;
     if (argc == 1) {
         result = action_info.chara->CheckMotionEnd(0);
     }
     if (argc == 2) {
-        char *name = GetStackString__FP12RS_STACKDATA__3(stack + 1);
+        char *name = GetStackString(stack + 1);
         if (name == NULL) {
             return 0;
         }
         result = action_info.chara->CheckMotionEnd(name);
     }
-    SetStack__FP12RS_STACKDATAf__3(stack, result);
+    SetStack(stack, result);
     return 1;
 }
-extern "C" int _NOW_MOS_WAIT__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
+static int _NOW_MOS_WAIT(RS_STACKDATA *stack, int argc) {
     float result;
     if (argc == 1) {
         result = action_info.chara->GetNowFrameWait(0);
     }
     if (argc == 2) {
-        char *name = GetStackString__FP12RS_STACKDATA__3(stack + 1);
+        char *name = GetStackString(stack + 1);
         if (name == NULL) {
             return 0;
         }
         result = action_info.chara->GetNowFrameWait(name);
     }
-    SetStack__FP12RS_STACKDATAf__3(stack, result);
+    SetStack(stack, result);
     return 1;
 }
 int _NOW_MOS_CHGWAIT(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
     }
-    SetStack__FP12RS_STACKDATAf__3(stack, action_info.chara->GetChgStepWait());
+    SetStack(stack, action_info.chara->GetChgStepWait());
     return 1;
 }
-extern "C" int _GET_MOS_STATUS__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argc) {
+static int _GET_MOS_STATUS(RS_STACKDATA *stack, int argc) {
     int status;
     if (argc == 1) {
         status = action_info.chara->GetMotionStatus(NULL);
     }
     if (argc == 2) {
-        char *name = GetStackString__FP12RS_STACKDATA__3(stack + 1);
+        char *name = GetStackString(stack + 1);
         if (name == NULL) {
             return 0;
         }
         status = action_info.chara->GetMotionStatus(name);
     }
-    SetStack__FP12RS_STACKDATAi__3(stack, status);
+    SetStack(stack, status);
     return 1;
 }
 int _SET_XCHG_STEP(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
     }
-    float value = GetStackFloat__FP12RS_STACKDATA__3(stack);
+    float value = GetStackFloat(stack);
     CActionChara *chara = action_info.chara;
     chara->blend_speed = value;
     if (value >= 1.0f) {
@@ -1492,7 +1512,7 @@ int _SET_MOS_STEP(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
     }
-    action_info.chara->SetStep(GetStackFloat__FP12RS_STACKDATA__3(stack));
+    action_info.chara->SetStep(GetStackFloat(stack));
     return 1;
 }
 int _TRG_ON_MOS(RS_STACKDATA *stack, int argc) {
@@ -1507,7 +1527,7 @@ int _SET_DEFAULT_MOS(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
     }
-    action_info.chara->default_motion = GetStackString__FP12RS_STACKDATA__3(stack);
+    action_info.chara->default_motion = GetStackString(stack);
     return 1;
 }
 int _SET_NEBA2(RS_STACKDATA *stack, int argc) {
@@ -1516,11 +1536,11 @@ int _SET_NEBA2(RS_STACKDATA *stack, int argc) {
     }
     return 1;
 }
-extern "C" int _ESM_CREATE__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argc) {
+static int _ESM_CREATE(RS_STACKDATA *stack, int argc) {
     if (action_info.chara->effect_man == NULL) {
         return 0;
     }
-    char *name = GetStackString__FP12RS_STACKDATA__3(stack++);
+    char *name = GetStackString(stack++);
     switch (argc) {
         case 1:
             action_info.chara->effect_man->CreateEffSpt(name, 0, 0);
@@ -1530,47 +1550,47 @@ extern "C" int _ESM_CREATE__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argc) 
             if (id <= -1) {
                 return 0;
             }
-            SetStack__FP12RS_STACKDATAi__3(stack, id);
+            SetStack(stack, id);
             break;
         }
     }
     return 1;
 }
-extern "C" int _ESM_SET_VECT1__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argc) {
+static int _ESM_SET_VECT1(RS_STACKDATA *stack, int argc) {
     float vect[4];
     if (action_info.chara->effect_man == NULL) {
         return 0;
     }
-    int index = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    vect[0] = GetStackFloat__FP12RS_STACKDATA__3(stack++);
-    vect[1] = GetStackFloat__FP12RS_STACKDATA__3(stack++);
-    vect[2] = GetStackFloat__FP12RS_STACKDATA__3(stack);
+    int index = GetStackInt(stack++);
+    vect[0] = GetStackFloat(stack++);
+    vect[1] = GetStackFloat(stack++);
+    vect[2] = GetStackFloat(stack);
     vect[3] = 1.0f;
     if (index >= 0) {
         return action_info.chara->effect_man->SetScriptVect1(vect, 0, index);
     }
     return action_info.chara->effect_man->SetScriptVect1(vect, 0, -1);
 }
-extern "C" int _ESM_SET_VECT2__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argc) {
+static int _ESM_SET_VECT2(RS_STACKDATA *stack, int argc) {
     float vect[4];
     if (action_info.chara->effect_man == NULL) {
         return 0;
     }
-    int index = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    vect[0] = GetStackFloat__FP12RS_STACKDATA__3(stack++);
-    vect[1] = GetStackFloat__FP12RS_STACKDATA__3(stack++);
-    vect[2] = GetStackFloat__FP12RS_STACKDATA__3(stack);
+    int index = GetStackInt(stack++);
+    vect[0] = GetStackFloat(stack++);
+    vect[1] = GetStackFloat(stack++);
+    vect[2] = GetStackFloat(stack);
     vect[3] = 1.0f;
     if (index >= 0) {
         return action_info.chara->effect_man->SetScriptVect2(vect, 0, index);
     }
     return action_info.chara->effect_man->SetScriptVect2(vect, 0, -1);
 }
-extern "C" int _ESM_FINISH__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argc) {
+static int _ESM_FINISH(RS_STACKDATA *stack, int argc) {
     CEffectScriptMan *effectScript;
     int effect_id;
 
-    effect_id = GetStackInt__FP12RS_STACKDATA__3(stack);
+    effect_id = GetStackInt(stack);
     if (effect_id < 0) {
         return 0;
     }
@@ -1581,11 +1601,11 @@ extern "C" int _ESM_FINISH__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argc) 
     effectScript->SetScriptProgNo(0x12C, 0, effect_id);
     return 1;
 }
-extern "C" int _ESM_DELETE__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argc) {
+static int _ESM_DELETE(RS_STACKDATA *stack, int argc) {
     CEffectScriptMan *effectScript;
     int effect_id;
 
-    effect_id = GetStackInt__FP12RS_STACKDATA__3(stack);
+    effect_id = GetStackInt(stack);
     if (effect_id < 0) {
         return 0;
     }
@@ -1596,20 +1616,20 @@ extern "C" int _ESM_DELETE__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argc) 
     effectScript->DeleteEffSpt(0, effect_id);
     return 1;
 }
-extern "C" int _ESM_SET_VALUE__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argc) {
+static int _ESM_SET_VALUE(RS_STACKDATA *stack, int argc) {
     if (argc != 3) {
         return 0;
     }
-    int prog_no = GetStackInt__FP12RS_STACKDATA__3(stack++);
-    int value_no = GetStackInt__FP12RS_STACKDATA__3(stack++);
+    int prog_no = GetStackInt(stack++);
+    int value_no = GetStackInt(stack++);
     int result;
     switch (stack->type) {
         case 0:
-            result = action_info.chara->effect_man->SetValue(value_no, GetStackInt__FP12RS_STACKDATA__3(stack), 0, prog_no);
+            result = action_info.chara->effect_man->SetValue(value_no, GetStackInt(stack), 0, prog_no);
             break;
         case 1:
             result =
-                action_info.chara->effect_man->SetValue(value_no, GetStackFloat__FP12RS_STACKDATA__3(stack), 0, prog_no);
+                action_info.chara->effect_man->SetValue(value_no, GetStackFloat(stack), 0, prog_no);
             break;
         default:
             return 0;

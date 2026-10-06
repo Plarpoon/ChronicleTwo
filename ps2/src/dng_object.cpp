@@ -42,7 +42,15 @@
 #include "prespr.hpp"
 #include "dng_object.hpp"
 
-union CopyVector { float f[4]; u_long128 word; };
+/**
+ *
+ * Vector copied as four floats or one quadword.
+ *
+ */
+union CopyVector {
+    float f[4];      /**< Floating point components. */
+    u_long128 word;  /**< The same components as a quadword. */
+};
 extern "C" int fptosi(float value);
 extern "C" void *__ct__11mgCDrawPrimFv(void *);
 extern "C" void *__ct__12mgCFrameAttrFv(void *);

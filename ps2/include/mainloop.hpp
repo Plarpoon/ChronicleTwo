@@ -23,8 +23,10 @@ class mgCTexture;
 
 
 /**
+ *
  * Modes the main loop can run, as LoopNo holds them and as they index
  * LoopInit, LoopMain and LoopExit.
+ *
  */
 // clang-format off
 enum MainLoopMode {
@@ -43,7 +45,9 @@ enum MainLoopMode {
 
 // clang-format on
 /**
+ *
  * Languages the game can run in, as LanguageCode holds them.
+ *
  */
 // clang-format off
 enum LanguageCodeNo {
@@ -59,7 +63,9 @@ enum LanguageCodeNo {
 
 // clang-format on
 /**
+ *
  * Controller input recording modes, as CaptureMode holds them.
+ *
  */
 // clang-format off
 enum MainCaptureMode {
@@ -72,7 +78,9 @@ enum MainCaptureMode {
 
 // clang-format on
 /**
+ *
  * Screens of the debug start menu, as menu_mode holds them.
+ *
  */
 // clang-format off
 enum DebugMenuMode {
@@ -84,8 +92,10 @@ enum DebugMenuMode {
 
 // clang-format on
 /**
+ *
  * Rows of the debug start menu's top screen; rows 1 to 8 are the MainLoopMode they start,
  * and each row's value in SelectArg is the map, language, item set or cfg number it uses.
+ *
  */
 // clang-format off
 enum DebugMenuRow {
@@ -100,7 +110,9 @@ enum DebugMenuRow {
 
 // clang-format on
 /**
+ *
  * Steps of the pause menu, as PauseMenuMode holds them.
+ *
  */
 // clang-format off
 enum PauseMenuStep {
@@ -112,7 +124,9 @@ enum PauseMenuStep {
 
 // clang-format on
 /**
+ *
  * Results of PauseMenu.
+ *
  */
 // clang-format off
 enum PauseMenuResult {
@@ -123,7 +137,9 @@ enum PauseMenuResult {
 
 // clang-format on
 /**
+ *
  * Value MasterDebugCode takes when the four shoulder buttons are held at boot.
+ *
  */
 // clang-format off
 enum MasterDebugCodeValue {

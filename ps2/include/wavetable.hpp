@@ -17,8 +17,10 @@ enum {
 };
 
 /**
+ *
  * Simulates small ripples on a square height field and draws the shading
  * of the ripples into a texture, so that water surfaces appear to move.
+ *
  */
 class CWaveTable {
 public:

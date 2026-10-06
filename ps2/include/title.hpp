@@ -16,8 +16,10 @@
 struct INIT_LOOP_ARG;
 
 /**
+ *
  * Screens of the title mode, as TITLE_INFO::mode and TITLE_INFO::next_mode
  * hold them.
+ *
  */
 // clang-format off
 enum TitleMode {
@@ -35,7 +37,9 @@ enum TitleMode {
 // clang-format on
 
 /**
+ *
  * Steps of the title screen, as TitlePhase holds them.
+ *
  */
 // clang-format off
 enum TitlePhaseNo {
@@ -55,7 +59,9 @@ enum TitlePhaseNo {
 // clang-format on
 
 /**
+ *
  * Rows of the title menu, as TITLE_INFO::select holds them.
+ *
  */
 // clang-format off
 enum TitleMenuItem {
@@ -68,7 +74,9 @@ enum TitleMenuItem {
 // clang-format on
 
 /**
+ *
  * Results of TitleModeKey and RushMovieKey, which TitleLoop acts on.
+ *
  */
 // clang-format off
 enum TitleKeyResult {
@@ -86,7 +94,9 @@ enum TitleKeyResult {
 // clang-format on
 
 /**
+ *
  * Steps of the attract movie, as RUSH_INFO::phase holds them.
+ *
  */
 // clang-format off
 enum RushPhase {
@@ -98,8 +108,10 @@ enum RushPhase {
 // clang-format on
 
 /**
+ *
  * Steps of the copyright and logo display, as TitleCopyRightDispPhase
  * holds them; the negative steps show the trial disc message.
+ *
  */
 // clang-format off
 enum CopyRightPhase {
@@ -118,7 +130,9 @@ enum CopyRightPhase {
 // clang-format on
 
 /**
+ *
  * Steps of the hard disk installer, as HDDPhase holds them.
+ *
  */
 // clang-format off
 enum HddInstallPhase {
@@ -137,8 +151,10 @@ enum HddInstallPhase {
 // clang-format on
 
 /**
+ *
  * Questions the hard disk installer asks in HDD_PHASE_CONFIRM, as
  * HDDConfirmType holds them.
+ *
  */
 // clang-format off
 enum HddConfirmType {
@@ -148,8 +164,10 @@ enum HddConfirmType {
 // clang-format on
 
 /**
+ *
  * Steps of the memory card check, as TitleMCCheckPhase holds them; steps
  * 0 to 2 check the card in port 1 and steps 3 to 5 the card in port 2.
+ *
  */
 // clang-format off
 enum TitleMcCheckPhase {
@@ -164,8 +182,10 @@ enum TitleMcCheckPhase {
 // clang-format on
 
 /**
+ *
  * Steps of the title screen's background camera, as TitleCameraPhase holds
  * them.
+ *
  */
 // clang-format off
 enum TitleCameraPhaseNo {
@@ -176,7 +196,9 @@ enum TitleCameraPhaseNo {
 // clang-format on
 
 /**
+ *
  * Steps of the language selection, as title_lang_phase holds them.
+ *
  */
 // clang-format off
 enum TitleLangPhase {
@@ -187,7 +209,9 @@ enum TitleLangPhase {
 // clang-format on
 
 /**
+ *
  * Extras that InitOmakeEnv prepares.
+ *
  */
 // clang-format off
 enum OmakeType {
@@ -197,7 +221,9 @@ enum OmakeType {
 // clang-format on
 
 /**
+ *
  * Bits of OmakePlayEnableAttr, gathered from the memory cards.
+ *
  */
 // clang-format off
 enum OmakePlayEnableBit {

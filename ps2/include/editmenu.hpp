@@ -58,8 +58,10 @@ struct MENUFORMPARTS_TYPE;
 #define REMOVAL_NAME_LINE_MAX 10
 
 /**
+ *
  * Page of the Georama menu that the player has chosen, as
  * CMenuGeorama::view_mode holds it.
+ *
  */
 // clang-format off
 enum GeoramaViewMode {
@@ -75,8 +77,10 @@ enum GeoramaViewMode {
 // clang-format on
 
 /**
+ *
  * Order that CMenuGeorama::ArrangePartsList sorts a parts list in, as
  * CMenuGeorama::sort_mode holds it.
+ *
  */
 // clang-format off
 enum GeoramaSortMode {
@@ -89,7 +93,9 @@ enum GeoramaSortMode {
 // clang-format on
 
 /**
+ *
  * How CMenuGeorama::LoadGeoramaPart finds the part it shows.
+ *
  */
 // clang-format off
 enum GeoramaLoadPartKind {
@@ -101,7 +107,9 @@ enum GeoramaLoadPartKind {
 // clang-format on
 
 /**
+ *
  * One line of a Georama menu parts list: a part and the name it is shown by.
+ *
  */
 struct GEORAMA_PARTS_LIST_ITEM {
     s32  no;         /**< Placed part number, part definition number or definition index, by list; -1 for an empty line. */
@@ -112,7 +120,9 @@ struct GEORAMA_PARTS_LIST_ITEM {
 STATIC_ASSERT(sizeof(GEORAMA_PARTS_LIST_ITEM) == 0x38);
 
 /**
+ *
  * Selected line and first shown line of one Georama menu page's list.
+ *
  */
 struct GEORAMA_LIST_INFO {
     s32 select; /**< Line the cursor is on. */
@@ -122,9 +132,11 @@ struct GEORAMA_LIST_INFO {
 STATIC_ASSERT(sizeof(GEORAMA_LIST_INFO) == 0x8);
 
 /**
+ *
  * The Georama menu of a town: lists the parts the town can build, the parts
  * in stock, the paint colours, the placed houses and the analysis of the
  * town, and shows the part the cursor is on as a turning model.
+ *
  */
 class CMenuGeorama : public CBaseMenuClass {
 public:
@@ -409,8 +421,10 @@ public:
 STATIC_ASSERT(sizeof(CMenuGeorama) == 0x1B900);
 
 /**
+ *
  * The menu that moves villagers into and out of a placed house, showing
  * the villager picked as a model.
+ *
  */
 class CRemovalMenu : public CBaseMenuClass {
 public:

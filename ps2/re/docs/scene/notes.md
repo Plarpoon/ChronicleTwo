@@ -103,3 +103,11 @@ No global data owned by the unit. All data are compiler-generated: at_853__3 (ri
 string), at_1117 ("hat"), at_1171 (GetData jump table), at_1503__3/at_1504__3 (0x10-byte .data literals, not yet traced), the
 noname_* "no_name" function-local defaults of the Assign* functions, and InScreenFunc's local
 statics `sun_func_1518` (0x1C0 bytes, .bss) / `init_1519` (guard byte, .sbss).
+# Particle point rendering
+
+`CParticle::Draw` renders an active particle as a single untextured point.
+It calculates opacity from horizontal distance to the main scene camera:
+`128 - 0.42666668 * sqrt(dx*dx + dz*dz)`. It emits a point only when the
+opacity is positive and the world position transforms to a drawable GS
+vertex. Its guarded draft compiles and differs from retail in eight floating
+point register choices.

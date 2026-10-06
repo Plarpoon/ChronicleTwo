@@ -32,6 +32,7 @@
 #include "scriptinterpreter.hpp"
 #include "visualmotion.hpp"
 #include "character.hpp"
+extern "C" int fptosi(float value);
 
 extern CCharacter2 *nowChr;
 extern u32 *pack_file;
@@ -72,9 +73,14 @@ extern char at_1522[];
 extern char at_1570[];
 extern char at_1571[];
 extern CHRINFO_SE *now_se_header;
+/**
+ *
+ * Pair of visual types stored in one quadword.
+ *
+ */
 union VisualTypeData {
-    mgCreateVisualType type[2];
-    u_long128 qw;
+    mgCreateVisualType type[2]; /**< Visual types. */
+    u_long128 qw;               /**< The same data as one quadword. */
 };
 
 extern VisualTypeData at_1575;
@@ -290,6 +296,11 @@ float CCharacter2::GetCameraDist() {
 }
 int CCharacter2::DrawDirect() {
     float world_pos[4];
+    /**
+     *
+     * Outline state copied while drawing a character directly.
+     *
+     */
     struct OutlineCopy {
         COutLineDraw *next;
         u_long128 box[2];
@@ -723,7 +734,7 @@ void CCharacter2::Step() {
         }
         seq_state = 2;
         sequence_done = 0;
-        motion_state = ((CCharacter2 *)this)->GetMotionStatus();
+        motion_state = GetMotionStatus();
         switch (seq_step->type) {
             case 0:
                 if (motion_state == 4) {
@@ -863,7 +874,86 @@ void CCharacter2::ResetFloor() {
     }
 }
 
+#ifdef NONMATCHING
+void CCharacter2::NormalDrive() {
+    if (next_key != now_key && next_key != NULL) {
+        posed_key = now_key;
+        prev_flags = now_flags;
+        prev_set = now_set;
+        prev_frame = frame;
+        now_key = next_key;
+        step = now_key->step;
+        now_set = next_set;
+        now_flags = next_flags;
+        blend = 0.1f;
+        motion_status = CHARA_MOTION_STATUS_START;
+        if (next_flags & CHARA_MOTION_RESTART) {
+            posed_key = next_key;
+            frame = (float)now_key->start_frame;
+        }
+        ExecEntryEffect(now_key);
+    } else if (next_key != NULL && now_flags != next_flags) {
+        now_flags = next_flags;
+        if (next_flags & CHARA_MOTION_RESTART) {
+            motion_status = CHARA_MOTION_STATUS_START;
+            posed_key = next_key;
+            frame = (float)now_key->start_frame;
+        }
+    }
+    if (now_key == NULL) {
+        return;
+    }
+    if (posed_key == now_key) {
+        float advance = step * 1.2f;
+        if (now_flags & CHARA_MOTION_PAUSE) {
+            advance = 0.0f;
+        }
+        frame += advance;
+        if (advance > 0.0f) {
+            motion_status = CHARA_MOTION_STATUS_PLAY;
+        }
+        float first = (float)now_key->start_frame;
+        if (frame >= first && frame < first + step * 1.2f) {
+            frame = first;
+            motion_status = CHARA_MOTION_STATUS_START;
+        }
+        float last = (float)now_key->end_frame;
+        if (frame + step * 1.2f > last) {
+            if (now_flags & CHARA_MOTION_HOLD) {
+                frame = last;
+                motion_status = CHARA_MOTION_STATUS_END;
+                step = 0.0f;
+            } else {
+                frame = first;
+                motion_status = CHARA_MOTION_STATUS_END;
+                ExecEntryEffect(now_key);
+            }
+        }
+    }
+    if (posed_key == now_key) {
+        frame_ratio = (float)(now_key->end_frame - now_key->start_frame);
+        frame_ratio = (frame - (float)now_key->start_frame) / frame_ratio;
+        SetMotionTime(CObjectFrame::frame, &motion[now_set], frame, NULL);
+    } else if (blend >= 1.0f) {
+        posed_key = now_key;
+        frame = (float)now_key->start_frame;
+        motion_status = CHARA_MOTION_STATUS_START;
+    } else {
+        frame_ratio = 0.0f;
+        motion_status = CHARA_MOTION_STATUS_BLEND;
+        ChangeMotion(CObjectFrame::frame, &motion[now_set], fptosi(frame + 0.9f),
+                     now_key->start_frame, blend, NULL);
+        blend += blend_speed;
+        if (blend >= 1.0f) {
+            posed_key = now_key;
+            frame = (float)now_key->start_frame;
+            motion_status = CHARA_MOTION_STATUS_START;
+        }
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/character", NormalDrive__11CCharacter2Fv);
+#endif
 void CCharacter2::ShadowStep() {
     int i;
     mgCFrame *source;

@@ -26,7 +26,15 @@ extern void *__vt__9mgCObject[];
 extern void *__vt__7CObject[];
 extern void *__vt__12CObjectFrame[];
 extern void *__vt__11CCharacter2[];
-union EffectVector { u_long128 quad; float values[4]; };
+/**
+ *
+ * Effect vector viewed as four floats or a quadword.
+ *
+ */
+union EffectVector {
+    u_long128 quad; /**< The vector as a quadword. */
+    float values[4]; /**< Floating point components. */
+};
 #include <cstdio>
 #include <cmath>
 #include <cstdlib>
@@ -1474,7 +1482,7 @@ static void SetStackFloat(RS_STACKDATA *slot, float value) {
     }
 }
 }
-extern "C" int _ZERO_VECTOR__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argument_count) {
+static int _ZERO_VECTOR(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 3) {
         return 0;
     }
@@ -1483,7 +1491,7 @@ extern "C" int _ZERO_VECTOR__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argum
     SetStackFloat(stack, 0.0f);
     return 1;
 }
-extern "C" int _NORMAL_VECTOR__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argument_count) {
+static int _NORMAL_VECTOR(RS_STACKDATA *stack, int argument_count) {
     float vector[4];
 
     if (argument_count != 3) {
@@ -1499,7 +1507,7 @@ extern "C" int _NORMAL_VECTOR__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int arg
     SetStackFloat(stack, vector[2]);
     return 1;
 }
-extern "C" int _COPY_VECTOR__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argument_count) {
+static int _COPY_VECTOR(RS_STACKDATA *stack, int argument_count) {
     float vector[4];
 
     if (argument_count != 6) {
@@ -1511,7 +1519,7 @@ extern "C" int _COPY_VECTOR__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argum
     SetStackFloat(stack, vector[2]);
     return 1;
 }
-extern "C" int _ADD_VECTOR__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argument_count) {
+static int _ADD_VECTOR(RS_STACKDATA *stack, int argument_count) {
     float vector[4];
 
     if (argument_count != 6) {
@@ -1523,7 +1531,7 @@ extern "C" int _ADD_VECTOR__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argume
     SetStackFloat(stack + 2, (stack + 2)->p->f + vector[2]);
     return 1;
 }
-extern "C" int _SUB_VECTOR__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argument_count) {
+static int _SUB_VECTOR(RS_STACKDATA *stack, int argument_count) {
     float vector[4];
 
     if (argument_count != 6) {
@@ -1535,7 +1543,7 @@ extern "C" int _SUB_VECTOR__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argume
     SetStackFloat(stack + 2, (stack + 2)->p->f - vector[2]);
     return 1;
 }
-extern "C" int _SCALE_VECTOR__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argument_count) {
+static int _SCALE_VECTOR(RS_STACKDATA *stack, int argument_count) {
     float scale;
 
     if (argument_count != 4) {
@@ -1547,7 +1555,7 @@ extern "C" int _SCALE_VECTOR__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argu
     SetStackFloat(stack + 2, (stack + 2)->p->f * scale);
     return 1;
 }
-extern "C" int _DIV_VECTOR__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argument_count) {
+static int _DIV_VECTOR(RS_STACKDATA *stack, int argument_count) {
     float divisor;
 
     if (argument_count != 4) {
@@ -1562,7 +1570,7 @@ extern "C" int _DIV_VECTOR__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argume
     SetStackFloat(stack + 2, (stack + 2)->p->f / divisor);
     return 1;
 }
-extern "C" int _DIST_VECTOR__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argument_count) {
+static int _DIST_VECTOR(RS_STACKDATA *stack, int argument_count) {
     float vector[3];
 
     if (argument_count != 4) {
@@ -1573,7 +1581,7 @@ extern "C" int _DIST_VECTOR__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argum
     SetStackFloat(stack++, mgDistVector(vector));
     return 1;
 }
-extern "C" int _DIST_VECTOR2__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argument_count) {
+static int _DIST_VECTOR2(RS_STACKDATA *stack, int argument_count) {
     float from[3];
     float to[3];
 
@@ -1586,7 +1594,7 @@ extern "C" int _DIST_VECTOR2__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argu
     SetStackFloat(stack++, mgDistVector(from, to));
     return 1;
 }
-extern "C" int _SQRT__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argument_count) {
+static int _SQRT(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 2) {
         return 0;
     }
@@ -1594,7 +1602,7 @@ extern "C" int _SQRT__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argument_cou
     SetStackFloat(stack, (float)sqrt(value));
     return 1;
 }
-extern "C" int _ATAN2F__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argument_count) {
+static int _ATAN2F(RS_STACKDATA *stack, int argument_count) {
     float y;
     float x;
 
@@ -1606,7 +1614,7 @@ extern "C" int _ATAN2F__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argument_c
     SetStackFloat(stack, atan2f(y, x));
     return 1;
 }
-extern "C" int _ANGLE_CMP__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argument_count) {
+static int _ANGLE_CMP(RS_STACKDATA *stack, int argument_count) {
     float a;
     float b;
     float c;
@@ -1620,14 +1628,14 @@ extern "C" int _ANGLE_CMP__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argumen
     SetStackInt(stack, mgAngleCmp(a, b, c));
     return 1;
 }
-extern "C" int _ANGLE_LIMIT__FP12RS_STACKDATAi__3(RS_STACKDATA *stack, int argument_count) {
+static int _ANGLE_LIMIT(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 1) {
         return 0;
     }
     SetStackFloat(stack, mgAngleLimit(stack->p->f));
     return 1;
 }
-extern "C" int _GET_RAND__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argument_count) {
+static int _GET_RAND(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 2) {
         return 0;
     }
@@ -1641,7 +1649,7 @@ extern "C" int _GET_RAND__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argument
     SetStackInt(stack, value);
     return 1;
 }
-extern "C" int _GET_REF_ROT__FP12RS_STACKDATAi__2(RS_STACKDATA *stack, int argument_count) {
+static int _GET_REF_ROT(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 7 && argument_count != 9) {
         return 0;
     }

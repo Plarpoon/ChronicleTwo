@@ -117,3 +117,9 @@ TRESURE_BOX_GROUP / TRESURE_BOX_ITEM / TRESURE_BOX_FLOOR / MESSAGE_TASK are not 
 ## First game
 No counterpart class in Dark Cloud 1; its CDungeonMap (dungeonmap.hpp) held treasure boxes as
 TREASURE_BOX structs and trap circles as MAP_TRAP_CIRCLE, a different layout.
+
+## DrawEpisode draft
+`CStartupEpisodeTitle::DrawEpisode` draws the message first, then the title frame with alpha-scaled width and a language-dependent reveal scissor. The guarded C++ draft compiles and retains its assembly fallback because it differs from retail.
+
+## AutoSetTreasureBox draft
+The guarded no-argument draft reads the stage treasure table into a scratch memory region, places eight random boxes beyond 320 units from the event point, converts mimic monster entries into boxes, rolls up to three random circles, and places the geostone, random stones and key box where permitted. It compiles and differs from retail; the assembly fallback remains active.

@@ -139,3 +139,6 @@ dynamically initialised in source; same for local `MenuMainFrame_PutRect`,
   parameters were not traced.
 - No first-game counterpart: the first game has no menudraw/CPosDataManage equivalent in
   `/home/adubbz/development/chronicle/ps2/include`.
+
+## Newly drafted drawing helpers
+`PrimFillRect4` emits four coloured vertices in top-left, top-right, bottom-left, bottom-right order after checking all four colour pointers. `DrawMenuTilePattern` draws up to 16 columns and 12 rows, stepping by the source rectangle width and height; it exits at screen width plus 4 and screen height plus 40. `DrawMenuDl(int&,...)` and `MenuMainFrameStep` have guarded drafts for the progress panel and moving lens frame. `CalcCommonBrdDrawInfo` sizes the common board from up to four message names and positions the line slots. All five compile with assembly fallbacks, and each currently differs from retail.

@@ -15,8 +15,10 @@ class mgCMemory;
 struct mgVu0FBOX;
 
 /**
+ *
  * Holds the collision triangles of a town-editor part and answers the
  * placement questions the editor asks about them on the XZ plane.
+ *
  */
 class CEditCollision : public CCollisionMDT {
 public:

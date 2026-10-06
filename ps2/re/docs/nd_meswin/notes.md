@@ -1,10 +1,21 @@
 # nd_meswin: reverse-engineering notes
 
+`ClsMes::GetMesWidth_system` scans the system message's 16-bit codes and
+returns the widest line. It expands registered names and display controls,
+uses the half-font width for narrow glyphs, and returns -1 for an invalid
+message or missing system text. A guarded C++ draft now compiles, but its
+generated code differs from retail.
+
+`ClsMes::SetGoalCursorXY` targets a yes/no choice coordinate in
+`MES_WIN_YESNO`. In other modes it places the selection marker beside the
+selected text line, adjusts for centered text, and shifts it by half the
+difference between the text width and the widest visible line. Its guarded
+draft compiles but does not match retail.
+
 ## C++ draft status
-All 98 functions have C++ in `ps2/src/nd_meswin.cpp`. 41 are exact and compiled
-by the matching build. 1 more compiles to retail's bytes in isolation but stays
-under `NONMATCHING`. 56 differ from retail and keep the `INCLUDE_ASM` fallback.
-Each function tried has its one promotion attempt recorded in
+The current unit draft check reports 83 matches and 15 differences. The
+differing functions keep retail assembly in the
+game build. Earlier promotion attempts are recorded in
 `scripts/re/promotion_attempts.tsv`.
 
 The migrated message setters write the window mode, background opacity, packed colours,

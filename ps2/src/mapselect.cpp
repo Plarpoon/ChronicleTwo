@@ -18,9 +18,30 @@ extern "C" char *strncat(char *destination, const char *source, size_t count);
 #include "vlgr_info.hpp"
 #include "scenesnd.hpp"
 
-struct EventListColors { u32 color[2]; };
-struct LineBreakPair { char chars[2]; };
-struct SaveEditLabels { const char *text[2]; };
+/**
+ *
+ * Two colours used by the event list.
+ *
+ */
+struct EventListColors {
+    u32 color[2]; /**< Event list colours. */
+};
+/**
+ *
+ * Pair of characters used for a line break.
+ *
+ */
+struct LineBreakPair {
+    char chars[2]; /**< Line break characters. */
+};
+/**
+ *
+ * Two labels used by the save editor.
+ *
+ */
+struct SaveEditLabels {
+    const char *text[2]; /**< Save editor labels. */
+};
 extern SaveEditLabels at_1125;
 extern SaveEditLabels at_1128__2;
 extern int MapNameNum;
@@ -89,8 +110,8 @@ int MapTypeSelect(void);
 int MapSelect(void);
 void InitSaveDataEdit(mgCMemory *stack);
 int EventViewLoop(void);
-extern "C" char *GetLine__FPPcPcPc__3(char **fields, char *cursor, char *end);
 void AtraMiriaOnOff(int mode, CCharacter2 *chara, int enable);
+static char *GetLine(char **columns, char *position, char *end);
 #ifdef NONMATCHING
 #include "character.hpp"
 #include "dataread.hpp"
@@ -136,7 +157,6 @@ extern int select__1049[8];
 extern int top__1050[8];
 extern int SedSelData[SED_ITEM_NUM];
 extern char *config_str[1];
-static char *GetLine(char **columns, char *position, char *end);
 #endif
 
 // Code (.text)
@@ -665,9 +685,9 @@ void LoadEventViewData(u_long128 *buffer, mgCMemory *stack) {
     entry = EventInfo;
     EventInfoNum = 0;
     BossEventTop = 0;
-    next = GetLine__FPPcPcPc__3(columns, (char *)buffer, end);
+    next = GetLine(columns, (char *)buffer, end);
     while (next < end) {
-        next = GetLine__FPPcPcPc__3(columns, next, end);
+        next = GetLine(columns, next, end);
         map_no = SearchMapNo(columns[0]);
         floor_no = 0;
         dungeon = 0;
@@ -687,56 +707,56 @@ void LoadEventViewData(u_long128 *buffer, mgCMemory *stack) {
         entry++;
     }
 }
-extern "C" char *GetLine__FPPcPcPc__3(char **fields, char *cursor, char *end) {
+static char *GetLine(char **columns, char *position, char *end) {
     LineBreakPair lineBreakPair;
     int field;
     int length;
     lineBreakPair = at_1377__2;
-    if (cursor < end) {
+    if (position < end) {
         field = 0;
         do {
-            if (memcmp(cursor, lineBreakPair.chars, 2) == 0) {
-                cursor += 2;
+            if (memcmp(position, lineBreakPair.chars, 2) == 0) {
+                position += 2;
                 break;
             }
-            if (memcmp(cursor, lineBreakPair.chars, 1) == 0) {
-                cursor += 1;
+            if (memcmp(position, lineBreakPair.chars, 1) == 0) {
+                position += 1;
                 break;
             }
-            if (memcmp(cursor, lineBreakPair.chars + 1, 1) == 0) {
-                cursor += 1;
+            if (memcmp(position, lineBreakPair.chars + 1, 1) == 0) {
+                position += 1;
                 break;
             }
             length = 0;
-            while (cursor < end) {
-                if (memcmp(cursor, lineBreakPair.chars, 2) == 0 ||
-                    memcmp(cursor, lineBreakPair.chars, 1) == 0 ||
-                    memcmp(cursor, lineBreakPair.chars + 1, 1) == 0) {
+            while (position < end) {
+                if (memcmp(position, lineBreakPair.chars, 2) == 0 ||
+                    memcmp(position, lineBreakPair.chars, 1) == 0 ||
+                    memcmp(position, lineBreakPair.chars + 1, 1) == 0) {
                     break;
                 }
-                s8 ch = *cursor;
+                s8 ch = *position;
                 if (ch == '\t') {
-                    char *next = fields[field + 1];
-                    cursor++;
+                    char *next = columns[field + 1];
+                    position++;
                     if (next != NULL) {
                         *next = 0;
                     }
                     break;
                 }
-                if (ch != ' ' && fields[field] != NULL) {
-                    fields[field][length] = ch;
+                if (ch != ' ' && columns[field] != NULL) {
+                    columns[field][length] = ch;
                     length++;
                 }
-                cursor++;
+                position++;
             }
-            char *current = fields[field];
+            char *current = columns[field];
             if (current != NULL) {
                 field++;
                 current[length] = 0;
             }
-        } while (cursor < end);
+        } while (position < end);
     }
-    return cursor;
+    return position;
 }
 void AtraMiriaOnOff(int mode, CCharacter2 *chara, int enable) {
     mgCFrame *left;

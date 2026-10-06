@@ -14,14 +14,73 @@
 
 extern char at_852__4[];
 
-struct FormatA { char text[0x14]; };
-struct FormatB { char text[0x13]; };
-struct McFileName { char text[0x40]; };
-struct McSaveDirPattern { char text[0x80]; };
-struct McIconBlock40 { u8 data[0x40]; };
-struct McIconBlock30 { u8 data[0x30]; };
-struct McIconBlock10 { u8 data[0x10]; };
-struct AlbumFile { u8 data[0x64000]; char digit_data[0x4B0]; int checksum; int trailer; };
+/**
+ *
+ * Holds a formatted memory-card directory name.
+ *
+ */
+struct FormatA {
+    char text[0x14]; /**< Directory-name format string. */
+};
+/**
+ *
+ * Holds a formatted memory-card file name.
+ *
+ */
+struct FormatB {
+    char text[0x13]; /**< File-name format string. */
+};
+/**
+ *
+ * Holds a memory-card file name.
+ *
+ */
+struct McFileName {
+    char text[0x40]; /**< Memory-card file name. */
+};
+/**
+ *
+ * Holds the path pattern used to find memory-card save directories.
+ *
+ */
+struct McSaveDirPattern {
+    char text[0x80]; /**< Save-directory path pattern. */
+};
+/**
+ *
+ * Holds the memory-card icon background colours.
+ *
+ */
+struct McIconBlock40 {
+    u8 data[0x40]; /**< Icon background-colour data. */
+};
+/**
+ *
+ * Holds memory-card icon light directions or colours.
+ *
+ */
+struct McIconBlock30 {
+    u8 data[0x30]; /**< Icon light data. */
+};
+/**
+ *
+ * Holds the memory-card icon ambient colour.
+ *
+ */
+struct McIconBlock10 {
+    u8 data[0x10]; /**< Icon ambient-colour data. */
+};
+/**
+ *
+ * Holds album data and the check digits written with it.
+ *
+ */
+struct AlbumFile {
+    u8 data[0x64000]; /**< Album payload. */
+    char digit_data[0x4B0]; /**< Album bytes used to calculate the check digits. */
+    int checksum; /**< First album check digit. */
+    int trailer; /**< Second album check digit. */
+};
 extern "C" int sceMcFlush(int fd);
 extern "C" int sceMcUnformat(int port, int slot);
 extern u8 cosbit_table[136];

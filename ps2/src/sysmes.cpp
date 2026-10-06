@@ -33,7 +33,6 @@ extern short SysMesBuffer[];
 #include "mainloop.hpp"
 #include "nd_meswin.hpp"
 
-// Data supplied by the assembly fallbacks until the unit's data is migrated.
 extern short SystemMesBuffer[];
 extern short SysMesBuffer[];
 extern ClsMes SystemMessage;

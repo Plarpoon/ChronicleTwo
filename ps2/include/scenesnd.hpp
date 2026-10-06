@@ -405,8 +405,6 @@ public:
     mgCMemory          loop_se_stack;             /**< Memory stack over loop_se_buff. */
     CLoopSeMngr        loop_se;                   /**< Looping sound effects. */
 
-    // scene.cpp
-
     /**
      *
      * Resets the scene and forgets the time of day, the map numbers and the save data.
@@ -999,8 +997,6 @@ public:
      */
     void SetNowSubMapNo(int map_no);
 
-    // sceneload.cpp
-
     /**
      *
      * Creates a character from a pack in a slot; gives back the slot, or -1.
@@ -1080,8 +1076,6 @@ public:
      * @size 0x204
      */
     int DeleteMap(int no, int clear_stack);
-
-    // scenesnd.cpp
 
     /**
      *
@@ -1763,8 +1757,6 @@ public:
      */
     void LoadSndFileInfo(char *data, int size);
 
-    // sceneevent.cpp
-
     /**
      *
      * Passes the time of day and lighting settings on to the active map.
@@ -1904,8 +1896,6 @@ public:
      * @size 0x1F8
      */
     void DrawEffect(int mode);
-
-    // scenevillager.cpp
 
     /**
      *

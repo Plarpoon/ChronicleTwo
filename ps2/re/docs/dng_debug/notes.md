@@ -85,3 +85,6 @@ Reloads texture 0x6C, draws a translucent box (14,70)-(260,332), then prints the
 EnemyLoader line prints "[G%d]%s" of the matching `base_monster_define` row (stride 0xB8,
 terminated by s16 -1; +2 s16, +4 name) or "[%d]--------", and "BASE > %s" of the row sharing the
 s16 at +0x44 when +2 > 0. `base_monster_define`'s row type belongs to the monster unit.
+
+## dngDebugStart draft
+`dngDebugStart` copies the live camera, movement, lock-on, sound, talk and effect settings into the editable command values. It configures pad repeat for 0xF000 and 0x5000, saves the battle pause flag, then sets that flag to 15. The guarded C++ draft compiles and differs from retail in nine instruction words.

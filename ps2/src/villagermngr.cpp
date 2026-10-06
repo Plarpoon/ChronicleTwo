@@ -151,7 +151,15 @@ int CVillagerMngr::CheckStay(int chara_id) {
     return villager->stay;
 }
 #ifdef NONMATCHING
-union VillagerVector { float v[4]; u_long128 qw; };
+/**
+ *
+ * Villager position vector viewed as floats or a quadword.
+ *
+ */
+union VillagerVector {
+    float v[4];     /**< Position components. */
+    u_long128 qw;   /**< The same position as one quadword. */
+};
 
 void CVillagerMngr::Step() {
     float camera_direction[4];

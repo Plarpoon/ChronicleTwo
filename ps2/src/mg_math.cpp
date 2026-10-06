@@ -8,270 +8,33 @@
 
 
 int Check_Point_Poly3(float x, float y, float x0, float y0, float x1, float y1, float x2, float y2);
+static void MulMatrix3(float (*matrix)[4], float (*second)[4], float (*third)[4]);
 
 // Code (.text)
-void mgFotI4(int *out, float *in) {
-    asm {
-        lqc2 $vf1, 0x0($5)
-        vftoi4.xyzw $vf1, $vf1
-        sqc2 $vf1, 0x0($4)
-    }
-}
-void mgCreateBox8(float (*corners)[4], float *max, float *min) {
-    // Each corner starts as a copy of one extreme and takes one axis from the other.
-    asm {
-        lqc2 $vf1, 0x0($5)
-        lqc2 $vf2, 0x0($6)
-        vaddx.xyzw $vf3, $vf2, $vf0x
-        vaddx.xyzw $vf4, $vf2, $vf0x
-        vaddx.xyzw $vf5, $vf2, $vf0x
-        vaddx.xyzw $vf6, $vf1, $vf0x
-        vaddx.xyzw $vf7, $vf1, $vf0x
-        vaddx.xyzw $vf8, $vf1, $vf0x
-        sqc2 $vf2, 0x0($4)
-        sqc2 $vf1, 0x70($4)
-        vaddx.x $vf3, $vf1, $vf0x
-        vaddx.y $vf4, $vf1, $vf0x
-        vaddx.z $vf5, $vf1, $vf0x
-        vaddx.x $vf6, $vf2, $vf0x
-        vaddx.y $vf7, $vf2, $vf0x
-        vaddx.z $vf8, $vf2, $vf0x
-        sqc2 $vf3, 0x10($4)
-        sqc2 $vf4, 0x20($4)
-        sqc2 $vf5, 0x40($4)
-        sqc2 $vf6, 0x60($4)
-        sqc2 $vf7, 0x50($4)
-        sqc2 $vf8, 0x30($4)
-    }
-}
-void mgZeroVector(float *vector) {
-    asm {
-        sq $0, 0x0($4)
-    }
-}
-void mgZeroVectorW(float *vector) {
-    asm {
-        sqc2 $vf0, 0x0($4)
-    }
-}
-int mgClipBoxVertex(float *point, float *max, float *min) {
-    register int status;
-
-    // Only the sign flags of the two subtractions matter: any negative component means outside.
-    asm {
-        lqc2 $vf1, 0x0($4)
-        lqc2 $vf10, 0x0($5)
-        lqc2 $vf11, 0x0($6)
-        ctc2.ni $0, $vi16
-        vsub.xyz $vf25, $vf10, $vf1
-        vsub.xyz $vf25, $vf1, $vf11
-        vnop
-        vnop
-        vnop
-        vnop
-        vnop
-        cfc2.ni status, $vi16
-    }
-
-    return (status & MG_VU0_STATUS_SIGN_STICKY) == 0;
-}
-int mgClipBox(float *max0, float *min0, float *max1, float *min1) {
-    register int status;
-
-    // Only the sign flags of the two subtractions matter: any negative component means apart.
-    asm {
-        lqc2 $vf10, 0x0($4)
-        lqc2 $vf11, 0x0($5)
-        lqc2 $vf1, 0x0($6)
-        lqc2 $vf2, 0x0($7)
-        ctc2.ni $0, $vi16
-        vsub.xyz $vf25, $vf10, $vf2
-        vsub.xyz $vf25, $vf1, $vf11
-        vnop
-        vnop
-        vnop
-        vnop
-        vnop
-        cfc2.ni status, $vi16
-    }
-
-    return (status & MG_VU0_STATUS_SIGN_STICKY) == 0;
-}
-int mgClipBoxW(float *max0, float *min0, float *max1, float *min1) {
-    register int status;
-
-    // Only the sign flags of the two subtractions matter: any negative component means apart.
-    asm {
-        lqc2 $vf10, 0x0($4)
-        lqc2 $vf11, 0x0($5)
-        lqc2 $vf1, 0x0($6)
-        lqc2 $vf2, 0x0($7)
-        ctc2.ni $0, $vi16
-        vsub.xyw $vf25, $vf10, $vf2
-        vsub.xyw $vf25, $vf1, $vf11
-        vnop
-        vnop
-        vnop
-        vnop
-        vnop
-        cfc2.ni status, $vi16
-    }
-
-    return (status & MG_VU0_STATUS_SIGN_STICKY) == 0;
-}
-int mgClipInBox(float *max0, float *min0, float *max1, float *min1) {
-    register int status;
-
-    // Only the sign flags of the two subtractions matter: any negative component means a corner sticks out.
-    asm {
-        lqc2 $vf10, 0x0($4)
-        lqc2 $vf11, 0x0($5)
-        lqc2 $vf1, 0x0($6)
-        lqc2 $vf2, 0x0($7)
-        ctc2.ni $0, $vi16
-        vsub.xyz $vf25, $vf1, $vf10
-        vsub.xyz $vf25, $vf11, $vf2
-        vnop
-        vnop
-        vnop
-        vnop
-        vnop
-        cfc2.ni status, $vi16
-    }
-
-    return (status & MG_VU0_STATUS_SIGN_STICKY) == 0;
-}
-int mgClipInBoxW(float *max0, float *min0, float *max1, float *min1) {
-    register int status;
-
-    // Only the sign flags of the two subtractions matter: any negative component means a corner sticks out.
-    asm {
-        lqc2 $vf10, 0x0($4)
-        lqc2 $vf11, 0x0($5)
-        lqc2 $vf1, 0x0($6)
-        lqc2 $vf2, 0x0($7)
-        ctc2.ni $0, $vi16
-        vsub.xyw $vf25, $vf1, $vf10
-        vsub.xyw $vf25, $vf11, $vf2
-        vnop
-        vnop
-        vnop
-        vnop
-        vnop
-        cfc2.ni status, $vi16
-    }
-
-    return (status & MG_VU0_STATUS_SIGN_STICKY) == 0;
-}
-void mgAddVector(float *vector, float *add) {
-    asm {
-        lqc2 $vf15, 0x0($4)
-        lqc2 $vf16, 0x0($5)
-        vadd.xyzw $vf15, $vf15, $vf16
-        sqc2 $vf15, 0x0($4)
-    }
-}
-void mgSubVector(float *vector, float *sub) {
-    asm {
-        lqc2 $vf15, 0x0($4)
-        lqc2 $vf16, 0x0($5)
-        vsub.xyzw $vf15, $vf15, $vf16
-        sqc2 $vf15, 0x0($4)
-    }
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgFotI4__FPiPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgCreateBox8__FPA4_fPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgZeroVector__FPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgZeroVectorW__FPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgClipBoxVertex__FPfPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgClipBox__FPfPfPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgClipBoxW__FPfPfPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgClipInBox__FPfPfPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgClipInBoxW__FPfPfPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgAddVector__FPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgSubVector__FPfPf);
 void mgNormalizeVector(float *out, float *in, float length) {
     sceVu0FVECTOR unit;
 
     sceVu0Normalize(unit, in);
     sceVu0ScaleVector(out, unit, length);
 }
-void mgVectorMin(float *min, float *a, float *b) {
-    asm {
-        lqc2 $vf15, 0x0($5)
-        lqc2 $vf16, 0x0($6)
-        vmini.xyzw $vf18, $vf15, $vf16
-        sqc2 $vf18, 0x0($4)
-    }
-}
-void mgVectorMin(float *min, float *a, float *b, float *c, float *d) {
-    asm {
-        lqc2 $vf15, 0x0($5)
-        lqc2 $vf16, 0x0($6)
-        lqc2 $vf17, 0x0($7)
-        lqc2 $vf18, 0x0($8)
-        vmini.xyzw $vf20, $vf15, $vf16
-        vmini.xyzw $vf20, $vf20, $vf17
-        vmini.xyzw $vf20, $vf20, $vf18
-        sqc2 $vf20, 0x0($4)
-    }
-}
-void mgVectorMaxMin(float *max, float *min, float *a, float *b) {
-    asm {
-        lqc2 $vf15, 0x0($6)
-        lqc2 $vf16, 0x0($7)
-        vmax.xyzw $vf18, $vf15, $vf16
-        vmini.xyzw $vf20, $vf15, $vf16
-        sqc2 $vf18, 0x0($4)
-        sqc2 $vf20, 0x0($5)
-    }
-}
-void mgVectorMaxMin(float *max, float *min, float *a, float *b, float *c) {
-    asm {
-        lqc2 $vf15, 0x0($6)
-        lqc2 $vf16, 0x0($7)
-        lqc2 $vf17, 0x0($8)
-        vmax.xyzw $vf18, $vf15, $vf16
-        vmini.xyzw $vf20, $vf15, $vf16
-        vmax.xyzw $vf19, $vf18, $vf17
-        vmini.xyzw $vf21, $vf20, $vf17
-        sqc2 $vf19, 0x0($4)
-        sqc2 $vf21, 0x0($5)
-    }
-}
-void mgVectorMaxMin(float *max, float *min, float *a, float *b, float *c, float *d) {
-    asm {
-        lqc2 $vf15, 0x0($6)
-        lqc2 $vf16, 0x0($7)
-        lqc2 $vf17, 0x0($8)
-        lqc2 $vf18, 0x0($9)
-        vmax.xyzw $vf20, $vf15, $vf16
-        vmini.xyzw $vf21, $vf15, $vf16
-        vmax.xyzw $vf20, $vf20, $vf17
-        vmini.xyzw $vf21, $vf21, $vf17
-        vmax.xyzw $vf20, $vf20, $vf18
-        vmini.xyzw $vf21, $vf21, $vf18
-        sqc2 $vf20, 0x0($4)
-        sqc2 $vf21, 0x0($5)
-    }
-}
-void mgBoxMaxMin(mgVu0FBOX *box, mgVu0FBOX *other) {
-    asm {
-        lqc2 $vf15, 0x0($4)
-        lqc2 $vf16, 0x10($4)
-        lqc2 $vf17, 0x0($5)
-        lqc2 $vf18, 0x10($5)
-        vmax.xyzw $vf20, $vf15, $vf16
-        vmini.xyzw $vf21, $vf15, $vf16
-        vmax.xyzw $vf20, $vf20, $vf17
-        vmini.xyzw $vf21, $vf21, $vf17
-        vmax.xyzw $vf20, $vf20, $vf18
-        vmini.xyzw $vf21, $vf21, $vf18
-        sqc2 $vf20, 0x0($4)
-        sqc2 $vf21, 0x10($4)
-    }
-}
-void mgPlaneNormal(float *normal, float *v0, float *v1, float *v2) {
-    asm {
-        lqc2 $vf15, 0x0($5)
-        lqc2 $vf16, 0x0($6)
-        lqc2 $vf17, 0x0($7)
-        vsub.xyzw $vf10, $vf16, $vf15
-        vsub.xyzw $vf11, $vf17, $vf15
-        vopmula.xyz $ACC, $vf10, $vf11
-        vopmsub.xyz $vf12, $vf11, $vf10
-        sqc2 $vf12, 0x0($4)
-    }
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgVectorMin__FPfPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgVectorMin__FPfPfPfPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgVectorMaxMin__FPfPfPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgVectorMaxMin__FPfPfPfPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgVectorMaxMin__FPfPfPfPfPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgBoxMaxMin__FP9mgVu0FBOXP9mgVu0FBOX);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgPlaneNormal__FPfPfPfPf);
 float mgDistPlanePoint(float *normal, float *on_plane, float *point) {
     sceVu0FVECTOR offset;
 
@@ -496,277 +259,21 @@ int Check_Point_Poly3(float x, float y, float x0, float y0, float x1, float y1, 
     return MG_POINT_POLY3_OUTSIDE;
 }
 
-float mgDistVector(float *vector) {
-    asm {
-        lqc2 $vf4, 0x0($4)
-        vmul.xyz $vf4, $vf4, $vf4
-        vmr32.xy $vf5, $vf4
-        vmr32.x $vf6, $vf5
-        vadd.x $vf7, $vf4, $vf5
-        vadd.x $vf5, $vf6, $vf7
-        vsqrt $Q, $vf5x
-        vwaitq
-        cfc2.ni $2, $vi22
-        mtc1 $2, $f0
-    }
-}
-float mgDistVectorXZ(float *vector) {
-    asm {
-        lqc2 $vf4, 0x0($4)
-        vmul.xyz $vf4, $vf4, $vf4
-        vmr32.xy $vf5, $vf4
-        vmr32.x $vf6, $vf5
-        vadd.x $vf7, $vf4, $vf6
-        vsqrt $Q, $vf7x
-        vwaitq
-        cfc2.ni $2, $vi22
-        mtc1 $2, $f0
-    }
-}
-float mgDistVector2(float *vector) {
-    asm {
-        lqc2 $vf4, 0x0($4)
-        vmul.xyz $vf4, $vf4, $vf4
-        vmr32.xy $vf5, $vf4
-        vmr32.x $vf6, $vf5
-        vadd.x $vf7, $vf4, $vf5
-        vadd.x $vf5, $vf6, $vf7
-        qmfc2.ni $2, $vf5
-        mtc1 $2, $f0
-    }
-}
-float mgDistVector(float *a, float *b) {
-    asm {
-        lqc2 $vf2, 0x0($4)
-        lqc2 $vf3, 0x0($5)
-        vsub.xyz $vf4, $vf3, $vf2
-        vmul.xyz $vf4, $vf4, $vf4
-        vmr32.xy $vf5, $vf4
-        vmr32.x $vf6, $vf5
-        vadd.x $vf7, $vf4, $vf5
-        vadd.x $vf5, $vf6, $vf7
-        vsqrt $Q, $vf5x
-        vwaitq
-        cfc2.ni $2, $vi22
-        mtc1 $2, $f0
-    }
-}
-float mgDistVectorXZ(float *a, float *b) {
-    asm {
-        lqc2 $vf2, 0x0($4)
-        lqc2 $vf3, 0x0($5)
-        vsub.xyz $vf4, $vf3, $vf2
-        vmul.xyz $vf4, $vf4, $vf4
-        vmr32.xy $vf5, $vf4
-        vmr32.x $vf6, $vf5
-        vadd.x $vf7, $vf4, $vf6
-        vsqrt $Q, $vf7x
-        vwaitq
-        cfc2.ni $2, $vi22
-        mtc1 $2, $f0
-    }
-}
-float mgDistVector2(float *a, float *b) {
-    asm {
-        lqc2 $vf2, 0x0($4)
-        lqc2 $vf3, 0x0($5)
-        vsub.xyz $vf4, $vf3, $vf2
-        vmul.xyz $vf4, $vf4, $vf4
-        vmr32.xy $vf5, $vf4
-        vmr32.x $vf6, $vf5
-        vadd.x $vf7, $vf4, $vf5
-        vadd.x $vf5, $vf6, $vf7
-        qmfc2.ni $2, $vf5
-        mtc1 $2, $f0
-    }
-}
-float mgDistVectorXZ2(float *a, float *b) {
-    asm {
-        lqc2 $vf2, 0x0($4)
-        lqc2 $vf3, 0x0($5)
-        vsub.xyz $vf4, $vf3, $vf2
-        vmul.xyz $vf4, $vf4, $vf4
-        vmr32.xy $vf5, $vf4
-        vmr32.x $vf6, $vf5
-        vadd.x $vf7, $vf4, $vf6
-        qmfc2.ni $2, $vf7
-        mtc1 $2, $f0
-    }
-}
-void mgUnitMatrix(float (*matrix)[4]) {
-    // vf0 is the constant (0, 0, 0, 1); its rotations are the other three rows.
-    asm {
-        vmr32.xyzw $vf1, $vf0
-        vmr32.xyzw $vf2, $vf1
-        vmr32.xyzw $vf3, $vf2
-        sqc2 $vf0, 0x30($4)
-        sqc2 $vf1, 0x20($4)
-        sqc2 $vf2, 0x10($4)
-        sqc2 $vf3, 0x0($4)
-    }
-}
-void mgZeroMatrix(float (*matrix)[4]) {
-    asm {
-        vsub.xyzw $vf1, $vf1, $vf1
-        sqc2 $vf1, 0x30($4)
-        sqc2 $vf1, 0x20($4)
-        sqc2 $vf1, 0x10($4)
-        sqc2 $vf1, 0x0($4)
-    }
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgDistVector__FPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgDistVectorXZ__FPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgDistVector2__FPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgDistVector__FPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgDistVectorXZ__FPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgDistVector2__FPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgDistVectorXZ2__FPfPf);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgUnitMatrix__FPA4_f);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgZeroMatrix__FPA4_f);
 /**
  * Multiplies a matrix in place by two further matrices.
  */
-static void MulMatrix3(float (*matrix)[4], float (*second)[4], float (*third)[4]) {
-    asm {
-        lqc2 $vf1, 0x0($4)
-        lqc2 $vf2, 0x10($4)
-        lqc2 $vf3, 0x20($4)
-        lqc2 $vf4, 0x30($4)
-        lqc2 $vf5, 0x0($5)
-        lqc2 $vf6, 0x10($5)
-        lqc2 $vf7, 0x20($5)
-        lqc2 $vf8, 0x30($5)
-        lqc2 $vf9, 0x0($6)
-        lqc2 $vf10, 0x10($6)
-        lqc2 $vf11, 0x20($6)
-        lqc2 $vf12, 0x30($6)
-        vmulax.xyzw $ACC, $vf1, $vf5x
-        vmadday.xyzw $ACC, $vf2, $vf5y
-        vmaddaz.xyzw $ACC, $vf3, $vf5z
-        vmaddw.xyzw $vf20, $vf4, $vf5w
-        vmulax.xyzw $ACC, $vf1, $vf6x
-        vmadday.xyzw $ACC, $vf2, $vf6y
-        vmaddaz.xyzw $ACC, $vf3, $vf6z
-        vmaddw.xyzw $vf21, $vf4, $vf6w
-        vmulax.xyzw $ACC, $vf1, $vf7x
-        vmadday.xyzw $ACC, $vf2, $vf7y
-        vmaddaz.xyzw $ACC, $vf3, $vf7z
-        vmaddw.xyzw $vf22, $vf4, $vf7w
-        vmulax.xyzw $ACC, $vf1, $vf8x
-        vmadday.xyzw $ACC, $vf2, $vf8y
-        vmaddaz.xyzw $ACC, $vf3, $vf8z
-        vmaddw.xyzw $vf23, $vf4, $vf8w
-        vmulax.xyzw $ACC, $vf20, $vf9x
-        vmadday.xyzw $ACC, $vf21, $vf9y
-        vmaddaz.xyzw $ACC, $vf22, $vf9z
-        vmaddw.xyzw $vf1, $vf23, $vf9w
-        vmulax.xyzw $ACC, $vf20, $vf10x
-        vmadday.xyzw $ACC, $vf21, $vf10y
-        vmaddaz.xyzw $ACC, $vf22, $vf10z
-        vmaddw.xyzw $vf2, $vf23, $vf10w
-        vmulax.xyzw $ACC, $vf20, $vf11x
-        vmadday.xyzw $ACC, $vf21, $vf11y
-        vmaddaz.xyzw $ACC, $vf22, $vf11z
-        vmaddw.xyzw $vf3, $vf23, $vf11w
-        vmulax.xyzw $ACC, $vf20, $vf12x
-        vmadday.xyzw $ACC, $vf21, $vf12y
-        vmaddaz.xyzw $ACC, $vf22, $vf12z
-        vmaddw.xyzw $vf4, $vf23, $vf12w
-        sqc2 $vf1, 0x0($4)
-        sqc2 $vf2, 0x10($4)
-        sqc2 $vf3, 0x20($4)
-        sqc2 $vf4, 0x30($4)
-    }
-}
-void mgMulMatrix(float (*product)[4], float (*left_matrix)[4], float (*right_matrix)[4]) {
-    asm {
-        lqc2 $vf1, 0x0($5)
-        lqc2 $vf2, 0x10($5)
-        lqc2 $vf3, 0x20($5)
-        lqc2 $vf4, 0x30($5)
-        lqc2 $vf5, 0x0($6)
-        lqc2 $vf6, 0x10($6)
-        lqc2 $vf7, 0x20($6)
-        lqc2 $vf8, 0x30($6)
-        vmulax.xyzw $ACC, $vf1, $vf5x
-        vmadday.xyzw $ACC, $vf2, $vf5y
-        vmaddaz.xyzw $ACC, $vf3, $vf5z
-        vmaddw.xyzw $vf20, $vf4, $vf5w
-        vmulax.xyzw $ACC, $vf1, $vf6x
-        vmadday.xyzw $ACC, $vf2, $vf6y
-        vmaddaz.xyzw $ACC, $vf3, $vf6z
-        vmaddw.xyzw $vf21, $vf4, $vf6w
-        vmulax.xyzw $ACC, $vf1, $vf7x
-        vmadday.xyzw $ACC, $vf2, $vf7y
-        vmaddaz.xyzw $ACC, $vf3, $vf7z
-        vmaddw.xyzw $vf22, $vf4, $vf7w
-        vmulax.xyzw $ACC, $vf1, $vf8x
-        vmadday.xyzw $ACC, $vf2, $vf8y
-        vmaddaz.xyzw $ACC, $vf3, $vf8z
-        vmaddw.xyzw $vf23, $vf4, $vf8w
-        sqc2 $vf20, 0x0($4)
-        sqc2 $vf21, 0x10($4)
-        sqc2 $vf22, 0x20($4)
-        sqc2 $vf23, 0x30($4)
-    }
-}
-void mgInversMatrix(float (*inverse)[4], float (*matrix)[4]) {
-    // vf15 receives the determinant of the 3x3 part and vf10-vf12 its cofactors; the inverse
-    // rotation is their transpose over the determinant, and the translation is moved back through it.
-    asm {
-        lqc2 $vf1, 0x0($5)
-        lqc2 $vf2, 0x10($5)
-        lqc2 $vf3, 0x20($5)
-        lqc2 $vf4, 0x30($5)
-        vmuly.x $vf5, $vf1, $vf2y
-        vmuly.x $vf6, $vf3, $vf1y
-        vmuly.x $vf7, $vf2, $vf3y
-        vmuly.x $vf8, $vf1, $vf3y
-        vmuly.x $vf9, $vf2, $vf1y
-        vmuly.x $vf10, $vf3, $vf2y
-        vmulaz.x $ACC, $vf5, $vf3z
-        vmaddaz.x $ACC, $vf6, $vf2z
-        vmaddaz.x $ACC, $vf7, $vf1z
-        vmsubaz.x $ACC, $vf8, $vf2z
-        vmsubaz.x $ACC, $vf9, $vf3z
-        vmsubz.x $vf15, $vf10, $vf1z
-        vsub.xyzw $vf5, $vf5, $vf5
-        vsub.xyzw $vf6, $vf6, $vf6
-        vsub.xyzw $vf7, $vf7, $vf7
-        vaddx.xyzw $vf8, $vf0, $vf0x
-        vdiv $Q, $vf0w, $vf15x
-        vmulaz.y $ACC, $vf2, $vf3z
-        vmsubz.y $vf10, $vf3, $vf2z
-        vmulaz.y $ACC, $vf3, $vf1z
-        vmsubz.y $vf11, $vf1, $vf3z
-        vmulaz.y $ACC, $vf1, $vf2z
-        vmsubz.y $vf12, $vf2, $vf1z
-        vmulax.z $ACC, $vf2, $vf3x
-        vmsubx.z $vf10, $vf3, $vf2x
-        vmulax.z $ACC, $vf3, $vf1x
-        vmsubx.z $vf11, $vf1, $vf3x
-        vmulax.z $ACC, $vf1, $vf2x
-        vmsubx.z $vf12, $vf2, $vf1x
-        vmulay.x $ACC, $vf2, $vf3y
-        vmsuby.x $vf10, $vf3, $vf2y
-        vmulay.x $ACC, $vf3, $vf1y
-        vmsuby.x $vf11, $vf1, $vf3y
-        vmulay.x $ACC, $vf1, $vf2y
-        vmsuby.x $vf12, $vf2, $vf1y
-        vaddy.x $vf5, $vf5, $vf10y
-        vaddy.y $vf5, $vf5, $vf11y
-        vaddy.z $vf5, $vf5, $vf12y
-        vaddz.x $vf6, $vf6, $vf10z
-        vaddz.y $vf6, $vf6, $vf11z
-        vaddz.z $vf6, $vf6, $vf12z
-        vaddx.x $vf7, $vf7, $vf10x
-        vaddx.y $vf7, $vf7, $vf11x
-        vaddx.z $vf7, $vf7, $vf12x
-        vmulq.xyzw $vf5, $vf5, $Q
-        vmulq.xyzw $vf6, $vf6, $Q
-        vmulq.xyzw $vf7, $vf7, $Q
-        vmulax.xyzw $ACC, $vf5, $vf4x
-        vmadday.xyzw $ACC, $vf6, $vf4y
-        vmaddz.xyzw $vf8, $vf7, $vf4z
-        vsub.xyz $vf8, $vf0, $vf8
-        vaddx.w $vf8, $vf0, $vf0x
-        sqc2 $vf5, 0x0($4)
-        sqc2 $vf6, 0x10($4)
-        sqc2 $vf7, 0x20($4)
-        sqc2 $vf8, 0x30($4)
-    }
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", MulMatrix3__FPA4_fPA4_fPA4_f);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgMulMatrix__FPA4_fPA4_fPA4_f);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgInversMatrix__FPA4_fPA4_f);
 void mgRotMatrixX(float (*matrix)[4], float angle_x) {
     mgUnitMatrix(matrix);
     matrix[2][2] = cosf(angle_x);
@@ -896,107 +403,58 @@ void mgShadowMatrix(float (*matrix)[4], float *light_direction, float *on_plane,
 #pragma optimization_level reset
 #pragma schedule off
 #pragma global_optimizer off
+#ifdef NONMATCHING
 void mgApplyMatrixN(float (*out)[4], float (*matrix)[4], float (*in)[4], int count) {
-    // The next input is loaded ahead of each store, so one vector past the run is read.
-    asm {
-        .set noreorder
-        addi count, count, -1
-        lqc2 vf16, 0(in)
-        lqc2 vf10, 0(matrix)
-        lqc2 vf11, 0x10(matrix)
-        lqc2 vf12, 0x20(matrix)
-        lqc2 vf13, 0x30(matrix)
-        nop
-    loop:
-        vmulax.xyzw ACC, vf10, vf16x
-        vmadday.xyzw ACC, vf11, vf16y
-        vmaddaz.xyzw ACC, vf12, vf16z
-        vmaddw.xyzw vf17, vf13, vf16w
-        addi count, count, -1
-        addi out, out, 0x10
-        addi in, in, 0x10
-        sqc2 vf17, -0x10(out)
-        lqc2 vf16, 0(in)
-        bgez count, loop
-        vnop
-        .set reorder
+    for (int i = 0; i < count; ++i) {
+        float vector[4] = {in[i][0], in[i][1], in[i][2], in[i][3]};
+        for (int axis = 0; axis < 4; ++axis) {
+            out[i][axis] = matrix[0][axis] * vector[0] + matrix[1][axis] * vector[1]
+                         + matrix[2][axis] * vector[2] + matrix[3][axis] * vector[3];
+        }
     }
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgApplyMatrixN__FPA4_fPA4_fPA4_fi);
+#endif
 #pragma global_optimizer reset
 #pragma schedule reset
 #pragma global_optimizer off
-void mgApplyMatrixN_MaxMin(float (*out)[4], float (*matrix)[4], float (*in)[4], int count, float *max,
-                           float *min) {
-    // The first vector seeds both bounds; the next input is loaded ahead of each store.
-    asm {
-        .set noreorder
-        addi count, count, -1
-        lqc2 vf16, 0(in)
-        lqc2 vf10, 0(matrix)
-        lqc2 vf11, 0x10(matrix)
-        lqc2 vf12, 0x20(matrix)
-        lqc2 vf13, 0x30(matrix)
-        vmulax.xyzw ACC, vf10, vf16x
-        vmadday.xyzw ACC, vf11, vf16y
-        vmaddaz.xyzw ACC, vf12, vf16z
-        vmaddw.xyzw vf17, vf13, vf16w
-        addi count, count, -1
-        addi out, out, 0x10
-        addi in, in, 0x10
-        sqc2 vf17, -0x10(out)
-        lqc2 vf16, 0(in)
-        vaddx.xyzw vf20, vf17, vf0x
-        vaddx.xyzw vf21, vf17, vf0x
-    loop:
-        vmulax.xyzw ACC, vf10, vf16x
-        vmadday.xyzw ACC, vf11, vf16y
-        vmaddaz.xyzw ACC, vf12, vf16z
-        vmaddw.xyzw vf17, vf13, vf16w
-        addi count, count, -1
-        addi out, out, 0x10
-        addi in, in, 0x10
-        sqc2 vf17, -0x10(out)
-        lqc2 vf16, 0(in)
-        vmax.xyzw vf20, vf20, vf17
-        bgez count, loop
-        vmini.xyzw vf21, vf21, vf17
-        nop
-        .set reorder
-        sqc2 vf20, 0(max)
-        sqc2 vf21, 0(min)
+#ifdef NONMATCHING
+void mgApplyMatrixN_MaxMin(float (*out)[4], float (*matrix)[4], float (*in)[4], int count,
+                           float *max, float *min) {
+    mgApplyMatrixN(out, matrix, in, count);
+    for (int axis = 0; axis < 4; ++axis) {
+        max[axis] = out[0][axis];
+        min[axis] = out[0][axis];
+    }
+    for (int i = 1; i < count; ++i) {
+        for (int axis = 0; axis < 4; ++axis) {
+            if (max[axis] < out[i][axis]) max[axis] = out[i][axis];
+            if (min[axis] > out[i][axis]) min[axis] = out[i][axis];
+        }
     }
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgApplyMatrixN_MaxMin__FPA4_fPA4_fPA4_fiPfPf);
+#endif
 #pragma global_optimizer reset
 #pragma global_optimizer off
+#ifdef NONMATCHING
 void mgVectorMinMaxN(float *max, float *min, float (*vectors)[4], int count) {
-    // The first vector seeds both bounds and the count following it are folded in.
-    asm {
-        .set noreorder
-        addi count, count, -1
-        lqc2 vf10, 0(vectors)
-        vmove.xyzw vf11, vf10
-        lqc2 vf16, 0x10(vectors)
-        vnop
-        vnop
-        vnop
-    loop:
-        vmax.xyzw vf10, vf10, vf16
-        vmini.xyzw vf11, vf11, vf16
-        addi count, count, -1
-        addi vectors, vectors, 0x10
-        lqc2 vf16, 0(vectors)
-        vnop
-        bgez count, loop
-        nop
-        nop
-        vnop
-        vnop
-        vnop
-        .set reorder
-        sqc2 vf10, 0(max)
-        sqc2 vf11, 0(min)
+    for (int axis = 0; axis < 4; ++axis) {
+        max[axis] = vectors[0][axis];
+        min[axis] = vectors[0][axis];
+    }
+    for (int i = 1; i < count; ++i) {
+        for (int axis = 0; axis < 4; ++axis) {
+            if (max[axis] < vectors[i][axis]) max[axis] = vectors[i][axis];
+            if (min[axis] > vectors[i][axis]) min[axis] = vectors[i][axis];
+        }
     }
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgVectorMinMaxN__FPfPfPA4_fi);
+#endif
 #pragma global_optimizer reset
 void mgApplyMatrix(float *max, float *min, float (*matrix)[4], float *box_max, float *box_min) {
     sceVu0FVECTOR corners[8];

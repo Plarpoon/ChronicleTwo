@@ -10,7 +10,9 @@
  */
 
 /**
+ *
  * Opcodes of the script virtual machine, as vmcode_t::op holds them.
+ *
  */
 // clang-format off
 enum RS_OPCODE {
@@ -48,8 +50,10 @@ enum RS_OPCODE {
 // clang-format on
 
 /**
+ *
  * How a load or address-load instruction finds its variable, as
  * vmcode_t::arg2 holds it.
+ *
  */
 // clang-format off
 enum RS_ADDR_MODE {
@@ -66,8 +70,10 @@ enum RS_ADDR_MODE {
 // clang-format on
 
 /**
+ *
  * Kind of constant a push-constant instruction pushes, as vmcode_t::arg1
  * holds it.
+ *
  */
 // clang-format off
 enum RS_CONST_TYPE {
@@ -79,7 +85,9 @@ enum RS_CONST_TYPE {
 // clang-format on
 
 /**
+ *
  * Comparisons of the compare opcode, as vmcode_t::arg1 holds them.
+ *
  */
 // clang-format off
 enum RS_COMPARE {
@@ -94,7 +102,9 @@ enum RS_COMPARE {
 // clang-format on
 
 /**
+ *
  * Kind of value an operand stack slot holds, as RS_STACKDATA::type holds it.
+ *
  */
 // clang-format off
 enum RS_STACK_TYPE {
@@ -107,7 +117,9 @@ enum RS_STACK_TYPE {
 // clang-format on
 
 /**
+ *
  * Program format an interpreter is running, as CRunScript::version holds it.
+ *
  */
 // clang-format off
 enum RS_VERSION {
@@ -118,7 +130,9 @@ enum RS_VERSION {
 // clang-format on
 
 /**
+ *
  * A tagged value stored on the script interpreter's operand stack.
+ *
  */
 struct RS_STACKDATA {
     int type; /**< Kind of value held. @see RS_STACK_TYPE. */
@@ -134,8 +148,10 @@ struct RS_STACKDATA {
 STATIC_ASSERT(sizeof(RS_STACKDATA) == 0x8);
 
 /**
+ *
  * A single virtual-machine instruction and its two opcode-specific
  * operands.
+ *
  */
 struct vmcode_t {
     int op;   /**< Operation to execute. @see RS_OPCODE. */
@@ -146,8 +162,10 @@ struct vmcode_t {
 STATIC_ASSERT(sizeof(vmcode_t) == 0xC);
 
 /**
+ *
  * Describes a script function's code position and stack-frame
  * requirements.
+ *
  */
 struct funcdata {
     int   addr;  /**< Offset of the function's first instruction in the code section. */
@@ -159,7 +177,9 @@ struct funcdata {
 STATIC_ASSERT(sizeof(funcdata) == 0x10);
 
 /**
+ *
  * Caller state saved on the call stack while a script function runs.
+ *
  */
 struct RS_CALLDATA {
     vmcode_t     *ret;   /**< Caller's call instruction, to return to. */
@@ -170,7 +190,9 @@ struct RS_CALLDATA {
 STATIC_ASSERT(sizeof(RS_CALLDATA) == 0xC);
 
 /**
+ *
  * Maps an externally selectable program number to its function.
+ *
  */
 struct RS_PROGDATA {
     int no;   /**< Program number. */
@@ -180,8 +202,10 @@ struct RS_PROGDATA {
 STATIC_ASSERT(sizeof(RS_PROGDATA) == 0x8);
 
 /**
+ *
  * Header of a compiled script program, locating its sections by offset from
  * the header.
+ *
  */
 struct RS_PROG_HEADER {
     char magic[4];   /**< Format signature; "SB2" for a program with global variables. */
@@ -194,7 +218,9 @@ struct RS_PROG_HEADER {
 };
 
 /**
+ *
  * Runs one compiled script on a stack machine, suspending at its waits.
+ *
  */
 class CRunScript {
 public:

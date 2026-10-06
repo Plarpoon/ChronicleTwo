@@ -220,23 +220,23 @@ void InitRodPoint(mgCFrame *reference, mgCFrame *rod);
 
 /**
  *
- * Copies out the position and velocity of the line's end, where the hook hangs.
+ * Copies out the current and previous positions of the line's end, where the hook hangs.
  *
  * @mangled GetHariPos__FPfPf
  * @address 0x3155F0
  * @size 0x30
  */
-void GetHariPos(float *pos, float *velo);
+void GetHariPos(float *pos, float *old_pos);
 
 /**
  *
- * Copies out the position and velocity of the line point the float hangs from.
+ * Copies out the current and previous positions of the line point the float hangs from.
  *
  * @mangled GetUkiPos__FPfPf
  * @address 0x315620
  * @size 0x30
  */
-void GetUkiPos(float *pos, float *velo);
+void GetUkiPos(float *pos, float *old_pos);
 
 /**
  *

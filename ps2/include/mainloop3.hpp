@@ -10,8 +10,10 @@
  */
 
 /**
+ *
  * Results of one frame of the future-map select menu, which the
  * event-select screen uses to decide whether to stay or leave.
+ *
  */
 // clang-format off
 enum FutureMapSelectResult {
@@ -22,8 +24,10 @@ enum FutureMapSelectResult {
 // clang-format on
 
 /**
+ *
  * Results of one frame of the hard-disk debug menu, which the
  * event-select screen uses to decide whether to stay or leave.
+ *
  */
 // clang-format off
 enum HDDMenuResult {
@@ -33,8 +37,10 @@ enum HDDMenuResult {
 // clang-format on
 
 /**
+ *
  * Entries of the hard-disk debug menu, in the order they are listed,
  * as the selected-entry index holds them.
+ *
  */
 // clang-format off
 enum HDDMenuItem {

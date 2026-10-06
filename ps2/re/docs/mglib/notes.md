@@ -156,3 +156,6 @@ Equivalent of the first game's mglib (`MGInit`, `MGBeginFrame`, `MGEndFrame`, `M
 into the `mgRENDER_INFO` class (first game: `RenderInfo` struct, 0x350). The first game's
 `MG_PICKZ` layout is identical here (4 entries instead of 16). Globals are renamed
 (`Vif1Packet` -> `mgVif1Packet`, `DBuffID` -> `mgDBuffID`, `mgTEX1Env` -> `mgTEX1_1/_2`, etc.).
+
+## VSyncCallBack draft
+The guarded C++ draft samples GS CSR bit 13, stores the inverse in `VSyncField`, calls an installed secondary callback, increments the non-negative frame counter and clears the active flag. Retail ends with `sync; ei`, which MWCC does not emit from this C++ representation; the retail assembly remains active.

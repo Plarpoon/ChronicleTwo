@@ -624,11 +624,13 @@ u_long128 *SetData7(int vertex_num, int type, int **index, u_long128 *packet, u_
 void SetDrawEnv(mgCDrawEnv *env, mgCVisualAttr *attr, mgCDrawEnv *base);
 
 /**
+ *
  * GIF tag of one A+D register write, whose loop count each user rewrites.
  *
  * @mangled giftag
  * @address 0x338320
  * @size 0x10
+ *
  */
 struct mgVisualGifTag {
     u_int word0;

@@ -217,13 +217,41 @@ void DrawMainUnitStatusBord(float rate) {
     CGameDataUsed    *active_items;
     int               hp_max;
     int               hp_now;
-    struct charge_position_data { int value[7][2]; };
+    /**
+     *
+     * Screen positions of the charge display elements.
+     *
+     */
+    struct charge_position_data {
+        int value[7][2]; /**< Position pairs. */
+    };
     charge_position_data charge_position;
-    struct charge_glyph_data { int value[4][2]; };
+    /**
+     *
+     * Glyph coordinates of the charge display.
+     *
+     */
+    struct charge_glyph_data {
+        int value[4][2]; /**< Glyph coordinate pairs. */
+    };
     charge_glyph_data charge_glyph;
-    struct status_mask_data { int value[7]; };
+    /**
+     *
+     * Mask values used by the dungeon status display.
+     *
+     */
+    struct status_mask_data {
+        int value[7]; /**< Status mask values. */
+    };
     status_mask_data status_mask;
-    struct status_glyph_data { s16 value[7][2]; };
+    /**
+     *
+     * Glyph coordinates of the dungeon status display.
+     *
+     */
+    struct status_glyph_data {
+        s16 value[7][2]; /**< Glyph coordinate pairs. */
+    };
     status_glyph_data status_glyph;
     mgRect<int> item_glyph;
     mgRect<int> hp_now_glyph;

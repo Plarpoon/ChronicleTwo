@@ -140,6 +140,14 @@ Offsets:
   points). 0x820..0xD48 no access found.
 - 0xD48 mgCMemory (IsCreateObject), 0xD78/0xD7C ints (album memory-card progress).
 - 0xEAC gradation mode, 0xEB0 int, 0xEB4..0xEB6 flags.
+- `GradationStep` advances the two success-flash strips by four pixels in mode 1. In mode 3 it
+  moves the first three effect parameters of both strips by two toward the colour table row for
+  `create_step`, alternating the row for the second effect. The draft uses `MENU_PARTS_EFFECT_STRUCT1`
+  and remains under the retail assembly fallback.
+- `CalcCursorPosition` selects cursor coordinates by the active layout (`key_arg_no`), including
+  the idea board, card and photo lists, item board, album and notebook. It takes frame dimensions
+  and offsets from the menu layout table, hides the frame for special `photo_only` states, and
+  can snap the cursor to its new position via `unk_eb6`. Its draft compiles but does not yet match.
 - 0xEB8..0xF28 forms/parts from AttachFormInfo (see header); 0xEFC, 0xF0C, 0xF2C not touched.
   Part pointers (GetPartInfo results) typed void* pending menudraw's part type.
 

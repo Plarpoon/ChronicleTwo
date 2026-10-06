@@ -1,5 +1,103 @@
 # dngmenu: reverse-engineering notes
 
+## Additional map behavior
+
+`CalcGlidPutPos` maps a cell to board coordinates `x * 52 - y * 16` and
+`y * 20`; its final argument selects whether to add the current scroll.
+`CheckIsViewMove` clips a point to the view rectangle, reserving 10 pixels
+at the right and bottom, and returns the displacement required to bring it
+inside. `SetNextRoomPos` applies that displacement to the scroll target.
+`ResetDngMapPos` centres a room on `(256, 208)` and uses `(-100, -100)`
+when the requested room is absent.
+
+`DrawGlidCheck` inspects a passage cell's four neighbours. It marks adjoining
+rooms above and left with bits `2` and `8`; visited boss or sub rooms set
+directional bits `0x40`, `0x80`, `0x100`, or `0x200`. `DrawBackPattern`
+draws a translucent black rectangle in event mode. In menu mode it scrolls
+the `dt` backdrop by half a pixel per frame and wraps its offset at the
+tile width of 128. `DrawLast` covers the menu screen with `dtbg`, while
+`DrawDngName` draws `dtname` twice, offset by four pixels for its shadow.
+
+`FadeIn` starts at alpha zero and increases by `128 / frames` per step;
+`FadeOut` decreases by the same amount. For nonpositive durations, the
+step is 128 in magnitude. `SetKomaMove` starts at the second node of the
+path because `koma_path` itself is the piece's starting point.
+
+`CheckDngTreeMapFuncType` returns 2 when the menu's `open_type` is 3,
+1 when it is 1 or `TreeMapCallDungeonSubMap` is set, and 0 otherwise. The
+flag is read as an unsigned byte even though the assembly reservation is
+four bytes. `CheckGeoramaMateria` walks the floor's group identifiers, collects
+the item numbers from matching groups, then twice removes items whose
+attribute word does not contain bit `0x10`.
+
+`DrawPlayer` draws the `dngop` texture at its room's board position, shifted
+four pixels right and thirty up. In event mode it takes positions from the
+next path node and retains the last position in `dng_player_pos`; in menu
+mode it bobs vertically. The shared `dng_player_blink_cnt` wraps at fifty
+frames and also modulates the sprite's brightness. `DngTreeMapDraw`
+dispatches to the tree map or save menu using the byte `DngTreeMode`.
+
+`CDngFreeMap::Step` advances an active fade, eases each scroll coordinate
+one fifth of the remaining distance towards its target, snaps the value
+when its integer distance is zero, wraps the room blink counter at 100,
+increases `DngTreeMapActiveLightRate` by 0.05 up to 1, and clears the
+queued mark count before the next draw.
+
+`MakeDngTreeMapJumpNo` maps the first floor of each dungeon through
+`name_tbl_2728`. It has special transitions from dungeon 0 floor 8 to
+`s01`, dungeon 1 floor 6 to `s05`, and dungeon 3 floor 20 to `d04b01`;
+the latter can instead select loop 2 when story flag `0x1B6` is set and
+`0x1BC` is clear. The first floor of dungeon 6 also sets the main scene's
+map to `d07f01`.
+
+`DrawTreeMap` first draws a shrinking highlight around the selected cell
+in menu mode. It then visits every grid cell: rooms go through
+`DrawRoomOne`, with a half-bright interval during their blink cycle, and
+passages go through `DrawRoot` twice, once for each layer. The outgoing
+marks come from `DrawGlidCheck`.
+
+`DngTreeMapKey` steps the tree map in map mode. When that step opens the
+save screen, it saves map information, sets loop number 2, and gives the
+save menu the unused portion of `MenuTreeMapStack` plus the tree menu's
+fourth texture block. When the save screen closes, it clears the save
+flag, resumes map mode, starts a forty-frame fade and resets the tree
+menu to mode 12, step 1 before rebuilding its messages.
+
+`__sinit_dngmenu_cpp` sets the initial source rectangles for the map's
+light circle, number glyphs, root placement and floor information frame,
+then initializes `MenuTreeMapStack`.
+
+`CMenuTreeMap::MsgInit` attaches `systree.mes` to all eight message windows,
+applies preset 15, enables zero values, and configures the command
+analyzer's menu and system message buffers. Its `MSG_INIT` script sets up
+the shared message window. That window begins with message 300 and appends
+message 81 or 80 for the two special opening modes, then places two lines
+near the screen bottom. The second line moves to x=600 while the save
+screen is inactive.
+
+`DrawRoot` draws passage shapes 0 through 9 as three parallel line strips
+or pairs of strips. Its first call is the shadow layer, shifted eight
+pixels down and right and drawn at five percent alpha; its second call is
+the coloured layer. Menu mode uses a warm tint, while event mode uses a
+darker red. Opened passage types with `show_mark` draw a 22 by 22 mark from
+`root_type_texturecrd_1216`, positioned with `markOffsetTable_1092` (or
+`zerumaito_offset_1110` for shape 0 in dungeon 6).
+
+`DrawRoomOne` chooses a room picture from `dt` according to its visited
+state, texture number, and start/exit/boss/sub flags. Dungeon numbers 4–6
+use a slightly larger destination rectangle. It draws a shadow in menu
+mode, dims rooms other than the player's in event mode, advances each
+room's mark phase by the mode-specific value in `stepCntTbl_1501`, and
+queues the bobbing mark rectangle. An unvisited room receives a small
+overlay unless it is the player's room. Visited rooms can display up to
+three glyphs from `dtname`, chosen by the room flags.
+
+`DrawGeoramaMateria` draws a page of up to fourteen georama item names in
+two columns, using `GeoramaMateriaInfoDrawPage` for the starting item and
+`GeoramaMateriaNum` for the end. It reloads the floor information texture
+for the frame, reloads the message texture for the names, then displays
+the page count in the lower right.
+
 Unit: dungeon floor map (`CDngFreeMap`) and the dungeon menu's tree map (`CMenuTreeMap`).
 No first-game counterpart (Dark Cloud 1 has no class of either name; nothing equivalent found
 in `/home/adubbz/development/chronicle/ps2/include`).

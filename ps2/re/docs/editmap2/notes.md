@@ -37,12 +37,6 @@ instruction as unsupported rather than C expressions. The available
 `libvu0.h` exposes callable SDK functions, including `sceVu0OuterProduct`;
 a call introduces an ABI boundary and cannot reproduce this inline body.
 Scalar C++ likewise emits scalar FPU instructions instead of the required
-COP2 opcodes. The function therefore remains an inline-assembly match, not
-a decompiled C++ match.
-
-To return it to undecompiled status, replace its whole source definition with
-`INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", PlaneNormalXZ__FPfPfPfPf);`
-and run the normal `scripts/build/cmake.sh` setup/build path. The split must
-regenerate the per-symbol assembly under `ps2/asm`; changing that generated
-file by hand is inappropriate. Then check the marker's object with `diff.sh`
-and verify both PS2 builds.
+COP2 opcodes. A guarded C++ draft forms two XZ-only edge vectors and calls
+`sceVu0OuterProduct`. It compiles, but differs from the retail inline VU0
+instructions; the game build retains the assembly fallback.

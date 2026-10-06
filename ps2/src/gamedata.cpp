@@ -436,12 +436,11 @@ int LoadGameDataAnalyze(char *name) {
     ((CScriptInterpreter *)interpreter_storage)->Run();
     return 1;
 }
-extern "C" int LoadData__9CGameDataFv(CGameData *self) {
-    int i;
-    int offset;
+int CGameData::LoadData() {
+    int item_no;
 
-    self->Initialize();
-    comdatapt = self->common_data;
+    Initialize();
+    comdatapt = common_data;
     comdatapt_num = 0;
     memset(local_itemdatano_converttable, -1, 0x400);
     LoadGameDataAnalyze(at_1063);
@@ -451,20 +450,18 @@ extern "C" int LoadData__9CGameDataFv(CGameData *self) {
     LoadGameDataAnalyze(at_1067);
     LoadGameDataAnalyze(at_1068);
     LoadGameDataAnalyze(at_1069__2);
-    i = 0;
-    offset = 0;
-    self->common_num = comdatapt_num;
-    self->max_item_no = 0;
+    item_no = 0;
+    common_num = comdatapt_num;
+    max_item_no = 0;
     do {
-        if (0 <= *(short *)((u8 *)local_itemdatano_converttable + offset)) {
-            self->max_item_no = i;
+        if (0 <= local_itemdatano_converttable[item_no]) {
+            max_item_no = item_no;
         }
-        i += 1;
-        offset += 2;
-    } while (i < 0x200);
-    return self->unk_0;
+        item_no += 1;
+    } while (item_no < 0x200);
+    return unk_0;
 }
-extern "C" int LoadItemSystemMes__9CGameDataFi(CGameData *self, int language) {
+int CGameData::LoadItemSystemMes(int language) {
     int size;
     u8 buffer[0x7800];
     u8 memory_storage[0x30];
@@ -625,20 +622,20 @@ CDataBreedFish *CGameData::GetFishData(int item_no) {
     return fish_data + record->list_no;
 }
 #pragma optimization_level 4
-extern "C" u8 *GetGuardData__9CGameDataFi(CGameData *self, int item_no) {
+s16 *CGameData::GetGuardData(int item_no) {
     CDataCommon *record;
     short list_no;
 
-    record = (CDataCommon *)GetCommonData__9CGameDataFi(self, item_no);
+    record = GetCommonData(item_no);
     if (record == NULL) {
         return 0;
     }
     list_no = record->list_no;
-    if ((int)self->guard_num <= list_no) {
+    if ((int)guard_num <= list_no) {
         return 0;
     }
-    if (self->guard_data != 0) {
-        return (u8 *)(self->guard_data + list_no);
+    if (guard_data != 0) {
+        return guard_data + list_no;
     }
     return 0;
 }

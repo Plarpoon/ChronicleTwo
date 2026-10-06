@@ -166,6 +166,28 @@ for `__construct_new_array` in PhotoNetaEnter. Size 0xC.
   emits the retail operand order for the final address addition.
 - `CMenuInvent::InitNetaCircle` uses `neta_select_index`, `neta_form`, and
   `neta_name_form` arrays for its three slots; typed indexing matches retail.
+- `HowMuchZairyouMakeItem` has an `int *` output parameter in its retail ABI,
+  but the pointed-to storage is `MakeItemNeeds`. A single cast to that record
+  lets the function index its material and output arrays directly; the typed
+  implementation remains a complete match.
+- `CountNeta`, `CountScoop`, `CalcPhotoExp`, and `LevelCheck` scan or update
+  `CUserDataManager::photo_subject[0x200]`. Typed short-array indexing preserves
+  each function's retail instructions and removes the integer pointer casts.
+- `USER_PICTURE_INFO::used` is a signed byte in retail. Declaring it `s8`
+  removes the signed-byte pointer casts in photo paths without changing the
+  matched functions; `SCOOP_INFO::known` and `obtained` were already signed bytes.
+- `CMenuInvent::EnterDataMenu` loads the three `MC_ICON_DATA` records through
+  their `name`, `data`, and `size` fields. Typed field access preserves retail.
+- `PrepareNextMode` uses `CMenuKeyFunc::cursor_form` at offset 0x138; typed
+  field access preserves retail. `MenuInventNetaMemoDraw` uses `memo_bar`,
+  `NetaMemoStr[i]`, and `NetaMemoID[i]`; `MenuInventAlbumPictureDraw` uses
+  `album_tex[i]`, `album_scroll_x`, and successive `USER_PICTURE_INFO` records.
+  Both drawing functions remain complete matches.
+- `GradationSet` reads two grade-part names from `invent_grade_fff`. Typed
+  indexing converts the byte-offset loop to an element index, changing a
+  shift and the loop increment; the typed version currently scores 99.096%.
+- `UpdataNetaMemoStr` indexes `PIC_NAME_INFO` records directly; its remaining
+  mismatch is the four-argument native `neta_sort` call sequence noted above.
 - `CInventUserData::ResetAddress` unrolls eight photo pointers per iteration. A
   typed `photo_work` row pointer preserves the loop shape, but MWCC hoists its base
   calculation and chooses different constants for the unrolled addresses.

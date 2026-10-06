@@ -83,11 +83,11 @@ void CFireRaster::Step() {
     FireRasterParticle *free_slot = 0;
     int                 i = 0;
     FireRasterParticle *particle_slot;
-    int                 offset = 0;
     int                 phase = 0;
+    int                 offset = 0;
 
-    for (; i < 20; i++, offset += sizeof(FireRasterParticle), phase += 2) {
-        particle_slot = (FireRasterParticle *) ((u8 *) this + offset + 0x70);
+    for (; i < 20; i++, phase += 2, offset++) {
+        particle_slot = &particle[offset];
 
         if (particle_slot->life <= 0) {
             free_slot = particle_slot;

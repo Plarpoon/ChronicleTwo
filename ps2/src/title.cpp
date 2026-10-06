@@ -408,7 +408,7 @@ void TitleBootInit() {
     Tex_TrialMsg = textures->GetTexture(at_1231__2, -1);
     Tex_TitleBG2 = textures->GetTexture(at_1232__2, -1);
     DataBuffer.Align64();
-    u_long128 *save_pack = (u_long128 *) ((u8 *) DataBuffer.stGetTop() + 0x41000);
+    u_long128 *save_pack = &DataBuffer.stGetTop()[0x4100];
     if (LoadFileMenu(at_1233, save_pack, MENU_FILE_LOAD_DIRECT) != 0) {
         for (int i = 0; i < 3; i++) {
             MC_ICON_DATA *icon = &MC_ICON_Data[i];
@@ -2605,7 +2605,7 @@ void TitleLangSelInit(mgCMemory *memory) {
     GamePad__2.MenuModeOn(0x78);
     title_lang_select = 0;
     mgFrameRate = 1;
-    buffer = (u8 *) (memory->stack + memory->stack_used);
+    buffer = reinterpret_cast<u8 *>(memory->stGetTop());
     LoadFile2(at_2723, buffer, &file_size, 0);
     memory->Alloc(file_size / 16 + 1);
     mgTexManager.EnterIMGFile(buffer, 1, NULL, NULL);

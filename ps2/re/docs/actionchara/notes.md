@@ -174,3 +174,9 @@ CheckRunEvent/CheckReleaseTimming load s8/s16 fields; declared int.
 ## Typed casts
 
 `ThrowItemObject` indexes the `CCharacter2` item array directly. `SearchRandomStone` already returns `CMapParts*`, and `CActionChara` is a `CCharacter2`, so the corresponding object and base casts can be omitted. The affected actionchara functions remain exact in objdiff.
+
+## Typed array traversal
+
+`CalcCollision` and `GetSwEffectPtr` advance typed entries with `&entry[1]` and `&slot[1]`; `CheckEquipSetItem` and the corresponding item check advance with `&item[1]`. These forms keep the retail pointer increment instructions while making the array element type explicit. Effect selection uses `&BattleFX.hit[index]` and `&BattleFX.flush[index]`. In `HitEffectSet`, binding `hit_next` to a local integer before indexing preserves MWCC’s argument scheduling; direct indexing changes the function score to 96.83%. All affected functions compare exactly.
+
+`CActionChara::Step` can call the held `mgCFrame` and `CMapParts` members directly; their stored fields already have the needed types. Removing the three base/derived casts leaves its object code exact.

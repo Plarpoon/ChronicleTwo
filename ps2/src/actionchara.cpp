@@ -241,7 +241,7 @@ void CActionChara::CalcCollision() {
         }
 
         index += 1;
-        entry += 1;
+        entry = &entry[1];
     } while (index < 8);
 }
 
@@ -378,7 +378,7 @@ ACTION_SW_EFFECT *CActionChara::GetSwEffectPtr() {
         }
 
         i += 1;
-        slot += 1;
+        slot = &slot[1];
     } while (i < 9);
 
     return NULL;
@@ -633,7 +633,7 @@ int CActionChara::UsedItemAction() {
     int               healing;
 
     battle_info = GetBattleCharaInfo();
-    item = battle_info->GetActiveItemInfo(0) + DngStatus.active_item;
+    item = &battle_info->GetActiveItemInfo(0)[DngStatus.active_item];
 
     if (DngStatus.active_item == 3) {
         return 3;
@@ -686,7 +686,7 @@ void CActionChara::EntryThrowItem() {
     CBattleCharaInfo *battle_info;
 
     battle_info = GetBattleCharaInfo();
-    item = battle_info->GetActiveItemInfo(0) + DngStatus.active_item;
+    item = &battle_info->GetActiveItemInfo(0)[DngStatus.active_item];
     item_no = item->item_no;
     table = at_1398;
     index = 0;
@@ -2623,7 +2623,8 @@ void HitEffectSet(CScene *scene, float *point) {
     if (BattleFX.hit == NULL) {
         hit = NULL;
     } else {
-        hit = BattleFX.hit + BattleFX.hit_next;
+        int hit_index = BattleFX.hit_next;
+        hit = &BattleFX.hit[hit_index];
         BattleFX.hit_next++;
 
         if (BattleFX.hit_next >= BattleFX.hit_num) {
@@ -2639,7 +2640,7 @@ void HitEffectSet(CScene *scene, float *point) {
     if (BattleFX.flush == NULL) {
         flush = NULL;
     } else {
-        flush = BattleFX.flush + BattleFX.flush_next;
+        flush = &BattleFX.flush[BattleFX.flush_next];
         BattleFX.flush_next++;
 
         if (BattleFX.flush_next >= BattleFX.flush_num) {
@@ -2663,7 +2664,8 @@ void HitEffectSet(CScene *scene, float *point) {
     if (BattleFX.hit == NULL) {
         hit = NULL;
     } else {
-        hit = BattleFX.hit + BattleFX.hit_next;
+        int hit_index = BattleFX.hit_next;
+        hit = &BattleFX.hit[hit_index];
         BattleFX.hit_next++;
 
         if (BattleFX.hit_next >= BattleFX.hit_num) {
@@ -2708,7 +2710,7 @@ int CheckAmuletAvoid(int item_no) {
                 }
 
                 i++;
-                ++item;
+                item = &item[1];
             } while (i < 3);
 
             return 0;
@@ -2737,7 +2739,7 @@ int CheckEquipSetItem(int item_no) {
                 }
 
                 i++;
-                ++item;
+                item = &item[1];
             } while (i < 3);
 
             return 0;
@@ -3389,11 +3391,11 @@ void CActionChara::Step() {
 
     if (hold_type == 4 && hold_parts != 0 && hold_frame != 0) {
         GetRotation(rotation);
-        ((mgCFrame *) hold_frame)->GetWorldPosition0(held_pos);
+        hold_frame->GetWorldPosition0(held_pos);
         held_pos[3] = 1.0f;
         held_pos[1] -= 1.0f;
-        ((CActionChara *) hold_parts)->SetPosition(held_pos);
-        ((CActionChara *) hold_parts)->SetRotation(rotation);
+        hold_parts->SetPosition(held_pos);
+        hold_parts->SetRotation(rotation);
     }
 
     gun = SearchObject(at_3389);
@@ -3557,7 +3559,7 @@ void GuardEffectSet(CScene *scene, float *point) {
     if (BattleFX.hit == NULL) {
         hit = NULL;
     } else {
-        hit = BattleFX.hit + BattleFX.hit_next;
+        hit = &BattleFX.hit[BattleFX.hit_next];
         ++BattleFX.hit_next;
 
         if (BattleFX.hit_next >= BattleFX.hit_num) {
@@ -3571,7 +3573,7 @@ void GuardEffectSet(CScene *scene, float *point) {
     if (BattleFX.flush == NULL) {
         flush = NULL;
     } else {
-        flush = BattleFX.flush + BattleFX.flush_next;
+        flush = &BattleFX.flush[BattleFX.flush_next];
         BattleFX.flush_next++;
 
         if (BattleFX.flush_next >= BattleFX.flush_num) {

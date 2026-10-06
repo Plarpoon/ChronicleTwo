@@ -618,7 +618,7 @@ CInventUserData *GetInventUserDataPtr() {
 
 void Init_USER_PICTURE_INFO(USER_PICTURE_INFO *photo) {
     if (photo != NULL) {
-        *(signed char *) &photo->used = 0;
+        photo->used = 0;
         photo->is_new = 0;
         photo->map_no = -1;
         photo->npc_no = -1;
@@ -633,7 +633,7 @@ void Copy_USER_PICTURE_INFO(USER_PICTURE_INFO *src, USER_PICTURE_INFO *dst) {
         return;
     }
 
-    dst->used = *(signed char *) &src->used;
+    dst->used = src->used;
     dst->is_new = *(signed char *) &src->is_new;
     dst->map_no = src->map_no;
     dst->npc_no = src->npc_no;
@@ -663,14 +663,14 @@ void PictureSeiton(USER_PICTURE_INFO *photos, char *work_base, int count) {
         for (j = i + 1; j < count; j++) {
             b = &photos[j];
 
-            if (*(signed char *) &b->used == 0) {
+            if (b->used == 0) {
                 continue;
             }
 
             swap = 0;
 
             if (pict_seiton_case == 0) {
-                if (*(signed char *) &a->used == 0 && *(signed char *) &b->used == 1) {
+                if (a->used == 0 && b->used == 1) {
                     swap = 1;
                 }
 
@@ -690,7 +690,7 @@ void PictureSeiton(USER_PICTURE_INFO *photos, char *work_base, int count) {
             }
 
             if (pict_seiton_case == 1) {
-                if (*(signed char *) &a->used == 0 && *(signed char *) &b->used == 1) {
+                if (a->used == 0 && b->used == 1) {
                     swap = 1;
                 }
 
@@ -710,7 +710,7 @@ void PictureSeiton(USER_PICTURE_INFO *photos, char *work_base, int count) {
             }
 
             if (pict_seiton_case == 2) {
-                if (*(signed char *) &a->used == 0 && *(signed char *) &b->used == 1) {
+                if (a->used == 0 && b->used == 1) {
                     swap = 1;
                 }
 
@@ -730,7 +730,7 @@ void PictureSeiton(USER_PICTURE_INFO *photos, char *work_base, int count) {
             }
 
             if (pict_seiton_case == 3) {
-                if (*(signed char *) &a->used == 0 && *(signed char *) &b->used == 1) {
+                if (a->used == 0 && b->used == 1) {
                     swap = 1;
                 }
 
@@ -923,7 +923,7 @@ USER_PICTURE_INFO *CInventUserData::IsPhotoSpace(int *slot) {
     int i;
 
     for (i = 0; i < 30; i++) {
-        if (*(signed char *) &photo[i].used == 0) {
+        if (photo[i].used == 0) {
             photo[i].image = &photo_work[i][0];
 
             if (slot != NULL) {
@@ -992,7 +992,7 @@ int CInventUserData::CheckNetaFlagHavePhoto(int neta_id) {
     do {
         info = GetPhotoInfo(i);
 
-        if (info != NULL && *(&*(signed char *) &info->used) != 0 && info->neta_id == neta_id) {
+        if (info != NULL && info->used != 0 && info->neta_id == neta_id) {
             return i;
         }
 
@@ -1003,52 +1003,46 @@ int CInventUserData::CheckNetaFlagHavePhoto(int neta_id) {
 }
 
 int CInventUserData::CountNeta() {
-    short subject;
-    int   user_data;
-    int   count;
-    int   slot;
-    int   byte_offset;
+    short             subject;
+    CUserDataManager *user_data;
+    int               count;
+    int               slot;
 
-    user_data = (int) GetUserDataMan();
+    user_data = GetUserDataMan();
     count = 0;
     slot = 0;
-    byte_offset = 0;
 
     do {
-        subject = ((CUserDataManager *) (user_data + byte_offset))->photo_subject[0];
+        subject = user_data->photo_subject[slot];
 
         if (0 < subject && subject < 1000) {
             count++;
         }
 
         slot++;
-        byte_offset += 2;
     } while (slot < 0x200);
 
     return count;
 }
 
 int CInventUserData::CountScoop() {
-    short subject;
-    int   user_data;
-    int   count;
-    int   slot;
-    int   byte_offset;
+    short             subject;
+    CUserDataManager *user_data;
+    int               count;
+    int               slot;
 
-    user_data = (int) GetUserDataMan();
+    user_data = GetUserDataMan();
     count = 0;
     slot = 0;
-    byte_offset = 0;
 
     do {
-        subject = ((CUserDataManager *) (user_data + byte_offset))->photo_subject[0];
+        subject = user_data->photo_subject[slot];
 
         if (subject >= 1000 && subject < 10000) {
             count++;
         }
 
         slot++;
-        byte_offset += 2;
     } while (slot < 0x200);
 
     return count;
@@ -1073,7 +1067,7 @@ int CInventUserData::GetNowHavePictureNum() {
     int i = 0;
 
     do {
-        if (*(signed char *) &photo[i].used != 0) {
+        if (photo[i].used != 0) {
             count++;
         }
 
@@ -1090,19 +1084,17 @@ int CInventUserData::GetPictureNum(int *counts) {
 }
 
 int CInventUserData::CalcPhotoExp() {
-    short subject;
-    int   user_data;
-    int   slot;
-    int   byte_offset;
-    int   experience;
+    short             subject;
+    CUserDataManager *user_data;
+    int               slot;
+    int               experience;
 
     experience = 0;
-    user_data = (int) GetUserDataMan();
+    user_data = GetUserDataMan();
     slot = 0;
-    byte_offset = 0;
 
     do {
-        subject = ((CUserDataManager *) (user_data + byte_offset))->photo_subject[0];
+        subject = user_data->photo_subject[slot];
 
         if (subject > 0) {
             if (subject < 1000) {
@@ -1113,27 +1105,25 @@ int CInventUserData::CalcPhotoExp() {
         }
 
         slot += 1;
-        byte_offset += 2;
     } while (slot < 0x200);
 
     return experience;
 }
 
 int CInventUserData::LevelCheck(USER_PICTURE_INFO *info) {
-    int   user_data;
-    int   i;
-    int   slot;
-    int   byte_offset;
-    short subject;
-    int   old_level;
+    CUserDataManager *user_data;
+    int               i;
+    int               slot;
+    short             subject;
+    int               old_level;
 
     if (info == NULL) {
         return 0;
     }
 
-    user_data = (int) GetUserDataMan();
+    user_data = GetUserDataMan();
 
-    if (user_data == 0) {
+    if (user_data == NULL) {
         return 0;
     }
 
@@ -1145,10 +1135,9 @@ int CInventUserData::LevelCheck(USER_PICTURE_INFO *info) {
 
     slot = -1;
     i = 0;
-    byte_offset = 0;
 
     do {
-        short owned = ((CUserDataManager *) (user_data + byte_offset))->photo_subject[0];
+        short owned = user_data->photo_subject[i];
 
         if (owned == subject) {
             return 0;
@@ -1160,14 +1149,13 @@ int CInventUserData::LevelCheck(USER_PICTURE_INFO *info) {
         }
 
         i++;
-        byte_offset += 2;
     } while (i < 0x200);
 
     if (slot < 0) {
         return 0;
     }
 
-    ((CUserDataManager *) ((slot << 1) + user_data))->photo_subject[0] = subject;
+    user_data->photo_subject[slot] = subject;
     old_level = level;
     level = CalcPhotoExp() / 100;
     return old_level != level;
@@ -1347,7 +1335,7 @@ int CScoopDataManager::KnowScoop() {
             info = GetScoopInfo((int) entry->scoop_id);
 
             if ((info != NULL) && (CheckBitFlagMenu((int) entry->flag_no) != 0) &&
-                (*(signed char *) &info->known == 0)) {
+                (info->known == 0)) {
                 SetViewFlag((int) entry->scoop_id, 1);
                 count += 1;
             }
@@ -1376,10 +1364,10 @@ int CScoopDataManager::CheckScoop() {
     for (i = 0; i < 30; i++) {
         photo = user->GetPhotoInfo(i);
 
-        if (photo != NULL && *(&*(signed char *) &photo->used) != 0) {
+        if (photo != NULL && photo->used != 0) {
             info = GetScoopInfo(photo->neta_id);
 
-            if (info != NULL && *(signed char *) &info->obtained == 0) {
+            if (info != NULL && info->obtained == 0) {
                 n++;
                 info->obtained = 1;
             }
@@ -1392,7 +1380,7 @@ int CScoopDataManager::CheckScoop() {
         if (neta >= 1000) {
             info = GetScoopInfo(neta);
 
-            if (info != NULL && *(signed char *) &info->obtained == 0) {
+            if (info != NULL && info->obtained == 0) {
                 n++;
                 info->obtained = 1;
             }
@@ -1408,7 +1396,7 @@ int CScoopDataManager::GetScoopTotal(int *total) {
     int i = 0;
 
     do {
-        if (*(signed char *) &info[i].obtained != 0) {
+        if (info[i].obtained != 0) {
             count++;
         }
 
@@ -1496,7 +1484,7 @@ char *GetPhotoName(USER_PICTURE_INFO *info) {
         return NULL;
     }
 
-    if (*(&*(signed char *) &info->used) == 0) {
+    if (info->used == 0) {
         return NULL;
     }
 
@@ -1584,7 +1572,7 @@ int CheckPhotoFlag() {
     do {
         USER_PICTURE_INFO *info = &photos[i];
 
-        if (*(&*(signed char *) &info->used) != 0) {
+        if (info->used != 0) {
             short *neta_id = &info->neta_id;
 
             if (0 < *neta_id && user->CheckNetaFlag(*neta_id) < 0) {
@@ -1666,9 +1654,7 @@ int CInventDataManage::HowMuchZairyouMakeItem(int item_id, int count, int *needs
     INVENT_DATA_INFO     *make_material;
     INVENT_MATERIAL_LIST *list;
     int                   i;
-    int                   offset;
-    int                   slot;
-    MakeItemNeeds        *row;
+    MakeItemNeeds        *result;
 
     if (needs == NULL) {
         return 0;
@@ -1682,28 +1668,20 @@ int CInventDataManage::HowMuchZairyouMakeItem(int item_id, int count, int *needs
 
     list = &make_material->materials;
     i = 0;
-    offset = 0;
-    slot = 0;
-    *needs = make_material->materials.num;
+    result = reinterpret_cast<MakeItemNeeds *>(needs);
+    result->num = make_material->materials.num;
 
     while (i < list->num) {
-        row = (MakeItemNeeds *) ((u8 *) needs + slot);
-        slot += 8;
-        row->need[0].item_id = *(short *) ((u8 *) list->material + offset);
-        row->need[0].amount = count * ((INVENT_MATERIAL *) ((u8 *) list->material + offset))->num;
-        offset += 4;
+        result->need[i].item_id = list->material[i].item_id;
+        result->need[i].amount = count * list->material[i].num;
         i++;
     }
 
     if (i < 4) {
-        slot = i * 8;
-
         do {
-            row = (MakeItemNeeds *) ((u8 *) needs + slot);
+            result->need[i].item_id = 0;
+            result->need[i].amount = 0;
             i++;
-            row->need[0].item_id = 0;
-            slot += 8;
-            row->need[0].amount = 0;
         } while (i < 4);
     }
 
@@ -1863,7 +1841,7 @@ int CheckInventItem(int item_id) {
     s8 found[3] = {0, 0, 0};
     for (i = 0; i < 30; i++) {
         USER_PICTURE_INFO *photo = InventUserDataPtr->GetPhotoInfo(i);
-        if (*(signed char *) &photo->used != 0) {
+        if (photo->used != 0) {
             short photo_neta = photo->neta_id;
             if (photo_neta > 0) {
                 if (neta_id[0] == photo_neta) {
@@ -1943,7 +1921,7 @@ int CheckInventPhoto(int id, int kind) {
     for (i = 0; i < 30; i++) {
         info = user->GetPhotoInfo(i);
 
-        if (info != NULL && *(&*(signed char *) &info->used) != 0) {
+        if (info != NULL && info->used != 0) {
             if (kind == 0) {
                 value = info->neta_id;
 
@@ -1984,7 +1962,7 @@ void CMenuInvent::InitPhotoNetaBoardToAlbum(int source) {
                 album_flag[i] = -1;
             }
 
-            if (photo != 0 && *(signed char *) &photo->used == 0) {
+            if (photo != 0 && photo->used == 0) {
                 album_flag[i] = -1;
             }
         }
@@ -2245,7 +2223,7 @@ int CMenuInvent::SetNetaCircle(int type, int index) {
         if (photo == NULL) {
             return 0;
         }
-        if (*(s8 *) &photo->used == 0) {
+        if (photo->used == 0) {
             return 0;
         }
         photo->is_new = 0;
@@ -2456,7 +2434,7 @@ void CMenuInvent::UpdataRecordBoard() {
 
 void CMenuInvent::PrepareNextMode(int next_mode) {
     key_arg_no = next_mode;
-    CMenuPosDataForm *ask_form = *(CMenuPosDataForm **) ((u_char *) MenuCommonInfo + 0x138);
+    CMenuPosDataForm *ask_form = MenuCommonInfo->cursor_form;
 
     if (ask_form != 0) {
         ask_form->draw_flag = 1;
@@ -2570,11 +2548,11 @@ void CMenuInvent::GradationSet(int mode) {
 
                 do {
                     MENUFORMPARTS_TYPE *part =
-                        invent_okeff_form->GetPartInfo(*(char **) ((u8 *) invent_grade_fff + offset));
+                        invent_okeff_form->GetPartInfo(invent_grade_fff[offset / sizeof(invent_grade_fff[0])]);
                     i++;
 
-                    *(int *) &part->y = 0x43600000;
-                    offset += 4;
+                    part->y = 224.0f;
+                    offset += sizeof(invent_grade_fff[0]);
                     part->h = 0.0f;
                 } while (i < 2);
             }
@@ -2743,8 +2721,6 @@ void CMenuInvent::ExitEnd() {
 }
 
 void CMenuInvent::EnterDataMenu(u8 *pack) {
-    char              *raw = (char *) this;
-    int               *words = (int *) this;
     mgCTextureManager *tex_manager = &mgTexManager;
     u_int             *file = GetPackFile((unsigned int *) pack, at_2732__2, 0);
 
@@ -2767,9 +2743,9 @@ void CMenuInvent::EnterDataMenu(u8 *pack) {
         MenuDataAnalyze((char *) GetPackFile((unsigned int *) pack, at_2735__2, &size), size, &data_stack);
         MenuInventStack.Align64();
 
-        *(u_int **) (raw + 0x1F4) = GetPackFile((u_int *) pack, raw + 0x1D4, words + 0x7E);
-        *(u_int **) (raw + 0x21C) = GetPackFile((u_int *) pack, raw + 0x1FC, words + 0x88);
-        *(u_int **) (raw + 0x244) = GetPackFile((u_int *) pack, raw + 0x224, words + 0x92);
+        icon_data[0].data = GetPackFile((u_int *) pack, icon_data[0].name, &icon_data[0].size);
+        icon_data[1].data = GetPackFile((u_int *) pack, icon_data[1].name, &icon_data[1].size);
+        icon_data[2].data = GetPackFile((u_int *) pack, icon_data[2].name, &icon_data[2].size);
         AttachPictTex(tex_block[3], photo_tex, InventUserDataPtr->GetPhotoInfo(0), 0x1E);
         script = (char *) GetPackFile((unsigned int *) pack, at_2736, &script_size);
         int size2 = 0;
@@ -2874,18 +2850,16 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                             InventUserDataPtr->SetCreateItemFlag(this->card_cursor, this->create_item_id);
                         } else {
                             s32 recipe_index;
-                            s32 recipe_offset;
                             this->unk_584 = 0;
                             InventUserDataPtr->GetPhotoInfo(0);
                             recipe_index = 0;
-                            recipe_offset = 0;
                             while (InventManagePt->num != 0) {
                                 INVENT_DATA_INFO  *recipe;
                                 CInventDataManage *table = InventManagePt;
                                 if (recipe_index < 0 || table->num <= recipe_index) {
                                     recipe = NULL;
                                 } else {
-                                    recipe = (INVENT_DATA_INFO *) ((u8 *) table->table + recipe_offset);
+                                    recipe = &table->table[recipe_index];
                                 }
                                 if (recipe == NULL) {
                                     break;
@@ -2920,7 +2894,6 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                                         break;
                                     }
                                 }
-                                recipe_offset += sizeof(INVENT_DATA_INFO);
                                 recipe_index++;
                             }
                         }
@@ -4004,7 +3977,7 @@ void CMenuInvent::BootExtendCommand() {
 
     menu_invent_command_info_pict_info = GetNowSelectedPictInfo();
 
-    if (menu_invent_command_info_pict_info == NULL || *(s8 *) &menu_invent_command_info_pict_info->used == 0) {
+    if (menu_invent_command_info_pict_info == NULL || menu_invent_command_info_pict_info->used == 0) {
         MenuSePlay(5);
         return;
     }
@@ -4032,7 +4005,7 @@ void CMenuInvent::BootExtendCommand() {
             for (int slot = 0; slot < 50; slot++) {
                 USER_PICTURE_INFO *album = InventAlbumPtr->GetAlbumPhotoInfo(slot);
 
-                if (album != NULL && *(s8 *) &album->used == 0) {
+                if (album != NULL && album->used == 0) {
                     menu_invent_command_info_move_album_Space_info = album;
                     menu_invent_command_info_move_album_Space_pos = slot;
                     break;
@@ -4822,7 +4795,7 @@ void CMenuInvent::IsAccessAlbum() {
                 int space = 0;
                 for (int i = 0; i < 50; i++) {
                     USER_PICTURE_INFO *photo = InventUserDataPtr->GetPhotoInfo(i);
-                    if (photo != NULL && *(s8 *) &photo->used == 0) {
+                    if (photo != NULL && photo->used == 0) {
                         space++;
                     }
                 }
@@ -5182,16 +5155,14 @@ void CMenuInvent::UpdataNetaMemoStr() {
     int              i;
     int              standard_count;
     PIC_NAME_INFO   *info;
-    int              offset;
 
     NetaMemoStrNum = 0;
     user_data = GetInventUserDataPtr();
     standard_count = 0;
     i = 0;
-    offset = 0;
 
     while (i < pic_name_info_num && i < (0x200)) {
-        info = (PIC_NAME_INFO *) ((char *) pic_name_info_top + offset);
+        info = &pic_name_info_top[i];
 
         if (info == NULL) {
             break;
@@ -5209,7 +5180,6 @@ void CMenuInvent::UpdataNetaMemoStr() {
             NetaMemoStrNum += 1;
         }
 
-        offset += 8;
         i += 1;
     }
 
@@ -5449,7 +5419,7 @@ void MenuInventPictureBoardDraw(float *pos, int &tex_block, int alpha) {
     mgCDrawPrim *prim = GetMenuPrim();
     for (i = 0; i < 30; i++) {
         USER_PICTURE_INFO *photo = &photos[i];
-        if (*(s8 *) &photo->used == 0 || CMenuInventPt->SelectedNetaPhotoAlready(i) != 0) {
+        if (photo->used == 0 || CMenuInventPt->SelectedNetaPhotoAlready(i) != 0) {
             continue;
         }
         float x = pos[0] + CMenuInventPt->photo_pos[i][0];
@@ -5519,7 +5489,6 @@ void MenuInventAlbumPictureDraw(float *origin, int &loaded_tex) {
     USER_PICTURE_INFO *photo;
     float              y;
     int                i;
-    int                offset;
     float              top;
     int                clip_top;
 
@@ -5535,12 +5504,13 @@ void MenuInventAlbumPictureDraw(float *origin, int &loaded_tex) {
     if (first_texture != NULL) {
         MenuReloadTexture(loaded_tex, first_texture->block);
         i = 0;
-        offset = 0;
         y = CMenuInventPt->album_scroll_y;
 
         do {
-            if ((30.0f) < y && photo != NULL && *(signed char *) &photo->used == 1) {
-                PictureDraw(*(mgCTexture **) ((u8 *) CMenuInventPt + 0x440 + offset), photo, *(float *) ((u8 *) CMenuInventPt + 0x250) + (80.0f) * (float) (i % 2), y, (0.7f), 0x80, 0x80, 0x80, 0x80);
+            if ((30.0f) < y && photo != NULL && photo->used == 1) {
+                PictureDraw(CMenuInventPt->album_tex[i], photo,
+                            CMenuInventPt->album_scroll_x + (80.0f) * (float) (i % 2), y, (0.7f), 0x80, 0x80,
+                            0x80, 0x80);
             }
 
             if (i % 2 != 0) {
@@ -5552,8 +5522,7 @@ void MenuInventAlbumPictureDraw(float *origin, int &loaded_tex) {
             }
 
             i += 1;
-            offset += 4;
-            photo = (USER_PICTURE_INFO *) ((u8 *) photo + 0x18);
+            photo++;
         } while (i < (0x32));
 
         ResetMenuScissor();
@@ -5574,8 +5543,6 @@ void MenuInventNetaMemoDraw(float *origin, int &loaded_tex) {
     int          clip_bottom;
     int          text_x;
     int          text_y;
-    int          str_offset;
-    int          id_offset;
 
     if (Tex_Hatsumei != 0 && !(origin[0] < -200.0f)) {
         top = 76.0f + origin[1];
@@ -5615,7 +5582,7 @@ void MenuInventNetaMemoDraw(float *origin, int &loaded_tex) {
         prim->Begin(6);
         prim->Texture(Tex_Hatsumei);
         prim->Color(0x80, 0x80, 0x80, 0x80);
-        PrimQuad(prim, 209.0f + origin[0], *(float *) ((u8 *) CMenuInventPt + 0x35C), bar_rect);
+        PrimQuad(prim, 209.0f + origin[0], CMenuInventPt->memo_bar, bar_rect);
         prim->End();
         SetMenuScissor(clip_rect);
         MenuReloadTexture(loaded_tex, MenuArg.mes_tex_block);
@@ -5626,8 +5593,6 @@ void MenuInventNetaMemoDraw(float *origin, int &loaded_tex) {
         char      text[0x20];
         menu_font.SetClearance(0xE, 0x18);
         i = 0;
-        str_offset = 0;
-        id_offset = 0;
 
         while (i < pic_name_info_num && i < (0x200)) {
             if (text_y >= clip_top - 0x28) {
@@ -5635,10 +5600,10 @@ void MenuInventNetaMemoDraw(float *origin, int &loaded_tex) {
                     break;
                 }
 
-                int number = *(int *) ((u8 *) NetaMemoStr + str_offset);
+                int number = NetaMemoStr[i];
 
                 if (number != 0) {
-                    short neta_id = *(short *) ((u8 *) NetaMemoID + id_offset);
+                    short neta_id = NetaMemoID[i];
                     char *prefix;
 
                     if (neta_id < 0x3E8) {
@@ -5660,8 +5625,6 @@ void MenuInventNetaMemoDraw(float *origin, int &loaded_tex) {
                 }
             }
 
-            str_offset += 4;
-            id_offset += 2;
             i += 1;
             text_y += (0x1A);
         }
@@ -6362,7 +6325,7 @@ int MenuInventPushKey(int pad, int pushed) {
                         case 1:
                             if (CMenuInventPt->SelectedNetaPhotoAlready(
                                     CMenuInventPt->photo_cursor) == 0 &&
-                                *(signed char *) &photo->used != 0) {
+                                photo->used != 0) {
                                 command = K_COMMAND_EXTEND;
                                 MenuItemCmdArgPos = 5;
                             }
@@ -6571,7 +6534,7 @@ int MenuInventPushKey(int pad, int pushed) {
                 break;
             case K_COMMAND_SWAP_ITEM:
                 if (CMenuInventPt->CheckSpectolFusion(item, 5, MenuMesForm[5]) != 0) {
-                    CMenuPosDataForm *form = *(CMenuPosDataForm **) ((u_char *) MenuCommonInfo + 0x138);
+                    CMenuPosDataForm *form = MenuCommonInfo->cursor_form;
 
                     if (form != NULL) {
                         form->draw_flag = 0;
@@ -6657,16 +6620,15 @@ int MenuInventPushKey(int pad, int pushed) {
                     CMenuInventPt->new_neta_photo[i] = 0;
                     USER_PICTURE_INFO *photo = InventUserDataPtr->GetPhotoInfo(i);
 
-                    if (*(signed char *) &photo->used != 0) {
+                    if (photo->used != 0) {
                         short neta = photo->neta_id;
 
                         if (neta > 0 && InventUserDataPtr->CheckNetaFlag(neta) < 0) {
                             CursorPos position;
                             CMenuInventPt->GetNetaBoardCursorPosition(i, &position.x);
-                            float *effect = (float *) ((u_char *) CMenuInventPt + (u_int) (InventInNetaEffectNum * 8));
-                            effect[0xD80 / 4] = (float) position.x;
-                            effect[0xD84 / 4] = (float) position.y;
-                            *(short *) ((u_char *) CMenuInventPt + (u_int) (InventInNetaEffectNum * 2) + 0xE70) = 0x80;
+                            CMenuInventPt->neta_effect_pos[InventInNetaEffectNum][0] = (float) position.x;
+                            CMenuInventPt->neta_effect_pos[InventInNetaEffectNum][1] = (float) position.y;
+                            CMenuInventPt->neta_effect_alpha[InventInNetaEffectNum] = 0x80;
                             CMenuInventPt->new_neta_photo[i] = 1;
                             InventInNetaEffectNum += 1;
                         }

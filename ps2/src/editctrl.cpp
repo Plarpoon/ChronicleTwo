@@ -33,43 +33,58 @@ const int kCharaTypeEffect = 4;
 extern char at_962[];
 
 extern CSceneEventData LadderData;
-extern MoveCheckInfo   MoveInfo;
-extern int             move_chara;
-extern int             CharaAngleTarget;
-extern int             CharaAngleTargetFlag;
-extern int             FixCameraFlag;
-extern int             InitEyeViewFlag;
-extern float           viewAngleH;
-extern float           viewAngleV;
-extern float           AddProj;
-extern int             ShutterCnt;
-extern float           OldCameraPos[4];
-extern sceVu0FVECTOR   OldFixCameraPos;
-extern int             name_id_982[30];
-extern char           *name_978[4];
-extern DEBUG_INFO      DebugInfo;
-extern int             LadderMode;
-extern int             LadderStep;
-extern mgCCamera      *LadderCamera;
-extern float           LdrNext;
-extern float           LdrRot;
-extern float           OldMtnRate;
-extern int             LdrSound;
-extern int             LdrBtmFoot;
-extern int             LdrTopFoot;
-extern sceVu0FVECTOR   LdrPos;
-extern sceVu0FVECTOR   StdPos;
-extern sceVu0FVECTOR   LdrBottomPos;
-extern sceVu0FVECTOR   LdrTopPos;
-extern sceVu0FVECTOR   LdrTopWalk;
-extern sceVu0FVECTOR   LdrCamPos;
-extern int             EyeViewCancelOnce;
-extern int             CharaFallFlag;
-extern int             CharaMotionMode;
-extern int             CharaMotionModeCnt;
-extern int             FixCameraChgCnt;
-extern int             ViewMode;
-extern CGamePad        GamePad__2;
+
+/**
+ *
+ * Clears the editor's persistent movement query when it is constructed.
+ *
+ */
+struct InitializedMoveCheckInfo : MoveCheckInfo {
+    /**
+     *
+     * Starts the persistent movement query in a cleared state.
+     *
+     */
+    InitializedMoveCheckInfo() { Initialize(); }
+};
+
+extern InitializedMoveCheckInfo MoveInfo;
+extern int                      move_chara;
+extern int                      CharaAngleTarget;
+extern int                      CharaAngleTargetFlag;
+extern int                      FixCameraFlag;
+extern int                      InitEyeViewFlag;
+extern float                    viewAngleH;
+extern float                    viewAngleV;
+extern float                    AddProj;
+extern int                      ShutterCnt;
+extern float                    OldCameraPos[4];
+extern sceVu0FVECTOR            OldFixCameraPos;
+extern int                      name_id_982[30];
+extern char                    *name_978[4];
+extern DEBUG_INFO               DebugInfo;
+extern int                      LadderMode;
+extern int                      LadderStep;
+extern mgCCamera               *LadderCamera;
+extern float                    LdrNext;
+extern float                    LdrRot;
+extern float                    OldMtnRate;
+extern int                      LdrSound;
+extern int                      LdrBtmFoot;
+extern int                      LdrTopFoot;
+extern sceVu0FVECTOR            LdrPos;
+extern sceVu0FVECTOR            StdPos;
+extern sceVu0FVECTOR            LdrBottomPos;
+extern sceVu0FVECTOR            LdrTopPos;
+extern sceVu0FVECTOR            LdrTopWalk;
+extern sceVu0FVECTOR            LdrCamPos;
+extern int                      EyeViewCancelOnce;
+extern int                      CharaFallFlag;
+extern int                      CharaMotionMode;
+extern int                      CharaMotionModeCnt;
+extern int                      FixCameraChgCnt;
+extern int                      ViewMode;
+extern CGamePad                 GamePad__2;
 
 #include <libvu0.h>
 
@@ -96,40 +111,40 @@ extern CGamePad        GamePad__2;
 #include "userdata.hpp"
 
 #ifdef NONMATCHING
-static int             LadderMode;           /**< End of the ladder the player entered. */
-static int             LadderStep;           /**< Stage of climbing the ladder. */
-static int             CharaMotionMode;      /**< Special movement motion in progress. */
-static int             CharaMotionModeCnt;   /**< Frames left in the landing motion. */
-static int             CharaFallFlag;        /**< Consecutive frames without ground contact. */
-static int             CharaAngleTargetFlag; /**< Whether a target heading is set. */
-static int             CharaAngleTarget;     /**< Target heading state. */
-static int             FixCameraFlag;        /**< Fixed-camera mode for this frame. */
-static int             FixCameraChgCnt;      /**< Frames since the fixed-camera position was sampled. */
-static int             EyeViewCancelOnce;    /**< Rejects one request to enter eye view. */
-static int             ViewMode;             /**< Walking, eye-view or photo view. */
-static int             InitEyeViewFlag;      /**< Whether the saved follow-camera position is valid. */
-static int             ShutterCnt;           /**< Photo shutter frame counter. */
-static int             move_chara;           /**< Character movement state. */
-static float           viewAngleH;           /**< First-person camera yaw. */
-static float           viewAngleV;           /**< First-person camera pitch. */
-static float           AddProj;              /**< First-person projection adjustment. */
-static mgCCamera      *LadderCamera;         /**< Camera used during ladder climbing. */
-static float           LdrNext;              /**< Height of the next ladder rung. */
-static float           LdrRot;               /**< Heading toward the ladder. */
-static float           OldMtnRate;           /**< Motion ratio at the previous ladder step. */
-static int             LdrSound;             /**< Ladder footstep sound set. */
-static int             LdrBtmFoot;           /**< Footstep set at the ladder bottom. */
-static int             LdrTopFoot;           /**< Footstep set at the ladder top. */
-static MoveCheckInfo   MoveInfo;             /**< Last player movement collision result. */
-static CSceneEventData LadderData;           /**< Event that owns the current ladder. */
-static sceVu0FVECTOR   OldFixCameraPos;      /**< Cached fixed-camera eye position. */
-static sceVu0FVECTOR   OldCameraPos;         /**< Follow-camera position saved before eye view. */
-static sceVu0FVECTOR   LdrPos;               /**< Origin of the ladder. */
-static sceVu0FVECTOR   StdPos;               /**< Position where the player approaches the ladder. */
-static sceVu0FVECTOR   LdrBottomPos;         /**< Landing at the bottom of the ladder. */
-static sceVu0FVECTOR   LdrTopPos;            /**< Landing at the top of the ladder. */
-static sceVu0FVECTOR   LdrTopWalk;           /**< Walk-off position at the top of the ladder. */
-static sceVu0FVECTOR   LdrCamPos;            /**< Camera eye position for ladder climbing. */
+static int                      LadderMode;           /**< End of the ladder the player entered. */
+static int                      LadderStep;           /**< Stage of climbing the ladder. */
+static int                      CharaMotionMode;      /**< Special movement motion in progress. */
+static int                      CharaMotionModeCnt;   /**< Frames left in the landing motion. */
+static int                      CharaFallFlag;        /**< Consecutive frames without ground contact. */
+static int                      CharaAngleTargetFlag; /**< Whether a target heading is set. */
+static int                      CharaAngleTarget;     /**< Target heading state. */
+static int                      FixCameraFlag;        /**< Fixed-camera mode for this frame. */
+static int                      FixCameraChgCnt;      /**< Frames since the fixed-camera position was sampled. */
+static int                      EyeViewCancelOnce;    /**< Rejects one request to enter eye view. */
+static int                      ViewMode;             /**< Walking, eye-view or photo view. */
+static int                      InitEyeViewFlag;      /**< Whether the saved follow-camera position is valid. */
+static int                      ShutterCnt;           /**< Photo shutter frame counter. */
+static int                      move_chara;           /**< Character movement state. */
+static float                    viewAngleH;           /**< First-person camera yaw. */
+static float                    viewAngleV;           /**< First-person camera pitch. */
+static float                    AddProj;              /**< First-person projection adjustment. */
+static mgCCamera               *LadderCamera;         /**< Camera used during ladder climbing. */
+static float                    LdrNext;              /**< Height of the next ladder rung. */
+static float                    LdrRot;               /**< Heading toward the ladder. */
+static float                    OldMtnRate;           /**< Motion ratio at the previous ladder step. */
+static int                      LdrSound;             /**< Ladder footstep sound set. */
+static int                      LdrBtmFoot;           /**< Footstep set at the ladder bottom. */
+static int                      LdrTopFoot;           /**< Footstep set at the ladder top. */
+static InitializedMoveCheckInfo MoveInfo;             /**< Last player movement collision result. */
+static CSceneEventData          LadderData;           /**< Event that owns the current ladder. */
+static sceVu0FVECTOR            OldFixCameraPos;      /**< Cached fixed-camera eye position. */
+static sceVu0FVECTOR            OldCameraPos;         /**< Follow-camera position saved before eye view. */
+static sceVu0FVECTOR            LdrPos;               /**< Origin of the ladder. */
+static sceVu0FVECTOR            StdPos;               /**< Position where the player approaches the ladder. */
+static sceVu0FVECTOR            LdrBottomPos;         /**< Landing at the bottom of the ladder. */
+static sceVu0FVECTOR            LdrTopPos;            /**< Landing at the top of the ladder. */
+static sceVu0FVECTOR            LdrTopWalk;           /**< Walk-off position at the top of the ladder. */
+static sceVu0FVECTOR            LdrCamPos;            /**< Camera eye position for ladder climbing. */
 
 static void LadderControl(CScene *scene, CPadControl *pad);
 #endif
@@ -407,7 +422,8 @@ void EditMoveChara(CScene *scene, sceVu0FVECTOR velocity, EditMoveCharaInfo *inf
     hard_landing = 0;
     character->sound_info.foot_sound_id = -1;
     MoveInfo.radius = 13.0f;
-    MoveCheck(position, velocity, next_position, &MoveInfo, polys, poly_count, ignore_mask);
+    MoveCheckInfo &move_info = MoveInfo;
+    MoveCheck(position, velocity, next_position, &move_info, polys, poly_count, ignore_mask);
 
     if (MoveInfo.landed) {
         if (velocity[1] < -5.0f) {
@@ -1493,12 +1509,6 @@ void EditDrawEffectChara(CScene *scene) {
     }
 }
 
-// Static initialiser (.init)
-extern "C" void __sinit_editctrl_cpp() {
-    memset(&MoveInfo, 0, sizeof(MoveInfo));
-    memset(&LadderData, 0, sizeof(LadderData));
-}
-
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", name_978__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", name_id_982__DATA);
@@ -1566,10 +1576,10 @@ INCLUDE_BSS(LdrBtmFoot, 0x4);
 INCLUDE_BSS(LdrTopFoot, 0x4);
 
 // Uninitialised data (.bss)
-INCLUDE_BSS(MoveInfo, 0x110);
+InitializedMoveCheckInfo MoveInfo;
 INCLUDE_BSS(OldFixCameraPos, 0x10);
 INCLUDE_BSS(OldCameraPos, 0x10);
-INCLUDE_BSS(LadderData, 0xD0);
+CSceneEventData LadderData;
 INCLUDE_BSS(LdrPos, 0x10);
 INCLUDE_BSS(StdPos, 0x10);
 INCLUDE_BSS(LdrBottomPos, 0x10);

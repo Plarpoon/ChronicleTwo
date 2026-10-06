@@ -17,25 +17,25 @@
 // Code (.text)
 void mgCVisualMotionMDT::Initialize() {
     int  slot_count;
-    int  byte_offset;
+    int  bone_index;
     int *slot;
 
     mgCVisualMDT::Initialize();
     slot_count = 0;
-    byte_offset = 0;
+    bone_index = 0;
 
     do {
-        slot = (int *) ((u_char *) this + byte_offset);
+        slot = &bone[bone_index];
         slot_count += 8;
-        slot[0x20] = -1;
-        slot[0x21] = -1;
-        byte_offset += 0x20;
-        slot[0x22] = -1;
-        slot[0x23] = -1;
-        slot[0x24] = -1;
-        slot[0x25] = -1;
-        slot[0x26] = -1;
-        slot[0x27] = -1;
+        bone_index += 8;
+        slot[0] = -1;
+        slot[1] = -1;
+        slot[2] = -1;
+        slot[3] = -1;
+        slot[4] = -1;
+        slot[5] = -1;
+        slot[6] = -1;
+        slot[7] = -1;
     } while (slot_count < 0x20);
 
     vu1_base = 0x7C;
@@ -195,15 +195,15 @@ mgVertexWeight::mgVertexWeight() {
 
 void mgCVisualMotionMDT::ChangeWeight(mgCFrame **new_frames, float (*matrix)[4][4], int count) {
     int  i;
-    int  byte_offset;
+    int  bone_index;
     int *slot;
     int  old;
 
-    byte_offset = 0;
+    bone_index = 0;
     i = 0;
 
     do {
-        slot = (int *) ((u_char *) this + byte_offset + 0x80);
+        slot = &bone[bone_index];
         old = *slot;
 
         if (old < 0) {
@@ -212,7 +212,7 @@ void mgCVisualMotionMDT::ChangeWeight(mgCFrame **new_frames, float (*matrix)[4][
 
         *slot = (*new_frames)->SearchFrameID(this->frame[old]->name);
         i += 1;
-        byte_offset += 4;
+        bone_index++;
     } while (i < 0x20);
 
     this->frame = new_frames;

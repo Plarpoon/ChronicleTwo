@@ -26,7 +26,7 @@ DNG_FLOOR_SAVE *CSaveDataDungeon::GetFloorInfoPtr(int dungeon, int floor) {
 
     index += floor;
 
-    return (DNG_FLOOR_SAVE *) ((u8 *) this + index * sizeof(DNG_FLOOR_SAVE) + 0x3C);
+    return &floor_info[index];
 }
 
 void CSaveDataDungeon::Initialize() {

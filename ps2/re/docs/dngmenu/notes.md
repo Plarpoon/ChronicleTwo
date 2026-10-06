@@ -1,5 +1,7 @@
 # dngmenu: reverse-engineering notes
 
+`dng_light_circle` and `dngfreemap_num` are const `mgRect<int>` globals: MWCC emits their zero-initialized storage in retail's `.rodata` section and still runs their constructors from the exact 144-byte static initializer. Declaring them without `const` places the storage in `.bss` and breaks the section mapping.
+
 ## Additional map behavior
 
 `CalcGlidPutPos` maps a cell to board coordinates `x * 52 - y * 16` and
@@ -291,3 +293,7 @@ so its placement needs further work during matching.
 `mgRect<float>::Set` stores its four arguments directly into the left, top,
 right and bottom fields. The explicit float specialization is a separate
 retail symbol from the generic template, so it has its own guarded draft.
+
+## Native static initialization
+
+The light-circle and free-map number rectangles are zero-filled 0x10-byte data globals whose four-argument constructors call `mgRect<int>::Set`. The root placement rectangle uses the default `mgRect<float>` constructor; the floor-information rectangle uses four arguments. A native `mgCMemory MenuTreeMapStack` completes the same initialization order. Together these globals emit the 144-byte retail `__sinit_dngmenu_cpp` exactly and retain the original data/BSS section assignments after object postprocessing. This replaces the guarded handwritten initializer and assembly fallback.

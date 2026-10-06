@@ -1308,7 +1308,7 @@ STATIC_ASSERT(sizeof(PARTY_CHARA_INFO) == 0xC);
  *
  */
 struct USER_PICTURE_INFO {
-    u8    used;       /**< Non-zero when the slot holds a photo. */
+    s8    used;       /**< Non-zero when the slot holds a photo. */
     u8    is_new;     /**< Non-zero for a photo not yet looked at in the menu. */
     short map_no;     /**< Map the photo was taken on, or -1. */
     short npc_no;     /**< Townsperson the photo shows, or -1. */

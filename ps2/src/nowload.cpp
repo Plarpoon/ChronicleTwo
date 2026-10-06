@@ -216,7 +216,7 @@ void CreateNowLoading(NowLoadingInfo *info) {
     *(LoadingMemoryWords *) memory = *(LoadingMemoryWords *) &info->memory;
     language = LanguageCode;
     LoadInfo.step_count = info->step_count;
-    buffer = (u8 *) (memory->stack + memory->stack_used);
+    buffer = reinterpret_cast<u8 *>(memory->stGetTop());
 
     if (language > 0 && language < 6) {
         language = 2;

@@ -182,7 +182,7 @@ static int htoi(char *text) {
 
     for (i = 0; i < length; i++) {
         s32 back = length - i;
-        s32 ch = ((u8 *) (back + (s32) text))[-1];
+        s32 ch = reinterpret_cast<u8 *>(&text[back])[-1];
         s32 digit = 0;
 
         if (ch >= '0' && ch <= '9') {

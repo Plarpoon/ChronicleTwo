@@ -815,93 +815,51 @@ void CScene::Initialize() {
     read_buff = NULL;
     chara_num = 128;
     {
-        int byte_offset;
-        int index = 0;
-        byte_offset = 0;
-
-        for (; index < chara_num; index++) {
-            CSceneCharacter *character = (CSceneCharacter *) ((char *) this + byte_offset +
-                                                              offsetof(CScene, chara));
+        for (int index = 0; index < chara_num; index++) {
+            CSceneCharacter *character = &chara[index];
             character->Initialize();
-            byte_offset += sizeof(CSceneCharacter);
         }
     }
     camera_num = 8;
     {
-        int byte_offset;
-        int index = 0;
-        byte_offset = 0;
-
-        for (; index < camera_num; index++) {
-            CSceneCamera *camera = (CSceneCamera *) ((char *) this + byte_offset +
-                                                     offsetof(CScene, camera));
+        for (int index = 0; index < camera_num; index++) {
+            CSceneCamera *camera = &this->camera[index];
             camera->Initialize();
-            byte_offset += sizeof(CSceneCamera);
         }
     }
     message_num = 8;
     {
-        int byte_offset;
-        int index = 0;
-        byte_offset = 0;
-
-        for (; index < message_num; index++) {
-            CSceneMessage *message = (CSceneMessage *) ((char *) this + byte_offset +
-                                                        offsetof(CScene, message));
+        for (int index = 0; index < message_num; index++) {
+            CSceneMessage *message = &this->message[index];
             message->Initialize();
-            byte_offset += sizeof(CSceneMessage);
         }
     }
     map_num = 4;
     {
-        int byte_offset;
-        int index = 0;
-        byte_offset = 0;
-
-        for (; index < map_num; index++) {
-            CSceneMap *map = (CSceneMap *) ((char *) this + byte_offset +
-                                            offsetof(CScene, map));
+        for (int index = 0; index < map_num; index++) {
+            CSceneMap *map = &this->map[index];
             map->Initialize();
-            byte_offset += sizeof(CSceneMap);
         }
     }
     sky_num = 4;
     {
-        int byte_offset;
-        int index = 0;
-        byte_offset = 0;
-
-        for (; index < sky_num; index++) {
-            CSceneSky *sky = (CSceneSky *) ((char *) this + byte_offset +
-                                            offsetof(CScene, sky));
+        for (int index = 0; index < sky_num; index++) {
+            CSceneSky *sky = &this->sky[index];
             sky->Initialize();
-            byte_offset += sizeof(CSceneSky);
         }
     }
     gameobj_num = 4;
     {
-        int byte_offset;
-        int index = 0;
-        byte_offset = 0;
-
-        for (; index < sky_num; index++) {
-            CSceneGameObj *object = (CSceneGameObj *) ((char *) this + byte_offset +
-                                                       offsetof(CScene, gameobj));
+        for (int index = 0; index < sky_num; index++) {
+            CSceneGameObj *object = &gameobj[index];
             object->Initialize();
-            byte_offset += sizeof(CSceneGameObj);
         }
     }
     effect_num = 8;
     {
-        int byte_offset;
-        int index = 0;
-        byte_offset = 0;
-
-        for (; index < effect_num; index++) {
-            CSceneEffect *effect = (CSceneEffect *) ((char *) this + byte_offset +
-                                                     offsetof(CScene, effect));
+        for (int index = 0; index < effect_num; index++) {
+            CSceneEffect *effect = &this->effect[index];
             effect->Initialize();
-            byte_offset += sizeof(CSceneEffect);
         }
     }
     bg_load_step = 0;
@@ -957,10 +915,8 @@ mgCMemory *CScene::GetStack(int index) {
 void CScene::ClearStack(int index) {
     int i;
 
-    int offset = index * 4;
-
     for (i = index; i < stack_num; i++) {
-        mgCMemory **slot = (mgCMemory **) ((u8 *) this + offset + 8);
+        mgCMemory **slot = &this->stack[i];
         mgCMemory  *stack = *slot;
 
         if (stack != NULL) {
@@ -971,8 +927,6 @@ void CScene::ClearStack(int index) {
                 (*slot)->stSetBuffer(NULL, 0);
             }
         }
-
-        offset += 4;
     }
 }
 

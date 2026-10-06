@@ -1,5 +1,9 @@
 # scene: reverse-engineering notes
 
+`CScene::Initialize` resets each slot array (`chara`, `camera`, `message`, `map`, `sky`, `gameobj`, and `effect`) through its declared element type. PAL uses a separate element counter and byte-stride induction value for each loop; typed indexing currently differs only in assignment of the two saved registers.
+
+`CScene::ClearStack` resets each assigned stack at or above an index and detaches every stack after the first. The slot is `CScene::stack[i]`; typed member indexing removes the old offset from the start of `CScene` but currently changes MWCC's loop induction code.
+
 Header: `ps2/include/scene.hpp`. No first-game counterpart exists for any class here
 (`/home/adubbz/development/chronicle` has no rain or scene-slot classes).
 

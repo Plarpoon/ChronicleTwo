@@ -11,6 +11,7 @@ and each was re-verified here.
 |---|---|---|
 | `conv_new_text(char*, char*)` | static | writes converted object name to dst, returns length; only caller CreateFrameVisual |
 | `htoi(char*)` | static | hex string -> int; called by mgSetFrameAttr |
+
 | `mgSetFrameAttr(mgCFrame*, int)` | global | parses name text after `--` into the frame's mgCFrameAttr (`frame+0xF4`, or a stack mgCFrameAttr when none); recurses over children (`+0x58` first child, `+0x5C` next sibling) when arg 2 != 0. Uses local statics `name_def_276`/`init_277` (default name = `at_387`, the empty string) |
 | `SearchVisualType(mgCreateVisualType*, char*)` | static | walks the table (stride 8) until `name == NULL` or `type == -1`; match via `mgFrameNameComp` |
 | `CreateFrameVisual(...)` | static | returns int (0 failure / no model, 1 visual created). See below |
@@ -24,6 +25,8 @@ and each was re-verified here.
 | `mgCFrame::SetVisual` | inline, owner mg_frame | `frame+0xF8 = visual`; it is virtual (mgCFrame vtable +0x48) |
 | `mgCVisualFixMDT::Initialize` | inline, owner mg_visual | just calls `mgCVisualMDT::Initialize` |
 | `mgCVisualMDT::Iam/GetMaterialNum/GetpMaterial/Draw(float(*)[4],mgCDrawManager*)` | inline, owner mg_visual | Iam=1; `+0x40` material count; `+0x44` material table; Draw = `Draw(NULL, m, dm)` via slot +0x2C |
+
+`htoi` now reads the byte at `&text[back]` with an unsigned-byte view instead of adding the text address to an integer. MWCC generates the same instructions except for the commutative operand order in one `addu` (`base,index` rather than retail's `index,base`), leaving this function at 99.81132% while that pointer expression is tuned.
 
 All mgCVisual virtuals and the inline mgCVisualMDT ones are emitted here as weak inline functions
 because the vtables `__vt__9mgCVisual` and `__vt__15mgCShadowFixMDT` are emitted in this unit (both

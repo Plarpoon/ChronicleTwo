@@ -980,7 +980,7 @@ void DrawGeoramaMateria(int top_y, char *title, int unused_count, int *items, in
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DrawGeoramaMateria__FiPciPii);
 #endif
 #ifdef NONMATCHING
-extern mgRect<int> dng_light_circle;
+extern const mgRect<int> dng_light_circle;
 
 void CDngFreeMap::DrawTreeMap(int opacity) {
     mgRect<float> cell_rect;
@@ -2543,23 +2543,6 @@ void mgRect<float>::Set(float new_left, float new_top, float new_right, float ne
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Set__9mgRect_f_Fffff);
 #endif
 
-// Static initialiser (.init)
-#ifdef NONMATCHING
-extern mgRect<int>   dngfreemap_num;
-extern mgRect<float> treemap_root_put;
-extern mgRect<int>   Floor_Info;
-
-extern "C" void __sinit_dngmenu_cpp() {
-    dng_light_circle.Set(388, 304, 124, 80);
-    dngfreemap_num.Set(0, 0, 12, 18);
-    treemap_root_put.Set(0.0f, 0.0f, 0.0f, 0.0f);
-    Floor_Info.Set(0, 238, 256, 18);
-    MenuTreeMapStack.Init();
-}
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", __sinit_dngmenu_cpp);
-#endif
-
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dngmenu", markOffsetTable_1092__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dngmenu", root_type_texturecrd_1216__DATA);
@@ -2595,8 +2578,8 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dngmenu", bitTable_2900__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dngmenu", at_3141__DATA);
 
 // Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dngmenu", dng_light_circle__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dngmenu", dngfreemap_num__DATA);
+const mgRect<int> dng_light_circle(388, 304, 124, 80);
+const mgRect<int> dngfreemap_num(0, 0, 12, 18);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dngmenu", at_1018__5__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dngmenu", at_1019__4__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dngmenu", at_1020__3__DATA);
@@ -2716,7 +2699,7 @@ INCLUDE_BSS(at_3478, 0x8);
 
 // Uninitialised data (.bss)
 INCLUDE_BSS(MenuDngMes, 0x20);
-INCLUDE_BSS(treemap_root_put, 0x10);
-INCLUDE_BSS(Floor_Info, 0x10);
-INCLUDE_BSS(MenuTreeMapStack, 0x30);
+mgRect<float> treemap_root_put;
+mgRect<int>   Floor_Info(0, 238, 256, 18);
+mgCMemory     MenuTreeMapStack;
 INCLUDE_BSS(at_3142, 0x10);

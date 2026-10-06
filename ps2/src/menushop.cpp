@@ -1627,7 +1627,7 @@ void CMenuQuestView::InitEnd() {
         if (invent != NULL) {
             USER_PICTURE_INFO *photo = invent->GetPhotoInfo(slot);
 
-            if (photo != NULL && (s8) photo->used != 0) {
+            if (photo != NULL && photo->used != 0) {
                 photo_no[slot] = photo->neta_id;
             }
         }

@@ -2,6 +2,8 @@
 
 `MenuGeoramaStack`, `potti0`, and `potti1` are native C++ globals. Their constructors produce the retail 0x58-byte static initializer (`__sinit_editmenu_cpp`) exactly; no hand-written C-linkage initializer is needed. The rectangle initializers use their four retail edge values.
 
+`CMenuGeorama::InitEnd` passes the memory stack's current top to `MenuCharaLoadStack::stSetBuffer`. Calling `stGetTop()` replaces the explicit stack-pointer addition and leaves the retail function byte-identical.
+
 `MenuGeoramaAnalyzeSelect` moves the analysis cursor with two pairs of key
 bits, clamps it to the page's last line, and scrolls the analysis list toward
 the selected line. It caps the scroll distance, eases the list's Y coordinate

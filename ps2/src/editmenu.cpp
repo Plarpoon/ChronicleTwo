@@ -1719,7 +1719,7 @@ int MakeDownLoadAnaunce(int town_no, mgCMemory *stack, int *out_num, int *out_su
                     src_char++;
                     dst_char++;
                     if (count >= 21 && *src_char == ' ') {
-                        char *word = src_char + 1;
+                        char *word = &src_char[1];
                         int   word_len = 0;
                         while (word != NULL && *word != ' ' && *word != '\0') {
                             word_len++;
@@ -2366,8 +2366,7 @@ void CMenuGeorama::InitEnd() {
     InitMenuDl(download_texture, MenuGeoStoneDownLoadTime);
     free_blocks = MenuGeoramaStack.stack_size - MenuGeoramaStack.stack_used;
     used_blocks = free_blocks;
-    MenuCharaLoadStack.stSetBuffer(
-        (MenuGeoramaStack.stack + MenuGeoramaStack.stack_used), free_blocks);
+    MenuCharaLoadStack.stSetBuffer(MenuGeoramaStack.stGetTop(), free_blocks);
 }
 
 void CMenuGeorama::ExitEnd() {

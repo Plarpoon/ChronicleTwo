@@ -16,7 +16,7 @@ so the mgCMemory member's inline ctor (`mgCMemory() { Init(); }`) runs, then the
 |---|---|---|
 | 0x00 | `int tex_block` | passed to `ReloadTexture(int)`, `GetTexture("loading", int)`, `EnterIMGFile(..., int, ...)`, `DeleteBlock(int)`. Callers set 0xCE (EditInit), 0x51 (InitDungeonMain). |
 | 0x04 | `int unk_4` | set to 1 by both callers, 0 by ctor; never read in nowload (only copied). |
-| 0x08 | `mgCMemory memory` | ctor Init; callers `stSetBuffer` on it; CreateNowLoading reads `+0x28/+0x2c` (= mgCMemory `stack`/`stack_used`, i.e. load address `stack + stack_used*16`) and calls `Alloc(&memory, qwords)`. mgCMemory is 0x30 (mg_memory.hpp). |
+| 0x08 | `mgCMemory memory` | ctor Init; callers `stSetBuffer` on it; CreateNowLoading obtains the next loading buffer through `stGetTop()` and calls `Alloc(&memory, qwords)`. mgCMemory is 0x30 (mg_memory.hpp). |
 | 0x38 | `int step_count` | divisor in `ProgBarWidthStep = 0.2f / step_count` and `NextProgBarWidth = (ProgBarCnt+1)/step_count`; clamp for ProgBarCnt. Callers set 15 (EditInit) and 10 (dungeon). |
 
 CreateNowLoading copies the whole struct to `LoadInfo` word by word (struct assignment `LoadInfo = *info;`).

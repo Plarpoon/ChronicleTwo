@@ -1,5 +1,7 @@
 # water: reverse-engineering notes
 
+`CFireRaster::Step` walks its `FireRasterParticle particle[20]` array while advancing a separate phase value for the wisp sway. Typed array indexing reproduces all PAL instructions except the compiler's choice of two saved registers for the slot offset and phase.
+
 ## C++ draft status
 All 25 functions have C++ in `ps2/src/water.cpp`. 13 are exact and compiled by
 the matching build. 2 more compile to retail's bytes in isolation but stay under

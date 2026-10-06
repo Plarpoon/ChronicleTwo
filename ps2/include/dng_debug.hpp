@@ -121,4 +121,12 @@ int dngDebugKey();
  */
 void DrawDebugWindow();
 
+/**
+ *
+ * Reloads a monster for the dungeon debug command, resetting its manager when requested.
+ *
+ * @mangled DBGCMD_ReloadEnemy__Fii
+ * @address 0x1BC710
+ * @size 0x21C
+ */
 void DBGCMD_ReloadEnemy(int monster_id, int reset);

@@ -1650,4 +1650,12 @@ int iRand(int limit);
  */
 float fRand(float limit);
 
+/**
+ *
+ * Projects a rotated world-space sprite into four screen-space corners.
+ *
+ * @mangled LocalTransWorldPrimPos__FPA4_iPffff
+ * @address 0x1C0050
+ * @size 0x4AC
+ */
 int LocalTransWorldPrimPos(int (*corners)[4], float *pos, float width, float height, float angle);

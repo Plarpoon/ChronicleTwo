@@ -641,4 +641,12 @@ int GetRidePodCore(int index);
  */
 int GetUsedItemAfterEffect(int item_no, USEITEM_EFFECT *effect);
 
+/**
+ *
+ * Copies an item's available command message IDs into a terminated list.
+ *
+ * @mangled ItemCmdMsgSet__FiPi
+ * @address 0x197560
+ * @size 0x6C
+ */
 int ItemCmdMsgSet(int item_no, int *messages);

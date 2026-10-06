@@ -43,6 +43,14 @@ struct MENU_SPI_ANALYZE_STRUCT1 {
 
 STATIC_ASSERT(sizeof(MENU_SPI_ANALYZE_STRUCT1) == 0x8);
 
+/**
+ *
+ * Looks up a menu script keyword in a null-terminated value table, returning -1 when absent.
+ *
+ * @mangled menu_spi_analyze_func_strcut1__FP24MENU_SPI_ANALYZE_STRUCT1Pc
+ * @address 0x254C20
+ * @size 0x80
+ */
 int menu_spi_analyze_func_strcut1(MENU_SPI_ANALYZE_STRUCT1 *table, char *name);
 
 /**

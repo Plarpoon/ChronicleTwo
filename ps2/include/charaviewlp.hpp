@@ -4,7 +4,7 @@
 
 /**
  * @file
- * Declares the entry, exit and per-frame functions of the debug character viewer, a main-loop mode that is left empty in the retail build.
+ * Declares the entry, exit and per-frame functions of the debug character viewer.
  */
 
 /**
@@ -15,7 +15,7 @@
 struct INIT_LOOP_ARG;
 
 /**
- * Prepares the character viewer when the main loop enters it; does nothing in the retail build.
+ * Entry hook for the character viewer, with no setup work.
  *
  * @mangled InitCharaViewerMain__F13INIT_LOOP_ARG
  * @address 0x1A3460
@@ -24,7 +24,7 @@ struct INIT_LOOP_ARG;
 void InitCharaViewerMain(INIT_LOOP_ARG arg);
 
 /**
- * Releases the character viewer when the main loop leaves it; does nothing in the retail build.
+ * Exit hook for the character viewer, with no cleanup work.
  *
  * @mangled FinishCharaVieweMain__Fv
  * @address 0x1A3470

@@ -5,12 +5,12 @@
 /**
  * @file
  * Declares the transfer of files over the network socket, the device that
- * paths with the "net:" prefix name; retail keeps only empty stubs.
+ * paths with the "net:" prefix name.
  */
 
 /**
  *
- * Loads a file sent over the network socket; gives the number of bytes loaded, always zero in retail.
+ * Returns zero because network socket file loading is unavailable.
  *
  * @mangled LoadFileSocket__FPcPUi
  * @address 0x28D1D0
@@ -20,7 +20,7 @@ int LoadFileSocket(char *path, unsigned int *data);
 
 /**
  *
- * Writes a file over the network socket; does nothing in retail.
+ * Provides the network socket file-writing hook without writing data.
  *
  * @mangled WriteFileSocket__FPcPUii
  * @address 0x28D1E0

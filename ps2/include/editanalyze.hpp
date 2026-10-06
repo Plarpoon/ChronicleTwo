@@ -98,14 +98,62 @@ int CheckLiveChara(int map_no, CEditMap *edit_map, int no, int chara);
  */
 void EditMapInitEvent(int map_no, CEditMap *edit_map);
 
+/**
+ *
+ * Checks the Sharlot town layout against its analysis conditions.
+ *
+ * @mangled AnalyzeSharlot__FP9CEditDataP8CEditMap
+ * @address 0x31C2A0
+ * @size 0x54C
+ */
 void AnalyzeSharlot(CEditData *data, CEditMap *map);
 
+/**
+ *
+ * Checks the Stera town layout against its analysis conditions.
+ *
+ * @mangled AnalyzeStera__FP9CEditDataP8CEditMap
+ * @address 0x31C7F0
+ * @size 0x230
+ */
 void AnalyzeStera(CEditData *data, CEditMap *map);
 
+/**
+ *
+ * Checks the Benietio town layout against its analysis conditions.
+ *
+ * @mangled AnalyzeBenietio__FP9CEditDataP8CEditMap
+ * @address 0x31CA20
+ * @size 0x48C
+ */
 void AnalyzeBenietio(CEditData *data, CEditMap *map);
 
+/**
+ *
+ * Checks the Heim town layout against its analysis conditions.
+ *
+ * @mangled AnalyzeHeim__FP9CEditDataP8CEditMap
+ * @address 0x31CFE0
+ * @size 0x564
+ */
 void AnalyzeHeim(CEditData *data, CEditMap *map);
 
+/**
+ *
+ * Checks the Moon Flower town layout against its analysis conditions.
+ *
+ * @mangled AnalyzeMoonFlower__FP9CEditDataP8CEditMap
+ * @address 0x31D550
+ * @size 0x884
+ */
 void AnalyzeMoonFlower(CEditData *data, CEditMap *map);
 
+/**
+ *
+ * Classifies a placed part color for the town analysis checks.
+ *
+ * @mangled GetColorType__FP10CEditPartsi
+ * @address 0x31CEB0
+ * @size 0x128
+ */
 int GetColorType(CEditParts *parts, int no);

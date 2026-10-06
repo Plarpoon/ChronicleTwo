@@ -74,7 +74,7 @@ struct PartsPieceNode {
 
 /**
  *
- * Supplies the retail list initialization entry used by animation nodes.
+ * Provides list links and initialization for map animation nodes.
  *
  */
 class CList_9CObjAnime_ {

@@ -325,19 +325,19 @@ public:
         struct {
             u32   map_jump_flags; /**< Options applied while changing maps. */
             u8    unk_2e94[8];
-            int   door_place_no[2];
+            int   door_place_no[2]; /**< Place numbers passed to an event when a door is used. */
             u8    unk_2ea4[4];
             char  map_jump_name[1]; /**< Name of the destination map. */
             u8    unk_2ea9[0x77];
-            float door_dir_x;
+            float door_dir_x; /**< Horizontal x direction used to calculate the door facing angle. */
             u8    unk_2f24[4];
-            float door_dir_z;
+            float door_dir_z; /**< Horizontal z direction used to calculate the door facing angle. */
             u8    unk_2f2c[4];
-            float door_vec[3];
+            float door_vec[3]; /**< Door vector passed to the event. */
             u8    unk_2f3c[0x4];
-            int   event_parts_id;
+            int   event_parts_id; /**< Map part selected for the current event. */
             u8    unk_2f44[0x18];
-            int   villager_id;
+            int   villager_id; /**< Villager selected for an edit event. */
         };
     };
 

@@ -157,7 +157,7 @@ struct INVENT_DATA_INFO {
             u8               unk_e[2];
         };
 
-        INVENT_MATERIAL_LIST materials;
+        INVENT_MATERIAL_LIST materials; /**< The recipe's materials as one list record. */
     };
 
     short unk_10;
@@ -989,14 +989,22 @@ char *GetPhotoNameCheck(USER_PICTURE_INFO *info);
 
 /**
  *
+ * Marks newly photographed ideas as discovered and reports whether any were added.
+ *
+ * @mangled CheckPhotoFlag__Fv
+ * @address 0x2012F0
+ * @size 0xC0
+ */
+int CheckPhotoFlag();
+
+/**
+ *
  * Returns non-zero when the player has the three ideas of an item's recipe, from photos or the notebook.
  *
  * @mangled CheckInventItem__Fi
  * @address 0x201B40
- * @size 0x1B0
+ * @size 0x1A8
  */
-int CheckPhotoFlag();
-
 int CheckInventItem(int item_id);
 
 /**

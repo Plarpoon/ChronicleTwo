@@ -232,7 +232,7 @@ public:
     /** Gives the animation held by this list node. */
     CObjAnime *pGetData() { return &data; }
 
-    /** Clears both list links through the retail dispatch table. */
+    /** Clears both list links through the initialization dispatch entry. */
     void Initialize() { vtable->initialize(this); }
 };
 

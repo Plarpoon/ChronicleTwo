@@ -231,7 +231,7 @@ public:
     void GetReversVec(float *out_vector);
 
     /**
-     * Draws the primitive for debugging; does nothing in retail.
+     * Reserved debug drawing hook for the collision primitive.
      *
      * @mangled DebugDraw__8CColPrimFv
      * @address 0x1BB910

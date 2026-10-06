@@ -667,6 +667,22 @@ void FinishDungeonMain();
  */
 int LoopDungeonMain();
 
+/**
+ *
+ * Loads the event script for the selected dungeon.
+ *
+ * @mangled EntryEventScript__Fi
+ * @address 0x1CFC70
+ * @size 0x194
+ */
 void EntryEventScript(int event_no);
 
+/**
+ *
+ * Restores the follow camera and character display after eye view ends.
+ *
+ * @mangled ResetEyeView__FP12CActionChara
+ * @address 0x1D52F0
+ * @size 0xBC
+ */
 void ResetEyeView(CActionChara *chara);

@@ -168,8 +168,7 @@ struct PAD_CAPTURE_FRAME {
 STATIC_ASSERT(sizeof(PAD_CAPTURE_FRAME) == 0x6);
 
 /**
- * Sizes of the input recording, which fills one megabyte of development
- * kit memory past the retail console's 32 megabytes.
+ * Sizes of the one-megabyte input recording in development kit memory.
  */
 enum {
     PAD_CAPTURE_BUFFER_SIZE = 0x100000,                                          /**< Bytes reserved for the recording. */

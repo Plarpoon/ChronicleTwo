@@ -862,14 +862,62 @@ void LoadMonsterFile();
  */
 void LoadMonsterFile(int monster_id, int initialize);
 
+/**
+ *
+ * Sounds the low-health warning while dungeon combat is active.
+ *
+ * @mangled StatusWarningSnd__Fv
+ * @address 0x290C70
+ * @size 0x100
+ */
 void StatusWarningSnd();
 
+/**
+ *
+ * Adjusts the battle music and player battle state as monsters approach.
+ *
+ * @mangled BattleAreaBGMCtrl__Fv
+ * @address 0x290D70
+ * @size 0x2DC
+ */
 void BattleAreaBGMCtrl();
 
+/**
+ *
+ * Finds the minimum and maximum item ranks available on a dungeon floor.
+ *
+ * @mangled PickupRandomItemCheckMax__FP22TRESURE_BOX_FLOOR_INFOi
+ * @address 0x291E00
+ * @size 0xE0
+ */
 void PickupRandomItemCheckMax(TRESURE_BOX_FLOOR_INFO *table, int floor_index);
 
+/**
+ *
+ * Selects a treasure item from the floor groups near the requested rank.
+ *
+ * @mangled PickupRandomItem__FP22TRESURE_BOX_FLOOR_INFOii
+ * @address 0x291EE0
+ * @size 0x14C
+ */
 TRESURE_BOX_ITEM *PickupRandomItem(TRESURE_BOX_FLOOR_INFO *table, int floor_index, int value);
 
+/**
+ *
+ * Checks whether a dungeon object can be placed clear of chests, markers, and stones.
+ *
+ * @mangled CheckObjectPutArea__FPf
+ * @address 0x292030
+ * @size 0xE0
+ */
 int CheckObjectPutArea(float *pos);
 
+/**
+ *
+ * Runs the script that defines monster placement for a dungeon floor.
+ *
+ * @mangled CreatMonsterFloorInfo__FPci
+ * @address 0x292EC0
+ * @size 0x64
+ */
 void CreatMonsterFloorInfo(char *script, int length);

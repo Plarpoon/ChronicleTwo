@@ -610,7 +610,7 @@ u_int CWater::CreatePacket(mgCDrawManager *draw_manager) {
         slope[rows - 3][column][3] = 0.3f;
         slope[2][column][3] = 0.3f;
     }
-    base = memory->stack + memory->stack_used;
+    base = memory->stGetTop();
     start = (u_long128 *) ((u_int) base | MG_UNCACHED);
     end = start;
     if (texture != NULL) {

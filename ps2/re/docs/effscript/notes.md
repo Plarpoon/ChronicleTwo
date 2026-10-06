@@ -116,6 +116,13 @@ register assignments (97.203%). Splitting allocation from construction adds
 another guard (94.25%). All of these forms preserve construction semantics
 but fail retail object matching, so the original call remains.
 
+MWCC 3.0 accepts `script->run.CRunScript()` as source, but it constructs a
+temporary at a stack address instead of the `run` member; the result is both
+semantically wrong and only 98.45% matching. The compiler's `-help` exposes
+no option to suppress the placement-new null guard. The native member form
+adds a branch and delay-slot instruction in the middle of `CreateEffSpt`, so
+relocation rebinding alone cannot restore the retail instruction stream.
+
 The script's local `GetStackString` returns the pointer stored in a stack
 slot. Typing its return as `char*` removes the integer-to-pointer casts at
 its call sites; all affected functions remain exact.

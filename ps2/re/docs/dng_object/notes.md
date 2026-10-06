@@ -65,6 +65,9 @@ Same shape as the rocket with 8 trail slots; Man loops 16 times, stride 0x130; `
 - 0x382-0x38F: never touched (alignment padding).
 - `CommonStageClassInit` (dng_main) clears active[] to 0, col_prim_id[] to -1 and index to 0 inline; there is no
   separate CMachineGun init symbol.
+`Step`'s byte-offset slot aliases refer to `start_pos[i]`, `velocity[i]`, and
+`pos[i]`. Replacing them with those typed array entries lowers its object score
+from 97.03% to 93.32%; the retail pointer scheduling needs further matching.
 
 ## CPullItem (0x80) / CPullItemManager (0x8)
 Size 0x80 from the `GetList`/`Clear`/`CommonStageClassInit` strides and `PullItem` = 0x48 * 0x80.

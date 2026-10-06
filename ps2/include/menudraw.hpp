@@ -2434,7 +2434,7 @@ void PrimQuad(mgCDrawPrim *prim, mgRect<T> put_rect, mgRect<int> tex_rect);
 
 /**
  *
- * Float rectangle passed by value to the retail rectangle primitive.
+ * Float rectangle passed by value to the rectangle primitive.
  *
  */
 struct mgRect_f_ {
@@ -2446,7 +2446,7 @@ struct mgRect_f_ {
 
 /**
  *
- * Integer texture rectangle passed by value to the retail rectangle primitive.
+ * Integer texture rectangle passed by value to the rectangle primitive.
  *
  */
 struct mgRect_i_ {

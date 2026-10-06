@@ -149,3 +149,11 @@ match.
 `GetEntryObjectPos(int id, int nth, float*)` walks the 24 `entry_object` records. It counts records with a non-null `frame` and matching `group`, then asks the selected frame for its world position. Named record access matches the retail function at 100%; the slot pointer is returned.
 
 `DeleteExtMotion` accesses `images[1..5]` through a byte offset in the matching source. A direct `this->images[j]` expression scores 99.67%, so that offset still requires a matching typed expression. The similarly named local `images` holds the current archive; `&images[j]` is incorrect even though a local objdiff trial misleadingly scored 100%.
+
+`DeleteExtMotion`'s remaining mismatch is register allocation: direct
+`&this->images[j]` keeps the 0x1E4-byte body but assigns the image pointer to
+`s4` and the array offset to `s5`; retail assigns the image pointer to `s5`
+and offset to `s4`. The retail loop maintains separate `j` and byte-offset
+counters. Indexing with `offset / 4` changes more instructions (97.47%), and
+keeping the offset live through the loop bound or the clear store also misses.
+The original offset expression remains for the 100% match.

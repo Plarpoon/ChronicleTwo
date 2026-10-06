@@ -219,7 +219,8 @@ vmcode_t *CRunScript::call_func(funcdata *callee, vmcode_t *return_pc) {
     call_sp++;
     memset(frame + func->arg, 0, (func->local - func->arg) * sizeof(RS_STACKDATA));
     check_stack();
-    return (vmcode_t *) (code + (int) callee->addr);
+    int code_offset = callee->addr;
+    return reinterpret_cast<vmcode_t *>(&code[code_offset]);
 }
 
 vmcode_t *CRunScript::ret_func() {
@@ -321,7 +322,8 @@ int CRunScript::run(int no) {
     sp = frame + func->local;
     check_stack();
     memset(frame + func->arg, 0, (func->local - func->arg) * sizeof(RS_STACKDATA));
-    start = (vmcode_t *) (code + (int) func->addr);
+    int code_offset = func->addr;
+    start = reinterpret_cast<vmcode_t *>(&code[code_offset]);
     end = 0;
     skip_wait = 0;
     skip_end_count = 0;

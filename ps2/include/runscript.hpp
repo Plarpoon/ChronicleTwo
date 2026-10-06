@@ -168,7 +168,7 @@ STATIC_ASSERT(sizeof(vmcode_t) == 0xC);
  *
  */
 struct funcdata {
-    int   addr;  /**< Offset of the function's first instruction in the code section. */
+    u32   addr;  /**< Nonnegative byte offset of the function's first instruction in the code section. */
     char *name;  /**< Name of the function, for runtime error messages. */
     int   local; /**< Number of frame slots, arguments included. */
     int   arg;   /**< Number of argument slots. */

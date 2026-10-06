@@ -41,6 +41,9 @@ OmakeFlag, MasterDebugCode, GamePad (`GamePad__2` in main.symbols.txt; the other
   `LoadFontTexture` preserve their PAL objects. `ReLoadFontTexture` still needs
   its byte-offset induction variable to preserve saved-register allocation;
   typed indexing changes only that allocation and remains unmatched.
+  Retaining `offset` and indexing both arrays through `offset / 4` scores
+  93.76% at the same 0x108-byte size; changing only either one of the two
+  accesses to `[page]` scores 92.95%. The exact offset form remains in source.
 - SelectArg: `int[32]` (0x80); debug-menu row values, row index = loop number for rows 1..8;
   [9] language, [10] item set (index into {0,1,2,6}), [12] cfg number; gcMAP_NO writes [1].
 - menu_sel_1452: `int[11]` EventSelect row values. at_1529: 64-byte char initializer (cfg name

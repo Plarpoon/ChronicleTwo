@@ -53,6 +53,10 @@ corners set to 1.0.
   `names` is a `char **`, but direct `names[i]` indexing changes the PAL loop's
   register allocation (99.18% at the same 0xC4 size); retaining the byte
   offset remains necessary for an exact object.
+  Retaining the byte induction variable but indexing `names[i / 4]` scores
+  97.12%; indexing with an unsigned shift scores 95.82%. Advancing a typed
+  `char **` cursor scores 86.47%. All three compile to the same 0xC4-byte
+  function but change register selection or scheduling.
 - `ConvertFontCode(src, dst)`: if not `CheckNowEurope()` plain strcpy. Else `[xxxx0HL]`/`[xxxx1HL]`
   9-char codes become one byte from two hex digits looked up in `mes_cord_conv_1193` (16 pairs
   {char, nibble}); type 1 maps 'R' -> 0xBD, 'S' -> 0xBE.

@@ -456,9 +456,14 @@ int CEditMap::GetePlacePartsAtInfoID(int id, int *out, int max) {
     }
 
     if (info->GetPartsType() == kPartsTypeRiver) {
+        /**
+         *
+         * A river position viewed as floats or one quadword.
+         *
+         */
         union RiverPosition {
-            u_long128 quad;
-            float     values[4];
+            u_long128 quad;      /**< Packed position components. */
+            float     values[4]; /**< Position components. */
         };
 
         RiverPosition position = *(RiverPosition *) &at_796__4;

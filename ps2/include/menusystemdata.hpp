@@ -76,7 +76,7 @@ public:
 
     /**
      *
-     * Clears the menu system data; retail clears only its first four bytes.
+     * Clears the leading status word of the menu system data.
      *
      * @mangled MenuSystemDataInit__15CMenuSystemDataFv
      * @address 0x2F6300

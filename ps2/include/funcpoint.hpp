@@ -214,7 +214,7 @@ public:
     CList<CObjAnime>    *prev; /**< Previous animation node, or NULL. */
     u8                   unk_8[8];
     CObjAnime            data;   /**< Animation owned by this node. */
-    CObjAnimeListVTable *vtable; /**< Retail dispatch table for list operations. */
+    CObjAnimeListVTable *vtable; /**< Dispatch table for list operations. */
     u8                   unk_44[0xC];
 
     /** Constructs an unlinked list node and its animation. */

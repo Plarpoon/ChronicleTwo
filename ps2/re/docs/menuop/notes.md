@@ -144,3 +144,8 @@ large address as `lui 2` plus a negative store offset; retail uses `lui 1`,
 therefore retain the explicit offset for exact matching. The three option
 map buttons form a typed pointer array, but direct indexing changes
 `CMenuOption::UpdateOptionForm` register allocation (99.78%).
+The typed `loop_row[i]` variant keeps the 0x344-byte function size and changes
+only the saved-register pairing in the three-button loop: retail uses `s3`
+for the row base and `s2` for the byte offset, while MWCC assigns these in
+the opposite order. Reordering declarations and loop increments leaves the
+99.78% score unchanged.

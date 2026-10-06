@@ -418,7 +418,8 @@ int GetNowLoopNo();
 INIT_LOOP_ARG *GetNowInitArg();
 
 /**
- * Marks the start of a frame for an external profiler; empty in the retail build.
+ *
+ * Hook for marking the start of a frame in an external profiler.
  *
  * @mangled cat_start__Fv
  * @address 0x191F70
@@ -427,7 +428,8 @@ INIT_LOOP_ARG *GetNowInitArg();
 void cat_start();
 
 /**
- * Marks the end of a frame for an external profiler; empty in the retail build.
+ *
+ * Hook for marking the end of a frame in an external profiler.
  *
  * @mangled cat_end__Fv
  * @address 0x191F80
@@ -511,7 +513,8 @@ void LoadFontTexture();
 void ReLoadFontTexture(int texture_no);
 
 /**
- * Ends a kiosk demo when asked to quit; empty in the retail build.
+ *
+ * Hook for ending a kiosk demo when asked to quit.
  *
  * @mangled demQuit__Fv
  * @address 0x1944C0
@@ -520,7 +523,8 @@ void ReLoadFontTexture(int texture_no);
 void demQuit();
 
 /**
- * Ends a kiosk demo when its time runs out; empty in the retail build.
+ *
+ * Hook for ending a kiosk demo when its time runs out.
  *
  * @mangled demoQuitTimeOut__Fv
  * @address 0x1944D0
@@ -529,7 +533,8 @@ void demQuit();
 void demoQuitTimeOut();
 
 /**
- * Reports a kiosk demo attract sequence interrupted by the player; empty in the retail build.
+ *
+ * Hook for reporting an attract sequence interrupted by the player.
  *
  * @mangled demoAttractInterrupted__Fv
  * @address 0x1944E0
@@ -538,7 +543,8 @@ void demoQuitTimeOut();
 void demoAttractInterrupted();
 
 /**
- * Reports a kiosk demo attract sequence played to its end; empty in the retail build.
+ *
+ * Hook for reporting an attract sequence played to its end.
  *
  * @mangled demoAttractComplete__Fv
  * @address 0x1944F0
@@ -547,7 +553,8 @@ void demoAttractInterrupted();
 void demoAttractComplete();
 
 /**
- * Fades out the E3 show demo when its time runs out; empty in the retail build.
+ *
+ * Hook for fading out the E3 show demo when its time runs out.
  *
  * @mangled FadeOutForE3__Fv
  * @address 0x194500
@@ -556,7 +563,8 @@ void demoAttractComplete();
 void FadeOutForE3();
 
 /**
- * Returns non-zero when the time limit of a show demo has run out; always 0 in the retail build.
+ *
+ * Checks whether a show demo's time limit has run out.
  *
  * @mangled TimeLimitCheck__Fv
  * @address 0x194510

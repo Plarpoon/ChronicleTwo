@@ -1690,5 +1690,22 @@ public:
 
 STATIC_ASSERT(sizeof(CSceneObjSeq) == 0x5F0);
 
+/**
+ *
+ * Clears a camera sequence command and its links.
+ *
+ * @mangled InitSceneCmrSeq__FP12_SEN_CMR_SEQ
+ * @address 0x25B960
+ * @size 0x54
+ */
 void InitSceneCmrSeq(_SEN_CMR_SEQ *seq);
+
+/**
+ *
+ * Clears an object sequence command and its links.
+ *
+ * @mangled InitSceneObjSeq__FP12_SEN_OBJ_SEQ
+ * @address 0x25EFA0
+ * @size 0x4C
+ */
 void InitSceneObjSeq(_SEN_OBJ_SEQ *seq);

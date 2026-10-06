@@ -92,7 +92,7 @@ struct SCN_LOADMAP_INFO2 {
      *
      * @mangled Initialize__17SCN_LOADMAP_INFO2Fv
      * @address 0x288F20
-     * @size 0x10
+     * @size 0x8
      */
     void Initialize();
 };
@@ -137,6 +137,14 @@ void mgCObjectStack<T>::Initialize() {
     unk_8 = 0;
 }
 
+/**
+ *
+ * Clears the scene message object stack.
+ *
+ * @mangled Initialize__39mgCObjectStack_21CList_12EMAP_MESSAGE__Fv
+ * @address 0x289900
+ * @size 0x8
+ */
 template <>
 void mgCObjectStack<CList<EMAP_MESSAGE> >::Initialize();
 

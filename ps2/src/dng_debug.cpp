@@ -267,17 +267,14 @@ int dngDebugKey() {
         if (dbinfo.cursor == DNG_DEBUG_CMD_ENEMY_RESET) {
             int                  index;
             CTreasureBoxManager *boxes;
-            int                  offset;
             boxes = DngMainScene->battle_area.treasure_box;
 
             if (boxes != NULL) {
                 index = 0;
-                offset = 0;
 
                 do {
-                    ((CTreasureBox *) ((u8 *) boxes + offset + 0x10))->Initialize();
+                    boxes->box[index].Initialize();
                     index++;
-                    offset += 0x70;
                 } while (index < 24);
             }
 

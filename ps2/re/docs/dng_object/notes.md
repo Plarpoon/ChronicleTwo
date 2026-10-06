@@ -128,3 +128,9 @@ externs; they become `static` definitions in the .cpp:
 ## Native draw locals
 
 `CRocketLauncher::Draw`, `CLaserGun::Draw`, and `CPullItem::Draw` construct a `CPreSprite` only when the object is active. Putting an early state guard before the native local and then declaring the large temporary arrays preserves their retail stack slots. `CLaserGun::Draw` also constructs `mgCFrameAttr` for its model branch; declaring its matrix immediately after the attribute keeps both retail slots. These native constructors reproduce the original code.
+
+`CRocketLauncherMan` and `CLaserGunMan` keep their shot arrays as first
+members, with 0x190-byte and 0x130-byte elements respectively. Replacing the
+draw loops' byte-offset addresses with `&rocket[i]` and `&laser[i]` changes
+MWCC's address calculation (92.58% for both), so those loops retain the exact
+byte-offset form pending a matching typed expression.

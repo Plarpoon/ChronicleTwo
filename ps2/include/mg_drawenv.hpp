@@ -127,7 +127,7 @@ struct mgFOG_PARAM {
             float scale;      /**< Coefficient of the reciprocal of depth in the fog value. */
         };
 
-        float values[4];
+        float values[4]; /**< Fog coefficients viewed as one four-float array. */
     };
 
     sceVu0FVECTOR coef; /**< Copy of offset, far_value, near_value and scale, sent to VU1 as one quadword. */

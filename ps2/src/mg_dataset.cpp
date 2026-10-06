@@ -987,7 +987,7 @@ mgCFrame *CopyFrameSub(mgCFrame *src, mgCMemory *memory, int copy_visual, mgCFra
 mgCFrame *mgCopyFrame(mgCFrame *frame, mgCMemory *memory, int copy_visual) {
     mgCFrame **copy_table;
     u_int      bytes;
-    u8        *copies;
+    mgCFrame  *copies;
     s32        i;
     mgCFrame **table;
     mgCFrame  *parent;
@@ -1024,10 +1024,10 @@ mgCFrame *mgCopyFrame(mgCFrame *frame, mgCMemory *memory, int copy_visual) {
             blocks = ((u_int) count * 0x110) >> 4;
         }
 
-        copies = (u8 *) new (memory->Alloc(blocks + 2)) mgCFrame[count];
+        copies = new (memory->Alloc(blocks + 2)) mgCFrame[count];
 
         for (i = 0; i < count; i++) {
-            mgCFrame *copy = (mgCFrame *) (copies + i * 0x110);
+            mgCFrame *copy = &copies[i];
             copy_table[i] = copy;
             CopyFrame(copy, table[i], memory, copy_visual, copy_table);
         }
@@ -1041,7 +1041,7 @@ mgCFrame *mgCopyFrame(mgCFrame *frame, mgCMemory *memory, int copy_visual) {
                 parent_index = frame->SearchFrameID(parent_name);
 
                 if (parent_index >= 0 && parent_index < count) {
-                    ((mgCFrame *) (copies + i * 0x110))->SetParent(copy_table[parent_index]);
+                    copies[i].SetParent(copy_table[parent_index]);
                 }
             }
         }

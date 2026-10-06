@@ -341,7 +341,6 @@ char *GetMapName(int map_no, char **title) {
 int SearchMapNo(char *name) {
     struct {
         int   no;
-        int   offset;
         char *name;
     } search;
 
@@ -352,10 +351,9 @@ int SearchMapNo(char *name) {
     }
 
     search.no = 0;
-    search.offset = 0;
 
-    for (; search.no < MapNameNum; search.offset += sizeof(MAP_NAME_INFO), search.no++) {
-        MAP_NAME_INFO *info = (MAP_NAME_INFO *) ((u_char *) map_name + search.offset);
+    for (; search.no < MapNameNum; search.no++) {
+        MAP_NAME_INFO *info = &map_name[search.no];
 
         if (info->name != NULL && strcmp(info->name, search.name) == 0) {
             return search.no;

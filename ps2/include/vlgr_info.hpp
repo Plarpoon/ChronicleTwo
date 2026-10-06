@@ -79,6 +79,14 @@ public:
 
 STATIC_ASSERT(sizeof(CVillagerInfo) == 0x1C);
 
+/**
+ *
+ * Maps a villager motion name to its motion number.
+ *
+ * @mangled vpiGetMotionID__FPc
+ * @address 0x31F7C0
+ * @size 0xC8
+ */
 int vpiGetMotionID(char *name);
 
 /**

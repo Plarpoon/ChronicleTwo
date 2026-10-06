@@ -98,8 +98,8 @@ extern s8          init_1225;
 extern s8          init_1228;
 extern s8          init_1231;
 extern s8          init_1234;
-extern mgCTexture *FontTex;
-extern u32         FontDataAdr;
+extern mgCTexture *FontTex[1];
+extern TM2_head   *FontDataAdr[1];
 extern char        at_1654[];
 extern char        at_1655[];
 extern char        at_1656[];
@@ -1099,7 +1099,7 @@ mgCTexture *GetFontTexture(int page) {
         return 0;
     }
 
-    return *(&FontTex + page);
+    return FontTex[page];
 }
 
 void LoadFontTexture() {
@@ -1112,9 +1112,9 @@ void LoadFontTexture() {
     u32  misalign;
 
     buffer = scratch;
-    FontTex = 0;
+    FontTex[0] = 0;
     misalign = (u32) buffer & 3;
-    FontDataAdr = 0;
+    FontDataAdr[0] = 0;
 
     if (misalign != 0) {
         buffer += (4 - misalign) * 0x10;
@@ -1136,13 +1136,13 @@ void LoadFontTexture() {
         sprintf(path, at_1657, file_name);
 
         if (LoadFile2(path, buffer, &size, 0) != 0) {
-            (&FontDataAdr)[page] = (u32) font_buff;
+            FontDataAdr[page] = (TM2_head *) font_buff;
 
-            if ((&FontDataAdr)[page] == 0) {
+            if (FontDataAdr[page] == 0) {
                 return;
             }
 
-            memcpy((void *) (&FontDataAdr)[page], buffer, size);
+            memcpy(FontDataAdr[page], buffer, size);
         }
 
         page += 1;

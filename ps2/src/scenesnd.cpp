@@ -1037,6 +1037,11 @@ void CScene::SePlayFoot(int ground, int foot, float *position) {
     sndSePlayVPf(se_base_id, foot + ground * 2, volume, pan, 0);
 }
 
+/**
+ *
+ * Reads one line of sound configuration fields and returns the following position.
+ *
+ */
 static char *GetLine(char **lines, char *cursor, char *end) {
     LineBreakPair line_break = at_1615__2;
     int           line_index;

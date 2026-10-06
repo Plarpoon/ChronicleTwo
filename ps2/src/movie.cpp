@@ -484,20 +484,21 @@ int mpegTS(sceMpeg *mpeg, sceMpegCbDataTimeStamp *data, void *user) {
 }
 #ifdef NONMATCHING
 int videoCallback(sceMpeg *mpeg, sceMpegCbDataStr *str, void *user) {
-    u8   *area1;
-    u8   *area2;
-    int   size1;
-    int   size2;
-    u8   *src = str->data;
-    u_int total = str->len;
-    u_int first = ((u8 *) user + ((ReadBuf *) user)->size) - src;
+    u8      *area1;
+    u8      *area2;
+    int      size1;
+    int      size2;
+    ReadBuf *ring = static_cast<ReadBuf *>(user);
+    u8      *src = str->data;
+    u_int    total = str->len;
+    u_int    first = &ring->data[ring->size] - src;
     if (total < first) {
         first = total;
     }
     videoDecBeginPut(&videoDec, &area1, &size1, &area2, &size2);
     int copied = cpy2area((u8 *) (((u32) area1 & 0xFFFFFFF) | 0x20000000), size1,
                           (u8 *) (((u32) area2 & 0xFFFFFFF) | 0x20000000), size2, src, first,
-                          (u8 *) user, total - first);
+                          ring->data, total - first);
     if (copied > 0 && videoDecPutTs(&videoDec, str->pts, str->dts, area1, copied) == 0) {
         printf(at_584__2);
     }
@@ -521,9 +522,10 @@ int pcmCallback(sceMpeg *mpeg, sceMpegCbDataStr *str, void *user) {
     int first;
     int ring_size;
     u8 *ring_end;
-    src = str->data + 4;
-    ring_size = ((ReadBuf *) user)->size;
-    ring_end = (u8 *) user + ring_size;
+    src = &str->data[4];
+    ReadBuf *ring = static_cast<ReadBuf *>(user);
+    ring_size = ring->size;
+    ring_end = &ring->data[ring_size];
 
     if (src >= ring_end) {
         src -= ring_size;
@@ -533,7 +535,7 @@ int pcmCallback(sceMpeg *mpeg, sceMpegCbDataStr *str, void *user) {
     total = str->len - 4;
     first = (total < first) ? total : first;
     audioDecBeginPut(&audioDec, &area1, &size1, &area2, &size2);
-    int copied = cpy2area(area1, size1, area2, size2, src, first, (u8 *) user, total - first);
+    int copied = cpy2area(area1, size1, area2, size2, src, first, ring->data, total - first);
     audioDecEndPut(&audioDec, copied);
     int result = 0;
 
@@ -617,7 +619,7 @@ u8 *voBufGetData(VoBuf *buf) {
         return 0;
     }
 
-    return (u8 *) buf->data + buf->write * 0xE0000;
+    return reinterpret_cast<u8 *>(&buf->data[buf->write]);
 }
 
 static s32 voBufIsEmpty(VoBuf *buffer) {
@@ -702,7 +704,7 @@ int viBufReset(ViBuf *buf) {
     }
 
     for (i = 0; i < buf->n; i++) {
-        scTag2((QWORD *) (buf->tag + i), DmaAddr((u8 *) buf->data + i * 0x800), 3, 0x80);
+        scTag2((QWORD *) (buf->tag + i), DmaAddr(&buf->data[i * 0x80]), 3, 0x80);
     }
 
     scTag2((QWORD *) (buf->tag + i), DmaAddr(buf->tag), 2, 0);
@@ -724,14 +726,14 @@ void viBufBeginPut(ViBuf *buf, u8 **area1, int *size1, u8 **area2, int *size2) {
     int free = (((buf->n - 2) - used) << 11) - queued;
 
     if (size - write_pos >= free) {
-        *area1 = (u8 *) buf->data + write_pos;
+        *area1 = &buf->data_bytes[write_pos];
         *size1 = free;
         *area2 = NULL;
         *size2 = 0;
     } else {
-        *area1 = (u8 *) buf->data + write_pos;
+        *area1 = &buf->data_bytes[write_pos];
         *size1 = buf->buff_size - write_pos;
-        *area2 = (u8 *) buf->data;
+        *area2 = buf->data_bytes;
         *size2 = free - (buf->buff_size - write_pos);
     }
 
@@ -833,7 +835,7 @@ int viBufRestartDMA(ViBuf *buf) {
         int size = buf->n << 11;
         int mode = 0;
         int distance;
-        qwc = (u32) ((u8 *) buf->data - madr) >> 4;
+        qwc = ((u32) buf->data - madr) >> 4;
         tag_addr = (u32) buf->tag & 0xFFFFFFF;
         madr += size;
         if (buf->env.d4madr != (u32) buf->data && buf->env.d4madr != (u32) buf->data + size) {
@@ -851,7 +853,7 @@ int viBufRestartDMA(ViBuf *buf) {
         if (index != fifo_index) {
             int mode = 0;
             int distance;
-            qwc = (u32) (((u8 *) buf->data + (fifo_index << 11)) - madr) >> 4;
+            qwc = ((u32) &buf->data_bytes[fifo_index << 11] - madr) >> 4;
             tag_addr = (u32) (buf->tag + fifo_index) & 0xFFFFFFF;
             distance = (fifo_index + buf->n - buf->dma_start) % buf->n;
             if ((u32) buf->data + (buf->env.d4madr - (u32) buf->data) % (buf->n << 11) !=
@@ -1014,16 +1016,16 @@ int strFileOpen(StrFile *file, char *path) {
     char       device[0x4C];
     sceCdRMode cd_mode;
     int        leftover;
-    s8        *colon = (s8 *) index(path, ':');
+    char      *colon = index(path, ':');
 
     if (colon != NULL) {
-        int device_len = colon - (s8 *) path;
+        int device_len = colon - path;
         strncpy(device, path, device_len);
         device[device_len] = 0;
 
         if (strcmp(device, at_1028__5) == 0) {
             int i;
-            int length = strlen((char *) colon + 1);
+            int length = strlen(colon + 1);
             i = 0;
             file->is_on_cd = 1;
 
@@ -1424,16 +1426,9 @@ int decBs0(VideoDec *dec) {
             int i = 0;
 
             if (dec->mpeg.frameCount == 0) {
-                int data_offset = 0;
-                int tag_offset = 0;
-
                 for (; i < voBuf.size; i++) {
-                    setImageTag(((VoTag *) ((u8 *) voBuf.ring_tag + tag_offset))->v[0],
-                                (u8 *) voBuf.data + data_offset, 0, dec->mpeg.width, dec->mpeg.height);
-                    setImageTag(((VoTag *) ((u8 *) voBuf.ring_tag + tag_offset))->v[1],
-                                (u8 *) voBuf.data + data_offset, 0, dec->mpeg.width, dec->mpeg.height);
-                    tag_offset += 0x48;
-                    data_offset += 0xE0000;
+                    setImageTag(voBuf.ring_tag[i].v[0], &voBuf.data[i], 0, dec->mpeg.width, dec->mpeg.height);
+                    setImageTag(voBuf.ring_tag[i].v[1], &voBuf.data[i], 0, dec->mpeg.width, dec->mpeg.height);
                 }
             }
 
@@ -1456,6 +1451,7 @@ void setImageTag(u32 *tag, void *data, int a, int width, int height) {
     int          blocks_y;
     int          tile_x;
     int          tile_y;
+    u8          *tile_data = static_cast<u8 *>(data);
 
     sceGifPkInit(&packet, (u_long128 *) (((u32) tag & 0xFFFFFFF) | 0x20000000));
     sceGifPkReset(&packet);
@@ -1479,8 +1475,8 @@ void setImageTag(u32 *tag, void *data, int a, int width, int height) {
             u_int *image_tag = sceGifPkReserve(&packet, 4);
             *(u_long *) image_tag = 0x40 | ((u_long) 0x08000000 << 32);
             *(u_long *) (image_tag + 2) = 0;
-            sceGifPkRef(&packet, (u_long128 *) (((u_long) data << 36) >> 36), 0x40, 0, 0, 0);
-            data = (u8 *) data + 0x400;
+            sceGifPkRef(&packet, (u_long128 *) (((u_long) tile_data << 36) >> 36), 0x40, 0, 0, 0);
+            tile_data = &tile_data[0x400];
             tile_y += 0x10;
         }
         tile_x += 0x10;

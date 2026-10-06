@@ -127,7 +127,7 @@ struct TM2_head {
             u_int   mipmap_size[4]; /**< Bytes of pixels of each mip level, in order from the base level. */
         };
 
-        TM2_PICTURE picture;
+        TM2_PICTURE picture; /**< First TIM2 picture's metadata. */
     };
 };
 

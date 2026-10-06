@@ -143,3 +143,9 @@ The guarded C++ draft changes the active key when a new request arrives, records
 loop bound, and each candidate's `name` is passed to `SearchFrameID`. Using
 these members directly removes the byte offsets and retains a 100% object
 match.
+
+## Entry-object position lookup
+
+`GetEntryObjectPos(int id, int nth, float*)` walks the 24 `entry_object` records. It counts records with a non-null `frame` and matching `group`, then asks the selected frame for its world position. Named record access matches the retail function at 100%; the slot pointer is returned.
+
+`DeleteExtMotion` accesses `images[1..5]` through a byte offset in the matching source. A direct `this->images[j]` expression scores 99.67%, so that offset still requires a matching typed expression. The similarly named local `images` holds the current archive; `&images[j]` is incorrect even though a local objdiff trial misleadingly scored 100%.

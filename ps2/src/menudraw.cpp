@@ -2485,14 +2485,12 @@ void CMenuPosDataForm::Initialize() {
 
 MENUFORMPARTS_TYPE *CMenuPosDataForm::GetPartInfo(char *name) {
     int i = 0;
-    int offset = 0;
 
     while (i < parts_num) {
-        if (strcmp(((MENUFORMPARTS_TYPE *) ((u8 *) parts + offset))->name, name) == 0) {
+        if (strcmp(parts[i].name, name) == 0) {
             return parts + i;
         }
 
-        offset += 0x48;
         i++;
     }
 
@@ -3499,20 +3497,18 @@ int CMenuPosDataForm::CheckMoveEnd() {
 
 void CMenuPosDataForm::SetAction(char *action) {
     int i = 0;
-    int offset = 0;
 
     while (i < action_num) {
-        if (strcmp(action, (char *) this->action + offset) == 0) {
-            *(short *) ((u8 *) this + 0x5E) = i;
-            *(short *) ((u8 *) this + 0x60) = 1;
+        if (strcmp(action, this->action[i].name) == 0) {
+            action_no = i;
+            action_state = 1;
             return;
         }
 
-        offset += 0x14;
         i++;
     }
 
-    *(short *) ((u8 *) this + 0x5E) = -1;
+    action_no = -1;
 }
 
 void CMenuPosDataForm::SetNextMovePos(int *position, int move_type) {
@@ -4682,7 +4678,7 @@ void Func_MenuItemBrdPrepare(MENUFORMPARTS_TYPE *parts, CGameDataUsed *items, CG
         if (0 < count) {
             do {
 
-                item = (CGameDataUsed *) ((u8 *) items + i * 0x6C);
+                item = &items[i];
                 target.SetPtr(target_kind, item);
                 parts->item_flag = CheckItemUseVariable(used, &target);
                 i++;
@@ -4696,7 +4692,6 @@ void Func_MenuItemBrdPrepare2(MENUFORMPARTS_TYPE *parts, CGameDataUsed *items,
                               CGameDataUsed *used) {
     int count;
     int i;
-    int offset;
     int item_no;
 
     if (parts == NULL) {
@@ -4713,19 +4708,16 @@ void Func_MenuItemBrdPrepare2(MENUFORMPARTS_TYPE *parts, CGameDataUsed *items,
 
     if (0 < count) {
 
-        offset = 0;
-
         do {
             if (item_no == 0x17D) {
                 parts->item_flag = 0;
             } else {
                 CItemUseTarget target;
-                target.SetPtr(1, (u8 *) items + offset);
+                target.SetPtr(1, &items[i]);
                 parts->item_flag = CheckItemUseVariable(used, &target);
             }
 
             i++;
-            offset += 0x6C;
             parts++;
         } while (i < count);
     }

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <eekernel.h>
 #include <libcdvd.h>

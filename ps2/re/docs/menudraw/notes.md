@@ -161,3 +161,13 @@ sequence before model setup.
 The local `divbyzerocheck on/reset` directives around form fades and the guarded
 effect step are redundant with the unit's global flag: removing them produces an
 identical complete `menudraw.cpp.o`.
+
+## Typed menu array access
+
+`GetPartInfo` indexes its `MENUFORMPARTS_TYPE` array directly; the 0x48-byte
+stride follows from the type. `Func_MenuItemBrdPrepare` and
+`Func_MenuItemBrdPrepare2` index `CGameDataUsed` entries, and `SetAction`
+reads the named `MENU_FORM_ACTION` and writes `action_no` and `action_state`.
+All four functions retain a 100% retail object diff. `GetEnableEnterPart`
+still requires its explicit stride to keep MWCC's register choice (direct
+typed indexing scored 97.83%).

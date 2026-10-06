@@ -63,7 +63,7 @@ extern int cnt_1056;
 int LoadNpcTalkMes(mgCMemory *memory) {
     char path[0x4C];
     int  size;
-    u8  *buffer = (u8 *) (memory->stack + memory->stack_used);
+    u8  *buffer = reinterpret_cast<u8 *>(memory->stGetTop());
 
     if (buffer == NULL) {
         return 0;
@@ -390,7 +390,7 @@ int EventLoop() {
             buffer->stack_used = 0;
             buffer->lock = 0;
             buffer->Align64();
-            program = (char *) (buffer->stack + buffer->stack_used);
+            program = reinterpret_cast<char *>(buffer->stGetTop());
 
             if (LoadFile2(file_path, program, &file_size, 0)) {
                 buffer->Alloc(((unsigned int) file_size & 0xF) ? ((unsigned int) file_size >> 4) + 1 : (unsigned int) file_size >> 4);

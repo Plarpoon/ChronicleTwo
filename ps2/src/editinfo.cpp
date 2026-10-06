@@ -164,7 +164,7 @@ int emapEDIT_PARTS(SPI_STACK *stack, int argument_count) {
 
     name = spiGetStackString(stack);
     ConvertFontCode(name, converted_name);
-    name_buffer = (char *) emapStack__2->Alloc(align16_blocks(strlen(converted_name) + 1));
+    name_buffer = reinterpret_cast<char *>(emapStack__2->Alloc(align16_blocks(strlen(converted_name) + 1)));
 
     if (name != NULL && name_buffer != NULL) {
         strcpy(name_buffer, converted_name);

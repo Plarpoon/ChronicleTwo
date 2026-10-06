@@ -610,15 +610,14 @@ public:
 
 STATIC_ASSERT(sizeof(CBaseMenuClass) == 0x110);
 
-/**
- *
- * Shared state of the menu system: key input, the cursor and its frame, the item held by the cursor and the
- * background music volume.
- *
- */
 #pragma push
 #pragma cpp_extensions on
 
+/**
+ *
+ * Holds the menu's key input, cursor, held item and music state.
+ *
+ */
 class CMenuKeyFunc {
 public:
     u8     unk_0;
@@ -640,11 +639,11 @@ public:
 
     union {
         struct {
-            int cursor;
-            int top_line;
+            int cursor;   /**< Selected row in the current menu. */
+            int top_line; /**< First visible row in the current menu. */
         };
 
-        int select_pos[2];
+        int select_pos[2]; /**< Cursor and first visible row as a pair. */
     };
 
     int                 save_cursor;   /**< Cursor position saved by SelDataInit. */
@@ -1562,16 +1561,16 @@ STATIC_ASSERT(sizeof(MENU_ITEM_CURSOR_INFO) == 0xC);
  */
 struct BUILDUP_WEAPON_INFO {
     s16            unk_0;
-    s8             mode;
-    s8             select_no;
-    s16            build_up;
+    s8             mode;      /**< Phase of the build-up view. */
+    s8             select_no; /**< Selected build-up choice. */
+    s16            build_up;  /**< Number of available build-up choices. */
     s16            unk_6;
-    int            select_num;
-    int            weapon_no[3];
-    int            enable[3];
-    CGameDataUsed *weapon;
+    int            select_num;   /**< Number of choices returned by CheckBuildUp. */
+    int            weapon_no[3]; /**< Weapon IDs offered as build-up results. */
+    int            enable[3];    /**< Availability of each build-up result. */
+    CGameDataUsed *weapon;       /**< Weapon being built up. */
     s32            unk_28;
-    CDataWeapon   *weapon_data[3];
+    CDataWeapon   *weapon_data[3]; /**< Data for the offered build-up weapons. */
     s32            unk_38[3];
 };
 

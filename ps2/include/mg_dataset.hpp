@@ -343,23 +343,23 @@ public:
     MDT_HEADER *header; /**< Header of the model being written. */
 
     union {
-        char *end;
-        int   cursor;
+        char *end;    /**< End of the model data written so far. */
+        int   cursor; /**< End offset viewed as an integer. */
     }; /**< End of the model written so far. */
 
     union {
-        char          *data;
-        int            section_start;
-        u_long128     *data_cursor;
-        MDT_MATERIAL_ *material_cursor;
+        char          *data;            /**< Start of the open data section. */
+        int            section_start;   /**< Open section address viewed as an integer. */
+        u_long128     *data_cursor;     /**< Next quadword in the open section. */
+        MDT_MATERIAL_ *material_cursor; /**< Next material in the open section. */
     }; /**< Write position inside the open data section. */
 
     int data_num; /**< Number of entries written to the open data section. */
 
     union {
-        MDT_FACES *faces;
-        int       *face_block;
-        int        face_block_addr;
+        MDT_FACES *faces;           /**< Face section header. */
+        int       *face_block;      /**< Face section viewed as words. */
+        int        face_block_addr; /**< Face section address viewed as an integer. */
     }; /**< Header of the face section. */
 
     FACES_ID *prim;           /**< Primitive being written. */
@@ -367,9 +367,9 @@ public:
     int       face_index_num; /**< Number of indices that make one face of the primitive. */
 
     union {
-        int *index;
-        int *face_cursor;
-        int  face_end;
+        int *index;       /**< Next face index to write. */
+        int *face_cursor; /**< Next face section word to write. */
+        int  face_end;    /**< End of face data viewed as an integer. */
     }; /**< Write position for the next index of the face section. */
 
     int           data_type; /**< Section open for writing, from mgMDTDataType. */

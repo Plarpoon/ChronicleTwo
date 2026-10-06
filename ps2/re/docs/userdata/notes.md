@@ -270,6 +270,26 @@ The header gives their addresses, sizes, declarations and purpose comments.
 
 All six functions retain 100% PAL object matches with the typed member access.
 
+Signed reads of the weapon palette and attack-type bytes, the fish sex byte,
+the attachment spectrum source and the character equipment flag use value
+conversion to `s8`. This preserves retail's signed-byte behavior without
+aliasing those fields through signed-byte pointers in `GetPalletColor`,
+`GetAttackType`, `TransToPassword`, `GetMsgAddInfo`, and `CheckEquipChange`.
+
+`GetAquariumFish0` addresses the first tank's `fish_tank[slot]` record: the
+raw byte offset +4 enters the first `CGameDataUsed`, and +6 reads its item
+number. Direct typed indexing changes register allocation in this function,
+so the retail-matching source still uses its offset form.
+
+`CBattleCharaInfo::GetNowAccessWHp` reads the selected human weapon's
+`CGameDataUsed::data.weapon.whp` gauge. Direct typed access for this branch
+retains a 100% PAL match. The ridepod branch addresses the second gauge of
+its equipped part, but direct `data.robopart.gage1` access changes codegen.
+
+`CUserDataManager::GetNumSameItem` counts a matching ridepod item once per
+`ROBO_DATA::parts` slot. Direct indexing of the bag, character or ridepod
+arrays changes register allocation, so its offset-based loops remain.
+
 ## Compiler flag cleanup
 
 The local `divbyzerocheck on`/`reset` pair is redundant with the PS2

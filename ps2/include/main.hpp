@@ -21,17 +21,6 @@ int main();
 
 /**
  *
- * Initialises the Metrowerks C/C++ runtime (static constructors and library state).
- *
- *
- * @mangled mwInit
- * @address 0x100190
- * @size 0x24
- */
-extern "C" void mwInit();
-
-/**
- *
  * VU1 microprogram that draws water surfaces.
  *
  */

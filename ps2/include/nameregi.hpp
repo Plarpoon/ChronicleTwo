@@ -81,7 +81,7 @@ STATIC_ASSERT(sizeof(NAMEREGI_TARGET_INFO) == 0x48);
  */
 struct MENU_SELECT_PARAM {
     int pos; /**< Cell the cursor is on, counted row by row. */
-    int row;
+    int row; /**< Row of the kanji grid used with pos to select a list entry. */
 };
 
 /**

@@ -1406,8 +1406,52 @@ void SetEventFunc(CRunScript *script);
 
 class CCameraControl;
 
-int   GetArgInt(ARG_DATA *arg);
+/**
+ *
+ * Reads an event argument as an integer, converting a float argument when needed.
+ *
+ * @mangled GetArgInt__FP8ARG_DATA
+ * @address 0x2632F0
+ * @size 0x54
+ */
+int GetArgInt(ARG_DATA *arg);
+
+/**
+ *
+ * Reads an event argument as a float, converting an integer argument when needed.
+ *
+ * @mangled GetArgFloat__FP8ARG_DATA
+ * @address 0x263350
+ * @size 0x50
+ */
 float GetArgFloat(ARG_DATA *arg);
+
+/**
+ *
+ * Returns the string stored in an event argument.
+ *
+ * @mangled GetArgString__FP8ARG_DATA
+ * @address 0x2633A0
+ * @size 0x34
+ */
 char *GetArgString(ARG_DATA *arg);
-void  GetArgVector(float *vec, ARG_DATA *arg);
-void  FileNameConvLanguage(char *name);
+
+/**
+ *
+ * Reads three event float arguments into a homogeneous vector.
+ *
+ * @mangled GetArgVector__FPfP8ARG_DATA
+ * @address 0x2633E0
+ * @size 0x60
+ */
+void GetArgVector(float *vec, ARG_DATA *arg);
+
+/**
+ *
+ * Adds the selected language marker to a known event filename extension.
+ *
+ * @mangled FileNameConvLanguage__FPc
+ * @address 0x262CC0
+ * @size 0xD4
+ */
+void FileNameConvLanguage(char *name);

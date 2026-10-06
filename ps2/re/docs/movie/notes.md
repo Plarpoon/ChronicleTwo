@@ -131,3 +131,17 @@ sceRead/sceLseek/sceClose, sceSifAllocIopHeap, sceGsSyncV, sceDmaSend, sndSetMas
 The local `divbyzerocheck on`/`reset` pairs are redundant with the PS2
 compiler flag. Removing all twelve pairs leaves every section and symbol in
 this unit's object diff unchanged.
+
+## Typed buffer access
+
+`ViBuf::data` stores 2048-byte video blocks and also has a byte view for
+write positions within a block. The byte view lets `viBufBeginPut` index its
+write position directly, while `viBufReset` indexes the quadword blocks.
+`VoBuf::data` stores whole decoded frames, so `voBufGetData` and `decBs0`
+index `VoData` records directly. `pcmCallback` treats its user pointer as a
+`ReadBuf` and uses that buffer's byte array; `strFileOpen` uses a `char*` for
+the colon within its path. These functions remain exact in objdiff.
+
+`viBufAddDMA` still needs its byte-address expression: typed block or byte
+indexing changes its object by one or two instructions. `audioDecBeginPut`
+likewise changes its object when the header offset uses array indexing.

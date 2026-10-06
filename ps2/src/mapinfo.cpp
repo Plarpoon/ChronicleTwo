@@ -807,7 +807,6 @@ void CMapInfo::AddMapInfo(char *script, int script_size, mgCMemory *stack) {
 int CMapInfo::OutputLightData(char *buff) {
     char *cursor = buff;
     int   set;
-    int   offset;
     int   light;
 
     struct {
@@ -820,8 +819,8 @@ int CMapInfo::OutputLightData(char *buff) {
 
     cursor += sprintf(cursor, at_704, active_light_no);
 
-    for (set = 0, offset = 0; set < lighting_info_num; offset += sizeof(CMapLightingInfo), set++) {
-        CMapLightingInfo *info = (CMapLightingInfo *) ((u8 *) lighting_info + offset);
+    for (set = 0; set < lighting_info_num; set++) {
+        CMapLightingInfo *info = &lighting_info[set];
         cursor += sprintf(cursor, at_705, set);
         cursor += sprintf(cursor, at_706);
         cursor += sprintf(cursor, at_707, (int) info->bg_color[0], (int) info->bg_color[1], (int) info->bg_color[2]);
@@ -835,21 +834,15 @@ int CMapInfo::OutputLightData(char *buff) {
         *ambient_z = converted_z;
         cursor += sprintf(cursor, at_709, ambient.x, *ambient_y, *ambient_z);
         light = 0;
-        int color_offset = 0;
-        int direction_offset = 0;
 
         do {
-            CMapLightingInfo *source = (CMapLightingInfo *) ((u8 *) info + color_offset);
-            float            *color_y = &color.y;
-            float            *color_z = &color.z;
-            color.x = source->light_color[0][0];
-            *color_y = source->light_color[0][1];
-            *color_z = source->light_color[0][2];
-            CMapLightingInfo *direction = (CMapLightingInfo *) ((u8 *) info + direction_offset);
-            cursor += sprintf(cursor, at_710, light, direction->light_dir[0][0], direction->light_dir[1][0], direction->light_dir[2][0], (int) color.x, (int) *color_y, (int) *color_z);
+            float *color_y = &color.y;
+            float *color_z = &color.z;
+            color.x = info->light_color[light][0];
+            *color_y = info->light_color[light][1];
+            *color_z = info->light_color[light][2];
+            cursor += sprintf(cursor, at_710, light, info->light_dir[0][light], info->light_dir[1][light], info->light_dir[2][light], (int) color.x, (int) *color_y, (int) *color_z);
             light++;
-            color_offset += 16;
-            direction_offset += 4;
         } while (light < 4);
 
         cursor += sprintf(cursor, at_711, info->fog_enable);

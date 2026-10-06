@@ -7123,7 +7123,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", MonsterBookDraw__Fv);
 #endif
 /**
  *
- * Short rectangle whose setter has a retail standalone symbol.
+ * Short rectangle used for screen positions and bounds.
  *
  */
 class mgRect_s_ {

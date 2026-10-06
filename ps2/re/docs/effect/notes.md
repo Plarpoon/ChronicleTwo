@@ -128,3 +128,10 @@ CEffect::Draw has a retail bug: checks `alpha_blend == 1` twice, so SUB (2) draw
 ## Division-check pragma
 
 The unit-level `divbyzerocheck` pragma was redundant with the global MWCC flag; removing it left the full compiled object identical in objdiff.
+
+## Texture rectangle initialization
+
+`InitEffectParam` and `CEffectCtrl::Initialize` clear eight four-word texture
+rectangles. Their previous byte-offset loops address the `tex_rect[8][4]`
+members at offsets 0xF8 and 0x25C respectively. Typed two-dimensional
+indexing preserves both functions' exact object code.

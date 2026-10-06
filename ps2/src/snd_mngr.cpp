@@ -251,6 +251,11 @@ int sndGetSeNo(u32 se_id) {
     return se_id & 0xFFFF;
 }
 
+/**
+ *
+ * Returns a sound port entry when the port number is in range.
+ *
+ */
 static sndPortInfo *GetPortInfo(int port) {
     if (port < 0 || port > SND_PORT_NUM) {
         return NULL;
@@ -259,6 +264,11 @@ static sndPortInfo *GetPortInfo(int port) {
     return &PortInfo[port];
 }
 
+/**
+ *
+ * Returns a sequence player when the sequence number is in range.
+ *
+ */
 static sndCSeSeq *GetSeSeq(int seq_id) {
     if (seq_id < 0 || seq_id >= 32) {
         return NULL;
@@ -267,6 +277,11 @@ static sndCSeSeq *GetSeSeq(int seq_id) {
     return &SeSequencer[seq_id];
 }
 
+/**
+ *
+ * Finds an unused sequence player and writes its slot number.
+ *
+ */
 static sndCSeSeq *GetEmptySeSeq(int *seq_id) {
     for (int index = 0; index < 32; index++) {
         sndCSeSeq *sequencer = &SeSequencer[index];

@@ -371,7 +371,7 @@ int CGameDataUsed::GetPalletColor() {
             data = GameItemDataManage.GetWeaponData(this->item_no);
 
             if (data != NULL) {
-                return *(s8 *) &data->pallet_color;
+                return static_cast<s8>(data->pallet_color);
             }
 
             return 0;
@@ -671,7 +671,7 @@ void CGameDataUsed::TransToPassword(char *data, int length) {
                 body = &item->data.fish;
                 memset(&buffer, 0, 14);
                 buffer.fish.item_no = item->item_no;
-                buffer.fish.sex = *(s8 *) &body->sex;
+                buffer.fish.sex = static_cast<s8>(body->sex);
                 buffer.fish.field_4a = body->unk_3a;
                 buffer.fish.param_3 = body->param[4];
                 buffer.fish.unknown_3c = body->param[3];
@@ -850,14 +850,14 @@ void CGameDataUsed::GetMsgAddInfo(char **message, char **extra_message, int *val
             if (values != NULL) {
                 values[0] = 0;
 
-                if (*(s8 *) &body->spectol_type == 1) {
+                if (static_cast<s8>(body->spectol_type) == 1) {
                     values[0] = body->level;
                 }
 
                 values[1] = body->spectol_value;
             }
 
-            if (*(s8 *) &body->spectol_type != 0) {
+            if (static_cast<s8>(body->spectol_type) != 0) {
                 *message = body->name;
             } else {
                 *message = GetItemMessage(item_no);
@@ -1460,7 +1460,7 @@ int CGameDataUsed::GetAttackType() {
         info = GetWeaponInfoData(this->item_no);
 
         if (info != NULL) {
-            return *(s8 *) &info->attack_type;
+            return static_cast<s8>(info->attack_type);
         }
     }
 
@@ -4534,7 +4534,7 @@ void CheckEquipChange(int chara_no) {
             GetCharaDefaultWeapon(1, weapons);
             GetUserDataMan()->SetChrEquipDirect(1, weapons[0]);
 
-            if (*(s8 *) &chara->unk_2b == 0) {
+            if (static_cast<s8>(chara->unk_2b) == 0) {
                 GetUserDataMan()->SetChrEquipDirect(1, weapons[2]);
                 GetUserDataMan()->SetChrEquipDirect(1, weapons[3]);
                 GetUserDataMan()->SetChrEquipDirect(1, weapons[4]);
@@ -4827,13 +4827,13 @@ COMMON_GAGE *CBattleCharaInfo::GetNowAccessWHp(int slot) {
     short        current_mode = chara_type;
 
     if (current_mode == 0) {
-        u8 *table = (u8 *) equip;
+        CGameDataUsed *table = equip;
 
         if (table == 0) {
             return gage;
         }
 
-        gage = (COMMON_GAGE *) (table + slot * sizeof(CGameDataUsed) + 0x10);
+        gage = &table[slot].data.weapon.whp;
     } else if (current_mode == 1) {
         gage = (COMMON_GAGE *) ((u8 *) equip + 0x10) + 1;
     } else if (current_mode == 2) {

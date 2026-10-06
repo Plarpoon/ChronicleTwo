@@ -472,11 +472,11 @@ void InitEditFlag() {
 int StartEditMode(CScene *scene) {
     CCharacter2     *player = scene->GetCharacter(scene->player_chara);
     mgCCameraFollow *angle_camera;
-    CCameraControl  *follow_camera;
+    mgCCameraFollow *follow_camera;
     float            angle;
 
     if (player != NULL) {
-        ((mgCObject *) player)->GetPosition(eCurPos);
+        player->GetPosition(eCurPos);
         *(u_long128 *) ePartsCurNowPos = *(u_long128 *) eCurPos;
         *(u_long128 *) ePartsCurPos = *(u_long128 *) eCurPos;
         *(u_long128 *) eCurNowPos = *(u_long128 *) eCurPos;
@@ -485,22 +485,22 @@ int StartEditMode(CScene *scene) {
     EditModeNo = 2;
     ClearEditFlag();
     IntiSystemMes();
-    angle_camera = (mgCCameraFollow *) scene->GetCamera(scene->before_camera);
+    angle_camera = static_cast<mgCCameraFollow *>(scene->GetCamera(scene->before_camera));
     angle = 0.0f;
 
     if (angle_camera != NULL) {
         angle = angle_camera->GetAngle();
     }
 
-    follow_camera = (CCameraControl *) scene->GetCamera(scene->active_camera);
+    follow_camera = static_cast<mgCCameraFollow *>(scene->GetCamera(scene->active_camera));
 
     if (follow_camera != NULL) {
-        ((mgCCameraFollow *) follow_camera)->FollowOn();
-        ((mgCCameraFollow *) follow_camera)->SetFollowOffset(0.0f, 0.0f, 0.0f);
+        follow_camera->FollowOn();
+        follow_camera->SetFollowOffset(0.0f, 0.0f, 0.0f);
         follow_camera->SetFollow(eCurPos[0], eCurPos[1], eCurPos[2]);
-        ((mgCCameraFollow *) follow_camera)->SetHeight(100.0f);
-        ((mgCCameraFollow *) follow_camera)->SetDistance(300.0f);
-        ((mgCCameraFollow *) follow_camera)->SetAngle(angle);
+        follow_camera->SetHeight(100.0f);
+        follow_camera->SetDistance(300.0f);
+        follow_camera->SetAngle(angle);
         follow_camera->Step(-1);
     }
 
@@ -511,13 +511,13 @@ int StartEditMode(CScene *scene) {
 
 void EndEditMode(CScene *scene, float *cursor_pos) {
     float        pos[4];
-    CEditMap    *map = (CEditMap *) scene->GetMap(scene->active_map);
+    CEditMap    *map = static_cast<CEditMap *>(scene->GetMap(scene->active_map));
     CCharacter2 *player = scene->GetCharacter(scene->player_chara);
 
     if (player != NULL) {
         *(u_long128 *) pos = *(u_long128 *) cursor_pos;
         pos[1] += 0.01f;
-        ((mgCObject *) player)->SetPosition(pos);
+        player->SetPosition(pos);
     }
 
     SystemMesClose(scene);

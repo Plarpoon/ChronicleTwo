@@ -64,7 +64,6 @@ float RegularityRand(float center, float range, int samples) {
  */
 void InitEffectParam(EFFECT_PARAM *param) {
     int i;
-    int offset;
 
     param->life = 0;
     param->dir = 0;
@@ -127,17 +126,13 @@ void InitEffectParam(EFFECT_PARAM *param) {
     param->alpha_p2 = 0;
 
     i = 0;
-    offset = 0;
 
     do {
-        int *entry = (int *) ((u_char *) param + offset);
-
+        param->tex_rect[i][0] = 0;
+        param->tex_rect[i][1] = 0;
+        param->tex_rect[i][2] = 0;
+        param->tex_rect[i][3] = 0;
         i++;
-        entry[62] = 0;
-        entry[63] = 0;
-        entry[64] = 0;
-        entry[65] = 0;
-        offset += 0x10;
     } while (i < 8);
 
     param->tex_get_type = 0;
@@ -719,7 +714,6 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
 
 void CEffectCtrl::Initialize() {
     int i;
-    int offset;
 
     entry = 0;
     run = 0;
@@ -867,17 +861,13 @@ void CEffectCtrl::Initialize() {
     tex_rect_num = 0;
 
     i = 0;
-    offset = 0;
 
     do {
-        int *entry = (int *) ((u_char *) this + offset);
-
+        tex_rect[i][0] = 0;
+        tex_rect[i][1] = 0;
+        tex_rect[i][2] = 0;
+        tex_rect[i][3] = 0;
         i++;
-        entry[151] = 0;
-        entry[152] = 0;
-        entry[153] = 0;
-        entry[154] = 0;
-        offset += 0x10;
     } while (i < 8);
 
     tex_get_type = 0;

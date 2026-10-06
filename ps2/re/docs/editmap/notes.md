@@ -109,3 +109,19 @@ or copy the check through `CMapParts` methods. These native calls produce the
 retail `PreDraw` and `DrawSub` functions without C-linkage aliases.
 
 `CEditMap::Initialize` clears the four grid pointers through the declared `grid[]` member; replacing the raw offset with `grid[i] = NULL` preserves the retail function. `ClearGrid` also uses `grid[i]` exactly after removing its local `global_optimizer off/reset` pair; with the pragma present, typed indexing scored 89.81%.
+
+A placed part's `CMapParts::name` begins at offset 0x70. Eight edit-map loops
+test its first byte to skip unused slots. Reading `part->name[0]`,
+`slot->name[0]`, or `edit_parts[i].name[0]` removes those byte-offset casts;
+the whole editmap unit remains exact in objdiff.
+
+Both `GetNearParts` overloads read `CEditPartsInfo::box` at offset 0x50.
+`GetNearParts(info, ...)` also sets the W components of the box's maximum and
+minimum corners before transforming them. Named field access replaces those
+byte offsets and preserves both retail functions. The output-array byte
+offset in the first overload remains: `out[count - 1]` and
+`out[out_offset / sizeof(*out)]` change MWCC scheduling (95.51% and 95.73%).
+
+## Indexed map storage
+
+`ClearAllParts` initializes each `edit_parts[i]` directly; `InitialPlaceParts` reads `info_mngr.init_parts[i]`; `GetePlaceParts(char*)` searches `edit_parts[i]`; and `GetGridPos` checks `grid[i]`. These typed accesses each produce a 100% function match. `ClearAllParts` still uses offset counters for `place_log` and fixed placements: replacing both with typed indexing scored 99.22%; only the log replacement scored 99.69%. `GetSameParts` typed indexing scored 99.09% and was reverted.

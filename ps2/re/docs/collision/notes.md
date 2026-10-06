@@ -53,6 +53,10 @@ fills it. Size: stride 0x50 in every loop (`CreateCollisionMDT`, `PickUpNearPoly
 - `Copy`: dest.bbox = bbox; dest.poly_count = poly_count; count < 1 -> dest.poly = 0; mem null
   -> shares `poly`; else `new (Alloc(count*5+2)) CCPoly[count]`-style `__nwa(count*0x50, ...)`
   and a 0x50-byte struct copy per element.
+  The exact C++ copy indexes `poly[i]` and `dest.poly[i]`, then views each
+  0x50-byte element as five `CollisionQuad` blocks for the retail quadword
+  stores. This removes byte-offset arithmetic while retaining the exact
+  object code; aggregate `CCPoly` assignment changes the copy sequence.
 - `CreateBBox`: bbox = (0,0,0,1)/(0,0,0,1), then MaxMin over every triangle.
 - `GetMaxY(pos)`: returns 0 if no polys or x/z outside bbox; casts the vertical line
   (x,0,z)->(x,1,z) with `mgIntersectionPoint_line_poly3`, keeps the greatest y (start -1e8),

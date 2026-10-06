@@ -881,6 +881,11 @@ int CScene::GetTalkEvent(float *position, CSceneEventData *event) {
     return 0;
 }
 
+/**
+ *
+ * Returns the name of a villager motion, or the default name for an unknown number.
+ *
+ */
 static char *GetMotionName(int motion_id) {
     switch (motion_id) {
         case 1:

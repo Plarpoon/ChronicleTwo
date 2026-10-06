@@ -16,6 +16,17 @@ forms `frame_tex+0x40` and `frame_tex+0x48` in registers before loading TEX1 and
 retail loads them directly through HI16/LO16 relocations. The out-of-line assignment symbol
 `__as__9sceGsTex0FRC9sceGsTex0` (0x14 bytes) must remain because it is present in retail;
 the current `mg_texture` source's only additional use is in code guarded by `NONMATCHING`.
+The m2c output shows a 16-iteration, two-character copy of `name`, followed by
+scalar copies through `next`. Explicit typed member writes with that same
+two-character loop compile to 0x178 bytes for `mgGetFrameBuffer`, farther from
+retail than implicit assignment. Local optimization levels 1 or 2 make the
+implicit-copy functions 0x12C and 0x17C bytes; level 4 retains their baseline
+0x120 and 0x168 bytes. The exact copy still needs the compiler-generated
+memberwise shape without the out-of-line TEX0 call and without hoisted register
+bases for TEX1 and CLAMP.
+After 16-byte function alignment, the first oversized copy moves
+`mgGetFrameBackBuffer` by 0x20 bytes; the second moves `mgGetpDrawEnv` by a
+further 0x30 bytes. Their cumulative linked `.text` shift is 0x50 bytes.
 
 MWCC emits the `.ctor` pointer to `__sinit_mglib_cpp` for the native global objects. Keeping
 the dumped `D_0037AFE8__DATA` entry alongside it adds a second pointer to the linked table.

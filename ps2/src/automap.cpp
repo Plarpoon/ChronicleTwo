@@ -89,7 +89,7 @@ void CMiniMapSymbol::SetMapInfo(CMap *new_map, CAutoMapParts *new_auto_map_parts
     grid_h = height;
     cell_w = cell_width;
     cell_d = cell_depth;
-    parts_table = (CMapParts *) new_map->GetPlacPartsTable(&parts_num);
+    parts_table = new_map->GetPlacPartsTable(&parts_num);
     CMapParts *part = parts_table;
     parts_num = 0;
 
@@ -99,7 +99,7 @@ void CMiniMapSymbol::SetMapInfo(CMap *new_map, CAutoMapParts *new_auto_map_parts
     }
 
     texture = mgTexManager.GetTexture(at_1111, -1);
-    s8 *floor_name = (s8 *) BattleAreaScene->map_name;
+    char *floor_name = BattleAreaScene->map_name;
 
     if (*floor_name == 0) {
         return;
@@ -107,7 +107,7 @@ void CMiniMapSymbol::SetMapInfo(CMap *new_map, CAutoMapParts *new_auto_map_parts
 
     info = 0;
     char buffer[0x40];
-    strcpy(buffer, (char *) floor_name);
+    strcpy(buffer, floor_name);
 
     if (strlen(buffer) == 7) {
         buffer[6] = 0;

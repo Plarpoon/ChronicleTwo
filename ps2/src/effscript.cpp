@@ -1839,8 +1839,8 @@ static void GetStackVector(float *vector, RS_STACKDATA *slot) {
  * Returns the string address stored in an effect script slot.
  *
  */
-static int GetStackString(RS_STACKDATA *slot) {
-    return slot->i;
+static char *GetStackString(RS_STACKDATA *slot) {
+    return reinterpret_cast<char *>(slot->i);
 }
 
 /**
@@ -2240,7 +2240,7 @@ int _AUTO_SET_OFFSET(RS_STACKDATA *stack, int argument_count) {
     int   offset = GetStackInt(stack++);
 
     if (argument_count >= 2) {
-        name = (char *) GetStackString(stack);
+        name = GetStackString(stack);
     }
 
     now_script->auto_offset = offset;
@@ -2593,7 +2593,7 @@ int _CHR_SET_MOTION(RS_STACKDATA *stack, int argument_count) {
 
     int   mode = 0;
     float step = -1.0f;
-    char *name = (char *) GetStackString(stack++);
+    char *name = GetStackString(stack++);
 
     if (argument_count >= 2) {
         step = GetStackFloat(stack++);
@@ -2861,7 +2861,7 @@ int _CHR_SET_MOTION2(RS_STACKDATA *stack, int argument_count) {
 
     int   mode = 0;
     float step = -1.0f;
-    char *name = (char *) GetStackString(stack++);
+    char *name = GetStackString(stack++);
 
     if (argument_count >= 2) {
         step = GetStackFloat(stack++);
@@ -3005,13 +3005,13 @@ int _CHR_GET_FRAME_POS(RS_STACKDATA *stack, int argument_count) {
     RS_STACKDATA *result_slot = stack + 1;
     mgCFrame     *character_frame;
     mgCFrame     *frame;
-    int           name = GetStackString(stack);
+    char         *name = GetStackString(stack);
 
     if ((character_frame = ((CObjectFrame *) now_script->chara)->frame) == 0) {
         return 0;
     }
 
-    if ((frame = character_frame->SearchFrame((char *) name)) == 0) {
+    if ((frame = character_frame->SearchFrame(name)) == 0) {
         return 0;
     }
 
@@ -3033,7 +3033,7 @@ int _CHR_SET_FRAME_SHOW(RS_STACKDATA *stack, int argument_count) {
         return 0;
     }
 
-    int       name = GetStackString(stack++);
+    char     *name = GetStackString(stack++);
     int       show = GetStackInt(stack++);
     int       attr_mask = GetStackInt(stack);
     mgCFrame *character_frame = ((CObjectFrame *) now_script->chara)->frame;
@@ -3044,7 +3044,7 @@ int _CHR_SET_FRAME_SHOW(RS_STACKDATA *stack, int argument_count) {
 
     mgCFrame *frame;
 
-    if ((frame = character_frame->SearchFrame((char *) name)) == 0) {
+    if ((frame = character_frame->SearchFrame(name)) == 0) {
         return 0;
     }
 
@@ -3175,7 +3175,7 @@ int _SPT_DELETE_SPRITE(RS_STACKDATA *stack, int argument_count) {
  *
  */
 int _SPT_SET_TEXNAME(RS_STACKDATA *stack, int argument_count) {
-    strcpy(now_script->tex_name, (char *) GetStackString(stack));
+    strcpy(now_script->tex_name, GetStackString(stack));
     return 1;
 }
 
@@ -4468,7 +4468,7 @@ int _SCN_GET_CHR_ROT(RS_STACKDATA *stack, int argc) {
 int _SCN_GET_CHR_FRM_POS(RS_STACKDATA *stack, int argc) {
     float        pos[4];
     int          chara_slot;
-    int          frame_name;
+    char        *frame_name;
     CCharacter2 *chara;
     mgCFrame    *frame;
 
@@ -4488,7 +4488,7 @@ int _SCN_GET_CHR_FRM_POS(RS_STACKDATA *stack, int argc) {
         return 0;
     }
 
-    frame = ((CObjectFrame *) chara)->frame->SearchFrame((char *) frame_name);
+    frame = ((CObjectFrame *) chara)->frame->SearchFrame(frame_name);
 
     if (frame == NULL) {
         return 0;
@@ -4514,7 +4514,7 @@ int _SCN_GET_CHR_FRM_DIR(RS_STACKDATA *stack, int argc) {
     mgCFrame    *frame;
 
     chara_slot = GetStackInt(stack++);
-    frame_name = (char *) GetStackString(stack++);
+    frame_name = GetStackString(stack++);
     character = now_scene->GetCharacter(chara_slot);
 
     if (character == NULL) {
@@ -4557,7 +4557,7 @@ int _SCN_GET_CHR_FRM_ROT(RS_STACKDATA *stack, int argc) {
     mgCFrame    *frame;
 
     chara_slot = GetStackInt(stack++);
-    frame_name = (char *) GetStackString(stack++);
+    frame_name = GetStackString(stack++);
     character = now_scene->GetCharacter(chara_slot);
 
     if (character == NULL) {
@@ -5043,7 +5043,7 @@ int _COLPRIM_CREATE(RS_STACKDATA *stack, int argc) {
     }
 
     owner = now_script->user_id;
-    damage_name = (char *) GetStackString(stack++);
+    damage_name = GetStackString(stack++);
 
     if (argc >= 2) {
         owner = GetStackInt(stack);
@@ -5088,7 +5088,7 @@ int _COLPRIM_SET_COORD(RS_STACKDATA *stack, int argc) {
                 return 0;
             }
 
-            start_name = (char *) GetStackString(stack++);
+            start_name = GetStackString(stack++);
             radius = GetStackFloat(stack);
             root = ((CObjectFrame *) now_script->chara)->frame;
 
@@ -5109,8 +5109,8 @@ int _COLPRIM_SET_COORD(RS_STACKDATA *stack, int argc) {
                 return 0;
             }
 
-            start_name = (char *) GetStackString(stack++);
-            end_name = (char *) GetStackString(stack++);
+            start_name = GetStackString(stack++);
+            end_name = GetStackString(stack++);
             radius = GetStackFloat(stack);
             root = ((CObjectFrame *) now_script->chara)->frame;
 
@@ -5284,7 +5284,7 @@ int _COLPRIM_GET_HIT_POS(RS_STACKDATA *stack, int argc) {
  */
 int _ES_CREATE(RS_STACKDATA *stack, int argc) {
     int   handle = -1;
-    char *name = (char *) GetStackString(stack++);
+    char *name = GetStackString(stack++);
 
     switch (argc) {
         case 1:

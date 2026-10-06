@@ -44,6 +44,8 @@ Strings: `at_214` "chara/%s.chr"; `at_250` "以後"; `at_439` "mtn" (WAIT arg 1 
 `at_555` "place.cfg"; `at_556` "npc_place4.cfg"; `at_557` "rm %d\n" (mgCMemory +0x28 - +0x24).
 `vpiGetMotionID`: NULL/"" -> -1, sit 4, stand 0, special 8, walk 1, run 2, else -1
 (= `VLGR_MOTION` in villagermngr.hpp). `vpiMOTION` only recognises "sit" (motion = 4).
+Testing `*name == '\0'` for the empty name matches the PAL object without casting the
+`char *` to a signed-byte pointer.
 
 ## Script files (read from DATA.DAT plaintext)
 - npc_place4.cfg comments: `PROG_INFO ID,章,節,経過時間;` + name, e.g. `PROG_INFO 3 , 1 , 1 , 2 ,"１章";`.

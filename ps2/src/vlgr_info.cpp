@@ -616,7 +616,7 @@ int vpiSHADOW(SPI_STACK *stack, int argc) {
  *
  */
 int vpiGetMotionID(char *name) {
-    if (name == NULL || *(s8 *) name == 0) {
+    if (name == NULL || *name == '\0') {
         return -1;
     }
 

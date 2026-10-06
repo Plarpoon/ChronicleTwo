@@ -58,6 +58,8 @@ Size: `operator=` memcpy 0x110; mgLoadMDSFile array stride 0x110 (`__construct_n
 CreateFrameVisual. corner[8] 0x00 (SetBBox: bit0 picks x, bit1 y, bit2 z from max(+0x80) vs
 min(+0x90), w=1.0), max 0x80, min 0x90 (mgVectorMaxMin output order: max, min), sphere centre
 0xa0 (copied as a vec4 by SetBSphere, then radius written at 0xac).
+`SetBBox` can use its `BoundInfo *bound` field directly for the max, min and
+corner writes; removing the old casts preserves the 0xF4-byte PAL function.
 
 ### Vtable `__vt__8mgCFrame` (slot offset: function)
 0x08 ChangeParam, 0x0c UseParam, 0x10 SetPosition(f*), 0x14 SetPosition(fff), 0x18 GetPosition,
@@ -81,7 +83,10 @@ mgCObject/mgCFrameBase vtables end at 0x3c. No destructors. Trailing zero word i
 - GetFrame: `0 <= i && i <= frame_num` (note `<=`), then frame_list ? frame_list[i] : 0.
 - SearchFrame: compares own name, then recurses into children only (via brother chain).
 - SearchFrameID: linear over frame_list (skips nulls), returns index or -1.
+  Direct `frame_list[index]` access matches the retail loop without byte offsets.
 - StrCmp (static): returns 1 when both names are equal up to NUL or "--", 0 otherwise or if either is null.
+  Its pointer locals can use `char *`, but narrowing the loaded character to `s8`
+  before comparing with `'-'` remains necessary for PAL code generation.
   mgFrameNameComp is `j StrCmp` (StrCmp inlined/tail-called).
 - GetLWMatrix: reference forces changed; uses cache only if neither self nor any ancestor changed;
   else ClearChildFlag, GetLocalMatrix, parent LW * local via VU0 macros, stores to lw_matrix.

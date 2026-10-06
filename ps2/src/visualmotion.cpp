@@ -224,14 +224,14 @@ int mgCVisualMotionMDT::DataAssignMotionMDT(MDT_HEADER *header, mgCVMotionData *
                                             mgCMemory *memory, mgCMemory *work,
                                             mgCTextureManager *textures) {
 
-    mgCFace *packet;
-    int      count;
-    int      part_count;
-    u_char  *source;
-    int      i;
-    int      address;
-    int      size;
-    u_char  *section;
+    mgCFace   *packet;
+    int        count;
+    int        part_count;
+    FACES_ID  *source;
+    int        i;
+    int        address;
+    int        size;
+    MDT_FACES *section;
 
     if (work == NULL) {
         return 0;
@@ -266,14 +266,14 @@ int mgCVisualMotionMDT::DataAssignMotionMDT(MDT_HEADER *header, mgCVMotionData *
     size = work->stack_size - work->stack_used;
     scratch.stSetBuffer(work->stGetTop(), size);
     face_group = 0;
-    section = (u_char *) header + header->faces_ofs;
-    part_count = *(int *) (section + 8);
-    source = section + 0x10;
+    section = (MDT_FACES *) ((u_char *) header + header->faces_ofs);
+    part_count = section->prim_num;
+    source = (FACES_ID *) (section + 1);
 
     for (i = 0; i < part_count; i++) {
         scratch.stack_used = 0;
         scratch.lock = 0;
-        source = (u_char *) CreateFace((FACES_ID *) source, memory, &scratch, &packet);
+        source = CreateFace(source, memory, &scratch, &packet);
         address = (int) memory->stGetTop();
         size = CreateFaceMotionPacket((u_int *) address, packet, data);
         ((u_int *) &packet->packet_tag)[0] = size | 0x30000000;

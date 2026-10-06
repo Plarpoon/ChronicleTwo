@@ -369,21 +369,19 @@ void mgCFrame::SetTransMatrix(float *quaternion) {
 }
 
 void mgCFrame::SetBBox(float *max, float *min) {
-    mgCFrame::BoundInfo *record = (mgCFrame::BoundInfo *) bound;
-
-    if (record != 0) {
-        sceVu0CopyVector(((mgCFrame::BoundInfo *) bound)->max, max);
-        sceVu0CopyVector(((mgCFrame::BoundInfo *) bound)->min, min);
+    if (bound != 0) {
+        sceVu0CopyVector(bound->max, max);
+        sceVu0CopyVector(bound->min, min);
 
         float *extremes[4];
-        extremes[0] = ((mgCFrame::BoundInfo *) bound)->min;
-        extremes[1] = ((mgCFrame::BoundInfo *) bound)->max;
+        extremes[0] = bound->min;
+        extremes[1] = bound->max;
 
         for (s32 i = 0; i < 8; i++) {
-            ((mgCFrame::BoundInfo *) bound)->corner[i][3] = 1.0f;
-            ((mgCFrame::BoundInfo *) bound)->corner[i][0] = extremes[(i & 1) != 0][0];
-            ((mgCFrame::BoundInfo *) bound)->corner[i][1] = extremes[(i & 2) != 0][1];
-            ((mgCFrame::BoundInfo *) bound)->corner[i][2] = extremes[(i & 4) != 0][2];
+            bound->corner[i][3] = 1.0f;
+            bound->corner[i][0] = extremes[(i & 1) != 0][0];
+            bound->corner[i][1] = extremes[(i & 2) != 0][1];
+            bound->corner[i][2] = extremes[(i & 4) != 0][2];
         }
     }
 }
@@ -834,11 +832,11 @@ static int StrCmp(char *left, char *right) {
         return 0;
     }
 
-    s8 *end_a = (s8 *) left;
-    s8 *end_b = (s8 *) right;
-    s32 ch;
-    s32 length_a = 0;
-    s32 length_b = 0;
+    char *end_a = left;
+    char *end_b = right;
+    s32   ch;
+    s32   length_a = 0;
+    s32   length_b = 0;
 
     while ((ch = *end_a) != 0) {
         if ((s8) ch == '-' && end_a[1] == '-') {
@@ -862,8 +860,8 @@ static int StrCmp(char *left, char *right) {
         return 0;
     }
 
-    s8 *pa = (s8 *) left;
-    s8 *pb = (s8 *) right;
+    char *pa = left;
+    char *pb = right;
 
     for (s32 i = 0; i < length_a; i++, pa++, pb++) {
         if (*pa != *pb) {
@@ -901,16 +899,14 @@ int mgCFrame::SearchFrameID(char *name) {
     }
 
     s32 index = 0;
-    s32 offset = 0;
 
     while (index < frame_num) {
-        mgCFrame *entry = *(mgCFrame **) ((u8 *) frame_list + offset);
+        mgCFrame *entry = frame_list[index];
 
         if (entry != 0 && StrCmp(entry->name, name) != 0) {
             return index;
         }
 
-        offset += 4;
         index++;
     }
 
@@ -1329,7 +1325,7 @@ mgCFrame &mgCFrame::operator=(mgCFrame &other) {
 }
 
 int mgCFrame::Draw() {
-    return Draw((u_int *) 0);
+    return Draw(NULL);
 }
 
 void mgCObject::ChangeParam() {

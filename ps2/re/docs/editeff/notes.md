@@ -110,6 +110,14 @@ Other types: first free slot, else greatest frame.
 
 `EditSetPlaceAnime` allocates a `CMapParts` in the temporary parts stack, then initializes its base objects and frame in retail order. A native placement `new CMapParts` was tested but scored 79.74% because that constructor performs different work and scheduling; the explicit sequence remains pending an exact native form.
 
+A typed inline placement overload for `mgCFrame*` and native member placement
+construction scores 98.30%: MWCC inserts a second null branch before the
+frame constructor and moves a vtable store into the branch delay slot. The
+exact manual constructor call remains. Typed array indexing of `_StarEffect`
+and `PlaceAnime` changes the increment/address scheduling in three tested
+functions (99.11%, 99.62%, and 99.41%), so those byte-offset expressions
+remain until an exact typed form is found.
+
 ## Native static initialization
 
 Native `_StarEffect[3]` and `CurPartsBuff` globals emit the retail array-construction and memory-initialization calls. The generated 64-byte initializer matches exactly. The existing data/vtable objdiff scores are unchanged from the handwritten initializer.

@@ -136,3 +136,10 @@ then stores x/y/z: written as `sceVu0FVECTOR position = {x, y, z, 1.0f}`.
 
 ## NormalDrive draft
 The guarded C++ draft changes the active key when a new request arrives, records the previous motion for blending, and applies pause, hold and restart flags while advancing frames. It sends the current frame to SetMotionTime or blends with ChangeMotion until the new key is posed. The draft compiles and differs from retail; assembly remains active.
+
+## Shadow frame types
+`_SHADOW_MODEL` compares the root model's `frame_list` with the shadow model's
+`frame_list`, both arrays of `mgCFrame*`. The shadow model's `frame_num` is the
+loop bound, and each candidate's `name` is passed to `SearchFrameID`. Using
+these members directly removes the byte offsets and retains a 100% object
+match.

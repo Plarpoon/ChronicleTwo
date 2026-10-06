@@ -109,3 +109,9 @@ Sphida meanings are not established; names are neutral.
 
 ## Symbol drafts
 `DrawSymbol` maps a world position to 16-pixel map cells, checks room visibility and the blink counter, and draws the matching table symbol. `DrawSymbol_Chara` projects a character and rotates four arrow vertices about its facing, clipped to the map rectangle. Both guarded C++ drafts compile and retain assembly fallbacks while instruction differences remain.
+
+## Mini-map source types
+`CMiniMapSymbol::SetMapInfo` receives a `CMapParts*` directly from
+`CMap::GetPlacPartsTable`. The battle area's `map_name` is a `char` array, so
+its floor name can be passed to `strcpy` without a signed-byte cast. The
+function remains an exact object match with those types.

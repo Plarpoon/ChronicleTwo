@@ -261,7 +261,7 @@ void CScene::AutoChangeBGMVol(int enabled) {
 
 void CScene::GetActiveBgmStatus(BGM_STATUS *status) {
 
-    CScene     *scene = (CScene *) this;
+    CScene     *scene = this;
     BGM_STATUS *out = status;
     BGM_INFO   *info = scene->GetActiveBgmInfo();
     out->state = scene->GetBGMState();

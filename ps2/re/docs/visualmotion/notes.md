@@ -94,7 +94,9 @@ retail signature is `PUi`; no record struct is declared.
 - DataAssignMotionMDT resets `work_memory`'s `lock` (0x1C) and `stack_used` (0x24), allocates the
   weights from it, then uses its free space as a temporary `mgCMemory` for face indices;
   packets go to `memory`. Each face gets `packet_tag = size | 0x30000000` (DMA call) and the
-  packet address. Returns 1, or 0 when `work_memory` is NULL.
+  packet address. The face section is an `MDT_FACES` header followed by variable-size
+  `FACES_ID` records; its `prim_num` field supplies the iteration count. Typed header and
+  record access preserve a 100% PAL object match. Returns 1, or 0 when `work_memory` is NULL.
 
 ## Unresolved
 - Field names are descriptive, not retail. `mgCVMotionData::unk_10` purpose unknown.

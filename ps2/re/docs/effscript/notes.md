@@ -108,3 +108,14 @@ The local stack access helpers are ordinary C++ static functions. The two `SetSt
 `CEffectScriptMan::SetCharacter` reaches `slot[group][slot]` at offset 0x184. Native two-dimensional indexing preserves the address but MWCC reverses both commutative `addu` operands (99.88%); staging the row first leaves one reversed `addu` (99.94%). Typed pointer and flat indexing variants were also tested and did not reproduce retail operand order, so the byte-offset expression remains pending an exact typed form. Four sprite-command stack advances likewise changed scheduling when written as `stack += n` or `&stack[n]`; their byte-address forms remain pending.
 
 The `CRunScript` member at offset 0x50 is constructed after raw `_EFF_SCRIPT` placement allocation succeeds. Native member placement new through the project overload adds an `operator new` call (98.11%); an inline void-pointer placement overload adds a second null check (98.13%). Native placement construction of the whole `_EFF_SCRIPT` scored 97.20%. The explicit constructor symbol remains for exact matching.
+
+An inline placement overload taking `CRunScript*` or `CRunScript&` still emits
+an extra null branch before the native constructor call (98.125%). Native
+placement construction of `_EFF_SCRIPT` shifts the branch and long-lived
+register assignments (97.203%). Splitting allocation from construction adds
+another guard (94.25%). All of these forms preserve construction semantics
+but fail retail object matching, so the original call remains.
+
+The script's local `GetStackString` returns the pointer stored in a stack
+slot. Typing its return as `char*` removes the integer-to-pointer casts at
+its call sites; all affected functions remain exact.

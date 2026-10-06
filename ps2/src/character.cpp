@@ -1917,9 +1917,9 @@ int _SHADOW_MODEL(SPI_STACK *stack, int argc) {
     int                  i;
     mgCFrame            *frame;
     int                  count;
-    u8                  *model;
-    int                 *frame_names;
-    int                 *model_names;
+    mgCFrame            *model;
+    mgCFrame           **frame_names;
+    mgCFrame           **model_names;
     char                *pack;
 
     visual_type = at_1575;
@@ -1934,14 +1934,14 @@ int _SHADOW_MODEL(SPI_STACK *stack, int argc) {
     nowChr->shadow_frame =
         mgLoadMDSFile(
             (MDS_HEADER *) pack, base_stack, visual_type.type, 0);
-    frame = (mgCFrame *) nowChr->CObjectFrame::frame;
+    frame = nowChr->CObjectFrame::frame;
     shadow_link = &nowChr->shadow_link;
-    model = (u8 *) nowChr->shadow_frame;
+    model = nowChr->shadow_frame;
 
     while (model != 0 && frame != 0) {
-        count = *(int *) (model + 0x64);
-        frame_names = (int *) frame->frame_list;
-        model_names = *(int **) (model + 0x68);
+        count = model->frame_num;
+        frame_names = frame->frame_list;
+        model_names = model->frame_list;
 
         if (count != 0) {
             bytes = count * 4;
@@ -1955,10 +1955,10 @@ int _SHADOW_MODEL(SPI_STACK *stack, int argc) {
                     pairs = 0;
 
                     for (i = 0; i < count; i++) {
-                        u8 *sub = (u8 *) model_names[i];
+                        mgCFrame *sub = model_names[i];
 
                         if (sub != 0 && frame_names[i] != 0) {
-                            char *sub_name = *(char **) (sub + 0x50);
+                            char *sub_name = sub->name;
 
                             if (sub_name != 0) {
                                 int id = frame->SearchFrameID(sub_name);

@@ -84,6 +84,8 @@ separate fields.
   +0x14, +0x18 = info+0x24. The previous header's "+4 music_no / +8 unk" was corrected (+4 is the
   loaded number, which menushop/event_func read as "bgm number"). mapjump's OldBgmStatus symbol
   is 0x20 (alignment padding of the global).
+  `CScene::GetActiveBgmStatus` reads these members through `this`; removing a cast of that
+  pointer leaves the PAL object unchanged.
 - SND_FILE_INFO columns (LoadSndFileInfo): id; 'B' -> bgm_no; 'B' -> se_base; 'F' -> se_battle;
   'S' -> se_env; 'S'(+7) -> env_bgm with env_vol 0, or "時間変化<f>" -> env_bgm -1 and env_vol
   f*127 clamped; up to 6 'O' columns -> se_src (8 slots init -1; '*' sets se_src[0] = 9999);

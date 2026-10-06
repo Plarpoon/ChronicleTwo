@@ -137,3 +137,5 @@ the first '.' of each entry name.
 ## Division-check pragma
 
 The unit-level `divbyzerocheck` pragma was redundant with the global MWCC flag; removing it left the full compiled object identical in objdiff.
+
+`SearchFileCache` compares the declared `FILE_CACHE::name` field and advances typed cache entries with `&entry[1]`. Device and path splitting cursors are `char*`, matching the textual path data and removing byte-pointer casts. The edited functions retain exact object code.

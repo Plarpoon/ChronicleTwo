@@ -107,3 +107,5 @@ eight-byte `CFuncPointCheck` declared in `funcpoint.hpp`; the constructor clears
 the time before `CMap::CreateFuncCheck` fills the check. Placed parts then step
 or copy the check through `CMapParts` methods. These native calls produce the
 retail `PreDraw` and `DrawSub` functions without C-linkage aliases.
+
+`CEditMap::Initialize` clears the four grid pointers through the declared `grid[]` member; replacing the raw offset with `grid[i] = NULL` preserves the retail function. `ClearGrid` also uses `grid[i]` exactly after removing its local `global_optimizer off/reset` pair; with the pragma present, typed indexing scored 89.81%.

@@ -866,12 +866,14 @@ extern void *__vt__18mgCVisualMotionMDT[];
  *
  */
 struct MotionCopyFields {
-    u_char     unk_0[0x1C];
-    void     **vptr;             /**< Virtual method table pointer. */
-    u_char     model_data[0x30]; /**< Model data copied from the source visual. */
-    mgCFrame **frame;            /**< Frames of the visual. */
-    int        frame_id;         /**< Frame number of the visual. */
-    float (*base_matrix)[4][4];  /**< Base matrices of the frames. */
+    u_char      unk_0[0x1C];
+    void      **vptr; /**< Virtual method table pointer. */
+    u_char      unk_20[0x24];
+    mgMaterial *material; /**< Material table of the copied visual. */
+    u_char      unk_48[0x8];
+    mgCFrame  **frame;          /**< Frames of the visual. */
+    int         frame_id;       /**< Frame number of the visual. */
+    float (*base_matrix)[4][4]; /**< Base matrices of the frames. */
     u_char          unk_5c[4];
     mgVu0FBOX       base_box;   /**< Bounds of the visual. */
     int             bone[32];   /**< Bone indices. */
@@ -964,13 +966,13 @@ mgCVisual *mgCVisualMotionMDT::Copy(mgCMemory *memory) {
 
     mgMaterial *dst;
     mgMaterial *src;
-    int         offset = 0;
+    int         material_index = 0;
 
     while (i < material_num) {
+        src = &material[material_index];
+        dst = &copy->material[material_index];
         i++;
-        src = (mgMaterial *) ((u_char *) material + offset);
-        dst = (mgMaterial *) ((u_char *) ((mgCVisualMDT *) copy)->material + offset);
-        offset += 0x30;
+        material_index++;
         *(MotionColor *) dst->diffuse = *(MotionColor *) src->diffuse;
         *(MotionColor *) dst->unk_10 = *(MotionColor *) src->unk_10;
         dst->texture = src->texture;

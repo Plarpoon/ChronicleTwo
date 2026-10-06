@@ -538,7 +538,7 @@ void InitCDFile() {
  */
 static int GetDevType(char *path, char *out_name) {
     char  device[0x40];
-    s8   *scan;
+    char *scan;
     char *out;
 
     if (*(s8 *) (path + 1) == ':') {
@@ -546,7 +546,7 @@ static int GetDevType(char *path, char *out_name) {
         return -1;
     }
 
-    scan = (s8 *) path;
+    scan = path;
     out = device;
 
     for (;;) {
@@ -566,7 +566,7 @@ static int GetDevType(char *path, char *out_name) {
     *out = 0;
 
     if (*scan != 0) {
-        strcpy(out_name, (char *) scan + 1);
+        strcpy(out_name, &scan[1]);
     } else {
         strcpy(out_name, path);
     }
@@ -989,8 +989,8 @@ static FILE_CACHE *SearchFileCache(char *path) {
 
     entry = FileCache;
 
-    for (i = 0; i < 16; i++, entry++) {
-        if (entry->address != 0 && strcasecmp((char *) entry + 0x10, path) == 0) {
+    for (i = 0; i < 16; i++, entry = &entry[1]) {
+        if (entry->address != 0 && strcasecmp(entry->name, path) == 0) {
             return entry;
         }
     }
@@ -1211,8 +1211,8 @@ void DivPathName(char *path, char *out_dir, char *out_name) {
 
 void DivPathNameExt(char *path, char *out_dir, char *out_name, char *out_ext) {
     DivPathName(path, out_dir, out_name);
-    s8  c;
-    s8 *cursor = (s8 *) out_name;
+    s8    c;
+    char *cursor = out_name;
 
     while ((c = *cursor) != 0) {
         if (c == '.') {
@@ -1224,7 +1224,7 @@ void DivPathNameExt(char *path, char *out_dir, char *out_name, char *out_ext) {
         cursor++;
     }
 
-    strcpy(out_ext, (char *) cursor);
+    strcpy(out_ext, cursor);
 }
 
 // Constants (.rodata)

@@ -104,7 +104,7 @@ void CEditMap::Initialize() {
     offset = 0;
 
     for (; i < grid_max; i++) {
-        *(int *) ((u8 *) this + offset + 0xF54) = 0;
+        this->grid[i] = NULL;
         offset += 4;
     }
 
@@ -115,25 +115,17 @@ void CEditMap::Initialize() {
     CMap::Initialize();
 }
 
-#pragma global_optimizer off
-
 void CEditMap::ClearGrid() {
     int i = 0;
-    int offset = 0;
 
     for (; i < grid_max; i++) {
-
-        CEditGrid *grid = *(CEditGrid **) ((u8 *) this + offset + 0xF54);
+        CEditGrid *grid = this->grid[i];
 
         if (grid != 0) {
             grid->Clear();
         }
-
-        offset += 4;
     }
 }
-
-#pragma global_optimizer reset
 
 void CEditMap::ClearHouse() {
     int house_no = 0;

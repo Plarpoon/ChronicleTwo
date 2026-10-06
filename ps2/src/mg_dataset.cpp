@@ -169,9 +169,9 @@ int conv_new_text(char *dst, char *src) {
 #pragma global_optimizer off
 
 static int htoi(char *text) {
-    s8 *end = (s8 *) text;
-    s32 length = 0;
-    s32 value = 0;
+    char *end = text;
+    s32   length = 0;
+    s32   value = 0;
 
     while (*end++ != 0) {
         length++;

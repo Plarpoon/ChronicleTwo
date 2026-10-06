@@ -317,7 +317,7 @@ CCameraInfo *CMap::GetCameraInfo(int no) {
 
 CMapParts *CMap::NewPlaceParts() {
     for (int i = 0; i < place_parts_max; i++) {
-        u8 unused = *(s8 *) place_parts[i].name == 0;
+        u8 unused = place_parts[i].name[0] == 0;
 
         if (unused) {
             return &place_parts[i];
@@ -624,7 +624,7 @@ int CMap::GetPlaceParts(mgVu0FBOX *box, CMapParts **out_parts, int max) {
     out_index = 0;
 
     for (; i < place_parts_num; i++, parts++) {
-        u8 unused = *(s8 *) parts->name == 0;
+        u8 unused = parts->name[0] == 0;
 
         if (unused) {
             continue;
@@ -665,7 +665,7 @@ int CMap::GetPlaceColParts(mgVu0FBOX *box, CMapParts **out, int max) {
     out_index = 0;
 
     for (; i < place_parts_num; i++, parts++) {
-        u8 unused = *(s8 *) parts->name == 0;
+        u8 unused = parts->name[0] == 0;
 
         if (unused) {
             continue;
@@ -811,7 +811,9 @@ int CMap::PreDraw(float *view_pos) {
     parts = place_parts;
 
     for (index = 0; index < place_parts_num; index++, parts++) {
-        if ((u8) (*(s8 *) parts->name == 0) == 0) {
+        u8 is_empty = parts->name[0] == 0;
+
+        if (is_empty == 0) {
             if (parts->in_screen != 0) {
                 draw_parts[draw_parts_num] = parts;
                 draw_parts_num++;
@@ -901,7 +903,7 @@ int CMap::GetCharaLight(mgCObject *chara, CFuncPoint *points, int max, int use_p
         *nearest_type = FUNC_POINT_NONE;
 
         for (index = 0; index < place_parts_num; index++, parts++) {
-            if ((parts->func_point_mngr.flag & FUNC_POINT_MNGR_LIGHT) != 0 && (u8) (*(s8 *) parts->name == 0) == 0) {
+            if ((parts->func_point_mngr.flag & FUNC_POINT_MNGR_LIGHT) != 0 && (u8) (parts->name[0] == 0) == 0) {
                 chara_position[3] = 1.0f;
                 parts->GetLWMatrix(world_matrix);
                 mgInversMatrix(inverse_matrix, world_matrix);
@@ -1131,7 +1133,7 @@ void CMap::DrawFireRaster() {
     if (list != 0) {
         for (i = 0; i < draw_parts_num; i++, list++) {
             parts = *list;
-            u8 unused = *(s8 *) parts->name == 0;
+            u8 unused = parts->name[0] == 0;
 
             if (unused) {
                 continue;
@@ -1406,7 +1408,7 @@ int CMap::GetPoly(int kind, CCPoly *polys, mgVu0FBOX &box, int max) {
 
     for (i = 0; i < found_count; i++) {
         CMapParts *parts = found[i];
-        u8         unused = *(s8 *) parts->name == 0;
+        u8         unused = parts->name[0] == 0;
 
         if (unused) {
             continue;
@@ -1680,7 +1682,7 @@ CFuncPoint *CMap::GetEvent(float *pos, int check_type, MapEventInfo *info) {
         for (parts_no = 0; parts_no < place_parts_max; parts_no++, parts++) {
             manager = &parts->func_point_mngr;
 
-            if ((manager->flag & FUNC_POINT_MNGR_EVENT) && (u8) (*(s8 *) parts->name == 0) == 0 && parts->GetShow() != 0) {
+            if ((manager->flag & FUNC_POINT_MNGR_EVENT) && (u8) (parts->name[0] == 0) == 0 && parts->GetShow() != 0) {
                 manager->GetStart(FUNC_POINT_EVENT);
 
                 if ((point = manager->Get()) != NULL) {
@@ -1839,7 +1841,7 @@ int CMap::GetSeSrcVolPan(int *ids, float *vols, float *pans, int max) {
     parts = place_parts;
 
     for (i = 0; i < place_parts_max; i++, parts++) {
-        u8 unused = *(s8 *) parts->name == 0;
+        u8 unused = parts->name[0] == 0;
 
         if (unused) {
             continue;
@@ -1961,7 +1963,7 @@ void CMap::CreateTrBox(CMapTreasureBox *model, int tex_block, mgCMemory *stack) 
     parts = place_parts;
 
     for (parts_index = 0; parts_index < place_parts_max; parts_index++, parts++) {
-        if ((u8) (*(s8 *) parts->name == 0) == 0) {
+        if ((u8) (parts->name[0] == 0) == 0) {
             tr_box_num += parts->func_point_mngr.GetEventNum(FUNC_EVENT_TREASURE_BOX);
         }
     }

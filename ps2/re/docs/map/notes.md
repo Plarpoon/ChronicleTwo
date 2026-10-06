@@ -182,6 +182,10 @@ fallback.
   `tr_box` by its box number. Both typed forms preserve retail instructions.
 - `GetPoly` writes each collected triangle's `CCPoly::parts_no`, the map-part
   index used by later collision queries; typed field access matches retail.
+- Empty map-part names can be tested with `parts->name[0]` instead of casting
+  the first character pointer to `s8 *`; these typed reads preserve retail
+  in the map selection and drawing loops. `PreDraw` keeps its exact branch
+  sequence when the emptiness result is first held in a local `u8`.
 - `GetEvent` initializes `MapEventInfo::matrix` directly; typed matrix access
   matches retail. Its stack buffer remains an aligned word array: declaring
   the local as `MapEventInfo` makes MWCC address its fields from `sp` instead

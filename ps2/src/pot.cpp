@@ -178,8 +178,8 @@ void CBPot::Clash(float *hit_position, float *unused, float *normal) {
     float shard_velocity[4];
     float shard_position[4];
     int   i;
-    int   direction_offset;
-    int   fragment_offset;
+    int   direction_index;
+    int   fragment_index;
     timer = BPOT_BREAK_TIME;
     sceVu0CopyVector(position, hit_position);
 
@@ -202,22 +202,20 @@ void CBPot::Clash(float *hit_position, float *unused, float *normal) {
         i = 0;
     }
 
-    direction_offset = 0;
-    fragment_offset = 0;
+    direction_index = 0;
+    fragment_index = 0;
 
     for (; i < fragment_num; i++) {
-        {
-            float *source = (float *) ((u8 *) offset + direction_offset);
-            sceVu0ScaleVector(shard_velocity, source, 0.25f);
-        }
+        float *source = offset[direction_index];
+        sceVu0ScaleVector(shard_velocity, source, 0.25f);
         shard_velocity[3] = 1.0f;
         sceVu0AddVector(shard_velocity, shard_velocity, normal);
         shard_velocity[3] = 1.0f;
-        sceVu0AddVector(shard_position, hit_position, (float *) ((u8 *) offset + direction_offset));
+        sceVu0AddVector(shard_position, hit_position, offset[direction_index]);
         shard_position[3] = 1.0f;
-        ((CFragment *) ((u8 *) this + fragment_offset + 0x40))->Set(shard_position, shard_velocity);
-        direction_offset += 0x10;
-        fragment_offset += 0x60;
+        fragment[fragment_index].Set(shard_position, shard_velocity);
+        direction_index++;
+        fragment_index++;
     }
 }
 

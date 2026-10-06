@@ -98,6 +98,10 @@ retail signature is `PUi`; no record struct is declared.
 
 ## Unresolved
 - Field names are descriptive, not retail. `mgCVMotionData::unk_10` purpose unknown.
+- `Copy` indexes source and destination material arrays directly and removes byte offsets into
+  `mgMaterial` records. The copy placeholder needs a typed material pointer at offset 0x44 for
+  the full game build. A separate material index makes MWCC retain the retail offset induction,
+  and the function matches 100%.
 - Typed `bone[bone_index]` access in `Initialize` and `ChangeWeight` replaces byte offsets into
   the object. Both compile with equivalent loads and stores, but register allocation differs from
   retail; current objdiff scores are 97.42% and 95.00% respectively.

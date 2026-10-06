@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * Declares Image Processing Unit transfer functions.
+ */
+
 #include "types.h"
 
 /**

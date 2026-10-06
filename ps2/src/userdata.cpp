@@ -2038,8 +2038,8 @@ void CFishAquarium::FishIntoAquarium(int tank, int slot, CGameDataUsed *fish) {
     (entry)->CopyGameData(fish);
 
     if (tank == 1) {
-        *(int *) ((u8 *) entry + 0x50) = GetMainScene()->day;
-        *(float *) ((u8 *) entry + 0x54) = GetMainScene()->time;
+        entry->data.fish.tank_day = GetMainScene()->day;
+        entry->data.fish.tank_hour = GetMainScene()->time;
     }
 }
 
@@ -2875,19 +2875,17 @@ int CUserDataManager::CheckQuickChange(int chara_no, int *out) {
         changeable = 0;
         i = 0;
         int former_monster = monster_id;
-        int offset = 0;
 
         do {
             if (box->IsChange(i + 1) != 0) {
                 changeable++;
 
                 if (monster_id < 0) {
-                    monster_id = ((MOS_CHANGE_PARAM *) ((u8 *) box + offset))->monster_id;
+                    monster_id = box->monster[i].monster_id;
                 }
             }
 
             i++;
-            offset += sizeof(MOS_CHANGE_PARAM);
         } while (i < 10);
 
         if (badge_item != 0 && 0 < changeable) {
@@ -3652,8 +3650,7 @@ int CUserDataManager::SetChrEquip(int chara_no, CGameDataUsed *item) {
 
         for (int part = 0; part < 4; part++) {
             if (item_type == SearchEquipType(2, part)) {
-                GameDataSwap(&((ROBO_DATA *) ((u8 *) ridepod + part * sizeof(CGameDataUsed)))->parts[0],
-                             item, 0);
+                GameDataSwap(&ridepod->parts[part], item, 0);
 
                 if (battle != 0) {
                     battle->RefreshParamater();
@@ -3867,27 +3864,20 @@ int CUserDataManager::SearchActiveItemTableSpace(int chara_no, int item_no) {
         return -1;
     }
 
-    int offset = 0;
-
     for (; i < 3; i++) {
-        CGameDataUsed *item = &((CHARA_DATA *) ((u8 *) chara + offset))->active_item[0];
+        CGameDataUsed *item = &chara->active_item[i];
 
         if (item->item_no == item_no && item->CheckStackRemain() > 0) {
             return i;
         }
-
-        offset += sizeof(CGameDataUsed);
     }
 
     int j = 0;
-    offset = 0;
 
     for (; j < 3; j++) {
-        if (((CHARA_DATA *) ((u8 *) chara + offset))->active_item[0].item_no <= 0) {
+        if (chara->active_item[j].item_no <= 0) {
             return j;
         }
-
-        offset += sizeof(CGameDataUsed);
     }
 
     return -1;
@@ -5802,14 +5792,13 @@ int CheckItemLimmitOver() {
 
 int CheckGetItemLimmitOver(int item_no, int count) {
     CUserDataManager *user_data;
-    u8               *info;
+    CDataCommon      *info;
     int               held;
     int               limit;
     int               take;
     int               bag_max;
     int               bag_room;
     int               i;
-    int               off;
     CGameDataUsed    *entry;
 
     user_data = GetUserDataMan();
@@ -5819,8 +5808,8 @@ int CheckGetItemLimmitOver(int item_no, int count) {
     }
 
     held = user_data->GetNumSameItem(item_no);
-    info = (u8 *) GetCommonItemData(item_no);
-    limit = *(u16 *) (info + 0xA) - held;
+    info = GetCommonItemData(item_no);
+    limit = info->max_num - held;
     take = count;
 
     if (limit < count) {
@@ -5831,7 +5820,7 @@ int CheckGetItemLimmitOver(int item_no, int count) {
         return count;
     }
 
-    int type = ConvertUsedItemType(info[0]);
+    int type = ConvertUsedItemType(info->type);
 
     if (type == 1 || (type == 2 && item_no != 0xB9 && item_no != 0x17F)) {
         bag_max = GetNowBagMax(0);
@@ -5839,24 +5828,21 @@ int CheckGetItemLimmitOver(int item_no, int count) {
         i = 0;
 
         if (0 < bag_max) {
-            off = 0;
-
             do {
-                entry = (CGameDataUsed *) ((u8 *) user_data + off);
+                entry = &user_data->used_data[i];
 
                 if (entry->item_no <= 0) {
-                    bag_room += *(short *) (info + 0x1E);
+                    bag_room += info->stack_num;
                 } else if (item_no == entry->item_no) {
                     bag_room += entry->CheckStackRemain();
                 }
 
                 i++;
-                off += sizeof(CGameDataUsed);
             } while (i < bag_max);
         }
 
-        if (*(u16 *) (info + 0xA) < bag_room) {
-            bag_room = *(u16 *) (info + 0xA);
+        if (info->max_num < bag_room) {
+            bag_room = info->max_num;
         }
 
         if (bag_room < take) {
@@ -5865,7 +5851,7 @@ int CheckGetItemLimmitOver(int item_no, int count) {
 
         held = user_data->GetNumSameItem(item_no);
 
-        if (*(u16 *) (info + 0xA) < take + held) {
+        if (info->max_num < take + held) {
             take = 0;
         }
     } else if (user_data->SearchSpaceUsedData() < 0) {
@@ -5884,7 +5870,7 @@ int CheckGetItemRemainNum(int item_no) {
     }
 
     held = manager->GetNumSameItem(item_no);
-    return *(u16 *) ((u8 *) GetCommonItemData(item_no) + 0xA) - held;
+    return GetCommonItemData(item_no)->max_num - held;
 }
 
 void CheckItemDngKey() {
@@ -6334,9 +6320,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/userdata", at_3332__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/userdata", at_3333__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/userdata", at_3334__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/userdata", at_4442__DATA);
-
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/userdata", D_0037B004__DATA);
 
 // Small initialised data (.sdata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/userdata", f_2005__DATA);

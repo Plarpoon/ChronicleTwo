@@ -211,6 +211,11 @@ int CColFrame::InsidePoint(float *point) {
 #ifdef NONMATCHING
 static float normal_transform[4][4];
 
+/**
+ *
+ * Stores the matrix used to transform collision vertices and normals.
+ *
+ */
 void pre_trance_normal(float (*matrix)[4]) {
     for (int column = 0; column < 4; column++) {
         for (int row = 0; row < 4; row++) {
@@ -227,6 +232,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/collision", pre_trance_normal__FPA4_f);
  * loaded, and writes the unnormalised normal of the transformed triangle.
  */
 #ifdef NONMATCHING
+/**
+ *
+ * Transforms a collision triangle and calculates its face normal.
+ *
+ */
 void trance_normal(float *v0, float *v1, float *v2, float *normal) {
     float  vertex[3][4];
     float *source[3] = {v0, v1, v2};

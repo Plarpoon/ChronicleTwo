@@ -1212,6 +1212,11 @@ void DrawOneItem(mgCDrawPrim *prim, mgRect<float> rect, int item, int mode, MENU
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", DrawOneItem__FP11mgCDrawPrim9mgRect_f_iiP25MENU_PARTS_EFFECT_STRUCT1PUci);
 #endif
+/**
+ *
+ * Draws a help window from three vertically stacked texture sections.
+ *
+ */
 void MenuWindowHelp(mgCDrawPrim *prim, mgCTexture *texture, float x, float y, float width, float height,
                     short *table) {
     if (texture != 0) {
@@ -1326,6 +1331,11 @@ static void SetMenuDrawNumberKeta(char value) {
     MenuDrawNumberKeta = value;
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Draws a number with the selected alignment and optional digit padding.
+ *
+ */
 int DrawMenuNumber(mgCDrawPrim *prim, int number, int align, mgRect<int> rect, mgRect<int> texture_rect, int step_x,
                    int step_y) {
     int digits = GetNumberKeta(number);
@@ -5283,6 +5293,11 @@ void SetBGFrameForMenu(int tex_block, char *name) {
     mgSetPkMoveImage(&frame, src, background, 0, 0, 0);
 }
 
+/**
+ *
+ * Draws a menu frame image with color and edge-fade settings for its drawing type.
+ *
+ */
 static void MenuFrameImageDraw(mgCDrawPrim *prim, mgCTexture *tex, mgRect<float> rect, mgRect<int> tex_rect, int gray,
                                int alpha, int dtype) {
     int prim_type;
@@ -7231,9 +7246,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menudraw", at_4890__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menudraw", at_4933__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menudraw", at_4934__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menudraw", at_4935__DATA);
-
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menudraw", D_0037B02C__DATA);
 
 // Small initialised data (.sdata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menudraw", rgbatbl_1379__DATA);

@@ -623,6 +623,11 @@ static int CheckPlaceBurnParts(GeoFuncParam *param, RS_STACKDATA *args, int argc
     return 1;
 }
 
+/**
+ *
+ * Loads and places a town NPC named by the current villager identifier.
+ *
+ */
 int LoadIntNPC(GeoFuncParam *param, RS_STACKDATA *stack, int mode) {
     CScene      *scene = param->scene;
     int          villager_id = scene->villager_id;
@@ -685,6 +690,11 @@ int LoadIntNPC(GeoFuncParam *param, RS_STACKDATA *stack, int mode) {
     return 1;
 }
 
+/**
+ *
+ * Loads a town NPC at its georama placement or function point.
+ *
+ */
 int LoadGeoNPC(GeoFuncParam *param, int mode) {
     CScene      *scene = param->scene;
     CEditMap    *map;

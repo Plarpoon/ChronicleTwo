@@ -8,6 +8,20 @@ unit changes MWCC's code generation for the two buffer-copy functions because it
 symbol base instead of loading each field through a separate relocation; this matching issue
 remains under investigation.
 
+The retail `mgGetFrameBuffer` and `mgGetFrameBackBuffer` are 0xF8 and 0x138 bytes. With the
+required out-of-line `sceGsTex0::operator=`, the current native `frame_tex` definition makes the
+copies 0x120 and 0x168 bytes: an extra call plus stack setup. Inlining the same TEX0 value copy
+reduces them to 0x100 and 0x140 bytes, leaving two extra `addiu` instructions in each. MWCC
+forms `frame_tex+0x40` and `frame_tex+0x48` in registers before loading TEX1 and CLAMP, while
+retail loads them directly through HI16/LO16 relocations. The out-of-line assignment symbol
+`__as__9sceGsTex0FRC9sceGsTex0` (0x14 bytes) must remain because it is present in retail;
+the current `mg_texture` source's only additional use is in code guarded by `NONMATCHING`.
+
+MWCC emits the `.ctor` pointer to `__sinit_mglib_cpp` for the native global objects. Keeping
+the dumped `D_0037AFE8__DATA` entry alongside it adds a second pointer to the linked table.
+The source therefore omits that assembly placeholder; the generated entry occupies the retail
+slot. The same duplicate-entry pattern appeared in 21 other game units with native globals.
+
 ## C++ draft status
 All 101 functions have C++ in `ps2/src/mglib.cpp`. 43 are exact and compiled by
 the matching build. 31 more compile to retail's bytes in isolation but stay

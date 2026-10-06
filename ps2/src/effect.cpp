@@ -25,6 +25,11 @@ extern SPI_TAG_PARAM   effm_tag[];
 extern char            at_848__2[];
 
 // Code (.text)
+/**
+ *
+ * Draws a uniform random value around a center.
+ *
+ */
 float UniformityRand(float center, float range) {
     float value = (float) rand() / 2147483648.0f;
 
@@ -33,6 +38,11 @@ float UniformityRand(float center, float range) {
     return value - range / 2.0f;
 }
 
+/**
+ *
+ * Draws an averaged random value around a center.
+ *
+ */
 float RegularityRand(float center, float range, int samples) {
     float sum = 0.0f;
     int   i;
@@ -47,6 +57,11 @@ float RegularityRand(float center, float range, int samples) {
     return center + sum;
 }
 
+/**
+ *
+ * Restores an effect parameter set to its defaults.
+ *
+ */
 void InitEffectParam(EFFECT_PARAM *param) {
     int i;
     int offset;
@@ -979,18 +994,33 @@ CEffectCtrl &CEffectCtrl::operator=(const CEffectCtrl &other) {
     return *this;
 }
 
+/**
+ *
+ * Sets effect and controller pool capacities for a script.
+ *
+ */
 int __BUFFER_SIZE(SPI_STACK *args, int arg_count) {
     int effect_num = spiGetStackInt(args++);
     g_tmp_effm->SetEffectNums(effect_num, spiGetStackInt(args));
     return 1;
 }
 
+/**
+ *
+ * Begins a named effect controller definition.
+ *
+ */
 int __EFFECT_START(SPI_STACK *args, int arg_count) {
     strcpy(g_tmp_eff_name, spiGetStackString(args));
     g_tmp_effc = new CEffectCtrl;
     return 1;
 }
 
+/**
+ *
+ * Registers and releases the current effect controller definition.
+ *
+ */
 int __EFFECT_END(SPI_STACK *args, int arg_count) {
     if (g_eff_entry_flag != 0) {
         g_tmp_effm->EnterEffectCtrl(*g_tmp_effc, g_tmp_eff_name);
@@ -1012,27 +1042,52 @@ static int __WAIT_FRAME(SPI_STACK *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the image resource name for an effect script.
+ *
+ */
 int __IMG_NAME(SPI_STACK *args, int arg_count) {
     strcpy(g_tmp_effm->img_name, spiGetStackString(args));
     return 1;
 }
 
+/**
+ *
+ * Sets particle width and height.
+ *
+ */
 int __SIZE(SPI_STACK *args, int arg_count) {
     g_tmp_effc->width = spiGetStackFloat(args++);
     g_tmp_effc->height = spiGetStackFloat(args);
     return 1;
 }
 
+/**
+ *
+ * Sets the particle direction mode.
+ *
+ */
 int __DIR(SPI_STACK *args, int arg_count) {
     g_tmp_effc->dir = spiGetStackInt(args);
     return 1;
 }
 
+/**
+ *
+ * Sets the number of particles emitted.
+ *
+ */
 int __NUM(SPI_STACK *args, int arg_count) {
     g_tmp_effc->num = spiGetStackInt(args);
     return 1;
 }
 
+/**
+ *
+ * Configures particle count variation.
+ *
+ */
 int __NUM_RAND(SPI_STACK *args, int arg_count) {
     g_tmp_effc->num_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->num_rand = spiGetStackFloat(args++);
@@ -1040,11 +1095,21 @@ int __NUM_RAND(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the effect controller count.
+ *
+ */
 int __COUNT(SPI_STACK *args, int arg_count) {
     g_tmp_effc->count = spiGetStackInt(args);
     return 1;
 }
 
+/**
+ *
+ * Configures effect controller count variation.
+ *
+ */
 int __CNT_RAND(SPI_STACK *args, int arg_count) {
     g_tmp_effc->cnt_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->cnt_rand = spiGetStackFloat(args++);
@@ -1052,6 +1117,11 @@ int __CNT_RAND(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the effect repetition count and wait interval.
+ *
+ */
 int __REPEAT(SPI_STACK *args, int arg_count) {
     g_tmp_effc->repeat = spiGetStackInt(args++);
 
@@ -1061,6 +1131,11 @@ int __REPEAT(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Configures repetition variation.
+ *
+ */
 int __REP_RAND(SPI_STACK *args, int arg_count) {
     g_tmp_effc->rep_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->rep_rand = spiGetStackFloat(args++);
@@ -1068,6 +1143,11 @@ int __REP_RAND(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the particle origin.
+ *
+ */
 int __POS(SPI_STACK *args, int arg_count) {
     g_tmp_effc->pos[0] = spiGetStackFloat(args++);
     g_tmp_effc->pos[1] = spiGetStackFloat(args++);
@@ -1075,6 +1155,11 @@ int __POS(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Configures particle origin variation.
+ *
+ */
 int __POS_RAND(SPI_STACK *args, int arg_count) {
     g_tmp_effc->pos_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->pos_rand[0] = spiGetStackFloat(args++);
@@ -1084,6 +1169,11 @@ int __POS_RAND(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the initial particle velocity.
+ *
+ */
 int __VELO(SPI_STACK *args, int arg_count) {
     g_tmp_effc->velo[0] = spiGetStackFloat(args++);
     g_tmp_effc->velo[1] = spiGetStackFloat(args++);
@@ -1091,6 +1181,11 @@ int __VELO(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Configures initial velocity variation.
+ *
+ */
 int __VELO_RAND(SPI_STACK *args, int arg_count) {
     g_tmp_effc->velo_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->velo_rand[0] = spiGetStackFloat(args++);
@@ -1100,6 +1195,11 @@ int __VELO_RAND(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the particle velocity multipliers.
+ *
+ */
 int __VELO_MUL(SPI_STACK *args, int arg_count) {
     g_tmp_effc->velo_mul[0] = spiGetStackFloat(args++);
     g_tmp_effc->velo_mul[1] = spiGetStackFloat(args++);
@@ -1107,6 +1207,11 @@ int __VELO_MUL(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets particle acceleration.
+ *
+ */
 int __ACC(SPI_STACK *args, int arg_count) {
     g_tmp_effc->acc[0] = spiGetStackFloat(args++);
     g_tmp_effc->acc[1] = spiGetStackFloat(args++);
@@ -1114,6 +1219,11 @@ int __ACC(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Configures particle acceleration variation.
+ *
+ */
 int __ACC_RAND(SPI_STACK *args, int arg_count) {
     g_tmp_effc->acc_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->acc_rand[0] = spiGetStackFloat(args++);
@@ -1123,6 +1233,11 @@ int __ACC_RAND(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the particle acceleration multipliers.
+ *
+ */
 int __ACC_MUL(SPI_STACK *args, int arg_count) {
     g_tmp_effc->acc_mul[0] = spiGetStackFloat(args++);
     g_tmp_effc->acc_mul[1] = spiGetStackFloat(args++);
@@ -1130,6 +1245,11 @@ int __ACC_MUL(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the change mode for particle movement on each axis.
+ *
+ */
 int __MOVE_TYPE(SPI_STACK *args, int arg_count) {
     g_tmp_effc->move_type.x = (EFFECT_CHANGE_TYPE) spiGetStackInt(args++);
     g_tmp_effc->move_type.y = (EFFECT_CHANGE_TYPE) spiGetStackInt(args++);
@@ -1137,6 +1257,11 @@ int __MOVE_TYPE(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the first particle movement parameters.
+ *
+ */
 int __MOVE_P1(SPI_STACK *args, int arg_count) {
     g_tmp_effc->move_p1[0] = spiGetStackFloat(args++);
     g_tmp_effc->move_p1[1] = spiGetStackFloat(args++);
@@ -1144,6 +1269,11 @@ int __MOVE_P1(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Configures variation of the first movement parameters.
+ *
+ */
 int __MOVE_P1_RAND(SPI_STACK *args, int arg_count) {
     g_tmp_effc->move_p1_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->move_p1_rand[0] = spiGetStackFloat(args++);
@@ -1153,6 +1283,11 @@ int __MOVE_P1_RAND(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the second particle movement parameters.
+ *
+ */
 int __MOVE_P2(SPI_STACK *args, int arg_count) {
     g_tmp_effc->move_p2[0] = spiGetStackFloat(args++);
     g_tmp_effc->move_p2[1] = spiGetStackFloat(args++);
@@ -1160,6 +1295,11 @@ int __MOVE_P2(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Configures variation of the second movement parameters.
+ *
+ */
 int __MOVE_P2_RAND(SPI_STACK *args, int arg_count) {
     g_tmp_effc->move_p2_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->move_p2_rand[0] = spiGetStackFloat(args++);
@@ -1169,18 +1309,33 @@ int __MOVE_P2_RAND(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the change mode for particle scale.
+ *
+ */
 int __SCALE_TYPE(SPI_STACK *args, int arg_count) {
     g_tmp_effc->scale_type.x = (EFFECT_CHANGE_TYPE) spiGetStackInt(args++);
     g_tmp_effc->scale_type.y = (EFFECT_CHANGE_TYPE) spiGetStackInt(args);
     return 1;
 }
 
+/**
+ *
+ * Sets the initial particle scale.
+ *
+ */
 int __SCALE(SPI_STACK *args, int arg_count) {
     g_tmp_effc->scale[0] = spiGetStackFloat(args++);
     g_tmp_effc->scale[1] = spiGetStackFloat(args);
     return 1;
 }
 
+/**
+ *
+ * Configures initial particle scale variation.
+ *
+ */
 int __SCALE_RAND(SPI_STACK *args, int arg_count) {
     g_tmp_effc->scale_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->scale_rand[0] = spiGetStackFloat(args++);
@@ -1189,12 +1344,22 @@ int __SCALE_RAND(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets particle scale velocity.
+ *
+ */
 int __SVELO(SPI_STACK *args, int arg_count) {
     g_tmp_effc->svelo[0] = spiGetStackFloat(args++);
     g_tmp_effc->svelo[1] = spiGetStackFloat(args);
     return 1;
 }
 
+/**
+ *
+ * Configures scale velocity variation.
+ *
+ */
 int __SVELO_RAND(SPI_STACK *args, int arg_count) {
     g_tmp_effc->svelo_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->svelo_rand[0] = spiGetStackFloat(args++);
@@ -1203,12 +1368,22 @@ int __SVELO_RAND(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the first particle scale parameters.
+ *
+ */
 int __SCALE_P1(SPI_STACK *args, int arg_count) {
     g_tmp_effc->scale_p1[0] = spiGetStackFloat(args++);
     g_tmp_effc->scale_p1[1] = spiGetStackFloat(args);
     return 1;
 }
 
+/**
+ *
+ * Configures variation of the first scale parameters.
+ *
+ */
 int __SCALE_P1_RAND(SPI_STACK *args, int arg_count) {
     g_tmp_effc->scale_p1_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->scale_p1_rand[0] = spiGetStackFloat(args++);
@@ -1217,12 +1392,22 @@ int __SCALE_P1_RAND(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the second particle scale parameters.
+ *
+ */
 int __SCALE_P2(SPI_STACK *args, int arg_count) {
     g_tmp_effc->scale_p2[0] = spiGetStackFloat(args++);
     g_tmp_effc->scale_p2[1] = spiGetStackFloat(args);
     return 1;
 }
 
+/**
+ *
+ * Configures variation of the second scale parameters.
+ *
+ */
 int __SCALE_P2_RAND(SPI_STACK *args, int arg_count) {
     g_tmp_effc->scale_p2_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->scale_p2_rand[0] = spiGetStackFloat(args++);
@@ -1231,21 +1416,41 @@ int __SCALE_P2_RAND(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the particle alpha blend mode.
+ *
+ */
 int __ALPHA_BLEND(SPI_STACK *args, int arg_count) {
     g_tmp_effc->alpha_blend = (EFFECT_ALPHA_BLEND) spiGetStackInt(args);
     return 1;
 }
 
+/**
+ *
+ * Sets the change mode for particle alpha.
+ *
+ */
 int __ALPHA_TYPE(SPI_STACK *args, int arg_count) {
     g_tmp_effc->alpha_type = (EFFECT_CHANGE_TYPE) spiGetStackInt(args);
     return 1;
 }
 
+/**
+ *
+ * Sets the initial particle alpha.
+ *
+ */
 int __ALPHA(SPI_STACK *args, int arg_count) {
     g_tmp_effc->alpha = spiGetStackFloat(args);
     return 1;
 }
 
+/**
+ *
+ * Configures initial particle alpha variation.
+ *
+ */
 int __ALPHA_RAND(SPI_STACK *args, int arg_count) {
     g_tmp_effc->alpha_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->alpha_rand = spiGetStackFloat(args++);
@@ -1253,11 +1458,21 @@ int __ALPHA_RAND(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the first particle alpha parameter.
+ *
+ */
 int __ALPHA_P1(SPI_STACK *args, int arg_count) {
     g_tmp_effc->alpha_p1 = spiGetStackFloat(args);
     return 1;
 }
 
+/**
+ *
+ * Configures variation of the first alpha parameter.
+ *
+ */
 int __ALPHA_P1_RAND(SPI_STACK *args, int arg_count) {
     g_tmp_effc->alpha_p1_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->alpha_p1_rand = spiGetStackFloat(args++);
@@ -1265,11 +1480,21 @@ int __ALPHA_P1_RAND(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the second particle alpha parameter.
+ *
+ */
 int __ALPHA_P2(SPI_STACK *args, int arg_count) {
     g_tmp_effc->alpha_p2 = spiGetStackFloat(args);
     return 1;
 }
 
+/**
+ *
+ * Configures variation of the second alpha parameter.
+ *
+ */
 int __ALPHA_P2_RAND(SPI_STACK *args, int arg_count) {
     g_tmp_effc->alpha_p2_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->alpha_p2_rand = spiGetStackFloat(args++);
@@ -1277,6 +1502,11 @@ int __ALPHA_P2_RAND(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Loads particle texture rectangles from a script.
+ *
+ */
 int __TEX_GET_RECT(SPI_STACK *args, int arg_count) {
     int i;
 
@@ -1292,11 +1522,21 @@ int __TEX_GET_RECT(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the particle texture selection mode.
+ *
+ */
 int __TEX_GET_TYPE(SPI_STACK *args, int arg_count) {
     g_tmp_effc->tex_get_type = spiGetStackInt(args);
     return 1;
 }
 
+/**
+ *
+ * Resolves the texture used by the current effect.
+ *
+ */
 int __TEX_NAME(SPI_STACK *args, int arg_count) {
     char *name = spiGetStackString(args);
 
@@ -1308,6 +1548,11 @@ int __TEX_NAME(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Enables gravity with an origin, acceleration, and mass.
+ *
+ */
 int __GRAVITY(SPI_STACK *args, int arg_count) {
     g_tmp_effc->gravity_pos[0] = spiGetStackFloat(args++);
     g_tmp_effc->gravity_pos[1] = spiGetStackFloat(args++);

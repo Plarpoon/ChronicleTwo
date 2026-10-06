@@ -74,3 +74,10 @@ Header: `ps2/include/fishing.hpp`. No first-game counterpart: Dark Cloud's `fish
 ## Native static initialization
 
 Native `mgCMemory` and `CCameraControl` globals emit the eight calls in the retail initializer order. The generated 116-byte initializer matches exactly, including both camera constructors; this removes the handwritten C-linkage constructor alias.
+
+## Typed read-buffer offsets
+
+`CScene::read_buff` is a `u_long128*`. The fishing BGM and motion buffers begin
+0x100000 bytes into it, which is element 0x10000. Using `read_buff[0x10000]`
+in `ReplayPrevBGM` and `sgInitFishing` removes byte-pointer arithmetic and
+the return cast; both functions remain exact in objdiff.

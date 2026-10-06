@@ -789,9 +789,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", at_1107__4__DATA);
 // Constants (.rodata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", at_821__5__DATA);
 
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", D_0037B070__DATA);
-
 // Virtual tables (.vtables)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", __vt__12CPaintEffect__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", __vt__11CStarEffect__DATA);

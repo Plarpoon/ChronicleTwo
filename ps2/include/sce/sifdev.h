@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * Declares SIF device file operations and flags.
+ */
+
 #define SCE_RDONLY 0x0001
 #define SCE_WRONLY 0x0002
 #define SCE_CREAT 0x0200

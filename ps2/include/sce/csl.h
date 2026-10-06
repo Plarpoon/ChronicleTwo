@@ -1,6 +1,11 @@
 #pragma once
 
 /**
+ * @file
+ * Declares component sound library buffer and module contexts.
+ */
+
+/**
  * One buffer a component sound library module reads or writes.
  */
 struct sceCslBuffCtx {

@@ -702,6 +702,11 @@ extern u8              dngfloor_infoview;
 extern float           AlphaRate_1743;
 extern u8              init_1744;
 
+/**
+ *
+ * Draws the dungeon room information panel and its available activities.
+ *
+ */
 void DrawDngRoomInfo(DNGMAP_ROOM_INFO *room) {
     if (room == NULL || Floor_InfoTex == NULL) {
         return;
@@ -925,6 +930,11 @@ extern short         dngboardbrdtbl[24];
 extern short         dngboardbrdtbl_2[12];
 extern char          at_1993[];
 
+/**
+ *
+ * Draws a paged list of georama materials for the dungeon room.
+ *
+ */
 void DrawGeoramaMateria(int top_y, char *title, int unused_count, int *items, int tex_block) {
     int left = (mgScreenWidth - 0x1AE) >> 1;
     int column_left = mgScreenWidth / 3;
@@ -2642,9 +2652,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dngmenu", at_3350__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dngmenu", at_3451__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dngmenu", at_3539__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dngmenu", at_3540__DATA);
-
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dngmenu", D_0037B018__DATA);
 
 // Virtual tables (.vtables)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dngmenu", __vt__12CMenuTreeMap__DATA);

@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * Declares the CD and DVD drive access interface.
+ */
+
 #include "types.h"
 
 /**

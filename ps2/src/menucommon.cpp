@@ -973,6 +973,11 @@ void Trans3DPosTo2DPos(mgCCamera *camera, mgCFrame *frame, int *out) {
     mgTransWorldScreen(out, frame_pos);
 }
 
+/**
+ *
+ * Allocates and clears the menu's integer extra-information table.
+ *
+ */
 int _ETCINFO_MALLOC(SPI_STACK *stack, int arg_count) {
     int             count;
     CPosDataManage *data;
@@ -993,12 +998,22 @@ int _ETCINFO_MALLOC(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the starting index for subsequent integer extra-information entries.
+ *
+ */
 int _MENU_ETCINFO_OFFSET(SPI_STACK *stack, int arg_count) {
     Menu_Target_No = spiGetStackInt(stack);
     Menu_Target_No_local = 0;
     return 1;
 }
 
+/**
+ *
+ * Stores a named integer extra-information entry from the menu script.
+ *
+ */
 int _MENU_ETCINFO(SPI_STACK *stack, int arg_count) {
     int           index;
     char         *name;
@@ -1032,6 +1047,11 @@ int _MENU_ETCINFO(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Clears a selected range of integer extra-information entries.
+ *
+ */
 int _MENU_ETCINFO_CLEAR(SPI_STACK *stack, int arg_count) {
     int from;
     int to;
@@ -1051,6 +1071,11 @@ int _MENU_ETCINFO_CLEAR(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Allocates and clears the menu's floating-point extra-information table.
+ *
+ */
 int _ETCINFO2_MALLOC(SPI_STACK *stack, int arg_count) {
     int             count;
     CPosDataManage *data;
@@ -1071,12 +1096,22 @@ int _ETCINFO2_MALLOC(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the starting index for floating-point extra-information entries.
+ *
+ */
 int _MENU_ETCINFO2_OFFSET(SPI_STACK *stack, int arg_count) {
     Menu_Target_No = spiGetStackInt(stack);
     Menu_Target_No_local = 0;
     return 1;
 }
 
+/**
+ *
+ * Stores a named floating-point extra-information entry from the menu script.
+ *
+ */
 int _MENU_ETCINFO2(SPI_STACK *stack, int arg_count) {
     int            index;
     char          *name;
@@ -1111,6 +1146,11 @@ int _MENU_ETCINFO2(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Clears a selected range of floating-point extra-information entries.
+ *
+ */
 int _MENU_ETCINFO2_CLEAR(SPI_STACK *stack, int arg_count) {
     CPosDataManage *data;
     int             from;
@@ -1135,16 +1175,31 @@ int _MENU_ETCINFO2_CLEAR(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Resets all texture information held by the menu position manager.
+ *
+ */
 int _MENU_RESET_TEXINFO(SPI_STACK *stack, int arg_count) {
     MenuPosData->ResetTextureInfoAll();
     return 1;
 }
 
+/**
+ *
+ * Initializes the menu form drawing list.
+ *
+ */
 int _MENU_INIT_DRAWLIST(SPI_STACK *stack, int arg_count) {
     MenuPosData->InitDrawList();
     return 1;
 }
 
+/**
+ *
+ * Clears a selected range of menu texture records.
+ *
+ */
 int _MENU_TEXDATA_CLEAR(SPI_STACK *stack, int argc) {
     int from = spiGetStackInt(stack++);
     int to = 500;
@@ -1164,6 +1219,11 @@ int _MENU_TEXDATA_CLEAR(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Clears menu forms and resets their drawing list.
+ *
+ */
 int _MENU_FORM_CLEAR(SPI_STACK *stack, int argc) {
     int from = 0;
     int to = 100;
@@ -1178,6 +1238,11 @@ int _MENU_FORM_CLEAR(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Allocates the menu texture record table from a scripted count.
+ *
+ */
 int _MENU_TEXDATA_MALLOC(SPI_STACK *stack, int argc) {
     int          count = 256;
     unsigned int bytes;
@@ -1202,6 +1267,11 @@ int _MENU_TEXDATA_MALLOC(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Selects the texture pack name and block used by following texture records.
+ *
+ */
 int _MENU_TEXNAME(SPI_STACK *stack, int argc) {
     SPI_STACK *block_arg = stack + 1;
     char      *name = spiGetStackString(stack);
@@ -1225,12 +1295,22 @@ int _MENU_TEXNAME(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the starting index for following menu texture records.
+ *
+ */
 int _MENU_TEXDATA_OFFSET(SPI_STACK *stack, int argc) {
     MenuTexPosNo = spiGetStackInt(stack);
     MenuTexPosNo_local = 0;
     return 1;
 }
 
+/**
+ *
+ * Stores a named menu texture region and its source rectangle.
+ *
+ */
 int _MENU_TEXDATA(SPI_STACK *stack, int argc) {
     char             *name;
     int               x;
@@ -1265,6 +1345,11 @@ int _MENU_TEXDATA(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Allocates and clears the menu form table.
+ *
+ */
 int _MENU_FORM_MALLOC(SPI_STACK *stack, int argc) {
     int          count = spiGetStackInt(stack);
     unsigned int bytes = count << 7;
@@ -1285,12 +1370,22 @@ int _MENU_FORM_MALLOC(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the starting index for following menu forms.
+ *
+ */
 int _MENU_FORM_OFFSET_NO(SPI_STACK *stack, int argc) {
     menu_analyze_formno = spiGetStackInt(stack);
     menu_analyze_formno_offset = 0;
     return 1;
 }
 
+/**
+ *
+ * Initializes a named menu form at the selected table index.
+ *
+ */
 int _MENU_FORM_SET(SPI_STACK *stack, int argc) {
     char      *name = spiGetStackString(stack++);
     int        form_no;
@@ -1321,6 +1416,11 @@ int _MENU_FORM_SET(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Allocates and initializes the parts of the current menu form.
+ *
+ */
 int _MENU_FORM_PARTNUM(SPI_STACK *stack, int argc) {
     int          i;
     int          offset;
@@ -1352,6 +1452,11 @@ int _MENU_FORM_PARTNUM(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Copies the referenced texture region's size into a menu form part.
+ *
+ */
 void menu_texdata_to_formpart_copy(MENUFORMPARTS_TYPE *part) {
     MENU_BASETEXINFO *tex = MenuPosData->GetTexGetInfo(part->tex_info_no);
     part->w = 0;
@@ -1384,6 +1489,11 @@ int menu_spi_analyze_func_strcut1(MENU_SPI_ANALYZE_STRUCT1 *table, char *name) {
     return -1;
 }
 
+/**
+ *
+ * Initializes type-specific data for the current menu form.
+ *
+ */
 int menu_dtype_init(CMenuPosDataForm *form, SPI_STACK *stack, int argc) {
     if (menu_formPt == NULL) {
         return 0;
@@ -1418,6 +1528,11 @@ int menu_dtype_init(CMenuPosDataForm *form, SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Resolves and initializes the current menu form's drawing type.
+ *
+ */
 int _MENU_FORM_DTYPE(SPI_STACK *stack, int argc) {
     char *name;
 
@@ -1436,6 +1551,11 @@ int _MENU_FORM_DTYPE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the current menu form's movement type from a scripted name.
+ *
+ */
 int _MENU_FORM_MTYPE(SPI_STACK *stack, int argc) {
     char *name = spiGetStackString(stack);
     int   type = -1;
@@ -1459,6 +1579,11 @@ int _MENU_FORM_MTYPE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the drawing flag of the current or a named menu form.
+ *
+ */
 int _MENU_FORM_DRAWFLG(SPI_STACK *stack, int argc) {
     CMenuPosDataForm *form;
 
@@ -1482,6 +1607,11 @@ int _MENU_FORM_DRAWFLG(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the current menu form's vibration counts.
+ *
+ */
 int _MENU_FORM_VIBECNT(SPI_STACK *stack, int argc) {
     char *next_slot;
 
@@ -1496,10 +1626,20 @@ int _MENU_FORM_VIBECNT(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Accepts the end marker of a menu form definition.
+ *
+ */
 int _MENU_FORM_SETEND(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the current menu form's horizontal and vertical movement rates.
+ *
+ */
 int _MENU_FORM_MOVERATE(SPI_STACK *stack, int argc) {
     SPI_STACK *next_slot = stack + 1;
 
@@ -1512,6 +1652,11 @@ int _MENU_FORM_MOVERATE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the current menu form's screen position.
+ *
+ */
 int _MENU_FORM_PUTXY(SPI_STACK *stack, int argc) {
     SPI_STACK *next_slot = stack + 1;
 
@@ -1524,6 +1669,11 @@ int _MENU_FORM_PUTXY(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the current menu form's color channels and resets their animation parameters.
+ *
+ */
 int _MENU_FORM_RGBA(SPI_STACK *stack, int argc) {
     int               values[4];
     int               i;
@@ -1565,6 +1715,11 @@ int _MENU_FORM_RGBA(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Selects which color channels a menu form may animate.
+ *
+ */
 int _MENU_FORM_RGBA_BIT(SPI_STACK *stack, int argc) {
     u8    mask;
     char *text = spiGetStackString(stack);
@@ -1603,6 +1758,11 @@ int _MENU_FORM_RGBA_BIT(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Allocates the current menu form's named action table.
+ *
+ */
 int _MENU_ACTION_TABLE_NUM(SPI_STACK *stack, int argc) {
     int               count;
     MENU_FORM_ACTION *table;
@@ -1629,6 +1789,11 @@ int _MENU_ACTION_TABLE_NUM(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Defines one named menu form movement action.
+ *
+ */
 int _MENU_ACTION_DEF(SPI_STACK *stack, int argc) {
     MENU_FORM_ACTION_MOVE *action;
     strcpy(menu_spi_form_action_info->name, spiGetStackString(stack++));
@@ -1643,6 +1808,11 @@ int _MENU_ACTION_DEF(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Selects the current menu form's active named action.
+ *
+ */
 int _MENU_ACTION_SETACTION(SPI_STACK *stack, int argc) {
     if (menu_formPt == NULL) {
         return 0;
@@ -1652,18 +1822,33 @@ int _MENU_ACTION_SETACTION(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets vibration counts for the current menu form part.
+ *
+ */
 int _MENU_PARTVIBECNT(SPI_STACK *stack, int argc) {
     menu_form_part->vibe_cnt[0] = spiGetStackInt(stack++);
     menu_form_part->vibe_cnt[1] = spiGetStackInt(stack);
     return 1;
 }
 
+/**
+ *
+ * Sets vibration ranges for the current menu form part.
+ *
+ */
 int _MENU_PARTVIBER(SPI_STACK *stack, int argc) {
     menu_form_part->viber[0] = spiGetStackInt(stack++);
     menu_form_part->viber[1] = spiGetStackInt(stack);
     return 1;
 }
 
+/**
+ *
+ * Configures the shadow and its offset for the current menu form part.
+ *
+ */
 int _MENU_SHADOW_ONOFF(SPI_STACK *stack, int argc) {
     menu_form_part->shadow = 1;
     menu_form_part->shadow_offset = 4;
@@ -1679,6 +1864,11 @@ int _MENU_SHADOW_ONOFF(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the current form's clipping width and height.
+ *
+ */
 int _CLIP_WH(SPI_STACK *stack, int argc) {
     int width;
     int height;
@@ -1700,6 +1890,11 @@ int _CLIP_WH(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets color channels of the current menu form part.
+ *
+ */
 int _MENU_PARTRGBA(SPI_STACK *stack, int argc) {
     MENUFORMPARTS_TYPE *part;
     int                 i;
@@ -1729,6 +1924,11 @@ int _MENU_PARTRGBA(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets alpha blending mode for the current menu form part.
+ *
+ */
 int _MENU_PART_ALPHA_BLEND(SPI_STACK *stack, int argc) {
     if (menu_form_part == NULL) {
         return 0;
@@ -1738,6 +1938,11 @@ int _MENU_PART_ALPHA_BLEND(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets indexed extra values on the current menu form part.
+ *
+ */
 int _MENU_PART_ETCINFO(SPI_STACK *stack, int argc) {
     int pairs;
     int i;
@@ -1758,6 +1963,11 @@ int _MENU_PART_ETCINFO(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Enables bilinear texture filtering on the current menu form part.
+ *
+ */
 int _MENU_PART_BILINEAR(SPI_STACK *stack, int argc) {
     MENUFORMPARTS_TYPE *part = menu_form_part;
     u8                 *field = &part->bilinear;
@@ -1778,10 +1988,20 @@ int _MENU_PART_BILINEAR(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Copies a scripted name into a menu form part.
+ *
+ */
 void MakePartsName(SPI_STACK *stack, MENUFORMPARTS_TYPE *part) {
     part->name = mgCopyString(spiGetStackString(stack), MenuSpiStack);
 }
 
+/**
+ *
+ * Creates a named menu part of a scripted drawing type.
+ *
+ */
 int _MENU_PART_DTYPE(SPI_STACK *stack, int argc) {
     MENUFORMPARTS_TYPE *part;
     int                 i;
@@ -1811,6 +2031,11 @@ int _MENU_PART_DTYPE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a textured menu part with drawing type zero.
+ *
+ */
 int _MENU_NORMAL(SPI_STACK *stack, int argc) {
     MENUFORMPARTS_TYPE *part;
 
@@ -1837,6 +2062,11 @@ int _MENU_NORMAL(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a textured menu part with drawing type one.
+ *
+ */
 int _MENU_NORMAL2(SPI_STACK *stack, int argc) {
     MENUFORMPARTS_TYPE *part = menu_formPt->GetEnableEnterPart();
     menu_form_part = part;
@@ -1857,6 +2087,11 @@ int _MENU_NORMAL2(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates an active cursor part at a scripted position.
+ *
+ */
 int _MENU_CURSOR(SPI_STACK *stack, int argc) {
     MENUFORMPARTS_TYPE *part = menu_formPt->GetEnableEnterPart();
     menu_form_part = part;
@@ -1869,6 +2104,11 @@ int _MENU_CURSOR(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a hidden function-information part at a scripted position.
+ *
+ */
 int _MENU_FUNCINFO(SPI_STACK *stack, int argc) {
     MENUFORMPARTS_TYPE *part = menu_formPt->GetEnableEnterPart();
     menu_form_part = part;
@@ -1881,6 +2121,11 @@ int _MENU_FUNCINFO(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a textured number display part of drawing type five.
+ *
+ */
 int _MENU_NUMBER1(SPI_STACK *stack, int argc) {
     MENUFORMPARTS_TYPE *part = menu_formPt->GetEnableEnterPart();
     menu_form_part = part;
@@ -1900,6 +2145,11 @@ int _MENU_NUMBER1(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a textured number display part of drawing type six.
+ *
+ */
 int _MENU_NUMBER2(SPI_STACK *stack, int argc) {
     MENUFORMPARTS_TYPE *part = menu_formPt->GetEnableEnterPart();
     menu_form_part = part;
@@ -1920,6 +2170,11 @@ int _MENU_NUMBER2(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a textured frame image part with scripted dimensions.
+ *
+ */
 int _MENU_FRMIMG(SPI_STACK *stack, int argc) {
     MENUFORMPARTS_TYPE *part = menu_formPt->GetEnableEnterPart();
     menu_form_part = part;
@@ -1941,6 +2196,11 @@ int _MENU_FRMIMG(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a menu form reference part at a scripted position.
+ *
+ */
 int _MENU_FORM(SPI_STACK *stack, int argc) {
     MENUFORMPARTS_TYPE *part = menu_formPt->GetEnableEnterPart();
     menu_form_part = part;
@@ -1953,6 +2213,11 @@ int _MENU_FORM(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates an item display part with its scripted type and dimensions.
+ *
+ */
 int _MENU_ITEM(SPI_STACK *stack, int argc) {
     MENUFORMPARTS_TYPE *part = menu_formPt->GetEnableEnterPart();
     menu_form_part = part;
@@ -1974,6 +2239,11 @@ int _MENU_ITEM(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a textured checkmark part for an item display.
+ *
+ */
 int _MENU_ITEM_CHECKMARK(SPI_STACK *stack, int argc) {
     MENUFORMPARTS_TYPE *part = menu_formPt->GetEnableEnterPart();
     menu_form_part = part;
@@ -1995,6 +2265,11 @@ int _MENU_ITEM_CHECKMARK(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a filled box part and allocates its color effects.
+ *
+ */
 int _MENU_FILLBOX(SPI_STACK *stack, int argc) {
     MENUFORMPARTS_TYPE *part = menu_formPt->GetEnableEnterPart();
     menu_form_part = part;
@@ -2014,6 +2289,11 @@ int _MENU_FILLBOX(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the next filled box color effect from scripted channels.
+ *
+ */
 int _MENU_FILLBOXINFO(SPI_STACK *stack, int argc) {
     menu_parts_effect_ptr->type = 1;
 
@@ -2025,6 +2305,11 @@ int _MENU_FILLBOXINFO(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a textured rectangular frame part.
+ *
+ */
 int _MENU_WAKU_RECT(SPI_STACK *stack, int argc) {
     MENUFORMPARTS_TYPE *part = menu_formPt->GetEnableEnterPart();
     menu_form_part = part;
@@ -2040,6 +2325,11 @@ int _MENU_WAKU_RECT(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a textured circular frame part.
+ *
+ */
 int _MENU_WAKU_CIRCLE(SPI_STACK *stack, int argc) {
     MENUFORMPARTS_TYPE *part = menu_formPt->GetEnableEnterPart();
     menu_form_part = part;
@@ -2055,6 +2345,11 @@ int _MENU_WAKU_CIRCLE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Allocates the current part's scripted effect records.
+ *
+ */
 int _MENU_PARTS_EFF_NUM(SPI_STACK *stack, int argc) {
     int          count = spiGetStackInt(stack);
     unsigned int bytes;
@@ -2078,6 +2373,11 @@ int _MENU_PARTS_EFF_NUM(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Configures the next scripted effect of the current menu part.
+ *
+ */
 int _MENU_PARTS_EFFECT(SPI_STACK *stack, int argc) {
     MENU_PARTS_EFFECT_STRUCT1 *effect;
     char                      *name;
@@ -2114,6 +2414,11 @@ int MenuDataAnalyze(char *script, int size, mgCMemory *memory) {
     return 1;
 }
 
+/**
+ *
+ * Selects whether subsequent commands match the requested menu command name.
+ *
+ */
 int _MENU_EXE_COMMAND_NAME(SPI_STACK *stack, int argc) {
     char *name;
 
@@ -2127,6 +2432,11 @@ int _MENU_EXE_COMMAND_NAME(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets visibility for the named forms in the selected menu command.
+ *
+ */
 int _MENU_EXE_FORM_DRAWFLAG(SPI_STACK *stack, int argc) {
     int               draw;
     int               count;
@@ -2155,6 +2465,11 @@ int _MENU_EXE_FORM_DRAWFLAG(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets a named form's color and resets its color animation parameters.
+ *
+ */
 int _MENU_EXE_FORM_RGBA(SPI_STACK *stack, int argc) {
     CMenuPosDataForm *form;
     int               i;
@@ -2196,6 +2511,11 @@ int _MENU_EXE_FORM_RGBA(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets a named form's color animation parameters.
+ *
+ */
 int _MENU_EXE_FORM_CALCRGBAPARAM(SPI_STACK *stack, int argc) {
     CMenuPosDataForm *form;
     int               mode;
@@ -2217,6 +2537,11 @@ int _MENU_EXE_FORM_CALCRGBAPARAM(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Starts a fade in or out on a named menu form.
+ *
+ */
 int _MENU_EXE_FORM_FADE(SPI_STACK *stack, int argc) {
     CMenuPosDataForm *form;
     int               mode;
@@ -2246,6 +2571,11 @@ int _MENU_EXE_FORM_FADE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets a named form's screen position for the selected language.
+ *
+ */
 int _MENU_EXE_FORM_SETPOS(SPI_STACK *stack, int argc) {
     if (SpiMenuExeCommandFlag == 0) {
         return 1;
@@ -2275,6 +2605,11 @@ int _MENU_EXE_FORM_SETPOS(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Starts a named action on a selected menu form.
+ *
+ */
 int _MENU_EXE_FORM_SETACTION(SPI_STACK *stack, int argc) {
     CMenuPosDataForm *form;
     SPI_STACK        *next_slot = stack + 1;
@@ -2293,6 +2628,11 @@ int _MENU_EXE_FORM_SETACTION(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets visibility for one named part of a menu form.
+ *
+ */
 int _MENU_EXE_FORM_PARTSONOFF(SPI_STACK *stack, int argc) {
     CMenuPosDataForm   *form;
     MENUFORMPARTS_TYPE *part;
@@ -2317,6 +2657,11 @@ int _MENU_EXE_FORM_PARTSONOFF(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets visibility for a named group of parts on one form.
+ *
+ */
 int _MENU_EXE_FORM_PARTSONOFF_GRP(SPI_STACK *stack, int argc) {
     CMenuPosDataForm   *form;
     int                 on;
@@ -2348,6 +2693,11 @@ int _MENU_EXE_FORM_PARTSONOFF_GRP(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Changes the drawing order of two named menu forms.
+ *
+ */
 int _MENU_EXE_FORM_SWAP(SPI_STACK *stack, int argc) {
     SPI_STACK *next_slot = stack + 1;
     char      *form;
@@ -2361,6 +2711,11 @@ int _MENU_EXE_FORM_SWAP(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Changes the drawing order of two named groups of menu forms.
+ *
+ */
 int _MENU_EXE_FORM_GROUP_SWAP(SPI_STACK *stack, int argc) {
     char *form;
     char *target;
@@ -2379,6 +2734,11 @@ int _MENU_EXE_FORM_GROUP_SWAP(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Applies a named message preset to a menu message window.
+ *
+ */
 int _MENU_EXE_MSGENV(SPI_STACK *stack, int argc) {
     SPI_STACK *next_slot = stack + 1;
     int        msg_no;
@@ -2394,6 +2754,11 @@ int _MENU_EXE_MSGENV(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Builds a message in the selected menu message window.
+ *
+ */
 int _MENU_EXE_MAKEMSG(SPI_STACK *stack, int argc) {
     SPI_STACK *next_slot = stack + 1;
     int        message;
@@ -2409,6 +2774,11 @@ int _MENU_EXE_MAKEMSG(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the selected message window's absolute position mode.
+ *
+ */
 int _MENU_EXE_SETABSPOS(SPI_STACK *stack, int argc) {
     SPI_STACK *next_slot = stack + 1;
     int        index;
@@ -2424,6 +2794,11 @@ int _MENU_EXE_SETABSPOS(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Selects a system text buffer for a menu message window.
+ *
+ */
 int _MENU_EXE_MSGSETSYSTEMBUFF(SPI_STACK *stack, int argc) {
     SPI_STACK *next_slot = stack + 1;
     int        message;
@@ -2444,6 +2819,11 @@ int _MENU_EXE_MSGSETSYSTEMBUFF(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Selects a menu text buffer for a message window.
+ *
+ */
 int _MENU_EXE_MSGSETBUFF(SPI_STACK *stack, int argc) {
     SPI_STACK *next_slot = stack + 1;
 
@@ -2457,6 +2837,11 @@ int _MENU_EXE_MSGSETBUFF(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the outline style of a menu message window.
+ *
+ */
 int _MENU_EXE_MSGSETFUCHI(SPI_STACK *stack, int argc) {
     SPI_STACK *next_slot = stack + 1;
     int        message;
@@ -2474,6 +2859,11 @@ int _MENU_EXE_MSGSETFUCHI(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the selected menu message window's cursor position.
+ *
+ */
 int _MENU_EXE_MSGSETCURSOR(SPI_STACK *stack, int argc) {
     SPI_STACK *next_slot = stack + 1;
     int        index;
@@ -2489,6 +2879,11 @@ int _MENU_EXE_MSGSETCURSOR(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the first selectable answer line of a menu message window.
+ *
+ */
 int _MENU_SET_QUESTIONGYOU(SPI_STACK *stack, int argc) {
     SPI_STACK *next_slot = stack + 1;
     int        msg_no;
@@ -2502,6 +2897,11 @@ int _MENU_SET_QUESTIONGYOU(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the opening fade speed of a menu message window.
+ *
+ */
 int _MENU_SET_OPENSPEED(SPI_STACK *stack, int argc) {
     int        message;
     SPI_STACK *next_slot = stack + 1;
@@ -2515,6 +2915,11 @@ int _MENU_SET_OPENSPEED(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Enables or disables menu key input.
+ *
+ */
 int _MENU_INPUT_KEY(SPI_STACK *stack, int argc) {
     if (SpiMenuExeCommandFlag == 0) {
         return 1;
@@ -2524,6 +2929,11 @@ int _MENU_INPUT_KEY(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Shows or hides the menu cursor form.
+ *
+ */
 int _MENU_CURSOR_ONOFF(SPI_STACK *stack, int argc) {
     int               value;
     CMenuPosDataForm *cursor;
@@ -2542,6 +2952,11 @@ int _MENU_CURSOR_ONOFF(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Fades the menu cursor in or out at a scripted speed.
+ *
+ */
 int _MENU_CURSOR_FADE(SPI_STACK *stack, int argc) {
     int fade_in;
     int speed;
@@ -2573,6 +2988,11 @@ int _MENU_CURSOR_FADE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the menu window frame type.
+ *
+ */
 int _MENU_WAKUTYPE(SPI_STACK *stack, int argc) {
     if (SpiMenuExeCommandFlag == 0) {
         return 1;
@@ -2582,6 +3002,11 @@ int _MENU_WAKUTYPE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Starts and advances a scene fade for the selected menu command.
+ *
+ */
 int _MENU_SCENE_FADE(SPI_STACK *stack, int argc) {
     int fade_in;
     int frames;
@@ -2607,6 +3032,11 @@ int _MENU_SCENE_FADE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Plays a named menu sound effect.
+ *
+ */
 int _MENU_SE_PLAY(SPI_STACK *stack, int argc) {
     if (SpiMenuExeCommandFlag == 0) {
         return 1;
@@ -2616,6 +3046,11 @@ int _MENU_SE_PLAY(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Reinitializes the menu form drawing list for a command.
+ *
+ */
 int _MENU_EXE_INIT_DRAWLIST(SPI_STACK *stack, int argc) {
     if (SpiMenuExeCommandFlag == 0) {
         return 1;
@@ -2625,6 +3060,11 @@ int _MENU_EXE_INIT_DRAWLIST(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Resets all menu texture information for a command.
+ *
+ */
 int _MENU_EXE_RESET_TEXINFO(SPI_STACK *stack, int argc) {
     if (SpiMenuExeCommandFlag == 0) {
         return 1;
@@ -2634,6 +3074,11 @@ int _MENU_EXE_RESET_TEXINFO(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Prints a scripted menu debugging message.
+ *
+ */
 int _MENU_DEBUG_PRINTF(SPI_STACK *stack, int argc) {
     if (SpiMenuExeCommandFlag == 0) {
         return 1;

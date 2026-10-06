@@ -434,9 +434,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/movieviewlp", at_1035__5__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/movieviewlp", at_1036__5__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/movieviewlp", at_1037__5__DATA);
 
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/movieviewlp", D_0037B064__DATA);
-
 // Small uninitialised data (.sbss)
 INCLUDE_BSS(MovieScene, 0x4);
 INCLUDE_BSS(MovieView, 0x4);

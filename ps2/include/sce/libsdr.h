@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * Declares the sound driver remote command interface.
+ */
+
 /* Commands sceSdRemote forwards to the IOP sound library. */
 #define rSdInit 0x8000
 #define rSdSetParam 0x8010

@@ -255,6 +255,21 @@ The header gives their addresses, sizes, declarations and purpose comments.
 | `CBattleCharaInfo::ClearMagicSwordPow` | Resets the element, charge count and seven charge strengths. |
 | `ConvertItemAttrToCharaAttr` | Maps item attribute bits to separate condition-adding and curing `CHARA_STATUS_ATTR` masks. |
 | `CheckBadStatus` | Tests for any condition except `CHARA_STATUS_POWER`; it includes the two status bits whose effects remain unknown. |
+
+## Typed access verified against retail
+
+- `CFishAquarium::FishIntoAquarium` stores the transfer day and hour in
+  `CGameDataUsed::data.fish.tank_day` and `tank_hour` (offsets 0x50 and 0x54).
+- `CUserDataManager::CheckQuickChange` reads `CMonsterBox::monster[i].monster_id`.
+- `CUserDataManager::SetChrEquip` addresses `ROBO_DATA::parts[part]` directly.
+- `CUserDataManager::SearchActiveItemTableSpace` scans the three
+  `CHARA_DATA::active_item` entries first for a stackable match, then for an empty entry.
+- `CheckGetItemLimmitOver` uses `CDataCommon::type`, `max_num`, and `stack_num`
+  and scans `CUserDataManager::used_data` for board capacity.
+- `CheckGetItemRemainNum` subtracts the held item count from `CDataCommon::max_num`.
+
+All six functions retain 100% PAL object matches with the typed member access.
+
 ## Compiler flag cleanup
 
 The local `divbyzerocheck on`/`reset` pair is redundant with the PS2

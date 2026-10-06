@@ -547,6 +547,11 @@ void LightingEdit(CScene *scene) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdebug", LightingEdit__FP6CScene);
 #endif
+/**
+ *
+ * Loads a gyorace fish definition from a debug script.
+ *
+ */
 int tagGyoFish(SPI_STACK *stack, int argument_count) {
     CGameDataUsed *racer = GetOmakeGyoracer2(fish_num);
 

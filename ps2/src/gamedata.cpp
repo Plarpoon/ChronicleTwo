@@ -121,6 +121,11 @@ void CGameData::Initialize() {
     InitItemMes(1, 1);
 }
 
+/**
+ *
+ * Initializes the common item table and item number lookup.
+ *
+ */
 int _DATACOMINIT(SPI_STACK *stack, int arg_count) {
     GameItemDataManage.common_num = spiGetStackInt(stack);
     comdatapt_num = 0;
@@ -129,6 +134,11 @@ int _DATACOMINIT(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Loads one common item record from game data script values.
+ *
+ */
 int _DATACOM(SPI_STACK *stack, int arg_count) {
     char *name_stack;
 
@@ -162,6 +172,11 @@ int _DATACOM(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Loads and converts a common item display name.
+ *
+ */
 int _MES_SYS(SPI_STACK *stack, int arg_count) {
     u8           converted[0x100];
     int          item_no;
@@ -188,18 +203,33 @@ int _MES_SYS(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Accepts a spectol system message entry.
+ *
+ */
 int _MES_SYS_SPECTOL(SPI_STACK *stack, int arg_count) {
     spiGetStackInt(stack++);
     spiGetStackString(stack);
     return 1;
 }
 
+/**
+ *
+ * Sets the weapon table count and resets its loading cursor.
+ *
+ */
 int _DATAWEPNUM(SPI_STACK *stack, int arg_count) {
     GameItemDataManage.weapon_num = spiGetStackInt(stack);
     SpiWeaponPt = GameItemDataManage.weapon_data;
     return 1;
 }
 
+/**
+ *
+ * Loads weapon durability and level experience values.
+ *
+ */
 int _DATAWEP(SPI_STACK *stack, int arg_count) {
     SPI_STACK *next;
 
@@ -214,6 +244,11 @@ int _DATAWEP(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Loads the base weapon status values.
+ *
+ */
 int _DATAWEP_ST(SPI_STACK *stack, int arg_count) {
     SPI_STACK *next;
 
@@ -228,6 +263,11 @@ int _DATAWEP_ST(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Loads the maximum weapon status values.
+ *
+ */
 int _DATAWEP_ST_L(SPI_STACK *stack, int arg_count) {
     SPI_STACK *next;
 
@@ -242,6 +282,11 @@ int _DATAWEP_ST_L(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Loads the base weapon attribute values.
+ *
+ */
 int _DATAWEP2_ST(SPI_STACK *stack, int arg_count) {
     int i;
     int offset;
@@ -262,6 +307,11 @@ int _DATAWEP2_ST(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Loads the maximum weapon attribute values.
+ *
+ */
 int _DATAWEP2_ST_L(SPI_STACK *stack, int arg_count) {
     int i;
     int offset;
@@ -282,6 +332,11 @@ int _DATAWEP2_ST_L(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Loads weapon special settings, attack type, and model number.
+ *
+ */
 int _DATAWEP_SPE(SPI_STACK *stack, int arg_count) {
     if (SpiWeaponPt == NULL) {
         return 0;
@@ -307,6 +362,11 @@ int _DATAWEP_SPE(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Loads weapon build-up requirements and advances the weapon cursor.
+ *
+ */
 int _DATAWEP_BUILDUP(SPI_STACK *stack, int count) {
     SpiWeaponPt->buildup_weapon[0] = spiGetStackInt(stack++);
     SpiWeaponPt->buildup_weapon[1] = spiGetStackInt(stack++);
@@ -322,12 +382,22 @@ int _DATAWEP_BUILDUP(SPI_STACK *stack, int count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the item table count and resets its loading cursor.
+ *
+ */
 int _DATAITEMINIT(SPI_STACK *stack, int arg_count) {
     GameItemDataManage.item_num = spiGetStackInt(stack);
     SpiItemPt = GameItemDataManage.item_data;
     return 1;
 }
 
+/**
+ *
+ * Loads use, status, target, and effect values for an item.
+ *
+ */
 int _DATAITEM(SPI_STACK *stack, int arg_count) {
     unsigned int flags;
 
@@ -351,12 +421,22 @@ int _DATAITEM(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the attachment table count and resets its loading cursor.
+ *
+ */
 int _DATAATTACHINIT(SPI_STACK *stack, int arg_count) {
     GameItemDataManage.attach_num = spiGetStackInt(stack);
     SpiAttach = GameItemDataManage.attach_data;
     return 1;
 }
 
+/**
+ *
+ * Loads the base status values of an attachment.
+ *
+ */
 int _DATAATTACH_ST(SPI_STACK *stack, int arg_count) {
     int i;
 
@@ -371,6 +451,11 @@ int _DATAATTACH_ST(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Loads the attribute values of an attachment.
+ *
+ */
 int _DATAATTACH_ST2(SPI_STACK *stack, int arg_count) {
     int i;
 
@@ -385,6 +470,11 @@ int _DATAATTACH_ST2(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Loads attachment special flags and advances its cursor.
+ *
+ */
 int _DATAATTACH_ST_SP(SPI_STACK *stack, int arg_count) {
     if (SpiAttach == NULL) {
         return 1;
@@ -395,12 +485,22 @@ int _DATAATTACH_ST_SP(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the ridepod part table count and resets its loading cursor.
+ *
+ */
 int _DATAROBOINIT(SPI_STACK *stack, int arg_count) {
     GameItemDataManage.robo_num = spiGetStackInt(stack);
     SpiRoboPart = GameItemDataManage.robo_data;
     return 1;
 }
 
+/**
+ *
+ * Loads a ridepod part record according to its part type.
+ *
+ */
 int _DATAROBO_ANALYZE(SPI_STACK *stack, int arg_count) {
     int type;
     int i;
@@ -440,12 +540,22 @@ int _DATAROBO_ANALYZE(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the fish table count and resets its loading cursor.
+ *
+ */
 int _DATAFISHINIT(SPI_STACK *stack, int arg_count) {
     GameItemDataManage.fish_num = spiGetStackInt(stack);
     SpiFish = GameItemDataManage.fish_data;
     return 1;
 }
 
+/**
+ *
+ * Loads the size and other attributes of a fish record.
+ *
+ */
 int _DATAFISH(SPI_STACK *stack, int arg_count) {
     SpiFish = GameItemDataManage.GetFishData(spiGetStackInt(stack++));
 
@@ -469,11 +579,21 @@ int _DATAFISH(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the guard data table count.
+ *
+ */
 int _DATAGAURDNUM(SPI_STACK *stack, int arg_count) {
     GameItemDataManage.guard_num = spiGetStackInt(stack);
     return 1;
 }
 
+/**
+ *
+ * Loads one guard data value for an item.
+ *
+ */
 int _DATAGAURD(SPI_STACK *stack, int arg_count) {
     short *guard;
 
@@ -492,6 +612,11 @@ int _DATAGAURD(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Loads and interprets a game item data script.
+ *
+ */
 int LoadGameDataAnalyze(char *name) {
     int   size;
     u8    buffer[0x7800];

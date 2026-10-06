@@ -105,6 +105,11 @@ void                 DrawBox(float (*corners)[4], int r, int g, int b);
 void                 MoveChara(CCharacter2 *chara, mgCCamera *camera, mgCMemory *memory);
 
 // Code (.text)
+/**
+ *
+ * Writes event character and camera placement data to a file.
+ *
+ */
 void OutPutFile() {
     char         text[0x100];
     float        chara_pos[4];
@@ -215,6 +220,11 @@ void OutPutFile() {
     sceClose(file);
 }
 
+/**
+ *
+ * Draws a colored wireframe box from its bounds.
+ *
+ */
 void DrawBox(float *max, float *min, int r, int g, int b) {
     float corners[8][4];
     float lo[4];
@@ -257,6 +267,11 @@ void DrawBox(float *max, float *min, int r, int g, int b) {
     DrawBox(corners, r, g, b);
 }
 
+/**
+ *
+ * Draws a colored wireframe box from eight corners.
+ *
+ */
 void DrawBox(float (*corners)[4], int r, int g, int b) {
     mgCDrawPrim prim;
     int         vertex[8][4];
@@ -319,6 +334,11 @@ void VectMatMul(float *out, float *vec, float (*mat)[4]) {
     sceVu0CopyVector(out, result);
 }
 
+/**
+ *
+ * Loads the event editor debug font into a texture block.
+ *
+ */
 void evLoadDebugFont(int texture_id, mgCMemory *memory) {
 
     mgCTextureManager *tex_manager = &mgTexManager;
@@ -378,6 +398,11 @@ void MoveCamera(float *pos, float *ref) {
     }
 }
 
+/**
+ *
+ * Moves the event editor camera target from gamepad input.
+ *
+ */
 void MoveCameraRef(float *pos, float *ref) {
     float dir[4];
     float move[4];
@@ -417,6 +442,11 @@ void MoveCameraRef(float *pos, float *ref) {
     }
 }
 
+/**
+ *
+ * Moves the event editor character relative to the active camera.
+ *
+ */
 void MoveChara(CCharacter2 *chara, mgCCamera *camera, mgCMemory *memory) {
     float     position[4];
     float     eye[4];

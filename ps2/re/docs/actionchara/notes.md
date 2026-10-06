@@ -175,6 +175,15 @@ CheckRunEvent/CheckReleaseTimming load s8/s16 fields; declared int.
 
 `ThrowItemObject` indexes the `CCharacter2` item array directly. `SearchRandomStone` already returns `CMapParts*`, and `CActionChara` is a `CCharacter2`, so the corresponding object and base casts can be omitted. The affected actionchara functions remain exact in objdiff.
 
+`RockOn_TargetSel`, `DistCheck_Action2`, and `Check_LockOn` use `CActiveMonster*`
+for the scene's monster slots. This exposes `state`, `catch_state`, `attrib`,
+`target_dist`, and `tbl` without repeated C-style casts. Scene character
+downcasts use `static_cast`. In `StepParam`, typed `ActionVector` locals and
+globals copy the two four-float direction constants without pointer
+reinterpretation. These changes retain exact object code. `GuardEffectSet`
+and `HitEffectSet` retain their C-style camera cast: MWCC schedules their
+literal loads differently with `static_cast`, despite the same target type.
+
 ## Typed array traversal
 
 `CalcCollision` and `GetSwEffectPtr` advance typed entries with `&entry[1]` and `&slot[1]`; `CheckEquipSetItem` and the corresponding item check advance with `&item[1]`. These forms keep the retail pointer increment instructions while making the array element type explicit. Effect selection uses `&BattleFX.hit[index]` and `&BattleFX.flush[index]`. In `HitEffectSet`, binding `hit_next` to a local integer before indexing preserves MWCC’s argument scheduling; direct indexing changes the function score to 96.83%. All affected functions compare exactly.

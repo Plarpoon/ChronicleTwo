@@ -591,7 +591,7 @@ int CSphida::Step() {
 }
 
 void CSphida::InitStatusSprite() {
-    mgCTexture *texture = mgTexManager.GetTexture((char *) at_1221__5, -1);
+    mgCTexture *texture = mgTexManager.GetTexture(at_1221__5, -1);
 
     pow_gage.pos_x = 256.0f;
     pow_gage.pos_y = 406.4f;

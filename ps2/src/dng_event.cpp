@@ -1396,12 +1396,22 @@ int GetDungeonEventPoint(float *out_pos, float *out_rot, int kind) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", GetDungeonEventPoint__FPfPfi);
 #endif
+/**
+ *
+ * Begins a treasure box group list for the current floor.
+ *
+ */
 int _GROUP_START(SPI_STACK *stack, int argc) {
     spiGetStackInt(stack);
     nowTbFloor->group_num = -1;
     return 1;
 }
 
+/**
+ *
+ * Adds a treasure box item group to the current floor.
+ *
+ */
 int _GROUP(SPI_STACK *stack, int argc) {
     int first;
     int second;
@@ -1416,6 +1426,11 @@ int _GROUP(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Adds weighted items to the current treasure box group.
+ *
+ */
 int _ITEM(SPI_STACK *stack, int argc) {
     int i;
     int id;
@@ -1435,11 +1450,21 @@ int _ITEM(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the first floor number for treasure box information.
+ *
+ */
 int _FLOOR_START(SPI_STACK *stack, int argc) {
     nowTbFloor->floor_start = spiGetStackInt(stack);
     return 1;
 }
 
+/**
+ *
+ * Assigns treasure box groups to a dungeon floor.
+ *
+ */
 int _FLOOR(SPI_STACK *stack, int argc) {
     int count;
     int i;
@@ -1816,6 +1841,11 @@ void AutoSetTreasureBox() {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", AutoSetTreasureBox__Fv);
 #endif
 #ifdef NONMATCHING
+/**
+ *
+ * Selects a floor for scripted monster placement.
+ *
+ */
 int _FLS(SPI_STACK *stack, int argc) {
     FLS_FLOOR_ID = spiGetStackInt(stack++);
     spiGetStackInt(stack);
@@ -1829,6 +1859,11 @@ int _FLS(SPI_STACK *stack, int argc) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", _FLS__FP9SPI_STACKi);
 #endif
 #ifdef NONMATCHING
+/**
+ *
+ * Adds scripted monster placements on the selected floor.
+ *
+ */
 int _FL(SPI_STACK *stack, int argc) {
     int i;
     int entry;
@@ -1848,6 +1883,11 @@ int _FL(SPI_STACK *stack, int argc) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", _FL__FP9SPI_STACKi);
 #endif
+/**
+ *
+ * Ends the scripted monster placement floor.
+ *
+ */
 int _FLE(SPI_STACK *stack, int argc) {
     FLS_FLOOR_ID = -1;
     return 1;

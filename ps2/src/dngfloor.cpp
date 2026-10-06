@@ -92,6 +92,11 @@ void CDngFloorManager::Initialize() {
     glid_h = 0;
 }
 
+/**
+ *
+ * Sets dungeon map dimensions and allocates its grid information.
+ *
+ */
 int _TREE_MAPINFO(SPI_STACK *stack, int argc) {
     int width = spiGetStackInt(stack++);
     int height = spiGetStackInt(stack++);
@@ -114,6 +119,11 @@ int _TREE_MAPINFO(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Reads a dungeon map grid cell and initializes its room information.
+ *
+ */
 int _GLID_INFO(SPI_STACK *stack, int argc) {
     tree_glid_info->type = spiGetStackInt(stack++);
     tree_glid_info->x = spiGetStackInt(stack++);
@@ -135,6 +145,11 @@ int _GLID_INFO(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the type, shape, and marker of a dungeon map root.
+ *
+ */
 int _ROOT_INFO(SPI_STACK *stack, int argc) {
     tree_spi_rootinfo->type = spiGetStackInt(stack++);
     tree_spi_rootinfo->shape = spiGetStackInt(stack++);
@@ -142,6 +157,11 @@ int _ROOT_INFO(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Initializes the current dungeon room from script data.
+ *
+ */
 int _ROOM_INFO(SPI_STACK *stack, int argc) {
     tree_spi_roominfo->floor_id = spiGetStackInt(stack++);
     tree_spi_roominfo->order = spiGetStackInt(stack++);
@@ -163,6 +183,11 @@ int _ROOM_INFO(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the linked rooms of the current dungeon room.
+ *
+ */
 int _ROOM_LINK(SPI_STACK *stack, int count) {
     for (int i = 0; i < count; i++) {
         tree_spi_roominfo->link[i] = spiGetStackInt(stack++);
@@ -171,6 +196,11 @@ int _ROOM_LINK(SPI_STACK *stack, int count) {
     return 1;
 }
 
+/**
+ *
+ * Applies named option flags to the current dungeon room.
+ *
+ */
 int _ROOM_OPTION(SPI_STACK *stack, int argc) {
     RoomOptions options = at_886__4;
     int         flags = 1;
@@ -194,6 +224,11 @@ int _ROOM_OPTION(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the key room references of the current dungeon room.
+ *
+ */
 int _ROOM_KEYROOM(SPI_STACK *stack, int argc) {
     tree_spi_roominfo->key_room[0] = spiGetStackInt(stack++);
     tree_spi_roominfo->key_room[1] = spiGetStackInt(stack++);
@@ -202,6 +237,11 @@ int _ROOM_KEYROOM(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Chooses the texture number of the current dungeon room.
+ *
+ */
 int _ROOM_TEXNO(SPI_STACK *stack, int argc) {
     int texture_no = spiGetStackInt(stack);
 
@@ -215,6 +255,11 @@ int _ROOM_TEXNO(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets gameplay options for a dungeon floor.
+ *
+ */
 int _ROOM_FLOOR_INFO(SPI_STACK *stack, int argc) {
     DNGMAP_ROOM_INFO *info = tree_dngmap->GetDngMapFloorInfo(spiGetStackInt(stack++));
 
@@ -237,6 +282,11 @@ int _ROOM_FLOOR_INFO(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets practice options for a dungeon floor.
+ *
+ */
 int _ROOM_FLOOR_INFO2(SPI_STACK *stack, int argc) {
     DNGMAP_ROOM_INFO *info = tree_dngmap->GetDngMapFloorInfo(spiGetStackInt(stack++));
 
@@ -249,6 +299,11 @@ int _ROOM_FLOOR_INFO2(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the display title of a dungeon floor.
+ *
+ */
 int _ROOM_TITLE(SPI_STACK *stack, int argc) {
     DNGMAP_ROOM_INFO *info = tree_dngmap->GetDngMapFloorInfo(spiGetStackInt(stack++));
 

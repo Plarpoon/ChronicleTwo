@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * Declares MIDI stream input module functions.
+ */
+
 #include "csl.h"
 
 #ifdef __cplusplus

@@ -937,6 +937,11 @@ void CancelEyeViewMode() {
     EyeViewCancelOnce = 1;
 }
 
+/**
+ *
+ * Handles editor camera control, eye view, and photo input.
+ *
+ */
 void CameraControl(CScene *scene, CPadControl *pad) {
     int              photo_locked;
     int              eye_pressed;
@@ -1045,6 +1050,11 @@ void CameraControl(CScene *scene, CPadControl *pad) {
 done:;
 }
 
+/**
+ *
+ * Initializes editor eye view from the character facing angle.
+ *
+ */
 void InitEyeCamera(CCharacter2 *chara, CCameraControl *camera) {
     float rotation[4];
     chara->GetRotation(rotation);
@@ -1215,6 +1225,11 @@ static void InitLadder(int mode, CScene *scene, CSceneEventData *event) {
     scene->map_event_no = 0;
 }
 
+/**
+ *
+ * Clears the active ladder movement state.
+ *
+ */
 void EndLadder() {
     LadderMode = 0;
 }
@@ -1544,9 +1559,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1764__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1765__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1766__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", at_1767__DATA);
-
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editctrl", D_0037B008__DATA);
 
 // Small uninitialised data (.sbss)
 INCLUDE_BSS(LadderMode, 0x4);

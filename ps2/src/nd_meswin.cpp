@@ -3397,19 +3397,15 @@ int ClsMes::MakeAnd3DPosSet(char *text, float *world_position, int offset_x, int
 }
 
 void ClsMes::DrawFukidashiShadow() {
-    u8 drawer_storage[0x110];
-
-    volatile int screen_origin[4];
-
     if (fukidashi_centre_x < 0 || fukidashi_centre_y < 0) {
         return;
     }
 
-    float scale = fade;
-    float width = (float) fukidashi_w * scale;
-    float height = (float) fukidashi_h * scale;
-    new ((u_long128 *) drawer_storage) mgCDrawPrim;
-    mgCDrawPrim *prim = (mgCDrawPrim *) drawer_storage;
+    float             scale = fade;
+    float             width = (float) fukidashi_w * scale;
+    float             height = (float) fukidashi_h * scale;
+    message_draw_prim drawer;
+    mgCDrawPrim      *prim = &drawer.prim;
     prim->Initialize(NULL, NULL);
     prim->AlphaTestEnable(0);
     prim->DepthTestEnable(0);
@@ -3417,8 +3413,8 @@ void ClsMes::DrawFukidashiShadow() {
     prim->TextureMapEnable(0);
     prim->AlphaBlendEnable(1);
     int origin_y = fptosi(draw_off_y);
-    screen_origin[0] = fptosi(draw_off_x) * 16;
-    screen_origin[1] = origin_y * 16;
+    prim->offset_x = fptosi(draw_off_x) * 16;
+    prim->offset_y = origin_y * 16;
     prim->Begin(5);
     prim->Color(0, 0, 0, 0x40);
     int center_x = fptosi(LinerInterpolation((float) fukidashi_centre_x, (float) fukidashi_x, fade));

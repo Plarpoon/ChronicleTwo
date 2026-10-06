@@ -481,6 +481,11 @@ void SetupUnitMan(CScene *scene, CUserDataManager *user_data, int unit, ROBO_INF
     }
 }
 
+/**
+ *
+ * Attaches Max’s equipped parts and sets his action character type.
+ *
+ */
 int SetupMints(CScene *scene, CUserDataManager *user_data) {
     CGameDataUsed *equip = user_data->GetCharaDataPtr(0)->equip;
     CCharacter2   *characters[5];
@@ -524,6 +529,11 @@ int SetupMints(CScene *scene, CUserDataManager *user_data) {
     return 1;
 }
 
+/**
+ *
+ * Attaches Monica’s equipped parts and sets her action character type.
+ *
+ */
 int SetupMonica(CScene *scene, CUserDataManager *user_data) {
     CGameDataUsed *equip = user_data->GetCharaDataPtr(1)->equip;
     CCharacter2   *characters[5];
@@ -706,6 +716,11 @@ ROBO_INFO_DATA *GetRoboPartsInfo(CUserDataManager *user_data) {
     return &robo_dat;
 }
 
+/**
+ *
+ * Clears character attachments and selects monster movement.
+ *
+ */
 int SetupMonster(CScene *scene, CUserDataManager *user_data) {
     CCharacter2 *characters[5];
 

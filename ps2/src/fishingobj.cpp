@@ -1657,9 +1657,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_903__5__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_1503__4__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_1564__DATA);
 
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", D_0037B08C__DATA);
-
 // Small uninitialised data (.sbss)
 #ifndef NONMATCHING
 INCLUDE_BSS(WaterLevel, 0x4);

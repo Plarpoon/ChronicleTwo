@@ -77,8 +77,8 @@ struct ThrowItemTable {
 
 extern ThrowItemTable at_1398;
 extern CMonsterMan   *ActiveMonster;
-extern float          at_3289[4];
-extern float          at_3291[4];
+extern ActionVector   at_3289;
+extern ActionVector   at_3291;
 extern char           at_2423[];
 extern char           at_3389[];
 extern char           at_2333[];
@@ -1168,7 +1168,7 @@ float CActionChara::GetTargetDist(CScene *scene) {
     id = target_no;
 
     if (id != -1) {
-        target = (CActionChara *) scene->GetCharacter(id);
+        target = static_cast<CActionChara *>(scene->GetCharacter(id));
 
         if (target != NULL) {
             GetPosition(my_pos);
@@ -1180,9 +1180,14 @@ float CActionChara::GetTargetDist(CScene *scene) {
     return -1.0f;
 }
 
+/**
+ *
+ * Finds the next valid monster target for lock-on selection.
+ *
+ */
 int RockOn_TargetSel(CScene *scene, int index) {
-    CActionChara *target;
-    int           tries;
+    CActiveMonster *target;
+    int             tries;
 
     if (index != -1) {
         index -= 1;
@@ -1194,11 +1199,11 @@ int RockOn_TargetSel(CScene *scene, int index) {
                 index = MONSTER_ACTIVE_MAX;
             }
 
-            target = (CActionChara *) scene->GetCharacter(index);
+            target = static_cast<CActiveMonster *>(scene->GetCharacter(index));
 
-            if (target != NULL && target->chara_kind == 2 && ((CActiveMonster *) target)->state == 1 &&
-                ((CActiveMonster *) target)->catch_state != 1 &&
-                !(((CActiveMonster *) target)->attrib & 1)) {
+            if (target != NULL && target->chara_kind == 2 && target->state == 1 &&
+                target->catch_state != 1 &&
+                !(target->attrib & 1)) {
                 return index;
             }
         }
@@ -1207,11 +1212,11 @@ int RockOn_TargetSel(CScene *scene, int index) {
     }
 
     for (tries = 0; tries < MONSTER_ACTIVE_MAX; tries++) {
-        target = (CActionChara *) scene->GetCharacter(tries + MONSTER_ACTIVE_MAX);
+        target = static_cast<CActiveMonster *>(scene->GetCharacter(tries + MONSTER_ACTIVE_MAX));
 
-        if (target != NULL && target->chara_kind == 2 && ((CActiveMonster *) target)->state == 1 &&
-            ((CActiveMonster *) target)->catch_state != 1 &&
-            !(((CActiveMonster *) target)->attrib & 1)) {
+        if (target != NULL && target->chara_kind == 2 && target->state == 1 &&
+            target->catch_state != 1 &&
+            !(target->attrib & 1)) {
             return tries + MONSTER_ACTIVE_MAX;
         }
     }
@@ -1219,29 +1224,34 @@ int RockOn_TargetSel(CScene *scene, int index) {
     return -1;
 }
 
+/**
+ *
+ * Selects a monster target by distance rank within a given range.
+ *
+ */
 int DistCheck_Action2(CScene *scene, float unused, float range, float *out_dist, int rank, int *out_rank) {
-    float         direction[4];
-    float         own_pos[4];
-    float         own_rot[4];
-    float         entry_pos[4];
-    float         front_vec[4];
-    float         dists[MONSTER_ACTIVE_MAX];
-    int           ids[MONSTER_ACTIVE_MAX];
-    CActionChara *player;
-    int           count;
-    int           i;
-    CActionChara *target;
-    int           best;
-    float         best_dist;
-    float         dist;
-    int           a;
-    int           min;
-    int           b;
-    float         key;
-    int           tmp_id;
-    float         tmp_dist;
+    float           direction[4];
+    float           own_pos[4];
+    float           own_rot[4];
+    float           entry_pos[4];
+    float           front_vec[4];
+    float           dists[MONSTER_ACTIVE_MAX];
+    int             ids[MONSTER_ACTIVE_MAX];
+    CActionChara   *player;
+    int             count;
+    int             i;
+    CActiveMonster *target;
+    int             best;
+    float           best_dist;
+    float           dist;
+    int             a;
+    int             min;
+    int             b;
+    float           key;
+    int             tmp_id;
+    float           tmp_dist;
 
-    player = (CActionChara *) scene->GetCharacter(0);
+    player = static_cast<CActionChara *>(scene->GetCharacter(0));
     direction[3] = 1.0f;
     best_dist = range;
     player->GetPosition(own_pos);
@@ -1252,16 +1262,16 @@ int DistCheck_Action2(CScene *scene, float unused, float range, float *out_dist,
     i = 0;
 
     do {
-        target = (CActionChara *) scene->GetCharacter(i + MONSTER_ACTIVE_MAX);
+        target = static_cast<CActiveMonster *>(scene->GetCharacter(i + MONSTER_ACTIVE_MAX));
 
-        if (target != NULL && target->chara_kind == 2 && ((CActiveMonster *) target)->state == 1 &&
-            ((CActiveMonster *) target)->catch_state != 1 &&
-            !(((CActiveMonster *) target)->attrib & 1)) {
+        if (target != NULL && target->chara_kind == 2 && target->state == 1 &&
+            target->catch_state != 1 &&
+            !(target->attrib & 1)) {
             target->GetEntryObjectPos(0, 0, entry_pos);
-            dist = ((CActiveMonster *) target)->target_dist;
+            dist = target->target_dist;
 
-            if (dist < range || ((CActiveMonster *) target)->tbl->boss != 0) {
-                if (!(best_dist <= dist) || ((CActiveMonster *) target)->tbl->boss != 0) {
+            if (dist < range || target->tbl->boss != 0) {
+                if (!(best_dist <= dist) || target->tbl->boss != 0) {
                     best = i;
                     best_dist = dist;
                 }
@@ -1325,16 +1335,21 @@ int DistCheck_Action2(CScene *scene, float unused, float range, float *out_dist,
     return ids[rank] + MONSTER_ACTIVE_MAX;
 }
 
+/**
+ *
+ * Checks whether a monster remains valid and within lock-on range.
+ *
+ */
 int Check_LockOn(CScene *scene, float range, int index) {
-    float         own_pos[4];
-    float         target_pos[4];
-    CActionChara *player;
-    CActionChara *target;
-    int           farther;
+    float           own_pos[4];
+    float           target_pos[4];
+    CActionChara   *player;
+    CActiveMonster *target;
+    int             farther;
 
-    player = (CActionChara *) scene->GetCharacter(0);
+    player = static_cast<CActionChara *>(scene->GetCharacter(0));
     player->GetPosition(own_pos);
-    target = (CActionChara *) scene->GetCharacter(index);
+    target = static_cast<CActiveMonster *>(scene->GetCharacter(index));
 
     if (target == NULL) {
         return 0;
@@ -1344,19 +1359,19 @@ int Check_LockOn(CScene *scene, float range, int index) {
         return 0;
     }
 
-    if (((CActiveMonster *) target)->state != 1) {
+    if (target->state != 1) {
         return 0;
     }
 
-    if (((CActiveMonster *) target)->attrib & 1) {
+    if (target->attrib & 1) {
         return 0;
     }
 
-    if (((CActiveMonster *) target)->catch_state == 1) {
+    if (target->catch_state == 1) {
         return 0;
     }
 
-    if (((CActiveMonster *) target)->tbl->boss != 0) {
+    if (target->tbl->boss != 0) {
         return 1;
     }
 
@@ -1365,7 +1380,7 @@ int Check_LockOn(CScene *scene, float range, int index) {
     target_pos[3] = 1.0f;
     farther = 1;
 
-    if (((CActiveMonster *) target)->target_dist <= range) {
+    if (target->target_dist <= range) {
         farther = 0;
     }
 
@@ -1393,7 +1408,7 @@ void CActionChara::CollisionCheck(float *pos, float *velocity, float *out_veloci
     flat_position[1] = 0.0f;
 
     for (index = 24; index < 48; index++) {
-        monster = (CActiveMonster *) nowScene__2->GetCharacter(index);
+        monster = static_cast<CActiveMonster *>(nowScene__2->GetCharacter(index));
         if (monster == NULL || monster->chara_kind != ACTION_KIND_SCRIPT ||
             monster->state == ACTIVE_MONSTER_NONE ||
             (monster->state == ACTIVE_MONSTER_DEAD && monster->alpha < 0.6f) ||
@@ -1438,7 +1453,7 @@ void CActionChara::RockOn() {
     float            to_target[4];
     float            front_vec[4];
     int              priority_index;
-    CCharacter2     *target;
+    CActiveMonster  *target;
     DNG_BATTLE_AREA *scene_input;
 
     GetPosition(own_pos);
@@ -1447,7 +1462,7 @@ void CActionChara::RockOn() {
     target_dot = 0.0f;
 
     if (lock_on != 0) {
-        target = nowScene__2->GetCharacter(target_no);
+        target = static_cast<CActiveMonster *>(nowScene__2->GetCharacter(target_no));
 
         if (target != NULL) {
             target->GetEntryObjectPos(0, 0, target_pos);
@@ -1481,11 +1496,11 @@ void CActionChara::RockOn() {
                 return;
             }
 
-            target = nowScene__2->GetCharacter(target_no);
+            target = static_cast<CActiveMonster *>(nowScene__2->GetCharacter(target_no));
 
             if (target != NULL) {
                 if (ActiveMonster->GetPriorityLevelIndex(
-                        ((CActiveMonster *) target)->priority + 1, &priority_index) != NULL) {
+                        target->priority + 1, &priority_index) != NULL) {
                     sndSePlay(SystemSND_ID, 0x1A, 0);
                     target_no = priority_index;
                     return;
@@ -1501,29 +1516,29 @@ void CActionChara::RockOn() {
 }
 #ifdef NONMATCHING
 int CActionChara::HumanMoveIF() {
-    sceVu0FVECTOR position;
-    sceVu0FVECTOR rotation;
-    sceVu0FVECTOR move_velocity;
-    sceVu0FVECTOR stick_vector = {0.0f, 0.0f, 0.0f, 1.0f};
-    sceVu0FVECTOR target_position;
-    CActionChara *target;
-    float         camera_angle;
-    float         stick_x;
-    float         stick_y;
-    float         move_x;
-    float         move_z;
-    float         move_speed;
-    float         acceleration_step;
-    float         acceleration;
-    float         stick_direction;
-    float         angle_change;
-    float         turn_penalty;
-    float         relative_angle;
-    float         facing;
-    float         motion_speed;
-    float         abs_x;
-    float         abs_z;
-    s8            boss;
+    sceVu0FVECTOR   position;
+    sceVu0FVECTOR   rotation;
+    sceVu0FVECTOR   move_velocity;
+    sceVu0FVECTOR   stick_vector = {0.0f, 0.0f, 0.0f, 1.0f};
+    sceVu0FVECTOR   target_position;
+    CActiveMonster *target;
+    float           camera_angle;
+    float           stick_x;
+    float           stick_y;
+    float           move_x;
+    float           move_z;
+    float           move_speed;
+    float           acceleration_step;
+    float           acceleration;
+    float           stick_direction;
+    float           angle_change;
+    float           turn_penalty;
+    float           relative_angle;
+    float           facing;
+    float           motion_speed;
+    float           abs_x;
+    float           abs_z;
+    s8              boss;
 
     GetPosition(position);
     GetRotation(rotation);
@@ -1606,9 +1621,9 @@ int CActionChara::HumanMoveIF() {
     target = NULL;
     boss = 0;
     if (lock_on != 0) {
-        target = (CActionChara *) nowScene__2->GetCharacter(target_no);
+        target = static_cast<CActionChara *>(nowScene__2->GetCharacter(target_no));
         if (target != NULL) {
-            boss = ((CActiveMonster *) target)->tbl->boss;
+            boss = target->tbl->boss;
         }
     }
     if (move_x != 0.0f || move_z != 0.0f) {
@@ -1726,18 +1741,18 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", HumanMoveIF__12CActionCharaF
 #endif
 #ifdef NONMATCHING
 int CActionChara::HumanShrowMoveIF() {
-    sceVu0FVECTOR position;
-    sceVu0FVECTOR move_velocity;
-    sceVu0FVECTOR target_position;
-    CActionChara *target;
-    float         camera_angle;
-    float         stick_x;
-    float         stick_y;
-    float         move_x;
-    float         move_z;
-    float         motion_speed;
-    float         abs_x;
-    float         abs_z;
+    sceVu0FVECTOR   position;
+    sceVu0FVECTOR   move_velocity;
+    sceVu0FVECTOR   target_position;
+    CActiveMonster *target;
+    float           camera_angle;
+    float           stick_x;
+    float           stick_y;
+    float           move_x;
+    float           move_z;
+    float           motion_speed;
+    float           abs_x;
+    float           abs_z;
 
     GetPosition(position);
     sceVu0CopyVector(move_velocity, velocity);
@@ -1780,7 +1795,7 @@ int CActionChara::HumanShrowMoveIF() {
         SetMotion("\x8E\x9D\x82\xBF\x8F\xE3\x82\xB0\x95\xE0\x82\xAB", 0, 1);
         SetStep(0.5f * motion_speed);
     } else if (lock_on != 0) {
-        target = (CActionChara *) nowScene__2->GetCharacter(target_no);
+        target = static_cast<CActionChara *>(nowScene__2->GetCharacter(target_no));
         if (target->chara_kind == ACTION_KIND_SCRIPT) {
             target->GetEntryObjectPos(0, 0, target_position);
             SetRotation(0.0f, unitRotation(CObjectFrame::frame, atan2f(target_position[0] - position[0], target_position[2] - position[2]), 5.0f), 0.0f);
@@ -1833,15 +1848,15 @@ int CActionChara::HumanTameMoveIF() {
 
 #ifdef NONMATCHING
 int CActionChara::HumanGunMoveIF(char *stand_motion, char *move_motion) {
-    sceVu0FVECTOR position;
-    sceVu0FVECTOR move_velocity;
-    sceVu0FVECTOR target_position;
-    CActionChara *target;
-    float         camera_angle;
-    float         stick_x;
-    float         stick_y;
-    float         move_x;
-    float         move_z;
+    sceVu0FVECTOR   position;
+    sceVu0FVECTOR   move_velocity;
+    sceVu0FVECTOR   target_position;
+    CActiveMonster *target;
+    float           camera_angle;
+    float           stick_x;
+    float           stick_y;
+    float           move_x;
+    float           move_z;
 
     GetPosition(position);
     sceVu0CopyVector(move_velocity, velocity);
@@ -1861,7 +1876,7 @@ int CActionChara::HumanGunMoveIF(char *stand_motion, char *move_motion) {
         stand_flag = 1;
     }
     if (lock_on != 0) {
-        target = (CActionChara *) nowScene__2->GetCharacter(target_no);
+        target = static_cast<CActionChara *>(nowScene__2->GetCharacter(target_no));
         if (target != NULL && target->chara_kind == ACTION_KIND_SCRIPT) {
             target->GetEntryObjectPos(0, 0, target_position);
             SetRotation(0.0f, unitRotation(CObjectFrame::frame, atan2f(target_position[0] - position[0], target_position[2] - position[2]), 5.0f), 0.0f);
@@ -1882,20 +1897,20 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", HumanGunMoveIF__12CActionCha
 #endif
 #ifdef NONMATCHING
 int CActionChara::RoboWalkMoveIF(int mode) {
-    sceVu0FVECTOR position;
-    sceVu0FVECTOR move_velocity;
-    sceVu0FVECTOR movement;
-    sceVu0FVECTOR target_position;
-    sceVu0FVECTOR rotation;
-    CActionChara *target;
-    CActionChara *arm;
-    float         camera_angle;
-    float         stick_x;
-    float         stick_y;
-    float         move_x;
-    float         move_z;
-    float         motion_speed;
-    float         target_angle;
+    sceVu0FVECTOR   position;
+    sceVu0FVECTOR   move_velocity;
+    sceVu0FVECTOR   movement;
+    sceVu0FVECTOR   target_position;
+    sceVu0FVECTOR   rotation;
+    CActiveMonster *target;
+    CActionChara   *arm;
+    float           camera_angle;
+    float           stick_x;
+    float           stick_y;
+    float           move_x;
+    float           move_z;
+    float           motion_speed;
+    float           target_angle;
 
     GetPosition(position);
     sceVu0CopyVector(move_velocity, velocity);
@@ -1927,7 +1942,7 @@ int CActionChara::RoboWalkMoveIF(int mode) {
         } else {
             SetMotion("\x97\xA7\x82\xBF-\x91\xAB", 0, mode);
         }
-        target = (CActionChara *) nowScene__2->GetCharacter(target_no);
+        target = static_cast<CActionChara *>(nowScene__2->GetCharacter(target_no));
         if (target != NULL && target->chara_kind == ACTION_KIND_SCRIPT) {
             target->GetPosition(target_position);
             target_angle = atan2f(target_position[0] - position[0], target_position[2] - position[2]);
@@ -1977,23 +1992,23 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RoboWalkMoveIF__12CActionCha
 #endif
 #ifdef NONMATCHING
 int CActionChara::RoboTankMoveIF(int mode) {
-    sceVu0FVECTOR position;
-    sceVu0FVECTOR move_velocity;
-    sceVu0FVECTOR movement;
-    sceVu0FVECTOR target_position;
-    sceVu0FVECTOR rotation;
-    CActionChara *target;
-    CActionChara *arm;
-    float         camera_angle;
-    float         stick_x;
-    float         stick_y;
-    float         move_x;
-    float         move_z;
-    float         motion_speed;
-    float         target_angle;
-    sceVu0FVECTOR wheel_rotation;
-    mgCFrame     *wheel;
-    float         wheel_step;
+    sceVu0FVECTOR   position;
+    sceVu0FVECTOR   move_velocity;
+    sceVu0FVECTOR   movement;
+    sceVu0FVECTOR   target_position;
+    sceVu0FVECTOR   rotation;
+    CActiveMonster *target;
+    CActionChara   *arm;
+    float           camera_angle;
+    float           stick_x;
+    float           stick_y;
+    float           move_x;
+    float           move_z;
+    float           motion_speed;
+    float           target_angle;
+    sceVu0FVECTOR   wheel_rotation;
+    mgCFrame       *wheel;
+    float           wheel_step;
 
     GetPosition(position);
     sceVu0CopyVector(move_velocity, velocity);
@@ -2035,7 +2050,7 @@ int CActionChara::RoboTankMoveIF(int mode) {
         } else {
             SetMotion("\x97\xA7\x82\xBF-\x83L\x83\x83\x83^\x83s\x83\x89", 0, mode);
         }
-        target = (CActionChara *) nowScene__2->GetCharacter(target_no);
+        target = static_cast<CActionChara *>(nowScene__2->GetCharacter(target_no));
         if (target != NULL && target->chara_kind == ACTION_KIND_SCRIPT) {
             target->GetPosition(target_position);
             target_angle = atan2f(target_position[0] - position[0], target_position[2] - position[2]);
@@ -2120,33 +2135,33 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RoboTankMoveIF__12CActionCha
 #endif
 #ifdef NONMATCHING
 int CActionChara::RoboBikeMoveIF(int mode) {
-    sceVu0FVECTOR position;
-    sceVu0FVECTOR leg_rotation;
-    sceVu0FVECTOR rotation;
-    sceVu0FVECTOR movement;
-    sceVu0FVECTOR target_position;
-    sceVu0FVECTOR direction = {0.0f, 0.0f, 1.0f, 1.0f};
-    sceVu0FMATRIX matrix;
-    CActionChara *leg;
-    CActionChara *arm;
-    CActionChara *target;
-    CMap         *map;
-    float         stick_x;
-    float         stick_y;
-    float         steering;
-    float         target_angle;
-    int           poly_count;
-    CCPoly        polys[128];
-    mgVu0FBOX     box;
-    sceVu0FVECTOR wheel_rotation;
-    sceVu0FVECTOR front_wheel_position;
-    sceVu0FVECTOR back_wheel_position;
-    sceVu0FVECTOR front_hit;
-    sceVu0FVECTOR back_hit;
-    sceVu0FVECTOR slope_rotation = {0.0f, 0.0f, 0.0f, 1.0f};
-    sceVu0FVECTOR old_velocity;
-    mgCFrame     *wheel;
-    float         slope_angle;
+    sceVu0FVECTOR   position;
+    sceVu0FVECTOR   leg_rotation;
+    sceVu0FVECTOR   rotation;
+    sceVu0FVECTOR   movement;
+    sceVu0FVECTOR   target_position;
+    sceVu0FVECTOR   direction = {0.0f, 0.0f, 1.0f, 1.0f};
+    sceVu0FMATRIX   matrix;
+    CActionChara   *leg;
+    CActionChara   *arm;
+    CActiveMonster *target;
+    CMap           *map;
+    float           stick_x;
+    float           stick_y;
+    float           steering;
+    float           target_angle;
+    int             poly_count;
+    CCPoly          polys[128];
+    mgVu0FBOX       box;
+    sceVu0FVECTOR   wheel_rotation;
+    sceVu0FVECTOR   front_wheel_position;
+    sceVu0FVECTOR   back_wheel_position;
+    sceVu0FVECTOR   front_hit;
+    sceVu0FVECTOR   back_hit;
+    sceVu0FVECTOR   slope_rotation = {0.0f, 0.0f, 0.0f, 1.0f};
+    sceVu0FVECTOR   old_velocity;
+    mgCFrame       *wheel;
+    float           slope_angle;
 
     leg = SearchChara("leg");
     if (leg == NULL) {
@@ -2220,7 +2235,7 @@ int CActionChara::RoboBikeMoveIF(int mode) {
         SetMotion("\x97\xA7\x82\xBF-\x83L\x83\x83\x83^\x83s\x83\x89", 0, mode);
     }
     if (lock_on != 0) {
-        target = (CActionChara *) nowScene__2->GetCharacter(target_no);
+        target = static_cast<CActionChara *>(nowScene__2->GetCharacter(target_no));
         if (target != NULL && target->chara_kind == ACTION_KIND_SCRIPT) {
             target->GetPosition(target_position);
             target_angle = atan2f(target_position[0] - position[0], target_position[2] - position[2]);
@@ -2311,21 +2326,21 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RoboBikeMoveIF__12CActionCha
 #endif
 #ifdef NONMATCHING
 int CActionChara::RoboAirMoveIF(int unk, int mode) {
-    sceVu0FVECTOR position;
-    sceVu0FVECTOR move_velocity;
-    CActionChara *target;
-    CActionChara *arm;
-    float         camera_angle;
-    float         stick_x;
-    float         stick_y;
-    float         move_x;
-    float         move_z;
-    float         motion_speed;
-    float         target_angle;
-    sceVu0FVECTOR propeller_rotation;
-    mgCFrame     *propeller;
-    float         turn_speed;
-    float         speed_limit;
+    sceVu0FVECTOR   position;
+    sceVu0FVECTOR   move_velocity;
+    CActiveMonster *target;
+    CActionChara   *arm;
+    float           camera_angle;
+    float           stick_x;
+    float           stick_y;
+    float           move_x;
+    float           move_z;
+    float           motion_speed;
+    float           target_angle;
+    sceVu0FVECTOR   propeller_rotation;
+    mgCFrame       *propeller;
+    float           turn_speed;
+    float           speed_limit;
 
     GetPosition(position);
     sceVu0CopyVector(move_velocity, velocity);
@@ -2404,7 +2419,7 @@ int CActionChara::RoboAirMoveIF(int unk, int mode) {
         } else {
             SetMotion("\x97\xA7\x82\xBF-\x83L\x83\x83\x83^\x83s\x83\x89", 0, mode);
         }
-        target = (CActionChara *) nowScene__2->GetCharacter(target_no);
+        target = static_cast<CActionChara *>(nowScene__2->GetCharacter(target_no));
         if (target != NULL && target->chara_kind == ACTION_KIND_SCRIPT) {
             target->GetPosition(target_position);
             target_angle = atan2f(target_position[0] - position[0], target_position[2] - position[2]);
@@ -2455,27 +2470,27 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RoboAirMoveIF__12CActionChar
 #endif
 #ifdef NONMATCHING
 int CActionChara::MonsterMoveIF() {
-    sceVu0FVECTOR position;
-    sceVu0FVECTOR rotation;
-    sceVu0FVECTOR move_velocity;
-    sceVu0FVECTOR stick_vector = {0.0f, 0.0f, 0.0f, 1.0f};
-    sceVu0FVECTOR target_position;
-    CActionChara *target;
-    float         camera_angle;
-    float         stick_x;
-    float         stick_y;
-    float         move_x;
-    float         move_z;
-    float         move_speed;
-    float         acceleration_step;
-    float         acceleration;
-    float         stick_direction;
-    float         angle_change;
-    float         turn_penalty;
-    float         relative_angle;
-    float         motion_speed;
-    float         abs_x;
-    float         abs_z;
+    sceVu0FVECTOR   position;
+    sceVu0FVECTOR   rotation;
+    sceVu0FVECTOR   move_velocity;
+    sceVu0FVECTOR   stick_vector = {0.0f, 0.0f, 0.0f, 1.0f};
+    sceVu0FVECTOR   target_position;
+    CActiveMonster *target;
+    float           camera_angle;
+    float           stick_x;
+    float           stick_y;
+    float           move_x;
+    float           move_z;
+    float           move_speed;
+    float           acceleration_step;
+    float           acceleration;
+    float           stick_direction;
+    float           angle_change;
+    float           turn_penalty;
+    float           relative_angle;
+    float           motion_speed;
+    float           abs_x;
+    float           abs_z;
 
     GetPosition(position);
     GetRotation(rotation);
@@ -2573,7 +2588,7 @@ int CActionChara::MonsterMoveIF() {
         }
     } else if (lock_on != 0) {
         SetMotion("\x97\xA7\x82\xBF", 0, 1);
-        target = (CActionChara *) nowScene__2->GetCharacter(target_no);
+        target = static_cast<CActionChara *>(nowScene__2->GetCharacter(target_no));
         if (target != NULL && target->chara_kind == ACTION_KIND_SCRIPT) {
             target->GetEntryObjectPos(0, 0, target_position);
             SetRotation(0.0f, unitRotation(CObjectFrame::frame, atan2f(target_position[0] - position[0], target_position[2] - position[2]), 5.0f), 0.0f);
@@ -2595,6 +2610,11 @@ int CActionChara::MonsterMoveIF() {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", MonsterMoveIF__12CActionCharaFv);
 #endif
 
+/**
+ *
+ * Creates hit effects at the impact point facing the active camera.
+ *
+ */
 void HitEffectSet(CScene *scene, float *point) {
     float            pos[4];
     float            to_camera[4];
@@ -2687,6 +2707,11 @@ void HitEffectSet(CScene *scene, float *point) {
     }
 }
 
+/**
+ *
+ * Checks whether an active item prevents a status effect, occasionally consuming it.
+ *
+ */
 int CheckAmuletAvoid(int item_no) {
     CBattleCharaInfo *info;
     CGameDataUsed    *item;
@@ -2719,6 +2744,11 @@ int CheckAmuletAvoid(int item_no) {
     }
 }
 
+/**
+ *
+ * Consumes a matching active item and reports whether one was found.
+ *
+ */
 int CheckEquipSetItem(int item_no) {
     CBattleCharaInfo *info;
     CGameDataUsed    *item;
@@ -2979,7 +3009,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", CheckDamage__12CActionCharaF
 int CActionChara::LoadActionFile(char *script, int size, mgCMemory *memory) {
     SetActionExtendTable();
     chara_kind = 2;
-    script_buf = (char *) memory->stAlloc64(size / 16 + 1);
+    script_buf = reinterpret_cast<char *>(memory->stAlloc64(size / 16 + 1));
     memcpy(script_buf, script, size);
     SetActionScript(&this->script, script_buf, memory);
     return 1;
@@ -3029,7 +3059,7 @@ void CActionChara::RunScript(CScene *scene, RUN_SCRIPT_ENV *env) {
 
     action_info.chara = this;
     nowScene__2 = scene;
-    action_info.camera = (mgCCameraFollow *) scene->GetCamera(scene->GetCameraID("MainCam"));
+    action_info.camera = static_cast<mgCCameraFollow *>(scene->GetCamera(scene->GetCameraID("MainCam")));
     action_info.env = env;
     menu_flag = 0;
     dir_gun = 0;
@@ -3209,10 +3239,10 @@ void CActionChara::StepParam() {
     float         move_copy[4];
     float         self_rot[4];
     float         target_rot[4];
-    float         forward[4];
+    ActionVector  forward;
     float         matrix[4][4];
     float         self_rot2[4];
-    float         forward2[4];
+    ActionVector  forward2;
     float         matrix2[4][4];
     float         knock[4];
     float         push[4];
@@ -3240,17 +3270,17 @@ void CActionChara::StepParam() {
                 self_rot[1] += 6.2831855f;
             }
 
-            *(ActionVector *) forward = *(ActionVector *) at_3289;
+            forward = at_3289;
             sceVu0UnitMatrix(matrix);
             sceVu0RotMatrixY(matrix, matrix, self_rot[1]);
-            sceVu0ApplyMatrix(front_vec, matrix, forward);
+            sceVu0ApplyMatrix(front_vec, matrix, forward.f);
         }
     } else {
         GetRotation(self_rot2);
-        *(ActionVector *) forward2 = *(ActionVector *) at_3291;
+        forward2 = at_3291;
         sceVu0UnitMatrix(matrix2);
         sceVu0RotMatrixY(matrix2, matrix2, self_rot2[1]);
-        sceVu0ApplyMatrix(front_vec, matrix2, forward2);
+        sceVu0ApplyMatrix(front_vec, matrix2, forward2.f);
     }
 
     add_vec[1] = 0.0f;
@@ -3533,6 +3563,11 @@ void CActionChara::Copy(CActionChara &dest, mgCMemory *memory) {
 extern ActionVector at_2818;
 extern char         at_2840[];
 
+/**
+ *
+ * Creates guard effects at the impact point facing the active camera.
+ *
+ */
 void GuardEffectSet(CScene *scene, float *point) {
     float            to_camera[4];
     float            position[4];

@@ -2582,9 +2582,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmode", at_2054__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmode", at_2103__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmode", at_2213__3__DATA);
 
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmode", D_0037B068__DATA);
-
 // Small initialised data (.sdata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmode", SysMesNo__DATA);
 

@@ -25,12 +25,22 @@
 #include "sysmes.hpp"
 #include "userdata.hpp"
 
+/**
+ *
+ * Maps name entry board slots to their displayed tile indices.
+ *
+ */
 struct BoardTable {
-    s8 slot[5];
+    s8 slot[5]; /**< Tile index for each board slot. */
 };
 
+/**
+ *
+ * Maps command slots to character grid positions for each language and font.
+ *
+ */
 struct PositionTable {
-    s8 index[3][5][12];
+    s8 index[3][5][12]; /**< Character grid position for each language, font, and command. */
 };
 
 extern char                 NameRegiTopic[0x40];
@@ -40,29 +50,49 @@ extern NAMEREGI_KANJI_INDEX NameRegiSearchKanjiIndexTable[0x2C];
 extern s8                   testchar[0x2C][2];
 extern s8                   txt_table[0x3B];
 
+/**
+ *
+ * Holds the character tables used by one name entry font mode.
+ *
+ */
 struct FontTables {
-    char *first;
-    char *second;
-    char *third;
+    char *first;  /**< First character table. */
+    char *second; /**< Second character table. */
+    char *third;  /**< Third character table. */
 };
 
+/**
+ *
+ * Holds the four channel values used to colour a name entry board tile.
+ *
+ */
 struct BoardColor {
-    s16 r;
-    s16 g;
-    s16 b;
-    s16 a;
+    s16 r; /**< Red channel. */
+    s16 g; /**< Green channel. */
+    s16 b; /**< Blue channel. */
+    s16 a; /**< Alpha channel. */
 };
 
+/**
+ *
+ * Locates and sizes a rectangular region of a name entry board texture.
+ *
+ */
 struct BoardRect {
-    s16 x;
-    s16 y;
-    s16 w;
-    s16 h;
+    s16 x; /**< Horizontal origin. */
+    s16 y; /**< Vertical origin. */
+    s16 w; /**< Width. */
+    s16 h; /**< Height. */
 };
 
+/**
+ *
+ * Locates a point on the name entry board.
+ *
+ */
 struct BoardPoint {
-    s16 x;
-    s16 y;
+    s16 x; /**< Horizontal coordinate. */
+    s16 y; /**< Vertical coordinate. */
 };
 
 extern BoardColor     colt_1808[2];
@@ -338,9 +368,14 @@ int GetNameRegistFontKanjiList(int font_index, char *out) {
     return -1;
 }
 
+/**
+ *
+ * Stores the two coordinates used to place the name entry message window.
+ *
+ */
 union NameRegiWindowPosition {
-    int coordinates[2];
-    s64 packed;
+    int coordinates[2]; /**< Horizontal and vertical window positions. */
+    s64 packed;         /**< Both positions copied together. */
 };
 
 extern NameRegiWindowPosition at_1081__4;
@@ -455,8 +490,13 @@ void ConvertAscii2ShitJiss(char *src, char *dst) {
     }
 }
 
+/**
+ *
+ * Groups the item names shown in one name entry menu state.
+ *
+ */
 struct NameRegiItemNames {
-    char *name[3];
+    char *name[3]; /**< Item name for each selectable entry. */
 };
 
 extern NameRegiItemNames at_1171__3;
@@ -910,17 +950,32 @@ int CNameRegiMenu::CheckKanjiPosition(int position, s16 *keys, int key_mode) {
     return result;
 }
 
+/**
+ *
+ * Stores the pair of names substituted into a name entry message.
+ *
+ */
 union NameMessageArguments {
-    char *name[2];
-    s64   packed;
+    char *name[2]; /**< Names inserted into the message. */
+    s64   packed;  /**< Both name pointers copied together. */
 };
 
+/**
+ *
+ * Holds the command navigation and event entries for the name entry board.
+ *
+ */
 struct NameCommandTable {
-    s8 bytes[0x30];
+    s8 bytes[0x30]; /**< Four entries for each command slot. */
 };
 
+/**
+ *
+ * Holds the bytes used to decode a fishing password.
+ *
+ */
 struct PasswordKey {
-    u8 bytes[0x21];
+    u8 bytes[0x21]; /**< Password decoding key and its terminator. */
 };
 
 extern s16                  addTable_1510[8][4];
@@ -1476,7 +1531,7 @@ s32 CNameRegiMenu::KeyStep() {
                     password[0x16] = 0;
                     strcpy((char *) key.bytes, Nameregi_Target.item->GetName(0));
                     key_text = key.bytes;
-                    password_valid = DecodePassword(password, (u8 *) decoded, 0x10, (u8 *) key_text, 0x14);
+                    password_valid = DecodePassword(password, decoded, 0x10, key_text, 0x14);
                     memcpy(header, decoded, 0xE);
 
                     if (password_valid == 0 || (header[0] & 0x1FF) < 0x136) {
@@ -1846,9 +1901,12 @@ void CNameRegiMenu::DrawBaseBoard() {
 }
 #ifdef NONMATCHING
 void CNameRegiMenu::DrawActiveFont() {
+    /**
+     * Locates an additional mark drawn beside an active Kanji character.
+     */
     struct KanjiMark {
-        int x;
-        int y;
+        int x; /**< Horizontal position. */
+        int y; /**< Vertical position. */
     };
 
     KanjiMark   marks[20];
@@ -2158,9 +2216,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nameregi", at_1287__3__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nameregi", at_1288__2__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nameregi", at_1747__2__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nameregi", at_1748__2__DATA);
-
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nameregi", D_0037B084__DATA);
 
 // Virtual tables (.vtables)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/nameregi", __vt__13CNameRegiMenu__DATA);

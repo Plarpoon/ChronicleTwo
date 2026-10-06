@@ -118,3 +118,6 @@ Fields are declared `s32`, not the enum types (MWCC may size enums below int).
 `Step` takes the route branch while a villager is not in camera pose and neither its hold count nor the manager stop flag is set. A place without a route turns the villager toward the place heading. A move node turns and advances toward its point, switching to its successor within ten units. A wait node advances after its frame count or motion end. The camera pose branch runs six steps, changes motion and model part modes, and faces the camera on the first pose frame. The source draft uses typed vectors and route nodes; exact code generation still needs a promotion check.
 
 `GetAppearVlgr` scans the 0x200-entry place table. It searches each villager's progress entries from newest to oldest, selects entries that apply to the current story order, and returns every place for the requested time and map. A progress-one entry provides the fallback when no later entry supplies a place. Progress below two forces daytime and progress one.
+
+The reverse scan addresses each schedule through `entry->prog_info[point]`;
+this direct typed access preserves the exact PAL object code.

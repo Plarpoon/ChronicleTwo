@@ -1669,6 +1669,11 @@ int CEffectScriptMan::SetTexb(int texb, int group, int slot) {
     return 0;
 }
 
+/**
+ *
+ * Returns a nonempty effect script base definition by index.
+ *
+ */
 EFF_SPT_BASE_DEF *GetEffSptBaseDefPtr(int index) {
     if (index < 0) {
         return 0;
@@ -2165,6 +2170,11 @@ static int _GET_REF_ROT(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns a direction vector from scripted rotation angles.
+ *
+ */
 int _GET_DIR_VECTOR(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 6) {
         return 0;
@@ -2191,6 +2201,11 @@ int _GET_DIR_VECTOR(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the origin offset of the current effect script.
+ *
+ */
 int _SET_ORIGIN(RS_STACKDATA *stack, int argument_count) {
     now_script->origin[0] = GetStackFloat(stack++);
     now_script->origin[1] = GetStackFloat(stack++);
@@ -2199,6 +2214,11 @@ int _SET_ORIGIN(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns the origin offset of the current effect script.
+ *
+ */
 int _GET_ORIGIN(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 3) {
         return 0;
@@ -2210,6 +2230,11 @@ int _GET_ORIGIN(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Configures automatic effect offset from a named frame.
+ *
+ */
 int _AUTO_SET_OFFSET(RS_STACKDATA *stack, int argument_count) {
     char *name = 0;
     int   offset = GetStackInt(stack++);
@@ -2229,6 +2254,11 @@ int _AUTO_SET_OFFSET(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns the first work vector of the current effect script.
+ *
+ */
 int _GET_WORK_VECT1(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 3) {
         return 0;
@@ -2240,6 +2270,11 @@ int _GET_WORK_VECT1(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns the second work vector of the current effect script.
+ *
+ */
 int _GET_WORK_VECT2(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 3) {
         return 0;
@@ -2251,6 +2286,11 @@ int _GET_WORK_VECT2(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns the target character identifier of the current effect script.
+ *
+ */
 int _GET_TARGET_ID(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 1) {
         return 0;
@@ -2260,6 +2300,11 @@ int _GET_TARGET_ID(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns the user identifier of the current effect script.
+ *
+ */
 int _GET_USER_ID(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 1) {
         return 0;
@@ -2269,6 +2314,11 @@ int _GET_USER_ID(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns a typed value from the current effect script.
+ *
+ */
 int _GET_VALUE(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 2) {
         return 0;
@@ -2299,6 +2349,11 @@ int _GET_VALUE(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Stores a typed value in the current effect script.
+ *
+ */
 int _SET_VALUE(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 2) {
         return 0;
@@ -2332,6 +2387,11 @@ int _SET_VALUE(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Changes primary effect character visibility with optional fading.
+ *
+ */
 int _CHR_SET_SHOW(RS_STACKDATA *stack, int argument_count) {
     if (now_script->chara == 0) {
         return 0;
@@ -2363,6 +2423,11 @@ int _CHR_SET_SHOW(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns primary effect character visibility and fade state.
+ *
+ */
 int _CHR_GET_SHOW(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 1 && argument_count != 2) {
         return 0;
@@ -2381,6 +2446,11 @@ int _CHR_GET_SHOW(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the primary effect character position.
+ *
+ */
 int _CHR_SET_POS(RS_STACKDATA *stack, int argument_count) {
     if (now_script->chara == 0) {
         return 0;
@@ -2392,6 +2462,11 @@ int _CHR_SET_POS(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns the primary effect character position.
+ *
+ */
 int _CHR_GET_POS(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 3) {
         return 0;
@@ -2409,6 +2484,11 @@ int _CHR_GET_POS(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Turns the primary effect character toward a rotation over optional steps.
+ *
+ */
 int _CHR_SET_ROT(RS_STACKDATA *stack, int argument_count) {
     if (now_script->chara == 0) {
         return 0;
@@ -2441,6 +2521,11 @@ int _CHR_SET_ROT(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns the primary effect character rotation.
+ *
+ */
 int _CHR_GET_ROT(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 3) {
         return 0;
@@ -2458,6 +2543,11 @@ int _CHR_GET_ROT(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the primary effect character scale.
+ *
+ */
 int _CHR_SET_SCALE(RS_STACKDATA *stack, int argument_count) {
     if (now_script->chara == 0) {
         return 0;
@@ -2469,6 +2559,11 @@ int _CHR_SET_SCALE(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns the primary effect character scale.
+ *
+ */
 int _CHR_GET_SCALE(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 3) {
         return 0;
@@ -2486,6 +2581,11 @@ int _CHR_GET_SCALE(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Starts a named motion on the primary effect character.
+ *
+ */
 int _CHR_SET_MOTION(RS_STACKDATA *stack, int argument_count) {
     if (now_script->chara == 0) {
         return 0;
@@ -2512,6 +2612,11 @@ int _CHR_SET_MOTION(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets primary effect character motion playback speed.
+ *
+ */
 int _CHR_SET_MOT_STEP(RS_STACKDATA *stack, int argument_count) {
     if (now_script->chara == 0) {
         return 0;
@@ -2521,6 +2626,11 @@ int _CHR_SET_MOT_STEP(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns the current motion frame wait of the primary effect character.
+ *
+ */
 int _CHR_GET_MOT_WAIT(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 1) {
         return 0;
@@ -2536,6 +2646,11 @@ int _CHR_GET_MOT_WAIT(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns the primary effect character facing direction.
+ *
+ */
 int _CHR_GET_DIR_VECTOR(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 3) {
         return 0;
@@ -2560,6 +2675,11 @@ int _CHR_GET_DIR_VECTOR(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns rotation toward a point from the primary effect character.
+ *
+ */
 int _CHR_GET_REF_ROT(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 4 && argument_count != 6) {
         return 0;
@@ -2596,6 +2716,11 @@ int _CHR_GET_REF_ROT(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Offsets the primary effect character position.
+ *
+ */
 int _CHR_ADD_POS(RS_STACKDATA *stack, int argument_count) {
     if (now_script->chara == 0) {
         return 0;
@@ -2610,6 +2735,11 @@ int _CHR_ADD_POS(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Offsets the primary effect character rotation.
+ *
+ */
 int _CHR_ADD_ROT(RS_STACKDATA *stack, int argument_count) {
     if (now_script->chara == 0) {
         return 0;
@@ -2630,6 +2760,11 @@ int _CHR_ADD_ROT(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Calculates and discards a primary effect character scale offset.
+ *
+ */
 int _CHR_ADD_SCALE(RS_STACKDATA *stack, int argument_count) {
     if (now_script->chara == 0) {
         return 0;
@@ -2645,6 +2780,11 @@ int _CHR_ADD_SCALE(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Assigns the primary character to another effect script slot.
+ *
+ */
 int _CHR_COPY_CHARA(RS_STACKDATA *stack, int argument_count) {
     if (now_script->chara == 0) {
         return 0;
@@ -2653,6 +2793,11 @@ int _CHR_COPY_CHARA(RS_STACKDATA *stack, int argument_count) {
     return EffScriptMan->AssignCharacter(now_script, GetStackInt(stack));
 }
 
+/**
+ *
+ * Sets a secondary effect character position.
+ *
+ */
 int _CHR_SET_POS2(RS_STACKDATA *stack, int argument_count) {
     int index = GetStackInt(stack++);
 
@@ -2666,6 +2811,11 @@ int _CHR_SET_POS2(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets a secondary effect character rotation.
+ *
+ */
 int _CHR_SET_ROT2(RS_STACKDATA *stack, int argument_count) {
     int index = GetStackInt(stack++);
 
@@ -2679,6 +2829,11 @@ int _CHR_SET_ROT2(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets a secondary effect character scale.
+ *
+ */
 int _CHR_SET_SCALE2(RS_STACKDATA *stack, int argument_count) {
     int index = GetStackInt(stack++);
 
@@ -2692,6 +2847,11 @@ int _CHR_SET_SCALE2(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Starts a named motion on a secondary effect character.
+ *
+ */
 int _CHR_SET_MOTION2(RS_STACKDATA *stack, int argument_count) {
     int index = GetStackInt(stack++);
 
@@ -2720,6 +2880,11 @@ int _CHR_SET_MOTION2(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Offsets a secondary effect character position.
+ *
+ */
 int _CHR_ADD_POS2(RS_STACKDATA *stack, int argument_count) {
     int index = GetStackInt(stack++);
 
@@ -2736,6 +2901,11 @@ int _CHR_ADD_POS2(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Offsets a secondary effect character rotation.
+ *
+ */
 int _CHR_ADD_ROT2(RS_STACKDATA *stack, int argument_count) {
     int           index;
     RS_STACKDATA *next = stack + 1;
@@ -2760,6 +2930,11 @@ int _CHR_ADD_ROT2(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Offsets a secondary effect character scale.
+ *
+ */
 int _CHR_ADD_SCALE2(RS_STACKDATA *stack, int argument_count) {
     int index = GetStackInt(stack++);
 
@@ -2776,6 +2951,11 @@ int _CHR_ADD_SCALE2(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Changes secondary effect character visibility with optional fading.
+ *
+ */
 int _CHR_SET_SHOW2(RS_STACKDATA *stack, int argument_count) {
     int index = GetStackInt(stack++);
 
@@ -2808,6 +2988,11 @@ int _CHR_SET_SHOW2(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns the world position of a named primary character frame.
+ *
+ */
 int _CHR_GET_FRAME_POS(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 4) {
         return 0;
@@ -2838,6 +3023,11 @@ int _CHR_GET_FRAME_POS(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Changes the draw state of a named primary character frame.
+ *
+ */
 int _CHR_SET_FRAME_SHOW(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 3) {
         return 0;
@@ -2864,6 +3054,11 @@ int _CHR_SET_FRAME_SHOW(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Reports whether the primary effect character motion has ended.
+ *
+ */
 int _CHR_CHK_MOT_END(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 1) {
         return 0;
@@ -2879,6 +3074,11 @@ int _CHR_CHK_MOT_END(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets lighting color and optional lighting bypass on the primary character.
+ *
+ */
 int _CHR_SET_LIGHT_COLOR(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 5 && argument_count != 4) {
         return 0;
@@ -2916,6 +3116,11 @@ int _CHR_SET_LIGHT_COLOR(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Allocates sprite slots for the current effect script.
+ *
+ */
 int _SPT_ASSIGN_SPRITE(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 1 && argument_count != 2) {
         return 0;
@@ -2946,6 +3151,11 @@ int _SPT_ASSIGN_SPRITE(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Releases sprite slots owned by the current effect script.
+ *
+ */
 int _SPT_DELETE_SPRITE(RS_STACKDATA *stack, int argument_count) {
     _ES_SPRITE *sprite = now_script->sprite;
 
@@ -2959,11 +3169,21 @@ int _SPT_DELETE_SPRITE(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the texture name used by effect sprites.
+ *
+ */
 int _SPT_SET_TEXNAME(RS_STACKDATA *stack, int argument_count) {
     strcpy(now_script->tex_name, (char *) GetStackString(stack));
     return 1;
 }
 
+/**
+ *
+ * Sets alpha blend mode for a range of effect sprites.
+ *
+ */
 int _SPT_SET_ALPHAB(RS_STACKDATA *stack, int argument_count) {
     int         first;
     int         alpha;
@@ -2992,6 +3212,11 @@ int _SPT_SET_ALPHAB(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Restores default values for a range of effect sprites.
+ *
+ */
 int _SPT_INIT_SPRITE(RS_STACKDATA *stack, int argument_count) {
     int         first;
     int         count;
@@ -3072,6 +3297,11 @@ int _SPT_INIT_SPRITE(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets visibility for a range of effect sprites.
+ *
+ */
 int _SPT_SET_DRAW_FLAG(RS_STACKDATA *stack, int argument_count) {
     int         first;
     int         draw_flag;
@@ -3100,6 +3330,11 @@ int _SPT_SET_DRAW_FLAG(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns the visibility flag of an effect sprite.
+ *
+ */
 int _SPT_GET_DRAW_FLAG(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 2) {
         return 0;
@@ -3116,6 +3351,11 @@ int _SPT_GET_DRAW_FLAG(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets texture origin and size for a range of effect sprites.
+ *
+ */
 int _SPT_SET_UV_SIZE(RS_STACKDATA *stack, int argument_count) {
     int         first;
     float       value[4];
@@ -3147,6 +3387,11 @@ int _SPT_SET_UV_SIZE(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets rendered size for a range of effect sprites.
+ *
+ */
 int _SPT_SET_PUT_SIZE(RS_STACKDATA *stack, int argument_count) {
     int         first;
     float       put_size[2];
@@ -3177,6 +3422,11 @@ int _SPT_SET_PUT_SIZE(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets position for a range of effect sprites.
+ *
+ */
 int _SPT_SET_POS(RS_STACKDATA *stack, int argument_count) {
     int         first;
     float       value[4];
@@ -3206,6 +3456,11 @@ int _SPT_SET_POS(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns an effect sprite position.
+ *
+ */
 int _SPT_GET_POS(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 4) {
         return 0;
@@ -3223,6 +3478,11 @@ int _SPT_GET_POS(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets rotation around the screen normal for a range of sprites.
+ *
+ */
 int _SPT_SET_ROTZ(RS_STACKDATA *stack, int argument_count) {
     int         first;
     float       rotz;
@@ -3251,6 +3511,11 @@ int _SPT_SET_ROTZ(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns an effect sprite rotation around the screen normal.
+ *
+ */
 int _SPT_GET_ROTZ(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 2) {
         return 0;
@@ -3267,6 +3532,11 @@ int _SPT_GET_ROTZ(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets two-dimensional scale for a range of effect sprites.
+ *
+ */
 int _SPT_SET_SCALE(RS_STACKDATA *stack, int argument_count) {
     int         first;
     float       scale[2];
@@ -3297,6 +3567,11 @@ int _SPT_SET_SCALE(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns an effect sprite two-dimensional scale.
+ *
+ */
 int _SPT_GET_SCALE(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 3) {
         return 0;
@@ -3313,6 +3588,11 @@ int _SPT_GET_SCALE(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets RGBA color for a range of effect sprites.
+ *
+ */
 int _SPT_SET_COLOR(RS_STACKDATA *stack, int argument_count) {
     int         first;
     float       value[4];
@@ -3344,6 +3624,11 @@ int _SPT_SET_COLOR(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns an effect sprite RGBA color.
+ *
+ */
 int _SPT_GET_COLOR(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 5) {
         return 0;
@@ -3362,6 +3647,11 @@ int _SPT_GET_COLOR(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Assigns successive sprite positions using velocity and acceleration.
+ *
+ */
 int _SPT_VAN_SET_POS(RS_STACKDATA *stack, int argc) {
     int         first_sprite;
     float       position[4];
@@ -3399,6 +3689,11 @@ int _SPT_VAN_SET_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Assigns successive sprite rotations using angular velocity and acceleration.
+ *
+ */
 int _SPT_VAN_SET_ROT(RS_STACKDATA *stack, int argc) {
     int         first_sprite;
     float       angle;
@@ -3434,6 +3729,11 @@ int _SPT_VAN_SET_ROT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Assigns successive sprite colors using velocity and acceleration.
+ *
+ */
 int _SPT_VAN_SET_COL(RS_STACKDATA *stack, int argc) {
     int         first_sprite;
     float       color[4];
@@ -3477,6 +3777,11 @@ int _SPT_VAN_SET_COL(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Assigns successive sprite scales using velocity and acceleration.
+ *
+ */
 int _SPT_VAN_SET_SCL(RS_STACKDATA *stack, int argc) {
     int         first_sprite;
     float       x;
@@ -3520,6 +3825,11 @@ int _SPT_VAN_SET_SCL(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Offsets positions of a range of effect sprites.
+ *
+ */
 int _SPT_ADD_POS(RS_STACKDATA *stack, int argc) {
     int         first_sprite;
     float       offset[4];
@@ -3549,6 +3859,11 @@ int _SPT_ADD_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Offsets rotations of a range of effect sprites.
+ *
+ */
 int _SPT_ADD_ROTZ(RS_STACKDATA *stack, int argc) {
     int         first;
     float       angle;
@@ -3578,6 +3893,11 @@ int _SPT_ADD_ROTZ(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Offsets and clamps colors of a range of effect sprites.
+ *
+ */
 int _SPT_ADD_COLOR(RS_STACKDATA *stack, int argc) {
     int         first_sprite;
     float       color_delta[4];
@@ -3633,6 +3953,11 @@ int _SPT_ADD_COLOR(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Rotates positions of a range of sprites around the world Y axis.
+ *
+ */
 int _SPT_WORLD_ROT(RS_STACKDATA *stack, int argc) {
     int         first;
     float       angle;
@@ -3665,10 +3990,20 @@ int _SPT_WORLD_ROT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Rejects the unsupported sprite lifetime command.
+ *
+ */
 int _SPT_SET_LIFE(RS_STACKDATA *stack, int argument_count) {
     return 0;
 }
 
+/**
+ *
+ * Sets position velocity for a range of effect sprites.
+ *
+ */
 int _SPT_SET_VELO_POS(RS_STACKDATA *stack, int argc) {
     int         first_sprite;
     float       velocity[4];
@@ -3699,6 +4034,11 @@ int _SPT_SET_VELO_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets position acceleration for a range of effect sprites.
+ *
+ */
 int _SPT_SET_ACC_POS(RS_STACKDATA *stack, int argc) {
     int         first_sprite;
     float       acceleration[4];
@@ -3729,6 +4069,11 @@ int _SPT_SET_ACC_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets angular velocity for a range of effect sprites.
+ *
+ */
 int _SPT_SET_VELO_ROTZ(RS_STACKDATA *stack, int argc) {
     int         first;
     float       value;
@@ -3757,6 +4102,11 @@ int _SPT_SET_VELO_ROTZ(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets angular acceleration for a range of effect sprites.
+ *
+ */
 int _SPT_SET_ACC_ROTZ(RS_STACKDATA *stack, int argc) {
     int         first;
     float       value;
@@ -3785,6 +4135,11 @@ int _SPT_SET_ACC_ROTZ(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets color velocity for a range of effect sprites.
+ *
+ */
 int _SPT_SET_VELO_COL(RS_STACKDATA *stack, int argc) {
     int         first_sprite;
     float       color_velocity[4];
@@ -3816,6 +4171,11 @@ int _SPT_SET_VELO_COL(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets color acceleration for a range of effect sprites.
+ *
+ */
 int _SPT_SET_ACC_COL(RS_STACKDATA *stack, int argc) {
     int         first_sprite;
     float       color_acceleration[4];
@@ -3847,6 +4207,11 @@ int _SPT_SET_ACC_COL(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets color blinking amplitude and speed for effect sprites.
+ *
+ */
 int _SPT_SET_BLINKING(RS_STACKDATA *stack, int argc) {
     int         first_sprite;
     float       color[4];
@@ -3882,6 +4247,11 @@ int _SPT_SET_BLINKING(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets scale velocity for a range of effect sprites.
+ *
+ */
 int _SPT_SET_VELO_SCL(RS_STACKDATA *stack, int argc) {
     int         first;
     float       x;
@@ -3913,6 +4283,11 @@ int _SPT_SET_VELO_SCL(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets scale acceleration for a range of effect sprites.
+ *
+ */
 int _SPT_SET_ACC_SCL(RS_STACKDATA *stack, int argc) {
     int         first;
     float       x;
@@ -3944,6 +4319,11 @@ int _SPT_SET_ACC_SCL(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets target scale and convergence divisor for effect sprites.
+ *
+ */
 int _SPT_SCALE_CONV(RS_STACKDATA *stack, int argc) {
     int         first;
     float       time;
@@ -3978,6 +4358,11 @@ int _SPT_SCALE_CONV(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets target color and convergence divisor for effect sprites.
+ *
+ */
 int _SPT_COLOR_CONV(RS_STACKDATA *stack, int argc) {
     int         first_sprite;
     float       color[4];
@@ -4012,6 +4397,11 @@ int _SPT_COLOR_CONV(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the position of a scene character.
+ *
+ */
 int _SCN_GET_CHR_POS(RS_STACKDATA *stack, int argc) {
     float        pos[3];
     CCharacter2 *chara;
@@ -4033,6 +4423,11 @@ int _SCN_GET_CHR_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the yaw or full rotation of a scene character.
+ *
+ */
 int _SCN_GET_CHR_ROT(RS_STACKDATA *stack, int argc) {
     float        rot[3];
     CCharacter2 *chara;
@@ -4065,6 +4460,11 @@ int _SCN_GET_CHR_ROT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the world position of a named scene character frame.
+ *
+ */
 int _SCN_GET_CHR_FRM_POS(RS_STACKDATA *stack, int argc) {
     float        pos[4];
     int          chara_slot;
@@ -4101,6 +4501,11 @@ int _SCN_GET_CHR_FRM_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the world direction of a named scene character frame.
+ *
+ */
 int _SCN_GET_CHR_FRM_DIR(RS_STACKDATA *stack, int argc) {
     float        direction[4];
     int          chara_slot;
@@ -4137,6 +4542,11 @@ int _SCN_GET_CHR_FRM_DIR(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns pitch and yaw from a named scene character frame.
+ *
+ */
 int _SCN_GET_CHR_FRM_ROT(RS_STACKDATA *stack, int argc) {
     float        direction[4];
     float        origin[4];
@@ -4183,6 +4593,11 @@ int _SCN_GET_CHR_FRM_ROT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the position of a scene character entry object.
+ *
+ */
 int _SCN_GET_ENTRY_OBJ_POS(RS_STACKDATA *stack, int argc) {
     float pos[3];
     int   chara_slot;
@@ -4212,6 +4627,11 @@ int _SCN_GET_ENTRY_OBJ_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Finds a scene collision point and optionally returns its reflection and surface data.
+ *
+ */
 int _INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR start;
     sceVu0FVECTOR end;
@@ -4310,6 +4730,11 @@ int _INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", _INTERSECTION_POINT__FP12RS_STACKDATAi);
 #endif
+/**
+ *
+ * Plays a sound from the current effect owner character.
+ *
+ */
 int _MON_SE_PLAY(RS_STACKDATA *stack, int argc) {
     float        position[4];
     float        pad[2];
@@ -4349,6 +4774,11 @@ int _MON_SE_PLAY(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Stops a sound from the current effect owner character.
+ *
+ */
 int _MON_SE_STOP(RS_STACKDATA *stack, int argc) {
     CCharacter2 *owner;
     int          slot = now_script->user_id;
@@ -4368,6 +4798,11 @@ int _MON_SE_STOP(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Plays a sound from the scene battle sound bank.
+ *
+ */
 int _BTL_SE_PLAY(RS_STACKDATA *stack, int argc) {
     float position[4];
     float pad[2];
@@ -4395,6 +4830,11 @@ int _BTL_SE_PLAY(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Stops a sound from the scene battle sound bank.
+ *
+ */
 int _BTL_SE_STOP(RS_STACKDATA *stack, int argc) {
     u_int se_handle;
 
@@ -4403,6 +4843,11 @@ int _BTL_SE_STOP(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Plays a sound from the scene base sound bank.
+ *
+ */
 int _BSE_SE_PLAY(RS_STACKDATA *stack, int argc) {
     u_int se_handle;
 
@@ -4411,6 +4856,11 @@ int _BSE_SE_PLAY(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Stops a sound from the scene base sound bank.
+ *
+ */
 int _BSE_SE_STOP(RS_STACKDATA *stack, int argc) {
     u_int se_handle;
 
@@ -4419,6 +4869,11 @@ int _BSE_SE_STOP(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Plays a sound from a selected scene character.
+ *
+ */
 int _MON_SE_PLAY2(RS_STACKDATA *stack, int argc) {
     float        position[4];
     float        pad[2];
@@ -4459,6 +4914,11 @@ int _MON_SE_PLAY2(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Stops a sound from a selected scene character.
+ *
+ */
 int _MON_SE_STOP2(RS_STACKDATA *stack, int argc) {
     RS_STACKDATA *second = stack + 1;
     CCharacter2  *owner;
@@ -4474,11 +4934,21 @@ int _MON_SE_STOP2(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets whether effect sprites use scene lighting.
+ *
+ */
 int _SET_LIGHT_FLAG(RS_STACKDATA *stack, int argc) {
     now_script->light_flag = GetStackInt(stack);
     return 1;
 }
 
+/**
+ *
+ * Returns the position of a selected scene character entry object.
+ *
+ */
 int _SCN_GET_CHR_ENTOBJ_POS(RS_STACKDATA *stack, int argc) {
     float        pos[3];
     int          chara_slot;
@@ -4504,28 +4974,58 @@ int _SCN_GET_CHR_ENTOBJ_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Rejects creation of a standalone damage object.
+ *
+ */
 int _CREATE_DAMAGE(RS_STACKDATA *stack, int argc) {
     printf((const char *) &at_3398);
     return 0;
 }
 
+/**
+ *
+ * Rejects deletion of a standalone damage object.
+ *
+ */
 int _DELETE_DAMAGE(RS_STACKDATA *stack, int argument_count) {
     return 0;
 }
 
+/**
+ *
+ * Rejects positioning of a standalone damage object.
+ *
+ */
 int _DMG_SET_POS(RS_STACKDATA *stack, int argument_count) {
     return 0;
 }
 
+/**
+ *
+ * Rejects setting a standalone damage direction.
+ *
+ */
 int _DMG_SET_FRONT_VECT(RS_STACKDATA *stack, int argument_count) {
     return 0;
 }
 
+/**
+ *
+ * Rejects setting standalone damage.
+ *
+ */
 int _DMG_SET_DAMAGE(RS_STACKDATA *stack, int argc) {
     printf((const char *) &at_3398);
     return 0;
 }
 
+/**
+ *
+ * Creates a collision primitive for the current effect script.
+ *
+ */
 int _COLPRIM_CREATE(RS_STACKDATA *stack, int argc) {
     CColPrim *colprim;
     int       owner;
@@ -4553,6 +5053,11 @@ int _COLPRIM_CREATE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets collision primitive coordinates from positions or named frames.
+ *
+ */
 int _COLPRIM_SET_COORD(RS_STACKDATA *stack, int argc) {
     float     start[4];
     float     end[4];
@@ -4633,6 +5138,11 @@ int _COLPRIM_SET_COORD(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Deletes the collision primitive owned by the current effect script.
+ *
+ */
 int _COLPRIM_DELETE(RS_STACKDATA *stack, int argc) {
     CColPrim *colprim;
 
@@ -4652,6 +5162,11 @@ int _COLPRIM_DELETE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the hit count of the current collision primitive.
+ *
+ */
 int _COLPRIM_GET_HITCNT(RS_STACKDATA *stack, int argc) {
     CColPrim *colprim;
 
@@ -4669,6 +5184,11 @@ int _COLPRIM_GET_HITCNT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Assigns a gift item, count, and rate to the current collision primitive.
+ *
+ */
 int _COLPRIM_GET_GIFT(RS_STACKDATA *stack, int argc) {
     int           item_id;
     int           count;
@@ -4698,6 +5218,11 @@ int _COLPRIM_GET_GIFT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the collision primitive reversal count and optional vector.
+ *
+ */
 int _COLPRIM_GET_REVCNT(RS_STACKDATA *stack, int argc) {
     if (argc != 4 && argc != 1) {
         return 0;
@@ -4718,6 +5243,11 @@ int _COLPRIM_GET_REVCNT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the damage value of the current collision primitive.
+ *
+ */
 int _COLPRIM_SET_DAMAGE(RS_STACKDATA *stack, int argc) {
     if (now_script->colprim == NULL) {
         return 0;
@@ -4727,6 +5257,11 @@ int _COLPRIM_SET_DAMAGE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the last hit position of the current collision primitive.
+ *
+ */
 int _COLPRIM_GET_HIT_POS(RS_STACKDATA *stack, int argc) {
     if (argc != 3) {
         return 0;
@@ -4742,6 +5277,11 @@ int _COLPRIM_GET_HIT_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a child effect script for the current effect owner.
+ *
+ */
 int _ES_CREATE(RS_STACKDATA *stack, int argc) {
     int   handle = -1;
     char *name = (char *) GetStackString(stack++);
@@ -4772,6 +5312,11 @@ int _ES_CREATE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the first work vector of a child effect script.
+ *
+ */
 int _ES_SET_VECT1(RS_STACKDATA *stack, int argc) {
     float vect[4];
     int   target_id;
@@ -4793,6 +5338,11 @@ int _ES_SET_VECT1(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the second work vector of a child effect script.
+ *
+ */
 int _ES_SET_VECT2(RS_STACKDATA *stack, int argc) {
     float vect[4];
     int   target_id;
@@ -4814,6 +5364,11 @@ int _ES_SET_VECT2(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the target identifier of a child effect script.
+ *
+ */
 int _ES_SET_TARGET_ID(RS_STACKDATA *stack, int argc) {
     switch (argc) {
         case 1:
@@ -4833,6 +5388,11 @@ int _ES_SET_TARGET_ID(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets a typed value in a child effect script.
+ *
+ */
 int _ES_SET_VALUE(RS_STACKDATA *stack, int argc) {
     int target_id = -1;
     int index;
@@ -4863,6 +5423,11 @@ int _ES_SET_VALUE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Associates the current collision primitive with a child effect script.
+ *
+ */
 int _ES_SET_COLPRIM(RS_STACKDATA *stack, int argc) {
     CColPrim *colprim;
 
@@ -4877,6 +5442,11 @@ int _ES_SET_COLPRIM(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the position of an event object handle.
+ *
+ */
 int _GET_EOH_POS(RS_STACKDATA *stack, int argc) {
     float pos[3];
 
@@ -4891,6 +5461,11 @@ int _GET_EOH_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Loads an effect program with script stack and call data.
+ *
+ */
 int SetEffectScript(CRunScript *script, char *program, mgCMemory *memory) {
     RS_STACKDATA *stack = (RS_STACKDATA *) memory->Alloc(0x20);
     RS_CALLDATA  *call_data = (RS_CALLDATA *) memory->Alloc(1);
@@ -4899,6 +5474,11 @@ int SetEffectScript(CRunScript *script, char *program, mgCMemory *memory) {
     return 1;
 }
 
+/**
+ *
+ * Builds the effect script external function table.
+ *
+ */
 void SetEffectScriptFunc() {
     int function_index;
     int previous_index;

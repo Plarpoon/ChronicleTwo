@@ -4681,6 +4681,11 @@ int MenuItemCharaDataLoad(mgCMemory *stack, int chara_no, MENU_BGREAD_INFO2 **in
     return total;
 }
 
+/**
+ *
+ * Loads a character model, skin, or equipped part for the menu preview.
+ *
+ */
 static void MenuItemCharaDataLoadPack(int chara_no, CActionChara *chara, CActionChara *body, int part,
                                       u_int *pack, mgCMemory *stack, int tex_block, int blur_type) {
     mgCTextureManager *tex_manager = &mgTexManager;
@@ -7494,9 +7499,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menuchr", at_5560__2__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menuchr", at_5561__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menuchr", at_5839__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menuchr", at_5893__DATA);
-
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menuchr", D_0037B05C__DATA);
 
 // Virtual tables (.vtables)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menuchr", __vt__12CMosBookMenu__DATA);

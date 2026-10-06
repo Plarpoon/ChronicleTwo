@@ -1540,6 +1540,11 @@ void CCharacter2::Initialize() {
     this->InitEffect();
 }
 
+/**
+ *
+ * Loads a character information script and builds its model resources.
+ *
+ */
 void ScanInfoFile(CCharacter2 *chara, u32 *pack_file, char *info_name, mgCMemory *memory,
                   mgCMemory *ext_memory, mgCMemory *img_memory, int texture_block, CCharacter2 *parent,
                   int with_line) {
@@ -1585,14 +1590,29 @@ void ScanInfoFile(CCharacter2 *chara, u32 *pack_file, char *info_name, mgCMemory
     chara->load_size = free_blocks;
 }
 
+/**
+ *
+ * Accepts the character script version marker.
+ *
+ */
 int _V2(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Accepts the character name script tag.
+ *
+ */
 int _NAME(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets character body dimensions from script values.
+ *
+ */
 int _BODY_SIZE(SPI_STACK *stack, int argc) {
     SPI_STACK *next = stack + 1;
 
@@ -1606,6 +1626,11 @@ int _BODY_SIZE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the base scale of the character model and shadow.
+ *
+ */
 int _SCALE(SPI_STACK *stack, int argc) {
     SPI_STACK *arg = stack + 1;
 
@@ -1629,10 +1654,20 @@ int _SCALE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Accepts the material animation script tag.
+ *
+ */
 int _MATERIAL_ANIME(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets polygon counts for the character model and shadow.
+ *
+ */
 int _POLY_NUM(SPI_STACK *stack, int argc) {
     nowChr->poly_num = 0;
     nowChr->shadow_poly_num = 0;
@@ -1648,6 +1683,11 @@ int _POLY_NUM(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Copies a named character image from the resource pack.
+ *
+ */
 int _IMG(SPI_STACK *stack, int argc) {
     int        index;
     SPI_STACK *name_arg = stack + 1;
@@ -1675,6 +1715,11 @@ int _IMG(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Registers loaded character images in the texture manager.
+ *
+ */
 int _IMG_END(SPI_STACK *stack, int argc) {
     int                i;
     mgCTextureManager *tex;
@@ -1705,6 +1750,11 @@ int _IMG_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Loads and registers an outline effect for the character.
+ *
+ */
 int _OUTLINE(SPI_STACK *stack, int argc) {
     char               name[0x40];
     char               texture_name[0x20];
@@ -1853,6 +1903,11 @@ static int _MODEL(SPI_STACK *stack, int count) {
     return 1;
 }
 
+/**
+ *
+ * Loads the shadow model and links its frames to the character model.
+ *
+ */
 int _SHADOW_MODEL(SPI_STACK *stack, int argc) {
     VisualTypeData       visual_type;
     char                *name;
@@ -1928,6 +1983,11 @@ int _SHADOW_MODEL(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Registers named model frames as character entry objects.
+ *
+ */
 int _OBJECT_NAME(SPI_STACK *stack, int argc) {
     char      name[0x40];
     int       frame_slot = -1;
@@ -2000,6 +2060,11 @@ int _OBJECT_NAME(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Registers grouped entry objects with frame values.
+ *
+ */
 int _OBJECT_NAME2(SPI_STACK *stack, int argc) {
     char      name[0x40];
     int       object_slot = -1;
@@ -2072,6 +2137,11 @@ int _OBJECT_NAME2(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Loads motion resources for a character motion slot.
+ *
+ */
 int _MOTION(SPI_STACK *stack, int argc) {
     tagMOTION_TYPE  *motion;
     char            *first_name;
@@ -2145,6 +2215,11 @@ int _MOTION(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Loads shadow motion resources for the current motion slot.
+ *
+ */
 int _SHADOW_MOTION(SPI_STACK *stack, int argc) {
     tagMOTION_TYPE  *motion;
     char            *first_name;
@@ -2200,6 +2275,11 @@ int _SHADOW_MOTION(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Lists model frames whose vertices are animated.
+ *
+ */
 int _VERTEX_ANIME(SPI_STACK *stack, int argc) {
     int i;
 
@@ -2214,6 +2294,11 @@ int _VERTEX_ANIME(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the character shape animation mode.
+ *
+ */
 int _SHAPE_ANIME(SPI_STACK *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -2223,6 +2308,11 @@ int _SHAPE_ANIME(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Begins the key frame list for the current motion.
+ *
+ */
 int _KEY_START(SPI_STACK *stack, int argc) {
     now_key_ptr = (CHRINFO_KEY_SET *) (now_stack->stack + now_stack->stack_used);
     nowChr->key_list[now_motion_id] = now_key_ptr;
@@ -2230,6 +2320,11 @@ int _KEY_START(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Adds a named key frame interval to the current motion.
+ *
+ */
 int _KEY(SPI_STACK *stack, int argc) {
     SPI_STACK *arg;
 
@@ -2252,6 +2347,11 @@ int _KEY(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Ends and allocates the current motion key frame list.
+ *
+ */
 int _KEY_END(SPI_STACK *stack, int argc) {
     if (now_key_ptr == 0) {
         return 0;
@@ -2298,6 +2398,11 @@ static int _SEQ_START(SPI_STACK *stack, int count) {
     return 1;
 }
 
+/**
+ *
+ * Adds a named motion to the current sequence.
+ *
+ */
 int _SEQ(SPI_STACK *stack, int argc) {
     if (now_seq_ptr == 0 || now_seqhd_ptr == 0) {
         return 0;
@@ -2325,6 +2430,11 @@ int _SEQ(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Ends and allocates the current motion sequence.
+ *
+ */
 int _SEQ_END(SPI_STACK *stack, int argc) {
     if (now_stack == 0) {
         return 0;
@@ -2340,6 +2450,11 @@ int _SEQ_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Allocates dynamic animation objects for character cloth.
+ *
+ */
 int _CLOTH_START(SPI_STACK *stack, int argc) {
     int count = spiGetStackInt(stack);
 
@@ -2362,6 +2477,11 @@ CDynamicAnime::CDynamicAnime() {
     Initialize();
 }
 
+/**
+ *
+ * Loads character cloth animations and updates linked shadow frames.
+ *
+ */
 int _CLOTH(SPI_STACK *stack, int argc) {
     int                  i;
     char                *name;
@@ -2418,10 +2538,20 @@ int _CLOTH(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Accepts the end of the cloth animation list.
+ *
+ */
 int _CLOTH_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the initial character position from script values.
+ *
+ */
 int _POSITION(SPI_STACK *stack, int argc) {
     float x = spiGetStackFloat(stack++);
     float y = spiGetStackFloat(stack++);
@@ -2430,6 +2560,11 @@ int _POSITION(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the initial character rotation from script values.
+ *
+ */
 int _ROTATION(SPI_STACK *stack, int argc) {
     float x = spiGetStackFloat(stack++);
     float y = spiGetStackFloat(stack++);
@@ -2438,6 +2573,11 @@ int _ROTATION(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Allocates sound cue entries for the current motion.
+ *
+ */
 int _SE_START(SPI_STACK *stack, int argc) {
     now_se_header = 0;
     nowChr->se_num[now_motion_id] = 0;
@@ -2454,6 +2594,11 @@ int _SE_START(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Adds a sound cue at a frame of a named motion.
+ *
+ */
 int _SE(SPI_STACK *stack, int argc) {
     char      *name;
     SPI_STACK *arg;
@@ -2494,6 +2639,11 @@ int _SE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Adds a timed loop sound cue to a named motion.
+ *
+ */
 int _SELP(SPI_STACK *stack, int argc) {
     char      *name;
     SPI_STACK *arg;
@@ -2548,14 +2698,29 @@ int _SELP(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Accepts the end of the motion sound cue list.
+ *
+ */
 int _SE_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Accepts the end of a character motion definition.
+ *
+ */
 int _MOTION_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Loads the effect pack named by the character script.
+ *
+ */
 int _EFFECT_START(SPI_STACK *stack, int argc) {
     eff_pack_ptr = (unsigned int *) GetPackFile(pack_file, spiGetStackString(stack), &eff_pack_size);
     return eff_pack_ptr != 0;
@@ -2696,6 +2861,11 @@ static int _EFFECT(SPI_STACK *stack, int count) {
     return 1;
 }
 
+/**
+ *
+ * Ends registration of character effects.
+ *
+ */
 int _EFFECT_END(SPI_STACK *stack, int argc) {
     if (eff_pack_ptr == 0) {
         return 0;
@@ -2841,6 +3011,11 @@ void CCharacter2::DrawEffect() {
     }
 }
 
+/**
+ *
+ * Loads and interprets a character skin information script.
+ *
+ */
 void ScanInfoSkinFile(CCharacter2 *chara, u32 *pack_file, char *info_name, char *skin_name,
                       mgCMemory *memory, int texture_block) {
     CScriptInterpreter interp;
@@ -2866,6 +3041,11 @@ void ScanInfoSkinFile(CCharacter2 *chara, u32 *pack_file, char *info_name, char 
     interp.Run();
 }
 
+/**
+ *
+ * Loads an image resource for a character skin.
+ *
+ */
 int _SKIN_IMG(SPI_STACK *stack, int argc) {
     SPI_STACK *name = stack + 1;
 
@@ -2878,10 +3058,20 @@ int _SKIN_IMG(SPI_STACK *stack, int argc) {
     return load_img_ptr != 0;
 }
 
+/**
+ *
+ * Accepts the end of character skin image declarations.
+ *
+ */
 int _SKIN_IMG_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Selects the model resource used for character skinning.
+ *
+ */
 int _SKIN_MODEL(SPI_STACK *stack, int argc) {
     char *name;
 
@@ -2900,6 +3090,11 @@ int _SKIN_MODEL(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Loads a frame model and rebinds its weighted visuals to a target model.
+ *
+ */
 mgCFrame *CreateChangeFrame(mgLoadData *data, mgCFrame *target) {
     mgCFrame  *source = (mgCFrame *) mgLoadMDSFile(data);
     char     **name;
@@ -3074,6 +3269,11 @@ static int _SKIN_MOTION(SPI_STACK *stack, int count) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/character", _SKIN_MOTION__FP9SPI_STACKi);
 #endif
+/**
+ *
+ * Allocates level-of-detail model records for the character.
+ *
+ */
 int _LOD_MODEL_START(SPI_STACK *stack, int argc) {
     int count = spiGetStackInt(stack);
 
@@ -3228,6 +3428,11 @@ static int _LOD_MODEL(SPI_STACK *stack, int count) {
     return 1;
 }
 
+/**
+ *
+ * Clears the active level-of-detail selection.
+ *
+ */
 int _LOD_MODEL_END(SPI_STACK *stack, int argc) {
     nowChr->lod_no = -1;
     return 1;

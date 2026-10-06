@@ -352,6 +352,11 @@ extern "C" void *__vt__12CObjectFrame[];
 extern "C" void *__vt__11CCharacter2[];
 
 // Code (.text)
+/**
+ *
+ * Returns the fish parameter record for a valid fish index.
+ *
+ */
 FISH_PARAM *GetFishParam(int index) {
     if (index < 0 || index > kLastFishParam) {
         return NULL;
@@ -360,6 +365,11 @@ FISH_PARAM *GetFishParam(int index) {
     return &FishParam[index];
 }
 
+/**
+ *
+ * Clears bait and lure state and resets the lure object.
+ *
+ */
 void EsaInit() {
     CObjectFrame *lure = Lure;
     EsaChara = 0;
@@ -371,15 +381,20 @@ void EsaInit() {
     lure->Initialize();
 }
 
+/**
+ *
+ * Restores the scene BGM that played before fishing.
+ *
+ */
 void ReplayPrevBGM(CScene *scene) {
-    u_char *read_buff;
+    u_long128 *read_buff;
 
     if (BgmReadFlag == 0) {
         scene->SetActiveBgmStatus(&BgmStatus);
         return;
     }
 
-    read_buff = (u_char *) scene->read_buff + 0x100000;
+    read_buff = &scene->read_buff[0x10000];
 
     if (BgmStatus.load_no < 0) {
         scene->StopBGM(0);
@@ -387,10 +402,15 @@ void ReplayPrevBGM(CScene *scene) {
         return;
     }
 
-    scene->LoadBGM(BgmStatus.load_no, (u_long128 *) read_buff);
+    scene->LoadBGM(BgmStatus.load_no, read_buff);
     scene->SetActiveBgmStatus(&BgmStatus);
 }
 
+/**
+ *
+ * Starts background loading of fishing motion resources.
+ *
+ */
 int LoadExMotionBG(SubGameInfo *info, u_long128 *buffer) {
     LoadExMotionFlag = 0;
 
@@ -409,6 +429,11 @@ int LoadExMotionBG(SubGameInfo *info, u_long128 *buffer) {
     return 1;
 }
 
+/**
+ *
+ * Finishes loading and attaching fishing motion resources.
+ *
+ */
 int LoadExMotionStep(SubGameInfo *info, mgCMemory *memory) {
     CCharacter2 *chara;
     CScene      *scene;
@@ -436,10 +461,20 @@ int LoadExMotionStep(SubGameInfo *info, mgCMemory *memory) {
     return 0;
 }
 
+/**
+ *
+ * Requests a fishing character mode change.
+ *
+ */
 void SetNextMode(int mode) {
     NextCharaMode = mode;
 }
 
+/**
+ *
+ * Requests exit from the fishing subgame.
+ *
+ */
 void ExitFishing(CScene *scene) {
     RetCode = 1;
 }
@@ -471,7 +506,7 @@ int sgInitFishing(SubGameInfo *info) {
         u_long128 *top = ReadStack.stGetTop();
         MotionBuff.stSetBuffer(top, remaining);
     } else {
-        MotionBuff.stSetBuffer((u_long128 *) ((u_char *) read_buff + 0x100000), 30000);
+        MotionBuff.stSetBuffer(&read_buff[0x10000], 30000);
     }
 
     chara = scene->GetCharacter(scene->player_chara);
@@ -586,6 +621,11 @@ int sgRestartFishing(SubGameInfo *info) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", sgRestartFishing__FP11SubGameInfo);
 #endif
+/**
+ *
+ * Resets fishing loading state and captures the active BGM status.
+ *
+ */
 int InitDataLoading() {
     SubGameInfo *info;
     CScene      *scene;
@@ -632,10 +672,20 @@ int InitDataLoading() {
     return 1;
 }
 
+/**
+ *
+ * Yields execution to the fishing loading thread.
+ *
+ */
 int switch_thread() {
     return RotateThreadReadyQueue(kLoadThreadPriority);
 }
 
+/**
+ *
+ * Allocates and starts the fishing data loading thread.
+ *
+ */
 int CreateLoadThread(mgCMemory *memory) {
     ThreadParam param;
     int         misalignment;
@@ -662,6 +712,11 @@ int CreateLoadThread(mgCMemory *memory) {
     return 1;
 }
 
+/**
+ *
+ * Advances the fishing loading thread and reports whether it is active.
+ *
+ */
 int StepLoadThread() {
     if (ThreadRunning == 0) {
         return 0;
@@ -672,6 +727,11 @@ int StepLoadThread() {
     return !(step_end_flag != 0);
 }
 
+/**
+ *
+ * Waits for and deletes the fishing data loading thread.
+ *
+ */
 void DeleteLoadThread() {
     if (ThreadRunning != 0) {
         while (StepLoadThread() != 0) {
@@ -683,6 +743,11 @@ void DeleteLoadThread() {
     }
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Loads fishing placement, rod, fish, and motion resources.
+ *
+ */
 void StepDataLoading(void *arg) {
     char         path[0x80];
     char         bgm_path[0x80];
@@ -1074,6 +1139,11 @@ int sgDrawFishing(SubGameInfo *info) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", sgDrawFishing__FP11SubGameInfo);
 #endif
+/**
+ *
+ * Draws one digit of a fishing interface number.
+ *
+ */
 void DrawNumber(mgCDrawPrim *prim, int digit, int x, int y) {
 
     int tex_u = 0;
@@ -1402,6 +1472,11 @@ static void CharaControl(CScene *scene, CPadControl *pad) {
     }
 }
 
+/**
+ *
+ * Sets up the camera and character for choosing a casting point.
+ *
+ */
 int InitSelectCastingPoint(CScene *scene) {
     CCharacter2     *chara = scene->GetCharacter(scene->player_chara);
     mgCCamera       *camera;
@@ -1434,6 +1509,11 @@ int InitSelectCastingPoint(CScene *scene) {
     return 1;
 }
 
+/**
+ *
+ * Restores camera state after choosing a casting point.
+ *
+ */
 int EndSelectCastingPoint(CScene *scene) {
     mgCCamera   *camera = scene->GetCamera(scene->active_camera);
     CCharacter2 *chara;
@@ -1458,6 +1538,11 @@ int EndSelectCastingPoint(CScene *scene) {
     return 1;
 }
 
+/**
+ *
+ * Updates the cast target and camera from player input.
+ *
+ */
 void SelectCastingPoint(CScene *scene, CPadControl *pad) {
     CCharacter2    *chara;
     CCameraControl *camera;
@@ -1605,6 +1690,11 @@ void SelectCastingPoint(CScene *scene, CPadControl *pad) {
     }
 }
 
+/**
+ *
+ * Starts a scaled water ripple effect at the fishing position.
+ *
+ */
 void DrawHamon(float *pos, float scale) {
     if (EffectMan != NULL) {
         float pos_vec[4];
@@ -1620,6 +1710,11 @@ void DrawHamon(float *pos, float scale) {
     }
 }
 
+/**
+ *
+ * Starts a scaled water splash effect at the fishing position.
+ *
+ */
 void DrawSplash(float *pos, float scale) {
     if (EffectMan != NULL) {
         float pos_vec[4];
@@ -1635,6 +1730,11 @@ void DrawSplash(float *pos, float scale) {
     }
 }
 
+/**
+ *
+ * Returns the motion frame count clamped to the requested bounds.
+ *
+ */
 int GetMotionCount(CCharacter2 *chara, char *name, int min_count, int max_count, int min_speed) {
     CHRINFO_KEY_SET *list;
     float            speed;
@@ -1667,6 +1767,11 @@ int GetMotionCount(CCharacter2 *chara, char *name, int min_count, int max_count,
     return count;
 }
 
+/**
+ *
+ * Starts the character casting animation and prepares its motion buffer.
+ *
+ */
 int InitCasting(CScene *scene) {
     CCharacter2 *chara;
 
@@ -1692,6 +1797,11 @@ int InitCasting(CScene *scene) {
     return 1;
 }
 
+/**
+ *
+ * Updates the casting animation and thrown tackle.
+ *
+ */
 void CastingLoop(CScene *scene, CPadControl *pad) {
     CCharacter2 *chara;
     float        hari_pos[4];
@@ -1737,6 +1847,11 @@ void CastingLoop(CScene *scene, CPadControl *pad) {
     }
 }
 
+/**
+ *
+ * Resets the float waiting state after a cast.
+ *
+ */
 int InitUkiWait(CScene *scene) {
     RodActFlag = 0;
     UkiMode = kUkiStart;
@@ -1757,6 +1872,11 @@ void ResetUkiCamera(CCameraControl *camera) {
     UkiCameraFlag = 0;
 }
 
+/**
+ *
+ * Updates float movement and player input while waiting for a bite.
+ *
+ */
 void UkiWaitLoop(CScene *scene, CPadControl *pad) {
     int              moved;
     int              up_push;
@@ -2111,6 +2231,11 @@ void UkiWaitLoop(CScene *scene, CPadControl *pad) {
     }
 }
 
+/**
+ *
+ * Sets up the character and camera for a hooked fish battle.
+ *
+ */
 int InitBattle(CScene *scene) {
     CCharacter2     *chara;
     mgCCamera       *camera;
@@ -2158,6 +2283,11 @@ int InitBattle(CScene *scene) {
     return 1;
 }
 
+/**
+ *
+ * Updates player input, line tension, and fish behavior during a battle.
+ *
+ */
 void BattleLoop(CScene *scene, CPadControl *pad) {
     int          pushed;
     int          released;
@@ -2358,6 +2488,11 @@ void BattleLoop(CScene *scene, CPadControl *pad) {
     }
 }
 
+/**
+ *
+ * Returns the horizontal distance from the player to the current fish.
+ *
+ */
 float GetFishDist(CScene *scene) {
     float        chara_rot[4];
     float        chara_pos[4];
@@ -2373,6 +2508,11 @@ float GetFishDist(CScene *scene) {
     return mgDistVectorXZ(chara_pos, fish_pos);
 }
 
+/**
+ *
+ * Removes consumed bait and resets the lure state.
+ *
+ */
 void DeleteEsa() {
     CSaveData *saved = GetSaveData();
     EsaInit();
@@ -2380,6 +2520,11 @@ void DeleteEsa() {
     saved->user_data.DeleteBait();
 }
 
+/**
+ *
+ * Sets up the character and camera after a failed catch.
+ *
+ */
 int InitFalse(CScene *scene) {
     CCharacter2 *chara;
     mgCCamera   *camera;
@@ -2418,6 +2563,11 @@ int InitFalse(CScene *scene) {
     return 1;
 }
 
+/**
+ *
+ * Updates the failed catch animation and camera.
+ *
+ */
 void FalseLoop(CScene *scene, CPadControl *pad) {
     CCharacter2     *chara;
     mgCCamera       *camera;
@@ -2484,6 +2634,11 @@ void FalseLoop(CScene *scene, CPadControl *pad) {
     }
 }
 
+/**
+ *
+ * Prepares caught fish data, rewards, and the success display.
+ *
+ */
 int InitSuccess(CScene *scene) {
     mgCTextureManager *tex_manager;
     CCharacter2       *fish_chara;
@@ -2598,6 +2753,11 @@ int InitSuccess(CScene *scene) {
     return 1;
 }
 
+/**
+ *
+ * Updates the caught fish display and its exit sequence.
+ *
+ */
 void SuccessLoop(CScene *scene, CPadControl *pad) {
     ClsMes          *message;
     CCharacter2     *chara;
@@ -2783,6 +2943,11 @@ void SuccessLoop(CScene *scene, CPadControl *pad) {
     }
 }
 
+/**
+ *
+ * Checks for fishable water below a position and places it on that surface.
+ *
+ */
 int CheckFishing(float *pos, CCPoly *polys, int count) {
     float end[4];
     int   hit_index[32];
@@ -2811,6 +2976,11 @@ int CheckFishing(float *pos, CCPoly *polys, int count) {
     return 0;
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Checks whether a proposed cast path and target are clear.
+ *
+ */
 int CheckCasting(CScene *scene, float *position, float *direction) {
     mgVu0FBOX box;
     CCPoly    polys[0x400];
@@ -2873,6 +3043,11 @@ int CheckCasting(CScene *scene, float *position, float *direction) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", CheckCasting__FP6CScenePfPf);
 #endif
+/**
+ *
+ * Selects a random size value with a lower bound.
+ *
+ */
 float GetRandamNumber(float center, float high, float floor) {
     float value = mgNRnd();
     value = center + value * ((high - center) / 3.0f);
@@ -2884,6 +3059,11 @@ float GetRandamNumber(float center, float high, float floor) {
     return value;
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Selects an appearing fish and calculates its bite wait time and attributes.
+ *
+ */
 int GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, int bait_no) {
     FISH_PLACE place[16];
     int        candidate_num = 0;
@@ -3060,6 +3240,11 @@ int GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, 
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", GetUkiWaitTime__FP9FISH_DATAP6CScenePfii);
 #endif
+/**
+ *
+ * Returns a float poke delay based on bait affinity.
+ *
+ */
 int GetUkiPokeTime(FISH_DATA *fish) {
     switch (FavoredEsa) {
         case 0:
@@ -3076,10 +3261,20 @@ int GetUkiPokeTime(FISH_DATA *fish) {
     return 0;
 }
 
+/**
+ *
+ * Returns the duration of a float pull.
+ *
+ */
 int GetUkiPullTime(FISH_DATA *fish) {
     return 30;
 }
 
+/**
+ *
+ * Starts background loading of the selected fish model.
+ *
+ */
 int FishLoadBG(FISH_DATA *fish, u_long128 *buffer) {
     char path[0x40];
 
@@ -3098,6 +3293,11 @@ int FishLoadBG(FISH_DATA *fish, u_long128 *buffer) {
     return LoadFileBG(path, buffer, 0) != 0;
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Updates fishing line tension and fish vigour.
+ *
+ */
 void LineTensionStep(FISH_DATA *fish, int reel) {
     float tension_rate;
     int   left_vibration;
@@ -3286,6 +3486,11 @@ int FISH_PLACE_MAP::CheckFishPlace(float *pos) {
     return 1;
 }
 
+/**
+ *
+ * Allocates the scripted fishing place map table.
+ *
+ */
 int fpFISH_MAP_NUM(SPI_STACK *args, int arg_count) {
     FishPlaceMapNum = spiGetStackInt(args);
     u_int blocks;
@@ -3304,6 +3509,11 @@ int fpFISH_MAP_NUM(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Starts a scripted fishing place map definition.
+ *
+ */
 int fpFISH_MAP(SPI_STACK *args, int arg_count) {
     fpNowFishPlaceMap = NULL;
 
@@ -3322,6 +3532,11 @@ int fpFISH_MAP(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the area and location of the current fishing place map.
+ *
+ */
 int fpFISH_PLACE(SPI_STACK *args, int arg_count) {
     int   area_type;
     char *name;
@@ -3351,6 +3566,11 @@ int fpFISH_PLACE(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Adds a fish appearance entry to the current fishing place map.
+ *
+ */
 int fpFISH(SPI_STACK *args, int arg_count) {
     FISH_PLACE *entry;
     int         index;
@@ -3378,6 +3598,11 @@ int fpFISH(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Finishes the current fishing place map definition.
+ *
+ */
 int fpFISH_MAP_END(SPI_STACK *args, int arg_count) {
     if (fpNowFishPlaceMap == 0) {
         return 0;
@@ -3503,9 +3728,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishing", at_2671__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishing", at_2672__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishing", at_2673__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishing", at_2674__2__DATA);
-
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishing", D_0037B074__DATA);
 
 // Small initialised data (.sdata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishing", at_1444__3__DATA);

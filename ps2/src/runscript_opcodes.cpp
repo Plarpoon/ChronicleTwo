@@ -3148,6 +3148,11 @@ int _GET_ENTRY_OBJ_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Starts a monster knockback with scaled speed, deceleration, and duration.
+ *
+ */
 int _BLOW_START(RS_STACKDATA *stack, int argc) {
     if (argc != 3) {
         return 0;
@@ -3160,6 +3165,11 @@ int _BLOW_START(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the active monster action status value.
+ *
+ */
 int _SET_ACT_STATUS(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -3169,6 +3179,11 @@ int _SET_ACT_STATUS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets or clears a bit mask on the active monster.
+ *
+ */
 int _SET_INT_FLAG(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -3179,6 +3194,11 @@ int _SET_INT_FLAG(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Marks the monster dead and spawns its money, badge, and item rewards.
+ *
+ */
 int _SET_DEAD_START(RS_STACKDATA *args, int argc) {
     sceVu0FVECTOR     position;
     sceVu0FVECTOR     velocity;
@@ -3334,6 +3354,11 @@ int _SET_DEAD_START(RS_STACKDATA *args, int argc) {
     return 1;
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Starts the monster death effect and spawns its experience pickups.
+ *
+ */
 int _SET_DEAD_OFF(RS_STACKDATA *args, int argc) {
     sceVu0FVECTOR position;
     sceVu0FVECTOR velocity;
@@ -3436,6 +3461,11 @@ int _SET_DEAD_OFF(RS_STACKDATA *args, int argc) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_DEAD_OFF__FP12RS_STACKDATAi);
 #endif
+/**
+ *
+ * Clears the monster catch state when its throw ends.
+ *
+ */
 int _SET_SHROW_END(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 0) {
         return 0;
@@ -3445,6 +3475,11 @@ int _SET_SHROW_END(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Starts a named monster motion with optional step and mode.
+ *
+ */
 int _SET_MOS(RS_STACKDATA *stack, int argc) {
     RS_STACKDATA *next = stack;
     int           flag = 0;
@@ -3480,6 +3515,11 @@ int _SET_MOS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes whether the current or named monster motion has finished.
+ *
+ */
 int _CHECK_MOS_END(RS_STACKDATA *stack, int argc) {
     int   result;
     char *name;
@@ -3502,6 +3542,11 @@ int _CHECK_MOS_END(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the frame wait of the current or named monster motion.
+ *
+ */
 int _NOW_MOS_WAIT(RS_STACKDATA *stack, int argc) {
     float wait;
 
@@ -3523,6 +3568,11 @@ int _NOW_MOS_WAIT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the status of the current or named monster motion.
+ *
+ */
 int _GET_MOS_STATUS(RS_STACKDATA *stack, int argc) {
     int status;
 
@@ -3544,6 +3594,11 @@ int _GET_MOS_STATUS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the active monster invulnerability duration.
+ *
+ */
 int _SET_MUTEKI(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 1;
@@ -3553,6 +3608,11 @@ int _SET_MUTEKI(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the active monster gekirin value.
+ *
+ */
 int _GET_GEKIRIN(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -3562,6 +3622,11 @@ int _GET_GEKIRIN(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the matching user monster identifier when the active user is a monster.
+ *
+ */
 int _GET_USER_MONS_ID(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -3581,6 +3646,11 @@ int _GET_USER_MONS_ID(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the active monster priority.
+ *
+ */
 int _GET_PRIORITY(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -3590,6 +3660,11 @@ int _GET_PRIORITY(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a monster of the requested kind at an optional position and rotation.
+ *
+ */
 int _CREATE_MONSTER(RS_STACKDATA *args, int argc) {
     sceVu0FVECTOR position;
     sceVu0FVECTOR rotation;
@@ -3626,6 +3701,11 @@ int _CREATE_MONSTER(RS_STACKDATA *args, int argc) {
     return monster != NULL;
 }
 
+/**
+ *
+ * Sets the active monster clip distance from a script scale.
+ *
+ */
 int _SET_CLIP_DIST(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -3635,14 +3715,29 @@ int _SET_CLIP_DIST(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Rejects the collision configuration opcode without changing monster state.
+ *
+ */
 int _SET_COLLISION(RS_STACKDATA *stack, int argc) {
     return 0;
 }
 
+/**
+ *
+ * Rejects the gravity configuration opcode without changing monster state.
+ *
+ */
 int _SET_GRAVITY(RS_STACKDATA *stack, int argc) {
     return 0;
 }
 
+/**
+ *
+ * Sets or clears active monster attribute bits selected by a mask.
+ *
+ */
 int _SET_ATTRIB(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -3659,6 +3754,11 @@ int _SET_ATTRIB(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the active monster scale to three output slots.
+ *
+ */
 int _GET_SCALE(RS_STACKDATA *stack, int argc) {
     float scale[4];
 
@@ -3671,6 +3771,11 @@ int _GET_SCALE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the monster collision radius, using a default for nonpositive values.
+ *
+ */
 int _GET_MONS_WIDTH(RS_STACKDATA *stack, int argc) {
     if (argc != 1 || nowMonster == NULL) {
         return 0;
@@ -3681,6 +3786,11 @@ int _GET_MONS_WIDTH(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a named effect for this monster and optionally returns its slot.
+ *
+ */
 int _ESM_CREATE(RS_STACKDATA *stack, int argc) {
     char *name = GetStackString(stack++);
     int   group = nowMonster->chara_type;
@@ -3704,17 +3814,32 @@ int _ESM_CREATE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets an effect script program for this monster effect slot.
+ *
+ */
 void _ESM_FINISH(RS_STACKDATA *stack, int argc) {
     int effect_id = nowMonster->chara_type;
     ActiveMonster->effect_man->SetScriptProgNo(300, effect_id,
                                                GetStackInt(stack));
 }
 
+/**
+ *
+ * Deletes an effect from this monster effect slot.
+ *
+ */
 void _ESM_DELETE(RS_STACKDATA *stack, int argc) {
     int effect_id = nowMonster->chara_type;
     ActiveMonster->effect_man->DeleteEffSpt(effect_id, GetStackInt(stack));
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Sets the first script vector on a monster effect slot.
+ *
+ */
 int _ESM_SET_VECT1(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR vector;
     int           slot = GetStackInt(stack++);
@@ -3728,6 +3853,11 @@ int _ESM_SET_VECT1(RS_STACKDATA *stack, int argc) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ESM_SET_VECT1__FP12RS_STACKDATAi);
 #endif
 #ifdef NONMATCHING
+/**
+ *
+ * Writes the first script vector from a monster effect slot.
+ *
+ */
 int _ESM_GET_VECT1(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR vector;
     if (argc != 4) {
@@ -3744,6 +3874,11 @@ int _ESM_GET_VECT1(RS_STACKDATA *stack, int argc) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ESM_GET_VECT1__FP12RS_STACKDATAi);
 #endif
 #ifdef NONMATCHING
+/**
+ *
+ * Sets the second script vector on a monster effect slot.
+ *
+ */
 int _ESM_SET_VECT2(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR vector;
     if (argc != 4) {
@@ -3760,6 +3895,11 @@ int _ESM_SET_VECT2(RS_STACKDATA *stack, int argc) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ESM_SET_VECT2__FP12RS_STACKDATAi);
 #endif
 #ifdef NONMATCHING
+/**
+ *
+ * Writes the second script vector from a monster effect slot.
+ *
+ */
 int _ESM_GET_VECT2(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR vector;
     if (argc != 4) {
@@ -3776,6 +3916,11 @@ int _ESM_GET_VECT2(RS_STACKDATA *stack, int argc) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ESM_GET_VECT2__FP12RS_STACKDATAi);
 #endif
 #ifdef NONMATCHING
+/**
+ *
+ * Sets the target identifier on a monster effect slot.
+ *
+ */
 int _ESM_SET_TARGET_ID(RS_STACKDATA *stack, int argc) {
     int slot = GetStackInt(stack++);
     int id = GetStackInt(stack);
@@ -3785,6 +3930,11 @@ int _ESM_SET_TARGET_ID(RS_STACKDATA *stack, int argc) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ESM_SET_TARGET_ID__FP12RS_STACKDATAi);
 #endif
 #ifdef NONMATCHING
+/**
+ *
+ * Writes the target identifier from a monster effect slot.
+ *
+ */
 void _ESM_GET_TARGET_ID(RS_STACKDATA *stack, int argc) {
     int id;
     int slot = GetStackInt(stack++);
@@ -3795,6 +3945,11 @@ void _ESM_GET_TARGET_ID(RS_STACKDATA *stack, int argc) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ESM_GET_TARGET_ID__FP12RS_STACKDATAi);
 #endif
 #ifdef NONMATCHING
+/**
+ *
+ * Sets the user identifier on a monster effect slot.
+ *
+ */
 int _ESM_SET_USER_ID(RS_STACKDATA *stack, int argc) {
     int slot = GetStackInt(stack++);
     int id = GetStackInt(stack);
@@ -3804,6 +3959,11 @@ int _ESM_SET_USER_ID(RS_STACKDATA *stack, int argc) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ESM_SET_USER_ID__FP12RS_STACKDATAi);
 #endif
 #ifdef NONMATCHING
+/**
+ *
+ * Writes the user identifier from a monster effect slot.
+ *
+ */
 int _ESM_GET_USER_ID(RS_STACKDATA *stack, int argc) {
     int id;
     int slot = GetStackInt(stack++);
@@ -3814,6 +3974,11 @@ int _ESM_GET_USER_ID(RS_STACKDATA *stack, int argc) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ESM_GET_USER_ID__FP12RS_STACKDATAi);
 #endif
+/**
+ *
+ * Sets an integer or float parameter on a monster effect slot.
+ *
+ */
 int _ESM_SET_VALUE(RS_STACKDATA *stack, int argc) {
     int slot;
     int index;
@@ -3840,6 +4005,11 @@ int _ESM_SET_VALUE(RS_STACKDATA *stack, int argc) {
     return result;
 }
 
+/**
+ *
+ * Loads an effect script by number or name into the monster effect manager.
+ *
+ */
 int _LOAD_EFFECT_SCRIPT(RS_STACKDATA *stack, int argc) {
     int        result;
     int        level;
@@ -3884,6 +4054,11 @@ int _LOAD_EFFECT_SCRIPT(RS_STACKDATA *stack, int argc) {
     return (result < 0) ^ 1;
 }
 
+/**
+ *
+ * Configures a sword effect for a monster motion and pair of frames.
+ *
+ */
 int _SW_EFFECT(RS_STACKDATA *stack, int argc) {
     if (argc != 9) {
         return 0;
@@ -3927,6 +4102,11 @@ int _SW_EFFECT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes an unused texture block number from the effect manager.
+ *
+ */
 int _ESM_GET_NOTUESD_TEXB(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -3936,11 +4116,21 @@ int _ESM_GET_NOTUESD_TEXB(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Advances the effect manager texture block reservation.
+ *
+ */
 int _ESM_ADD_TEXB(RS_STACKDATA *stack, int argc) {
     ActiveMonster->effect_man->AddTexb();
     return 1;
 }
 
+/**
+ *
+ * Launches a monster rocket with position, direction, optional homing, and damage.
+ *
+ */
 int _SHOT_ROCKET_LAUNCHER(RS_STACKDATA *args, int argc) {
     sceVu0FVECTOR position;
     sceVu0FVECTOR target;
@@ -3999,6 +4189,11 @@ int _SHOT_ROCKET_LAUNCHER(RS_STACKDATA *args, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the event script number requested by the active monster.
+ *
+ */
 int _RUN_EVENT_SCRIPT(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -4009,6 +4204,11 @@ int _RUN_EVENT_SCRIPT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets or clears character status bits for the active monster in the scene.
+ *
+ */
 int _SET_STATUS(RS_STACKDATA *stack, int argc) {
     int           status;
     RS_STACKDATA *next = stack + 1;
@@ -4028,6 +4228,11 @@ int _SET_STATUS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets or clears battle-area pause bits selected by a mask.
+ *
+ */
 int _SET_PAUSE(RS_STACKDATA *stack, int argc) {
     RS_STACKDATA    *next;
     DNG_BATTLE_AREA *pause = &nowScene->battle_area;
@@ -4048,6 +4253,11 @@ int _SET_PAUSE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the active battle-area pause bits selected by a mask.
+ *
+ */
 int _CHECK_PAUSE(RS_STACKDATA *stack, int argument_count) {
 
     DNG_BATTLE_AREA *pause = &nowScene->battle_area;
@@ -4062,6 +4272,11 @@ int _CHECK_PAUSE(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Writes a persistent dungeon save flag value.
+ *
+ */
 int _GET_BIT_FLAG(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 2) {
         return 0;
@@ -4074,6 +4289,11 @@ int _GET_BIT_FLAG(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets a persistent dungeon save flag value.
+ *
+ */
 int _SET_BIT_FLAG(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 2) {
         return 0;
@@ -4085,6 +4305,11 @@ int _SET_BIT_FLAG(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Writes the active monster attack type.
+ *
+ */
 int _GET_ATT_TYPE(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 1) {
         return 0;
@@ -4094,6 +4319,11 @@ int _GET_ATT_TYPE(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Writes the active battle character attribute.
+ *
+ */
 int _GET_USER_ATTR(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 1) {
         return 0;
@@ -4104,6 +4334,11 @@ int _GET_USER_ATTR(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Copies a reserved monster image into its active image buffer.
+ *
+ */
 int _TRANS_RESERV_IMG(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 1) {
         return 0;
@@ -4126,6 +4361,11 @@ int _TRANS_RESERV_IMG(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Writes active monster status attribute bits selected by a mask.
+ *
+ */
 int _GET_STS_ATTR(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 2) {
         return 0;
@@ -4136,12 +4376,22 @@ int _GET_STS_ATTR(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Marks the current monster stun time and updates its stun effect.
+ *
+ */
 int _SET_PIYORI_MARK(RS_STACKDATA *stack, int argument_count) {
     nowMonster->piyori_mark = nowMonster->piyori_time;
     nowMonster->piyori.Set((mgCObject *) nowMonster, nowMonster->piyori_mark);
     return 1;
 }
 
+/**
+ *
+ * Writes the active monster stun mark value.
+ *
+ */
 int _CHECK_PIYORI(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 1) {
         return 0;
@@ -4151,11 +4401,21 @@ int _CHECK_PIYORI(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Writes the active monster attack value.
+ *
+ */
 int _GET_BASE_ATTACK(RS_STACKDATA *stack, int argument_count) {
     SetStack(stack, nowMonster->attack);
     return 1;
 }
 
+/**
+ *
+ * Writes the nearest other monster position and distance.
+ *
+ */
 int _GET_NEAR_MONS_POS(RS_STACKDATA *stack, int argument_count) {
     float pos[4];
     float nearest_pos[4];
@@ -4194,6 +4454,11 @@ int _GET_NEAR_MONS_POS(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the size value on a selected monster entry object.
+ *
+ */
 int _SET_INDEXOBJ_SIZE(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 2) {
         return 0;
@@ -4215,6 +4480,11 @@ int _SET_INDEXOBJ_SIZE(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Writes the size value from a selected monster entry object.
+ *
+ */
 int _GET_INDEXOBJ_SIZE(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 2) {
         return 0;
@@ -4235,6 +4505,11 @@ int _GET_INDEXOBJ_SIZE(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the current scene motion blur setting.
+ *
+ */
 int _SET_MOTION_BLUR(RS_STACKDATA *stack,
                      int           argument_count) {
     if (argument_count != 1) {
@@ -4245,6 +4520,11 @@ int _SET_MOTION_BLUR(RS_STACKDATA *stack,
     return 1;
 }
 
+/**
+ *
+ * Plays a sound from a selected monster sound bank.
+ *
+ */
 int _MONS_SE_PLAY(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 2) {
         return 0;
@@ -4263,6 +4543,11 @@ int _MONS_SE_PLAY(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Stops a sound from a selected monster sound bank.
+ *
+ */
 int _MONS_SE_STOP(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 2) {
         return 0;
@@ -4281,6 +4566,11 @@ int _MONS_SE_STOP(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Controls a looped sound on a selected monster.
+ *
+ */
 int _MONS_SE_LOOP(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 3) {
         return 0;
@@ -4300,6 +4590,11 @@ int _MONS_SE_LOOP(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets whether active monster sounds use positional volume.
+ *
+ */
 int _MONS_VOL_CTRL(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 1) {
         return 0;
@@ -4309,6 +4604,11 @@ int _MONS_VOL_CTRL(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Shows or hides a named map part or one of its pieces.
+ *
+ */
 int _SET_MAPOBJ_SHOW(RS_STACKDATA *stack, int argument_count) {
     CMap      *maps[8];
     CMapParts *parts;
@@ -4364,6 +4664,11 @@ int _SET_MAPOBJ_SHOW(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Loads a monster program with allocated script stacks and opcode callbacks.
+ *
+ */
 int SetMonsterScript(CRunScript *script, char *program, mgCMemory *memory) {
 
     RS_STACKDATA *value_stack = (RS_STACKDATA *) memory->Alloc(0x40);
@@ -4374,6 +4679,11 @@ int SetMonsterScript(CRunScript *script, char *program, mgCMemory *memory) {
     return 1;
 }
 
+/**
+ *
+ * Builds the monster opcode dispatch table and checks duplicate opcode numbers.
+ *
+ */
 void SetMonsterExtendTable() {
     int index;
     int earlier;

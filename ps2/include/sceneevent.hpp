@@ -74,17 +74,22 @@ struct CSceneEventData {
         };
 
         struct {
-            EventFloat4  head;
-            EventFloat4  group_1;
-            EventFloat2  group_2;
-            EventFloat4  group_3 __attribute__((aligned(16)));
-            EventFloat4  group_4;
-            EventFloat4  group_5;
-            EventVector4 vectors_a;
-            EventVector2 vectors_b;
+            EventFloat4  head;                                 /**< First four words of the event point's settings. */
+            EventFloat4  group_1;                              /**< Next four words of the event point's settings. */
+            EventFloat2  group_2;                              /**< Last two words of the event point's settings. */
+            EventFloat4  group_3 __attribute__((aligned(16))); /**< Position of the event point or game object. */
+            EventFloat4  group_4;                              /**< Rotation of the event point. */
+            EventFloat4  group_5;                              /**< Scale of the event point. */
+            EventVector4 vectors_a;                            /**< First four quadwords of the map event information. */
+            EventVector2 vectors_b;                            /**< Last two quadwords of the map event information. */
         };
     };
 
+    /**
+     *
+     * Clears every event value before the scene fills the event description.
+     *
+     */
     CSceneEventData() { memset(this, 0, sizeof(*this)); }
 };
 

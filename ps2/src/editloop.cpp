@@ -184,6 +184,11 @@ static CUserDataManager *GetUserData() {
     return 0;
 }
 
+/**
+ *
+ * Clears the edit scene character control lock count.
+ *
+ */
 void InitLockCharaCtrl() {
     LockChara = 0;
 }
@@ -218,12 +223,22 @@ int IsEditMode() {
     return 0;
 }
 
+/**
+ *
+ * Resets the pending edit mode change state.
+ *
+ */
 void InitEditModeChg() {
     EditModeChgFlag = 0;
     EditModeChgCnt = 0;
     EditModeChgEvent = 0;
 }
 
+/**
+ *
+ * Reports whether an edit mode change is in progress.
+ *
+ */
 int NowEditModeChg() {
     if (EditModeChgFlag != 0) {
         return EditModeChgCnt > 0;
@@ -242,6 +257,11 @@ void EditModeChg(int event) {
     LockCharaCtrl();
 }
 
+/**
+ *
+ * Advances a pending edit mode change and its transition event.
+ *
+ */
 void EditModeChgStep(CScene *scene) {
     if (EditModeChgFlag != 0) {
         EditModeChgCnt--;
@@ -301,6 +321,11 @@ void SetDataPacket(int mode) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editloop", SetDataPacket__Fi);
 #endif
+/**
+ *
+ * Saves edit state and stops scene activity before leaving the edit loop.
+ *
+ */
 void PreExitLoop(CScene *scene) {
     BurnEditParts();
     EditDataSave();
@@ -737,11 +762,21 @@ void EditExit() {
     }
 }
 
+/**
+ *
+ * Resets background submap loading state.
+ *
+ */
 void InitSubMapLoadStep() {
     SubMapLoadBG = 0;
     now_load_map_no = -1;
 }
 
+/**
+ *
+ * Advances background submap loading and initializes its villagers and events.
+ *
+ */
 int SubMapLoadStep() {
     CScene *scene;
 
@@ -1616,11 +1651,21 @@ int EditLoop() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editloop", EditLoop__Fv);
 #endif
+/**
+ *
+ * Resets edit event state and character control locks.
+ *
+ */
 void InitEditEvent() {
     InitLockCharaCtrl();
     EditEvent.Reset();
 }
 
+/**
+ *
+ * Stops an edit event and releases character control.
+ *
+ */
 void ResetEditEvent() {
     if (EditEvent.state == 1) {
         EditEvent.Reset();
@@ -1628,6 +1673,11 @@ void ResetEditEvent() {
     }
 }
 
+/**
+ *
+ * Restarts the current edit event and locks character control.
+ *
+ */
 void RestartEditEvent() {
     if (EditEvent.state == 1) {
         ResetEditEvent();
@@ -2193,6 +2243,11 @@ int BurnEditParts() {
     return 0;
 }
 
+/**
+ *
+ * Loads sound and BGM for an edit map.
+ *
+ */
 void editLoadSound(int map_no) {
     int sound_data_id;
     int bgm_no;
@@ -2635,6 +2690,11 @@ int EditAnalyzeChanged() {
     return 0;
 }
 
+/**
+ *
+ * Provides an empty common villager loading stage.
+ *
+ */
 void LoadComVillaager() {
 }
 

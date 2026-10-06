@@ -4953,9 +4953,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmenu", at_4293__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmenu", at_4367__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmenu", at_4368__DATA);
 
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmenu", D_0037B01C__DATA);
-
 // Virtual tables (.vtables)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmenu", __vt__12CRemovalMenu__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmenu", __vt__12CMenuGeorama__DATA);

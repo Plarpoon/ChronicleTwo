@@ -1745,9 +1745,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menumap", at_1677__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menumap", at_1937__2__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menumap", at_1938__2__DATA);
 
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menumap", D_0037B058__DATA);
-
 // Virtual tables (.vtables)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menumap", __vt__13CWorldMapMenu__DATA);
 

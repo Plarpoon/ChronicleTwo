@@ -373,6 +373,11 @@ void DBGCMD_ReloadEnemy(int monster_id, int reset) {
     }
 }
 
+/**
+ *
+ * Draws player position and memory usage in the dungeon debug panel.
+ *
+ */
 void DrawSystemParamInfo() {
     CPreSprite sprite;
     char       text[0x800];
@@ -403,6 +408,11 @@ void DrawSystemParamInfo() {
     dbFont.DrawDirect(text, 0x10, 0x118);
 }
 
+/**
+ *
+ * Draws player and target monster details with memory usage in the dungeon debug panel.
+ *
+ */
 void DrawSystemParamInfo2() {
     CPreSprite sprite;
     char       text[0x800];
@@ -498,9 +508,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_debug", at_1106__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_debug", at_1107__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_debug", at_1132__2__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_debug", at_1133__2__DATA);
-
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_debug", D_0037B010__DATA);
 
 // Uninitialised data (.bss)
 CFont dbFont;

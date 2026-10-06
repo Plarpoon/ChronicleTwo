@@ -101,6 +101,11 @@ int CFuncPoint::Check(CFuncPointCheck *check) {
     return 1;
 }
 
+/**
+ *
+ * Checks whether a moving point has passed its target on any axis.
+ *
+ */
 int CheckOver(float *current, float *speed, float *end) {
     for (int index = 0; index < 3; index++) {
         if (!(speed[index] <= 0.0f)) {

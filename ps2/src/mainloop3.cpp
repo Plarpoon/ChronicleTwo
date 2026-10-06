@@ -366,9 +366,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mainloop3", at_951__6__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mainloop3", at_952__6__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mainloop3", at_953__5__DATA);
 
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mainloop3", D_0037B09C__DATA);
-
 // Small initialised data (.sdata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mainloop3", at_804__4__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mainloop3", at_806__3__DATA);

@@ -592,11 +592,21 @@ void CDynamicAnime::Copy(CDynamicAnime &destination, mgCFrame *root, mgCMemory *
     }
 }
 
+/**
+ *
+ * Allocates the frame reference table for a dynamic animation.
+ *
+ */
 int dynFRAME_START(SPI_STACK *stack, int argc) {
     dynNowDA->NewFrameTable(spiGetStackInt(stack), dynStack);
     return 1;
 }
 
+/**
+ *
+ * Adds a named model frame to the dynamic animation.
+ *
+ */
 int dynFRAME(SPI_STACK *stack, int argc) {
     char     *name;
     mgCFrame *frame;
@@ -617,15 +627,30 @@ int dynFRAME(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Accepts the end of the dynamic animation frame table.
+ *
+ */
 int dynFRAME_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Allocates the initial vertex table for a dynamic animation.
+ *
+ */
 int dynVERTEX_START(SPI_STACK *stack, int argc) {
     dynNowDA->NewVertexTable(spiGetStackInt(stack), dynStack);
     return 1;
 }
 
+/**
+ *
+ * Adds an initial vertex offset from a frame world position.
+ *
+ */
 int dynVERTEX(SPI_STACK *stack, int argc) {
     float     offset[4];
     float     world[4];
@@ -648,6 +673,11 @@ int dynVERTEX(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Adds an initial vertex transformed from frame local coordinates.
+ *
+ */
 int dynVERTEX_L(SPI_STACK *stack, int argc) {
     float     local[4];
     float     world[4];
@@ -671,6 +701,11 @@ int dynVERTEX_L(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Copies initial vertices into the current and previous positions.
+ *
+ */
 int dynVERTEX_END(SPI_STACK *stack, int argc) {
     float vertex[4];
     int   i;
@@ -687,12 +722,22 @@ int dynVERTEX_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Allocates the fixed vertex table for a dynamic animation.
+ *
+ */
 int dynFIX_VERTEX_START(SPI_STACK *stack, int argc) {
     spiGetStackInt(stack);
     dynNowDA->NewFixVertexTable(dynNowDA->vertex_num, dynStack);
     return 1;
 }
 
+/**
+ *
+ * Finds and initializes a fixed vertex relative to its frame.
+ *
+ */
 DA_FIX_VERTEX *dynFixVertex(SPI_STACK *stack, int argc) {
     int            frame_id;
     int            vertex_index;
@@ -729,6 +774,11 @@ DA_FIX_VERTEX *dynFixVertex(SPI_STACK *stack, int argc) {
     return fix;
 }
 
+/**
+ *
+ * Configures a fixed vertex without velocity transfer.
+ *
+ */
 int dynFIX_VERTEX(SPI_STACK *stack, int argc) {
     DA_FIX_VERTEX *fix;
 
@@ -751,6 +801,11 @@ int dynFIX_VERTEX(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Configures a fixed vertex with positive velocity transfer.
+ *
+ */
 int dynFIX_VERTEX_C(SPI_STACK *stack, int argc) {
     DA_FIX_VERTEX *fix;
 
@@ -773,6 +828,11 @@ int dynFIX_VERTEX_C(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Configures a fixed vertex with negative velocity transfer.
+ *
+ */
 int dynFIX_VERTEX_S(SPI_STACK *stack, int argc) {
     DA_FIX_VERTEX *fix;
 
@@ -795,10 +855,20 @@ int dynFIX_VERTEX_S(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Accepts the end of the fixed vertex table.
+ *
+ */
 int dynFIX_VERTEX_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a frame pose from a type and four vertex references.
+ *
+ */
 DA_FRAME_POSE *FRAME_POSE_Sub(SPI_STACK *stack, int argc) {
     DA_FRAME_POSE *pose;
     char          *kind;
@@ -853,6 +923,11 @@ DA_FRAME_POSE *FRAME_POSE_Sub(SPI_STACK *stack, int argc) {
     return pose;
 }
 
+/**
+ *
+ * Marks a scripted frame pose as local to its frame.
+ *
+ */
 int dynFRAME_POSE_L(SPI_STACK *stack, int argc) {
     DA_FRAME_POSE *pose;
     mgCFrame      *frame;
@@ -868,6 +943,11 @@ int dynFRAME_POSE_L(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Marks a scripted frame pose as world-relative and detaches its frame.
+ *
+ */
 int dynFRAME_POSE(SPI_STACK *stack, int argc) {
     mgCFrame      *frame;
     DA_FRAME_POSE *pose;
@@ -884,6 +964,11 @@ int dynFRAME_POSE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the frames drawn by the dynamic animation.
+ *
+ */
 int dynDRAW_FRAME(SPI_STACK *stack, int argc) {
     int i;
 
@@ -896,11 +981,21 @@ int dynDRAW_FRAME(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Allocates the vertex distance constraint table.
+ *
+ */
 int dynBIND_VERTEX_START(SPI_STACK *stack, int argc) {
     dynNowDA->NewBindVertexTable(spiGetStackInt(stack), dynStack);
     return 1;
 }
 
+/**
+ *
+ * Connects two vertices with a weighted distance constraint.
+ *
+ */
 int dynBIND_VERTEX(SPI_STACK *stack, int argc) {
     DA_BIND_VERTEX *bind;
     int             vertex1;
@@ -942,15 +1037,30 @@ int dynBIND_VERTEX(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Accepts the end of the vertex constraint table.
+ *
+ */
 int dynBIND_VERTEX_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Allocates the dynamic animation bounding box table.
+ *
+ */
 int dynBOUNDING_BOX_START(SPI_STACK *stack, int argc) {
     dynNowDA->NewBoundingBoxTable(spiGetStackInt(stack), dynStack);
     return 1;
 }
 
+/**
+ *
+ * Adds a frame-bound box with optional coordinate bounds.
+ *
+ */
 int dynBOUNDING_BOX(SPI_STACK *stack, int argc) {
     DA_BOUNDING_BOX *box;
 
@@ -975,10 +1085,20 @@ int dynBOUNDING_BOX(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Accepts the end of the bounding box table.
+ *
+ */
 int dynBOUNDING_BOX_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Allocates the dynamic animation collision table.
+ *
+ */
 int dynCOLLISION_START(SPI_STACK *stack, int argc) {
     dynNowDA->NewCollisionTable(spiGetStackInt(stack), dynStack);
     return 1;
@@ -1031,21 +1151,41 @@ void CDACollision::Initialize() {
     friction = 0.8f;
 }
 
+/**
+ *
+ * Accepts the end of the dynamic animation collision table.
+ *
+ */
 int dynCOLLISION_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the gravity vector for the dynamic animation.
+ *
+ */
 int dynGRAVITY(SPI_STACK *stack, int argc) {
     spiGetStackVector(dynNowDA->gravity, stack);
     dynNowDA->gravity[3] = 0.0f;
     return 1;
 }
 
+/**
+ *
+ * Sets the dynamic animation stiffness coefficient.
+ *
+ */
 int dynK(SPI_STACK *stack, int argc) {
     dynNowDA->k = spiGetStackFloat(stack);
     return 1;
 }
 
+/**
+ *
+ * Sets the wind response scale for the dynamic animation.
+ *
+ */
 int dynWind(SPI_STACK *stack, int argc) {
     dynNowDA->wind_scale = spiGetStackFloat(stack);
     return 1;

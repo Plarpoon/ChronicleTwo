@@ -334,11 +334,21 @@ void CHealingPoint::Step() {
     }
 }
 
+/**
+ *
+ * Sets the fixed flag of the current automap room preset.
+ *
+ */
 int _ROOM_FIXED(SPI_STACK *stack, int arg_count) {
     nowPriset->fixed = spiGetStackInt(stack);
     return 1;
 }
 
+/**
+ *
+ * Sets the automap cell width and depth from a script.
+ *
+ */
 int _GRID_SIZE(SPI_STACK *stack, int unused) {
     float        cell_size_x = spiGetStackFloat(stack++);
     float        cell_size_z = spiGetStackFloat(stack);
@@ -348,11 +358,21 @@ int _GRID_SIZE(SPI_STACK *stack, int unused) {
     return 1;
 }
 
+/**
+ *
+ * Sets the identifier of the current automap room preset.
+ *
+ */
 int _ROOM_ID(SPI_STACK *stack, int arg_count) {
     nowPriset->id = spiGetStackInt(stack);
     return 1;
 }
 
+/**
+ *
+ * Allocates the cell table for the current automap room preset.
+ *
+ */
 int _ROOM_SIZE(SPI_STACK *stack, int arg_count) {
     if (arg_count != 2) {
         return 0;
@@ -377,11 +397,21 @@ int _ROOM_SIZE(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the appearance rate of the current automap room preset.
+ *
+ */
 int _ROOM_RATE(SPI_STACK *stack, int arg_count) {
     nowPriset->rate = spiGetStackInt(stack);
     return 1;
 }
 
+/**
+ *
+ * Appends one row of cell data to the current automap room preset.
+ *
+ */
 int _RD(SPI_STACK *stack, int arg_count) {
     if (arg_count != nowPriset->w * 2) {
         return 0;
@@ -395,6 +425,11 @@ int _RD(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Advances to the next automap room preset.
+ *
+ */
 int _ROOM_END(SPI_STACK *stack, int arg_count) {
     nowPriset = nowPriset + 1;
     return 1;

@@ -28,6 +28,11 @@ static inline char *VaStart(char *stack_arguments, int named_arguments) {
 }
 
 // Code (.text)
+/**
+ *
+ * Converts a Shift JIS character code to a JIS character code.
+ *
+ */
 unsigned long SjisToJis(unsigned long sjis) {
     unsigned long hi = (sjis >> 8) & 0xFF;
     unsigned long lo = sjis & 0xFF;
@@ -52,6 +57,11 @@ unsigned long SjisToJis(unsigned long sjis) {
     return ((hi + 1) << 8) + lo + 0x2021;
 }
 
+/**
+ *
+ * Converts a Shift JIS character code to a font serial number.
+ *
+ */
 unsigned long SjisToSerno(unsigned long sjis) {
     unsigned long jis = SjisToJis(sjis);
     unsigned long offset = 0xFFFFFFFFFFFFFFDFUL;
@@ -60,6 +70,11 @@ unsigned long SjisToSerno(unsigned long sjis) {
     return row * 94 + ((jis & 0xFF) + offset);
 }
 
+/**
+ *
+ * Maps a single-byte character to its debug font serial number.
+ *
+ */
 int ascii2serno(u8 ch) {
     int code;
 

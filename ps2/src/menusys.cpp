@@ -1204,6 +1204,11 @@ int CBaseMenuClass::CheckSpectolFusion(CGameDataUsed *item, int panel, CMenuPosD
     return 0;
 }
 
+/**
+ *
+ * Updates the spectol breakdown message and resulting attachment preview.
+ *
+ */
 void UpdataInfoSpectolBreakItem(CDC2Mes *mes, CGameDataUsed *item, int count) {
     SpectolBreakTable volume = at_1557;
     volume.v[0] = count;
@@ -1651,6 +1656,11 @@ int CBaseMenuClass::SelectInGiftBox(int key, int command) {
     return 0;
 }
 
+/**
+ *
+ * Positions the quantity selection board around the current menu cursor.
+ *
+ */
 void SetConditionHowMuchBoard() {
     CMenuPosDataForm *board = MenuCommonInfo->how_much_form;
     int               cursor_pos[2];
@@ -1928,6 +1938,11 @@ void SetPreCmdGiftBoxSelect(CBaseMenuClass *menu, CGameDataUsed *item) {
     menu->SetAskParam(&param);
 }
 
+/**
+ *
+ * Checks whether fishing is available on the current map and battle state.
+ *
+ */
 int CheckFishCondition() {
     CScene          *scene;
     DNG_BATTLE_AREA *battle_scene;
@@ -2044,12 +2059,22 @@ void SetSpectolInfo(CGameDataUsed *item, CGameDataUsed *part) {
     SpectolInfo[1] = part;
 }
 
+/**
+ *
+ * Initializes the second spectol information panel when present.
+ *
+ */
 void InitSpectol() {
     if (SpectolInfo[1] != NULL) {
         SpectolInfo[1]->Init();
     }
 }
 
+/**
+ *
+ * Applies an attachment's spectol values to a weapon and counts raised stats.
+ *
+ */
 int AfterSpectolFusion(CGameDataUsed *item, CGameDataUsed *part) {
     WEAPON_USED *target;
     ATTACH_USED *spectol;
@@ -2160,6 +2185,11 @@ void FusionColor(int type, int step, float *color) {
     }
 }
 
+/**
+ *
+ * Positions and animates the character frame shown during spectol conversion.
+ *
+ */
 void SpectolFrameCalc(CActionChara *chara, int active) {
     float scale[4];
     float rot[4];
@@ -2194,6 +2224,11 @@ void SpectolFrameCalc(CActionChara *chara, int active) {
     }
 }
 
+/**
+ *
+ * Saves the source item state and consumes the amount converted to spectol.
+ *
+ */
 void TransSpectolDataSave(CGameDataUsed *item, int count) {
     memcpy(&SpectolTransBefore, item, sizeof(CGameDataUsed));
 
@@ -2562,6 +2597,11 @@ int MenuItemBrdKey(int keys, int *cursor, int *scroll, int board) {
 
 extern s8 ret_tbl1_2511[2];
 #ifdef NONMATCHING
+/**
+ *
+ * Transfers or swaps menu items according to their inventory types.
+ *
+ */
 int MenuDataSwap(CGameDataUsed *destination, CGameDataUsed *source, int quantity) {
     if (destination == NULL || source == NULL) {
         return 0;
@@ -3014,12 +3054,22 @@ int CMenuKeyFunc::GetItemAll(CGameDataUsed *item, MENU_SWAPITEM_INFO *info) {
     return 1;
 }
 
+/**
+ *
+ * Fills an item's available command messages in an ask-mode parameter record.
+ *
+ */
 int GetItemCommandMsg(CGameDataUsed *item, MENU_ASKMODE_PARA *param, int slot, int arg) {
     return GetItemCommandMsg(item, param->cmd_msg, param->cmd_color, param->unk_48, param->cmd_mark, slot, arg);
 }
 
 extern s8 human_tbl_2871[5][2];
 
+/**
+ *
+ * Builds the commands, colors, values, and markers available for an item.
+ *
+ */
 int GetItemCommandMsg(CGameDataUsed *item, int *cmds, u32 *colors, short *values, short *marks, int type,
                       int arg) {
     int item_no = item->item_no;
@@ -4112,6 +4162,11 @@ void CheckEnableHaveItemNum(void) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", CheckEnableHaveItemNum__Fv);
 #endif
+/**
+ *
+ * Positions the equipment preview camera around a character or its selected part.
+ *
+ */
 void MenuEquipCameraSetEnv(CActionChara *chara, mgCCamera *camera, int type, int index) {
     float     position[4];
     float     offset[4];
@@ -4173,6 +4228,11 @@ extern char  at_3827[];
 extern char  at_3828[];
 extern char *WepStatusInfoStatusVolStrTable[10];
 
+/**
+ *
+ * Updates the weapon status forms for the selected inventory item.
+ *
+ */
 void MenuPosFormValueSetWeapon(CGameDataUsed *item) {
     if (item != NULL && item->item_no > 0) {
         s16 type = item->used_type;
@@ -4241,6 +4301,11 @@ extern char *WepStatusInfoStrTable[10];
 extern s8    count_time_3839;
 extern s8    init_3840;
 
+/**
+ *
+ * Updates an attachment or weapon form with current and changed status values.
+ *
+ */
 void MenuFormUpdataAttachInfo(CMenuPosDataForm *form, CGameDataUsed *item, int item_no, int reset, s16 *before) {
     s16 param[10];
     int raised[10];
@@ -4331,6 +4396,11 @@ void MenuFormUpdataAttachInfo(CMenuPosDataForm *form, CGameDataUsed *item, int i
     }
 }
 
+/**
+ *
+ * Updates the fishing rod status form for the selected item.
+ *
+ */
 void MenuPosFormValueSetFishingRod(CGameDataUsed *item) {
     int               values[8];
     char              name[0x20];
@@ -6829,6 +6899,11 @@ extern u64           at_6234;
 extern u64           at_6256;
 extern u64           at_6265;
 #ifdef NONMATCHING
+/**
+ *
+ * Handles item debug menu input and changes its displayed item state.
+ *
+ */
 void MenuItemDebugKey(void) {
     float          rotation[4];
     float          health_input[2];
@@ -7476,6 +7551,11 @@ static inline void DebugPrint(CMenuFont *font, char *text, int x, int y) {
     font->DrawDirect(font->str, font->pos_x, font->pos_y);
 }
 
+/**
+ *
+ * Draws item debug information for the active inspection mode.
+ *
+ */
 void MenuItemDebugDraw(void) {
     CMenuFont          menu_font;
     mgCTextureManager *tex_manager = &mgTexManager;
@@ -8741,6 +8821,11 @@ done:
     return 1;
 }
 
+/**
+ *
+ * Assigns an item's number to a visible information form part.
+ *
+ */
 void local_item_infoview_set(MENUFORMPARTS_TYPE *part, CGameDataUsed *item) {
     if (part != NULL) {
         part->etc_info[0] = 0;
@@ -8758,6 +8843,11 @@ extern char  at_7441[];
 extern char  at_7442[];
 extern char  at_7443[];
 #ifdef NONMATCHING
+/**
+ *
+ * Updates a character's equipped weapon indicators and warning colors.
+ *
+ */
 void MenuItemCharaActWepInfoDraw(CMenuPosDataForm *form, CGameDataUsed *equip, int chara_no, int flag) {
     CItemUseTarget target;
     int            blink = (int) (64.0f * sinf(WeaponWarningCounter));
@@ -8834,6 +8924,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuItemCharaActWepInfoDraw__FP1
 #endif
 extern char at_7478[];
 
+/**
+ *
+ * Updates a character's visible health and equipment preview forms.
+ *
+ */
 void MenuItemCharaViewCheck(CHARA_DATA *chara, int chara_no, int flag) {
     CMenuPosDataForm *form = CMenuItemInfoPt->view_form[chara_no];
 
@@ -8897,6 +8992,11 @@ extern char  at_7541[];
 extern float counter_7509;
 extern s8    init_7510;
 #ifdef NONMATCHING
+/**
+ *
+ * Updates the ridepod status form and equipped part indicators.
+ *
+ */
 void MenuPosFormValueSetCharaRobo(ROBO_DATA *robo, int flag) {
     if (robo == NULL) {
         return;
@@ -8986,6 +9086,11 @@ extern char at_7562[];
 extern char at_7563[];
 extern char at_7564[];
 
+/**
+ *
+ * Updates monster transformation status and health on its menu form.
+ *
+ */
 void MenuPosFormValueSetMonster(MOS_CHANGE_PARAM *monster, CHARA_DATA *chara) {
     CMenuPosDataForm *form = CMenuItemInfoPt->view_form[4];
 
@@ -9062,6 +9167,11 @@ int BuildUpWeaponTrans(CGameDataUsed *weapon, int no) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", BuildUpWeaponTrans__FP13CGameDataUsedi);
 #endif
+/**
+ *
+ * Draws the three texture sections of a weapon name board.
+ *
+ */
 void BuildUpWeaponNameBoardDraw(mgCDrawPrim *prim, float x, float y, int width) {
     mgRect<int> left_rect(0xAC, 0x76, 8, 0x20);
     mgRect<int> middle_rect(0xB4, 0x76, 4, 0x20);
@@ -9303,6 +9413,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuWeaponBuildUpDraw__FRi);
 extern s8 count_7867;
 extern s8 init_7868;
 
+/**
+ *
+ * Updates the weapon upgrade status form for a selected weapon.
+ *
+ */
 void MenuWeaponStatusInfoFormSet(CGameDataUsed *item, CDataWeapon *data) {
     int i;
 
@@ -9360,6 +9475,11 @@ extern s8 sel_7928[][6];
 extern s8 conv_7932[];
 #ifdef NONMATCHING
 
+/**
+ *
+ * Changes the active item selection mode and its cursor settings.
+ *
+ */
 int MenuItemSelectDiffer(int select) {
     if (CMenuItemInfoPt->unk_160) {
         return 0;
@@ -9980,6 +10100,11 @@ int CMenuItemInfo::LRCheck(int key) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", LRCheck__13CMenuItemInfoFi);
 #endif
+/**
+ *
+ * Sets the item information cursor indicators for the active menu mode.
+ *
+ */
 void MenuItemInfoCursorSet(int mode) {
     MENU_ITEM_CURSOR_INFO *info = &MenuItemCursorInfo;
     info->enable = 0;

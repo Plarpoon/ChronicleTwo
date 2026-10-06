@@ -1,6 +1,11 @@
 #pragma once
 
 /**
+ * @file
+ * Declares SIF remote procedure call structures and functions.
+ */
+
+/**
  * Holds the SDK bookkeeping shared by SIF RPC clients and servers.
  */
 struct sceSifRpcHeader {

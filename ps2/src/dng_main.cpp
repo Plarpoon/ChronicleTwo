@@ -1155,6 +1155,11 @@ int LoopDungeonMain() {
     return 0;
 }
 
+/**
+ *
+ * Draws the dungeon scene, effects, and interface for the current camera.
+ *
+ */
 void DngMainDraw() {
     mgCTextureManager *tex_man = &mgTexManager;
     SV_CONFIG_OPTION  *config;
@@ -1758,6 +1763,11 @@ void DngMainDraw() {
     DrawDebugWindow();
 }
 
+/**
+ *
+ * Updates dungeon battle state, characters, effects, and scene time.
+ *
+ */
 void DngStep() {
     SV_CONFIG_OPTION *config = &DngSaveData->config;
     DNG_BATTLE_AREA  *area;
@@ -2139,6 +2149,11 @@ int RunMainEvent() {
     return DngStatus.mode;
 }
 
+/**
+ *
+ * Processes gameplay and debug input during the dungeon field mode.
+ *
+ */
 int DngMainKey() {
     DngMainScene->GetCamera(DngMainScene->active_camera);
 
@@ -2784,6 +2799,11 @@ int DngMainKey() {
     return 0;
 }
 
+/**
+ *
+ * Checks nearby dungeon interactions and requests their event scripts.
+ *
+ */
 void IsEventRun() {
     sceVu0FVECTOR     pos;
     CBattleCharaInfo *info;
@@ -2979,6 +2999,11 @@ void IsEventRun() {
     }
 }
 
+/**
+ *
+ * Starts a system event script and switches the dungeon to event mode.
+ *
+ */
 int EventScriptSetup(SYSTEM_SCRIPT_INFO *script) {
     InitEvent(DngMainScene);
     VoiceUnit.StopVoice(10);
@@ -3074,6 +3099,11 @@ int ChangeSetUnit(int dir) {
     return next;
 }
 
+/**
+ *
+ * Applies periodic status damage and visual feedback to the player.
+ *
+ */
 void CheckStatusError() {
     sceVu0FVECTOR     pos;
     sceVu0FVECTOR     top;
@@ -3132,6 +3162,11 @@ void CheckStatusError() {
 
 static sceVu0FVECTOR backup_pos;
 
+/**
+ *
+ * Enters the dungeon eye camera view using the character orientation.
+ *
+ */
 void InitEyeCamera(CActionChara *chara) {
     CBattleCharaInfo *info = GetBattleCharaInfo();
     sceVu0FVECTOR     rot;
@@ -3289,6 +3324,11 @@ static void EyeCamera(mgCCamera *camera, CCharacter2 *chara, int mode) {
 
 int debug_no[7] = {100, 0, 1, 0, 0, 0, 0};
 
+/**
+ *
+ * Draws the dungeon debug command menu when it is enabled.
+ *
+ */
 void DebugMainDraw() {
     if (DngStatus.debug_window) {
         mgTexManager.ReloadTexture(0x6C, (sceVif1Packet *) NULL);

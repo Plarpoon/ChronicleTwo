@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * Declares device control and communication functions.
+ */
+
 #include "common.h"
 
 extern "C" {

@@ -1,7 +1,9 @@
 #pragma once
 
-/* Vendor SDK declarations. The reconstruction is given no system include path at all — only the
-   game's own headers — which is why this is reached with quotes rather than as <libgraph.h>. */
+/**
+ * @file
+ * Declares Graphics Synthesizer registers and rendering helpers.
+ */
 
 #include "common.h"
 

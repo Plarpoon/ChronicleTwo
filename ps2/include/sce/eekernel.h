@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * Declares Emotion Engine kernel services and interrupt control.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

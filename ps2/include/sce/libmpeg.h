@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * Declares MPEG decoder state and playback functions.
+ */
+
 #include "types.h"
 
 #include <libipu.h>

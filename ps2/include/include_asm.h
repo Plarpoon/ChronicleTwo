@@ -2,6 +2,11 @@
 #define INCLUDE_ASM_H
 
 /**
+ * @file
+ * Declares markers that the assembly gap tool expands into retail code and data.
+ */
+
+/**
  * Markers that stand in for code and data not decompiled yet.
  *
  * `INCLUDE_ASM("<directory>", <name>);` supplies a function and

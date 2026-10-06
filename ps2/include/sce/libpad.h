@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * Declares controller port state and input functions.
+ */
+
 #define scePadStateDiscon 0
 #define scePadStateFindPad 1
 #define scePadStateFindCTP1 2

@@ -1,7 +1,9 @@
 #pragma once
 
-/* Vendor SDK declarations. The reconstruction is given no system include path at all — only the
-   game's own headers — which is why this is reached with quotes rather than as <libdma.h>. */
+/**
+ * @file
+ * Declares DMA controller registers and transfer helpers.
+ */
 
 #include "common.h"
 

@@ -48,6 +48,12 @@ exactly 0x00..0xCF into `CScene+0x2E90`, and the next CScene field is at `+0x2F6
 `CMap+0xC88` by `UpDateMapInfo`, `+0x3050` CVillagerMngr (scenevillager).
 
 ## Other observations
+- `CSceneEventData` has an alternate bulk-copy view: `head`, `group_1`, and
+  `group_2` cover the ten words of `CFuncPoint::EventData`; `group_3`,
+  `group_4`, and `group_5` cover position, rotation, and scale; and
+  `vectors_a`/`vectors_b` cover the six quadwords of `MapEventInfo`.
+- `CScene::RunEvent` copies these blocks into its `event_data` member. Direct
+  member access produces the same PAL instructions as the former 0x2E90 offset view.
 - `UpDateMapInfo` / `DrawSky` use `CMapLightingInfo` (mapload.hpp) on the stack with
   `memset(…, 0, 0x1D0)`.
 - `EyeViewDrawOnOff` toggles `+4` of the two parts groups named by `at_958__3`/`at_959__3`.

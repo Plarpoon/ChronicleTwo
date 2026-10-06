@@ -760,9 +760,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/vlgr_info", at_555__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/vlgr_info", at_556__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/vlgr_info", at_557__DATA);
 
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/vlgr_info", D_0037B098__DATA);
-
 // Small uninitialised data (.sbss)
 INCLUDE_BSS(PlaceInfoNum, 0x4);
 INCLUDE_BSS(PlaceInfo, 0x4);

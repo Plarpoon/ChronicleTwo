@@ -244,6 +244,10 @@ def declarator(t, name=""):
             name = "(" + name + ")"
         args = [declarator(a) for a in t.argument_types()]
         if k == T.FUNCTIONPROTO and t.is_function_variadic():
+            # A lone ellipsis is legal in C++ but m2c parses this context as C.
+            # An empty C parameter list preserves the unspecified arguments.
+            if not args:
+                return declarator(t.get_result(), "%s()" % name)
             args.append("...")
         return declarator(t.get_result(),
                           "%s(%s)" % (name, ", ".join(args) or "void"))

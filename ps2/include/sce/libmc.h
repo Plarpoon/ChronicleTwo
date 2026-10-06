@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * Declares memory card operations and result codes.
+ */
+
 #define MC_WAIT 0
 #define MC_NOWAIT 1
 

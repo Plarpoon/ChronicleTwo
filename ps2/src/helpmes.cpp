@@ -310,9 +310,6 @@ void ShowErrorHelpMes(int mes_no, int time) {
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/helpmes", at_799__6__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/helpmes", at_800__5__DATA);
 
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/helpmes", D_0037B094__DATA);
-
 // Small uninitialised data (.sbss)
 INCLUDE_BSS(InitFlag__2, 0x4);
 INCLUDE_BSS(WindowMode, 0x4);

@@ -1736,9 +1736,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mglib", at_716__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mglib", at_1568__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mglib", at_1569__DATA);
 
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mglib", D_0037AFE8__DATA);
-
 // Small initialised data (.sdata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mglib", font_cons__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mglib", rot_priority__DATA);

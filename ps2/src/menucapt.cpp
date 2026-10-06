@@ -273,9 +273,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", at_904__5__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", at_905__5__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", at_906__5__DATA);
 
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", D_0037B054__DATA);
-
 // Small uninitialised data (.sbss)
 INCLUDE_BSS(MenuChapterMode, 0x4);
 INCLUDE_BSS(MenuChapterInfo, 0x4);

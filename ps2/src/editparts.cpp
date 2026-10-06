@@ -153,6 +153,11 @@ void CEditParts::Initialize() {
     CMapParts::Initialize();
 }
 
+/**
+ *
+ * Snaps a position component to its integer map coordinate.
+ *
+ */
 float StandardPos(float pos) {
     if (pos > 0.0f) {
         return (float) fptosi(0.001f + pos);

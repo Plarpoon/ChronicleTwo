@@ -1,6 +1,11 @@
 #pragma once
 
 /**
+ * @file
+ * Declares SIF DMA transfer structures and functions.
+ */
+
+/**
  * Describes one DMA transfer submitted to the SIF hardware.
  */
 struct sceSifDmaData {

@@ -239,7 +239,7 @@ void CSWordAfterEffect::StartEffect(mgCFrame *start, mgCFrame *end, int value8_c
     point_num = 0;
     write_index = point_max - 1;
     head_index = point_max - 1;
-    printf((char *) at_356);
+    printf(at_356);
 }
 
 void CSWordAfterEffect::AddPoint(float *first, float *second) {

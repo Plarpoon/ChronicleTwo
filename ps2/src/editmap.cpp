@@ -1973,6 +1973,11 @@ int CEditMap::DrawSub(int mode) {
     return total;
 }
 
+/**
+ *
+ * Accepts the start of a scripted river parts section.
+ *
+ */
 int emapEDIT_RIVER(SPI_STACK *stack, int argc) {
     return 1;
 }
@@ -1982,6 +1987,11 @@ extern "C" void *__vt__7CObject[];
 extern "C" void *__vt__12CObjectFrame[];
 extern "C" void *__vt__9CMapPiece[];
 
+/**
+ *
+ * Loads a named river part and its map piece model.
+ *
+ */
 int emapRIVER_PARTS_NAME(SPI_STACK *stack, int argc) {
     int index = spiGetStackInt(stack++);
 
@@ -2025,6 +2035,11 @@ int emapRIVER_PARTS_NAME(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Loads the map mask piece model.
+ *
+ */
 int emapMASK_PARTS_NAME(SPI_STACK *stack, int argc) {
     int index = spiGetStackInt(stack++);
 
@@ -2066,6 +2081,11 @@ int emapMASK_PARTS_NAME(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Loads the map water piece model.
+ *
+ */
 int emapWATER_PARTS_NAME(SPI_STACK *stack, int argc) {
     CMdsInfo  *mds = emapMap->SearchMDS(spiGetStackString(stack));
     CMapPiece *piece;
@@ -2097,10 +2117,20 @@ int emapWATER_PARTS_NAME(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Accepts the end of a scripted river parts section.
+ *
+ */
 int emapEDIT_RIVER_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Allocates the fixed edit parts table from a script.
+ *
+ */
 int emapFIX_EPARTS_START(SPI_STACK *stack, int argc) {
     int         count = spiGetStackInt(stack);
     u32         size;
@@ -2121,6 +2151,11 @@ int emapFIX_EPARTS_START(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Adds a fixed edit part with its position and angle.
+ *
+ */
 int emapFIX_EPARTS(SPI_STACK *stack, int argc) {
     int         index = emapFixIdx;
     ePlaceData *entry;
@@ -2141,6 +2176,11 @@ int emapFIX_EPARTS(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Ends the fixed edit parts table definition.
+ *
+ */
 int emapFIX_EPARTS_END(SPI_STACK *stack, int argc) {
     emapFixNum = 0;
     emapFixIdx = 0;
@@ -2148,6 +2188,11 @@ int emapFIX_EPARTS_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Allocates the initial edit parts table from a script.
+ *
+ */
 int emapINIT_EPARTS_START(SPI_STACK *stack, int argc) {
     int count = spiGetStackInt(stack);
     u32 size;
@@ -2169,6 +2214,11 @@ int emapINIT_EPARTS_START(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Adds an initial edit part with its position and angle.
+ *
+ */
 int emapINIT_EPARTS(SPI_STACK *stack, int argc) {
     int         index = emapInitIdx;
     ePlaceData *entry;
@@ -2189,6 +2239,11 @@ int emapINIT_EPARTS(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Ends the initial edit parts table definition.
+ *
+ */
 int emapINIT_EPARTS_END(SPI_STACK *stack, int argc) {
     emapInitNum = 0;
     emapInitIdx = 0;

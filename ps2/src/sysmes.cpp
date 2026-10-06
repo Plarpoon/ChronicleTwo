@@ -129,9 +129,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_492__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_493__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_494__DATA);
 
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", D_0037B000__DATA);
-
 // Uninitialised data (.bss)
 mgCMemory SystemMesStack;
 INCLUDE_BSS(SystemMesBuffer, 0xD000);

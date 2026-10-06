@@ -420,6 +420,11 @@ void CEditMap::LoadData(CEditData *data) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", LoadData__8CEditMapFP9CEditData);
 #endif
+/**
+ *
+ * Returns the culture point value of a placed edit part.
+ *
+ */
 int GetCulturePoint(CEditParts *parts, int) {
     if (parts == 0 || parts->info == 0) {
         return 0;
@@ -820,6 +825,11 @@ void LoadEditAnalyzeData(char *script, int size, mgCMemory *stack) {
     interpreter.Run();
 }
 
+/**
+ *
+ * Starts an edit analysis source from a script.
+ *
+ */
 int eaGEO_ANALYZE(SPI_STACK *stack, int) {
     eaAnaSrc = 0;
     int id = spiGetStackInt(stack);
@@ -834,6 +844,11 @@ int eaGEO_ANALYZE(SPI_STACK *stack, int) {
     return 1;
 }
 
+/**
+ *
+ * Defines a named condition for the current edit analysis source.
+ *
+ */
 int eaCONDITION(SPI_STACK *stack, int argc) {
     int con_no;
 
@@ -856,6 +871,11 @@ int eaCONDITION(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Starts a message entry in the current edit analysis source.
+ *
+ */
 int eaANALYZE(SPI_STACK *stack, int argc) {
     int entry_no;
 
@@ -881,6 +901,11 @@ int eaANALYZE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Assigns condition numbers to the current edit analysis entry.
+ *
+ */
 int eaCON_NO(SPI_STACK *stack, int count) {
     if (eaAnaData == 0) {
         return 0;
@@ -898,6 +923,11 @@ int eaCON_NO(SPI_STACK *stack, int count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the required present part name for an edit analysis entry.
+ *
+ */
 int eaON_PARTS(SPI_STACK *stack, int) {
     if (eaAnaData == 0) {
         return 0;
@@ -907,6 +937,11 @@ int eaON_PARTS(SPI_STACK *stack, int) {
     return 1;
 }
 
+/**
+ *
+ * Sets the required absent part name for an edit analysis entry.
+ *
+ */
 int eaOFF_PARTS(SPI_STACK *stack, int) {
     if (eaAnaData == 0) {
         return 0;
@@ -916,6 +951,11 @@ int eaOFF_PARTS(SPI_STACK *stack, int) {
     return 1;
 }
 
+/**
+ *
+ * Sets the percentage requirement of an edit analysis entry.
+ *
+ */
 int eaPERCENT(SPI_STACK *stack, int) {
     if (eaAnaData == NULL) {
         return 0;
@@ -925,11 +965,21 @@ int eaPERCENT(SPI_STACK *stack, int) {
     return 1;
 }
 
+/**
+ *
+ * Ends the current edit analysis entry.
+ *
+ */
 int eaEND_ANALYZE(SPI_STACK *, int) {
     eaAnaData = 0;
     return 1;
 }
 
+/**
+ *
+ * Ends the current edit analysis source.
+ *
+ */
 int eaEND_GEO_ANALYZE(SPI_STACK *, int) {
     eaAnaSrc = 0;
     return 1;

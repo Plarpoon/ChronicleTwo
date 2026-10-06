@@ -141,6 +141,13 @@ owning variable names (DngMess, EventMess, SystemMessage...) if they turn up.
 - MesLineShade from GetGyouAlpha / GetFontColor (1 halves rgb, 2 alpha 0xFF*alpha>>7, 3 black
   at alpha*0x40>>7 and no outline, 4 rgb unchanged alpha 0 / skipped).
 
+## Matching notes
+- `DrawFukidashiShadow` constructs a local `mgCDrawPrim` in the existing
+  `message_draw_prim` union. Its two stack stores at offsets 0x190/0x194 are
+  `mgCDrawPrim::offset_x` and `offset_y` relative to the local primitive at
+  stack offset 0x80. They hold the draw offset multiplied by 16, and replacing
+  a separate scratch array with those typed fields gives a 100% match.
+
 ## Globals
 - `p` (.data, 0x80): float[16][2] bubble outline ratios (DrawFukidashi_sub, DrawFukidashiShadow).
 - `waku_data` (0x90): s32[9][4] frame margins per window mode (left, top, right, bottom);

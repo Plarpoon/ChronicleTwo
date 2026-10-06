@@ -147,23 +147,21 @@ int CScene::GetCameraPoly(CCPoly *polys, mgVu0FBOX &box, int max) {
 }
 
 void CScene::RunEvent(int requested_event_no, CSceneEventData *data) {
-    u8 *scene = (u8 *) this;
-
     if (event_run == 0 || (printf(at_858__3), event_no != 100)) {
         event_no = requested_event_no;
 
         if (data != NULL) {
-            ((CSceneEventData *) (scene + 0x2E90))->head = data->head;
-            ((CSceneEventData *) (scene + 0x2E90))->group_1 = data->group_1;
-            ((CSceneEventData *) (scene + 0x2E90))->group_2 = data->group_2;
-            ((CSceneEventData *) (scene + 0x2E90))->group_3 = data->group_3;
-            ((CSceneEventData *) (scene + 0x2E90))->group_4 = data->group_4;
-            ((CSceneEventData *) (scene + 0x2E90))->group_5 = data->group_5;
-            ((CSceneEventData *) (scene + 0x2E90))->vectors_a = data->vectors_a;
-            ((CSceneEventData *) (scene + 0x2E90))->vectors_b = data->vectors_b;
-            ((CSceneEventData *) (scene + 0x2E90))->chara_no = data->chara_no;
-            ((CSceneEventData *) (scene + 0x2E90))->chara_slot = data->chara_slot;
-            ((CSceneEventData *) (scene + 0x2E90))->gameobj_no = data->gameobj_no;
+            event_data.head = data->head;
+            event_data.group_1 = data->group_1;
+            event_data.group_2 = data->group_2;
+            event_data.group_3 = data->group_3;
+            event_data.group_4 = data->group_4;
+            event_data.group_5 = data->group_5;
+            event_data.vectors_a = data->vectors_a;
+            event_data.vectors_b = data->vectors_b;
+            event_data.chara_no = data->chara_no;
+            event_data.chara_slot = data->chara_slot;
+            event_data.gameobj_no = data->gameobj_no;
             event_data.unk_cc = data->unk_cc;
         }
 

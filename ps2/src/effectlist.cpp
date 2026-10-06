@@ -346,6 +346,11 @@ void CFadeInOut::CaptureScreen() {
 }
 #ifdef NONMATCHING
 
+/**
+ *
+ * Draws a grid of screen-aligned sprite primitives.
+ *
+ */
 void DivSpriteScreen(mgCDrawPrim &prim) {
     int x;
     int y;
@@ -380,6 +385,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", DivSpriteScreen__FR11mgCDrawP
 #endif
 #ifdef NONMATCHING
 
+/**
+ *
+ * Draws a vertical screen strip with an optional staggered edge.
+ *
+ */
 void DivSpriteScreen(mgCDrawPrim &prim, int left, int right, int jagged_left) {
     int row_height;
     int row;

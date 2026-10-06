@@ -354,7 +354,6 @@ int CVillagerMngr::GetAppearVlgr(int progress, int time, int map_no, int *villag
     int                           villager_id;
     int                           handled;
     int                           point;
-    int                           point_offset;
     int                           selected;
     int                           alternative;
     int                           alternative_offset;
@@ -393,10 +392,9 @@ int CVillagerMngr::GetAppearVlgr(int progress, int time, int map_no, int *villag
 
                 if (point >= 0) {
                     output_offset = found * sizeof(int);
-                    point_offset = point * sizeof(CVillagerPlace::ProgressInfo);
 
                     do {
-                        schedule = (CVillagerPlace::ProgressInfo *) ((u8 *) entry->prog_info + point_offset);
+                        schedule = &entry->prog_info[point];
                         point_info = GetGameProgressInfo(schedule->progress);
 
                         if (point_info != NULL && current->order >= point_info->order) {
@@ -435,7 +433,6 @@ int CVillagerMngr::GetAppearVlgr(int progress, int time, int map_no, int *villag
                         }
 
                         point--;
-                        point_offset -= sizeof(CVillagerPlace::ProgressInfo);
                     } while (point >= 0);
                 }
 

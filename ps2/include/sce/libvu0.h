@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * Declares Vector Unit 0 vector and matrix helpers.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

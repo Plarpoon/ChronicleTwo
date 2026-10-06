@@ -109,6 +109,11 @@ int CountPartsInfoID(int id, CEditMap *map, int *parts_nos, int count) {
     return matches;
 }
 
+/**
+ *
+ * Checks whether a placed edit part is a fence.
+ *
+ */
 int CheckSaku(CEditMap *map, int parts_no) {
     CEditParts *parts;
 
@@ -121,6 +126,11 @@ int CheckSaku(CEditMap *map, int parts_no) {
     return parts->GetPartsType() == 8;
 }
 
+/**
+ *
+ * Counts placed trees across the supported tree part types.
+ *
+ */
 int GetTreeNum(CEditMap *map) {
     int n;
 
@@ -152,6 +162,11 @@ int GetHouseParts(CEditMap *map, int *out, int max) {
     return total;
 }
 
+/**
+ *
+ * Checks the information identifier of a placed edit part.
+ *
+ */
 int CheckInfoID(CEditMap *map, int parts_no, int id) {
     CEditParts *parts;
 

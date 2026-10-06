@@ -158,3 +158,8 @@ item-specific branches. The ridepod item comparison is `&robo_data.parts[2]`; th
 branch reads the type of `equip[0]`; item 0x1AA uses `weapon.attribute[1]` as its recovery
 amount. The status loop counts one possible effect even when multiple bits change. Retail
 assembly remains the default until object-code matching is complete.
+
+## Compiler flag
+The nested local `divbyzerocheck on/reset` directives around the number-glyph
+helpers are redundant with the unit's global flag: removing them produces an
+identical complete `menucls1.cpp.o`.

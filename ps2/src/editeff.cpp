@@ -15,7 +15,7 @@ extern void     *__vt__9mgCObject[];
 extern void     *__vt__7CObject[];
 extern void     *__vt__9CMapParts[];
 extern void     *__vt__14CFuncPointMngr[];
-extern "C" void *__ct__8mgCFrameFv(void *);
+extern "C" void *__ct__8mgCFrameFv(void *frame);
 
 static const float paint_color_max = 255.0f;
 const int          color_channels = 3;
@@ -779,16 +779,6 @@ int EditPlaceAnimeEndCheck() {
 
 CStarEffect::CStarEffect() {}
 
-// Static initialiser (.init)
-extern "C" void *__construct_array(void *array, void *(*constructor)(void *),
-                                   void *destructor, unsigned int element_size, unsigned int count);
-extern "C" void *__ct__11CStarEffectFv(void *effect);
-
-extern "C" void __sinit_editeff_cpp() {
-    __construct_array(_StarEffect, __ct__11CStarEffectFv, NULL, sizeof(CStarEffect), star_effect_count);
-    CurPartsBuff.Init();
-}
-
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", at_1038__6__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editeff", at_1039__4__DATA);
@@ -812,8 +802,8 @@ INCLUDE_BSS(EffectState, 0x4);
 INCLUDE_BSS(PaintEffect, 0x4);
 
 // Uninitialised data (.bss)
-INCLUDE_BSS(_StarEffect, 0x300);
-INCLUDE_BSS(CurPartsBuff, 0x30);
+CStarEffect _StarEffect[star_effect_count];
+mgCMemory   CurPartsBuff;
 INCLUDE_BSS(at_1037__6, 0x20);
 INCLUDE_BSS(at_1112__3, 0x10);
 INCLUDE_BSS(PlaceAnime, 0x1B0);

@@ -110,6 +110,11 @@ scrlbar_parts[0..2]=0; scrlbar_pos={0,9}; card_ok=0; card_changed=0.
 - Local functions (static, keep in .cpp): InitMnOnePictTex, SetMCIconData, SubGameCFGAnalyze.
 
 ## Function notes
+- Typed `CMenuOption` and `CSaveMenuClass` constructors produce exact retail
+  `MenuOptionInit` and `MenuSaveInit` bodies, including their base construction and
+  initialization order. The typed `CManualMenu` constructor gives a 99.32% body;
+  MWCC moves the allocation pointer before its null branch, while retail places
+  the move in its delay slot, adding one nop later.
 - Init signature `(mgCMemory *stack, int *tex_block, int open_type)`; open_type is
   MenuCommonInfo+0x50 (MenuOpenType) from NextMenuInit/MenuMainInit, or 7 / 0x1E from
   DngTreeMapKey / GyoraceMenuKey.

@@ -85,3 +85,11 @@ byte-identical.
 ## Number glyph calls
 
 All status-board callers pass `mgRect<int>` glyph bounds to `PrintV` by value. The MWCC ABI passes the aggregate through its address, so native `PrintV(..., rect, ...)` calls reproduce the same code as the former linker-name aliases.
+
+## Division-check pragma
+
+The unit-level `divbyzerocheck` pragma was redundant with the global MWCC flag; removing it left the full compiled object identical in objdiff.
+
+## Native primitive constructors
+
+The former `MG_DRAWPRIM_MANUAL_CTOR` macro suppressed normal `mgCDrawPrim` construction throughout this unit. Removing it and the explicit constructor aliases makes `PrintV`, `DrawDrumCounter`, the active-item cursor, and the status boards construct their `CPreSprite` locals through C++. `DrawRoboUnitStatusBord` declares its two sprites immediately before first use, after calculating gauge colours, so the calls retain retail order; the full unit has no new fuzzy functions.

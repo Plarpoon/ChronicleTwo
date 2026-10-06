@@ -1,4 +1,3 @@
-#define sceVu0ApplyMatrix sceVu0ApplyMatrixSdk
 #include "common.h"
 
 #include <cstring>
@@ -92,9 +91,6 @@ extern "C" void *__vt__9mgCObject[];
 extern "C" void *__vt__7CObject[];
 extern "C" void *__vt__12CObjectFrame[];
 extern "C" void *__vt__9CMapPiece[];
-
-#undef sceVu0ApplyMatrix
-extern "C" void sceVu0ApplyMatrix(float *dest, float *matrix, float *source);
 
 // Code (.text)
 void CMapParts::Initialize() {
@@ -605,7 +601,7 @@ int CMapParts::CheckColBox(mgVu0FBOX *box) {
     GetLWMatrix(lw_matrix);
     *(u_long128 *) sphere = *(u_long128 *) col_bound_sphere;
     sphere[3] = 1.0f;
-    sceVu0ApplyMatrix(sphere, (float *) lw_matrix, sphere);
+    sceVu0ApplyMatrix(sphere, lw_matrix, sphere);
     sphere[3] = col_bound_sphere[3];
 
     // The sphere is tested first, on X and Z only.
@@ -655,15 +651,15 @@ int CMapParts::GetBoundBox(mgVu0FBOX *out_box) {
 }
 
 int CMapParts::GetBoundSphere(float *sphere) {
-    float matrix[16];
-    float sphere_center[4];
-    float radius;
+    sceVu0FMATRIX matrix;
+    float         sphere_center[4];
+    float         radius;
 
     if (bound_valid == 0) {
         return 0;
     }
 
-    GetLWMatrix((float (*)[4]) matrix);
+    GetLWMatrix(matrix);
     *(PartsVector *) sphere_center = *(PartsVector *) bound_sphere;
     radius = bound_sphere[3];
     sphere_center[3] = 1.0f;
@@ -691,10 +687,10 @@ int CMapParts::InsideScreen() {
 }
 
 int CMapParts::InsideScreen(COcclusion *occluders, int count) {
-    float     matrix[16];
-    SphereVec sphere;
-    float     radius;
-    int       i;
+    sceVu0FMATRIX matrix;
+    SphereVec     sphere;
+    float         radius;
+    int           i;
 
     if (bound_valid == 0) {
         return 0;
@@ -710,8 +706,7 @@ int CMapParts::InsideScreen(COcclusion *occluders, int count) {
         return 1;
     }
 
-    mgMulMatrix((float (*)[4]) matrix, mgRenderInfo.view,
-                (float (*)[4]) matrix);
+    mgMulMatrix(matrix, mgRenderInfo.view, matrix);
     *(PartsVector *) &sphere = *(PartsVector *) bound_sphere;
     radius = bound_sphere[3];
     sphere.w = 1.0f;

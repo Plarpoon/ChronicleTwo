@@ -1,5 +1,7 @@
 # editmenu: reverse-engineering notes
 
+`MenuGeoramaStack`, `potti0`, and `potti1` are native C++ globals. Their constructors produce the retail 0x58-byte static initializer (`__sinit_editmenu_cpp`) exactly; no hand-written C-linkage initializer is needed. The rectangle initializers use their four retail edge values.
+
 `MenuGeoramaAnalyzeSelect` moves the analysis cursor with two pairs of key
 bits, clamps it to the page's last line, and scrolls the analysis list toward
 the selected line. It caps the scroll distance, eases the list's Y coordinate
@@ -138,3 +140,9 @@ Every data symbol of the unit is LOCAL in retail, so none is declared in the hea
 `georama_parts_adjust_scaletable` / `_z_table` float[0x5D], `PartsMakeOkTable` s32[0x100],
 `GeoramaPenkiNum` s16[8] (symbol spans 0x20), `old_menuparts_pos/rot`, `now_menu_pos_mapparts`,
 `georama_adjust_position` float[4], `MenuGeoramaPushFunc` int(*[9])(CMenuGeorama*,int,int).
+
+## Compiler flag cleanup
+
+The local `divbyzerocheck on`/`reset` pair is redundant with the PS2 compiler
+flag. Removing it leaves every section and symbol in this unit's object diff
+unchanged.

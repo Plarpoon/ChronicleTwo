@@ -505,7 +505,7 @@ int CActionChara::CheckKeri(char *name, int flag) {
         radius = 40.0f;
     }
 
-    stone = (CMapParts *) AutoMapGen.SearchRandomStone(pos, radius);
+    stone = AutoMapGen.SearchRandomStone(pos, radius);
 
     if (stone != NULL) {
         if (flag != 0) {
@@ -570,7 +570,7 @@ int CActionChara::CheckEnemyCatch(char *name) {
 
     object->GetWorldPosition0(pos);
     pos[3] = 1.0f;
-    stone = (CMapParts *) AutoMapGen.SearchRandomStone(pos, 30.0f);
+    stone = AutoMapGen.SearchRandomStone(pos, 30.0f);
 
     if (stone != NULL) {
         piece = stone->SearchPiece(at_1325);
@@ -713,7 +713,7 @@ void CActionChara::EntryThrowItem() {
 
         if (action_info.env != NULL) {
             effect_man->SetCharacter(
-                (CCharacter2 *) (action_info.env->item_chara + index), 0, throw_effect);
+                &action_info.env->item_chara[index], 0, throw_effect);
             effect_man->SetTexb(action_info.env->texb, 0, throw_effect);
             index = 0;
 
@@ -1257,7 +1257,7 @@ int DistCheck_Action2(CScene *scene, float unused, float range, float *out_dist,
         if (target != NULL && target->chara_kind == 2 && ((CActiveMonster *) target)->state == 1 &&
             ((CActiveMonster *) target)->catch_state != 1 &&
             !(((CActiveMonster *) target)->attrib & 1)) {
-            ((CCharacter2 *) target)->GetEntryObjectPos(0, 0, entry_pos);
+            target->GetEntryObjectPos(0, 0, entry_pos);
             dist = ((CActiveMonster *) target)->target_dist;
 
             if (dist < range || ((CActiveMonster *) target)->tbl->boss != 0) {
@@ -1360,7 +1360,7 @@ int Check_LockOn(CScene *scene, float range, int index) {
         return 1;
     }
 
-    ((CCharacter2 *) target)->GetEntryObjectPos(0, 0, target_pos);
+    target->GetEntryObjectPos(0, 0, target_pos);
     own_pos[3] = 1.0f;
     target_pos[3] = 1.0f;
     farther = 1;
@@ -3361,7 +3361,7 @@ void CActionChara::Step() {
     float         pitch_matrix[4][4];
     CActionChara *link;
     CCharacter2  *chained;
-    CCharacter2  *self = (CCharacter2 *) this;
+    CCharacter2  *self = this;
     mgCFrame     *gun;
     int           monster_index;
 
@@ -3376,7 +3376,7 @@ void CActionChara::Step() {
 
     if (link != NULL) {
         do {
-            chained = (CCharacter2 *) link;
+            chained = link;
 
             if (chained->sound_info.se_positional != 2) {
                 chained->sound_info.se_positional = 0;

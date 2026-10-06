@@ -65,3 +65,9 @@ returns CastingLureTime. CheckRodActionChance: *just = (ActionChanceCnt == 0x1C)
 ## Enums
 FishingMode: 1 bait (sgRestartFishing default, InitRodPoint; InitSuccess calls DeleteEsa),
 2 lure (item 0x12F in sgRestartFishing). SetFishingMode/GetFishingMode keep `int` for mangling.
+
+`DrawFishingLine` and `DrawFishingActionChance` construct local `mgCDrawPrim` builders after computing the rod and fish endpoints. Declaring their screen-coordinate arrays after the builders retains retail stack placement and removes raw primitive buffers and constructor aliases.
+
+## Native static initialization
+
+`CFishObj` clears its point, constraint, and float state in its inline default constructor. Three native globals for the lure, float, and hook emit the retail `__sinit_fishingobj_cpp` call sequence. The generated 80-byte initializer and the three 0x3D0-byte BSS objects match retail.

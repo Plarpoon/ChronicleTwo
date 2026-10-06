@@ -1,11 +1,10 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include "editcoll.hpp"
 #include "mg_frame.hpp"
 #include "mg_math.hpp"
 #include "mg_memory.hpp"
-
-extern "C" int fptosi(float value);
 
 struct CollisionRow {
     float value[4];

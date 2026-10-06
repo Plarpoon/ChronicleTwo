@@ -242,11 +242,6 @@ enum OmakePlayEnableBit {
  *
  */
 struct TITLE_INFO {
-    TITLE_INFO() {
-        memset(this, 0, sizeof(TITLE_INFO));
-        InitSV_CONFIG_OPTION(&config);
-    }
-
     int                mode;          /**< Screen being shown. @see TitleMode */
     int                next_mode;     /**< Screen to switch to at the end of the frame, or TITLE_MODE_NONE. @see TitleMode */
     s16                select;        /**< Row chosen in the title menu. @see TitleMenuItem */
@@ -269,6 +264,11 @@ struct TITLE_INFO {
     SV_CONFIG_OPTION   config;         /**< Game options, exchanged with the save data around the menus. */
     mgCMemory          chara_stack[5]; /**< Memory for the party characters' base data while a menu is open. */
     CScene::BGM_STATUS bgm_status;     /**< Background music that was playing before a menu or the installer changed it. */
+
+    TITLE_INFO() {
+        memset(this, 0, sizeof(TITLE_INFO));
+        InitSV_CONFIG_OPTION(&config);
+    }
 };
 
 STATIC_ASSERT(sizeof(TITLE_INFO) == 0x194);
@@ -297,8 +297,6 @@ STATIC_ASSERT(sizeof(RUSH_INFO) == 0x18);
  *
  */
 struct HDD_INFO {
-    HDD_INFO() : connect(0), app_install(0), install_space(0) {}
-
     int   connect;       /**< Result of HddConectCheck: positive when a hard disk is usable, zero when there is none. */
     int   hdd_state;     /**< State HddConectCheck reports through its argument. */
     int   app_install;   /**< Result of CheckAppInstallForTitle: positive when the game is installed, negative on error. */
@@ -308,6 +306,8 @@ struct HDD_INFO {
     int   result;     /**< Last result of StepInstallThread once the installation stopped. */
     int   progress;   /**< Installation progress in percent. */
     void *work;       /**< Work buffer handed to CreateInstallThread. */
+
+    HDD_INFO() : connect(0), app_install(0), install_space(0) {}
 };
 
 STATIC_ASSERT(sizeof(HDD_INFO) == 0x24);

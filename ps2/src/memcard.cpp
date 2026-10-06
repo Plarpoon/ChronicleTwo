@@ -91,8 +91,6 @@ struct AlbumFile {
     int  trailer;           /**< Second album check digit. */
 };
 
-extern "C" int             sceMcFlush(int fd);
-extern "C" int             sceMcUnformat(int port, int slot);
 extern u8                  cosbit_table[136];
 extern char                at_922__4[0x13];
 extern char                at_923__5[0xD];
@@ -127,7 +125,6 @@ extern int                 test_write_num_1476;
 extern char                init_1477;
 extern char                at_1581__4[];
 extern char                at_1582__4[];
-extern "C" int             sceMcSeek(int fd, int offset, int origin);
 extern char                init_1324;
 extern char                at_1453__3[];
 extern char                at_1454__3[];

@@ -173,6 +173,22 @@ public:
     s32                cursor_jump; /**< Non-zero to put the cursor at its place at once rather than moving it. */
 
     /**
+     *
+     * Creates a manual menu at the first entry with an empty movie buffer.
+     *
+     */
+    CManualMenu() {
+        select = 0;
+        top = 0;
+        list_y = 400.0f;
+        cursor_jump = 0;
+        pict_mode = 0;
+        pict_num = 0;
+        key_arg_no = 0;
+        movie_stack.stSetBuffer(NULL, 0);
+    }
+
+    /**
      * Steps the menu one frame: picks an entry, plays its movie or turns its
      * picture pages, and closes. Gives 1 once it has closed.
      *
@@ -222,6 +238,27 @@ public:
     s32                 top;           /**< First option shown in the list. */
     s32                 choice;        /**< Choice the cursor is on. */
     s32                 cursor_jump;   /**< Non-zero to put the cursor at its place at once rather than moving it. */
+
+    /**
+     *
+     * Creates the option menu with its choices cleared.
+     *
+     */
+    CMenuOption() {
+        for (int i = 0; i < OPTION_ITEM_MAX; i++) {
+            choice_num[i] = 1;
+            button[i][0] = NULL;
+            button[i][1] = NULL;
+            button[i][2] = NULL;
+            value[i] = NULL;
+            unk_2A4[i] = 0;
+        }
+
+        list_y = 400.0f;
+        select = 0;
+        top = 0;
+        choice = 0;
+    }
 
     /**
      * Steps the menu one frame: moves the cursor, changes the options and
@@ -307,6 +344,42 @@ public:
     CMenuPosDataForm   *scrlbar_form;     /**< Form of the file list's scroll bar. */
     MENUFORMPARTS_TYPE *scrlbar_parts[3]; /**< Top, middle and bottom parts of the scroll bar. */
     s32                 scrlbar_pos[2];   /**< Screen x and y offset of the scroll bar. */
+
+    /**
+     *
+     * Creates the save menu at its first step with empty card and form state.
+     *
+     */
+    CSaveMenuClass() {
+        first_step = 1;
+        slot = 0;
+        list_jump = 0;
+        top = 0;
+        select = 0;
+        mode = 0;
+        dl_base = 0;
+        save_kind = 1;
+        need_kb = 0;
+        save_kb = 0;
+        check_kb = 0;
+        chapter8_start = 0;
+        save_count = 0;
+        unk_154 = 0;
+        dl_tex = NULL;
+        title_form = NULL;
+        slot_form[0] = NULL;
+        slot_form[1] = NULL;
+        cursor_form = NULL;
+        list_form = NULL;
+        scrlbar_form = NULL;
+        scrlbar_parts[0] = NULL;
+        scrlbar_parts[1] = NULL;
+        scrlbar_parts[2] = NULL;
+        scrlbar_pos[0] = 0;
+        scrlbar_pos[1] = 9;
+        card_ok = 0;
+        card_changed = 0;
+    }
 
     /**
      * Shows the progress message of a save or load at the middle of the

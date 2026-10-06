@@ -125,3 +125,9 @@ sceRead/sceLseek/sceClose, sceSifAllocIopHeap, sceGsSyncV, sceDmaSend, sndSetMas
   StrFile 0x20; VoTag 0x4-0x40.
 - Return types of the static helpers are mostly int 1/0; voBufIsFull/IsEmpty/audioDecIsPreset
   compute a boolean (`sltiu`/`xori`), isAudioOK returns it.
+
+## Compiler flag cleanup
+
+The local `divbyzerocheck on`/`reset` pairs are redundant with the PS2
+compiler flag. Removing all twelve pairs leaves every section and symbol in
+this unit's object diff unchanged.

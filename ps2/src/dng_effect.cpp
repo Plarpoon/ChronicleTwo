@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cmath>
 #include <cstdio>
@@ -37,15 +38,11 @@
 #include "snd_seseq.hpp"
 #include "water.hpp"
 
-extern "C" int           fptosi(float);
-extern "C" mgCDrawPrim  *__ct__11mgCDrawPrimFv(mgCDrawPrim *);
-extern "C" mgCFrameAttr *__ct__12mgCFrameAttrFv(mgCFrameAttr *);
-extern char              at_2882[];
-extern char              at_1107__2[];
-extern int               chill_tex_rect_910[6][3];
-extern "C" void         *__construct_new_array(void *buffer, void *(*constructor)(void *), void *destructor, unsigned int size, int count);
-extern char              at_1051[];
-extern char              at_1214__2[];
+extern char at_2882[];
+extern char at_1107__2[];
+extern int  chill_tex_rect_910[6][3];
+extern char at_1051[];
+extern char at_1214__2[];
 
 // Code (.text)
 float trans_effect_rate(int rate) {
@@ -261,23 +258,18 @@ void CChillAfterHit::Draw() {
     int   sprite0[4];
     int   sprite1[4];
 
-    union {
-        CPreSprite prim;
-    };
-
-    int                    quad[4][4];
-    int                    trail_quad[4][4];
-    int                    j;
-    int                    i;
-    CHILL_AFTER_HIT_PIECE *p;
-    int                   *rect;
-    int                    alpha;
-    int                    trail_offset;
-    float                  size;
-    int                    side;
-
     if (TEX_ExFx_ICE != 0 && active != 0) {
-        __ct__11mgCDrawPrimFv(&prim);
+        CPreSprite             prim;
+        int                    quad[4][4];
+        int                    trail_quad[4][4];
+        int                    j;
+        int                    i;
+        CHILL_AFTER_HIT_PIECE *p;
+        int                   *rect;
+        int                    alpha;
+        int                    trail_offset;
+        float                  size;
+        int                    side;
         prim.Initialize(0, 0);
         prim.Preset2D();
         prim.Coord(1);
@@ -867,17 +859,13 @@ void CThunder::Initialize() {
 }
 
 void CSparcEffect::Draw() {
-    union {
-        mgCFrameAttr attr;
-    };
-
-    float sx = 2.0f;
-    float sz = 1.0f;
-
     if (state != 0 && model[0] != 0) {
-        __ct__12mgCFrameAttrFv(&attr);
+        mgCFrameAttr attr;
+        float        sx = 2.0f;
+        float        sz = 1.0f;
 
         attr.no_light = 1;
+
         switch ((s64) color) {
             case 0:
                 attr.color[0] = 255.0f;
@@ -1083,8 +1071,6 @@ void CPalletAnime::SetAnim(s16 red, s16 green, s16 blue, s16 pulse_num, s16 dura
     this->repeats = repeats;
 }
 
-#pragma divbyzerocheck on
-
 int CPalletAnime::CreatPallet(float *out, float *base) {
     if (duration <= 0) {
         return 0;
@@ -1105,8 +1091,6 @@ int CPalletAnime::CreatPallet(float *out, float *base) {
     out[3] = 128.0f;
     return 1;
 }
-
-#pragma divbyzerocheck reset
 
 void CPalletAnime::Step() {
     s16 repeat_left;
@@ -1315,13 +1299,6 @@ void CSwordLuminous::Draw() {
     float tip_pos[4];
     float step[4];
 
-    union {
-        CPreSprite prim;
-    };
-
-    int corner0[4];
-    int corner1[4];
-
     if (mode == 0 || tip_frame == 0 || root_frame == 0) {
         return;
     }
@@ -1333,7 +1310,9 @@ void CSwordLuminous::Draw() {
     sceVu0Normalize(step, step);
     sceVu0ScaleVector(step, step, length / 16.0f);
 
-    __ct__11mgCDrawPrimFv(&prim);
+    CPreSprite prim;
+    int        corner0[4];
+    int        corner1[4];
     prim.Initialize(0, 0);
     prim.Preset2D();
     prim.Coord(1);
@@ -1359,6 +1338,7 @@ void CSwordLuminous::Draw() {
         sceVu0AddVector(tip_pos, tip_pos, step);
         i++;
     } while (i < 0x10);
+
     prim.End();
 }
 
@@ -1398,16 +1378,10 @@ void CSwordLuminous::Step() {
 void CSWordAfterImage::Draw() {
     int screen[4];
 
-    union {
-        CPreSprite prim;
-    };
-
-    float edge[4];
-    float edge_end[4];
-
     if (smooth_num > 0) {
-
-        __ct__11mgCDrawPrimFv(&prim);
+        CPreSprite prim;
+        float      edge[4];
+        float      edge_end[4];
 
         prim.Initialize(0, 0);
         prim.Preset2D();
@@ -1418,6 +1392,7 @@ void CSWordAfterImage::Draw() {
         prim.DepthTest(1);
         prim.AlphaBlend(2);
         prim.Begin(4);
+
         for (int i = 0; i < smooth_num; i++) {
             sceVu0SubVector(edge, smooth_back[i], smooth_edge[i]);
             sceVu0ScaleVector(edge, edge, 0.7f);
@@ -1439,6 +1414,7 @@ void CSWordAfterImage::Draw() {
                 prim.Vertex4(screen);
             }
         }
+
         prim.End();
     }
 }
@@ -1843,18 +1819,12 @@ void CHitEffectImage::DrawSpark(float size) {
 }
 
 void CFlushEffect::Draw() {
-    union {
-        CPreSprite prim;
-    };
-
-    int corner0[4];
-    int corner_b_r[4];
-    int corner_t_l[4];
-    int corner1[4];
-
     if (active != 0) {
-
-        __ct__11mgCDrawPrimFv(&prim);
+        CPreSprite prim;
+        int        corner0[4];
+        int        corner_b_r[4];
+        int        corner_t_l[4];
+        int        corner1[4];
 
         prim.Initialize(0, 0);
         prim.Preset2D();
@@ -1866,6 +1836,7 @@ void CFlushEffect::Draw() {
         prim.Begin(3);
         prim.Texture(TEX_SystemEffect2);
         prim.AlphaTestEnable(1);
+
         if (mgTransWorldPrim3DSprite(corner0, corner1, pos, size, size, 0) != 0) {
             corner_b_r[0] = corner1[0];
             corner_b_r[1] = corner0[1];
@@ -1889,6 +1860,7 @@ void CFlushEffect::Draw() {
             prim.TextureCrd(tex_u + tex_size, tex_v + tex_size);
             prim.Vertex4(corner1);
         }
+
         prim.End();
     }
 }
@@ -1962,19 +1934,13 @@ void CPowerLine::Step() {
 }
 
 void CPowerLine::Draw() {
-    union {
-        CPreSprite sprite;
-    };
-
-    float center[4];
-    int   corner0[4];
-    int   corner_b_r[4];
-    int   corner_t_l[4];
-    int   corner1[4];
-
     if (duration > 0 || live_num > 0) {
-
-        __ct__11mgCDrawPrimFv(&sprite);
+        CPreSprite sprite;
+        float      center[4];
+        int        corner0[4];
+        int        corner_b_r[4];
+        int        corner_t_l[4];
+        int        corner1[4];
         sprite.Initialize(0, 0);
         sprite.Preset2D();
         sprite.DepthTestEnable(1);
@@ -2026,6 +1992,7 @@ void CPowerLine::Draw() {
 
             streak++;
         }
+
         sprite.End();
     }
 }
@@ -2914,12 +2881,6 @@ void CWeaponElement::Draw_Cold() {
         int   w;
     } pos;
 
-    union {
-        CPreSprite prim;
-    };
-
-    int         quad_a[4];
-    int         quad_b[4];
     mgCTexture *tex;
     int         i;
 
@@ -2927,7 +2888,9 @@ void CWeaponElement::Draw_Cold() {
     sceVu0CopyVector(base, *origin);
     pos.w = 0x3F800000;
 
-    __ct__11mgCDrawPrimFv(&prim);
+    CPreSprite prim;
+    int        quad_a[4];
+    int        quad_b[4];
 
     prim.Initialize(NULL, NULL);
     prim.Preset2D();
@@ -2939,6 +2902,7 @@ void CWeaponElement::Draw_Cold() {
     prim.AlphaBlend(2);
     prim.Begin(6);
     prim.Texture(tex);
+
     for (i = 0; i < WEAPON_ELEMENT_SPARK_MAX; i++) {
         int    tex_row = frame[i];
         float *particle_alpha = &alpha[i];
@@ -2958,6 +2922,7 @@ void CWeaponElement::Draw_Cold() {
             }
         }
     }
+
     prim.End();
 }
 #ifdef NONMATCHING
@@ -3085,14 +3050,6 @@ void CWeaponElement::Draw_Wind() {
         int   w;
     } pos;
 
-    union {
-        CPreSprite prim;
-    };
-
-    float       identity[4][4];
-    float       rotation[4][4];
-    int         quad_a[4];
-    int         quad_b[4];
     mgCTexture *tex;
     int         i;
 
@@ -3100,7 +3057,11 @@ void CWeaponElement::Draw_Wind() {
     sceVu0CopyVector(base, *origin);
     pos.w = 0x3F800000;
 
-    __ct__11mgCDrawPrimFv(&prim);
+    CPreSprite prim;
+    float      identity[4][4];
+    float      rotation[4][4];
+    int        quad_a[4];
+    int        quad_b[4];
 
     prim.Initialize(NULL, NULL);
     prim.Preset2D();
@@ -3112,6 +3073,7 @@ void CWeaponElement::Draw_Wind() {
     prim.AlphaBlend(2);
     prim.Begin(6);
     prim.Texture(tex);
+
     for (i = 0; i < WEAPON_ELEMENT_SPARK_MAX; i++) {
         int    tex_row = frame[i];
         float *particle_alpha = &alpha[i];
@@ -3134,6 +3096,7 @@ void CWeaponElement::Draw_Wind() {
             }
         }
     }
+
     prim.End();
 }
 #ifdef NONMATCHING
@@ -3252,12 +3215,6 @@ void CWeaponElement::Draw_Fire() {
         int   w;
     } pos;
 
-    union {
-        CPreSprite prim;
-    };
-
-    int         quad_a[4];
-    int         quad_b[4];
     mgCTexture *tex;
     int         i;
 
@@ -3265,7 +3222,9 @@ void CWeaponElement::Draw_Fire() {
     sceVu0CopyVector(base, fire_pos);
     pos.w = 0x3F800000;
 
-    __ct__11mgCDrawPrimFv(&prim);
+    CPreSprite prim;
+    int        quad_a[4];
+    int        quad_b[4];
 
     prim.Initialize(NULL, NULL);
     prim.Preset2D();
@@ -3277,6 +3236,7 @@ void CWeaponElement::Draw_Fire() {
     prim.AlphaBlend(2);
     prim.Begin(6);
     prim.Texture(tex);
+
     for (i = 0; i < WEAPON_ELEMENT_SPARK_MAX; i++) {
         int    tex_row = frame[i];
         float *particle_alpha = &alpha[i];
@@ -3296,6 +3256,7 @@ void CWeaponElement::Draw_Fire() {
             }
         }
     }
+
     prim.End();
 }
 #ifdef NONMATCHING

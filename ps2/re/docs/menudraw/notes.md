@@ -128,6 +128,16 @@ Defining the ten rectangle globals with their initial coordinates invokes the `m
 constructor at startup. MWCC emits the retail `__sinit_menudraw_cpp` initializer exactly,
 including the order and calls to `mgRect<int>::Set`.
 
+`PrimQuad_f_` and `PrimQuad_i_` use concrete 16-byte-aligned rectangle parameter types;
+their native C++ mangled names and instructions match retail. The template `mgRect<T>`
+name mangles differently under this compiler and cannot supply these retail symbols.
+
+`CRepairManager::GeneratePoly` can construct its action character with typed placement
+new, removing raw vtable writes and a run-script constructor alias. Its score is 89.17%:
+retail writes successive base vtables and calls their virtual `Initialize`, whereas
+native construction calls the base constructors. This difference is in the constructor
+sequence before model setup.
+
 ## Other
 - File-local functions (static, not in the header): ConvMGIRECTtoINTtbl, ConvMGFRECTtoFLOATtbl,
   both SetPartEffectInfoRandFunc, PushPrimRepeat, MenuWindowHelp, SetMenuDrawNumberKeta,
@@ -146,3 +156,8 @@ including the order and calls to `mgRect<int>::Set`.
 
 ## Newly drafted drawing helpers
 `PrimFillRect4` emits four coloured vertices in top-left, top-right, bottom-left, bottom-right order after checking all four colour pointers. `DrawMenuTilePattern` draws up to 16 columns and 12 rows, stepping by the source rectangle width and height; it exits at screen width plus 4 and screen height plus 40. `DrawMenuDl(int&,...)` and `MenuMainFrameStep` have guarded drafts for the progress panel and moving lens frame. `CalcCommonBrdDrawInfo` sizes the common board from up to four message names and positions the line slots. All five compile with assembly fallbacks, and each currently differs from retail.
+
+## Compiler flag
+The local `divbyzerocheck on/reset` directives around form fades and the guarded
+effect step are redundant with the unit's global flag: removing them produces an
+identical complete `menudraw.cpp.o`.

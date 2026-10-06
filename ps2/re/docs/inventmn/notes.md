@@ -155,6 +155,21 @@ Offsets:
 Owned by menudraw; its inline constructor (`this[10] = 0`) is emitted in inventmn at 0x2082C0
 for `__construct_new_array` in PhotoNetaEnter. Size 0xC.
 
+## Typed access and code generation
+- `GetInventUserDataPtr` reaches the embedded invention data through the existing
+  `CSaveData::GetUserDataManager()` and `CUserDataManager::GetInventUserData()` accessors.
+  MWCC inlines both and retains the retail two-addition address calculation; a single
+  nested field expression combines the offsets and changes the object code.
+- `CDC2AlbumData::RelateAlbumPicData`, `GetPhotoName`, and
+  `CMenuInvent::GetNowSelectNetaID` accept typed photo-array access without changing
+  their retail instructions. The latter keeps a named typed photo pointer so MWCC
+  emits the retail operand order for the final address addition.
+- `CMenuInvent::InitNetaCircle` uses `neta_select_index`, `neta_form`, and
+  `neta_name_form` arrays for its three slots; typed indexing matches retail.
+- `CInventUserData::ResetAddress` unrolls eight photo pointers per iteration. A
+  typed `photo_work` row pointer preserves the loop shape, but MWCC hoists its base
+  calculation and chooses different constants for the unrolled addresses.
+
 ## Unresolved
 - Meaning of most unk_ fields of CMenuInvent; mode values 4 and 8.
 - Exact sizes of CInventUserData and CScoopDataManager.

@@ -127,3 +127,9 @@ helpers from a library header. Every map*/cfg* tag handler, mapDummy and IsAddMo
 in the .cpp.
 CMap/CMapInfo/CMapParts/CMapPiece/CObject/mgCObject/CObjectFrame/CCameraInfo/CColFrame/CCollision/
 CMapWater/mgCFrame members emitted here belong to other units' headers.
+
+## Compiler flag
+The local `divbyzerocheck on/reset` directives are redundant with the unit's
+global flag: removing them produces an identical complete `mapload.cpp.o`.
+The `fptosi` conversion used by this unit is the CodeWarrior runtime helper declared in
+`mw_runtime.h`; using that header preserves the complete object.

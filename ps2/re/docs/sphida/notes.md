@@ -78,3 +78,8 @@ No vtable of its own.
 ## Unresolved
 - Meaning of `GOLF_CLUB_DEF::unk_4` (float) and `unk_8` (int).
 - 0x150..0x1E0 (apart from the 6 bytes set to 0x80) and 0x210..0x240 have no observed readers.
+## Compiler flag cleanup
+
+The local `divbyzerocheck on`/`reset` pair is redundant with the PS2
+compiler flag. Removing it leaves every section and symbol in the unit's
+object diff unchanged.

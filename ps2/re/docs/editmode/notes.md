@@ -80,3 +80,7 @@ Everything else is LOCAL in retail (`local_symbols.tsv`) and belongs in the .cpp
   null check, then removes `parts_no` at `eCurPos`; chosen in `EditMode` instead of
   `PlaceEditParts` under a flag computed earlier in the placing branch (not traced).
 - UNDO_DATA 0x08/0x0C meaning (likely padding before the vectors).
+
+## Native static initialization
+
+Native `CFont Font__2` emits the retail `CFont::Init` call. The generated 12-byte initializer matches exactly.

@@ -108,3 +108,7 @@ At least 0x110 here (larger than the first game's 0xD0): 0x00 float radius (<=0 
 - ChangeWeight: void (v0 is memcpy leftover). AnimeDataInit(*) returns 1; CreateAnimeDataEX 1.
 - MotionProc (time): `fptoui(time)` then binary search; types 12 process consecutive lists with the
   same frame in one call.
+
+## Division-check pragma
+
+The unit-level `divbyzerocheck` pragma was redundant with the global MWCC flag; removing it left the full compiled object identical in objdiff.

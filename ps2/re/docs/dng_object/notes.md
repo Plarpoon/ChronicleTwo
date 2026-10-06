@@ -121,3 +121,7 @@ externs; they become `static` definitions in the .cpp:
 - Retail names of all fields and enum constants are unknown; the names are descriptive.
 - Meaning of SetStatus's second parameter (`unk_10`).
 - PULL_ITEM types 4 and 5 differ only in sprite position and which monster drop slot feeds them.
+
+## Native draw locals
+
+`CRocketLauncher::Draw`, `CLaserGun::Draw`, and `CPullItem::Draw` construct a `CPreSprite` only when the object is active. Putting an early state guard before the native local and then declaring the large temporary arrays preserves their retail stack slots. `CLaserGun::Draw` also constructs `mgCFrameAttr` for its model branch; declaring its matrix immediately after the attribute keeps both retail slots. These native constructors reproduce the original code.

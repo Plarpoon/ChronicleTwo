@@ -157,3 +157,11 @@ whoever decompiles them should give them inline bodies.
 
 ## Element and map ball drafts
 `CWeaponElement::Init_Cold`, `Init_Wind`, and `Init_Fire` reset the size and blend arrays, then seed sparks from the charged power and spread. Wind also normalizes and scales each spark velocity and sets spin. Thunder seeds velocities, offsets and bolt endpoints separately; the bolt count caps at 16. `CMapEffect_Sprite::Draw` fades floor balls by remaining life, projects a billboard, and emits two textured triangles. These five guarded C++ drafts compile and retain retail assembly while instruction differences remain.
+
+## Native draw constructors
+
+`CChillAfterHit`, `CSparcEffect`, `CSwordLuminous`, `CSWordAfterImage`, `CFlushEffect`, `CPowerLine`, and the cold, wind and fire weapon-element draws construct their sprite or frame-attribute locals through native C++ declarations. The local must be declared at the original constructor execution point, and later temporary arrays must follow it in declaration order to retain their stack slots. For `CSparcEffect`, the `sx` and `sz` values also follow the attribute in the active branch. Direct native placement-array new was tested for `CMapEffectsManeger::Init_LightBoll` but changed code generation; the runtime array helper remains declared in `mw_runtime.h`.
+
+## Division-check pragma
+
+The unit-level `divbyzerocheck` pragma was redundant with the global MWCC flag; removing it left the full compiled object identical in objdiff.

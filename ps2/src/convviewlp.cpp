@@ -411,12 +411,6 @@ int SaveDataConvertLoop() {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/convviewlp", SaveDataConvertLoop__Fv);
 #endif
 
-// Static initialiser (.init)
-extern "C" void __sinit_convviewlp_cpp() {
-    DataBuffer__3.Init();
-    Stack_ReadBuff__3.Init();
-}
-
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/convviewlp", at_1072__4__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/convviewlp", at_1073__4__DATA);
@@ -471,8 +465,8 @@ INCLUDE_BSS(init_823, 0x4);
 INCLUDE_BSS(init_826, 0x1);
 
 // Uninitialised data (.bss)
-INCLUDE_BSS(DataBuffer__3, 0x30);
-INCLUDE_BSS(Stack_ReadBuff__3, 0x30);
+mgCMemory DataBuffer__3;
+mgCMemory Stack_ReadBuff__3;
 INCLUDE_BSS(SaveFileInfoTableSizeConvert, 0x200);
 INCLUDE_BSS(buf0_816, 0x30);
 INCLUDE_BSS(buf1_819, 0x30);

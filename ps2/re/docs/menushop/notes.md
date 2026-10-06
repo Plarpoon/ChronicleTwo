@@ -164,3 +164,7 @@ form the frame; the reaction adds 24 pixels to the sixth height, while scoop mod
 eight pixels from the fourth and zeroes the fifth and sixth. The debug overlay reads the
 same quest and scoop records to label their two state bytes. Retail assembly remains the
 default until object-code matching is complete.
+
+## Compiler flag
+The local `divbyzerocheck on/reset` pair around `CMenuQuestView` is redundant with the
+unit's global flag: removing it produces an identical complete `menushop.cpp.o`.

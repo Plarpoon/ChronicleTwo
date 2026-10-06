@@ -3,8 +3,8 @@
 The seven `MenuActionCharaBuffer` stacks and the other eight `mgCMemory` globals use native
 C++ construction in BSS declaration order. MWCC generates the 148-byte retail
 `__sinit_menuchr_cpp` from those declarations. `CMosBookMenu` constructs its camera with speed
-8.0 and then its stack; this produces an exact retail `MonsterBookInit` when the normal
-compiler inline depth is used. The character and other menu constructors are still being
+8.0 and then its stack; the native `MonsterBookInit` matches PAL exactly.
+The character and other menu constructors are still being
 matched after converting their manual constructor aliases to native C++.
 
 `MenuItemChrLoadEndCheck` obtains the background read's `buffer` at offset 0x110 and uses the
@@ -157,3 +157,16 @@ read bases. `MonsterEffectEnter` temporarily replaces the effect manager's
 load buffer, builds the bases for that count, then restores the buffer. The
 scene's `read_buff` field is at offset 0x3C. Both functions match when their
 array indexing and member calls use the declared C++ types.
+# Native party-change construction
+
+`CMenuChrCngMenu` initializes its inherited menu object and its two `mgCMemory` work stacks before clearing its state fields. The palette at offset `0x1A80` and the following reserved bytes form one contiguous `0x500`-byte clear; the header exposes a typed `clut_storage` overlay so the constructor can make that single clear without byte-pointer arithmetic. PAL's `MenuCharaChangeInit` emits one `memset` for this region.
+
+`CMosBookMenu` initializes the camera, list, and description fields in its native constructor, as in the PR7 cleanup branch. `MonsterBookInit` constructs it in `MosBookStack` and then sets its texture block and boot mode.
+
+`CMenuMosSelect` initializes its badge and message window fields in its native constructor. Its member `CActionChara` objects contain `CCharaFrameMatching` objects whose default construction is trivial; the explicitly empty constructor had introduced calls absent from PAL. The constructor is inlined into `MenuMonsterBoxInit` at inline depth 3, matching the PAL constructor sequence and null branch exactly.
+
+`SetMenuLoadItemNo` reads Max's or Monica's five `CHARA_DATA::equip` item numbers. For the ridepod, the displayed order is parts 3, 0, 1, an empty slot, and part 2. Typed access to `ROBO_DATA::parts` and `CGameDataUsed::item_no` preserves its exact PAL object code.
+
+`monster_progress_tbl` has 19 rows of five signed halfwords. Each row starts with a badge number and holds four monster forms. The search functions walk the row and form columns, while `get_monster_tbl_bajjilevel` filters a row by badge and level before gathering its next form. Typed indexing preserves the latter function's PAL code; two search loops currently differ in induction-variable code generation.
+
+`CMenuCostumeSel::UpdateCostumeList` reads the worn outfit IDs from equipment slots 2, 4, and 3. These are the `item_no` fields of `CHARA_DATA::equip`; typed member access matches PAL. `MenuNPCLoadCheck` writes a temporary texture manager name suffix while loading the party model, then clears its first character.

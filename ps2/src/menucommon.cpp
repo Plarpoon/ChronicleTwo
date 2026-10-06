@@ -1,5 +1,6 @@
 extern signed char sort_table[0x24];
 #include "menucommon.hpp"
+#include "mw_runtime.h"
 
 #include <cmath>
 #include <cstdio>
@@ -118,8 +119,6 @@ int menu_dtype_init(CMenuPosDataForm *form, SPI_STACK *stack, int argc);
 
 extern "C" MENU_FORM_ACTION
     *menu_spi_form_action_info;
-
-extern "C" int fptosi(float value);
 
 int CompGameData(int item_a, int item_b);
 
@@ -303,14 +302,10 @@ static inline unsigned int align16_blocks(unsigned int n) {
 
 #include "common.h"
 
-#pragma divbyzerocheck on
-
 // Code (.text)
 int GetRandI(int range) {
     return rand() % range;
 }
-
-#pragma divbyzerocheck reset
 
 float GetRandF(float range) {
     return range * mgRnd();
@@ -848,8 +843,6 @@ void CalcMenu1(float target, float *value, float divisor, float snap_range, int 
     }
 }
 
-#pragma divbyzerocheck on
-
 void CalcMenu1(int target, int *value, int divisor, int snap_range, int snap) {
     *value += (target - *value) / divisor;
 
@@ -857,8 +850,6 @@ void CalcMenu1(int target, int *value, int divisor, int snap_range, int snap) {
         *value = target;
     }
 }
-
-#pragma divbyzerocheck reset
 
 int CalcMenuAdd(int *cursor, int step, int limit) {
     if (cursor == NULL) {

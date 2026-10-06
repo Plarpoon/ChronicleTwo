@@ -3506,8 +3506,6 @@ RGBAQ_TYPE RgbqToUint(unsigned int color) {
     return rgbaq;
 }
 
-#pragma divbyzerocheck on
-
 RGBAQ_TYPE ClsMes::GetFontColor(int index, int *outline) {
     RGBAQ_TYPE result;
     int        line;
@@ -3554,8 +3552,6 @@ RGBAQ_TYPE ClsMes::GetFontColor(int index, int *outline) {
     return result;
 }
 
-#pragma divbyzerocheck reset
-
 int ClsMes::GetGyouAlpha(int line) {
     if (line < select_top) {
         return 0;
@@ -3596,8 +3592,6 @@ int ClsMes::GetGyouAlpha(int line) {
 
     return alpha;
 }
-
-#pragma divbyzerocheck on
 
 void ClsMes::DrawFont() {
     int index;
@@ -3734,7 +3728,6 @@ void ClsMes::DrawFont() {
     prim.End();
 }
 
-#pragma divbyzerocheck reset
 #ifdef NONMATCHING
 void ClsMes::SetGoalCursorXY() {
     if (select < 0) {

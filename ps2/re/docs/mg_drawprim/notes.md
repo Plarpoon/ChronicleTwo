@@ -177,3 +177,8 @@ After replacing the bodies, run the normal split through
 edit `ps2/asm` directly. Verify the three object diffs and both PS2 builds.
 The matching path for source C++ would require adding compiler support for
 VU0 vector intrinsics that emit the exact COP2 instruction and mask sequence.
+## Compiler flag cleanup
+
+The local `divbyzerocheck on`/`reset` pair is redundant with the PS2
+compiler flag. Removing it leaves every section and symbol in this unit's
+object diff unchanged.

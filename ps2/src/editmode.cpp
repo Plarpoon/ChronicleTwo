@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cmath>
 #include <cstdio>
@@ -27,12 +28,11 @@
 #include "scene.hpp"
 #include "scenesnd.hpp"
 
-extern "C" int fptosi(float);
-static void    InitBalanceDraw(CScene *scene);
-static int     CheckFocusBalanceParts(CEditMap *map, int index, float *cursor);
-static void    GetBalanceHeight(CScene *scene, float *balance);
-static int     GetGeoCheckCol(CMap *map, mgVu0FBOX &box, CCPoly *polys, int max);
-static int     GetGeoCheckCamCol(CMap *map, mgVu0FBOX &box, CCPoly *polys, int max);
+static void InitBalanceDraw(CScene *scene);
+static int  CheckFocusBalanceParts(CEditMap *map, int index, float *cursor);
+static void GetBalanceHeight(CScene *scene, float *balance);
+static int  GetGeoCheckCol(CMap *map, mgVu0FBOX &box, CCPoly *polys, int max);
+static int  GetGeoCheckCamCol(CMap *map, mgVu0FBOX &box, CCPoly *polys, int max);
 
 extern "C" UNDO_DATA            UndoData;
 extern "C" CEditParts::WallInfo WallInfo;
@@ -2311,10 +2311,6 @@ int CheckEditToWalk(CScene *scene, float *position) {
     return 1;
 }
 
-extern "C" void __sinit_editmode_cpp(void) {
-    Font__2.Init();
-}
-
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmode", at_1268__3__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmode", at_1362__DATA);
@@ -2515,7 +2511,7 @@ INCLUDE_BSS(eDirCurRot, 0x10);
 INCLUDE_BSS(WallPutPos, 0x10);
 INCLUDE_BSS(WallInfo, 0x40);
 INCLUDE_BSS(EditCursor, 0x10);
-INCLUDE_BSS(Font__2, 0xC0);
+CFont Font__2;
 INCLUDE_BSS(at_1148, 0x10);
 INCLUDE_BSS(at_1149__2, 0x10);
 INCLUDE_BSS(at_1445__3, 0x10);

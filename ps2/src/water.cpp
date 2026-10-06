@@ -284,8 +284,6 @@ void CWater::SetVertex(float *a, float *b) {
     mgVectorMaxMin(max, min, a, b);
 }
 
-#pragma divbyzerocheck on
-
 void CWater::Shake(int x, int z, float amount) {
     int    last_x;
     int    last_z;
@@ -317,8 +315,6 @@ void CWater::Shake(int x, int z, float amount) {
     height = &this->height[z] + x * columns;
     *height += amount;
 }
-
-#pragma divbyzerocheck reset
 
 void CWaterFrame::Shake(float x, float z, float height_change) {
     CWater       *water;

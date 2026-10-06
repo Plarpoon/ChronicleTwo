@@ -79,4 +79,8 @@ All six game functions have named, typed C++ bodies. The C++ drafts use `SAVE_CO
 The conversion loop preserves the four-phase progression, a maximum of 64 directory entries from each search, the North American to PAL directory rename, and the duplicate search for numbered game saves and the two special saves. The retail allocation holds 32 source directory records while the copy loop accepts up to 64; the draft keeps this bound exactly. `InitSaveFileInfoTablePtr` resets the counters and only the first 32 records of the size table, as the retail stores show.
 
 ## Isolated promotion results
-`SVConvViewExit`, `InitSaveFileInfoTablePtr`, and `__sinit_convviewlp_cpp` passed exact linked-image checks and are active C++ source. `SVConvViewInit`, `SVConvViewLoop`, and `SaveDataConvertLoop` compiled as C++ but produced different linked images in their one isolated trial. They remain behind `NONMATCHING` with retail assembly in normal builds. The three differences include source text and object-layout changes; no matching claim is made for them.
+`SVConvViewExit` and `InitSaveFileInfoTablePtr` passed exact linked-image checks and are active C++ source. The retail `__sinit_convviewlp_cpp` is emitted from native globals. `SVConvViewInit`, `SVConvViewLoop`, and `SaveDataConvertLoop` compiled as C++ but produced different linked images in their one isolated trial. They remain behind `NONMATCHING` with retail assembly in normal builds. The three differences include source text and object-layout changes; no matching claim is made for them.
+
+## Native static initialization
+
+Native `DataBuffer__3` and `Stack_ReadBuff__3` globals emit the retail initializer calls in order. The generated 44-byte initializer matches exactly.

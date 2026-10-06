@@ -1,9 +1,9 @@
-#include <cmath>
-extern "C" int fptosi(float value);
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <libvu0.h>
 
+#include <cmath>
 #include <cstring>
 
 #include "collision.hpp"
@@ -229,8 +229,6 @@ int CMap::GetNowTimeBand() {
     return GetTimeBand(GetNowTime());
 }
 
-#pragma divbyzerocheck on
-
 int CMap::GetNowTimeLightBand() {
     int band_count = time_light_num;
 
@@ -251,8 +249,6 @@ int CMap::GetNowTimeLightBand() {
 
     return fptosi(hour / (24.0f / (float) band_count)) % band_count;
 }
-
-#pragma divbyzerocheck reset
 
 void CMap::GetLightingRatio(float *ratio) {
     float time = GetNowTime();
@@ -325,8 +321,6 @@ void CMap::GetLightingSunRatio(float *out_ratio) {
     }
 }
 
-#pragma divbyzerocheck on
-
 int CMap::GetTimeLightingRatio(float *ratio) {
     int   band_count = time_light_num;
     int   i;
@@ -373,8 +367,6 @@ int CMap::GetTimeLightingRatio(float *ratio) {
     ratio[next_band] = 1.0f - blend;
     return band_count;
 }
-
-#pragma divbyzerocheck reset
 
 void CMap::GetSunPoint(float *out_pos) {
     sceVu0FVECTOR sun = {0.0f, -1900.0f, 700.0f, 1.0f};

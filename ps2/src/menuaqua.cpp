@@ -1,5 +1,6 @@
 struct fish_prize_record;
 #include "menuaqua.hpp"
+#include "mw_runtime.h"
 
 #include <cmath>
 #include <cstdio>
@@ -381,8 +382,6 @@ static aqua_grid_cell *Get_aquarium_paul_table_xz(int x, int z);
 extern "C" aqua_fish_info aquafish_info[];
 
 extern aqua_food_info esa_info[10];
-
-extern "C" int fptosi(float value);
 
 static int GetFishPath(int item_no, char *out);
 

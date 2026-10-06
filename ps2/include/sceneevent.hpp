@@ -60,8 +60,6 @@ struct EventVector4 {
 #pragma cpp_extensions on
 
 struct CSceneEventData {
-    CSceneEventData() { memset(this, 0, sizeof(*this)); }
-
     union {
         struct {
             CFuncPoint::EventData event;      /**< Settings of the event point, or the event number of a villager or game object. */
@@ -86,6 +84,8 @@ struct CSceneEventData {
             EventVector2 vectors_b;
         };
     };
+
+    CSceneEventData() { memset(this, 0, sizeof(*this)); }
 };
 
 #pragma pop

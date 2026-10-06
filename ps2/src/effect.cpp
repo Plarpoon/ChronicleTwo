@@ -1,5 +1,8 @@
 #include "common.h"
+#include "mw_runtime.h"
 
+#include <cmath>
+#include <cstdlib>
 #include <cstring>
 
 #include "effect.hpp"
@@ -13,10 +16,6 @@
 #include "mg_texture.hpp"
 #include "mglib.hpp"
 #include "scriptinterpreter.hpp"
-
-extern "C" int fptosi(float value);
-#include <cmath>
-#include <cstdlib>
 
 extern CEffectManager *g_tmp_effm;
 extern CEffectCtrl    *g_tmp_effc;
@@ -399,8 +398,6 @@ CEffectCtrl::CEffectCtrl() {
 
 CEffectCtrl::~CEffectCtrl() {}
 
-#pragma divbyzerocheck on
-
 void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
     int          spawned;
     int          count;
@@ -704,8 +701,6 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
         }
     }
 }
-
-#pragma divbyzerocheck reset
 
 void CEffectCtrl::Initialize() {
     int i;

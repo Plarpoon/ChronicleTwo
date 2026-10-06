@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cmath>
 #include <cstdio>
@@ -34,7 +35,6 @@
 #include "sound.hpp"
 #include "swordeffect.hpp"
 #include "visualmotion.hpp"
-extern "C" int fptosi(float value);
 
 extern CCharacter2        *nowChr;
 extern u32                *pack_file;

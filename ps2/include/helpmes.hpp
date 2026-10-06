@@ -15,6 +15,14 @@
  *
  */
 struct HELP_MES_INFO {
+    s32 show;          /**< Non-zero while a help message is requested. */
+    s32 created;       /**< Non-zero once the window has been set up for the requested message. */
+    s32 time;          /**< Frames left before the request ends by itself; zero or less to keep it. */
+    s32 mes_no;        /**< Message of the help message file to show; -1 for none. */
+    s32 x;             /**< Screen x of the window's frame when fukidashi_pos is negative. */
+    s32 y;             /**< Screen y of the window's frame when fukidashi_pos is negative. */
+    s32 fukidashi_pos; /**< Screen slot the window is forced into; negative to place it at x and y. */
+
     /**
      *
      * Clears the active help message request.
@@ -29,14 +37,6 @@ struct HELP_MES_INFO {
         x = 0;
         created = 0;
     }
-
-    s32 show;          /**< Non-zero while a help message is requested. */
-    s32 created;       /**< Non-zero once the window has been set up for the requested message. */
-    s32 time;          /**< Frames left before the request ends by itself; zero or less to keep it. */
-    s32 mes_no;        /**< Message of the help message file to show; -1 for none. */
-    s32 x;             /**< Screen x of the window's frame when fukidashi_pos is negative. */
-    s32 y;             /**< Screen y of the window's frame when fukidashi_pos is negative. */
-    s32 fukidashi_pos; /**< Screen slot the window is forced into; negative to place it at x and y. */
 };
 
 STATIC_ASSERT(sizeof(HELP_MES_INFO) == 0x1C);

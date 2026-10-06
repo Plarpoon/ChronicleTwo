@@ -1305,7 +1305,6 @@ void mgCMDTBuilder::AddFace(int vertex) {
 #pragma schedule reset
 
 #pragma schedule off
-#pragma divbyzerocheck on
 
 void mgCMDTBuilder::EndPrim() {
     prim->face_num = index_num / face_index_num;
@@ -1317,7 +1316,6 @@ void mgCMDTBuilder::EndPrim() {
 #pragma optimization_level reset
 #pragma schedule off
 // Defined inline in mg_visual.hpp.
-#pragma divbyzerocheck reset
 
 int mgCVisualMDT::Iam() {
     return MG_VISUAL_KIND_MDT;

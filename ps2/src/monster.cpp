@@ -1378,7 +1378,6 @@ extern char           at_2485[];
 extern char           at_2486[];
 extern char           at_2487[];
 extern char           at_2488[];
-#pragma divbyzerocheck on
 
 void CMonsterMan::CheckDamage() {
     CScene           *now_scene = scene;
@@ -1804,7 +1803,6 @@ void CMonsterMan::CheckDamage() {
     }
 }
 
-#pragma divbyzerocheck reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/monster", CheckDamage__11CMonsterManFv);
 #endif

@@ -76,3 +76,5 @@ mgCObject -> CObject -> CObjectFrame -> CLockOnModel); there is no out-of-line c
   `CLockOnModel::pos`) together with `WarningGage2.warning[0..2]`. Probably an out-of-bounds or
   differently-declared write in the original source; not reflected in the header.
 - `CLevelupInfo` 0x00-0x1C, 0x30, 0x34 and `CDamageScore` 0x00, 0x54, 0x58, 0x6C, 0x70 purpose.
+
+`CPiyori::Draw` and `CGiftMark::Draw` construct their `CPreSprite` only after locating the active target; keeping quad temporaries after that native local reproduces the original stack layout.

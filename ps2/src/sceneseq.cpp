@@ -336,8 +336,6 @@ void CCameraPas::Initialize() {
     ref_spline.Initialize();
 }
 
-#pragma divbyzerocheck on
-
 int CCameraPas::Setup() {
     int   frames[16];
     float distances[16];
@@ -407,8 +405,6 @@ int CCameraPas::Setup() {
     return 0;
 }
 
-#pragma divbyzerocheck reset
-
 void CCameraPas::Run() {
     run = 1;
 }
@@ -474,8 +470,6 @@ int CCharaPas::AddCharaPas(float *point) {
     return 0;
 }
 
-#pragma divbyzerocheck on
-
 int CCharaPas::Setup() {
     int   frames[16];
     float distances[16];
@@ -516,8 +510,6 @@ int CCharaPas::Setup() {
     spline.SetUpSpline(pos, frames, pas_num, total_length / (float) frame);
     return 0;
 }
-
-#pragma divbyzerocheck reset
 
 void CCharaPas::Run() {
     if (pas_num > 0) {

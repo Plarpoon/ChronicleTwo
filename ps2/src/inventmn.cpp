@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cmath>
 #include <cstdio>
@@ -136,7 +137,6 @@ extern short               NetaMemoID[512];
 extern int                 NetaMemoStr[512];
 extern short               NetaMemoStrNum;
 extern CMenuPosDataForm   *GiftBoxViewForm;
-extern "C" int             fptosi(float);
 
 enum {
     K_COMMAND_HANDLED = -1
@@ -613,8 +613,7 @@ CInventUserData *GetInventUserDataPtr() {
         return NULL;
     }
 
-    return (CInventUserData *) ((u8 *) &save->user_data +
-                                (int) &((CUserDataManager *) NULL)->invent_data);
+    return save->GetUserDataManager()->GetInventUserData();
 }
 
 void Init_USER_PICTURE_INFO(USER_PICTURE_INFO *photo) {
@@ -849,7 +848,7 @@ void CDC2AlbumData::RelateAlbumPicData() {
             info->image = NULL;
 
             if (this != NULL) {
-                info->image = (char *) this + i * 0x2000;
+                info->image = photo_work[i];
             }
         }
 
@@ -893,8 +892,10 @@ void CInventUserData::Initialize() {
 }
 
 void CInventUserData::ResetAddress() {
+    char (*work)[0x2000] = photo_work;
+
     for (int index = 0; index < 30; index++) {
-        photo[index].image = (char *) photo_work + index * (int) sizeof(photo_work[0]);
+        photo[index].image = work[index];
     }
 }
 
@@ -1506,7 +1507,7 @@ char *GetPhotoName(USER_PICTURE_INFO *info) {
         offset = 0;
 
         for (; i < pic_name_info_num; i++) {
-            if (neta_id == ((PIC_NAME_INFO *) ((char *) pic_name_info_top + offset))->neta_id) {
+            if (neta_id == pic_name_info_top[i].neta_id) {
                 return pic_name_info_top[i].name;
             }
 
@@ -1581,7 +1582,7 @@ int CheckPhotoFlag() {
     int                offset = 0;
 
     do {
-        USER_PICTURE_INFO *info = (USER_PICTURE_INFO *) ((u8 *) photos + offset);
+        USER_PICTURE_INFO *info = &photos[i];
 
         if (*(&*(signed char *) &info->used) != 0) {
             short *neta_id = &info->neta_id;
@@ -2195,22 +2196,18 @@ USER_PICTURE_INFO *CMenuInvent::GetPhotoInfoFromMode(int *slot_count) {
 }
 
 void CMenuInvent::InitNetaCircle(int show) {
-    CMenuPosDataForm **panel;
-    int                i = 0;
-    int                byte_offset = 0;
-    u8                *entry;
+    int i = 0;
 
     do {
         if (show == 0) {
             CancelNetaCircle(0);
             neta_select_state[i] = -1;
 
-            *(int *) ((u8 *) this + 0x610 + byte_offset) = -1;
+            neta_select_index[i] = -1;
             unk_622[i] = 0;
         }
 
-        entry = (u8 *) this + byte_offset;
-        panel = (CMenuPosDataForm **) (entry + 0xEF0);
+        CMenuPosDataForm **panel = &neta_form[i];
 
         if (*panel != 0) {
             (*panel)->SetRGBACalcParam(3, 0x7F, 0x80);
@@ -2219,7 +2216,7 @@ void CMenuInvent::InitNetaCircle(int show) {
                 (*panel)->draw_flag = 0;
             } else {
                 (*panel)->draw_flag = 1;
-                CMenuPosDataForm *label = *(CMenuPosDataForm **) (entry + 0xF00);
+                CMenuPosDataForm *label = neta_name_form[i];
 
                 if (label != 0) {
                     label->SetAction(at_2313);
@@ -2228,7 +2225,6 @@ void CMenuInvent::InitNetaCircle(int show) {
         }
 
         i++;
-        byte_offset += 4;
     } while (i < 3);
 }
 #ifdef NONMATCHING
@@ -2375,8 +2371,8 @@ int CMenuInvent::GetNowSelectNetaID(int slot) {
     if (kind == 0) {
         USER_PICTURE_INFO *photos = InventUserDataPtr->GetPhotoInfo(0);
         int                photo_slot = neta_select_index[slot];
-        return ((USER_PICTURE_INFO *) ((u8 *) photos + photo_slot * sizeof(USER_PICTURE_INFO)))
-            ->neta_id;
+        USER_PICTURE_INFO *photo = photos + photo_slot;
+        return photo->neta_id;
     }
 
     if (kind == 1) {

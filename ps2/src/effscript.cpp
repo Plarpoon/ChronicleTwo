@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cstring>
 
@@ -19,8 +20,7 @@
 #include "scene.hpp"
 #include "scenesnd.hpp"
 
-extern "C" int  fptosi(float value);
-extern "C" void __ct__10CRunScriptFv(void *);
+extern "C" void __ct__10CRunScriptFv(void *script);
 extern void    *__vt__9mgCObject[];
 extern void    *__vt__7CObject[];
 extern void    *__vt__12CObjectFrame[];

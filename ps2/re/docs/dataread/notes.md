@@ -133,3 +133,7 @@ the first '.' of each entry name.
   `align_size(size, 0x800) / 16` quads (signed) before queuing, in both directions. GetPackFile(char*)
   also returns null for a null or empty name. DivPathName treats a slash at index 0 as "no
   directory" and copies the whole path into the name.
+
+## Division-check pragma
+
+The unit-level `divbyzerocheck` pragma was redundant with the global MWCC flag; removing it left the full compiled object identical in objdiff.

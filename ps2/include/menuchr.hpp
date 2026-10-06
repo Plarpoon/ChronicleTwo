@@ -185,8 +185,20 @@ public:
     float               star_pulse;    /**< Angle that makes the ring's outer circle pulse. */
     s32                 unk_27C;
     CHR_CNG_STAR        star[CHR_CNG_STAR_NUM]; /**< Sparkles around the ring. */
-    u32                 clut[CHR_CNG_CLUT_NUM]; /**< Darkened copy of the screen's palette, drawn for those not in the party. */
-    u8                  unk_1E80[0x100];
+
+    union {
+        struct {
+            u32 clut[CHR_CNG_CLUT_NUM]; /**< Darkened copy of the screen's palette, drawn for those not in the party. */
+            u8  unk_1E80[0x100];
+        };
+
+        u8 clut_storage[0x500]; /**< Palette bytes and adjacent reserved space cleared together. */
+    };
+
+    /**
+     * Initializes the party change menu and clears its model work stacks.
+     */
+    CMenuChrCngMenu();
 
     /**
      *
@@ -359,6 +371,11 @@ public:
     s32               unk_765C;
     s16               load_wait;  /**< Frames left before the shown monster's model is loaded. */
     s16               load_phase; /**< Step of loading the shown monster's model. */
+
+    /**
+     * Initializes the monster box, its message windows, and the default badge selection.
+     */
+    CMenuMosSelect();
 
     /**
      *
@@ -588,7 +605,30 @@ public:
     /**
      * Constructs the book with its model camera at the default speed.
      */
-    CMosBookMenu() : camera(8.0f) {}
+    CMosBookMenu() : camera(8.0f) {
+        bg_scroll = 0.0f;
+        monster = NULL;
+        unk_1BC = 0;
+        unk_1C0 = 0;
+        unk_1C4 = 0;
+        unk_1C8 = 0;
+        unk_1CC = 0;
+        load_phase = 0;
+        show_wait = 0;
+        load_wait = 0;
+        monster_info = NULL;
+        select = 0;
+        skip_draw = 0;
+        list_num = 0;
+
+        for (int i = 0; i < MOS_BOOK_LIST_MAX; i++) {
+            list[i] = -1;
+        }
+
+        InitMonsterInfo();
+        camera.SetPos(0.0f, 0.0f, 100.0f);
+        camera.SetRef(0.0f, 0.0f, 0.0f);
+    }
 
     /**
      *

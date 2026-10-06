@@ -1,5 +1,5 @@
-#define sceVu0ApplyMatrix sceVu0ApplyMatrixSdk
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cmath>
 #include <cstdio>
@@ -27,9 +27,6 @@
 #include "snd_mngr.hpp"
 #include "snd_seseq.hpp"
 #include "subgame.hpp"
-
-#undef sceVu0ApplyMatrix
-extern "C" void sceVu0ApplyMatrix(float *, float *, float *);
 
 /**
  *
@@ -616,7 +613,7 @@ int sgLoopGyoRace(SubGameInfo *info) {
                     position[2] = 0.0f;
                     sceVu0UnitMatrix(matrix);
                     sceVu0RotMatrixY(matrix, matrix, 1.5707964f * (distance - 1.0f));
-                    sceVu0ApplyMatrix(position, (float *) matrix, position);
+                    sceVu0ApplyMatrix(position, matrix, position);
                     position[2] -= 345.0f;
                 }
                 if (!(distance < 5.0f) && distance < 7.0f) {
@@ -624,7 +621,7 @@ int sgLoopGyoRace(SubGameInfo *info) {
                     position[2] = 0.0f;
                     sceVu0UnitMatrix(matrix);
                     sceVu0RotMatrixY(matrix, matrix, 1.5707964f * (distance - 5.0f));
-                    sceVu0ApplyMatrix(position, (float *) matrix, position);
+                    sceVu0ApplyMatrix(position, matrix, position);
                     position[2] += 345.0f;
                 }
                 position[1] = -15.0f;
@@ -732,7 +729,7 @@ int sgLoopGyoRace(SubGameInfo *info) {
                     position[2] = 0.0f;
                     sceVu0UnitMatrix(matrix);
                     sceVu0RotMatrixY(matrix, matrix, 1.5707964f * (distance - 1.0f));
-                    sceVu0ApplyMatrix(position, (float *) matrix, position);
+                    sceVu0ApplyMatrix(position, matrix, position);
                     position[2] -= 345.0f;
                 }
                 if (!(distance < 5.0f) && distance < 7.0f) {
@@ -740,7 +737,7 @@ int sgLoopGyoRace(SubGameInfo *info) {
                     position[2] = 0.0f;
                     sceVu0UnitMatrix(matrix);
                     sceVu0RotMatrixY(matrix, matrix, 1.5707964f * (distance - 5.0f));
-                    sceVu0ApplyMatrix(position, (float *) matrix, position);
+                    sceVu0ApplyMatrix(position, matrix, position);
                     position[2] += 345.0f;
                 }
                 position[1] = -15.0f;
@@ -928,8 +925,6 @@ int sgCharaDrawGyoRace(SubGameInfo *info) {
     return 0;
 }
 
-extern "C" int fptosi(float);
-
 static void DivSpriteScreen(mgCDrawPrim &prim) {
     int strip_height;
     int screen_width;
@@ -965,7 +960,7 @@ static void DivSpriteScreen(mgCDrawPrim &prim) {
 
         while (y < mgScreenHeight) {
             sceVu0RotMatrixZ(matrix, matrix, ras_off_1762);
-            sceVu0ApplyMatrix(step, (float *) matrix, step);
+            sceVu0ApplyMatrix(step, matrix, step);
             RaceVector uv;
             uv = at_1775;
             RaceVector xy;

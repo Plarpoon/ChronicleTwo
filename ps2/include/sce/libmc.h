@@ -111,6 +111,11 @@ int sceMcRead(int fd, void *buffer, int size);
 int sceMcWrite(int fd, void *buffer, int size);
 
 /**
+ * Moves the read or write position of an open memory-card file.
+ */
+int sceMcSeek(int fd, int offset, int origin);
+
+/**
  * Writes the buffered data of the given file to the card and returns a command id.
  */
 int sceMcFlush(int fd);

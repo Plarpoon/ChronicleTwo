@@ -702,6 +702,17 @@ def bind_suffixed_references(elf, unit):
                 remap[index] = defined[plain]
         definition.name = name
         definition.st_name = elf.strtab.add_symbol(name)
+    # The main unit's handwritten callback is assembled under the split's
+    # duplicate suffix. Its native C++ declaration uses the original local
+    # name; bind that reference to this unit's assembled body.
+    if unit == 'main' and 'VSyncCallBack__Fi__2' in defined:
+        for index, symbol in enumerate(symbols):
+            if symbol.name == 'VSyncCallBack__Fi':
+                remap[index] = defined['VSyncCallBack__Fi__2']
+                # mwccgap may already have pointed the unresolved declaration
+                # at the assembled section; only the suffixed name is exported.
+                symbol.st_shndx = 0
+                symbol.st_value = 0
     for record in elf.relocations:
         for relocation in record.relocations:
             if relocation.symbol_index in remap:

@@ -141,3 +141,9 @@ Size: `__construct_array(ObjectSeq, __ct__12CSceneObjSeqFv, 0, 0x5F0, 0x20)` in
 - The 0x04..0x0C words of both command structs and the unused class gaps listed above.
 - Meaning of the motion `flags` int passed through to CEohMother::SetMotion (vtable slot 0xB0 of
   the object's character).
+
+## Compiler flag cleanup
+
+The two local `divbyzerocheck on`/`reset` pairs are redundant with the PS2
+compiler flag. Removing them leaves every section and symbol in this unit's
+object diff unchanged.

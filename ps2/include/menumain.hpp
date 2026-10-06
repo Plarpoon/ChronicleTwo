@@ -187,13 +187,6 @@ STATIC_ASSERT(sizeof(MENU_INIT_ARG) == 0x98);
  *
  */
 struct MENU_DRAW_ENV {
-    /**
-     *
-     * Creates the menu camera with its initial movement speed.
-     *
-     */
-    MENU_DRAW_ENV() : camera(8.0f) {}
-
     mgCCamera     camera; /**< Camera that menu models are viewed through. */
     u8            unk_70[0x10];
     sceVu0FVECTOR ref;            /**< Point that the camera looks at. */
@@ -204,6 +197,13 @@ struct MENU_DRAW_ENV {
     s32           unk_AC;
     sceVu0FVECTOR old_ambient; /**< Ambient light to restore after menu models are drawn. */
     sceVu0FVECTOR ambient;     /**< Ambient light that menu models are drawn with. */
+
+    /**
+     *
+     * Creates the menu camera with its initial movement speed.
+     *
+     */
+    MENU_DRAW_ENV() : camera(8.0f) {}
 };
 
 STATIC_ASSERT(sizeof(MENU_DRAW_ENV) == 0xD0);

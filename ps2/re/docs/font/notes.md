@@ -88,3 +88,17 @@ DIFFs: retail copies the returned value through a second stack temp (0x28 -> 0x2
 ## Unresolved
 - `unk_84`, `unk_b0`, `unk_b4` meaning (b0/b4 are a float offset used by `DrawDirect`).
 - `FONT_TBL_BIN::unk_6` never read.
+
+## Typed access matching
+
+`GetGaijiW` and `GetGaijiH` can index `GaijiDataTbl` directly. Keeping the
+two code-point subtractions in separate statements preserves retail's two
+`addiu` instructions; collapsing them into one indexed expression makes MWCC
+fold the base address instead. Both functions match fully without byte-offset
+pointer arithmetic. `CFont::DrawDirect` reads its known float fields
+`unk_b0` and `unk_b4` directly, also matching fully without raw field casts.
+The unused C-linkage constructor declaration was removed, and the genuine
+runtime `fptosi` declaration now comes from `mw_runtime.h`.
+The text walkers in `CalcDrawWH` and `DrawDirect` also use `char *` with
+`&text[pos]` and `&cursor[2]`, removing signed-byte casts and pointer
+arithmetic while preserving both complete function matches.

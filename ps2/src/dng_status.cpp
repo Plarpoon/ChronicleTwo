@@ -1,5 +1,5 @@
-#define MG_DRAWPRIM_MANUAL_CTOR
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cmath>
 #include <cstdio>
@@ -33,12 +33,9 @@
 #include "snd_seseq.hpp"
 #include "userdata.hpp"
 
-extern "C" int  fptosi(float value);
-extern "C" void __ct__11mgCDrawPrimFv(mgCDrawPrim *);
-extern float    cur_ang_1005;
-extern s8       init_1006;
+extern float cur_ang_1005;
+extern s8    init_1006;
 
-#pragma divbyzerocheck on
 #include <cmath>
 
 #include "actionchara.hpp"
@@ -89,8 +86,6 @@ void PrintV(int x, int y, int value, mgCTexture *texture, mgRect<int> rect, int 
 
     CPreSprite sprite;
     CPreSprite spare;
-    __ct__11mgCDrawPrimFv(&sprite);
-    __ct__11mgCDrawPrimFv(&spare);
     sprite.Initialize(0, 0);
     sprite.Preset2D();
     sprite.Begin(6);
@@ -118,8 +113,6 @@ void PrintV(int x, int y, int value, mgCTexture *texture, mgRect<int> rect, int 
     sprite.End();
 }
 
-#pragma divbyzerocheck reset
-
 void DrawDrumCounter(int x, int y, int value) {
     int digit[6];
     int index;
@@ -138,9 +131,6 @@ void DrawDrumCounter(int x, int y, int value) {
     digit[4] = value;
 
     CPreSprite sprite[2];
-
-    __ct__11mgCDrawPrimFv(&sprite[0]);
-    __ct__11mgCDrawPrimFv(&sprite[1]);
     sprite[0].Initialize(NULL, NULL);
     sprite[0].Preset2D();
     sprite[0].Begin(MG_PRIM_SPRITE);
@@ -164,9 +154,6 @@ void DrawActiveItemCursor(int x, int y, float alpha) {
     float      corner[4];
     float      u;
     float      v;
-
-    __ct__11mgCDrawPrimFv(&sprite);
-    __ct__11mgCDrawPrimFv(&spare);
     sprite.Initialize(0, 0);
     sprite.Preset2D();
     sprite.Bilinear(1);
@@ -353,9 +340,6 @@ void DrawMainUnitStatusBord(float rate) {
         palanim_1023 -= 3.1415927f;
     }
     flash[0] = sinf(palanim_1023);
-
-    __ct__11mgCDrawPrimFv(&sprite);
-    __ct__11mgCDrawPrimFv(&spare);
 
     sprite.Initialize(NULL, NULL);
     sprite.Preset2D();
@@ -641,8 +625,6 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_status", DrawMainUnitStatusBord__Ff);
 
 void DrawRoboUnitStatusBord(float rate) {
     int               color[4];
-    CPreSprite        sprite;
-    CPreSprite        spare;
     extern float      palanim_1222;
     extern s8         init_1223;
     CBattleCharaInfo *info;
@@ -704,9 +686,8 @@ void DrawRoboUnitStatusBord(float rate) {
         color[3] = 0x80;
     }
 
-    __ct__11mgCDrawPrimFv(&sprite);
-    __ct__11mgCDrawPrimFv(&spare);
-
+    CPreSprite sprite;
+    CPreSprite spare;
     sprite.Initialize(NULL, NULL);
     sprite.Preset2D();
     sprite.Begin(MG_PRIM_SPRITE);
@@ -844,8 +825,6 @@ void DrawMonsterUnitStatusBord(float alpha) {
     mgRect<int> rect1;
     mgRect<int> rect2;
     mgRect<int> rect3;
-    __ct__11mgCDrawPrimFv(&prim);
-    __ct__11mgCDrawPrimFv(&spare);
     prim.Initialize(0, 0);
     prim.Preset2D();
     prim.Begin(6);

@@ -17,7 +17,7 @@
 // Small uninitialised data (.sbss)
 static volatile int        vcount__2;
 extern int                 MainThreadPriority;
-extern "C" int             VSyncCallBack__Fi__2(int);
+static int                 VSyncCallBack(int event);
 extern const unsigned char at_846__DATA[];
 extern const unsigned char at_847__DATA[];
 extern const unsigned char at_848__DATA[];
@@ -37,7 +37,7 @@ extern const unsigned char at_857__DATA[];
  * interrupts before returning.
  */
 #ifdef NONMATCHING
-extern "C" int VSyncCallBack__Fi__2(int) {
+static int VSyncCallBack(int event) {
     ++vcount__2;
     if (vcount__2 < 0) {
         vcount__2 = 0;
@@ -83,7 +83,7 @@ static void init() {
     sceDmaReset(1);
     sceGsResetPath();
     sceGsResetGraph(0, SCE_GS_INTERLACE, SCE_GS_PAL, 0);
-    sceGsSyncVCallback(VSyncCallBack__Fi__2);
+    sceGsSyncVCallback(VSyncCallBack);
     ClearScreen(0, 0, 0);
     mwInit();
 

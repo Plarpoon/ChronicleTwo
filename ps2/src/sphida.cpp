@@ -778,7 +778,6 @@ void CSphida::DrawStatusSprite() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", DrawStatusSprite__7CSphidaFv);
 #endif
-#pragma divbyzerocheck on
 
 void CSphida::DrawParCounter() {
     mgTexManager.ReloadTexture(tex_bank, (sceVif1Packet *) NULL);
@@ -843,8 +842,6 @@ void CSphida::DrawParCounter() {
 
     prim.End();
 }
-
-#pragma divbyzerocheck reset
 
 void CSphida::Draw() {
     if (play_flag == 0) {

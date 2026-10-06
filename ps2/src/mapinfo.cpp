@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <libvu0.h>
 
@@ -39,41 +40,40 @@ static int amapIMG(SPI_STACK *stack, int argument_count);
 static int amapPCP(SPI_STACK *stack, int argument_count);
 
 // mglib.hpp cannot be included beside mapload.hpp (both declare mgFOG_PARAM).
-extern int     mgScreenWidth;
-extern "C" int fptosi(float);
-extern char    at_360[];
-extern char    at_361[];
-extern char    at_362[];
-extern char    at_363[];
-extern char    at_364[];
-extern char    at_365[];
-extern char    at_366[];
-extern char    at_367[];
-extern char    at_368[];
-extern char    at_369__3[];
-extern char    at_370__2[];
-extern char    at_371[];
-extern char    at_372[];
-extern char    at_373[];
-extern char    at_374[];
-extern char    at_375[];
-extern char    at_376[];
-extern char    at_377[];
-extern char    at_378[];
-extern char    at_379[];
-extern char    at_380[];
-extern char    at_381[];
-extern char    at_382__2[];
-extern char    at_704[];
-extern char    at_705[];
-extern char    at_706[];
-extern char    at_707[];
-extern char    at_708[];
-extern char    at_709[];
-extern char    at_710[];
-extern char    at_711[];
-extern char    at_712[];
-extern char    at_713__2[];
+extern int  mgScreenWidth;
+extern char at_360[];
+extern char at_361[];
+extern char at_362[];
+extern char at_363[];
+extern char at_364[];
+extern char at_365[];
+extern char at_366[];
+extern char at_367[];
+extern char at_368[];
+extern char at_369__3[];
+extern char at_370__2[];
+extern char at_371[];
+extern char at_372[];
+extern char at_373[];
+extern char at_374[];
+extern char at_375[];
+extern char at_376[];
+extern char at_377[];
+extern char at_378[];
+extern char at_379[];
+extern char at_380[];
+extern char at_381[];
+extern char at_382__2[];
+extern char at_704[];
+extern char at_705[];
+extern char at_706[];
+extern char at_707[];
+extern char at_708[];
+extern char at_709[];
+extern char at_710[];
+extern char at_711[];
+extern char at_712[];
+extern char at_713__2[];
 
 static int mapIMG(SPI_STACK *stack, int argument_count);
 static int mapPCP(SPI_STACK *stack, int argument_count);

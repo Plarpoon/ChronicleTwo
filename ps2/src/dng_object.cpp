@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cmath>
 #include <cstdio>
@@ -54,14 +55,11 @@ union CopyVector {
     u_long128 word; /**< The same components as a quadword. */
 };
 
-extern "C" int   fptosi(float value);
-extern "C" void *__ct__11mgCDrawPrimFv(void *);
-extern "C" void *__ct__12mgCFrameAttrFv(void *);
-extern float     at_1112[4];
-extern float     at_1240__3[4];
-extern char      at_1291__3[];
-extern float     anim_1410;
-extern s8        init_1411;
+extern float at_1112[4];
+extern float at_1240__3[4];
+extern char  at_1291__3[];
+extern float anim_1410;
+extern s8    init_1411;
 
 #include <libvu0.h>
 
@@ -449,24 +447,19 @@ void CRocketLauncher::Step() {
 }
 
 void CRocketLauncher::Draw() {
-    union {
-        CPreSprite sprite;
-    };
-
-    float smooth[128][4];
-    int   corner_a[4];
-    int   corner_b[4];
-    float look_matrix[4][4];
-    int   points;
-    int   index;
-    float fade;
-    float size;
-
     if (state == 0) {
         return;
     }
 
-    __ct__11mgCDrawPrimFv(&sprite);
+    CPreSprite sprite;
+    float      smooth[128][4];
+    int        corner_a[4];
+    int        corner_b[4];
+    float      look_matrix[4][4];
+    int        points;
+    int        index;
+    float      fade;
+    float      size;
 
     if (draw_flags & 2) {
         points = CreatSmoothPass(smooth, trail, 0x10, 6, trail_index, 0x10);
@@ -510,6 +503,7 @@ void CRocketLauncher::Draw() {
             fade -= 1.0f / (float) trail_len;
             size += 12.0f / (float) trail_len;
         }
+
         sprite.End();
     }
 
@@ -982,6 +976,10 @@ void CLaserGun::Step() {
 }
 
 void CLaserGun::Draw() {
+    if (state == 0) {
+        return;
+    }
+
     float size;
     int   index;
     float fade;
@@ -989,9 +987,7 @@ void CLaserGun::Draw() {
     int   count;
     float t;
 
-    union {
-        CPreSprite sprite;
-    };
+    CPreSprite sprite;
 
     float smooth[256][4];
     int   corner_a[4];
@@ -1000,15 +996,7 @@ void CLaserGun::Draw() {
     float segment[4];
     float step[4];
 
-    union {
-        mgCFrameAttr attr;
-    };
-
-    float matrix[4][4];
-
-    if (state != 0) {
-        __ct__11mgCDrawPrimFv(&sprite);
-
+    {
         (mgTexManager).ReloadTexture(tex_block, (sceVif1Packet *) NULL);
 
         if (draw_flags & 2) {
@@ -1101,12 +1089,13 @@ void CLaserGun::Draw() {
 
                 fade -= 1.0f / (float) trail_len;
             }
+
             sprite.End();
         }
 
         if (draw_flags & 1) {
-
-            __ct__12mgCFrameAttrFv(&attr);
+            mgCFrameAttr attr;
+            float        matrix[4][4];
             attr.no_light = 1;
             attr.color[0] = color[0];
             attr.color[1] = color[1];
@@ -1182,18 +1171,19 @@ void CLaserGunMan::Initialize(mgCFrame *frame, int texture_id, mgCTexture *textu
 }
 
 void CPullItem::Draw(mgCTexture *texture) {
-    union {
-        CPreSprite sprite;
-    };
+    if (state == 0) {
+        return;
+    }
+
+    CPreSprite sprite;
 
     int   quad_a[4];
     int   quad_b[4];
     float center[4];
 
-    if (state != 0) {
-        __ct__11mgCDrawPrimFv(&sprite);
-
+    {
         sprite.Initialize(0, 0);
+
         if (glow != 0) {
             sprite.AlphaBlend(2);
         } else {
@@ -1251,6 +1241,7 @@ void CPullItem::Draw(mgCTexture *texture) {
             sprite.TextureCrd(draw_u + tex_w, tex_v + tex_h);
             sprite.Vertex4(quad_b);
         }
+
         sprite.End();
     }
 }

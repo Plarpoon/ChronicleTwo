@@ -4,6 +4,8 @@
 
 #include <libvu0.h>
 
+#include <cstring>
+
 /**
  * @file
  * Declares the fishing tackle simulation: the point masses and constraints
@@ -94,6 +96,13 @@ public:
     u_char     unk_2b4[0xC];
     int        float_num;      /**< Number of entries of float_info in use. */
     FISH_FLOAT float_info[16]; /**< Point pairs that float the object at the water surface. */
+
+    /**
+     *
+     * Clears a fishing tackle object before its points are configured.
+     *
+     */
+    CFishObj() { memset(this, 0, sizeof(*this)); }
 
     /**
      *

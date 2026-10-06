@@ -604,8 +604,6 @@ static s32 voBufIsFull(VoBuf *buffer) {
     return buffer->count == buffer->size;
 }
 
-#pragma divbyzerocheck on
-
 void voBufIncCount(VoBuf *buf) {
     DIntr();
     buf->ring_tag[buf->write].status = 2;
@@ -613,8 +611,6 @@ void voBufIncCount(VoBuf *buf) {
     buf->write = (buf->write + 1) % buf->size;
     EIntr();
 }
-
-#pragma divbyzerocheck reset
 
 u8 *voBufGetData(VoBuf *buf) {
     if (voBufIsFull(buf)) {
@@ -628,8 +624,6 @@ static s32 voBufIsEmpty(VoBuf *buffer) {
     return buffer->count == 0;
 }
 
-#pragma divbyzerocheck on
-
 VoTag *voBufGetTag(VoBuf *buf) {
     if (voBufIsEmpty(buf)) {
         return 0;
@@ -637,8 +631,6 @@ VoTag *voBufGetTag(VoBuf *buf) {
 
     return &buf->ring_tag[(buf->write - buf->count + buf->size) % buf->size];
 }
-
-#pragma divbyzerocheck reset
 
 void voBufDecCount(VoBuf *buf) {
     if (buf->count > 0) {
@@ -721,8 +713,6 @@ int viBufReset(ViBuf *buf) {
     return 1;
 }
 
-#pragma divbyzerocheck on
-
 void viBufBeginPut(ViBuf *buf, u8 **area1, int *size1, u8 **area2, int *size2) {
     WaitSema(buf->sema);
     int write_pos;
@@ -748,16 +738,12 @@ void viBufBeginPut(ViBuf *buf, u8 **area1, int *size1, u8 **area2, int *size2) {
     SignalSema(buf->sema);
 }
 
-#pragma divbyzerocheck reset
-
 void viBufEndPut(ViBuf *buf, int count) {
     WaitSema(buf->sema);
     buf->read_bytes += count;
     buf->total_bytes += count;
     SignalSema(buf->sema);
 }
-
-#pragma divbyzerocheck on
 
 int viBufAddDMA(ViBuf *buf) {
     int chained = 0;
@@ -807,7 +793,6 @@ int viBufAddDMA(ViBuf *buf) {
     return 1;
 }
 
-#pragma divbyzerocheck reset
 #pragma optimization_level 4
 
 int viBufStopDMA(ViBuf *buf) {
@@ -921,7 +906,6 @@ void viBufFlush(ViBuf *buf) {
     SignalSema(buf->sema);
 }
 
-#pragma divbyzerocheck on
 #ifdef NONMATCHING
 int viBufModifyPts(ViBuf *buf, TimeStamp *ts) {
     int index = (buf->n_ts + (buf->wt_ts - buf->count_ts)) % buf->n_ts;
@@ -964,8 +948,6 @@ int viBufModifyPts(ViBuf *buf, TimeStamp *ts) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", viBufModifyPts__FP5ViBufP9TimeStamp);
 #endif
-#pragma divbyzerocheck reset
-#pragma divbyzerocheck on
 
 int viBufPutTs(ViBuf *buf, TimeStamp *ts) {
     int had_room = 0;
@@ -990,8 +972,6 @@ int viBufPutTs(ViBuf *buf, TimeStamp *ts) {
     return had_room;
 }
 
-#pragma divbyzerocheck reset
-#pragma divbyzerocheck on
 #ifdef NONMATCHING
 int viBufGetTs(ViBuf *buf, TimeStamp *ts) {
     int found = 0;
@@ -1028,7 +1008,6 @@ int viBufGetTs(ViBuf *buf, TimeStamp *ts) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", viBufGetTs__FP5ViBufP9TimeStamp);
 #endif
-#pragma divbyzerocheck reset
 
 int strFileOpen(StrFile *file, char *path) {
     char       full_path[0x100];
@@ -1166,8 +1145,6 @@ int readBufBeginPut(ReadBuf *buf, u8 **out) {
     return room;
 }
 
-#pragma divbyzerocheck on
-
 int readBufEndPut(ReadBuf *buf, int count) {
     int room = buf->size - buf->count;
     int stored = (count < room) ? count : room;
@@ -1176,9 +1153,6 @@ int readBufEndPut(ReadBuf *buf, int count) {
     return stored;
 }
 
-#pragma divbyzerocheck reset
-#pragma divbyzerocheck on
-
 int readBufBeginGet(ReadBuf *buf, u8 **out) {
     if (buf->count != 0) {
         *out = buf->data + (buf->put - buf->count + buf->size) % buf->size;
@@ -1186,8 +1160,6 @@ int readBufBeginGet(ReadBuf *buf, u8 **out) {
 
     return buf->count;
 }
-
-#pragma divbyzerocheck reset
 
 int readBufEndGet(ReadBuf *buf, int count) {
     int avail = buf->count;
@@ -1278,8 +1250,6 @@ s32 audioDecIsPreset(AudioDec *decoder) {
     return decoder->total_bytes_sent >= decoder->iop_buff_size;
 }
 
-#pragma divbyzerocheck on
-
 int audioDecSendToIOP(AudioDec *dec) {
     int iop_addr1;
     int iop_addr2;
@@ -1328,9 +1298,6 @@ int audioDecSendToIOP(AudioDec *dec) {
     return sent;
 }
 
-#pragma divbyzerocheck reset
-#pragma divbyzerocheck on
-
 void iopGetArea(int *addr1, int *size1, int *addr2, int *size2, AudioDec *dec, int wanted) {
     int room = (wanted + dec->iop_buff_size - dec->iop_last_pos - 0x400) % dec->iop_buff_size;
     int len = room / 0x400 * 0x400;
@@ -1347,8 +1314,6 @@ void iopGetArea(int *addr1, int *size1, int *addr2, int *size2, AudioDec *dec, i
         *size2 = len - (dec->iop_buff_size - dec->iop_last_pos);
     }
 }
-
-#pragma divbyzerocheck reset
 
 int sendToIOP2area(int dest1, int size1, int dest2, int size2, u8 *src1, int len1, u8 *src2,
                    int len2) {
@@ -1596,8 +1561,6 @@ void audioDecBeginPut(AudioDec *dec, u8 **area1, int *size1, u8 **area2, int *si
     }
 }
 
-#pragma divbyzerocheck on
-
 void audioDecEndPut(AudioDec *dec, int count) {
     if (dec->state == 0) {
         int header_bytes = sizeof(dec->hdr) - dec->hdr_count;
@@ -1615,8 +1578,6 @@ void audioDecEndPut(AudioDec *dec, int count) {
     dec->count += count;
     dec->total_bytes += count;
 }
-
-#pragma divbyzerocheck reset
 
 int isAudioOK() {
     return isWithAudio != 0 ? audioDecIsPreset(&audioDec) : 1;

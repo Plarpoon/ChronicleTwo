@@ -93,3 +93,7 @@ function-local statics (DrawFireEffect / GetLight area); `at_475`, `at_1118` are
 ## Unresolved
 - `Step` return type (see above).
 - `GetLight`'s `mode` and `DrawFireEffect`'s `rate` parameter meanings are inferred from use only loosely.
+
+## Division-check pragma
+
+The unit-level `divbyzerocheck` pragma was redundant with the global MWCC flag; removing it left the full compiled object identical in objdiff.

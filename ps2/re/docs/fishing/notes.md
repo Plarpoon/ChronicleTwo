@@ -68,3 +68,9 @@ Header: `ps2/include/fishing.hpp`. No first-game counterpart: Dark Cloud's `fish
   FISH_PARAM 0x18 and FISH_PLACE_MAP area_param[3..4]; names of the rod attributes.
 - SetFishPlace's merge branch reads `place[i]` with the map's fish index (retail quirk: uses the
   outer index's byte offset into `place`), keep it when matching.
+
+`sgSystemDrawFishing` constructs its `mgCDrawPrim` after the texture loads. Declaring the tension arrays immediately after the native builder retains their retail stack slots and gives an exact object-code match.
+
+## Native static initialization
+
+Native `mgCMemory` and `CCameraControl` globals emit the eight calls in the retail initializer order. The generated 116-byte initializer matches exactly, including both camera constructors; this removes the handwritten C-linkage constructor alias.

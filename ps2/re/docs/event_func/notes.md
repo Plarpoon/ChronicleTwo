@@ -184,3 +184,6 @@ this particle type, switch to it.
 - `EdEventStep` returns 1; `EdEventFinish` returns 0 when the scene camera is missing, else 1.
 - `GetLocalFlag` computes a bool but returns `int` (mangling does not include return type).
 - `CommandStreamOpen2` builds the path but never opens it (retail behaviour).
+# Native event object construction
+
+`_COPY_CHARA` and `_COPY_MONS2SCNCHR` allocate a `CCharacter2` in a scene stack, then copy the source character or monster into the new slot. Native placement construction performs the base object setup, vtable installation, shadow matching reset, and character initialization represented by the retail sequence. `_ESM_INITIALIZE` similarly creates `CEffectScriptMan` in the event stack; its sprite and manager constructors perform the two initialization steps that were formerly written through vtable symbols. The `_ESM_INITIALIZE` C++ body remains behind `NONMATCHING`, so the PAL build uses its assembly body.

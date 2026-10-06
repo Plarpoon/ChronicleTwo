@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cstring>
 
@@ -17,7 +18,6 @@
 #include "mg_texture.hpp"
 #include "mglib.hpp"
 #include "object.hpp"
-extern "C" int fptosi(float value);
 
 enum {
     kFuncPointHasFire = 2,
@@ -152,8 +152,6 @@ CPartsGroup *CMap::GetPartsGroup(int no) {
     return &parts_group[no];
 }
 
-extern void *__vt__23CList_14PartsGroupData_[];
-
 int CMap::AddPartsGroup(char *name, CMapParts *parts, mgCMemory *memory) {
     int                    group_no;
     char                  *new_name;
@@ -177,11 +175,7 @@ int CMap::AddPartsGroup(char *name, CMapParts *parts, mgCMemory *memory) {
         group->name = new_name;
     }
 
-    if ((node = (CList<PartsGroupData> *) operator new(0x10, memory->Alloc(3))) != 0) {
-        *(void ***) ((u8 *) node + 0xC) = __vt__23CList_14PartsGroupData_;
-        node->data.parts = 0;
-        node->Initialize();
-    }
+    node = new (memory->Alloc(3)) CList<PartsGroupData>;
 
     node->data.parts = parts;
     group->Add(node);
@@ -513,13 +507,13 @@ CMapParts *CMap::PlaceParts(char *name, float *pos, float *rot, float *scale, mg
 
 void CMap::PlacePartsEnd() {
     mgVu0FBOX bounds;
+
     {
         int        water_index;
         CMapWater *surface;
-        int        water_offset;
 
-        for (water_index = 0, water_offset = 0; water_index < water_num; water_offset += 0xA0, water_index++) {
-            surface = (CMapWater *) ((u8 *) water + water_offset);
+        for (water_index = 0; water_index < water_num; water_index++) {
+            surface = &water[water_index];
 
             if (surface->frame != NULL && surface->parts_name == NULL) {
                 surface->parts[surface->parts_num++] = NULL;
@@ -529,15 +523,13 @@ void CMap::PlacePartsEnd() {
     int        parts_index;
     int        water_index;
     CMapWater *surface;
-    int        water_offset;
-    int        parts_offset;
     CMapParts *parts;
     char      *name;
     place_parts_num = place_parts_max;
 
-    for (parts_index = 0, parts_offset = 0; parts_index < place_parts_max; parts_offset += 0x310, parts_index++) {
-        parts = (CMapParts *) ((u8 *) place_parts + parts_offset);
-        u8 unused = *(s8 *) parts->name == 0;
+    for (parts_index = 0; parts_index < place_parts_max; parts_index++) {
+        parts = &place_parts[parts_index];
+        u8 unused = parts->name[0] == 0;
 
         if (!unused) {
             place_parts_num = parts_index + 1;
@@ -555,8 +547,8 @@ void CMap::PlacePartsEnd() {
         name = parts->parts_name;
 
         if (name != NULL) {
-            for (water_index = 0, water_offset = 0; water_index < water_num; water_offset += 0xA0, water_index++) {
-                surface = (CMapWater *) ((u8 *) water + water_offset);
+            for (water_index = 0; water_index < water_num; water_index++) {
+                surface = &water[water_index];
 
                 if (surface->frame != NULL && surface->parts_name != NULL && strcmp(surface->parts_name, name) == 0) {
                     if (surface->parts_num < surface->parts_max) {
@@ -718,10 +710,9 @@ int CMap::PreDraw(float *view_pos) {
     }
 
     active_occlusion = 0;
-    int occlusion_offset;
 
-    for (index = 0, occlusion_offset = 0; index < occlusion_num; occlusion_offset += 0xC0, index++) {
-        COcclusion *current = (COcclusion *) ((u8 *) this + occlusion_offset + 0x680);
+    for (index = 0; index < occlusion_num; index++) {
+        COcclusion *current = &occlusion[index];
 
         if (current->enable != 0) {
             current->Setup(mgRenderInfo.view);
@@ -866,15 +857,12 @@ int CMap::GetCharaLight(mgCObject *chara, CFuncPoint *points, int max, int use_p
 
     {
         int         index;
-        int         point_offset;
         CFuncPoint *point;
         index = 0;
 
         if (0 < light_num) {
-            point_offset = 0;
-
             do {
-                point = (CFuncPoint *) ((u8 *) points + point_offset);
+                point = &points[index];
                 sceVu0SubVector(direction, point->position, chara_position);
                 attenuation = point->plight.power;
                 attenuation *= attenuation;
@@ -889,7 +877,6 @@ int CMap::GetCharaLight(mgCObject *chara, CFuncPoint *points, int max, int use_p
                 sceVu0Normalize(direction, direction);
                 mgSetLight(3 - index, direction, color);
                 index++;
-                point_offset += 0x1C0;
             } while (index < light_num);
         }
     }
@@ -1167,7 +1154,6 @@ void CMap::DrawWater(mgCCamera *camera, mgCTexture *screen, mgCTexture *overlay)
 
     int ripple_row;
     int surface_no;
-    int surface_offset;
     int ripple_column;
 
     if (water_surface_num <= 0) {
@@ -1196,19 +1182,19 @@ void CMap::DrawWater(mgCCamera *camera, mgCTexture *screen, mgCTexture *overlay)
         surface_no = 0;
     }
 
-    for (surface_no = 0, surface_offset = 0; surface_no < water_surface_num; surface_offset += 4, surface_no++) {
-        if ((*(CWaterFrame **) ((u8 *) water_surface + surface_offset)) != NULL) {
-            (*(CWaterFrame **) ((u8 *) water_surface + surface_offset))->CreatePacket();
-            (*(CWaterFrame **) ((u8 *) water_surface + surface_offset))->SetTexture(screen);
+    for (surface_no = 0; surface_no < water_surface_num; surface_no++) {
+        if (water_surface[surface_no] != NULL) {
+            water_surface[surface_no]->CreatePacket();
+            water_surface[surface_no]->SetTexture(screen);
             ripple_row = fptosi(48.0f * ((float) rand() / (float) 0x7FFFFFFF));
             ripple_column = fptosi(32.0f * ((float) rand() / 2147483648.0f));
             float shake_strength = 0.1f;
-            (*(CWaterFrame **) ((u8 *) water_surface + surface_offset))->Shake(ripple_row, ripple_column, shake_strength);
+            water_surface[surface_no]->Shake(ripple_row, ripple_column, shake_strength);
             float        speed_value = 0.15f;
             const float &speed = speed_value;
-            (*(CWaterFrame **) ((u8 *) water_surface + surface_offset))->SetParam(speed, 0.0045f, 0.0f, 16.0f);
-            (*(CWaterFrame **) ((u8 *) water_surface + surface_offset))->Step();
-            (*(CWaterFrame **) ((u8 *) water_surface + surface_offset))->SetColor(0x80, 0x80, 0x80, 0x80);
+            water_surface[surface_no]->SetParam(speed, 0.0045f, 0.0f, 16.0f);
+            water_surface[surface_no]->Step();
+            water_surface[surface_no]->SetColor(0x80, 0x80, 0x80, 0x80);
         }
     }
 
@@ -1298,7 +1284,6 @@ void CMap::DrawWater(mgCCamera *camera, mgCTexture *screen, mgCTexture *overlay)
         int          overlay_no;
         CWaterFrame *overlay_surface;
         int          overlay_parts_no;
-        int          overlay_parts_offset;
         CMapWater   *overlay_water;
         overlay_water = water;
 
@@ -1338,8 +1323,8 @@ void CMap::DrawWater(mgCCamera *camera, mgCTexture *screen, mgCTexture *overlay)
                 overlay_surface->SetParam(overlay_speed, 0.0045f, 0.0f, 300.0f);
                 overlay_surface->SetScale(overlay_scale);
 
-                for (overlay_parts_no = 0, overlay_parts_offset = 0; overlay_parts_no < overlay_water->parts_num; overlay_parts_offset += 4, overlay_parts_no++) {
-                    parts = *(CMapParts **) ((u8 *) overlay_water->parts + overlay_parts_offset);
+                for (overlay_parts_no = 0; overlay_parts_no < overlay_water->parts_num; overlay_parts_no++) {
+                    parts = overlay_water->parts[overlay_parts_no];
 
                     if (parts == NULL) {
                         mgDrawDirect(overlay_surface);
@@ -1438,7 +1423,7 @@ int CMap::GetPoly(int kind, CCPoly *polys, mgVu0FBOX &box, int max) {
 
             do {
                 j++;
-                *(s16 *) ((u8 *) polys + 0x48) = i;
+                polys->parts_no = i;
                 polys++;
             } while (j < effect_num);
         }
@@ -1499,7 +1484,6 @@ int CMap::GetFixCameraPos(sceVu0FVECTOR pos, sceVu0FVECTOR out_camera_pos) {
     CCameraInfo *selected;
     int          camera_no;
     int          rect_no;
-    int          rect_offset;
     CCameraInfo *camera;
 
     float         segment_length2;
@@ -1527,8 +1511,8 @@ int CMap::GetFixCameraPos(sceVu0FVECTOR pos, sceVu0FVECTOR out_camera_pos) {
     }
     camera = camera_base;
     for (camera_no = 0; camera_no < camera_info_num; camera_no++, camera++) {
-        for (rect_no = 0, rect_offset = 0; rect_no < camera->rect_num; rect_offset += 4, rect_no++) {
-            CColFrame *rect = *(CColFrame **) ((u8 *) camera + 0x94 + rect_offset);
+        for (rect_no = 0; rect_no < camera->rect_num; rect_no++) {
+            CColFrame *rect = camera->rect[rect_no];
             if (rect == NULL) {
                 break;
             }
@@ -1566,14 +1550,11 @@ int CMap::GetFixCameraPos(sceVu0FVECTOR pos, sceVu0FVECTOR out_camera_pos) {
         }
 
         mgZeroVector(projection_sum);
-        int sum_offset;
         int sum_no = 0;
         if (0 < projection_num) {
-            sum_offset = 0;
             do {
-                mgAddVector(projection_sum, (float *) ((u8 *) projection + sum_offset));
+                mgAddVector(projection_sum, projection[sum_no]);
                 sum_no++;
-                sum_offset += 0x10;
             } while (sum_no < projection_num);
         }
         sum_no = 0;
@@ -1668,7 +1649,7 @@ CFuncPoint *CMap::GetEvent(float *pos, int check_type, MapEventInfo *info) {
     current = (MapEventInfo *) &event_storage;
     nearest_point = NULL;
     current->event_no = 0;
-    mgUnitMatrix((float (*)[4])((u8 *) current + 0x10));
+    mgUnitMatrix(current->matrix);
     current->point_no = -1;
     current->parts_no = -1;
     func_point.GetStart(FUNC_POINT_EVENT);
@@ -2009,13 +1990,10 @@ void CMap::CreateTrBox(CMapTreasureBox *model, int tex_block, mgCMemory *stack) 
         int             box_no;
         CFuncPointMngr *current_manager;
         CFuncPoint     *current_point;
-        int             box_offset;
-        int             total_box_offset;
         CMapParts      *linked_parts;
         int             parts_no;
         CMapParts      *parts_cursor = place_parts;
         box_no = 0;
-        total_box_offset = 0;
 
         for (parts_no = -1, parts_cursor--; parts_no < place_parts_max; parts_cursor++, parts_no++) {
             if (box_no >= tr_box_num) {
@@ -2034,15 +2012,11 @@ void CMap::CreateTrBox(CMapTreasureBox *model, int tex_block, mgCMemory *stack) 
             current_manager->GetStart(FUNC_POINT_EVENT);
 
             if ((current_point = current_manager->Get()) != NULL) {
-                box_offset = total_box_offset;
-
                 do {
                     if ((current_point->event.flag & FUNC_EVENT_TREASURE_BOX) != 0) {
-                        tr_box_model->Copy(*(CMapTreasureBox *) ((u8 *) tr_box + box_offset), stack);
-                        ((CMapTreasureBox *) ((u8 *) tr_box + box_offset))->AssignFuncPoint(current_point, linked_parts);
+                        tr_box_model->Copy(tr_box[box_no], stack);
+                        tr_box[box_no].AssignFuncPoint(current_point, linked_parts);
                         current_point->event.point_no = box_no;
-                        box_offset += 0x680;
-                        total_box_offset += 0x680;
                         box_no++;
                     }
                 } while ((current_point = current_manager->Get()) != NULL);

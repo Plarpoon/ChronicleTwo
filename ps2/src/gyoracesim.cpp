@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cstring>
 
@@ -22,7 +23,6 @@ struct FISH_STATS {
     float unknown_b;
 };
 
-extern "C" int     fptosi(float value);
 extern int         jrand;
 extern int         ia[56];
 extern grFISH_DATA fish_data[18];

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -35,8 +36,6 @@
 #include "sound.hpp"
 #include "sysmes.hpp"
 #include "userdata.hpp"
-
-extern "C" int fptosi(float value);
 
 enum {
     kBitFlagGekkaView = 0x2BE,
@@ -345,9 +344,9 @@ extern u8                     GeoramaMesPosForceSetFlag;
 extern signed char            GeoramaMesForceMakeFlag_PaintVer;
 extern u8                     MenuGeoramaCursorForceSetFlag;
 extern signed char            MenuGeoStoneDonwLoadFlag;
-extern mgCMemory              MenuGeoramaStack;
-extern mgRect<int>            potti0;
-extern mgRect<int>            potti1;
+mgCMemory                     MenuGeoramaStack;
+mgRect<int>                   potti0(0x174, 0xBE, 0x10, 0x10);
+mgRect<int>                   potti1(0x164, 0xBE, 0x10, 0x10);
 extern mgCTexture            *Tex_Georama;
 extern GeoRequestCheck       *GeoRequestFlag;
 extern MenuGeoramaSystemInfo *MenuGeoramaSystemData;
@@ -1525,7 +1524,6 @@ void DrawDownLoadAnaunce() {
     }
 }
 #ifdef NONMATCHING
-#pragma divbyzerocheck on
 
 int MakeDownLoadAnaunce(int town_no, mgCMemory *stack, int *out_num, int *out_sub_num, int *out_height) {
     short       floors[0x180][2];
@@ -1828,7 +1826,6 @@ int MakeDownLoadAnaunce(int town_no, mgCMemory *stack, int *out_num, int *out_su
     return 0;
 }
 
-#pragma divbyzerocheck reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmenu", MakeDownLoadAnaunce__FiP9mgCMemoryPiPiPi);
 #endif
@@ -4740,13 +4737,6 @@ void MenuRemovalDraw() {
 
 void CBaseMenuClass::InitEnd() {}
 
-// Static initialiser (.init)
-extern "C" void __sinit_editmenu_cpp() {
-    MenuGeoramaStack.Init();
-    potti0.Set(0x174, 0xBE, 0x10, 0x10);
-    potti1.Set(0x164, 0xBE, 0x10, 0x10);
-}
-
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmenu", old_menuparts_pos__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/editmenu", old_menuparts_rot__DATA);
@@ -4998,7 +4988,6 @@ INCLUDE_BSS(HouseChildPartInfo, 0x60);
 INCLUDE_BSS(PartsMakeOkTable, 0x400);
 INCLUDE_BSS(DownLoadMes, 0x20);
 INCLUDE_BSS(GeoramaPenkiNum, 0x20);
-INCLUDE_BSS(MenuGeoramaStack, 0x30);
 INCLUDE_BSS(MenuEditAnalyzeDataSrcListHTable, 0x40);
 INCLUDE_BSS(MenuEditAnalyzeDataSrc, 0x80);
 INCLUDE_BSS(GeoBoardListTitleTexRect, 0x50);
@@ -5010,8 +4999,6 @@ INCLUDE_BSS(GeoramaReqMsgFont, 0xC0);
 INCLUDE_BSS(GeoramaReqMsgFontGyouNum, 0x30);
 INCLUDE_BSS(GeoramaReqMsgTexH, 0x60);
 INCLUDE_BSS(GeoramaReqMsgFontDrawFlag, 0x30);
-INCLUDE_BSS(potti0, 0x10);
-INCLUDE_BSS(potti1, 0x10);
 INCLUDE_BSS(at_1826__2, 0x10);
 INCLUDE_BSS(at_1827__2, 0x10);
 INCLUDE_BSS(at_2443, 0x40);

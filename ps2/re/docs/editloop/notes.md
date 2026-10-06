@@ -74,3 +74,5 @@ All other named data is local (static in .cpp): .sbss ints/pointers 0x37D2C0..0x
 `FishingBuff`, `SkyBuff`), `data_buf`/`init_dbuf` (2 x mgCMemory), `EventBuff` (4), `CharaBufs` (8),
 `EditEvent` (CEditEvent, 0x150; +0x4 state, 1 = running; +0x148 door SE id), `EdDebugInfo`
 (EditDebugInfo, 0x3C), `TestVisual` (0x50), `TestFrame` (0x110), `beforeAnalyze` (int[16]).
+
+`CameraCtrlParam::operator=` copies the 11 scalar limits and the `no_check` flag field by field. A native C++ assignment operator has the retail mangled name and exactly reproduces the previous compiler-generated copy body.

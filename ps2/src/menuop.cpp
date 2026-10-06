@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cstdio>
 #include <cstring>
@@ -31,8 +32,6 @@
 #include "sound.hpp"
 #include "sysmes.hpp"
 #include "userdata.hpp"
-
-extern "C" void *__ct__14CBaseMenuClassFv(void *);
 
 /**
  *
@@ -71,7 +70,6 @@ extern char               at_1438__3[];
 extern char               at_1439__3[];
 extern char               at_1440__3[];
 extern char               at_1441__2[];
-extern "C" int            fptosi(float value);
 extern CMenuPosDataForm  *LocalMenuBGForm;
 extern CMenuPosDataForm  *LocalMenuClipForm;
 extern signed char        manual_list_mesclstbl[5];
@@ -111,8 +109,6 @@ extern char               at_1656__4[];
 extern CMenuPosDataForm  *OptionButtonForm;
 extern CSound             CSnd;
 extern CGamePad           GamePad__2;
-extern "C" void          *__vt__11CManualMenu[];
-extern "C" void          *__vt__11CMenuOption[];
 extern char               at_1900[];
 extern char               at_1901[];
 extern char               at_1902[];
@@ -138,7 +134,6 @@ extern char               at_1238__2[];
 extern short              fillw_1125[];
 extern char               at_2895[];
 extern CScene::BGM_STATUS SubGameDataBgm;
-extern "C" void          *__vt__14CSaveMenuClass[];
 mgCMemory                 SaveMenuStack;
 extern CDC2Mes           *SaveFileList[13];
 extern char              *space_2549;
@@ -322,20 +317,7 @@ void MenuManualInit(mgCMemory *memory, int *tex_block, int mode) {
     StaticMenuLocalStack.stSetBuffer(memory->stGetTop(), free_size);
     ManualMovie = (CMovie *) operator new(0x23940, StaticMenuLocalStack.Alloc(0x2396));
 
-    if ((menu = (CManualMenu *) operator new(sizeof(CManualMenu),
-                                             StaticMenuLocalStack.Alloc(0x1A))) != NULL) {
-        __ct__14CBaseMenuClassFv(menu);
-        *(void ***) ((u_char *) menu + 0x10C) = __vt__11CManualMenu;
-        menu->movie_stack.Init();
-        menu->select = 0;
-        menu->top = 0;
-        menu->list_y = 400.0f;
-        menu->cursor_jump = 0;
-        menu->pict_mode = 0;
-        menu->pict_num = 0;
-        menu->key_arg_no = 0;
-        menu->movie_stack.stSetBuffer(NULL, 0);
-    }
+    menu = new (StaticMenuLocalStack.Alloc(0x1A)) CManualMenu;
 
     CManualPtr = menu;
     menu->SetTexBlock(tex_block);
@@ -1550,7 +1532,6 @@ void MenuOptionInit(mgCMemory *memory, int *tex_block, int mode) {
     mgCTextureManager *textures;
     int                option;
     int                choice;
-    int                i;
     int                free_size;
     char               prefix[0x20];
     char               name[0x20];
@@ -1558,25 +1539,7 @@ void MenuOptionInit(mgCMemory *memory, int *tex_block, int mode) {
     free_size = memory->stGetRest();
     StaticMenuLocalStack.stSetBuffer(memory->stGetTop(), free_size);
 
-    if ((menu = (CMenuOption *) operator new(sizeof(CMenuOption),
-                                             StaticMenuLocalStack.Alloc(0x3B))) != NULL) {
-        __ct__14CBaseMenuClassFv(menu);
-        *(void ***) ((u_char *) menu + 0x10C) = __vt__11CMenuOption;
-
-        for (i = 0; i < OPTION_ITEM_MAX; i++) {
-            menu->choice_num[i] = 1;
-            menu->button[i][0] = NULL;
-            menu->button[i][1] = NULL;
-            menu->button[i][2] = NULL;
-            menu->value[i] = NULL;
-            menu->unk_2A4[i] = 0;
-        }
-
-        menu->list_y = 400.0f;
-        menu->select = 0;
-        menu->top = 0;
-        menu->choice = 0;
-    }
+    menu = new (StaticMenuLocalStack.Alloc(0x3B)) CMenuOption;
 
     CMenuOptionPtr = menu;
     menu->SetTexBlock(tex_block);
@@ -2685,39 +2648,7 @@ void MenuSaveInit(mgCMemory *memory, int *tex_block, int mode) {
     free_size = memory->stGetRest();
     SaveMenuStack.stSetBuffer(memory->stGetTop(), free_size);
 
-    if ((menu = (CSaveMenuClass *) operator new(sizeof(CSaveMenuClass),
-                                                SaveMenuStack.Alloc(0x1D))) != NULL) {
-        __ct__14CBaseMenuClassFv(menu);
-        *(void ***) ((u_char *) menu + 0x10C) = __vt__14CSaveMenuClass;
-        menu->first_step = 1;
-        menu->slot = 0;
-        menu->list_jump = 0;
-        menu->top = 0;
-        menu->select = 0;
-        menu->mode = 0;
-        menu->dl_base = 0;
-        menu->save_kind = 1;
-        menu->need_kb = 0;
-        menu->save_kb = 0;
-        menu->check_kb = 0;
-        menu->chapter8_start = 0;
-        menu->save_count = 0;
-        menu->unk_154 = 0;
-        menu->dl_tex = NULL;
-        menu->title_form = NULL;
-        menu->slot_form[0] = NULL;
-        menu->slot_form[1] = NULL;
-        menu->cursor_form = NULL;
-        menu->list_form = NULL;
-        menu->scrlbar_form = NULL;
-        menu->scrlbar_parts[0] = NULL;
-        menu->scrlbar_parts[1] = NULL;
-        menu->scrlbar_parts[2] = NULL;
-        menu->scrlbar_pos[0] = 0;
-        menu->scrlbar_pos[1] = 9;
-        menu->card_ok = 0;
-        menu->card_changed = 0;
-    }
+    menu = new (SaveMenuStack.Alloc(0x1D)) CSaveMenuClass;
 
     SaveMenuPtr = menu;
 

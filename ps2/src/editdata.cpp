@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -14,7 +15,6 @@
 
 void LoadEditAnalyzeData(char *script, int size, mgCMemory *stack);
 
-extern "C" int   fptosi(float value);
 static const int kEditConditionCount = 0x40;
 static const int kEditPartsCount = 300;
 static const int kEditGroupCount = 32;

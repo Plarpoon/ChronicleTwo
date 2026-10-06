@@ -42,6 +42,13 @@ enum CrossFadeType {
  */
 class CEffectList {
 public:
+    char           *name;       /**< Copy, in the list's memory, of the name the list was loaded under. */
+    u_int          *pack;       /**< Pack file the effects and their textures were read from. */
+    int             block;      /**< Texture block the pack's textures were entered into. */
+    int             effect_num; /**< Effects in the list. */
+    CEffectManager *managers;   /**< Effect manager of each effect, named after its effect file. */
+    mgC3DSprite    *sprites;    /**< 3D sprite each effect's particles are drawn with. */
+
     CEffectList() {
         pack = NULL;
         name = NULL;
@@ -50,13 +57,6 @@ public:
         managers = NULL;
         sprites = NULL;
     }
-
-    char           *name;       /**< Copy, in the list's memory, of the name the list was loaded under. */
-    u_int          *pack;       /**< Pack file the effects and their textures were read from. */
-    int             block;      /**< Texture block the pack's textures were entered into. */
-    int             effect_num; /**< Effects in the list. */
-    CEffectManager *managers;   /**< Effect manager of each effect, named after its effect file. */
-    mgC3DSprite    *sprites;    /**< 3D sprite each effect's particles are drawn with. */
 
     /**
      * Enters every texture archive of a pack into a texture block, and builds
@@ -119,13 +119,6 @@ STATIC_ASSERT(sizeof(CEffectList) == 0x18);
  */
 class CFadeInOut {
 public:
-    /**
-     *
-     * Creates an inactive screen fade.
-     *
-     */
-    CFadeInOut() { Initialize(); }
-
     float       r;                /**< Red of the cover colour, 0 to 128. */
     float       g;                /**< Green of the cover colour, 0 to 128. */
     float       b;                /**< Blue of the cover colour, 0 to 128. */
@@ -138,6 +131,13 @@ public:
     float       cross_alpha_rate; /**< Scale on the alpha of a dissolving captured screen. */
     mgCTexture *cross_texture;    /**< Texture the screen is captured into for a cross-fade, or NULL. */
     int         blur_alpha;       /**< Alpha the previous frame is drawn over the screen with for motion blur, or 0 for none. */
+
+    /**
+     *
+     * Creates an inactive screen fade.
+     *
+     */
+    CFadeInOut() { Initialize(); }
 
     /**
      * Clears the cover, stops any fade and forgets the cross-fade texture

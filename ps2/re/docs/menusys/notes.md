@@ -195,3 +195,9 @@ beginning at `unk_48`. The named overlay arrays in the header keep each run
 inside its declared bounds while preserving the existing message, colour and
 mark fields. The function separately copies the selected argument and item
 pointer fields; it leaves `unk_6`, `unk_72`, `unk_8C` and `unk_90` untouched.
+
+## Compiler flag cleanup
+
+The four local `divbyzerocheck on`/`reset` pairs are redundant with the PS2
+compiler flag. Removing them leaves every section and symbol in this unit's
+object diff unchanged.

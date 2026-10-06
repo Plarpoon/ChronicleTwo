@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cstdio>
 #include <cstring>
@@ -10,8 +11,6 @@
 #include "mg_texture.hpp"
 #include "mglib.hpp"
 #include "nd_meswin.hpp"
-
-extern "C" void __ct__11mgCDrawPrimFv(void *);
 
 /**
  *
@@ -74,14 +73,14 @@ extern char                 at_996__3[];
 extern char                 at_997__3[];
 extern const unsigned char  at_1543[6];
 extern mgRect<int>          at_817__4;
-extern "C" int              fptosi(float value);
 
 // Code (.text)
 int GetGaijiW(int code) {
     if (code >= GAIJI_CODE_TOP && code < GAIJI_CODE_END) {
 
-        s16 *first_width = &GaijiDataTbl[0].w;
-        return *(s16 *) ((u8 *) first_width + (code - 0x8000 - 0x7D00) * sizeof(GAIJI_DATA));
+        int index = code - 0x8000;
+        index -= 0x7D00;
+        return GaijiDataTbl[index].w;
     }
 
     return 0;
@@ -90,8 +89,9 @@ int GetGaijiW(int code) {
 int GetGaijiH(int code) {
     if (code >= GAIJI_CODE_TOP && code < GAIJI_CODE_END) {
 
-        s16 *first_height = &GaijiDataTbl[0].h;
-        return *(s16 *) ((u8 *) first_height + (code - 0x8000 - 0x7D00) * sizeof(GAIJI_DATA));
+        int index = code - 0x8000;
+        index -= 0x7D00;
+        return GaijiDataTbl[index].h;
     }
 
     return 0;
@@ -819,14 +819,14 @@ void CFont::CalcDrawWH(char *text, int *width, int *height) {
 
     if (0 < len) {
         do {
-            cursor = (s8 *) text + pos;
+            cursor = &text[pos];
 
-            if (0 < GetAlphabeticalFontNo_cp((char *) cursor)) {
+            if (0 < GetAlphabeticalFontNo_cp(cursor)) {
                 pen_x += clearance_w / 2;
                 pos += 9;
                 UpDateWH(&max_width, &max_height, pen_x, pen_y + clearance_h);
             } else {
-                gaiji = GetFontGaijiFontNo((char *) cursor);
+                gaiji = GetFontGaijiFontNo(cursor);
 
                 if (gaiji != 0) {
                     if (GetFontGaijiHankaku(gaiji) != 0) {
@@ -838,7 +838,7 @@ void CFont::CalcDrawWH(char *text, int *width, int *height) {
                     pos += 2;
                     UpDateWH(&max_width, &max_height, pen_x, pen_y + clearance_h);
                 } else {
-                    gaiji_no = GetGaijiFontNo((char *) cursor);
+                    gaiji_no = GetGaijiFontNo(cursor);
 
                     if (gaiji_no >= 0xFD00 && gaiji_no < 0xFD32) {
                         pen_x += GetGaijiW(gaiji_no);
@@ -856,9 +856,9 @@ void CFont::CalcDrawWH(char *text, int *width, int *height) {
                             pos += 1;
                             UpDateWH(&max_width, &max_height, pen_x, pen_y + clearance_h);
                         } else {
-                            if (CheckKanjiFont(GetFontNo((char *) cursor)) != 0) {
+                            if (CheckKanjiFont(GetFontNo(cursor)) != 0) {
                                 pen_x += clearance_w;
-                            } else if (CheckKanjiFont(GetFontNo((char *) cursor + 2)) != 0) {
+                            } else if (CheckKanjiFont(GetFontNo(&cursor[2])) != 0) {
                                 pen_x += clearance_w;
                             } else {
                                 pen_x += clearance_w;
@@ -895,31 +895,31 @@ void CFont::DrawDirect(char *text, int x, int y) {
 
     MySetPrim(&local.prim, 1, 0);
 
-    int height = fptosi(*(float *) ((u8 *) this + 0xB4));
-    local.sizes.size_x = fptosi(*(float *) ((u8 *) this + 0xB0)) * 16;
+    int height = fptosi(unk_b4);
+    local.sizes.size_x = fptosi(unk_b0) * 16;
     local.sizes.size_y = height * 16;
     (&local.prim)->Begin(6);
-    int len = strlen(text);
-    int pen_x = 0;
-    int pen_y = 0;
-    int pos = 0;
-    u16 gaiji_no;
-    u16 gaiji;
-    int font_no;
-    int half;
-    s8 *cursor;
+    int   len = strlen(text);
+    int   pen_x = 0;
+    int   pen_y = 0;
+    int   pos = 0;
+    u16   gaiji_no;
+    u16   gaiji;
+    int   font_no;
+    int   half;
+    char *cursor;
 
     if (0 < len) {
         do {
-            cursor = (s8 *) text + pos;
-            font_no = GetAlphabeticalFontNo_cp((char *) cursor);
+            cursor = &text[pos];
+            font_no = GetAlphabeticalFontNo_cp(cursor);
 
             if (0 < font_no) {
                 DrawChar(&local.prim, font_no, pos_x + pen_x, pos_y + pen_y, 1, color, (int) alpha);
                 pen_x += clearance_w / 2;
                 pos += 9;
             } else {
-                gaiji = GetFontGaijiFontNo((char *) cursor);
+                gaiji = GetFontGaijiFontNo(cursor);
 
                 if (gaiji != 0) {
                     DrawChar(&local.prim, gaiji & 0xFFFF, pos_x + pen_x, pos_y + pen_y, 1, color,
@@ -933,7 +933,7 @@ void CFont::DrawDirect(char *text, int x, int y) {
 
                     pos += 2;
                 } else {
-                    gaiji_no = GetGaijiFontNo((char *) cursor);
+                    gaiji_no = GetGaijiFontNo(cursor);
 
                     if (gaiji_no >= 0xFD00 && gaiji_no < 0xFD32) {
                         DrawGaiji(&local.prim, gaiji_no, pos_x + pen_x, pos_y + pen_y);
@@ -952,11 +952,11 @@ void CFont::DrawDirect(char *text, int x, int y) {
                             pen_x += clearance_w / 2;
                             pos += 1;
                         } else {
-                            DrawChar(&local.prim, (char *) cursor, pos_x + pen_x, pos_y + pen_y);
+                            DrawChar(&local.prim, cursor, pos_x + pen_x, pos_y + pen_y);
 
-                            if (CheckKanjiFont(GetFontNo((char *) cursor)) != 0) {
+                            if (CheckKanjiFont(GetFontNo(cursor)) != 0) {
                                 pen_x += clearance_w;
-                            } else if (CheckKanjiFont(GetFontNo((char *) cursor + 2)) != 0) {
+                            } else if (CheckKanjiFont(GetFontNo(&cursor[2])) != 0) {
                                 pen_x += clearance_w;
                             } else {
                                 pen_x += clearance_w;

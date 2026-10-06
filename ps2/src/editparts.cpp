@@ -1,11 +1,10 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include "editparts.hpp"
 #include "mdslist.hpp"
 #include "mg_math.hpp"
 #include "mg_memory.hpp"
-
-extern "C" int fptosi(float value);
 
 const int kPartsInfoWallValueOffset = 0x1A4;
 const int kFenceEndAOffset = 0xA0;

@@ -56,3 +56,9 @@ mode table etc.); this game's `main` holds only start-up/shut-down, the game mod
 
 ## VSyncCallBack draft
 The guarded C++ draft increments the non-negative vertical blank counter. Retail ends with `sync; ei`, an instruction sequence unavailable to this plain C++ draft, so the retail assembly remains active.
+
+The source now declares and calls the callback by its native static C++ name.
+`postprocess_object.py` binds that local name to this unit's assembled
+`VSyncCallBack__Fi__2` body, which keeps the retail callback address and
+removes the source-level C-linkage alias. The linked game compiles with this
+binding; `init` remains a 100% object match.

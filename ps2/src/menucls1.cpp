@@ -65,8 +65,6 @@ char *GetMenuBigNum(int number) {
     return MenuBigNum[number % 10];
 }
 
-#pragma divbyzerocheck on
-
 void SetMenuBigNum2(char *out, int number) {
     if (out != 0) {
         int rest = number;
@@ -96,11 +94,6 @@ void SetMenuBigNum2(char *out, int number) {
         out[pos] = 0;
     }
 }
-
-#pragma divbyzerocheck reset
-#pragma divbyzerocheck on
-
-#pragma divbyzerocheck on
 
 void SetMenuBigNum(char *out, int number) {
     if (out != 0) {
@@ -153,9 +146,6 @@ void SetMenuBigNum(char *out, int number) {
         out[pos] = 0;
     }
 }
-
-#pragma divbyzerocheck reset
-#pragma divbyzerocheck reset
 
 CMenuFont::CMenuFont() {
     Init();

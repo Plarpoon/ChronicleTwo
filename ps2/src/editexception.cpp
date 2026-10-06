@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -21,20 +22,19 @@
 #include "scene.hpp"
 #include "sound.hpp"
 
-extern "C" int fptosi(float value);
-extern char    at_917__5[];
-extern char    at_918__4[];
-extern char    at_919__6[];
-extern char    at_920__5[];
-extern char    at_921__4[];
-extern char    at_1143__2[];
-extern char    at_1259[];
-extern void   *__vt__9mgCVisual[];
-extern void   *__vt__11mgC3DSprite[];
-extern mgVec4  at_1327;
-extern mgVec4  at_1328__2;
-extern mgVec4  at_1329;
-extern mgVec4  at_1330;
+extern char   at_917__5[];
+extern char   at_918__4[];
+extern char   at_919__6[];
+extern char   at_920__5[];
+extern char   at_921__4[];
+extern char   at_1143__2[];
+extern char   at_1259[];
+extern void  *__vt__9mgCVisual[];
+extern void  *__vt__11mgC3DSprite[];
+extern mgVec4 at_1327;
+extern mgVec4 at_1328__2;
+extern mgVec4 at_1329;
+extern mgVec4 at_1330;
 
 extern char at_1084__2[];
 extern char at_1085[];

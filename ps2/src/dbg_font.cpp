@@ -10,8 +10,6 @@
 #include "mg_texture.hpp"
 #include "mglib.hpp"
 
-extern "C" int vsprintf(char *, const char *, char *);
-
 static inline char *VaStart(char *stack_arguments, int named_arguments) {
     int register_bytes;
 

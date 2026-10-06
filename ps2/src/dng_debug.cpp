@@ -1,5 +1,5 @@
 #include "common.h"
-extern "C" void __ct__11mgCDrawPrimFv(void *);
+#include "mw_runtime.h"
 #define DNG_DEBUG_SOURCE
 #include <cmath>
 #include <cstdio>
@@ -37,24 +37,23 @@ extern "C" void __ct__11mgCDrawPrimFv(void *);
 #include "snd_mngr.hpp"
 #include "snd_seseq.hpp"
 
-extern char   *command_str[13];
-extern char    at_1103[];
-extern char    at_1104[];
-extern char    at_1105[];
-extern char    at_1106[];
-extern char    at_1107[];
-extern char    at_1132__2[];
-extern char    at_1133__2[];
-extern char    at_968[];
-extern char    at_969[];
-extern char    at_970[];
-extern char    at_971[];
-extern char    at_972[];
-extern char    at_973__2[];
-extern char    at_974__2[];
-extern char    at_975[];
-extern CFont   dbFont;
-extern "C" int fptosi(float value);
+extern char *command_str[13];
+extern char  at_1103[];
+extern char  at_1104[];
+extern char  at_1105[];
+extern char  at_1106[];
+extern char  at_1107[];
+extern char  at_1132__2[];
+extern char  at_1133__2[];
+extern char  at_968[];
+extern char  at_969[];
+extern char  at_970[];
+extern char  at_971[];
+extern char  at_972[];
+extern char  at_973__2[];
+extern char  at_974__2[];
+extern char  at_975[];
+extern CFont dbFont;
 #include <cstdio>
 #include <cstdlib>
 
@@ -130,18 +129,13 @@ void dngDebugStart() {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_debug", dngDebugStart__Fv);
 #endif
 void dngDebugDraw() {
-    union {
-        CPreSprite sprite;
-    };
-
-    char  text[0x800];
-    char *cursor;
-    int   i;
-
     if (dbinfo.active != 0) {
         (mgTexManager).ReloadTexture(0x6C, (sceVif1Packet *) NULL);
 
-        __ct__11mgCDrawPrimFv(&sprite);
+        CPreSprite sprite;
+        char       text[0x800];
+        char      *cursor;
+        int        i;
         sprite.Initialize(0, 0);
         sprite.Preset2D();
         sprite.TextureMapEnable(0);
@@ -467,9 +461,6 @@ void DrawDebugWindow() {
     }
 }
 
-// Static initialiser (.init)
-extern "C" void __sinit_dng_debug_cpp() { dbFont.Init(); }
-
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_debug", command_str__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_debug", command_int__DATA);
@@ -507,5 +498,5 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_debug", at_1133__2__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_debug", D_0037B010__DATA);
 
 // Uninitialised data (.bss)
-INCLUDE_BSS(dbFont, 0xC0);
+CFont dbFont;
 INCLUDE_BSS(dbinfo, 0x20);

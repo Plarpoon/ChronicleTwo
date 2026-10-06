@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cmath>
 #include <cstdio>
@@ -34,7 +35,6 @@ enum {
 };
 
 extern MINIMAP_SYMBOL_INFO symbol_table[];
-extern "C" int             fptosi(float value);
 extern int                 cax;
 extern int                 cay;
 extern CAutoMapGen        *auto_map;

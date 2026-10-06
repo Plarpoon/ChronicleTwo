@@ -170,3 +170,7 @@ CheckRunEvent/CheckReleaseTimming load s8/s16 fields; declared int.
   spread value in a local initialized to 50.0f before the call; this gives MWCC
   the retail literal-load order. `HitEffectSet` copies its direction constant
   into a typed `ActionVector`, then passes its `f` member at both call sites.
+
+## Typed casts
+
+`ThrowItemObject` indexes the `CCharacter2` item array directly. `SearchRandomStone` already returns `CMapParts*`, and `CActionChara` is a `CCharacter2`, so the corresponding object and base casts can be omitted. The affected actionchara functions remain exact in objdiff.

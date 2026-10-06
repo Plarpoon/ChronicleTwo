@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cmath>
 #include <cstdio>
@@ -681,7 +682,6 @@ static int CheckGeoramaMateria(TRESURE_BOX_FLOOR_INFO *info, int floor_no, int *
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", CheckGeoramaMateria__FP22TRESURE_BOX_FLOOR_INFOiPi);
 #endif
 #ifdef NONMATCHING
-extern "C" int         fptosi(float);
 extern mgCTexture     *Floor_InfoTex;
 extern mgRect<int>     Floor_Info;
 extern short           dngboardbrdtbl[24];

@@ -298,7 +298,6 @@ int CheckChronicleKanjiFont(mgCMemory *memory) {
 }
 
 int GetNameRegistFontKanjiList(int font_index, char *out) {
-    s8                  *dst = (s8 *) out;
     int                  position = 0;
     int                  row = 0;
     NAMEREGI_KANJI_NODE *node;
@@ -327,13 +326,13 @@ int GetNameRegistFontKanjiList(int font_index, char *out) {
         }
 
         if (position == font_index) {
-            dst[0] = -0x7F;
-            dst[1] = 0x40;
+            out[0] = -0x7F;
+            out[1] = 0x40;
             return 2;
         }
 
-        row++;
         position++;
+        row++;
     } while (row < 0x2C);
 
     return -1;
@@ -726,8 +725,6 @@ void CheckInputWord(char *word) {
     }
 }
 
-#pragma divbyzerocheck on
-
 int nameregist_local_key(MENU_SELECT_PARAM *param, int &keys, s16 *step, int table_index) {
     int direction = 0;
 
@@ -789,9 +786,6 @@ int nameregist_local_key(MENU_SELECT_PARAM *param, int &keys, s16 *step, int tab
     return direction;
 }
 
-#pragma divbyzerocheck reset
-#pragma divbyzerocheck on
-
 void CNameRegiMenu::ConvertPositionNameRegi(int mode) {
     int font_mode = GetActiveFontMode();
 
@@ -842,8 +836,6 @@ void CNameRegiMenu::ConvertPositionNameRegi(int mode) {
         }
     }
 }
-
-#pragma divbyzerocheck reset
 
 int CNameRegiMenu::CheckKanjiPosition(int position, s16 *keys, int key_mode) {
     MENU_SELECT_PARAM *param = &select;
@@ -1950,7 +1942,6 @@ void CNameRegiMenu::DrawActiveFont() {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nameregi", DrawActiveFont__13CNameRegiMenuFv);
 #endif
 #ifdef NONMATCHING
-#pragma divbyzerocheck on
 
 void CNameRegiMenu::StepMarkCursor() {
     float target_x = 0.0f;
@@ -2013,7 +2004,6 @@ void CNameRegiMenu::StepMarkCursor() {
     }
 }
 
-#pragma divbyzerocheck reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/nameregi", StepMarkCursor__13CNameRegiMenuFv);
 #endif
@@ -2076,12 +2066,11 @@ void CNameRegiMenu::DrawSelectedWord() {
 
 void CNameRegiMenu::DrawMessage() {
     RGBAQ_TYPE color;
-    u8         prim[0x128];
     MenuReloadTexture(OldReloadTexNumber, MenuDCMsg[6]->texture_block);
-    new ((u_long128 *) prim) mgCDrawPrim;
-    SetSpriteEnv((mgCDrawPrim *) prim, 0);
+    mgCDrawPrim prim;
+    SetSpriteEnv(&prim, 0);
     *(s64 *) &color = at_2031__3;
-    DrawVersatileWin_1((mgCDrawPrim *) prim, waku, &color, 0x80);
+    DrawVersatileWin_1(&prim, waku, &color, 0x80);
     (MenuDCMsg[6])->DrawMsg();
 
     if (message_open != 0) {

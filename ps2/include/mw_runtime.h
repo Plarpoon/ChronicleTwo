@@ -19,6 +19,12 @@ int fptosi(float value);
  */
 unsigned int fptoui(float value);
 
+/**
+ * Initializes an array allocated with the CodeWarrior placement-array layout.
+ */
+void *__construct_new_array(void *buffer, void *(*constructor)(void *), void *destructor, unsigned int element_size,
+                            int count);
+
 #ifdef __cplusplus
 }
 #endif

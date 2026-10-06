@@ -162,13 +162,13 @@ enum MasterDebugCodeValue {
  *
  */
 struct INIT_LOOP_ARG {
-    INIT_LOOP_ARG() { memset(this, 0, sizeof(*this)); }
-
     int map_no; /**< Map or dungeon the mode starts in, or -1 for none. */
     s8  unk_4[0x40];
     int floor_no; /**< Dungeon floor to start on, or -1 for the saved one. */
     int event_no; /**< Event to run on entry, or -1 for none. */
     int unk_4c;
+
+    INIT_LOOP_ARG() { memset(this, 0, sizeof(*this)); }
 };
 
 STATIC_ASSERT(sizeof(INIT_LOOP_ARG) == 0x50);
@@ -179,13 +179,13 @@ STATIC_ASSERT(sizeof(INIT_LOOP_ARG) == 0x50);
  *
  */
 struct DEBUG_INFO {
-    DEBUG_INFO() { memset(this, 0, sizeof(*this)); }
-
     int debug_camera;  /**< Non-zero to move the camera freely. */
     int chara_move;    /**< Debug character movement level, from 0 to 2. */
     int georama_debug; /**< Non-zero to lift the georama placement conditions. */
     int param_off;     /**< Non-zero to hide the parameter display. */
     int invent_debug;  /**< 1 to show the invention debug display. */
+
+    DEBUG_INFO() { memset(this, 0, sizeof(*this)); }
 };
 
 STATIC_ASSERT(sizeof(DEBUG_INFO) == 0x14);

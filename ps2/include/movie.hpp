@@ -430,7 +430,7 @@ int    pcmCallback(sceMpeg *mpeg, sceMpegCbDataStr *str, void *user);
 int    videoCallback(sceMpeg *mpeg, sceMpegCbDataStr *str, void *user);
 int    decBs0(VideoDec *dec);
 void   videoDecMain(void *arg);
-int    defMain(void *);
+int    defMain(void *arg);
 void   stepMain(void *arg);
 int    vblankHandler(int irq);
 int    handler_endimage(int irq);

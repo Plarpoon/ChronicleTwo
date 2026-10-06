@@ -206,8 +206,6 @@ void mgCDrawPrim::BeginPrim2(int prim_type, u_int data_a, u_int data_b, int unit
     write++;
 }
 
-#pragma divbyzerocheck on
-
 void mgCDrawPrim::EndPrim2() {
     if (packed == 0) {
         EndDma();
@@ -225,8 +223,6 @@ void mgCDrawPrim::EndPrim2() {
         }
     }
 }
-
-#pragma divbyzerocheck reset
 
 void mgCDrawPrim::End2() {
     if (disabled == 0) {

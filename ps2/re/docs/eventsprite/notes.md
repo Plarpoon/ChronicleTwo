@@ -78,3 +78,5 @@ come from `NormalDraw`/`FirstDraw`/`Draw`; fields stay `int` because the setters
 - Whether `CEventSprite`/`CEventSpriteMother`/`CMarker` really have inline ctors (vs. `event_func`
   calling `Init` explicitly) is inferred from the `__sinit` shape; confirm when matching `__sinit_event_func_cpp`.
 - Field names are descriptive, not retail (no retail field names available).
+
+`CEventSprite::Draw` constructs a local `mgCDrawPrim` only while the sprite is active. Replacing its 0x120-byte scratch buffer and explicit base-constructor alias with a scoped native `mgCDrawPrim` preserves the retail object code.

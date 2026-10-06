@@ -44,8 +44,6 @@ enum SCN_LOADMAP_STEP {
  *
  */
 struct SCN_LOADMAP_INFO2 {
-    SCN_LOADMAP_INFO2() { Initialize(); }
-
     /**
      *
      * Names and loaded contents of the files of one map: the map itself, or the map added to it.
@@ -85,6 +83,8 @@ struct SCN_LOADMAP_INFO2 {
     s32        data_ready;    /**< Nonzero once the map's files are loaded and the map can be built. */
     s32        map_no;        /**< Scene map slot the map is loaded into. */
     mgCMemory *stack;         /**< Stack the map is built in, and the texture and effect packs are loaded into. */
+
+    SCN_LOADMAP_INFO2() { Initialize(); }
 
     /**
      *

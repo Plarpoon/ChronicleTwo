@@ -32,8 +32,6 @@ extern char at_660[];
 extern char at_713[];
 extern char at_714[];
 
-extern "C" void Exit__2(int status);
-
 /**
  *
  * File path buffer viewed as text or aligned quadwords.
@@ -859,7 +857,6 @@ static int CDRead(char *path, u_int *buffer, int *out_size) {
  * Rounds a size up to the next
  * multiple of an alignment.
  */
-#pragma divbyzerocheck on
 
 static u_int align_size(u_int size, u_int alignment) {
     u32 rest = size % alignment;
@@ -870,8 +867,6 @@ static u_int align_size(u_int size, u_int alignment) {
 
     return size;
 }
-
-#pragma divbyzerocheck reset
 
 /**
  * Gives a free file cache entry,

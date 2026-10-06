@@ -2382,8 +2382,6 @@ int MenuListKeyCheck(int keys, int *cursor, int *top_line, int count, int visibl
     return moved;
 }
 
-#pragma divbyzerocheck on
-
 int MenuGlidKeyCheck(int select_key, int *pos, int *top_line, int *size, int *disp, int *limit, int max) {
     int result = 0;
     int moved[2] = {0, 0};
@@ -2462,8 +2460,6 @@ int MenuGlidKeyCheck(int select_key, int *pos, int *top_line, int *size, int *di
 
     return result;
 }
-
-#pragma divbyzerocheck reset
 
 int MenuListSelectKeyCheck(int keys, int page_size) {
     int step = 0;
@@ -3917,8 +3913,6 @@ int CMenuKeyFunc::menu_inputkey_limmit_check_line(int keys) {
     return result;
 }
 
-#pragma divbyzerocheck on
-
 int CMenuKeyFunc::menu_inputkey_limmit_check_glid(int select_key) {
     int                x;
     int                y;
@@ -3970,8 +3964,6 @@ int CMenuKeyFunc::menu_inputkey_limmit_check_glid(int select_key) {
 
     return result;
 }
-
-#pragma divbyzerocheck reset
 
 int CMenuKeyFunc::CheckMoveSelect(int arg) {
     int result = -1;
@@ -9063,7 +9055,6 @@ extern s8    backboard_y_repeat_drawnum_7629[3];
 extern s16   mos_repeat_table_x_7694[5];
 extern char *strtbl_7727[7];
 #ifdef NONMATCHING
-#pragma divbyzerocheck on
 
 void MenuWeaponBuildUpDraw(int &tex_block) {
     if (BuildUpWeaponInfo.mode == 0) {
@@ -9281,7 +9272,6 @@ void MenuWeaponBuildUpDraw(int &tex_block) {
     }
 }
 
-#pragma divbyzerocheck reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuWeaponBuildUpDraw__FRi);
 #endif
@@ -9344,7 +9334,6 @@ extern s8 argtblno_7927[][6];
 extern s8 sel_7928[][6];
 extern s8 conv_7932[];
 #ifdef NONMATCHING
-#pragma divbyzerocheck on
 
 int MenuItemSelectDiffer(int select) {
     if (CMenuItemInfoPt->unk_160) {
@@ -9421,7 +9410,6 @@ int MenuItemSelectDiffer(int select) {
     return 1;
 }
 
-#pragma divbyzerocheck reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuItemSelectDiffer__Fi);
 #endif

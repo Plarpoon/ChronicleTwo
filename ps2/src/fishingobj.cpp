@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -20,8 +21,6 @@
 
 void        ParaBlend(float *out, float t, float (*points)[4], int count);
 static void BindPosition(float *point0, float *point1, float length, float rate);
-
-extern "C" void __ct__11mgCDrawPrimFv(void *prim);
 
 const int kLinePointNum = 64;
 const int kUkiPointIndex = 60;
@@ -85,7 +84,6 @@ extern int              ActionChanceCnt;
 extern int              ActionChanceDir;
 extern int              NowFishSpeed;
 extern float            NowFishRot;
-extern "C" int          fptosi(float value);
 #include <libvu0.h>
 
 #include "dng_main.hpp"
@@ -1068,9 +1066,6 @@ void DrawFishingLine() {
     float       start[4];
     float       end[4];
     float       delta[4];
-    u_char      prim[0x120];
-    int         screen_a[4];
-    int         screen_b[4];
     int         i;
     int         ok;
     FISH_POINT *point;
@@ -1082,22 +1077,24 @@ void DrawFishingLine() {
     *(u_long128 *) end = *(u_long128 *) &FishPoint.pos;
     start[3] = 1.0f;
     end[3] = 1.0f;
-    __ct__11mgCDrawPrimFv(prim);
-    ((mgCDrawPrim *) prim)->Initialize(NULL, NULL);
-    ((mgCDrawPrim *) prim)->DepthTestEnable(1);
-    ((mgCDrawPrim *) prim)->AlphaBlendEnable(1);
-    ((mgCDrawPrim *) prim)->ZMask(1);
-    ((mgCDrawPrim *) prim)->TextureMapEnable(0);
-    ((mgCDrawPrim *) prim)->Begin(1);
-    ((mgCDrawPrim *) prim)->Color(0xDC, 0xDC, 0xDC, 0x10);
+    mgCDrawPrim prim;
+    int         screen_a[4];
+    int         screen_b[4];
+    prim.Initialize(NULL, NULL);
+    prim.DepthTestEnable(1);
+    prim.AlphaBlendEnable(1);
+    prim.ZMask(1);
+    prim.TextureMapEnable(0);
+    prim.Begin(1);
+    prim.Color(0xDC, 0xDC, 0xDC, 0x10);
 
     if (BattleFlag != 0) {
         ok = mgTransWorldScreen(screen_a, start);
         ok &= mgTransWorldScreen(screen_b, end);
 
         if (ok) {
-            ((mgCDrawPrim *) prim)->Vertex4(screen_a);
-            ((mgCDrawPrim *) prim)->Vertex4(screen_b);
+            prim.Vertex4(screen_a);
+            prim.Vertex4(screen_b);
         }
     } else {
         ok = mgTransWorldScreen(screen_a, start);
@@ -1105,8 +1102,8 @@ void DrawFishingLine() {
         ok &= mgTransWorldScreen(screen_b, LinePoint[LineTop + 1].pos);
 
         if (ok) {
-            ((mgCDrawPrim *) prim)->Vertex4(screen_a);
-            ((mgCDrawPrim *) prim)->Vertex4(screen_b);
+            prim.Vertex4(screen_a);
+            prim.Vertex4(screen_b);
         }
 
         for (i = LineTop + 1; i < kLinePointNum - 1; i++) {
@@ -1118,21 +1115,21 @@ void DrawFishingLine() {
 
             if (ok) {
                 if (point->pos[1] < GetWaterLevel()) {
-                    ((mgCDrawPrim *) prim)->Color(0xDC, 0xDC, 0xDC, 0);
+                    prim.Color(0xDC, 0xDC, 0xDC, 0);
                 }
 
-                ((mgCDrawPrim *) prim)->Vertex4(screen_a);
+                prim.Vertex4(screen_a);
 
                 if (LinePoint[i + 1].pos[1] < GetWaterLevel()) {
-                    ((mgCDrawPrim *) prim)->Color(0xDC, 0xDC, 0xDC, 0);
+                    prim.Color(0xDC, 0xDC, 0xDC, 0);
                 }
 
-                ((mgCDrawPrim *) prim)->Vertex4(screen_b);
+                prim.Vertex4(screen_b);
             }
         }
     }
 
-    ((mgCDrawPrim *) prim)->End();
+    prim.End();
 }
 
 void DrawFishingActionChance() {
@@ -1141,10 +1138,6 @@ void DrawFishingActionChance() {
     float              end[4];
     float              mid[4];
     float              delta[4];
-    u_char             prim[0x120];
-    float              to_end[4];
-    int                top_left[4];
-    int                bottom_right[4];
     *(u_long128 *) start = *(u_long128 *) (RodPoint + kRodTipIndex);
     *(u_long128 *) delta = *(u_long128 *) (RodPoint + kRodNearTipIndex);
     sceVu0SubVector(delta, delta, start);
@@ -1153,12 +1146,15 @@ void DrawFishingActionChance() {
     *(u_long128 *) end = *(u_long128 *) &FishPoint.pos;
     start[3] = 1.0f;
     end[3] = 1.0f;
-    __ct__11mgCDrawPrimFv(prim);
-    ((mgCDrawPrim *) prim)->Initialize(NULL, NULL);
-    ((mgCDrawPrim *) prim)->DepthTestEnable(1);
-    ((mgCDrawPrim *) prim)->AlphaBlendEnable(1);
-    ((mgCDrawPrim *) prim)->ZMask(1);
-    ((mgCDrawPrim *) prim)->TextureMapEnable(0);
+    mgCDrawPrim prim;
+    float       to_end[4];
+    int         top_left[4];
+    int         bottom_right[4];
+    prim.Initialize(NULL, NULL);
+    prim.DepthTestEnable(1);
+    prim.AlphaBlendEnable(1);
+    prim.ZMask(1);
+    prim.TextureMapEnable(0);
 
     if (BattleFlag != 0 && ActionChanceCnt > 0) {
         sceVu0SubVector(to_end, start, end);
@@ -1173,33 +1169,33 @@ void DrawFishingActionChance() {
             bottom_right[1] = cy + 0xE0;
             top_left[0] = cx - 0x100;
             top_left[1] = cy - 0xE0;
-            ((mgCDrawPrim *) prim)->DepthTestEnable(0);
-            ((mgCDrawPrim *) prim)->TextureMapEnable(1);
-            ((mgCDrawPrim *) prim)->Coord(1);
-            ((mgCDrawPrim *) prim)->ZMask(-1);
-            ((mgCDrawPrim *) prim)->Begin(6);
-            ((mgCDrawPrim *) prim)->Color(0x80, 0x80, 0x80, 0x80);
-            ((mgCDrawPrim *) prim)->Texture(textures->GetTexture(at_1503__4, -1));
+            prim.DepthTestEnable(0);
+            prim.TextureMapEnable(1);
+            prim.Coord(1);
+            prim.ZMask(-1);
+            prim.Begin(6);
+            prim.Color(0x80, 0x80, 0x80, 0x80);
+            prim.Texture(textures->GetTexture(at_1503__4, -1));
 
             if (ActionChanceDir > 0) {
                 bottom_right[0] += 0x180;
                 top_left[0] += 0x180;
-                ((mgCDrawPrim *) prim)->TextureCrd(0x1A, 0x16);
-                ((mgCDrawPrim *) prim)->Vertex4(top_left);
-                ((mgCDrawPrim *) prim)->TextureCrd(0x34, 0x2C);
-                ((mgCDrawPrim *) prim)->Vertex4(bottom_right);
+                prim.TextureCrd(0x1A, 0x16);
+                prim.Vertex4(top_left);
+                prim.TextureCrd(0x34, 0x2C);
+                prim.Vertex4(bottom_right);
             }
 
             if (ActionChanceDir < 0) {
                 bottom_right[0] -= 0x180;
                 top_left[0] -= 0x180;
-                ((mgCDrawPrim *) prim)->TextureCrd(0, 0x16);
-                ((mgCDrawPrim *) prim)->Vertex4(top_left);
-                ((mgCDrawPrim *) prim)->TextureCrd(0x1A, 0x2C);
-                ((mgCDrawPrim *) prim)->Vertex4(bottom_right);
+                prim.TextureCrd(0, 0x16);
+                prim.Vertex4(top_left);
+                prim.TextureCrd(0x1A, 0x2C);
+                prim.Vertex4(bottom_right);
             }
 
-            ((mgCDrawPrim *) prim)->End();
+            prim.End();
         }
     }
 }
@@ -1597,13 +1593,6 @@ void ParaBlend(float *out, float t, float (*point)[4], int count) {
     sceVu0ApplyMatrix(out, basis.m, powers);
 }
 
-// Static initialiser (.init)
-extern "C" void __sinit_fishingobj_cpp() {
-    memset(&LureObj, 0, sizeof(LureObj));
-    memset(&UkiObj, 0, sizeof(UkiObj));
-    memset(&HariObj, 0, sizeof(HariObj));
-}
-
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_975__5__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishingobj", at_985__4__DATA);
@@ -1659,8 +1648,8 @@ INCLUDE_BSS(FishPoint, 0x30);
 INCLUDE_BSS(CastingPoint, 0x10);
 INCLUDE_BSS(ReleasePoint, 0x10);
 INCLUDE_BSS(BattleStartPos, 0x10);
-INCLUDE_BSS(LureObj, 0x3D0);
-INCLUDE_BSS(UkiObj, 0x3D0);
-INCLUDE_BSS(HariObj, 0x3D0);
+CFishObj LureObj;
+CFishObj UkiObj;
+CFishObj HariObj;
 INCLUDE_BSS(ChanceBarPos, 0x10);
 #endif

@@ -18,7 +18,6 @@
 #include "mglib.hpp"
 
 // Trap on division by zero for variable integer divisors.
-#pragma divbyzerocheck on
 
 #ifdef NONMATCHING
 /**

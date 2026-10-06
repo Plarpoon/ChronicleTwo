@@ -117,3 +117,9 @@ Local (keep static in .cpp):
 No direct counterpart unit. `MenuCalcBufAlignment` matches the first game's
 (`menu_draw.hpp`), and `LoadFileMenu` replaces the first game's `LoadFileBGMenuData`/
 `LoadFileMenuData` pair with one function taking a mode.
+
+## Compiler flag
+The local `divbyzerocheck on/reset` directives are redundant with the unit's
+global flag: removing them produces an identical complete `menucommon.cpp.o`.
+The `fptosi` conversion used by this unit is the CodeWarrior runtime helper declared in
+`mw_runtime.h`; using that header preserves the complete object.

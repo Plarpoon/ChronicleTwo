@@ -157,3 +157,9 @@ owning variable names (DngMess, EventMess, SystemMessage...) if they turn up.
 ## First game
 First game's `ClsMes` (chronicle `clsmes.hpp`) is a different design (texture-based, 0x1858
 bytes). Only the name and the idea of a laid-out character table carry over; no layout reused.
+
+## Compiler flag cleanup
+
+The two local `divbyzerocheck on`/`reset` pairs are redundant with the PS2
+compiler flag. Removing them leaves every section and symbol in this unit's
+object diff unchanged.

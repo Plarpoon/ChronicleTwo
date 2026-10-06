@@ -40,14 +40,78 @@
 #include "sysmes.hpp"
 #include "userdata.hpp"
 
-#pragma inline_depth(8)
+extern int MenuCharaChangePosDataCfgBuffer;
 
-static inline CActionChara *NewMenuActionChara(mgCMemory *stack) {
-    CActionChara *chara = new (stack->Alloc(0x105)) CActionChara;
-    return chara;
+inline CMenuChrCngMenu::CMenuChrCngMenu() {
+    change_phase = 0;
+    change_chara = -1;
+    change_ready = 0;
+    MenuCharaChangePosDataCfgBuffer = 0;
+    unk_118 = 0;
+    select = 0;
+    last_select = 0;
+    star_fade = 0;
+    enable_change = 0;
+    party_member = 0;
+    item_brd_select = 0;
+    item_brd_pos = 0;
+    open_wait = -1;
+    cursor_wave = 0;
+    form = NULL;
+    npc_sub_form2 = NULL;
+    npc_chara_form = NULL;
+    npc_sub_form = NULL;
+    npc_mes_form = NULL;
+    chara_pos[0] = NULL;
+    chara_pos[1] = NULL;
+    chara_pos[2] = NULL;
+    chara_pos[3] = NULL;
+    chara_pos[4] = NULL;
+    npc_cmd_mes[0] = 0;
+    npc_cmd_mes[1] = 0;
+    npc_cmd_mes[2] = 0;
+    npc_cmd_mes[3] = 0;
+    unk_23C = 0;
+    cmd_part[0] = NULL;
+    cmd_part[1] = NULL;
+    cmd_part[2] = NULL;
+    cmd_part[3] = NULL;
+    point_gauge_part = NULL;
+    set_cursor = 0;
+    gauge_part[0] = NULL;
+    gauge_part[1] = NULL;
+    gauge_part[2] = NULL;
+    gauge[0] = NULL;
+    gauge[1] = NULL;
+    gauge[2] = NULL;
+    item_brd_arrived = 0;
+    party_info = 0;
+    npc_data = 0;
+    mes_data = 0;
+    sys_mes = NULL;
+    npc_no = 0;
+    sub_menu = -1;
+    sub_menu_next = -1;
+    face_state = -1;
+    face_chara = -1;
+    face_loaded = 0;
+    face_img = NULL;
+    npc_chara = NULL;
+    npc_loading = 0;
+    npc_loaded = 0;
+    npc_wait = 0;
+    npc_show = 0;
+    npc_y = 0;
+    InitStarInfo();
+    key_arg_no = 0;
+    close_on_end = 0;
+    got_item = 0;
+    gift_item = 0;
+    gift_num = 0;
+    memset(clut_storage, 0, sizeof(clut_storage));
+    npc_model_stack.stSetBuffer(NULL, 0);
+    npc_build_stack.stSetBuffer(NULL, 0);
 }
-
-#pragma inline_depth reset
 
 /**
  *
@@ -754,19 +818,19 @@ void SetMenuLoadItemNo(int who) {
             CHARA_DATA *chara = user_data->GetCharaDataPtr(who);
 
             do {
-                MenuLoadItemNo[count] = *(short *) ((u8 *) chara + count * 0x6C + 0x172);
+                MenuLoadItemNo[count] = chara->equip[count].item_no;
                 count++;
             } while (count < 5);
 
             break;
         }
         case 2: {
-            u8 *robo = (u8 *) user_data;
-            MenuLoadItemNo[0] = *(short *) (robo + 0x47D6);
-            MenuLoadItemNo[1] = *(short *) (robo + 0x4692);
-            MenuLoadItemNo[2] = *(short *) (robo + 0x46FE);
+            ROBO_DATA &robo = user_data->robo_data;
+            MenuLoadItemNo[0] = robo.parts[3].item_no;
+            MenuLoadItemNo[1] = robo.parts[0].item_no;
+            MenuLoadItemNo[2] = robo.parts[1].item_no;
             MenuLoadItemNo[3] = 0;
-            MenuLoadItemNo[4] = *(short *) (robo + 0x476A);
+            MenuLoadItemNo[4] = robo.parts[2].item_no;
             count = 5;
             break;
         }
@@ -1048,7 +1112,7 @@ void CMenuChrCngMenu::LoadNPCFaceData(mgCMemory *memory, int mode) {
 
         sprintf(path, at_1304__6, face_chara);
         memory->Align64();
-        face_img = (u8 *) (memory->stack + memory->stack_used);
+        face_img = reinterpret_cast<u8 *>(memory->stGetTop());
         size = LoadFileMenu(path, (u_long128 *) face_img, mode);
         memory->Alloc((size & 0xF) ? (size >> 4) + 1 : size >> 4);
     }
@@ -1065,10 +1129,12 @@ void CMenuChrCngMenu::EnterNPCFaceData() {
     }
 }
 
+#pragma inline_depth(8)
+
 int CMenuChrCngMenu::LoadBGNPCModel(int restart_read) {
     mgCMemory *stack = &MenuCharaLoadStack;
     stack->stReset();
-    npc_chara = NewMenuActionChara(stack);
+    npc_chara = new (stack->Alloc(0x105)) CActionChara;
     npc_chara->Initialize(NULL);
     stack->Align64();
     npc_build_stack.stSetBuffer(stack->stGetTop(), 0xCD00);
@@ -1097,6 +1163,8 @@ int CMenuChrCngMenu::LoadBGNPCModel(int restart_read) {
     ExeScript(at_1361);
     return size;
 }
+
+#pragma inline_depth reset
 
 int CMenuChrCngMenu::CheckBGNPCModel() {
     int   load_result;
@@ -2745,123 +2813,40 @@ void MenuCharaChangeStarDraw() {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", MenuCharaChangeStarDraw__Fv);
 #endif
 int MenuCharaChangeInit(mgCMemory *stack, int *tex_block, int mode) {
-    u8              *buffer;
+    u_long128       *buffer;
     int              size;
     unsigned int     file_size;
     CMenuChrCngMenu *menu;
     CRepairManager  *repair;
     int              i;
-    mgCMemory       *slot;
     CCharacter2     *chara;
-    int              offset;
     short            party_chara;
 
-    buffer = (u8 *) stack->stack;
+    buffer = stack->stack;
 
     if (mode == 4 || mode == 0xE) {
-        file_size = LoadFileMenu(at_2595__2, (u_long128 *) buffer, 1);
+        file_size = LoadFileMenu(at_2595__2, buffer, 1);
         stack->Alloc((file_size & 0xF) ? (file_size >> 4) + 1 : file_size >> 4);
         stack->Align64();
     }
 
-    ChrChangeInitTextureStack.stSetBuffer((u_long128 *) buffer, stack->stack_used);
-    size = stack_free_size(stack);
-    MenuChangeMemory.stSetBuffer((u_long128 *) stack_free_top(stack), size);
+    ChrChangeInitTextureStack.stSetBuffer(buffer, stack->stack_used);
+    size = stack->stGetRest();
+    MenuChangeMemory.stSetBuffer(stack->stGetTop(), size);
     MenuChangeMemory.Alloc(0x100);
 
-    if ((menu = new (MenuChangeMemory.Alloc(0x1FA)) CMenuChrCngMenu) != NULL) {
-        menu->change_phase = 0;
-        menu->change_chara = -1;
-        menu->change_ready = 0;
-        MenuCharaChangePosDataCfgBuffer = 0;
-        menu->unk_118 = 0;
-        menu->select = 0;
-        menu->last_select = 0;
-        menu->star_fade = 0;
-        menu->enable_change = 0;
-        menu->party_member = 0;
-        menu->item_brd_select = 0;
-        *(&menu->item_brd_pos) = 0;
-        menu->open_wait = -1;
-        menu->set_cursor = 1;
-        menu->cursor_wave = 0;
-        menu->form = NULL;
-        (&menu->npc_mes_form)[3] = NULL;
-        (&menu->npc_mes_form)[2] = NULL;
-        (&menu->npc_mes_form)[1] = NULL;
-        (&menu->npc_mes_form)[0] = NULL;
-        menu->chara_pos[0] = NULL;
-        menu->chara_pos[1] = NULL;
-        menu->chara_pos[2] = NULL;
-        menu->chara_pos[3] = NULL;
-        menu->chara_pos[4] = NULL;
-        menu->npc_cmd_mes[0] = 0;
-        menu->npc_cmd_mes[1] = 0;
-        menu->npc_cmd_mes[2] = 0;
-        menu->npc_cmd_mes[3] = 0;
-        menu->unk_23C = 0;
-        menu->cmd_part[0] = NULL;
-        menu->cmd_part[1] = NULL;
-        menu->cmd_part[2] = NULL;
-        menu->cmd_part[3] = NULL;
-        menu->point_gauge_part = NULL;
-        menu->set_cursor = 0;
-        menu->gauge_part[0] = NULL;
-        menu->gauge_part[1] = NULL;
-        menu->gauge_part[2] = NULL;
-        menu->gauge[0] = NULL;
-        menu->gauge[1] = NULL;
-        menu->gauge[2] = NULL;
-        menu->item_brd_arrived = 0;
-        menu->party_info = 0;
-        menu->npc_data = 0;
-        menu->mes_data = 0;
-        menu->sys_mes = NULL;
-        menu->npc_no = 0;
-        menu->sub_menu = -1;
-        menu->sub_menu_next = -1;
-        menu->face_state = -1;
-        menu->face_chara = -1;
-        menu->face_loaded = 0;
-        menu->face_img = NULL;
-        menu->npc_chara = NULL;
-        menu->npc_loading = 0;
-        menu->npc_loaded = 0;
-        menu->npc_wait = 0;
-        menu->npc_show = 0;
-        menu->npc_y = 0;
-        menu->InitStarInfo();
-        menu->key_arg_no = 0;
-        menu->close_on_end = 0;
-        menu->got_item = 0;
-        menu->gift_item = 0;
-        menu->gift_num = 0;
-        memset((u8 *) menu + 0x1A80, 0, 0x500);
-        menu->npc_model_stack.stSetBuffer(NULL, 0);
-        menu->npc_build_stack.stSetBuffer(NULL, 0);
-    }
+    menu = new (MenuChangeMemory.Alloc(0x1FA)) CMenuChrCngMenu;
 
     ChrChangMenuPt = menu;
     menu->SetTexBlock(tex_block);
     party_chara = MenuUserDataManPtr->active_chr_no;
-    *(&ChrChangMenuPt->last_select) = party_chara;
+    ChrChangMenuPt->last_select = party_chara;
     ChrChangMenuPt->select = party_chara;
 
-    if ((repair = (CRepairManager *) operator new(0x1EC, MenuChangeMemory.Alloc(0x21))) !=
-        NULL) {
-        slot = (mgCMemory *) &repair->effect_stack[0];
-
-        do {
-            slot->Init();
-            slot = (mgCMemory *) ((u8 *) slot + 0x30);
-        } while ((unsigned int) slot < (unsigned int) &repair->unk_1a4);
-
-        (&repair->model_stack)->Init();
-    }
+    repair = new (MenuChangeMemory.Alloc(0x21)) CRepairManager;
 
     MenuRepairMan = repair;
     repair->Initialize();
-    i = 0;
 
     if (mode == 4) {
         ChrChangMenuPt->key_arg_no = 2;
@@ -2869,22 +2854,18 @@ int MenuCharaChangeInit(mgCMemory *stack, int *tex_block, int mode) {
         ChrChangMenuPt->select = 4;
     }
 
-    offset = 0;
-
-    do {
+    for (i = 0; i < MENU_CHARA_LOAD_MAX; i++) {
         chara = MenuMainScene->GetCharacter(i);
-        i++;
-        *(CCharacter2 **) ((u8 *) MenuActionChara + offset) = chara;
-        offset += 4;
-    } while (i < 7);
+        MenuActionChara[i] = static_cast<CActionChara *>(chara);
+    }
 
     MenuBGReadInfo2Malloc(&MenuChangeMemory, tbl_2483);
     MenuCharaChangeCLUT_Tex = 0;
     MenuMainFrameModeSet(4, 1);
     ChrChangMenuPt->EnterDataMenu((u8 *) stack->stack);
     MenuChangeMemory.Align64();
-    size = stack_free_size(&MenuChangeMemory);
-    MenuChangeNpcMemory.stSetBuffer((u_long128 *) stack_free_top(&MenuChangeMemory), size);
+    size = MenuChangeMemory.stGetRest();
+    MenuChangeNpcMemory.stSetBuffer(MenuChangeMemory.stGetTop(), size);
     ChrChangMenuPt->LoadNPCFaceData(&MenuChangeNpcMemory, 0);
     MenuChangeNpcMemory.Align64();
     size = stack_free_size(&MenuChangeNpcMemory);
@@ -3197,12 +3178,10 @@ char *GetMonsterName(int monster_no) {
 int get_gajji_id_from_monster_progress_table(int progress_no, int *column_out) {
     int row;
     int column;
-    int column_offset;
-    int row_offset;
 
-    for (row = 0, row_offset = 0; row < 19; row++, row_offset += 10) {
-        for (column = 1, column_offset = 2; column < 5; column++, column_offset += 2) {
-            if (progress_no == *(short *) (column_offset + ((int) monster_progress_tbl + row_offset))) {
+    for (row = 0; row < 19; row++) {
+        for (column = 1; column < 5; column++) {
+            if (progress_no == monster_progress_tbl[row * 5 + column]) {
                 if (column_out) {
                     *column_out = column - 1;
                 }
@@ -3216,16 +3195,16 @@ int get_gajji_id_from_monster_progress_table(int progress_no, int *column_out) {
 }
 
 int GetMonsterProgressTableNo(int column, int value) {
-    int row = 0;
-    int row_offset = 0;
+    int  row = 0;
+    s16 *entry = &monster_progress_tbl[column + 1];
 
     do {
-        if (value == *(short *) (row_offset + (int) &monster_progress_tbl[column] + 2)) {
+        if (value == *entry) {
             return row;
         }
 
         row++;
-        row_offset += 10;
+        entry += 5;
     } while (row < 19);
 
     return -1;
@@ -3247,7 +3226,7 @@ int get_monster_tbl_bajjilevel(int *list, int monster_id, int value, int column)
     for (; row < 19; row++) {
         if (value < 0 ||
             (0 <= value && column > 0 && value == (monster_progress_tbl + column)[row * 5])) {
-            if (monster_id == *(short *) ((u8 *) monster_progress_tbl + row * 10)) {
+            if (monster_id == monster_progress_tbl[row * 5]) {
                 list[count] = (monster_progress_tbl + column)[row * 5 + 1];
                 count++;
             }
@@ -3349,7 +3328,6 @@ void CMenuMosSelect::AttachForm() {
     char              name[0x20];
     MOS_CHANGE_PARAM *base;
     int               i;
-    int               offset;
     badge_form = (CMenuPosDataForm *) MenuPosData->GetFormInfo(at_2940);
     model_form = (CMenuPosDataForm *) MenuPosData->GetFormInfo(at_2941);
     info_form = (CMenuPosDataForm *) MenuPosData->GetFormInfo(at_2942);
@@ -3359,7 +3337,6 @@ void CMenuMosSelect::AttachForm() {
     if (badge_form != NULL) {
         base = badge;
         i = 0;
-        offset = 0;
 
         do {
             MENUFORMPARTS_TYPE *part;
@@ -3367,11 +3344,10 @@ void CMenuMosSelect::AttachForm() {
             part = badge_form->GetPartInfo(name);
 
             if (part != NULL) {
-                part->draw_flag = ((MOS_CHANGE_PARAM *) ((u8 *) base + offset))->enable != 0;
+                part->draw_flag = base[i].enable != 0;
             }
 
             i += 1;
-            offset += 0xBC;
         } while (i < 0xC);
     }
 }
@@ -3602,9 +3578,9 @@ void CMenuMosSelect::CalcCursorPosition() {
     int pos[2];
 
     if (BuildUpWeaponInfo.mode == 1) {
-        int off = BuildUpWeaponInfo.select_no * 4;
-        pos[0] = *(short *) ((u8 *) &BuildUpNameXY[0][0] + off) - 0x14;
-        pos[1] = *(short *) ((u8 *) &BuildUpNameXY[0][1] + off);
+        int selected = BuildUpWeaponInfo.select_no;
+        pos[0] = BuildUpNameXY[selected][0] - 0x14;
+        pos[1] = BuildUpNameXY[selected][1];
     } else {
         GetBajjiPosition(badge_form, select, top, pos);
         pos[0] -= 0x1E;
@@ -3703,6 +3679,49 @@ int CMenuMosSelect::KeyNormalMode(int keys, int a, int b) {
     return 1;
 }
 
+inline CMenuMosSelect::CMenuMosSelect() {
+    key_arg_no = 0;
+    select = 0;
+    top = 0;
+    unk_5504 = 0;
+    mes_data = NULL;
+    monster->Initialize(NULL);
+    unk_765C = 0;
+    result = 0;
+    load_wait = 0;
+    load_phase = 0;
+    view_monster = -1;
+    pick_monster = -1;
+    load_monster = -1;
+    level_max = 0;
+    set_cursor = 1;
+    mes_show = 0;
+    MenuMesInit(&mes);
+    mes.texture_block = MenuArg.mes_tex_block;
+    badge = GetUserDataMan()->GetMonsterBajjiDataPtr(1);
+    select_badge = NULL;
+    info_win.texture_block = MenuArg.mes_tex_block;
+    MenuMesInit(&info_win);
+    info_win.SetWindowMode(4);
+    info_win.fuchi = 0;
+    info_win.fade_speed = 1.0f;
+    info_win.push_button = 0;
+    info_win.fukidashi_pos = 8;
+    info_win.alpha = 0;
+    effect_data = NULL;
+    effect_sound = NULL;
+    effect_show = 0;
+    effect_frame = 0;
+    info_win_show = 1;
+    skip_draw = 0;
+    change_wait = 0;
+    badge_form = NULL;
+    info_form = NULL;
+    model_form = NULL;
+}
+
+#pragma inline_depth(3)
+
 void MenuMonsterBoxInit(mgCMemory *stack, int *tex_block, int mode) {
     CMenuMosSelect *menu;
     CActionChara   *chara;
@@ -3714,46 +3733,7 @@ void MenuMonsterBoxInit(mgCMemory *stack, int *tex_block, int mode) {
     memory.stSetBuffer(stack->stGetTop(), rest);
     stack = &memory;
 
-    if ((menu = new (stack->Alloc(0x769)) CMenuMosSelect) != NULL) {
-        menu->key_arg_no = 0;
-        menu->select = 0;
-        menu->top = 0;
-        menu->unk_5504 = 0;
-        menu->mes_data = NULL;
-        menu->monster->Initialize(NULL);
-        menu->unk_765C = 0;
-        menu->result = 0;
-        menu->load_wait = 0;
-        menu->load_phase = 0;
-        menu->view_monster = -1;
-        menu->pick_monster = -1;
-        menu->load_monster = -1;
-        menu->level_max = 0;
-        menu->set_cursor = 1;
-        menu->mes_show = 0;
-        MenuMesInit(&menu->mes);
-        menu->mes.texture_block = MenuArg.mes_tex_block;
-        menu->badge = GetUserDataMan()->GetMonsterBajjiDataPtr(1);
-        menu->select_badge = NULL;
-        menu->info_win.texture_block = MenuArg.mes_tex_block;
-        MenuMesInit(&menu->info_win);
-        menu->info_win.SetWindowMode(4);
-        menu->info_win.fuchi = 0;
-        menu->info_win.fade_speed = 1.0f;
-        menu->info_win.push_button = 0;
-        menu->info_win.fukidashi_pos = 8;
-        menu->info_win.alpha = 0;
-        menu->effect_data = NULL;
-        menu->effect_sound = NULL;
-        menu->effect_show = 0;
-        menu->effect_frame = 0;
-        menu->info_win_show = 1;
-        menu->skip_draw = 0;
-        menu->change_wait = 0;
-        menu->badge_form = NULL;
-        menu->info_form = NULL;
-        menu->model_form = NULL;
-    }
+    menu = new (stack->Alloc(0x769)) CMenuMosSelect;
 
     MenuMosSelectPtr = menu;
     menu->SetTexBlock(tex_block);
@@ -3822,6 +3802,8 @@ void MenuMonsterBoxInit(mgCMemory *stack, int *tex_block, int mode) {
         MenuMosSelectPtr->view_monster = MenuMosSelectPtr->badge[MenuMosSelectPtr->select].monster_id;
     }
 }
+
+#pragma inline_depth reset
 #ifdef NONMATCHING
 int CMenuMosSelect::KeyStep() {
     sceVu0FVECTOR effectPos;
@@ -4029,7 +4011,7 @@ int CMenuMosSelect::KeyStep() {
                                 effect.Initialize(NULL);
                                 effect_show = 0;
                                 effect_data = MenuMonChangeLoadStack.stack;
-                                effect_sound = (u32 *) ((u8 *) effect_data + 0x39800);
+                                effect_sound = reinterpret_cast<u32 *>(&effect_data[0x3980]);
                                 effect_stack.stSetBuffer(
                                     MenuMonChangeLoadStack.stack + MenuMonChangeLoadStack.stack_size - 0x3B80, 0x3980);
                                 StartReadBG();
@@ -5936,15 +5918,16 @@ int MenuNPCLoadCheck(CActionChara *chara, mgCMemory *memory, int tex_block) {
     if (MenuNPCLoadFlag == 1) {
         if (chara != NULL) {
 
-            u8 *tex_manager = (u8 *) &mgTexManager;
+            mgCTextureManager *tex_manager = &mgTexManager;
+            char              *suffix = tex_manager->name_suffix;
             memory->stack_used = 0;
             memory->lock = 0;
             mgTexManager.DeleteBlock(tex_block);
-            strcpy((char *) (tex_manager + 0x1D8), at_4950__2);
+            strcpy(suffix, at_4950__2);
             chara->Initialize(NULL);
             chara->LoadPack((u_int *) MenuPartyNPCModelReadBuffer, menu_infocfgname, memory, memory, memory,
                             tex_block, 0);
-            tex_manager[0x1D8] = 0;
+            suffix[0] = 0;
             MenuNPCLoadFlag = 0;
             return 1;
         }
@@ -5955,11 +5938,11 @@ int MenuNPCLoadCheck(CActionChara *chara, mgCMemory *memory, int tex_block) {
 
 void CMenuCostumeSel::UpdateCostumeList(int mode, unsigned long chara_flag) {
     WornCostumes worn;
-    u8          *chara_data;
+    CHARA_DATA  *chara_data;
     int          kind;
     int          index;
 
-    chara_data = (u8 *) GetUserDataMan()->GetCharaDataPtr(0);
+    chara_data = GetUserDataMan()->GetCharaDataPtr(0);
 
     if (mode == 0) {
         this->costume_num[0] = GetCostumeList(chara_flag, 6, this->costume_list[1]);
@@ -5968,7 +5951,7 @@ void CMenuCostumeSel::UpdateCostumeList(int mode, unsigned long chara_flag) {
     }
 
     if (mode == 1) {
-        chara_data = (u8 *) GetUserDataMan()->GetCharaDataPtr(1);
+        chara_data = GetUserDataMan()->GetCharaDataPtr(1);
         this->costume_num[0] = GetCostumeList(chara_flag, 9, this->costume_list[1]);
         this->costume_num[1] = GetCostumeList(chara_flag, 8, this->costume_list[0]);
         this->costume_num[2] = GetCostumeList(chara_flag, 10, this->costume_list[2]);
@@ -5979,9 +5962,9 @@ void CMenuCostumeSel::UpdateCostumeList(int mode, unsigned long chara_flag) {
     }
 
     worn = *(WornCostumes *) at_4967__2;
-    worn.id[0] = *(short *) (chara_data + 0x24A);
-    worn.id[1] = *(short *) (chara_data + 0x322);
-    worn.id[2] = *(short *) (chara_data + 0x2B6);
+    worn.id[0] = chara_data->equip[2].item_no;
+    worn.id[1] = chara_data->equip[4].item_no;
+    worn.id[2] = chara_data->equip[3].item_no;
 
     for (kind = 0; kind < 3; kind++) {
         this->costume_select[kind] = 0;
@@ -6004,6 +5987,8 @@ int CosutmeSelDefaultSet(int costume_id, short *costume_list) {
     return 0;
 }
 
+#pragma inline_depth(8)
+
 void CMenuCostumeSel::LoadMenuData(mgCMemory *stack, int *tex_block) {
     int                i;
     mgCTextureManager *tex_manager;
@@ -6016,7 +6001,7 @@ void CMenuCostumeSel::LoadMenuData(mgCMemory *stack, int *tex_block) {
     SetTexBlock(tex_block);
 
     for (i = 0; i < 7; i++) {
-        MenuActionChara[i] = NewMenuActionChara(stack);
+        MenuActionChara[i] = new (stack->Alloc(0x105)) CActionChara;
         MenuActionChara[i]->Initialize(NULL);
     }
 
@@ -6069,6 +6054,8 @@ void CMenuCostumeSel::LoadMenuData(mgCMemory *stack, int *tex_block) {
     this->load_wait = 0;
     MenuCosutumeLoadPhase = 2;
 }
+
+#pragma inline_depth reset
 
 int CMenuCostumeSel::KeyStep() {
     CActionChara *model = MenuActionChara[0];
@@ -6871,6 +6858,8 @@ void CMosBookMenu::Draw() {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", Draw__12CMosBookMenuFv);
 #endif
 
+#pragma inline_depth(8)
+
 int CMosBookMenu::KeyStep() {
     int   select;
     int   lr;
@@ -7009,7 +6998,7 @@ int CMosBookMenu::KeyStep() {
             if (ReadBGSync() == 0) {
                 this->load_phase += 1;
                 this->show_wait = 0;
-                this->monster = NewMenuActionChara(&this->stack);
+                this->monster = new (this->stack.Alloc(0x105)) CActionChara;
                 this->monster->Initialize(NULL);
                 MenuMonsterLoadBGCheck(MenuCharaBuild2, &this->monster, this->tex_block_no, -1);
                 float x = -12.8f;
@@ -7054,43 +7043,19 @@ int CMosBookMenu::KeyStep() {
     return 0;
 }
 
+#pragma inline_depth reset
+
 void MonsterBookInit(mgCMemory *stack, int *tex_block, int mode) {
     CMosBookMenu *book;
-    int           i;
     int           size;
 
-    size = memory_free_size(stack);
-    MosBookStack.stSetBuffer((u_long128 *) memory_free_top(stack), size);
+    size = stack->stGetRest();
+    MosBookStack.stSetBuffer(stack->stGetTop(), size);
 
-    if ((book = new (MosBookStack.Alloc(0x9A)) CMosBookMenu) != NULL) {
-
-        *(int *) &book->bg_scroll = 0;
-        book->monster = NULL;
-        ((int *) &book->unk_1BC)[0] = 0;
-        ((int *) &book->unk_1BC)[1] = 0;
-        ((int *) &book->unk_1BC)[2] = 0;
-        ((int *) &book->unk_1BC)[3] = 0;
-        ((int *) &book->unk_1BC)[4] = 0;
-        book->load_phase = 0;
-        book->show_wait = 0;
-        book->load_wait = 0;
-        book->monster_info = NULL;
-        book->select = 0;
-
-        book->skip_draw = 0;
-        book->list_num = 0;
-
-        for (i = 0; i < 0x180; i++) {
-            book->list[i] = -1;
-        }
-
-        book->InitMonsterInfo();
-        book->camera.SetPos(0.0f, 0.0f, 100.0f);
-        book->camera.SetRef(0.0f, 0.0f, 0.0f);
-    }
+    book = new (MosBookStack.Alloc(0x9A)) CMosBookMenu;
 
     MenuMosBookPtr = book;
-    ((CBaseMenuClass *) book)->SetTexBlock(tex_block);
+    book->SetTexBlock(tex_block);
     MonsterBookPtr = (u8 *) &GetSaveData()->monster_book;
     MonsterBookBootMode = mode;
     MenuBGReadInfo2Malloc(&MosBookStack, tbl_5848);

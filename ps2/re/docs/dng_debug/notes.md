@@ -88,3 +88,9 @@ s16 at +0x44 when +2 > 0. `base_monster_define`'s row type belongs to the monste
 
 ## dngDebugStart draft
 `dngDebugStart` copies the live camera, movement, lock-on, sound, talk and effect settings into the editable command values. It configures pad repeat for 0xF000 and 0x5000, saves the battle pause flag, then sets that flag to 15. The guarded C++ draft compiles and differs from retail in nine instruction words.
+
+`dngDebugDraw` constructs a `CPreSprite` after reloading its texture, while the debug window is active. Declaring the sprite before the text buffer within the active branch preserves the retail stack layout and eliminates the base-constructor alias.
+
+## Native static initialization
+
+The native global `CFont dbFont` triggers MWCC’s static initializer, which calls `CFont::Init` and matches the 12-byte retail initializer. The postprocessed object names it `__sinit_dng_debug_cpp`; `dbFont` retains its 0xB8-byte BSS allocation.

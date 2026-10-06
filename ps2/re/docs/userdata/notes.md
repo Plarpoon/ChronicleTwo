@@ -255,3 +255,8 @@ The header gives their addresses, sizes, declarations and purpose comments.
 | `CBattleCharaInfo::ClearMagicSwordPow` | Resets the element, charge count and seven charge strengths. |
 | `ConvertItemAttrToCharaAttr` | Maps item attribute bits to separate condition-adding and curing `CHARA_STATUS_ATTR` masks. |
 | `CheckBadStatus` | Tests for any condition except `CHARA_STATUS_POWER`; it includes the two status bits whose effects remain unknown. |
+## Compiler flag cleanup
+
+The local `divbyzerocheck on`/`reset` pair is redundant with the PS2
+compiler flag. Removing it leaves every section and symbol in the unit's
+object diff unchanged.

@@ -23,7 +23,6 @@
 #include "scene.hpp"
 #include "scriptinterpreter.hpp"
 
-extern "C" int       strcasecmp(const char *left, const char *right);
 extern int           now_mds_num;
 extern int           max_mds_num;
 extern CMdsList     *pcpMdsList;

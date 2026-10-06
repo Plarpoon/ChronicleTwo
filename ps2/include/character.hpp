@@ -272,8 +272,6 @@ public:
     s32 *src_frame; /**< Index of each frame of the first model. */
     s32 *dst_frame; /**< Index of the frame of the second model that matches each entry of src_frame. */
 
-    CCharaFrameMatching() {}
-
     /**
      * Empties the matching.
      *
@@ -355,14 +353,6 @@ public:
     float         body_width;      /**< Width of the body. */
     float         body_height;     /**< Height of the body, used for framing and scaling. */
 
-    float GetBodyWidth() {
-        return body_width;
-    }
-
-    float GetBodyHeight() {
-        return body_height;
-    }
-
     float                 body_depth;                           /**< Depth of the body. */
     s32                   load_size;                            /**< Quadwords of the model memory that loading the character took. */
     s32                   copy_size;                            /**< Quadwords that a copy of the character takes; zero or below to take load_size. */
@@ -426,6 +416,14 @@ public:
     CHARA_ENTRY_EFFECT    entry_effect[CHARA_ENTRY_EFFECT_MAX]; /**< Effects that the motion playing starts. */
     CHRINFO_EFFECT_IMAGE *effect_image_list;                    /**< IMG archives that the effects entered. */
     s32                   effect_enable;                        /**< Nonzero while motions start their effects. */
+
+    float GetBodyWidth() {
+        return body_width;
+    }
+
+    float GetBodyHeight() {
+        return body_height;
+    }
 
     /**
      * Makes a character with no model and no motion.

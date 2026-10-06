@@ -152,12 +152,6 @@ extern CDngFreeMap       EventDngMap;
 extern CEffectScriptMan *EventEffectScript;
 extern CSWordAfterImage *SwordEffect;
 extern float             vv_3333[12];
-extern "C" void         *__vt__9mgCObject[];
-extern "C" void         *__vt__7CObject[];
-extern "C" void         *__vt__12CObjectFrame[];
-extern "C" void         *__vt__11CCharacter2[];
-extern "C" void         *__vt__9mgCVisual[];
-extern "C" void         *__vt__11mgC3DSprite[];
 
 static int   GetStackInt(RS_STACKDATA *stack);
 static float GetStackFloat(RS_STACKDATA *stack);
@@ -5532,19 +5526,7 @@ int _COPY_CHARA(RS_STACKDATA *stack, int argc) {
     CCharacter2 *source = GetCharacter(src_no);
     CCharacter2 *copy;
 
-    if ((copy = (CCharacter2 *) operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-        *(void ***) copy = __vt__9mgCObject;
-        copy->Initialize();
-        *(void ***) copy = __vt__7CObject;
-        copy->Initialize();
-        *(void ***) copy = __vt__12CObjectFrame;
-        copy->Initialize();
-        *(void ***) copy = __vt__11CCharacter2;
-        copy->shadow_link.num = 0;
-        copy->shadow_link.dst_frame = 0;
-        copy->shadow_link.src_frame = 0;
-        copy->Initialize();
-    }
+    copy = new (memory->Alloc(0x68)) CCharacter2;
 
     if (source == NULL) {
         return 0;
@@ -15377,13 +15359,7 @@ int _ESM_INITIALIZE(RS_STACKDATA *stack, int argc) {
         return 0;
     }
     CEffectScriptMan *manager;
-    if ((manager = (CEffectScriptMan *) operator new(sizeof(CEffectScriptMan), memory->Alloc(0x11B))) != NULL) {
-        ((void ***) &manager->sprite)[7] = __vt__9mgCVisual;
-        manager->sprite.Initialize();
-        *(void ***) ((u_int) &manager->sprite + 0x1C) = __vt__11mgC3DSprite;
-        manager->sprite.Initialize();
-        manager->Initialize(NULL, -1, -1);
-    }
+    manager = new (memory->Alloc(0x11B)) CEffectScriptMan;
     EventEffectScript = manager;
     if (EventEffectScript == NULL) {
         return 0;
@@ -16402,17 +16378,7 @@ int _COPY_MONS2SCNCHR(RS_STACKDATA *stack, int argc) {
     int          dst_no = GetStackInt(stack);
     CCharacter2 *copy;
 
-    if ((copy = (CCharacter2 *) operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-        *(void ***) copy = __vt__9mgCObject;
-        copy->Initialize();
-        *(void ***) copy = __vt__7CObject;
-        copy->Initialize();
-        *(void ***) copy = __vt__12CObjectFrame;
-        copy->Initialize();
-        *(void ***) copy = __vt__11CCharacter2;
-        copy->shadow_link.Initialize();
-        copy->Initialize();
-    }
+    copy = new (memory->Alloc(0x68)) CCharacter2;
 
     if (copy == NULL) {
         return 0;

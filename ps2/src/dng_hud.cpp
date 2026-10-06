@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cmath>
 #include <cstdio>
@@ -41,10 +42,8 @@
 #include "userdata.hpp"
 #include "water.hpp"
 
-extern "C" mgCDrawPrim *__ct__11mgCDrawPrimFv(mgCDrawPrim *);
-extern "C" int          fptosi(float);
-extern int              gekirin_anim[16];
-extern "C" const char   at_1221__2[];
+extern int            gekirin_anim[16];
+extern "C" const char at_1221__2[];
 
 // Code (.text)
 void CLevelupInfo::SetLevelUpInfo(int screen_x, int screen_y, int source, int value) {
@@ -187,12 +186,6 @@ void CPiyori::Draw() {
         int   w;
     } pos;
 
-    union {
-        CPreSprite prim;
-    };
-
-    int   quad_a[4];
-    int   quad_b[4];
     int   i;
     int   alpha;
     int   draw_time;
@@ -213,7 +206,9 @@ void CPiyori::Draw() {
             draw_radius = this->radius / 24.0 * draw_time;
         }
 
-        __ct__11mgCDrawPrimFv(&prim);
+        CPreSprite prim;
+        int        quad_a[4];
+        int        quad_b[4];
         prim.Initialize(NULL, NULL);
         prim.Preset2D();
         prim.Coord(1);
@@ -241,6 +236,7 @@ void CPiyori::Draw() {
 
             draw_angle += 2.0943952f;
         }
+
         prim.End();
     }
 }
@@ -303,12 +299,6 @@ void CGiftMark::Draw() {
         int   w;
     } pos;
 
-    union {
-        CPreSprite prim;
-    };
-
-    int quad_a[4];
-    int quad_b[4];
     int i;
 
     if (active != 0) {
@@ -317,7 +307,9 @@ void CGiftMark::Draw() {
             pos.v[1] += 10.0f + 2.0f * height;
             pos.v[1] += 5.0f * sinf(angle);
 
-            __ct__11mgCDrawPrimFv(&prim);
+            CPreSprite prim;
+            int        quad_a[4];
+            int        quad_b[4];
             prim.Initialize(NULL, NULL);
             prim.Preset2D();
             prim.Coord(1);
@@ -341,6 +333,7 @@ void CGiftMark::Draw() {
 
                 i += 1;
             } while (i < 3);
+
             prim.End();
         }
     }

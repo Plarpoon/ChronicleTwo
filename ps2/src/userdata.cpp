@@ -554,8 +554,6 @@ void CGameDataUsed::SetName(char *name) {
     }
 }
 
-#pragma divbyzerocheck on
-
 char *CGameDataUsed::GetName(int name_type) {
     char *name;
     int   weapon_level;
@@ -637,8 +635,6 @@ char *CGameDataUsed::GetName(int name_type) {
 
     return word_1327;
 }
-
-#pragma divbyzerocheck reset
 
 void CGameDataUsed::TransToPassword(char *data, int length) {
     CGameDataUsed   *item = this;

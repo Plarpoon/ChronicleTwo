@@ -73,8 +73,6 @@ STATIC_ASSERT(sizeof(CCameraInfo) == 0xD0);
  */
 class CMapInfo {
 public:
-    CMapInfo() { Initialize(); }
-
     int               img_num;           /**< Capacity of img_name. */
     char             *img_name[16];      /**< Names of the texture packs of the map, null after the last. */
     int               pcp_num;           /**< Capacity of pcp_name. */
@@ -104,6 +102,8 @@ public:
     int               chara_light_adjust;          /**< First value of the CHARA_LIGHT_ADJUST tag. */
     float             chara_light_adjust_value[3]; /**< Remaining values of the CHARA_LIGHT_ADJUST tag. */
     int               unk_fc;
+
+    CMapInfo() { Initialize(); }
 
     /**
      * Clears every setting and gives the defaults that a script may change.

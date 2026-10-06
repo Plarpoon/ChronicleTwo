@@ -82,3 +82,5 @@ Behaviour notes:
   (callers pass `CrossFadeBuff` / `BuffReadData + 0x200000`). `draft.sh` will confirm when written.
 - Data: `at_392/at_393` (CEffectManager::CreatePacket sprite size/colour init), `at_564__2..at_566`,
   `at_586..at_589` (DivSpriteScreen vertex templates / jag offsets) are compiler literals.
+
+`CFadeInOut::Draw` creates separate `mgCDrawPrim` locals in the main fade and blur branches. Both branch-scoped native objects preserve the retail stack layout and constructor calls while removing byte-buffer casts.

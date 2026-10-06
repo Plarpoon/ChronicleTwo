@@ -115,3 +115,9 @@ code touches CScene+0x3E70..0x405F (next known CScene field is at +0x4060), so t
 bounded by 0x1F0 but not established; no STATIC_ASSERT. Field types are unknown beyond "word
 stored as 0". Not related to `CThunder` (dng_effect) as far as the code shows. No first-game
 counterpart.
+
+## Compiler flag cleanup
+
+The local `divbyzerocheck on`/`reset` pair around `CWater::Shake` is redundant
+with the PS2 compiler flag. Removing it leaves every section and symbol in
+the water unit's object diff unchanged.

@@ -79,6 +79,13 @@ STATIC_ASSERT(sizeof(PAD_CTRL_ANALOG) == 0x8);
  */
 class CPadControl {
 public:
+    float           rx;                          /**< Right stick horizontal position this frame. */
+    float           ry;                          /**< Right stick vertical position this frame. */
+    float           lx;                          /**< Left stick horizontal position this frame. */
+    float           ly;                          /**< Left stick vertical position this frame. */
+    PAD_CTRL_BTN    btn[PAD_CTRL_BTN_MAX];       /**< Logical buttons, by number. */
+    PAD_CTRL_ANALOG analog[PAD_CTRL_ANALOG_MAX]; /**< Logical stick axes, by number. */
+
     /**
      * Unbinds every logical button and stick axis.
      *
@@ -132,13 +139,6 @@ public:
      * @size 0x1A0
      */
     void Update(CGamePad *pad);
-
-    float           rx;                          /**< Right stick horizontal position this frame. */
-    float           ry;                          /**< Right stick vertical position this frame. */
-    float           lx;                          /**< Left stick horizontal position this frame. */
-    float           ly;                          /**< Left stick vertical position this frame. */
-    PAD_CTRL_BTN    btn[PAD_CTRL_BTN_MAX];       /**< Logical buttons, by number. */
-    PAD_CTRL_ANALOG analog[PAD_CTRL_ANALOG_MAX]; /**< Logical stick axes, by number. */
 };
 
 STATIC_ASSERT(sizeof(CPadControl) == 0x510);

@@ -648,11 +648,12 @@ STATIC_ASSERT(sizeof(ARG_LIST) == 0x10);
  */
 class CEventScriptArg {
 public:
-    CEventScriptArg();
     int        next_id;  /**< Number the next list built is given. */
     ARG_LIST  *list;     /**< First list, or null. */
     int        list_num; /**< Number of lists. */
     mgCMemory *memory;   /**< Memory the lists and their strings are taken from. */
+
+    CEventScriptArg();
 
     /**
      * Runs an argument script program, which builds this object's argument lists.
@@ -674,7 +675,6 @@ STATIC_ASSERT(sizeof(CEventScriptArg) == 0x10);
  */
 class CRaster {
 public:
-    CRaster();
     int   state;          /**< Progress of the effect. @see RASTER_STATE. */
     float amplitude;      /**< Distance, in pixels, lines are moved at most. */
     float amplitude_step; /**< Change of the amplitude each frame. */
@@ -686,6 +686,8 @@ public:
     s32   unk_20;
     int   frames; /**< Number of frames the current change lasts, or -1. */
     int   frame;  /**< Frames passed in the current change. */
+
+    CRaster();
 
     /**
      * Turns the effect off and clears its settings.
@@ -752,7 +754,6 @@ STATIC_ASSERT(sizeof(CRaster) == 0x2C);
  */
 class CScreenEffect {
 public:
-    CScreenEffect();
     CRaster     raster;                /**< Raster wave effect. */
     mgCTexture *sepia_texture;         /**< Texture the sepia picture is captured into, or null. */
     int         sepia;                 /**< Non-zero while the sepia picture is drawn. */
@@ -761,6 +762,8 @@ public:
     int         mono_flash_interval;   /**< Number of frames each monochrome picture is shown. */
     int         mono_flash_frame;      /**< Frames the current monochrome picture has been shown. */
     int         mono_flash_no;         /**< Monochrome picture shown now, 0 or 1. */
+
+    CScreenEffect();
 
     /**
      * Turns every effect off and forgets the textures.

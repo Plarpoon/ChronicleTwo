@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <libvu0.h>
 
@@ -119,9 +120,7 @@ struct AccumeSlot {
     int       unk_324;
 };
 
-extern "C" int fptosi(float);
-extern "C" int fptoui(float);
-void           ParabolicInitialVector(float *result, float *from, float *to, float gravity, float flight_time);
+void ParabolicInitialVector(float *result, float *from, float *to, float gravity, float flight_time);
 
 /**
  *
@@ -1593,8 +1592,6 @@ int _SET_DIR_GUN(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
-#pragma divbyzerocheck on
-
 int _GET_NOW_HP_RATE(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -1606,8 +1603,6 @@ int _GET_NOW_HP_RATE(RS_STACKDATA *stack, int argc) {
     SetStack(stack, (float) rate);
     return 1;
 }
-
-#pragma divbyzerocheck reset
 
 int _SET_BOMB(RS_STACKDATA *stack, int argc) {
     GetBattleCharaInfo()->SetHpRate(0.05f);

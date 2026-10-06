@@ -209,13 +209,6 @@ class CScene {
 public:
     /**
      *
-     * Creates a scene with all data slots and playback state reset.
-     *
-     */
-    CScene() : event_data() { InitAllData(); }
-
-    /**
-     *
      * Music bank loaded into one music port, with the volume and fade it is played at.
      *
      */
@@ -412,6 +405,13 @@ public:
     u_long128        loop_se_buff[0x200];   /**< Memory the looping sound effect manager is created in. */
     mgCMemory        loop_se_stack;         /**< Memory stack over loop_se_buff. */
     CLoopSeMngr      loop_se;               /**< Looping sound effects. */
+
+    /**
+     *
+     * Creates a scene with all data slots and playback state reset.
+     *
+     */
+    CScene() : event_data() { InitAllData(); }
 
     /**
      *

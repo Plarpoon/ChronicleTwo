@@ -124,3 +124,7 @@ CEffect::Draw has a retail bug: checks `alpha_blend == 1` twice, so SUB (2) draw
   0x1DC float start time, 0x1E0 vector). That container type belongs to character, not here.
 - `__EFFECT_END` passes the emitter by value to `EnterEffectCtrl` (stack copy then
   `~CEffectCtrl`), consistent with the `F11CEffectCtrlPc` mangling.
+
+## Division-check pragma
+
+The unit-level `divbyzerocheck` pragma was redundant with the global MWCC flag; removing it left the full compiled object identical in objdiff.

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -35,7 +36,6 @@ mgCMemory MenuLocalStack;
 
 CInventUserData *GetInventUserDataPtr();
 
-extern "C" int          fptosi(float value);
 extern short            NowSellMode;
 extern SHOP_PRICE_INFO *Spi_PriceList;
 extern char             at_1221__3[];
@@ -68,7 +68,6 @@ int GetDonyShopLineUp(int *item_list, int *status) {
     int             listed = 0;
     int             available = 0;
     DONY_SHOP_ITEM *entry = dony_shoplist;
-    int             offset = 0;
 
     for (; 0 < entry->item_no; entry++) {
         listed++;
@@ -77,10 +76,9 @@ int GetDonyShopLineUp(int *item_list, int *status) {
             already_owned++;
         } else if (entry->level < level) {
             if (item_list != NULL) {
-                *(int *) ((u8 *) item_list + offset) = entry->item_no;
+                item_list[available] = entry->item_no;
             }
 
-            offset += 4;
             available++;
         }
     }
@@ -305,39 +303,30 @@ int _SHOP_ANALYZE(SPI_STACK *stack, int argc) {
         }
     } else if (Now_Shop_ID == 0x20) {
         NowSellMode = SHOP_SELL_MODE_MEDAL;
-        int byte_offset;
         int index = 0;
-        byte_offset = 0;
 
         for (; index < Now_ShopListNum; index++) {
             int item_number = spiGetStackInt(stack++);
-            *(int *) ((u8 *) Now_ShopDataReadPtr + byte_offset) = item_number;
-            byte_offset += sizeof(int);
+            Now_ShopDataReadPtr[index] = item_number;
         }
     } else if (Now_Shop_ID == 0x21) {
         NowSellMode = SHOP_SELL_MODE_DONY;
-        int byte_offset;
         int index = 0;
-        byte_offset = 0;
 
         for (; index < Now_ShopListNum; index++) {
             int item_number = spiGetStackInt(stack++);
-            *(int *) ((u8 *) Now_ShopDataReadPtr + byte_offset) = item_number;
-            byte_offset += sizeof(int);
+            Now_ShopDataReadPtr[index] = item_number;
         }
     } else {
-        int byte_offset;
         int index;
 
         if (0 < remaining) {
             index = 0;
-            byte_offset = 0;
 
             do {
                 int item_number = spiGetStackInt(stack++);
-                *(int *) ((u8 *) Now_ShopDataReadPtr + byte_offset) = item_number;
+                Now_ShopDataReadPtr[index] = item_number;
                 index++;
-                byte_offset += sizeof(int);
             } while (index < remaining);
         }
     }
@@ -1625,7 +1614,6 @@ extern float       QuestMoveRate;
 extern u8          QuestViewCommentFlag;
 extern QUEST_INFO *ActiveQuestInfo;
 extern SCOOP_DATA *ScmFlagCtrl;
-#pragma divbyzerocheck on
 
 void CMenuQuestView::InitEnd() {
     select = 0;
@@ -1713,8 +1701,6 @@ void CMenuQuestView::InitEnd() {
     ScmFlagCtrl = NULL;
     FadeInMenu(40, 0.0f);
 }
-
-#pragma divbyzerocheck reset
 
 extern CQuestData        *QuestDataPtr;
 extern CScoopDataManager *ScoopMan;

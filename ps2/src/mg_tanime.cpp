@@ -61,7 +61,6 @@ void mgCTexAnimeData::Initialize() {
 
 #ifdef NONMATCHING
 #pragma global_optimizer off
-#pragma divbyzerocheck on
 
 void mgCTextureAnime::TexAnime(int texb, sceVif1Packet *packet) {
     int                      i;
@@ -510,7 +509,6 @@ void mgCTextureAnime::TexAnime(int texb, sceVif1Packet *packet) {
 }
 
 #pragma global_optimizer reset
-#pragma divbyzerocheck reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_tanime", TexAnime__15mgCTextureAnimeFiP13sceVif1Packet);
 #endif

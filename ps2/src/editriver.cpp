@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cstring>
 
@@ -11,8 +12,6 @@
 #include "mg_memory.hpp"
 #include "mg_texture.hpp"
 #include "mglib.hpp"
-
-extern "C" int fptosi(float value);
 
 // Code (.text)
 int CEditMap::PlaceRiver(float *pos) {

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -13,65 +14,64 @@
 #include "scriptinterpreter.hpp"
 #include "userdata.hpp"
 
-extern CDataCommon     *comdatapt;
-extern int              comdatapt_num;
-extern mgCMemory       *gamedata_build_stack;
-extern CDataCommon      local_com_itemdata[432];
-extern CDataItem        local_itemdata[162];
-extern CDataWeapon      local_weapondata[116];
-extern CDataAttach      local_attachdata[38];
-extern CDataRoboPart    local_robodata[68];
-extern CDataBreedFish   local_fishdata[20];
-extern short            local_guarddata[40];
-extern short            local_itemdatano_converttable[512];
-extern char             gamedata_sysword_buffer_1073[0x2800];
-extern char             filename_1267[0x20];
-extern char             item_file_path_1288[0x80];
-extern SPI_TAG_PARAM    gamedata_tag[];
-extern short            msg_offsettbl_1363[3];
-extern signed char      ItemCmdMsgTbl[33][8];
-extern "C" unsigned int fptoui(float);
-extern char             at_1018[];
-extern char             at_1019[];
-extern char             at_1020[];
-extern char             at_1021[];
-extern char             at_1022[];
-extern char             at_1023[];
-extern char             at_1024[];
-extern char             at_1025__2[];
-extern char             at_1026[];
-extern char             at_1027[];
-extern char             at_1028[];
-extern char             at_1029[];
-extern char             at_1030[];
-extern char             at_1031[];
-extern char             at_1032[];
-extern char             at_1033[];
-extern char             at_1034[];
-extern char             at_1035[];
-extern char             at_1036[];
-extern char             at_1037[];
-extern char             at_1038[];
-extern char             at_1039[];
-extern char             at_1040[];
-extern char             at_1041[];
-extern char             at_1048[];
-extern char             at_1063[];
-extern char             at_1064__2[];
-extern char             at_1065[];
-extern char             at_1066[];
-extern char             at_1067[];
-extern char             at_1068[];
-extern char             at_1069__2[];
-extern char             at_1079[];
-extern char             at_1283__3[];
-extern char             at_1284__3[];
-extern char             at_1307__2[];
-extern char             at_1308__2[];
-extern char             at_1309__2[];
-extern char             at_1310__2[];
-extern char             at_1311__2[];
-extern char             at_1501[];
+extern CDataCommon   *comdatapt;
+extern int            comdatapt_num;
+extern mgCMemory     *gamedata_build_stack;
+extern CDataCommon    local_com_itemdata[432];
+extern CDataItem      local_itemdata[162];
+extern CDataWeapon    local_weapondata[116];
+extern CDataAttach    local_attachdata[38];
+extern CDataRoboPart  local_robodata[68];
+extern CDataBreedFish local_fishdata[20];
+extern short          local_guarddata[40];
+extern short          local_itemdatano_converttable[512];
+extern char           gamedata_sysword_buffer_1073[0x2800];
+extern char           filename_1267[0x20];
+extern char           item_file_path_1288[0x80];
+extern SPI_TAG_PARAM  gamedata_tag[];
+extern short          msg_offsettbl_1363[3];
+extern signed char    ItemCmdMsgTbl[33][8];
+extern char           at_1018[];
+extern char           at_1019[];
+extern char           at_1020[];
+extern char           at_1021[];
+extern char           at_1022[];
+extern char           at_1023[];
+extern char           at_1024[];
+extern char           at_1025__2[];
+extern char           at_1026[];
+extern char           at_1027[];
+extern char           at_1028[];
+extern char           at_1029[];
+extern char           at_1030[];
+extern char           at_1031[];
+extern char           at_1032[];
+extern char           at_1033[];
+extern char           at_1034[];
+extern char           at_1035[];
+extern char           at_1036[];
+extern char           at_1037[];
+extern char           at_1038[];
+extern char           at_1039[];
+extern char           at_1040[];
+extern char           at_1041[];
+extern char           at_1048[];
+extern char           at_1063[];
+extern char           at_1064__2[];
+extern char           at_1065[];
+extern char           at_1066[];
+extern char           at_1067[];
+extern char           at_1068[];
+extern char           at_1069__2[];
+extern char           at_1079[];
+extern char           at_1283__3[];
+extern char           at_1284__3[];
+extern char           at_1307__2[];
+extern char           at_1308__2[];
+extern char           at_1309__2[];
+extern char           at_1310__2[];
+extern char           at_1311__2[];
+extern char           at_1501[];
 
 // Code (.text)
 CGameData *GetGameDataPt() {

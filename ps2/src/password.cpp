@@ -221,7 +221,6 @@ static unsigned int random() {
 
 #pragma schedule reset
 
-#pragma divbyzerocheck on
 #pragma optimization_level 0
 
 /**
@@ -256,9 +255,7 @@ static void EncodeBinData(u8 *data, int size, u8 *key, int key_size) {
 }
 
 #pragma optimization_level reset
-#pragma divbyzerocheck reset
 
-#pragma divbyzerocheck on
 #pragma optimization_level 0
 
 /**
@@ -300,7 +297,6 @@ static int DecodeBinData(u8 *data, int size, u8 *key, int key_size) {
 }
 
 #pragma optimization_level reset
-#pragma divbyzerocheck reset
 
 #pragma optimization_level 0
 

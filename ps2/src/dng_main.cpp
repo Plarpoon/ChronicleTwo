@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cmath>
 #include <cstdio>
@@ -68,7 +69,6 @@ extern "C" float      viewAngleH__2;
 extern "C" float      viewAngleV__2;
 extern char           at_3589[];
 extern CWeaponElement wep_effect[8];
-extern "C" int        fptosi(float value);
 #include "actionchara.hpp"
 #include "automap.hpp"
 #include "cameracontrol.hpp"

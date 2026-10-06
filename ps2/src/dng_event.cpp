@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cmath>
 #include <cstdio>
@@ -52,7 +53,6 @@
 #include "userdata.hpp"
 #include "water.hpp"
 
-extern "C" int                 fptosi(float value);
 extern int                     FLS_FLOOR_ID;
 extern char                    at_1082__2[];
 extern char                    at_1248[];
@@ -689,26 +689,26 @@ void CTreasureBox::DrawShadow(float *view_pos, float *light_direction) {
 }
 
 void CTreasureBoxManager::SetLargeModel(CCharacter2 *model, int value) {
-    mgCFrame *frame;
-    mgCFrame *found;
-    u8       *entry;
-    int       i;
+    mgCFrame     *frame;
+    mgCFrame     *found;
+    CTreasureBox *entry;
+    int           i;
 
-    *(int *) this = value;
-    *(CCharacter2 **) ((u8 *) this + 0xA94) = model;
+    this->tex_block = value;
+    this->model = model;
     frame = model->CObjectFrame::frame;
 
     if (frame != NULL) {
         found = frame->SearchFrame(at_1274__2);
 
         if (found != NULL) {
-            entry = (u8 *) this + 0x10;
+            entry = box;
 
             for (i = 0; i < 0x18; i++) {
-                *(mgCFrame **) (entry + 0x64) = found;
-                *(mgCFrame **) (entry + 0x68) = frame;
-                *(CCharacter2 **) (entry + 0x6C) = model;
-                entry += 0x70;
+                entry->lid_frame = found;
+                entry->frame = frame;
+                entry->model = model;
+                entry++;
             }
         }
     }

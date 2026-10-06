@@ -1,6 +1,8 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <eekernel.h>
+#include <libvu0.h>
 
 #include <cmath>
 #include <cstdio>
@@ -55,7 +57,6 @@ extern FISH_PLACE_MAP  *FishPlaceMap;
 extern int              FishPlaceMapNum;
 extern u_int            fpNowFishPlaceMapNum;
 extern SPI_TAG_PARAM    tag__8[];
-extern "C" int          fptosi(float value);
 void                    StepDataLoading(void *arg);
 extern int              RodActFlag;
 extern int              UkiCameraFlag;
@@ -140,7 +141,6 @@ extern char             at_1749__2[];
 extern char             at_2099[];
 extern char             at_2127__3[];
 extern char             at_2461[];
-extern "C" int          rand(void);
 
 enum {
     kFishShapeCount = 5,
@@ -191,13 +191,13 @@ int              GetMotionCount(CCharacter2 *chara, char *name, int min_count, i
 void             DeleteEsa();
 int              EndSelectCastingPoint(CScene *scene);
 FISH_PARAM      *GetFishParam(int index);
-int              GetUkiWaitTime(FISH_DATA *, CScene *, float *, int, int);
+int              GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, int bait_no);
 int              GetUkiPokeTime(FISH_DATA *fish);
 int              GetUkiPullTime(FISH_DATA *fish);
 int              FishLoadBG(FISH_DATA *fish, u_long128 *buffer);
 float            GetRandamNumber(float center, float high, float floor);
 void             DrawSplash(float *pos, float scale);
-void             LineTensionStep(FISH_DATA *, int);
+void             LineTensionStep(FISH_DATA *fish, int reel);
 void             ExitFishing(CScene *scene);
 int              LoadExMotionBG(SubGameInfo *info, u_long128 *buffer);
 void             ReplayPrevBGM(CScene *scene);
@@ -217,11 +217,9 @@ extern Vec4      at_1490__2;
 extern Vec4      at_1491__2;
 extern char      at_1508__3[];
 extern char      at_1509__3[];
-extern "C" void  sceVu0InterVectorXYZ(float *result, float *from, float *to, float rate);
 extern mgCMemory EsaStack;
 extern mgCMemory SndStack;
 extern mgCMemory FishingBuff__2;
-extern "C" void *__ct__14CCameraControlFv(void *);
 extern Vec4      at_1536;
 extern char      at_1577[];
 
@@ -290,7 +288,6 @@ extern char               at_1442__3[];
 extern char               at_1443__3[];
 extern char               at_1723__2[];
 extern CCameraControl     CameraInfo;
-extern "C" void           srand(u_int seed);
 extern Vec4               at_1681__2;
 extern char               at_1683__2[];
 extern Vec4               at_1689;
@@ -343,8 +340,6 @@ extern "C" void *__vt__9mgCObject[];
 extern "C" void *__vt__7CObject[];
 extern "C" void *__vt__12CObjectFrame[];
 extern "C" void *__vt__11CCharacter2[];
-
-extern "C" void __ct__11mgCDrawPrimFv(mgCDrawPrim *prim);
 
 // Code (.text)
 FISH_PARAM *GetFishParam(int index) {
@@ -1080,15 +1075,9 @@ void DrawNumber(mgCDrawPrim *prim, int digit, int x, int y) {
 }
 
 int sgSystemDrawFishing(SubGameInfo *info) {
-    union {
-        mgCDrawPrim prim;
-    };
-
     CScene     *scene;
     mgCTexture *system_texture;
     mgCTexture *banner_texture;
-    float       tension_end[4];
-    float       tension_color[4];
     int         top;
     int         gauge_top;
     float       reach;
@@ -1114,7 +1103,9 @@ int sgSystemDrawFishing(SubGameInfo *info) {
     banner_texture = (mgCTexture *) mgTexManager.GetTexture(at_1509__3,
                                                             SystemTexb);
 
-    __ct__11mgCDrawPrimFv(&prim);
+    mgCDrawPrim prim;
+    float       tension_end[4];
+    float       tension_color[4];
 
     prim.Initialize(NULL, NULL);
     prim.AlphaBlendEnable(1);
@@ -1123,6 +1114,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
     prim.ZMask(-1);
     prim.Bilinear(1);
     prim.TextureMapEnable(0);
+
     if (CharaMode == 5) {
         top = mgScreenHeight - 0x47;
         prim.Begin(6);
@@ -1225,6 +1217,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
     }
 
     prim.TextureMapEnable(1);
+
     if (DrawCongra > 0) {
         prim.Begin(6);
         prim.Color(0x80, 0x80, 0x80, 0x80);
@@ -3389,18 +3382,6 @@ void LoadFishPlaceData(char *script, int size, mgCMemory *stack) {
     interpreter.Run();
 }
 
-// Static initialiser (.init)
-extern "C" void __sinit_fishing_cpp() {
-    EsaStack.Init();
-    SndStack.Init();
-    __ct__14CCameraControlFv(&CameraInfo);
-    __ct__14CCameraControlFv(&UkiCameraInfo);
-    MotionBuff.Init();
-    ReadStack.Init();
-    FishingBuff__2.Init();
-    FishStack.Init();
-}
-
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishing", lure_file__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/fishing", EsaInfo__DATA);
@@ -3616,18 +3597,18 @@ INCLUDE_BSS(fpNowFishPlaceMap, 0x4);
 INCLUDE_BSS(fpNowFishPlaceMapNum, 0x4);
 
 // Uninitialised data (.bss)
-INCLUDE_BSS(EsaStack, 0x30);
-INCLUDE_BSS(SndStack, 0x30);
-INCLUDE_BSS(CameraInfo, 0x1F0);
-INCLUDE_BSS(UkiCameraInfo, 0x1F0);
+mgCMemory      EsaStack;
+mgCMemory      SndStack;
+CCameraControl CameraInfo;
+CCameraControl UkiCameraInfo;
 INCLUDE_BSS(CastPoint, 0x10);
 INCLUDE_BSS(CastPointCur, 0x10);
 INCLUDE_BSS(RodData, 0x20);
 INCLUDE_BSS(FishData, 0x30);
-INCLUDE_BSS(MotionBuff, 0x30);
-INCLUDE_BSS(ReadStack, 0x30);
-INCLUDE_BSS(FishingBuff__2, 0x30);
-INCLUDE_BSS(FishStack, 0x30);
+mgCMemory MotionBuff;
+mgCMemory ReadStack;
+mgCMemory FishingBuff__2;
+mgCMemory FishStack;
 INCLUDE_BSS(BgmStatus, 0x20);
 INCLUDE_BSS(at_1681__2, 0x10);
 INCLUDE_BSS(at_1689, 0x10);

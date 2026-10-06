@@ -1,4 +1,10 @@
 #include "menudraw.hpp"
+#include "mw_runtime.h"
+
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include "actionchara.hpp"
 #include "character.hpp"
@@ -24,10 +30,6 @@
 #include "mglib.hpp"
 #include "nd_meswin.hpp"
 #include "userdata.hpp"
-extern "C" int sprintf(...);
-#include <cmath>
-#include <cstdlib>
-#include <cstring>
 
 /**
  *
@@ -495,10 +497,6 @@ extern int MenuItemBrdViewLine;
 
 extern float MenuItemBrdScrlCurLen;
 
-extern "C" int fptosi(float value);
-
-extern "C" unsigned int fptoui(float value);
-
 extern float DrawItemCounter;
 
 extern signed char DrawItemDefCounter;
@@ -551,9 +549,9 @@ extern menu_effect_preset at_5441;
 
 extern menu_effect_preset at_5450;
 
-extern "C" u8 temp_3925[32];
+extern "C" char temp_3925[32];
 
-extern "C" u8 at_3927[];
+extern "C" char at_3927[];
 
 extern "C" char at_4182[];
 
@@ -2506,8 +2504,6 @@ void CMenuPosDataForm::SetRGBACalcParam(int index, int from, int to) {
     p[0x59] = to;
 }
 
-#pragma divbyzerocheck on
-
 void CMenuPosDataForm::FormFadeIn(int frames, int reset) {
     int i;
 
@@ -2527,9 +2523,6 @@ void CMenuPosDataForm::FormFadeIn(int frames, int reset) {
     SetRGBACalcParam(3, 0x80 / frames, 0x80);
 }
 
-#pragma divbyzerocheck reset
-#pragma divbyzerocheck on
-
 void CMenuPosDataForm::FormFadeOut(int frames, int reset) {
     int i;
 
@@ -2548,8 +2541,6 @@ void CMenuPosDataForm::FormFadeOut(int frames, int reset) {
 
     SetRGBACalcParam(3, -0x80 / frames, 0);
 }
-
-#pragma divbyzerocheck reset
 
 void CMenuPosDataForm::SetNumber(char *part_name, int number) {
     MENUFORMPARTS_TYPE *part = GetPartInfo(part_name);
@@ -4225,8 +4216,8 @@ void CPosDataManage::EtcTbl2Clear(int from, int to) {
 }
 
 void *GetMenuMainIconChar(int icon_no) {
-    sprintf(&temp_3925, &at_3927, icon_no - 2);
-    return &temp_3925;
+    sprintf(temp_3925, at_3927, icon_no - 2);
+    return temp_3925;
 }
 
 CMenuPosDataForm *CPosDataManage::GetFormInfo(char *name) {
@@ -5539,13 +5530,6 @@ void CRepairManager::SetRepairData(mgCMemory *memory, int block, unsigned int *p
     keep = 1;
 }
 
-extern void     *__vt__9mgCObject[];
-extern void     *__vt__7CObject[];
-extern void     *__vt__12CObjectFrame[];
-extern void     *__vt__11CCharacter2[];
-extern void     *__vt__12CActionChara[];
-extern "C" void *__ct__10CRunScriptFv(void *);
-
 void CRepairManager::GeneratePoly(float *pos, int block) {
     int           pack_size;
     unsigned int *pack;
@@ -5557,22 +5541,7 @@ void CRepairManager::GeneratePoly(float *pos, int block) {
     model_stack.stack_used = 0;
     model_stack.lock = 0;
 
-    if ((chara = (CActionChara *) operator new(sizeof(CActionChara), model_stack.Alloc(0x105))) != NULL) {
-        *(void **) chara = __vt__9mgCObject;
-        ((mgCObject *) chara)->Initialize();
-        *(void **) chara = __vt__7CObject;
-        ((mgCObject *) chara)->Initialize();
-        *(void **) chara = __vt__12CObjectFrame;
-        ((mgCObject *) chara)->Initialize();
-        *(void **) chara = __vt__11CCharacter2;
-        chara->shadow_link.num = 0;
-        chara->shadow_link.dst_frame = 0;
-        chara->shadow_link.src_frame = 0;
-        ((mgCObject *) chara)->Initialize();
-        *(void **) chara = __vt__12CActionChara;
-        __ct__10CRunScriptFv(&chara->script);
-        memset(&chara->move_check, 0, sizeof(chara->move_check));
-    }
+    chara = new (model_stack.Alloc(0x105)) CActionChara;
 
     model = chara;
     model->Initialize(NULL);
@@ -6614,7 +6583,6 @@ void CMenuEffect::PresetInfo(MENU_EFFECT_INFO *particle, int no, int mode) {
     }
 }
 #ifdef NONMATCHING
-#pragma divbyzerocheck on
 
 void CMenuEffect::Step() {
     end = 0;
@@ -6966,7 +6934,6 @@ void CMenuEffect::Step() {
     }
 }
 
-#pragma divbyzerocheck reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", Step__11CMenuEffectFv);
 #endif

@@ -417,14 +417,14 @@ STATIC_ASSERT(sizeof(CRain) == 0xABF0);
  */
 class CSceneData {
 public:
-    CSceneData() { Initialize(); }
-
     u32        status;        /**< Status flags of the slot (SCENE_DATA_STATUS). */
     s32        type;          /**< Kind of the data within its slot list, set by the data's user. */
     char       name[32];      /**< Name the data was given to the slot under. */
     s32        tex_block;     /**< First texture block the data's textures were loaded into, or -1. */
     s32        tex_block_num; /**< Number of texture blocks from tex_block that the data uses. */
     mgCMemory *stack;         /**< Memory stack the data was loaded into. */
+
+    CSceneData() { Initialize(); }
 
     /**
      * Empties the slot: no status, no name, and no memory or textures.
@@ -445,11 +445,11 @@ STATIC_ASSERT(sizeof(CSceneData) == 0x34);
  */
 class CSceneCharacter : public CSceneData {
 public:
-    CSceneCharacter() { Initialize(); }
-
     CCharacter2 *chara;    /**< Character kept in the slot. */
     s32          texb;     /**< Texture block the character is drawn with, or -1 for the scene's default. */
     s32          chara_no; /**< Number of the villager or character placed in the slot, or -1. */
+
+    CSceneCharacter() { Initialize(); }
 
     /**
      * Puts a character in the slot under a name; gives back zero when
@@ -480,9 +480,9 @@ STATIC_ASSERT(sizeof(CSceneCharacter) == 0x40);
  */
 class CSceneMap : public CSceneData {
 public:
-    CSceneMap() { Initialize(); }
-
     CMap *map; /**< Map kept in the slot. */
+
+    CSceneMap() { Initialize(); }
 
     /**
      * Empties the slot.
@@ -513,9 +513,9 @@ STATIC_ASSERT(sizeof(CSceneMap) == 0x38);
  */
 class CSceneMessage : public CSceneData {
 public:
-    CSceneMessage() { Initialize(); }
-
     ClsMes *mes; /**< Messages kept in the slot. */
+
+    CSceneMessage() { Initialize(); }
 
     /**
      * Empties the slot.
@@ -546,9 +546,9 @@ STATIC_ASSERT(sizeof(CSceneMessage) == 0x38);
  */
 class CSceneCamera : public CSceneData {
 public:
-    CSceneCamera() { Initialize(); }
-
     mgCCamera *camera; /**< Camera kept in the slot. */
+
+    CSceneCamera() { Initialize(); }
 
     /**
      * Puts a camera in the slot under a name, which may be missing; gives
@@ -579,9 +579,9 @@ STATIC_ASSERT(sizeof(CSceneCamera) == 0x38);
  */
 class CSceneSky : public CSceneData {
 public:
-    CSceneSky() { Initialize(); }
-
     CMapSky *sky; /**< Sky kept in the slot. */
+
+    CSceneSky() { Initialize(); }
 
     /**
      * Puts a sky in the slot under a name, which may be missing; gives
@@ -633,9 +633,9 @@ STATIC_ASSERT(sizeof(CSceneGameObj) == 0x40);
  */
 class CSceneEffect : public CSceneData {
 public:
-    CSceneEffect() { Initialize(); }
-
     CEffectScriptMan *effect; /**< Effect script manager kept in the slot. */
+
+    CSceneEffect() { Initialize(); }
 
     /**
      * Empties the slot.

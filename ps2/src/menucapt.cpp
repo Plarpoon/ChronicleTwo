@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cstdio>
 #include <cstring>
@@ -36,7 +37,6 @@ extern u32                voiceflag_921;
 extern u32                wait_cnt_918;
 extern mgCTexture        *MenuChapterBG;
 extern mgCTexture        *MenuChapter_Logo;
-extern "C" int            fptosi(float value);
 #include <cstdio>
 #include <cstring>
 

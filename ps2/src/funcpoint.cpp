@@ -1,4 +1,5 @@
 #include "common.h"
+#include "mw_runtime.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -16,8 +17,6 @@
 #include "snd_mngr.hpp"
 #include "sound.hpp"
 #include "water.hpp"
-
-extern "C" int fptosi(float value);
 
 // Code (.text)
 int CheckTime(float time, float start, float end) {
@@ -1280,7 +1279,6 @@ int GetSeSrcVolPan(
     return n;
 }
 #ifdef NONMATCHING
-#pragma divbyzerocheck on
 
 float GetLightAnimeWeight(CFuncPoint *point, int frame) {
     float depth = point->plight.flicker_depth;
@@ -1312,7 +1310,6 @@ float GetLightAnimeWeight(CFuncPoint *point, int frame) {
     return weight;
 }
 
-#pragma divbyzerocheck reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", GetLightAnimeWeight__FP10CFuncPointi);
 #endif

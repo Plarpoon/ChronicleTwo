@@ -1,9 +1,8 @@
-#include <cstdlib>
-#include <cstring>
-extern "C" char *strncat(char *destination, const char *source, size_t count);
 #include "common.h"
 
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include "actionchara.hpp"
 #include "character.hpp"

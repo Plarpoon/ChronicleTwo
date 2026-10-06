@@ -25,6 +25,7 @@ enum PadSetupPhase {
 };
 
 // clang-format on
+
 /**
  *
  * Controller types that scePadInfoMode and the controller's data report.
@@ -43,6 +44,7 @@ enum PadTerminalId {
 };
 
 // clang-format on
+
 /**
  *
  * Bits of a controller's button word, one per button.
@@ -69,6 +71,7 @@ enum PadButton {
 };
 
 // clang-format on
+
 /**
  *
  * Vibration actuators of a DualShock, as CGamePad::SetVibration selects them.
@@ -81,6 +84,7 @@ enum PadMotor {
 };
 
 // clang-format on
+
 /**
  *
  * Input recording modes, as CGamePad::capture_mode holds them.
@@ -96,6 +100,7 @@ enum PadCaptureMode {
 #pragma push
 #pragma cpp_extensions on
 // clang-format on
+
 /**
  *
  * Defines the state of one controller: its buttons, sticks, setup
@@ -103,29 +108,32 @@ enum PadCaptureMode {
  *
  */
 struct PAD_STATUS {
-    int button;              /**< Pressed buttons. @see PadButton */
-    int left_y;              /**< Left stick vertical position, 0 to 255 with 0x80 at rest. */
-    int left_x;              /**< Left stick horizontal position, 0 to 255 with 0x80 at rest. */
-    int right_y;             /**< Right stick vertical position, 0 to 255 with 0x80 at rest. */
-    int right_x;             /**< Right stick horizontal position, 0 to 255 with 0x80 at rest. */
-    int phase;               /**< Controller setup step. @see PadSetupPhase */
-    int state;               /**< Connection state scePadGetState last reported. */
-    int extended_id;         /**< Extended controller type scePadInfoMode reports. @see PadTerminalId */
-    int pad_mode;            /**< Controller type of the latest read. @see PadTerminalId */
-    int previous_pad_mode;   /**< Controller type of the previous successful read. @see PadTerminalId */
-    u8  vibration[6];        /**< Actuator values sent to the controller. @see PadMotor */
-    u8  actuator[6];         /**< Actuator alignment sent to the controller. */
+    int button;            /**< Pressed buttons. @see PadButton */
+    int left_y;            /**< Left stick vertical position, 0 to 255 with 0x80 at rest. */
+    int left_x;            /**< Left stick horizontal position, 0 to 255 with 0x80 at rest. */
+    int right_y;           /**< Right stick vertical position, 0 to 255 with 0x80 at rest. */
+    int right_x;           /**< Right stick horizontal position, 0 to 255 with 0x80 at rest. */
+    int phase;             /**< Controller setup step. @see PadSetupPhase */
+    int state;             /**< Connection state scePadGetState last reported. */
+    int extended_id;       /**< Extended controller type scePadInfoMode reports. @see PadTerminalId */
+    int pad_mode;          /**< Controller type of the latest read. @see PadTerminalId */
+    int previous_pad_mode; /**< Controller type of the previous successful read. @see PadTerminalId */
+    u8  vibration[6];      /**< Actuator values sent to the controller. @see PadMotor */
+    u8  actuator[6];       /**< Actuator alignment sent to the controller. */
+
     union {
-        int vibration_words[6];
+        int vibration_words[6]; /**< Vibration timers and values viewed as one word array. */
+
         struct {
-    int vibration_timer[2];  /**< Remaining time of each actuator, in vertical blanks. @see PadMotor */
-    int unk_3C;
-    int unk_40;
-    int unk_44;
-    int unk_48;
-};
+            int vibration_timer[2]; /**< Remaining time of each actuator, in vertical blanks. @see PadMotor */
+            int unk_3C;
+            int unk_40;
+            int unk_44;
+            int unk_48;
+        };
     };
 };
+
 STATIC_ASSERT(sizeof(PAD_STATUS) == 0x4C);
 #pragma pop
 
@@ -141,6 +149,7 @@ struct PAD_REPEAT {
     int initial_delay[32]; /**< Frames each button is held before it starts to repeat. */
     int repeat_delay[32];  /**< Frames between repeats of each button. */
 };
+
 STATIC_ASSERT(sizeof(PAD_REPEAT) == 0x188);
 
 /**
@@ -155,6 +164,7 @@ struct PAD_CAPTURE_FRAME {
     u8  right_y; /**< Right stick vertical position. */
     u8  right_x; /**< Right stick horizontal position. */
 };
+
 STATIC_ASSERT(sizeof(PAD_CAPTURE_FRAME) == 0x6);
 
 /**
@@ -162,8 +172,8 @@ STATIC_ASSERT(sizeof(PAD_CAPTURE_FRAME) == 0x6);
  * kit memory past the retail console's 32 megabytes.
  */
 enum {
-    PAD_CAPTURE_BUFFER_SIZE = 0x100000,                                             /**< Bytes reserved for the recording. */
-    PAD_CAPTURE_FRAME_MAX   = PAD_CAPTURE_BUFFER_SIZE / sizeof(PAD_CAPTURE_FRAME), /**< Frames the recording holds. */
+    PAD_CAPTURE_BUFFER_SIZE = 0x100000,                                          /**< Bytes reserved for the recording. */
+    PAD_CAPTURE_FRAME_MAX = PAD_CAPTURE_BUFFER_SIZE / sizeof(PAD_CAPTURE_FRAME), /**< Frames the recording holds. */
 };
 
 /**
@@ -189,8 +199,8 @@ enum {
 class CGamePad {
 public:
     int        unk_000;
-    PAD_STATUS pad[2];            /**< Current state of each controller. */
-    PAD_STATUS previous_pad[2];   /**< State of each controller on the previous frame. */
+    PAD_STATUS pad[2];          /**< Current state of each controller. */
+    PAD_STATUS previous_pad[2]; /**< State of each controller on the previous frame. */
     int        unk_134;
     int        unk_138;
     int        unk_13C;
@@ -576,7 +586,7 @@ public:
      * @address 0x14BAE0
      * @size 0x64
      */
-    void Capture(PAD_STATUS *status);
+    void Capture(PAD_STATUS *pad);
 
     /**
      * Replaces a controller's input with the next recorded frame.
@@ -605,6 +615,7 @@ public:
      */
     void LoadCapture();
 };
+
 STATIC_ASSERT(sizeof(CGamePad) == 0x478);
 
 /**

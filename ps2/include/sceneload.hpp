@@ -29,13 +29,13 @@ enum {
  *
  */
 enum SCN_LOADMAP_STEP {
-    SCN_LOADMAP_STEP_CREATE = 0,       /**< Makes the map object and assigns it to the scene. */
-    SCN_LOADMAP_STEP_MAP_INFO = 1,     /**< Reads the map description (.map) of the map and of the added map. */
-    SCN_LOADMAP_STEP_DATA = 2,         /**< Loads the models (.mpk) and textures (.ipk) of both maps. */
-    SCN_LOADMAP_STEP_EFFECT = 3,       /**< Loads the effects (.efp) and the sky (.sky). */
-    SCN_LOADMAP_STEP_CREATE_MAP = 4,   /**< Makes the table of placed parts and builds the map's parts. */
-    SCN_LOADMAP_STEP_FUNC_POINT = 5,   /**< Assigns the map's function points. */
-    SCN_LOADMAP_STEP_CFG = 6,          /**< Runs the configuration script (.cfg) and finishes the map; the last step. */
+    SCN_LOADMAP_STEP_CREATE = 0,     /**< Makes the map object and assigns it to the scene. */
+    SCN_LOADMAP_STEP_MAP_INFO = 1,   /**< Reads the map description (.map) of the map and of the added map. */
+    SCN_LOADMAP_STEP_DATA = 2,       /**< Loads the models (.mpk) and textures (.ipk) of both maps. */
+    SCN_LOADMAP_STEP_EFFECT = 3,     /**< Loads the effects (.efp) and the sky (.sky). */
+    SCN_LOADMAP_STEP_CREATE_MAP = 4, /**< Makes the table of placed parts and builds the map's parts. */
+    SCN_LOADMAP_STEP_FUNC_POINT = 5, /**< Assigns the map's function points. */
+    SCN_LOADMAP_STEP_CFG = 6,        /**< Runs the configuration script (.cfg) and finishes the map; the last step. */
 };
 
 /**
@@ -45,45 +45,46 @@ enum SCN_LOADMAP_STEP {
  */
 struct SCN_LOADMAP_INFO2 {
     SCN_LOADMAP_INFO2() { Initialize(); }
+
     /**
      *
      * Names and loaded contents of the files of one map: the map itself, or the map added to it.
      *
      */
     struct MapFiles {
-        s32 enable;                 /**< Nonzero when this map is loaded. */
-        char dir[0x20];             /**< Directory the map's files are in. */
-        char map_name[0x10];        /**< Name of the map description file, without its .map extension. */
-        char cfg_name[0x10];        /**< Name of the configuration script, without its .cfg extension. */
-        char mpk_name[0x10];        /**< Name of the model pack, without its .mpk extension. */
-        char ipk_name[0x10];        /**< Name of the texture pack, without its .ipk extension. */
-        char efp_name[0x10];        /**< Name of the effect pack, without its .efp extension. */
-        char sky_name[0x10];        /**< Name of the sky pack in dir, without its .sky extension. */
-        char def_sky_name[0x10];    /**< Name of the sky pack in the common map/ directory, used when sky_name is not found. */
-        char *map_data;             /**< Loaded map description. */
-        s32 map_size;               /**< Size in bytes of map_data. */
-        char *cfg_data;             /**< Loaded configuration script. */
-        s32 cfg_size;               /**< Size in bytes of cfg_data. */
-        unsigned int *mpk_data;     /**< Loaded model pack. */
-        unsigned int *ipk_data;     /**< Loaded texture pack, or NULL when it was not found. */
-        unsigned int *efp_data;     /**< Loaded effect pack, or NULL when it was not found. */
-        unsigned int *sky_data;     /**< Loaded sky pack, or NULL when it was not found or not wanted. */
+        s32           enable;             /**< Nonzero when this map is loaded. */
+        char          dir[0x20];          /**< Directory the map's files are in. */
+        char          map_name[0x10];     /**< Name of the map description file, without its .map extension. */
+        char          cfg_name[0x10];     /**< Name of the configuration script, without its .cfg extension. */
+        char          mpk_name[0x10];     /**< Name of the model pack, without its .mpk extension. */
+        char          ipk_name[0x10];     /**< Name of the texture pack, without its .ipk extension. */
+        char          efp_name[0x10];     /**< Name of the effect pack, without its .efp extension. */
+        char          sky_name[0x10];     /**< Name of the sky pack in dir, without its .sky extension. */
+        char          def_sky_name[0x10]; /**< Name of the sky pack in the common map/ directory, used when sky_name is not found. */
+        char         *map_data;           /**< Loaded map description. */
+        s32           map_size;           /**< Size in bytes of map_data. */
+        char         *cfg_data;           /**< Loaded configuration script. */
+        s32           cfg_size;           /**< Size in bytes of cfg_data. */
+        unsigned int *mpk_data;           /**< Loaded model pack. */
+        unsigned int *ipk_data;           /**< Loaded texture pack, or NULL when it was not found. */
+        unsigned int *efp_data;           /**< Loaded effect pack, or NULL when it was not found. */
+        unsigned int *sky_data;           /**< Loaded sky pack, or NULL when it was not found or not wanted. */
     };
 
-    s32 tex_block;                              /**< First texture block the map's textures are entered into. */
-    s32 stack_no;                               /**< Scene stack the map is built in. */
-    u8 *load_buf;                               /**< Buffer the map description, configuration script, model pack and sky pack are loaded into. */
-    s32 efp_tex_block;                          /**< Texture block the effect pack's textures are entered into. */
-    s32 sky_tex_block;                          /**< Texture block the sky's textures are entered into; the sky is made only when it is above zero. */
-    char name[0x10];                            /**< Name the map is assigned to the scene under. */
-    MapFiles files[SCN_LOADMAP_FILES_MAX];      /**< Files of the map itself and of the map added to it. */
-    s32 load_sky;                               /**< Nonzero to load the sky pack. */
-    s32 place_parts_max;                        /**< Number of placed parts the map makes room for; none when not above zero. */
-    s32 unk_194;
-    s32 tex_block_num;                          /**< Number of texture blocks the map's textures took. */
-    s32 data_ready;                             /**< Nonzero once the map's files are loaded and the map can be built. */
-    s32 map_no;                                 /**< Scene map slot the map is loaded into. */
-    mgCMemory *stack;                           /**< Stack the map is built in, and the texture and effect packs are loaded into. */
+    s32        tex_block;                    /**< First texture block the map's textures are entered into. */
+    s32        stack_no;                     /**< Scene stack the map is built in. */
+    u8        *load_buf;                     /**< Buffer the map description, configuration script, model pack and sky pack are loaded into. */
+    s32        efp_tex_block;                /**< Texture block the effect pack's textures are entered into. */
+    s32        sky_tex_block;                /**< Texture block the sky's textures are entered into; the sky is made only when it is above zero. */
+    char       name[0x10];                   /**< Name the map is assigned to the scene under. */
+    MapFiles   files[SCN_LOADMAP_FILES_MAX]; /**< Files of the map itself and of the map added to it. */
+    s32        load_sky;                     /**< Nonzero to load the sky pack. */
+    s32        place_parts_max;              /**< Number of placed parts the map makes room for; none when not above zero. */
+    s32        unk_194;
+    s32        tex_block_num; /**< Number of texture blocks the map's textures took. */
+    s32        data_ready;    /**< Nonzero once the map's files are loaded and the map can be built. */
+    s32        map_no;        /**< Scene map slot the map is loaded into. */
+    mgCMemory *stack;         /**< Stack the map is built in, and the texture and effect packs are loaded into. */
 
     /**
      *
@@ -95,6 +96,7 @@ struct SCN_LOADMAP_INFO2 {
      */
     void Initialize();
 };
+
 STATIC_ASSERT(sizeof(SCN_LOADMAP_INFO2::MapFiles) == 0xB4);
 STATIC_ASSERT(sizeof(SCN_LOADMAP_INFO2) == 0x1A8);
 
@@ -106,9 +108,9 @@ STATIC_ASSERT(sizeof(SCN_LOADMAP_INFO2) == 0x1A8);
 template <typename T>
 class mgCObjectStack {
 public:
-    u8 unk_0[0x8];
+    u8  unk_0[0x8];
     s32 unk_8;
-    u8 unk_c[0x8];
+    u8  unk_c[0x8];
 
     /**
      *

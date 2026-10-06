@@ -54,7 +54,7 @@ enum VersatileWinPart {
  * @address 0x2DB1B0
  * @size 0xC0
  */
-void CalcSelectCursorPos(RECT win, int *cursor_pos);
+void CalcSelectCursorPos(RECT rect, int *out);
 
 /**
  *
@@ -84,7 +84,7 @@ void DrawVersatileWin_yesno(mgCDrawPrim *prim, RECT win, RGBAQ_TYPE *color, int 
  * @address 0x2DB860
  * @size 0x330
  */
-void MyMenuHelpWinDraw(mgCDrawPrim *prim, RECT win, int alpha);
+void MyMenuHelpWinDraw(mgCDrawPrim *prim, RECT rect, int alpha);
 
 /**
  *
@@ -105,7 +105,7 @@ void MyMenuFloatingWinDraw(mgCDrawPrim *prim, RECT win, int point_x, int point_y
  * @address 0x2DC390
  * @size 0x3C0
  */
-void DrawVersatileWin_1(mgCDrawPrim *prim, RECT win, RGBAQ_TYPE *color, int alpha, int opaque);
+void DrawVersatileWin_1(mgCDrawPrim *prim, RECT rect, RGBAQ_TYPE *color, int alpha, int opaque);
 
 /**
  *
@@ -135,7 +135,7 @@ void DrawVersatileWin_3(mgCDrawPrim *prim, RECT win, int select_y, RGBAQ_TYPE *c
  * @address 0x2DCD80
  * @size 0x3C0
  */
-void DrawVersatileWin_4(mgCDrawPrim *prim, RECT win, RGBAQ_TYPE *color, int alpha, int opaque);
+void DrawVersatileWin_4(mgCDrawPrim *prim, RECT rect, RGBAQ_TYPE *color, int alpha, int opaque);
 
 /**
  *

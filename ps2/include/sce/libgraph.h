@@ -280,6 +280,7 @@ typedef struct sceGsTex0 {
             u_long cld : 3;
         } bits;
     };
+
     sceGsTex0 &operator=(const sceGsTex0 &source);
 } sceGsTex0;
 
@@ -338,12 +339,12 @@ typedef struct sceGsTex0 {
 #define SCE_GS_SET_XYZF2(x, y, z, f) \
     ((u_long) (x) | ((u_long) (y) << 16) | ((u_long) (z) << 32) | ((u_long) (f) << 56))
 
-#define SCE_GS_SET_TEST(ate, atst, aref, afail, date, datm, zte, ztst)                       \
-    ((u_long) (ate) | ((u_long) (atst) << 1) | ((u_long) (aref) << 4) |                       \
-     ((u_long) (afail) << 12) | ((u_long) (date) << 14) | ((u_long) (datm) << 15) |           \
+#define SCE_GS_SET_TEST(ate, atst, aref, afail, date, datm, zte, ztst)              \
+    ((u_long) (ate) | ((u_long) (atst) << 1) | ((u_long) (aref) << 4) |             \
+     ((u_long) (afail) << 12) | ((u_long) (date) << 14) | ((u_long) (datm) << 15) | \
      ((u_long) (zte) << 16) | ((u_long) (ztst) << 17))
 
-#define SCE_GS_SET_ALPHA(a, b, c, d, fix)                                                \
+#define SCE_GS_SET_ALPHA(a, b, c, d, fix)                                             \
     ((u_long) (a) | ((u_long) (b) << 2) | ((u_long) (c) << 4) | ((u_long) (d) << 6) | \
      ((u_long) (fix) << 32))
 
@@ -411,7 +412,7 @@ typedef struct {
             u_char green; /**< Green colour channel. */
             u_char blue;  /**< Blue colour channel. */
             u_char alpha; /**< Alpha channel. */
-            u_int q;      /**< Packed Q value. */
+            u_int  q;     /**< Packed Q value. */
         } bytes;
     };
 } sceGsRgbaq;
@@ -518,59 +519,59 @@ typedef struct {
 } sceGsDimx;
 
 typedef struct {
-    u_long pmode;
-    u_long smode2;
-    u_long dispfb;
+    u_long       pmode;
+    u_long       smode2;
+    u_long       dispfb;
     sceGsDisplay display;
-    u_long bgcolor;
+    u_long       bgcolor;
 } sceGsDispEnv;
 
 /* The eight register pairs sceGsSetDefDrawEnv fills, without the GIF tag that carries them: the
    tag covers the clear beside them as well, so it belongs to the pair of them rather than to
    either, which is also why sceGsSetHalfOffset is handed this and not the tag. */
 typedef struct {
-    sceGsFrame frame1;
-    u_long frame1addr;
-    sceGsZbuf zbuf1;
-    u_long zbuf1addr;
-    sceGsXyOffset xyoffset1;
-    u_long xyoffset1addr;
-    sceGsScissor scissor1;
-    u_long scissor1addr;
+    sceGsFrame      frame1;
+    u_long          frame1addr;
+    sceGsZbuf       zbuf1;
+    u_long          zbuf1addr;
+    sceGsXyOffset   xyoffset1;
+    u_long          xyoffset1addr;
+    sceGsScissor    scissor1;
+    u_long          scissor1addr;
     sceGsPrModeCont prmodecont;
-    u_long prmodecontaddr;
-    sceGsColClamp colclamp;
-    u_long colclampaddr;
-    sceGsDthe dthe;
-    u_long dtheaddr;
-    sceGsTest test1;
-    u_long test1addr;
+    u_long          prmodecontaddr;
+    sceGsColClamp   colclamp;
+    u_long          colclampaddr;
+    sceGsDthe       dthe;
+    u_long          dtheaddr;
+    sceGsTest       test1;
+    u_long          test1addr;
 } sceGsDrawEnv1;
 
 typedef struct {
-    sceGsTest test0;
-    u_long test0addr;
-    sceGsPrim prim;
-    u_long primaddr;
+    sceGsTest  test0;
+    u_long     test0addr;
+    sceGsPrim  prim;
+    u_long     primaddr;
     sceGsRgbaq rgbaq;
-    u_long rgbaqaddr;
-    sceGsXyz xyz2_0;
-    u_long xyz2_0addr;
-    sceGsXyz xyz2_1;
-    u_long xyz2_1addr;
-    sceGsTest test1;
-    u_long test1addr;
+    u_long     rgbaqaddr;
+    sceGsXyz   xyz2_0;
+    u_long     xyz2_0addr;
+    sceGsXyz   xyz2_1;
+    u_long     xyz2_1addr;
+    sceGsTest  test1;
+    u_long     test1addr;
 } sceGsClear;
 
 typedef struct {
-    sceGsDispEnv disp0;
-    sceGsDispEnv disp1;
-    sceGifTag giftag0;
+    sceGsDispEnv  disp0;
+    sceGsDispEnv  disp1;
+    sceGifTag     giftag0;
     sceGsDrawEnv1 draw0;
-    sceGsClear clear0;
-    sceGifTag giftag1;
+    sceGsClear    clear0;
+    sceGifTag     giftag1;
     sceGsDrawEnv1 draw1;
-    sceGsClear clear1;
+    sceGsClear    clear1;
 } sceGsDBuff;
 
 /* The read-back packet the SDK builds and the game only ever passes by address. Its extent is the
@@ -595,8 +596,8 @@ void sceGsResetGraph(short mode, short inter, short omode, short ffmd);
  */
 void sceGsResetPath();
 
-int sceGsSyncV(int mode);
-int sceGsSyncPath(int mode, u_short timeout);
+int  sceGsSyncV(int mode);
+int  sceGsSyncPath(int mode, u_short timeout);
 void sceGsSyncVCallback(int (*callback)(int));
 void sceGsSetDefDBuff(sceGsDBuff *db, int psm, int w, int h, int ztest, int zpsm, int clear);
 void sceGsSwapDBuff(sceGsDBuff *db, int id);

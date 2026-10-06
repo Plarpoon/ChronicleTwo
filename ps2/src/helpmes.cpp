@@ -1,54 +1,60 @@
 #include "helpmes.hpp"
-#include "dataread.hpp"
-#include "mainloop.hpp"
-#include "nd_meswin.hpp"
 
 #include <cstdio>
 #include <cstring>
 
-extern int ShowOffOnce;
-extern int WindowMode;
-extern HELP_MES_INFO HelpMesInfo;
-extern ClsMes HelpMes;
-extern "C" void *__ct__6ClsMesFv(void *);
+#include "dataread.hpp"
+#include "mainloop.hpp"
+#include "nd_meswin.hpp"
+
+extern int  ShowOffOnce;
+extern int  WindowMode;
 extern char at_799__6[15];
 extern char at_800__5[30];
-#include "mglib.hpp"
-#include "mainloop.hpp"
-#include "snd_mngr.hpp"
-#include "nd_meswin.hpp"
-#include "mg_texture.hpp"
-#include "dataread.hpp"
-#include "mg_memory.hpp"
 #include <cstdio>
 #include <cstring>
 
-extern HELP_MES_INFO HelpMesInfo;
-extern int ShowOffOnce;
-extern int WindowMode;
-extern ClsMes HelpMes;
-extern int LanguageCode;
+#include "dataread.hpp"
+#include "mainloop.hpp"
+#include "mg_memory.hpp"
+#include "mg_texture.hpp"
+#include "mglib.hpp"
+#include "nd_meswin.hpp"
+#include "snd_mngr.hpp"
+
+extern int  ShowOffOnce;
+extern int  WindowMode;
+extern int  LanguageCode;
 extern char HelpMesBuff[0x1000];
-extern int InitFlag__2;
+extern int  InitFlag__2;
+
+ClsMes        HelpMes __attribute__((aligned(4)));
+u8            D_01F628B8[4];
+u8            D_01F628BC[4];
+HELP_MES_INFO HelpMesInfo;
 
 // Code (.text)
 void LoadHelpMes(u_long128 *scratch) {
     char path[0x4C];
-    int size;
+    int  size;
 
     sprintf(path, at_799__6, LanguageCode);
+
     if (LoadFile2(path, scratch, &size, 0) != 0) {
         if (size > 0x1000) {
             printf(at_800__5, size, 0x1000);
             return;
         }
+
         memcpy(HelpMesBuff, scratch, size);
         InitFlag__2 = 1;
     }
 }
+
 static HELP_MES_INFO *GetHepMesInfo() {
     return &HelpMesInfo;
 }
+
 void CreateHelpMes(int message_id) {
     if (InitFlag__2 != 0) {
         HelpMes.npc_name_mode = 0;
@@ -61,6 +67,7 @@ void CreateHelpMes(int message_id) {
         for (int i = 0; i < 16; i++) {
             HelpMes.page_chars[i] = 0;
         }
+
         HelpMes.last_x = 0;
         HelpMes.last_y = 0;
         HelpMes.fade = 0.0f;
@@ -80,16 +87,20 @@ void CreateHelpMes(int message_id) {
         HelpMes.mes_no = -1;
         HelpMes.unk_1e40 = 0;
         HelpMes.alpha = 0x80;
+
         for (int i = 0; i < MES_NAME_MAX; i++) {
             memset(HelpMes.name[i], 0, sizeof(HelpMes.name[i]));
         }
+
         for (int i = 0; i < MES_NAME_MAX; i++) {
             HelpMes.item_mes[i] = -1;
         }
+
         for (int i = 0; i < MES_VALUE_MAX; i++) {
             HelpMes.values[i] = 0;
             HelpMes.value_width[i] = 0;
         }
+
         HelpMes.value = 0;
         HelpMes.value_sign = 0;
         HelpMes.value_zero = 1;
@@ -121,6 +132,7 @@ void CreateHelpMes(int message_id) {
         HelpMes.scissor.width = 0;
         HelpMes.scissor.y = 0;
         HelpMes.scissor.height = 0;
+
         for (int i = 0; i < MES_LINE_MAX; i++) {
             HelpMes.line_indent[i] = 0;
             HelpMes.line_pos[i][0] = 0;
@@ -144,9 +156,10 @@ void CreateHelpMes(int message_id) {
             HelpMes.delta_x[i] = 0;
             HelpMes.delta_y[i] = 0;
         }
+
         HelpMes.Preset(4);
         HelpMes.SetWindowMode(0);
-        HelpMes.SetBuff((short *)HelpMesBuff);
+        HelpMes.SetBuff((short *) HelpMesBuff);
         HelpMes.texture_block = message_id;
         ShowOffOnce = 0;
         HelpMesInfo.time = 0;
@@ -158,33 +171,42 @@ void CreateHelpMes(int message_id) {
         HelpMesInfo.created = 0;
     }
 }
+
 void StepHelpMes() {
-    ClsMes *message = &HelpMes;
+    ClsMes        *message = &HelpMes;
     HELP_MES_INFO *info = GetHepMesInfo();
+
     if (info != NULL) {
         int hidden = !info->show;
+
         if (hidden) {
             return;
         }
     } else {
         return;
     }
+
     if (!info->created) {
         message->Preset(4);
         message->SetWindowMode(WindowMode);
         message->MakeMesWin(info->mes_no);
         message->fade_speed = 1.0f;
+
         if (info->fukidashi_pos < 0) {
             message->abs_win.x = info->x;
             message->abs_win.y = info->y;
         } else {
             message->fukidashi_pos = info->fukidashi_pos;
         }
+
         info->created = 1;
     }
+
     message->Step();
+
     if (info->time > 0) {
         info->time--;
+
         if (info->time == 0) {
             info->time = 0;
             info->mes_no = -1;
@@ -196,35 +218,45 @@ void StepHelpMes() {
         }
     }
 }
+
 void ShowOffOnceHelpMes() {
     ShowOffOnce = 1;
 }
+
 void DrawHelpMes() {
     if (DebugInfo.param_off != 0) {
         return;
     }
-    ClsMes *message = &HelpMes;
+
+    ClsMes        *message = &HelpMes;
     HELP_MES_INFO *info = GetHepMesInfo();
+
     if (info != NULL) {
         int hidden = !info->show;
+
         if (hidden) {
             return;
         }
     } else {
         return;
     }
+
     if (ShowOffOnce != 0) {
         ShowOffOnce = 0;
         return;
     }
-    mgTexManager.ReloadTexture(HelpMes.texture_block, (sceVif1Packet *)NULL);
+
+    mgTexManager.ReloadTexture(HelpMes.texture_block, (sceVif1Packet *) NULL);
     message->DrawMesWin();
 }
+
 void ShowHelpMes(int mes_no, int time) {
     HELP_MES_INFO *info = GetHepMesInfo();
+
     if (info == NULL) {
         return;
     }
+
     if (info->mes_no != mes_no) {
         info->time = 0;
         info->mes_no = -1;
@@ -234,6 +266,7 @@ void ShowHelpMes(int mes_no, int time) {
         info->created = 0;
         info->fukidashi_pos = -1;
     }
+
     info->show = 1;
     info->mes_no = mes_no;
     info->time = time > 0 ? time + 1 : time;
@@ -245,9 +278,11 @@ void ShowHelpMes(int mes_no, int time) {
 
 void ShowErrorHelpMes(int mes_no, int time) {
     HELP_MES_INFO *info = GetHepMesInfo();
+
     if (info == NULL) {
         return;
     }
+
     if (info->mes_no != mes_no) {
         info->time = 0;
         info->mes_no = -1;
@@ -257,24 +292,13 @@ void ShowErrorHelpMes(int mes_no, int time) {
         info->created = 0;
         info->fukidashi_pos = -1;
     }
+
     info->show = 1;
     info->mes_no = mes_no;
     info->time = time > 0 ? time + 1 : time;
     info->fukidashi_pos = 8;
     WindowMode = 4;
     sndSePlay(GetSystemSndID(), 28, 0);
-}
-
-// Static initialiser (.init)
-extern "C" void __sinit_helpmes_cpp() {
-    __ct__6ClsMesFv(&HelpMes);
-    HelpMesInfo.time = 0;
-    HelpMesInfo.mes_no = -1;
-    HelpMesInfo.fukidashi_pos = -1;
-    HelpMesInfo.show = 0;
-    HelpMesInfo.y = 0;
-    HelpMesInfo.x = 0;
-    HelpMesInfo.created = 0;
 }
 
 // Constants (.rodata)
@@ -291,6 +315,3 @@ INCLUDE_BSS(ShowOffOnce, 0x4);
 
 // Uninitialised data (.bss)
 INCLUDE_BSS(HelpMesBuff, 0x1000);
-INCLUDE_BSS(HelpMes, 0x295C);
-INCLUDE_BSS(D_01F628BC, 0x4);
-INCLUDE_BSS(HelpMesInfo, 0x20);

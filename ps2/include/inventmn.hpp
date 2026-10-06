@@ -1,11 +1,12 @@
 #pragma once
 
 #include "common.h"
-#include "mg_memory.hpp"
-#include "mg_tanime.hpp"
+
 #include "memcard.hpp"
 #include "menudraw.hpp"
 #include "menusys.hpp"
+#include "mg_memory.hpp"
+#include "mg_tanime.hpp"
 #include "userdata.hpp"
 
 /**
@@ -16,6 +17,7 @@
 struct InventFoundFlags {
     u8 flag[3]; /**< Flags marking discovered inventions. */
 };
+
 STATIC_ASSERT(sizeof(InventFoundFlags) == 3);
 
 /**
@@ -71,10 +73,11 @@ struct SCOOP_DATA {
     short flag_no;  /**< Menu bit flag whose setting makes the scoop known. */
     s8    info_no;  /**< Index of the scoop's record in CScoopDataManager. */
     u8    unk_5[3];
-    char *text;     /**< Description of the scoop, read from the scoop text file. */
+    char *text; /**< Description of the scoop, read from the scoop text file. */
     int   unk_c;
     int   unk_10;
 };
+
 STATIC_ASSERT(sizeof(SCOOP_DATA) == 0x14);
 
 /**
@@ -85,8 +88,9 @@ STATIC_ASSERT(sizeof(SCOOP_DATA) == 0x14);
 struct PIC_NAME_INFO {
     u16   neta_id; /**< Idea the name belongs to. */
     short unk_2;
-    char *name;    /**< Name of the idea. */
+    char *name; /**< Name of the idea. */
 };
+
 STATIC_ASSERT(sizeof(PIC_NAME_INFO) == 0x8);
 
 /**
@@ -99,6 +103,7 @@ struct INVENT_MATERIAL {
     u8    num;     /**< Number of the item consumed per invention built. */
     u8    unk_3;
 };
+
 STATIC_ASSERT(sizeof(INVENT_MATERIAL) == 0x4);
 
 /**
@@ -107,10 +112,11 @@ STATIC_ASSERT(sizeof(INVENT_MATERIAL) == 0x4);
  *
  */
 struct INVENT_MATERIAL_LIST {
-    INVENT_MATERIAL *material;     /**< Materials consumed in building the invention. */
-    short num;
-    u8 unk_6[2];
+    INVENT_MATERIAL *material; /**< Materials consumed in building the invention. */
+    short            num;      /**< Number of materials in the recipe. */
+    u8               unk_6[2];
 };
+
 STATIC_ASSERT(sizeof(INVENT_MATERIAL_LIST) == 0x8);
 
 /**
@@ -128,9 +134,11 @@ struct MakeItemNeeds {
         int item_id; /**< Required item. */
         int amount;  /**< Number required. */
     };
-    int num;      /**< Number of entries in need. */
+
+    int  num;     /**< Number of entries in need. */
     Need need[4]; /**< Materials required. */
 };
+
 STATIC_ASSERT(sizeof(MakeItemNeeds) == 0x24);
 
 /**
@@ -139,21 +147,25 @@ STATIC_ASSERT(sizeof(MakeItemNeeds) == 0x24);
  *
  */
 struct INVENT_DATA_INFO {
-    short            item_id;      /**< Item the invention produces, or -1 for an unset row. */
-    short            neta_id[3];   /**< Ideas that combine into the invention. */
+    short item_id;    /**< Item the invention produces, or -1 for an unset row. */
+    short neta_id[3]; /**< Ideas that combine into the invention. */
+
     union {
         struct {
-    INVENT_MATERIAL *material;     /**< Materials consumed in building the invention. */
-    short            material_num; /**< Number of entries in material. */
-    u8               unk_e[2];
+            INVENT_MATERIAL *material;     /**< Materials consumed in building the invention. */
+            short            material_num; /**< Number of entries in material. */
+            u8               unk_e[2];
         };
+
         INVENT_MATERIAL_LIST materials;
     };
-    short            unk_10;
-    u8               unk_12[2];
-    float            model_pos[3]; /**< Position the produced item's model is shown at when built. */
-    float            model_scale;  /**< Scale the produced item's model is shown at when built. */
+
+    short unk_10;
+    u8    unk_12[2];
+    float model_pos[3]; /**< Position the produced item's model is shown at when built. */
+    float model_scale;  /**< Scale the produced item's model is shown at when built. */
 };
+
 STATIC_ASSERT(sizeof(INVENT_DATA_INFO) == 0x24);
 
 /**
@@ -212,8 +224,9 @@ public:
      * @address 0x1FFFF0
      * @size 0x40
      */
-    USER_PICTURE_INFO *GetAlbumPhotoInfo(int index);
+    USER_PICTURE_INFO *GetAlbumPhotoInfo(int slot);
 };
+
 STATIC_ASSERT(sizeof(CDC2AlbumData) == 0x64CB0);
 
 /**
@@ -254,7 +267,7 @@ public:
      * @address 0x201410
      * @size 0x180
      */
-    int CheckInventEnable(int *neta_id, int *near_match);
+    int CheckInventEnable(int *ids, int *combined);
 
     /**
      *
@@ -264,7 +277,7 @@ public:
      * @address 0x201590
      * @size 0xE0
      */
-    int HowMuchZairyouMakeItem(int item_id, int count, int *result);
+    int HowMuchZairyouMakeItem(int item_id, int count, int *needs);
 
     /**
      *
@@ -296,6 +309,7 @@ public:
      */
     int LoadAnalyzeInventFile(char *script, int size);
 };
+
 STATIC_ASSERT(sizeof(CInventDataManage) == 0x8);
 
 /**
@@ -305,66 +319,66 @@ STATIC_ASSERT(sizeof(CInventDataManage) == 0x8);
  */
 class CMenuInvent : public CBaseMenuClass {
 public:
-    short                 photo_only;               /**< 1 when the menu was opened to show the photos alone. */
+    short                 photo_only; /**< 1 when the menu was opened to show the photos alone. */
     short                 unk_112;
-    int                   card_cursor;              /**< Invention card under the cursor. */
-    int                   card_top;                 /**< Invention card at the top of the list. */
-    int                   item_cursor;              /**< Carried item under the cursor. */
-    int                   item_top;                 /**< Carried item at the top of the list. */
-    int                   photo_cursor;             /**< Carried photo under the cursor. */
-    int                   photo_top;                /**< Row of carried photos at the top of the board. */
-    int                   album_cursor;             /**< Album photo under the cursor. */
-    int                   album_top;                /**< Row of album photos at the top of the board. */
-    int                   memo_cursor;              /**< Idea notebook line under the cursor. */
-    int                   memo_top;                 /**< Idea notebook line at the top of the list. */
-    MENUFORM_MAKEBRD_INFO make_board;               /**< Materials shown on the building board. */
-    CGameDataUsed         create_item;              /**< Item shown for the invention card under the cursor. */
-    MC_ICON_DATA          icon_data[3];             /**< Memory card icons of the album save. */
+    int                   card_cursor;  /**< Invention card under the cursor. */
+    int                   card_top;     /**< Invention card at the top of the list. */
+    int                   item_cursor;  /**< Carried item under the cursor. */
+    int                   item_top;     /**< Carried item at the top of the list. */
+    int                   photo_cursor; /**< Carried photo under the cursor. */
+    int                   photo_top;    /**< Row of carried photos at the top of the board. */
+    int                   album_cursor; /**< Album photo under the cursor. */
+    int                   album_top;    /**< Row of album photos at the top of the board. */
+    int                   memo_cursor;  /**< Idea notebook line under the cursor. */
+    int                   memo_top;     /**< Idea notebook line at the top of the list. */
+    MENUFORM_MAKEBRD_INFO make_board;   /**< Materials shown on the building board. */
+    CGameDataUsed         create_item;  /**< Item shown for the invention card under the cursor. */
+    MC_ICON_DATA          icon_data[3]; /**< Memory card icons of the album save. */
     u8                    unk_24c;
-    u8                    album_scroll_reset;
+    u8                    album_scroll_reset; /**< Requests a reset of album scrolling. */
     u8                    unk_24e[2];
-    float                 album_scroll_x;
-    float                 album_scroll_y;
-    u8                    album_enable;             /**< Non-zero when the player carries the album item. */
+    float                 album_scroll_x; /**< Horizontal album scroll position. */
+    float                 album_scroll_y; /**< Vertical album scroll position. */
+    u8                    album_enable;   /**< Non-zero when the player carries the album item. */
     u8                    unk_259[3];
-    float                 photo_scroll;             /**< Vertical scroll of the photo board. */
-    float                 photo_bar;                /**< Position of the photo board's scroll bar. */
-    float                 photo_pos[30][2];         /**< Position of each slot on the photo board. */
-    u8                    memo_scroll_reset;
+    float                 photo_scroll;      /**< Vertical scroll of the photo board. */
+    float                 photo_bar;         /**< Position of the photo board's scroll bar. */
+    float                 photo_pos[30][2];  /**< Position of each slot on the photo board. */
+    u8                    memo_scroll_reset; /**< Requests a reset of notebook scrolling. */
     u8                    unk_355[3];
-    float                 memo_scroll;              /**< Vertical scroll of the idea notebook. */
-    float                 memo_bar;
-    int                   blink_count;
+    float                 memo_scroll; /**< Vertical scroll of the idea notebook. */
+    float                 memo_bar;    /**< Position of the notebook scroll bar. */
+    int                   blink_count; /**< Frames elapsed in the cursor blink cycle. */
     u8                    unk_364[0xC];
-    float                 neta_color[4];            /**< Colour of the frame of a photo showing an idea. */
-    float                 scoop_color[4];           /**< Colour of the frame of a photo showing a scoop. */
+    float                 neta_color[4];  /**< Colour of the frame of a photo showing an idea. */
+    float                 scoop_color[4]; /**< Colour of the frame of a photo showing a scoop. */
     short                 unk_390;
     short                 unk_392;
     u_int                *unk_394;
-    mgCMemory             data_stack;               /**< Memory the menu layout data is read into. */
-    mgCTexture           *photo_tex[30];            /**< Texture of each carried photo. */
-    mgCTexture           *album_tex[50];            /**< Texture of each album photo. */
-    s8                    album_flag[50];           /**< State of each album photo, -1 for an empty slot. */
+    mgCMemory             data_stack;     /**< Memory the menu layout data is read into. */
+    mgCTexture           *photo_tex[30];  /**< Texture of each carried photo. */
+    mgCTexture           *album_tex[50];  /**< Texture of each album photo. */
+    s8                    album_flag[50]; /**< State of each album photo, -1 for an empty slot. */
     u8                    unk_53a[2];
-    mgCMemory             chara_stack;              /**< Memory the menu characters are built in. */
-    u8                   *create_model_file;
-    u8                   *create_motion_file;
-    CActionChara         *create_chara;             /**< Model of the item being built. */
+    mgCMemory             chara_stack;        /**< Memory the menu characters are built in. */
+    u8                   *create_model_file;  /**< Loaded model data for the item being built. */
+    u8                   *create_motion_file; /**< Loaded motion data for the item being built. */
+    CActionChara         *create_chara;       /**< Model of the item being built. */
     void                 *unk_578;
-    INVENT_MATERIAL_LIST *make_material; /**< Materials of the recipe being built. */
-    short                 create_step;              /**< Stage of the building sequence. */
-    short                 create_item_id;           /**< Item being built. */
+    INVENT_MATERIAL_LIST *make_material;  /**< Materials of the recipe being built. */
+    short                 create_step;    /**< Stage of the building sequence. */
+    short                 create_item_id; /**< Item being built. */
     int                   unk_584;
-    int                   create_photo_neta[3];
+    int                   create_photo_neta[3]; /**< Idea identifiers associated with the selected photos. */
     int                   unk_594;
-    s8                    create_photo_name[32];
+    s8                    create_photo_name[32]; /**< Name displayed for the selected invention photo. */
     s8                    unk_5b8;
     u8                    unk_5b9[3];
-    int                   neta_circle_snap;
-    float                 neta_flash_angle;
-    u8                    new_neta_photo[0x20];     /**< Non-zero for each carried photo whose idea the idea board confirmation teaches. */
+    int                   neta_circle_snap;     /**< Snap state of the idea board selection circle. */
+    float                 neta_flash_angle;     /**< Angle of the idea flash effect. */
+    u8                    new_neta_photo[0x20]; /**< Non-zero for each carried photo whose idea the idea board confirmation teaches. */
     float                 unk_5e4;
-    float                 create_scale;             /**< Scale of the model of the item being built. */
+    float                 create_scale; /**< Scale of the model of the item being built. */
     float                 unk_5ec;
     float                 unk_5f0;
     u8                    unk_5f4;
@@ -377,70 +391,70 @@ public:
     short                 unk_606;
     short                 unk_608;
     short                 unk_60a;
-    short                 neta_select_num;          /**< Number of ideas placed on the idea board. */
+    short                 neta_select_num; /**< Number of ideas placed on the idea board. */
     u8                    unk_60e[2];
-    int                   neta_select_index[3];     /**< Photo slot or notebook line of each idea on the board, or -1. */
-    s8                    neta_select_type[3];      /**< Source of each idea on the board: 0 a photo, 1 the notebook, -1 none. */
-    s8                    neta_select_state[3];
+    int                   neta_select_index[3]; /**< Photo slot or notebook line of each idea on the board, or -1. */
+    s8                    neta_select_type[3];  /**< Source of each idea on the board: 0 a photo, 1 the notebook, -1 none. */
+    s8                    neta_select_state[3]; /**< Selection state of each idea board slot. */
     s8                    unk_622[3];
     u8                    unk_625[3];
-    float                 neta_circle_radius;
-    float                 neta_circle_angle;
-    BG_READ_INFO         *chara_read_info;          /**< Background read of the extra character data. */
-    s8                    chara_load_step;          /**< Stage of loading the menu characters. */
+    float                 neta_circle_radius; /**< Radius of the idea board selection circle. */
+    float                 neta_circle_angle;  /**< Angle of the idea board selection circle. */
+    BG_READ_INFO         *chara_read_info;    /**< Background read of the extra character data. */
+    s8                    chara_load_step;    /**< Stage of loading the menu characters. */
     u8                    unk_635[3];
-    CActionChara         *sub_chara;                /**< Character attached to the menu character. */
-    CActionChara         *create_effect;
+    CActionChara         *sub_chara;     /**< Character attached to the menu character. */
+    CActionChara         *create_effect; /**< Effect character shown during item creation. */
     s8                    unk_640;
     u8                    unk_641;
     short                 unk_642;
     u8                    unk_644[4];
     float                 unk_648;
-    s8                    arrow_count;
+    s8                    arrow_count; /**< Animation frame of the selection arrow. */
     u8                    unk_64d[3];
-    float                 effect_sway;
-    float                 effect_bob;
-    float                 effect_bob_angle;
-    int                   effect_bob_count;
-    float                 effect_sway_angle;
+    float                 effect_sway;       /**< Horizontal sway of the creation effect. */
+    float                 effect_bob;        /**< Vertical bob of the creation effect. */
+    float                 effect_bob_angle;  /**< Phase of the creation effect bob. */
+    int                   effect_bob_count;  /**< Cycles of the creation effect bob. */
+    float                 effect_sway_angle; /**< Phase of the creation effect sway. */
     u8                    unk_664[0xC];
-    float                 chara_pos[4];
-    float                 chara_make_pos[4];
-    int                   line_pos[50][2];          /**< Points of the random line drawn by the menu forms. */
+    float                 chara_pos[4];      /**< Position of the displayed character. */
+    float                 chara_make_pos[4]; /**< Target position of the character during creation. */
+    int                   line_pos[50][2];   /**< Points of the random line drawn by the menu forms. */
     u8                    unk_820[0x528];
     mgCMemory             unk_d48;
     int                   unk_d78;
     int                   unk_d7c;
-    float                 neta_effect_pos[30][2];   /**< Screen position of each new idea's star effect. */
-    short                 neta_effect_alpha[30];    /**< Alpha of each new idea's star effect. */
-    int                   gradation_mode;           /**< Colour fade of the invention flash being run. */
+    float                 neta_effect_pos[30][2]; /**< Screen position of each new idea's star effect. */
+    short                 neta_effect_alpha[30];  /**< Alpha of each new idea's star effect. */
+    int                   gradation_mode;         /**< Colour fade of the invention flash being run. */
     int                   unk_eb0;
-    u8                    card_scroll_reset;
-    u8                    photo_scroll_reset;
+    u8                    card_scroll_reset;  /**< Requests a reset of invention card scrolling. */
+    u8                    photo_scroll_reset; /**< Requests a reset of photo board scrolling. */
     u8                    unk_eb6;
     u8                    unk_eb7;
-    CMenuPosDataForm     *bg_form;                  /**< Background form. */
-    CMenuPosDataForm     *itembrd_form;             /**< Item board form. */
-    CMenuPosDataForm     *neta_board_form;          /**< Idea board form. */
-    MENUFORMPARTS_TYPE   *neta_board_bar[3];        /**< Scroll bar parts of the idea board. */
-    MENUFORMPARTS_TYPE   *neta_board_arrow;         /**< Up arrow part of the idea board. */
-    MENUFORMPARTS_TYPE   *neta_memo_arrow;          /**< Notebook arrow part of the idea board. */
-    CMenuPosDataForm     *makebrd_form;             /**< Building board form. */
-    CMenuPosDataForm     *card_list_title_form;     /**< Invention card list title form. */
-    CMenuPosDataForm     *card_list_form;           /**< Invention card list form. */
-    CMenuPosDataForm     *album_sw_form;            /**< Album switch form. */
-    CMenuPosDataForm     *album_big_form;           /**< Enlarged album photo form. */
-    CMenuPosDataForm     *neta_memo_form;           /**< Idea notebook form. */
-    CMenuPosDataForm     *neta_form[3];             /**< Form of each idea slot on the idea board. */
+    CMenuPosDataForm     *bg_form;              /**< Background form. */
+    CMenuPosDataForm     *itembrd_form;         /**< Item board form. */
+    CMenuPosDataForm     *neta_board_form;      /**< Idea board form. */
+    MENUFORMPARTS_TYPE   *neta_board_bar[3];    /**< Scroll bar parts of the idea board. */
+    MENUFORMPARTS_TYPE   *neta_board_arrow;     /**< Up arrow part of the idea board. */
+    MENUFORMPARTS_TYPE   *neta_memo_arrow;      /**< Notebook arrow part of the idea board. */
+    CMenuPosDataForm     *makebrd_form;         /**< Building board form. */
+    CMenuPosDataForm     *card_list_title_form; /**< Invention card list title form. */
+    CMenuPosDataForm     *card_list_form;       /**< Invention card list form. */
+    CMenuPosDataForm     *album_sw_form;        /**< Album switch form. */
+    CMenuPosDataForm     *album_big_form;       /**< Enlarged album photo form. */
+    CMenuPosDataForm     *neta_memo_form;       /**< Idea notebook form. */
+    CMenuPosDataForm     *neta_form[3];         /**< Form of each idea slot on the idea board. */
     u8                    unk_efc[4];
-    CMenuPosDataForm     *neta_name_form[3];        /**< Name form of each idea slot on the idea board. */
+    CMenuPosDataForm     *neta_name_form[3]; /**< Name form of each idea slot on the idea board. */
     u8                    unk_f0c[4];
-    CMenuPosDataForm     *poly_chr_form[2];         /**< Forms the menu characters are drawn in. */
-    CMenuPosDataForm     *invent_okeff_form;        /**< Invention success effect form. */
-    CMenuPosDataForm     *dload_form;               /**< Loading form. */
-    CMenuPosDataForm     *recbrd_form;              /**< Camera record board form. */
-    CMenuPosDataForm     *kakudai_pic_form;         /**< Enlarged photo form. */
-    MENUFORMPARTS_TYPE   *kakudai_pic;              /**< Picture part of the enlarged photo form. */
+    CMenuPosDataForm     *poly_chr_form[2];  /**< Forms the menu characters are drawn in. */
+    CMenuPosDataForm     *invent_okeff_form; /**< Invention success effect form. */
+    CMenuPosDataForm     *dload_form;        /**< Loading form. */
+    CMenuPosDataForm     *recbrd_form;       /**< Camera record board form. */
+    CMenuPosDataForm     *kakudai_pic_form;  /**< Enlarged photo form. */
+    MENUFORMPARTS_TYPE   *kakudai_pic;       /**< Picture part of the enlarged photo form. */
     u8                    unk_f2c[4];
 
     /**
@@ -458,7 +472,7 @@ public:
      * @address 0x201EE0
      * @size 0xB0
      */
-    void InitPhotoNetaBoardToAlbum(int from_album);
+    void InitPhotoNetaBoardToAlbum(int source);
 
     /**
      *
@@ -508,7 +522,7 @@ public:
      * @address 0x2027F0
      * @size 0x80
      */
-    USER_PICTURE_INFO *GetPhotoInfoFromMode(int *num);
+    USER_PICTURE_INFO *GetPhotoInfoFromMode(int *slot_count);
 
     /**
      *
@@ -518,7 +532,7 @@ public:
      * @address 0x202870
      * @size 0xF0
      */
-    void InitNetaCircle(int keep);
+    void InitNetaCircle(int show);
 
     /**
      *
@@ -558,7 +572,7 @@ public:
      * @address 0x202EE0
      * @size 0x50
      */
-    int SelectedNetaPhotoAlready(int index);
+    int SelectedNetaPhotoAlready(int neta_id);
 
     /**
      *
@@ -568,7 +582,7 @@ public:
      * @address 0x202F30
      * @size 0x70
      */
-    int SelectedNetaMemoListAlready(int index);
+    int SelectedNetaMemoListAlready(int neta_id);
 
     /**
      *
@@ -608,7 +622,7 @@ public:
      * @address 0x2033F0
      * @size 0x40
      */
-    void CreateModeSwapForm(int swap);
+    void CreateModeSwapForm(int side);
 
     /**
      *
@@ -668,7 +682,7 @@ public:
      * @address 0x203E00
      * @size 0x90
      */
-    virtual int ItemCmdAfter(int command, ITEMCMD_RET_PARA *result);
+    virtual int ItemCmdAfter(int command, ITEMCMD_RET_PARA *para);
 
     /**
      *
@@ -718,7 +732,7 @@ public:
      * @address 0x205A80
      * @size 0x5A0
      */
-    virtual int IsMakeObject(int mode, int arg);
+    virtual int IsMakeObject(int keys, int button);
 
     /**
      *
@@ -748,7 +762,7 @@ public:
      * @address 0x207770
      * @size 0x840
      */
-    virtual int IsAskExtend(int mode, int arg);
+    virtual int IsAskExtend(int mode, int button);
 
     /**
      *
@@ -758,7 +772,7 @@ public:
      * @address 0x207FB0
      * @size 0x310
      */
-    void PhotoNetaEnter(int index, int mode);
+    void PhotoNetaEnter(int index, int button);
 
     /**
      *
@@ -778,7 +792,7 @@ public:
      * @address 0x2096C0
      * @size 0xA0
      */
-    void GetNetaBoardCursorPosition(int index, int *pos);
+    void GetNetaBoardCursorPosition(int slot, int *pos);
 
     /**
      *
@@ -788,7 +802,7 @@ public:
      * @address 0x209760
      * @size 0x70
      */
-    void GetNetaMemoCursorPosition(int line, int *pos);
+    void GetNetaMemoCursorPosition(int slot, int *pos);
 
     /**
      *
@@ -808,8 +822,9 @@ public:
      * @address 0x20C000
      * @size 0x160
      */
-    void NextDifferentMode(int mode, int arg);
+    void NextDifferentMode(int next, int arg);
 };
+
 STATIC_ASSERT(sizeof(CMenuInvent) == 0xF30);
 
 /**
@@ -850,7 +865,7 @@ void Copy_USER_PICTURE_INFO(USER_PICTURE_INFO *src, USER_PICTURE_INFO *dst);
  * @address 0x1FF9B0
  * @size 0x360
  */
-void PictureSeiton(USER_PICTURE_INFO *photo, char *work, int num);
+void PictureSeiton(USER_PICTURE_INFO *photo, char *work, int count);
 
 /**
  *
@@ -860,7 +875,7 @@ void PictureSeiton(USER_PICTURE_INFO *photo, char *work, int num);
  * @address 0x1FFD10
  * @size 0x130
  */
-void AttachPictTex(int block, mgCTexture **tex, USER_PICTURE_INFO *photo, int num);
+void AttachPictTex(int block, mgCTexture **tex, USER_PICTURE_INFO *info, int count);
 
 /**
  *
@@ -870,7 +885,7 @@ void AttachPictTex(int block, mgCTexture **tex, USER_PICTURE_INFO *photo, int nu
  * @address 0x1FFE40
  * @size 0x60
  */
-int CheckPhotoDataNoNeed(USER_PICTURE_INFO *photo, int num, int *index);
+int CheckPhotoDataNoNeed(USER_PICTURE_INFO *photo, int count, int *unneeded);
 
 /**
  *
@@ -890,7 +905,7 @@ int IsTakePhoto();
  * @address 0x200960
  * @size 0xC0
  */
-void TranslateInventUserData(CInventUserData *src, CInventUserData *dst);
+void TranslateInventUserData(CInventUserData *old_data, CInventUserData *new_data);
 
 /**
  *
@@ -930,7 +945,7 @@ void InitScoopString();
  * @address 0x200BE0
  * @size 0x70
  */
-void AnalyzeScoopString(mgCMemory *memory, char *script, int size);
+void AnalyzeScoopString(mgCMemory *stack, char *script, int size);
 
 /**
  *
@@ -950,7 +965,7 @@ void LoadFilePictureName();
  * @address 0x201110
  * @size 0xF0
  */
-char *GetPhotoName(USER_PICTURE_INFO *photo);
+char *GetPhotoName(USER_PICTURE_INFO *info);
 
 /**
  *
@@ -960,7 +975,7 @@ char *GetPhotoName(USER_PICTURE_INFO *photo);
  * @address 0x201200
  * @size 0x50
  */
-int GetPhotoNameStr(int neta_id, char *name);
+int GetPhotoNameStr(int neta_id, char *dest);
 
 /**
  *
@@ -970,7 +985,7 @@ int GetPhotoNameStr(int neta_id, char *name);
  * @address 0x201250
  * @size 0xA0
  */
-char *GetPhotoNameCheck(USER_PICTURE_INFO *photo);
+char *GetPhotoNameCheck(USER_PICTURE_INFO *info);
 
 /**
  *
@@ -992,7 +1007,7 @@ int CheckInventItem(int item_id);
  * @address 0x201CF0
  * @size 0xD0
  */
-int CheckItemTable(int item_id, int *neta_id);
+int CheckItemTable(int item_id, int *values);
 
 /**
  *
@@ -1002,7 +1017,7 @@ int CheckItemTable(int item_id, int *neta_id);
  * @address 0x201DC0
  * @size 0x120
  */
-int CheckInventPhoto(int id, int check);
+int CheckInventPhoto(int id, int kind);
 
 /**
  *
@@ -1053,7 +1068,7 @@ void MenuInventPictureBoardDraw(float *pos, int &tex_block, int mode);
  * @address 0x20A9A0
  * @size 0x200
  */
-void MenuInventAlbumPictureDraw(float *pos, int &tex_block);
+void MenuInventAlbumPictureDraw(float *origin, int &loaded_tex);
 
 /**
  *
@@ -1063,7 +1078,7 @@ void MenuInventAlbumPictureDraw(float *pos, int &tex_block);
  * @address 0x20ABA0
  * @size 0x410
  */
-void MenuInventNetaMemoDraw(float *pos, int &tex_block);
+void MenuInventNetaMemoDraw(float *origin, int &loaded_tex);
 
 /**
  *

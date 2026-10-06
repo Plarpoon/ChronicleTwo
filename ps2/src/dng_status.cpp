@@ -1,43 +1,42 @@
 #define MG_DRAWPRIM_MANUAL_CTOR
 #include "common.h"
-#include "mg_drawprim.hpp"
+
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #include "automap.hpp"
+#include "cameracontrol.hpp"
+#include "dng_debug.hpp"
+#include "dng_effect.hpp"
+#include "dng_main.hpp"
+#include "dng_status.hpp"
 #include "effscript.hpp"
-#include "maintex.hpp"
-#include "monster.hpp"
+#include "event.hpp"
+#include "event_func.hpp"
 #include "font.hpp"
 #include "mainloop.hpp"
-#include "cameracontrol.hpp"
-#include "event_func.hpp"
-#include "event.hpp"
-#include "menucommon.hpp"
-#include "mglib.hpp"
+#include "maintex.hpp"
 #include "mapload.hpp"
-#include <cmath>
-#include <cstring>
-#include <cstdlib>
-#include <cstdio>
+#include "menucommon.hpp"
+#include "mg_drawenv.hpp"
+#include "mg_drawprim.hpp"
+#include "mg_math.hpp"
+#include "mg_tanime.hpp"
+#include "mg_texture.hpp"
+#include "mglib.hpp"
+#include "monster.hpp"
+#include "prespr.hpp"
 #include "savedatadungeon.hpp"
 #include "sceneevent.hpp"
 #include "snd_seseq.hpp"
-#include "mg_drawenv.hpp"
-#include "mg_math.hpp"
-#include "dng_effect.hpp"
-#include "dng_debug.hpp"
-#include "dng_main.hpp"
-#include "mg_tanime.hpp"
-#include "mg_texture.hpp"
-#include "prespr.hpp"
 #include "userdata.hpp"
-#include "dng_status.hpp"
 
-extern "C" int fptosi(float value);
+extern "C" int  fptosi(float value);
 extern "C" void __ct__11mgCDrawPrimFv(mgCDrawPrim *);
-extern "C" void PrintV__FiiiP10mgCTexture9mgRect_i_iiiP7SP_RGBA(
-    int x, int y, int value, mgCTexture *texture, mgRect<int> *rect,
-    int digit_count, int right_align, int spacing, SP_RGBA *color);
-extern float cur_ang_1005;
-extern s8 init_1006;
+extern float    cur_ang_1005;
+extern s8       init_1006;
 
 #pragma divbyzerocheck on
 #include <cmath>
@@ -49,6 +48,7 @@ extern s8 init_1006;
 #include "scenesnd.hpp"
 #include "subgame.hpp"
 #include "userdata.hpp"
+
 // Code (.text)
 void PrintV(int x, int y, int value, mgCTexture *texture, mgRect<int> rect, int digit_count,
             int right_align, int spacing, SP_RGBA *color) {
@@ -65,20 +65,25 @@ void PrintV(int x, int y, int value, mgCTexture *texture, mgRect<int> rect, int 
     digits[3] = -1;
     digits[4] = -1;
     digits[5] = -1;
+
     for (j = 0; j < digit_count - 1; j++) {
         divisor *= 10;
     }
+
     for (k = digit_count - 1; k >= 0; k--) {
         int digit = value / divisor;
         digits[k] = digit;
         value -= digit * divisor;
         divisor /= 10;
     }
+
     shown = digit_count;
+
     for (i = digit_count - 1; i > 0; i--) {
         if (digits[i] != 0) {
             break;
         }
+
         shown--;
     }
 
@@ -90,23 +95,29 @@ void PrintV(int x, int y, int value, mgCTexture *texture, mgRect<int> rect, int 
     sprite.Preset2D();
     sprite.Begin(6);
     sprite.Texture(texture);
+
     if (color != 0) {
         sprite.Color(color->r, color->g, color->b, color->a);
     } else {
         sprite.Color(0x80, 0x80, 0x80, 0x80);
     }
+
     if (spacing < 0) {
         spacing = rect.right;
     }
+
     if (right_align != 0) {
         x += spacing * (digit_count - shown);
     }
+
     for (shown--; shown >= 0; shown--) {
         sprite.SetIRect(x, y, rect.right, rect.bottom + 1, rect.left + rect.right * digits[shown], rect.top);
         x += spacing;
     }
+
     sprite.End();
 }
+
 #pragma divbyzerocheck reset
 
 void DrawDrumCounter(int x, int y, int value) {
@@ -135,10 +146,12 @@ void DrawDrumCounter(int x, int y, int value) {
     sprite[0].Begin(MG_PRIM_SPRITE);
     sprite[0].Texture(TEX_SystenFrame);
     sprite[0].Color(0x80, 0x80, 0x80, 0x80);
+
     for (index = 0; index < 5; index++) {
         sprite[0].SetIRect(x, y, 12, 12, digit[index] * 12, 0xE8);
         x += 15;
     }
+
     sprite[0].End();
 }
 
@@ -148,9 +161,9 @@ void DrawDrumCounter(int x, int y, int value) {
 void DrawActiveItemCursor(int x, int y, float alpha) {
     CPreSprite sprite;
     CPreSprite spare;
-    float corner[4];
-    float u;
-    float v;
+    float      corner[4];
+    float      u;
+    float      v;
 
     __ct__11mgCDrawPrimFv(&sprite);
     __ct__11mgCDrawPrimFv(&spare);
@@ -161,14 +174,18 @@ void DrawActiveItemCursor(int x, int y, float alpha) {
     sprite.Texture(TEX_SystenFrame);
     sprite.SetAlphaBlend(2);
     sprite.Color(0x80, 0x80, 0x80, fptosi(128.0f * alpha));
+
     if (init_1006 == 0) {
         cur_ang_1005 = -3.1415927f;
         init_1006 = 1;
     }
+
     cur_ang_1005 += 0.017453292f;
+
     if (!(cur_ang_1005 <= 3.1415927f)) {
         cur_ang_1005 -= 25.132742f;
     }
+
     v = -28.0f;
     u = v;
     corner[0] = x + (u * sinf(cur_ang_1005) - v * cosf(cur_ang_1005));
@@ -208,8 +225,8 @@ void DrawActiveItemCursor(int x, int y, float alpha) {
 #ifdef NONMATCHING
 void DrawMainUnitStatusBord(float rate) {
     SP_RGBA           color;
-    CPreSprite sprite;
-    CPreSprite spare;
+    CPreSprite        sprite;
+    CPreSprite        spare;
     extern float      palanim_1023;
     extern s8         init_1024;
     CActionChara     *character;
@@ -217,6 +234,7 @@ void DrawMainUnitStatusBord(float rate) {
     CGameDataUsed    *active_items;
     int               hp_max;
     int               hp_now;
+
     /**
      *
      * Screen positions of the charge display elements.
@@ -225,7 +243,9 @@ void DrawMainUnitStatusBord(float rate) {
     struct charge_position_data {
         int value[7][2]; /**< Position pairs. */
     };
+
     charge_position_data charge_position;
+
     /**
      *
      * Glyph coordinates of the charge display.
@@ -234,7 +254,9 @@ void DrawMainUnitStatusBord(float rate) {
     struct charge_glyph_data {
         int value[4][2]; /**< Glyph coordinate pairs. */
     };
+
     charge_glyph_data charge_glyph;
+
     /**
      *
      * Mask values used by the dungeon status display.
@@ -243,7 +265,9 @@ void DrawMainUnitStatusBord(float rate) {
     struct status_mask_data {
         int value[7]; /**< Status mask values. */
     };
+
     status_mask_data status_mask;
+
     /**
      *
      * Glyph coordinates of the dungeon status display.
@@ -252,14 +276,15 @@ void DrawMainUnitStatusBord(float rate) {
     struct status_glyph_data {
         s16 value[7][2]; /**< Glyph coordinate pairs. */
     };
+
     status_glyph_data status_glyph;
-    mgRect<int> item_glyph;
-    mgRect<int> hp_now_glyph;
-    mgRect<int> hp_max_glyph;
-    mgRect<int> whp_now_glyph;
-    mgRect<int> whp_max_glyph;
-    mgRect<int> second_whp_now_glyph;
-    mgRect<int> second_whp_max_glyph;
+    mgRect<int>       item_glyph;
+    mgRect<int>       hp_now_glyph;
+    mgRect<int>       hp_max_glyph;
+    mgRect<int>       whp_now_glyph;
+    mgRect<int>       whp_max_glyph;
+    mgRect<int>       second_whp_now_glyph;
+    mgRect<int>       second_whp_max_glyph;
     int               whp[2][2];
     int               abs[2][2];
     int               weapon_y;
@@ -296,10 +321,10 @@ void DrawMainUnitStatusBord(float rate) {
     color.g = 0x80;
     color.b = 0x80;
     color.a = 0x80;
-    weapon_y = (int)(80.0f * rate) - 72;
+    weapon_y = (int) (80.0f * rate) - 72;
     hp_y = weapon_y;
     weapon_x = 280;
-    second_weapon_x = 580 - (int)(300.0f * rate);
+    second_weapon_x = 580 - (int) (300.0f * rate);
     second_weapon_y = 8;
     if (SubGameRunning() != 0) {
         weapon_y = -72;
@@ -307,7 +332,7 @@ void DrawMainUnitStatusBord(float rate) {
         second_weapon_x = 580;
     }
     event_running = 0;
-    character = (CActionChara *)DngMainScene->GetCharacter(0);
+    character = (CActionChara *) DngMainScene->GetCharacter(0);
     if (character != NULL) {
         event_running = character->CheckRunEvent();
     }
@@ -316,9 +341,9 @@ void DrawMainUnitStatusBord(float rate) {
     hp_now = info->GetNowHp_i();
     info->GetNowWhp(0, whp[0]);
     info->GetNowWhp(1, whp[1]);
-    hp_rate = (float)hp_now / (float)hp_max;
-    whp_rate[0] = (float)whp[0][0] / (float)whp[0][1];
-    whp_rate[1] = (float)whp[1][0] / (float)whp[1][1];
+    hp_rate = (float) hp_now / (float) hp_max;
+    whp_rate[0] = (float) whp[0][0] / (float) whp[0][1];
+    whp_rate[1] = (float) whp[1][0] / (float) whp[1][1];
     if (!init_1024) {
         palanim_1023 = 0.0f;
         init_1024 = 1;
@@ -368,7 +393,7 @@ void DrawMainUnitStatusBord(float rate) {
     for (index = 0, item_x = 0; index < 3; index++, active_items++, item_x += 41) {
         if (active_items->GetNum() >= 2) {
             item_glyph.Set(0, 0xE8, 12, 12);
-            PrintV__FiiiP10mgCTexture9mgRect_i_iiiP7SP_RGBA(item_x + 64, hp_y + 45, active_items->GetNum(), TEX_SystenFrame, &item_glyph, 2, 1, 10, NULL);
+            PrintV(item_x + 64, hp_y + 45, active_items->GetNum(), TEX_SystenFrame, item_glyph, 2, 1, 10, NULL);
         }
     }
     charge_max = info->GetMagicSwordCounterMax();
@@ -379,17 +404,16 @@ void DrawMainUnitStatusBord(float rate) {
     extern charge_glyph_data at_1049__DATA;
     charge_glyph = at_1049__DATA;
 
-
     sprite.Initialize(NULL, NULL);
     sprite.Preset2D();
     sprite.Begin(MG_PRIM_SPRITE);
     sprite.Texture(TEX_SystenFrame);
-    alpha = (int)(128.0f * rate);
+    alpha = (int) (128.0f * rate);
     sprite.Color(0x80, 0x80, 0x80, alpha);
     for (index = 0; index < charge_max; index++) {
         if (index < charge_now) {
             sprite.SetIRect(charge_position.value[index][0], charge_position.value[index][1], 10, 10,
-                              charge_glyph.value[element][0], charge_glyph.value[element][1]);
+                            charge_glyph.value[element][0], charge_glyph.value[element][1]);
         } else {
             sprite.SetIRect(charge_position.value[index][0], charge_position.value[index][1], 10, 10, 0xD0, 0xD8);
         }
@@ -400,7 +424,6 @@ void DrawMainUnitStatusBord(float rate) {
     status_mask = at_1058__2__DATA;
     extern status_glyph_data at_1059__2__DATA;
     status_glyph = at_1059__2__DATA;
-
 
     if (status_attr != 0) {
         status_x = 24;
@@ -417,12 +440,12 @@ void DrawMainUnitStatusBord(float rate) {
         }
         sprite.End();
     }
-    width = (int)(171.0f * hp_rate);
+    width = (int) (171.0f * hp_rate);
     red = 0x80;
     green = 0x80;
     blue = 0x80;
     if (hp_rate < 0.2f) {
-        pulse = (int)(-64.0f * flash[0]);
+        pulse = (int) (-64.0f * flash[0]);
         red = pulse + 0x80;
         green = 0x80 - pulse;
         blue = 0x80 - pulse;
@@ -452,19 +475,19 @@ void DrawMainUnitStatusBord(float rate) {
     }
     sprite.End();
     hp_now_glyph.Set(0, 0xE8, 12, 12);
-    PrintV__FiiiP10mgCTexture9mgRect_i_iiiP7SP_RGBA(161, hp_y + 14, hp_now, TEX_SystenFrame, &hp_now_glyph, 5, 1, 10, NULL);
+    PrintV(161, hp_y + 14, hp_now, TEX_SystenFrame, hp_now_glyph, 5, 1, 10, NULL);
     hp_max_glyph.Set(0, 0xE8, 12, 12);
-    PrintV__FiiiP10mgCTexture9mgRect_i_iiiP7SP_RGBA(221, hp_y + 14, hp_max, TEX_SystenFrame, &hp_max_glyph, 5, 0, 10, NULL);
+    PrintV(221, hp_y + 14, hp_max, TEX_SystenFrame, hp_max_glyph, 5, 0, 10, NULL);
     second_weapon_no = info->equip[1].item_no;
     weapon_no = info->equip[0].item_no;
     if (whp_rate[0] < 0.2f) {
         if (whp[0][0] <= 0) {
-            pulse = (int)(-64.0f * flash[0]);
+            pulse = (int) (-64.0f * flash[0]);
             color.r = pulse + 0x80;
             color.g = 0x80 - pulse;
             color.b = 0x80 - pulse;
         } else {
-            pulse = (int)(-64.0f * flash[0]);
+            pulse = (int) (-64.0f * flash[0]);
             color.r = 0x80 - pulse;
             color.g = 0x80 - pulse;
             color.b = 0x80 - pulse;
@@ -491,11 +514,11 @@ void DrawMainUnitStatusBord(float rate) {
     sprite.End();
     number_x = weapon_x + 76;
     whp_now_glyph.Set(0, 0xE8, 12, 12);
-    PrintV__FiiiP10mgCTexture9mgRect_i_iiiP7SP_RGBA(number_x - 61, weapon_y + 19, whp[0][0], TEX_SystenFrame, &whp_now_glyph, 5, 1, 10, &color);
+    PrintV(number_x - 61, weapon_y + 19, whp[0][0], TEX_SystenFrame, whp_now_glyph, 5, 1, 10, &color);
     whp_max_glyph.Set(0, 0xE8, 12, 12);
-    PrintV__FiiiP10mgCTexture9mgRect_i_iiiP7SP_RGBA(number_x - 4, weapon_y + 19, whp[0][1], TEX_SystenFrame, &whp_max_glyph, 5, 0, 10, &color);
+    PrintV(number_x - 4, weapon_y + 19, whp[0][1], TEX_SystenFrame, whp_max_glyph, 5, 0, 10, &color);
     gauge_left = weapon_x + 36;
-    gauge_right = gauge_left + (int)(95.0f * whp_rate[0]);
+    gauge_right = gauge_left + (int) (95.0f * whp_rate[0]);
     sprite.Preset2D();
     sprite.Begin(MG_PRIM_TRIANGLE_STRIP);
     sprite.Color(0x80, 0x80, 0x80, 0x80);
@@ -510,7 +533,7 @@ void DrawMainUnitStatusBord(float rate) {
     sprite.End();
     info->GetNowAbs(0, abs[0]);
     gauge_left = weapon_x + 38;
-    gauge_right = gauge_left + (int)(95.0f * ((float)abs[0][0] / (float)abs[0][1]));
+    gauge_right = gauge_left + (int) (95.0f * ((float) abs[0][0] / (float) abs[0][1]));
     sprite.Preset2D();
     sprite.Begin(MG_PRIM_TRIANGLE_STRIP);
     sprite.TextureCrd(0x46, 0xB6);
@@ -524,12 +547,12 @@ void DrawMainUnitStatusBord(float rate) {
     sprite.End();
     if (whp_rate[1] < 0.2f) {
         if (whp[1][0] <= 0) {
-            pulse = (int)(-64.0f * flash[0]);
+            pulse = (int) (-64.0f * flash[0]);
             color.r = pulse + 0x80;
             color.g = 0x80 - pulse;
             color.b = 0x80 - pulse;
         } else {
-            pulse = (int)(-64.0f * flash[0]);
+            pulse = (int) (-64.0f * flash[0]);
             color.r = 0x80 - pulse;
             color.g = 0x80 - pulse;
             color.b = 0x80 - pulse;
@@ -555,7 +578,7 @@ void DrawMainUnitStatusBord(float rate) {
     }
     sprite.End();
     gauge_left = second_weapon_x + 74;
-    gauge_right = gauge_left + (int)(95.0f * whp_rate[1]);
+    gauge_right = gauge_left + (int) (95.0f * whp_rate[1]);
     sprite.Preset2D();
     sprite.Begin(MG_PRIM_TRIANGLE_STRIP);
     sprite.TextureCrd(0x46, 0xB2);
@@ -569,7 +592,7 @@ void DrawMainUnitStatusBord(float rate) {
     sprite.End();
     info->GetNowAbs(1, abs[1]);
     gauge_left = second_weapon_x + 76;
-    gauge_right = gauge_left + (int)(95.0f * ((float)abs[1][0] / (float)abs[1][1]));
+    gauge_right = gauge_left + (int) (95.0f * ((float) abs[1][0] / (float) abs[1][1]));
     sprite.Initialize(NULL, NULL);
     sprite.Preset2D();
     sprite.Begin(MG_PRIM_TRIANGLE_STRIP);
@@ -584,9 +607,9 @@ void DrawMainUnitStatusBord(float rate) {
     sprite.End();
     number_x = second_weapon_x + 142;
     second_whp_now_glyph.Set(0, 0xE8, 12, 12);
-    PrintV__FiiiP10mgCTexture9mgRect_i_iiiP7SP_RGBA(number_x - 61, second_weapon_y + 28, whp[1][0], TEX_SystenFrame, &second_whp_now_glyph, 5, 1, 10, &color);
+    PrintV(number_x - 61, second_weapon_y + 28, whp[1][0], TEX_SystenFrame, second_whp_now_glyph, 5, 1, 10, &color);
     second_whp_max_glyph.Set(0, 0xE8, 12, 12);
-    PrintV__FiiiP10mgCTexture9mgRect_i_iiiP7SP_RGBA(number_x - 4, second_weapon_y + 28, whp[1][1], TEX_SystenFrame, &second_whp_max_glyph, 5, 0, 10, &color);
+    PrintV(number_x - 4, second_weapon_y + 28, whp[1][1], TEX_SystenFrame, second_whp_max_glyph, 5, 0, 10, &color);
     if (rate >= 1.0f) {
         if (SubGameRunning() != 0) {
             return;
@@ -618,8 +641,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_status", DrawMainUnitStatusBord__Ff);
 
 void DrawRoboUnitStatusBord(float rate) {
     int               color[4];
-    CPreSprite sprite;
-    CPreSprite spare;
+    CPreSprite        sprite;
+    CPreSprite        spare;
     extern float      palanim_1222;
     extern s8         init_1223;
     CBattleCharaInfo *info;
@@ -635,36 +658,40 @@ void DrawRoboUnitStatusBord(float rate) {
     int               top_right;
     int               bottom_right;
 
-
     color[0] = 0x80;
     color[1] = 0x80;
     color[2] = 0x80;
     color[3] = 0x80;
-    int y = (int)(80.0f * rate) - 72;
+    int y = (int) (80.0f * rate) - 72;
     info = GetBattleCharaInfo();
     hp_max = info->GetMaxHp_i();
     hp_now = info->GetNowHp_i();
     info->GetNowWhp(0, whp);
-    hp_rate[0] = (float)hp_now / (float)hp_max;
-    whp_rate = (float)whp[0] / (float)whp[1];
+    hp_rate[0] = (float) hp_now / (float) hp_max;
+    whp_rate = (float) whp[0] / (float) whp[1];
+
     if (!init_1223) {
         palanim_1222 = 0.0f;
         init_1223 = 1;
     }
+
     palanim_1222 += 0.19634955f;
+
     if (!(palanim_1222 <= 0.0f)) {
         palanim_1222 -= 3.1415927f;
     }
+
     flash = sinf(palanim_1222);
+
     if (whp_rate < 0.2f) {
         if (whp_rate <= 0.0f) {
-            pulse = (int)(-64.0f * flash);
+            pulse = (int) (-64.0f * flash);
             color[0] = pulse + 0x80;
             color[1] = 0x80 - pulse;
             color[2] = 0x80 - pulse;
             color[3] = 0x80;
         } else {
-            pulse = (int)(-64.0f * flash);
+            pulse = (int) (-64.0f * flash);
             color[0] = 0x80 - pulse;
             color[1] = 0x80 - pulse;
             color[2] = 0x80 - pulse;
@@ -709,13 +736,15 @@ void DrawRoboUnitStatusBord(float rate) {
     sprite.Color(0x80, 0x80, 0x80, 0x80);
     {
         int &saved_width = width;
-        top_right = (saved_width = (int)(141.0f * hp_rate[0])) + 58;
+        top_right = (saved_width = (int) (141.0f * hp_rate[0])) + 58;
     }
     bottom_right = top_right;
     int limit = 196;
+
     if (bottom_right > limit) {
         bottom_right = limit;
     }
+
     sprite.TextureCrd(0x50, 0xB4);
     sprite.Vertex(62, y + 5, 0);
     sprite.TextureCrd(0x58, 0xB4);
@@ -730,7 +759,7 @@ void DrawRoboUnitStatusBord(float rate) {
     sprite.Begin(MG_PRIM_TRIANGLE_STRIP);
     sprite.Texture(TEX_SystenFrame);
     sprite.Color(color[0], color[1], color[2], 0x80);
-    top_right = (int)(107.0f * ((float)whp[0] / (float)whp[1])) + 337;
+    top_right = (int) (107.0f * ((float) whp[0] / (float) whp[1])) + 337;
     sprite.TextureCrd(0x46, 0xB2);
     sprite.Vertex(337, y + 8, 0);
     sprite.TextureCrd(0x4E, 0xB2);
@@ -740,23 +769,23 @@ void DrawRoboUnitStatusBord(float rate) {
     sprite.TextureCrd(0x4E, 0xB6);
     sprite.Vertex(top_right, y + 12, 0);
     sprite.End();
-    int blue = ((SP_RGBA *)&color[2])->r;
-    int green = ((SP_RGBA *)&color[1])->r;
+    int blue = ((SP_RGBA *) &color[2])->r;
+    int green = ((SP_RGBA *) &color[1])->r;
     color[1] = green;
     color[2] = blue;
     color[3] = 0x80;
     mgRect<int> whp_now_glyph(0, 0xE8, 12, 12);
-    PrintV__FiiiP10mgCTexture9mgRect_i_iiiP7SP_RGBA(370, y + 18, whp[0], TEX_SystenFrame, &whp_now_glyph, 5, 1, 10, (SP_RGBA *)color);
+    PrintV(370, y + 18, whp[0], TEX_SystenFrame, whp_now_glyph, 5, 1, 10, (SP_RGBA *) color);
     mgRect<int> whp_max_glyph(0, 0xE8, 12, 12);
-    PrintV__FiiiP10mgCTexture9mgRect_i_iiiP7SP_RGBA(430, y + 18, whp[1], TEX_SystenFrame, &whp_max_glyph, 5, 0, 10, (SP_RGBA *)color);
+    PrintV(430, y + 18, whp[1], TEX_SystenFrame, whp_max_glyph, 5, 0, 10, (SP_RGBA *) color);
     color[0] = 0x80;
     color[1] = 0x80;
     color[2] = 0x80;
     color[3] = 0x80;
     mgRect<int> hp_now_glyph(0, 0xE8, 12, 12);
-    PrintV__FiiiP10mgCTexture9mgRect_i_iiiP7SP_RGBA(56, y + 20, hp_now, TEX_SystenFrame, &hp_now_glyph, 5, 1, 10, (SP_RGBA *)color);
+    PrintV(56, y + 20, hp_now, TEX_SystenFrame, hp_now_glyph, 5, 1, 10, (SP_RGBA *) color);
     mgRect<int> hp_max_glyph(0, 0xE8, 12, 12);
-    PrintV__FiiiP10mgCTexture9mgRect_i_iiiP7SP_RGBA(116, y + 20, hp_max, TEX_SystenFrame, &hp_max_glyph, 5, 0, 10, (SP_RGBA *)color);
+    PrintV(116, y + 20, hp_max, TEX_SystenFrame, hp_max_glyph, 5, 0, 10, (SP_RGBA *) color);
     info->GetNowAbs(0, abs);
     DrawDrumCounter(230, y + 19, abs[0]);
     sprite.Initialize(NULL, NULL);
@@ -766,46 +795,51 @@ void DrawRoboUnitStatusBord(float rate) {
     sprite.Color(0x80, 0x80, 0x80, 0x80);
     sprite.SetIRect(width + 57, y - 3, 8, 24, 0xB0, 0x2A);
     sprite.End();
+
     if (hp_rate[0] < 0.3f) {
         WarningGage2.warning[0] = 1;
     } else {
         WarningGage2.warning[0] = 0;
     }
+
     if (whp_rate < 0.2f) {
         WarningGage2.warning[1] = 1;
     } else {
         WarningGage2.warning[1] = 0;
     }
+
     WarningGage2.rate[0] = hp_rate[0];
     WarningGage2.layout = WARNING_GAGE_LAYOUT_ROBO;
     WarningGage2.rate[1] = whp_rate;
 }
+
 void DrawMonsterUnitStatusBord(float alpha) {
 
-
-    int whp[2];
-    int abs[2];
+    int               whp[2];
+    int               abs[2];
     CBattleCharaInfo *info;
-    int max_hp;
-    int now_hp;
-    float hp_rate;
-    int hp_right;
-    int hp_bottom_right;
-    int whp_left;
-    int whp_right;
-    int whp_bottom_right;
-    int abs_right;
+    int               max_hp;
+    int               now_hp;
+    float             hp_rate;
+    int               hp_right;
+    int               hp_bottom_right;
+    int               whp_left;
+    int               whp_right;
+    int               whp_bottom_right;
+    int               abs_right;
+
     if (alpha < 1.0f) {
         return;
     }
+
     info = GetBattleCharaInfo();
     max_hp = info->GetMaxHp_i();
     now_hp = info->GetNowHp_i();
     info->GetNowWhp(0, whp);
 
-    CPreSprite prim;
-    CPreSprite spare;
-    int color[4];
+    CPreSprite  prim;
+    CPreSprite  spare;
+    int         color[4];
     mgRect<int> rect0;
     mgRect<int> rect1;
     mgRect<int> rect2;
@@ -828,12 +862,14 @@ void DrawMonsterUnitStatusBord(float alpha) {
     prim.Begin(4);
     prim.Texture(TEX_SystenFrame);
     prim.Color(0x80, 0x80, 0x80, 0x80);
-    hp_rate = (float)now_hp / (float)max_hp;
+    hp_rate = (float) now_hp / (float) max_hp;
     hp_right = fptosi(176.0f * hp_rate) + 0x20;
     hp_bottom_right = hp_right;
+
     if (hp_bottom_right > 0xC8) {
         hp_bottom_right = 0xC8;
     }
+
     prim.TextureCrd(0x46, 0xA2);
     prim.Vertex(0x28, 0xE, 0);
     prim.TextureCrd(0x4E, 0xA2);
@@ -849,16 +885,19 @@ void DrawMonsterUnitStatusBord(float alpha) {
     prim.Bilinear(0);
     prim.Texture(TEX_SystenFrame);
     prim.Color(0x80, 0x80, 0x80, 0x80);
-    whp_right = fptosi(137.0f * ((float)whp[0] / (float)whp[1])) + 0x157;
+    whp_right = fptosi(137.0f * ((float) whp[0] / (float) whp[1])) + 0x157;
     whp_left = 0x157;
     whp_bottom_right = whp_right + 4;
     whp_left -= 4;
+
     if (whp_left < 0x153) {
         whp_left = 0x153;
     }
+
     if (whp_bottom_right > 0x1E1) {
         whp_bottom_right = 0x1E1;
     }
+
     prim.TextureCrd(0x46, 0xA8);
     prim.Vertex(whp_left, 0xD, 0);
     prim.TextureCrd(0x4E, 0xA8);
@@ -869,7 +908,7 @@ void DrawMonsterUnitStatusBord(float alpha) {
     prim.Vertex(whp_bottom_right, 0x12, 0);
     prim.End();
     info->GetNowAbs(0, abs);
-    abs_right = fptosi(137.0f * ((float)abs[0] / (float)abs[1])) + 0x157;
+    abs_right = fptosi(137.0f * ((float) abs[0] / (float) abs[1])) + 0x157;
     prim.Preset2D();
     prim.Begin(4);
     prim.TextureCrd(0x46, 0xB6);
@@ -890,26 +929,28 @@ void DrawMonsterUnitStatusBord(float alpha) {
     color[2] = 0x80;
     color[3] = 0x80;
     rect0.Set(0, 0xE8, 0xC, 0xC);
-    PrintV__FiiiP10mgCTexture9mgRect_i_iiiP7SP_RGBA(0x6E, 0x18, now_hp, TEX_SystenFrame, &rect0, 5,
-                                                    1, 0xA, (SP_RGBA *)color);
+    PrintV(0x6E, 0x18, now_hp, TEX_SystenFrame, rect0, 5,
+           1, 0xA, (SP_RGBA *) color);
     rect1.Set(0, 0xE8, 0xC, 0xC);
-    PrintV__FiiiP10mgCTexture9mgRect_i_iiiP7SP_RGBA(0xAC, 0x18, max_hp, TEX_SystenFrame, &rect1, 5,
-                                                    0, 0xA, (SP_RGBA *)color);
+    PrintV(0xAC, 0x18, max_hp, TEX_SystenFrame, rect1, 5,
+           0, 0xA, (SP_RGBA *) color);
     color[0] = 0x80;
     color[1] = 0x80;
     color[2] = 0x80;
     color[3] = 0x80;
     rect2.Set(0, 0xE8, 0xC, 0xC);
-    PrintV__FiiiP10mgCTexture9mgRect_i_iiiP7SP_RGBA(0x160, 0x1D, whp[1], TEX_SystenFrame, &rect2, 5,
-                                                    1, 0xA, (SP_RGBA *)color);
+    PrintV(0x160, 0x1D, whp[1], TEX_SystenFrame, rect2, 5,
+           1, 0xA, (SP_RGBA *) color);
     rect3.Set(0, 0xE8, 0xC, 0xC);
-    PrintV__FiiiP10mgCTexture9mgRect_i_iiiP7SP_RGBA(0x163, 0x1D, whp[0], TEX_SystenFrame, &rect3, 5,
-                                                    0, 0xA, (SP_RGBA *)color);
+    PrintV(0x163, 0x1D, whp[0], TEX_SystenFrame, rect3, 5,
+           0, 0xA, (SP_RGBA *) color);
+
     if (hp_rate < 0.3f) {
         WarningGage2.warning[0] = 1;
     } else {
         WarningGage2.warning[0] = 0;
     }
+
     WarningGage2.rate[0] = hp_rate;
     WarningGage2.layout = 0;
 }
@@ -924,17 +965,18 @@ void DrawStatusBord() {
     WarningGage2.warning[1] = 0;
     WarningGage2.warning[2] = 0;
     LockOnModel.pos[3] = 0.0f;
+
     switch (chara) {
-    case USER_CHARA_MAX:
-    case USER_CHARA_MONICA:
-        DrawMainUnitStatusBord(rate);
-        break;
-    case USER_CHARA_ROBO:
-        DrawRoboUnitStatusBord(rate);
-        break;
-    case USER_CHARA_MONSTER:
-        DrawMonsterUnitStatusBord(rate);
-        break;
+        case USER_CHARA_MAX:
+        case USER_CHARA_MONICA:
+            DrawMainUnitStatusBord(rate);
+            break;
+        case USER_CHARA_ROBO:
+            DrawRoboUnitStatusBord(rate);
+            break;
+        case USER_CHARA_MONSTER:
+            DrawMonsterUnitStatusBord(rate);
+            break;
     }
 }
 

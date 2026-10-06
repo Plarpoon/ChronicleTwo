@@ -60,14 +60,14 @@ enum {
  *
  */
 struct mg3DSpriteRenderHead {
-    u_int dma_tag[4];              /**< DMA tag over the VU data and the program call. */
-    u_int vif_code[4];             /**< VIF NOP, BASE, OFFSET and the UNPACK of the VU data. */
+    u_int         dma_tag[4];  /**< DMA tag over the VU data and the program call. */
+    u_int         vif_code[4]; /**< VIF NOP, BASE, OFFSET and the UNPACK of the VU data. */
     sceVu0IVECTOR unk_20[3];
-    u_int unk_50[4];
-    sceVu0FMATRIX local_screen;    /**< Transform from the sprite's local space to GS screen coordinates. */
-    sceVu0FMATRIX local_world;     /**< Transform from the sprite's local space to world space. */
-    u_int unk_e0[11][4];
-    sceVu0FVECTOR fog;             /**< Fog offset, near value, far value and scale. */
+    u_int         unk_50[4];
+    sceVu0FMATRIX local_screen; /**< Transform from the sprite's local space to GS screen coordinates. */
+    sceVu0FMATRIX local_world;  /**< Transform from the sprite's local space to world space. */
+    u_int         unk_e0[11][4];
+    sceVu0FVECTOR fog; /**< Fog offset, near value, far value and scale. */
 };
 
 /**
@@ -76,17 +76,17 @@ struct mg3DSpriteRenderHead {
  *
  */
 struct mg3DSpriteRenderTail {
-    u_int unk_00[4];
+    u_int         unk_00[4];
     sceVu0FMATRIX view_screen;     /**< View-to-screen transform with its axes scaled by the local transform's scale. */
-    u_int program_call[4];         /**< VIF MSCAL that starts the VU program. */
-    u_int flags_tag[4];            /**< DMA tag and VIF UNPACK of the draw flags. */
-    u_int flags[4];                /**< Draw flags, from mg3DSpriteDrawFlag. */
-    u_int direct_tag[4];           /**< DMA tag and VIF DIRECT of the GS register writes. */
-    u_int giftag[4];               /**< GIF tag of the GS register writes, in A+D mode. */
-    u_int prmodecont[4];           /**< PRMODECONT write that makes PRMODE hold the primitive attributes. */
-    u_int prmode[4];               /**< PRMODE write of the visual's primitive attributes. */
-    u_int fogcol[4];               /**< FOGCOL write of the fog colour. */
-    u_int ret_tag[4];              /**< DMA tag that returns to the caller. */
+    u_int         program_call[4]; /**< VIF MSCAL that starts the VU program. */
+    u_int         flags_tag[4];    /**< DMA tag and VIF UNPACK of the draw flags. */
+    u_int         flags[4];        /**< Draw flags, from mg3DSpriteDrawFlag. */
+    u_int         direct_tag[4];   /**< DMA tag and VIF DIRECT of the GS register writes. */
+    u_int         giftag[4];       /**< GIF tag of the GS register writes, in A+D mode. */
+    u_int         prmodecont[4];   /**< PRMODECONT write that makes PRMODE hold the primitive attributes. */
+    u_int         prmode[4];       /**< PRMODE write of the visual's primitive attributes. */
+    u_int         fogcol[4];       /**< FOGCOL write of the fog colour. */
+    u_int         ret_tag[4];      /**< DMA tag that returns to the caller. */
 };
 
 /**
@@ -98,6 +98,7 @@ struct mg3DSpriteRenderInfo {
     mg3DSpriteRenderHead head; /**< Packet header and transform data. */
     mg3DSpriteRenderTail tail; /**< VU and GS commands following the header. */
 };
+
 STATIC_ASSERT(sizeof(mg3DSpriteRenderInfo) == 0x280);
 
 /**
@@ -107,15 +108,15 @@ STATIC_ASSERT(sizeof(mg3DSpriteRenderInfo) == 0x280);
  */
 class mgCSprite : public mgCVisualPrim {
 public:
-    int unk_38;
-    int unk_3C;
-    mgCTexture *texture;  /**< Texture the rectangle is mapped with, or NULL for an untextured rectangle. */
-    float depth;          /**< View-space distance the rectangle is drawn at; below 1.0 it is drawn at depth zero. */
-    int unk_48;
-    int unk_4C;
-    mgRect<int> screen;   /**< Corners of the rectangle on screen, in sixteenths of a pixel from the screen offset. */
-    mgRect<int> uv;       /**< Corners of the rectangle in the texture, in sixteenths of a texel. */
-    sceGsRgbaq color;     /**< Colour and alpha the rectangle is drawn with. */
+    int         unk_38;
+    int         unk_3C;
+    mgCTexture *texture; /**< Texture the rectangle is mapped with, or NULL for an untextured rectangle. */
+    float       depth;   /**< View-space distance the rectangle is drawn at; below 1.0 it is drawn at depth zero. */
+    int         unk_48;
+    int         unk_4C;
+    mgRect<int> screen; /**< Corners of the rectangle on screen, in sixteenths of a pixel from the screen offset. */
+    mgRect<int> uv;     /**< Corners of the rectangle in the texture, in sixteenths of a texel. */
+    sceGsRgbaq  color;  /**< Colour and alpha the rectangle is drawn with. */
 
     /**
      *
@@ -186,18 +187,18 @@ public:
  */
 class mgC3DSprite : public mgCVisual {
 public:
-    u_long128 *packet;        /**< Cached address of the built packet, or NULL when nothing has been built. */
-    mgCMemory *memory;        /**< Memory the packet is built in. */
-    u_long128 *packet_start;  /**< Uncached address of the start of the packet. */
-    u_long128 *packet_cur;    /**< Uncached address the next quadword of the packet is written to. */
-    int unk_30;
-    u_int *batch_tag;         /**< DMA tag and VIF unpack code that head the open batch of billboards. */
-    sceGifTag *batch_giftag;  /**< GIF tag that the VU program draws the open batch's billboards with. */
-    u_int *batch_header;      /**< Quadword giving the VU program the open batch's billboard count and mode. */
-    int sprite_num;           /**< Billboards in the open batch. */
-    int mode;                 /**< Shape the billboards are drawn as, an mgC3DSpriteMode. */
-    int prog_started;         /**< Whether a batch has already started the VU program in this packet. */
-    int unk_4C;
+    u_long128 *packet;       /**< Cached address of the built packet, or NULL when nothing has been built. */
+    mgCMemory *memory;       /**< Memory the packet is built in. */
+    u_long128 *packet_start; /**< Uncached address of the start of the packet. */
+    u_long128 *packet_cur;   /**< Uncached address the next quadword of the packet is written to. */
+    int        unk_30;
+    u_int     *batch_tag;    /**< DMA tag and VIF unpack code that head the open batch of billboards. */
+    sceGifTag *batch_giftag; /**< GIF tag that the VU program draws the open batch's billboards with. */
+    u_int     *batch_header; /**< Quadword giving the VU program the open batch's billboard count and mode. */
+    int        sprite_num;   /**< Billboards in the open batch. */
+    int        mode;         /**< Shape the billboards are drawn as, an mgC3DSpriteMode. */
+    int        prog_started; /**< Whether a batch has already started the VU program in this packet. */
+    int        unk_4C;
 
     /**
      *
@@ -219,7 +220,7 @@ public:
      * @address 0x13B2E0
      * @size 0x400
      */
-    virtual int CreateRenderInfoPacket(u_int *packet, float (*matrix)[4],
+    virtual int CreateRenderInfoPacket(u_int         *packet, float (*matrix)[4],
                                        mgRENDER_INFO *render_info);
 
     /**
@@ -299,7 +300,7 @@ public:
      * @address 0x13BC00
      * @size 0x130
      */
-    void CPSetSprite(float *pos, float *size, float *color, float *uv0, float *uv1);
+    void CPSetSprite(float *first, float *second, float *third, float *fourth, float *fifth);
 
     /**
      * Closes the open batch, filling in its DMA tag and header and starting

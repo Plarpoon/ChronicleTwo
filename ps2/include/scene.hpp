@@ -51,13 +51,13 @@ class mgCMemory;
  *
  */
 enum SCENE_DATA_KIND {
-    SCENE_DATA_CHARA   = 1, /**< Character slots. */
-    SCENE_DATA_MAP     = 2, /**< Map slots. */
+    SCENE_DATA_CHARA = 1,   /**< Character slots. */
+    SCENE_DATA_MAP = 2,     /**< Map slots. */
     SCENE_DATA_MESSAGE = 3, /**< Message slots. */
-    SCENE_DATA_CAMERA  = 4, /**< Camera slots. */
-    SCENE_DATA_SKY     = 5, /**< Sky slots; the scene's slot lookup gives none for this kind. */
+    SCENE_DATA_CAMERA = 4,  /**< Camera slots. */
+    SCENE_DATA_SKY = 5,     /**< Sky slots; the scene's slot lookup gives none for this kind. */
     SCENE_DATA_GAMEOBJ = 6, /**< Game object slots. */
-    SCENE_DATA_EFFECT  = 7, /**< Effect script slots; the scene's slot lookup gives a game object slot for this kind. */
+    SCENE_DATA_EFFECT = 7,  /**< Effect script slots; the scene's slot lookup gives a game object slot for this kind. */
 };
 
 /**
@@ -67,8 +67,8 @@ enum SCENE_DATA_KIND {
  *
  */
 enum SCENE_DATA_STATUS {
-    SCENE_DATA_LOADED   = 1 << 0, /**< The slot's data has finished loading into its memory stack. */
-    SCENE_DATA_ACTIVE   = 1 << 1, /**< The slot takes part in stepping and drawing. */
+    SCENE_DATA_LOADED = 1 << 0,   /**< The slot's data has finished loading into its memory stack. */
+    SCENE_DATA_ACTIVE = 1 << 1,   /**< The slot takes part in stepping and drawing. */
     SCENE_DATA_ASSIGNED = 1 << 2, /**< Data has been given to the slot. */
 };
 
@@ -79,7 +79,7 @@ enum SCENE_DATA_STATUS {
  */
 enum RAIN_DROP_TYPE {
     RAIN_DROP_NEAR = 0, /**< Falls close to the camera and leaves ripples when it lands. */
-    RAIN_DROP_FAR  = 1, /**< Falls far from the camera and starts again as soon as it lands. */
+    RAIN_DROP_FAR = 1,  /**< Falls far from the camera and starts again as soon as it lands. */
 };
 
 /**
@@ -136,12 +136,12 @@ void DrawScreenRain();
  */
 class CRipple {
 public:
-    s32           active;  /**< Non-zero while the ripple is showing. */
+    s32           active; /**< Non-zero while the ripple is showing. */
     u8            unk_04[0xC];
-    sceVu0FVECTOR pos;     /**< Centre of the ripple in the world. */
-    float         size;    /**< Width the ripple reaches at the end of its life. */
-    s32           count;   /**< Frames the ripple has shown for. */
-    s32           life;    /**< Frames the ripple shows for in all. */
+    sceVu0FVECTOR pos;   /**< Centre of the ripple in the world. */
+    float         size;  /**< Width the ripple reaches at the end of its life. */
+    s32           count; /**< Frames the ripple has shown for. */
+    s32           life;  /**< Frames the ripple shows for in all. */
     s32           unk_2c;
 
     /**
@@ -199,12 +199,12 @@ STATIC_ASSERT(sizeof(CRipple) == 0x30);
  */
 class CParticle {
 public:
-    s32           active;  /**< Non-zero while the particle is moving. */
+    s32           active; /**< Non-zero while the particle is moving. */
     u8            unk_04[0xC];
-    sceVu0FVECTOR pos;     /**< Position of the particle in the world. */
-    sceVu0FVECTOR speed;   /**< Distance the particle moves each frame. */
-    sceVu0FVECTOR accel;   /**< Change made to speed each frame. */
-    float         base_y;  /**< Height the particle started at; it ends when it falls below this. */
+    sceVu0FVECTOR pos;    /**< Position of the particle in the world. */
+    sceVu0FVECTOR speed;  /**< Distance the particle moves each frame. */
+    sceVu0FVECTOR accel;  /**< Change made to speed each frame. */
+    float         base_y; /**< Height the particle started at; it ends when it falls below this. */
     u8            unk_44[0xC];
 
     /**
@@ -221,7 +221,7 @@ public:
      * @address 0x2857B0
      * @size 0x80
      */
-    int Birth(float *pos, float *speed);
+    int Birth(float *pos, float *velocity);
 
     /**
      * Moves the particle by one frame; gives back zero when it is not
@@ -263,12 +263,12 @@ STATIC_ASSERT(sizeof(CParticle) == 0x50);
  */
 class CRainDrop {
 public:
-    s32           active;                    /**< Non-zero while the drop is falling. */
-    s32           type;                      /**< How far from the camera the drop falls (RAIN_DROP_TYPE). */
+    s32           active; /**< Non-zero while the drop is falling. */
+    s32           type;   /**< How far from the camera the drop falls (RAIN_DROP_TYPE). */
     u8            unk_08[0x8];
-    sceVu0FVECTOR pos[RAIN_DROP_TRAIL_NUM];  /**< Position of the drop this frame, then in each frame before. */
-    sceVu0FVECTOR speed;                     /**< Distance the drop moves each frame. */
-    s32           color[4];                  /**< Red, green, blue and alpha the streak is drawn with. */
+    sceVu0FVECTOR pos[RAIN_DROP_TRAIL_NUM]; /**< Position of the drop this frame, then in each frame before. */
+    sceVu0FVECTOR speed;                    /**< Distance the drop moves each frame. */
+    s32           color[4];                 /**< Red, green, blue and alpha the streak is drawn with. */
 
     /**
      * Makes a drop that is not falling.
@@ -325,13 +325,13 @@ STATIC_ASSERT(sizeof(CRainDrop) == 0xB0);
  */
 class CRain {
 public:
-    s32       active;                        /**< Non-zero while it is raining. */
-    s32       chara_no;                      /**< Scene character slot that rain splashes off, or -1 for none. */
+    s32       active;   /**< Non-zero while it is raining. */
+    s32       chara_no; /**< Scene character slot that rain splashes off, or -1 for none. */
     u8        unk_08[0x8];
-    CRainDrop drop[RAIN_DROP_NUM];           /**< Drops falling close to the camera. */
-    CRainDrop far_drop[RAIN_FAR_DROP_NUM];   /**< Drops falling far from the camera. */
-    CParticle particle[RAIN_PARTICLE_NUM];   /**< Splashes thrown up by the rain. */
-    CRipple   ripple[RAIN_RIPPLE_NUM];       /**< Ripples on the ground. */
+    CRainDrop drop[RAIN_DROP_NUM];         /**< Drops falling close to the camera. */
+    CRainDrop far_drop[RAIN_FAR_DROP_NUM]; /**< Drops falling far from the camera. */
+    CParticle particle[RAIN_PARTICLE_NUM]; /**< Splashes thrown up by the rain. */
+    CRipple   ripple[RAIN_RIPPLE_NUM];     /**< Ripples on the ground. */
 
     /**
      * Makes rain that is not falling.
@@ -418,12 +418,13 @@ STATIC_ASSERT(sizeof(CRain) == 0xABF0);
 class CSceneData {
 public:
     CSceneData() { Initialize(); }
-    u32        status;         /**< Status flags of the slot (SCENE_DATA_STATUS). */
-    s32        type;           /**< Kind of the data within its slot list, set by the data's user. */
-    char       name[32];       /**< Name the data was given to the slot under. */
-    s32        tex_block;      /**< First texture block the data's textures were loaded into, or -1. */
-    s32        tex_block_num;  /**< Number of texture blocks from tex_block that the data uses. */
-    mgCMemory *stack;          /**< Memory stack the data was loaded into. */
+
+    u32        status;        /**< Status flags of the slot (SCENE_DATA_STATUS). */
+    s32        type;          /**< Kind of the data within its slot list, set by the data's user. */
+    char       name[32];      /**< Name the data was given to the slot under. */
+    s32        tex_block;     /**< First texture block the data's textures were loaded into, or -1. */
+    s32        tex_block_num; /**< Number of texture blocks from tex_block that the data uses. */
+    mgCMemory *stack;         /**< Memory stack the data was loaded into. */
 
     /**
      * Empties the slot: no status, no name, and no memory or textures.
@@ -445,6 +446,7 @@ STATIC_ASSERT(sizeof(CSceneData) == 0x34);
 class CSceneCharacter : public CSceneData {
 public:
     CSceneCharacter() { Initialize(); }
+
     CCharacter2 *chara;    /**< Character kept in the slot. */
     s32          texb;     /**< Texture block the character is drawn with, or -1 for the scene's default. */
     s32          chara_no; /**< Number of the villager or character placed in the slot, or -1. */
@@ -479,6 +481,7 @@ STATIC_ASSERT(sizeof(CSceneCharacter) == 0x40);
 class CSceneMap : public CSceneData {
 public:
     CSceneMap() { Initialize(); }
+
     CMap *map; /**< Map kept in the slot. */
 
     /**
@@ -511,6 +514,7 @@ STATIC_ASSERT(sizeof(CSceneMap) == 0x38);
 class CSceneMessage : public CSceneData {
 public:
     CSceneMessage() { Initialize(); }
+
     ClsMes *mes; /**< Messages kept in the slot. */
 
     /**
@@ -543,6 +547,7 @@ STATIC_ASSERT(sizeof(CSceneMessage) == 0x38);
 class CSceneCamera : public CSceneData {
 public:
     CSceneCamera() { Initialize(); }
+
     mgCCamera *camera; /**< Camera kept in the slot. */
 
     /**
@@ -575,6 +580,7 @@ STATIC_ASSERT(sizeof(CSceneCamera) == 0x38);
 class CSceneSky : public CSceneData {
 public:
     CSceneSky() { Initialize(); }
+
     CMapSky *sky; /**< Sky kept in the slot. */
 
     /**
@@ -607,6 +613,7 @@ STATIC_ASSERT(sizeof(CSceneSky) == 0x38);
 class CSceneGameObj : public CSceneCharacter {
 public:
     CSceneGameObj() { Initialize(); }
+
     /**
      * Empties the slot.
      *
@@ -627,6 +634,7 @@ STATIC_ASSERT(sizeof(CSceneGameObj) == 0x40);
 class CSceneEffect : public CSceneData {
 public:
     CSceneEffect() { Initialize(); }
+
     CEffectScriptMan *effect; /**< Effect script manager kept in the slot. */
 
     /**

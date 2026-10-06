@@ -25,11 +25,11 @@ enum SPI_STACK_TYPE {
  *
  */
 enum SPI_LIMIT {
-    SPI_HASH_BUCKET_COUNT = 101,    /**< Number of hash chains of tag names. */
-    SPI_HASH_TAG_MAX = 128,         /**< Number of tags at which the hash chains are no longer built. */
-    SPI_STACK_SIZE = 64,            /**< Number of arguments one tag may have. */
-    SPI_STRING_BUFF_SIZE = 0x2800,  /**< Number of bytes of string argument text one tag may have. */
-    SPI_TOKEN_SIZE = 0x100,         /**< Number of bytes in the local buffers that hold one word of a text script or the argument types of a binary tag. */
+    SPI_HASH_BUCKET_COUNT = 101,   /**< Number of hash chains of tag names. */
+    SPI_HASH_TAG_MAX = 128,        /**< Number of tags at which the hash chains are no longer built. */
+    SPI_STACK_SIZE = 64,           /**< Number of arguments one tag may have. */
+    SPI_STRING_BUFF_SIZE = 0x2800, /**< Number of bytes of string argument text one tag may have. */
+    SPI_TOKEN_SIZE = 0x100,        /**< Number of bytes in the local buffers that hold one word of a text script or the argument types of a binary tag. */
 };
 
 /**
@@ -74,7 +74,7 @@ public:
      * @size 0x34
      */
     int get(int *c) {
-        *c = (u8)buffer[position];
+        *c = (u8) buffer[position];
         position++;
         return size >= position;
     }
@@ -105,6 +105,7 @@ public:
         }
     }
 };
+
 STATIC_ASSERT(sizeof(input_str) == 0xC);
 
 /**
@@ -114,6 +115,7 @@ STATIC_ASSERT(sizeof(input_str) == 0xC);
  */
 struct SPI_STACK {
     int type; /**< Kind of value held, an SPI_STACK_TYPE. */
+
     union {
         int   integer; /**< Value of an integer argument. */
         float real;    /**< Value of a floating-point argument. */
@@ -133,6 +135,7 @@ struct SPI_STACK {
         return *this;
     }
 };
+
 STATIC_ASSERT(sizeof(SPI_STACK) == 0x8);
 
 /**
@@ -150,6 +153,7 @@ struct SPI_TAG_PARAM {
     char            *name;     /**< Name of the tag, compared case-sensitively; in a text script it begins with a letter from 'A' to 'Z'. */
     SPI_TAG_FUNCTION function; /**< Routine called with the arguments of the tag, or null to ignore it. */
 };
+
 STATIC_ASSERT(sizeof(SPI_TAG_PARAM) == 0x8);
 
 /**
@@ -163,6 +167,7 @@ struct SPI_TAG_HASH {
     int           index; /**< Index of the tag in the tag table. */
     int           unk_c;
 };
+
 STATIC_ASSERT(sizeof(SPI_TAG_HASH) == 0x10);
 
 /**
@@ -172,20 +177,20 @@ STATIC_ASSERT(sizeof(SPI_TAG_HASH) == 0x10);
  */
 class CScriptInterpreter : public input_str {
 public:
-    int            stack_count;              /**< Number of arguments on the stack. */
-    int            stack_size;               /**< Number of arguments the stack can hold. */
-    SPI_STACK     *stack;                    /**< Arguments of the current tag. */
-    int            string_buff_size;         /**< Number of bytes in the string buffer. */
-    char          *string_buff_next;         /**< Next free byte of the string buffer. */
-    char          *string_buff;              /**< Storage for the text of string arguments. */
-    int            binary;                   /**< Non-zero when the script is in binary form. */
-    int            tag_count;                /**< Number of entries in the tag table. */
-    SPI_TAG_PARAM *tag;                      /**< Tags the interpreter recognises. */
-    SPI_TAG_HASH **hash_table;               /**< Hash chains of the tag names, or null to search the tag table in order. */
+    int            stack_count;      /**< Number of arguments on the stack. */
+    int            stack_size;       /**< Number of arguments the stack can hold. */
+    SPI_STACK     *stack;            /**< Arguments of the current tag. */
+    int            string_buff_size; /**< Number of bytes in the string buffer. */
+    char          *string_buff_next; /**< Next free byte of the string buffer. */
+    char          *string_buff;      /**< Storage for the text of string arguments. */
+    int            binary;           /**< Non-zero when the script is in binary form. */
+    int            tag_count;        /**< Number of entries in the tag table. */
+    SPI_TAG_PARAM *tag;              /**< Tags the interpreter recognises. */
+    SPI_TAG_HASH **hash_table;       /**< Hash chains of the tag names, or null to search the tag table in order. */
     u8             unk_34[0xC];
-    SPI_TAG_HASH  *hash_buckets[SPI_HASH_BUCKET_COUNT];       /**< First link of each hash chain. */
+    SPI_TAG_HASH  *hash_buckets[SPI_HASH_BUCKET_COUNT]; /**< First link of each hash chain. */
     u8             unk_1d4[0xC];
-    SPI_TAG_HASH   hash_entries[SPI_HASH_TAG_MAX];       /**< Links of the hash chains, one per tag. */
+    SPI_TAG_HASH   hash_entries[SPI_HASH_TAG_MAX]; /**< Links of the hash chains, one per tag. */
     u8             unk_9e0[0x4F0];
 
     /**
@@ -311,6 +316,7 @@ public:
      */
     int SearchCommand(int *tag_index);
 };
+
 STATIC_ASSERT(sizeof(CScriptInterpreter) == 0xED0);
 
 /**

@@ -40,3 +40,16 @@ Scalar C++ likewise emits scalar FPU instructions instead of the required
 COP2 opcodes. A guarded C++ draft forms two XZ-only edge vectors and calls
 `sceVu0OuterProduct`. It compiles, but differs from the retail inline VU0
 instructions; the game build retains the assembly fallback.
+
+## GetSeSrcVolPan
+
+`CEditMap::GetSeSrcVolPan` gathers sound sources from placed parts and river
+grids. The river pass walks `CEditMap::grid`, an array of `CEditGrid *` at
+offset 0xF54; `sndGetVolPan(float *, float *, float *, float, float)` is a native
+C++ overload declared in `snd_mngr.hpp`. Replacing the raw mangled call with
+that overload leaves its call instructions unchanged.
+
+The typed `this->grid[i]` lookup avoids the old byte offset cast. Reusing the
+preceding placed-parts loop index `i` for the river-grid loop preserves the
+retail register assignment; the complete function has a 100% object match.
+Using a new loop index instead exchanges two saved registers in the river pass.

@@ -1,175 +1,195 @@
 #include "common.h"
-#include "savedata.hpp"
-#include "subgame.hpp"
-#include "scenesnd.hpp"
-#include "gamedata.hpp"
+
+#include <libgraph.h>
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "dataread.hpp"
 #include "editdata.hpp"
+#include "font.hpp"
+#include "gaiji.hpp"
+#include "gamedata.hpp"
 #include "gamepad.hpp"
+#include "helpmes.hpp"
+#include "inventmn.hpp"
+#include "main.hpp"
+#include "mainloop.hpp"
+#include "mainloop3.hpp"
 #include "mapselect.hpp"
+#include "menuchr.hpp"
+#include "mg_drawprim.hpp"
 #include "mg_memory.hpp"
 #include "mg_texture.hpp"
 #include "mglib.hpp"
 #include "monster.hpp"
+#include "nd_meswin.hpp"
+#include "nowload.hpp"
 #include "npccfg.hpp"
+#include "padcontrol.hpp"
+#include "savedata.hpp"
+#include "scene.hpp"
+#include "scenesnd.hpp"
 #include "scriptinterpreter.hpp"
+#include "snd_mngr.hpp"
+#include "subgame.hpp"
+#include "sysmes.hpp"
+#include "title.hpp"
+#include "userdata.hpp"
 #include "visualmotion.hpp"
 #include "vlgr_info.hpp"
 #include "water.hpp"
-#include "dataread.hpp"
-#include "font.hpp"
-#include "gaiji.hpp"
-#include "helpmes.hpp"
-#include "nowload.hpp"
-#include "snd_mngr.hpp"
-#include "sysmes.hpp"
-#include "userdata.hpp"
-#include "mainloop.hpp"
-#include <cstring>
-#include <cstdio>
-
-#include <cstdlib>
-#include <libgraph.h>
-#include "inventmn.hpp"
-#include "main.hpp"
-#include "mainloop3.hpp"
-#include "menuchr.hpp"
-#include "mg_drawprim.hpp"
-#include "nd_meswin.hpp"
-#include "padcontrol.hpp"
-#include "scene.hpp"
-#include "title.hpp"
 
 extern INIT_LOOP_ARG NextInitArg;
 extern INIT_LOOP_ARG PrevInitArg;
-extern int NextLoopNo;
-extern int PrevLoopNo;
-extern int CaptureScreen;
-extern int PauseSel;
-extern int PauseMenuMode;
-extern int exit_start;
-extern float BlackFade;
-extern float BlackFade2;
-extern CSaveData SaveData;
-extern ClsMes PauseMes;
-extern mgCMemory SystemSeStack;
-extern u_long128 main_buffer[0x1A0000];
-extern u_long128 SystemSeBuff[400];
-extern u_long128 InfoBuff[5000];
-static int MenuLoop();
-static int EventSelect();
-static int gcALL_GEO_PARTS(SPI_STACK *stack, int argc);
+extern int           NextLoopNo;
+extern int           PrevLoopNo;
+extern int           CaptureScreen;
+extern int           PauseSel;
+extern int           PauseMenuMode;
+extern int           exit_start;
+extern float         BlackFade;
+extern float         BlackFade2;
+extern CSaveData     SaveData;
+extern ClsMes        PauseMes;
+extern mgCMemory     SystemSeStack;
+extern u_long128     main_buffer[0x1A0000];
+extern u_long128     SystemSeBuff[400];
+extern u_long128     InfoBuff[5000];
+static int           MenuLoop();
+static int           EventSelect();
+static int           gcALL_GEO_PARTS(SPI_STACK *stack, int argc);
 extern void (*LoopInit[])(INIT_LOOP_ARG);
 extern int (*LoopMain[])();
 extern void (*LoopExit[])();
-extern PAD_TABLE_ENTRY pad_table[];
+extern PAD_TABLE_ENTRY    pad_table[];
 extern ANALOG_TABLE_ENTRY analog_table[];
 
 void LoadFilePictureName();
-int get_gajji_id_from_monster_progress_table(int monster_no, int *level);
-int GetMonsterProgressTableNo(int level, int monster_no);
+int  get_gajji_id_from_monster_progress_table(int monster_no, int *level);
+int  GetMonsterProgressTableNo(int level, int monster_no);
 
-extern CFont Font;
+extern CFont     Font;
 extern mgCMemory MainBuffer;
-extern int menu_mode;
-void InitEventSelect();
+extern int       menu_mode;
+void             InitEventSelect();
 
 extern int SelectArg[32];
 
-extern CSaveData *ActiveSaveData;
-extern int CaptureMode;
-extern int LoopNo;
-extern int PlayTimeCountFlag;
+extern CSaveData    *ActiveSaveData;
+extern int           CaptureMode;
+extern int           LoopNo;
+extern int           PlayTimeCountFlag;
 extern CSubGameData *SubGameSaveData;
-extern int event_view;
-extern int future_sel;
-extern int hdd_sel;
-extern CScene MainScene;
+extern int           event_view;
+extern int           future_sel;
+extern int           hdd_sel;
+extern CScene        MainScene;
 extern INIT_LOOP_ARG InitArg;
-extern mgCMemory InfoStack;
+extern mgCMemory     InfoStack;
 
-extern mgCMemory MenuBuffer;
-extern mgCMemory buf0_1224;
-extern mgCMemory buf1_1227;
-extern mgCMemory dbuf0_1230;
-extern mgCMemory dbuf1_1233;
-extern s8 init_1225;
-extern s8 init_1228;
-extern s8 init_1231;
-extern s8 init_1234;
+extern mgCMemory   MenuBuffer;
+extern mgCMemory   buf0_1224;
+extern mgCMemory   buf1_1227;
+extern mgCMemory   dbuf0_1230;
+extern mgCMemory   dbuf1_1233;
+extern s8          init_1225;
+extern s8          init_1228;
+extern s8          init_1231;
+extern s8          init_1234;
 extern mgCTexture *FontTex;
-extern u32 FontDataAdr;
-extern char at_1654[];
-extern char at_1655[];
-extern char at_1656[];
-extern u8 font_buff[];
-extern char at_1657[];
-extern char at_1296[];
-extern char at_1856[];
+extern u32         FontDataAdr;
+extern char        at_1654[];
+extern char        at_1655[];
+extern char        at_1656[];
+extern u8          font_buff[];
+extern char        at_1657[];
+extern char        at_1296[];
+extern char        at_1856[];
 
 extern SPI_TAG_PARAM tag__3[];
-extern char at_2082[];
-extern char at_2083[];
-extern char at_2084[];
-extern char at_2085[];
+extern char          at_2082[];
+extern char          at_2083[];
+extern char          at_2084[];
+extern char          at_2085[];
 
 // Code (.text)
-CFont *GetDebugFont(void) {
+CFont *GetDebugFont() {
     return &Font;
 }
-int GetCaptureMode(void) {
+
+int GetCaptureMode() {
     return CaptureMode;
 }
-s32 GetSystemSndID(void) {
+
+s32 GetSystemSndID() {
     return SystemSND_ID;
 }
-CScene *GetMainScene(void) {
+
+CScene *GetMainScene() {
     return &MainScene;
 }
-CSaveData *GetSaveData(void) {
+
+CSaveData *GetSaveData() {
     return ActiveSaveData;
 }
-CSubGameData *GetSubGameSaveData(void) {
+
+CSubGameData *GetSubGameSaveData() {
     return SubGameSaveData;
 }
-void InitSaveData(void) {
+
+void InitSaveData() {
     GetSaveData()->Initialize();
 }
-int GetVramTopAddress(void) {
+
+int GetVramTopAddress() {
     return mgGetTopVRAMAddress() + 0x20;
 }
-mgCMemory *GetMainStack(void) {
+
+mgCMemory *GetMainStack() {
     return &MainBuffer;
 }
+
 void NextLoop(int loop_no, INIT_LOOP_ARG arg) {
     NextLoopNo = loop_no;
     NextInitArg = arg;
 }
-int GetNowLoopNo(void) {
+
+int GetNowLoopNo() {
     return LoopNo;
 }
-INIT_LOOP_ARG *GetNowInitArg(void) {
+
+INIT_LOOP_ARG *GetNowInitArg() {
     return &InitArg;
 }
+
 void cat_start() {}
+
 void cat_end() {}
+
 void SetTextureTable(int table_size, int table_count, mgCMemory *memory) {
     mgTexManager.SetTableBuffer(table_count, table_size, memory);
     mgTexManager.Initialize(GetVramTopAddress(), -1);
 }
+
 /**
  * Registers the logical controller bindings for the selected language.
  */
 static void InitPadTable(int language) {
-    int confirm[2] = { PAD_CIRCLE, PAD_CROSS };
-    int cancel[2]  = { PAD_CROSS, PAD_CIRCLE };
+    int confirm[2] = {PAD_CIRCLE, PAD_CROSS};
+    int cancel[2] = {PAD_CROSS, PAD_CIRCLE};
     int language_index;
     int i;
 
     language_index = 0;
+
     if (language != LANG_JAPANESE) {
         language_index = 1;
     }
+
     PadCtrl.Initialize();
+
     for (i = 0; pad_table[i].no >= 0; i++) {
         switch (pad_table[i].no) {
             case 0:
@@ -190,25 +210,31 @@ static void InitPadTable(int language) {
                 pad_table[i].button = cancel[language_index];
                 break;
         }
+
         PadCtrl.RegisterBtn(pad_table[i].no, pad_table[i].button, pad_table[i].trigger);
     }
+
     for (i = 0; analog_table[i].no >= 0; i++) {
         PadCtrl.RegisterAnalog(analog_table[i].no, analog_table[i].axis);
     }
 }
+
 static void VSyncCallBack(int unused) {
     if (PlayTimeCountFlag != 0) {
-        s64 ticks = GetSaveData()->play_time;
+        s64        ticks = GetSaveData()->play_time;
         CSaveData *save = GetSaveData();
         save->play_time = ticks + 1;
     }
 }
+
 void PlayTimeCount(int value) {
     PlayTimeCountFlag = value;
 }
-int GetPlayTimeCountFlag(void) {
+
+int GetPlayTimeCountFlag() {
     return PlayTimeCountFlag;
 }
+
 void LanguageChange(int language, u_long128 *buffer) {
     LanguageCode = language;
     GameItemDataManage.LoadItemSystemMes(language);
@@ -230,6 +256,7 @@ void LanguageChange(int language, u_long128 *buffer) {
     InitPauseData();
     InitPadTable(LanguageCode);
 }
+
 void MainLoop() {
     mgCMemory        *memory;
     mgCMemory        *read_memory;
@@ -253,7 +280,7 @@ void MainLoop() {
     InitFileCache(NULL, 0);
     mgInit(MG_SCREEN_MODE_512X480, 3);
     PlayTimeCountFlag = 0;
-    mgInitVSyncCallBack((int (*)(int))VSyncCallBack);
+    mgInitVSyncCallBack((int (*)(int)) VSyncCallBack);
     LanguageCode = LANG_FRENCH;
     SCElogoFade(0, memory);
     LoopNo = LOOP_TITLE;
@@ -267,9 +294,11 @@ void MainLoop() {
     GamePad__2.UpDate();
     MasterDebugCode = 0;
     DebugFlag = 0;
+
     if (GamePad__2.On2(PAD_R1) && GamePad__2.On2(PAD_R2) && GamePad__2.On2(PAD_L1) && GamePad__2.On2(PAD_L2)) {
         MasterDebugCode = MASTER_DEBUG_CODE;
     }
+
     GamePad__2.DebugKeyLock(1);
     sceGsSyncV(0);
     GamePad__2.UpDate();
@@ -294,9 +323,11 @@ void MainLoop() {
     InitPauseData();
     InitSaveData();
     user_data = NULL;
+
     if (ActiveSaveData != NULL) {
         user_data = &ActiveSaveData->user_data;
     }
+
     LoadMonsterLanguage(LanguageCode);
     InitPadTable(LanguageCode);
     LanguageEquipChange();
@@ -309,22 +340,28 @@ void MainLoop() {
     SystemSeStack.stack_used = 0;
     SystemSeStack.lock = 0;
     read_memory = GetMainStack();
-    buffer_address = (int)(read_memory->stack + read_memory->stack_used);
+    buffer_address = (int) (read_memory->stack + read_memory->stack_used);
     alignment = buffer_address % 64;
+
     if (alignment != 0) {
         buffer_address += ((64 - alignment) / 16) * 16;
     }
-    file_buffer = (u_long128 *)buffer_address;
+
+    file_buffer = (u_long128 *) buffer_address;
     SystemSND_ID = -1;
+
     if (LoadFile2("snd2/SY_000.snd", file_buffer, NULL, 0)) {
-        SystemSND_ID = sndLoadSound(SND_PORT_SYSTEM, (u_int *)file_buffer, &SystemSeStack);
+        SystemSND_ID = sndLoadSound(SND_PORT_SYSTEM, (u_int *) file_buffer, &SystemSeStack);
     }
+
     if (LoadFile2("snd2/rev.bin", file_buffer, &file_size, 0)) {
-        MainScene.LoadSndRevInfo((char *)file_buffer, file_size);
+        MainScene.LoadSndRevInfo((char *) file_buffer, file_size);
     }
+
     if (LoadFile2("snd2/MAP_index.txt", file_buffer, &file_size, 0)) {
-        MainScene.LoadSndFileInfo((char *)file_buffer, file_size);
+        MainScene.LoadSndFileInfo((char *) file_buffer, file_size);
     }
+
     LoadHelpMes(file_buffer);
     LoadMapName(LanguageCode, file_buffer);
     LoadEditAnalyzeData(LanguageCode, file_buffer);
@@ -340,46 +377,56 @@ void MainLoop() {
 
     while (1) {
         if (LoopNo == LOOP_TITLE || OmakeFlag != 0) {
-            SubGameSaveData = (CSubGameData *)main_buffer;
+            SubGameSaveData = (CSubGameData *) main_buffer;
             memory->stSetBuffer(main_buffer + 5000, 0x19EC78);
             memory->stack_used = 0;
             memory->lock = 0;
         }
+
         printf("main_data remain = %dkb\n", ((memory->stack_size - memory->stack_used) * 16) / 1024);
+
         if (LoopNo < 0 || LoopNo >= LOOP_MODE_NUM) {
             break;
         }
+
         if (DebugFlag == 0 && LoopNo == LOOP_MENU) {
             LoopNo = LOOP_TITLE;
         }
+
         if (CaptureMode == CAPTURE_RECORD) {
             GamePad__2.CaptureStart();
             srand(9999);
         }
+
         if (CaptureMode == CAPTURE_PLAY || CaptureMode == CAPTURE_PLAY_SCREEN) {
             if (CaptureMode != CAPTURE_OFF) {
                 GamePad__2.LoadCapture();
             }
+
             GamePad__2.CapturePlay();
             srand(9999);
         }
+
         mgFrameRate = 2;
         CaptureScreen = 0;
         GetMainScene()->save_data = GetSaveData();
         float now_time = GetSaveData()->now_time;
         GetMainScene()->SetTime(now_time);
         GetMainScene()->day = GetSaveData()->day;
+
         if (GetSaveData()->game_progress == 2) {
             CSaveData *save = GetSaveData();
             save->now_time = 22.0f;
             GetMainScene()->SetTime(22.0f);
             GetMainScene()->time_step = 0;
         }
+
         if (LoopNo == LOOP_TITLE) {
             sndSeAllStop(-1);
             sndDeletePort(SND_PORT_BGM);
             MainScene.InitSnd();
         }
+
         printf("##### %d\n", mgGetVSyncCount());
         LoopInit[LoopNo](InitArg);
         INIT_LOOP_ARG next_arg;
@@ -390,11 +437,13 @@ void MainLoop() {
             if (GamePad__2.On(PAD_CIRCLE)) {
                 cat_start();
             }
+
             if (LoopNo != LOOP_MENU) {
                 GetMainScene()->save_data = GetSaveData();
                 float now_time = GetSaveData()->now_time;
                 GetMainScene()->SetTime(now_time);
                 GetMainScene()->day = GetSaveData()->day;
+
                 if (GetSaveData()->game_progress == 2) {
                     CSaveData *save = GetSaveData();
                     save->now_time = 22.0f;
@@ -402,15 +451,20 @@ void MainLoop() {
                     GetMainScene()->time_step = 0;
                 }
             }
+
             SV_CONFIG_OPTION *config = &GetSaveData()->config;
             GamePad__2.VibrationEnable(!config->vibration);
+
             if (GamePad__2.Down2(PAD_L1)) {
                 pmeter_flag = !pmeter_flag;
             }
+
             mgPerformanceMeter(pmeter_flag);
+
             if (GamePad__2.Down2(PAD_CIRCLE)) {
                 DebugFlag = !DebugFlag;
             }
+
             mgBeginFrame(NULL);
             mode_finished = LoopMain[LoopNo]();
             sndStep(mgGetNowFrameRate());
@@ -433,13 +487,16 @@ void MainLoop() {
             frame_border.Vertex(0, 0, 0);
             frame_border.End();
             mgEndFrame(NULL);
+
             if (mode_finished != 0) {
                 PauseCancel();
                 break;
             }
+
             if (GamePad__2.On(PAD_CIRCLE)) {
                 cat_end();
             }
+
             switch (LoopNo) {
                 case LOOP_EDIT:
                 case LOOP_DUNGEON:
@@ -449,34 +506,45 @@ void MainLoop() {
                     if (GamePad__2.Down2(PAD_SELECT)) {
                         pause = 1;
                     }
+
                     while (pause != 0) {
                         sceGsSyncV(0);
                         GamePad__2.UpDate();
+
                         if (GamePad__2.Down(PAD_START) || GamePad__2.Down2(PAD_SELECT)) {
                             pause = 0;
                             break;
                         }
+
                         if (GamePad__2.Down2(PAD_START)) {
                             mgStoreFrameImage();
                         }
+
                         if (GamePad__2.Down(PAD_RIGHT | PAD_CIRCLE) || GamePad__2.Down2(PAD_RIGHT)) {
                             break;
                         }
                     }
+
                     break;
                 }
             }
+
             while (PauseLoop() != 0) {
             }
+
             PauseCount();
         }
+
         LoopExit[LoopNo]();
+
         if (LoopNo != LOOP_MENU) {
             if (CaptureMode != CAPTURE_OFF) {
                 GamePad__2.SaveCapture();
             }
+
             CaptureMode = CAPTURE_OFF;
         }
+
         PrevLoopNo = LoopNo;
         PrevInitArg = InitArg;
         LoopNo = NextLoopNo;
@@ -486,9 +554,11 @@ void MainLoop() {
         GamePad__2.UpDate();
         sceGsSyncV(0);
         GamePad__2.UpDate();
+
         while (sceGsSyncV(0) != 0) {
         }
     }
+
     sndSeAllStop(-1);
     sndStopVoice(0);
     sndStopVoice(1);
@@ -498,6 +568,7 @@ void MainLoop() {
     sndStep(2.0f);
     GamePad__2.Close();
 }
+
 void MenuInit(INIT_LOOP_ARG arg) {
     mgCMemory *main_stack;
     u_long128 *packet_a;
@@ -513,39 +584,46 @@ void MenuInit(INIT_LOOP_ARG arg) {
     main_stack = GetMainStack();
     main_stack->stack_used = 0;
     main_stack->lock = 0;
+
     if (init_1225 == 0) {
         buf0_1224.Init();
         init_1225 = 1;
     }
+
     if (init_1228 == 0) {
         buf1_1227.Init();
         init_1228 = 1;
     }
+
     if (init_1231 == 0) {
         dbuf0_1230.Init();
         init_1231 = 1;
     }
+
     if (init_1234 == 0) {
         dbuf1_1233.Init();
         init_1234 = 1;
     }
+
     packet_a = main_stack->stAlloc64(0x2710);
     packet_b = main_stack->stAlloc64(0x2710);
     mgInitVif1Packet(packet_a, packet_b, 0x27100);
-    buf0_1224.stSetBuffer((u_long128 *)main_stack->stAlloc64(0x2710), 0x2710);
-    buf1_1227.stSetBuffer((u_long128 *)main_stack->stAlloc64(0x2710), 0x2710);
-    dbuf0_1230.stSetBuffer((u_long128 *)main_stack->stAlloc64(0xC350), 0xC350);
-    dbuf1_1233.stSetBuffer((u_long128 *)main_stack->stAlloc64(0xC350), 0xC350);
-    MenuBuffer.stSetBuffer((u_long128 *)main_stack->stAlloc64(0x7A120), 0x7A120);
-    read_buffer = (u_long128 *)main_stack->stAlloc64(0x186A0);
+    buf0_1224.stSetBuffer(main_stack->stAlloc64(0x2710), 0x2710);
+    buf1_1227.stSetBuffer(main_stack->stAlloc64(0x2710), 0x2710);
+    dbuf0_1230.stSetBuffer(main_stack->stAlloc64(0xC350), 0xC350);
+    dbuf1_1233.stSetBuffer(main_stack->stAlloc64(0xC350), 0xC350);
+    MenuBuffer.stSetBuffer(main_stack->stAlloc64(0x7A120), 0x7A120);
+    read_buffer = main_stack->stAlloc64(0x186A0);
     mgSetPacketBuffer(&buf0_1224, &buf1_1227);
     mgSetDataBuffer(&dbuf0_1230, &dbuf1_1233, 1);
     GamePad__2.SetAutoRepeat(0xF000, 0xF, 4);
     mgSetBackGround(0.0f, 0.0f, 0.0f, 0.0f);
     SetTextureTable(0x64, 0x14, &MenuBuffer);
+
     if (DebugFlag == 0) {
         InitEventSelect();
     }
+
     mgTexManager.DeleteBlock(1);
     mgTexManager.EnterIMGFile(GetGaijiImgPtr(), 1, NULL, NULL);
     ReLoadFontTexture(1);
@@ -558,9 +636,9 @@ void MenuInit(INIT_LOOP_ARG arg) {
  */
 static int MenuLoop() {
     mgCTextureManager *textures = &mgTexManager;
-    int map_result;
+    int                map_result;
 
-    textures->ReloadTexture(1, (sceVif1Packet *)NULL);
+    textures->ReloadTexture(1, (sceVif1Packet *) NULL);
     if (DebugFlag == 0) {
         menu_mode = DEBUG_MENU_EVENT_SELECT;
     }
@@ -581,7 +659,7 @@ static int MenuLoop() {
         return 0;
     }
     if (menu_mode == DEBUG_MENU_EVENT_SELECT) {
-        textures->ReloadTexture(1, (sceVif1Packet *)NULL);
+        textures->ReloadTexture(1, (sceVif1Packet *) NULL);
         return EventSelect() != 0;
     }
     if (menu_mode == DEBUG_MENU_SAVE_DATA_EDIT) {
@@ -594,21 +672,19 @@ static int MenuLoop() {
         "game start ", "map        ", "dungeon    ", "title      ",
         "chrview    ", "texview    ", "mapview    ", "sound view ",
         "movie view ", "Language   ", "Item       ", "Save Data  ",
-        "Load cfg   ", "Convert Save Data ", "", NULL
-    };
+        "Load cfg   ", "Convert Save Data ", "", NULL};
     char *language[] = {
         "Japanese", "English", "French", "German",
-        "Italian", "Spanish", "Chinese", "Korean"
-    };
-    char *item_set[] = {"Presentation", "GameStart", "StartDebug", "WeaponOnly"};
-    int   item_set_no[] = {0, 1, 2, 6};
-    char  text[2048];
-    char  config_name[64];
-    int   row = 0;
+        "Italian", "Spanish", "Chinese", "Korean"};
+    char      *item_set[] = {"Presentation", "GameStart", "StartDebug", "WeaponOnly"};
+    int        item_set_no[] = {0, 1, 2, 6};
+    char       text[2048];
+    char       config_name[64];
+    int        row = 0;
     static int select = 0;
-    char *cursor[] = {" ", ">"};
-    int  *menu_arguments = SelectArg;
-    char *text_end;
+    char      *cursor[] = {" ", ">"};
+    int       *menu_arguments = SelectArg;
+    char      *text_end;
 
     if (GamePad__2.Down(PAD_DOWN)) {
         select++;
@@ -713,11 +789,9 @@ static int MenuLoop() {
             if (select == DEBUG_ROW_CONVERT_SAVE) {
                 INIT_LOOP_ARG arg;
 
-
                 NextLoop(LOOP_SV_CONV_VIEW, arg);
             } else {
                 INIT_LOOP_ARG arg;
-
 
                 arg.map_no = menu_arguments[select];
                 arg.event_no = DefStartEventNo;
@@ -731,11 +805,12 @@ static int MenuLoop() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", MenuLoop__Fv);
 #endif
-void MenuExit(void) {
+void MenuExit() {
     GamePad__2.AutoRepeatOff();
     mgCloseFont();
 }
-void InitEventSelect(void) {
+
+void InitEventSelect() {
     event_view = 0;
     future_sel = 0;
     menu_mode = 2;
@@ -759,9 +834,8 @@ static int EventSelect() {
         "diorama map               :",
         "HDD                       :",
         "extra                     :",
-        ""
-    };
-    int           result;
+        ""};
+    int result;
 
     if (event_view != 0) {
         result = EventViewLoop();
@@ -793,18 +867,18 @@ static int EventSelect() {
         return result > 0;
     }
 
-    char         *subgame_name[3] = { "Spheda", "GyoRace", "Fishing" };
-    static int    select = 0;
-    char         *cursor[2] = { "  ", ">>" };
-    int           row = 0;
-    char         *map_name;
-    char         *text;
-    char          display[1024];
-    char          config_path[64];
-    int           chapter;
-    int           subgame;
-    int           loop_no;
-    int           monica;
+    char      *subgame_name[3] = {"Spheda", "GyoRace", "Fishing"};
+    static int select = 0;
+    char      *cursor[2] = {"  ", ">>"};
+    int        row = 0;
+    char      *map_name;
+    char      *text;
+    char       display[1024];
+    char       config_path[64];
+    int        chapter;
+    int        subgame;
+    int        loop_no;
+    int        monica;
 
     if (GamePad__2.Down(PAD_DOWN)) {
         select++;
@@ -861,7 +935,9 @@ static int EventSelect() {
     }
 
     text = display;
-    text += sprintf(text, "\n\x83\x5F\x81\x5B\x83\x4E\x83\x4E\x83\x8D\x83\x6A\x83\x4E\x83\x8B\x83\x56\x83\x58\x83\x65\x83\x80\x92\xB2\x90\xAE" "ROM %s %s\n", "2003/07/29", "Ver0.334");
+    text += sprintf(text, "\n\x83\x5F\x81\x5B\x83\x4E\x83\x4E\x83\x8D\x83\x6A\x83\x4E\x83\x8B\x83\x56\x83\x58\x83\x65\x83\x80\x92\xB2\x90\xAE"
+                          "ROM %s %s\n",
+                    "2003/07/29", "Ver0.334");
     for (; menu[row][0] != '\0'; row++) {
         text += sprintf(text, "%s%s", cursor[row == select], menu[row]);
         switch (row) {
@@ -1017,25 +1093,30 @@ mgCTexture *GetFontTexture(int page) {
     if ((page < 0) || (page > 0)) {
         return 0;
     }
+
     return *(&FontTex + page);
 }
-void LoadFontTexture(void) {
-    u8 scratch[0x35000];
+
+void LoadFontTexture() {
+    u8   scratch[0x35000];
     char path[0x40];
     char file_name[0x20];
-    int size;
-    u8 *buffer;
-    int page;
-    u32 misalign;
+    int  size;
+    u8  *buffer;
+    int  page;
+    u32  misalign;
 
     buffer = scratch;
     FontTex = 0;
-    misalign = (u32)buffer & 3;
+    misalign = (u32) buffer & 3;
     FontDataAdr = 0;
+
     if (misalign != 0) {
         buffer += (4 - misalign) * 0x10;
     }
+
     page = 0;
+
     do {
         if (LanguageCode == 0) {
             sprintf(file_name, at_1654, page);
@@ -1046,27 +1127,35 @@ void LoadFontTexture(void) {
         } else if (page == 0) {
             sprintf(file_name, at_1656);
         }
+
         sprintf(path, at_1657, file_name);
+
         if (LoadFile2(path, buffer, &size, 0) != 0) {
-            (&FontDataAdr)[page] = (u32)font_buff;
+            (&FontDataAdr)[page] = (u32) font_buff;
+
             if ((&FontDataAdr)[page] == 0) {
                 return;
             }
-            memcpy((void *)(&FontDataAdr)[page], buffer, size);
+
+            memcpy((void *) (&FontDataAdr)[page], buffer, size);
         }
+
         page += 1;
     } while (page <= 0);
 }
+
 void ReLoadFontTexture(int texture_no) {
-    char file_name[0x20];
-    int page;
-    int offset;
+    char       file_name[0x20];
+    int        page;
+    int        offset;
     TM2_head **font_data;
 
     offset = 0;
     page = 0;
+
     do {
-        font_data = (TM2_head **)((u8 *)&FontDataAdr + offset);
+        font_data = (TM2_head **) ((u8 *) &FontDataAdr + offset);
+
         if (*font_data != NULL) {
             if (LanguageCode == 0) {
                 sprintf(file_name, at_1654, page);
@@ -1077,21 +1166,31 @@ void ReLoadFontTexture(int texture_no) {
             } else if (page == 0) {
                 sprintf(file_name, at_1656);
             }
+
             if (&mgTexManager == NULL) {
                 return;
             }
-            *(mgCTexture **)((u8 *)&FontTex + offset) = mgTexManager.EnterTexture(texture_no, file_name, *font_data, 0, 0);
+
+            *(mgCTexture **) ((u8 *) &FontTex + offset) = mgTexManager.EnterTexture(texture_no, file_name, *font_data, 0, 0);
         }
+
         page += 1;
         offset += 4;
     } while (page <= 0);
 }
+
 void demQuit() {}
+
 void demoQuitTimeOut() {}
+
 void demoAttractInterrupted() {}
+
 void demoAttractComplete() {}
+
 void FadeOutForE3() {}
+
 int TimeLimitCheck() { return 0; }
+
 void InitPauseMenu(int value) {
     PauseMes.Init();
     PauseMes.Preset(MES_PRESET_SMALL_FUKIDASHI);
@@ -1103,37 +1202,48 @@ void InitPauseMenu(int value) {
     PauseMenuMode = PAUSE_MENU_OPEN;
     exit_start = 0;
 }
+
 int PauseMenu() {
     int result;
     int previous_select;
 
     result = PAUSE_MENU_STAY;
+
     switch (PauseMenuMode) {
         case PAUSE_MENU_OPEN:
             PauseMenuMode = PAUSE_MENU_SELECT;
             break;
         case PAUSE_MENU_SELECT:
             previous_select = PauseSel;
+
             if (PadCtrl.Btn(9)) {
                 PauseSel = 1;
             }
+
             if (PadCtrl.Btn(10)) {
                 PauseSel = 0;
             }
+
             if (PadCtrl.Analog(0) > 0.8f) {
                 PauseSel = 1;
             }
+
             if (PadCtrl.Analog(0) < -0.8f) {
                 PauseSel = 0;
             }
+
             int selected = PauseSel;
+
             if (PauseMes.select < 0) {
                 PauseMes.cursor_time = 0;
             }
+
             PauseMes.select = selected;
+
             if (previous_select != PauseSel) {
                 sndSePlay(GetSystemSndID(), 0, 0);
             }
+
             if (PadCtrl.Btn(0)) {
                 if (PauseSel == 0) {
                     BlackFade = 0.0f;
@@ -1143,16 +1253,20 @@ int PauseMenu() {
                     result = PAUSE_MENU_RESUME;
                 }
             }
+
             if (GamePad__2.Down(PAD_START)) {
                 result = PAUSE_MENU_RESUME;
             }
+
             break;
         case PAUSE_MENU_FADE_OUT:
             BlackFade += 0.03f;
+
             if (BlackFade >= 1.0f) {
                 BlackFade = 1.0f;
                 PauseMenuMode = PAUSE_MENU_END;
             }
+
             break;
         case PAUSE_MENU_END:
             result = PAUSE_MENU_QUIT;
@@ -1176,84 +1290,103 @@ int PauseMenu() {
     PauseMes.DrawMesWin();
     return result;
 }
+
 void LoadGameConfig(char *path) {
     u8  script[0x4000];
     int size;
 
     if (path == NULL) {
         SetCurrentDir(at_1296);
+
         if (LoadFile2(at_1856, script, &size, 0) == 0) {
             SetCurrentDir(NULL);
             return;
         }
+
         SetCurrentDir(NULL);
     } else if (LoadFile2(path, script, &size, 0) == 0) {
         return;
     }
+
     CScriptInterpreter interpreter;
     interpreter.SetTag(tag__3);
-    interpreter.SetScript((char *)script, size);
+    interpreter.SetScript((char *) script, size);
     interpreter.Run();
 }
+
 int gcMAP_NO(SPI_STACK *stack, int arg) {
     int map_no;
+
     if (stack->type == 0) {
         map_no = SearchMapNo(spiGetStackString(stack));
     } else {
         map_no = spiGetStackInt(stack);
     }
+
     SelectArg[LOOP_EDIT] = map_no;
     return 1;
 }
+
 int gcPROGRESS(SPI_STACK *stack, int arg) {
-    int value = spiGetStackInt(stack);
+    int        value = spiGetStackInt(stack);
     CSaveData *save = GetSaveData();
     save->game_progress = value;
     return 0;
 }
+
 int gcBIT_FLAG_ON(SPI_STACK *stack, int count) {
     CSaveData *save_data;
-    int i;
+    int        i;
 
     for (i = 0; i < count; i++) {
         save_data = GetSaveData();
         save_data->SetBitFlag(spiGetStackInt(stack++), 1);
     }
+
     return 0;
 }
+
 int gcBIT_FLAG_OFF(SPI_STACK *stack, int count) {
     CSaveData *save_data;
-    int i;
+    int        i;
 
     for (i = 0; i < count; i++) {
         save_data = GetSaveData();
         save_data->SetBitFlag(spiGetStackInt(stack++), 0);
     }
+
     return 0;
 }
+
 int gcSTART_EVENT(SPI_STACK *stack, int arg_count) {
     DefStartEventNo = spiGetStackInt(stack);
     return 0;
 }
+
 int gcGEO_COMPLETE(SPI_STACK *stack, int count) {
-    int i;
-    int index;
+    int   i;
+    int   index;
     void *edit_data;
 
     DebugInfo.georama_debug = 1;
+
     for (i = 0; i < count; i++) {
         index = spiGetStackInt(stack++);
         edit_data = GetSaveData()->GetEditData(index);
+
         if (edit_data != 0) {
-            ((CEditData *)edit_data)->dbgSetAllContintionFlag(index, 1);
+            ((CEditData *) edit_data)->dbgSetAllContintionFlag(index, 1);
         }
     }
+
     return 1;
 }
+
 int gcGEO_DEBUG(SPI_STACK *stack, int arg_count) {
     DebugInfo.georama_debug = 1;
     return 1;
 }
+
 int gcITEM_SET(SPI_STACK *stack, int arg_count) {
     CUserDataManager *user_data;
 
@@ -1261,19 +1394,22 @@ int gcITEM_SET(SPI_STACK *stack, int arg_count) {
     DebugGetItem(user_data, spiGetStackInt(stack));
     return 1;
 }
+
 int gcGET_ITEM(SPI_STACK *stack, int count) {
-    int i;
+    int               i;
     CUserDataManager *user_data;
 
     for (i = 0; i < count; i++) {
         user_data = &GetSaveData()->user_data;
         user_data->GetItem(spiGetStackInt(stack++), 1);
     }
+
     return 1;
 }
+
 int gcGET_N_ITEM(SPI_STACK *stack, int count) {
-    int item_no;
-    int i;
+    int               item_no;
+    int               i;
     CUserDataManager *user_data;
 
     for (i = 0; i < count; i++) {
@@ -1281,11 +1417,13 @@ int gcGET_N_ITEM(SPI_STACK *stack, int count) {
         item_no = spiGetStackInt(stack++);
         user_data->GetItem(item_no, spiGetStackInt(stack++));
     }
+
     return 1;
 }
+
 int gcEQUIP(SPI_STACK *stack, int arg_count) {
-    int chara_no;
-    int item_no;
+    int               chara_no;
+    int               item_no;
     CUserDataManager *user_data;
     user_data = &GetSaveData()->user_data;
     chara_no = spiGetStackInt(stack++);
@@ -1293,33 +1431,40 @@ int gcEQUIP(SPI_STACK *stack, int arg_count) {
     user_data->SetChrEquip(chara_no, item_no);
     return 1;
 }
+
 int gcDEFENSE(SPI_STACK *stack, int arg_count) {
-    int chara_no;
-    int defence;
+    int         chara_no;
+    int         defence;
     CHARA_DATA *chara;
 
     chara_no = spiGetStackInt(stack++);
     defence = spiGetStackInt(stack);
     chara = GetSaveData()->user_data.GetCharaDataPtr(chara_no);
+
     if (chara != NULL) {
         chara->defence = defence;
     }
+
     return 1;
 }
+
 int gcHP(SPI_STACK *stack, int arg_count) {
-    int chara_no;
-    int hp;
+    int         chara_no;
+    int         hp;
     CHARA_DATA *chara;
 
     chara_no = spiGetStackInt(stack++);
     hp = spiGetStackInt(stack);
     chara = GetSaveData()->user_data.GetCharaDataPtr(chara_no);
+
     if (chara != NULL) {
         chara->hp.max = hp;
         chara->hp.now = hp;
     }
+
     return 1;
 }
+
 /**
  * Unlocks Geostones and town conditions and grants Georama materials.
  */
@@ -1327,63 +1472,78 @@ static int gcALL_GEO_PARTS(SPI_STACK *stack, int argc) {
     CSaveDataDungeon *dungeon;
     DNG_FLOOR_SAVE   *floor;
     CEditData        *edit;
-    int              mode;
-    int              stage;
-    int              floor_no;
-    int              town;
-    int              i;
+    int               mode;
+    int               stage;
+    int               floor_no;
+    int               town;
+    int               i;
 
     mode = 0;
+
     if (argc > 0) {
         mode = spiGetStackInt(stack);
     }
+
     dungeon = &GetSaveData()->save_dungeon;
+
     for (stage = 0; stage < SAVE_DUNGEON_NUM; stage++) {
         for (floor_no = 0; floor_no < 40; floor_no++) {
             floor = dungeon->GetFloorInfoPtr(stage, floor_no);
+
             if (floor != NULL) {
                 floor->flag |= DNG_FLOOR_FLAG_GEOSTONE_FOUND | DNG_FLOOR_FLAG_GEOSTONE_READ;
             }
         }
     }
+
     for (town = 0; town < SAVE_EDIT_DATA_MAX; town++) {
         edit = GetSaveData()->GetEditData(town);
+
         if (edit != NULL) {
             for (i = 0; i < EDIT_ANALYZE_DATA_MAX; i++) {
                 edit->analyze.data_open[i] = 1;
             }
+
             for (i = 0; i < EDIT_ANALYZE_CONDITION_MAX; i++) {
                 edit->analyze.condition_open[i] = 1;
             }
         }
     }
+
     if (mode == 0) {
         for (i = 0; i < 999; i++) {
             GetSaveData()->SetBuildPartsNum(i, 30);
         }
     }
+
     if (mode == 1) {
         for (i = 210; i < 245; i++) {
             GetSaveData()->GetItem(i, 99);
         }
     }
+
     return 1;
 }
+
 int gcPARAM_DRAW(SPI_STACK *stack, int arg_count) {
     DebugInfo.param_off = !spiGetStackInt(stack);
     return 1;
 }
+
 int gcOPTION(SPI_STACK *stack, int arg) {
-    char *name;
+    char             *name;
     SV_CONFIG_OPTION *options;
-    SPI_STACK *value;
+    SPI_STACK        *value;
 
     value = stack + 1;
-    name = (char *)spiGetStackString(stack);
+    name = spiGetStackString(stack);
+
     if (name == NULL) {
         return 0;
     }
+
     options = &GetSaveData()->config;
+
     if (strcmp(name, at_2082) == 0) {
         options->monster_name = spiGetStackInt(value);
     } else if (strcmp(name, at_2083) == 0) {
@@ -1393,99 +1553,127 @@ int gcOPTION(SPI_STACK *stack, int arg) {
     } else if (strcmp(name, at_2085) == 0) {
         options->anger_counter = spiGetStackInt(value);
     }
+
     return 1;
 }
+
 int gcMONICA(SPI_STACK *stack, int arg_count) {
     CUserDataManager *manager;
 
     manager = GetUserDataMan();
+
     if (manager) {
         manager->JoinPartyMember(1);
     }
+
     return 1;
 }
+
 int gcSTEVE(SPI_STACK *stack, int mode) {
     CUserDataManager *manager;
 
     manager = GetUserDataMan();
+
     if (manager == NULL) {
         return 0;
     }
+
     manager->JoinPartyMember(2);
     manager->GetItemNotOver(0xF6, 1);
+
     if (mode == 2) {
         manager->DeleteItem(0xF6, 1);
         manager->GetItemNotOver(GetRidePodCore(spiGetStackInt(stack)), 1);
     }
+
     return 1;
 }
+
 int gcMONSTER(SPI_STACK *stack, int arg_count) {
-    int sp7C;
+    int               sp7_c;
     CUserDataManager *manager;
-    int i;
-    int monster_id;
-    int badge_no;
+    int               i;
+    int               monster_id;
+    int               badge_no;
     MOS_CHANGE_PARAM *badge;
 
     manager = GetUserDataMan();
+
     if (manager == NULL) {
         return 0;
     }
+
     manager->JoinPartyMember(3);
     manager->GetItemNotOver(0x134, 1);
+
     for (i = 0; i < arg_count; i++) {
         monster_id = spiGetStackInt(stack++);
-        badge_no = get_gajji_id_from_monster_progress_table(monster_id, &sp7C) + 1;
+        badge_no = get_gajji_id_from_monster_progress_table(monster_id, &sp7_c) + 1;
         manager->monster_box.EnableChange(badge_no);
         badge = manager->monster_box.GetMonsterBajjiData(badge_no);
+
         if (badge != NULL) {
-            badge->class_level = sp7C;
+            badge->class_level = sp7_c;
             badge->monster_id = monster_id;
-            badge->progress = GetMonsterProgressTableNo(sp7C, monster_id);
+            badge->progress = GetMonsterProgressTableNo(sp7_c, monster_id);
         }
+
         manager->monster_id = monster_id;
     }
+
     return 1;
 }
+
 int gcPARTY(SPI_STACK *stack, int arg_count) {
-    int chara_no;
+    int               chara_no;
     CUserDataManager *manager;
 
     chara_no = spiGetStackInt(stack);
+
     if (chara_no <= 0 || chara_no > 0x1A) {
         return 0;
     }
+
     manager = GetUserDataMan();
+
     if (manager != NULL) {
         manager->JoinPartyChara(chara_no, 0x80, 1);
         manager->SetPartyCharaStatus(chara_no, 1);
     }
+
     return 1;
 }
+
 int gcACTIVE_CHARA(SPI_STACK *stack, int arg_count) {
-    int chara_no;
+    int               chara_no;
     CUserDataManager *manager;
 
     chara_no = spiGetStackInt(stack);
+
     if (chara_no < 0) {
         chara_no = 0;
     }
+
     if (chara_no > 1) {
         chara_no = 1;
     }
+
     manager = GetUserDataMan();
+
     if (manager) {
         manager->SetActiveChrNo(chara_no);
     }
+
     return 1;
 }
+
 CUserDataManager::CUserDataManager() {}
+
 CEditData::CEditData() {
     Initialize();
 }
 
 // Static initialiser (.init)
-
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mainloop", LoopInit__DATA);
@@ -1614,7 +1802,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mainloop", at_2085__DATA);
 
 // Static initialiser table (.ctor)
 
-
 // Small initialised data (.sdata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mainloop", MainThreadPriority__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mainloop", at_973__DATA);
@@ -1666,14 +1853,14 @@ INCLUDE_BSS(PauseMenuMode, 0x4);
 // Uninitialised data (.bss)
 INCLUDE_BSS(GamePad__2, 0x480);
 INCLUDE_BSS(PadCtrl, 0x510);
-DEBUG_INFO DebugInfo;
-CFont Font;
+DEBUG_INFO    DebugInfo;
+CFont         Font;
 INIT_LOOP_ARG InitArg;
 INIT_LOOP_ARG NextInitArg;
 INIT_LOOP_ARG PrevInitArg;
 INCLUDE_BSS(main_buffer, 0x1A00000);
 static mgCMemory MainBuffer;
-CScene MainScene;
+CScene           MainScene;
 INCLUDE_BSS(SystemSeBuff, 0x1900);
 mgCMemory SystemSeStack;
 INCLUDE_BSS(InfoBuff, 0x13880);

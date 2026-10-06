@@ -58,9 +58,11 @@ struct DATA_HEADER {
         int   name_offset; /**< Offset of the file name from the start of the index, as stored on the disc. */
         char *name;        /**< File name, once the index has been loaded. */
     };
+
     int size;   /**< File size in bytes. */
     int sector; /**< Starting sector relative to DATA.DAT. */
 };
+
 STATIC_ASSERT(sizeof(DATA_HEADER) == 0xC);
 
 /**
@@ -77,12 +79,15 @@ struct BG_READ_INFO {
     char       name[256]; /**< Full path of the file, used to find it and in messages. */
     u_long128 *buffer;    /**< Destination buffer. */
     int        size;      /**< File size in bytes. */
+
     union {
         int sector; /**< Absolute starting sector, for a file on the disc. */
         int fd;     /**< Open file descriptor, for a file on any other device. */
     };
+
     int sectors; /**< Number of sectors to read, for a file on the disc. */
 };
+
 STATIC_ASSERT(sizeof(BG_READ_INFO) == 0x120);
 
 /**
@@ -98,6 +103,7 @@ struct FILE_CACHE {
     int        unk_0c;
     char       name[48]; /**< Path the file was cached under. */
 };
+
 STATIC_ASSERT(sizeof(FILE_CACHE) == 0x40);
 
 /**

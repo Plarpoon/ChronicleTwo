@@ -24,6 +24,7 @@ enum MidiPortLimit {
 };
 
 // clang-format on
+
 /**
  *
  * Directions a port's banks are laid out in sound processor memory.
@@ -36,6 +37,7 @@ enum SpuAllocDirection {
 };
 
 // clang-format on
+
 /**
  *
  * One volume fade the sequencer advances once a frame.
@@ -59,20 +61,20 @@ STATIC_ASSERT(sizeof(MIDI_FADE) == 0x10);
  */
 struct MIDI_PORT {
     s32       unk_00;
-    u8        spu_direction;                     /**< Direction the port's banks are laid out in, a SpuAllocDirection. */
-    s32       linked_port;                       /**< Port that is given every bank this port loads, or -1. */
+    u8        spu_direction;                      /**< Direction the port's banks are laid out in, a SpuAllocDirection. */
+    s32       linked_port;                        /**< Port that is given every bank this port loads, or -1. */
     s32       dependent_port[MIDI_PORT_BANK_MAX]; /**< Ports placed at this port's sound processor address, reset when it loads or is deleted. */
-    s32       dependent_port_count;              /**< Number of entries in dependent_port. */
-    void     *bank[MIDI_PORT_BANK_MAX];          /**< IOP address of each loaded bank header. */
-    s32       bank_count;                        /**< Number of banks loaded. */
-    s32       spu_address;                       /**< Sound processor address the port's first bank body loads to. */
+    s32       dependent_port_count;               /**< Number of entries in dependent_port. */
+    void     *bank[MIDI_PORT_BANK_MAX];           /**< IOP address of each loaded bank header. */
+    s32       bank_count;                         /**< Number of banks loaded. */
+    s32       spu_address;                        /**< Sound processor address the port's first bank body loads to. */
     s32       unk_98;
-    s32       spu_next_address;                  /**< Sound processor address the port's next bank body loads at. */
-    void     *sequence[MIDI_PORT_SEQ_MAX];       /**< IOP address of each loaded sequence. */
-    void     *resident_sequence;                 /**< IOP address of the sequence the sequencer is given for the port, kept when the port is deleted. */
+    s32       spu_next_address;            /**< Sound processor address the port's next bank body loads at. */
+    void     *sequence[MIDI_PORT_SEQ_MAX]; /**< IOP address of each loaded sequence. */
+    void     *resident_sequence;           /**< IOP address of the sequence the sequencer is given for the port, kept when the port is deleted. */
     s32       unk_CC[MIDI_PORT_SEQ_MAX];
-    s32       sequence_count;                    /**< Number of sequences loaded. */
-    MIDI_FADE fade[2];                           /**< The port's two volume fades. */
+    s32       sequence_count; /**< Number of sequences loaded. */
+    MIDI_FADE fade[2];        /**< The port's two volume fades. */
     s32       unk_118;
     s32       unk_11C;
     s32       unk_120;

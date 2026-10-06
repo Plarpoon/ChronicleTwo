@@ -50,9 +50,9 @@ enum DNGMAP_FADE {
  *
  */
 enum {
-    DNGMAP_MARK_MAX = 8,          /**< Room marks the map can queue in one frame. */
-    DNGMAP_BLINK_CYCLE = 100,     /**< Frames one cycle of the map's blink counter lasts. */
-    DNG_TREE_MAP_MES_MAX = 8,     /**< Message windows the tree map menu holds. */
+    DNGMAP_MARK_MAX = 8,              /**< Room marks the map can queue in one frame. */
+    DNGMAP_BLINK_CYCLE = 100,         /**< Frames one cycle of the map's blink counter lasts. */
+    DNG_TREE_MAP_MES_MAX = 8,         /**< Message windows the tree map menu holds. */
     DNG_TREE_MAP_MATERIA_MAX = 0x103, /**< Georama parts the tree map can list for one floor. */
 };
 
@@ -83,8 +83,8 @@ enum DNG_TREE_MODE {
  *
  */
 struct DNGMAP_KOMA_POS {
-    float x;               /**< Screen x of the point. */
-    float y;               /**< Screen y of the point. */
+    float            x;    /**< Screen x of the point. */
+    float            y;    /**< Screen y of the point. */
     DNGMAP_KOMA_POS *next; /**< Following point of the path, or NULL at its end. */
 };
 
@@ -98,43 +98,43 @@ STATIC_ASSERT(sizeof(DNGMAP_KOMA_POS) == 0xC);
  */
 class CDngFreeMap {
 public:
-    CSaveDataDungeon *save_dungeon;   /**< Saved progress through the dungeons. */
-    CDngFloorManager *floor_manager;  /**< Floors and rooms of the dungeon being shown. */
-    u8 active;                        /**< Non-zero while the map steps and draws. */
-    u8 unk_9;
-    s16 dng_no;                       /**< Dungeon being shown. */
-    s16 mode;                         /**< Caller the map is drawn for, a DNGMAP_MODE. */
-    u8 unk_e[0x2];
-    float back_scroll;                /**< Offset the backdrop's tiles have scrolled by. */
-    u8 unk_14[0xC];
-    mgRect<float> view_rect;          /**< Screen area the shown room is kept inside. */
-    s32 mark_num;                     /**< Room marks queued this frame. */
-    u8 unk_34[0xC];
-    mgRect<float> mark_rect[DNGMAP_MARK_MAX]; /**< Screen rectangles of the room marks queued this frame, drawn above the rooms. */
-    s16 user_room_no;                 /**< Room the player's piece stands in; negative for none. */
-    s16 next_room_no;                 /**< Room the player's piece moves to in an event; negative for none. */
-    GLID_INFO *user_glid;             /**< Grid cell of the room the player's piece stands in. */
-    s16 blink_cnt;                    /**< Frame counter, wrapping at DNGMAP_BLINK_CYCLE, that blinks the rooms. */
-    u8 unk_ca[0x2];
-    GLID_INFO *select_glid;           /**< Grid cell the tree map's cursor is on, or NULL. */
-    s16 tex_block;                    /**< Texture block the map's textures are entered into; negative for none. */
-    u8 unk_d2[0x2];
-    mgCTexture *name_tex;             /**< Dungeon names and room letters ("dtname"). */
-    mgCTexture *map_tex;              /**< Rooms, passages and backdrop tiles ("dt"). */
-    mgCTexture *last_tex;             /**< Picture laid over the whole screen ("dtbg"). */
-    mgCTexture *koma_tex;             /**< Player's piece ("dngop"). */
-    DNGMAP_KOMA_POS *koma_path;       /**< Head of the path the player's piece moves along in an event. */
-    DNGMAP_KOMA_POS *koma_now;        /**< Point of the path the player's piece moves to next. */
-    s16 koma_move;                    /**< Non-zero while the player's piece moves along its path. */
-    u8 unk_ee[0x2];
-    float alpha;                      /**< Opacity the map draws with, from 0 to 128. */
-    s32 fade_time;                    /**< Frames the current fade lasts. */
-    float fade_step;                  /**< Amount alpha changes by each frame of the fade. */
-    s32 fade_mode;                    /**< Direction of the current fade, a DNGMAP_FADE. */
-    float pos_x;                      /**< Horizontal offset the board is scrolled by. */
-    float pos_y;                      /**< Vertical offset the board is scrolled by. */
-    float next_pos_x;                 /**< Horizontal offset the board scrolls towards. */
-    float next_pos_y;                 /**< Vertical offset the board scrolls towards. */
+    CSaveDataDungeon *save_dungeon;  /**< Saved progress through the dungeons. */
+    CDngFloorManager *floor_manager; /**< Floors and rooms of the dungeon being shown. */
+    u8                active;        /**< Non-zero while the map steps and draws. */
+    u8                unk_9;
+    s16               dng_no; /**< Dungeon being shown. */
+    s16               mode;   /**< Caller the map is drawn for, a DNGMAP_MODE. */
+    u8                unk_e[0x2];
+    float             back_scroll; /**< Offset the backdrop's tiles have scrolled by. */
+    u8                unk_14[0xC];
+    mgRect<float>     view_rect; /**< Screen area the shown room is kept inside. */
+    s32               mark_num;  /**< Room marks queued this frame. */
+    u8                unk_34[0xC];
+    mgRect<float>     mark_rect[DNGMAP_MARK_MAX]; /**< Screen rectangles of the room marks queued this frame, drawn above the rooms. */
+    s16               user_room_no;               /**< Room the player's piece stands in; negative for none. */
+    s16               next_room_no;               /**< Room the player's piece moves to in an event; negative for none. */
+    GLID_INFO        *user_glid;                  /**< Grid cell of the room the player's piece stands in. */
+    s16               blink_cnt;                  /**< Frame counter, wrapping at DNGMAP_BLINK_CYCLE, that blinks the rooms. */
+    u8                unk_ca[0x2];
+    GLID_INFO        *select_glid; /**< Grid cell the tree map's cursor is on, or NULL. */
+    s16               tex_block;   /**< Texture block the map's textures are entered into; negative for none. */
+    u8                unk_d2[0x2];
+    mgCTexture       *name_tex;  /**< Dungeon names and room letters ("dtname"). */
+    mgCTexture       *map_tex;   /**< Rooms, passages and backdrop tiles ("dt"). */
+    mgCTexture       *last_tex;  /**< Picture laid over the whole screen ("dtbg"). */
+    mgCTexture       *koma_tex;  /**< Player's piece ("dngop"). */
+    DNGMAP_KOMA_POS  *koma_path; /**< Head of the path the player's piece moves along in an event. */
+    DNGMAP_KOMA_POS  *koma_now;  /**< Point of the path the player's piece moves to next. */
+    s16               koma_move; /**< Non-zero while the player's piece moves along its path. */
+    u8                unk_ee[0x2];
+    float             alpha;      /**< Opacity the map draws with, from 0 to 128. */
+    s32               fade_time;  /**< Frames the current fade lasts. */
+    float             fade_step;  /**< Amount alpha changes by each frame of the fade. */
+    s32               fade_mode;  /**< Direction of the current fade, a DNGMAP_FADE. */
+    float             pos_x;      /**< Horizontal offset the board is scrolled by. */
+    float             pos_y;      /**< Vertical offset the board is scrolled by. */
+    float             next_pos_x; /**< Horizontal offset the board scrolls towards. */
+    float             next_pos_y; /**< Vertical offset the board scrolls towards. */
 
     /**
      *
@@ -401,7 +401,7 @@ public:
      * @address 0x1EFDF0
      * @size 0x30
      */
-    void SetKomaMove(int move);
+    void SetKomaMove(int moving);
 
     /**
      *
@@ -426,30 +426,43 @@ STATIC_ASSERT(sizeof(mgRect<float>) == 0x10);
  */
 class CMenuTreeMap : public CBaseMenuClass {
 public:
-    float cursor_pos[2];                         /**< Screen position of the cursor, easing towards the chosen floor. */
-    s16 dng_no;                                  /**< Dungeon being shown. */
-    s16 unk_11a;
-    s16 jump_pay;                                /**< Non-zero when jumping to a floor costs half the player's money. */
-    u8 unk_11e[0x2];
-    GLID_INFO *select_glid;                      /**< Grid cell of the floor the cursor is on. */
-    u8 unk_124[0xC];
-    CDC2Mes mes[DNG_TREE_MAP_MES_MAX];           /**< Message windows of the floor information. */
-    short *mes_data;                             /**< Messages the menu shows ("systree.mes"). */
-    s32 cursor_view;                             /**< Non-zero to draw the cursor. */
-    s32 cursor_reset;                            /**< Non-zero to put the cursor onto its floor at once. */
-    s32 money_view;                              /**< Non-zero to show the player's money beside the jump question. */
-    s32 help_view;                               /**< Non-zero to show the help message along the bottom of the screen. */
-    u8 tresure_loaded;                           /**< Non-zero once the dungeon's treasure tables are read. */
-    u8 unk_153c5[0x3];
-    TRESURE_BOX_FLOOR_INFO tresure;              /**< Treasure tables of the dungeon's floors. */
-    s32 georama_materia[DNG_TREE_MAP_MATERIA_MAX]; /**< Georama parts that can be found on the chosen floor. */
+    float                  cursor_pos[2]; /**< Screen position of the cursor, easing towards the chosen floor. */
+    s16                    dng_no;        /**< Dungeon being shown. */
+    s16                    unk_11a;
+    s16                    jump_pay; /**< Non-zero when jumping to a floor costs half the player's money. */
+    u8                     unk_11e[0x2];
+    GLID_INFO             *select_glid; /**< Grid cell of the floor the cursor is on. */
+    u8                     unk_124[0xC];
+    CDC2Mes                mes[DNG_TREE_MAP_MES_MAX]; /**< Message windows of the floor information. */
+    short                 *mes_data;                  /**< Messages the menu shows ("systree.mes"). */
+    s32                    cursor_view;               /**< Non-zero to draw the cursor. */
+    s32                    cursor_reset;              /**< Non-zero to put the cursor onto its floor at once. */
+    s32                    money_view;                /**< Non-zero to show the player's money beside the jump question. */
+    s32                    help_view;                 /**< Non-zero to show the help message along the bottom of the screen. */
+    u8                     tresure_loaded;            /**< Non-zero once the dungeon's treasure tables are read. */
+    u8                     unk_153c5[0x3];
+    TRESURE_BOX_FLOOR_INFO tresure;                                   /**< Treasure tables of the dungeon's floors. */
+    s32                    georama_materia[DNG_TREE_MAP_MATERIA_MAX]; /**< Georama parts that can be found on the chosen floor. */
 
     /**
      *
      * Creates the menu with its message windows and points the floor windows at them.
      *
      */
+#ifdef NONMATCHING
+    CMenuTreeMap() {
+        unk_11a = 0;
+        select_glid = NULL;
+        mes_data = NULL;
+        key_arg_no = 0;
+        help_view = 1;
+        cursor_reset = 0;
+        money_view = 0;
+        tresure_loaded = 0;
+    }
+#else
     CMenuTreeMap();
+#endif
 
     /**
      *

@@ -161,12 +161,12 @@ STATIC_ASSERT(sizeof(MC_ERROR_INFO) == 0x14);
  *
  */
 struct SAVEDATA_INFO {
-    s32 state;           /**< One once the file is read, complete and of the current version, zero otherwise. */
-    s32 file_no;         /**< Number of the save file. */
-    s16 map_no;          /**< Main map the save was written on. */
-    s16 dungeon_no;      /**< Dungeon the save was written in. */
-    s16 floor_id;        /**< Floor of that dungeon the save was written on. */
-    s16 progress;        /**< Story progress of the save. */
+    s32 state;      /**< One once the file is read, complete and of the current version, zero otherwise. */
+    s32 file_no;    /**< Number of the save file. */
+    s16 map_no;     /**< Main map the save was written on. */
+    s16 dungeon_no; /**< Dungeon the save was written in. */
+    s16 floor_id;   /**< Floor of that dungeon the save was written on. */
+    s16 progress;   /**< Story progress of the save. */
     u8  unk_10[2];
     s16 program_loop_no; /**< Main loop mode the save was written in. @see MainLoopMode. */
     u32 omake_flag;      /**< Bonus content the save unlocks, as SAVEDATA_FORMAT::omake_flag holds it. */
@@ -187,9 +187,9 @@ STATIC_ASSERT(sizeof(SAVEDATA_INFO) == 0x40);
  *
  */
 struct SAVEDATA_FORMAT {
-    char      version[0x10];   /**< Version string that the file starts with. */
-    u64       costume_bit;     /**< Costumes the save has collected, once the costume flag is set. */
-    s16       debug_code;      /**< Debug code of the save. */
+    char      version[0x10]; /**< Version string that the file starts with. */
+    u64       costume_bit;   /**< Costumes the save has collected, once the costume flag is set. */
+    s16       debug_code;    /**< Debug code of the save. */
     s16       unk_1A;
     s32       unk_1C;
     s32       unk_20;
@@ -235,43 +235,43 @@ STATIC_ASSERT(sizeof(COSBIT_INFO) == 0x4);
  */
 class CMemoryCardManager {
 public:
-    char             version[0x10];     /**< Version string that every save file starts with. */
-    char             file_name[0x20];   /**< Name format of the save files. */
-    char             game_name[0x20];   /**< Name of the game. */
-    s32              func_no;           /**< Operation that the manager is running. @see MC_FUNC_NO. */
+    char             version[0x10];   /**< Version string that every save file starts with. */
+    char             file_name[0x20]; /**< Name format of the save files. */
+    char             game_name[0x20]; /**< Name of the game. */
+    s32              func_no;         /**< Operation that the manager is running. @see MC_FUNC_NO. */
     u8               unk_54[4];
-    s32              step;              /**< Step that the current operation has reached. */
-    s32              fd;                /**< File that the last sceMcOpen returned, -1 until one does. */
+    s32              step; /**< Step that the current operation has reached. */
+    s32              fd;   /**< File that the last sceMcOpen returned, -1 until one does. */
     u8               unk_60[0x20];
-    MC_DIR_ENTRY     dir_table[17];     /**< Table that sceMcGetDir fills with directory entries. */
-    s32              dir_entries;       /**< Entries the last sceMcGetDir found, or the error it reported. */
-    s32              album_buffer_set;  /**< One once SetBuff_Album has been given an album buffer. */
-    s32              port;              /**< Port that every command of the manager names. */
-    s32              file_no;           /**< Save file that the current operation works on. */
-    MC_ERROR_INFO    error;             /**< What stopped the last operation. */
-    char            *write_buffer;      /**< Data the current write sends. */
-    char            *read_buffer;       /**< Area the current read fills. */
-    char             work_buffer[0x400]; /**< Area that the header of the bonus data file is read into. */
-    SAVEDATA_FORMAT *save_buffer;       /**< Save file image that saves and loads go through. */
-    CSubGameData    *sub_game_data;     /**< Bonus data that the save menu hands the manager. */
-    char            *album_buffer;      /**< Photo album image that album saves and loads go through. */
-    s32              load_map_no;       /**< Main map of the save last loaded. */
+    MC_DIR_ENTRY     dir_table[17];        /**< Table that sceMcGetDir fills with directory entries. */
+    s32              dir_entries;          /**< Entries the last sceMcGetDir found, or the error it reported. */
+    s32              album_buffer_set;     /**< One once SetBuff_Album has been given an album buffer. */
+    s32              port;                 /**< Port that every command of the manager names. */
+    s32              file_no;              /**< Save file that the current operation works on. */
+    MC_ERROR_INFO    error;                /**< What stopped the last operation. */
+    char            *write_buffer;         /**< Data the current write sends. */
+    char            *read_buffer;          /**< Area the current read fills. */
+    char             work_buffer[0x400];   /**< Area that the header of the bonus data file is read into. */
+    SAVEDATA_FORMAT *save_buffer;          /**< Save file image that saves and loads go through. */
+    CSubGameData    *sub_game_data;        /**< Bonus data that the save menu hands the manager. */
+    char            *album_buffer;         /**< Photo album image that album saves and loads go through. */
+    s32              load_map_no;          /**< Main map of the save last loaded. */
     s32              load_program_loop_no; /**< Main loop mode of the save last loaded. @see MainLoopMode. */
-    s32              load_dungeon_no;   /**< Dungeon of the save last loaded. */
-    s32              load_floor_id;     /**< Dungeon floor of the save last loaded. */
-    s32              load_dng_tree_flag; /**< Dungeon tree flag of the save last loaded. */
-    s32              search_wait;       /**< Frames the idle operation has waited since it last read the card. */
-    s32              transferred;       /**< Bytes that the current read or write has moved. */
-    s32              total_transferred; /**< Bytes that the current operation has moved, for its progress bar. */
-    s32              transfer_size;     /**< Bytes that the current read or write is to move. */
-    s32              transfer_result;   /**< Result of the last read or write command. */
-    MC_ICON_DATA     icon[3];           /**< Icon files that the save directories carry. */
-    sceMcIconSys     icon_sys;          /**< icon.sys image that MakeDir writes into a new directory. */
-    MC_CARD_INFO     card[2];           /**< What the manager found out about the card in each port. */
+    s32              load_dungeon_no;      /**< Dungeon of the save last loaded. */
+    s32              load_floor_id;        /**< Dungeon floor of the save last loaded. */
+    s32              load_dng_tree_flag;   /**< Dungeon tree flag of the save last loaded. */
+    s32              search_wait;          /**< Frames the idle operation has waited since it last read the card. */
+    s32              transferred;          /**< Bytes that the current read or write has moved. */
+    s32              total_transferred;    /**< Bytes that the current operation has moved, for its progress bar. */
+    s32              transfer_size;        /**< Bytes that the current read or write is to move. */
+    s32              transfer_result;      /**< Result of the last read or write command. */
+    MC_ICON_DATA     icon[3];              /**< Icon files that the save directories carry. */
+    sceMcIconSys     icon_sys;             /**< icon.sys image that MakeDir writes into a new directory. */
+    MC_CARD_INFO     card[2];              /**< What the manager found out about the card in each port. */
     u8               unk_D9C[4];
-    SAVEDATA_INFO    file_info[13];     /**< Save files of the card, as the menus show them. */
-    s32              file_exists;       /**< Whether the last album or bonus data check found the file. */
-    u32              omake_flag;        /**< Bonus content that the bonus data file unlocks. */
+    SAVEDATA_INFO    file_info[13]; /**< Save files of the card, as the menus show them. */
+    s32              file_exists;   /**< Whether the last album or bonus data check found the file. */
+    u32              omake_flag;    /**< Bonus content that the bonus data file unlocks. */
     u8               unk_10E8[0x18];
 
     /**
@@ -363,7 +363,7 @@ public:
      * @address 0x2F6A30
      * @size 0x190
      */
-    void SetIconData(MC_ICON_DATA *icon_data, int name_no);
+    void SetIconData(MC_ICON_DATA *icon_data, int index);
 
     /**
      *
@@ -393,7 +393,7 @@ public:
      * @address 0x2F6D30
      * @size 0x20
      */
-    void SetFuncNo(int func_no);
+    void SetFuncNo(int operation);
 
     /**
      *
@@ -443,7 +443,7 @@ public:
      * @address 0x2F6E40
      * @size 0x70
      */
-    u32 CheckOmake(u_long *costume_bit);
+    u32 CheckOmake(u_long *out_mask);
 
     /**
      *
@@ -473,7 +473,7 @@ public:
      * @address 0x2F6F70
      * @size 0x80
      */
-    void UpDateViewInfo(SAVEDATA_INFO *info, SAVEDATA_FORMAT *format);
+    void UpDateViewInfo(SAVEDATA_INFO *view, SAVEDATA_FORMAT *format);
 
     /**
      *
@@ -635,7 +635,7 @@ public:
      * @address 0x2F9B20
      * @size 0x130
      */
-    int DeleteFile(int file_no);
+    int DeleteFile(int index);
 
     /**
      *
@@ -646,7 +646,7 @@ public:
      * @address 0x2F9C50
      * @size 0x100
      */
-    int McError(int result);
+    int McError(int code);
 
     /**
      *
@@ -666,7 +666,7 @@ public:
      * @address 0x2F9E20
      * @size 0x3D0
      */
-    int GetSaveFileInfoFromMc(int file_no, int *step);
+    int GetSaveFileInfoFromMc(int index, int *step);
 
     /**
      *
@@ -689,7 +689,7 @@ STATIC_ASSERT(sizeof(CMemoryCardManager) == 0x1100);
  * @address 0x2F6390
  * @size 0xC0
  */
-void CopyMCBrowserName(int name_no, char *dest, unsigned short *nl_offset);
+void CopyMCBrowserName(int index, char *name, unsigned short *nl_offset);
 
 /**
  *
@@ -710,7 +710,7 @@ void SetDngTreeFlag(int flag);
  * @address 0x2F7B80
  * @size 0xD0
  */
-int GetCostumeList(u_long costume_bit, int type, short *list);
+int GetCostumeList(u_long mask, int type, short *list);
 
 /**
  *
@@ -720,7 +720,7 @@ int GetCostumeList(u_long costume_bit, int type, short *list);
  * @address 0x2FA440
  * @size 0x40
  */
-int McCheckMCPs2(MC_CARD_INFO *card);
+int McCheckMCPs2(MC_CARD_INFO *info);
 
 /**
  *
@@ -731,7 +731,7 @@ int McCheckMCPs2(MC_CARD_INFO *card);
  * @address 0x2FA480
  * @size 0x70
  */
-int McCheckMCPs2Boot(MC_CARD_INFO *card, int size);
+int McCheckMCPs2Boot(MC_CARD_INFO *info, int blocks_needed);
 
 /**
  *
@@ -741,7 +741,7 @@ int McCheckMCPs2Boot(MC_CARD_INFO *card, int size);
  * @address 0x2FA4F0
  * @size 0x40
  */
-COSBIT_INFO *GetCosInfo(int item_no);
+COSBIT_INFO *GetCosInfo(int costume_no);
 
 /**
  *

@@ -49,19 +49,19 @@ enum DbgFontSheet {
  */
 class dbgCJISFont {
 public:
-    int           texture_id[DBG_FONT_SHEET_COUNT];          /**< Texture-manager slot holding each glyph sheet; -1 for none. */
-    int           loaded_texture_id;                         /**< Slot of the sheet last made resident; -1 when none is. */
-    char          texture_name[DBG_FONT_SHEET_COUNT][0x20];  /**< Texture-manager name of each glyph sheet. */
-    int           x;                                         /**< Screen x of the next glyph. */
-    int           y;                                         /**< Screen y of the next glyph. */
-    int           char_width;                                /**< Width of a full-width glyph cell; tabs advance by two cells. */
-    int           char_height;                               /**< Height of a glyph cell and of a line. */
-    unsigned long prev_serno;                                /**< Serial number of the preceding half-width kana, for merging sound marks; 0 for none. */
-    char          buffer[0x800];                             /**< Text buffer, emptied by Clear. */
-    int           color[4];                                  /**< Red, green, blue and alpha of the glyphs. */
-    int           back_enable;                               /**< Non-zero to draw a box behind each glyph; toggled by "ESC[$". */
-    int           back_color[4];                             /**< Red, green, blue and alpha of the box behind each glyph. */
-    int           shadow_enable;                             /**< Non-zero to draw each glyph in black one pixel larger beneath it; toggled by "ESC[#". */
+    int           texture_id[DBG_FONT_SHEET_COUNT];         /**< Texture-manager slot holding each glyph sheet; -1 for none. */
+    int           loaded_texture_id;                        /**< Slot of the sheet last made resident; -1 when none is. */
+    char          texture_name[DBG_FONT_SHEET_COUNT][0x20]; /**< Texture-manager name of each glyph sheet. */
+    int           x;                                        /**< Screen x of the next glyph. */
+    int           y;                                        /**< Screen y of the next glyph. */
+    int           char_width;                               /**< Width of a full-width glyph cell; tabs advance by two cells. */
+    int           char_height;                              /**< Height of a glyph cell and of a line. */
+    unsigned long prev_serno;                               /**< Serial number of the preceding half-width kana, for merging sound marks; 0 for none. */
+    char          buffer[0x800];                            /**< Text buffer, emptied by Clear. */
+    int           color[4];                                 /**< Red, green, blue and alpha of the glyphs. */
+    int           back_enable;                              /**< Non-zero to draw a box behind each glyph; toggled by "ESC[$". */
+    int           back_color[4];                            /**< Red, green, blue and alpha of the box behind each glyph. */
+    int           shadow_enable;                            /**< Non-zero to draw each glyph in black one pixel larger beneath it; toggled by "ESC[#". */
 
     /**
      * Builds the font with no glyph sheets and default colours.
@@ -121,6 +121,7 @@ public:
      */
     void PrintDirect(int x, int y, char *format, ...);
 };
+
 STATIC_ASSERT(sizeof(dbgCJISFont) == 0x8B0);
 
 /**

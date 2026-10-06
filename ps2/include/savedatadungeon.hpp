@@ -24,7 +24,7 @@ enum {
  *
  */
 enum DNG_FLOOR_FLAG {
-    DNG_FLOOR_FLAG_OPEN = 0x1,                /**< The floor can be entered. */
+    DNG_FLOOR_FLAG_OPEN = 0x1, /**< The floor can be entered. */
     DNG_FLOOR_FLAG_UNK_2 = 0x2,
     DNG_FLOOR_FLAG_PRACTICE_CLEAR = 0x8,      /**< The floor's practice condition is cleared. */
     DNG_FLOOR_FLAG_FAST_DESTROY_CLEAR = 0x10, /**< The floor is cleared within its target time. */
@@ -46,10 +46,10 @@ struct DNG_FLOOR_SAVE {
     u16 unk_8;
     u8  unk_a;
     u8  unk_b;
-    u16 spheda_clear;      /**< Non-zero once the floor's spheda challenge is cleared. */
-    u16 flag;              /**< Progress on the floor, a set of DNG_FLOOR_FLAG. */
-    u16 kill_count;        /**< Monsters defeated on the floor. */
-    u16 visit_count;       /**< Times the floor has been entered. */
+    u16 spheda_clear; /**< Non-zero once the floor's spheda challenge is cleared. */
+    u16 flag;         /**< Progress on the floor, a set of DNG_FLOOR_FLAG. */
+    u16 kill_count;   /**< Monsters defeated on the floor. */
+    u16 visit_count;  /**< Times the floor has been entered. */
 };
 
 STATIC_ASSERT(sizeof(DNG_FLOOR_SAVE) == 0x14);
@@ -62,9 +62,9 @@ STATIC_ASSERT(sizeof(DNG_FLOOR_SAVE) == 0x14);
  */
 class CSaveDataDungeon {
 public:
-    s32 stage_id;                                      /**< Dungeon that the player is in. */
-    s32 floor_id[SAVE_DUNGEON_NUM];                    /**< Floor that the player is on, per dungeon. */
-    s32 prev_floor_id[SAVE_DUNGEON_NUM];               /**< Floor that the player was on before, per dungeon; -1 for none. */
+    s32            stage_id;                           /**< Dungeon that the player is in. */
+    s32            floor_id[SAVE_DUNGEON_NUM];         /**< Floor that the player is on, per dungeon. */
+    s32            prev_floor_id[SAVE_DUNGEON_NUM];    /**< Floor that the player was on before, per dungeon; -1 for none. */
     DNG_FLOOR_SAVE floor_info[SAVE_DUNGEON_FLOOR_NUM]; /**< Records of every floor, dungeon by dungeon. */
 
     /**
@@ -75,7 +75,7 @@ public:
      * @address 0x2FC2A0
      * @size 0x120
      */
-    DNG_FLOOR_SAVE *GetFloorInfoPtr(int stage, int floor);
+    DNG_FLOOR_SAVE *GetFloorInfoPtr(int dungeon, int floor);
 
     /**
      *

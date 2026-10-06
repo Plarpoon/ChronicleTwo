@@ -24,13 +24,13 @@ struct sceVif1Packet;
  *
  */
 enum mgTEXTURE_CONST {
-    MG_TEXTURE_HASH_SIZE = 101,          /**< Chains in the manager's name hash table. */
+    MG_TEXTURE_HASH_SIZE = 101,           /**< Chains in the manager's name hash table. */
     MG_TEXTURE_VRAM_FIX_DEFAULT = 0x3FE0, /**< VRAM block address fixed textures grow down from when none is given. */
-    MG_TEXTURE_BLOCK_FIX = 0x7FFF,       /**< Block number of the fixed block, whose textures stay resident in VRAM. */
-    MG_TEXTURE_LEVEL_MAX = 4,            /**< Mip levels a texture holds, its base level included. */
-    MG_TEXTURE_CLUT_BLOCKS = 4,          /**< GS blocks of VRAM reserved for the palette of an indexed texture. */
-    MG_TEXTURE_PAGE_BLOCKS = 32,         /**< GS blocks in one VRAM page, the unit a texture's VRAM is rounded up to. */
-    MG_TEXTURE_IMG_GROUP_MAX = 32,       /**< Archive groups an mgCEnterIMGInfo reports. */
+    MG_TEXTURE_BLOCK_FIX = 0x7FFF,        /**< Block number of the fixed block, whose textures stay resident in VRAM. */
+    MG_TEXTURE_LEVEL_MAX = 4,             /**< Mip levels a texture holds, its base level included. */
+    MG_TEXTURE_CLUT_BLOCKS = 4,           /**< GS blocks of VRAM reserved for the palette of an indexed texture. */
+    MG_TEXTURE_PAGE_BLOCKS = 32,          /**< GS blocks in one VRAM page, the unit a texture's VRAM is rounded up to. */
+    MG_TEXTURE_IMG_GROUP_MAX = 32,        /**< Archive groups an mgCEnterIMGInfo reports. */
 };
 
 /**
@@ -77,55 +77,60 @@ enum TIM2_IMAGE_TYPE {
  *
  */
 struct TM2_PICTURE {
-    u_int total_size;         /**< Bytes of the first picture; its header starts here. */
-    u_int clut_size; /**< GS blocks the palette occupies, or 0 for a true-colour texture. */
-    u_int image_size;         /**< Bytes of pixels of the first picture, every mip level included. */
-    u_short header_size;      /**< Bytes from the picture header to the picture's pixels. */
-    u_short clut_colors;
-    u_char picture_format;
-    u_char mipmap_count;
-    u_char clut_type;
-    u_char image_type; /**< Pixel format of the picture. @see TIM2_IMAGE_TYPE */
-    u_short width; /**< Width of the base level, in pixels. */
-    u_short height; /**< Height of the base level, in pixels. */
-    unsigned long long tex0; /**< GS TEX0 value the texture is drawn with. */
-    unsigned long long tex1; /**< GS TEX1 value the picture asks to be sampled with. */
-    u_int gs_regs;
-    u_int gs_tex_clut;
-    long long mip_tbp1;
-    long long mip_tbp2;
-    int mip_sizes[1];
+    u_int              total_size;     /**< Bytes of the first picture; its header starts here. */
+    u_int              clut_size;      /**< GS blocks the palette occupies, or 0 for a true-colour texture. */
+    u_int              image_size;     /**< Bytes of pixels of the first picture, every mip level included. */
+    u_short            header_size;    /**< Bytes from the picture header to the picture's pixels. */
+    u_short            clut_colors;    /**< Number of palette colours. */
+    u_char             picture_format; /**< Format of this TIM2 picture header. */
+    u_char             mipmap_count;   /**< Number of mipmap levels. */
+    u_char             clut_type;      /**< Pixel format of the palette. */
+    u_char             image_type;     /**< Pixel format of the picture. @see TIM2_IMAGE_TYPE */
+    u_short            width;          /**< Width of the base level, in pixels. */
+    u_short            height;         /**< Height of the base level, in pixels. */
+    unsigned long long tex0;           /**< GS TEX0 value the texture is drawn with. */
+    unsigned long long tex1;           /**< GS TEX1 value the picture asks to be sampled with. */
+    u_int              gs_regs;        /**< GS texture register values supplied by the picture. */
+    u_int              gs_tex_clut;    /**< Palette register value supplied by the picture. */
+    long long          mip_tbp1;       /**< GS base pointers for the first set of mipmap levels. */
+    long long          mip_tbp2;       /**< GS base pointers for the remaining mipmap levels. */
+    int                mip_sizes[1];   /**< Byte size of each mipmap level. */
 };
+
 #pragma cpp_extensions on
+
 /**
  *
  * TIM2 file header followed by the first picture's metadata.
  *
  */
 struct TM2_head {
-    char tag[4];              /**< File signature. */
+    char tag[4]; /**< File signature. */
     char unk_04[0xC];
+
     union {
         struct {
-    u_int total_size;         /**< Bytes of the first picture; its header starts here. */
-    u_int unk_14;
-    u_int image_size;         /**< Bytes of pixels of the first picture, every mip level included. */
-    u_short header_size;      /**< Bytes from the picture header to the picture's pixels. */
-    u_short unk_1e;
-    u_char unk_20;
-    u_char mipmap_textures;   /**< Mip levels stored for the picture. */
-    u_char unk_22;
-    u_char image_type;        /**< Pixel format of the picture. @see TIM2_IMAGE_TYPE */
-    u_short image_width;      /**< Width of the base level, in pixels. */
-    u_short image_height;     /**< Height of the base level, in pixels. */
-    u_long unk_28;
-    u_long tex1;              /**< GS TEX1 value the picture asks to be sampled with. */
-    char unk_38[0x18];
-    u_int mipmap_size[4];     /**< Bytes of pixels of each mip level, in order from the base level. */
-};
+            u_int   total_size; /**< Bytes of the first picture; its header starts here. */
+            u_int   unk_14;
+            u_int   image_size;  /**< Bytes of pixels of the first picture, every mip level included. */
+            u_short header_size; /**< Bytes from the picture header to the picture's pixels. */
+            u_short unk_1e;
+            u_char  unk_20;
+            u_char  mipmap_textures; /**< Mip levels stored for the picture. */
+            u_char  unk_22;
+            u_char  image_type;   /**< Pixel format of the picture. @see TIM2_IMAGE_TYPE */
+            u_short image_width;  /**< Width of the base level, in pixels. */
+            u_short image_height; /**< Height of the base level, in pixels. */
+            u_long  unk_28;
+            u_long  tex1; /**< GS TEX1 value the picture asks to be sampled with. */
+            char    unk_38[0x18];
+            u_int   mipmap_size[4]; /**< Bytes of pixels of each mip level, in order from the base level. */
+        };
+
         TM2_PICTURE picture;
     };
 };
+
 #pragma cpp_extensions reset
 
 /**
@@ -135,11 +140,12 @@ struct TM2_head {
  *
  */
 struct mgIMG_FILE_HEADER {
-    char tag[4];  /**< "IMG", "IM2" or "IM3". @see mgIMG_VERSION */
+    char  tag[4]; /**< "IMG", "IM2" or "IM3". @see mgIMG_VERSION */
     u_int num;    /**< Entries in an IMG or IM2 archive. */
     u_int num3;   /**< Entries in an IM3 archive. */
-    int unk_c;
+    int   unk_c;
 };
+
 STATIC_ASSERT(sizeof(mgIMG_FILE_HEADER) == 0x10);
 
 /**
@@ -149,9 +155,10 @@ STATIC_ASSERT(sizeof(mgIMG_FILE_HEADER) == 0x10);
  */
 struct mgIMG1_HEADER {
     char name[0x20]; /**< Name the picture is registered under. */
-    int offset;      /**< Byte offset of the picture's TIM2 image from the start of the archive. */
+    int  offset;     /**< Byte offset of the picture's TIM2 image from the start of the archive. */
     char unk_24[0xC];
 };
+
 STATIC_ASSERT(sizeof(mgIMG1_HEADER) == 0x30);
 
 /**
@@ -170,21 +177,24 @@ struct IMG_HEADER_NAME {
  */
 struct mgIMG_HEADER {
     union {
-    char name[0x20]; /**< Name the picture is registered under; a leading '#' marks a texture animation script. */
-        IMG_HEADER_NAME name_copy;
+        char            name[0x20]; /**< Name the picture is registered under; a leading '#' marks a texture animation script. */
+        IMG_HEADER_NAME name_copy;  /**< Structured view of the picture name. */
     };
-    int unk_20;
-    int offset;      /**< Byte offset of the picture's TIM2 image, or of the script, from the start of the archive. */
-    int swizzled;    /**< Non-zero when the 8-bit pixels are stored in 32-bit page order. */
-    int block;       /**< Texture block the picture goes into, relative to the block the archive is entered at. */
-    short no_image;  /**< Non-zero to register the picture and reserve its VRAM without its pixels. */
+
+    int   unk_20;
+    int   offset;   /**< Byte offset of the picture's TIM2 image, or of the script, from the start of the archive. */
+    int   swizzled; /**< Non-zero when the 8-bit pixels are stored in 32-bit page order. */
+    int   block;    /**< Texture block the picture goes into, relative to the block the archive is entered at. */
+    short no_image; /**< Non-zero to register the picture and reserve its VRAM without its pixels. */
     short unk_32;
-    int size;        /**< Byte size of a texture animation script entry. */
+    int   size; /**< Byte size of a texture animation script entry. */
+
     union {
-    sceGsClamp clamp; /**< GS CLAMP value the texture is sampled with. */
-        long long clamp_bits;
+        sceGsClamp clamp;      /**< GS CLAMP value the texture is sampled with. */
+        long long  clamp_bits; /**< Bitwise view of the GS CLAMP value. */
     };
 };
+
 STATIC_ASSERT(sizeof(mgIMG_HEADER) == 0x40);
 
 /**
@@ -198,6 +208,7 @@ public:
     int block[MG_TEXTURE_IMG_GROUP_MAX];     /**< First texture block of each archive group, or -1 for a group the archive does not use. */
     int block_num[MG_TEXTURE_IMG_GROUP_MAX]; /**< Texture blocks each archive group spills over, its first block included. */
 };
+
 STATIC_ASSERT(sizeof(mgCEnterIMGInfo) == 0x100);
 
 /**
@@ -209,21 +220,21 @@ STATIC_ASSERT(sizeof(mgCEnterIMGInfo) == 0x100);
  */
 class mgCTexture {
 public:
-    short block;             /**< Texture block the texture belongs to, or -1 when it is free. */
-    short width;             /**< Width of the base level, in pixels. */
-    short height;            /**< Height of the base level, in pixels. */
-    short bpp;               /**< Bits per pixel: 4, 8, 16, 24 or 32. */
-    char name[0x20];         /**< Name the texture is registered and looked up under. */
-    int vram_size;           /**< GS blocks of VRAM reserved for the pixels, rounded up to whole pages. */
-    int image_blocks;        /**< GS blocks the pixels of every mip level occupy. */
-    int clut_size;           /**< GS blocks the palette occupies, or 0 for a true-colour texture. */
-    sceGsTex0 tex0;          /**< GS TEX0 value the texture is drawn with. */
-    sceGsTex1 tex1;          /**< GS TEX1 value the texture is sampled with. */
-    sceGsClamp clamp;        /**< GS CLAMP value the texture is sampled with. */
-    u_long128 *image[MG_TEXTURE_LEVEL_MAX];      /**< Pixels of each mip level in main memory, or NULL past the last level. */
-    u_long128 *clut;         /**< Palette in main memory, or NULL for a true-colour texture. */
-    int swizzled;            /**< Non-zero when the 8-bit pixels are stored in 32-bit page order. */
-    mgCTexture *next;        /**< Following texture of the same texture block. */
+    short       block;                       /**< Texture block the texture belongs to, or -1 when it is free. */
+    short       width;                       /**< Width of the base level, in pixels. */
+    short       height;                      /**< Height of the base level, in pixels. */
+    short       bpp;                         /**< Bits per pixel: 4, 8, 16, 24 or 32. */
+    char        name[0x20];                  /**< Name the texture is registered and looked up under. */
+    int         vram_size;                   /**< GS blocks of VRAM reserved for the pixels, rounded up to whole pages. */
+    int         image_blocks;                /**< GS blocks the pixels of every mip level occupy. */
+    int         clut_size;                   /**< GS blocks the palette occupies, or 0 for a true-colour texture. */
+    sceGsTex0   tex0;                        /**< GS TEX0 value the texture is drawn with. */
+    sceGsTex1   tex1;                        /**< GS TEX1 value the texture is sampled with. */
+    sceGsClamp  clamp;                       /**< GS CLAMP value the texture is sampled with. */
+    u_long128  *image[MG_TEXTURE_LEVEL_MAX]; /**< Pixels of each mip level in main memory, or NULL past the last level. */
+    u_long128  *clut;                        /**< Palette in main memory, or NULL for a true-colour texture. */
+    int         swizzled;                    /**< Non-zero when the 8-bit pixels are stored in 32-bit page order. */
+    mgCTexture *next;                        /**< Following texture of the same texture block. */
 
     /**
      * Creates a free texture with no pixels, no palette and default
@@ -257,6 +268,7 @@ public:
      */
     void Bilinear(int mode);
 };
+
 STATIC_ASSERT(sizeof(mgCTexture) == 0x70);
 
 /**
@@ -268,10 +280,10 @@ STATIC_ASSERT(sizeof(mgCTexture) == 0x70);
  */
 class mgCTextureBlock {
 public:
-    int unk_0;
-    int unk_4;
-    mgCTexture *texture;    /**< First texture of the block's list, or NULL when the block is empty. */
-    mgCTextureAnime *anime; /**< Texture animation of the block, or NULL. */
+    int              unk_0;
+    int              unk_4;
+    mgCTexture      *texture; /**< First texture of the block's list, or NULL when the block is empty. */
+    mgCTextureAnime *anime;   /**< Texture animation of the block, or NULL. */
 
     /**
      * Creates an empty block.
@@ -309,6 +321,7 @@ public:
      */
     void Delete(mgCTexture *texture);
 };
+
 STATIC_ASSERT(sizeof(mgCTextureBlock) == 0x10);
 
 /**
@@ -318,9 +331,10 @@ STATIC_ASSERT(sizeof(mgCTextureBlock) == 0x10);
  *
  */
 struct mgTEXTURE_HASH {
-    mgCTexture *texture;  /**< Texture the link refers to. */
-    mgTEXTURE_HASH *next; /**< Following link of the same chain, or NULL. */
+    mgCTexture     *texture; /**< Texture the link refers to. */
+    mgTEXTURE_HASH *next;    /**< Following link of the same chain, or NULL. */
 };
+
 STATIC_ASSERT(sizeof(mgTEXTURE_HASH) == 8);
 
 /**
@@ -333,23 +347,23 @@ STATIC_ASSERT(sizeof(mgTEXTURE_HASH) == 8);
  */
 class mgCTextureManager {
 public:
-    int vram_top;                                 /**< VRAM block address the uploaded texture block starts at. */
-    int vram_fix;                                 /**< VRAM block address below the fixed textures, which grow downwards. */
-    int last_block;                               /**< Texture block last placed by ReloadTexture, or -1. */
-    int block_max;                                /**< Texture blocks in the block array. */
-    mgCTextureBlock *blocks;                      /**< Numbered texture blocks. */
-    mgCTextureBlock fix_block;                    /**< Block MG_TEXTURE_BLOCK_FIX, whose textures stay resident in VRAM. */
-    mgTEXTURE_HASH *hash_table[MG_TEXTURE_HASH_SIZE]; /**< First link of each chain of the name hash table. */
-    mgCTexture *texture_buf;                      /**< Pool of textures. */
-    mgCTexture **texture_stack;                   /**< Textures of the pool, in use first and free after. */
-    int texture_max;                              /**< Textures in the pool. */
-    int texture_num;                              /**< Textures of the pool in use. */
-    mgTEXTURE_HASH *hash_buf;                     /**< Pool of hash links. */
-    mgTEXTURE_HASH **hash_stack;                  /**< Hash links of the pool, in use first and free after. */
-    int hash_max;                                 /**< Hash links in the pool. */
-    int hash_num;                                 /**< Hash links of the pool in use. */
-    char name_suffix[0x14];                       /**< Text appended to every name a texture is entered or looked up under. */
-    mgCMemory unk_1ec;
+    int              vram_top;                         /**< VRAM block address the uploaded texture block starts at. */
+    int              vram_fix;                         /**< VRAM block address below the fixed textures, which grow downwards. */
+    int              last_block;                       /**< Texture block last placed by ReloadTexture, or -1. */
+    int              block_max;                        /**< Texture blocks in the block array. */
+    mgCTextureBlock *blocks;                           /**< Numbered texture blocks. */
+    mgCTextureBlock  fix_block;                        /**< Block MG_TEXTURE_BLOCK_FIX, whose textures stay resident in VRAM. */
+    mgTEXTURE_HASH  *hash_table[MG_TEXTURE_HASH_SIZE]; /**< First link of each chain of the name hash table. */
+    mgCTexture      *texture_buf;                      /**< Pool of textures. */
+    mgCTexture     **texture_stack;                    /**< Textures of the pool, in use first and free after. */
+    int              texture_max;                      /**< Textures in the pool. */
+    int              texture_num;                      /**< Textures of the pool in use. */
+    mgTEXTURE_HASH  *hash_buf;                         /**< Pool of hash links. */
+    mgTEXTURE_HASH **hash_stack;                       /**< Hash links of the pool, in use first and free after. */
+    int              hash_max;                         /**< Hash links in the pool. */
+    int              hash_num;                         /**< Hash links of the pool in use. */
+    char             name_suffix[0x14];                /**< Text appended to every name a texture is entered or looked up under. */
+    mgCMemory        unk_1ec;
 
     /**
      * Creates a manager with no pools and no texture blocks.
@@ -368,7 +382,7 @@ public:
      * @address 0x12C740
      * @size 0x2A0
      */
-    void SetTableBuffer(int texture_max, int block_max, mgCMemory *memory);
+    void SetTableBuffer(int texture_count, int block_total, mgCMemory *memory);
 
     /**
      * Empties every texture block, the pools and the hash table, and sets
@@ -378,7 +392,7 @@ public:
      * @address 0x12C9E0
      * @size 0x1A0
      */
-    void Initialize(int vram_top, int vram_fix);
+    void Initialize(int start, int end);
 
     /**
      * Gives the hash table chain a texture name belongs to.
@@ -415,7 +429,7 @@ public:
      * @address 0x12CDA0
      * @size 0xB0
      */
-    mgCTexture *SearchHash(char *name, int block);
+    mgCTexture *SearchHash(char *name, int mode);
 
     /**
      * Finds the texture of a name, with the name suffix appended, in one
@@ -487,7 +501,7 @@ public:
      * @address 0x12D830
      * @size 0x260
      */
-    mgCTexture *EnterTexture(int block, char *name, TM2_head *tm2, int swizzled, int no_image);
+    mgCTexture *EnterTexture(int id, char *name, TM2_head *head, int reload, int no_image);
 
     /**
      * Registers every picture of an IMG archive from a texture block on,
@@ -547,7 +561,7 @@ public:
      * @address 0x12E850
      * @size 0x120
      */
-    void ReloadTexture(int block, sceVif1Packet *packet);
+    void ReloadTexture(int index, sceVif1Packet *packet);
 
     /**
      * Places a texture block's textures in VRAM and, given a buffer, writes
@@ -568,7 +582,7 @@ public:
      * @address 0x12EE80
      * @size 0x110
      */
-    int ReloadCLUT(mgCTexture *texture, u_int *packet);
+    int ReloadCLUT(mgCTexture *texture, u_int *buffer);
 
     /**
      * Uploads a texture's palette into VRAM through a VIF1 packet.
@@ -641,7 +655,7 @@ public:
      * @address 0x12F270
      * @size 0x40
      */
-    mgCTextureAnime *GetTexAnime(int block);
+    mgCTextureAnime *GetTexAnime(int index);
 
     /**
      * Runs a texture animation script, entering its animations into the
@@ -653,6 +667,7 @@ public:
      */
     void LoadCFGFile(char *script, int size, mgCMemory *stack, mgCTextureAnime *anime);
 };
+
 STATIC_ASSERT(sizeof(mgCTextureManager) == 0x21C);
 
 /**
@@ -683,5 +698,5 @@ mgIMG_HEADER mgGetIMGHeader(char *img, int index);
  * @address 0x12E600
  * @size 0x200
  */
-int mgLoadImage(u_int *packet, int dbp, int dpsm, int dbw, u_long128 *image, int qwc, int x, int y,
+int mgLoadImage(u_int *packet, int base, int format, int width, u_long128 *image, int quadwords, int x, int y,
                 int w, int h);

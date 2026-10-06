@@ -15,6 +15,21 @@
  *
  */
 struct HELP_MES_INFO {
+    /**
+     *
+     * Clears the active help message request.
+     *
+     */
+    HELP_MES_INFO() {
+        time = 0;
+        mes_no = -1;
+        fukidashi_pos = -1;
+        show = 0;
+        y = 0;
+        x = 0;
+        created = 0;
+    }
+
     s32 show;          /**< Non-zero while a help message is requested. */
     s32 created;       /**< Non-zero once the window has been set up for the requested message. */
     s32 time;          /**< Frames left before the request ends by itself; zero or less to keep it. */
@@ -34,8 +49,7 @@ STATIC_ASSERT(sizeof(HELP_MES_INFO) == 0x1C);
  * @address 0x31E310
  * @size 0x90
  */
-void LoadHelpMes(u_long128 *buffer);
-
+void LoadHelpMes(u_long128 *scratch);
 
 /**
  *
@@ -45,7 +59,7 @@ void LoadHelpMes(u_long128 *buffer);
  * @address 0x31E3B0
  * @size 0x43C
  */
-void CreateHelpMes(int tex_no);
+void CreateHelpMes(int message_id);
 
 /**
  *

@@ -1,9 +1,11 @@
 #pragma once
 
 #include "common.h"
+
+#include <cstring>
+
 #include "gamepad.hpp"
 #include "sound.hpp"
-#include <cstring>
 
 /**
  * @file
@@ -20,7 +22,6 @@ class CSubGameData;
 class CPadControl;
 class mgCMemory;
 class mgCTexture;
-
 
 /**
  *
@@ -44,6 +45,7 @@ enum MainLoopMode {
 };
 
 // clang-format on
+
 /**
  *
  * Languages the game can run in, as LanguageCode holds them.
@@ -62,6 +64,7 @@ enum LanguageCodeNo {
 };
 
 // clang-format on
+
 /**
  *
  * Controller input recording modes, as CaptureMode holds them.
@@ -77,6 +80,7 @@ enum MainCaptureMode {
 };
 
 // clang-format on
+
 /**
  *
  * Screens of the debug start menu, as menu_mode holds them.
@@ -91,6 +95,7 @@ enum DebugMenuMode {
 };
 
 // clang-format on
+
 /**
  *
  * Rows of the debug start menu's top screen; rows 1 to 8 are the MainLoopMode they start,
@@ -109,6 +114,7 @@ enum DebugMenuRow {
 };
 
 // clang-format on
+
 /**
  *
  * Steps of the pause menu, as PauseMenuMode holds them.
@@ -123,6 +129,7 @@ enum PauseMenuStep {
 };
 
 // clang-format on
+
 /**
  *
  * Results of PauseMenu.
@@ -136,6 +143,7 @@ enum PauseMenuResult {
 };
 
 // clang-format on
+
 /**
  *
  * Value MasterDebugCode takes when the four shoulder buttons are held at boot.
@@ -147,6 +155,7 @@ enum MasterDebugCodeValue {
 };
 
 // clang-format on
+
 /**
  *
  * Parameters that the main loop hands to a mode when it enters it.
@@ -154,12 +163,14 @@ enum MasterDebugCodeValue {
  */
 struct INIT_LOOP_ARG {
     INIT_LOOP_ARG() { memset(this, 0, sizeof(*this)); }
-    int map_no;       /**< Map or dungeon the mode starts in, or -1 for none. */
-    s8 unk_4[0x40];
-    int floor_no;     /**< Dungeon floor to start on, or -1 for the saved one. */
-    int event_no;     /**< Event to run on entry, or -1 for none. */
+
+    int map_no; /**< Map or dungeon the mode starts in, or -1 for none. */
+    s8  unk_4[0x40];
+    int floor_no; /**< Dungeon floor to start on, or -1 for the saved one. */
+    int event_no; /**< Event to run on entry, or -1 for none. */
     int unk_4c;
 };
+
 STATIC_ASSERT(sizeof(INIT_LOOP_ARG) == 0x50);
 
 /**
@@ -169,12 +180,14 @@ STATIC_ASSERT(sizeof(INIT_LOOP_ARG) == 0x50);
  */
 struct DEBUG_INFO {
     DEBUG_INFO() { memset(this, 0, sizeof(*this)); }
+
     int debug_camera;  /**< Non-zero to move the camera freely. */
     int chara_move;    /**< Debug character movement level, from 0 to 2. */
     int georama_debug; /**< Non-zero to lift the georama placement conditions. */
     int param_off;     /**< Non-zero to hide the parameter display. */
     int invent_debug;  /**< 1 to show the invention debug display. */
 };
+
 STATIC_ASSERT(sizeof(DEBUG_INFO) == 0x14);
 
 /**
@@ -187,6 +200,7 @@ struct PAD_TABLE_ENTRY {
     int trigger; /**< 0 to report while held, 0x10000 when pressed, 0x20000 when released. */
     int button;  /**< Controller buttons the logical button reads. @see PadButton */
 };
+
 STATIC_ASSERT(sizeof(PAD_TABLE_ENTRY) == 0xC);
 
 /**
@@ -198,6 +212,7 @@ struct ANALOG_TABLE_ENTRY {
     int no;   /**< Logical axis number, or -1 to end the table. */
     int axis; /**< Stick axis read: 1 left X, 2 left Y, 3 right X, 4 right Y. */
 };
+
 STATIC_ASSERT(sizeof(ANALOG_TABLE_ENTRY) == 0x8);
 
 /**
@@ -428,7 +443,7 @@ void cat_end();
  * @address 0x191F90
  * @size 0x50
  */
-void SetTextureTable(int block_max, int texture_max, mgCMemory *memory);
+void SetTextureTable(int table_size, int table_count, mgCMemory *memory);
 
 /**
  * Turns counting of the play time on or off.
@@ -437,7 +452,7 @@ void SetTextureTable(int block_max, int texture_max, mgCMemory *memory);
  * @address 0x192190
  * @size 0x10
  */
-void PlayTimeCount(int enable);
+void PlayTimeCount(int value);
 
 /**
  * Returns non-zero while the play time is being counted.
@@ -475,7 +490,7 @@ void MainLoop();
  * @address 0x194210
  * @size 0x30
  */
-mgCTexture *GetFontTexture(int index);
+mgCTexture *GetFontTexture(int page);
 
 /**
  * Loads the font texture image of the current language into the font buffer.
@@ -493,7 +508,7 @@ void LoadFontTexture();
  * @address 0x1943B0
  * @size 0x110
  */
-void ReLoadFontTexture(int block);
+void ReLoadFontTexture(int texture_no);
 
 /**
  * Ends a kiosk demo when asked to quit; empty in the retail build.
@@ -575,4 +590,4 @@ int PauseMenu();
  * @address 0x194BD0
  * @size 0xB0
  */
-void LoadGameConfig(char *file_name);
+void LoadGameConfig(char *path);

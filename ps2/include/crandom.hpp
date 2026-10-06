@@ -28,6 +28,7 @@ public:
      */
     float nget();
 };
+
 STATIC_ASSERT(sizeof(CRandom) == 0x4);
 
 /**

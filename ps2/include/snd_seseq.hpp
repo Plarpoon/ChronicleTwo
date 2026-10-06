@@ -66,10 +66,11 @@ enum sndMIDI_LOOP {
  */
 struct sndSeSeqEvent {
     s16 delta;  /**< Ticks to wait after the previous event. */
-    u8 status;  /**< MIDI status byte with channel, or 0 for the terminating event. */
-    u8 unk_3;
-    s8 data[2]; /**< MIDI data bytes; unused bytes are left undefined. */
+    u8  status; /**< MIDI status byte with channel, or 0 for the terminating event. */
+    u8  unk_3;
+    s8  data[2]; /**< MIDI data bytes; unused bytes are left undefined. */
 };
+
 STATIC_ASSERT(sizeof(sndSeSeqEvent) == 0x6);
 
 /**
@@ -89,6 +90,7 @@ struct sndSeSeqVoice {
      */
     sndSeSeqVoice() { active = 0; }
 };
+
 STATIC_ASSERT(sizeof(sndSeSeqVoice) == 0x4);
 
 /**
@@ -99,10 +101,10 @@ STATIC_ASSERT(sizeof(sndSeSeqVoice) == 0x4);
  */
 class sndCSeSeqData {
 public:
-    char *name;             /**< Name of the sequence. */
-    int tick_rate;          /**< Ticks the sequence advances per second. */
-    int event_num;          /**< Number of entries in the event list, the terminating event included. */
-    sndSeSeqEvent *event;   /**< Event list, ending in an event with status 0, or NULL when none is loaded. */
+    char          *name;      /**< Name of the sequence. */
+    int            tick_rate; /**< Ticks the sequence advances per second. */
+    int            event_num; /**< Number of entries in the event list, the terminating event included. */
+    sndSeSeqEvent *event;     /**< Event list, ending in an event with status 0, or NULL when none is loaded. */
 
     /**
      * Creates the sequence with no events.
@@ -132,6 +134,7 @@ public:
      */
     void LoadSMF(char *smf, int size, mgCMemory *memory);
 };
+
 STATIC_ASSERT(sizeof(sndCSeSeqData) == 0x10);
 
 /**
@@ -142,15 +145,15 @@ STATIC_ASSERT(sizeof(sndCSeSeqData) == 0x10);
  */
 class sndTrack {
 public:
-    s8 vol;                  /**< Volume controller value. */
-    s8 expression;           /**< Expression controller value. */
-    s8 prog;                 /**< Current program. */
-    s8 pan;                  /**< Pan controller value. */
-    s8 bend_lsb;             /**< Pitch bend low seven bits. */
-    s8 bend_msb;             /**< Pitch bend high seven bits. */
-    s8 se_id;                /**< Sound effect ID new notes are started with. */
-    s8 unk_7;
-    int voice_num;           /**< Number of usable entries of voice. */
+    s8            vol;        /**< Volume controller value. */
+    s8            expression; /**< Expression controller value. */
+    s8            prog;       /**< Current program. */
+    s8            pan;        /**< Pan controller value. */
+    s8            bend_lsb;   /**< Pitch bend low seven bits. */
+    s8            bend_msb;   /**< Pitch bend high seven bits. */
+    s8            se_id;      /**< Sound effect ID new notes are started with. */
+    s8            unk_7;
+    int           voice_num; /**< Number of usable entries of voice. */
     sndSeSeqVoice voice[1];  /**< Notes the track is sounding. */
 
     /**
@@ -194,7 +197,7 @@ public:
      * @address 0x18D8F0
      * @size 0x80
      */
-    int NoteOn(int key, int velocity);
+    int NoteOn(int note, int velocity);
 
     /**
      * Releases the voice holding a key on the current program, returning
@@ -234,6 +237,7 @@ public:
      */
     int PitchBend(int msb, int lsb);
 };
+
 STATIC_ASSERT(sizeof(sndTrack) == 0x10);
 
 /**
@@ -244,19 +248,19 @@ STATIC_ASSERT(sizeof(sndTrack) == 0x10);
  */
 class sndCSeSeq {
 public:
-    int port;                  /**< Sound driver port the sound effects play on. */
-    int bank;                  /**< Bank the sound effects are taken from. */
+    int            port;       /**< Sound driver port the sound effects play on. */
+    int            bank;       /**< Bank the sound effects are taken from. */
     sndCSeSeqData *data;       /**< Sequence being played, or NULL when the player is free. */
     sndSeSeqEvent *event;      /**< Next event to process, or NULL before playback starts. */
-    int tick;                  /**< Ticks elapsed since playback started. */
-    int wait;                  /**< Ticks elapsed since the previous event was processed. */
-    int vol;                   /**< Volume applied to every track, 0 to 127. */
-    int loop_tick;             /**< Value of tick at the loop start marker. */
+    int            tick;       /**< Ticks elapsed since playback started. */
+    int            wait;       /**< Ticks elapsed since the previous event was processed. */
+    int            vol;        /**< Volume applied to every track, 0 to 127. */
+    int            loop_tick;  /**< Value of tick at the loop start marker. */
     sndSeSeqEvent *loop_event; /**< Loop start controller event to revisit. */
-    int loop;                  /**< Non-zero once the loop end marker has been reached during a step. */
-    int pause;                 /**< Non-zero keeps Step from advancing the sequence. */
-    int track_num;             /**< Number of tracks in use. */
-    sndTrack track[8];         /**< Track of each MIDI channel. */
+    int            loop;       /**< Non-zero once the loop end marker has been reached during a step. */
+    int            pause;      /**< Non-zero keeps Step from advancing the sequence. */
+    int            track_num;  /**< Number of tracks in use. */
+    sndTrack       track[8];   /**< Track of each MIDI channel. */
 
     /**
      * Creates an idle player.
@@ -419,4 +423,5 @@ public:
      */
     void SendPitch(int trk);
 };
+
 STATIC_ASSERT(sizeof(sndCSeSeq) == 0xB0);

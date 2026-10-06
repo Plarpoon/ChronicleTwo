@@ -1,39 +1,42 @@
 #include "common.h"
-#include "mg_memory.hpp"
-#include "mg_drawprim.hpp"
-#include "mg_texture.hpp"
-#include "mg_frame.hpp"
-#include "mg_drawenv.hpp"
-#include "mg_math.hpp"
-#include "mglib.hpp"
+
+#include <eekernel.h>
+
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #include "actionchara.hpp"
-#include "scene.hpp"
-#include "object.hpp"
-#include "padcontrol.hpp"
 #include "cameracontrol.hpp"
+#include "dataread.hpp"
+#include "dngfloor.hpp"
+#include "editctrl.hpp"
+#include "effscript.hpp"
 #include "fishing.hpp"
 #include "fishingobj.hpp"
-#include "subgame.hpp"
-#include "scenesnd.hpp"
-#include "snd_mngr.hpp"
-#include "savedata.hpp"
-#include "nd_meswin.hpp"
-#include "scriptinterpreter.hpp"
-#include "editctrl.hpp"
-#include "mainloop.hpp"
-#include "gamepad.hpp"
-#include "effscript.hpp"
-#include "helpmes.hpp"
-#include "sceneload.hpp"
-#include "dataread.hpp"
 #include "gamedata.hpp"
-#include "dngfloor.hpp"
-#include <eekernel.h>
-#include <cmath>
-#include <cstring>
-#include <cstdio>
+#include "gamepad.hpp"
+#include "helpmes.hpp"
 #include "intersection.hpp"
-#include <cstdlib>
+#include "mainloop.hpp"
+#include "mg_drawenv.hpp"
+#include "mg_drawprim.hpp"
+#include "mg_frame.hpp"
+#include "mg_math.hpp"
+#include "mg_memory.hpp"
+#include "mg_texture.hpp"
+#include "mglib.hpp"
+#include "nd_meswin.hpp"
+#include "object.hpp"
+#include "padcontrol.hpp"
+#include "savedata.hpp"
+#include "scene.hpp"
+#include "sceneload.hpp"
+#include "scenesnd.hpp"
+#include "scriptinterpreter.hpp"
+#include "snd_mngr.hpp"
+#include "subgame.hpp"
 
 /**
  *
@@ -43,103 +46,110 @@
 struct Vec4 {
     float v[4]; /**< Vector components. */
 };
+
 extern FISHING_ROD_DATA RodData;
-extern FISH_DATA FishData;
-extern mgCMemory *fpStack;
-extern FISH_PLACE_MAP *fpNowFishPlaceMap;
-extern FISH_PLACE_MAP *FishPlaceMap;
-extern int FishPlaceMapNum;
-extern u_int fpNowFishPlaceMapNum;
-extern SPI_TAG_PARAM tag__8[];
-extern "C" int fptosi(float value);
-void StepDataLoading(void *arg);
-extern int RodActFlag;
-extern int UkiCameraFlag;
-extern int UkiMode;
-extern int UkiModeCnt;
-extern u_int FishSnd;
-extern int CastStep;
-extern int CastCount;
-extern int CastTime;
-extern int CastMotionCnt;
-extern Vec4 CastPoint;
-extern float UkiCamOldRot;
-extern CCameraControl UkiCameraInfo;
-extern int DrawHit;
-extern float LineTension;
-extern float addLineTension;
-extern float MinLineTension;
-extern float LineMaxLen;
-extern float LineMinLen;
-extern float FishMinLen;
-extern float FishMaxLen;
-extern int RodStatus;
-extern int RodStatusCnt;
-extern int ActionCount;
-extern int ActionDecCount;
-extern int WindReel;
-extern int BattleBgmCnt;
-extern int BattleCount;
-extern int FalseStep;
-extern int FalseMotionCount;
-extern int FavoredEsa;
-extern CCharacter2 *EsaChara;
-extern int FalseStep2;
-extern int FishMesNo;
-extern int font_h_2216;
-extern signed char init_2217;
-extern float oldPadRx;
-extern float oldPadRy;
-extern int RunEventNo;
-extern int MardanEventMap;
-extern int MardanEventPlace;
-extern signed char init_1961;
-extern signed char init_2496;
-extern int snd_cnt_2495;
-extern int snd_cnt_1960;
-extern float CastDistSizeRate;
-extern int RodNo;
-extern int LocalEsaNo;
-extern int RodActionPoint;
-extern int hamon_count_1798;
-extern signed char init_1799;
-extern int boze_cnt_1801;
-extern int pull_uki_cnt_1808;
-extern int act_count_1838;
-extern int charge_point_1839;
-extern int act_interval_1840;
-extern int LoadFishFlag;
-extern int FishFontH;
-extern CCharacter2 *FishChara;
-extern CCharacter2 *MainChara;
-extern int FishTexb;
-extern u_long128 *ReadBuffer;
-extern mgCMemory FishStack;
-extern mgCMemory MotionBuff;
-extern int GetItemRet;
-extern int DrawCongra;
-extern u_int FanSnd;
-extern char at_932__4[];
-extern char at_2197__3[];
-extern char at_2198__3[];
-extern char at_2272[];
-extern char at_1397__3[];
-extern char at_1920[];
-extern char at_1921[];
-extern char at_1922[];
-extern char at_1722[];
-extern char at_2057[];
-extern char at_2058[];
-extern char at_2059[];
-extern char at_2060[];
-extern char at_1749__2[];
-extern char at_2099[];
-extern char at_2127__3[];
-extern char at_2461[];
-extern "C" int rand(void);
-enum { kFishShapeCount = 5, kFishShapeCircle = 2 };
+extern FISH_DATA        FishData;
+extern mgCMemory       *fpStack;
+extern FISH_PLACE_MAP  *fpNowFishPlaceMap;
+extern FISH_PLACE_MAP  *FishPlaceMap;
+extern int              FishPlaceMapNum;
+extern u_int            fpNowFishPlaceMapNum;
+extern SPI_TAG_PARAM    tag__8[];
+extern "C" int          fptosi(float value);
+void                    StepDataLoading(void *arg);
+extern int              RodActFlag;
+extern int              UkiCameraFlag;
+extern int              UkiMode;
+extern int              UkiModeCnt;
+extern u_int            FishSnd;
+extern int              CastStep;
+extern int              CastCount;
+extern int              CastTime;
+extern int              CastMotionCnt;
+extern Vec4             CastPoint;
+extern float            UkiCamOldRot;
+extern CCameraControl   UkiCameraInfo;
+extern int              DrawHit;
+extern float            LineTension;
+extern float            addLineTension;
+extern float            MinLineTension;
+extern float            LineMaxLen;
+extern float            LineMinLen;
+extern float            FishMinLen;
+extern float            FishMaxLen;
+extern int              RodStatus;
+extern int              RodStatusCnt;
+extern int              ActionCount;
+extern int              ActionDecCount;
+extern int              WindReel;
+extern int              BattleBgmCnt;
+extern int              BattleCount;
+extern int              FalseStep;
+extern int              FalseMotionCount;
+extern int              FavoredEsa;
+extern CCharacter2     *EsaChara;
+extern int              FalseStep2;
+extern int              FishMesNo;
+extern int              font_h_2216;
+extern signed char      init_2217;
+extern float            oldPadRx;
+extern float            oldPadRy;
+extern int              RunEventNo;
+extern int              MardanEventMap;
+extern int              MardanEventPlace;
+extern signed char      init_1961;
+extern signed char      init_2496;
+extern int              snd_cnt_2495;
+extern int              snd_cnt_1960;
+extern float            CastDistSizeRate;
+extern int              RodNo;
+extern int              LocalEsaNo;
+extern int              RodActionPoint;
+extern int              hamon_count_1798;
+extern signed char      init_1799;
+extern int              boze_cnt_1801;
+extern int              pull_uki_cnt_1808;
+extern int              act_count_1838;
+extern int              charge_point_1839;
+extern int              act_interval_1840;
+extern int              LoadFishFlag;
+extern int              FishFontH;
+extern CCharacter2     *FishChara;
+extern CCharacter2     *MainChara;
+extern int              FishTexb;
+extern u_long128       *ReadBuffer;
+extern mgCMemory        FishStack;
+extern mgCMemory        MotionBuff;
+extern int              GetItemRet;
+extern int              DrawCongra;
+extern u_int            FanSnd;
+extern char             at_932__4[];
+extern char             at_2197__3[];
+extern char             at_2198__3[];
+extern char             at_2272[];
+extern char             at_1397__3[];
+extern char             at_1920[];
+extern char             at_1921[];
+extern char             at_1922[];
+extern char             at_1722[];
+extern char             at_2057[];
+extern char             at_2058[];
+extern char             at_2059[];
+extern char             at_2060[];
+extern char             at_1749__2[];
+extern char             at_2099[];
+extern char             at_2127__3[];
+extern char             at_2461[];
+extern "C" int          rand(void);
+
+enum {
+    kFishShapeCount = 5,
+    kFishShapeCircle = 2
+};
+
 const int kFishPlaceValueCount = 5;
 const int kFishPlaceMaxFish = 8;
+
 enum {
     kUkiStart = 0,
     kUkiWaitBite = 1,
@@ -149,156 +159,184 @@ enum {
     kUkiCharge = 5,
     kUkiBite = 6,
 };
-enum { kFishingModeFloat = 1, kFishingModeLure = 2 };
+
+enum {
+    kFishingModeFloat = 1,
+    kFishingModeLure = 2
+};
+
 const int kFishCameraState = 1000;
+
 enum {
     kFishBtnCameraToggle = 6,
     kFishBtnAction = 0x78,
     kFishBtnReel = 0x79,
     kFishBtnReelFast = 0x7A,
 };
+
 enum {
     kFishAxisUp = 4,
     kFishAxisSide = 5,
 };
-int InitUkiWait(CScene *);
-int InitFalse(CScene *);
-int InitBattle(CScene *);
-int InitSuccess(CScene *);
-void DrawHamon(float *, float);
-void SetNextMode(int);
-float GetFishDist(CScene *);
-void EsaInit(void);
-int GetMotionCount(CCharacter2 *, char *, int, int, int);
-void DeleteEsa(void);
-int EndSelectCastingPoint(CScene *);
-FISH_PARAM *GetFishParam(int);
-int GetUkiWaitTime(FISH_DATA *, CScene *, float *, int, int);
-int GetUkiPokeTime(FISH_DATA *);
-int GetUkiPullTime(FISH_DATA *);
-int FishLoadBG(FISH_DATA *, u_long128 *);
-float GetRandamNumber(float, float, float);
-void DrawSplash(float *, float);
-void LineTensionStep(FISH_DATA *, int);
-void ExitFishing(CScene *);
-int LoadExMotionBG(SubGameInfo *info, u_long128 *buffer);
-void ReplayPrevBGM(CScene *scene);
-int LoadExMotionStep(SubGameInfo *info, mgCMemory *memory);
-int InitDataLoading(void);
-int switch_thread(void);
-int CreateLoadThread(mgCMemory *memory);
-int StepLoadThread(void);
-void DeleteLoadThread(void);
-void DrawNumber(mgCDrawPrim *prim, int digit, int x, int y);
-int InitCasting(CScene *scene);
-extern float CastDist;
-extern Vec4 CastPointCur;
-extern Vec4 at_1631__3;
-extern char at_1576__2[];
-extern Vec4 at_1490__2;
-extern Vec4 at_1491__2;
-extern char at_1508__3[];
-extern char at_1509__3[];
-extern "C" void sceVu0InterVectorXYZ(float *result, float *from, float *to, float rate);
+
+int              InitUkiWait(CScene *scene);
+int              InitFalse(CScene *scene);
+int              InitBattle(CScene *scene);
+int              InitSuccess(CScene *scene);
+void             DrawHamon(float *pos, float scale);
+void             SetNextMode(int mode);
+float            GetFishDist(CScene *scene);
+void             EsaInit();
+int              GetMotionCount(CCharacter2 *chara, char *name, int min_count, int max_count, int min_speed);
+void             DeleteEsa();
+int              EndSelectCastingPoint(CScene *scene);
+FISH_PARAM      *GetFishParam(int index);
+int              GetUkiWaitTime(FISH_DATA *, CScene *, float *, int, int);
+int              GetUkiPokeTime(FISH_DATA *fish);
+int              GetUkiPullTime(FISH_DATA *fish);
+int              FishLoadBG(FISH_DATA *fish, u_long128 *buffer);
+float            GetRandamNumber(float center, float high, float floor);
+void             DrawSplash(float *pos, float scale);
+void             LineTensionStep(FISH_DATA *, int);
+void             ExitFishing(CScene *scene);
+int              LoadExMotionBG(SubGameInfo *info, u_long128 *buffer);
+void             ReplayPrevBGM(CScene *scene);
+int              LoadExMotionStep(SubGameInfo *info, mgCMemory *memory);
+int              InitDataLoading();
+int              switch_thread();
+int              CreateLoadThread(mgCMemory *memory);
+int              StepLoadThread();
+void             DeleteLoadThread();
+void             DrawNumber(mgCDrawPrim *prim, int digit, int x, int y);
+int              InitCasting(CScene *scene);
+extern float     CastDist;
+extern Vec4      CastPointCur;
+extern Vec4      at_1631__3;
+extern char      at_1576__2[];
+extern Vec4      at_1490__2;
+extern Vec4      at_1491__2;
+extern char      at_1508__3[];
+extern char      at_1509__3[];
+extern "C" void  sceVu0InterVectorXYZ(float *result, float *from, float *to, float rate);
 extern mgCMemory EsaStack;
 extern mgCMemory SndStack;
 extern mgCMemory FishingBuff__2;
 extern "C" void *__ct__14CCameraControlFv(void *);
-extern Vec4 at_1536;
-extern char at_1577[];
-enum { kPadButtonDebugJump = 1, kPadButtonCancel = 1, kPadButtonCast = 0x78 };
-int InitSelectCastingPoint(CScene *scene);
-int CheckCasting(CScene *scene, float *position, float *direction);
-extern FISH_PARAM FishParam[];
-extern CCharacter2 *Lure;
-extern mgCFrame *LureFrame;
-extern mgCFrame *UkiFrame;
-extern mgCFrame *HariFrame;
-extern CCharacter2 *CursorChara[2];
-extern int EsaNo;
-extern int LureNo;
-extern int NextCharaMode;
-extern int CharaMode;
-extern int RetCode;
-extern int CastOKFlag;
-extern int fgLoopMode;
-extern mgCFrame *RodHand;
-extern CCharacter2 *UkiRod;
-extern CCharacter2 *LureRod;
-extern CCharacter2 *Uki;
-extern CCharacter2 *Hari;
+extern Vec4      at_1536;
+extern char      at_1577[];
+
+enum {
+    kPadButtonDebugJump = 1,
+    kPadButtonCancel = 1,
+    kPadButtonCast = 0x78
+};
+
+int                       InitSelectCastingPoint(CScene *scene);
+int                       CheckCasting(CScene *scene, float *position, float *direction);
+extern FISH_PARAM         FishParam[];
+extern CCharacter2       *Lure;
+extern mgCFrame          *LureFrame;
+extern mgCFrame          *UkiFrame;
+extern mgCFrame          *HariFrame;
+extern CCharacter2       *CursorChara[2];
+extern int                EsaNo;
+extern int                LureNo;
+extern int                NextCharaMode;
+extern int                CharaMode;
+extern int                RetCode;
+extern int                CastOKFlag;
+extern int                fgLoopMode;
+extern mgCFrame          *RodHand;
+extern CCharacter2       *UkiRod;
+extern CCharacter2       *LureRod;
+extern CCharacter2       *Uki;
+extern CCharacter2       *Hari;
 extern CScene::BGM_STATUS BgmStatus;
-extern int FishingTexb;
-extern int SystemTexb;
-extern int EsaTexb;
-extern mgCMemory ReadStack;
-extern int fgLoopStep;
-extern int fgLoopCnt;
-extern int BgmReadFlag;
-extern int LoadExMotionFlag;
-extern u_long128 *ex_mtn_buff;
-extern int ThreadRunning;
-extern int step_end_flag;
-extern CEffectScriptMan *EffectMan;
-extern int ThreadStack__2;
-extern int TheadID__2;
-extern char at_917__6[];
-extern char at_979__6[];
-extern char at_980__4[];
-extern char at_1058__3[];
-extern char at_1304__8[];
-extern char at_1305__5[];
-extern char at_1306__6[];
-extern char at_1307__6[];
-extern char at_1308__6[];
-extern char at_1309__5[];
-extern char at_1310__5[];
-extern char at_1311__4[];
-extern char at_1312__2[];
-extern char at_1313__2[];
-extern char at_1314__2[];
-extern char at_1315__4[];
-extern char at_1316__2[];
-extern int EsaInfo[18];
-extern char *lure_file[4];
-extern char at_1424__2[];
-extern char at_1442__3[];
-extern char at_1443__3[];
-extern char at_1723__2[];
-extern CCameraControl CameraInfo;
-extern "C" void srand(u_int seed);
-extern Vec4 at_1681__2;
-extern char at_1683__2[];
-extern Vec4 at_1689;
-extern char at_1691__2[];
-enum { kCameraSettled = 1000 };
-enum { kLastFishParam = 18 };
-enum { kLoadThreadPriority = 10 };
+extern int                FishingTexb;
+extern int                SystemTexb;
+extern int                EsaTexb;
+extern mgCMemory          ReadStack;
+extern int                fgLoopStep;
+extern int                fgLoopCnt;
+extern int                BgmReadFlag;
+extern int                LoadExMotionFlag;
+extern u_long128         *ex_mtn_buff;
+extern int                ThreadRunning;
+extern int                step_end_flag;
+extern CEffectScriptMan  *EffectMan;
+extern int                ThreadStack__2;
+extern int                TheadID__2;
+extern char               at_917__6[];
+extern char               at_979__6[];
+extern char               at_980__4[];
+extern char               at_1058__3[];
+extern char               at_1304__8[];
+extern char               at_1305__5[];
+extern char               at_1306__6[];
+extern char               at_1307__6[];
+extern char               at_1308__6[];
+extern char               at_1309__5[];
+extern char               at_1310__5[];
+extern char               at_1311__4[];
+extern char               at_1312__2[];
+extern char               at_1313__2[];
+extern char               at_1314__2[];
+extern char               at_1315__4[];
+extern char               at_1316__2[];
+extern int                EsaInfo[18];
+extern char              *lure_file[4];
+extern char               at_1424__2[];
+extern char               at_1442__3[];
+extern char               at_1443__3[];
+extern char               at_1723__2[];
+extern CCameraControl     CameraInfo;
+extern "C" void           srand(u_int seed);
+extern Vec4               at_1681__2;
+extern char               at_1683__2[];
+extern Vec4               at_1689;
+extern char               at_1691__2[];
+
+enum {
+    kCameraSettled = 1000
+};
+
+enum {
+    kLastFishParam = 18
+};
+
+enum {
+    kLoadThreadPriority = 10
+};
+
 enum {
     kCharaModeReel = 6,
     kCharaModeReel2 = 7,
 };
-enum { kCaptureSeed = 0xC31AFF };
+
+enum {
+    kCaptureSeed = 0xC31AFF
+};
+
 static void CharaControl(CScene *scene, CPadControl *pad);
-void SelectCastingPoint(CScene *scene, CPadControl *pad);
-void CastingLoop(CScene *scene, CPadControl *pad);
-void UkiWaitLoop(CScene *scene, CPadControl *pad);
-void BattleLoop(CScene *scene, CPadControl *pad);
-void FalseLoop(CScene *scene, CPadControl *pad);
-void SuccessLoop(CScene *scene, CPadControl *pad);
-int CheckFishing(float *pos, CCPoly *polys, int count);
-int fpFISH_MAP_NUM(SPI_STACK *args, int argCount);
-int fpFISH_MAP(SPI_STACK *args, int argCount);
-int fpFISH_PLACE(SPI_STACK *args, int argCount);
-int fpFISH(SPI_STACK *args, int argCount);
-int fpFISH_MAP_END(SPI_STACK *args, int argCount);
+void        SelectCastingPoint(CScene *scene, CPadControl *pad);
+void        CastingLoop(CScene *scene, CPadControl *pad);
+void        UkiWaitLoop(CScene *scene, CPadControl *pad);
+void        BattleLoop(CScene *scene, CPadControl *pad);
+void        FalseLoop(CScene *scene, CPadControl *pad);
+void        SuccessLoop(CScene *scene, CPadControl *pad);
+int         CheckFishing(float *pos, CCPoly *polys, int count);
+int         fpFISH_MAP_NUM(SPI_STACK *args, int arg_count);
+int         fpFISH_MAP(SPI_STACK *args, int arg_count);
+int         fpFISH_PLACE(SPI_STACK *args, int arg_count);
+int         fpFISH(SPI_STACK *args, int arg_count);
+int         fpFISH_MAP_END(SPI_STACK *args, int arg_count);
 
 static inline int FreeSize(mgCMemory *memory) {
     return memory->stack_size - memory->stack_used;
 }
 
 static inline u_char *FreeTop(mgCMemory *memory) {
-    return (u_char *)(memory->stack + memory->stack_used);
+    return (u_char *) (memory->stack + memory->stack_used);
 }
 
 extern "C" void *__vt__9mgCObject[];
@@ -313,9 +351,11 @@ FISH_PARAM *GetFishParam(int index) {
     if (index < 0 || index > kLastFishParam) {
         return NULL;
     }
+
     return &FishParam[index];
 }
-void EsaInit(void) {
+
+void EsaInit() {
     CObjectFrame *lure = Lure;
     EsaChara = 0;
     LureFrame = 0;
@@ -325,64 +365,83 @@ void EsaInit(void) {
     LureNo = -1;
     lure->Initialize();
 }
+
 void ReplayPrevBGM(CScene *scene) {
     u_char *read_buff;
+
     if (BgmReadFlag == 0) {
         scene->SetActiveBgmStatus(&BgmStatus);
         return;
     }
-    read_buff = (u_char *)scene->read_buff + 0x100000;
+
+    read_buff = (u_char *) scene->read_buff + 0x100000;
+
     if (BgmStatus.load_no < 0) {
         scene->StopBGM(0);
         scene->InitBGM();
         return;
     }
-    scene->LoadBGM(BgmStatus.load_no, (u_long128 *)read_buff);
+
+    scene->LoadBGM(BgmStatus.load_no, (u_long128 *) read_buff);
     scene->SetActiveBgmStatus(&BgmStatus);
 }
+
 int LoadExMotionBG(SubGameInfo *info, u_long128 *buffer) {
     LoadExMotionFlag = 0;
-    if (info->dungeon != 0) {
-        return 0;
-    }
-    StartReadBG();
-    if (LoadFileBG(at_917__6, buffer, 0) == 0) {
-        return 0;
-    }
-    ex_mtn_buff = buffer;
-    LoadExMotionFlag = 1;
-    return 1;
-}
-int LoadExMotionStep(SubGameInfo *info, mgCMemory *memory) {
-    CCharacter2 *chara;
-    CScene *scene;
 
     if (info->dungeon != 0) {
         return 0;
     }
+
+    StartReadBG();
+
+    if (LoadFileBG(at_917__6, buffer, 0) == 0) {
+        return 0;
+    }
+
+    ex_mtn_buff = buffer;
+    LoadExMotionFlag = 1;
+    return 1;
+}
+
+int LoadExMotionStep(SubGameInfo *info, mgCMemory *memory) {
+    CCharacter2 *chara;
+    CScene      *scene;
+
+    if (info->dungeon != 0) {
+        return 0;
+    }
+
     if (ReadBGSync() != 0) {
         return 1;
     }
+
     if (LoadExMotionFlag == 0) {
         return 0;
     }
+
     scene = info->scene;
     chara = scene->GetCharacter(scene->player_chara);
+
     if (chara != NULL) {
-        chara->LoadPack((u_int *)ex_mtn_buff, at_932__4, memory, memory, memory, 0, NULL);
+        chara->LoadPack((u_int *) ex_mtn_buff, at_932__4, memory, memory, memory, 0, NULL);
     }
+
     LoadExMotionFlag = 0;
     return 0;
 }
+
 void SetNextMode(int mode) {
     NextCharaMode = mode;
 }
+
 void ExitFishing(CScene *scene) {
     RetCode = 1;
 }
+
 int sgInitFishing(SubGameInfo *info) {
     CCharacter2 *chara;
-    CScene *scene;
+    CScene      *scene;
 
     FishingTexb = info->texb;
     FishTexb = info->texb + 1;
@@ -395,20 +454,23 @@ int sgInitFishing(SubGameInfo *info) {
     LoadExMotionFlag = 0;
     u_long128 *read_buff = scene->read_buff;
     ReadBuffer = read_buff;
+
     if (info->menu_buff != NULL) {
-        int buffer_size = info->menu_buff->stGetSize();
+        int        buffer_size = info->menu_buff->stGetSize();
         u_long128 *buffer_top = info->menu_buff->stack;
         ReadStack.stSetBuffer(buffer_top, buffer_size);
         ReadStack.stReset();
         ReadBuffer = ReadStack.stAlloc64(0x10000);
         ReadStack.Align64();
-        int remaining = ReadStack.stGetRest();
+        int        remaining = ReadStack.stGetRest();
         u_long128 *top = ReadStack.stGetTop();
         MotionBuff.stSetBuffer(top, remaining);
     } else {
-        MotionBuff.stSetBuffer((u_long128 *)((u_char *)read_buff + 0x100000), 30000);
+        MotionBuff.stSetBuffer((u_long128 *) ((u_char *) read_buff + 0x100000), 30000);
     }
+
     chara = scene->GetCharacter(scene->player_chara);
+
     if (chara != NULL) {
         if (chara->GetKeyListPtr(at_979__6, NULL) != 0) {
             chara->SetMotion(at_979__6, 0);
@@ -416,6 +478,7 @@ int sgInitFishing(SubGameInfo *info) {
             chara->SetMotion(at_980__4, 0);
         }
     }
+
     fgLoopMode = 0;
     fgLoopStep = 0;
     fgLoopCnt = 0;
@@ -425,9 +488,9 @@ int sgInitFishing(SubGameInfo *info) {
 }
 #ifdef NONMATCHING
 int sgRestartFishing(SubGameInfo *info) {
-    CScene *scene = info->scene;
+    CScene    *scene = info->scene;
     u_long128 *buffer = ReadBuffer;
-    int rod_status[5];
+    int        rod_status[5];
 
     mgTexManager.DeleteBlock(EsaTexb);
     EsaStack.stack_used = 0;
@@ -444,7 +507,7 @@ int sgRestartFishing(SubGameInfo *info) {
         SetFishingMode(kFishingModeLure);
         EsaChara = NULL;
         char lure_path[0x40] = "sg/fish/";
-        int lure_no = LocalEsaNo - 14;
+        int  lure_no = LocalEsaNo - 14;
         if (lure_no >= 4) {
             lure_no = -1;
         }
@@ -452,7 +515,7 @@ int sgRestartFishing(SubGameInfo *info) {
         if (lure_no >= 0) {
             strcat(lure_path, lure_file[lure_no]);
             if (LoadFile2(lure_path, buffer, NULL, 0) != 0) {
-                Lure->LoadPack((u_int *)buffer, at_932__4, &EsaStack, &EsaStack, &EsaStack, EsaTexb, NULL);
+                Lure->LoadPack((u_int *) buffer, at_932__4, &EsaStack, &EsaStack, &EsaStack, EsaTexb, NULL);
             }
             LureFrame = Lure->CObjectFrame::frame;
         }
@@ -470,7 +533,7 @@ int sgRestartFishing(SubGameInfo *info) {
                 EsaChara = new (EsaStack.Alloc(0x68)) CCharacter2;
                 EsaChara->Initialize();
                 if (LoadFile2(esa_path, buffer, NULL, 0) != 0) {
-                    EsaChara->LoadPack((u_int *)buffer, at_932__4, &EsaStack, &EsaStack, &EsaStack, EsaTexb, NULL);
+                    EsaChara->LoadPack((u_int *) buffer, at_932__4, &EsaStack, &EsaStack, &EsaStack, EsaTexb, NULL);
                 } else {
                     EsaChara = NULL;
                 }
@@ -483,7 +546,7 @@ int sgRestartFishing(SubGameInfo *info) {
         mgCMemory sound_memory;
         sound_memory.Init();
         sound_memory.stSetBuffer(MotionBuff.stGetTop(), MotionBuff.stGetRest());
-        u_int *sound_buffer = (u_int *)sound_memory.stAlloc64(0x4000);
+        u_int *sound_buffer = (u_int *) sound_memory.stAlloc64(0x4000);
         if (sound_buffer != NULL && LoadFile2(at_1058__3, sound_buffer, NULL, 0) != 0) {
             sndInitPort(8);
             SndStack.stack_used = 0;
@@ -506,27 +569,28 @@ int sgRestartFishing(SubGameInfo *info) {
     RodData.status[2] = rod_status[2];
     RodData.status[3] = rod_status[3];
     RodData.status[4] = rod_status[4];
-    float rate = 0.2f * ((float)RodData.status[3] / 100.0f) + 0.8f;
-    RodData.status[0] = fptosi(0.5f + (float)RodData.status[0] * rate);
-    RodData.status[1] = fptosi(0.5f + (float)RodData.status[1] * rate);
-    RodData.status[2] = fptosi(0.5f + (float)RodData.status[2] * rate);
+    float rate = 0.2f * ((float) RodData.status[3] / 100.0f) + 0.8f;
+    RodData.status[0] = fptosi(0.5f + (float) RodData.status[0] * rate);
+    RodData.status[1] = fptosi(0.5f + (float) RodData.status[1] * rate);
+    RodData.status[2] = fptosi(0.5f + (float) RodData.status[2] * rate);
     CastDistSizeRate = 10.0f;
-    RodData.status4_rate = (float)RodData.status[4] / 100.0f;
+    RodData.status4_rate = (float) RodData.status[4] / 100.0f;
     SetWaterLevel(-100000.0f);
     return 1;
 }
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", sgRestartFishing__FP11SubGameInfo);
 #endif
-int InitDataLoading(void) {
+int InitDataLoading() {
     SubGameInfo *info;
-    CScene *scene;
-    int bgm_no;
-    mgCMemory *memory;
+    CScene      *scene;
+    int          bgm_no;
+    mgCMemory   *memory;
 
     info = GetNowSubGameInfo();
     memory = info->load_buff;
     scene = info->scene;
+
     if (memory != NULL) {
         memory->stack_used = 0;
         memory->lock = 0;
@@ -535,14 +599,18 @@ int InitDataLoading(void) {
         scene->AssignStack(5);
         scene->GetStack(5);
     }
+
     bgm_no = scene->GetDefBgmNo(0x205);
+
     if (info->keep_bgm == 0) {
         scene->GetActiveBgmStatus(&BgmStatus);
+
         if (scene->CheckLoadBGM(bgm_no) != 0) {
             scene->StopBGM(0);
         }
     }
-    EffectMan = (CEffectScriptMan *)scene->GetEffect(0);
+
+    EffectMan = scene->GetEffect(0);
     CharaMode = 0;
     NextCharaMode = -1;
     RunEventNo = -1;
@@ -558,44 +626,52 @@ int InitDataLoading(void) {
     DrawHit = 0;
     return 1;
 }
-int switch_thread(void) {
+
+int switch_thread() {
     return RotateThreadReadyQueue(kLoadThreadPriority);
 }
+
 int CreateLoadThread(mgCMemory *memory) {
     ThreadParam param;
-    int misalignment;
+    int         misalignment;
 
     stack_size = 0x40000;
 
-    ThreadStack__2 = (int)memory->Alloc(0x4001);
+    ThreadStack__2 = (int) memory->Alloc(0x4001);
     misalignment = ThreadStack__2 & 0x3F;
+
     if (misalignment != 0) {
         ThreadStack__2 += 0x40 - misalignment;
     }
+
     param.entry = StepDataLoading;
     step_end_flag = 0;
     param.initPriority = kLoadThreadPriority;
     param.option = 0;
     param.gpReg = &_gp;
-    param.stack = (void *)ThreadStack__2;
+    param.stack = (void *) ThreadStack__2;
     param.stackSize = stack_size;
     TheadID__2 = CreateThread(&param);
     ThreadRunning = 1;
     StartThread(TheadID__2, NULL);
     return 1;
 }
-int StepLoadThread(void) {
+
+int StepLoadThread() {
     if (ThreadRunning == 0) {
         return 0;
     }
+
     switch_thread();
 
     return !(step_end_flag != 0);
 }
-void DeleteLoadThread(void) {
+
+void DeleteLoadThread() {
     if (ThreadRunning != 0) {
         while (StepLoadThread() != 0) {
         }
+
         TerminateThread(TheadID__2);
         DeleteThread(TheadID__2);
         ThreadRunning = 0;
@@ -603,20 +679,20 @@ void DeleteLoadThread(void) {
 }
 #ifdef NONMATCHING
 void StepDataLoading(void *arg) {
-    char path[0x80];
-    char bgm_path[0x80];
-    int file_size;
-    int pack_size;
-    u_long128 *buffer = ReadBuffer;
+    char         path[0x80];
+    char         bgm_path[0x80];
+    int          file_size;
+    int          pack_size;
+    u_long128   *buffer = ReadBuffer;
     SubGameInfo *info = GetNowSubGameInfo();
-    mgCMemory *memory = info->load_buff;
-    CScene *scene = info->scene;
+    mgCMemory   *memory = info->load_buff;
+    CScene      *scene = info->scene;
 
     if (memory == NULL) {
         memory = scene->GetStack(5);
     }
     if (LoadFile2(at_1304__8, buffer, &file_size, 0) != 0) {
-        LoadFishPlaceData((char *)buffer, file_size, memory);
+        LoadFishPlaceData((char *) buffer, file_size, memory);
     }
     StartReadBG();
     if (LanguageCode >= 2) {
@@ -646,8 +722,8 @@ void StepDataLoading(void *arg) {
         FishChara = NULL;
         BG_READ_INFO *read_info = GetReadBGFile(0);
         if (read_info != NULL) {
-            u_int *pack = (u_int *)read_info->buffer;
-            int bgm_no = scene->GetDefBgmNo(0x205);
+            u_int *pack = (u_int *) read_info->buffer;
+            int    bgm_no = scene->GetDefBgmNo(0x205);
             if (scene->CheckLoadBGM(bgm_no) != 0) {
                 scene->GetBgmFile(bgm_path, bgm_no);
                 u_int *bgm_pack = GetPackFile(pack, bgm_path, NULL);
@@ -676,7 +752,7 @@ void StepDataLoading(void *arg) {
                 }
                 u_int *system_pack = GetPackFile(pack, at_1310__5, &pack_size);
                 if (system_pack != NULL) {
-                    u_char *copy = (u_char *)memory->Alloc((pack_size + 15) / 16);
+                    u_char *copy = (u_char *) memory->Alloc((pack_size + 15) / 16);
                     if (copy != NULL) {
                         memcpy(copy, system_pack, pack_size);
                         mgTexManager.EnterIMGFile(copy, SystemTexb, NULL, NULL);
@@ -684,7 +760,7 @@ void StepDataLoading(void *arg) {
                 }
                 u_int *fish_pack = GetPackFile(pack, at_1311__4, &pack_size);
                 if (fish_pack != NULL) {
-                    u_char *copy = (u_char *)memory->Alloc((pack_size + 15) / 16);
+                    u_char *copy = (u_char *) memory->Alloc((pack_size + 15) / 16);
                     if (copy != NULL) {
                         memcpy(copy, fish_pack, pack_size);
                         mgTexManager.EnterIMGFile(copy, SystemTexb, NULL, NULL);
@@ -714,17 +790,17 @@ void StepDataLoading(void *arg) {
                             SndStack.stSetBuffer(memory->Alloc(100), 100);
                             if (LoadFile2(at_1315__4, buffer, NULL, 0) != 0) {
                                 sndInitPort(5);
-                                FishSnd = sndLoadSound(5, (u_int *)buffer, memory);
+                                FishSnd = sndLoadSound(5, (u_int *) buffer, memory);
                             }
                             if (LoadFile2(at_1058__3, buffer, NULL, 0) != 0) {
                                 sndInitPort(8);
                                 SndStack.stack_used = 0;
                                 SndStack.lock = 0;
-                                FanSnd = sndLoadSound(8, (u_int *)buffer, &SndStack);
+                                FanSnd = sndLoadSound(8, (u_int *) buffer, &SndStack);
                             }
                             if (info->dungeon != 0) {
                                 if (LoadFile2(at_917__6, buffer, NULL, 0) != 0) {
-                                    MainChara->LoadPackNoLine((u_int *)buffer, at_932__4, memory, memory, memory, 0, NULL);
+                                    MainChara->LoadPackNoLine((u_int *) buffer, at_932__4, memory, memory, memory, 0, NULL);
                                 }
                             }
                             sgRestartFishing(info);
@@ -740,34 +816,39 @@ void StepDataLoading(void *arg) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", StepDataLoading__FPv);
 #endif
-int sgBreakFishing(void) {
+int sgBreakFishing() {
     DeleteLoadThread();
     sgExitFishing(GetNowSubGameInfo());
     return 1;
 }
+
 int sgExitFishing(SubGameInfo *info) {
     CCharacter2 *chara;
-    CScene *scene;
+    CScene      *scene;
 
     mgTexManager.DeleteBlock(FishingTexb);
     mgTexManager.DeleteBlock(FishTexb);
     mgTexManager.DeleteBlock(SystemTexb);
     ReEquipFishingGameWeapon();
+
     if (info != NULL && info->scene != NULL) {
         ReplayPrevBGM(info->scene);
     }
+
     scene = info->scene;
     chara = scene->GetCharacter(scene->player_chara);
+
     if (chara != NULL) {
         chara->DeleteExtMotion();
         chara->SetMotion(at_980__4, 0);
     }
+
     BgmReadFlag = 0;
     return 1;
 }
 #ifdef NONMATCHING
 int sgLoopFishing(SubGameInfo *info) {
-    CScene *scene = info->scene;
+    CScene      *scene = info->scene;
     CCharacter2 *chara = scene->GetCharacter(scene->player_chara);
 
     if (fgLoopMode == 0) {
@@ -872,33 +953,40 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", sgLoopFishing__FP11SubGameInfo);
 int sgLoopFishing2(SubGameInfo *info) {
     CScene *scene;
 
-    u_long128 poly_buffer[0x1400];
-    float hand_pos[4];
+    u_long128    poly_buffer[0x1400];
+    float        hand_pos[4];
     CCharacter2 *chara;
-    mgCFrame *frame;
+    mgCFrame    *frame;
 
     if (fgLoopMode == 0) {
         return 0;
     }
+
     scene = info->scene;
     MainChara->UpdatePosition();
     UkiRod->CObjectFrame::frame->SetReference(RodHand);
     RodStep(scene, poly_buffer);
+
     if (CharaMode == kCharaModeReel || CharaMode == kCharaModeReel2) {
         chara = scene->GetCharacter(scene->player_chara);
+
         if (chara != NULL) {
             frame = chara->CObjectFrame::frame;
+
             if (frame != NULL) {
                 frame = frame->SearchFrame(at_1424__2);
             }
+
             if (frame != NULL) {
                 frame->GetWorldPosition0(hand_pos);
+
                 if (CatchLine(hand_pos, 50.0f) == 0) {
                     SlowLineVelo(0.2f);
                 }
             }
         }
     }
+
     return 0;
 }
 #ifdef NONMATCHING
@@ -910,27 +998,27 @@ int sgDrawFishing(SubGameInfo *info) {
         return 0;
     }
     mgCTextureManager *textures = &mgTexManager;
-    textures->ReloadTexture(FishingTexb, (sceVif1Packet *)NULL);
+    textures->ReloadTexture(FishingTexb, (sceVif1Packet *) NULL);
     UkiRod->DrawDirect();
     sceVu0FVECTOR hook_offset = {0.0f, -3.5f, 1.0f, 0.0f};
     if (LureFrame != NULL && SetLurePose(LureFrame) != 0) {
         if (GetShowHari() != 0) {
-            textures->ReloadTexture(EsaTexb, (sceVif1Packet *)NULL);
+            textures->ReloadTexture(EsaTexb, (sceVif1Packet *) NULL);
             mgDrawDirect(LureFrame);
         }
         LureFrame->GetLWMatrix(uki_matrix);
         u_long128 lure_swap_row;
-        lure_swap_row = *(u_long128 *)uki_matrix[0];
-        *(u_long128 *)uki_matrix[0] = *(u_long128 *)uki_matrix[2];
-        *(u_long128 *)uki_matrix[2] = lure_swap_row;
+        lure_swap_row = *(u_long128 *) uki_matrix[0];
+        *(u_long128 *) uki_matrix[0] = *(u_long128 *) uki_matrix[2];
+        *(u_long128 *) uki_matrix[2] = lure_swap_row;
         sceVu0ScaleVector(uki_matrix[2], uki_matrix[2], -1.0f);
-        *(u_long128 *)lure_matrix[0] = *(u_long128 *)uki_matrix[0];
-        *(u_long128 *)lure_matrix[1] = *(u_long128 *)uki_matrix[1];
-        *(u_long128 *)lure_matrix[2] = *(u_long128 *)uki_matrix[2];
-        *(u_long128 *)lure_matrix[3] = *(u_long128 *)uki_matrix[3];
+        *(u_long128 *) lure_matrix[0] = *(u_long128 *) uki_matrix[0];
+        *(u_long128 *) lure_matrix[1] = *(u_long128 *) uki_matrix[1];
+        *(u_long128 *) lure_matrix[2] = *(u_long128 *) uki_matrix[2];
+        *(u_long128 *) lure_matrix[3] = *(u_long128 *) uki_matrix[3];
         LureFrame->GetWorldPosition(lure_matrix[3], hook_offset);
     }
-    textures->ReloadTexture(FishingTexb, (sceVif1Packet *)NULL);
+    textures->ReloadTexture(FishingTexb, (sceVif1Packet *) NULL);
     if (SetUkiPose(UkiFrame, HariFrame) != 0) {
         mgDrawDirect(UkiFrame);
         if (GetShowHari() != 0) {
@@ -938,25 +1026,25 @@ int sgDrawFishing(SubGameInfo *info) {
         }
         HariFrame->GetLWMatrix(uki_matrix);
         u_long128 hari_swap_row;
-        hari_swap_row = *(u_long128 *)uki_matrix[1];
-        *(u_long128 *)uki_matrix[1] = *(u_long128 *)uki_matrix[2];
-        *(u_long128 *)uki_matrix[2] = hari_swap_row;
+        hari_swap_row = *(u_long128 *) uki_matrix[1];
+        *(u_long128 *) uki_matrix[1] = *(u_long128 *) uki_matrix[2];
+        *(u_long128 *) uki_matrix[2] = hari_swap_row;
         sceVu0ScaleVector(uki_matrix[0], uki_matrix[0], -1.0f);
-        *(u_long128 *)lure_matrix[0] = *(u_long128 *)uki_matrix[0];
-        *(u_long128 *)lure_matrix[1] = *(u_long128 *)uki_matrix[1];
-        *(u_long128 *)lure_matrix[2] = *(u_long128 *)uki_matrix[2];
-        *(u_long128 *)lure_matrix[3] = *(u_long128 *)uki_matrix[3];
+        *(u_long128 *) lure_matrix[0] = *(u_long128 *) uki_matrix[0];
+        *(u_long128 *) lure_matrix[1] = *(u_long128 *) uki_matrix[1];
+        *(u_long128 *) lure_matrix[2] = *(u_long128 *) uki_matrix[2];
+        *(u_long128 *) lure_matrix[3] = *(u_long128 *) uki_matrix[3];
         HariFrame->GetWorldPosition(lure_matrix[3], hook_offset);
     }
     if (CharaMode == 1) {
         char *cursor_motion[2] = {at_1442__3, at_1443__3};
         CursorChara[0]->SetMotion(cursor_motion[CastOKFlag], 0);
-        CursorChara[0]->SetPosition((float *)&CastPointCur);
+        CursorChara[0]->SetPosition((float *) &CastPointCur);
         CursorChara[0]->Step();
         CursorChara[0]->DrawDirect();
     }
     if (EsaChara != NULL && FishChara == NULL) {
-        textures->ReloadTexture(EsaTexb, (sceVif1Packet *)NULL);
+        textures->ReloadTexture(EsaTexb, (sceVif1Packet *) NULL);
         EsaChara->SetPosition(lure_matrix[3]);
         mgZeroVectorW(lure_matrix[3]);
         if (EsaChara->CObjectFrame::frame != NULL) {
@@ -967,7 +1055,7 @@ int sgDrawFishing(SubGameInfo *info) {
         }
     }
     if (FishChara != NULL) {
-        textures->ReloadTexture(FishTexb, (sceVif1Packet *)NULL);
+        textures->ReloadTexture(FishTexb, (sceVif1Packet *) NULL);
         FishChara->SetPosition(uki_matrix[3]);
         mgZeroVectorW(uki_matrix[3]);
         if (FishChara->CObjectFrame::frame != NULL) {
@@ -990,41 +1078,44 @@ void DrawNumber(mgCDrawPrim *prim, int digit, int x, int y) {
     prim->TextureCrd(tex_u + 12, 0x80);
     prim->Vertex(x + 12, y + 14, 0);
 }
+
 int sgSystemDrawFishing(SubGameInfo *info) {
     union {
         mgCDrawPrim prim;
     };
-    CScene *scene;
+
+    CScene     *scene;
     mgCTexture *system_texture;
     mgCTexture *banner_texture;
-    float tension_end[4];
-    float tension_color[4];
-    int top;
-    int gauge_top;
-    float reach;
-    float line_length;
-    int length;
-    float fill;
-    float bottom_y;
-    float tension;
-    float fish_dist;
-    int hundreds;
-    int tens;
-    int ones;
+    float       tension_end[4];
+    float       tension_color[4];
+    int         top;
+    int         gauge_top;
+    float       reach;
+    float       line_length;
+    int         length;
+    float       fill;
+    float       bottom_y;
+    float       tension;
+    float       fish_dist;
+    int         hundreds;
+    int         tens;
+    int         ones;
 
     if (fgLoopMode == 0) {
         return 0;
     }
 
-    mgTexManager.ReloadTexture(SystemTexb, (sceVif1Packet *)NULL);
+    mgTexManager.ReloadTexture(SystemTexb, (sceVif1Packet *) NULL);
     DrawFishingActionChance();
     scene = info->scene;
-    system_texture = (mgCTexture *)mgTexManager.GetTexture(at_1508__3,
-                                                                      SystemTexb);
-    banner_texture = (mgCTexture *)mgTexManager.GetTexture(at_1509__3,
-                                                                      SystemTexb);
+    system_texture = (mgCTexture *) mgTexManager.GetTexture(at_1508__3,
+                                                            SystemTexb);
+    banner_texture = (mgCTexture *) mgTexManager.GetTexture(at_1509__3,
+                                                            SystemTexb);
 
     __ct__11mgCDrawPrimFv(&prim);
+
     prim.Initialize(NULL, NULL);
     prim.AlphaBlendEnable(1);
     prim.DepthTestEnable(0);
@@ -1041,16 +1132,19 @@ int sgSystemDrawFishing(SubGameInfo *info) {
         prim.End();
         fish_dist = GetFishDist(scene);
         reach = (FishMaxLen - fish_dist) / (FishMaxLen - FishMinLen);
+
         if (reach < 0.0f) {
             reach = 0.0f;
         }
+
         if (!(reach <= 1.0f)) {
             reach = 1.0f;
         }
+
         line_length = GetNowLineLength();
         prim.Begin(6);
         prim.Color(0x15, 0x29, 0xFF, 0x80);
-        prim.Vertex(342.0f + 110.0f * reach, (float)(top + 0x25), 0.0f);
+        prim.Vertex(342.0f + 110.0f * reach, (float) (top + 0x25), 0.0f);
         prim.Vertex(0x1C4, top + 0x2A, 0);
         prim.End();
         prim.Bilinear(0);
@@ -1085,23 +1179,23 @@ int sgSystemDrawFishing(SubGameInfo *info) {
         prim.Vertex(0x1E1, top + 0x96, 0);
         prim.End();
         tension = LineTension;
-        fill = 130.0f * (1.0f - (float)tension);
-        *(u_long128 *)tension_end = *(u_long128 *)&at_1490__2;
-        *(u_long128 *)tension_color = *(u_long128 *)&at_1491__2;
+        fill = 130.0f * (1.0f - (float) tension);
+        *(u_long128 *) tension_end = *(u_long128 *) &at_1490__2;
+        *(u_long128 *) tension_color = *(u_long128 *) &at_1491__2;
         sceVu0InterVectorXYZ(tension_color, tension_color, tension_end, tension);
         prim.Shading(1);
         prim.Begin(4);
         prim.Color(fptosi(tension_end[0]), fptosi(tension_end[1]), fptosi(tension_end[2]), 0x80);
-        bottom_y = (float)(top + 0x96);
+        bottom_y = (float) (top + 0x96);
         prim.Vertex(469.0f, bottom_y, 0.0f);
         prim.Color(fptosi(tension_end[0]), fptosi(tension_end[1]), fptosi(tension_end[2]), 0x80);
-        prim.Vertex(481.0f, (float)(top + 0x96), 0.0f);
+        prim.Vertex(481.0f, (float) (top + 0x96), 0.0f);
         prim.Color(fptosi(tension_color[0]), fptosi(tension_color[1]), fptosi(tension_color[2]),
-                        0x80);
-        fill = fill + (float)(top + 0x14);
+                   0x80);
+        fill = fill + (float) (top + 0x14);
         prim.Vertex(469.0f, fill, 0.0f);
         prim.Color(fptosi(tension_color[0]), fptosi(tension_color[1]), fptosi(tension_color[2]),
-                        0x80);
+                   0x80);
         prim.Vertex(481.0f, fill, 0.0f);
         prim.End();
         prim.Begin(4);
@@ -1129,6 +1223,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
         prim.Vertex(0x1F6, top + 0xA7, 0);
         prim.End();
     }
+
     prim.TextureMapEnable(1);
     if (DrawCongra > 0) {
         prim.Begin(6);
@@ -1140,6 +1235,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
         prim.Vertex(0x180, 0xE3, 0);
         prim.End();
     }
+
     if (DrawHit > 0) {
         prim.Begin(6);
         prim.Color(0x80, 0x80, 0x80, 0x80);
@@ -1150,45 +1246,51 @@ int sgSystemDrawFishing(SubGameInfo *info) {
         prim.Vertex(0x180, 0xE8, 0);
         prim.End();
     }
+
     return 1;
 }
+
 static void CharaControl(CScene *scene, CPadControl *pad) {
-    mgCCameraFollow *camera;
-    CCharacter2 *chara;
-    float position[4];
-    float rotation[4];
-    float velocity[4];
-    float matrix[4][4];
+    mgCCameraFollow  *camera;
+    CCharacter2      *chara;
+    float             position[4];
+    float             rotation[4];
+    float             velocity[4];
+    float             matrix[4][4];
     EditMoveCharaInfo idle_info;
-    float turn_rotation[4];
+    float             turn_rotation[4];
     EditMoveCharaInfo move_info;
-    float camera_angle;
-    float stick_y;
-    float stick_x;
-    float move_x;
-    float move_z;
-    float target_angle;
-    float turned_angle;
-    float turn_delta;
-    float stick_length;
-    float cast_dir[4];
-    float event_pos[4];
-    int can_cast;
+    float             camera_angle;
+    float             stick_y;
+    float             stick_x;
+    float             move_x;
+    float             move_z;
+    float             target_angle;
+    float             turned_angle;
+    float             turn_delta;
+    float             stick_length;
+    float             cast_dir[4];
+    float             event_pos[4];
+    int               can_cast;
 
     chara = scene->GetCharacter(scene->player_chara);
+
     if (chara != NULL) {
-        camera = (mgCCameraFollow *)scene->GetCamera(scene->active_camera);
+        camera = (mgCCameraFollow *) scene->GetCamera(scene->active_camera);
+
         if (camera != NULL) {
-            switch (((mgCCamera *)camera)->Iam()) {
+            switch (((mgCCamera *) camera)->Iam()) {
                 case kCameraSettled:
                     break;
                 default:
                     return;
             }
+
             chara->GetPosition(position);
             chara->GetRotation(rotation);
             mgCreateMatrixPY(matrix, position, rotation[1]);
-            *(u_long128 *)velocity = *(u_long128 *)chara->velocity;
+            *(u_long128 *) velocity = *(u_long128 *) chara->velocity;
+
             if (pad == NULL) {
                 memset(&idle_info.move_info, 0, sizeof(idle_info.move_info));
                 memset(&idle_info, 0, sizeof(idle_info));
@@ -1197,6 +1299,7 @@ static void CharaControl(CScene *scene, CPadControl *pad) {
                 EditCameraControl(scene, NULL, NULL);
                 return;
             }
+
             camera_angle = camera->GetAngle();
             stick_y = pad->Analog(5);
             stick_x = pad->Analog(4);
@@ -1204,32 +1307,40 @@ static void CharaControl(CScene *scene, CPadControl *pad) {
             move_z = -stick_y * sinf(camera_angle) + stick_x * cosf(camera_angle);
             move_x *= 3.5f;
             move_z *= 3.5f;
+
             if (DebugInfo.chara_move != 0) {
                 if (GamePad__2.On(1) != 0) {
                     move_x *= 3.0f;
                     move_z *= 3.0f;
                 }
+
                 if (pad->Btn(kPadButtonDebugJump) != 0) {
                     velocity[1] = 8.0f;
                 }
             }
+
             velocity[0] = move_x;
             velocity[2] = move_z;
             velocity[1] -= 0.6f;
+
             if (move_x != 0.0f || move_z != 0.0f) {
                 chara->GetRotation(turn_rotation);
                 target_angle = atan2f(move_x, move_z);
                 turned_angle = mgAngleInterpolate(turn_rotation[1], target_angle, 0.3f, 0);
                 turn_delta = target_angle - turned_angle;
+
                 if (turn_delta < 0.0f) {
                     turn_delta = -turn_delta;
                 }
-                if (!((float)fptosi(turn_delta) <= 1.0f)) {
+
+                if (!((float) fptosi(turn_delta) <= 1.0f)) {
                     velocity[0] *= 0.5f;
                     velocity[2] *= 0.5f;
                 }
+
                 chara->SetRotation(0.0f, turned_angle, 0.0f);
                 stick_length = sqrtf(stick_y * stick_y + stick_x * stick_x);
+
                 if (stick_length < 0.8f) {
                     chara->SetMotion(at_1576__2, 0);
                     chara->SetStep(0.1f + stick_length / 0.8f);
@@ -1239,148 +1350,181 @@ static void CharaControl(CScene *scene, CPadControl *pad) {
             } else {
                 chara->SetMotion(at_1397__3, 0);
             }
+
             memset(&move_info.move_info, 0, sizeof(move_info.move_info));
             memset(&move_info, 0, sizeof(move_info));
             EditMoveChara(scene, velocity, &move_info);
             EditCameraControl(scene, pad, NULL);
-            *(u_long128 *)cast_dir = *(u_long128 *)&at_1536;
+            *(u_long128 *) cast_dir = *(u_long128 *) &at_1536;
             sceVu0ApplyMatrix(cast_dir, matrix, cast_dir);
             can_cast = move_info.move_info.landed;
+
             if (GetFishingMode() == 2 && LureNo < 0) {
                 can_cast = 0;
             }
+
             if (can_cast != 0 && CheckCasting(scene, position, cast_dir) != 0) {
                 ShowHelpMes(0x65, 1);
+
                 if (pad->Btn(kPadButtonCast) != 0 && InitSelectCastingPoint(scene) != 0) {
                     SetNextMode(1);
                 }
             }
+
             if (GetNowSubGameInfo()->no_map_event == 0) {
                 chara->GetPosition(event_pos);
+
                 union {
                     CSceneEventData data;
+
                     struct {
                         u_char unknown_00[8];
-                        int event_no;
+                        int    event_no;
                     } fields;
-                } eventData;
-                if (scene->GetMapEvent(event_pos, 0, &eventData.data) != 0) {
-                    scene->RunEvent(eventData.fields.event_no, &eventData.data);
+                } event_data;
+
+                if (scene->GetMapEvent(event_pos, 0, &event_data.data) != 0) {
+                    scene->RunEvent(event_data.fields.event_no, &event_data.data);
                     ExitFishing(scene);
                 }
+
                 scene->map_event_no = 0;
             }
         }
     }
 }
+
 int InitSelectCastingPoint(CScene *scene) {
-    CCharacter2 *chara = scene->GetCharacter(scene->player_chara);
-    mgCCamera *camera;
-    float position[4];
+    CCharacter2     *chara = scene->GetCharacter(scene->player_chara);
+    mgCCamera       *camera;
+    float            position[4];
     CameraCtrlParam *param;
 
     if (chara == NULL) {
         return 0;
     }
-    camera = (mgCCamera *)scene->GetCamera(scene->active_camera);
+
+    camera = scene->GetCamera(scene->active_camera);
+
     if (camera == NULL || camera->Iam() != kCameraSettled) {
         return 0;
     }
+
     chara->GetRotation(position);
-    ((CCameraControl *)camera)->CopyParam(CameraInfo);
-    param = ((CCameraControl *)camera)->GetActiveParam();
+    ((CCameraControl *) camera)->CopyParam(CameraInfo);
+    param = ((CCameraControl *) camera)->GetActiveParam();
     param->max_dist = 120.0f;
     param->min_dist = 120.0f;
     param->near_height = 12.0f;
     param->far_height = 12.0f;
+
     if (GetCaptureMode() != 0) {
         srand(kCaptureSeed);
     }
+
     LoadExMotionBG(GetNowSubGameInfo(), ReadBuffer);
     return 1;
 }
+
 int EndSelectCastingPoint(CScene *scene) {
-    mgCCamera *camera = (mgCCamera *)scene->GetCamera(scene->active_camera);
+    mgCCamera   *camera = scene->GetCamera(scene->active_camera);
     CCharacter2 *chara;
 
     if (camera == NULL || camera->Iam() != kCameraSettled) {
         return 1;
     }
-    CameraInfo.CopyParam(*(CCameraControl *)camera);
+
+    CameraInfo.CopyParam(*(CCameraControl *) camera);
+
     if (GetNowSubGameInfo()->dungeon == 0) {
         chara = scene->GetCharacter(scene->player_chara);
+
         if (chara != NULL) {
             chara->DeleteExtMotion();
             chara->SetMotion(at_1397__3, 4);
         }
     }
+
     SetWaterLevel(-100000.0f);
     CastOKFlag = 0;
     return 1;
 }
+
 void SelectCastingPoint(CScene *scene, CPadControl *pad) {
-    CCharacter2 *chara;
+    CCharacter2    *chara;
     CCameraControl *camera;
-    float matrix[4][4];
-    float rotation[4];
-    float position[4];
-    float cast_dir[4];
-    float target[4];
-    float follow_offset[4];
-    float camera_pos[4];
-    float diff[4];
-    float angle_diff;
-    float turn;
-    float max_dist;
-    float cast_distance;
-    float ratio;
-    float lean;
-    float lean_abs;
-    int saved_cancel;
-    int castable;
+    float           matrix[4][4];
+    float           rotation[4];
+    float           position[4];
+    float           cast_dir[4];
+    float           target[4];
+    float           follow_offset[4];
+    float           camera_pos[4];
+    float           diff[4];
+    float           angle_diff;
+    float           turn;
+    float           max_dist;
+    float           cast_distance;
+    float           ratio;
+    float           lean;
+    float           lean_abs;
+    int             saved_cancel;
+    int             castable;
 
     if (pad == NULL) {
         return;
     }
+
     chara = scene->GetCharacter(scene->player_chara);
+
     if (chara == NULL) {
         return;
     }
-    camera = (CCameraControl *)scene->GetCamera(scene->active_camera);
+
+    camera = (CCameraControl *) scene->GetCamera(scene->active_camera);
+
     if (camera == NULL) {
         return;
     }
-    switch (((mgCCamera *)camera)->Iam()) {
+
+    switch (((mgCCamera *) camera)->Iam()) {
         case kCameraSettled:
             break;
         default:
             return;
     }
+
     chara->GetPosition(position);
     chara->GetRotation(rotation);
     mgCreateMatrixPY(matrix, position, rotation[1]);
     angle_diff = mgAngleLimit(rotation[1] - mgAngleLimit(camera->GetAngle() - 3.1415927f));
     turn = 0.0f;
+
     if (!(angle_diff <= 0.4f)) {
         turn = 0.2f * mgAngleLimit(angle_diff - 0.4f);
     }
+
     if (angle_diff < -0.4f) {
         turn = 0.2f * mgAngleLimit(0.4f + angle_diff);
     }
+
     camera->Rotate(turn);
     CastDist -= 5.0f * pad->Analog(4);
-    max_dist = 240.0f * (0.5f * (1.0f + (float)RodData.status[0] / 100.0f));
+    max_dist = 240.0f * (0.5f * (1.0f + (float) RodData.status[0] / 100.0f));
     max_dist += 160.0f;
+
     if (CastDist < 160.0f) {
         CastDist = 160.0f;
     }
+
     if (!(CastDist <= max_dist)) {
         CastDist = max_dist;
     }
+
     cast_distance = CastDist;
     CastDistSizeRate = (cast_distance - 160.0f) / 240.0f;
     CastDistSizeRate = 0.8f + 0.4f * CastDistSizeRate;
-    *(u_long128 *)cast_dir = *(u_long128 *)&at_1631__3;
+    *(u_long128 *) cast_dir = *(u_long128 *) &at_1631__3;
     cast_dir[2] = cast_distance;
     sceVu0ApplyMatrix(cast_dir, matrix, cast_dir);
     camera->GetFollowOffset(follow_offset);
@@ -1399,30 +1543,37 @@ void SelectCastingPoint(CScene *scene, CPadControl *pad) {
     EditCameraControl(scene, pad, NULL);
     camera->SetRotCameraCancel(saved_cancel);
     castable = CheckCasting(scene, position, cast_dir);
+
     if (mgDistVectorXZ(camera_pos, position) < 30.0f) {
         castable = 0;
     }
+
     if (castable > 0) {
         CastOKFlag = 1;
     } else {
         CastOKFlag = 0;
     }
-    *(u_long128 *)&CastPoint = *(u_long128 *)cast_dir;
-    *(u_long128 *)&CastPointCur = *(u_long128 *)cast_dir;
+
+    *(u_long128 *) &CastPoint = *(u_long128 *) cast_dir;
+    *(u_long128 *) &CastPointCur = *(u_long128 *) cast_dir;
+
     if (CastOKFlag != 0) {
         SetWaterLevel(cast_dir[1]);
         ShowHelpMes(0x66, 1);
     } else {
         SetWaterLevel(-100000.0f);
         ShowHelpMes(0x6A, 1);
+
         if (!(cast_dir[1] <= position[1])) {
             cast_dir[1] = position[1];
         }
     }
+
     CastPoint.v[1] = cast_dir[1];
     CastPointCur.v[1] = cast_dir[1];
     lean = 0.05f * -pad->Analog(5);
     lean_abs = lean < 0.0f ? -lean : lean;
+
     if (!(lean_abs <= 0.01f)) {
         rotation[1] = mgAngleLimit(rotation[1] + lean);
         chara->SetRotation(rotation);
@@ -1430,81 +1581,99 @@ void SelectCastingPoint(CScene *scene, CPadControl *pad) {
     } else {
         chara->SetMotion(at_1397__3, 0);
     }
+
     ReadBG();
+
     if (CastOKFlag != 0 && pad->Btn(kPadButtonCast) != 0) {
         if (InitCasting(scene) != 0) {
             SetNextMode(2);
         }
     } else if (pad->Btn(kPadButtonCancel) != 0) {
         BreakReadBG();
+
         if (EndSelectCastingPoint(scene) != 0) {
             SetNextMode(0);
         }
     }
 }
+
 void DrawHamon(float *pos, float scale) {
     if (EffectMan != NULL) {
         float pos_vec[4];
-        Vec4 scale_vec = at_1681__2;
+        Vec4  scale_vec = at_1681__2;
         scale_vec.v[0] = scale;
         scale_vec.v[1] = scale;
         scale_vec.v[2] = scale;
-        *(u_long128 *)pos_vec = *(u_long128 *)pos;
+        *(u_long128 *) pos_vec = *(u_long128 *) pos;
         pos_vec[1] = 0.5f + GetWaterLevel();
         EffectMan->CreateEffSpt(at_1683__2, 0, 0);
         EffectMan->SetScriptVect1(pos_vec, -1, -1);
         EffectMan->SetScriptVect2(scale_vec.v, -1, -1);
     }
 }
+
 void DrawSplash(float *pos, float scale) {
     if (EffectMan != NULL) {
         float pos_vec[4];
-        Vec4 scale_vec = at_1689;
+        Vec4  scale_vec = at_1689;
         scale_vec.v[0] = scale;
         scale_vec.v[1] = scale;
         scale_vec.v[2] = scale;
-        *(u_long128 *)pos_vec = *(u_long128 *)pos;
+        *(u_long128 *) pos_vec = *(u_long128 *) pos;
         pos_vec[1] = 0.5f + GetWaterLevel();
         EffectMan->CreateEffSpt(at_1691__2, 0, 0);
         EffectMan->SetScriptVect1(pos_vec, -1, -1);
         EffectMan->SetScriptVect2(scale_vec.v, -1, -1);
     }
 }
+
 int GetMotionCount(CCharacter2 *chara, char *name, int min_count, int max_count, int min_speed) {
     CHRINFO_KEY_SET *list;
-    float speed;
-    float floor;
-    int count;
+    float            speed;
+    float            floor;
+    int              count;
 
     list = chara->GetKeyListPtr(name, NULL);
+
     if (list == NULL) {
         return min_count;
     }
+
     speed = list->step;
-    floor = (float)min_speed;
+    floor = (float) min_speed;
+
     if (speed < floor) {
         speed = floor;
     }
-    count = fptosi((float)(list->end_frame - list->start_frame) / speed);
+
+    count = fptosi((float) (list->end_frame - list->start_frame) / speed);
+
     if (count <= min_count) {
         count = min_count;
     }
+
     if (count >= max_count) {
         count = max_count;
     }
+
     return count;
 }
+
 int InitCasting(CScene *scene) {
     CCharacter2 *chara;
 
     chara = scene->GetCharacter(scene->player_chara);
+
     if (chara == NULL) {
         return 0;
     }
+
     MotionBuff.stack_used = 0;
     MotionBuff.lock = 0;
+
     while (LoadExMotionStep(GetNowSubGameInfo(), &MotionBuff) != 0) {
     }
+
     chara->SetMotion(at_1722, 4);
     chara->Step();
     CastStep = 0;
@@ -1514,25 +1683,32 @@ int InitCasting(CScene *scene) {
     CastMotionCnt = GetMotionCount(chara, at_1723__2, 20, 300, 0);
     return 1;
 }
+
 void CastingLoop(CScene *scene, CPadControl *pad) {
     CCharacter2 *chara;
-    float hari_pos[4];
-    float hari_prev[4];
+    float        hari_pos[4];
+    float        hari_prev[4];
     chara = scene->GetCharacter(scene->player_chara);
+
     if (chara != NULL) {
         EditCameraControl(scene, pad, NULL);
         GetHariPos(hari_pos, hari_prev);
+
         if (hari_pos[1] <= GetWaterLevel() && !(hari_prev[1] <= GetWaterLevel())) {
             DrawHamon(hari_pos, 0.8f);
             sndSePlay(FishSnd, 4, 0);
         }
+
         if (CastStep == 0) {
             CastCount += 1;
+
             if (CastCount == 0x23) {
                 sndSePlay(FishSnd, 0, 0);
                 CastTime = CastingLure(CastPoint.v);
             }
+
             CastMotionCnt -= 1;
+
             if (CastMotionCnt <= 0) {
                 CastCount = 0;
                 CastStep = 1;
@@ -1541,8 +1717,10 @@ void CastingLoop(CScene *scene, CPadControl *pad) {
             }
         } else if (CastStep == 1) {
             CastCount += 1;
+
             if (CastCount >= CastTime) {
                 EndCastingLure();
+
                 if (InitUkiWait(scene) != 0) {
                     SetNextMode(3);
                 }
@@ -1550,6 +1728,7 @@ void CastingLoop(CScene *scene, CPadControl *pad) {
         }
     }
 }
+
 int InitUkiWait(CScene *scene) {
     RodActFlag = 0;
     UkiMode = kUkiStart;
@@ -1557,66 +1736,79 @@ int InitUkiWait(CScene *scene) {
     UkiCameraFlag = 0;
     return 1;
 }
+
 void ResetUkiCamera(CCameraControl *camera) {
     if (UkiCameraFlag != 0) {
         camera->RotBack(UkiCamOldRot);
+
         if (camera != NULL) {
             UkiCameraInfo.CopyParam(*camera);
         }
     }
+
     UkiCameraFlag = 0;
 }
+
 void UkiWaitLoop(CScene *scene, CPadControl *pad) {
-    int moved;
-    int up_push;
-    int right_push;
-    int left_push;
-    CCharacter2 *chara;
-    CCameraControl *camera;
-    int pushed;
+    int              moved;
+    int              up_push;
+    int              right_push;
+    int              left_push;
+    CCharacter2     *chara;
+    CCameraControl  *camera;
+    int              pushed;
     CameraCtrlParam *param;
-    float stick_side;
-    float stick_up;
-    int up_now;
-    u_char right_now;
-    u_char left_now;
-    u_char up_old;
-    u_char right_old;
-    u_char left_old;
-    int reel_result;
-    int reel_sound;
-    int reel_held;
-    int caught;
-    float hari_pos[4];
-    float hari_prev[4];
-    float chara_pos[4];
-    float hari_now[4];
-    float hari_now_prev[4];
-    float uki_pos[4];
-    float uki_prev[4];
-    float chara_now[4];
-    float camera_target[1][4];
-    float uki_pos2[4];
-    float dist;
+    float            stick_side;
+    float            stick_up;
+    int              up_now;
+    u_char           right_now;
+    u_char           left_now;
+    u_char           up_old;
+    u_char           right_old;
+    u_char           left_old;
+    int              reel_result;
+    int              reel_sound;
+    int              reel_held;
+    int              caught;
+    float            hari_pos[4];
+    float            hari_prev[4];
+    float            chara_pos[4];
+    float            hari_now[4];
+    float            hari_now_prev[4];
+    float            uki_pos[4];
+    float            uki_prev[4];
+    float            chara_now[4];
+    float            camera_target[1][4];
+    float            uki_pos2[4];
+    float            dist;
     chara = scene->GetCharacter(scene->player_chara);
+
     if (chara == NULL) {
         return;
     }
-    camera = (CCameraControl *)scene->GetCamera(scene->active_camera);
+
+    camera = (CCameraControl *) scene->GetCamera(scene->active_camera);
+
     if (UkiMode == kUkiReeledIn) {
         UkiModeCnt += 1;
+
         if (UkiModeCnt > 15) {
             EndSelectCastingPoint(scene);
+
             if (chara != NULL) {
                 chara->SetMotion(at_1397__3, 4);
             }
+
             SetNextMode(0);
         }
+
         return;
     }
+
     moved = 1;
     stick_side = pad->Analog(kFishAxisSide);
     stick_up = pad->Analog(kFishAxisUp);
+
     if (stick_up > 0.8f) {
         RodActFlag = 1;
         chara->SetMotion(at_1920, 6);
@@ -1630,6 +1822,7 @@ void UkiWaitLoop(CScene *scene, CPadControl *pad) {
         chara->SetMotion(at_1749__2, 0);
         moved = 0;
     }
+
     right_now = stick_side > 0.8f;
     left_now = stick_side < -0.8f;
     up_old = oldPadRy > 0.8f;
@@ -1643,6 +1836,7 @@ void UkiWaitLoop(CScene *scene, CPadControl *pad) {
     reel_result = 0;
     reel_held = 0;
     reel_sound = 7;
+
     if (pad->Btn(kFishBtnReel) != 0) {
         reel_sound = 7;
         reel_result = ExtendLine(-1.0f);
@@ -1653,46 +1847,60 @@ void UkiWaitLoop(CScene *scene, CPadControl *pad) {
         reel_held = moved;
         reel_sound = 8;
     }
+
     if (reel_result < 0) {
         UkiMode = kUkiReeledIn;
+
         if (chara != NULL) {
             chara->SetMotion(at_1722, 0);
         }
+
         UkiModeCnt = 0;
         return;
     }
+
     if (reel_held != 0) {
         scene->loop_se.SeLoopPlayStop(FishSnd, reel_sound, 2, 13);
     }
+
     GetHariPos(hari_pos, hari_prev);
-    ((mgCObject *)chara)->GetPosition(chara_pos);
+    ((mgCObject *) chara)->GetPosition(chara_pos);
+
     if (!(hari_pos[1] <= GetWaterLevel() - 3.0f)) {
         if (GetFishingMode() == kFishingModeFloat) {
             FishData.fish_no = -1;
         }
     }
+
     if (mgDistVectorXZ(chara_pos, hari_pos) < 160.0f) {
         FishData.fish_no = -1;
     }
+
     if (init_1799 == 0) {
         hamon_count_1798 = 0;
         init_1799 = 1;
     }
+
     caught = 0;
     GetHariPos(hari_now, hari_now_prev);
     GetUkiPos(uki_pos, uki_prev);
-    ((mgCObject *)chara)->GetPosition(chara_now);
+    ((mgCObject *) chara)->GetPosition(chara_now);
     dist = mgDistVectorXZ(chara_now, hari_now);
+
     if (dist < 160.0f) {
         dist = 160.0f;
     }
+
     if (!(dist <= 400.0f)) {
         dist = 400.0f;
     }
+
     CastDistSizeRate = (dist - 160.0f) / 240.0f;
     CastDistSizeRate = 0.8f + 0.4f * CastDistSizeRate;
+
     if (GetFishingMode() == kFishingModeFloat) {
         ShowHelpMes(0x67, 1);
+
         switch (UkiMode) {
             case kUkiStart:
                 scene->ResetStatus(1, scene->player_chara, 0x20);
@@ -1708,7 +1916,9 @@ void UkiWaitLoop(CScene *scene, CPadControl *pad) {
                         DrawHamon(uki_pos, 0.4f);
                         hamon_count_1798 = fptosi(50.0f * mgRnd()) + 30;
                     }
+
                     hamon_count_1798 -= 1;
+
                     if (FishData.fish_no < 0) {
                         boze_cnt_1801 += 1;
                     } else if (UkiModeCnt <= 0) {
@@ -1717,6 +1927,7 @@ void UkiWaitLoop(CScene *scene, CPadControl *pad) {
                         pull_uki_cnt_1808 = 0;
                     }
                 }
+
                 break;
             case kUkiPoke:
                 if (moved != 0) {
@@ -1727,37 +1938,46 @@ void UkiWaitLoop(CScene *scene, CPadControl *pad) {
                             UkiMode = kUkiStart;
                             break;
                         }
+
                         UkiMode = kUkiPull;
                         UkiModeCnt = GetUkiPullTime(&FishData);
                     }
+
                     if (pull_uki_cnt_1808 <= 0) {
                         PullUki(2.0f + 5.0f * mgRnd());
                         GamePad__2.SetVibration(1, 0x50, 10);
                         pull_uki_cnt_1808 = rand() % 10 + 5;
                         DrawHamon(uki_pos, 0.6f);
                     }
+
                     pull_uki_cnt_1808 -= 1;
                 }
+
                 break;
             case kUkiPull:
                 if (FishData.fish_no <= 0) {
                     UkiMode = kUkiStart;
                 } else {
                     scene->SetStatus(1, scene->player_chara, 0x20);
+
                     if (pushed != 0) {
                         caught = 1;
                     }
+
                     GamePad__2.SetVibration(1, 0x96, 4);
+
                     if (UkiModeCnt <= 0) {
                         UkiMode = kUkiStart;
                     } else {
                         PullUki(10.0f);
                     }
                 }
+
                 break;
         }
     } else {
         ShowHelpMes(0x68, 1);
+
         switch (UkiMode) {
             case kUkiStart:
                 scene->ResetStatus(1, scene->player_chara, 0x20);
@@ -1772,6 +1992,7 @@ void UkiWaitLoop(CScene *scene, CPadControl *pad) {
                     act_count_1838 = 0;
                     charge_point_1839 = 0;
                 }
+
                 if (pushed != 0 || pad->Btn(kFishBtnAction) != 0) {
                     if (act_interval_1840 < 3) {
                         RodActionPoint = RodActionPoint + fptosi(3.0f * mgRnd());
@@ -1779,13 +2000,16 @@ void UkiWaitLoop(CScene *scene, CPadControl *pad) {
                         charge_point_1839 += fptosi(10.0f * mgRnd()) + 2;
                         RodActionPoint = RodActionPoint - fptosi(3.0f * mgRnd());
                     }
+
                     act_interval_1840 = 0;
                     act_count_1838 = fptosi(30.0f * mgRnd()) + 10;
                     DrawHamon(hari_now, 0.5f);
                     sndSePlay(FishSnd, 10, 0);
                 }
+
                 act_interval_1840 += 1;
                 act_count_1838 -= 1;
+
                 if (FishData.fish_no >= 0 && RodActionPoint < 0) {
                     UkiMode = kUkiBite;
                     UkiModeCnt = 0x23;
@@ -1793,34 +2017,45 @@ void UkiWaitLoop(CScene *scene, CPadControl *pad) {
                     DrawSplash(hari_now, 0.5f);
                     sndSePlay(FishSnd, 11, 0);
                 }
+
                 break;
             case kUkiBite:
                 if (UkiModeCnt < 0x20 && pushed != 0) {
                     caught = 1;
                 }
+
                 scene->SetStatus(1, scene->player_chara, 0x20);
                 GamePad__2.SetVibration(1, 0x96, 4);
+
                 if (UkiModeCnt <= 0) {
                     UkiMode = kUkiStart;
                 } else {
                     PullUki(10.0f);
                 }
+
                 break;
         }
     }
+
     UkiModeCnt -= 1;
+
     if (UkiModeCnt < 0) {
         UkiModeCnt = 0;
     }
+
     camera->SetRotCameraCancel(0x80);
+
     if (caught == 0 && GetFishingMode() == kFishingModeFloat) {
         GetUkiPos(camera_target[0], uki_pos2);
+
         if (!(camera_target[0][1] <= 1.0f + GetWaterLevel())) {
             ResetUkiCamera(camera);
         }
+
         if (moved != 0) {
             ResetUkiCamera(camera);
         }
+
         if (UkiCameraFlag != 0) {
             camera_target[0][1] = GetWaterLevel() - 20.0f;
             EditCameraControl(scene, NULL, camera_target);
@@ -1830,6 +2065,7 @@ void UkiWaitLoop(CScene *scene, CPadControl *pad) {
     } else {
         EditCameraControl(scene, pad, NULL);
     }
+
     if (GetFishingMode() == kFishingModeFloat) {
         if (pad->Btn(kFishBtnCameraToggle) != 0) {
             if (UkiCameraFlag == 0) {
@@ -1845,44 +2081,54 @@ void UkiWaitLoop(CScene *scene, CPadControl *pad) {
             }
         }
     }
+
     camera->SetRotCameraCancel(0);
+
     if (caught != 0) {
         ResetUkiCamera(camera);
         scene->ResetStatus(1, scene->player_chara, 0x20);
+
         if (InitBattle(scene) != 0) {
             GamePad__2.SetVibration(0, 1, 5);
             SetNextMode(5);
             sndSePlay(FishSnd, 0x12, 0);
+
             if (MardanEventMap != 0 && MardanEventPlace != 0) {
                 RunEventNo = 0x1F9;
                 scene->fade.FadeOut(0x14, 0.0f, 0.0f, 0.0f);
             }
-            LoadFishFlag = FishLoadBG(&FishData, (u_long128 *)ReadBuffer);
+
+            LoadFishFlag = FishLoadBG(&FishData, ReadBuffer);
         }
     }
 }
+
 int InitBattle(CScene *scene) {
-    CCharacter2 *chara;
-    mgCCamera *camera;
+    CCharacter2     *chara;
+    mgCCamera       *camera;
     CameraCtrlParam *param;
-    float chara_rot[4];
-    float chara_pos[4];
+    float            chara_rot[4];
+    float            chara_pos[4];
     chara = scene->GetCharacter(scene->player_chara);
+
     if (chara == NULL) {
         return 0;
     }
-    camera = (mgCCamera *)scene->GetCamera(scene->active_camera);
+
+    camera = scene->GetCamera(scene->active_camera);
+
     if (camera == NULL || camera->Iam() != kFishCameraState) {
         return 0;
     }
-    ((mgCObject *)chara)->GetPosition(chara_pos);
-    ((mgCObject *)chara)->GetRotation(chara_rot);
-    param = ((CCameraControl *)camera)->GetActiveParam();
+
+    ((mgCObject *) chara)->GetPosition(chara_pos);
+    ((mgCObject *) chara)->GetRotation(chara_rot);
+    param = ((CCameraControl *) camera)->GetActiveParam();
     param->max_dist = 80.0f;
     param->min_dist = 80.0f;
     param->near_height = 12.0f;
     param->far_height = 12.0f;
-    ((CCameraControl *)camera)->RotBack(mgAngleLimit(3.1415927f + chara_rot[1] - 0.2f));
+    ((CCameraControl *) camera)->RotBack(mgAngleLimit(3.1415927f + chara_rot[1] - 0.2f));
     camera->Step(-1);
     InitFishBattle();
     LineTension = 0;
@@ -1903,33 +2149,37 @@ int InitBattle(CScene *scene) {
     BattleCount = 0;
     return 1;
 }
+
 void BattleLoop(CScene *scene, CPadControl *pad) {
-    int pushed;
-    int released;
+    int          pushed;
+    int          released;
     CCharacter2 *chara;
-    float stick_side;
-    float stick_up;
-    u_char up_now;
-    u_char right_now;
-    u_char left_now;
-    u_char up_old;
-    u_char right_old;
-    u_char left_old;
-    int rod_dir;
-    int rod_chance;
-    int rod_sound;
-    int reel_result;
-    int finished;
-    float hari_pos[4];
-    float hari_prev[4];
-    CCPoly polys[0x400];
+    float        stick_side;
+    float        stick_up;
+    u_char       up_now;
+    u_char       right_now;
+    u_char       left_now;
+    u_char       up_old;
+    u_char       right_old;
+    u_char       left_old;
+    int          rod_dir;
+    int          rod_chance;
+    int          rod_sound;
+    int          reel_result;
+    int          finished;
+    float        hari_pos[4];
+    float        hari_prev[4];
+    CCPoly       polys[0x400];
     chara = scene->GetCharacter(scene->player_chara);
+
     if (chara == NULL) {
         return;
     }
+
     EditCameraControl(scene, pad, NULL);
     ReadBG();
     ShowHelpMes(0x69, 1);
+
     if (RunEventNo > 0 && scene->fade.FadeCheck() != 0) {
         scene->StopBGM(0);
         scene->InitBGM();
@@ -1941,9 +2191,11 @@ void BattleLoop(CScene *scene, CPadControl *pad) {
         ExitFishing(scene);
         return;
     }
+
     if (BattleBgmCnt == 20) {
         scene->PlayBGM(1, -1, 1.0f);
     }
+
     BattleBgmCnt += 1;
     stick_side = pad->Analog(kFishAxisSide);
     stick_up = pad->Analog(kFishAxisUp);
@@ -1956,33 +2208,43 @@ void BattleLoop(CScene *scene, CPadControl *pad) {
     pushed = (up_now && !up_old) || (right_now && !right_old) || (left_now && !left_old);
     released = (!up_now && up_old) || (!right_now && right_old) || (!left_now && left_old);
     rod_dir = 0;
+
     if (right_now) {
         rod_dir = 1;
     }
+
     if (left_now) {
         rod_dir = -1;
     }
+
     rod_chance = CheckRodActionChance(rod_dir, &rod_sound);
+
     if (rod_sound != 0) {
         sndSePlay(FishSnd, 0x11, 0);
     }
+
     if (init_1961 == 0) {
         snd_cnt_1960 = 0;
         init_1961 = 1;
     }
+
     if (pushed) {
         GetHariPos(hari_pos, hari_prev);
         sndSePlay(FishSnd, 0xB, 0);
         DrawSplash(hari_pos, 0.5f);
+
         if (snd_cnt_1960 == 0) {
             sndSePlay(FishSnd, 9, 0);
             snd_cnt_1960 = 10;
         }
     }
+
     snd_cnt_1960 -= 1;
+
     if (snd_cnt_1960 < 0) {
         snd_cnt_1960 = 0;
     }
+
     switch (RodStatus) {
         case 0:
             if (pushed) {
@@ -1992,6 +2254,7 @@ void BattleLoop(CScene *scene, CPadControl *pad) {
                 RodStatus = 2;
                 RodStatusCnt = 20;
             }
+
             break;
         case 1:
             if (RodStatusCnt == 0) {
@@ -1999,6 +2262,7 @@ void BattleLoop(CScene *scene, CPadControl *pad) {
             } else if (released) {
                 RodStatus = 2;
             }
+
             break;
         case 2:
             if (RodStatusCnt == 0) {
@@ -2006,10 +2270,13 @@ void BattleLoop(CScene *scene, CPadControl *pad) {
             } else if (pushed) {
                 RodStatus = 1;
             }
+
             break;
     }
+
     RodStatusCnt -= 1;
     BattleCount += 1;
+
     if (stick_up > 0.8f) {
         chara->SetMotion(at_2057, 0);
     } else if (stick_side > 0.8f) {
@@ -2019,7 +2286,9 @@ void BattleLoop(CScene *scene, CPadControl *pad) {
     } else {
         chara->SetMotion(at_2060, 0);
     }
+
     reel_result = 0;
+
     if (pad->Btn(kFishBtnReel) != 0) {
         scene->loop_se.SeLoopPlayStop(FishSnd, 7, 2, 100);
         reel_result = ExtendLine(-1.0f);
@@ -2027,29 +2296,38 @@ void BattleLoop(CScene *scene, CPadControl *pad) {
     } else {
         WindReel = 0;
     }
+
     if (pushed || pad->Btn(kFishBtnAction) != 0) {
         ActionCount += 1;
         ActionDecCount = 10;
     }
+
     ActionDecCount -= 1;
+
     if (ActionDecCount <= 0) {
         ActionCount -= 1;
+
         if (ActionCount < 0) {
             ActionCount = 0;
         }
     }
+
     FishBattle(scene, polys, 0x400);
     LineTensionStep(&FishData, rod_chance);
     finished = 0;
+
     if (GetFishDist(scene) < FishMinLen || reel_result < 0) {
         finished = 1;
     }
+
     if (BattleCount < 100) {
         finished = 0;
     }
+
     if (MardanEventMap != 0 && MardanEventPlace != 0) {
         finished = 0;
     }
+
     if (!(LineTension < 1.0f)) {
         if (InitFalse(scene) != 0) {
             EndFishBattle();
@@ -2071,39 +2349,46 @@ void BattleLoop(CScene *scene, CPadControl *pad) {
         }
     }
 }
+
 float GetFishDist(CScene *scene) {
-    float chara_rot[4];
-    float chara_pos[4];
-    float fish_pos[4];
-    float fish_velo[4];
-    float matrix[16];
+    float        chara_rot[4];
+    float        chara_pos[4];
+    float        fish_pos[4];
+    float        fish_velo[4];
+    float        matrix[16];
     CCharacter2 *chara = scene->GetCharacter(scene->player_chara);
-    ((mgCObject *)chara)->GetPosition(chara_pos);
-    ((mgCObject *)chara)->GetRotation(chara_rot);
-    mgUnitMatrix((float(*)[4])matrix);
-    sceVu0RotMatrixY((float(*)[4])matrix, (float(*)[4])matrix, chara_rot[1]);
+    ((mgCObject *) chara)->GetPosition(chara_pos);
+    ((mgCObject *) chara)->GetRotation(chara_rot);
+    mgUnitMatrix((float (*)[4]) matrix);
+    sceVu0RotMatrixY((float (*)[4]) matrix, (float (*)[4]) matrix, chara_rot[1]);
     GetFishPosVelo(fish_pos, fish_velo);
     return mgDistVectorXZ(chara_pos, fish_pos);
 }
-void DeleteEsa(void) {
+
+void DeleteEsa() {
     CSaveData *saved = GetSaveData();
     EsaInit();
     EsaChara = 0;
     saved->user_data.DeleteBait();
 }
+
 int InitFalse(CScene *scene) {
     CCharacter2 *chara;
-    mgCCamera *camera;
-    float roll;
-    float chance;
+    mgCCamera   *camera;
+    float        roll;
+    float        chance;
     chara = scene->GetCharacter(scene->player_chara);
+
     if (chara == NULL) {
         return 0;
     }
-    camera = (mgCCamera *)scene->GetCamera(scene->active_camera);
+
+    camera = scene->GetCamera(scene->active_camera);
+
     if (camera == NULL || camera->Iam() != kFishCameraState) {
         return 0;
     }
+
     ExtendLine(-1000.0f);
     ExtendLine(20.0f);
     ResetLineVelo();
@@ -2113,119 +2398,141 @@ int InitFalse(CScene *scene) {
     roll = mgRnd();
     chance = 0.3f;
     chance *= 1.0f - 0.5f * RodData.status4_rate;
+
     if (GetFishingMode() == kFishingModeLure) {
         chance *= 0.5f;
     }
+
     if (roll < chance) {
         DeleteEsa();
     }
+
     return 1;
 }
+
 void FalseLoop(CScene *scene, CPadControl *pad) {
-    CCharacter2 *chara;
-    mgCCamera *camera;
+    CCharacter2     *chara;
+    mgCCamera       *camera;
     CameraCtrlParam *param;
-    float chara_rot[4];
-    float chara_pos[4];
-    float ref_pos[4];
-    float cam_pos[4];
+    float            chara_rot[4];
+    float            chara_pos[4];
+    float            ref_pos[4];
+    float            cam_pos[4];
+
     if (pad == NULL) {
         return;
     }
+
     chara = scene->GetCharacter(scene->player_chara);
+
     if (chara == NULL) {
         return;
     }
-    camera = (mgCCamera *)scene->GetCamera(scene->active_camera);
+
+    camera = scene->GetCamera(scene->active_camera);
+
     if (camera == NULL) {
         return;
     }
+
     switch (camera->Iam()) {
         case kFishCameraState:
             break;
         default:
             return;
     }
-    ((mgCObject *)chara)->GetPosition(chara_pos);
-    ((mgCObject *)chara)->GetPosition(ref_pos);
-    ((mgCObject *)chara)->GetRotation(chara_rot);
-    param = ((CCameraControl *)camera)->GetActiveParam();
+
+    ((mgCObject *) chara)->GetPosition(chara_pos);
+    ((mgCObject *) chara)->GetPosition(ref_pos);
+    ((mgCObject *) chara)->GetRotation(chara_rot);
+    param = ((CCameraControl *) camera)->GetActiveParam();
     param->max_dist = 80.0f;
     param->min_dist = 80.0f;
     param->near_height = -5.0f;
     param->far_height = -5.0f;
     param->min_height = -5.0f;
     ref_pos[1] += 15.0f;
-    ((CCameraControl *)camera)->GetPos(cam_pos);
+    ((CCameraControl *) camera)->GetPos(cam_pos);
     cam_pos[1] = 5.0f + ref_pos[1];
-    ((CCameraControl *)camera)->SetRef(ref_pos);
-    ((CCameraControl *)camera)->SetPos(cam_pos);
-    ((CCameraControl *)camera)->SetRotate(mgAngleLimit(chara_rot[1] - 0.2f));
+    ((CCameraControl *) camera)->SetRef(ref_pos);
+    ((CCameraControl *) camera)->SetPos(cam_pos);
+    ((CCameraControl *) camera)->SetRotate(mgAngleLimit(chara_rot[1] - 0.2f));
     camera->Step(-1);
     FalseMotionCount -= 1;
+
     if (FalseStep == 0 && (FalseMotionCount <= 0 || chara->CheckMotionEnd() != 0)) {
         chara->SetMotion(at_2127__3, 4);
         FalseStep = 1;
         FalseMotionCount = 40;
     }
+
     if (FalseStep > 0 && FalseMotionCount <= 0 && pad->Btn(kFishBtnAction) != 0) {
         ExtendLine(-1000.0f);
         ResetLineVelo();
         EndSelectCastingPoint(scene);
         SetNextMode(0);
-        ((CCameraControl *)camera)->RotBack(mgAngleLimit(3.1415927f + chara_rot[1]));
+        ((CCameraControl *) camera)->RotBack(mgAngleLimit(3.1415927f + chara_rot[1]));
         scene->PlayBGM(0, -1, 1.0f);
     }
 }
+
 int InitSuccess(CScene *scene) {
     mgCTextureManager *tex_manager;
-    CCharacter2 *fish_chara;
-    CCharacter2 *chara;
-    ClsMes *message;
-    CSaveData *save_data;
-    FISH_PARAM *fish_param;
-    int fish_item_no;
-    float fish_size;
-    float fish_weight;
+    CCharacter2       *fish_chara;
+    CCharacter2       *chara;
+    ClsMes            *message;
+    CSaveData         *save_data;
+    FISH_PARAM        *fish_param;
+    int                fish_item_no;
+    float              fish_size;
+    float              fish_weight;
     chara = scene->GetCharacter(scene->player_chara);
+
     if (chara == NULL) {
         return 0;
     }
-    mgCCamera *camera = (mgCCamera *)scene->GetCamera(scene->active_camera);
+
+    mgCCamera *camera = scene->GetCamera(scene->active_camera);
+
     if (camera == NULL || camera->Iam() != kFishCameraState) {
         return 0;
     }
+
     tex_manager = &mgTexManager;
     FishFontH = 0;
+
     if (LoadFishFlag != 0) {
         while (ReadBGSync() != 0) {
         }
+
         int size = FreeSize(&MotionBuff);
-        FishStack.stSetBuffer((u_long128 *)FreeTop(&MotionBuff), size);
+        FishStack.stSetBuffer((u_long128 *) FreeTop(&MotionBuff), size);
         FishStack.stack_used = 0;
         FishStack.lock = 0;
 
-        if ((fish_chara = (CCharacter2 *)operator new(sizeof(CCharacter2), FishStack.Alloc(0x68))) != NULL) {
-            *(void ***)fish_chara = __vt__9mgCObject;
+        if ((fish_chara = (CCharacter2 *) operator new(sizeof(CCharacter2), FishStack.Alloc(0x68))) != NULL) {
+            *(void ***) fish_chara = __vt__9mgCObject;
             fish_chara->Initialize();
-            *(void ***)fish_chara = __vt__7CObject;
+            *(void ***) fish_chara = __vt__7CObject;
             fish_chara->Initialize();
-            *(void ***)fish_chara = __vt__12CObjectFrame;
+            *(void ***) fish_chara = __vt__12CObjectFrame;
             fish_chara->Initialize();
-            *(void ***)fish_chara = __vt__11CCharacter2;
+            *(void ***) fish_chara = __vt__11CCharacter2;
             fish_chara->shadow_link.num = 0;
             fish_chara->shadow_link.dst_frame = 0;
             fish_chara->shadow_link.src_frame = 0;
             fish_chara->Initialize();
         }
+
         FishChara = fish_chara;
         fish_chara->Initialize();
         tex_manager->DeleteBlock(FishTexb);
-        FishChara->LoadPack((u_int *)ReadBuffer, at_932__4, &FishStack, &FishStack, &FishStack,
-                              FishTexb, NULL);
+        FishChara->LoadPack((u_int *) ReadBuffer, at_932__4, &FishStack, &FishStack, &FishStack,
+                            FishTexb, NULL);
         FishChara->SetScale(FishData.width_scale, FishData.width_scale, FishData.length_scale);
         FishChara->SetMotion(at_2197__3, 0);
     }
+
     ExtendLine(-1000.0f);
     ExtendLine(20.0f);
     ResetLineVelo();
@@ -2233,9 +2540,11 @@ int InitSuccess(CScene *scene) {
     chara->SetMotion(at_2198__3, 6);
     FalseMotionCount = GetMotionCount(chara, at_2198__3, 20, 300, 0);
     save_data = GetSaveData();
+
     if (GetFishingMode() == kFishingModeFloat) {
         DeleteEsa();
     }
+
     GetItemRet = 0;
     message = scene->GetMessage(1);
     fish_param = GetFishParam(FishData.fish_no);
@@ -2244,6 +2553,7 @@ int InitSuccess(CScene *scene) {
     fish_item_no = -1;
     message->values[1] = 0;
     message->value_width[1] = 0;
+
     if (fish_param != NULL) {
         fish_size = FishData.size / 100.0f;
         fish_item_no = fish_param->item_no;
@@ -2252,8 +2562,10 @@ int InitSuccess(CScene *scene) {
         save_data->user_data.AddFp(FishData.fishing_point);
         save_data->user_data.CheckFishRecordUpdate(fish_item_no, fish_size, fish_weight);
     }
+
     DrawCongra = 100;
     SetShowHari(0);
+
     if (fish_item_no >= 0) {
         message->Preset(4);
         message->SetWindowMode(4);
@@ -2262,80 +2574,96 @@ int InitSuccess(CScene *scene) {
         message->value_width[0] = 0;
         message->values[1] = FishData.fishing_point;
         message->value_width[1] = 0;
+
         if (LanguageCode > 0 && LanguageCode < 6) {
             message->value_half = 1;
         }
+
         FishFontH = message->font_h;
         message->font_h += 4;
         message->MakeMesWin(13);
         message->fukidashi_pos = 8;
         message->abs_win.height = message->font_h * 4 - message->font_h / 2 + 4;
     }
+
     sndSePlay(FanSnd, 0, 0);
     return 1;
 }
+
 void SuccessLoop(CScene *scene, CPadControl *pad) {
-    ClsMes *message;
-    CCharacter2 *chara;
-    mgCCamera *camera;
+    ClsMes          *message;
+    CCharacter2     *chara;
+    mgCCamera       *camera;
     CameraCtrlParam *param;
-    float chara_rot[4];
-    float chara_pos[4];
-    float ref_pos[4];
-    float cam_pos[4];
+    float            chara_rot[4];
+    float            chara_pos[4];
+    float            ref_pos[4];
+    float            cam_pos[4];
+
     if (pad == NULL) {
         return;
     }
+
     chara = scene->GetCharacter(scene->player_chara);
+
     if (chara == NULL) {
         return;
     }
-    camera = (mgCCamera *)scene->GetCamera(scene->active_camera);
+
+    camera = scene->GetCamera(scene->active_camera);
+
     if (camera == NULL) {
         return;
     }
+
     switch (camera->Iam()) {
         case kFishCameraState:
             break;
         default:
             return;
     }
+
     message = scene->GetMessage(1);
-    ((mgCObject *)chara)->GetPosition(chara_pos);
-    ((mgCObject *)chara)->GetPosition(ref_pos);
-    ((mgCObject *)chara)->GetRotation(chara_rot);
-    param = ((CCameraControl *)camera)->GetActiveParam();
+    ((mgCObject *) chara)->GetPosition(chara_pos);
+    ((mgCObject *) chara)->GetPosition(ref_pos);
+    ((mgCObject *) chara)->GetRotation(chara_rot);
+    param = ((CCameraControl *) camera)->GetActiveParam();
     param->max_dist = 80.0f;
     param->min_dist = 80.0f;
     param->near_height = -5.0f;
     param->far_height = -5.0f;
     param->min_height = -5.0f;
     ref_pos[1] += 15.0f;
-    ((CCameraControl *)camera)->GetPos(cam_pos);
+    ((CCameraControl *) camera)->GetPos(cam_pos);
     cam_pos[1] = 5.0f + ref_pos[1];
-    ((CCameraControl *)camera)->SetRef(ref_pos);
-    ((CCameraControl *)camera)->SetPos(cam_pos);
-    ((CCameraControl *)camera)->SetRotate(mgAngleLimit(chara_rot[1] - 0.2f));
+    ((CCameraControl *) camera)->SetRef(ref_pos);
+    ((CCameraControl *) camera)->SetPos(cam_pos);
+    ((CCameraControl *) camera)->SetRotate(mgAngleLimit(chara_rot[1] - 0.2f));
     camera->Step(-1);
     FalseMotionCount -= 1;
+
     if (FalseStep == 0 && (FalseMotionCount <= 0 || chara->CheckMotionEnd() != 0)) {
         chara->SetMotion(at_2272, 4);
         FalseStep2 = 0;
         FalseStep = 1;
         FalseMotionCount = 60;
     }
+
     if (FalseMotionCount <= 0) {
         FalseMotionCount = 0;
     }
+
     if (init_2217 == 0) {
         font_h_2216 = 0;
         init_2217 = 1;
     }
+
     if (FalseStep == 1) {
         if (FalseMotionCount <= 0 && pad->Btn(kFishBtnAction) != 0) {
             if (message->select < 0) {
                 message->cursor_time = 0;
             }
+
             message->select = -1;
             message->draw_speed = message->GetDrawSpeedDef();
             message->mes_no = -1;
@@ -2345,30 +2673,37 @@ void SuccessLoop(CScene *scene, CPadControl *pad) {
             message->fukidashi_centre_x = -1;
             message->fukidashi_centre_y = -1;
             message->fukidashi_pos = 0;
+
             if (FishFontH > 0) {
                 message->font_h = FishFontH;
             }
+
             message->abs_win.height = -1;
             sndSePlay(GetSystemSndID(), 0x19, 0);
             FalseStep = 3;
+
             if (GetSaveData()->GetBitFlag(0x3C) == 0) {
                 FalseStep2 = 0;
                 FalseStep = 2;
                 FishMesNo = 0x7D1;
             }
+
             if (GetNowSubGameInfo()->record_check != 0 &&
                 CheckFishingRecord(FishData.size / 100.0f) != 0) {
                 FalseStep2 = 0;
                 FalseStep = 2;
                 FishMesNo = 0x7D2;
             }
+
             return;
         }
     }
+
     if (FalseStep == 2) {
         ClsMes *result_message = scene->GetMessage(1);
-        int state = result_message->State();
-        int confirm = pad->Btn(kFishBtnAction);
+        int     state = result_message->State();
+        int     confirm = pad->Btn(kFishBtnAction);
+
         switch (FalseStep2) {
             case 0:
                 GetSaveData()->SetBitFlag(0x3C, 1);
@@ -2384,26 +2719,31 @@ void SuccessLoop(CScene *scene, CPadControl *pad) {
                         if (confirm != 0) {
                             result_message->GoNextPage();
                             sndSePlay(GetSystemSndID(), 0x19, 0);
+
                             if (FishMesNo == 0x7D2) {
                                 sndSePlay(GetSystemSndID(), 0x12, 0);
                             }
                         }
+
                         break;
                     case 3:
                         if (confirm != 0) {
                             FalseStep2 += 1;
                             sndSePlay(GetSystemSndID(), 0x19, 0);
                         }
+
                         break;
                     case 0:
                         FalseStep2 += 1;
                         break;
                 }
+
                 break;
             case 2:
                 if (result_message->select < 0) {
                     result_message->cursor_time = 0;
                 }
+
                 result_message->select = -1;
                 result_message->draw_speed = result_message->GetDrawSpeedDef();
                 result_message->mes_no = -1;
@@ -2417,6 +2757,7 @@ void SuccessLoop(CScene *scene, CPadControl *pad) {
                 break;
         }
     }
+
     if (FalseStep >= 3) {
         ExtendLine(-1000.0f);
         ResetLineVelo();
@@ -2424,52 +2765,58 @@ void SuccessLoop(CScene *scene, CPadControl *pad) {
         SetNextMode(0);
         FishChara = NULL;
         mgTexManager.DeleteBlock(FishTexb);
-        ((CCameraControl *)camera)->RotBack(mgAngleLimit(3.1415927f + chara_rot[1]));
+        ((CCameraControl *) camera)->RotBack(mgAngleLimit(3.1415927f + chara_rot[1]));
         SetShowHari(1);
         scene->PlayBGM(0, -1, 1.0f);
+
         if (GetItemRet != 0) {
             sgGetItemOverFlagOn();
         }
     }
 }
+
 int CheckFishing(float *pos, CCPoly *polys, int count) {
     float end[4];
-    int hit_index[32];
+    int   hit_index[32];
     float hit_point[32][4];
-    int hits;
-    int i;
-    *(u_long128 *)end = *(u_long128 *)pos;
+    int   hits;
+    int   i;
+    *(u_long128 *) end = *(u_long128 *) pos;
     end[1] -= 140.0f;
     hits = CheckHits(polys, count, pos, end, 32, hit_index, hit_point, 1, 0);
     i = 0;
+
     if (hits <= 0) {
         return 0;
     }
+
     for (; i < 1; i++) {
-        int index = hit_index[i];
+        int   index = hit_index[i];
         float height = hit_point[i][1];
         pos[1] = height;
+
         if (polys[index].area_kind == 7) {
             return 1;
         }
     }
+
     return 0;
 }
 #ifdef NONMATCHING
 int CheckCasting(CScene *scene, float *position, float *direction) {
     mgVu0FBOX box;
-    CCPoly polys[0x400];
-    float end[4];
-    float move_dir[4];
-    float step_point[4];
-    float from[4];
-    float to[4];
-    float point_a[4];
-    float point_b[4];
-    float point_dir[4];
-    float probe[4];
-    float hit_point[32][4];
-    int hit_index[32];
+    CCPoly    polys[0x400];
+    float     end[4];
+    float     move_dir[4];
+    float     step_point[4];
+    float     from[4];
+    float     to[4];
+    float     point_a[4];
+    float     point_b[4];
+    float     point_dir[4];
+    float     probe[4];
+    float     hit_point[32][4];
+    int       hit_index[32];
 
     mgVectorMaxMin(box.max, box.min, position, direction);
     box.max[3] = 1.0f;
@@ -2484,12 +2831,12 @@ int CheckCasting(CScene *scene, float *position, float *direction) {
     direction[1] = 40.0f + position[1];
     sceVu0SubVector(move_dir, direction, position);
     move_dir[3] = 0.0f;
-    *(u_long128 *)end = *(u_long128 *)direction;
-    *(u_long128 *)from = *(u_long128 *)position;
-    *(u_long128 *)to = *(u_long128 *)direction;
+    *(u_long128 *) end = *(u_long128 *) direction;
+    *(u_long128 *) from = *(u_long128 *) position;
+    *(u_long128 *) to = *(u_long128 *) direction;
     from[1] = direction[1];
     from[3] = 1.0f;
-    *(u_long128 *)point_b = *(u_long128 *)direction;
+    *(u_long128 *) point_b = *(u_long128 *) direction;
     if (CheckFishing(direction, polys, poly_count) == 0) {
         return 0;
     }
@@ -2497,7 +2844,7 @@ int CheckCasting(CScene *scene, float *position, float *direction) {
     mgNormalizeVector(step_point, move_dir, 80.0f);
     mgAddVector(step_point, position);
     step_point[1] = end[1];
-    *(u_long128 *)point_a = *(u_long128 *)step_point;
+    *(u_long128 *) point_a = *(u_long128 *) step_point;
     if (CheckFishing(step_point, polys, poly_count) == 0) {
         return 0;
     }
@@ -2507,7 +2854,7 @@ int CheckCasting(CScene *scene, float *position, float *direction) {
     int steps = fptosi(mgDistVectorXZ(point_a, point_b) / 10.0f);
     mgAddVector(point_a, point_dir);
     for (int i = 1; i < steps; i++) {
-        *(u_long128 *)probe = *(u_long128 *)point_a;
+        *(u_long128 *) probe = *(u_long128 *) point_a;
         if (CheckFishing(probe, polys, poly_count) == 0) {
             return 0;
         }
@@ -2521,25 +2868,27 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", CheckCasting__FP6CScenePfPf);
 float GetRandamNumber(float center, float high, float floor) {
     float value = mgNRnd();
     value = center + value * ((high - center) / 3.0f);
+
     if (value < floor) {
         value = floor + (center - floor) * mgRnd();
     }
+
     return value;
 }
 #ifdef NONMATCHING
 int GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, int bait_no) {
     FISH_PLACE place[16];
-    int candidate_num = 0;
-    float rate_sum = 0.0f;
-    int picked;
-    int fish_no;
-    float size;
-    float weight;
-    float length_scale;
-    float width_scale;
-    float pull_strength;
-    int fishing_point;
-    int wait_time;
+    int        candidate_num = 0;
+    float      rate_sum = 0.0f;
+    int        picked;
+    int        fish_no;
+    float      size;
+    float      weight;
+    float      length_scale;
+    float      width_scale;
+    float      pull_strength;
+    int        fishing_point;
+    int        wait_time;
 
     if (bait_no < 0) {
         fish->fish_no = -1;
@@ -2636,7 +2985,7 @@ int GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, 
         float wait_bias = 0.0f;
         if (fish_no > 0) {
             FISH_PARAM *param = GetFishParam(fish_no);
-            int bait_affinity = 0;
+            int         bait_affinity = 0;
             if (bait_no >= 0 && bait_no < 18) {
                 bait_affinity = param->bait_affinity[bait_no];
             }
@@ -2675,14 +3024,14 @@ int GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, 
         }
         if (!(wait_bias < 0.0f)) {
             float rate = 1.0f + wait_bias;
-            wait_time = fptosi((float)wait_base / rate);
-            int extra = fptosi((float)wait_extra / rate);
-            wait_time += fptosi((float)extra * mgRnd());
+            wait_time = fptosi((float) wait_base / rate);
+            int extra = fptosi((float) wait_extra / rate);
+            wait_time += fptosi((float) extra * mgRnd());
         } else {
             float rate = 1.0f - wait_bias;
-            wait_time = fptosi((float)wait_base * rate);
-            int extra = fptosi((float)wait_extra / rate);
-            wait_time += fptosi((float)extra * mgRnd());
+            wait_time = fptosi((float) wait_base * rate);
+            int extra = fptosi((float) wait_extra / rate);
+            wait_time += fptosi((float) extra * mgRnd());
         }
     }
     int rod_power = RodData.status[2] - 10;
@@ -2694,7 +3043,7 @@ int GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, 
     fish->weight = weight;
     fish->length_scale = length_scale;
     fish->width_scale = width_scale;
-    fish->pull_strength = pull_strength / (1.0f + 2.0f * ((float)rod_power / 90.0f));
+    fish->pull_strength = pull_strength / (1.0f + 2.0f * ((float) rod_power / 90.0f));
     fish->vigour_recovery = 0.01f;
     fish->vigour = 0.0f;
     fish->fishing_point = fishing_point;
@@ -2709,42 +3058,49 @@ int GetUkiPokeTime(FISH_DATA *fish) {
             fish->fish_no = -1;
             return 5;
         case 1:
-            return (int)(60.0f * mgRnd()) + 100;
+            return (int) (60.0f * mgRnd()) + 100;
         case 2:
-            return (int)(50.0f * mgRnd()) + 50;
+            return (int) (50.0f * mgRnd()) + 50;
         case 3:
-            return (int)(30.0f * mgRnd()) + 30;
+            return (int) (30.0f * mgRnd()) + 30;
     }
+
     return 0;
 }
+
 int GetUkiPullTime(FISH_DATA *fish) {
     return 30;
 }
+
 int FishLoadBG(FISH_DATA *fish, u_long128 *buffer) {
     char path[0x40];
+
     if (fish->fish_no < 0) {
         return 0;
     }
+
     StartReadBG();
     FISH_PARAM *param = GetFishParam(fish->fish_no);
+
     if (param == NULL) {
         return 0;
     }
+
     sprintf(path, at_2461, param->file_name);
     return LoadFileBG(path, buffer, 0) != 0;
 }
 #ifdef NONMATCHING
 void LineTensionStep(FISH_DATA *fish, int reel) {
     float tension_rate;
-    int left_vibration;
-    int right_vibration;
+    int   left_vibration;
+    int   right_vibration;
     float pull;
 
     pull = fish->pull_strength * (1.0f + 0.5f * fish->vigour);
     int action_count = ActionCount;
     tension_rate = -0.004f;
     if (action_count > 5) {
-        tension_rate = -0.004f + 0.01f * (float)(action_count - 5) / 15.0f;
+        tension_rate = -0.004f + 0.01f * (float) (action_count - 5) / 15.0f;
     }
     if (action_count > 20) {
         tension_rate = 0.2f;
@@ -2759,7 +3115,7 @@ void LineTensionStep(FISH_DATA *fish, int reel) {
     }
     if (reel < 0) {
         pull *= 2.0f;
-        fish->vigour -= 0.05f * (3.0f * ((float)RodData.status[1] / 100.0f));
+        fish->vigour -= 0.05f * (3.0f * ((float) RodData.status[1] / 100.0f));
     }
     switch (RodStatus) {
         case 0:
@@ -2823,32 +3179,39 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", LineTensionStep__FP9FISH_DATAi);
 #endif
 int GetAppearFish(int map_no, float *pos, FISH_PLACE *places, int max_places) {
     FISH_PLACE_MAP *map;
-    int i;
-    int count;
+    int             i;
+    int             count;
     map = FishPlaceMap;
+
     for (i = 0; i < max_places; i++) {
         places[i].fish_no = -1;
         places[i].wait_bias = 0;
         places[i].rate = 0;
     }
+
     for (i = 0; i < FishPlaceMapNum; i++, map++) {
         if (map_no == map->map_no && map->CheckFishPlace(pos) != 0) {
             map->SetFishPlace(places, max_places, map->exclusive);
+
             if (map->exclusive != 0) {
                 break;
             }
         }
     }
+
     for (count = 0; count < max_places; count++) {
         if (places[count].fish_no < 0) {
             break;
         }
     }
+
     if (map_no >= 0 && count <= 0) {
         return GetAppearFish(-1, pos, places, max_places);
     }
+
     return count;
 }
+
 int FISH_PLACE_MAP::SetFishPlace(FISH_PLACE *place, int place_num, int replace) {
     int filled = 0;
 
@@ -2859,19 +3222,25 @@ int FISH_PLACE_MAP::SetFishPlace(FISH_PLACE *place, int place_num, int replace) 
             place[i].rate = 0.0f;
         }
     }
+
     if (fish_num >= place_num) {
         fish_num = place_num;
     }
+
     for (int i = 0; i < fish_num; i++) {
         FISH_PLACE *source = &fish[i];
+
         if (replace == 0) {
             int j;
+
             for (j = 0; j < place_num; j++) {
                 if (place[j].fish_no < 0 || source->fish_no == place[j].fish_no) {
                     FISH_PLACE *target = &place[j];
+
                     if (target->fish_no < 0) {
                         filled++;
                     }
+
                     target->fish_no = source->fish_no;
                     target->rate = place[i].rate > source->rate ? place[i].rate : source->rate;
                     target->wait_bias = place[i].wait_bias > source->wait_bias ? place[i].wait_bias : source->wait_bias;
@@ -2885,84 +3254,111 @@ int FISH_PLACE_MAP::SetFishPlace(FISH_PLACE *place, int place_num, int replace) 
             place[i].wait_bias = source->wait_bias;
         }
     }
+
     return filled;
 }
+
 int FISH_PLACE_MAP::CheckFishPlace(float *pos) {
     float center[4];
     mgZeroVector(center);
+
     switch (area_type) {
         case kFishShapeCircle:
             center[0] = area_param[0];
             center[2] = area_param[1];
             float dist = mgDistVectorXZ(center, pos);
-            if (dist > area_param[2])
+
+            if (dist > area_param[2]) {
                 return 0;
+            }
+
             return 1;
     }
+
     return 1;
 }
+
 int fpFISH_MAP_NUM(SPI_STACK *args, int arg_count) {
     FishPlaceMapNum = spiGetStackInt(args);
     u_int blocks;
-    if (((u_int)FishPlaceMapNum * sizeof(FISH_PLACE_MAP)) & 0xF) {
-        blocks = (((u_int)FishPlaceMapNum * sizeof(FISH_PLACE_MAP)) >> 4) + 1;
+
+    if (((u_int) FishPlaceMapNum * sizeof(FISH_PLACE_MAP)) & 0xF) {
+        blocks = (((u_int) FishPlaceMapNum * sizeof(FISH_PLACE_MAP)) >> 4) + 1;
     } else {
-        blocks = ((u_int)FishPlaceMapNum * sizeof(FISH_PLACE_MAP)) >> 4;
+        blocks = ((u_int) FishPlaceMapNum * sizeof(FISH_PLACE_MAP)) >> 4;
     }
+
     void *block = fpStack->Alloc(blocks + 2);
     FishPlaceMap =
-        (FISH_PLACE_MAP *)operator new[](FishPlaceMapNum * sizeof(FISH_PLACE_MAP), (u_long128 *)block);
+        (FISH_PLACE_MAP *) operator new[](FishPlaceMapNum * sizeof(FISH_PLACE_MAP), (u_long128 *) block);
     fpNowFishPlaceMapNum = 0;
     fpNowFishPlaceMap = FishPlaceMap;
     return 1;
 }
+
 int fpFISH_MAP(SPI_STACK *args, int arg_count) {
     fpNowFishPlaceMap = NULL;
-    if ((int)fpNowFishPlaceMapNum >= FishPlaceMapNum) {
+
+    if ((int) fpNowFishPlaceMapNum >= FishPlaceMapNum) {
         return 0;
     }
+
     fpNowFishPlaceMap = &FishPlaceMap[fpNowFishPlaceMapNum];
     memset(fpNowFishPlaceMap, 0, sizeof(FISH_PLACE_MAP));
     fpNowFishPlaceMap->map_no = spiGetStackInt(args++);
+
     if (arg_count >= 2) {
         fpNowFishPlaceMap->exclusive = spiGetStackInt(args);
     }
+
     return 1;
 }
+
 int fpFISH_PLACE(SPI_STACK *args, int arg_count) {
-    int area_type;
+    int   area_type;
     char *name;
-    int i;
+    int   i;
+
     if (fpNowFishPlaceMap == 0) {
         return 0;
     }
+
     area_type = spiGetStackInt(args++);
+
     if (area_type < 0 || area_type >= kFishShapeCount) {
         area_type = 0;
     }
+
     fpNowFishPlaceMap->area_type = area_type;
     name = spiGetStackString(args++);
 
-    if (name != 0 && *(signed char *)name != 0) {
+    if (name != 0 && *(signed char *) name != 0) {
         fpNowFishPlaceMap->name = mgCopyString(name, fpStack);
     }
+
     for (i = 0; i < kFishPlaceValueCount; i++) {
         fpNowFishPlaceMap->area_param[i] = spiGetStackFloat(args++);
     }
+
     return 1;
 }
+
 int fpFISH(SPI_STACK *args, int arg_count) {
     FISH_PLACE *entry;
-    int index;
-    int *count_ptr;
+    int         index;
+    int        *count_ptr;
+
     if (fpNowFishPlaceMap == 0) {
         return 0;
     }
+
     count_ptr = &fpNowFishPlaceMap->fish_num;
     index = *count_ptr;
+
     if (index >= kFishPlaceMaxFish) {
         return 0;
     }
+
     *count_ptr = index + 1;
     entry = &fpNowFishPlaceMap->fish[index];
     entry->fish_no = -1;
@@ -2973,13 +3369,16 @@ int fpFISH(SPI_STACK *args, int arg_count) {
     entry->wait_bias = spiGetStackFloat(args);
     return 1;
 }
+
 int fpFISH_MAP_END(SPI_STACK *args, int arg_count) {
     if (fpNowFishPlaceMap == 0) {
         return 0;
     }
+
     fpNowFishPlaceMapNum += 1;
     return 1;
 }
+
 void LoadFishPlaceData(char *script, int size, mgCMemory *stack) {
     fpStack = stack;
     FishPlaceMapNum = 0;

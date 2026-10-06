@@ -76,6 +76,7 @@ public:
      */
     void Init();
 };
+
 STATIC_ASSERT(sizeof(CMarker) == 0x4);
 
 /**
@@ -96,13 +97,13 @@ enum EVENT_SPRITE_ANIME {
  */
 class CEventSprite {
 public:
-    int  draw;        /**< Non-zero to draw the image. */
-    int  tex_block;   /**< Texture block that holds the image's texture. */
-    char name[0x40];  /**< Name of the image's texture. */
-    int  color[4];    /**< Red, green, blue and alpha, with 0x80 as full. */
-    int  get[4];      /**< Texel x, y, width and height of the part of the texture that the image shows. */
-    int  put[4];      /**< Screen x, y, width and height at which the image is drawn. */
-    int  anime[4];    /**< Running animation (EVENT_SPRITE_ANIME) and its target values and frames left. */
+    int  draw;       /**< Non-zero to draw the image. */
+    int  tex_block;  /**< Texture block that holds the image's texture. */
+    char name[0x40]; /**< Name of the image's texture. */
+    int  color[4];   /**< Red, green, blue and alpha, with 0x80 as full. */
+    int  get[4];     /**< Texel x, y, width and height of the part of the texture that the image shows. */
+    int  put[4];     /**< Screen x, y, width and height at which the image is drawn. */
+    int  anime[4];   /**< Running animation (EVENT_SPRITE_ANIME) and its target values and frames left. */
 
     /**
      *
@@ -211,6 +212,7 @@ public:
      */
     void Init();
 };
+
 STATIC_ASSERT(sizeof(CEventSprite) == 0x88);
 
 /**
@@ -237,7 +239,7 @@ public:
      * @address 0x2944E0
      * @size 0x50
      */
-    int SetName(int no, char *name);
+    int SetName(int index, char *name);
 
     /**
      *
@@ -247,7 +249,7 @@ public:
      * @address 0x294530
      * @size 0x50
      */
-    int SetDraw(int no, int draw);
+    int SetDraw(int index, int draw);
 
     /**
      *
@@ -257,7 +259,7 @@ public:
      * @address 0x294580
      * @size 0x50
      */
-    int SetGet(int no, int x, int y, int w, int h);
+    int SetGet(int index, int a, int b, int c, int d);
 
     /**
      *
@@ -267,7 +269,7 @@ public:
      * @address 0x2945D0
      * @size 0x50
      */
-    int SetPut(int no, int x, int y, int w, int h);
+    int SetPut(int index, int a, int b, int c, int d);
 
     /**
      *
@@ -277,7 +279,7 @@ public:
      * @address 0x294620
      * @size 0x50
      */
-    int SetMove(int no, int x, int y, int frames);
+    int SetMove(int index, int a, int b, int c);
 
     /**
      *
@@ -287,7 +289,7 @@ public:
      * @address 0x294670
      * @size 0x50
      */
-    int SetFade(int no, int fade_in, int frames);
+    int SetFade(int index, int a, int b);
 
     /**
      *
@@ -297,7 +299,7 @@ public:
      * @address 0x2946C0
      * @size 0x50
      */
-    int SetColor(int no, int r, int g, int b, int a);
+    int SetColor(int index, int a, int b, int c, int d);
 
     /**
      *
@@ -327,7 +329,7 @@ public:
      * @address 0x2947D0
      * @size 0xA0
      */
-    int Set(int no, int tex_block);
+    int Set(int index, int value);
 
     /**
      *
@@ -339,6 +341,7 @@ public:
      */
     void Init();
 };
+
 STATIC_ASSERT(sizeof(CEventSpriteMother) == 0x440);
 
 /**
@@ -414,7 +417,7 @@ public:
      * @address 0x294990
      * @size 0x40
      */
-    void SetTexture(char *name, int tex_block);
+    void SetTexture(char *name, int slot);
 
     /**
      *
@@ -474,7 +477,7 @@ public:
      * @address 0x294A20
      * @size 0x20
      */
-    void SetUvSize(int x, int y, int w, int h);
+    void SetUvSize(int u, int v, int w, int h);
 
     /**
      *
@@ -494,7 +497,7 @@ public:
      * @address 0x294A50
      * @size 0x20
      */
-    void GetScale(float *scale_x, float *scale_y);
+    void GetScale(float *out_x, float *out_y);
 
     /**
      *
@@ -504,7 +507,7 @@ public:
      * @address 0x294A70
      * @size 0x10
      */
-    void GetPosition(float *pos);
+    void GetPosition(float *out);
 
     /**
      *
@@ -514,7 +517,7 @@ public:
      * @address 0x294A80
      * @size 0x10
      */
-    void GetColor(float *color);
+    void GetColor(float *out);
 
     /**
      *
@@ -586,4 +589,5 @@ public:
      */
     void Draw();
 };
+
 STATIC_ASSERT(sizeof(CEventSprite2) == 0x80);

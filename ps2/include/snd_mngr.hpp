@@ -25,15 +25,15 @@ class sndCSeSeqData;
  *
  */
 enum sndPORT {
-    SND_PORT_BGM = 0,     /**< Background music; its sequences are played on the voice-capable driver port. */
-    SND_PORT_OB = 1,      /**< Sound effects of map objects. */
-    SND_PORT_BASE = 3,    /**< Sound effects of the base map. */
-    SND_PORT_EVENT = 4,   /**< Sound effects and sequences of events. */
-    SND_PORT_ENEMY = 5,   /**< Sound effects of monsters. */
-    SND_PORT_SYSTEM = 6,  /**< System sound effects, loaded once at boot. */
-    SND_PORT_MENU = 8,    /**< Sound effects of menus. */
-    SND_PORT_BGM2 = 11,   /**< Second background music port, sharing the first's sequence handling. */
-    SND_PORT_NUM = 16,    /**< Number of game sound ports. */
+    SND_PORT_BGM = 0,    /**< Background music; its sequences are played on the voice-capable driver port. */
+    SND_PORT_OB = 1,     /**< Sound effects of map objects. */
+    SND_PORT_BASE = 3,   /**< Sound effects of the base map. */
+    SND_PORT_EVENT = 4,  /**< Sound effects and sequences of events. */
+    SND_PORT_ENEMY = 5,  /**< Sound effects of monsters. */
+    SND_PORT_SYSTEM = 6, /**< System sound effects, loaded once at boot. */
+    SND_PORT_MENU = 8,   /**< Sound effects of menus. */
+    SND_PORT_BGM2 = 11,  /**< Second background music port, sharing the first's sequence handling. */
+    SND_PORT_NUM = 16,   /**< Number of game sound ports. */
 };
 
 /**
@@ -97,13 +97,13 @@ enum sndREVERB_TYPE {
  *
  */
 struct SND_LOOP_SE_SEQ {
-    u32 se_id;     /**< Sound ID with the sound effect number, or -1 when the entry is free. */
-    s16 keep_time; /**< Frames the sound keeps playing after the last request. */
-    s16 count;     /**< Frames since the last request; 0 until the sound has been started. */
-    s16 voice;     /**< Voice number the sound effect plays with. */
-    s16 unk_a;
-    float vol;     /**< Volume scale of the sound effect's default volume, or below 0 for the default. */
-    float pan;     /**< Pan from -1 (left) to 1 (right). */
+    u32   se_id;     /**< Sound ID with the sound effect number, or -1 when the entry is free. */
+    s16   keep_time; /**< Frames the sound keeps playing after the last request. */
+    s16   count;     /**< Frames since the last request; 0 until the sound has been started. */
+    s16   voice;     /**< Voice number the sound effect plays with. */
+    s16   unk_a;
+    float vol; /**< Volume scale of the sound effect's default volume, or below 0 for the default. */
+    float pan; /**< Pan from -1 (left) to 1 (right). */
 
     /**
      * Creates the entry as free.
@@ -114,6 +114,7 @@ struct SND_LOOP_SE_SEQ {
      */
     SND_LOOP_SE_SEQ();
 };
+
 STATIC_ASSERT(sizeof(SND_LOOP_SE_SEQ) == 0x14);
 
 /**
@@ -124,8 +125,8 @@ STATIC_ASSERT(sizeof(SND_LOOP_SE_SEQ) == 0x14);
  */
 class CLoopSeMngr {
 public:
-    int loop_se_num;          /**< Number of entries of loop_se. */
-    SND_LOOP_SE_SEQ *loop_se; /**< Looping sound effect entries, or NULL before Create. */
+    int              loop_se_num; /**< Number of entries of loop_se. */
+    SND_LOOP_SE_SEQ *loop_se;     /**< Looping sound effect entries, or NULL before Create. */
 
     /**
      * Creates the manager with no entries.
@@ -140,7 +141,7 @@ public:
      * @address 0x18DA20
      * @size 0xC0
      */
-    int Create(int num, mgCMemory *memory);
+    int Create(int sequence_count, mgCMemory *memory);
 
     /**
      * Forgets the entries without freeing them.
@@ -178,7 +179,7 @@ public:
      * @address 0x18DC50
      * @size 0x20
      */
-    int SeLoopPlayStop(unsigned int snd_id, int se_no, int keep_time, int voice);
+    int SeLoopPlayStop(unsigned int handle, int sound, int flags, int loop);
 
     /**
      * Requests a looping sound effect with a volume scale and pan for this
@@ -211,6 +212,7 @@ public:
      */
     void AllSeStop();
 };
+
 STATIC_ASSERT(sizeof(CLoopSeMngr) == 0x8);
 
 /**
@@ -221,12 +223,12 @@ STATIC_ASSERT(sizeof(CLoopSeMngr) == 0x8);
  */
 struct sndSeInfo {
     int unk_0;
-    s8 type;    /**< How the sound effect is played, a sndSE_TYPE. */
-    s8 prog;    /**< Program, sequence number or sound-effect sequence number, by type. */
-    s8 key;     /**< Key number a key-on sound effect is played at. */
-    s8 unk_7;
-    s8 def_vol; /**< Default volume, 0 to 127. */
-    s8 unk_9[3];
+    s8  type; /**< How the sound effect is played, a sndSE_TYPE. */
+    s8  prog; /**< Program, sequence number or sound-effect sequence number, by type. */
+    s8  key;  /**< Key number a key-on sound effect is played at. */
+    s8  unk_7;
+    s8  def_vol; /**< Default volume, 0 to 127. */
+    s8  unk_9[3];
 
     /**
      * Creates the entry with no sound.
@@ -237,6 +239,7 @@ struct sndSeInfo {
      */
     sndSeInfo();
 };
+
 STATIC_ASSERT(sizeof(sndSeInfo) == 0xC);
 
 /**
@@ -247,12 +250,12 @@ STATIC_ASSERT(sizeof(sndSeInfo) == 0xC);
  */
 class sndBankInfo {
 public:
-    int unk_0;
-    int se_num;               /**< Number of entries of se. */
-    sndSeInfo *se;            /**< Sound effect table, indexed by sound effect number. */
-    int sq_num;               /**< Number of entries of sq_name. */
-    char **sq_name;           /**< Names of the driver sequences, indexed by sequence number. */
-    int seseq_num;            /**< Number of entries of seseq. */
+    int            unk_0;
+    int            se_num;    /**< Number of entries of se. */
+    sndSeInfo     *se;        /**< Sound effect table, indexed by sound effect number. */
+    int            sq_num;    /**< Number of entries of sq_name. */
+    char         **sq_name;   /**< Names of the driver sequences, indexed by sequence number. */
+    int            seseq_num; /**< Number of entries of seseq. */
     sndCSeSeqData *seseq;     /**< Sound-effect sequences, indexed by sound-effect sequence number. */
 
     /**
@@ -275,6 +278,7 @@ public:
         if (se_no < 0 || se_no >= se_num) {
             return NULL;
         }
+
         return &se[se_no];
     }
 
@@ -295,6 +299,7 @@ public:
      */
     int SearchSeq(char *name, int *index);
 };
+
 STATIC_ASSERT(sizeof(sndBankInfo) == 0x1C);
 
 /**
@@ -306,16 +311,17 @@ STATIC_ASSERT(sizeof(sndBankInfo) == 0x1C);
 struct sndPortSeSeq {
     s16 seseq_no; /**< Index of the sound-effect sequence player, or -1 when the entry is free. */
     s16 se_no;    /**< Sound effect number that started it. */
-    s8 bank;      /**< Bank number of the sound effect. */
-    s8 voice;     /**< Voice number it was started with. */
-    s8 unk_6;
-    s8 unk_7;
+    s8  bank;     /**< Bank number of the sound effect. */
+    s8  voice;    /**< Voice number it was started with. */
+    s8  unk_6;
+    s8  unk_7;
 
     /**
      * Creates the entry as free.
      */
     sndPortSeSeq() { seseq_no = -1; }
 };
+
 STATIC_ASSERT(sizeof(sndPortSeSeq) == 0x8);
 
 /**
@@ -326,16 +332,16 @@ STATIC_ASSERT(sizeof(sndPortSeSeq) == 0x8);
  */
 class sndPortInfo {
 public:
-    int port;                 /**< Sound driver port sound effects play on, or -1. */
-    int sq_port;              /**< Sound driver port sequences play on, or -1. */
-    int bank_num;             /**< Number of banks loaded. */
-    sndBankInfo bank[16];     /**< Loaded banks. */
-    u8 unk_1cc[0x40];
-    int sq_no;                /**< Number of the driver sequence last started, or -1. */
-    int sq_state;             /**< Playback state of the driver sequence, a sndSQ_STATE. */
-    int sq_vol;               /**< Volume of the driver sequence, 0 to 127. */
-    int sq_se_no;             /**< Sound effect number that started the driver sequence, or -1. */
-    sndPortSeSeq seseq[16];   /**< Sound-effect sequences playing on the port. */
+    int          port;     /**< Sound driver port sound effects play on, or -1. */
+    int          sq_port;  /**< Sound driver port sequences play on, or -1. */
+    int          bank_num; /**< Number of banks loaded. */
+    sndBankInfo  bank[16]; /**< Loaded banks. */
+    u8           unk_1cc[0x40];
+    int          sq_no;     /**< Number of the driver sequence last started, or -1. */
+    int          sq_state;  /**< Playback state of the driver sequence, a sndSQ_STATE. */
+    int          sq_vol;    /**< Volume of the driver sequence, 0 to 127. */
+    int          sq_se_no;  /**< Sound effect number that started the driver sequence, or -1. */
+    sndPortSeSeq seseq[16]; /**< Sound-effect sequences playing on the port. */
 
     /**
      * Creates the port with no driver ports and no banks.
@@ -354,9 +360,11 @@ public:
         sq_state = SND_SQ_STATE_STOP;
         sq_vol = 0;
         sq_se_no = -1;
+
         for (i = 0; i < 16; i++) {
             seseq[i].seseq_no = -1;
         }
+
         for (int j = 0; j < 16; j++) {
             bank[j].seseq_num = 0;
             bank[j].sq_num = 0;
@@ -375,6 +383,7 @@ public:
         if (bank_no < 0 || bank_no >= bank_num) {
             return NULL;
         }
+
         return &bank[bank_no];
     }
 
@@ -387,6 +396,7 @@ public:
                 return &seseq[i];
             }
         }
+
         return NULL;
     }
 
@@ -397,10 +407,12 @@ public:
     sndPortSeSeq *SearchSeSeq(int bank_no, int se_no, int voice) {
         for (int i = 0; i < 16; i++) {
             sndPortSeSeq *entry = &seseq[i];
+
             if (entry->seseq_no >= 0 && entry->bank == bank_no && entry->se_no == se_no && entry->voice == voice) {
                 return entry;
             }
         }
+
         return NULL;
     }
 
@@ -425,6 +437,7 @@ public:
      */
     void LoadVolInfoTxt(int bank_no, char *text, int size);
 };
+
 STATIC_ASSERT(sizeof(sndPortInfo) == 0x29C);
 
 /**
@@ -452,7 +465,7 @@ unsigned int sndCreateID(unsigned int snd_id, int se_no);
  * @address 0x18DFC0
  * @size 0x10
  */
-int sndGetSeNo(unsigned int snd_id);
+int sndGetSeNo(unsigned int se_id);
 
 /**
  * Starts the sound driver and its semaphore, sets both master volumes to
@@ -622,7 +635,7 @@ void sndSeAllStop(int port_no);
  * @address 0x18EE40
  * @size 0x30
  */
-int sndGetSeDefVol(unsigned int snd_id, int se_no);
+int sndGetSeDefVol(unsigned int se_id, int index);
 
 /**
  * Loads a sound pack into a port as a new bank: its wave data, driver
@@ -905,7 +918,7 @@ void sndSePlayPBPrKr(int port, int bank, int prog, int key, int velocity, int vo
  * @address 0x1909D0
  * @size 0x80
  */
-void sndSeStopPBPrKr(int port, int bank, int prog, int key, int voice);
+void sndSeStopPBPrKr(int a, int bank, int c, int d, int voice);
 
 /**
  * Sets the volume of a program and key on a sound driver port and bank; a
@@ -924,7 +937,7 @@ void sndSetSeVolPBPrKr(int port, int bank, int prog, int key, int vol, int voice
  * @address 0x190AF0
  * @size 0x90
  */
-void sndSetSePanPBPrKr(int port, int bank, int prog, int key, int pan, int voice);
+void sndSetSePanPBPrKr(int a, int bank, int c, int d, int e, int f);
 
 /**
  * Sets the pitch of a program and key on a sound driver port and bank.
@@ -933,7 +946,7 @@ void sndSetSePanPBPrKr(int port, int bank, int prog, int key, int pan, int voice
  * @address 0x190B80
  * @size 0x90
  */
-void sndSetSePitchPBPrKr(int port, int bank, int prog, int key, int pitch, int voice);
+void sndSetSePitchPBPrKr(int a, int bank, int c, int d, int e, int f);
 
 /**
  * Starts a sequence on a sound driver port at a volume.
@@ -942,7 +955,7 @@ void sndSetSePitchPBPrKr(int port, int bank, int prog, int key, int pitch, int v
  * @address 0x190C10
  * @size 0x60
  */
-void sndSqPlay(int port, int sq_no, int vol);
+void sndSqPlay(int a, int b, int c);
 
 /**
  * Silences and stops the sequence of a sound driver port, stopping the

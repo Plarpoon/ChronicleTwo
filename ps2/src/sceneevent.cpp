@@ -1,18 +1,20 @@
 #include "common.h"
-#include "map.hpp"
-#include "mapload.hpp"
-#include "mg_drawenv.hpp"
-#include "mg_texture.hpp"
-#include "sceneevent.hpp"
-#include "scenesnd.hpp"
-#include "mg_camera.hpp"
-#include "mg_math.hpp"
-#include "mglib.hpp"
-#include "screeneffect.hpp"
-#include "collision.hpp"
-#include "mapsky.hpp"
+
 #include <cstdio>
 #include <cstring>
+
+#include "collision.hpp"
+#include "map.hpp"
+#include "mapload.hpp"
+#include "mapsky.hpp"
+#include "mg_camera.hpp"
+#include "mg_drawenv.hpp"
+#include "mg_math.hpp"
+#include "mg_texture.hpp"
+#include "mglib.hpp"
+#include "sceneevent.hpp"
+#include "scenesnd.hpp"
+#include "screeneffect.hpp"
 
 /**
  *
@@ -20,9 +22,10 @@
  *
  */
 union CopyVector {
-    float f[4]; /**< Floating point components. */
+    float     f[4]; /**< Floating point components. */
     u_long128 word; /**< The same components as one quadword. */
 };
+
 /**
  *
  * Name copied into a scene event record.
@@ -31,6 +34,7 @@ union CopyVector {
 struct CopyEventName {
     char text[16]; /**< Event name. */
 };
+
 /**
  *
  * Integer words copied into a scene event record.
@@ -39,200 +43,254 @@ struct CopyEventName {
 struct CopyEventWords {
     int value[16]; /**< Event data words. */
 };
+
 extern float col_1003[4][4];
 extern float at_1013__4[4];
-extern char at_858__3[];
-extern char at_958__3[];
-extern char at_959__3[];
-extern char at_1093[];
+extern char  at_858__3[];
+extern char  at_958__3[];
+extern char  at_959__3[];
+extern char  at_1093[];
+#include <cstdio>
+#include <cstring>
+
 #include "collision.hpp"
 #include "mapsky.hpp"
 #include "mg_camera.hpp"
 #include "mg_math.hpp"
-#include "mglib.hpp"
-#include "mg_texture.hpp"
 #include "mg_tanime.hpp"
+#include "mg_texture.hpp"
+#include "mglib.hpp"
 #include "screeneffect.hpp"
-#include <cstring>
-
-#include <cstdio>
 
 // Code (.text)
 void CScene::UpDateMapInfo() {
-    CMap *active_maps[4];
+    CMap             *active_maps[4];
     CMapLightingInfo *lighting;
-    int count = GetActiveMap(active_maps, 4);
-    int i;
+    int               count = GetActiveMap(active_maps, 4);
+    int               i;
+
     for (i = 0; i < count; i++) {
         if (active_maps[i] != NULL) {
             active_maps[i]->now_time = time;
         }
     }
+
     CMap *map = GetMap(active_map);
+
     if (map != NULL) {
         CMapLightingInfo lighting_data;
         map->GetLightInfo(lighting = &lighting_data);
         mgFogEnable(lighting->fog_enable);
+
         if (lighting->fog_enable != 0) {
             mgSetFogParam(lighting->fog.near_dist, lighting->fog.far_dist, lighting->fog.r,
                           lighting->fog.g, lighting->fog.b, lighting->fog.far_value,
                           lighting->fog.near_value);
         }
+
         mgSetRenderInfo(lighting->projection, 3.0f, 50000.0f);
         mgSetLight(lighting->light_dir, lighting->light_color);
         mgSetAmbient(lighting->ambient);
         mgResetPlight();
+
         if (lighting->plight_enable != 0) {
             mgPlightEnable(1);
             int light;
+
             for (light = 0; light < 4; light++) {
-                mgSetPlight(light, (mgPOINT_LIGHT *)&lighting->point_light[light]);
+                mgSetPlight(light, (mgPOINT_LIGHT *) &lighting->point_light[light]);
             }
         }
+
         mgSetBackGround(lighting->bg_color);
     }
 }
+
 int CScene::GetColPoly(CCPoly *polys, mgVu0FBOX &box, int max) {
     CMap *maps[4];
-    int count = GetActiveMap(maps, 4);
-    int total = 0;
-    int i;
+    int   count = GetActiveMap(maps, 4);
+    int   total = 0;
+    int   i;
+
     for (i = 0; i < count; i++) {
         int found = maps[i]->GetColPoly(polys, box, max);
         total += found;
         polys += found;
         max -= found;
+
         if (max < 0) {
             break;
         }
     }
+
     return total;
 }
+
 int CScene::GetCameraPoly(CCPoly *polys, mgVu0FBOX &box, int max) {
     CMap *maps[4];
-    int count = GetActiveMap(maps, 4);
-    int total = 0;
-    int i;
+    int   count = GetActiveMap(maps, 4);
+    int   total = 0;
+    int   i;
+
     for (i = 0; i < count; i++) {
         int found = maps[i]->GetCameraPoly(polys, box, max);
         total += found;
         polys += found;
         max -= found;
+
         if (max < 0) {
             break;
         }
     }
+
     return total;
 }
+
 void CScene::RunEvent(int requested_event_no, CSceneEventData *data) {
-    u8 *scene = (u8 *)this;
+    u8 *scene = (u8 *) this;
+
     if (event_run == 0 || (printf(at_858__3), event_no != 100)) {
         event_no = requested_event_no;
+
         if (data != NULL) {
-            ((CSceneEventData *)(scene + 0x2E90))->head = data->head;
-            ((CSceneEventData *)(scene + 0x2E90))->group_1 = data->group_1;
-            ((CSceneEventData *)(scene + 0x2E90))->group_2 = data->group_2;
-            ((CSceneEventData *)(scene + 0x2E90))->group_3 = data->group_3;
-            ((CSceneEventData *)(scene + 0x2E90))->group_4 = data->group_4;
-            ((CSceneEventData *)(scene + 0x2E90))->group_5 = data->group_5;
-            ((CSceneEventData *)(scene + 0x2E90))->vectors_a = data->vectors_a;
-            ((CSceneEventData *)(scene + 0x2E90))->vectors_b = data->vectors_b;
-            ((CSceneEventData *)(scene + 0x2E90))->chara_no = data->chara_no;
-            ((CSceneEventData *)(scene + 0x2E90))->chara_slot = data->chara_slot;
-            ((CSceneEventData *)(scene + 0x2E90))->gameobj_no = data->gameobj_no;
+            ((CSceneEventData *) (scene + 0x2E90))->head = data->head;
+            ((CSceneEventData *) (scene + 0x2E90))->group_1 = data->group_1;
+            ((CSceneEventData *) (scene + 0x2E90))->group_2 = data->group_2;
+            ((CSceneEventData *) (scene + 0x2E90))->group_3 = data->group_3;
+            ((CSceneEventData *) (scene + 0x2E90))->group_4 = data->group_4;
+            ((CSceneEventData *) (scene + 0x2E90))->group_5 = data->group_5;
+            ((CSceneEventData *) (scene + 0x2E90))->vectors_a = data->vectors_a;
+            ((CSceneEventData *) (scene + 0x2E90))->vectors_b = data->vectors_b;
+            ((CSceneEventData *) (scene + 0x2E90))->chara_no = data->chara_no;
+            ((CSceneEventData *) (scene + 0x2E90))->chara_slot = data->chara_slot;
+            ((CSceneEventData *) (scene + 0x2E90))->gameobj_no = data->gameobj_no;
             event_data.unk_cc = data->unk_cc;
         }
+
         event_run = 1;
     }
 }
+
 int CScene::GetMapEvent(float *position, int map_no, CSceneEventData *event) {
-    CMap *maps[4];
+    CMap        *maps[4];
     MapEventInfo result;
-    int flag_no;
-    int count = GetActiveMap(maps, 4);
-    int i;
+    int          flag_no;
+    int          count = GetActiveMap(maps, 4);
+    int          i;
     flag_no = 0;
+
     for (i = 0; i < count; i++) {
         CFuncPoint *point = maps[i]->GetEvent(position, map_no, &result);
+
         if (result.event_no != 0) {
             flag_no = result.event_no;
         }
+
         if (point != NULL) {
             if (event != NULL) {
-                *(CopyVector *)event->position = *(CopyVector *)point->position;
-                *(CopyVector *)event->rotation = *(CopyVector *)point->rotation;
-                *(CopyVector *)event->scale = *(CopyVector *)point->scale;
+                *(CopyVector *) event->position = *(CopyVector *) point->position;
+                *(CopyVector *) event->rotation = *(CopyVector *) point->rotation;
+                *(CopyVector *) event->scale = *(CopyVector *) point->scale;
                 event->event.flag = point->event.flag;
                 event->event.event_no = point->event.event_no;
                 event->event.point_no = point->event.point_no;
                 event->event.unk_2c = point->event.unk_2c;
                 event->event.unk_30 = point->event.unk_30;
                 event->event.unk_34 = point->event.unk_34;
-                *(CopyEventName *)event->event.unk_38 = *(CopyEventName *)point->event.unk_38;
+                *(CopyEventName *) event->event.unk_38 = *(CopyEventName *) point->event.unk_38;
                 event->map_event.check_type = result.check_type;
                 event->map_event.event_no = result.event_no;
-                *(CopyEventWords *)event->map_event.matrix = *(CopyEventWords *)result.matrix;
+                *(CopyEventWords *) event->map_event.matrix = *(CopyEventWords *) result.matrix;
                 event->map_event.parts_no = result.parts_no;
                 event->map_event.point_no = result.point_no;
             }
+
             return 1;
         }
     }
+
     map_event_no = flag_no;
     int object_chara = GetGameObjectEvent(position, event);
+
     if (object_chara < 0) {
         return 0;
     }
+
     map_event_no = 1;
+
     if (map_no != 1) {
         return 0;
     }
+
     if (object_chara == 0x78) {
         event->event.point_no = 300;
     } else if (object_chara == 0x7A) {
         event->event.point_no = 400;
     }
+
     return 1;
 }
+
 int CScene::GetFixCameraPos(float *position, float *out_camera) {
     float lifted[4];
     CMap *maps[4];
-    int count;
-    int i;
-    *(u_long128 *)lifted = *(u_long128 *)position;
+    int   count;
+    int   i;
+    *(u_long128 *) lifted = *(u_long128 *) position;
     lifted[1] += 1.0f;
     count = GetActiveMap(maps, 4);
+
     for (i = 0; i < count; i++) {
         if (maps[i]->GetFixCameraPos(lifted, out_camera) != 0) {
             return 1;
         }
     }
+
     return 0;
 }
+
 void CScene::FixCameraPartsOnOff(float *pos) {
     CMap *maps[4];
-    int count = GetActiveMap(maps, 4);
+    int   count = GetActiveMap(maps, 4);
+
     for (int index = 0; index < count; ++index) {
         maps[index]->FixCameraPartsOnOff(pos);
     }
 }
+
 void CScene::EyeViewDrawOnOff(int on) {
     CMap *maps[4];
-    int count = GetActiveMap(maps, 4);
+    int   count = GetActiveMap(maps, 4);
+
     for (int index = 0; index < count; ++index) {
         CPartsGroup *shown = maps[index]->SearchPartsGroup(at_958__3);
         CPartsGroup *hidden = maps[index]->SearchPartsGroup(at_959__3);
-        if (shown != NULL) shown->off = (u8)((on != 0) ^ 1);
-        if (hidden != NULL) hidden->off = on;
+
+        if (shown != NULL) {
+            shown->off = (u8) ((on != 0) ^ 1);
+        }
+
+        if (hidden != NULL) {
+            hidden->off = on;
+        }
     }
 }
+
 void CScene::GetSunPosition(float *pos) {
     sceVu0FVECTOR camera_pos;
     mgZeroVector(camera_pos);
     mgCCamera *camera = GetCamera(active_camera);
-    if (camera != NULL) camera->GetPos(camera_pos);
+
+    if (camera != NULL) {
+        camera->GetPos(camera_pos);
+    }
+
     CMap *map = GetMap(active_map);
-    if (map == NULL) return;
+
+    if (map == NULL) {
+        return;
+    }
+
     map->GetSunPoint(pos);
     sceVu0Normalize(pos, pos);
     sceVu0ScaleVector(pos, pos, 5000.0f);
@@ -240,38 +298,50 @@ void CScene::GetSunPosition(float *pos) {
     pos[1] += map->unk_dc;
     pos[2] += camera_pos[2];
 }
+
 void CScene::GetMoonPosition(float *pos) {
     GetSunPosition(pos);
     pos[1] *= -1.0f;
 }
+
 void CScene::DrawSky(int sky_index) {
     float camera_info[4];
     float sun_position[4];
     float moon_position[4];
     float lighting_ratio[8];
     float sun_ratio[8];
-    union { CMapLightingInfo lighting; };
-    float sky_color_a[4];
-    float sky_color_b[4];
-    CMapSky *sky;
+
+    union {
+        CMapLightingInfo lighting;
+    };
+
+    float      sky_color_a[4];
+    float      sky_color_b[4];
+    CMapSky   *sky;
     mgCCamera *camera;
-    CMap *map;
+    CMap      *map;
+
     if (sky_index < 0) {
         sky = GetSky(1);
+
         if (sky == NULL) {
             sky = GetSky(0);
         }
     } else {
         sky = GetSky(sky_index);
     }
+
     if (sky != NULL) {
         mgZeroVector(camera_info);
         camera = GetCamera(active_camera);
+
         if (camera != NULL) {
             camera->GetPos(camera_info);
             camera_info[3] = camera->GetAngleH();
         }
+
         map = GetMap(active_map);
+
         if (map != NULL && map->sky_info != 0) {
             camera_info[1] = map->unk_dc;
             memset(&lighting, 0, sizeof(lighting));
@@ -280,24 +350,26 @@ void CScene::DrawSky(int sky_index) {
             map->GetLightingSunRatio(sun_ratio);
             GetSunPosition(sun_position);
             GetMoonPosition(moon_position);
-            *(CopyVector *)sky_color_a = *(CopyVector *)lighting.bg_color;
+            *(CopyVector *) sky_color_a = *(CopyVector *) lighting.bg_color;
             sceVu0ScaleVector(sky_color_a, sky_color_a, 0.0078125f);
             sky_color_a[3] = 1.0f;
-            *(CopyVector *)sky_color_b = *(CopyVector *)lighting.bg_color2;
+            *(CopyVector *) sky_color_b = *(CopyVector *) lighting.bg_color2;
             sceVu0ScaleVector(sky_color_b, sky_color_b, 0.0078125f);
             sky_color_b[3] = 1.0f;
             sky->DrawSkyBack(camera_info, sky_color_a, sky_color_b);
             sky->DrawSky(camera_info, sun_position, moon_position,
-                                          map->GetNowTimeBand(), lighting_ratio, sun_ratio);
+                         map->GetNowTimeBand(), lighting_ratio, sun_ratio);
         }
     }
 }
+
 void CScene::DrawLensFlare(int flare_type, char *texture, char *alpha_texture) {
     float ratio[4];
     float color[4];
     float sun_position[4];
-    int screen[4];
+    int   screen[4];
     CMap *map = GetMap(active_map);
+
     if (map != NULL && map->sky_info != 0) {
         if (map->lens_flare == 0) {
             return;
@@ -305,9 +377,11 @@ void CScene::DrawLensFlare(int flare_type, char *texture, char *alpha_texture) {
     } else {
         return;
     }
+
     map->GetLightingFlareRatio(ratio);
+
     if (ratio[0] != 0.0f || ratio[1] != 0.0f || ratio[3] != 0.0f) {
-        *(CopyVector *)color = *(CopyVector *)at_1013__4;
+        *(CopyVector *) color = *(CopyVector *) at_1013__4;
         color[0] += col_1003[0][0] * ratio[0];
         color[1] += col_1003[0][1] * ratio[0];
         color[2] += col_1003[0][2] * ratio[0];
@@ -322,36 +396,45 @@ void CScene::DrawLensFlare(int flare_type, char *texture, char *alpha_texture) {
         color[2] += col_1003[3][2] * ratio[3];
         GetSunPosition(sun_position);
         sun_position[3] = 1.0f;
+
         if (mgTransWorldScreen(screen, sun_position) != 0) {
             screen[2] = mgTransZPrim(10000.0f);
             LensFlare(screen, color, flare_type, texture, alpha_texture);
         }
     }
 }
+
 void CScene::EffectStep() {
     CMap *maps[4];
-    int count = GetActiveMap(maps, 4);
+    int   count = GetActiveMap(maps, 4);
+
     for (int index = 0; index < count; ++index) {
         maps[index]->EffectStep();
     }
+
     fire_raster.Step();
 }
+
 void CScene::DrawEffect(int tex_block) {
-    CMap *maps[4];
+    CMap              *maps[4];
     mgCTextureManager *tex_manager = &mgTexManager;
-    mgCTexture *fire_texture;
-    int count = GetActiveMap(maps, 4);
-    int i;
-    int j;
-    int k;
+    mgCTexture        *fire_texture;
+    int                count = GetActiveMap(maps, 4);
+    int                i;
+    int                j;
+    int                k;
+
     for (i = 0; i < count; i++) {
         int block = maps[i]->effect_list.block;
+
         if (block >= 0) {
-            tex_manager->ReloadTexture(block, (sceVif1Packet *)NULL);
+            tex_manager->ReloadTexture(block, (sceVif1Packet *) NULL);
             maps[i]->DrawEffect();
         }
     }
-    tex_manager->ReloadTexture(tex_block, (sceVif1Packet *)NULL);
+
+    tex_manager->ReloadTexture(tex_block, (sceVif1Packet *) NULL);
+
     for (j = 0; j < count; j++) {
         if (maps[j] != NULL) {
             maps[j]->fire_raster = &fire_raster;
@@ -359,14 +442,16 @@ void CScene::DrawEffect(int tex_block) {
             maps[j]->fire_raster = NULL;
         }
     }
+
     fire_texture =
         tex_manager->GetTexture(at_1093, tex_block);
     fire_raster.SetTexture(fire_texture);
-    mgCTexture frame;
+    mgCTexture  frame;
     mgRect<int> rect;
     mgGetFrameBuffer(&frame);
-    rect.Set( 0, 0, (mgScreenWidth - 1) << 4, (mgScreenHeight - 1) << 4);
+    rect.Set(0, 0, (mgScreenWidth - 1) << 4, (mgScreenHeight - 1) << 4);
     mgSetPkMoveImage(&frame, rect, fire_texture, 0, 0, 0);
+
     for (k = 0; k < count; k++) {
         if (maps[k] != NULL) {
             maps[k]->fire_raster = &fire_raster;

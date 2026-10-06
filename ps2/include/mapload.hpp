@@ -2,8 +2,9 @@
 
 #include "common.h"
 
-#include <cstring>
 #include <libvu0.h>
+
+#include <cstring>
 
 #include "mg_drawenv.hpp"
 #include "mg_frame.hpp"
@@ -119,8 +120,10 @@ public:
      * @size 0x30
      */
     CMapLightingInfo() { memset(this, 0, sizeof(CMapLightingInfo)); }
+
     CMapLightingInfo &operator=(const CMapLightingInfo &other);
 };
+
 STATIC_ASSERT(sizeof(CMapLightingInfo) == 0x1D0);
 
 /**
@@ -158,11 +161,11 @@ public:
      *
      */
     struct PlightData {
-        sceVu0FVECTOR color;          /**< Colour of the light, with w of 0. */
-        float         power;          /**< Strength of the light. */
-        float         range;          /**< Distance the light reaches. */
-        int           light_type;     /**< Kind of light, a FUNC_PLIGHT_TYPE. */
-        int           light_chara;    /**< Non-zero lets the light reach characters. */
+        sceVu0FVECTOR color;       /**< Colour of the light, with w of 0. */
+        float         power;       /**< Strength of the light. */
+        float         range;       /**< Distance the light reaches. */
+        int           light_type;  /**< Kind of light, a FUNC_PLIGHT_TYPE. */
+        int           light_chara; /**< Non-zero lets the light reach characters. */
         int           unk_40;
         int           unk_44;
         int           no_map_light;   /**< Non-zero keeps the light off the map itself. */
@@ -177,9 +180,9 @@ public:
      *
      */
     struct AnimeData {
-        char         *parts_name; /**< Placed part that the animation controls. */
-        char         *piece_name; /**< Name of the map piece animated. */
-        char         *frame_name; /**< Name of the frame of that piece animated. */
+        char         *parts_name;  /**< Placed part that the animation controls. */
+        char         *piece_name;  /**< Name of the map piece animated. */
+        char         *frame_name;  /**< Name of the frame of that piece animated. */
         int           kind;        /**< Value the animation drives, an OBJ_ANIME_PARAM. */
         int           mode;        /**< How the value moves each step, an OBJ_ANIME_MODE. */
         s16           uniform;     /**< Non-zero copies the first component to the other two. */
@@ -210,13 +213,13 @@ public:
      *
      */
     struct SoundData {
-        int           se_no;  /**< Sound effect played. */
+        int           se_no; /**< Sound effect played. */
         float         unk_24;
         float         unk_28;
         float         unk_2c;
-        int           shape;  /**< 1 to sound along the line from start to end rather than from the point's position. */
-        sceVu0FVECTOR start;  /**< First end of the sounding line, in the point's space. */
-        sceVu0FVECTOR end;    /**< Second end of the sounding line, in the point's space. */
+        int           shape; /**< 1 to sound along the line from start to end rather than from the point's position. */
+        sceVu0FVECTOR start; /**< First end of the sounding line, in the point's space. */
+        sceVu0FVECTOR end;   /**< Second end of the sounding line, in the point's space. */
     };
 
     /**
@@ -227,28 +230,30 @@ public:
     struct InventData {
         int       neta_no; /**< Photo subject (neta) the point gives a picture taken of it. */
         int       unk_24;
-        float     range;   /**< Distance the point reaches, 400 when zero. */
-        float     angle;  /**< Angle in radians, given in degrees by the script. */
-        mgVu0FBOX box;    /**< Box the point covers. */
+        float     range; /**< Distance the point reaches, 400 when zero. */
+        float     angle; /**< Angle in radians, given in degrees by the script. */
+        mgVu0FBOX box;   /**< Box the point covers. */
     };
 
-    char    *name;   /**< Name the point is searched by, or null. */
-    int      type;   /**< Kind of point, a FUNC_POINT_TYPE. */
-    int      unk_8;
-    int      unk_c;
-    int      enable; /**< Non-zero while the point works. */
-    float    start;  /**< Hour of the day the point starts working. */
-    float    end;    /**< Hour of the day the point stops working; equal to start for all day. */
+    char *name; /**< Name the point is searched by, or null. */
+    int   type; /**< Kind of point, a FUNC_POINT_TYPE. */
+    int   unk_8;
+    int   unk_c;
+    int   enable; /**< Non-zero while the point works. */
+    float start;  /**< Hour of the day the point starts working. */
+    float end;    /**< Hour of the day the point stops working; equal to start for all day. */
+
     union {
         int        data[0x14]; /**< Settings of the point as raw words, copied as a whole. */
-        EffectData effect;  /**< Settings of a FUNC_POINT_EFFECT point. */
-        FireData   fire;    /**< Settings of a FUNC_POINT_FIRE or FUNC_POINT_FLARE point. */
-        PlightData plight;  /**< Settings of a FUNC_POINT_PLIGHT point. */
-        AnimeData  anime;   /**< Settings of a FUNC_POINT_ANIME point. */
-        EventData  event;   /**< Settings of a FUNC_POINT_EVENT point. */
-        SoundData  sound;   /**< Settings of a FUNC_POINT_SOUND point. */
-        InventData invent;  /**< Settings of a FUNC_POINT_INVENT point. */
+        EffectData effect;     /**< Settings of a FUNC_POINT_EFFECT point. */
+        FireData   fire;       /**< Settings of a FUNC_POINT_FIRE or FUNC_POINT_FLARE point. */
+        PlightData plight;     /**< Settings of a FUNC_POINT_PLIGHT point. */
+        AnimeData  anime;      /**< Settings of a FUNC_POINT_ANIME point. */
+        EventData  event;      /**< Settings of a FUNC_POINT_EVENT point. */
+        SoundData  sound;      /**< Settings of a FUNC_POINT_SOUND point. */
+        InventData invent;     /**< Settings of a FUNC_POINT_INVENT point. */
     };
+
     mgCFrame      frame;    /**< Places the point in the world. */
     sceVu0FVECTOR position; /**< Position given to the frame. */
     sceVu0FVECTOR rotation; /**< Rotation given to the frame. */
@@ -313,8 +318,9 @@ public:
      * @address 0x1657B0
      * @size 0x20
      */
-    void SetScale(float *scale);
+    void SetScale(float *scl);
 };
+
 STATIC_ASSERT(sizeof(CFuncPoint) == 0x1C0);
 
 /**
@@ -328,7 +334,7 @@ public:
     int           material_no; /**< Index of the material in the frame's visual. */
     mgMaterial   *material;    /**< Material whose colour is replaced, or null. */
     int           unk_c;
-    sceVu0FVECTOR color;       /**< Colour the material takes while the piece is drawn. */
+    sceVu0FVECTOR color; /**< Colour the material takes while the piece is drawn. */
 
     /**
      *
@@ -350,6 +356,7 @@ public:
      */
     void Initialize();
 };
+
 STATIC_ASSERT(sizeof(PieceMaterial) == 0x20);
 
 /**
@@ -382,6 +389,7 @@ public:
      */
     void Initialize();
 };
+
 STATIC_ASSERT(sizeof(CCameraDrawInfo) == 0x8);
 
 /**
@@ -446,6 +454,7 @@ inline float mgAbs(float value) {
     if (value < 0.0f) {
         return -value;
     }
+
     return value;
 }
 

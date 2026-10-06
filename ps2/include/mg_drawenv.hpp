@@ -2,8 +2,8 @@
 
 #include "common.h"
 
-#include <libvu0.h>
 #include <libgraph.h>
+#include <libvu0.h>
 
 /**
  * @file
@@ -54,18 +54,19 @@ struct mgVu0FBOX {
      * @address 0x139F00
      * @size 0x20
      */
-    /**
-     * Copies every register setting of another packet into this one.
-     *
-     * @mangled __as__10mgCDrawEnvFR10mgCDrawEnv
-     * @address 0x138F10
-     * @size 0x30
-     */
-    mgVu0FBOX &operator=(mgVu0FBOX &other);
+    mgVu0FBOX &operator=(mgVu0FBOX &source);
 };
+
 STATIC_ASSERT(sizeof(mgVu0FBOX) == 0x20);
 
-struct mgVec4 { float v[4]; };
+/**
+ *
+ * Four floating-point values used by drawing calculations.
+ *
+ */
+struct mgVec4 {
+    float v[4]; /**< Vector components. */
+};
 
 /**
  *
@@ -73,11 +74,20 @@ struct mgVec4 { float v[4]; };
  *
  */
 struct mgPOINT_LIGHT {
-    union { sceVu0FVECTOR pos; mgVec4 pos_copy; }; /**< World position of the light; the stored copy has w = 1. */
-    union { sceVu0FVECTOR color; /**< Colour of the light. */ mgVec4 color_copy; };
-    float power;         /**< Strength of the light; zero or less switches the light off. */
-    float range;         /**< Distance the light reaches; zero or less derives it from the power and colour. */
+    union {
+        sceVu0FVECTOR pos;      /**< Position of the light in world space. */
+        mgVec4        pos_copy; /**< Stored vector view of the light's position. */
+    }; /**< World position of the light; the stored copy has w = 1. */
+
+    union {
+        sceVu0FVECTOR color;      /**< Colour of the light. */
+        mgVec4        color_copy; /**< Stored vector view of the light's colour. */
+    };
+
+    float power; /**< Strength of the light; zero or less switches the light off. */
+    float range; /**< Distance the light reaches; zero or less derives it from the power and colour. */
 };
+
 STATIC_ASSERT(sizeof(mgPOINT_LIGHT) == 0x30);
 
 /**
@@ -91,32 +101,38 @@ struct mgLIGHT_INFO {
     sceVu0FVECTOR ambient;        /**< Ambient light colour. */
     mgPOINT_LIGHT point_light[4]; /**< Point lights. */
 };
+
 STATIC_ASSERT(sizeof(mgLIGHT_INFO) == 0x150);
 
 #pragma cpp_extensions on
+
 /**
  *
  * Distance fog: the colour it fades to and the coefficients that give the fog value from depth.
  *
  */
 struct mgFOG_PARAM {
-    float near_dist;    /**< Distance at which the fog takes its near value. */
-    float far_dist;     /**< Distance at which the fog takes its far value. */
-    u_char r;           /**< Red component of the fog colour. */
-    u_char g;           /**< Green component of the fog colour. */
-    u_char b;           /**< Blue component of the fog colour. */
+    float  near_dist; /**< Distance at which the fog takes its near value. */
+    float  far_dist;  /**< Distance at which the fog takes its far value. */
+    u_char r;         /**< Red component of the fog colour. */
+    u_char g;         /**< Green component of the fog colour. */
+    u_char b;         /**< Blue component of the fog colour. */
     u_char unk_b;
+
     union {
         struct {
-    float offset;       /**< Constant term of the fog value as a function of the reciprocal of depth. */
-    float far_value;    /**< Fog value at the far distance. */
-    float near_value;   /**< Fog value at the near distance. */
-    float scale;        /**< Coefficient of the reciprocal of depth in the fog value. */
+            float offset;     /**< Constant term of the fog value as a function of the reciprocal of depth. */
+            float far_value;  /**< Fog value at the far distance. */
+            float near_value; /**< Fog value at the near distance. */
+            float scale;      /**< Coefficient of the reciprocal of depth in the fog value. */
         };
+
         float values[4];
     };
+
     sceVu0FVECTOR coef; /**< Copy of offset, far_value, near_value and scale, sent to VU1 as one quadword. */
 };
+
 #pragma cpp_extensions reset
 STATIC_ASSERT(sizeof(mgFOG_PARAM) == 0x30);
 
@@ -127,13 +143,13 @@ STATIC_ASSERT(sizeof(mgFOG_PARAM) == 0x30);
  */
 class mgCDrawEnv {
 public:
-    sceGifTag giftag;    /**< GIF tag for the three register writes that follow, in A+D mode. */
-    sceGsTest test;      /**< Alpha and depth test settings. */
-    u_long test_addr;    /**< TEST register of the context the packet writes to. */
-    sceGsZbuf zbuf;      /**< Depth buffer settings, including the depth write mask. */
-    u_long zbuf_addr;    /**< ZBUF register of the context the packet writes to. */
-    sceGsAlpha alpha;    /**< Alpha blending equation. */
-    u_long alpha_addr;   /**< ALPHA register of the context the packet writes to. */
+    sceGifTag  giftag;     /**< GIF tag for the three register writes that follow, in A+D mode. */
+    sceGsTest  test;       /**< Alpha and depth test settings. */
+    u_long     test_addr;  /**< TEST register of the context the packet writes to. */
+    sceGsZbuf  zbuf;       /**< Depth buffer settings, including the depth write mask. */
+    u_long     zbuf_addr;  /**< ZBUF register of the context the packet writes to. */
+    sceGsAlpha alpha;      /**< Alpha blending equation. */
+    u_long     alpha_addr; /**< ALPHA register of the context the packet writes to. */
 
     /**
      * Creates a packet for the first drawing context with the default
@@ -147,7 +163,15 @@ public:
     mgCDrawEnv();
 #endif
 
-    mgCDrawEnv &operator=(mgCDrawEnv &other);
+    /**
+     *
+     * Copies every register setting of another draw environment packet.
+     *
+     * @mangled __as__10mgCDrawEnvFR10mgCDrawEnv
+     * @address 0x138F10
+     * @size 0x30
+     */
+    mgCDrawEnv &operator=(mgCDrawEnv &source);
 
     /**
      * Builds the packet for a drawing context (zero for the first, any other
@@ -167,7 +191,7 @@ public:
      * @address 0x139000
      * @size 0x80
      */
-    void SetAlpha(int mode);
+    void SetAlpha(int macro);
 
     /**
      * Returns the mgAlphaMacroID mode that the alpha blending equation
@@ -189,6 +213,7 @@ public:
      */
     void SetZBuf(int mode);
 };
+
 STATIC_ASSERT(sizeof(mgCDrawEnv) == 0x40);
 
 /**
@@ -199,53 +224,53 @@ STATIC_ASSERT(sizeof(mgCDrawEnv) == 0x40);
  */
 class mgRENDER_INFO {
 public:
-    float projection;                 /**< Distance from the eye to the screen plane, in GS pixels. */
-    sceVu0FMATRIX world_screen;       /**< Transform from world space to GS screen coordinates. */
-    sceVu0FMATRIX view_screen;        /**< Transform from view space to GS screen coordinates. */
-    sceVu0FMATRIX world_screen_rel;   /**< Transform from world space to screen coordinates relative to the screen centre. */
-    sceVu0FMATRIX aspect;             /**< Scale of the vertical axis that corrects the pixel aspect ratio. */
-    sceVu0FMATRIX screen;             /**< Perspective projection to GS screen coordinates. */
-    sceVu0FMATRIX world_view;         /**< Transform from world space to view space, aspect correction included. */
-    u_int unk_190[4];
-    sceVu0FMATRIX view;               /**< Transform from world space to view space, as the camera gives it. */
-    sceVu0FMATRIX view_clip;          /**< Perspective projection to clip space over the guard area. */
-    sceVu0FMATRIX world_clip;         /**< Transform from world space to clip space over the guard area. */
-    sceVu0FMATRIX clip_screen;        /**< Transform from guard-area clip space to GS screen coordinates. */
-    sceVu0FMATRIX view_clip_full;     /**< Perspective projection to clip space over the whole GS coordinate range. */
-    sceVu0FMATRIX clip_screen_full;   /**< Transform from full-range clip space to GS screen coordinates. */
-    sceVu0FVECTOR shadow_plane_pos;   /**< Point on the plane that drop shadows fall onto. */
+    float         projection;       /**< Distance from the eye to the screen plane, in GS pixels. */
+    sceVu0FMATRIX world_screen;     /**< Transform from world space to GS screen coordinates. */
+    sceVu0FMATRIX view_screen;      /**< Transform from view space to GS screen coordinates. */
+    sceVu0FMATRIX world_screen_rel; /**< Transform from world space to screen coordinates relative to the screen centre. */
+    sceVu0FMATRIX aspect;           /**< Scale of the vertical axis that corrects the pixel aspect ratio. */
+    sceVu0FMATRIX screen;           /**< Perspective projection to GS screen coordinates. */
+    sceVu0FMATRIX world_view;       /**< Transform from world space to view space, aspect correction included. */
+    u_int         unk_190[4];
+    sceVu0FMATRIX view;                /**< Transform from world space to view space, as the camera gives it. */
+    sceVu0FMATRIX view_clip;           /**< Perspective projection to clip space over the guard area. */
+    sceVu0FMATRIX world_clip;          /**< Transform from world space to clip space over the guard area. */
+    sceVu0FMATRIX clip_screen;         /**< Transform from guard-area clip space to GS screen coordinates. */
+    sceVu0FMATRIX view_clip_full;      /**< Perspective projection to clip space over the whole GS coordinate range. */
+    sceVu0FMATRIX clip_screen_full;    /**< Transform from full-range clip space to GS screen coordinates. */
+    sceVu0FVECTOR shadow_plane_pos;    /**< Point on the plane that drop shadows fall onto. */
     sceVu0FVECTOR shadow_plane_normal; /**< Normal of the plane that drop shadows fall onto. */
-    sceVu0FMATRIX shadow;             /**< Projection that flattens geometry onto the shadow plane. */
-    u_int unk_380[4];
-    sceVu0FVECTOR shadow_light_dir;   /**< Direction of the light that casts drop shadows. */
-    sceVu0FVECTOR camera_pos;         /**< World position of the eye. */
-    sceVu0FMATRIX camera_pose;        /**< Orientation and position of the camera in world space. */
-    int light_changed;                /**< Set whenever the lighting changes. */
-    int active_light;                 /**< Index of the lighting setup in use. */
-    mgLIGHT_INFO light_info[8];       /**< Lighting setups. */
-    sceVu0FVECTOR clip_min;           /**< Smallest GS screen coordinates, with the near distance as z. */
-    sceVu0FVECTOR clip_max;           /**< Largest GS screen coordinates, with the far distance as z. */
-    sceVu0FVECTOR guard_max;          /**< Largest corner of the guard area in GS coordinates, with the far distance as w. */
-    sceVu0FVECTOR guard_min;          /**< Smallest corner of the guard area in GS coordinates, with the near distance as w. */
-    sceVu0FVECTOR full_max;           /**< Largest corner of the GS coordinate range, with the far distance as w. */
-    sceVu0FVECTOR full_min;           /**< Smallest corner of the GS coordinate range, with the near distance as w. */
-    sceVu0FVECTOR screen_box_max;     /**< Largest corner of the screen relative to its centre, with the far distance as w. */
-    sceVu0FVECTOR screen_box_min;     /**< Smallest corner of the screen relative to its centre, with the near distance as w. */
-    sceVu0FVECTOR gs_box_max;         /**< Largest corner of the GS drawing range relative to its centre, with the far distance as w. */
-    sceVu0FVECTOR gs_box_min;         /**< Smallest corner of the GS drawing range relative to its centre, with the near distance as w. */
-    mgCDrawEnv draw_env[2];           /**< Default draw environment of each drawing context. */
-    int all_scissor;                  /**< Non-zero scissors every object that needs clipping, whatever its attributes. */
-    int fog_enable;                   /**< Non-zero draws fog. */
-    int plight_enable;                /**< Non-zero lights objects with the point lights. */
-    int unk_fac;
-    u_int unk_fb0[4];
-    int clip;                         /**< Non-zero while the visible object being drawn is not wholly inside the GS drawing range. */
-    int scissor;                      /**< Non-zero while the object being drawn needs scissoring, as its attributes or all_scissor ask. */
-    int plight_hit;                   /**< Non-zero while a point light reaches the object being drawn. */
-    mgCFrameAttr *attr;               /**< Attributes of the object being drawn. */
-    mgFOG_PARAM fog;                  /**< Fog settings. */
-    sceVu0FVECTOR object_color;       /**< Colour of the object being drawn. */
-    int motion;                       /**< Non-zero while the object being drawn is a motion model. */
+    sceVu0FMATRIX shadow;              /**< Projection that flattens geometry onto the shadow plane. */
+    u_int         unk_380[4];
+    sceVu0FVECTOR shadow_light_dir; /**< Direction of the light that casts drop shadows. */
+    sceVu0FVECTOR camera_pos;       /**< World position of the eye. */
+    sceVu0FMATRIX camera_pose;      /**< Orientation and position of the camera in world space. */
+    int           light_changed;    /**< Set whenever the lighting changes. */
+    int           active_light;     /**< Index of the lighting setup in use. */
+    mgLIGHT_INFO  light_info[8];    /**< Lighting setups. */
+    sceVu0FVECTOR clip_min;         /**< Smallest GS screen coordinates, with the near distance as z. */
+    sceVu0FVECTOR clip_max;         /**< Largest GS screen coordinates, with the far distance as z. */
+    sceVu0FVECTOR guard_max;        /**< Largest corner of the guard area in GS coordinates, with the far distance as w. */
+    sceVu0FVECTOR guard_min;        /**< Smallest corner of the guard area in GS coordinates, with the near distance as w. */
+    sceVu0FVECTOR full_max;         /**< Largest corner of the GS coordinate range, with the far distance as w. */
+    sceVu0FVECTOR full_min;         /**< Smallest corner of the GS coordinate range, with the near distance as w. */
+    sceVu0FVECTOR screen_box_max;   /**< Largest corner of the screen relative to its centre, with the far distance as w. */
+    sceVu0FVECTOR screen_box_min;   /**< Smallest corner of the screen relative to its centre, with the near distance as w. */
+    sceVu0FVECTOR gs_box_max;       /**< Largest corner of the GS drawing range relative to its centre, with the far distance as w. */
+    sceVu0FVECTOR gs_box_min;       /**< Smallest corner of the GS drawing range relative to its centre, with the near distance as w. */
+    mgCDrawEnv    draw_env[2];      /**< Default draw environment of each drawing context. */
+    int           all_scissor;      /**< Non-zero scissors every object that needs clipping, whatever its attributes. */
+    int           fog_enable;       /**< Non-zero draws fog. */
+    int           plight_enable;    /**< Non-zero lights objects with the point lights. */
+    int           unk_fac;
+    u_int         unk_fb0[4];
+    int           clip;         /**< Non-zero while the visible object being drawn is not wholly inside the GS drawing range. */
+    int           scissor;      /**< Non-zero while the object being drawn needs scissoring, as its attributes or all_scissor ask. */
+    int           plight_hit;   /**< Non-zero while a point light reaches the object being drawn. */
+    mgCFrameAttr *attr;         /**< Attributes of the object being drawn. */
+    mgFOG_PARAM   fog;          /**< Fog settings. */
+    sceVu0FVECTOR object_color; /**< Colour of the object being drawn. */
+    int           motion;       /**< Non-zero while the object being drawn is a motion model. */
 
     /**
      * Puts both draw environments back to their defaults and the fog, point
@@ -402,7 +427,7 @@ public:
      * @address 0x139D70
      * @size 0xC0
      */
-    void GetPlight(int index, mgPOINT_LIGHT *light);
+    void GetPlight(int index, mgPOINT_LIGHT *out);
 
     /**
      * Turns fog on or off.
@@ -449,6 +474,7 @@ public:
      * @size 0x90
      */
     void SetFogParam(float near_dist, float far_dist, u_char r, u_char g, u_char b,
-                     float far_value, float near_value);
+                     float depth_max, float depth_min);
 };
+
 STATIC_ASSERT(sizeof(mgRENDER_INFO) == 0x1020);

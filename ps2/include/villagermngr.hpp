@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+
 #include <libvu0.h>
 
 /**
@@ -19,16 +20,16 @@ class mgCMemory;
  *
  */
 enum VLGR_MOTION {
-    VLGR_MOTION_NONE       = -1, /**< No motion requested. */
-    VLGR_MOTION_STAND      = 0,  /**< Standing. */
-    VLGR_MOTION_WALK       = 1,  /**< Walking. */
-    VLGR_MOTION_RUN        = 2,  /**< Running. */
-    VLGR_MOTION_TALK       = 3,  /**< Talking. */
-    VLGR_MOTION_SIT        = 4,  /**< Sitting. */
-    VLGR_MOTION_CAMERA_IN  = 5,  /**< Going into the pose for the camera. */
-    VLGR_MOTION_CAMERA     = 6,  /**< Holding the pose for the camera. */
-    VLGR_MOTION_CAMERA_OUT = 7,  /**< Coming back out of the pose for the camera. */
-    VLGR_MOTION_SPECIAL    = 8   /**< The villager's special motion. */
+    VLGR_MOTION_NONE = -1,      /**< No motion requested. */
+    VLGR_MOTION_STAND = 0,      /**< Standing. */
+    VLGR_MOTION_WALK = 1,       /**< Walking. */
+    VLGR_MOTION_RUN = 2,        /**< Running. */
+    VLGR_MOTION_TALK = 3,       /**< Talking. */
+    VLGR_MOTION_SIT = 4,        /**< Sitting. */
+    VLGR_MOTION_CAMERA_IN = 5,  /**< Going into the pose for the camera. */
+    VLGR_MOTION_CAMERA = 6,     /**< Holding the pose for the camera. */
+    VLGR_MOTION_CAMERA_OUT = 7, /**< Coming back out of the pose for the camera. */
+    VLGR_MOTION_SPECIAL = 8     /**< The villager's special motion. */
 };
 
 /**
@@ -37,8 +38,8 @@ enum VLGR_MOTION {
  *
  */
 enum VLGR_TIME {
-    VLGR_TIME_NOON  = 0, /**< Daytime. */
-    VLGR_TIME_NIGHT = 1  /**< Night-time. */
+    VLGR_TIME_NOON = 0, /**< Daytime. */
+    VLGR_TIME_NIGHT = 1 /**< Night-time. */
 };
 
 /**
@@ -57,12 +58,12 @@ enum VLGR_ROUTE_TYPE {
  *
  */
 enum VLGR_EX_STEP {
-    VLGR_EX_STEP_START    = 1, /**< Begin turning into the pose. */
-    VLGR_EX_STEP_IN       = 2, /**< Wait for the motion into the pose to end. */
-    VLGR_EX_STEP_HOLD     = 3, /**< Hold the pose while the camera keeps asking for it. */
-    VLGR_EX_STEP_OUT      = 4, /**< Wait for the motion out of the pose to end. */
-    VLGR_EX_STEP_RESTORE  = 5, /**< Go back to the place's waiting motion. */
-    VLGR_EX_STEP_END      = 6  /**< Leave the camera pose. */
+    VLGR_EX_STEP_START = 1,   /**< Begin turning into the pose. */
+    VLGR_EX_STEP_IN = 2,      /**< Wait for the motion into the pose to end. */
+    VLGR_EX_STEP_HOLD = 3,    /**< Hold the pose while the camera keeps asking for it. */
+    VLGR_EX_STEP_OUT = 4,     /**< Wait for the motion out of the pose to end. */
+    VLGR_EX_STEP_RESTORE = 5, /**< Go back to the place's waiting motion. */
+    VLGR_EX_STEP_END = 6      /**< Leave the camera pose. */
 };
 
 /**
@@ -82,8 +83,10 @@ public:
         s32   type; /**< Kind of step, a VLGR_ROUTE_TYPE. */
         s32   unk_8;
         s32   unk_c;
+
         union {
             sceVu0FVECTOR pos; /**< Point to walk to, for a VLGR_ROUTE_MOVE step. */
+
             struct {
                 s32 motion_end; /**< Whether the wait also ends when the motion ends. */
                 s32 time;       /**< Number of frames to wait. */
@@ -123,6 +126,7 @@ public:
      */
     Node *Add(mgCMemory *stack);
 };
+
 STATIC_ASSERT(sizeof(CVillagerPlaceInfo::Node) == 0x20);
 STATIC_ASSERT(sizeof(CVillagerPlaceInfo) == 0x40);
 
@@ -167,6 +171,7 @@ public:
      */
     CVillagerPlace();
 };
+
 STATIC_ASSERT(sizeof(CVillagerPlace::ProgressInfo) == 0x28);
 STATIC_ASSERT(sizeof(CVillagerPlace) == 0x8);
 
@@ -177,8 +182,8 @@ STATIC_ASSERT(sizeof(CVillagerPlace) == 0x8);
  */
 class CVillagerData {
 public:
-    s32                       chara_id;    /**< Number of the scene character showing the villager. */
-    s32                       vlgr_id;     /**< Number of the villager, or -1 for a free entry. */
+    s32                       chara_id; /**< Number of the scene character showing the villager. */
+    s32                       vlgr_id;  /**< Number of the villager, or -1 for a free entry. */
     s32                       unk_8;
     s32                       unk_c;
     s32                       unk_10;
@@ -197,8 +202,8 @@ public:
     s32                       unk_44;
     s32                       unk_48;
     s32                       unk_4c;
-    sceVu0FVECTOR             pos;         /**< Position of the villager. */
-    sceVu0FVECTOR             rot;         /**< Rotation of the villager. */
+    sceVu0FVECTOR             pos; /**< Position of the villager. */
+    sceVu0FVECTOR             rot; /**< Rotation of the villager. */
 
     /**
      *
@@ -219,6 +224,7 @@ public:
      */
     void Initialize();
 };
+
 STATIC_ASSERT(sizeof(CVillagerData) == 0x70);
 
 /**
@@ -228,11 +234,11 @@ STATIC_ASSERT(sizeof(CVillagerData) == 0x70);
  */
 class CVillagerMngr {
 public:
-    s32           stop;      /**< Whether every villager is held still. */
-    s32           data_num;  /**< Number of entries in data. */
+    s32           stop;     /**< Whether every villager is held still. */
+    s32           data_num; /**< Number of entries in data. */
     s32           unk_8;
     s32           unk_c;
-    CVillagerData data[32];  /**< State of each villager placed. */
+    CVillagerData data[32]; /**< State of each villager placed. */
 
     /**
      *
@@ -271,7 +277,7 @@ public:
      * @address 0x2D1C40
      * @size 0x30
      */
-    void Stay(int no);
+    void Stay(int chara_id);
 
     /**
      *
@@ -281,7 +287,7 @@ public:
      * @address 0x2D1C70
      * @size 0x40
      */
-    void CancelStay(int no);
+    void CancelStay(int chara_id);
 
     /**
      *
@@ -291,7 +297,7 @@ public:
      * @address 0x2D1CB0
      * @size 0x3C
      */
-    void ExMode(int no);
+    void ExMode(int chara_id);
 
     /**
      *
@@ -341,7 +347,7 @@ public:
      * @address 0x2D1EB0
      * @size 0x64
      */
-    int CheckStay(int no);
+    int CheckStay(int chara_id);
 
     /**
      *
@@ -361,7 +367,7 @@ public:
      * @address 0x2D23D0
      * @size 0x2A8
      */
-    int GetAppearVlgr(int progress, int time, int map_no, int *vlgr_id, CVillagerPlaceInfo **place);
+    int GetAppearVlgr(int progress, int time, int map_no, int *villager_ids, CVillagerPlaceInfo **place);
 
     /**
      *
@@ -373,4 +379,5 @@ public:
      */
     int GetTalkRect(int chara_id, float *rect);
 };
+
 STATIC_ASSERT(sizeof(CVillagerMngr) == 0xE10);

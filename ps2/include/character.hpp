@@ -148,11 +148,11 @@ STATIC_ASSERT(sizeof(CHRINFO_KEY_SET) == 0x30);
  *
  */
 struct CHRINFO_SEQ {
-    char  name[0x22];   /**< Name of the motion that the step plays; empty in the entry that ends the sequence. */
-    u8    type;         /**< How the step ends. @see ChrInfoSeqType. */
+    char  name[0x22]; /**< Name of the motion that the step plays; empty in the entry that ends the sequence. */
+    u8    type;       /**< How the step ends. @see ChrInfoSeqType. */
     u8    unk_23;
-    s32   loop_count;   /**< Number of times that a looping step plays its motion. */
-    float blend_speed;  /**< Blend weight gained each step while blending into the motion; -1.0 for the default. */
+    s32   loop_count;  /**< Number of times that a looping step plays its motion. */
+    float blend_speed; /**< Blend weight gained each step while blending into the motion; -1.0 for the default. */
 };
 
 STATIC_ASSERT(sizeof(CHRINFO_SEQ) == 0x2C);
@@ -193,9 +193,9 @@ STATIC_ASSERT(sizeof(CHRINFO_SE) == 0x10);
  *
  */
 struct CHARA_EFFECT_MANAGER : public CEffectManager {
-    CEffectCtrl  *emitter_pool;    /**< Emitter pool allocated with the character. */
+    CEffectCtrl  *emitter_pool; /**< Emitter pool allocated with the character. */
     u32           unk_188;
-    CEffect      *particle_pool;   /**< Particle pool allocated with the character. */
+    CEffect      *particle_pool; /**< Particle pool allocated with the character. */
     u32           unk_190;
     u32           unk_194;
     s32           local_draw;      /**< Nonzero to transform the effect sprite packet by its attachment matrix. */
@@ -213,9 +213,9 @@ STATIC_ASSERT(sizeof(CHARA_EFFECT_MANAGER) == 0x1F0);
  *
  */
 struct CHRINFO_EFFECT {
-    char            name[0x20];   /**< Name of the effect. */
-    CHARA_EFFECT_MANAGER *effect; /**< Effect that plays. */
-    CHRINFO_EFFECT *next;         /**< Next effect of the character, or NULL. */
+    char                  name[0x20]; /**< Name of the effect. */
+    CHARA_EFFECT_MANAGER *effect;     /**< Effect that plays. */
+    CHRINFO_EFFECT       *next;       /**< Next effect of the character, or NULL. */
 };
 
 STATIC_ASSERT(sizeof(CHRINFO_EFFECT) == 0x28);
@@ -239,10 +239,10 @@ STATIC_ASSERT(sizeof(CHRINFO_EFFECT_IMAGE) == 0x28);
  *
  */
 struct CHARA_ENTRY_OBJECT {
-    mgCFrame *frame;   /**< Frame of the model; NULL for a free slot. */
+    mgCFrame *frame; /**< Frame of the model; NULL for a free slot. */
     float     unk_04;
-    s32       group;   /**< Group that the frame belongs to; -1 for a free slot. */
-    s32       enable;  /**< Nonzero while the slot is in use. */
+    s32       group;  /**< Group that the frame belongs to; -1 for a free slot. */
+    s32       enable; /**< Nonzero while the slot is in use. */
 };
 
 STATIC_ASSERT(sizeof(CHARA_ENTRY_OBJECT) == 0x10);
@@ -253,9 +253,9 @@ STATIC_ASSERT(sizeof(CHARA_ENTRY_OBJECT) == 0x10);
  *
  */
 struct CHARA_ENTRY_EFFECT {
-    CHARA_EFFECT_MANAGER *effect; /**< Effect to run. */
-    s32             active;       /**< Nonzero while the slot holds an effect of the motion. */
-    s32             running;      /**< Nonzero once the motion reached the point that runs the effect. */
+    CHARA_EFFECT_MANAGER *effect;  /**< Effect to run. */
+    s32                   active;  /**< Nonzero while the slot holds an effect of the motion. */
+    s32                   running; /**< Nonzero once the motion reached the point that runs the effect. */
 };
 
 STATIC_ASSERT(sizeof(CHARA_ENTRY_EFFECT) == 0xC);
@@ -296,16 +296,16 @@ STATIC_ASSERT(sizeof(CCharaFrameMatching) == 0xC);
  *
  */
 struct CHARA_SOUND_INFO {
-    u32          foot_se_bank;       /**< Sound bank of the footstep sounds. */
-    s32          foot_sound_id;      /**< Footstep set of the ground; below zero for none. */
-    s32          foot_sound_enable;  /**< Nonzero while the feet play sounds. */
-    u32          se_bank;            /**< Sound bank of the character's sounds. */
-    u32          se_bank_2;          /**< Second sound bank of the character's sounds. */
-    s32          se_positional;      /**< Nonzero to take the volume and pan of the sounds from the character's position. */
-    float        se_volume;          /**< Volume that the sounds play at. */
-    float        se_pan;             /**< Pan that the sounds play at. */
-    s32          foot_effect_wait;   /**< Steps left in which a foot touched the ground. */
-    CLoopSeMngr *loop_se;            /**< Manager of the sounds that loop over a range of frames. */
+    u32          foot_se_bank;      /**< Sound bank of the footstep sounds. */
+    s32          foot_sound_id;     /**< Footstep set of the ground; below zero for none. */
+    s32          foot_sound_enable; /**< Nonzero while the feet play sounds. */
+    u32          se_bank;           /**< Sound bank of the character's sounds. */
+    u32          se_bank_2;         /**< Second sound bank of the character's sounds. */
+    s32          se_positional;     /**< Nonzero to take the volume and pan of the sounds from the character's position. */
+    float        se_volume;         /**< Volume that the sounds play at. */
+    float        se_pan;            /**< Pan that the sounds play at. */
+    s32          foot_effect_wait;  /**< Steps left in which a foot touched the ground. */
+    CLoopSeMngr *loop_se;           /**< Manager of the sounds that loop over a range of frames. */
 };
 
 STATIC_ASSERT(sizeof(CHARA_SOUND_INFO) == 0x28);
@@ -317,12 +317,12 @@ STATIC_ASSERT(sizeof(CHARA_SOUND_INFO) == 0x28);
  */
 class CCharaLOD {
 public:
-    float     distance;    /**< Camera distance beyond which the level is drawn. */
-    s32       motion;      /**< Nonzero when the character's motion plays while the level is drawn. */
-    s32       standalone;  /**< Nonzero when the level is a model of its own rather than visuals swapped into the main model. */
-    mgCFrame *frame;       /**< Model of the level. */
-    s32       link_num;    /**< Number of entries in link. */
-    s32     (*link)[2];    /**< Pairs of frame indices: the frame of the main model, then the frame of this level that gives it its visual. */
+    float     distance;   /**< Camera distance beyond which the level is drawn. */
+    s32       motion;     /**< Nonzero when the character's motion plays while the level is drawn. */
+    s32       standalone; /**< Nonzero when the level is a model of its own rather than visuals swapped into the main model. */
+    mgCFrame *frame;      /**< Model of the level. */
+    s32       link_num;   /**< Number of entries in link. */
+    s32 (*link)[2];       /**< Pairs of frame indices: the frame of the main model, then the frame of this level that gives it its visual. */
 
     /**
      * Makes an empty level of detail.
@@ -344,16 +344,16 @@ STATIC_ASSERT(sizeof(CCharaLOD) == 0x18);
  */
 class CCharacter2 : public CObjectFrame {
 public:
-    sceVu0FVECTOR         velocity;                                     /**< Distance that the character moves each step. */
-    sceVu0FVECTOR         base_scale;                                   /**< Scale that the info file gives the model. */
-    float                 move_accel;
-    sceVu0FMATRIX         entry_matrix;                                 /**< Matrix of the first entry frame as of the last step, used to reset the cloth after a jump. */
-    char                  name[0x10];                                   /**< Name that scripts find the character by. */
-    float                 alpha;                                        /**< Alpha that the character draws with. */
-    s32                   poly_num;                                     /**< Polygon count of the model that the info file gives. */
-    s32                   shadow_poly_num;                              /**< Polygon count of the shadow that the info file gives. */
-    float                 body_width;                                   /**< Width of the body. */
-    float                 body_height;                                  /**< Height of the body, used for framing and scaling. */
+    sceVu0FVECTOR velocity;        /**< Distance that the character moves each step. */
+    sceVu0FVECTOR base_scale;      /**< Scale that the info file gives the model. */
+    float         move_accel;      /**< Acceleration accumulated while the character moves. */
+    sceVu0FMATRIX entry_matrix;    /**< Matrix of the first entry frame as of the last step, used to reset the cloth after a jump. */
+    char          name[0x10];      /**< Name that scripts find the character by. */
+    float         alpha;           /**< Alpha that the character draws with. */
+    s32           poly_num;        /**< Polygon count of the model that the info file gives. */
+    s32           shadow_poly_num; /**< Polygon count of the shadow that the info file gives. */
+    float         body_width;      /**< Width of the body. */
+    float         body_height;     /**< Height of the body, used for framing and scaling. */
 
     float GetBodyWidth() {
         return body_width;
@@ -362,69 +362,70 @@ public:
     float GetBodyHeight() {
         return body_height;
     }
-    float                 body_depth;                                   /**< Depth of the body. */
-    s32                   load_size;                                    /**< Quadwords of the model memory that loading the character took. */
-    s32                   copy_size;                                    /**< Quadwords that a copy of the character takes; zero or below to take load_size. */
-    s16                   dynamic_anime_flags;                          /**< Flags of the cloth and hair animations. @see CharaDynamicAnimeFlag. */
-    COutLineDraw         *outline;                                      /**< Outlines drawn around the character, linked through COutLineDraw::next. */
-    s32                   outline_tex_no;                               /**< Number of the screen texture that the outlines draw into. */
-    s32                   dynamic_anime_num;                            /**< Number of entries in dynamic_anime. */
-    CDynamicAnime        *dynamic_anime;                                /**< Cloth and hair animations of the character. */
-    s32                   shape_anime;                                  /**< Nonzero when the skin deforms by shape animation. */
-    mgCFrame             *entry_frame[CHARA_ENTRY_FRAME_MAX];           /**< Frames named as the character's main object positions. */
-    CHARA_ENTRY_OBJECT    entry_object[CHARA_ENTRY_OBJECT_MAX];         /**< Frames named as places to put objects. */
-    mgCFrame             *shadow_frame;                                 /**< Shadow model; NULL when the character has none. */
-    mgIMG_FILE_HEADER    *images[CHARA_IMAGE_MAX];                      /**< IMG archives that the character entered; the first is its own, the rest come from extension packs. */
-    s32                   tex_anime_group_num;                          /**< Number of texture animation groups in the character's texture block. */
-    s32                   tex_anime_group_start;                        /**< First texture animation group of the character's own archive. */
-    s32                   texture_block;                                /**< Texture block that the character's textures are entered in. */
-    mgCFrame             *deform_frame[CHARA_DEFORM_FRAME_MAX];         /**< Frames of the model whose skin deforms. */
-    s32                   deform_frame_num;                             /**< Number of entries in deform_frame. */
-    s32                   lod_num;                                      /**< Number of entries in lod. */
-    CCharaLOD            *lod;                                          /**< Levels of detail of the character. */
-    s32                   lod_no;                                       /**< Level of detail drawn; below zero before the first change. */
-    s32                   motion_enable;                                /**< Nonzero while the character's motion plays. */
-    CCharaFrameMatching   shadow_link;                                  /**< Frames of the model that pose the frames of the shadow. */
-    CHRINFO_KEY_SET      *next_key;                                     /**< Motion set to play from the next step. */
-    s32                   next_flags;                                   /**< Playback flags of next_key. @see CharaMotionFlag. */
-    s32                   next_set;                                     /**< Motion set of next_key. */
-    CHRINFO_KEY_SET      *now_key;                                      /**< Motion that plays. */
-    s32                   seq_mode;                                     /**< Nonzero while a motion sequence drives the motion. */
-    s32                   now_flags;                                    /**< Playback flags of now_key. @see CharaMotionFlag. */
-    s32                   now_set;                                      /**< Motion set of now_key. */
-    s32                   motion_status;                                /**< State of the motion. @see CharaMotionStatus. */
-    float                 frame;                                        /**< Frame of the motion that plays. */
-    float                 frame_ratio;                                  /**< Part of the motion played, from 0.0 to 1.0. */
-    float                 step;                                         /**< Frames that the motion advances each step. */
-    CHRINFO_KEY_SET      *posed_key;                                    /**< Motion that the model is posed by; differs from now_key while blending. */
-    s32                   prev_flags;                                   /**< Playback flags of the previous motion. */
-    s32                   prev_set;                                     /**< Motion set of the previous motion. */
-    float                 prev_frame;                                   /**< Frame that the previous motion stood on. */
-    CHRINFO_SEQ_HEADER   *next_seq;                                     /**< Motion sequence to play from the next step. */
-    CHRINFO_SEQ_HEADER   *now_seq;                                      /**< Motion sequence that plays. */
-    CHRINFO_SEQ          *seq_step;                                     /**< Step of the motion sequence that plays. */
-    s32                   seq_flags;                                    /**< Playback flags given to every step of the sequence. @see CharaMotionFlag. */
-    s32                   seq_loop;                                     /**< Plays left of a looping step. */
-    s32                   seq_state;                                    /**< State of the motion sequence. @see CharaSeqState. */
-    s32                   seq_advance;                                  /**< Nonzero to let a waiting step move on. */
-    tagMOTION_TYPE        motion[CHARA_MOTION_SET_MAX];                 /**< Motion data of each motion set of the model. */
-    tagMOTION_TYPE        shadow_motion[CHARA_MOTION_SET_MAX];          /**< Motion data of each motion set of the shadow. */
+
+    float                 body_depth;                           /**< Depth of the body. */
+    s32                   load_size;                            /**< Quadwords of the model memory that loading the character took. */
+    s32                   copy_size;                            /**< Quadwords that a copy of the character takes; zero or below to take load_size. */
+    s16                   dynamic_anime_flags;                  /**< Flags of the cloth and hair animations. @see CharaDynamicAnimeFlag. */
+    COutLineDraw         *outline;                              /**< Outlines drawn around the character, linked through COutLineDraw::next. */
+    s32                   outline_tex_no;                       /**< Number of the screen texture that the outlines draw into. */
+    s32                   dynamic_anime_num;                    /**< Number of entries in dynamic_anime. */
+    CDynamicAnime        *dynamic_anime;                        /**< Cloth and hair animations of the character. */
+    s32                   shape_anime;                          /**< Nonzero when the skin deforms by shape animation. */
+    mgCFrame             *entry_frame[CHARA_ENTRY_FRAME_MAX];   /**< Frames named as the character's main object positions. */
+    CHARA_ENTRY_OBJECT    entry_object[CHARA_ENTRY_OBJECT_MAX]; /**< Frames named as places to put objects. */
+    mgCFrame             *shadow_frame;                         /**< Shadow model; NULL when the character has none. */
+    mgIMG_FILE_HEADER    *images[CHARA_IMAGE_MAX];              /**< IMG archives that the character entered; the first is its own, the rest come from extension packs. */
+    s32                   tex_anime_group_num;                  /**< Number of texture animation groups in the character's texture block. */
+    s32                   tex_anime_group_start;                /**< First texture animation group of the character's own archive. */
+    s32                   texture_block;                        /**< Texture block that the character's textures are entered in. */
+    mgCFrame             *deform_frame[CHARA_DEFORM_FRAME_MAX]; /**< Frames of the model whose skin deforms. */
+    s32                   deform_frame_num;                     /**< Number of entries in deform_frame. */
+    s32                   lod_num;                              /**< Number of entries in lod. */
+    CCharaLOD            *lod;                                  /**< Levels of detail of the character. */
+    s32                   lod_no;                               /**< Level of detail drawn; below zero before the first change. */
+    s32                   motion_enable;                        /**< Nonzero while the character's motion plays. */
+    CCharaFrameMatching   shadow_link;                          /**< Frames of the model that pose the frames of the shadow. */
+    CHRINFO_KEY_SET      *next_key;                             /**< Motion set to play from the next step. */
+    s32                   next_flags;                           /**< Playback flags of next_key. @see CharaMotionFlag. */
+    s32                   next_set;                             /**< Motion set of next_key. */
+    CHRINFO_KEY_SET      *now_key;                              /**< Motion that plays. */
+    s32                   seq_mode;                             /**< Nonzero while a motion sequence drives the motion. */
+    s32                   now_flags;                            /**< Playback flags of now_key. @see CharaMotionFlag. */
+    s32                   now_set;                              /**< Motion set of now_key. */
+    s32                   motion_status;                        /**< State of the motion. @see CharaMotionStatus. */
+    float                 frame;                                /**< Frame of the motion that plays. */
+    float                 frame_ratio;                          /**< Part of the motion played, from 0.0 to 1.0. */
+    float                 step;                                 /**< Frames that the motion advances each step. */
+    CHRINFO_KEY_SET      *posed_key;                            /**< Motion that the model is posed by; differs from now_key while blending. */
+    s32                   prev_flags;                           /**< Playback flags of the previous motion. */
+    s32                   prev_set;                             /**< Motion set of the previous motion. */
+    float                 prev_frame;                           /**< Frame that the previous motion stood on. */
+    CHRINFO_SEQ_HEADER   *next_seq;                             /**< Motion sequence to play from the next step. */
+    CHRINFO_SEQ_HEADER   *now_seq;                              /**< Motion sequence that plays. */
+    CHRINFO_SEQ          *seq_step;                             /**< Step of the motion sequence that plays. */
+    s32                   seq_flags;                            /**< Playback flags given to every step of the sequence. @see CharaMotionFlag. */
+    s32                   seq_loop;                             /**< Plays left of a looping step. */
+    s32                   seq_state;                            /**< State of the motion sequence. @see CharaSeqState. */
+    s32                   seq_advance;                          /**< Nonzero to let a waiting step move on. */
+    tagMOTION_TYPE        motion[CHARA_MOTION_SET_MAX];         /**< Motion data of each motion set of the model. */
+    tagMOTION_TYPE        shadow_motion[CHARA_MOTION_SET_MAX];  /**< Motion data of each motion set of the shadow. */
     s32                   unk_500;
-    tagFRAME_INF         *shadow_frame_info;                            /**< Skinning data that every motion set of the shadow shares. */
-    float                 blend;                                        /**< Weight of the motion that plays against the previous one while blending. */
-    float                 blend_speed;                                  /**< Weight that blend gains each step. */
-    CHRINFO_KEY_SET      *key_list[CHARA_MOTION_SET_MAX];               /**< Motions of each motion set. */
-    s32                   key_num[CHARA_MOTION_SET_MAX];                /**< Number of motions of each motion set, counting the one that ends the list. */
-    CHRINFO_SEQ_HEADER   *seq_list[CHARA_MOTION_SET_MAX];               /**< Motion sequences of each motion set. */
-    CSWordAfterEffect    *sword_effect[CHARA_SWORD_EFFECT_MAX];         /**< Sword trails that the character draws. */
-    CHARA_SOUND_INFO      sound_info;                                   /**< Sound banks and settings that linked characters share. */
-    CHRINFO_SE           *se_list[CHARA_MOTION_SET_MAX];                /**< Motion sounds of each motion set. */
-    s32                   se_num[CHARA_MOTION_SET_MAX];                 /**< Number of entries of each se_list. */
-    s32                   effect_image_load;                            /**< Nonzero to enter the IMG archives that the effects name. */
-    CHRINFO_EFFECT       *effect_list;                                  /**< Effects that the info file loaded. */
-    CHARA_ENTRY_EFFECT    entry_effect[CHARA_ENTRY_EFFECT_MAX];         /**< Effects that the motion playing starts. */
-    CHRINFO_EFFECT_IMAGE *effect_image_list;                            /**< IMG archives that the effects entered. */
-    s32                   effect_enable;                                /**< Nonzero while motions start their effects. */
+    tagFRAME_INF         *shadow_frame_info;                    /**< Skinning data that every motion set of the shadow shares. */
+    float                 blend;                                /**< Weight of the motion that plays against the previous one while blending. */
+    float                 blend_speed;                          /**< Weight that blend gains each step. */
+    CHRINFO_KEY_SET      *key_list[CHARA_MOTION_SET_MAX];       /**< Motions of each motion set. */
+    s32                   key_num[CHARA_MOTION_SET_MAX];        /**< Number of motions of each motion set, counting the one that ends the list. */
+    CHRINFO_SEQ_HEADER   *seq_list[CHARA_MOTION_SET_MAX];       /**< Motion sequences of each motion set. */
+    CSWordAfterEffect    *sword_effect[CHARA_SWORD_EFFECT_MAX]; /**< Sword trails that the character draws. */
+    CHARA_SOUND_INFO      sound_info;                           /**< Sound banks and settings that linked characters share. */
+    CHRINFO_SE           *se_list[CHARA_MOTION_SET_MAX];        /**< Motion sounds of each motion set. */
+    s32                   se_num[CHARA_MOTION_SET_MAX];         /**< Number of entries of each se_list. */
+    s32                   effect_image_load;                    /**< Nonzero to enter the IMG archives that the effects name. */
+    CHRINFO_EFFECT       *effect_list;                          /**< Effects that the info file loaded. */
+    CHARA_ENTRY_EFFECT    entry_effect[CHARA_ENTRY_EFFECT_MAX]; /**< Effects that the motion playing starts. */
+    CHRINFO_EFFECT_IMAGE *effect_image_list;                    /**< IMG archives that the effects entered. */
+    s32                   effect_enable;                        /**< Nonzero while motions start their effects. */
 
     /**
      * Makes a character with no model and no motion.
@@ -526,7 +527,7 @@ public:
      * @address 0x176670
      * @size 0x110
      */
-    virtual void LoadChrFile(unsigned int *pack, char *name, mgCMemory *model_stack, mgCMemory *motion_stack, mgCMemory *image_stack, int image_block, CCharacter2 *parent, int outline);
+    virtual void LoadChrFile(unsigned int *pack, char *name, mgCMemory *a, mgCMemory *b, mgCMemory *c, int d, CCharacter2 *e, int with_line);
 
     /**
      * Gets the state of the motion.
@@ -550,6 +551,7 @@ public:
         if (now_key != NULL) {
             return now_key->name;
         }
+
         return NULL;
     }
 
@@ -620,7 +622,7 @@ public:
      * @address 0x1765A0
      * @size 0x60
      */
-    virtual float GetWaitToFrame(char *name, float ratio);
+    virtual float GetWaitToFrame(char *name, float wait);
 
     /**
      * Sets the motion to play from the next step by its number across every motion set.
@@ -792,6 +794,7 @@ public:
         if (copy_size > 0) {
             return copy_size;
         }
+
         return load_size;
     }
 
@@ -820,7 +823,7 @@ public:
      * @address 0x174310
      * @size 0x60
      */
-    void CopyOutLine(CCharacter2 *source);
+    void CopyOutLine(CCharacter2 *other);
 
     /**
      * Rebuilds the bounding boxes of the frames whose skin deforms.
@@ -910,7 +913,7 @@ public:
      * @address 0x175E80
      * @size 0x90
      */
-    CHRINFO_KEY_SET *GetKeyListIndexPtr(int no, int *out_set);
+    CHRINFO_KEY_SET *GetKeyListIndexPtr(int no, int *out_list);
 
     /**
      * Finds a motion by its name.
@@ -919,7 +922,7 @@ public:
      * @address 0x175F10
      * @size 0xE0
      */
-    CHRINFO_KEY_SET *GetKeyListPtr(char *name, int *out_set);
+    CHRINFO_KEY_SET *GetKeyListPtr(char *name, int *out_list);
 
     /**
      * Finds a motion sequence by its name.
@@ -928,7 +931,7 @@ public:
      * @address 0x175FF0
      * @size 0xC0
      */
-    CHRINFO_SEQ_HEADER *GetSeqHeaderPtr(char *name, int *out_set);
+    CHRINFO_SEQ_HEADER *GetSeqHeaderPtr(char *name, int *out_list);
 
     /**
      * Drops the motion sets, textures and sounds that extension packs added.
@@ -955,7 +958,7 @@ public:
      * @address 0x176390
      * @size 0x90
      */
-    int GetEntryObjectPos(int no, float *out_position);
+    int GetEntryObjectPos(int index, float *out_position);
 
     /**
      * Gets the matrix of an entry frame, or one made from the character's position and Y rotation when it has none.
@@ -964,7 +967,7 @@ public:
      * @address 0x176420
      * @size 0xA0
      */
-    int GetEntryObjectPos(int no, float (*out_matrix)[4]);
+    int GetEntryObjectPos(int index, float (*out_matrix)[4]);
 
     /**
      * Gets the world position of the frame of a group named as a place to put objects.
@@ -973,7 +976,7 @@ public:
      * @address 0x1764C0
      * @size 0xE0
      */
-    CHARA_ENTRY_OBJECT *GetEntryObjectPos(int group, int no, float *out_position);
+    CHARA_ENTRY_OBJECT *GetEntryObjectPos(int id, int nth, float *out_position);
 
     /**
      * Runs a skin info file from a pack, replacing parts of the model.
@@ -982,7 +985,7 @@ public:
      * @address 0x176600
      * @size 0x10
      */
-    void LoadSkin(unsigned int *pack, char *name, char *skin_name, mgCMemory *stack, int image_block);
+    void LoadSkin(unsigned int *pack, char *name, char *skin_name, mgCMemory *memory, int texture_block);
 
     /**
      * Clears the effects of the character.
@@ -1027,7 +1030,7 @@ public:
      * @address 0x179EA0
      * @size 0x210
      */
-    mgCFrame *ChangeLOD(int no);
+    mgCFrame *ChangeLOD(int index);
 };
 
 STATIC_ASSERT(sizeof(CCharacter2) == 0x660);

@@ -26,18 +26,18 @@ enum mgCameraKind {
  */
 class mgCCamera {
 public:
-    sceVu0FVECTOR pos;       /**< World position of the eye. */
-    sceVu0FVECTOR ref;       /**< World position of the point that the eye looks at. */
-    sceVu0FVECTOR next_pos;  /**< World position that the eye moves to. */
-    sceVu0FVECTOR next_ref;  /**< World position that the look-at point moves to. */
-    float roll;              /**< Angle, in radians, that turns the view about the view direction. */
-    int unk_44;
-    float pos_speed;         /**< Number of steps over which the eye closes the gap to its next position; 1.0 or less moves it at once. */
-    float ref_speed;         /**< Number of steps over which the look-at point closes the gap to its next position. */
-    float angle_h;           /**< Angle, in radians, of the view direction about the vertical axis. */
-    float angle_v;           /**< Angle, in radians, of the view direction above the horizontal plane. */
-    float snap_range;        /**< Distance at which the eye and the look-at point snap onto their next positions. */
-    int suspended; /**< Non-zero while the camera does not move. */
+    sceVu0FVECTOR pos;      /**< World position of the eye. */
+    sceVu0FVECTOR ref;      /**< World position of the point that the eye looks at. */
+    sceVu0FVECTOR next_pos; /**< World position that the eye moves to. */
+    sceVu0FVECTOR next_ref; /**< World position that the look-at point moves to. */
+    float         roll;     /**< Angle, in radians, that turns the view about the view direction. */
+    int           unk_44;
+    float         pos_speed;  /**< Number of steps over which the eye closes the gap to its next position; 1.0 or less moves it at once. */
+    float         ref_speed;  /**< Number of steps over which the look-at point closes the gap to its next position. */
+    float         angle_h;    /**< Angle, in radians, of the view direction about the vertical axis. */
+    float         angle_v;    /**< Angle, in radians, of the view direction above the horizontal plane. */
+    float         snap_range; /**< Distance at which the eye and the look-at point snap onto their next positions. */
+    int           suspended;  /**< Non-zero while the camera does not move. */
 
     /**
      * Holds every camera still while it is not zero.
@@ -57,7 +57,7 @@ public:
      * @address 0x131790
      * @size 0x290
      */
-    virtual void Step(int steps);
+    virtual void Step(int frames);
 
     /**
      * Stops the camera from moving until it resumes.
@@ -270,6 +270,7 @@ public:
      */
     mgCCamera(float speed);
 };
+
 STATIC_ASSERT(sizeof(mgCCamera) == 0x70);
 
 /**
@@ -281,11 +282,11 @@ class mgCCameraFollow : public mgCCamera {
 public:
     sceVu0FVECTOR follow;        /**< World position that the eye circles. */
     sceVu0FVECTOR follow_offset; /**< Offset added to the followed position to give the point that the eye circles and looks at. */
-    float distance;              /**< Distance from the eye to the circled point, on the horizontal plane. */
-    float height;                /**< Height of the eye above the circled point. */
-    float next_angle;            /**< Angle, in radians, that the eye turns to. */
-    float angle;                 /**< Angle, in radians, of the eye about the circled point. */
-    int follow_on; /**< Non-zero while the eye circles the point; zero leaves the eye where it is. */
+    float         distance;      /**< Distance from the eye to the circled point, on the horizontal plane. */
+    float         height;        /**< Height of the eye above the circled point. */
+    float         next_angle;    /**< Angle, in radians, that the eye turns to. */
+    float         angle;         /**< Angle, in radians, of the eye about the circled point. */
+    int           follow_on;     /**< Non-zero while the eye circles the point; zero leaves the eye where it is. */
     sceVu0FVECTOR follow_next;   /**< Point that the eye circles and looks at: the followed position plus its offset. */
 
     /**
@@ -297,7 +298,7 @@ public:
      * @address 0x131DC0
      * @size 0x210
      */
-    virtual void Step(int steps);
+    virtual void Step(int frames);
 
     /**
      * Puts the circled point onto the look-at point's next position, and the
@@ -495,4 +496,5 @@ public:
      */
     mgCCameraFollow(float distance, float height, float angle, float speed);
 };
+
 STATIC_ASSERT(sizeof(mgCCameraFollow) == 0xC0);

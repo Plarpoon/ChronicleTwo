@@ -1,4 +1,5 @@
 #include "common.h"
+
 #include "prespr.hpp"
 
 /**
@@ -8,6 +9,7 @@ struct SpriteGsPacket {
     u_long data; /**< GS register value. */
     u_long reg;  /**< GS register address. */
 };
+
 STATIC_ASSERT(sizeof(SpriteGsPacket) == 0x10);
 
 // Code (.text)
@@ -37,36 +39,37 @@ void CPreSprite::SetIStretch(int x, int y, int w, int h, int u, int v, int tw, i
 }
 
 void CPreSprite::SetScirror(int x, int y, int w, int h) {
-    SpriteGsPacket *packet = (SpriteGsPacket *)write;
-    packet->data = (s64)x | ((s64)(x + w) << 16) | ((s64)y << 32) | ((s64)(y + h) << 48);
+    SpriteGsPacket *packet = (SpriteGsPacket *) write;
+    packet->data = (s64) x | ((s64) (x + w) << 16) | ((s64) y << 32) | ((s64) (y + h) << 48);
     packet->reg = SCE_GS_SCISSOR_1;
     write++;
 }
 
 void CPreSprite::SetAlphaBlend(int mode) {
-    SpriteGsPacket *packet = (SpriteGsPacket *)write;
+    SpriteGsPacket *packet = (SpriteGsPacket *) write;
+
     switch (mode) {
-    case 0:
-        break;
-    case MG_ALPHA_BLEND_NORMAL:
-        packet->data = 0x44;
-        packet->reg = SCE_GS_ALPHA_1;
-        write++;
-        break;
-    case MG_ALPHA_BLEND_ADD:
-        packet->data = 0x48;
-        packet->reg = SCE_GS_ALPHA_1;
-        write++;
-        break;
-    case MG_ALPHA_BLEND_SUB:
-        packet->data = 0x42;
-        packet->reg = SCE_GS_ALPHA_1;
-        write++;
-        break;
-    case MG_ALPHA_BLEND_NONE:
-        packet->data = 0x2A | ((u_long)0x80 << 32);
-        packet->reg = SCE_GS_ALPHA_1;
-        write++;
-        break;
+        case 0:
+            break;
+        case MG_ALPHA_BLEND_NORMAL:
+            packet->data = 0x44;
+            packet->reg = SCE_GS_ALPHA_1;
+            write++;
+            break;
+        case MG_ALPHA_BLEND_ADD:
+            packet->data = 0x48;
+            packet->reg = SCE_GS_ALPHA_1;
+            write++;
+            break;
+        case MG_ALPHA_BLEND_SUB:
+            packet->data = 0x42;
+            packet->reg = SCE_GS_ALPHA_1;
+            write++;
+            break;
+        case MG_ALPHA_BLEND_NONE:
+            packet->data = 0x2A | ((u_long) 0x80 << 32);
+            packet->reg = SCE_GS_ALPHA_1;
+            write++;
+            break;
     }
 }

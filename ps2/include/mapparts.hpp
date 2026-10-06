@@ -37,9 +37,9 @@ class mgCMemory;
  *
  */
 struct InScreenFuncInfo {
-    float range;  /**< Distance from the camera within which a function point counts. */
+    float range; /**< Distance from the camera within which a function point counts. */
     float unk_04;
-    float dist;   /**< Distance from the camera to the function point found. */
+    float dist; /**< Distance from the camera to the function point found. */
 };
 
 STATIC_ASSERT(sizeof(InScreenFuncInfo) == 0xC);
@@ -53,32 +53,32 @@ STATIC_ASSERT(sizeof(InScreenFuncInfo) == 0xC);
  */
 class CMapParts : public CObject {
 public:
-    char                       name[32];                         /**< Name the map gives this placement of the part. */
-    char                       parts_name[32];                   /**< Name of the part that was placed. */
-    CList<CMapPiece>          *piece_list;                       /**< First node of the list of pieces the part is built from. */
-    mgCFrame                   frame;                            /**< Frame that places every piece of the part in the world. */
-    s32                        lod_num;                          /**< Number of levels of detail the part has distances for. */
-    s32                        lod_blend;                        /**< Non-zero blends between levels of detail. */
-    float                     *lod_dist;                         /**< Distance at which each level of detail starts. */
-    s32                        minimap_tile;                     /**< Tile of the dungeon mini map drawn for the part, or -1 for none; set by CMiniMap. */
-    float                      fixed_time;                       /**< Time of day the function points are checked against; below zero to use the scene's time. */
-    s32                        need_step;                        /**< Non-zero while a piece of the part moves and must be stepped every frame. */
-    s32                        color_num;                        /**< Number of entries of color in use. */
-    sceVu0FVECTOR              color[MAP_PARTS_COLOR_MAX];       /**< Colour given to the materials of each colour number; a W of zero or below leaves them as they are. */
-    s32                        bound_valid;                      /**< Non-zero while bound_box holds the extent of the drawn pieces. */
-    mgVu0FBOX                  bound_box;                        /**< Extent of the drawn pieces, in the part's own space. */
-    sceVu0FVECTOR              bound_sphere;                     /**< Sphere around bound_box: centre in XYZ, radius in W. */
-    s32                        col_bound_valid;                  /**< Non-zero while col_bound_box holds the extent of the collision pieces. */
-    mgVu0FBOX                  col_bound_box;                    /**< Extent of the collision pieces, in the part's own space. */
-    sceVu0FVECTOR              col_bound_sphere;                 /**< Sphere around col_bound_box: centre in XYZ, radius in W. */
-    CFuncPointMngr             func_point_mngr;                  /**< Function points that come with the part. */
-    s32                        no_light;                         /**< Non-zero draws the part with the scene's lights cleared, lit only by its own light points. */
-    s32                        no_plight;                        /**< Non-zero draws the part with point lights turned off. */
-    u32                        move_flag;                        /**< Four flags that the map's MOVE_FLAG command sets, read by the automap. */
-    CList<CObjAnime>          *anime_list;                       /**< First node of the list of animations the function points drive. */
-    s32                        group_no;                         /**< Group of parts the placement belongs to, or -1. */
-    s32                        in_screen;                        /**< Non-zero while the part is on screen this frame. */
-    CFuncPointCheck            func_check;                       /**< Conditions the function points were last checked against. */
+    char              name[32];                   /**< Name the map gives this placement of the part. */
+    char              parts_name[32];             /**< Name of the part that was placed. */
+    CList<CMapPiece> *piece_list;                 /**< First node of the list of pieces the part is built from. */
+    mgCFrame          frame;                      /**< Frame that places every piece of the part in the world. */
+    s32               lod_num;                    /**< Number of levels of detail the part has distances for. */
+    s32               lod_blend;                  /**< Non-zero blends between levels of detail. */
+    float            *lod_dist;                   /**< Distance at which each level of detail starts. */
+    s32               minimap_tile;               /**< Tile of the dungeon mini map drawn for the part, or -1 for none; set by CMiniMap. */
+    float             fixed_time;                 /**< Time of day the function points are checked against; below zero to use the scene's time. */
+    s32               need_step;                  /**< Non-zero while a piece of the part moves and must be stepped every frame. */
+    s32               color_num;                  /**< Number of entries of color in use. */
+    sceVu0FVECTOR     color[MAP_PARTS_COLOR_MAX]; /**< Colour given to the materials of each colour number; a W of zero or below leaves them as they are. */
+    s32               bound_valid;                /**< Non-zero while bound_box holds the extent of the drawn pieces. */
+    mgVu0FBOX         bound_box;                  /**< Extent of the drawn pieces, in the part's own space. */
+    sceVu0FVECTOR     bound_sphere;               /**< Sphere around bound_box: centre in XYZ, radius in W. */
+    s32               col_bound_valid;            /**< Non-zero while col_bound_box holds the extent of the collision pieces. */
+    mgVu0FBOX         col_bound_box;              /**< Extent of the collision pieces, in the part's own space. */
+    sceVu0FVECTOR     col_bound_sphere;           /**< Sphere around col_bound_box: centre in XYZ, radius in W. */
+    CFuncPointMngr    func_point_mngr;            /**< Function points that come with the part. */
+    s32               no_light;                   /**< Non-zero draws the part with the scene's lights cleared, lit only by its own light points. */
+    s32               no_plight;                  /**< Non-zero draws the part with point lights turned off. */
+    u32               move_flag;                  /**< Four flags that the map's MOVE_FLAG command sets, read by the automap. */
+    CList<CObjAnime> *anime_list;                 /**< First node of the list of animations the function points drive. */
+    s32               group_no;                   /**< Group of parts the placement belongs to, or -1. */
+    s32               in_screen;                  /**< Non-zero while the part is on screen this frame. */
+    CFuncPointCheck   func_check;                 /**< Conditions the function points were last checked against. */
 
     /**
      * Makes a part that holds no pieces.
@@ -203,7 +203,7 @@ public:
      * @address 0x167830
      * @size 0x70
      */
-    void AddPiece(CList<CMapPiece> *piece);
+    void AddPiece(CList<CMapPiece> *node);
 
     /**
      * Finds the piece with a given name, or gives back NULL.
@@ -281,7 +281,7 @@ public:
      * @address 0x167C00
      * @size 0xF0
      */
-    int GetDefColor(int no, float *out_rgba);
+    int GetDefColor(int id, float *out_color);
 
     /**
      * Copies every colour that is in use into the materials of its colour
@@ -381,7 +381,7 @@ public:
      * @address 0x1687B0
      * @size 0x110
      */
-    int InsideScreen(COcclusion *occlusion, int occlusion_num);
+    int InsideScreen(COcclusion *occluders, int count);
 
     /**
      * Finds the nearest screen function point of the part that the camera

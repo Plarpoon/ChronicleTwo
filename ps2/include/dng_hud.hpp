@@ -2,8 +2,9 @@
 
 #include "common.h"
 
-#include <cstring>
 #include <libvu0.h>
+
+#include <cstring>
 
 #include "object.hpp"
 
@@ -92,20 +93,20 @@ enum WarningGageLayout {
  */
 class CLevelupInfo {
 public:
-    s32 unk_00;
-    s32 unk_04;
-    s32 unk_08;
-    s32 unk_0c;
-    s32 unk_10;
-    s32 unk_14;
-    s32 unk_18;
-    s32 unk_1c;
+    s32   unk_00;
+    s32   unk_04;
+    s32   unk_08;
+    s32   unk_0c;
+    s32   unk_10;
+    s32   unk_14;
+    s32   unk_18;
+    s32   unk_1c;
     float progress; /**< Progress through the current phase, from 0.0 to 1.0. */
-    s32 phase;      /**< Current stage of the banner, a ::LevelupInfoPhase. */
-    s32 x;          /**< Screen x of the banner's text. */
-    s32 y;          /**< Screen y of the banner's text. */
-    s32 unk_30;
-    s32 unk_34;
+    s32   phase;    /**< Current stage of the banner, a ::LevelupInfoPhase. */
+    s32   x;        /**< Screen x of the banner's text. */
+    s32   y;        /**< Screen y of the banner's text. */
+    s32   unk_30;
+    s32   unk_34;
 
     /**
      * Starts the banner centred on a screen position.
@@ -114,7 +115,7 @@ public:
      * @address 0x1CA710
      * @size 0x50
      */
-    void SetLevelUpInfo(int x, int y, int unk_30, int unk_34);
+    void SetLevelUpInfo(int x, int y, int source, int value);
 
     /**
      * Draws the banner for its current phase.
@@ -144,13 +145,13 @@ STATIC_ASSERT(sizeof(CLevelupInfo) == 0x38);
  */
 class CPiyori {
 public:
-    mgCObject *target;       /**< Character that the stars circle; NULL while no stars are shown. */
-    float star_angle[3];     /**< Angle, in radians, of the bob of each star. */
-    float circle_angle;      /**< Angle, in radians, of the first star around the circle. */
-    float height;            /**< Height of the circle above the character's position. */
-    float radius;            /**< Radius of the circle. */
-    s16 time;                /**< Frames left until the stars vanish; they shrink and fade over the last 16. */
-    s16 se_wait;             /**< Frames left until the sound of the stars plays again. */
+    mgCObject *target;        /**< Character that the stars circle; NULL while no stars are shown. */
+    float      star_angle[3]; /**< Angle, in radians, of the bob of each star. */
+    float      circle_angle;  /**< Angle, in radians, of the first star around the circle. */
+    float      height;        /**< Height of the circle above the character's position. */
+    float      radius;        /**< Radius of the circle. */
+    s16        time;          /**< Frames left until the stars vanish; they shrink and fade over the last 16. */
+    s16        se_wait;       /**< Frames left until the sound of the stars plays again. */
 
     /**
      * Removes the stars.
@@ -177,7 +178,7 @@ public:
      * @address 0x1CAC10
      * @size 0x90
      */
-    void Set(mgCObject *target, float height, float radius, short time);
+    void Set(mgCObject *object, float height, float radius, short life);
 
     /**
      * Starts the stars circling a character, sized to the character.
@@ -216,11 +217,11 @@ STATIC_ASSERT(sizeof(CPiyori) == 0x20);
  */
 class CGiftMark {
 public:
-    CCharacter2 *chara; /**< Character that the mark floats above. */
-    float height;       /**< Height of the character, which places the mark above it. */
-    float angle;        /**< Angle, in radians, of the mark's bob. */
-    s32 active;         /**< Nonzero while the mark is shown. */
-    s16 time;           /**< Frames that the mark has been shown; it ends after 240. */
+    CCharacter2 *chara;  /**< Character that the mark floats above. */
+    float        height; /**< Height of the character, which places the mark above it. */
+    float        angle;  /**< Angle, in radians, of the mark's bob. */
+    s32          active; /**< Nonzero while the mark is shown. */
+    s16          time;   /**< Frames that the mark has been shown; it ends after 240. */
 
     /**
      * Shows the mark above a character.
@@ -229,7 +230,7 @@ public:
      * @address 0x1CB090
      * @size 0x50
      */
-    void Set(CCharacter2 *chara, float height);
+    void Set(CCharacter2 *chara, float character_scale);
 
     /**
      * Draws the mark above its character.
@@ -300,13 +301,13 @@ STATIC_ASSERT(sizeof(CEnemyGekirin) == 0x2);
  */
 class CEnemyLifeGage {
 public:
-    sceVu0FVECTOR pos;                                    /**< World position that the gauge is drawn over. */
-    s32 max_hp;                                           /**< Life that fills the gauge. */
-    s32 hp;                                               /**< Life left. */
-    s32 screen;                                           /**< Nonzero to draw the gauge across the foot of the screen instead of in the world. */
-    s32 view;                                             /**< Nonzero while the gauge is to be shown. */
-    float scale;                                          /**< Width of the gauge from 0.0 to 1.0, grown while shown and shrunk while hidden. */
-    CEnemyGekirin gekirin[ENEMY_LIFE_GAGE_GEKIRIN_MAX];   /**< Gekirin marks drawn above the gauge. */
+    sceVu0FVECTOR pos;                                  /**< World position that the gauge is drawn over. */
+    s32           max_hp;                               /**< Life that fills the gauge. */
+    s32           hp;                                   /**< Life left. */
+    s32           screen;                               /**< Nonzero to draw the gauge across the foot of the screen instead of in the world. */
+    s32           view;                                 /**< Nonzero while the gauge is to be shown. */
+    float         scale;                                /**< Width of the gauge from 0.0 to 1.0, grown while shown and shrunk while hidden. */
+    CEnemyGekirin gekirin[ENEMY_LIFE_GAGE_GEKIRIN_MAX]; /**< Gekirin marks drawn above the gauge. */
 
     /**
      * Shows or hides the gauge, starting it from half width when it appears.
@@ -315,7 +316,7 @@ public:
      * @address 0x1CB490
      * @size 0x40
      */
-    void SetView(int view);
+    void SetView(int visible);
 
     /**
      * Places the gauge, fills it, and starts breaking the gekirin marks beyond a count.
@@ -324,7 +325,7 @@ public:
      * @address 0x1CB4D0
      * @size 0xA0
      */
-    void Set(float *pos, int max_hp, int hp, int gekirin_num, int screen);
+    void Set(float *pos, int new_max_life, int new_life, int count, int new_pinned);
 
     /**
      * Draws the gauge, and its gekirin marks when they are not hidden.
@@ -351,7 +352,7 @@ public:
      * @address 0x1CBD10
      * @size 0x50
      */
-    void ResetGekirin(int gekirin_num);
+    void ResetGekirin(int gekirin_count);
 
     /**
      * Empties and hides the gauge, showing a number of gekirin marks.
@@ -372,29 +373,29 @@ STATIC_ASSERT(sizeof(CEnemyLifeGage) == 0x50);
  */
 class CDamageScore {
 public:
-    s32 unk_00;
-    u8 unk_04[0xC];
-    sceVu0FVECTOR pos;      /**< World position that the number is drawn over. */
-    char text[8];           /**< Digits of the number. */
-    float bounce[8];        /**< Angle, in radians, of the bounce of each digit, or of the sprite. */
-    s16 color[3];           /**< Red, green and blue of the digits. */
-    s16 alpha;              /**< Opacity of the number. */
-    s16 phase;              /**< Current stage, a ::DamageScorePhase. */
-    s16 length;             /**< Number of digits in the text. */
-    s32 unk_54;
-    s32 unk_58;
-    s32 digit_w;            /**< Width of one digit in the texture. */
-    s32 digit_h;            /**< Height of one digit in the texture. */
-    s32 digit_u;            /**< Texture x of the digit 0. */
-    s32 digit_v;            /**< Texture y of the digits. */
-    s32 unk_6c;
-    s32 unk_70;
-    s32 sprite_w;           /**< Width of the sprite in the texture. */
-    s32 sprite_h;           /**< Height of the sprite in the texture. */
-    s32 sprite_u;           /**< Texture x of the sprite. */
-    s32 sprite_v;           /**< Texture y of the sprite. */
-    s32 sprite;             /**< Nonzero to draw the sprite instead of the digits. */
-    s32 active;             /**< Nonzero while the number is shown. */
+    s32           unk_00;
+    u8            unk_04[0xC];
+    sceVu0FVECTOR pos;       /**< World position that the number is drawn over. */
+    char          text[8];   /**< Digits of the number. */
+    float         bounce[8]; /**< Angle, in radians, of the bounce of each digit, or of the sprite. */
+    s16           color[3];  /**< Red, green and blue of the digits. */
+    s16           alpha;     /**< Opacity of the number. */
+    s16           phase;     /**< Current stage, a ::DamageScorePhase. */
+    s16           length;    /**< Number of digits in the text. */
+    s32           unk_54;
+    s32           unk_58;
+    s32           digit_w; /**< Width of one digit in the texture. */
+    s32           digit_h; /**< Height of one digit in the texture. */
+    s32           digit_u; /**< Texture x of the digit 0. */
+    s32           digit_v; /**< Texture y of the digits. */
+    s32           unk_6c;
+    s32           unk_70;
+    s32           sprite_w; /**< Width of the sprite in the texture. */
+    s32           sprite_h; /**< Height of the sprite in the texture. */
+    s32           sprite_u; /**< Texture x of the sprite. */
+    s32           sprite_v; /**< Texture y of the sprite. */
+    s32           sprite;   /**< Nonzero to draw the sprite instead of the digits. */
+    s32           active;   /**< Nonzero while the number is shown. */
 
     /**
      * Makes a number with white digits.
@@ -430,7 +431,7 @@ public:
      * @address 0x1CBE50
      * @size 0x90
      */
-    void SetSprite(float *pos, int u, int v, int w, int h);
+    void SetSprite(float *pos, int u, int v, int u1, int v1);
 
     /**
      * Draws the number or the sprite.
@@ -460,14 +461,14 @@ STATIC_ASSERT(sizeof(CDamageScore) == 0x90);
  */
 class CDamageScore2 {
 public:
-    s32 chara_no;   /**< Index in the scene of the character that the number is drawn over. */
+    s32   chara_no; /**< Index in the scene of the character that the number is drawn over. */
     float height;   /**< Height above the character's position at which the number is drawn. */
     float offset_y; /**< Screen offset of the jump. */
     float alpha;    /**< Opacity of the number, from 0.0 to 1.0. */
-    s32 value;      /**< Number shown. */
-    char text[8];   /**< Digits of the number. */
-    s32 phase;      /**< Current stage, a ::DamageScore2Phase. */
-    s32 length;     /**< Number of digits in the text. */
+    s32   value;    /**< Number shown. */
+    char  text[8];  /**< Digits of the number. */
+    s32   phase;    /**< Current stage, a ::DamageScore2Phase. */
+    s32   length;   /**< Number of digits in the text. */
     float progress; /**< Progress through the current phase. */
 
     /**
@@ -477,7 +478,7 @@ public:
      * @address 0x1CC3C0
      * @size 0x70
      */
-    void SetValue(int chara_no, int value, float height);
+    void SetValue(int slot, int value, float height);
 
     /**
      * Draws the number over its character.
@@ -507,13 +508,13 @@ STATIC_ASSERT(sizeof(CDamageScore2) == 0x28);
  */
 class CLockOnModel : public CObjectFrame {
 public:
-    CScene *scene;          /**< Scene whose characters are looked up. */
-    ClsMes *mes;            /**< Message window that shows the enemy's name. */
-    float angle;            /**< Angle, in radians, by which the marker is turned. */
-    char *name;             /**< Name of the locked-on enemy; NULL when none is shown. */
-    s32 unk_90;
-    u8 unk_94[0xC];
-    sceVu0FVECTOR pos;      /**< World position of the marker and of the name. */
+    CScene       *scene; /**< Scene whose characters are looked up. */
+    ClsMes       *mes;   /**< Message window that shows the enemy's name. */
+    float         angle; /**< Angle, in radians, by which the marker is turned. */
+    char         *name;  /**< Name of the locked-on enemy; NULL when none is shown. */
+    s32           unk_90;
+    u8            unk_94[0xC];
+    sceVu0FVECTOR pos; /**< World position of the marker and of the name. */
 
     /**
      * Draws the marker over the enemy that the player is locked on to, as a model or as a
@@ -562,10 +563,10 @@ STATIC_ASSERT(sizeof(CLockOnModel) == 0xB0);
  */
 class CWarningGage2 {
 public:
-    s32 warning[3]; /**< Nonzero for each gauge that is low. */
-    s32 time;       /**< Frame of the flash cycle; the warnings show in the second half of it. */
-    float rate[3];  /**< How full each gauge is; an empty gauge shows a different warning. */
-    s32 layout;     /**< Board that the warnings are placed over, a ::WarningGageLayout. */
+    s32   warning[3]; /**< Nonzero for each gauge that is low. */
+    s32   time;       /**< Frame of the flash cycle; the warnings show in the second half of it. */
+    float rate[3];    /**< How full each gauge is; an empty gauge shows a different warning. */
+    s32   layout;     /**< Board that the warnings are placed over, a ::WarningGageLayout. */
 
     /**
      * Advances the flash cycle.

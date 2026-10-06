@@ -83,7 +83,7 @@ enum ITEM_USE_TARGET_TYPE {
  *
  */
 struct CDataCommon {
-    u8    type;          /**< Item type, from which ConvertUsedItemType gives the family. */
+    u8    type; /**< Item type, from which ConvertUsedItemType gives the family. */
     u8    unk_1;
     s16   item_no;       /**< Item number of this entry. */
     s16   list_no;       /**< Index of the item's entry in the table of its family. */
@@ -93,12 +93,13 @@ struct CDataCommon {
     char  file_name[16]; /**< Base name of the item's model files. */
     u8    active_set;    /**< Non-zero when the item can be set as an active item. */
     u8    unk_1d;
-    s16   stack_num;     /**< Count of the item one stack can hold. */
+    s16   stack_num; /**< Count of the item one stack can hold. */
     u8    unk_20;
     u8    unk_21[3];
-    u32   attribute;     /**< ITEM_ATTRIBUTE bits. */
-    char *name;          /**< Display name of the item, from the item message script. */
+    u32   attribute; /**< ITEM_ATTRIBUTE bits. */
+    char *name;      /**< Display name of the item, from the item message script. */
 };
+
 STATIC_ASSERT(sizeof(CDataCommon) == 0x2C);
 
 /**
@@ -122,6 +123,7 @@ public:
      */
     CDataItem();
 };
+
 STATIC_ASSERT(sizeof(CDataItem) == 0x10);
 
 /**
@@ -144,6 +146,7 @@ public:
      */
     CDataAttach();
 };
+
 STATIC_ASSERT(sizeof(CDataAttach) == 0x18);
 
 /**
@@ -153,13 +156,13 @@ STATIC_ASSERT(sizeof(CDataAttach) == 0x18);
  */
 class CDataWeapon {
 public:
-    s16 durability;         /**< Durability gauge a new copy of the weapon starts with. */
-    s16 levelup_exp;        /**< Experience needed to level up, grown by half of itself per level. */
-    s16 status[2];          /**< Starting values of the first two parameters. */
-    s16 status_max[2];      /**< Limits of the first two parameters. */
-    s16 attribute[8];       /**< Starting values of the attribute parameters. */
-    s16 attribute_max[8];   /**< Limits of the attribute parameters. */
-    u32 special;            /**< Special ability bits the weapon starts with. */
+    s16 durability;       /**< Durability gauge a new copy of the weapon starts with. */
+    s16 levelup_exp;      /**< Experience needed to level up, grown by half of itself per level. */
+    s16 status[2];        /**< Starting values of the first two parameters. */
+    s16 status_max[2];    /**< Limits of the first two parameters. */
+    s16 attribute[8];     /**< Starting values of the attribute parameters. */
+    s16 attribute_max[8]; /**< Limits of the attribute parameters. */
+    u32 special;          /**< Special ability bits the weapon starts with. */
     u8  unk_30[8];
     u8  unk_38;
     u8  fusion_point;       /**< Synthesis points the weapon gains at each level-up. */
@@ -167,8 +170,8 @@ public:
     s16 buildup_monster[3]; /**< Monsters that must have been defeated to build up, or negative for none. */
     u8  pallet_color;       /**< Colour palette of the weapon's model. */
     u8  unk_47;
-    u8  attack_type;        /**< Attack type of the weapon. */
-    u8  model_no;           /**< Model number of the weapon. */
+    u8  attack_type; /**< Attack type of the weapon. */
+    u8  model_no;    /**< Model number of the weapon. */
     u8  unk_4a[2];
 
     /**
@@ -180,6 +183,7 @@ public:
      */
     CDataWeapon();
 };
+
 STATIC_ASSERT(sizeof(CDataWeapon) == 0x4C);
 
 /**
@@ -197,9 +201,9 @@ public:
     s16 unk_a;
     s16 unk_c[8];
     s16 unk_1c;
-    s16 info_type_d;  /**< Attack type of a part of item type 0xD. */
-    s16 info_type_e;  /**< Attack type of a part of item type 0xE. */
-    u8  offset_no;    /**< Number of the joint and sound files of the part. */
+    s16 info_type_d; /**< Attack type of a part of item type 0xD. */
+    s16 info_type_e; /**< Attack type of a part of item type 0xE. */
+    u8  offset_no;   /**< Number of the joint and sound files of the part. */
     u8  unk_23;
 
     /**
@@ -211,6 +215,7 @@ public:
      */
     int GetOffsetNo();
 };
+
 STATIC_ASSERT(sizeof(CDataRoboPart) == 0x24);
 
 /**
@@ -220,7 +225,7 @@ STATIC_ASSERT(sizeof(CDataRoboPart) == 0x24);
  */
 class CDataBreedFish {
 public:
-    float size;     /**< Standard size of the fish. */
+    float size; /**< Standard size of the fish. */
     s16   unk_4;
     s16   unk_6;
     s16   unk_8;
@@ -239,6 +244,7 @@ public:
      */
     CDataBreedFish();
 };
+
 STATIC_ASSERT(sizeof(CDataBreedFish) == 0x14);
 
 /**
@@ -251,7 +257,7 @@ struct USEITEM_EFFECT {
     u32 status_flags; /**< Status conditions the item acts on. */
     u16 target_flags; /**< Kinds of target the item can be used on. */
     u8  unk_a[2];
-    int value[4];     /**< Amounts of the item's effects. */
+    int value[4]; /**< Amounts of the item's effects. */
 };
 
 /**
@@ -261,7 +267,8 @@ struct USEITEM_EFFECT {
  */
 class CItemUseTarget {
 public:
-    int type;                /**< What the target is, an ITEM_USE_TARGET_TYPE. */
+    int type; /**< What the target is, an ITEM_USE_TARGET_TYPE. */
+
     union {
         void          *data; /**< Target of any kind. */
         CGameDataUsed *item; /**< Target owned item, for ITEM_USE_TARGET_ITEM. */
@@ -281,8 +288,9 @@ public:
      * @address 0x197B40
      * @size 0x58
      */
-    void SetPtr(int type, void *target);
+    void SetPtr(int new_kind, void *new_ptr);
 };
+
 STATIC_ASSERT(sizeof(CItemUseTarget) == 0x8);
 
 /**
@@ -424,8 +432,9 @@ public:
      * @address 0x196FE0
      * @size 0x6C
      */
-    s16 GetDataTypeStartListNo(int type);
+    int GetDataTypeStartListNo(int type);
 };
+
 STATIC_ASSERT(sizeof(CGameData) == 0x30);
 
 /** Spectrumising table: for each item number from 1, the attachment parameter it raises and by how much. */
@@ -511,7 +520,7 @@ CDataBreedFish *GetBreedFishInfoData(int item_no);
  * @address 0x1970A0
  * @size 0xCC
  */
-char *GetItemFileName(int item_no, int with_extension);
+char *GetItemFileName(int item_no, int variant);
 
 /**
  * Builds the path of an item's model file in the directory of its family, or for weapons and
@@ -521,7 +530,7 @@ char *GetItemFileName(int item_no, int with_extension);
  * @address 0x197170
  * @size 0x180
  */
-char *GetItemFilePath(int item_no, int alternate);
+char *GetItemFilePath(int item_no, int variant);
 
 /**
  * Gives the item type of an item number, or 0 for a number without common data.
@@ -548,7 +557,7 @@ u32 GetItemDataAttribute(int item_no);
  * @address 0x197340
  * @size 0xCC
  */
-int ConvertUsedItemType(int type);
+int ConvertUsedItemType(int item_no);
 
 /**
  * Gives the number of one of an item's messages, or -1 for an item without common data.
@@ -584,7 +593,7 @@ int GetItemIconNo(int item_no);
  * @address 0x1974F0
  * @size 0x6C
  */
-void SetItemSpectolPoint(int item_no, ATTACH_USED *attach, int num);
+void SetItemSpectolPoint(int item_no, ATTACH_USED *used, int multiplier);
 
 /**
  * Fills a list, ended by -1, with the message numbers of the menu commands an item offers,

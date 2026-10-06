@@ -83,7 +83,7 @@ void InitTakePhoto();
  * @address 0x313960
  * @size 0xA0
  */
-void LoadTakePhoto(int camera_texb, mgCMemory *memory, u_long128 *buffer);
+void LoadTakePhoto(int arg0, mgCMemory *memory, u_long128 *buffer);
 
 /**
  * Enters camera mode, starting in the aiming step.
@@ -173,7 +173,7 @@ int DrawTakePhoto(USER_PICTURE_INFO *picture, float *distance);
  * @address 0x3149E0
  * @size 0x90
  */
-void SetTookPhotoData(USER_PICTURE_INFO *picture);
+void SetTookPhotoData(USER_PICTURE_INFO *photo);
 
 /**
  * Draws the camera-mode text: the button prompts or the photo title, the
@@ -183,4 +183,4 @@ void SetTookPhotoData(USER_PICTURE_INFO *picture);
  * @address 0x314A70
  * @size 0x340
  */
-void DrawTakePhotoSystem(int texb, CInventUserData *user_data);
+void DrawTakePhotoSystem(int texture, CInventUserData *user_data);

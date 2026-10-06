@@ -37,21 +37,20 @@ static int Conv32To8(int width, int height, u_char *image);
  */
 extern u_char texflush_dma[0x30];
 
-extern char at_497[];
-extern char at_866[];
-extern char at_884[];
-extern char at_867[];
-extern char at_868[];
+extern char   at_497[];
+extern char   at_866[];
+extern char   at_884[];
+extern char   at_867[];
+extern char   at_868[];
 extern u_char lut_1246[128];
-extern int block_table8_1266[32];
-extern int block_table32_1267[32];
-extern "C" void *__construct_new_array(void *, void *(*)(void *), void *, u_int, int);
-extern "C" void *__ct__10mgCTextureFv(void *);
-extern "C" void *__ct__15mgCTextureBlockFv(void *);
-extern "C" void *Alloc__9mgCMemoryFi(mgCMemory *, int);
+extern int    block_table8_1266[32];
+extern int    block_table32_1267[32];
+
 static inline u_int align16_blocks(u_int n) {
-    if (n & 0xF)
+    if (n & 0xF) {
         return (n >> 4) + 1;
+    }
+
     return n >> 4;
 }
 
@@ -70,6 +69,7 @@ static int GetZBufVram(int *size) {
     *size = frame.width * frame.width * 4 / 256;
     return mgZBUF_1.bits.zbp << 5;
 }
+
 #pragma schedule reset
 #pragma schedule off
 
@@ -87,47 +87,56 @@ static int CheckCopyToZBufVram(mgCTexture *texture, int *size) {
 
     return 0;
 }
+
 #pragma schedule reset
 #pragma schedule off
+
 mgCTexture::mgCTexture() {
     Initialize();
 }
+
 #pragma schedule reset
 #pragma schedule off
 #pragma global_optimizer off
 
 void mgCTexture::Initialize() {
-    u_char *self = (u_char *)this;
-    int i;
-    *(signed char *)(self + 8) = 0;
+    u_char *self = (u_char *) this;
+    int     i;
+    *(signed char *) (self + 8) = 0;
     this->block = -1;
+
     for (i = 0; i < 4; i++) {
-        *(int *)((i << 2) + (int)self + 0x50) = 0;
+        *(int *) ((i << 2) + (int) self + 0x50) = 0;
     }
-    *(int *)(self + 0x60) = 0;
-    *(long long *)(self + 0x48) = 0;
-    *(long long *)(self + 0x40) = 0;
-    *(long long *)(self + 0x38) = 0;
+
+    *(int *) (self + 0x60) = 0;
+    *(long long *) (self + 0x48) = 0;
+    *(long long *) (self + 0x40) = 0;
+    *(long long *) (self + 0x38) = 0;
+
     struct TexFlags {
         u_char flags_low : 2;
         u_char flags_mid : 2;
         u_char flags_high : 4;
     };
-    ((TexFlags *)(self + 0x48))->flags_low = 1;
-    ((TexFlags *)(self + 0x48))->flags_mid = 1;
-    *(short *)(self + 6) = 0;
+
+    ((TexFlags *) (self + 0x48))->flags_low = 1;
+    ((TexFlags *) (self + 0x48))->flags_mid = 1;
+    *(short *) (self + 6) = 0;
     this->height = 0;
     this->width = 0;
-    *(int *)(self + 0x64) = 0;
-    *(int *)(self + 0x28) = 0;
-    *(int *)(self + 0x2C) = 0;
-    *(int *)(self + 0x30) = 0;
-    *(int *)(self + 0x68) = 0;
+    *(int *) (self + 0x64) = 0;
+    *(int *) (self + 0x28) = 0;
+    *(int *) (self + 0x2C) = 0;
+    *(int *) (self + 0x30) = 0;
+    *(int *) (self + 0x68) = 0;
 }
+
 #pragma global_optimizer reset
 #pragma schedule reset
 #pragma schedule off
 #pragma global_optimizer off
+
 void mgCTexture::Bilinear(int mode) {
     if (tex1.MXL == 0) {
         switch (mode) {
@@ -157,47 +166,60 @@ void mgCTexture::Bilinear(int mode) {
         }
     }
 }
+
 #pragma global_optimizer reset
 #pragma schedule reset
 #pragma schedule off
+
 mgCTextureBlock::mgCTextureBlock() {
     Initialize();
 }
+
 #pragma schedule reset
 #pragma schedule off
+
 void mgCTextureBlock::Initialize() {
     unk_4 = 0;
     unk_0 = 0;
     anime = NULL;
     texture = NULL;
 }
+
 #pragma schedule reset
 #pragma schedule off
 #pragma global_optimizer off
+
 void mgCTextureBlock::Add(mgCTexture *texture) {
     texture->next = NULL;
     mgCTexture *node;
+
     if (this->texture == NULL) {
         this->texture = texture;
     } else {
         node = this->texture;
+
         while (node != NULL) {
             mgCTexture *next = node->next;
+
             if (next == NULL) {
                 node->next = texture;
                 break;
-    }
+            }
+
             node = next;
         }
     }
 }
+
 #pragma global_optimizer reset
 #pragma schedule reset
 #pragma schedule off
 #pragma global_optimizer off
+
 void mgCTextureBlock::Delete(mgCTexture *texture) {
     mgCTexture *node = this->texture;
     mgCTexture *prev = NULL;
+
     while (node != NULL) {
         if (node == texture) {
             if (prev == NULL) {
@@ -206,63 +228,70 @@ void mgCTextureBlock::Delete(mgCTexture *texture) {
                 prev->next = node->next;
             }
         }
+
         prev = node;
         node = node->next;
     }
 }
+
 #pragma global_optimizer reset
 #pragma schedule reset
 #pragma schedule off
+
 mgCTextureManager::mgCTextureManager() : texture_max(0), hash_max(0) {
     block_max = 0;
     blocks = NULL;
 }
+
 #pragma schedule reset
 #pragma schedule off
 #pragma global_optimizer off
+
 void mgCTextureManager::SetTableBuffer(int texture_count, int block_total, mgCMemory *memory) {
-    int slot;
-    int node;
-    int count;
+    int   slot;
+    int   node;
+    int   count;
     u_int bytes;
     block_max = block_total;
     count = block_max;
     bytes = count * 0x10;
-    blocks = (mgCTextureBlock *)__construct_new_array(
-        (void *)operator new[](count * 0x10 + 0x10,
-                               (u_long128 *)Alloc__9mgCMemoryFi(memory, align16_blocks(bytes) + 2)),
-        __ct__15mgCTextureBlockFv, 0, 0x10, count);
+    blocks = new (memory->Alloc(align16_blocks(bytes) + 2)) mgCTextureBlock[count];
+
     if (blocks == 0) {
         block_max = 0;
     }
+
     texture_max = texture_count;
     count = texture_max;
     bytes = count * 0x70;
-    texture_buf = (mgCTexture *)__construct_new_array(
-        (void *)operator new[](count * 0x70 + 0x10,
-                               (u_long128 *)Alloc__9mgCMemoryFi(memory, align16_blocks(bytes) + 2)),
-        __ct__10mgCTextureFv, 0, 0x70, count);
+    texture_buf = new (memory->Alloc(align16_blocks(bytes) + 2)) mgCTexture[count];
     bytes = texture_max * 4;
-    texture_stack = (mgCTexture **)Alloc__9mgCMemoryFi(memory, align16_blocks(bytes));
+    texture_stack = (mgCTexture **) memory->Alloc(align16_blocks(bytes));
+
     for (slot = 0; slot < texture_max; slot++) {
         texture_stack[slot] = &texture_buf[slot];
     }
+
     texture_num = 0;
     hash_max = texture_count;
     bytes = hash_max * 8;
-    hash_buf = (mgTEXTURE_HASH *)operator new[](
-        hash_max * 8, (u_long128 *)Alloc__9mgCMemoryFi(memory, align16_blocks(bytes) + 2));
+    hash_buf = (mgTEXTURE_HASH *) operator new[](
+        hash_max * 8, memory->Alloc(align16_blocks(bytes) + 2));
     bytes = hash_max * 4;
-    hash_stack = (mgTEXTURE_HASH **)Alloc__9mgCMemoryFi(memory, align16_blocks(bytes));
+    hash_stack = (mgTEXTURE_HASH **) memory->Alloc(align16_blocks(bytes));
+
     for (node = 0; node < hash_max; node++) {
         hash_stack[node] = hash_buf + node;
     }
+
     hash_num = 0;
 }
+
 #pragma global_optimizer reset
 #pragma schedule reset
 #pragma schedule off
 #pragma global_optimizer off
+
 void mgCTextureManager::Initialize(int start, int end) {
     int i;
     int slot;
@@ -270,137 +299,170 @@ void mgCTextureManager::Initialize(int start, int end) {
     int node;
     vram_top = start;
     vram_fix = end;
+
     if (vram_fix < 0) {
         vram_fix = 0x3FE0;
     }
+
     if (blocks != 0) {
-    for (i = 0; i < block_max; i++) {
-        blocks[i].Initialize();
-    }
-    fix_block.Initialize();
+        for (i = 0; i < block_max; i++) {
+            blocks[i].Initialize();
+        }
+
+        fix_block.Initialize();
+
         for (slot = 0; slot < texture_max; slot++) {
             texture_stack[slot] = &texture_buf[slot];
-    }
-    texture_num = 0;
-    for (i = 0; i < block_max; i++) {
+        }
+
+        texture_num = 0;
+
+        for (i = 0; i < block_max; i++) {
             blocks[i].unk_0 = vram_top;
 
-            ((mgCTextureBlock *)((i << 4) + (int)blocks))->unk_4 = vram_top;
-    }
-    last_block = -1;
+            ((mgCTextureBlock *) ((i << 4) + (int) blocks))->unk_4 = vram_top;
+        }
+
+        last_block = -1;
         name_suffix[0] = 0;
+
         for (bucket = 0; bucket < 101; bucket++) {
-            *(mgTEXTURE_HASH **)((bucket << 2) + (int)this + 0x24) = 0;
-    }
+            *(mgTEXTURE_HASH **) ((bucket << 2) + (int) this + 0x24) = 0;
+        }
+
         for (node = 0; node < hash_max; node++) {
             hash_stack[node] = hash_buf + node;
+        }
+
+        hash_num = 0;
     }
-    hash_num = 0;
 }
-}
+
 #pragma global_optimizer reset
 #pragma schedule reset
 #pragma schedule off
 #pragma optimization_level 2
+
 int mgCTextureManager::hash(char *name) {
     u_char value;
-    for (value = 0; *(signed char *)name != 0; name++) {
-        value = (((value << 8) + *(signed char *)name) % 101);
+
+    for (value = 0; *(signed char *) name != 0; name++) {
+        value = (((value << 8) + *(signed char *) name) % 101);
     }
+
     return value;
 }
+
 #pragma optimization_level reset
 #pragma schedule reset
 #pragma schedule off
 #pragma global_optimizer off
+
 void mgCTextureManager::AddHash(mgCTexture *texture) {
-    mgTEXTURE_HASH *node;
-    mgTEXTURE_HASH *cur;
-    mgTEXTURE_HASH *following;
+    mgTEXTURE_HASH  *node;
+    mgTEXTURE_HASH  *cur;
+    mgTEXTURE_HASH  *following;
     mgTEXTURE_HASH **bucket;
+
     if (hash_num >= hash_max) {
         node = NULL;
     } else {
         node = hash_stack[hash_num++];
     }
+
     if (node != NULL) {
         node->next = NULL;
         node->texture = texture;
 
-        int index = hash((char *)texture + 8);
-        bucket = (mgTEXTURE_HASH **)((index << 2) + (int)this + 0x24);
+        int index = hash(texture->name);
+        bucket = &hash_table[index];
         cur = *bucket;
+
         if (cur == NULL) {
             *bucket = node;
-    } else {
+        } else {
             while (cur != NULL) {
                 following = cur->next;
+
                 if (following == NULL) {
                     cur->next = node;
-        return;
-    }
+                    return;
+                }
+
                 cur = following;
+            }
         }
     }
 }
-}
+
 #pragma global_optimizer reset
 #pragma schedule reset
 #pragma schedule off
 #pragma global_optimizer off
+
 void mgCTextureManager::DelHash(mgCTexture *texture) {
-    mgTEXTURE_HASH *cur;
-    mgTEXTURE_HASH *prev;
-    mgTEXTURE_HASH *found;
+    mgTEXTURE_HASH  *cur;
+    mgTEXTURE_HASH  *prev;
+    mgTEXTURE_HASH  *found;
     mgTEXTURE_HASH **bucket;
+
     if (texture != NULL) {
-        int index = hash((char *)texture + 8);
-        bucket = (mgTEXTURE_HASH **)((index << 2) + (int)this + 0x24);
+        int index = hash(texture->name);
+        bucket = &hash_table[index];
         cur = *bucket;
         prev = NULL;
         found = NULL;
+
         while (cur != NULL) {
             if (cur->texture == texture) {
                 found = cur;
-            break;
-        }
+                break;
+            }
+
             prev = cur;
             cur = cur->next;
-    }
+        }
+
         if (found != NULL) {
             if (prev == NULL) {
                 *bucket = found->next;
-    } else {
+            } else {
                 prev->next = found->next;
-    }
-    if (hash_num > 0) {
+            }
+
+            if (hash_num > 0) {
                 hash_num--;
                 hash_stack[hash_num] = found;
-    }
-}
+            }
         }
     }
+}
+
 #pragma global_optimizer reset
 #pragma schedule reset
 #pragma schedule off
 #pragma global_optimizer off
+
 mgCTexture *mgCTextureManager::SearchHash(char *name, int mode) {
     mgTEXTURE_HASH *node;
-    int bucket = hash(name);
+    int             bucket = hash(name);
 
-    for (node = *(mgTEXTURE_HASH **)((bucket << 2) + (int)this + 0x24); node != NULL;
+    for (node = hash_table[bucket]; node != NULL;
          node = node->next) {
-        if (strcmp(name, (char *)node->texture + 8) == 0) {
+        if (strcmp(name, node->texture->name) == 0) {
             if (mode < 0 || node->texture->block == mode) {
                 return node->texture;
             }
         }
     }
+
     return NULL;
 }
+
 #pragma global_optimizer reset
 #pragma schedule reset
 #pragma schedule off
+
 mgCTexture *mgCTextureManager::SearchTextureName(char *name, int block) {
     char full_name[128];
 
@@ -412,29 +474,38 @@ mgCTexture *mgCTextureManager::SearchTextureName(char *name, int block) {
 
     return SearchHash(name, block);
 }
+
 #pragma schedule reset
 #pragma schedule off
+
 mgCTexture *mgCTextureManager::SearchTexture(char *name) {
     mgCTexture *slot;
+
     if (texture_num >= texture_max) {
         slot = NULL;
     } else {
         slot = texture_stack[texture_num++];
     }
+
     if (SearchTextureName(name, -1) != 0) {
         printf(at_497, name);
     }
+
     return slot;
 }
+
 #pragma schedule reset
 #pragma schedule off
 #pragma optimization_level 1
+
 mgCTexture *mgCTextureManager::GetTexture(char *name, int block) {
     return SearchTextureName(name, block);
 }
+
 #pragma optimization_level reset
 #pragma schedule reset
 #pragma schedule off
+
 mgCTextureBlock *mgCTextureManager::GetTextureBlock(int block) {
     if (block == MG_TEXTURE_BLOCK_FIX) {
         return &fix_block;
@@ -446,14 +517,16 @@ mgCTextureBlock *mgCTextureManager::GetTextureBlock(int block) {
 
     return &blocks[block];
 }
+
 #pragma schedule reset
 #pragma schedule off
 #pragma global_optimizer off
+
 int mgCTextureManager::GetRemainVRAM(int block) {
     mgCTexture *texture;
-    int vram;
-    int zbuf_remain;
-    int size;
+    int         vram;
+    int         zbuf_remain;
+    int         size;
 
     if (block < 0 || block >= block_max) {
         return 0;
@@ -477,26 +550,27 @@ int mgCTextureManager::GetRemainVRAM(int block) {
 
     return vram_fix - vram;
 }
+
 #pragma global_optimizer reset
 #pragma schedule reset
 #ifdef NONMATCHING
 mgCTexture *mgCTextureManager::EnterTexture(int block, char *name, u_long128 **image, int width,
                                             int height, int bpp, u_long128 *clut, u_long tex1,
                                             int swizzled) {
-    char full_name[0x20];
-    u_long128 *no_image[MG_TEXTURE_LEVEL_MAX];
+    char             full_name[0x20];
+    u_long128       *no_image[MG_TEXTURE_LEVEL_MAX];
     mgCTextureBlock *texture_block;
-    mgCTexture *texture;
-    sceGsTex1 *lod;
-    int psm;
-    int tw;
-    int th;
-    int tbw;
-    int power;
-    int i;
-    int level_blocks;
-    int last_level;
-    int vram;
+    mgCTexture      *texture;
+    sceGsTex1       *lod;
+    int              psm;
+    int              tw;
+    int              th;
+    int              tbw;
+    int              power;
+    int              i;
+    int              level_blocks;
+    int              last_level;
+    int              vram;
 
     strcpy(full_name, name);
     strcat(full_name, name_suffix);
@@ -638,21 +712,21 @@ mgCTexture *mgCTextureManager::EnterTexture(int block, char *name, u_long128 **i
     texture->bpp = bpp;
     texture->block = block;
     texture->swizzled = swizzled;
-    *(u_long *)&texture->tex1 = SCE_GS_SET_TEX1(1, 0, 1, 1, 1, 0, 0);
+    *(u_long *) &texture->tex1 = SCE_GS_SET_TEX1(1, 0, 1, 1, 1, 0, 0);
 
     if (bpp > 0) {
         if (last_level > 0) {
-            *(u_long *)&texture->tex1 = SCE_GS_SET_TEX1(0, 2, 1, 5, 1, 0, -120);
+            *(u_long *) &texture->tex1 = SCE_GS_SET_TEX1(0, 2, 1, 5, 1, 0, -120);
 
             if (tex1 != 0) {
-                lod = (sceGsTex1 *)&tex1;
-                *(u_long *)&texture->tex1 = SCE_GS_SET_TEX1(0, last_level, 1, 5, 1, lod->L, lod->K);
+                lod = (sceGsTex1 *) &tex1;
+                *(u_long *) &texture->tex1 = SCE_GS_SET_TEX1(0, last_level, 1, 5, 1, lod->L, lod->K);
             }
         } else {
-            *(u_long *)&texture->tex1 = SCE_GS_SET_TEX1(0, 0, 1, 1, 1, 0, 0);
+            *(u_long *) &texture->tex1 = SCE_GS_SET_TEX1(0, 0, 1, 1, 1, 0, 0);
 
             if (tex1 != 0) {
-                *(u_long *)&texture->tex1 = SCE_GS_SET_TEX1(0, 0, 1, 1, 1, 0, 0);
+                *(u_long *) &texture->tex1 = SCE_GS_SET_TEX1(0, 0, 1, 1, 1, 0, 0);
             }
         }
     }
@@ -684,24 +758,26 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_texture", EnterTexture__17mgCTextureMan
 #endif
 #pragma schedule off
 #pragma optimization_level 2
+
 mgCTexture *mgCTextureManager::EnterTexture(int id, char *name, TM2_head *head, int reload,
                                             int no_image) {
-    u_char magic[8];
-    u_long128 *images[4];
+    u_char       magic[8];
+    u_long128   *images[4];
     TM2_PICTURE *pic;
-    int width;
-    int height;
-    int pixel_bits;
-    u_char *clut;
-    u_char *mip;
-    u_char *first;
-    int level;
+    int          width;
+    int          height;
+    int          pixel_bits;
+    u_char      *clut;
+    u_char      *mip;
+    u_char      *first;
+    int          level;
 
     memcpy(magic, head, 4);
     magic[4] = 0;
     pic = &head->picture;
     width = head->picture.width;
     height = head->picture.height;
+
     switch (head->picture.image_type) {
         case 1:
             pixel_bits = 0x10;
@@ -721,55 +797,65 @@ mgCTexture *mgCTextureManager::EnterTexture(int id, char *name, TM2_head *head, 
         default:
             return 0;
     }
+
     clut = NULL;
+
     for (int j = 0; j < 4; j++) {
         images[j] = NULL;
     }
-        // The pixels follow the picture header; the palette follows every mip level.
+
+    // The pixels follow the picture header; the palette follows every mip level.
     if (no_image == 0) {
-        images[0] = (u_long128 *)((u_char *)pic + pic->header_size);
+        images[0] = (u_long128 *) ((u_char *) pic + pic->header_size);
+
         if (pixel_bits <= 8) {
-            clut = (u_char *)images[0] + pic->image_size;
+            clut = (u_char *) images[0] + pic->image_size;
         }
+
         if (pic->mipmap_count > 1) {
-            mip = (u_char *)images[0] + pic->mip_sizes[0];
+            mip = (u_char *) images[0] + pic->mip_sizes[0];
+
             for (level = 1; level < pic->mipmap_count; level++) {
-                images[level] = (u_long128 *)mip;
+                images[level] = (u_long128 *) mip;
                 mip += pic->mip_sizes[level];
             }
         }
     }
+
     if (reload != 0 && pixel_bits == 8 && pic->mipmap_count == 1) {
-        first = (u_char *)images[0];
+        first = (u_char *) images[0];
+
         if (Conv32To8(width, height, first) != 0) {
             reload = 0;
+        }
     }
-}
-    return EnterTexture(id, name, images, width, height, pixel_bits, (u_long128 *)clut, pic->tex1,
+
+    return EnterTexture(id, name, images, width, height, pixel_bits, (u_long128 *) clut, pic->tex1,
                         reload);
 }
+
 #pragma optimization_level reset
 #pragma schedule reset
 #ifdef NONMATCHING
 int mgCTextureManager::EnterIMGFile(u_char *img, int block, mgCMemory *stack,
                                     mgCEnterIMGInfo *info) {
-    mgIMG_FILE_HEADER *file = (mgIMG_FILE_HEADER *)img;
-    mgIMG_HEADER swap;
-    mgIMG_HEADER *entries;
-    mgIMG_HEADER *entry;
-    mgIMG1_HEADER *entry1;
-    mgCTexture *texture;
-    int not_im2;
-    int not_im3;
-    int spill;
-    int current_block;
-    int last_block_used;
-    int texture_block;
-    int swizzled;
-    int offset;
-    int i;
-    u_int a;
-    u_int b;
+    mgIMG_FILE_HEADER *file = (mgIMG_FILE_HEADER *) img;
+    mgIMG_HEADER       swap;
+    mgIMG_HEADER      *entries;
+    mgIMG_HEADER      *entry;
+    mgIMG1_HEADER     *entry1;
+    mgCTexture        *texture;
+    int                not_im2;
+    int                not_im3;
+    int                spill;
+    int                current_block;
+    int                last_block_used;
+    int                texture_block;
+    int                swizzled;
+    int                offset;
+    int                i;
+    u_int              a;
+    u_int              b;
 
     if (img == NULL) {
         return 0;
@@ -794,7 +880,7 @@ int mgCTextureManager::EnterIMGFile(u_char *img, int block, mgCMemory *stack,
     last_block_used = block;
 
     if (not_im3 == 0) {
-        entries = (mgIMG_HEADER *)(file + 1);
+        entries = (mgIMG_HEADER *) (file + 1);
 
         // Order the pictures by group, leaving texture animation scripts where they are.
         for (a = 0; a < file->num3 - 1; a++) {
@@ -822,7 +908,7 @@ int mgCTextureManager::EnterIMGFile(u_char *img, int block, mgCMemory *stack,
 
             if (entry->name[0] == '#') {
                 if (block >= 0 && stack != NULL) {
-                    LoadCFGFile((char *)img + offset, entry->size, stack, NULL);
+                    LoadCFGFile((char *) img + offset, entry->size, stack, NULL);
                 }
 
                 continue;
@@ -836,7 +922,7 @@ int mgCTextureManager::EnterIMGFile(u_char *img, int block, mgCMemory *stack,
                 info->block_num[entry->block] = 1;
             }
 
-            texture = EnterTexture(texture_block, entry->name, (TM2_head *)(img + offset), swizzled,
+            texture = EnterTexture(texture_block, entry->name, (TM2_head *) (img + offset), swizzled,
                                    entry->no_image);
 
             if (texture != NULL) {
@@ -872,10 +958,10 @@ int mgCTextureManager::EnterIMGFile(u_char *img, int block, mgCMemory *stack,
             }
         }
     } else {
-        entry1 = (mgIMG1_HEADER *)(file + 1);
+        entry1 = (mgIMG1_HEADER *) (file + 1);
 
         for (a = 0; a < file->num; a++, entry1++) {
-            texture = EnterTexture(current_block, entry1->name, (TM2_head *)(img + entry1->offset),
+            texture = EnterTexture(current_block, entry1->name, (TM2_head *) (img + entry1->offset),
                                    not_im2 == 0, 0);
 
             if (texture != NULL && current_block < block_max - 1 &&
@@ -930,105 +1016,132 @@ static int GetIMGVersion(char *img) {
 
     return MG_IMG_VERSION_NONE;
 }
+
 #pragma schedule reset
 #pragma schedule off
+
 int mgGetIMGHeaderNum(char *img) {
-    int *words = (int *)img;
+    int *words = (int *) img;
+
     if (words == NULL) {
         return 0;
     }
+
     int version = GetIMGVersion(img);
+
     if (version == 0) {
         return 0;
     }
+
     if (version == 1 || version == 2) {
         return words[1];
     }
+
     if (version == 3) {
         return words[2];
     }
+
     return 0;
 }
+
 #pragma schedule reset
 #pragma schedule off
 #pragma optimization_level 2
+
 mgIMG_HEADER mgGetIMGHeader(char *img, int index) {
     mgIMG_HEADER header;
-    int version;
-    int count;
-    int stride;
-    int i;
-    char *entry;
-    char *start;
+    int          version;
+    int          count;
+    int          stride;
+    int          i;
+    char        *entry;
+    char        *start;
     memset(&header, 0, sizeof(mgIMG_HEADER));
+
     if (img == NULL) {
         return header;
     }
+
     entry = img;
     version = GetIMGVersion(img);
+
     if (version == 0) {
         return header;
     }
+
     count = 0;
     stride = 0;
+
     if (version == 1 || version == 2) {
         entry += 0x10;
-        count = *(int *)(img + 4);
+        count = *(int *) (img + 4);
         stride = 0x30;
     }
+
     if (version == 3) {
         start = entry;
         entry += 0x10;
-        count = *(int *)(start + 8);
+        count = *(int *) (start + 8);
         stride = 0x40;
     }
+
     for (i = 0; i < count; i++) {
         if (index == i) {
-        switch (version) {
+            switch (version) {
                 case 2:
-                header.swizzled = 1;
+                    header.swizzled = 1;
                 case 1:
                     memcpy(&header, entry, 0x20);
-                    header.offset = *(u_int *)(entry + 0x20);
-                break;
+                    header.offset = *(u_int *) (entry + 0x20);
+                    break;
                 case 3:
-                    header.name_copy = *(IMG_HEADER_NAME *)entry;
-                    header.unk_20 = *(u_int *)(entry + 0x20);
-                    header.offset = *(u_int *)(entry + 0x24);
-                    header.swizzled = *(u_int *)(entry + 0x28);
-                    header.block = *(u_int *)(entry + 0x2C);
-                    header.no_image = *(short *)(entry + 0x30);
+                    header.name_copy = *(IMG_HEADER_NAME *) entry;
+                    header.unk_20 = *(u_int *) (entry + 0x20);
+                    header.offset = *(u_int *) (entry + 0x24);
+                    header.swizzled = *(u_int *) (entry + 0x28);
+                    header.block = *(u_int *) (entry + 0x2C);
+                    header.no_image = *(short *) (entry + 0x30);
                     short *half = &header.unk_32;
-                    *half = *(short *)(entry + 0x32);
-                    header.size = *(int *)(entry + 0x34);
-                    header.clamp_bits = *(long long *)(entry + 0x38);
-                break;
+                    *half = *(short *) (entry + 0x32);
+                    header.size = *(int *) (entry + 0x34);
+                    header.clamp_bits = *(long long *) (entry + 0x38);
+                    break;
+            }
         }
-    }
+
         entry += stride;
     }
+
     return header;
 }
+
 #pragma optimization_level reset
 #pragma schedule reset
 #pragma schedule off
+
 void mgCTextureManager::DeleteTexture(mgCTexture *texture) {
     mgCTextureBlock *block;
+
     if (texture != NULL) {
         block = GetTextureBlock(texture->block);
+
         if (block != NULL) {
-    DelHash(texture);
+            DelHash(texture);
             block->Delete(texture);
-    if (texture_num > 0) {
+
+            if (texture_num > 0) {
                 texture_num--;
                 texture_stack[texture_num] = texture;
+            }
+
+            texture->Initialize();
+        }
     }
-    texture->Initialize();
 }
-    }
-}
+
 #pragma schedule reset
 #pragma schedule off
+
 void mgCTextureManager::DeleteTexture(char *name, int block) {
     mgCTexture *texture = GetTexture(name, block);
 
@@ -1036,13 +1149,15 @@ void mgCTextureManager::DeleteTexture(char *name, int block) {
         DeleteTexture(texture);
     }
 }
+
 #pragma schedule reset
 #pragma schedule off
 #pragma global_optimizer off
+
 void mgCTextureManager::DeleteBlock(int block) {
     mgCTextureBlock *texture_block = GetTextureBlock(block);
-    mgCTexture *texture;
-    mgCTexture *next;
+    mgCTexture      *texture;
+    mgCTexture      *next;
 
     if (texture_block == NULL) {
         return;
@@ -1055,25 +1170,29 @@ void mgCTextureManager::DeleteBlock(int block) {
 
     texture_block->Initialize();
 }
+
 #pragma global_optimizer reset
 #pragma schedule reset
 #pragma schedule off
 #pragma optimization_level 1
+
 void mgCTextureManager::EndEnterTexture(int block) {
-    ReloadTexture(block, (u_int *)NULL);
+    ReloadTexture(block, (u_int *) NULL);
 }
+
 #pragma optimization_level reset
 #pragma schedule reset
 #pragma schedule off
 #pragma optimization_level 2
+
 int mgLoadImage(u_int *packet, int base, int format, int width, u_long128 *image, int quadwords,
                 int pos_x, int pos_y, int size_w, int size_h) {
-    u_int *start = packet;
+    u_int             *start = packet;
     unsigned long long blt_buf;
     unsigned long long trx_pos;
     unsigned long long trx_reg;
-    int chunk;
-    int length;
+    int                chunk;
+    int                length;
     // The transfer setup: TEXFLUSH, BITBLTBUF, TRXPOS, TRXREG and TRXDIR as A+D pairs.
     packet[0] = 0x10000006;
     packet[1] = 0;
@@ -1087,19 +1206,19 @@ int mgLoadImage(u_int *packet, int base, int format, int width, u_long128 *image
     packet[9] = 0;
     packet[10] = 0x3F;
     packet[11] = 0;
-    blt_buf = ((long long)format << 56) | (((long long)base << 32) | ((long long)width << 48));
-    packet[12] = (int)(blt_buf & 0xFFFFFFFFULL);
-    packet[13] = (int)((blt_buf >> 32) & 0xFFFFFFFFULL);
+    blt_buf = ((long long) format << 56) | (((long long) base << 32) | ((long long) width << 48));
+    packet[12] = (int) (blt_buf & 0xFFFFFFFFULL);
+    packet[13] = (int) ((blt_buf >> 32) & 0xFFFFFFFFULL);
     packet[14] = 0x50;
     packet[15] = 0;
-    trx_pos = ((long long)pos_x << 32) | ((long long)pos_y << 48);
-    packet[16] = (u_int)(trx_pos & 0xFFFFFFFFULL);
-    packet[17] = (int)((trx_pos >> 32) & 0xFFFFFFFFULL);
+    trx_pos = ((long long) pos_x << 32) | ((long long) pos_y << 48);
+    packet[16] = (u_int) (trx_pos & 0xFFFFFFFFULL);
+    packet[17] = (int) ((trx_pos >> 32) & 0xFFFFFFFFULL);
     packet[18] = 0x51;
     packet[19] = 0;
-    trx_reg = size_w | ((long long)size_h << 32);
-    packet[20] = (u_int)(trx_reg & 0xFFFFFFFFULL);
-    packet[21] = (int)((trx_reg >> 32) & 0xFFFFFFFFULL);
+    trx_reg = size_w | ((long long) size_h << 32);
+    packet[20] = (u_int) (trx_reg & 0xFFFFFFFFULL);
+    packet[21] = (int) ((trx_reg >> 32) & 0xFFFFFFFFULL);
     packet[22] = 0x52;
     packet[23] = 0;
     packet[24] = 0;
@@ -1108,11 +1227,14 @@ int mgLoadImage(u_int *packet, int base, int format, int width, u_long128 *image
     packet[27] = 0;
     // The pixels follow by reference, in transfers of at most 0x4000 quadwords.
     packet += 28;
+
     while (quadwords > 0) {
         chunk = 0x4000;
+
         if (quadwords < 0x4000) {
             chunk = quadwords;
         }
+
         packet[0] = 0x10000001;
         packet[1] = 0;
         packet[2] = 0;
@@ -1122,85 +1244,99 @@ int mgLoadImage(u_int *packet, int base, int format, int width, u_long128 *image
         packet[6] = 0;
         packet[7] = 0;
         packet[8] = chunk | 0x30000000;
-        packet[9] = (u_int)image;
+        packet[9] = (u_int) image;
         packet[10] = 0;
         packet[11] = chunk | 0x50000000;
         packet += 12;
         image += chunk;
         quadwords -= 0x4000;
     }
+
     length = packet - start;
     return length;
 }
+
 #pragma optimization_level reset
 #pragma schedule reset
 #pragma schedule off
 #pragma global_optimizer off
+
 /**
  * Writes the DMA chain flushing the GS texture cache, when given a
  * buffer; gives the quadwords it takes either way.
  */
 static int SetTexFlush_TagCnt(u_int *buffer) {
     if (buffer == NULL) {
+        return 3;
+    }
+
+    u_long128 *dst = (u_long128 *) buffer;
+    dst[0] = *(u_long128 *) &texflush_dma[0];
+    dst[1] = *(u_long128 *) &texflush_dma[0x10];
+    dst[2] = *(u_long128 *) &texflush_dma[0x20];
     return 3;
 }
-    u_long128 *dst = (u_long128 *)buffer;
-    dst[0] = *(u_long128 *)&texflush_dma[0];
-    dst[1] = *(u_long128 *)&texflush_dma[0x10];
-    dst[2] = *(u_long128 *)&texflush_dma[0x20];
-    return 3;
-}
+
 #pragma global_optimizer reset
 #pragma schedule reset
 #pragma schedule off
 #pragma global_optimizer off
+
 void mgCTextureManager::ReloadTexture(int index, sceVif1Packet *packet) {
-    int previous;
-    u_int *cursor;
-    u_int *start;
+    int              previous;
+    u_int           *cursor;
+    u_int           *start;
     mgCTextureAnime *anime;
+
     if (index < 0 || index >= block_max) {
         last_block = -1;
         return;
     }
+
     previous = last_block;
+
     if (packet == NULL) {
         packet = mgVif1Packet;
     }
+
     sceVif1PkTerminate(packet);
-    cursor = *(u_int **)packet;
+    cursor = *(u_int **) packet;
     start = cursor;
     cursor += ReloadTexture(index, cursor) * 4;
     sceVif1PkReserve(packet, cursor - start);
+
     if (previous != index) {
         mgCTextureBlock *base = blocks;
-        anime = ((mgCTextureBlock *)((index << 4) + (int)base))->anime;
+        anime = ((mgCTextureBlock *) ((index << 4) + (int) base))->anime;
+
         if (anime != NULL) {
             // An 8-bit texture in the Z buffer's VRAM sits in the upper byte of each 32-bit pixel.
             anime->TexAnime(index, packet);
         }
     }
+
     last_block = index;
-// Swizzled 8-bit pixels are uploaded as a 32-bit image of half the size.
+    // Swizzled 8-bit pixels are uploaded as a 32-bit image of half the size.
 }
+
 #pragma global_optimizer reset
 #pragma schedule reset
 #ifdef NONMATCHING
 int mgCTextureManager::ReloadTexture(int block, u_int *packet) {
-    sceGsTex0 tex0;
+    sceGsTex0   tex0;
     mgCTexture *texture;
-    u_int *cursor;
-    int vram;
-    int fix;
-    int zbuf;
-    int zbuf_size;
-    int zbuf_end;
-    int size;
-    int to_zbuf;
-    int width;
-    int height;
-    int bpp;
-    int level;
+    u_int      *cursor;
+    int         vram;
+    int         fix;
+    int         zbuf;
+    int         zbuf_size;
+    int         zbuf_end;
+    int         size;
+    int         to_zbuf;
+    int         width;
+    int         height;
+    int         bpp;
+    int         level;
 
     if (packet != NULL && (block < 0 || block >= block_max)) {
         last_block = -1;
@@ -1270,7 +1406,7 @@ int mgCTextureManager::ReloadTexture(int block, u_int *packet) {
                 if (cursor != NULL) {
                     cursor +=
                         mgLoadImage(cursor, tex0.TBP0, tex0.PSM, tex0.TBW, texture->image[level],
-                                          bpp * width * height / 16 / 8, 0, 0, width, height);
+                                    bpp * width * height / 16 / 8, 0, 0, width, height);
                 }
 
                 tex0.TBP0 = tex0.TBP0 + bpp * width * height / 256 / 8;
@@ -1292,56 +1428,72 @@ int mgCTextureManager::ReloadTexture(int block, u_int *packet) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_texture", ReloadTexture__17mgCTextureManagerFiPUi);
 #endif
 #pragma schedule off
+
 sceGsTex0 &sceGsTex0::operator=(const sceGsTex0 &src) {
     value = src.value;
     return *this;
 }
+
 #pragma schedule reset
 #pragma schedule off
 #pragma global_optimizer off
+
 int mgCTextureManager::ReloadCLUT(mgCTexture *texture, u_int *buffer) {
-    int result;
-    short depth;
+    int     result;
+    short   depth;
     u_char *palette;
+
     if (texture == NULL) {
         return 0;
     }
-    palette = (u_char *)texture->clut;
+
+    palette = (u_char *) texture->clut;
+
     if (palette == NULL) {
         return 0;
     }
+
     result = 0;
     depth = texture->bpp;
+
     if (depth == 8) {
-        return mgLoadImage(buffer, texture->tex0.CBP, texture->tex0.CPSM, 1, (u_long128 *)palette,
+        return mgLoadImage(buffer, texture->tex0.CBP, texture->tex0.CPSM, 1, (u_long128 *) palette,
                            0x40, 0, 0, 0x10, 0x10);
     }
+
     if (depth == 4) {
-        result = mgLoadImage(buffer, texture->tex0.CBP, texture->tex0.CPSM, 1, (u_long128 *)palette,
+        result = mgLoadImage(buffer, texture->tex0.CBP, texture->tex0.CPSM, 1, (u_long128 *) palette,
                              4, 0, 0, 8, 2);
-}
+    }
+
     return result;
 }
+
 #pragma global_optimizer reset
 #pragma schedule reset
 #pragma schedule off
 #pragma global_optimizer off
+
 void mgCTextureManager::ReloadCLUT(mgCTexture *texture, sceVif1Packet *packet) {
     u_int *cursor;
     u_int *start;
+
     if (packet == NULL) {
         packet = mgVif1Packet;
     }
+
     sceVif1PkTerminate(packet);
-    cursor = *(u_int **)packet;
+    cursor = *(u_int **) packet;
     start = cursor;
     cursor += ReloadCLUT(texture, cursor);
     cursor += SetTexFlush_TagCnt(cursor) * 4;
     sceVif1PkReserve(packet, cursor - start);
 }
+
 #pragma global_optimizer reset
 #pragma schedule reset
 #pragma schedule off
+
 void mgCTextureManager::TexAnimeOn(int block, char *group_name) {
     mgCTextureBlock *texture_block = GetTextureBlock(block);
     mgCTextureAnime *anime;
@@ -1350,8 +1502,10 @@ void mgCTextureManager::TexAnimeOn(int block, char *group_name) {
         anime->Enable(anime->SearchGroupName(group_name));
     }
 }
+
 #pragma schedule reset
 #pragma schedule off
+
 void mgCTextureManager::TexAnimeOff(int block, char *group_name) {
     mgCTextureBlock *texture_block = GetTextureBlock(block);
     mgCTextureAnime *anime;
@@ -1360,8 +1514,10 @@ void mgCTextureManager::TexAnimeOff(int block, char *group_name) {
         anime->Disable(anime->SearchGroupName(group_name));
     }
 }
+
 #pragma schedule reset
 #pragma schedule off
+
 void mgCTextureManager::TexAnimeAllOff(int block) {
     mgCTextureBlock *texture_block = GetTextureBlock(block);
     mgCTextureAnime *anime;
@@ -1370,7 +1526,9 @@ void mgCTextureManager::TexAnimeAllOff(int block) {
         anime->DisableAll();
     }
 }
+
 #pragma schedule off
+
 char **mgCTextureManager::GetGroupNameList(int block, int *num) {
     mgCTextureBlock *texture_block = GetTextureBlock(block);
     mgCTextureAnime *anime;
@@ -1388,8 +1546,10 @@ char **mgCTextureManager::GetGroupNameList(int block, int *num) {
     *num = MG_TEX_ANIME_GROUP_MAX;
     return anime->name;
 }
+
 #pragma schedule reset
 #pragma schedule off
+
 void mgCTextureManager::DeleteTexAnimeGroup(int block, int group) {
     mgCTextureBlock *texture_block = GetTextureBlock(block);
     mgCTextureAnime *anime;
@@ -1398,7 +1558,9 @@ void mgCTextureManager::DeleteTexAnimeGroup(int block, int group) {
         anime->DeleteGroup(group);
     }
 }
+
 #pragma schedule reset
+
 void mgCTextureManager::DeleteTexAnime(int block) {
     mgCTextureBlock *texture_block = GetTextureBlock(block);
 
@@ -1406,32 +1568,40 @@ void mgCTextureManager::DeleteTexAnime(int block) {
         texture_block->anime = NULL;
     }
 }
+
 #pragma schedule reset
 #pragma schedule off
+
 mgCTextureAnime *mgCTextureManager::GetTexAnime(int index) {
     mgCTextureBlock *block = GetTextureBlock(index);
+
     if (block != NULL) {
         return block->anime;
     }
-        return NULL;
-    }
+
+    return NULL;
+}
+
 #pragma schedule reset
 #pragma schedule off
 #pragma optimization_level 1
+
 /**
  * Reorders one block of 8-bit pixels stored in 32-bit page order back
  * into linear order.
  */
-    // Each block is four columns of 64 bytes; odd columns use the second half of the table.
+// Each block is four columns of 64 bytes; odd columns use the second half of the table.
 static int BlockConv32to8(u_char *src, u_char *dst) {
     u_int column;
     u_int texel;
     u_int row;
-    int lut_index;
-    int src_index;
+    int   lut_index;
+    int   src_index;
     src_index = 0;
+
     for (row = 0; row < 4; row++) {
         lut_index = (row & 1) << 6;
+
         for (column = 0; column < 16; column++) {
             for (texel = 0; texel < 4; texel++) {
                 u_char dst_index = lut_1246[lut_index];
@@ -1440,34 +1610,39 @@ static int BlockConv32to8(u_char *src, u_char *dst) {
                 src_index++;
             }
         }
+
         dst += 0x40;
     }
+
     return 0;
 }
+
 #pragma optimization_level reset
 #pragma schedule reset
 #pragma schedule off
 #pragma optimization_level 2
+
 /**
  * Reorders one page of 8-bit pixels stored in 32-bit page order back
  * into linear order, block by block.
  */
 static int PageConv32to8(int width, int height, u_char *src, u_char *dst) {
-    int block_column[32];
-    int block_row[32];
-    u_char block_out[0x100];
-    u_char block_in[0x100];
-    int index;
-    int row;
-    int column;
-    int line;
-    int blocks_wide;
+    int     block_column[32];
+    int     block_row[32];
+    u_char  block_out[0x100];
+    u_char  block_in[0x100];
+    int     index;
+    int     row;
+    int     column;
+    int     line;
+    int     blocks_wide;
     u_char *block_ptr;
     u_char *page_ptr;
-    int blocks_high;
-    int block;
+    int     blocks_high;
+    int     block;
 
     index = 0;
+
     for (row = 0; row < 4; row++) {
         for (column = 0; column < 8; column++) {
             int entry = block_table32_1267[index];
@@ -1476,23 +1651,28 @@ static int PageConv32to8(int width, int height, u_char *src, u_char *dst) {
             index++;
         }
     }
+
     blocks_wide = width / 16;
     blocks_high = height / 16;
     memset(block_out, 0, 0x100);
     memset(block_in, 0, 0x100);
+
     for (row = 0; row < blocks_high; row++) {
         for (column = 0; column < blocks_wide; column++) {
             block = block_table8_1266[column + row * blocks_wide];
             block_ptr = block_in;
             page_ptr = src + (block_row[block] << 11) + (block_column[block] << 5);
+
             for (line = 0; line < 8; line++) {
                 memcpy(block_ptr, page_ptr, 0x20);
                 block_ptr += 0x20;
                 page_ptr += 0x100;
             }
+
             BlockConv32to8(block_in, block_out);
             block_ptr = block_out;
             page_ptr = dst + (row << 11) + column * 0x10;
+
             for (line = 0; line < 0x10; line++) {
                 memcpy(page_ptr, block_ptr, 0x10);
                 block_ptr += 0x10;
@@ -1500,8 +1680,10 @@ static int PageConv32to8(int width, int height, u_char *src, u_char *dst) {
             }
         }
     }
+
     return 0;
 }
+
 #pragma optimization_level reset
 #pragma schedule reset
 #ifdef NONMATCHING
@@ -1512,19 +1694,19 @@ static int PageConv32to8(int width, int height, u_char *src, u_char *dst) {
  */
 static int Conv32To8(int width, int height, u_char *image) {
     static u_char conv_work[0x10000];
-    u_char work8[0x2000];
-    u_char work32[0x2000];
-    u_char *source_cursor;
-    u_char *work_cursor;
-    u_char *destination_cursor;
-    int size;
-    int pages_x;
-    int pages_y;
-    int row_bytes;
-    int row_count;
-    int i;
-    int j;
-    int k;
+    u_char        work8[0x2000];
+    u_char        work32[0x2000];
+    u_char       *source_cursor;
+    u_char       *work_cursor;
+    u_char       *destination_cursor;
+    int           size;
+    int           pages_x;
+    int           pages_y;
+    int           row_bytes;
+    int           row_count;
+    int           i;
+    int           j;
+    int           k;
 
     size = width * height;
 

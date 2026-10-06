@@ -23,8 +23,8 @@ struct mgMaterial;
  *
  */
 enum mgFrameDrawFlag {
-    MG_FRAME_DRAW_VISIBLE        = 1, /**< Draws the frame's own visual. */
-    MG_FRAME_DRAW_SKIP_CHILDREN  = 2, /**< Leaves the frame's children undrawn. */
+    MG_FRAME_DRAW_VISIBLE = 1,        /**< Draws the frame's own visual. */
+    MG_FRAME_DRAW_SKIP_CHILDREN = 2,  /**< Leaves the frame's children undrawn. */
     MG_FRAME_DRAW_SKIP_BY_PARENT = 4, /**< Makes the parent skip this frame and its subtree. */
 };
 
@@ -36,7 +36,7 @@ enum mgFrameDrawFlag {
 enum mgFrameBillboard {
     MG_FRAME_BILLBOARD_NONE = 0, /**< Keeps the hierarchy's orientation. */
     MG_FRAME_BILLBOARD_FULL = 1, /**< Turns about the vertical axis and tilts to face the camera. */
-    MG_FRAME_BILLBOARD_Y    = 2, /**< Turns only about the vertical axis to face the camera. */
+    MG_FRAME_BILLBOARD_Y = 2,    /**< Turns only about the vertical axis to face the camera. */
 };
 
 /**
@@ -45,7 +45,7 @@ enum mgFrameBillboard {
  *
  */
 enum mgFrameRotType {
-    MG_FRAME_ROT_APPLY        = 1, /**< Applies the object's rotation angles to the local matrix. */
+    MG_FRAME_ROT_APPLY = 1,        /**< Applies the object's rotation angles to the local matrix. */
     MG_FRAME_ROT_LOCAL_ORIGIN = 2, /**< Rotates about the frame's own origin, leaving the translation unrotated; implies MG_FRAME_ROT_APPLY. */
 };
 
@@ -55,29 +55,29 @@ enum mgFrameRotType {
  *
  */
 enum mgFrameAttrParam {
-    MG_FRAME_ATTR_DRAW          = 0x1,      /**< Copies the draw flags. */
-    MG_FRAME_ATTR_ALPHA_REF     = 0x2,      /**< Copies the visual attribute at offset 0x0 (alpha test reference). */
-    MG_FRAME_ATTR_ALPHA_BLEND   = 0x4,      /**< Copies the visual attribute at offset 0x4 (alpha blending mode). */
-    MG_FRAME_ATTR_Z_WRITE       = 0x8,      /**< Copies the visual attribute at offset 0x8 (depth write). */
-    MG_FRAME_ATTR_Z_TEST        = 0x10,     /**< Copies the visual attribute at offset 0xC (depth test). */
-    MG_FRAME_ATTR_CLIP          = 0x20,     /**< Copies clip_enable. */
-    MG_FRAME_ATTR_UNK_20        = 0x40,     /**< Copies the field at offset 0x20. */
-    MG_FRAME_ATTR_UNK_24        = 0x80,     /**< Copies the field at offset 0x24. */
-    MG_FRAME_ATTR_UNK_28        = 0x100,    /**< Copies the field at offset 0x28. */
-    MG_FRAME_ATTR_PROGRAM_OPT   = 0x200,    /**< Copies program_option. */
-    MG_FRAME_ATTR_FOG           = 0x400,    /**< Copies fog. */
-    MG_FRAME_ATTR_UNK_34        = 0x800,    /**< Copies the field at offset 0x34. */
-    MG_FRAME_ATTR_UNK_38        = 0x1000,   /**< Copies the field at offset 0x38. */
-    MG_FRAME_ATTR_UNK_3C        = 0x2000,   /**< Copies the field at offset 0x3C. */
-    MG_FRAME_ATTR_PROGRAM_MODE  = 0x4000,   /**< Copies program_mode. */
-    MG_FRAME_ATTR_NO_LIGHT      = 0x8000,   /**< Copies no_light. */
-    MG_FRAME_ATTR_COLOR         = 0x10000,  /**< Copies color. */
-    MG_FRAME_ATTR_POINT_LIGHT   = 0x20000,  /**< Copies point_light. */
-    MG_FRAME_ATTR_OBJ_ALPHA     = 0x40000,  /**< Copies obj_alpha. */
-    MG_FRAME_ATTR_BILLBOARD     = 0x80000,  /**< Copies billboard. */
-    MG_FRAME_ATTR_NO_CULL       = 0x100000, /**< Copies no_cull. */
-    MG_FRAME_ATTR_DEPTH_BIAS    = 0x200000, /**< Copies depth_bias. */
-    MG_FRAME_ATTR_DEST_ALPHA    = 0x400000, /**< Copies the visual attribute at offset 0x14 (destination alpha test). */
+    MG_FRAME_ATTR_DRAW = 0x1,               /**< Copies the draw flags. */
+    MG_FRAME_ATTR_ALPHA_REF = 0x2,          /**< Copies the visual attribute at offset 0x0 (alpha test reference). */
+    MG_FRAME_ATTR_ALPHA_BLEND = 0x4,        /**< Copies the visual attribute at offset 0x4 (alpha blending mode). */
+    MG_FRAME_ATTR_Z_WRITE = 0x8,            /**< Copies the visual attribute at offset 0x8 (depth write). */
+    MG_FRAME_ATTR_Z_TEST = 0x10,            /**< Copies the visual attribute at offset 0xC (depth test). */
+    MG_FRAME_ATTR_CLIP = 0x20,              /**< Copies clip_enable. */
+    MG_FRAME_ATTR_UNK_20 = 0x40,            /**< Copies the field at offset 0x20. */
+    MG_FRAME_ATTR_UNK_24 = 0x80,            /**< Copies the field at offset 0x24. */
+    MG_FRAME_ATTR_UNK_28 = 0x100,           /**< Copies the field at offset 0x28. */
+    MG_FRAME_ATTR_PROGRAM_OPT = 0x200,      /**< Copies program_option. */
+    MG_FRAME_ATTR_FOG = 0x400,              /**< Copies fog. */
+    MG_FRAME_ATTR_UNK_34 = 0x800,           /**< Copies the field at offset 0x34. */
+    MG_FRAME_ATTR_UNK_38 = 0x1000,          /**< Copies the field at offset 0x38. */
+    MG_FRAME_ATTR_UNK_3C = 0x2000,          /**< Copies the field at offset 0x3C. */
+    MG_FRAME_ATTR_PROGRAM_MODE = 0x4000,    /**< Copies program_mode. */
+    MG_FRAME_ATTR_NO_LIGHT = 0x8000,        /**< Copies no_light. */
+    MG_FRAME_ATTR_COLOR = 0x10000,          /**< Copies color. */
+    MG_FRAME_ATTR_POINT_LIGHT = 0x20000,    /**< Copies point_light. */
+    MG_FRAME_ATTR_OBJ_ALPHA = 0x40000,      /**< Copies obj_alpha. */
+    MG_FRAME_ATTR_BILLBOARD = 0x80000,      /**< Copies billboard. */
+    MG_FRAME_ATTR_NO_CULL = 0x100000,       /**< Copies no_cull. */
+    MG_FRAME_ATTR_DEPTH_BIAS = 0x200000,    /**< Copies depth_bias. */
+    MG_FRAME_ATTR_DEST_ALPHA = 0x400000,    /**< Copies the visual attribute at offset 0x14 (destination alpha test). */
     MG_FRAME_ATTR_AMBIENT_BOOST = 0x800000, /**< Copies ambient_boost. */
 };
 
@@ -88,27 +88,27 @@ enum mgFrameAttrParam {
  */
 class mgCFrameAttr : public mgCVisualAttr {
 public:
-    int           draw;            /**< Visibility bits, from mgFrameDrawFlag; set by the 'V' name flag. */
-    int           clip_enable;     /**< Whether a frame crossing the screen's guard band is drawn with clipping; set by the 'N' name flag. */
+    int           draw;        /**< Visibility bits, from mgFrameDrawFlag; set by the 'V' name flag. */
+    int           clip_enable; /**< Whether a frame crossing the screen's guard band is drawn with clipping; set by the 'N' name flag. */
     float         unk_20;
     int           unk_24;
     int           unk_28;
-    int           program_option;  /**< Sets bit 2 of the microprogram's draw flags; set by the 'S' name flag. */
-    int           fog;             /**< Fog mode: 0 off, 1 the scene's fog colour, 2 black fog, 3 white fog; set by the 'F' name flag. */
+    int           program_option; /**< Sets bit 2 of the microprogram's draw flags; set by the 'S' name flag. */
+    int           fog;            /**< Fog mode: 0 off, 1 the scene's fog colour, 2 black fog, 3 white fog; set by the 'F' name flag. */
     int           unk_34;
     float         unk_38;
     int           unk_3c;
-    int           program_mode;    /**< Microprogram mode bits; nonzero also sends the eye position in model space; set by the 'M' name flag. */
-    float         obj_alpha;       /**< Factor applied to the alpha of the frame's ambient and material colours. */
-    int           no_cull;         /**< Whether the frame is drawn without testing its bound against the screen. */
-    int           ambient_boost;   /**< Whether the ambient light gains 30% of the first light's colour; set by the 'T' name flag. */
+    int           program_mode;  /**< Microprogram mode bits; nonzero also sends the eye position in model space; set by the 'M' name flag. */
+    float         obj_alpha;     /**< Factor applied to the alpha of the frame's ambient and material colours. */
+    int           no_cull;       /**< Whether the frame is drawn without testing its bound against the screen. */
+    int           ambient_boost; /**< Whether the ambient light gains 30% of the first light's colour; set by the 'T' name flag. */
     sceVu0FVECTOR unk_50;
-    int           no_light;        /**< Whether the frame is drawn without the scene's lights; set by the 'C0' name flag. */
-    sceVu0FVECTOR color;           /**< Colour handed to the renderer while the frame is drawn. */
-    int           point_light;     /**< Whether the frame is lit by the point lights its bounding sphere reaches. */
+    int           no_light;    /**< Whether the frame is drawn without the scene's lights; set by the 'C0' name flag. */
+    sceVu0FVECTOR color;       /**< Colour handed to the renderer while the frame is drawn. */
+    int           point_light; /**< Whether the frame is lit by the point lights its bounding sphere reaches. */
     int           unk_84;
-    int           billboard;       /**< Billboard mode, from mgFrameBillboard; set by the 'BA' and 'BY' name flags. */
-    float         depth_bias;      /**< Above 1.0, pulls the frame's depth forward so it draws over coplanar geometry; set by the 'Zp' name flag. */
+    int           billboard;  /**< Billboard mode, from mgFrameBillboard; set by the 'BA' and 'BY' name flags. */
+    float         depth_bias; /**< Above 1.0, pulls the frame's depth forward so it draws over coplanar geometry; set by the 'Zp' name flag. */
 
     /**
      * Makes a set of attributes with every field at its default.
@@ -325,7 +325,10 @@ public:
      * Bounding box and sphere of a frame in its local space.
      *
      */
-    struct BoundCorners { float v[32]; };
+    struct BoundCorners {
+        float v[32]; /**< Components of the frame's eight bounding box corners. */
+    };
+
     /**
      *
      * Bounding box and sphere of a frame in its local space.
@@ -339,21 +342,21 @@ public:
         float         radius;    /**< Radius of the bounding sphere. */
     };
 
-    char          *name;          /**< Frame name, whose part after "--" carries attribute flags. */
-    mgCFrame      *parent;        /**< Parent frame, or the followed frame while reference is set. */
-    mgCFrame      *child;         /**< First child frame, or null. */
-    mgCFrame      *brother;       /**< Next sibling frame, or null. */
-    mgCFrame      *elder;         /**< Previous sibling frame, or null. */
-    int            frame_num;     /**< Number of frames in frame_list. */
-    mgCFrame     **frame_list;    /**< Every frame of the model in load order, kept on the root frame. */
-    float        (*init_matrix)[4][4]; /**< Local-to-world matrix of each frame in frame_list as loaded, kept on the root frame. */
-    sceVu0FMATRIX lw_matrix;      /**< Cached local-to-world matrix. */
-    sceVu0FMATRIX trans_matrix;   /**< Local transform, used as set while use_srt is clear. */
-    BoundInfo     *bound;         /**< Bounding box and sphere, or null. */
-    mgCFrameAttr  *attr;          /**< Drawing attributes, or null. */
-    mgCVisual     *visual;        /**< Visual drawn at the frame, or null. */
-    int            reference;     /**< Whether parent is a followed frame rather than a true parent. */
-    int            rot_type;      /**< Rotation bits, from mgFrameRotType. */
+    char      *name;            /**< Frame name, whose part after "--" carries attribute flags. */
+    mgCFrame  *parent;          /**< Parent frame, or the followed frame while reference is set. */
+    mgCFrame  *child;           /**< First child frame, or null. */
+    mgCFrame  *brother;         /**< Next sibling frame, or null. */
+    mgCFrame  *elder;           /**< Previous sibling frame, or null. */
+    int        frame_num;       /**< Number of frames in frame_list. */
+    mgCFrame **frame_list;      /**< Every frame of the model in load order, kept on the root frame. */
+    float (*init_matrix)[4][4]; /**< Local-to-world matrix of each frame in frame_list as loaded, kept on the root frame. */
+    sceVu0FMATRIX lw_matrix;    /**< Cached local-to-world matrix. */
+    sceVu0FMATRIX trans_matrix; /**< Local transform, used as set while use_srt is clear. */
+    BoundInfo    *bound;        /**< Bounding box and sphere, or null. */
+    mgCFrameAttr *attr;         /**< Drawing attributes, or null. */
+    mgCVisual    *visual;       /**< Visual drawn at the frame, or null. */
+    int           reference;    /**< Whether parent is a followed frame rather than a true parent. */
+    int           rot_type;     /**< Rotation bits, from mgFrameRotType. */
 
     /**
      * Turns the frame to an angle about each axis and makes the rotation apply.
@@ -689,7 +692,7 @@ public:
      * @address 0x137FE0
      * @size 0x3E0
      */
-    void SetAttrParam(mgCFrameAttr &attr, int children, int mask);
+    void SetAttrParam(mgCFrameAttr &attr, int recurse, int mask);
 
     /**
      * Sets the frame's alpha factor, optionally through its subtree.
@@ -698,7 +701,7 @@ public:
      * @address 0x1383C0
      * @size 0x70
      */
-    void SetAttrParamObjAlpha(float alpha, int children);
+    void SetAttrParamObjAlpha(float alpha, int recurse);
 
     /**
      * Sets the frame's draw flags, optionally through its subtree.
@@ -707,7 +710,7 @@ public:
      * @address 0x138430
      * @size 0x70
      */
-    void SetAttrParamDraw(int draw, int children);
+    void SetAttrParamDraw(int value, int recurse);
 
     /**
      * Gets the screen rectangle that the frame and its subtree cover.

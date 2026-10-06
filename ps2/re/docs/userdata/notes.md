@@ -1,5 +1,10 @@
 # userdata: reverse-engineering notes
 
+`BattleParamater` is a native `CBattleCharaInfo` global; its inline constructor calls
+`Initialize` and produces the 12-byte retail `__sinit_userdata_cpp`. `CheckVoiceUnit` and
+`AddYarikomiMedal` return `int` even though they read narrower stored fields. Their definitions
+and the callers' return-value handling match retail with the wider declarations.
+
 Header: `ps2/include/userdata.hpp`. Owns `COMMON_GAGE`, `CGameDataUsed`, `ROBO_DATA`, `MOS_CHANGE_PARAM`,
 `CMonsterBox`, `CFishAquarium`, `CFishingRecord`, `CFishingTournament`, `CUserDataManager`,
 `CBattleCharaInfo` (all retail names from mangled symbols). It also declares these plain structs:

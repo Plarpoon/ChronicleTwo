@@ -96,9 +96,9 @@ enum SceneCmrSeqCmd {
  *
  */
 enum SceneCmrSyncMode {
-    SCENE_CMR_SYNC_FIXED = 0,  /**< The camera angle does not turn with the object. */
-    SCENE_CMR_SYNC_YAW = 1,    /**< The camera angle turns with the object's heading. */
-    SCENE_CMR_SYNC_FRAME = 2,  /**< The camera follows the full orientation of a frame of the object. */
+    SCENE_CMR_SYNC_FIXED = 0, /**< The camera angle does not turn with the object. */
+    SCENE_CMR_SYNC_YAW = 1,   /**< The camera angle turns with the object's heading. */
+    SCENE_CMR_SYNC_FRAME = 2, /**< The camera follows the full orientation of a frame of the object. */
 };
 
 /**
@@ -123,46 +123,46 @@ enum SceneObjSeqTrack {
  *
  */
 enum SceneObjSeqCmd {
-    SCENE_OBJ_CMD_NONE = 0,                 /**< Free entry. */
-    SCENE_OBJ_CMD_POS_DELAY = 1,            /**< Waits a number of frames on the position track. */
-    SCENE_OBJ_CMD_SET_POS = 2,              /**< Puts the object at a position. */
-    SCENE_OBJ_CMD_MOVE = 3,                 /**< Moves the object at an even speed. */
-    SCENE_OBJ_CMD_MOVE2 = 4,                /**< Moves the object with an eased speed. */
-    SCENE_OBJ_CMD_INIT_PAS = 5,             /**< Clears the object path. */
-    SCENE_OBJ_CMD_SET_PAS_FRM = 6,          /**< Sets the frame count of the object path. */
-    SCENE_OBJ_CMD_ADD_PAS = 7,              /**< Adds a point to the object path. */
-    SCENE_OBJ_CMD_START_PAS = 8,            /**< Runs the object along its path. */
-    SCENE_OBJ_CMD_JUMP = 9,                 /**< Moves the object to a position along a jump arc. */
-    SCENE_OBJ_CMD_SET_EOH_FRAME_POS = 10,   /**< Puts the object at a frame of another event object. */
-    SCENE_OBJ_CMD_ADD_POS = 11,             /**< Adds an offset to the position every frame. */
-    SCENE_OBJ_CMD_ATTACH_CAMERA = 12,       /**< Keeps the object a distance in front of the camera. */
-    SCENE_OBJ_CMD_ROT_DELAY = 13,           /**< Waits a number of frames on the rotation track. */
-    SCENE_OBJ_CMD_SET_ROT = 14,             /**< Sets the rotation of the object. */
-    SCENE_OBJ_CMD_ROTATION = 15,            /**< Turns the object at an even speed. */
-    SCENE_OBJ_CMD_ROTATION2 = 16,           /**< Turns the object with an eased speed. */
-    SCENE_OBJ_CMD_REFERENCE = 17,           /**< Turns the object to face a position. */
-    SCENE_OBJ_CMD_MOTION_DELAY = 18,        /**< Waits a number of frames on the motion track. */
-    SCENE_OBJ_CMD_SET_MOTION = 19,          /**< Starts a motion at once. */
-    SCENE_OBJ_CMD_NEXT_MOTION = 20,         /**< Starts a motion once the current one ends. */
-    SCENE_OBJ_CMD_MOTION_WAIT = 21,         /**< Waits for the current motion to end. */
-    SCENE_OBJ_CMD_MOTION_TRG = 22,          /**< Arms the motion trigger. */
-    SCENE_OBJ_CMD_MOTION_TRG_WAIT = 23,     /**< Waits for the motion trigger. */
-    SCENE_OBJ_CMD_SET_MOT_STEP = 24,        /**< Sets the motion playback step. */
-    SCENE_OBJ_CMD_SET_MOT_CHANGE_STEP = 25, /**< Sets the motion blend step. */
-    SCENE_OBJ_CMD_RESET_MOTION = 26,        /**< Resets the motion. */
-    SCENE_OBJ_CMD_SET_MOTION_NOW_TIME = 27, /**< Sets the current motion time. */
+    SCENE_OBJ_CMD_NONE = 0,                  /**< Free entry. */
+    SCENE_OBJ_CMD_POS_DELAY = 1,             /**< Waits a number of frames on the position track. */
+    SCENE_OBJ_CMD_SET_POS = 2,               /**< Puts the object at a position. */
+    SCENE_OBJ_CMD_MOVE = 3,                  /**< Moves the object at an even speed. */
+    SCENE_OBJ_CMD_MOVE2 = 4,                 /**< Moves the object with an eased speed. */
+    SCENE_OBJ_CMD_INIT_PAS = 5,              /**< Clears the object path. */
+    SCENE_OBJ_CMD_SET_PAS_FRM = 6,           /**< Sets the frame count of the object path. */
+    SCENE_OBJ_CMD_ADD_PAS = 7,               /**< Adds a point to the object path. */
+    SCENE_OBJ_CMD_START_PAS = 8,             /**< Runs the object along its path. */
+    SCENE_OBJ_CMD_JUMP = 9,                  /**< Moves the object to a position along a jump arc. */
+    SCENE_OBJ_CMD_SET_EOH_FRAME_POS = 10,    /**< Puts the object at a frame of another event object. */
+    SCENE_OBJ_CMD_ADD_POS = 11,              /**< Adds an offset to the position every frame. */
+    SCENE_OBJ_CMD_ATTACH_CAMERA = 12,        /**< Keeps the object a distance in front of the camera. */
+    SCENE_OBJ_CMD_ROT_DELAY = 13,            /**< Waits a number of frames on the rotation track. */
+    SCENE_OBJ_CMD_SET_ROT = 14,              /**< Sets the rotation of the object. */
+    SCENE_OBJ_CMD_ROTATION = 15,             /**< Turns the object at an even speed. */
+    SCENE_OBJ_CMD_ROTATION2 = 16,            /**< Turns the object with an eased speed. */
+    SCENE_OBJ_CMD_REFERENCE = 17,            /**< Turns the object to face a position. */
+    SCENE_OBJ_CMD_MOTION_DELAY = 18,         /**< Waits a number of frames on the motion track. */
+    SCENE_OBJ_CMD_SET_MOTION = 19,           /**< Starts a motion at once. */
+    SCENE_OBJ_CMD_NEXT_MOTION = 20,          /**< Starts a motion once the current one ends. */
+    SCENE_OBJ_CMD_MOTION_WAIT = 21,          /**< Waits for the current motion to end. */
+    SCENE_OBJ_CMD_MOTION_TRG = 22,           /**< Arms the motion trigger. */
+    SCENE_OBJ_CMD_MOTION_TRG_WAIT = 23,      /**< Waits for the motion trigger. */
+    SCENE_OBJ_CMD_SET_MOT_STEP = 24,         /**< Sets the motion playback step. */
+    SCENE_OBJ_CMD_SET_MOT_CHANGE_STEP = 25,  /**< Sets the motion blend step. */
+    SCENE_OBJ_CMD_RESET_MOTION = 26,         /**< Resets the motion. */
+    SCENE_OBJ_CMD_SET_MOTION_NOW_TIME = 27,  /**< Sets the current motion time. */
     SCENE_OBJ_CMD_SET_MOTION_WAIT_TIME = 28, /**< Sets the motion wait time. */
-    SCENE_OBJ_CMD_NORMAL_DRIVE = 29,        /**< Returns the object to its normal behaviour. */
-    SCENE_OBJ_CMD_TEX_ANIME_DELAY = 30,     /**< Waits a number of frames on the texture animation track. */
-    SCENE_OBJ_CMD_TEX_ANIME = 31,           /**< Turns a texture animation on or off. */
-    SCENE_OBJ_CMD_COLOR_DELAY = 32,         /**< Waits a number of frames on the colour track. */
-    SCENE_OBJ_CMD_SET_COLOR = 33,           /**< Changes the object colour over a number of frames. */
-    SCENE_OBJ_CMD_SCALE_DELAY = 34,         /**< Waits a number of frames on the scale track. */
-    SCENE_OBJ_CMD_SET_SCALE = 35,           /**< Changes the object scale over a number of frames. */
-    SCENE_OBJ_CMD_SE_DELAY = 36,            /**< Waits a number of frames on the sound effect track. */
-    SCENE_OBJ_CMD_SE_PLAY = 37,             /**< Plays a sound effect. */
-    SCENE_OBJ_CMD_RESET_DA_POSITION = 38,   /**< Writes the position and rotation back to the object and resets its dynamic animation. */
-    SCENE_OBJ_CMD_NUM = 39,                 /**< One past the last valid object command. */
+    SCENE_OBJ_CMD_NORMAL_DRIVE = 29,         /**< Returns the object to its normal behaviour. */
+    SCENE_OBJ_CMD_TEX_ANIME_DELAY = 30,      /**< Waits a number of frames on the texture animation track. */
+    SCENE_OBJ_CMD_TEX_ANIME = 31,            /**< Turns a texture animation on or off. */
+    SCENE_OBJ_CMD_COLOR_DELAY = 32,          /**< Waits a number of frames on the colour track. */
+    SCENE_OBJ_CMD_SET_COLOR = 33,            /**< Changes the object colour over a number of frames. */
+    SCENE_OBJ_CMD_SCALE_DELAY = 34,          /**< Waits a number of frames on the scale track. */
+    SCENE_OBJ_CMD_SET_SCALE = 35,            /**< Changes the object scale over a number of frames. */
+    SCENE_OBJ_CMD_SE_DELAY = 36,             /**< Waits a number of frames on the sound effect track. */
+    SCENE_OBJ_CMD_SE_PLAY = 37,              /**< Plays a sound effect. */
+    SCENE_OBJ_CMD_RESET_DA_POSITION = 38,    /**< Writes the position and rotation back to the object and resets its dynamic animation. */
+    SCENE_OBJ_CMD_NUM = 39,                  /**< One past the last valid object command. */
 };
 
 /**
@@ -171,13 +171,14 @@ enum SceneObjSeqCmd {
  *
  */
 struct SPLINE_KEY {
-    int frame;     /**< Frame at which the segment starts. */
-    int length;    /**< Number of frames the segment lasts. */
-    float a[3];    /**< Cubic coefficient of each axis. */
-    float b[3];    /**< Square coefficient of each axis. */
-    float c[3];    /**< Linear coefficient of each axis. */
-    float d[3];    /**< Constant coefficient of each axis, the segment's start point. */
+    int   frame;  /**< Frame at which the segment starts. */
+    int   length; /**< Number of frames the segment lasts. */
+    float a[3];   /**< Cubic coefficient of each axis. */
+    float b[3];   /**< Square coefficient of each axis. */
+    float c[3];   /**< Linear coefficient of each axis. */
+    float d[3];   /**< Constant coefficient of each axis, the segment's start point. */
 };
+
 STATIC_ASSERT(sizeof(SPLINE_KEY) == 0x38);
 
 /**
@@ -187,12 +188,12 @@ STATIC_ASSERT(sizeof(SPLINE_KEY) == 0x38);
  */
 class C3DSpline {
 public:
-    SPLINE_KEY key[16]; /**< Segments of the spline. */
-    int key_num;        /**< Number of points the spline passes through. */
-    int now_key;        /**< Segment the current point is on. */
-    float now_frame;    /**< Current time along the spline, in frames. */
-    float now_pos[3];   /**< Current point on the spline. */
-    float speed;        /**< Distance StepS moves along the spline in one step. */
+    SPLINE_KEY key[16];    /**< Segments of the spline. */
+    int        key_num;    /**< Number of points the spline passes through. */
+    int        now_key;    /**< Segment the current point is on. */
+    float      now_frame;  /**< Current time along the spline, in frames. */
+    float      now_pos[3]; /**< Current point on the spline. */
+    float      speed;      /**< Distance StepS moves along the spline in one step. */
 
     /**
      * Clears every segment and puts the spline at its start.
@@ -220,7 +221,7 @@ public:
      * @address 0x2584A0
      * @size 0x2E0
      */
-    void SetUpSpline(float (*points)[4], int *frames, int num, float speed);
+    void SetUpSpline(float (*points)[4], int *frames, int count, float speed);
 
     /**
      * Moves the current point along the spline by the step distance;
@@ -249,8 +250,9 @@ public:
      * @address 0x258BB0
      * @size 0x30
      */
-    void GetNowXYZ(float *pos);
+    void GetNowXYZ(float *out);
 };
+
 STATIC_ASSERT(sizeof(C3DSpline) == 0x39C);
 
 /**
@@ -260,13 +262,13 @@ STATIC_ASSERT(sizeof(C3DSpline) == 0x39C);
  */
 class CCameraPas {
 public:
-    sceVu0FVECTOR pos[16]; /**< Eye points of the path. */
-    sceVu0FVECTOR ref[16]; /**< Look-at points of the path. */
-    int pas_num;           /**< Number of points on the path. */
-    int frame;             /**< Number of frames the whole path lasts. */
-    C3DSpline pos_spline;  /**< Spline through the eye points. */
-    C3DSpline ref_spline;  /**< Spline through the look-at points. */
-    int run;               /**< Non-zero while the camera runs along the path. */
+    sceVu0FVECTOR pos[16];    /**< Eye points of the path. */
+    sceVu0FVECTOR ref[16];    /**< Look-at points of the path. */
+    int           pas_num;    /**< Number of points on the path. */
+    int           frame;      /**< Number of frames the whole path lasts. */
+    C3DSpline     pos_spline; /**< Spline through the eye points. */
+    C3DSpline     ref_spline; /**< Spline through the look-at points. */
+    int           run;        /**< Non-zero while the camera runs along the path. */
 
     /**
      * Clears the path.
@@ -285,7 +287,7 @@ public:
      * @address 0x258C20
      * @size 0x80
      */
-    int AddCameraPas(float *pos, float *ref);
+    int AddCameraPas(float *eye_point, float *look_point);
 
     /**
      * Inserts an eye point and a look-at point before a point of the path;
@@ -295,7 +297,7 @@ public:
      * @address 0x258CA0
      * @size 0x110
      */
-    int InsCameraPas(int no, float *pos, float *ref);
+    int InsCameraPas(int index, float *eye_point, float *look_point);
 
     /**
      * Replaces a point of the path; returns non-zero when the index is out
@@ -305,7 +307,7 @@ public:
      * @address 0x258DB0
      * @size 0x60
      */
-    int SetCameraPas(int no, float *pos, float *ref);
+    int SetCameraPas(int index, float *eye_point, float *look_point);
 
     /**
      * Copies out a point of the path; returns non-zero when the index is
@@ -315,7 +317,7 @@ public:
      * @address 0x258E10
      * @size 0x60
      */
-    int GetCameraPas(int no, float *pos, float *ref);
+    int GetCameraPas(int index, float *eye_point, float *look_point);
 
     /**
      * Removes a point of the path; returns non-zero when the index is out
@@ -325,7 +327,7 @@ public:
      * @address 0x258E70
      * @size 0xE0
      */
-    int DelCameraPas(int no);
+    int DelCameraPas(int index);
 
     /**
      * Sets the number of frames the whole path lasts; always returns 0.
@@ -381,7 +383,7 @@ public:
      * @address 0x2592A0
      * @size 0xB0
      */
-    void Step(float *pos, float *ref);
+    void Step(float *eye_out, float *look_out);
 
     /**
      * Returns non-zero once the camera has reached the end of the path.
@@ -392,6 +394,7 @@ public:
      */
     int CheckEnd();
 };
+
 STATIC_ASSERT(sizeof(CCameraPas) == 0x950);
 
 /**
@@ -402,11 +405,11 @@ STATIC_ASSERT(sizeof(CCameraPas) == 0x950);
 class CCharaPas {
 public:
     sceVu0FVECTOR pos[16]; /**< Points of the path. */
-    int frame;             /**< Number of frames the whole path lasts. */
-    int pas_num;           /**< Number of points on the path. */
-    C3DSpline spline;      /**< Spline through the points. */
-    int run;               /**< Non-zero while the object walks along the path. */
-    int end;               /**< Non-zero once the spline has reached its end, for the last step. */
+    int           frame;   /**< Number of frames the whole path lasts. */
+    int           pas_num; /**< Number of points on the path. */
+    C3DSpline     spline;  /**< Spline through the points. */
+    int           run;     /**< Non-zero while the object walks along the path. */
+    int           end;     /**< Non-zero once the spline has reached its end, for the last step. */
 
     /**
      * Clears the path.
@@ -434,7 +437,7 @@ public:
      * @address 0x259420
      * @size 0x50
      */
-    int AddCharaPas(float *pos);
+    int AddCharaPas(float *point);
 
     /**
      * Builds the spline and measures it so that the object covers the path
@@ -463,7 +466,7 @@ public:
      * @address 0x259600
      * @size 0x190
      */
-    void Step(float *pos, float *rot_y);
+    void Step(float *pos, float *angle);
 
     /**
      * Returns non-zero once the object has reached the end of the path.
@@ -482,7 +485,7 @@ public:
      * @address 0x2597B0
      * @size 0xD0
      */
-    int InsCharaPas(int no, float *pos);
+    int InsCharaPas(int index, float *point);
 
     /**
      * Replaces a point of the path; returns non-zero when the index is out
@@ -492,7 +495,7 @@ public:
      * @address 0x259880
      * @size 0x40
      */
-    int SetCharaPas(int no, float *pos);
+    int SetCharaPas(int index, float *point);
 
     /**
      * Copies out a point of the path; returns non-zero when the index is
@@ -502,7 +505,7 @@ public:
      * @address 0x2598C0
      * @size 0x40
      */
-    int GetCharaPas(int no, float *pos);
+    int GetCharaPas(int index, float *point);
 
     /**
      * Removes a point of the path; returns non-zero when the index is out
@@ -512,7 +515,7 @@ public:
      * @address 0x259900
      * @size 0xB0
      */
-    int DelCharaPas(int no);
+    int DelCharaPas(int index);
 
     /**
      * Sets the number of frames the whole path lasts.
@@ -532,6 +535,7 @@ public:
      */
     int GetFrame();
 };
+
 STATIC_ASSERT(sizeof(CCharaPas) == 0x4B0);
 
 /**
@@ -540,29 +544,34 @@ STATIC_ASSERT(sizeof(CCharaPas) == 0x4B0);
  *
  */
 struct _SEN_CMR_SEQ {
-    int cmd;              /**< Command, a SceneCmrSeqCmd; 0 marks a free entry. */
-    s32 unk_4;
-    s32 unk_8;
-    s32 unk_c;
-    sceVu0FVECTOR vec0;   /**< Eye position, shake size or fade colour; for angle commands the angle, height and distance. */
-    sceVu0FVECTOR vec1;   /**< Look-at position, or the offset from a followed object. */
+    int           cmd; /**< Command, a SceneCmrSeqCmd; 0 marks a free entry. */
+    s32           unk_4;
+    s32           unk_8;
+    s32           unk_c;
+    sceVu0FVECTOR vec0; /**< Eye position, shake size or fade colour; for angle commands the angle, height and distance. */
+    sceVu0FVECTOR vec1; /**< Look-at position, or the offset from a followed object. */
+
     union {
-        int frame;        /**< Number of frames the command lasts. */
-        float value;      /**< Angle, height, distance or slowing rate the command sets. */
-        int no;           /**< Event object handle or character number the command uses. */
+        int   frame; /**< Number of frames the command lasts. */
+        float value; /**< Angle, height, distance or slowing rate the command sets. */
+        int   no;    /**< Event object handle or character number the command uses. */
     };
+
     union {
-        int mode;         /**< Ease shape (a SceneSeqEase) or follow mode (a SceneCmrSyncMode). */
-        int slow_frame;   /**< Number of frames a slowing command lasts. */
+        int   mode;       /**< Ease shape (a SceneSeqEase) or follow mode (a SceneCmrSyncMode). */
+        int   slow_frame; /**< Number of frames a slowing command lasts. */
         float dist;       /**< Distance in front of the eye that a character is kept at. */
     };
+
     union {
-        float ease_rate;  /**< Share of the frame count over which an eased command changes speed. */
-        int attach_frame; /**< Number of frames a character is kept in front of the eye, or below zero for ever. */
+        float ease_rate;    /**< Share of the frame count over which an eased command changes speed. */
+        int   attach_frame; /**< Number of frames a character is kept in front of the eye, or below zero for ever. */
     };
-    char name[0x20];      /**< Name of the frame of a followed object, or empty for its origin. */
-    _SEN_CMR_SEQ *next;   /**< Next command of the same track. */
+
+    char          name[0x20]; /**< Name of the frame of a followed object, or empty for its origin. */
+    _SEN_CMR_SEQ *next;       /**< Next command of the same track. */
 };
+
 STATIC_ASSERT(sizeof(_SEN_CMR_SEQ) == 0x60);
 
 /**
@@ -571,30 +580,35 @@ STATIC_ASSERT(sizeof(_SEN_CMR_SEQ) == 0x60);
  *
  */
 struct _SEN_OBJ_SEQ {
-    int cmd;              /**< Command, a SceneObjSeqCmd; 0 marks a free entry. */
-    s32 unk_4;
-    s32 unk_8;
-    s32 unk_c;
-    sceVu0FVECTOR vec;    /**< Position, rotation, offset, colour or scale the command uses. */
+    int           cmd; /**< Command, a SceneObjSeqCmd; 0 marks a free entry. */
+    s32           unk_4;
+    s32           unk_8;
+    s32           unk_c;
+    sceVu0FVECTOR vec; /**< Position, rotation, offset, colour or scale the command uses. */
+
     union {
-        int frame;        /**< Number of frames the command lasts. */
-        float value;      /**< Motion step or time, jump height or camera distance the command sets. */
-        int no;           /**< Event object handle, motion flags, sound number or texture animation switch. */
-        int grounded;     /**< Whether path movement keeps the object on the ground. */
+        int   frame;    /**< Number of frames the command lasts. */
+        float value;    /**< Motion step or time, jump height or camera distance the command sets. */
+        int   no;       /**< Event object handle, motion flags, sound number or texture animation switch. */
+        int   grounded; /**< Whether path movement keeps the object on the ground. */
     };
+
     union {
-        int mode;         /**< Ease shape (a SceneSeqEase), or 1 to keep a moved object on the ground. */
-        int sub_frame;    /**< Number of frames a jump, attach or frame-follow command lasts. */
-        float step;       /**< Motion step a motion command starts the motion with. */
-        int se_no;        /**< Sound effect number within its sound bank. */
+        int   mode;      /**< Ease shape (a SceneSeqEase), or 1 to keep a moved object on the ground. */
+        int   sub_frame; /**< Number of frames a jump, attach or frame-follow command lasts. */
+        float step;      /**< Motion step a motion command starts the motion with. */
+        int   se_no;     /**< Sound effect number within its sound bank. */
     };
+
     union {
-        float ease_rate;  /**< Share of the frame count over which an eased command changes speed. */
-        int started;      /**< Non-zero once a motion command has started its motion. */
+        float ease_rate; /**< Share of the frame count over which an eased command changes speed. */
+        int   started;   /**< Non-zero once a motion command has started its motion. */
     };
-    char name[0x20];      /**< Name of a motion, a texture animation or a frame. */
-    _SEN_OBJ_SEQ *next;   /**< Next command of the same track. */
+
+    char          name[0x20]; /**< Name of a motion, a texture animation or a frame. */
+    _SEN_OBJ_SEQ *next;       /**< Next command of the same track. */
 };
+
 STATIC_ASSERT(sizeof(_SEN_OBJ_SEQ) == 0x50);
 
 /**
@@ -604,67 +618,67 @@ STATIC_ASSERT(sizeof(_SEN_OBJ_SEQ) == 0x50);
  */
 class CSceneCmrSeq {
 public:
-    _SEN_CMR_SEQ *seq_tbl;      /**< Pool of command entries. */
-    int seq_num;                /**< Number of entries in the pool. */
-    _SEN_CMR_SEQ *pr_seq;       /**< Current command of the position track. */
-    _SEN_CMR_SEQ *pr_last;      /**< Last command of the position track. */
-    _SEN_CMR_SEQ *ahd_seq;      /**< Current command of the angle track. */
-    _SEN_CMR_SEQ *ahd_last;     /**< Last command of the angle track. */
-    _SEN_CMR_SEQ *fade_seq;     /**< Current command of the fade track. */
-    _SEN_CMR_SEQ *fade_last;    /**< Last command of the fade track. */
-    _SEN_CMR_SEQ *quake_seq;    /**< Current command of the shake track. */
-    _SEN_CMR_SEQ *quake_last;   /**< Last command of the shake track. */
-    _SEN_CMR_SEQ *chara_seq;    /**< Current command of the character track. */
-    _SEN_CMR_SEQ *chara_last;   /**< Last command of the character track. */
-    _SEN_CMR_SEQ *pr_keep;      /**< Return point of the position track, or NULL; finished commands are kept while set. */
-    _SEN_CMR_SEQ *ahd_keep;     /**< Return point of the angle track, or NULL; finished commands are kept while set. */
-    int pr_cnt;                 /**< Frame counter of the running position command. */
-    int ahd_cnt;                /**< Frame counter of the running angle command. */
-    int fade_cnt;               /**< Frame counter of the running fade command. */
-    int quake_cnt;              /**< Frame counter of the running shake command. */
-    int chara_cnt;              /**< Frame counter of the running character command. */
-    s32 unk_4c;
-    sceVu0FVECTOR pos;          /**< Eye position given to the camera. */
-    sceVu0FVECTOR ref;          /**< Look-at position given to the camera. */
-    float angle;                /**< Angle, in radians, of the eye about the look-at point. */
-    float height;               /**< Height of the eye above the look-at point. */
-    float dist;                 /**< Horizontal distance of the eye from the look-at point. */
-    int sync;                   /**< Non-zero while the camera follows an event object. */
-    int sync_obj;               /**< Handle of the followed event object. */
-    int sync_mode;              /**< How the camera turns with the followed object, a SceneCmrSyncMode. */
-    s32 unk_88;
-    s32 unk_8c;
-    sceVu0FVECTOR sync_ofs;     /**< Offset of the look-at point from the followed object or frame. */
-    float sync_angle;           /**< Angle of the eye about a followed object. */
-    float sync_height;          /**< Height of the eye above a followed object. */
-    float sync_dist;            /**< Distance of the eye from a followed object. */
-    char sync_frame[0x20];      /**< Name of the followed frame of the object, or empty for its origin. */
-    s32 unk_cc;
-    sceVu0FVECTOR pos_spd;      /**< Eye movement in one frame of an even move. */
-    sceVu0FVECTOR ref_spd;      /**< Look-at movement in one frame of an even move. */
-    float angle_spd;            /**< Angle change in one frame of an angle move. */
-    s32 unk_f4;
-    float height_spd;           /**< Height change in one frame of an angle move. */
-    float dist_spd;             /**< Distance change in one frame of an angle move. */
+    _SEN_CMR_SEQ *seq_tbl;    /**< Pool of command entries. */
+    int           seq_num;    /**< Number of entries in the pool. */
+    _SEN_CMR_SEQ *pr_seq;     /**< Current command of the position track. */
+    _SEN_CMR_SEQ *pr_last;    /**< Last command of the position track. */
+    _SEN_CMR_SEQ *ahd_seq;    /**< Current command of the angle track. */
+    _SEN_CMR_SEQ *ahd_last;   /**< Last command of the angle track. */
+    _SEN_CMR_SEQ *fade_seq;   /**< Current command of the fade track. */
+    _SEN_CMR_SEQ *fade_last;  /**< Last command of the fade track. */
+    _SEN_CMR_SEQ *quake_seq;  /**< Current command of the shake track. */
+    _SEN_CMR_SEQ *quake_last; /**< Last command of the shake track. */
+    _SEN_CMR_SEQ *chara_seq;  /**< Current command of the character track. */
+    _SEN_CMR_SEQ *chara_last; /**< Last command of the character track. */
+    _SEN_CMR_SEQ *pr_keep;    /**< Return point of the position track, or NULL; finished commands are kept while set. */
+    _SEN_CMR_SEQ *ahd_keep;   /**< Return point of the angle track, or NULL; finished commands are kept while set. */
+    int           pr_cnt;     /**< Frame counter of the running position command. */
+    int           ahd_cnt;    /**< Frame counter of the running angle command. */
+    int           fade_cnt;   /**< Frame counter of the running fade command. */
+    int           quake_cnt;  /**< Frame counter of the running shake command. */
+    int           chara_cnt;  /**< Frame counter of the running character command. */
+    s32           unk_4c;
+    sceVu0FVECTOR pos;       /**< Eye position given to the camera. */
+    sceVu0FVECTOR ref;       /**< Look-at position given to the camera. */
+    float         angle;     /**< Angle, in radians, of the eye about the look-at point. */
+    float         height;    /**< Height of the eye above the look-at point. */
+    float         dist;      /**< Horizontal distance of the eye from the look-at point. */
+    int           sync;      /**< Non-zero while the camera follows an event object. */
+    int           sync_obj;  /**< Handle of the followed event object. */
+    int           sync_mode; /**< How the camera turns with the followed object, a SceneCmrSyncMode. */
+    s32           unk_88;
+    s32           unk_8c;
+    sceVu0FVECTOR sync_ofs;         /**< Offset of the look-at point from the followed object or frame. */
+    float         sync_angle;       /**< Angle of the eye about a followed object. */
+    float         sync_height;      /**< Height of the eye above a followed object. */
+    float         sync_dist;        /**< Distance of the eye from a followed object. */
+    char          sync_frame[0x20]; /**< Name of the followed frame of the object, or empty for its origin. */
+    s32           unk_cc;
+    sceVu0FVECTOR pos_spd;   /**< Eye movement in one frame of an even move. */
+    sceVu0FVECTOR ref_spd;   /**< Look-at movement in one frame of an even move. */
+    float         angle_spd; /**< Angle change in one frame of an angle move. */
+    s32           unk_f4;
+    float         height_spd;   /**< Height change in one frame of an angle move. */
+    float         dist_spd;     /**< Distance change in one frame of an angle move. */
     sceVu0FVECTOR pos_ease_spd; /**< Current eye movement in one frame of an eased move, or the angle, height and distance change of an eased angle move. */
     sceVu0FVECTOR ref_ease_spd; /**< Current look-at movement in one frame of an eased move. */
     sceVu0FVECTOR pos_ease_acc; /**< Change of the eye movement in one frame of an eased move, or of the angle change of an eased angle move. */
     sceVu0FVECTOR ref_ease_acc; /**< Change of the look-at movement in one frame of an eased move. */
-    int ease_frame;             /**< Number of frames over which an eased move changes speed. */
-    s32 unk_144;
-    s32 unk_148;
-    s32 unk_14c;
-    sceVu0FVECTOR pos_vel;      /**< Last eye movement in one frame, which slowing lets die away. */
-    sceVu0FVECTOR ref_vel;      /**< Last look-at movement in one frame, which slowing lets die away. */
-    sceVu0FVECTOR ahd_vel;      /**< Last angle, height and distance change in one frame, which slowing lets die away. */
-    int quake;                  /**< Non-zero while the camera shakes. */
-    s32 unk_184;
-    s32 unk_188;
-    s32 unk_18c;
-    sceVu0FVECTOR quake_amp;    /**< Current size of the shake. */
-    sceVu0FVECTOR quake_pos;    /**< Eye position without the shake. */
-    sceVu0FVECTOR quake_ref;    /**< Look-at position without the shake. */
-    CCameraPas pas;             /**< Path the camera runs along. */
+    int           ease_frame;   /**< Number of frames over which an eased move changes speed. */
+    s32           unk_144;
+    s32           unk_148;
+    s32           unk_14c;
+    sceVu0FVECTOR pos_vel; /**< Last eye movement in one frame, which slowing lets die away. */
+    sceVu0FVECTOR ref_vel; /**< Last look-at movement in one frame, which slowing lets die away. */
+    sceVu0FVECTOR ahd_vel; /**< Last angle, height and distance change in one frame, which slowing lets die away. */
+    int           quake;   /**< Non-zero while the camera shakes. */
+    s32           unk_184;
+    s32           unk_188;
+    s32           unk_18c;
+    sceVu0FVECTOR quake_amp; /**< Current size of the shake. */
+    sceVu0FVECTOR quake_pos; /**< Eye position without the shake. */
+    sceVu0FVECTOR quake_ref; /**< Look-at position without the shake. */
+    CCameraPas    pas;       /**< Path the camera runs along. */
 
     /**
      * Sets up the path and an empty sequencer with no command pool.
@@ -691,7 +705,7 @@ public:
      * @address 0x25BA40
      * @size 0x50
      */
-    void Initialize(_SEN_CMR_SEQ *seq_tbl, int seq_num);
+    void Initialize(_SEN_CMR_SEQ *nodes, int count);
 
     /**
      * Stops every track, clears the camera state and frees every command
@@ -786,7 +800,7 @@ public:
      * @address 0x25C440
      * @size 0xA0
      */
-    _SEN_CMR_SEQ *GetNextSeq(_SEN_CMR_SEQ *seq, int track);
+    _SEN_CMR_SEQ *GetNextSeq(_SEN_CMR_SEQ *seq, int lane);
 
     /**
      * Queues a wait of a number of 60 Hz frames on the position track.
@@ -833,7 +847,7 @@ public:
      * @address 0x25C6B0
      * @size 0xE0
      */
-    void Move2(float *pos, float *ref, int frame, int ease, float ease_rate);
+    void Move2(float *pos, float *ref, int frame, int param34, float param38);
 
     /**
      * Queues an even move of the look-at point over a number of 60 Hz
@@ -879,7 +893,7 @@ public:
      * @address 0x25C9B0
      * @size 0x70
      */
-    void AddPas(float *pos, float *ref);
+    void AddPas(float *eye_point, float *look_point);
 
     /**
      * Queues running the camera along its path.
@@ -981,7 +995,7 @@ public:
      * @address 0x25CDC0
      * @size 0xE0
      */
-    void MoveAHD2(float angle, float height, float dist, int frame, int ease, float ease_rate);
+    void MoveAHD2(float angle, float height, float dist, int frame, int param34, float param38);
 
     /**
      * Queues following an event object, or a named frame of it, from an
@@ -991,7 +1005,7 @@ public:
      * @address 0x25CEA0
      * @size 0xD0
      */
-    void SetSyncObj(int obj, float *ofs, float angle, float height, float dist, int mode, char *frame_name);
+    void SetSyncObj(int kind, float *offset, float angle, float height, float dist, int option, char *frame_name);
 
     /**
      * Queues stopping the follow of an event object.
@@ -1113,8 +1127,9 @@ public:
      * @address 0x25D580
      * @size 0xB0
      */
-    void CharaAttach(int chara_no, float dist, int frame);
+    void CharaAttach(int kind, float factor, int frame);
 };
+
 STATIC_ASSERT(sizeof(CSceneCmrSeq) == 0xB10);
 
 /**
@@ -1124,51 +1139,51 @@ STATIC_ASSERT(sizeof(CSceneCmrSeq) == 0xB10);
  */
 class CSceneObjSeq {
 public:
-    _SEN_OBJ_SEQ *seq_tbl;       /**< Pool of command entries. */
-    int seq_num;                 /**< Number of entries in the pool. */
-    _SEN_OBJ_SEQ *pos_seq;       /**< Current command of the position track. */
-    _SEN_OBJ_SEQ *pos_last;      /**< Last command of the position track. */
-    _SEN_OBJ_SEQ *rot_seq;       /**< Current command of the rotation track. */
-    _SEN_OBJ_SEQ *rot_last;      /**< Last command of the rotation track. */
-    _SEN_OBJ_SEQ *mot_seq;       /**< Current command of the motion track. */
-    _SEN_OBJ_SEQ *mot_last;      /**< Last command of the motion track. */
-    _SEN_OBJ_SEQ *anm_seq;       /**< Current command of the texture animation track. */
-    _SEN_OBJ_SEQ *anm_last;      /**< Last command of the texture animation track. */
-    _SEN_OBJ_SEQ *col_seq;       /**< Current command of the colour track. */
-    _SEN_OBJ_SEQ *col_last;      /**< Last command of the colour track. */
-    _SEN_OBJ_SEQ *scale_seq;     /**< Current command of the scale track. */
-    _SEN_OBJ_SEQ *scale_last;    /**< Last command of the scale track. */
-    _SEN_OBJ_SEQ *se_seq;        /**< Current command of the sound effect track. */
-    _SEN_OBJ_SEQ *se_last;       /**< Last command of the sound effect track. */
-    int pos_cnt;                 /**< Frame counter of the running position command. */
-    int rot_cnt;                 /**< Frame counter of the running rotation command. */
-    int mot_cnt;                 /**< Frame counter of the running motion command. */
-    int anm_cnt;                 /**< Frame counter of the running texture animation command. */
-    int col_cnt;                 /**< Frame counter of the running colour command. */
-    int scale_cnt;               /**< Frame counter of the running scale command. */
-    int se_cnt;                  /**< Frame counter of the running sound effect command. */
-    s32 unk_5c;
-    s32 unk_60;
-    int eoh_no;                  /**< Handle of the event object the sequence drives, or -1 for none. */
-    s32 unk_68;
-    s32 unk_6c;
-    sceVu0FVECTOR pos;           /**< Position of the object. */
-    sceVu0FVECTOR rot;           /**< Rotation of the object, in radians. */
-    sceVu0FVECTOR pos_spd;       /**< Movement in one frame of an even move. */
-    sceVu0FVECTOR rot_spd;       /**< Rotation in one frame of an even turn. */
-    sceVu0FVECTOR pos_ease_spd;  /**< Current movement in one frame of an eased move. */
-    sceVu0FVECTOR rot_ease_spd;  /**< Current rotation in one frame of an eased turn. */
-    sceVu0FVECTOR pos_ease_acc;  /**< Change of the movement in one frame of an eased move. */
-    sceVu0FVECTOR rot_ease_acc;  /**< Change of the rotation in one frame of an eased turn. */
-    int pos_ease_frame;          /**< Number of frames over which an eased move changes speed. */
-    int rot_ease_frame;          /**< Number of frames over which an eased turn changes speed. */
-    s32 unk_f8;
-    s32 unk_fc;
-    sceVu0FVECTOR jump_start;    /**< Position a jump starts from. */
-    sceVu0FVECTOR jump_end;      /**< Position a jump lands on. */
-    sceVu0FVECTOR color_spd;     /**< Colour change in one frame of a colour command. */
-    sceVu0FVECTOR scale_spd;     /**< Scale change in one frame of a scale command. */
-    CCharaPas pas;               /**< Path the object walks along. */
+    _SEN_OBJ_SEQ *seq_tbl;    /**< Pool of command entries. */
+    int           seq_num;    /**< Number of entries in the pool. */
+    _SEN_OBJ_SEQ *pos_seq;    /**< Current command of the position track. */
+    _SEN_OBJ_SEQ *pos_last;   /**< Last command of the position track. */
+    _SEN_OBJ_SEQ *rot_seq;    /**< Current command of the rotation track. */
+    _SEN_OBJ_SEQ *rot_last;   /**< Last command of the rotation track. */
+    _SEN_OBJ_SEQ *mot_seq;    /**< Current command of the motion track. */
+    _SEN_OBJ_SEQ *mot_last;   /**< Last command of the motion track. */
+    _SEN_OBJ_SEQ *anm_seq;    /**< Current command of the texture animation track. */
+    _SEN_OBJ_SEQ *anm_last;   /**< Last command of the texture animation track. */
+    _SEN_OBJ_SEQ *col_seq;    /**< Current command of the colour track. */
+    _SEN_OBJ_SEQ *col_last;   /**< Last command of the colour track. */
+    _SEN_OBJ_SEQ *scale_seq;  /**< Current command of the scale track. */
+    _SEN_OBJ_SEQ *scale_last; /**< Last command of the scale track. */
+    _SEN_OBJ_SEQ *se_seq;     /**< Current command of the sound effect track. */
+    _SEN_OBJ_SEQ *se_last;    /**< Last command of the sound effect track. */
+    int           pos_cnt;    /**< Frame counter of the running position command. */
+    int           rot_cnt;    /**< Frame counter of the running rotation command. */
+    int           mot_cnt;    /**< Frame counter of the running motion command. */
+    int           anm_cnt;    /**< Frame counter of the running texture animation command. */
+    int           col_cnt;    /**< Frame counter of the running colour command. */
+    int           scale_cnt;  /**< Frame counter of the running scale command. */
+    int           se_cnt;     /**< Frame counter of the running sound effect command. */
+    s32           unk_5c;
+    s32           unk_60;
+    int           eoh_no; /**< Handle of the event object the sequence drives, or -1 for none. */
+    s32           unk_68;
+    s32           unk_6c;
+    sceVu0FVECTOR pos;            /**< Position of the object. */
+    sceVu0FVECTOR rot;            /**< Rotation of the object, in radians. */
+    sceVu0FVECTOR pos_spd;        /**< Movement in one frame of an even move. */
+    sceVu0FVECTOR rot_spd;        /**< Rotation in one frame of an even turn. */
+    sceVu0FVECTOR pos_ease_spd;   /**< Current movement in one frame of an eased move. */
+    sceVu0FVECTOR rot_ease_spd;   /**< Current rotation in one frame of an eased turn. */
+    sceVu0FVECTOR pos_ease_acc;   /**< Change of the movement in one frame of an eased move. */
+    sceVu0FVECTOR rot_ease_acc;   /**< Change of the rotation in one frame of an eased turn. */
+    int           pos_ease_frame; /**< Number of frames over which an eased move changes speed. */
+    int           rot_ease_frame; /**< Number of frames over which an eased turn changes speed. */
+    s32           unk_f8;
+    s32           unk_fc;
+    sceVu0FVECTOR jump_start; /**< Position a jump starts from. */
+    sceVu0FVECTOR jump_end;   /**< Position a jump lands on. */
+    sceVu0FVECTOR color_spd;  /**< Colour change in one frame of a colour command. */
+    sceVu0FVECTOR scale_spd;  /**< Scale change in one frame of a scale command. */
+    CCharaPas     pas;        /**< Path the object walks along. */
 
     /**
      * Sets up the path and an empty sequencer with no command pool.
@@ -1196,7 +1211,7 @@ public:
      * @address 0x25F050
      * @size 0x80
      */
-    void Initialize(_SEN_OBJ_SEQ *seq_tbl, int seq_num);
+    void Initialize(_SEN_OBJ_SEQ *nodes, int count);
 
     /**
      * Stops every track, forgets the driven object and clears the object
@@ -1345,7 +1360,7 @@ public:
      * @address 0x25F810
      * @size 0xC0
      */
-    void Move(float *pos, int frame, int ground);
+    void Move(float *dest, int frame, int mode);
 
     /**
      * Queues an eased move over a number of 60 Hz frames.
@@ -1354,7 +1369,7 @@ public:
      * @address 0x25F8D0
      * @size 0xD0
      */
-    void Move2(float *pos, int frame, int ease, float ease_rate);
+    void Move2(float *dest, int frame, int mode, float param28);
 
     /**
      * Queues clearing the object path.
@@ -1381,7 +1396,7 @@ public:
      * @address 0x25FA60
      * @size 0x40
      */
-    void AddPas(float *pos);
+    void AddPas(float *point);
 
     /**
      * Queues walking the object along its path, kept on the ground when the
@@ -1401,7 +1416,7 @@ public:
      * @address 0x25FAE0
      * @size 0xD0
      */
-    void Jump(float *pos, float height, int frame);
+    void Jump(float *dest, float height, int frame);
 
     /**
      * Queues keeping the object at an offset from a named frame of another
@@ -1411,7 +1426,7 @@ public:
      * @address 0x25FBB0
      * @size 0xD0
      */
-    void SetEohFramePos(int eoh_no, char *frame_name, int frame, float *ofs);
+    void SetEohFramePos(int eoh_no, char *frame_name, int frame, float *offset);
 
     /**
      * Queues adding an offset to the position every frame for a number of
@@ -1421,7 +1436,7 @@ public:
      * @address 0x25FC80
      * @size 0xB0
      */
-    void AddPos(float *add, int frame);
+    void AddPos(float *offset, int frame);
 
     /**
      * Queues keeping the object a distance in front of the camera for a
@@ -1431,7 +1446,7 @@ public:
      * @address 0x25FD30
      * @size 0xA0
      */
-    void AttachCamera(float dist, int frame);
+    void AttachCamera(float value, int frame);
 
     /**
      * Queues a wait of a number of 60 Hz frames on the rotation track.
@@ -1459,7 +1474,7 @@ public:
      * @address 0x25FEA0
      * @size 0xB0
      */
-    void Rotation(float *rot, int frame);
+    void Rotation(float *target, int frame);
 
     /**
      * Queues an eased turn to a rotation over a number of 60 Hz frames.
@@ -1468,7 +1483,7 @@ public:
      * @address 0x25FF50
      * @size 0xD0
      */
-    void Rotation2(float *rot, int frame, int ease, float ease_rate);
+    void Rotation2(float *target, int frame, int mode, float param28);
 
     /**
      * Queues turning the object to face a position over a number of 60 Hz
@@ -1478,7 +1493,7 @@ public:
      * @address 0x260020
      * @size 0xB0
      */
-    void Reference(float *pos, int frame);
+    void Reference(float *ref, int frame);
 
     /**
      * Queues a wait of a number of 60 Hz frames on the motion track.
@@ -1496,7 +1511,7 @@ public:
      * @address 0x260160
      * @size 0x70
      */
-    void SetMotion(char *name, int flags, float step);
+    void SetMotion(char *name, int frames, float speed);
 
     /**
      * Queues starting a named motion once the current one ends.
@@ -1505,7 +1520,7 @@ public:
      * @address 0x2601D0
      * @size 0x70
      */
-    void NextMotion(char *name, int flags, float step);
+    void NextMotion(char *name, int frames, float speed);
 
     /**
      * Queues waiting for the current motion to end.
@@ -1606,7 +1621,7 @@ public:
      * @address 0x2604C0
      * @size 0x80
      */
-    void TexAnime(char *name, int on);
+    void TexAnime(char *name, int frames);
 
     /**
      * Queues a wait of a number of 60 Hz frames on the colour track.
@@ -1660,7 +1675,7 @@ public:
      * @address 0x260850
      * @size 0x50
      */
-    void SePlay(int snd_id, int se_no);
+    void SePlay(int sound_id, int sound_no);
 
     /**
      * Queues writing the position and rotation back to the object and
@@ -1672,6 +1687,7 @@ public:
      */
     void ResetDAPosition();
 };
+
 STATIC_ASSERT(sizeof(CSceneObjSeq) == 0x5F0);
 
 void InitSceneCmrSeq(_SEN_CMR_SEQ *seq);

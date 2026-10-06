@@ -1,9 +1,10 @@
 #pragma once
 
 #include "common.h"
+
 #include "mainloop.hpp"
-#include "savedata.hpp"
 #include "memcard.hpp"
+#include "savedata.hpp"
 
 /**
  * @file
@@ -17,9 +18,9 @@
  *
  */
 enum SV_CONV_MODE {
-    SV_CONV_MODE_SELECT  = 0, /**< Choosing the memory card slot. */
+    SV_CONV_MODE_SELECT = 0,  /**< Choosing the memory card slot. */
     SV_CONV_MODE_CONVERT = 2, /**< Running SaveDataConvertLoop each frame. */
-    SV_CONV_MODE_RESULT  = 3, /**< Showing the outcome until the player returns to slot selection. */
+    SV_CONV_MODE_RESULT = 3,  /**< Showing the outcome until the player returns to slot selection. */
 };
 
 /**
@@ -29,9 +30,9 @@ enum SV_CONV_MODE {
  */
 enum SAVEDATA_CONVERT_PHASE {
     SAVEDATA_CONVERT_PHASE_CHECK_CARD = 0, /**< Checking that a formatted PS2 memory card is in the slot. */
-    SAVEDATA_CONVERT_PHASE_READ_DIR   = 1, /**< Listing the North American release's save directories. */
-    SAVEDATA_CONVERT_PHASE_CONVERT    = 2, /**< Renaming each listed directory. */
-    SAVEDATA_CONVERT_PHASE_END        = 3, /**< Conversion has finished. */
+    SAVEDATA_CONVERT_PHASE_READ_DIR = 1,   /**< Listing the North American release's save directories. */
+    SAVEDATA_CONVERT_PHASE_CONVERT = 2,    /**< Renaming each listed directory. */
+    SAVEDATA_CONVERT_PHASE_END = 3,        /**< Conversion has finished. */
 };
 
 /**
@@ -40,10 +41,10 @@ enum SAVEDATA_CONVERT_PHASE {
  *
  */
 enum SAVEDATA_CONVERT_RESULT {
-    SAVEDATA_CONVERT_RESULT_NONE       = 0,   /**< No conversion has finished yet. */
-    SAVEDATA_CONVERT_RESULT_DONE       = 1,   /**< Every listed directory was processed. */
+    SAVEDATA_CONVERT_RESULT_NONE = 0,         /**< No conversion has finished yet. */
+    SAVEDATA_CONVERT_RESULT_DONE = 1,         /**< Every listed directory was processed. */
     SAVEDATA_CONVERT_RESULT_CARD_ERROR = 100, /**< The memory card could not be accessed. */
-    SAVEDATA_CONVERT_RESULT_NO_FILES   = 101, /**< The card holds no saves to convert. */
+    SAVEDATA_CONVERT_RESULT_NO_FILES = 101,   /**< The card holds no saves to convert. */
 };
 
 /**
@@ -52,10 +53,10 @@ enum SAVEDATA_CONVERT_RESULT {
  *
  */
 enum SAVEDATA_CONVERT_TYPE {
-    SAVEDATA_CONVERT_TYPE_NONE  = -1, /**< Not a directory the conversion handles. */
-    SAVEDATA_CONVERT_TYPE_GAME  = 0,  /**< Numbered game save, suffixed "dkcl". */
-    SAVEDATA_CONVERT_TYPE_ALBUM = 1,  /**< Photo album save, suffixed "dc2album". */
-    SAVEDATA_CONVERT_TYPE_OMAKE = 2,  /**< Bonus data save, suffixed "dc2omake". */
+    SAVEDATA_CONVERT_TYPE_NONE = -1, /**< Not a directory the conversion handles. */
+    SAVEDATA_CONVERT_TYPE_GAME = 0,  /**< Numbered game save, suffixed "dkcl". */
+    SAVEDATA_CONVERT_TYPE_ALBUM = 1, /**< Photo album save, suffixed "dc2album". */
+    SAVEDATA_CONVERT_TYPE_OMAKE = 2, /**< Bonus data save, suffixed "dc2omake". */
 };
 
 /**
@@ -64,10 +65,11 @@ enum SAVEDATA_CONVERT_TYPE {
  *
  */
 struct SAVE_CONVERT_WORK {
-    u8 unk_0[0x80];
+    u8        unk_0[0x80];
     CSaveData save_data; /**< Save image whose embedded objects are constructed for conversion. */
-    u8 unk_659b0[0x10];
+    u8        unk_659b0[0x10];
 };
+
 STATIC_ASSERT(sizeof(SAVE_CONVERT_WORK) == 0x659C0);
 
 /**

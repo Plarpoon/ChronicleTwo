@@ -15,7 +15,7 @@
  * @address 0x320F60
  * @size 0x140
  */
-int ConvertBinToTxt(u8* data, int size, char* text);
+int ConvertBinToTxt(u8 *data, int size, char *text);
 
 /**
  * Reads password text back into binary data, eight bytes per eleven
@@ -25,7 +25,7 @@ int ConvertBinToTxt(u8* data, int size, char* text);
  * @address 0x3210A0
  * @size 0x120
  */
-int ConvertTxtToBin(char* text, u8* data);
+int ConvertTxtToBin(char *text, u8 *data);
 
 /**
  * Turns a block of data into password text tied to a key, such as an item's
@@ -35,7 +35,7 @@ int ConvertTxtToBin(char* text, u8* data);
  * @address 0x321640
  * @size 0x100
  */
-int EncodePassword(u8* data, int size, u8* key, int key_size, char* text, int text_size);
+int EncodePassword(u8 *data, int size, u8 *key, int key_size, char *text, int text_size);
 
 /**
  * Turns password text back into its block of data and gives 1 when its
@@ -45,4 +45,4 @@ int EncodePassword(u8* data, int size, u8* key, int key_size, char* text, int te
  * @address 0x321740
  * @size 0x110
  */
-int DecodePassword(char* text, u8* data, int size, u8* key, int key_size);
+int DecodePassword(char *text, u8 *data, int size, u8 *key, int key_size);

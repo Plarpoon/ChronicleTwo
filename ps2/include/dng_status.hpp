@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+
 #include "mg_tanime.hpp"
 
 /**
@@ -23,6 +24,7 @@ struct SP_RGBA {
     int b; /**< Blue intensity. */
     int a; /**< Alpha. */
 };
+
 STATIC_ASSERT(sizeof(SP_RGBA) == 0x10);
 
 /**
@@ -34,8 +36,8 @@ STATIC_ASSERT(sizeof(SP_RGBA) == 0x10);
  * @address 0x1BCEC0
  * @size 0x2A0
  */
-void PrintV(int x, int y, int value, mgCTexture *texture, mgRect<int> glyph, int digits, int align_right,
-            int pitch, SP_RGBA *color);
+void PrintV(int x, int y, int value, mgCTexture *texture, mgRect<int> rect, int digit_count, int right_align,
+            int spacing, SP_RGBA *color);
 
 /**
  * Draws a five-digit counter, leading zeros included, with the digit sprites
@@ -76,7 +78,7 @@ void DrawRoboUnitStatusBord(float rate);
  * @address 0x1BF330
  * @size 0x670
  */
-void DrawMonsterUnitStatusBord(float rate);
+void DrawMonsterUnitStatusBord(float alpha);
 
 /**
  * Clears the low-gauge warnings and draws the status board matching the

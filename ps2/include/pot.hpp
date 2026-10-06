@@ -21,10 +21,10 @@ class mgCFrame;
  *
  */
 enum {
-    BPOT_FRAGMENT_MAX = 32,  /**< Broken pieces a smashed pot holds. */
-    BPOT_BREAK_TIME = 60,    /**< Steps the broken pieces stay after the smash. */
-    BPOT_FADE_TIME = 30,     /**< Steps, at the end of the break time, over which the pieces fade out. */
-    POT_FLY_TIME_MAX = 150,  /**< Steps a thrown pot flies before it is dropped without breaking. */
+    BPOT_FRAGMENT_MAX = 32, /**< Broken pieces a smashed pot holds. */
+    BPOT_BREAK_TIME = 60,   /**< Steps the broken pieces stay after the smash. */
+    BPOT_FADE_TIME = 30,    /**< Steps, at the end of the break time, over which the pieces fade out. */
+    POT_FLY_TIME_MAX = 150, /**< Steps a thrown pot flies before it is dropped without breaking. */
 };
 
 /**
@@ -89,7 +89,7 @@ public:
      * @address 0x2D0740
      * @size 0x90
      */
-    void Draw(float *origin, float alpha);
+    void Draw(float *camera_pos, float alpha);
 
     /**
      * Moves the piece one step against the collision triangles around it,
@@ -99,7 +99,7 @@ public:
      * @address 0x2D07D0
      * @size 0x370
      */
-    void Step(CCPoly *polys, int poly_num);
+    void Step(CCPoly *polys, int poly_count);
 
     /**
      * Starts the piece moving from a position at a velocity, under gravity.
@@ -137,7 +137,7 @@ public:
     sceVu0FVECTOR position;                    /**< World position of the smash, from which the pieces are placed. */
     int           fragment_num;                /**< Number of pieces in use. */
     CFragment     fragment[BPOT_FRAGMENT_MAX]; /**< Broken pieces. */
-    float       (*offset)[4];                  /**< Starting offset of each piece from the smash, one per piece. */
+    float (*offset)[4];                        /**< Starting offset of each piece from the smash, one per piece. */
 
     /**
      * Makes a broken object with no model and no pieces in use.
@@ -152,7 +152,7 @@ public:
      * @address 0x2D0BF0
      * @size 0x170
      */
-    void Clash(float *position, float *normal, float *velocity);
+    void Clash(float *hit_position, float *unused, float *normal);
 
     /**
      * Moves and draws the pieces while the break lasts, and hides the broken
@@ -194,15 +194,15 @@ STATIC_ASSERT(sizeof(CBPot) == 0xC50);
  */
 class CPot {
 public:
-    int           state;          /**< What the pot is doing, from POT_STATE. */
-    CMapParts    *parts;          /**< Map part that is the pot, or NULL when there is no pot. */
-    sceVu0FVECTOR position;       /**< World position of the pot. */
-    sceVu0FVECTOR velocity;       /**< Distance the thrown pot moves each step. */
-    sceVu0FVECTOR gravity;        /**< Change of velocity each step while thrown. */
-    sceVu0FVECTOR hold_pos;       /**< Position of the pot at the last held step, from which it is thrown. */
-    sceVu0FVECTOR prev_hold_pos;  /**< Position of the pot at the held step before the last. */
-    sceVu0FVECTOR break_pos;      /**< Position at which the pot was last smashed or put away. */
-    int           fly_time;       /**< Steps the pot has been flying. */
+    int           state;         /**< What the pot is doing, from POT_STATE. */
+    CMapParts    *parts;         /**< Map part that is the pot, or NULL when there is no pot. */
+    sceVu0FVECTOR position;      /**< World position of the pot. */
+    sceVu0FVECTOR velocity;      /**< Distance the thrown pot moves each step. */
+    sceVu0FVECTOR gravity;       /**< Change of velocity each step while thrown. */
+    sceVu0FVECTOR hold_pos;      /**< Position of the pot at the last held step, from which it is thrown. */
+    sceVu0FVECTOR prev_hold_pos; /**< Position of the pot at the held step before the last. */
+    sceVu0FVECTOR break_pos;     /**< Position at which the pot was last smashed or put away. */
+    int           fly_time;      /**< Steps the pot has been flying. */
 
     /**
      * Makes a pot that is neither held nor flying.
@@ -246,7 +246,7 @@ public:
      * @address 0x2D1710
      * @size 0xD0
      */
-    void Bakuhatsu(float *normal, float *velocity);
+    void Bakuhatsu(float *position_, float *normal);
 
     /**
      * Steps the pot as it is held or flying. Returns a POT_STEP_RESULT.
@@ -296,7 +296,7 @@ STATIC_ASSERT(sizeof(CPot) == 0x80);
  * @address 0x2D0670
  * @size 0xD0
  */
-void CalcReflectionVector(float *direction, float *normal, float *out_reflection);
+void CalcReflectionVector(float *incoming, float *surface, float *reflected);
 
 /**
  * Starting offsets of the twelve pieces of a broken box from the smash.

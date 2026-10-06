@@ -4,8 +4,8 @@
 
 #include <libvu0.h>
 
-#include "mg_camera.hpp"
 #include "gyoracesim.hpp"
+#include "mg_camera.hpp"
 
 /**
  * @file
@@ -36,17 +36,18 @@ enum GYORACE_MODE {
  *
  */
 struct GYORACE_FISH_INF {
-    int lane;          /**< Lane of the fish, from 0; also its number in the commentary less one. */
-    int chara_no;      /**< Scene character slot that shows the fish. */
-    int fish_no;       /**< Race fish of CGyoraceFishData that races; -1 for a fish not taken from it. */
-    int rank;          /**< Place of the fish in the race, from 1. */
-    u_int lap; /**< Lap that the fish swims, from 0. */
-    int unk_14;
-    float lap_start;   /**< Value of race_cnt at which the fish started its second lap. */
-    int unk_1c;
+    int   lane;     /**< Lane of the fish, from 0; also its number in the commentary less one. */
+    int   chara_no; /**< Scene character slot that shows the fish. */
+    int   fish_no;  /**< Race fish of CGyoraceFishData that races; -1 for a fish not taken from it. */
+    int   rank;     /**< Place of the fish in the race, from 1. */
+    u_int lap;      /**< Lap that the fish swims, from 0. */
+    int   unk_14;
+    float lap_start; /**< Value of race_cnt at which the fish started its second lap. */
+    int   unk_1c;
     float time;        /**< Race time of the fish, in sixtieths of a second. */
     float lap_time[2]; /**< Time that the fish took over each lap, in sixtieths of a second. */
 };
+
 STATIC_ASSERT(sizeof(GYORACE_FISH_INF) == 0x2C);
 
 /**
@@ -55,11 +56,12 @@ STATIC_ASSERT(sizeof(GYORACE_FISH_INF) == 0x2C);
  *
  */
 struct GYORACE_RESULT {
-    char name[0x18]; /**< Name of the fish that took the place. */
-    float time;      /**< Goal time of the fish, in sixtieths of a second. */
-    int fish_no;     /**< Race fish of CGyoraceFishData that took the place; -1 for one not taken from it. */
-    int race_class;  /**< Race class in which the place was taken. */
+    char  name[0x18]; /**< Name of the fish that took the place. */
+    float time;       /**< Goal time of the fish, in sixtieths of a second. */
+    int   fish_no;    /**< Race fish of CGyoraceFishData that took the place; -1 for one not taken from it. */
+    int   race_class; /**< Race class in which the place was taken. */
 };
+
 STATIC_ASSERT(sizeof(GYORACE_RESULT) == 0x24);
 
 /**

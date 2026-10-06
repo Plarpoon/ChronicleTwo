@@ -1,165 +1,180 @@
 #include "common.h"
-#include "dng_effect.hpp"
-#include "character.hpp"
-#include "cameracontrol.hpp"
-#include "editeff.hpp"
-#include "mainloop.hpp"
-#include "scenesnd.hpp"
-#include <cstring>
-#include "nd_meswin.hpp"
-#include <cstdio>
-#include "gamepad.hpp"
-#include "mg_texture.hpp"
-#include "mg_math.hpp"
-#include "menudraw.hpp"
-#include "editctrl.hpp"
-#include "editmenu.hpp"
-#include "editmap.hpp"
-#include "savedata.hpp"
-#include "padcontrol.hpp"
-#include "scene.hpp"
-#include "effscript.hpp"
-#include "editmode.hpp"
-#include "mglib.hpp"
-#include "dataread.hpp"
-#include "mg_dataset.hpp"
+
 #include <cmath>
+#include <cstdio>
+#include <cstring>
+
+#include "cameracontrol.hpp"
+#include "character.hpp"
+#include "dataread.hpp"
+#include "dng_effect.hpp"
+#include "editctrl.hpp"
+#include "editeff.hpp"
+#include "editmap.hpp"
+#include "editmenu.hpp"
+#include "editmode.hpp"
+#include "effscript.hpp"
+#include "gamepad.hpp"
+#include "mainloop.hpp"
+#include "menudraw.hpp"
+#include "mg_dataset.hpp"
+#include "mg_math.hpp"
+#include "mg_texture.hpp"
+#include "mglib.hpp"
+#include "nd_meswin.hpp"
+#include "padcontrol.hpp"
+#include "savedata.hpp"
+#include "scene.hpp"
+#include "scenesnd.hpp"
 
 extern "C" int fptosi(float);
-extern "C" int GetBuildPartsNum__9CSaveDataFi(CSaveData *save, int parts_no);
-static void InitBalanceDraw(CScene *scene);
-static int CheckFocusBalanceParts(CEditMap *map, int index, float *cursor);
-static void GetBalanceHeight(CScene *scene, float *balance);
-static int GetGeoCheckCol(CMap *map, mgVu0FBOX &box, CCPoly *polys, int max);
-static int GetGeoCheckCamCol(CMap *map, mgVu0FBOX &box, CCPoly *polys, int max);
+static void    InitBalanceDraw(CScene *scene);
+static int     CheckFocusBalanceParts(CEditMap *map, int index, float *cursor);
+static void    GetBalanceHeight(CScene *scene, float *balance);
+static int     GetGeoCheckCol(CMap *map, mgVu0FBOX &box, CCPoly *polys, int max);
+static int     GetGeoCheckCamCol(CMap *map, mgVu0FBOX &box, CCPoly *polys, int max);
 
-extern "C" UNDO_DATA UndoData;
+extern "C" UNDO_DATA            UndoData;
 extern "C" CEditParts::WallInfo WallInfo;
 
 extern mgRect<int> data[];
-extern "C" char at_1254__2[];
-extern "C" char at_1284__5[];
+extern "C" char    at_1254__2[];
+extern "C" char    at_1284__5[];
 
-extern CFont Font__2;
-extern int PutSideMode;
-extern int NowSelectWallParts;
-extern int PuuSideRotCameraFlag;
-extern int PlacePartsNo;
-extern float PartsHeight;
-extern int MagnetPartsFlag;
-extern int SelectWallGroup;
-extern int CtrlLockFlag;
-extern int PartsInfoID;
-extern int PreMenuCount;
-extern int PreMenuMaxCount;
-extern int CursorLockCnt;
-extern int EditHelpMesNo;
-extern int EditHelpMesParam2;
-extern int EditHelpMesParam;
-extern int PlaceRiverCnt;
-extern int RemoveMtnCnt;
-extern int SysMesCnt;
-extern int SysMesNo;
-extern "C" UNDO_DATA UndoData;
-extern "C" int EditModeNo;
-extern "C" int HighSpeedMoveCnt;
-extern "C" int MagnetEnable;
-extern "C" float eCameraDist;
-extern "C" float eCurPos[4];
-extern "C" float ePartsCurNowPos[4];
-extern "C" float ePartsCurPos[4];
-extern "C" float eCurNowPos[4];
-extern "C" int eCurRot;
-extern "C" int PlacePartsFlag;
-extern "C" int RemainPartsNum;
-extern "C" float WallPutPos[4];
+extern CFont                    Font__2;
+extern int                      PutSideMode;
+extern int                      NowSelectWallParts;
+extern int                      PuuSideRotCameraFlag;
+extern int                      PlacePartsNo;
+extern float                    PartsHeight;
+extern int                      MagnetPartsFlag;
+extern int                      SelectWallGroup;
+extern int                      CtrlLockFlag;
+extern int                      PartsInfoID;
+extern int                      PreMenuCount;
+extern int                      PreMenuMaxCount;
+extern int                      CursorLockCnt;
+extern int                      EditHelpMesNo;
+extern int                      EditHelpMesParam2;
+extern int                      EditHelpMesParam;
+extern int                      PlaceRiverCnt;
+extern int                      RemoveMtnCnt;
+extern int                      SysMesCnt;
+extern int                      SysMesNo;
+extern "C" UNDO_DATA            UndoData;
+extern "C" int                  EditModeNo;
+extern "C" int                  HighSpeedMoveCnt;
+extern "C" int                  MagnetEnable;
+extern "C" float                eCameraDist;
+extern "C" float                eCurPos[4];
+extern "C" float                ePartsCurNowPos[4];
+extern "C" float                ePartsCurPos[4];
+extern "C" float                eCurNowPos[4];
+extern "C" int                  eCurRot;
+extern "C" int                  PlacePartsFlag;
+extern "C" int                  RemainPartsNum;
+extern "C" float                WallPutPos[4];
 extern "C" CEditParts::WallInfo WallInfo;
-extern "C" int __as__9mgVu0FBOXFR9mgVu0FBOX(...);
-extern "C" int GroundBalance__8CEditMapFi(CEditMap *, int);
-extern "C" int UpdateHouse__8CEditMapFv(CEditMap *);
-extern "C" float PlaceRiverPos[4];
-extern char at_1367[];
-extern CCharacter2 *PaintCurChr;
-extern mgCFrame *PaintCursor2;
-extern "C" float PaintColor[4];
-extern int PaintItemNo;
-extern char at_1377__3[];
-extern CCharacter2 *ShovelCurChr;
-extern "C" u8 at_1268__3[16];
-extern "C" float RemoveMtnPos[4];
-extern "C" u8 RemoveMtnCurPos[16];
-extern CCharacter2 *RemoveCurChr;
-extern mgCFrame *UnitCursor;
-extern mgCFrame *EditCursor[3];
-extern "C" u8 now_balance_h[16];
-extern "C" u8 at_2213__3[10];
-extern "C" int GetPlaceParts__4CMapFPc(CMap *map, char *name);
+extern "C" float                PlaceRiverPos[4];
+extern char                     at_1367[];
+extern CCharacter2             *PaintCurChr;
+extern mgCFrame                *PaintCursor2;
+extern "C" float                PaintColor[4];
+extern int                      PaintItemNo;
+extern char                     at_1377__3[];
+extern CCharacter2             *ShovelCurChr;
+extern "C" u8                   at_1268__3[16];
+extern "C" float                RemoveMtnPos[4];
+extern "C" u8                   RemoveMtnCurPos[16];
+extern CCharacter2             *RemoveCurChr;
+extern mgCFrame                *UnitCursor;
+extern mgCFrame                *EditCursor[3];
+extern "C" u8                   now_balance_h[16];
+extern "C" u8                   at_2213__3[10];
 
 // Code (.text)
-static int CheckControl(void) {
+static int CheckControl() {
     return CtrlLockFlag;
 }
-void EditModeControlLock(void) {
+
+void EditModeControlLock() {
     CtrlLockFlag++;
 }
-void EditModeControlUnLock(void) {
+
+void EditModeControlUnLock() {
     CtrlLockFlag -= 1;
+
     if (CtrlLockFlag < 0) {
         CtrlLockFlag = 0;
     }
 }
+
 static void SetHelpMes(int message_no, int param, int param2) {
     EditHelpMesNo = message_no;
     EditHelpMesParam = param;
     EditHelpMesParam2 = param2;
 }
+
 static CUserDataManager *GetUserData() {
     CSaveData *save;
 
     save = GetSaveData();
+
     if (save != NULL) {
         return &save->user_data;
     }
+
     return NULL;
 }
+
 static float ConvColor(float component) {
     return component / 128.0f;
 }
+
 static void ConvColorV(float *color) {
     color[0] /= 128.0f;
     color[1] /= 128.0f;
     color[2] /= 128.0f;
 }
+
 static int emSearchColorCode(float *color) {
     float penki_color[4];
-    int i;
+    int   i;
 
     for (i = 0; i < 8; i++) {
         GetPenkiColor(i, penki_color);
         ConvColorV(penki_color);
+
         if (EditPartsCmpColor(color, penki_color) != 0) {
             return i;
         }
     }
+
     return -1;
 }
+
 static int emGetPenkiItemNo(int slot) {
     if ((slot < 0) || (slot >= 8)) {
         return -1;
     }
+
     return GetPenkiItemNo(slot);
 }
+
 static int emGetPenkiItemNo(float *color) {
     return emGetPenkiItemNo(emSearchColorCode(color));
 }
-static void IntiSystemMes(void) {
+
+static void IntiSystemMes() {
     SysMesCnt = 0;
     SysMesNo = -1;
 }
+
 static void OpenSystemMes(CScene *scene, int message_no, int frames) {
     ClsMes *message;
 
     message = scene->GetMessage(1);
+
     if (message != NULL) {
         message->Preset(4);
         message->SetWindowMode(4);
@@ -169,12 +184,15 @@ static void OpenSystemMes(CScene *scene, int message_no, int frames) {
         SysMesNo = message_no;
     }
 }
+
 static void SystemMesClose(CScene *scene) {
     ClsMes *message = scene->GetMessage(1);
+
     if (message != NULL) {
         if (message->select < 0) {
             message->cursor_time = 0;
         }
+
         message->select = -1;
         message->draw_speed = message->GetDrawSpeedDef();
         message->mes_no = -1;
@@ -186,58 +204,68 @@ static void SystemMesClose(CScene *scene) {
         message->fukidashi_pos = 0;
     }
 }
+
 static void SystemMesStep(CScene *scene) {
     if (SysMesNo >= 0) {
         if (SysMesCnt < 0) {
             SystemMesClose(scene);
             SysMesCnt = 0;
         }
+
         SysMesCnt = SysMesCnt - 1;
     }
 }
+
 static int EditStartPlaceEffect(CEditParts *parts, float *pos) {
-    int anime_result;
+    int             anime_result;
     CEditPartsInfo *info;
+
     if (parts == NULL || (info = parts->info) == NULL) {
         return 0;
     }
-    anime_result = EditSetPlaceAnime(info->place_anime, (CMapParts *)parts);
+
+    anime_result = EditSetPlaceAnime(info->place_anime, (CMapParts *) parts);
     anime_result |= EditPlaceEffect(parts, pos);
     return anime_result;
 }
-static int EditEndPlaceEffect(void) {
+
+static int EditEndPlaceEffect() {
     int anime_end = EditPlaceAnimeEndCheck();
     int effect_end = EditPEffectEndCheck();
+
     if (anime_end == 1 || effect_end == 1) {
         return 0;
     }
+
     return 0;
 }
+
 void EditPreMenuAnime(int max_count) {
     PreMenuMaxCount = max_count;
     PreMenuCount = 0;
 }
 #ifdef NONMATCHING
-extern char at_1067__3[];
-extern char at_1068__3[];
-extern char at_1069__5[];
-extern char at_1070__3[];
-extern char at_1071__3[];
-extern char at_1072__3[];
-extern char at_1073__3[];
-extern char at_1074__3[];
-extern char at_1075__2[];
-extern char at_1076__2[];
-extern mgCFrame *PaintCursor;
-extern mgCFrame *RemoveCursor;
-extern mgCFrame *ShovelCursor;
+extern char        at_1067__3[];
+extern char        at_1068__3[];
+extern char        at_1069__5[];
+extern char        at_1070__3[];
+extern char        at_1071__3[];
+extern char        at_1072__3[];
+extern char        at_1073__3[];
+extern char        at_1074__3[];
+extern char        at_1075__2[];
+extern char        at_1076__2[];
+extern mgCFrame   *PaintCursor;
+extern mgCFrame   *RemoveCursor;
+extern mgCFrame   *ShovelCursor;
 extern mgCTexture *eSysTexture;
+
 void LoadEditCursor(mgCMemory *memory, int block) {
     mgCTextureManager *textures = &mgTexManager;
     if (LoadFile2(at_1067__3, read_buffer, NULL, 0) != 0) {
-        u_int *pack = (u_int *)read_buffer;
-        u_int size;
-        u_int *image = GetPackFile(pack, at_1068__3, (int *)&size);
+        u_int *pack = (u_int *) read_buffer;
+        u_int  size;
+        u_int *image = GetPackFile(pack, at_1068__3, (int *) &size);
         if (image != NULL) {
             u_int blocks;
             if (size & 0xF) {
@@ -247,7 +275,7 @@ void LoadEditCursor(mgCMemory *memory, int block) {
             }
             void *copy = memory->Alloc(blocks);
             memcpy(copy, image, size);
-            textures->EnterIMGFile((u_char *)copy, block, NULL, NULL);
+            textures->EnterIMGFile((u_char *) copy, block, NULL, NULL);
         }
         eSysTexture = textures->GetTexture(at_1069__5, block);
         mgCFrameAttr attr;
@@ -258,12 +286,12 @@ void LoadEditCursor(mgCMemory *memory, int block) {
         attr.color[3] = 128.0f;
         u_int *cursor_model = GetPackFile(pack, at_1070__3, NULL);
         if (cursor_model != NULL) {
-            EditCursor[0] = mgLoadMDSFile((MDS_HEADER *)cursor_model, memory, NULL, NULL);
+            EditCursor[0] = mgLoadMDSFile((MDS_HEADER *) cursor_model, memory, NULL, NULL);
             EditCursor[0]->SetAttrParam(attr, 1, MG_FRAME_ATTR_NO_LIGHT | MG_FRAME_ATTR_COLOR | MG_FRAME_ATTR_BILLBOARD);
         }
         PaintCursor = NULL;
         PaintCursor2 = NULL;
-        PaintCurChr = new ((u_long128 *)memory->Alloc(0x68)) CCharacter2;
+        PaintCurChr = new ((u_long128 *) memory->Alloc(0x68)) CCharacter2;
         u_int *paint_model = GetPackFile(pack, at_1071__3, NULL);
         if (paint_model != NULL) {
             PaintCurChr->LoadPackNoLine(paint_model, at_1072__3, memory, memory, memory, block, NULL);
@@ -278,7 +306,7 @@ void LoadEditCursor(mgCMemory *memory, int block) {
         ShovelCursor = NULL;
         ShovelCurChr = NULL;
         RemoveCurChr = NULL;
-        RemoveCurChr = new ((u_long128 *)memory->Alloc(0x68)) CCharacter2;
+        RemoveCurChr = new ((u_long128 *) memory->Alloc(0x68)) CCharacter2;
         u_int *remove_model = GetPackFile(pack, at_1074__3, NULL);
         if (remove_model != NULL) {
             RemoveCurChr->LoadPackNoLine(remove_model, at_1072__3, memory, memory, memory, block, NULL);
@@ -289,7 +317,7 @@ void LoadEditCursor(mgCMemory *memory, int block) {
                 }
             }
         }
-        ShovelCurChr = new ((u_long128 *)memory->Alloc(0x68)) CCharacter2;
+        ShovelCurChr = new ((u_long128 *) memory->Alloc(0x68)) CCharacter2;
         u_int *shovel_model = GetPackFile(pack, at_1075__2, NULL);
         if (shovel_model != NULL) {
             ShovelCurChr->LoadPackNoLine(shovel_model, at_1072__3, memory, memory, memory, block, NULL);
@@ -302,7 +330,7 @@ void LoadEditCursor(mgCMemory *memory, int block) {
         }
         u_int *unit_model = GetPackFile(pack, at_1076__2, NULL);
         if (unit_model != NULL) {
-            UnitCursor = mgLoadMDSFile((MDS_HEADER *)unit_model, memory, NULL, NULL);
+            UnitCursor = mgLoadMDSFile((MDS_HEADER *) unit_model, memory, NULL, NULL);
             mgCFrameAttr unit_attr;
             unit_attr.z_write = -1;
             unit_attr.clip_enable = 1;
@@ -322,19 +350,22 @@ void LoadEditCursor(mgCMemory *memory, int block) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmode", LoadEditCursor__FP9mgCMemoryi);
 #endif
-int GetSelPartsInfoID(void) {
+int GetSelPartsInfoID() {
     return PartsInfoID;
 }
-static void ClearEditStepCnt(void) {
+
+static void ClearEditStepCnt() {
     PlaceRiverCnt = 0;
     CursorLockCnt = 0;
     RemoveMtnCnt = 0;
 }
-void ClearUndoFlag(void) {
+
+void ClearUndoFlag() {
     UndoData.info_id = -1;
     UndoData.parts_no = -1;
 }
-void ClearEditFlag(void) {
+
+void ClearEditFlag() {
     PlacePartsNo = -1;
     PartsInfoID = -1;
     NowSelectWallParts = -1;
@@ -351,7 +382,8 @@ void ClearEditFlag(void) {
     EditHelpMesNo = -1;
     ClearEditStepCnt();
 }
-void InitEditFlag(void) {
+
+void InitEditFlag() {
     eCameraDist = 600.0f;
     EditModeNo = 0;
     ClearEditFlag();
@@ -361,52 +393,64 @@ void InitEditFlag(void) {
     MagnetEnable = 1;
     HighSpeedMoveCnt = 0;
 }
+
 int StartEditMode(CScene *scene) {
-    CCharacter2 *player = scene->GetCharacter(scene->player_chara);
+    CCharacter2     *player = scene->GetCharacter(scene->player_chara);
     mgCCameraFollow *angle_camera;
-    CCameraControl *follow_camera;
-    float angle;
+    CCameraControl  *follow_camera;
+    float            angle;
+
     if (player != NULL) {
-        ((mgCObject *)player)->GetPosition(eCurPos);
-        *(u_long128 *)ePartsCurNowPos = *(u_long128 *)eCurPos;
-        *(u_long128 *)ePartsCurPos = *(u_long128 *)eCurPos;
-        *(u_long128 *)eCurNowPos = *(u_long128 *)eCurPos;
+        ((mgCObject *) player)->GetPosition(eCurPos);
+        *(u_long128 *) ePartsCurNowPos = *(u_long128 *) eCurPos;
+        *(u_long128 *) ePartsCurPos = *(u_long128 *) eCurPos;
+        *(u_long128 *) eCurNowPos = *(u_long128 *) eCurPos;
     }
+
     EditModeNo = 2;
     ClearEditFlag();
     IntiSystemMes();
-    angle_camera = (mgCCameraFollow *)scene->GetCamera(scene->before_camera);
+    angle_camera = (mgCCameraFollow *) scene->GetCamera(scene->before_camera);
     angle = 0.0f;
+
     if (angle_camera != NULL) {
         angle = angle_camera->GetAngle();
     }
-    follow_camera = (CCameraControl *)scene->GetCamera(scene->active_camera);
+
+    follow_camera = (CCameraControl *) scene->GetCamera(scene->active_camera);
+
     if (follow_camera != NULL) {
-        ((mgCCameraFollow *)follow_camera)->FollowOn();
-        ((mgCCameraFollow *)follow_camera)->SetFollowOffset(0.0f, 0.0f, 0.0f);
+        ((mgCCameraFollow *) follow_camera)->FollowOn();
+        ((mgCCameraFollow *) follow_camera)->SetFollowOffset(0.0f, 0.0f, 0.0f);
         follow_camera->SetFollow(eCurPos[0], eCurPos[1], eCurPos[2]);
-        ((mgCCameraFollow *)follow_camera)->SetHeight(100.0f);
-        ((mgCCameraFollow *)follow_camera)->SetDistance(300.0f);
-        ((mgCCameraFollow *)follow_camera)->SetAngle(angle);
+        ((mgCCameraFollow *) follow_camera)->SetHeight(100.0f);
+        ((mgCCameraFollow *) follow_camera)->SetDistance(300.0f);
+        ((mgCCameraFollow *) follow_camera)->SetAngle(angle);
         follow_camera->Step(-1);
     }
+
     EditInitPlaceEffect();
     InitBalanceDraw(scene);
     return 1;
 }
+
 void EndEditMode(CScene *scene, float *cursor_pos) {
-    float pos[4];
-    CEditMap *map = (CEditMap *)scene->GetMap(scene->active_map);
+    float        pos[4];
+    CEditMap    *map = (CEditMap *) scene->GetMap(scene->active_map);
     CCharacter2 *player = scene->GetCharacter(scene->player_chara);
+
     if (player != NULL) {
-        *(u_long128 *)pos = *(u_long128 *)cursor_pos;
+        *(u_long128 *) pos = *(u_long128 *) cursor_pos;
         pos[1] += 0.01f;
-        ((mgCObject *)player)->SetPosition(pos);
+        ((mgCObject *) player)->SetPosition(pos);
     }
+
     SystemMesClose(scene);
+
     if (map != NULL) {
         map->focus_parts = -1;
     }
+
     EditInitPlaceEffect();
     EditInitPlaceAnime();
 }
@@ -422,6 +466,7 @@ struct PaintParams {
     int blue;  /**< Blue component. */
     int item;  /**< Paint item number. */
 };
+
 /**
  *
  * Red, green and blue components of a paint shade.
@@ -432,6 +477,7 @@ struct PaintShade {
     int green; /**< Green component. */
     int blue;  /**< Blue component. */
 };
+
 int StartEditModeFromMenu(CScene *scene, int mode, int *params) {
     scene->GetMap(scene->active_map);
     EditModeNo = mode;
@@ -442,7 +488,7 @@ int StartEditModeFromMenu(CScene *scene, int mode, int *params) {
         EditModeNo == EDIT_MODE_REPAINT) {
         ClearEditFlag();
         PaintParams color = {0, 0, 0, 0};
-        PaintShade shade = {0, 0, 0};
+        PaintShade  shade = {0, 0, 0};
         color.red = params[0];
         color.green = params[1];
         color.blue = params[2];
@@ -475,10 +521,10 @@ int StartEditModeFromMenu(CScene *scene, int mode, int *params) {
         }
         PlacePartsFlag = 0;
         MagnetPartsFlag = 0;
-        mgCCameraFollow *camera = (mgCCameraFollow *)scene->GetCamera(scene->active_camera);
+        mgCCameraFollow *camera = (mgCCameraFollow *) scene->GetCamera(scene->active_camera);
         if (camera != NULL) {
             camera->SetFollowOffset(0.0f, 0.0f, 0.0f);
-            ((CCameraControl *)camera)->SetFollow(eCurPos[0], eCurPos[1], eCurPos[2]);
+            ((CCameraControl *) camera)->SetFollow(eCurPos[0], eCurPos[1], eCurPos[2]);
             camera->SetHeight(eCameraDist);
             camera->SetDistance(eCameraDist);
         }
@@ -491,72 +537,87 @@ int StartEditModeFromMenu(CScene *scene, int mode, int *params) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmode", StartEditModeFromMenu__FP6CSceneiPi);
 #endif
-static void *GetUndoData(void) {
+static void *GetUndoData() {
     return &UndoData;
 }
-static int UndoEnable(void) {
-    return *(int *)GetUndoData() >= 0;
+
+static int UndoEnable() {
+    return *(int *) GetUndoData() >= 0;
 }
+
 static void UndoPlaceParts(CScene *scene) {
-    UNDO_DATA *undo;
-    CEditMap *map = (CEditMap *)scene->GetMap(scene->active_map);
+    UNDO_DATA      *undo;
+    CEditMap       *map = (CEditMap *) scene->GetMap(scene->active_map);
     CEditPartsInfo *info;
-    int remaining;
-    int built;
+    int             remaining;
+    int             built;
+
     if (map != NULL) {
         map->focus_parts = -1;
     }
+
     PlacePartsFlag = 0;
 
     if (EditModeNo == 2 || EditModeNo == 2) {
-        undo = (UNDO_DATA *)GetUndoData();
+        undo = (UNDO_DATA *) GetUndoData();
+
         if (undo->info_id >= 0) {
-            RemoveEditParts(scene, undo->parts_no, (float *)&undo->pos);
+            RemoveEditParts(scene, undo->parts_no, (float *) &undo->pos);
             PartsInfoID = undo->info_id;
             info = map->GetePartsInfoAtID(PartsInfoID);
+
             if (info != NULL) {
                 remaining = info->max_num;
                 remaining -= map->GetePlacePartsAtInfoID(PartsInfoID, NULL, 0);
-                built = GetBuildPartsNum__9CSaveDataFi(GetSaveData(), PartsInfoID);
+                built = GetSaveData()->GetBuildPartsNum(PartsInfoID);
+
                 if (built < remaining) {
                     remaining = built;
                 }
+
                 RemainPartsNum = remaining;
                 EditInitPlaceAnime();
                 EditInitPlaceEffect();
-                *(u_long128 *)eCurPos = *(u_long128 *)&undo->pos;
+                *(u_long128 *) eCurPos = *(u_long128 *) &undo->pos;
                 eCurRot = map->ConvEditAngle(undo->rot[1]);
             }
+
             undo->info_id = -1;
             undo->parts_no = -1;
         }
     }
 }
+
 static void StackUndoData(UNDO_DATA *data) {
     UndoData.info_id = data->info_id;
     UndoData.parts_no = data->parts_no;
-    *(mgVec4 *)UndoData.pos = *(mgVec4 *)data->pos;
-    *(mgVec4 *)UndoData.rot = *(mgVec4 *)data->rot;
+    *(mgVec4 *) UndoData.pos = *(mgVec4 *) data->pos;
+    *(mgVec4 *) UndoData.rot = *(mgVec4 *) data->rot;
 }
+
 void StartEditPutWall(CEditParts::WallInfo *wall) {
     mgZeroVector(WallPutPos);
-    *(mgVec4 *)WallInfo.plane = *(mgVec4 *)wall->plane;
-    *(mgVec4 *)WallInfo.center = *(mgVec4 *)wall->center;
+    *(mgVec4 *) WallInfo.plane = *(mgVec4 *) wall->plane;
+    *(mgVec4 *) WallInfo.center = *(mgVec4 *) wall->center;
     WallInfo.box = wall->box;
 }
+
 int PlaceEditParts(CEditMap *map, float *pos, float *rot, EP_PLACE_INFO *place_info) {
-    UNDO_DATA undo;
+    UNDO_DATA       undo;
     CEditPartsInfo *river_info = map->GetePartsInfoAtID(PartsInfoID);
-    CEditParts *placed;
-    int success;
-    int build_no;
+    CEditParts     *placed;
+    int             success;
+    int             build_no;
+
     if (river_info == NULL) {
         return 0;
     }
+
     undo.info_id = -1;
     success = 0;
     undo.parts_no = -1;
     placed = NULL;
+
     if (river_info->attr & 0x80) {
         if (map->PlaceRiverParts(pos) != 0) {
             success = 1;
@@ -564,41 +625,49 @@ int PlaceEditParts(CEditMap *map, float *pos, float *rot, EP_PLACE_INFO *place_i
         }
     } else {
         build_no = map->BuildEditParts(PartsInfoID);
-        placed = (CEditParts *)map->PlaceEditParts(build_no, place_info, pos, rot, NULL);
+        placed = (CEditParts *) map->PlaceEditParts(build_no, place_info, pos, rot, NULL);
+
         if (placed != NULL) {
             undo.parts_no = build_no;
             success = 1;
         }
     }
+
     if (success != 0) {
         if (!(river_info->attr & 0x80)) {
             sndSePlay(GetSystemSndID(), 0x14, 0);
         }
+
         EditStartPlaceEffect(placed, pos);
-        GroundBalance__8CEditMapFi(map, 1);
-        UpdateHouse__8CEditMapFv(map);
+        map->GroundBalance(1);
+        map->UpdateHouse();
         undo.info_id = PartsInfoID;
-        *(u_long128 *)&undo.pos = *(u_long128 *)pos;
-        *(u_long128 *)&undo.rot = *(u_long128 *)rot;
+        *(u_long128 *) &undo.pos = *(u_long128 *) pos;
+        *(u_long128 *) &undo.rot = *(u_long128 *) rot;
         StackUndoData(&undo);
         RemainPartsNum -= 1;
         GetSaveData()->AddBuildPartsNum(PartsInfoID, -1);
+
         if (RemainPartsNum <= 0) {
             RemainPartsNum = 0;
             PartsInfoID = -1;
         }
     }
+
     PlacePartsFlag = 0;
     return 1;
 }
+
 void PlaceRiverStart(CEditMap *map, float *pos) {
     PlaceRiverCnt = 0x32;
-    *(u_long128 *)PlaceRiverPos = *(u_long128 *)pos;
+    *(u_long128 *) PlaceRiverPos = *(u_long128 *) pos;
     CursorLockCnt = 5;
+
     if (ShovelCurChr != NULL) {
         ShovelCurChr->SetMotion(at_1254__2, 6);
     }
 }
+
 int PlaceRiverStep(CEditMap *map) {
     float rotation[4];
     float color[4];
@@ -606,234 +675,293 @@ int PlaceRiverStep(CEditMap *map) {
     if (PlaceRiverCnt <= 0) {
         return 0;
     }
+
     PlaceRiverCnt -= 1;
+
     if (PlaceRiverCnt >= 0x1E) {
         CursorLockCnt = 5;
     }
+
     if (PlaceRiverCnt == 0x28) {
         sndSePlay(GetSystemSndID(), 0x22, 0);
     }
+
     if (PlaceRiverCnt == 0x1E) {
         mgZeroVector(rotation);
+
         if (PlaceEditParts(map, PlaceRiverPos, rotation, NULL) != 0) {
-            *(u_long128 *)color = *(u_long128 *)at_1268__3;
+            *(u_long128 *) color = *(u_long128 *) at_1268__3;
             EditPaintEffect(NULL, PlaceRiverPos, color, 1);
         }
     }
+
     if (PlaceRiverCnt <= 0) {
         PlaceRiverCnt = 0;
     }
+
     return 0;
 }
-int NowPlaceRiver(void) {
+
+int NowPlaceRiver() {
     return PlaceRiverCnt > 0;
 }
+
 void RemoveMtnStart(CEditMap *map, float *pos, float *cursor_pos) {
     RemoveMtnCnt = 0x12;
-    *(u_long128 *)RemoveMtnPos = *(u_long128 *)pos;
-    *(u_long128 *)RemoveMtnCurPos = *(u_long128 *)cursor_pos;
+    *(u_long128 *) RemoveMtnPos = *(u_long128 *) pos;
+    *(u_long128 *) RemoveMtnCurPos = *(u_long128 *) cursor_pos;
     CursorLockCnt = 5;
+
     if (RemoveCurChr != NULL) {
         RemoveCurChr->ResetMotion();
         RemoveCurChr->SetMotion(at_1284__5, 6);
     }
 }
+
 int RemoveMtnStep(CScene *scene) {
     CEditMap *edit_map;
-    int parts_index;
+    int       parts_index;
 
     if (RemoveMtnCnt <= 0) {
         return 0;
     }
-    edit_map = (CEditMap *)scene->GetMap(scene->active_map);
+
+    edit_map = (CEditMap *) scene->GetMap(scene->active_map);
     RemoveMtnCnt -= 1;
+
     if (RemoveMtnCnt >= 3) {
         CursorLockCnt = 3;
     }
 
-    *(u_long128 *)eCurPos = *(u_long128 *)RemoveMtnCurPos;
-    *(u_long128 *)eCurPos = *(u_long128 *)RemoveMtnCurPos;
+    *(u_long128 *) eCurPos = *(u_long128 *) RemoveMtnCurPos;
+    *(u_long128 *) eCurPos = *(u_long128 *) RemoveMtnCurPos;
+
     if (RemoveMtnCnt == 3) {
         parts_index = edit_map->GetePlaceParts(RemoveMtnPos);
-        EditSetPlaceAnime(3, (CMapParts *)edit_map->GetePlaceParts(parts_index));
+        EditSetPlaceAnime(3, (CMapParts *) edit_map->GetePlaceParts(parts_index));
+
         if (RemoveEditParts(scene, parts_index, RemoveMtnPos) != 0) {
             sndSePlay(GetSystemSndID(), 0x17, 0);
         } else {
             EditInitPlaceAnime();
         }
     }
+
     if (RemoveMtnCnt <= 0) {
         RemoveMtnCnt = 0;
     }
+
     return 0;
 }
+
 int RemoveEditParts(CScene *scene, int parts_index, float *pos) {
     CEditMap::RemoveInfo info;
-    int paint_num[8];
-    float color[8][4];
-    CEditMap *map = (CEditMap *)scene->GetMap(scene->active_map);
-    int i;
-    int j;
-    int k;
-    int l;
-    int count;
+    int                  paint_num[8];
+    float                color[8][4];
+    CEditMap            *map = (CEditMap *) scene->GetMap(scene->active_map);
+    int                  i;
+    int                  j;
+    int                  k;
+    int                  l;
+    int                  count;
     memset(&info, 0, 0x494);
+
     for (i = 0; i < 8; i++) {
         GetPenkiColor(i, color[i]);
         ConvColorV(color[i]);
         paint_num[i] = 0;
     }
+
     info.color_num = 8;
     info.color = color;
     info.paint_num = paint_num;
+
     if (map->RemoveEditParts(parts_index, pos, &info) != 0) {
-        GroundBalance__8CEditMapFi(map, 1);
+        map->GroundBalance(1);
+
         for (j = 0; j < 0x100; j++) {
             CEditPartsInfo *river_info = map->GetePartsInfoAtID(j);
+
             if (river_info != NULL && !(river_info->attr & 0x8000)) {
                 count = info.parts_num[j];
+
                 if (count > 0) {
                     GetSaveData()->AddBuildPartsNum(j, count);
                 }
             }
         }
+
         for (k = 0; k < info.house_num; k++) {
             GetSaveData()->user_data.LeaveHouse(info.house_npc[k]);
             scene->ResetActive(1, scene->SearchCharaID(info.house_npc[k]));
         }
+
         for (l = 0; l < 8; l++) {
             emGetPenkiItemNo(l);
         }
+
         return 1;
     }
+
     return 0;
 }
+
 int DeleteKanketuParts(CScene *scene, CEditMap *map, float *position, int parts_no) {
     float removed_position[4];
+
     if (map->GetePlaceParts(PartsInfoID) == NULL) {
         return 0;
     }
+
     map->GetePlaceParts(parts_no);
-    *(u_long128 *)removed_position = *(u_long128 *)position;
+    *(u_long128 *) removed_position = *(u_long128 *) position;
     int removed = map->RemoveEditParts(parts_no, eCurPos, NULL);
+
     if (removed != 0) {
         sndSePlay(GetSystemSndID(), 20, 0);
         CEffectScriptMan *effects = scene->GetEffect(0);
+
         if (effects != NULL) {
             float effect_vector[4] = {8.0f, 8.0f, 8.0f, 0.0f};
             float effect_position[4];
-            *(u_long128 *)effect_position = *(u_long128 *)removed_position;
+            *(u_long128 *) effect_position = *(u_long128 *) removed_position;
             effects->CreateEffSpt(at_1367, -1, -1);
             effects->SetScriptVect1(effect_position, -1, -1);
             effects->SetScriptVect2(effect_vector, -1, -1);
-            *(u_long128 *)effect_position = *(u_long128 *)removed_position;
+            *(u_long128 *) effect_position = *(u_long128 *) removed_position;
             effect_position[0] += 50.0f;
             effects->CreateEffSpt(at_1367, -1, -1);
             effects->SetScriptVect1(effect_position, -1, -1);
             effects->SetScriptVect2(effect_vector, -1, -1);
-            *(u_long128 *)effect_position = *(u_long128 *)removed_position;
+            *(u_long128 *) effect_position = *(u_long128 *) removed_position;
             effect_position[0] -= 24.0f;
             effect_position[2] -= 30.0f;
             effects->CreateEffSpt(at_1367, -1, -1);
             effects->SetScriptVect1(effect_position, -1, -1);
             effects->SetScriptVect2(effect_vector, -1, -1);
-            *(u_long128 *)effect_position = *(u_long128 *)removed_position;
+            *(u_long128 *) effect_position = *(u_long128 *) removed_position;
             effect_position[0] -= 36.0f;
             effect_position[2] += 40.0f;
             effects->CreateEffSpt(at_1367, -1, -1);
             effects->SetScriptVect1(effect_position, -1, -1);
             effects->SetScriptVect2(effect_vector, -1, -1);
         }
+
         RemainPartsNum--;
         GetSaveData()->AddBuildPartsNum(PartsInfoID, -1);
+
         if (RemainPartsNum <= 0) {
             RemainPartsNum = 0;
             PartsInfoID = -1;
         }
     }
+
     PlacePartsFlag = 0;
     return removed;
 }
+
 int PaintEditParts(CEditMap *map, int parts_no, int color_no, float *color) {
-    float position[4];
-    float effect_color[4];
+    float       position[4];
+    float       effect_color[4];
     CEditParts *part = map->GetePlaceParts(parts_no);
+
     if (PaintCurChr != NULL) {
         sceVu0ScaleVector(effect_color, color, 128.0f);
         PaintCurChr->GetPosition(position);
         PaintCurChr->SetMotion(at_1377__3, 6);
         EditPaintEffect(part, position, effect_color, 0);
     }
+
     sndSePlay(GetSystemSndID(), 22, 0);
     color[3] = 128.0f;
+
     if (color_no == 99) {
         map->PaintFence(parts_no, color, 999);
     } else {
         part->SetColor(color_no, color);
         part->UpdateColor();
     }
+
     return 1;
 }
+
 static int CheckPlaceAlt(int map_no, CEditMap *map, float *position, int parts_no, float *altitude) {
-    float height = position[1];
-    float ground_position[4];
+    float      height = position[1];
+    float      ground_position[4];
     CMapParts *ground;
-    int index;
+    int        index;
+
     if (map_no == 1) {
         ground = NULL;
+
         for (index = 0; index < EDIT_MAP_BALANCE_MAX; index++) {
             if (CheckFocusBalanceParts(map, index, position)) {
                 ground = map->balance_parts[index];
                 break;
             }
         }
+
         if (ground != NULL) {
             ground->GetPosition(ground_position);
             height -= ground_position[1];
         }
     }
+
     if (parts_no == 75 || parts_no == 79) {
         if (!(height <= 30.0f)) {
             return 0;
         }
     }
+
     if (altitude != NULL) {
         *altitude = height;
     }
+
     if (!(height <= 200.0f)) {
         return 0;
     }
+
     return 1;
 }
+
 static float GetGeoMapLimitHeight(int map_kind) {
-    if (map_kind == 0)
+    if (map_kind == 0) {
         return 700.0f;
-    if (map_kind == 1)
+    }
+
+    if (map_kind == 1) {
         return 900.0f;
-    if (map_kind == 3)
+    }
+
+    if (map_kind == 3) {
         return 700.0f;
-    if (map_kind == 4)
+    }
+
+    if (map_kind == 4) {
         return 700.0f;
+    }
+
     return -1.0f;
 }
 #ifdef NONMATCHING
 extern "C" float ePartsCurRot[4];
 extern "C" float ePartsCurNowRot[4];
 extern "C" float eDirCurRot[4];
-extern float eDirCurLen;
-extern char at_1835__2[];
-extern char at_1836__2[];
+extern float     eDirCurLen;
+extern char      at_1835__2[];
+extern char      at_1836__2[];
+
 void EditMode(CScene *scene) {
-    int moving;
-    int river;
-    int any_height;
-    int map_count;
-    int map_no;
+    int   moving;
+    int   river;
+    int   any_height;
+    int   map_count;
+    int   map_no;
     char *edit_name;
-    int wall_parts;
+    int   wall_parts;
     CMap *active_map = scene->GetMap(scene->active_map);
     if (active_map != NULL && strcmp(active_map->Iam(), at_1835__2) == 0) {
-        CEditMap *map = (CEditMap *)active_map;
+        CEditMap *map = (CEditMap *) active_map;
         if (map != NULL) {
             CPadControl *pad = &PadCtrl;
             if (CursorLockCnt > 0) {
@@ -846,10 +974,10 @@ void EditMode(CScene *scene) {
             SystemMesStep(scene);
             map_no = scene->now_map_no;
             map->area_no = map_no;
-            mgCCameraFollow *camera = (mgCCameraFollow *)scene->GetCamera(scene->active_camera);
+            mgCCameraFollow *camera = (mgCCameraFollow *) scene->GetCamera(scene->active_camera);
             if (camera != NULL) {
                 float old_pos[4];
-                *(u_long128 *)old_pos = *(u_long128 *)eCurPos;
+                *(u_long128 *) old_pos = *(u_long128 *) eCurPos;
                 float angle = camera->GetAngle();
                 float stick_x = 0.0f;
                 if (pad != NULL) {
@@ -939,7 +1067,7 @@ void EditMode(CScene *scene) {
                     UndoPlaceParts(scene);
                 }
                 float target[4];
-                *(u_long128 *)target = *(u_long128 *)ePartsCurNowPos;
+                *(u_long128 *) target = *(u_long128 *) ePartsCurNowPos;
                 moving = 0;
                 if ((move_x != 0.0f) | (move_z != 0.0f)) {
                     moving = 1;
@@ -1008,17 +1136,17 @@ void EditMode(CScene *scene) {
                 CMap *maps[8];
                 map_count = scene->GetActiveMap(maps, 8);
                 eCurPos[1] = 0.0f;
-                mgVu0FBOX box;
-                float new_pos[4];
-                float ground[4];
-                float start_pos[4];
-                float move[4];
-                CCPoly polys[0x800];
+                mgVu0FBOX     box;
+                float         new_pos[4];
+                float         ground[4];
+                float         start_pos[4];
+                float         move[4];
+                CCPoly        polys[0x800];
                 MoveCheckInfo move_info;
-                *(u_long128 *)box.max = *(u_long128 *)eCurPos;
-                *(u_long128 *)box.min = *(u_long128 *)eCurPos;
-                *(u_long128 *)new_pos = *(u_long128 *)eCurPos;
-                *(u_long128 *)start_pos = *(u_long128 *)old_pos;
+                *(u_long128 *) box.max = *(u_long128 *) eCurPos;
+                *(u_long128 *) box.min = *(u_long128 *) eCurPos;
+                *(u_long128 *) new_pos = *(u_long128 *) eCurPos;
+                *(u_long128 *) start_pos = *(u_long128 *) old_pos;
                 new_pos[1] = 20.0f;
                 start_pos[1] = 20.0f;
                 sceVu0SubVector(move, new_pos, start_pos);
@@ -1114,13 +1242,13 @@ void EditMode(CScene *scene) {
                         camera->SetHeight(limit_height - follow[1]);
                     }
                 }
-                *(u_long128 *)ePartsCurPos = *(u_long128 *)eCurPos;
+                *(u_long128 *) ePartsCurPos = *(u_long128 *) eCurPos;
                 ePartsCurRot[1] = map->GetEditAngle(eCurRot);
-                int ground_count = 0;
+                int     ground_count = 0;
                 CCPoly *next_poly = polys;
-                *(u_long128 *)box.max = *(u_long128 *)eCurPos;
-                *(u_long128 *)box.min = *(u_long128 *)eCurPos;
-                *(u_long128 *)new_pos = *(u_long128 *)eCurPos;
+                *(u_long128 *) box.max = *(u_long128 *) eCurPos;
+                *(u_long128 *) box.min = *(u_long128 *) eCurPos;
+                *(u_long128 *) new_pos = *(u_long128 *) eCurPos;
                 new_pos[1] = 1000.0f;
                 box.max[0] += 10.0f;
                 box.max[1] = 10000.0f;
@@ -1138,7 +1266,7 @@ void EditMode(CScene *scene) {
                     }
                 }
                 if (CheckHitVertical(polys, ground_count, new_pos, -2000.0f, ground, 1) >= 0) {
-                    *(u_long128 *)eCurPos = *(u_long128 *)ground;
+                    *(u_long128 *) eCurPos = *(u_long128 *) ground;
                     ePartsCurPos[1] = ground[1];
                 }
                 EditEndPlaceEffect();
@@ -1169,7 +1297,7 @@ void EditMode(CScene *scene) {
                                     if (MagnetEnable != 0) {
                                         float magnet_pos[4];
                                         float magnet_rot;
-                                        *(u_long128 *)magnet_pos = *(u_long128 *)place_pos;
+                                        *(u_long128 *) magnet_pos = *(u_long128 *) place_pos;
                                         int was_magnet = MagnetPartsFlag;
                                         magnet_rot = rot[1];
                                         int line_parts = (place_info->attr & 0x100) != 0;
@@ -1203,7 +1331,7 @@ void EditMode(CScene *scene) {
                                     if (place_info->id == 0x55) {
                                         float probe[4];
                                         PlacePartsFlag = 0;
-                                        *(u_long128 *)probe = *(u_long128 *)eCurPos;
+                                        *(u_long128 *) probe = *(u_long128 *) eCurPos;
                                         probe[3] = 10.0f;
                                         finish_no = map->GetePlaceParts(probe);
                                         CEditParts *base = map->GetePlaceParts(finish_no);
@@ -1215,7 +1343,7 @@ void EditMode(CScene *scene) {
                                         }
                                     }
                                     EP_PLACE_INFO place;
-                                    int blocked = 0;
+                                    int           blocked = 0;
                                     place.unk_44 = 0;
                                     PartsHeight = 0.0f;
                                     if (!finish) {
@@ -1262,7 +1390,7 @@ void EditMode(CScene *scene) {
                         if (EditModeNo == EDIT_MODE_REMOVE) {
                             float probe[4];
                             SetHelpMes(EDIT_HELP_REMOVE, 0, 0);
-                            *(u_long128 *)probe = *(u_long128 *)eCurPos;
+                            *(u_long128 *) probe = *(u_long128 *) eCurPos;
                             probe[3] = 10.0f;
                             int parts_no = map->GetePlaceParts(probe);
                             eCurPos[1] = eCurPos[1] > probe[1] ? eCurPos[1] : probe[1];
@@ -1277,9 +1405,9 @@ void EditMode(CScene *scene) {
                         }
                         while (EditModeNo == EDIT_MODE_PAINT || EditModeNo == EDIT_MODE_REPAINT) {
                             float probe[4];
-                            *(u_long128 *)probe = *(u_long128 *)eCurPos;
+                            *(u_long128 *) probe = *(u_long128 *) eCurPos;
                             probe[3] = 10.0f;
-                            int parts_no = map->GetePlaceParts(probe);
+                            int         parts_no = map->GetePlaceParts(probe);
                             CEditParts *parts = map->GetePlaceParts(parts_no);
                             if (parts != NULL) {
                                 CEditPartsInfo *paint_info = parts->info;
@@ -1384,11 +1512,11 @@ void EditMode(CScene *scene) {
                         if (side_mode == EDIT_PUT_SIDE_SELECT) {
                             SetHelpMes(EDIT_HELP_SELECT_WALL, 0, 0);
                             if (pad->Btn(0x66)) {
-                                float probe[4];
+                                float                probe[4];
                                 CEditParts::WallInfo wall;
-                                *(u_long128 *)probe = *(u_long128 *)eCurPos;
+                                *(u_long128 *) probe = *(u_long128 *) eCurPos;
                                 probe[3] = 1.0f;
-                                int parts_no = map->GetePlaceParts(probe);
+                                int         parts_no = map->GetePlaceParts(probe);
                                 CEditParts *parts = map->GetePlaceParts(parts_no);
                                 SelectWallGroup = 0;
                                 if (parts != NULL && parts->IsWallParts() && parts->GetWallPlane(SelectWallGroup, &wall)) {
@@ -1404,9 +1532,9 @@ void EditMode(CScene *scene) {
                             }
                         }
                         if (PutSideMode == EDIT_PUT_SIDE_MOVE) {
-                            float wall_pos[4];
+                            float         wall_pos[4];
                             EP_PLACE_INFO place;
-                            *(u_long128 *)wall_pos = *(u_long128 *)WallPutPos;
+                            *(u_long128 *) wall_pos = *(u_long128 *) WallPutPos;
                             int placeable = map->CheckWallEditParts(map->GetePartsInfo(edit_name), wall_pos, SelectWallGroup,
                                                                     NowSelectWallParts, &place);
                             ePartsCurPos[0] = wall_pos[0];
@@ -1492,24 +1620,27 @@ void EditMode(CScene *scene) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmode", EditMode__FP6CScene);
 #endif
-extern int cnt_1857;
-extern s8 init_1858;
+extern int       cnt_1857;
+extern s8        init_1858;
 extern "C" float ePartsCurNowRot[4];
+
 void DrawEditCursorParts(CScene *scene) {
     if (EditNowPlaceAnime() == 0 && PutSideMode != 1 && EditModeNo != EDIT_MODE_REMOVE) {
         if (init_1858 == 0) {
             init_1858 = 1;
             cnt_1857 = 0;
         }
-        CEditMap *map = (CEditMap *)scene->GetMap(scene->active_map);
-        float rotation[4];
+
+        CEditMap *map = (CEditMap *) scene->GetMap(scene->active_map);
+        float     rotation[4];
         rotation[2] = 0.0f;
         rotation[0] = 0.0f;
         rotation[1] = ePartsCurNowRot[1];
         float ambient[4];
         mgGetAmbient(ambient);
-        float pulse = 32.0f * sinf(6.2831855f * (float)cnt_1857 / 60.0f);
+        float pulse = 32.0f * sinf(6.2831855f * (float) cnt_1857 / 60.0f);
         cnt_1857++;
+
         if (PlacePartsFlag != 0) {
             float base = 32.0f + pulse;
             ambient[0] += base;
@@ -1520,23 +1651,29 @@ void DrawEditCursorParts(CScene *scene) {
             ambient[2] = ambient[1] = base;
             ambient[0] = 128.0f + pulse;
         }
+
         CEditPartsInfo *info = map->GetePartsInfoAtID(PartsInfoID);
-        int lighting;
+        int             lighting;
+
         if (info != NULL) {
             CMapParts *parts = info->parts;
+
             if (parts != NULL) {
                 float position[4];
-                *(u_long128 *)position = *(u_long128 *)ePartsCurNowPos;
+                *(u_long128 *) position = *(u_long128 *) ePartsCurNowPos;
                 lighting = mgActiveLighting(3, 0);
                 mgInitActiveLighting();
                 mgSetAmbient(ambient);
+
                 if (PreMenuCount < PreMenuMaxCount) {
-                    position[1] += 40.0f * (float)PreMenuCount;
-                    float scale = 1.0f - (float)(PreMenuCount + 1) / (float)PreMenuMaxCount;
+                    position[1] += 40.0f * (float) PreMenuCount;
+                    float scale = 1.0f - (float) (PreMenuCount + 1) / (float) PreMenuMaxCount;
+
                     if (parts != NULL) {
                         parts->SetScale(scale, 1.0f, scale);
                     }
                 }
+
                 if (!(info->attr & 0x80) && parts != NULL && PartsHeight < 300.0f) {
                     parts->SetPosition(position);
                     parts->SetRotation(rotation);
@@ -1546,104 +1683,125 @@ void DrawEditCursorParts(CScene *scene) {
                     parts->StepFuncPoint(check);
                     parts->Draw();
                 }
+
                 if (PreMenuCount < PreMenuMaxCount) {
                     if (parts != NULL) {
                         parts->SetScale(1.0f, 1.0f, 1.0f);
                     }
+
                     PreMenuCount++;
                 }
+
                 if (parts != NULL) {
                     parts->SetPosition(0.0f, 0.0f, 0.0f);
                     parts->SetRotation(0.0f, 0.0f, 0.0f);
                     parts->SetScale(1.0f, 1.0f, 1.0f);
                 }
+
                 mgActiveLighting(lighting, 0);
             }
         }
     }
 }
-extern char at_1961[];
-extern char at_1962[];
-extern char at_1963[];
-extern int cnt_1939;
-extern s8 init_1940;
+
+extern char      at_1961[];
+extern char      at_1962[];
+extern char      at_1963[];
+extern int       cnt_1939;
+extern s8        init_1940;
 extern "C" float pos_save_1942[4];
+
 void DrawEditCursor(CScene *scene) {
-    mgCFrame *cursor;
-    CCharacter2 *chara;
-    mgCFrame *unit;
+    mgCFrame       *cursor;
+    CCharacter2    *chara;
+    mgCFrame       *unit;
     CEditPartsInfo *info;
-    CEditMap *map;
-    float position[4];
-    float grid_position[4];
-    float grid_size[4];
-    map = (CEditMap *)scene->GetMap(scene->active_map);
+    CEditMap       *map;
+    float           position[4];
+    float           grid_position[4];
+    float           grid_size[4];
+    map = (CEditMap *) scene->GetMap(scene->active_map);
     cursor = EditCursor[0];
     chara = NULL;
-    *(u_long128 *)position = *(u_long128 *)eCurNowPos;
+    *(u_long128 *) position = *(u_long128 *) eCurNowPos;
     unit = NULL;
+
     switch (EditModeNo) {
-    case EDIT_MODE_REMOVE:
-        chara = RemoveCurChr;
-        cursor = NULL;
-        if (map->IsRiverGrid(position)) {
-            unit = UnitCursor;
-        }
-        break;
-    case EDIT_MODE_PLACE:
-        info = map->GetePartsInfoAtID(PartsInfoID);
-        if (info != NULL) {
-            if (EditNowPlaceAnime() == 0 && PutSideMode != 1) {
-                cursor = NULL;
-            }
-            if (info->attr & 0x80) {
-                unit = UnitCursor;
-                cursor = NULL;
-                chara = ShovelCurChr;
-            }
-        }
-        if (NowPlaceRiver()) {
-            chara = ShovelCurChr;
-            unit = NULL;
+        case EDIT_MODE_REMOVE:
+            chara = RemoveCurChr;
             cursor = NULL;
-        }
-        break;
-    case EDIT_MODE_PAINT:
-    case EDIT_MODE_REPAINT:
-        chara = PaintCurChr;
-        cursor = NULL;
-        break;
+
+            if (map->IsRiverGrid(position)) {
+                unit = UnitCursor;
+            }
+
+            break;
+        case EDIT_MODE_PLACE:
+            info = map->GetePartsInfoAtID(PartsInfoID);
+
+            if (info != NULL) {
+                if (EditNowPlaceAnime() == 0 && PutSideMode != 1) {
+                    cursor = NULL;
+                }
+
+                if (info->attr & 0x80) {
+                    unit = UnitCursor;
+                    cursor = NULL;
+                    chara = ShovelCurChr;
+                }
+            }
+
+            if (NowPlaceRiver()) {
+                chara = ShovelCurChr;
+                unit = NULL;
+                cursor = NULL;
+            }
+
+            break;
+        case EDIT_MODE_PAINT:
+        case EDIT_MODE_REPAINT:
+            chara = PaintCurChr;
+            cursor = NULL;
+            break;
     }
+
     if (cursor != NULL) {
         cursor->SetPosition(position);
         cursor->SetScale(6.0f, 6.0f, 6.0f);
         mgDrawDirect(cursor);
     }
+
     if (chara != NULL) {
         chara->SetPosition(position);
         chara->SetScale(6.0f, 6.0f, 6.0f);
         chara->DrawDirect();
     }
+
     if (unit != NULL && map->GetGridPos(position, grid_position, grid_size)) {
         if (unit != NULL) {
             grid_position[1] += 10.0f;
             unit->SetPosition(grid_position);
             unit->SetScale(grid_size[0], 1.0f, grid_size[2]);
             float color[4] = {128.0f, 64.0f, 64.0f, 48.0f};
+
             if (PlacePartsFlag != 0) {
                 color[0] = 64.0f;
                 color[1] = 78.0f;
                 color[2] = 128.0f;
             }
+
             if (unit->attr != NULL) {
-                *(u_long128 *)unit->attr->color = *(u_long128 *)color;
+                *(u_long128 *) unit->attr->color = *(u_long128 *) color;
             }
         }
+
         mgDrawDirect(unit);
     }
+
     if (DebugFlag == 0 || DebugInfo.georama_debug == 0) {
         return;
     }
+
     mgCDrawPrim prim;
     prim.Initialize(NULL, NULL);
     prim.AlphaBlendEnable(1);
@@ -1654,38 +1812,46 @@ void DrawEditCursor(CScene *scene) {
     prim.Vertex(0x100, 0xA, 0);
     prim.Vertex(0x1FF, 0x3C, 0);
     prim.End();
-    char text[0x100];
+    char  text[0x100];
     char *end = text;
+
     if (init_1940 == 0) {
         cnt_1939 = 0;
         init_1940 = 1;
     }
+
     if (GamePad__2.Down(0x200)) {
         if (cnt_1939 == 0) {
-            *(u_long128 *)pos_save_1942 = *(u_long128 *)eCurPos;
+            *(u_long128 *) pos_save_1942 = *(u_long128 *) eCurPos;
             cnt_1939++;
             pos_save_1942[3] = eCurRot;
         } else {
             cnt_1939 = 0;
         }
     }
+
     *end = 0;
+
     if (cnt_1939 == 0) {
         end += sprintf(end, at_1961, eCurPos[0], eCurPos[1], eCurPos[2], eCurRot);
     }
+
     if (cnt_1939 == 1) {
-        end += sprintf(end, at_1961, pos_save_1942[0], pos_save_1942[1], pos_save_1942[2], (int)pos_save_1942[3]);
+        end += sprintf(end, at_1961, pos_save_1942[0], pos_save_1942[1], pos_save_1942[2], (int) pos_save_1942[3]);
         end += sprintf(end, at_1961, eCurPos[0], eCurPos[1], eCurPos[2], eCurRot);
         end += sprintf(end, at_1962, mgDistVector(pos_save_1942, eCurPos));
         sprintf(end, at_1963, mgDistVectorXZ(pos_save_1942, eCurPos));
         mgCFrame *marker = EditCursor[0];
+
         if (marker != NULL) {
             marker->SetPosition(pos_save_1942);
             mgDrawDirect(marker);
         }
     }
+
     GetDebugFont()->DrawDirect(text, 0x100, 0xA);
 }
+
 extern char *space_str[6];
 extern char *place_str[6];
 extern char *rotate_str[6];
@@ -1702,168 +1868,205 @@ extern char *paint_num_str[6];
 extern char *repaint_str[6];
 extern char *repaint_house_str[6];
 extern char *repaint_fence_str[6];
-void DrawEditHelpMes(void) {
+
+void DrawEditHelpMes() {
     int lang;
+
     if (EditHelpMesNo < 0 || (lang = LanguageCode) < 0 || lang >= 6) {
         return;
     }
+
     Font__2.SetColor(0xFF, 0xFF, 0xFF, 0x80);
     char text[0x100] = {0};
     char number[0x100] = {0};
+
     switch (EditHelpMesNo) {
-    case 11:
-        strcpy(text, undo_str[lang]);
-        break;
-    case 0:
-        strcpy(text, place_str[lang]);
-        strcat(text, space_str[lang]);
-        strcat(text, rotate_str[lang]);
-        if (EditHelpMesParam2 != 0) {
+        case 11:
+            strcpy(text, undo_str[lang]);
+            break;
+        case 0:
+            strcpy(text, place_str[lang]);
             strcat(text, space_str[lang]);
-            strcat(text, undo_str[lang]);
-        }
-        break;
-    case 1:
-        strcpy(text, place_str[lang]);
-        if (EditHelpMesParam > 1) {
-            strcat(text, sw_wall_str[lang]);
-        }
-        if (EditHelpMesParam2 != 0) {
+            strcat(text, rotate_str[lang]);
+
+            if (EditHelpMesParam2 != 0) {
+                strcat(text, space_str[lang]);
+                strcat(text, undo_str[lang]);
+            }
+
+            break;
+        case 1:
+            strcpy(text, place_str[lang]);
+
+            if (EditHelpMesParam > 1) {
+                strcat(text, sw_wall_str[lang]);
+            }
+
+            if (EditHelpMesParam2 != 0) {
+                strcat(text, space_str[lang]);
+                strcat(text, undo_str[lang]);
+            }
+
+            break;
+        case 2:
+            strcpy(text, place_str[lang]);
             strcat(text, space_str[lang]);
-            strcat(text, undo_str[lang]);
-        }
-        break;
-    case 2:
-        strcpy(text, place_str[lang]);
-        strcat(text, space_str[lang]);
-        strcat(text, rotate_str[lang]);
-        strcat(text, space_str[lang]);
-        strcat(text, magnet_str[lang]);
-        strcat(text, onoff_str[EditHelpMesParam == 0][lang]);
-        if (EditHelpMesParam2 != 0) {
+            strcat(text, rotate_str[lang]);
             strcat(text, space_str[lang]);
-            strcat(text, undo_str[lang]);
-        }
-        break;
-    case 3:
-        strcpy(text, remove_str[lang]);
-        break;
-    case 4:
-        strcpy(text, sel_wall_str[lang]);
-        break;
-    case 5:
-        sprintf(text, paint_str[lang], EditHelpMesParam);
-        sprintf(number, paint_num_str[lang], EditHelpMesParam2);
-        strcat(text, space_str[lang]);
-        strcat(text, number);
-        break;
-    case 6:
-        sprintf(text, paint_house_str[lang], EditHelpMesParam, EditHelpMesParam);
-        sprintf(number, paint_num_str[lang], EditHelpMesParam2);
-        strcat(text, space_str[lang]);
-        strcat(text, number);
-        break;
-    case 7:
-        sprintf(text, paint_fence_str[lang], EditHelpMesParam, EditHelpMesParam * 5);
-        sprintf(number, paint_num_str[lang], EditHelpMesParam2);
-        strcat(text, space_str[lang]);
-        strcat(text, number);
-        break;
-    case 8:
-        strcpy(text, repaint_str[lang]);
-        break;
-    case 9:
-        strcpy(text, repaint_house_str[lang]);
-        break;
-    case 10:
-        strcpy(text, repaint_fence_str[lang]);
-        break;
+            strcat(text, magnet_str[lang]);
+            strcat(text, onoff_str[EditHelpMesParam == 0][lang]);
+
+            if (EditHelpMesParam2 != 0) {
+                strcat(text, space_str[lang]);
+                strcat(text, undo_str[lang]);
+            }
+
+            break;
+        case 3:
+            strcpy(text, remove_str[lang]);
+            break;
+        case 4:
+            strcpy(text, sel_wall_str[lang]);
+            break;
+        case 5:
+            sprintf(text, paint_str[lang], EditHelpMesParam);
+            sprintf(number, paint_num_str[lang], EditHelpMesParam2);
+            strcat(text, space_str[lang]);
+            strcat(text, number);
+            break;
+        case 6:
+            sprintf(text, paint_house_str[lang], EditHelpMesParam, EditHelpMesParam);
+            sprintf(number, paint_num_str[lang], EditHelpMesParam2);
+            strcat(text, space_str[lang]);
+            strcat(text, number);
+            break;
+        case 7:
+            sprintf(text, paint_fence_str[lang], EditHelpMesParam, EditHelpMesParam * 5);
+            sprintf(number, paint_num_str[lang], EditHelpMesParam2);
+            strcat(text, space_str[lang]);
+            strcat(text, number);
+            break;
+        case 8:
+            strcpy(text, repaint_str[lang]);
+            break;
+        case 9:
+            strcpy(text, repaint_house_str[lang]);
+            break;
+        case 10:
+            strcpy(text, repaint_fence_str[lang]);
+            break;
     }
+
     if (text[0] != 0) {
         int y = mgScreenHeight - 0x1F;
         Font__2.SetStr(text);
         Font__2.SetPos(0x28, y);
         Font__2.DrawDirect(Font__2.str, Font__2.pos_x, Font__2.pos_y);
     }
+
     EditHelpMesNo = -1;
 }
+
 static int CheckFocusBalanceParts(CEditMap *map, int index, float *cursor) {
-    float box[8];
-    CMapParts *parts = (CMapParts *)map->balance_parts[index];
+    float      box[8];
+    CMapParts *parts = (CMapParts *) map->balance_parts[index];
+
     if (parts == NULL) {
         return 0;
     }
-    if (parts->GetBoundBox((mgVu0FBOX *)box) == 0) {
+
+    if (parts->GetBoundBox((mgVu0FBOX *) box) == 0) {
         return 0;
     }
+
     if (!(cursor[0] <= box[0])) {
         return 0;
     }
+
     if (cursor[0] < box[4]) {
         return 0;
     }
+
     if (!(cursor[2] <= box[2])) {
         return 0;
     }
+
     int outside = 1;
+
     if (!(cursor[2] < box[6])) {
         outside = 0;
     }
+
     return outside ^ 1;
 }
+
 static void InitBalanceDraw(CScene *scene) {
     CEditMap *map;
 
-    map = (CEditMap *)scene->GetMap(scene->active_map);
+    map = (CEditMap *) scene->GetMap(scene->active_map);
+
     if (map != NULL) {
-        GroundBalance__8CEditMapFi(map, 0);
+        map->GroundBalance(0);
     }
-    GetBalanceHeight(scene, (float *)now_balance_h);
+
+    GetBalanceHeight(scene, (float *) now_balance_h);
 }
+
 static void GetBalanceHeight(CScene *scene, float *balance) {
-    CEditMap *map = (CEditMap *)scene->GetMap(scene->active_map);
-    int num_x = map->balance_weight[1] - map->balance_weight[0];
-    int depth = map->balance_weight[3] - map->balance_weight[2];
-    float abs_width;
-    if ((float)num_x < 0.0f) {
-        abs_width = -(float)num_x;
+    CEditMap *map = (CEditMap *) scene->GetMap(scene->active_map);
+    int       num_x = map->balance_weight[1] - map->balance_weight[0];
+    int       depth = map->balance_weight[3] - map->balance_weight[2];
+    float     abs_width;
+
+    if ((float) num_x < 0.0f) {
+        abs_width = -(float) num_x;
     } else {
-        abs_width = (float)num_x;
+        abs_width = (float) num_x;
     }
+
     if (abs_width < 4.0f) {
         num_x = 0;
     }
+
     float abs_depth;
-    if ((float)depth < 0.0f) {
-        abs_depth = -(float)depth;
+
+    if ((float) depth < 0.0f) {
+        abs_depth = -(float) depth;
     } else {
-        abs_depth = (float)depth;
+        abs_depth = (float) depth;
     }
+
     if (abs_depth < 4.0f) {
         depth = 0;
     }
+
     balance[0] = -num_x;
     balance[1] = num_x;
     balance[2] = -depth;
     balance[3] = depth;
     int i = 0;
+
     do {
         float *slot = &balance[i];
+
         if (!(*slot <= 20.0f)) {
             *slot = 20.0f;
         }
+
         if (*slot < -20.0f) {
             *slot = -20.0f;
         }
+
         i++;
     } while (i < 4);
 }
 #ifdef NONMATCHING
 extern mgCTexture *eSysTexture;
+
 void DrawEditSystem(int block, CScene *scene, float *pos, int edit) {
     mgCTextureManager *manager = &mgTexManager;
     if (eSysTexture != NULL) {
-        manager->ReloadTexture(block, (sceVif1Packet *)NULL);
+        manager->ReloadTexture(block, (sceVif1Packet *) NULL);
         mgCDrawPrim prim;
         prim.Initialize(NULL, NULL);
         prim.AlphaBlendEnable(1);
@@ -1898,23 +2101,23 @@ void DrawEditSystem(int block, CScene *scene, float *pos, int edit) {
                 prim.End();
             }
             if (scene->GetMainMapNo() == 1) {
-                CEditMap *map = (CEditMap *)scene->GetMap(scene->active_map);
+                CEditMap *map = (CEditMap *) scene->GetMap(scene->active_map);
                 if (map != NULL) {
                     prim.Begin(6);
                     prim.Texture(eSysTexture);
-                    int x = 0x12C;
+                    int   x = 0x12C;
                     float colors[4][4] = {
-                        {90.0f, 20.0f, 10.0f, 48.0f},
-                        {180.0f, 40.0f, 20.0f, 77.0f},
-                        {30.0f, 60.0f, 90.0f, 48.0f},
-                        {60.0f, 120.0f, 180.0f, 77.0f},
+                        {90.0f,  20.0f,  10.0f,  48.0f},
+                        {180.0f, 40.0f,  20.0f,  77.0f},
+                        {30.0f,  60.0f,  90.0f,  48.0f},
+                        {60.0f,  120.0f, 180.0f, 77.0f},
                     };
-                    int balance = map->BalanceCheck();
+                    int   balance = map->BalanceCheck();
                     float target[4];
                     GetBalanceHeight(scene, target);
-                    int focused = 0;
+                    int   focused = 0;
                     float cursor[4];
-                    *(u_long128 *)cursor = *(u_long128 *)eCurPos;
+                    *(u_long128 *) cursor = *(u_long128 *) eCurPos;
                     for (int i = 0; i < 4; i++) {
                         float *color = colors[balance * 2];
                         prim.Color(color);
@@ -1922,8 +2125,8 @@ void DrawEditSystem(int block, CScene *scene, float *pos, int edit) {
                             prim.Color(color + 4);
                             focused = 1;
                         }
-                        float *now = (float *)now_balance_h + i;
-                        float height = *now + (target[i] - *now) / 12.0f;
+                        float *now = (float *) now_balance_h + i;
+                        float  height = *now + (target[i] - *now) / 12.0f;
                         *now = height;
                         int height16 = fptosi(16.0f * height);
                         int height1 = fptosi(height);
@@ -1946,56 +2149,69 @@ void DrawEditSystem(int block, CScene *scene, float *pos, int edit) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmode", DrawEditSystem__FiP6CScenePfi);
 #endif
-static int GetGeoCheckPts(CMap *map) {
+static CMapParts *GetGeoCheckPts(CMap *map) {
     if (map != NULL) {
-        return GetPlaceParts__4CMapFPc(map, (char *)at_2213__3);
+        return map->GetPlaceParts((char *) at_2213__3);
     }
-    return 0;
+
+    return NULL;
 }
+
 static int GetGeoCheckCol(CMap *map, mgVu0FBOX &box, CCPoly *polys, int max) {
     if (map == NULL) {
         return 0;
     }
-    CMapParts *part = (CMapParts *)GetGeoCheckPts(map);
+
+    CMapParts *part = GetGeoCheckPts(map);
+
     if (part == NULL) {
         return 0;
     }
+
     part->Show(1);
     int count = part->GetColPoly(polys, box, max);
     part->Show(0);
     return count;
 }
+
 static int GetGeoCheckCamCol(CMap *map, mgVu0FBOX &box, CCPoly *polys, int max) {
     if (map == NULL) {
         return 0;
     }
-    CMapParts *part = (CMapParts *)GetGeoCheckPts(map);
+
+    CMapParts *part = GetGeoCheckPts(map);
+
     if (part == NULL) {
         return 0;
     }
+
     part->Show(1);
     int count = part->GetCameraPoly(polys, box, max);
     part->Show(0);
     return count;
 }
+
 int CheckWalkToEdit(CScene *scene, float *position) {
-    float pos[4];
-    float hit[4];
+    float     pos[4];
+    float     hit[4];
     mgVu0FBOX box;
-    CCPoly polys[0x80];
-    float hit_normals[0x20][4];
-    int hit_indices[0x20];
-    float normal[4];
-    *(u_long128 *)pos = *(u_long128 *)position;
+    CCPoly    polys[0x80];
+    float     hit_normals[0x20][4];
+    int       hit_indices[0x20];
+    float     normal[4];
+    *(u_long128 *) pos = *(u_long128 *) position;
     CMap *map = scene->GetMap(scene->active_map);
+
     if (map == NULL) {
         return 1;
     }
+
     if (GetGeoCheckPts(map) == 0) {
         return 1;
     }
-    *(u_long128 *)box.max = *(u_long128 *)pos;
-    *(u_long128 *)box.min = *(u_long128 *)pos;
+
+    *(u_long128 *) box.max = *(u_long128 *) pos;
+    *(u_long128 *) box.min = *(u_long128 *) pos;
     pos[1] = 20.0f;
     box.max[1] = 100.0f;
     box.max[0] += 100.0f;
@@ -2004,48 +2220,60 @@ int CheckWalkToEdit(CScene *scene, float *position) {
     box.min[1] = -100.0f;
     box.min[2] -= 100.0f;
     int poly_count = GetGeoCheckCol(map, box, polys, 0x80);
+
     if (CheckHitVertical(polys, poly_count, pos, -40.0f, hit, 0) < 0) {
         return 0;
     }
+
     pos[3] = 20.0f;
     int hit_count = CheckHitsSphere(polys, poly_count, pos, 0x20, hit_indices, hit_normals, 0, 0);
     int i;
+
     for (i = 0; i < hit_count; i++) {
         sceVu0Normalize(normal, polys[hit_indices[i]].normal);
         float slope;
+
         if (normal[1] < 0.0f) {
             slope = -normal[1];
         } else {
             slope = normal[1];
         }
+
         if (slope <= 0.5f) {
             return 0;
         }
     }
+
     return 1;
 }
+
 int CheckEditToWalk(CScene *scene, float *position) {
-    float cursor[4];
-    float ground_hit[4];
+    float     cursor[4];
+    float     ground_hit[4];
     mgVu0FBOX box;
-    CCPoly polys[512];
-    float hit_positions[64][4];
-    int hit_indices[64];
-    *(u_long128 *)cursor = *(u_long128 *)eCurPos;
-    *(u_long128 *)position = *(u_long128 *)eCurPos;
-    CEditMap *map = (CEditMap *)scene->GetMap(scene->active_map);
+    CCPoly    polys[512];
+    float     hit_positions[64][4];
+    int       hit_indices[64];
+    *(u_long128 *) cursor = *(u_long128 *) eCurPos;
+    *(u_long128 *) position = *(u_long128 *) eCurPos;
+    CEditMap *map = (CEditMap *) scene->GetMap(scene->active_map);
+
     if (map == NULL) {
         return 1;
     }
+
     if (GetGeoCheckPts(map) == 0) {
         return 1;
     }
+
     cursor[3] = 1.0f;
+
     if (map->IsRiverGrid(cursor)) {
         return 0;
     }
-    *(u_long128 *)box.max = *(u_long128 *)eCurPos;
-    *(u_long128 *)box.min = *(u_long128 *)eCurPos;
+
+    *(u_long128 *) box.max = *(u_long128 *) eCurPos;
+    *(u_long128 *) box.min = *(u_long128 *) eCurPos;
     cursor[1] = 1000.0f;
     box.max[0] += 20.0f;
     box.max[1] = 10000.0f;
@@ -2057,23 +2285,29 @@ int CheckEditToWalk(CScene *scene, float *position) {
     box.min[3] = 1.0f;
     int poly_count = scene->GetColPoly(polys, box, 512);
     int ground_index = CheckHitVertical(polys, poly_count, cursor, -2000.0f, ground_hit, 1);
+
     if (ground_index < 0) {
         return 0;
     }
-    *(u_long128 *)position = *(u_long128 *)ground_hit;
+
+    *(u_long128 *) position = *(u_long128 *) ground_hit;
+
     if (polys[ground_index].area_kind != 9) {
         return 0;
     }
+
     cursor[3] = 10.0f;
     int hit_count = CheckHitsPipeY(polys, poly_count, cursor,
-                                  -(5.0f + (cursor[1] - ground_hit[1])), 64,
-                                  hit_indices, hit_positions, 0, 1);
+                                   -(5.0f + (cursor[1] - ground_hit[1])), 64,
+                                   hit_indices, hit_positions, 0, 1);
     int index;
+
     for (index = 0; index < hit_count; index++) {
         if (!(hit_positions[index][1] <= 5.0f + ground_hit[1])) {
             return 0;
         }
     }
+
     return 1;
 }
 

@@ -112,13 +112,13 @@ STATIC_ASSERT(sizeof(MoveCheckInfo) == 0x110);
  *
  */
 struct DNG_STATUS {
-    int   mode;          /**< What the main loop runs each frame, a DNG_STATUS_MODE. */
-    int   dungeon_no;    /**< Dungeon that the loop was entered with. */
-    int   eye_view;      /**< Non-zero while the first-person view is on. */
-    int   active_item;   /**< Slot of the active item that the player uses. */
-    float cursor_fade;   /**< Opacity of the active item cursor, from 0 to 1. */
-    int   status_count;  /**< Frames counted towards the next status-ailment flash. */
-    int   debug_window;  /**< Non-zero while the debug window is drawn. */
+    int   mode;         /**< What the main loop runs each frame, a DNG_STATUS_MODE. */
+    int   dungeon_no;   /**< Dungeon that the loop was entered with. */
+    int   eye_view;     /**< Non-zero while the first-person view is on. */
+    int   active_item;  /**< Slot of the active item that the player uses. */
+    float cursor_fade;  /**< Opacity of the active item cursor, from 0 to 1. */
+    int   status_count; /**< Frames counted towards the next status-ailment flash. */
+    int   debug_window; /**< Non-zero while the debug window is drawn. */
 };
 
 STATIC_ASSERT(sizeof(DNG_STATUS) == 0x1C);
@@ -129,9 +129,9 @@ STATIC_ASSERT(sizeof(DNG_STATUS) == 0x1C);
  *
  */
 struct ACCUME_EFFECT {
-    mgCFrame *frame;          /**< Frame that the effect gathers on. */
+    mgCFrame *frame; /**< Frame that the effect gathers on. */
     u8        unk_4[0x30C];
-    int       mode;           /**< Stage of the effect that the action script set. */
+    int       mode; /**< Stage of the effect that the action script set. */
     u8        unk_314[0xC];
     s32       unk_320;
     u8        unk_324[0xC];

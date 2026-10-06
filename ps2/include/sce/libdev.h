@@ -28,5 +28,4 @@ void sceDevConsAttribute(int handle, u_char attributes);
  * Draws a development console.
  */
 void sceDevConsDraw(int handle);
-
 }

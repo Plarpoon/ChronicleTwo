@@ -2,11 +2,11 @@
 
 #include "common.h"
 
+#include "memcard.hpp"
 #include "menusys.hpp"
 #include "mg_memory.hpp"
 #include "savedata.hpp"
 #include "scenesnd.hpp"
-#include "memcard.hpp"
 
 /**
  *
@@ -55,6 +55,7 @@ enum ManualMenuStep {
 };
 
 // clang-format on
+
 /**
  *
  * Steps of the file list page of the save menu, as CSaveMenuClass::phase holds them.
@@ -75,6 +76,7 @@ enum SaveListPhase {
 };
 
 // clang-format on
+
 /**
  *
  * Steps of the format page of the save menu, as CSaveMenuClass::phase holds them.
@@ -88,6 +90,7 @@ enum SaveFormatPhase {
 };
 
 // clang-format on
+
 /**
  *
  * What the save menu was opened to do, as CSaveMenuClass::mode holds it.
@@ -101,6 +104,7 @@ enum SaveMenuMode {
 };
 
 // clang-format on
+
 /**
  *
  * Pages of the save menu, as CSaveMenuClass::page holds them.
@@ -118,6 +122,7 @@ enum SaveMenuPage {
 };
 
 // clang-format on
+
 /**
  *
  * Phases of the mini-game save menu, as SubGameSaveOrLoadPhase holds them.
@@ -148,6 +153,7 @@ enum SubGameSavePhase {
 };
 
 // clang-format on
+
 /**
  *
  * The manual menu: a list of explanations that each play a movie, or show a
@@ -156,15 +162,15 @@ enum SubGameSavePhase {
  */
 class CManualMenu : public CBaseMenuClass {
 public:
-    s32                select;           /**< Manual entry the cursor is on. */
-    s32                top;              /**< First entry shown in the list. */
-    CScene::BGM_STATUS bgm_status;       /**< Music that was playing when an entry was opened, played again afterwards. */
-    s32                pict_mode;        /**< Non-zero when the open entry shows picture pages rather than a movie. */
-    s32                pict_num;         /**< Number of picture pages of the open entry. */
-    s32                pict_page;        /**< Picture page shown. */
-    mgCMemory          movie_stack;      /**< Memory the movie streams through. */
-    float              list_y;           /**< Screen y of the list, moving towards its place. */
-    s32                cursor_jump;      /**< Non-zero to put the cursor at its place at once rather than moving it. */
+    s32                select;      /**< Manual entry the cursor is on. */
+    s32                top;         /**< First entry shown in the list. */
+    CScene::BGM_STATUS bgm_status;  /**< Music that was playing when an entry was opened, played again afterwards. */
+    s32                pict_mode;   /**< Non-zero when the open entry shows picture pages rather than a movie. */
+    s32                pict_num;    /**< Number of picture pages of the open entry. */
+    s32                pict_page;   /**< Picture page shown. */
+    mgCMemory          movie_stack; /**< Memory the movie streams through. */
+    float              list_y;      /**< Screen y of the list, moving towards its place. */
+    s32                cursor_jump; /**< Non-zero to put the cursor at its place at once rather than moving it. */
 
     /**
      * Steps the menu one frame: picks an entry, plays its movie or turns its
@@ -205,17 +211,17 @@ STATIC_ASSERT(sizeof(CManualMenu) == 0x178);
  */
 class CMenuOption : public CBaseMenuClass {
 public:
-    float               list_y;                                        /**< Screen y of the list, moving towards its place. */
-    s32                 choice_num[OPTION_ITEM_MAX];                   /**< Number of choices of each option. */
-    MENUFORMPARTS_TYPE *button[OPTION_ITEM_MAX][OPTION_BUTTON_NUM];    /**< Buttons of each option's choices. */
-    s32                *value[OPTION_ITEM_MAX];                        /**< Setting in config that each option changes, or NULL. */
+    float               list_y;                                     /**< Screen y of the list, moving towards its place. */
+    s32                 choice_num[OPTION_ITEM_MAX];                /**< Number of choices of each option. */
+    MENUFORMPARTS_TYPE *button[OPTION_ITEM_MAX][OPTION_BUTTON_NUM]; /**< Buttons of each option's choices. */
+    s32                *value[OPTION_ITEM_MAX];                     /**< Setting in config that each option changes, or NULL. */
     s32                 unk_2A4[OPTION_ITEM_MAX];
-    SV_CONFIG_OPTION    config;                                        /**< Options being edited, given to the game when the menu closes. */
-    SV_CONFIG_OPTION    config_backup;                                 /**< Options as they were when the menu opened. */
-    s32                 select;                                        /**< Option the cursor is on. */
-    s32                 top;                                           /**< First option shown in the list. */
-    s32                 choice;                                        /**< Choice the cursor is on. */
-    s32                 cursor_jump;                                   /**< Non-zero to put the cursor at its place at once rather than moving it. */
+    SV_CONFIG_OPTION    config;        /**< Options being edited, given to the game when the menu closes. */
+    SV_CONFIG_OPTION    config_backup; /**< Options as they were when the menu opened. */
+    s32                 select;        /**< Option the cursor is on. */
+    s32                 top;           /**< First option shown in the list. */
+    s32                 choice;        /**< Choice the cursor is on. */
+    s32                 cursor_jump;   /**< Non-zero to put the cursor at its place at once rather than moving it. */
 
     /**
      * Steps the menu one frame: moves the cursor, changes the options and
@@ -243,7 +249,7 @@ public:
      * @address 0x2C6A70
      * @size 0x50
      */
-    void DefaultButton(MENUFORMPARTS_TYPE **buttons);
+    void DefaultButton(MENUFORMPARTS_TYPE **row);
 
     /**
      * Lights one button, marking it as the option's choice.
@@ -274,33 +280,33 @@ STATIC_ASSERT(sizeof(CMenuOption) == 0x384);
  */
 class CSaveMenuClass : public CBaseMenuClass {
 public:
-    u8                  first_step;        /**< Non-zero until the menu's first frame has opened the slot choice. */
-    s32                 select;            /**< File the cursor is on. */
-    s32                 top;               /**< First file shown in the list. */
-    u8                  list_jump;         /**< Non-zero to put the list at its place at once rather than moving it. */
-    s32                 slot;              /**< Memory card slot chosen, 0 or 1. */
-    s32                 mode;              /**< What the menu was opened to do, a SaveMenuMode. */
-    s32                 page;              /**< Page shown, a SaveMenuPage. */
-    s32                 phase;             /**< Step within the page. */
-    s32                 save_kind;         /**< 1 to save to a new file, 0 to overwrite the chosen file, as EnvSetSave takes it. */
-    s32                 dl_base;           /**< Progress of the card access already shown on the progress bar. */
-    s32                 need_kb;           /**< Space the save needs, in kilobytes, as shown to the player. */
-    s32                 save_kb;           /**< Size of the save data, in kilobytes. */
-    s32                 check_kb;          /**< Space the save needs, in kilobytes, compared with the card's free space. */
-    s32                 card_ok;           /**< Whether a usable card was in the slot when it was last checked. */
-    s32                 card_changed;      /**< 1 when the card was found removed or changed during the file list. */
-    s32                 chapter8_start;    /**< 1 when the game is at the start of chapter 8, which asks before saving. */
-    s32                 save_count;        /**< Number of times the game was saved while the menu was open. */
+    u8                  first_step;     /**< Non-zero until the menu's first frame has opened the slot choice. */
+    s32                 select;         /**< File the cursor is on. */
+    s32                 top;            /**< First file shown in the list. */
+    u8                  list_jump;      /**< Non-zero to put the list at its place at once rather than moving it. */
+    s32                 slot;           /**< Memory card slot chosen, 0 or 1. */
+    s32                 mode;           /**< What the menu was opened to do, a SaveMenuMode. */
+    s32                 page;           /**< Page shown, a SaveMenuPage. */
+    s32                 phase;          /**< Step within the page. */
+    s32                 save_kind;      /**< 1 to save to a new file, 0 to overwrite the chosen file, as EnvSetSave takes it. */
+    s32                 dl_base;        /**< Progress of the card access already shown on the progress bar. */
+    s32                 need_kb;        /**< Space the save needs, in kilobytes, as shown to the player. */
+    s32                 save_kb;        /**< Size of the save data, in kilobytes. */
+    s32                 check_kb;       /**< Space the save needs, in kilobytes, compared with the card's free space. */
+    s32                 card_ok;        /**< Whether a usable card was in the slot when it was last checked. */
+    s32                 card_changed;   /**< 1 when the card was found removed or changed during the file list. */
+    s32                 chapter8_start; /**< 1 when the game is at the start of chapter 8, which asks before saving. */
+    s32                 save_count;     /**< Number of times the game was saved while the menu was open. */
     s32                 unk_154;
-    CScene::BGM_STATUS  bgm_status;        /**< Music that was playing when the menu opened, played again when it closes. */
-    mgCTexture         *dl_tex;            /**< Texture of the progress bar. */
-    CMenuPosDataForm   *title_form;        /**< Form of the menu title. */
-    CMenuPosDataForm   *slot_form[2];      /**< Forms of the two memory card slots. */
-    CMenuPosDataForm   *cursor_form;       /**< Form of the cursor. */
-    CMenuPosDataForm   *list_form;         /**< Form of the file list. */
-    CMenuPosDataForm   *scrlbar_form;      /**< Form of the file list's scroll bar. */
-    MENUFORMPARTS_TYPE *scrlbar_parts[3];  /**< Top, middle and bottom parts of the scroll bar. */
-    s32                 scrlbar_pos[2];    /**< Screen x and y offset of the scroll bar. */
+    CScene::BGM_STATUS  bgm_status;       /**< Music that was playing when the menu opened, played again when it closes. */
+    mgCTexture         *dl_tex;           /**< Texture of the progress bar. */
+    CMenuPosDataForm   *title_form;       /**< Form of the menu title. */
+    CMenuPosDataForm   *slot_form[2];     /**< Forms of the two memory card slots. */
+    CMenuPosDataForm   *cursor_form;      /**< Form of the cursor. */
+    CMenuPosDataForm   *list_form;        /**< Form of the file list. */
+    CMenuPosDataForm   *scrlbar_form;     /**< Form of the file list's scroll bar. */
+    MENUFORMPARTS_TYPE *scrlbar_parts[3]; /**< Top, middle and bottom parts of the scroll bar. */
+    s32                 scrlbar_pos[2];   /**< Screen x and y offset of the scroll bar. */
 
     /**
      * Shows the progress message of a save or load at the middle of the
@@ -354,7 +360,7 @@ void InitMenuReturnMsg(mgCMemory *stack);
  * @address 0x2C4340
  * @size 0x30
  */
-void SetMenuReturnMsgCtrl(int on);
+void SetMenuReturnMsgCtrl(int show);
 
 /**
  * Draws the message that tells how to go back, while it is turned on.
@@ -373,7 +379,7 @@ void DrawMenuReturnMsg();
  * @address 0x2C43C0
  * @size 0x70
  */
-int CheckOmakeVtuto(int no);
+int CheckOmakeVtuto(int entry);
 
 /**
  * Opens the manual menu: makes the menu, reads its textures and form data
@@ -383,7 +389,7 @@ int CheckOmakeVtuto(int no);
  * @address 0x2C4480
  * @size 0x510
  */
-void MenuManualInit(mgCMemory *stack, int *tex_block, int open_type);
+void MenuManualInit(mgCMemory *memory, int *tex_block, int open_type);
 
 /**
  * Steps the manual menu one frame. Gives 1 once it has closed.
@@ -412,7 +418,7 @@ void MenuManualDraw();
  * @address 0x2C6E30
  * @size 0x5C0
  */
-void MenuOptionInit(mgCMemory *stack, int *tex_block, int open_type);
+void MenuOptionInit(mgCMemory *memory, int *tex_block, int open_type);
 
 /**
  * Steps the option menu one frame. Gives 1 once it has closed.
@@ -460,7 +466,7 @@ void SaveFileListDraw(int &tex_block, float *pos, int alpha);
  * @address 0x2C9980
  * @size 0x50
  */
-int GetDngMapNo(int dng_no);
+int GetDngMapNo(int dungeon);
 
 /**
  * Keeps the saved map information so that ResetMapInfo can put it back, and
@@ -470,7 +476,7 @@ int GetDngMapNo(int dng_no);
  * @address 0x2C99D0
  * @size 0xC0
  */
-void SaveMapInfo(int dng_no);
+void SaveMapInfo(int dungeon);
 
 /**
  * Puts back the map information that SaveMapInfo kept.
@@ -489,7 +495,7 @@ void ResetMapInfo();
  * @address 0x2C9AE0
  * @size 0x6A0
  */
-void MenuSaveInit(mgCMemory *stack, int *tex_block, int open_type);
+void MenuSaveInit(mgCMemory *memory, int *tex_block, int mode);
 
 /**
  * Steps the save menu one frame. Gives 1 once it has closed.
@@ -518,7 +524,7 @@ void MenuSaveDraw();
  * @address 0x2CA450
  * @size 0x3E0
  */
-void SubGameSaveInit(mgCMemory *stack, int *tex_block, int open_type);
+void SubGameSaveInit(mgCMemory *memory, int *tex_block, int mode);
 
 /**
  * Steps the mini-game save menu one frame. Gives 1 once it has closed.

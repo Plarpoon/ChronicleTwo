@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+
 #include "villagermngr.hpp"
 
 /**
@@ -19,8 +20,8 @@ class mgCMemory;
  *
  */
 enum {
-    VLGR_PLACE_MAX    = 0x200, /**< Number of villager numbers a place table is held for. */
-    GAME_PROGRESS_MAX = 0x100  /**< Number of story progress points. */
+    VLGR_PLACE_MAX = 0x200,   /**< Number of villager numbers a place table is held for. */
+    GAME_PROGRESS_MAX = 0x100 /**< Number of story progress points. */
 };
 
 /**
@@ -30,10 +31,10 @@ enum {
  */
 enum VLGR_HOUSE_TYPE {
     VLGR_HOUSE_NONE = -1, /**< The villager has no house. */
-    VLGR_HOUSE_A    = 0,  /**< House map with the "ia" suffix. */
-    VLGR_HOUSE_B    = 1,  /**< House map with the "ib" suffix. */
-    VLGR_HOUSE_C    = 2,  /**< House map with the "ic" suffix. */
-    VLGR_HOUSE_D    = 3   /**< House map with the "id" suffix. */
+    VLGR_HOUSE_A = 0,     /**< House map with the "ia" suffix. */
+    VLGR_HOUSE_B = 1,     /**< House map with the "ib" suffix. */
+    VLGR_HOUSE_C = 2,     /**< House map with the "ic" suffix. */
+    VLGR_HOUSE_D = 3      /**< House map with the "id" suffix. */
 };
 
 /**
@@ -47,6 +48,7 @@ struct GAME_PROGRESS_INFO {
     s32   order;   /**< Position of the point in the story, compared to tell earlier points from later ones. */
     char *name;    /**< Name of the point, shown by the save data editor. */
 };
+
 STATIC_ASSERT(sizeof(GAME_PROGRESS_INFO) == 0xC);
 
 /**
@@ -74,6 +76,7 @@ public:
      */
     CVillagerInfo();
 };
+
 STATIC_ASSERT(sizeof(CVillagerInfo) == 0x1C);
 
 int vpiGetMotionID(char *name);
@@ -86,7 +89,7 @@ int vpiGetMotionID(char *name);
  * @address 0x31EAD0
  * @size 0x40
  */
-CVillagerPlaceInfo *GetVlgrPlaceInfo(int place_no);
+CVillagerPlaceInfo *GetVlgrPlaceInfo(int index);
 
 /**
  *
@@ -96,7 +99,7 @@ CVillagerPlaceInfo *GetVlgrPlaceInfo(int place_no);
  * @address 0x31EB10
  * @size 0x20
  */
-CVillagerPlace *GetVlgrPlaceTable(int *num);
+CVillagerPlace *GetVlgrPlaceTable(int *count);
 
 /**
  *
@@ -106,7 +109,7 @@ CVillagerPlace *GetVlgrPlaceTable(int *num);
  * @address 0x31EB30
  * @size 0xC0
  */
-CVillagerInfo *GetVillagerInfo(int vlgr_id);
+CVillagerInfo *GetVillagerInfo(int villager_no);
 
 /**
  *
@@ -116,7 +119,7 @@ CVillagerInfo *GetVillagerInfo(int vlgr_id);
  * @address 0x31EBF0
  * @size 0x50
  */
-int GetVillagerModelName(int vlgr_id, char *name);
+int GetVillagerModelName(int villager_no, char *path);
 
 /**
  *
@@ -126,7 +129,7 @@ int GetVillagerModelName(int vlgr_id, char *name);
  * @address 0x31F210
  * @size 0x90
  */
-void LoadNPCInfo(char *script, int size, mgCMemory *stack);
+void LoadNPCInfo(char *script, int length, mgCMemory *memory);
 
 /**
  *
@@ -136,7 +139,7 @@ void LoadNPCInfo(char *script, int size, mgCMemory *stack);
  * @address 0x31F2A0
  * @size 0x70
  */
-void LoadPlaceInfo(char *script, int size, mgCMemory *stack);
+void LoadPlaceInfo(char *script, int length, mgCMemory *memory);
 
 /**
  *
@@ -146,7 +149,7 @@ void LoadPlaceInfo(char *script, int size, mgCMemory *stack);
  * @address 0x31F960
  * @size 0x1C0
  */
-void LoadGameInfo(mgCMemory *stack);
+void LoadGameInfo(mgCMemory *memory);
 
 /**
  *
@@ -156,7 +159,7 @@ void LoadGameInfo(mgCMemory *stack);
  * @address 0x31FB20
  * @size 0x40
  */
-GAME_PROGRESS_INFO *GetGameProgressInfo(int progress);
+GAME_PROGRESS_INFO *GetGameProgressInfo(int index);
 
 /**
  *
@@ -166,7 +169,7 @@ GAME_PROGRESS_INFO *GetGameProgressInfo(int progress);
  * @address 0x31FB60
  * @size 0x30
  */
-int GetGameChapter(int progress);
+int GetGameChapter(int index);
 
 /**
  *

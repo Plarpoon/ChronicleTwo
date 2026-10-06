@@ -98,3 +98,11 @@ Unseen: 0x08, 0x54, 0xC4, 0xE4, 0x108.
 - ClearBaseFromLevel: m2c says void (Ghidra's int is a leftover register).
 - CCharacter2 vtable slots used: +0xEC Copy(CCharacter2&, mgCMemory*), +0xF0 GetCopySize,
   +0xD4 (per-step update), +0x10 SetPosition, +0x18 GetPosition, +0x38 draw, +0x54 show.
+
+## Native C++ calls
+
+`CEffectScriptMan::DeleteEffSpt` releases the collision primitive through `CColPrim::Delete(owner)` and frees the three owned `u_long128*` blocks with `mgCMemory::Free`, ending with the work block. `AssignSprite` obtains its array storage with `mgCMemory::Alloc` before placement array construction. Direct typed member calls reproduce the retail code.
+
+The local stack access helpers are ordinary C++ static functions. The two `SetStack` overloads write through reference slots only when `RS_STACKDATA::type == 3`. Retail symbol listings append numeric suffixes where same-named local helpers occur in earlier units; their instruction bodies are identical to the unsuffixed native C++ object functions apart from relocated branch addresses.
+
+`CEffectScriptMan::SetCharacter` reaches `slot[group][slot]` at offset 0x184. Native two-dimensional indexing preserves the address but MWCC reverses both commutative `addu` operands (99.88%); staging the row first leaves one reversed `addu` (99.94%). Typed pointer and flat indexing variants were also tested and did not reproduce retail operand order, so the byte-offset expression remains pending an exact typed form. Four sprite-command stack advances likewise changed scheduling when written as `stack += n` or `&stack[n]`; their byte-address forms remain pending.

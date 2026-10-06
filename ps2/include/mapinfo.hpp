@@ -27,12 +27,12 @@ class CCameraDrawInfo;
  */
 class CCameraInfo {
 public:
-    int             pos_num;        /**< Number of entries of pos in use. */
-    sceVu0FVECTOR   pos[8];         /**< World positions of the fixed camera. */
-    int             rect_num;       /**< Number of entries of rect. */
-    CColFrame      *rect[4];        /**< Collision shapes marking the area where the camera applies. */
-    int             draw_info_num;  /**< Number of entries of draw_info. */
-    CCameraDrawInfo draw_info[4];   /**< Map part groups switched on while the camera is in use. */
+    int             pos_num;       /**< Number of entries of pos in use. */
+    sceVu0FVECTOR   pos[8];        /**< World positions of the fixed camera. */
+    int             rect_num;      /**< Number of entries of rect. */
+    CColFrame      *rect[4];       /**< Collision shapes marking the area where the camera applies. */
+    int             draw_info_num; /**< Number of entries of draw_info. */
+    CCameraDrawInfo draw_info[4];  /**< Map part groups switched on while the camera is in use. */
 
     /**
      * Constructs a camera area with no positions, shapes or part groups.
@@ -61,6 +61,7 @@ public:
      */
     CCameraDrawInfo *GetDrawInfo(int index);
 };
+
 STATIC_ASSERT(sizeof(CCameraInfo) == 0xD0);
 
 /**
@@ -74,28 +75,28 @@ class CMapInfo {
 public:
     CMapInfo() { Initialize(); }
 
-    int               img_num;                     /**< Capacity of img_name. */
-    char             *img_name[16];                /**< Names of the texture packs of the map, null after the last. */
-    int               pcp_num;                     /**< Capacity of pcp_name. */
-    char             *pcp_name[16];                /**< Names of the model packs of the map, null after the last. */
-    char             *map_file;                    /**< Copy of the map's configuration script. */
-    int               map_file_size;               /**< Size of map_file, in bytes. */
-    char             *add_map_file;                /**< Copy of the map's additional configuration script. */
-    int               add_map_file_size;           /**< Size of add_map_file, in bytes. */
-    int               active_light_no;             /**< Lighting set used when lighting does not follow the time of day. */
-    int               lighting_info_num;           /**< Number of entries of lighting_info. */
-    CMapLightingInfo *lighting_info;               /**< Lighting sets of the map. */
-    int               time_cfade;                  /**< Value of the TIME_CFADE tag. */
-    float             floor;                       /**< Value of the FLOOR tag. */
+    int               img_num;           /**< Capacity of img_name. */
+    char             *img_name[16];      /**< Names of the texture packs of the map, null after the last. */
+    int               pcp_num;           /**< Capacity of pcp_name. */
+    char             *pcp_name[16];      /**< Names of the model packs of the map, null after the last. */
+    char             *map_file;          /**< Copy of the map's configuration script. */
+    int               map_file_size;     /**< Size of map_file, in bytes. */
+    char             *add_map_file;      /**< Copy of the map's additional configuration script. */
+    int               add_map_file_size; /**< Size of add_map_file, in bytes. */
+    int               active_light_no;   /**< Lighting set used when lighting does not follow the time of day. */
+    int               lighting_info_num; /**< Number of entries of lighting_info. */
+    CMapLightingInfo *lighting_info;     /**< Lighting sets of the map. */
+    int               time_cfade;        /**< Value of the TIME_CFADE tag. */
+    float             floor;             /**< Value of the FLOOR tag. */
     int               unk_ac;
-    sceVu0FVECTOR     chara_pos;                   /**< Position given by the CHARA_POS tag. */
-    int               time_enable;                 /**< Non-zero when the map follows the clock of the game. */
-    int               time_light_blend;            /**< Non-zero to blend lighting sets and turn the sun with the time of day. */
-    float             fixed_time;                  /**< Hour of the day used when the clock is not followed. */
-    int               fixed_time_enable;           /**< Non-zero to use fixed_time when the clock is not followed. */
-    int               time_light_num;              /**< Number of lighting sets that divide the day. */
-    int               def_foot;                    /**< Value of the DEF_FOOT tag. */
-    int               sky_info;                    /**< First value of the SKY_INFO tag. */
+    sceVu0FVECTOR     chara_pos;         /**< Position given by the CHARA_POS tag. */
+    int               time_enable;       /**< Non-zero when the map follows the clock of the game. */
+    int               time_light_blend;  /**< Non-zero to blend lighting sets and turn the sun with the time of day. */
+    float             fixed_time;        /**< Hour of the day used when the clock is not followed. */
+    int               fixed_time_enable; /**< Non-zero to use fixed_time when the clock is not followed. */
+    int               time_light_num;    /**< Number of lighting sets that divide the day. */
+    int               def_foot;          /**< Value of the DEF_FOOT tag. */
+    int               sky_info;          /**< First value of the SKY_INFO tag. */
     float             unk_dc;
     float             sun_angle;                   /**< Angle, in radians, of the sun's path about the vertical axis. */
     int               lens_flare;                  /**< Value of the LENS_FLARE tag. */
@@ -197,4 +198,5 @@ public:
      */
     int OutputLightData(char *buff);
 };
+
 STATIC_ASSERT(sizeof(CMapInfo) == 0x100);

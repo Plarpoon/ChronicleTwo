@@ -23,6 +23,7 @@ class mgCTexture;
 struct SWordFloat4 {
     float values[4]; /**< Four floating point components. */
 };
+
 /**
  *
  * Pair of floating point values used by the weapon trail.
@@ -39,35 +40,35 @@ struct SWordFloat2 {
  */
 class CSWordAfterEffect {
 public:
-    mgCFrame      *frame0;      /**< Frame whose world position is recorded into the first ring each step. */
-    mgCFrame      *frame1;      /**< Frame whose world position is recorded into the second ring each step. */
-    sceVu0FVECTOR *point0;      /**< Ring of recorded positions of the first frame. */
-    sceVu0FVECTOR *point1;      /**< Ring of recorded positions of the second frame. */
-    sceVu0FVECTOR *smooth0;     /**< Smoothed curve built from the first ring. */
-    sceVu0FVECTOR *smooth1;     /**< Smoothed curve built from the second ring. */
-    u_char             unk_18[8];
-    sceVu0IVECTOR  color0;      /**< Colour and peak alpha of the first edge; also of the second when textured. */
-    sceVu0IVECTOR  color1;      /**< Colour and peak alpha of the second edge when untextured. */
+    mgCFrame      *frame0;  /**< Frame whose world position is recorded into the first ring each step. */
+    mgCFrame      *frame1;  /**< Frame whose world position is recorded into the second ring each step. */
+    sceVu0FVECTOR *point0;  /**< Ring of recorded positions of the first frame. */
+    sceVu0FVECTOR *point1;  /**< Ring of recorded positions of the second frame. */
+    sceVu0FVECTOR *smooth0; /**< Smoothed curve built from the first ring. */
+    sceVu0FVECTOR *smooth1; /**< Smoothed curve built from the second ring. */
+    u_char         unk_18[8];
+    sceVu0IVECTOR  color0; /**< Colour and peak alpha of the first edge; also of the second when textured. */
+    sceVu0IVECTOR  color1; /**< Colour and peak alpha of the second edge when untextured. */
     SWordFloat4    unk_40;
     SWordFloat2    unk_50;
-    int            division; /**< Smoothed points made between two recorded points. */
-    int            smooth_num; /**< Number of smoothed points last built. */
-    int            tex_block; /**< Texture block reloaded into VRAM before drawing. */
+    int            division;    /**< Smoothed points made between two recorded points. */
+    int            smooth_num;  /**< Number of smoothed points last built. */
+    int            tex_block;   /**< Texture block reloaded into VRAM before drawing. */
     mgCTexture    *texture;     /**< Texture the strip is mapped with; NULL draws it untextured. */
-    int            tex_u; /**< Texel u the strip's texture starts at. */
-    int            tex_v; /**< Texel v of the first edge. */
-    int            tex_w; /**< Texel width the texture spans along the strip. */
-    int            tex_h; /**< Texel height from the first edge to the second. */
-    int            point_max; /**< Size of the rings. */
-    int            point_num; /**< Number of recorded points in the rings. */
+    int            tex_u;       /**< Texel u the strip's texture starts at. */
+    int            tex_v;       /**< Texel v of the first edge. */
+    int            tex_w;       /**< Texel width the texture spans along the strip. */
+    int            tex_h;       /**< Texel height from the first edge to the second. */
+    int            point_max;   /**< Size of the rings. */
+    int            point_num;   /**< Number of recorded points in the rings. */
     int            write_index; /**< Ring slot written next; the ring fills downward. */
-    int            head_index; /**< Ring slot written last. */
-    int            active; /**< Non-zero while the trail is recorded and drawn. */
-    int            length; /**< Smoothed points drawn while the trail is fully opaque. */
-    int            hold_time; /**< Steps left before the trail starts to fade. */
+    int            head_index;  /**< Ring slot written last. */
+    int            active;      /**< Non-zero while the trail is recorded and drawn. */
+    int            length;      /**< Smoothed points drawn while the trail is fully opaque. */
+    int            hold_time;   /**< Steps left before the trail starts to fade. */
     float          alpha;       /**< Fade of the trail, from 1 down to 0. */
     float          fade_speed;  /**< Fade taken off the alpha each step once fading. */
-    u_char             unk_9c[4];
+    u_char         unk_9c[4];
 
     /**
      *
@@ -113,7 +114,7 @@ public:
      * @address 0x2FAD30
      * @size 0x40
      */
-    void SetTexture(int block, mgCTexture *tex, int u, int v, int w, int h);
+    void SetTexture(int tex_no, mgCTexture *tex, int u, int v, int u1, int v1);
 
     /**
      *
@@ -133,7 +134,7 @@ public:
      * @address 0x2FAD90
      * @size 0x70
      */
-    void StartEffect(mgCFrame *frame_0, mgCFrame *frame_1, int length, int fade_time, int hold_time);
+    void StartEffect(mgCFrame *start, mgCFrame *end, int value8_c, int frames, int hold_time);
 
     /**
      *
@@ -143,7 +144,7 @@ public:
      * @address 0x2FAE00
      * @size 0xA0
      */
-    void AddPoint(float *pos0, float *pos1);
+    void AddPoint(float *first, float *second);
 
     /**
      *
@@ -173,7 +174,7 @@ public:
      * @address 0x2FAF60
      * @size 0x140
      */
-    void Initialize(mgCMemory *memory, int point_max, int division);
+    void Initialize(mgCMemory *memory, int capacity, int subdivisions);
 
     /**
      *

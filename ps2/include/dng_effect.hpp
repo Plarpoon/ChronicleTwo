@@ -149,15 +149,15 @@ enum MAP_EFFECT_TYPE {
  *
  */
 struct BattleEffectPrim {
-    s32           kind;      /**< Look of a death-effect fleck: 0 a cloud puff, 1 a shrinking glitter. */
-    sceVu0FVECTOR pos;       /**< Position, absolute for hit sparks and relative to the effect for the others. */
-    sceVu0FVECTOR velocity;  /**< Direction of a hit spark, or distance a death-effect fleck moves per step. */
-    float         size;      /**< Drawn size of a death-effect fleck. */
-    float         speed;     /**< Distance a hit spark moves along its direction, or a power-line streak rises, per step. */
-    float         rate;      /**< Speed a hit spark loses per step, or the peak alpha of a death-effect fleck. */
-    s32           life;      /**< Steps left; the particle is free at zero. */
-    s32           life_max;  /**< Steps the death-effect fleck started with. */
-    float         alpha;     /**< Blend of a hit spark, from one down to nothing. */
+    s32           kind;       /**< Look of a death-effect fleck: 0 a cloud puff, 1 a shrinking glitter. */
+    sceVu0FVECTOR pos;        /**< Position, absolute for hit sparks and relative to the effect for the others. */
+    sceVu0FVECTOR velocity;   /**< Direction of a hit spark, or distance a death-effect fleck moves per step. */
+    float         size;       /**< Drawn size of a death-effect fleck. */
+    float         speed;      /**< Distance a hit spark moves along its direction, or a power-line streak rises, per step. */
+    float         rate;       /**< Speed a hit spark loses per step, or the peak alpha of a death-effect fleck. */
+    s32           life;       /**< Steps left; the particle is free at zero. */
+    s32           life_max;   /**< Steps the death-effect fleck started with. */
+    float         alpha;      /**< Blend of a hit spark, from one down to nothing. */
     float         alpha_step; /**< Blend a hit spark loses per step. */
 };
 
@@ -185,17 +185,17 @@ STATIC_ASSERT(sizeof(BattleEffectChara) == 0x1C);
  *
  */
 struct CHILL_AFTER_HIT_PIECE {
-    sceVu0FVECTOR pos;        /**< Position of the shard. */
-    sceVu0FVECTOR velocity;   /**< Distance moved per step while the shard still flies. */
-    float         size;       /**< Drawn size of the shard. */
-    float         damping;    /**< Factor the velocity is scaled by each step. */
-    float         angle;      /**< Screen angle the shard is drawn turned by. */
-    float         spin;       /**< Angle added each step while the shard flies; shrinks each step. */
-    s8            rect;       /**< Texture rectangle the shard is drawn with. */
-    s8            move_time;  /**< Steps left for which the shard still flies; once spent it falls and fades. */
-    s8            trail_num;  /**< Number of earlier positions drawn behind the shard. */
-    s8            fade_speed; /**< Alpha the shard loses per step once it stops flying. */
-    s16           alpha;      /**< Blend of the shard; the shard is gone at zero. */
+    sceVu0FVECTOR pos;         /**< Position of the shard. */
+    sceVu0FVECTOR velocity;    /**< Distance moved per step while the shard still flies. */
+    float         size;        /**< Drawn size of the shard. */
+    float         damping;     /**< Factor the velocity is scaled by each step. */
+    float         angle;       /**< Screen angle the shard is drawn turned by. */
+    float         spin;        /**< Angle added each step while the shard flies; shrinks each step. */
+    s8            rect;        /**< Texture rectangle the shard is drawn with. */
+    s8            move_time;   /**< Steps left for which the shard still flies; once spent it falls and fades. */
+    s8            trail_num;   /**< Number of earlier positions drawn behind the shard. */
+    s8            fade_speed;  /**< Alpha the shard loses per step once it stops flying. */
+    s16           alpha;       /**< Blend of the shard; the shard is gone at zero. */
     float         trail[2][3]; /**< The shard's last two positions, newest first. */
 };
 
@@ -208,10 +208,10 @@ STATIC_ASSERT(sizeof(CHILL_AFTER_HIT_PIECE) == 0x50);
  */
 class CChillAfterHit {
 public:
-    s32                   active;    /**< Non-zero while any shard is still drawn. */
-    s32                   piece_num; /**< Number of shards the burst throws. */
-    float                 rate;      /**< Strength of the hit, from nothing to one, which sets the count and size. */
-    sceVu0FVECTOR         center;    /**< Point the hit landed at. */
+    s32                   active;                           /**< Non-zero while any shard is still drawn. */
+    s32                   piece_num;                        /**< Number of shards the burst throws. */
+    float                 rate;                             /**< Strength of the hit, from nothing to one, which sets the count and size. */
+    sceVu0FVECTOR         center;                           /**< Point the hit landed at. */
     CHILL_AFTER_HIT_PIECE piece[CHILL_AFTER_HIT_PIECE_MAX]; /**< The shards. */
 
     /**
@@ -305,11 +305,11 @@ STATIC_ASSERT(sizeof(FIRE_AFTER_HIT_TRAIL) == 0x14);
  */
 class CFireAfterHit {
 public:
-    s32                  active;    /**< Non-zero while any flame or puff is still drawn. */
-    s32                  flame_num; /**< Number of flames the burst throws. */
-    s32                  time;      /**< Steps since the burst started. */
-    float                rate;      /**< Strength of the hit, from nothing to one, which sets the count and size. */
-    FIRE_AFTER_HIT_FLAME flame[FIRE_AFTER_HIT_FLAME_MAX]; /**< The flames. */
+    s32                  active;                                                    /**< Non-zero while any flame or puff is still drawn. */
+    s32                  flame_num;                                                 /**< Number of flames the burst throws. */
+    s32                  time;                                                      /**< Steps since the burst started. */
+    float                rate;                                                      /**< Strength of the hit, from nothing to one, which sets the count and size. */
+    FIRE_AFTER_HIT_FLAME flame[FIRE_AFTER_HIT_FLAME_MAX];                           /**< The flames. */
     FIRE_AFTER_HIT_TRAIL trail[FIRE_AFTER_HIT_FLAME_MAX][FIRE_AFTER_HIT_TRAIL_MAX]; /**< Smoke puffs of each flame. */
 
     /**
@@ -388,11 +388,11 @@ STATIC_ASSERT(sizeof(TORNADO_PIECE) == 0x30);
  */
 class CTornado {
 public:
-    mgCFrame     *model;    /**< Ring model, drawn once per ring. */
-    s32           live_num; /**< Number of rings still turning. */
-    s32           active;   /**< Non-zero while any ring is still drawn. */
-    float         rate;     /**< Strength of the hit, from nothing to one, which sets the count and the ring height. */
-    sceVu0FVECTOR center;   /**< Point the hit landed at. */
+    mgCFrame     *model;                    /**< Ring model, drawn once per ring. */
+    s32           live_num;                 /**< Number of rings still turning. */
+    s32           active;                   /**< Non-zero while any ring is still drawn. */
+    float         rate;                     /**< Strength of the hit, from nothing to one, which sets the count and the ring height. */
+    sceVu0FVECTOR center;                   /**< Point the hit landed at. */
     TORNADO_PIECE piece[TORNADO_PIECE_MAX]; /**< The rings. */
 
     /**
@@ -462,13 +462,13 @@ STATIC_ASSERT(sizeof(THUNDER_SPARK) == 0x40);
  */
 class CThunder {
 public:
-    mgCFrame      frame;    /**< Frame that places the sparks and draws them as one sprite visual. */
-    mgCFrameAttr  attr;     /**< Drawing attributes of the frame. */
+    mgCFrame      frame; /**< Frame that places the sparks and draws them as one sprite visual. */
+    mgCFrameAttr  attr;  /**< Drawing attributes of the frame. */
     u8            unk_1a0[0x10];
     THUNDER_SPARK spark[THUNDER_SPARK_MAX]; /**< The sparks. */
-    s8            active;   /**< Non-zero while any spark is still drawn. */
-    s8            live_num; /**< Number of sparks still alive. */
-    float         rate;     /**< Strength of the hit, from nothing to one, which sets the count and size. */
+    s8            active;                   /**< Non-zero while any spark is still drawn. */
+    s8            live_num;                 /**< Number of sparks still alive. */
+    float         rate;                     /**< Strength of the hit, from nothing to one, which sets the count and size. */
 
     /**
      *
@@ -478,7 +478,7 @@ public:
      * @address 0x1C17C0
      * @size 0x200
      */
-    void SetPos(float *pos, float size, float strength);
+    void SetPos(float *pos, float width, float power);
 
     /**
      *
@@ -583,7 +583,7 @@ public:
      * @address 0x1C2190
      * @size 0x70
      */
-    void SetPrim(float *pos, int color);
+    void SetPrim(float *pos, int kind);
 
     /**
      *
@@ -593,7 +593,7 @@ public:
      * @address 0x1C2200
      * @size 0x150
      */
-    void Draw(CPreSprite *prim);
+    void Draw(CPreSprite *sprite);
 
     /**
      *
@@ -628,7 +628,7 @@ public:
     CMiniEffPrim prim[MINI_EFF_PRIM_MAX]; /**< The sprites. */
     s32          active_num;              /**< Number of sprites in use. */
     u8           unk_804[0xC];
-    CPreSprite   draw_prim;               /**< Primitive batch the sprites are drawn with. */
+    CPreSprite   draw_prim; /**< Primitive batch the sprites are drawn with. */
 
     /**
      *
@@ -638,7 +638,7 @@ public:
      * @address 0x1C23E0
      * @size 0x70
      */
-    void CreatPrim(float *pos, int color);
+    void CreatPrim(float *pos, int kind);
 
     /**
      *
@@ -754,11 +754,11 @@ STATIC_ASSERT(sizeof(HEALING_LIGHT) == 0x30);
  */
 class CHealingEffectMan {
 public:
-    s16           active;     /**< Non-zero once a healing point has been placed. */
+    s16           active;                   /**< Non-zero once a healing point has been placed. */
     HEALING_LIGHT light[HEALING_LIGHT_MAX]; /**< The lights. */
-    float         brightness; /**< Fade value that the mode animates. */
-    s16           mode;       /**< State, a HEALING_EFFECT_MODE value. */
-    sceVu0FVECTOR center;     /**< Position of the healing point. */
+    float         brightness;               /**< Fade value that the mode animates. */
+    s16           mode;                     /**< State, a HEALING_EFFECT_MODE value. */
+    sceVu0FVECTOR center;                   /**< Position of the healing point. */
 
     /**
      *
@@ -824,8 +824,8 @@ public:
     mgCFrame *tip_frame;  /**< Frame at the tip of the blade. */
     mgCFrame *root_frame; /**< Frame at the root of the blade. */
     u8        unk_c[4];
-    float     fade;       /**< Fade value that the mode animates. */
-    float     pulse;      /**< Phase of the glow's size pulse. */
+    float     fade;  /**< Fade value that the mode animates. */
+    float     pulse; /**< Phase of the glow's size pulse. */
 
     /**
      *
@@ -857,12 +857,12 @@ STATIC_ASSERT(sizeof(CSwordLuminous) == 0x18);
  */
 class CSWordAfterImage {
 public:
-    sceVu0FVECTOR *edge_point;   /**< Ring of recorded points along the leading edge. */
-    sceVu0FVECTOR *back_point;   /**< Ring of recorded points along the trailing edge. */
-    float         *life;         /**< Ring of the recorded pairs' remaining lives. */
-    sceVu0FVECTOR *smooth_edge;  /**< Smoothed leading edge built from the ring. */
-    sceVu0FVECTOR *smooth_back;  /**< Smoothed trailing edge built from the ring. */
-    float         *smooth_life;  /**< Life interpolated along the smoothed edges. */
+    sceVu0FVECTOR *edge_point;  /**< Ring of recorded points along the leading edge. */
+    sceVu0FVECTOR *back_point;  /**< Ring of recorded points along the trailing edge. */
+    float         *life;        /**< Ring of the recorded pairs' remaining lives. */
+    sceVu0FVECTOR *smooth_edge; /**< Smoothed leading edge built from the ring. */
+    sceVu0FVECTOR *smooth_back; /**< Smoothed trailing edge built from the ring. */
+    float         *smooth_life; /**< Life interpolated along the smoothed edges. */
     u8             unk_18[8];
     s32            edge_color[4]; /**< Colour and peak alpha of the leading edge. */
     s32            back_color[4]; /**< Colour and peak alpha of the trailing edge. */
@@ -903,7 +903,7 @@ public:
      * @address 0x1C3490
      * @size 0xD0
      */
-    void AddPoint(float *edge, float *back, float life);
+    void AddPoint(float *tip, float *base, float fade);
 
     /**
      *
@@ -923,7 +923,7 @@ public:
      * @address 0x1C3620
      * @size 0x180
      */
-    void Initialize(mgCMemory *memory, int point_max, int division);
+    void Initialize(mgCMemory *memory, int capacity, int division);
 };
 
 STATIC_ASSERT(sizeof(CSWordAfterImage) == 0x60);
@@ -935,13 +935,13 @@ STATIC_ASSERT(sizeof(CSWordAfterImage) == 0x60);
  */
 class CAfterWire {
 public:
-    s32           mode;        /**< Non-zero while the wire is drawn. */
+    s32           mode;                        /**< Non-zero while the wire is drawn. */
     sceVu0FVECTOR point[AFTER_WIRE_POINT_MAX]; /**< Ring of recent positions. */
-    s16           smooth_num;  /**< Number of smoothed points last built. */
-    s16           point_num;   /**< Number of positions in the ring. */
-    s16           oldest;      /**< Ring slot of the oldest position. */
-    s16           write_index; /**< Ring slot written next. */
-    s16           newest;      /**< Ring slot written last. */
+    s16           smooth_num;                  /**< Number of smoothed points last built. */
+    s16           point_num;                   /**< Number of positions in the ring. */
+    s16           oldest;                      /**< Ring slot of the oldest position. */
+    s16           write_index;                 /**< Ring slot written next. */
+    s16           newest;                      /**< Ring slot written last. */
 
     /**
      *
@@ -981,7 +981,7 @@ public:
      * @address 0x1C3870
      * @size 0x180
      */
-    void DrawWire(sceVu0FVECTOR *work);
+    void DrawWire(sceVu0FVECTOR *smooth);
 
     /**
      *
@@ -1021,7 +1021,7 @@ public:
     float             sprite_size; /**< Drawn size of a quad spark. */
     s32               kind;        /**< Way the sparks are drawn, a HIT_EFFECT_KIND value. */
     u8                unk_48[8];
-    mgRect<int>       tex_rect;    /**< Texture position and size of a quad spark. */
+    mgRect<int>       tex_rect; /**< Texture position and size of a quad spark. */
 
     /**
      *
@@ -1041,8 +1041,8 @@ public:
      * @address 0x1C3A10
      * @size 0x310
      */
-    void SethitEffect(float *pos, float *direction, float spread, float distance, float slow, float gravity,
-                      int life, int spark_num);
+    void SethitEffect(float *pos, float *hit_dir, float spread, float hit_speed, float hit_power, float gravity,
+                      int life, int count);
 
     /**
      *
@@ -1082,7 +1082,7 @@ public:
      * @address 0x1C4140
      * @size 0x1C0
      */
-    void DrawSpark(float length);
+    void DrawSpark(float size);
 };
 
 STATIC_ASSERT(sizeof(CHitEffectImage) == 0x60);
@@ -1145,12 +1145,12 @@ public:
     s32               prim_life; /**< Steps a new streak lives. */
     float             height;    /**< Height range a new streak starts in, over five. */
     u8                unk_44[0xC];
-    mgRect<int>       tex_rect;  /**< Texture position of a streak. */
-    s32               color[4];  /**< Colour and alpha of the streaks. */
-    BattleEffectPrim *prim;      /**< The streaks. */
-    s32               prim_max;  /**< Number of streaks the block holds. */
-    s32               live_num;  /**< Number of streaks still alive. */
-    s32               next;      /**< Block slot the next streak is written to. */
+    mgRect<int>       tex_rect; /**< Texture position of a streak. */
+    s32               color[4]; /**< Colour and alpha of the streaks. */
+    BattleEffectPrim *prim;     /**< The streaks. */
+    s32               prim_max; /**< Number of streaks the block holds. */
+    s32               live_num; /**< Number of streaks still alive. */
+    s32               next;     /**< Block slot the next streak is written to. */
 
     /**
      *
@@ -1221,7 +1221,7 @@ public:
      * @address 0x1C4A20
      * @size 0x70
      */
-    void SetDeadEffect(float *pos, float radius, float height, float size, int duration);
+    void SetDeadEffect(float *pos, float value14, float value10, float value18, int value1_c);
 
     /**
      *
@@ -1327,7 +1327,7 @@ public:
      * @address 0x1C5B50
      * @size 0x160
      */
-    void Init_LightBoll(mgCMemory *memory, int sprite_num);
+    void Init_LightBoll(mgCMemory *memory, int count);
 
     /**
      *
@@ -1359,24 +1359,24 @@ STATIC_ASSERT(sizeof(CMapEffectsManeger) == 0x14);
  */
 class BattleEffectMan {
 public:
-    BattleEffectPrim  *hit_prim;    /**< Spark block shared by the hit effects. */
-    CHitEffectImage   *hit;         /**< Hit effects. */
-    s32                hit_num;     /**< Number of hit effects. */
-    s32                hit_next;    /**< Hit effect handed out next. */
-    CFlushEffect      *flush;       /**< Flashes. */
-    s32                flush_num;   /**< Number of flashes. */
-    s32                flush_next;  /**< Flash handed out next. */
-    BattleEffectPrim  *power_prim;  /**< Streak block shared by the power lines. */
-    CPowerLine        *power;       /**< Power lines. */
-    s32                power_num;   /**< Number of power lines. */
-    s32                power_next;  /**< Power line handed out next. */
-    BattleEffectPrim  *dead_prim;   /**< Fleck block shared by the death clouds. */
-    CDeadEffect       *dead;        /**< Death clouds. */
-    s32                dead_num;    /**< Number of death clouds. */
-    s32                dead_next;   /**< Death cloud handed out next. */
-    CCharacter2       *chara;       /**< Pooled characters. */
-    BattleEffectChara *chara_slot;  /**< Slot record of each pooled character. */
-    s32                chara_num;   /**< Number of pooled characters. */
+    BattleEffectPrim  *hit_prim;   /**< Spark block shared by the hit effects. */
+    CHitEffectImage   *hit;        /**< Hit effects. */
+    s32                hit_num;    /**< Number of hit effects. */
+    s32                hit_next;   /**< Hit effect handed out next. */
+    CFlushEffect      *flush;      /**< Flashes. */
+    s32                flush_num;  /**< Number of flashes. */
+    s32                flush_next; /**< Flash handed out next. */
+    BattleEffectPrim  *power_prim; /**< Streak block shared by the power lines. */
+    CPowerLine        *power;      /**< Power lines. */
+    s32                power_num;  /**< Number of power lines. */
+    s32                power_next; /**< Power line handed out next. */
+    BattleEffectPrim  *dead_prim;  /**< Fleck block shared by the death clouds. */
+    CDeadEffect       *dead;       /**< Death clouds. */
+    s32                dead_num;   /**< Number of death clouds. */
+    s32                dead_next;  /**< Death cloud handed out next. */
+    CCharacter2       *chara;      /**< Pooled characters. */
+    BattleEffectChara *chara_slot; /**< Slot record of each pooled character. */
+    s32                chara_num;  /**< Number of pooled characters. */
 
     /**
      *
@@ -1419,8 +1419,8 @@ STATIC_ASSERT(sizeof(BattleEffectMan) == 0x48);
  */
 class CWeaponElement {
 public:
-    sceVu0FVECTOR *origin;     /**< Point the cloud is drawn around, held by the weapon. */
-    sceVu0FVECTOR  fire_pos;   /**< Point the fire element was started at, which its sparks stay around. */
+    sceVu0FVECTOR *origin;                               /**< Point the cloud is drawn around, held by the weapon. */
+    sceVu0FVECTOR  fire_pos;                             /**< Point the fire element was started at, which its sparks stay around. */
     sceVu0FVECTOR  offset[WEAPON_ELEMENT_SPARK_MAX];     /**< Distance of each spark from the origin. */
     sceVu0FVECTOR  velocity[WEAPON_ELEMENT_SPARK_MAX];   /**< Distance each spark moves per step. */
     float          size[WEAPON_ELEMENT_SPARK_MAX];       /**< Width each spark draws at before it shrinks. */
@@ -1464,7 +1464,7 @@ public:
      * @address 0x1C7040
      * @size 0xC0
      */
-    void Set(sceVu0FVECTOR *origin, float *position, float power, int kind, float spread);
+    void Set(sceVu0FVECTOR *base, float *center, float level, int element_type, float spread);
 
     /**
      *
@@ -1628,7 +1628,7 @@ int CreatSmoothPass(sceVu0FVECTOR *out, sceVu0FVECTOR *ring, int point_num, int 
  * @address 0x1CA400
  * @size 0x270
  */
-float unitRotation(mgCFrame *frame, float target, float divide);
+float unitRotation(mgCFrame *frame, float target, float speed);
 
 /**
  *

@@ -89,7 +89,7 @@ public:
      * @address 0x15D8B0
      * @size 0x70
      */
-    int GetFlag(int no);
+    int GetFlag(int index);
 };
 
 STATIC_ASSERT(sizeof(CMapFlagData) == 0x10);
@@ -123,10 +123,10 @@ class CPartsGroup {
 public:
     CPartsGroup() { Initialize(); }
 
-    char *name;                   /**< Name the group is looked up by, or NULL when the slot is free. */
-    s32 off;                      /**< Hides the group's parts while nonzero. */
-    s32 camera_off;               /**< Hides the group's parts for the frame a fixed camera asks it to. */
-    CList<PartsGroupData> *list;  /**< First entry of the group's parts. */
+    char                  *name;       /**< Name the group is looked up by, or NULL when the slot is free. */
+    s32                    off;        /**< Hides the group's parts while nonzero. */
+    s32                    camera_off; /**< Hides the group's parts for the frame a fixed camera asks it to. */
+    CList<PartsGroupData> *list;       /**< First entry of the group's parts. */
 
     /**
      *
@@ -146,7 +146,7 @@ public:
      * @address 0x15D950
      * @size 0x50
      */
-    void Add(CList<PartsGroupData> *entry);
+    void Add(CList<PartsGroupData> *node);
 };
 
 STATIC_ASSERT(sizeof(CPartsGroup) == 0x10);
@@ -163,10 +163,10 @@ struct MapDrawOffRect {
         parts = NULL;
     }
 
-    mgVu0FBOX area;               /**< Box that the viewpoint is tested against. */
-    s32 used;                     /**< Nonzero once the slot holds an area. */
-    s32 outside;                  /**< Hides the parts while the viewpoint is outside the area instead of inside. */
-    CList<CMapParts *> *parts;    /**< Placed parts that the area hides. */
+    mgVu0FBOX           area;    /**< Box that the viewpoint is tested against. */
+    s32                 used;    /**< Nonzero once the slot holds an area. */
+    s32                 outside; /**< Hides the parts while the viewpoint is outside the area instead of inside. */
+    CList<CMapParts *> *parts;   /**< Placed parts that the area hides. */
 };
 
 STATIC_ASSERT(sizeof(MapDrawOffRect) == 0x30);
@@ -177,11 +177,11 @@ STATIC_ASSERT(sizeof(MapDrawOffRect) == 0x30);
  *
  */
 struct MapEventInfo {
-    s32 check_type;               /**< Kind of check the event was searched for. */
-    s32 event_no;                 /**< Event number of the point, or of the last event point passed through. */
-    sceVu0FMATRIX matrix;         /**< World matrix of the event point. */
-    s32 parts_no;                 /**< Placed parts the point belongs to, or -1 for a point of the map itself. */
-    s32 point_no;                 /**< Number assigned to the point, such as its treasure box index. */
+    s32           check_type; /**< Kind of check the event was searched for. */
+    s32           event_no;   /**< Event number of the point, or of the last event point passed through. */
+    sceVu0FMATRIX matrix;     /**< World matrix of the event point. */
+    s32           parts_no;   /**< Placed parts the point belongs to, or -1 for a point of the map itself. */
+    s32           point_no;   /**< Number assigned to the point, such as its treasure box index. */
 };
 
 STATIC_ASSERT(sizeof(MapEventInfo) == 0x60);
@@ -193,13 +193,13 @@ STATIC_ASSERT(sizeof(MapEventInfo) == 0x60);
  */
 class CObject : public mgCObject {
 public:
-    float far_dist;               /**< Distance from the camera beyond which the object is not drawn, or not above zero for none. */
-    s32 fade;                     /**< Fades the object in and out at the near and far distances instead of cutting it off. */
-    float fade_alpha;             /**< Current alpha of a fading object, or below zero before its first step. */
-    float fade_speed;             /**< Alpha the fade gains or loses each step. */
-    float near_dist;              /**< Distance from the camera within which the object is not drawn, or not above zero for none. */
-    s32 show;                     /**< Draws the object while nonzero. */
-    s32 draw_off;                 /**< Keeps the object from drawing while nonzero, whatever show holds. */
+    float far_dist;   /**< Distance from the camera beyond which the object is not drawn, or not above zero for none. */
+    s32   fade;       /**< Fades the object in and out at the near and far distances instead of cutting it off. */
+    float fade_alpha; /**< Current alpha of a fading object, or below zero before its first step. */
+    float fade_speed; /**< Alpha the fade gains or loses each step. */
+    float near_dist;  /**< Distance from the camera within which the object is not drawn, or not above zero for none. */
+    s32   show;       /**< Draws the object while nonzero. */
+    s32   draw_off;   /**< Keeps the object from drawing while nonzero, whatever show holds. */
 
     /**
      *
@@ -391,12 +391,12 @@ STATIC_ASSERT(sizeof(CObject) == 0x70);
  */
 class CMapWater : public CObject {
 public:
-    CWaterFrame *frame;           /**< Water surface drawn, or NULL when the slot is free. */
-    sceVu0IVECTOR follow;         /**< Nonzero for each axis on which the surface follows the camera. */
-    char *parts_name;             /**< Name of the placed parts the surface is drawn at, or NULL for the world origin. */
-    s32 parts_max;                /**< Capacity of parts. */
-    s32 parts_num;                /**< Number of placed parts in parts. */
-    CMapParts **parts;            /**< Placed parts the surface is drawn at, NULL for the world origin. */
+    CWaterFrame  *frame;      /**< Water surface drawn, or NULL when the slot is free. */
+    sceVu0IVECTOR follow;     /**< Nonzero for each axis on which the surface follows the camera. */
+    char         *parts_name; /**< Name of the placed parts the surface is drawn at, or NULL for the world origin. */
+    s32           parts_max;  /**< Capacity of parts. */
+    s32           parts_num;  /**< Number of placed parts in parts. */
+    CMapParts   **parts;      /**< Placed parts the surface is drawn at, NULL for the world origin. */
 
     /**
      *
@@ -438,43 +438,43 @@ STATIC_ASSERT(sizeof(CMapWater) == 0xA0);
  */
 class CMap : public CMapInfo {
 public:
-    CMdsListSet *mds_list_set;                          /**< Model lists the map's parts are taken from. */
+    CMdsListSet      *mds_list_set;                     /**< Model lists the map's parts are taken from. */
     CList<CMapParts> *parts_list;                       /**< First of the parts the map can place. */
-    s32 parts_group_max;                                /**< Number of slots in parts_group. */
-    CPartsGroup parts_group[MAP_PARTS_GROUP_MAX];       /**< Named groups of placed parts. */
-    s32 unk_30c;
-    CEffectList effect_list;                            /**< Effects the map's function points draw. */
-    s32 place_parts_max;                                /**< Capacity of place_parts. */
-    CMapParts *place_parts;                             /**< Parts placed in the map. */
-    s32 place_parts_num;                                /**< Number of entries of place_parts in use, up to the last placed. */
-    s32 bbox_valid;                                     /**< Nonzero once bbox holds the bounds of a placed parts. */
-    mgVu0FBOX bbox;                                     /**< Bounds of every placed parts. */
-    s32 draw_parts_num;                                 /**< Number of placed parts in draw_parts. */
-    CMapParts **draw_parts;                             /**< Placed parts on screen this frame. */
-    s32 draw_rect_max;                                  /**< Number of slots in draw_rect. */
-    MapDrawOffRect draw_rect[MAP_DRAW_RECT_MAX];        /**< Areas that hide placed parts. */
-    s32 occlusion_num;                                  /**< Number of planes in occlusion. */
-    COcclusion occlusion[MAP_OCCLUSION_MAX];            /**< Planes that hide the placed parts behind them. */
-    s32 camera_info_num;                                /**< Number of fixed cameras in camera_info. */
-    CCameraInfo *camera_info;                           /**< Fixed cameras of the map. */
-    float now_time;                                     /**< Time of day the map is lit for, in hours. */
-    s32 obj_anime_num;                                  /**< Number of animations in obj_anime. */
-    CObjAnime *obj_anime;                               /**< Animations driven by the map's function points. */
-    s32 tr_box_texture;                                 /**< Texture block of the treasure box model, or -1. */
-    s32 tr_box_num;                                     /**< Number of treasure boxes in tr_box. */
-    CMapTreasureBox *tr_box;                            /**< Treasure boxes placed at the map's treasure box points. */
-    CMapTreasureBox *tr_box_model;                      /**< Treasure box that every one in tr_box is copied from. */
-    s32 unk_ca4;
-    s32 piece_load_skip;                                /**< Skips loading the map's pieces while nonzero. */
-    s32 parts_event;                                    /**< Nonzero when placed parts hold event points, so events are searched in them too. */
-    CFuncPointMngr func_point;                          /**< Function points of the map itself. */
-    float anime_time;                                   /**< Frames counted by EffectStep, for the function points' animation. */
-    s32 anime_frame;                                    /**< anime_time as a whole number of frames. */
-    s32 water_surface_num;                              /**< Number of water surfaces in water_surface. */
-    CWaterFrame **water_surface;                        /**< Water surfaces the map's water draws. */
-    s32 water_num;                                      /**< Number of slots in water. */
-    CMapWater *water;                                   /**< Places the water surfaces are drawn at. */
-    CFireRaster *fire_raster;                           /**< Heat-haze raster that fire points draw into, or NULL. */
+    s32               parts_group_max;                  /**< Number of slots in parts_group. */
+    CPartsGroup       parts_group[MAP_PARTS_GROUP_MAX]; /**< Named groups of placed parts. */
+    s32               unk_30c;
+    CEffectList       effect_list;                  /**< Effects the map's function points draw. */
+    s32               place_parts_max;              /**< Capacity of place_parts. */
+    CMapParts        *place_parts;                  /**< Parts placed in the map. */
+    s32               place_parts_num;              /**< Number of entries of place_parts in use, up to the last placed. */
+    s32               bbox_valid;                   /**< Nonzero once bbox holds the bounds of a placed parts. */
+    mgVu0FBOX         bbox;                         /**< Bounds of every placed parts. */
+    s32               draw_parts_num;               /**< Number of placed parts in draw_parts. */
+    CMapParts       **draw_parts;                   /**< Placed parts on screen this frame. */
+    s32               draw_rect_max;                /**< Number of slots in draw_rect. */
+    MapDrawOffRect    draw_rect[MAP_DRAW_RECT_MAX]; /**< Areas that hide placed parts. */
+    s32               occlusion_num;                /**< Number of planes in occlusion. */
+    COcclusion        occlusion[MAP_OCCLUSION_MAX]; /**< Planes that hide the placed parts behind them. */
+    s32               camera_info_num;              /**< Number of fixed cameras in camera_info. */
+    CCameraInfo      *camera_info;                  /**< Fixed cameras of the map. */
+    float             now_time;                     /**< Time of day the map is lit for, in hours. */
+    s32               obj_anime_num;                /**< Number of animations in obj_anime. */
+    CObjAnime        *obj_anime;                    /**< Animations driven by the map's function points. */
+    s32               tr_box_texture;               /**< Texture block of the treasure box model, or -1. */
+    s32               tr_box_num;                   /**< Number of treasure boxes in tr_box. */
+    CMapTreasureBox  *tr_box;                       /**< Treasure boxes placed at the map's treasure box points. */
+    CMapTreasureBox  *tr_box_model;                 /**< Treasure box that every one in tr_box is copied from. */
+    s32               unk_ca4;
+    s32               piece_load_skip;   /**< Skips loading the map's pieces while nonzero. */
+    s32               parts_event;       /**< Nonzero when placed parts hold event points, so events are searched in them too. */
+    CFuncPointMngr    func_point;        /**< Function points of the map itself. */
+    float             anime_time;        /**< Frames counted by EffectStep, for the function points' animation. */
+    s32               anime_frame;       /**< anime_time as a whole number of frames. */
+    s32               water_surface_num; /**< Number of water surfaces in water_surface. */
+    CWaterFrame     **water_surface;     /**< Water surfaces the map's water draws. */
+    s32               water_num;         /**< Number of slots in water. */
+    CMapWater        *water;             /**< Places the water surfaces are drawn at. */
+    CFireRaster      *fire_raster;       /**< Heat-haze raster that fire points draw into, or NULL. */
 
     /**
      *
@@ -614,7 +614,7 @@ public:
      * @address 0x161110
      * @size 0xA0
      */
-    virtual void DrawScreenFunc(mgCFrame *marker);
+    virtual void DrawScreenFunc(mgCFrame *frame);
 
     /**
      *
@@ -624,7 +624,7 @@ public:
      * @address 0x161370
      * @size 0x170
      */
-    virtual int GetSeSrcVolPan(int *se_no, float *vol, float *pan, int max);
+    virtual int GetSeSrcVolPan(int *ids, float *vol, float *pan, int max);
 
     /**
      *
@@ -694,7 +694,7 @@ public:
      * @address 0x15DA50
      * @size 0x100
      */
-    int AddPartsGroup(char *name, CMapParts *parts, mgCMemory *stack);
+    int AddPartsGroup(char *name, CMapParts *parts, mgCMemory *memory);
 
     /**
      *
@@ -734,7 +734,7 @@ public:
      * @address 0x15DE40
      * @size 0x100
      */
-    void SetPlacePartsBuff(mgCMemory *stack, int max);
+    void SetPlacePartsBuff(mgCMemory *memory, int count);
 
     /**
      *
@@ -814,7 +814,7 @@ public:
      * @address 0x15E120
      * @size 0x50
      */
-    void AddParts(CList<CMapParts> *parts);
+    void AddParts(CList<CMapParts> *node);
 
     /**
      *
@@ -834,7 +834,7 @@ public:
      * @address 0x15E210
      * @size 0x1C0
      */
-    void CreateDrawRect(mgCMemory *stack, mgVu0FBOX *area, mgVu0FBOX *parts_box, int outside);
+    void CreateDrawRect(mgCMemory *memory, mgVu0FBOX *rect, mgVu0FBOX *clip, int outside);
 
     /**
      *
@@ -994,7 +994,7 @@ public:
      * @address 0x1606D0
      * @size 0x110
      */
-    int GetTrBoxColPoly(CCPoly *polys, float *pos, int max);
+    int GetTrBoxColPoly(CCPoly *polys, float *param, int max);
 
     /**
      *
@@ -1064,7 +1064,7 @@ public:
      * @address 0x161A30
      * @size 0x50
      */
-    CMapTreasureBox *GetTrBox(int no);
+    CMapTreasureBox *GetTrBox(int index);
 
     /**
      *
@@ -1084,7 +1084,7 @@ public:
      * @address 0x161AF0
      * @size 0xA0
      */
-    void UpdateTrBoxFlag(CMapFlagData *flags);
+    void UpdateTrBoxFlag(CMapFlagData *flag_data);
 
     /**
      *
@@ -1184,7 +1184,7 @@ public:
      * @address 0x162770
      * @size 0x120
      */
-    float GetLightNoTime(int light_no);
+    float GetLightNoTime(int index);
 
     /**
      *
@@ -1244,7 +1244,7 @@ public:
      * @address 0x165890
      * @size 0x90
      */
-    void LoadMapFile(char *script, int size, mgCMemory *stack, int add_mode);
+    void LoadMapFile(char *script, int length, mgCMemory *memory, int add_mode);
 
     /**
      *
@@ -1264,7 +1264,7 @@ public:
      * @address 0x1661E0
      * @size 0x70
      */
-    void LoadCfgFile(char *script, int size, mgCMemory *stack);
+    void LoadCfgFile(char *script, int length, mgCMemory *memory);
 };
 
 STATIC_ASSERT(sizeof(CMap) == 0xD10);

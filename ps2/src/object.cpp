@@ -1,11 +1,11 @@
 #include "common.h"
-#include "object.hpp"
 
 #include <libvu0.h>
 
 #include "mg_frame.hpp"
 #include "mg_math.hpp"
 #include "mglib.hpp"
+#include "object.hpp"
 
 // Code (.text)
 void CObject::GetMatrix(float (*out_matrix)[4]) {
@@ -26,7 +26,7 @@ void CObject::GetMatrix(float (*out_matrix)[4]) {
         sceVu0RotMatrixZ(out_matrix, out_matrix, rotation[2]);
     }
 
-    *(u_long128 *)out_matrix[3] = *(u_long128 *)position;
+    *(u_long128 *) out_matrix[3] = *(u_long128 *) position;
     out_matrix[3][3] = 1.0f;
 }
 
@@ -62,12 +62,14 @@ int CObject::FarClip(float dist, float *out_alpha) {
     if (fade) {
         if (draw) {
             fade_alpha += speed;
+
             if (fade_alpha > 1.0f) {
                 fade_alpha = 1.0f;
             }
         } else {
             // Still drawn while it fades out.
             fade_alpha -= speed;
+
             if (fade_alpha <= 0.0f) {
                 fade_alpha = 0.0f;
                 draw = 0;
@@ -131,10 +133,12 @@ float CObject::GetAlpha() {
 
     return 0.0f;
 }
+
 int CObject::PreDraw() {
     if (show == 0 || draw_off != 0) {
         return 0;
     }
+
     return 1;
 }
 
@@ -188,10 +192,12 @@ int CObjectFrame::PreDraw() {
 
     return draw;
 }
+
 int CObjectFrame::Draw() {
     if (CObjectFrame::PreDraw() == 0) {
         return 0;
     }
+
     mgDraw(frame);
     return 0;
 }
@@ -206,7 +212,7 @@ int CObjectFrame::DrawDirect() {
 }
 
 void CObjectFrame::Copy(CObjectFrame &dest, mgCMemory *memory) {
-    (CObject &)dest = *this;
+    (CObject &) dest = *this;
 
     // The frame is shared whether or not the copy has memory to duplicate it into.
     if (memory == NULL) {

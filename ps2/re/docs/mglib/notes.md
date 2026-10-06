@@ -1,5 +1,13 @@
 # mglib notes
 
+The global draw environment, texture manager, draw manager, two packet stacks, two data stacks,
+frame texture and two fixed-Z textures are native C++ objects. Their declaration order reproduces
+the compiler-generated `__sinit_mglib_cpp` call sequence, which matches the 200-byte retail
+initializer. The frame texture has the genuine `mgCTexture` type. Defining it in this translation
+unit changes MWCC's code generation for the two buffer-copy functions because it hoists the
+symbol base instead of loading each field through a separate relocation; this matching issue
+remains under investigation.
+
 ## C++ draft status
 All 101 functions have C++ in `ps2/src/mglib.cpp`. 43 are exact and compiled by
 the matching build. 31 more compile to retail's bytes in isolation but stay

@@ -25,7 +25,7 @@ enum {
 class CWaveTable {
 public:
     float height[2][WAVE_TABLE_DIM][WAVE_TABLE_DIM]; /**< Two ripple height fields: the current one and the one from the step before. */
-    int current;                                     /**< Index (0 or 1) of the height field that holds the current heights. */
+    int   current;                                   /**< Index (0 or 1) of the height field that holds the current heights. */
 
     /**
      * Creates a table whose two height fields are flat and whose current
@@ -77,4 +77,5 @@ public:
      */
     void Effect();
 };
+
 STATIC_ASSERT(sizeof(CWaveTable) == 0x1208);

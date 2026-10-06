@@ -19,10 +19,10 @@ class mgCMemory;
  *
  */
 enum DA_FRAME_POSE_TYPE {
-    DA_FRAME_POSE_NONE    = 0, /**< Leaves the frame unposed. */
-    DA_FRAME_POSE_BONE    = 1, /**< "bone": z runs from the first vertex to the second and x towards the midpoint of the last two, from the midpoint of the first two. */
+    DA_FRAME_POSE_NONE = 0,    /**< Leaves the frame unposed. */
+    DA_FRAME_POSE_BONE = 1,    /**< "bone": z runs from the first vertex to the second and x towards the midpoint of the last two, from the midpoint of the first two. */
     DA_FRAME_POSE_BONE_YX = 2, /**< "bone_yx": as DA_FRAME_POSE_BONE with y, not z, running from the first vertex to the second. */
-    DA_FRAME_POSE_B_CDLR  = 3, /**< "b_cdlr": x runs from the first vertex to the second and z from the fourth to the third, from the first vertex. */
+    DA_FRAME_POSE_B_CDLR = 3,  /**< "b_cdlr": x runs from the first vertex to the second and z from the fourth to the third, from the first vertex. */
 };
 
 /**
@@ -140,7 +140,7 @@ public:
      * @address 0x17D4D0
      * @size 0x1B0
      */
-    virtual int CheckHit(float *position);
+    virtual int CheckHit(float *point);
 
     /**
      * Puts the cylinder along the frame's x axis at its origin with no size
@@ -168,35 +168,35 @@ STATIC_ASSERT(sizeof(CDAColPipe) == 0xE0);
  */
 class CDynamicAnime {
 public:
-    mgCFrame         *top_frame;         /**< Root frame of the model the animation moves. */
-    int               frame_num;         /**< Number of entries in frame. */
-    mgCFrame        **frame;             /**< Frames of the model the animation refers to by index. */
-    DA_FRAME_POSE    *frame_pose;        /**< Pose of each entry of frame, frame_num entries. */
-    int               vertex_num;        /**< Number of simulated vertices. */
-    sceVu0FVECTOR    *init_vertex;       /**< World position of each vertex as loaded. */
-    sceVu0FVECTOR    *now_vertex;        /**< Position of each vertex in the current step. */
-    sceVu0FVECTOR    *old_vertex;        /**< Position of each vertex in the previous step. */
-    sceVu0FVECTOR    *velocity;          /**< Velocity of each vertex. */
-    sceVu0FVECTOR    *world_init_vertex; /**< Loaded positions moved by the root frame's matrix, made each step while k is positive. */
-    int               fix_vertex_num;    /**< Number of entries the fix vertex table was made for. */
-    DA_FIX_VERTEX    *fix_vertex;        /**< Point each vertex is tied to, indexed by vertex. */
-    int               draw_frame_num;    /**< Number of entries in draw_frame. */
-    int              *draw_frame;        /**< Indices in frame of the frames drawn with the animation, -1 for none. */
-    int               bind_vertex_num;   /**< Number of entries in bind_vertex. */
-    DA_BIND_VERTEX   *bind_vertex;       /**< Pairs of vertices held at a fixed distance. */
-    int               bbox_num;          /**< Number of entries in bbox. */
-    DA_BOUNDING_BOX  *bbox;              /**< Boxes read from the animation script. */
-    int               collision_num;     /**< Number of entries in collision. */
-    CDACollision    **collision;         /**< Volumes the vertices are pushed out of; an entry may be null. */
-    sceVu0FVECTOR     gravity;           /**< Velocity added to each vertex every step. */
-    float             k;                 /**< Value of the script's K tag; a positive value makes world_init_vertex each step. */
-    float             wind_scale;        /**< Factor applied to the wind, from the script's WIND tag. */
-    float             wind_power;        /**< Strength of the wind, or 0.0 for none. */
-    sceVu0FVECTOR     wind_dir;          /**< Unit direction the wind blows in. */
-    int               wind_seed;         /**< State of the random sequence that makes the wind gust. */
-    float             wind_gust;         /**< Current strength of the gust, kept between 0.0 and 1.0. */
-    int               floor_enable;      /**< Whether the vertices are kept above floor_y. */
-    float             floor_y;           /**< Height the vertices may not fall below while floor_enable is set. */
+    mgCFrame        *top_frame;         /**< Root frame of the model the animation moves. */
+    int              frame_num;         /**< Number of entries in frame. */
+    mgCFrame       **frame;             /**< Frames of the model the animation refers to by index. */
+    DA_FRAME_POSE   *frame_pose;        /**< Pose of each entry of frame, frame_num entries. */
+    int              vertex_num;        /**< Number of simulated vertices. */
+    sceVu0FVECTOR   *init_vertex;       /**< World position of each vertex as loaded. */
+    sceVu0FVECTOR   *now_vertex;        /**< Position of each vertex in the current step. */
+    sceVu0FVECTOR   *old_vertex;        /**< Position of each vertex in the previous step. */
+    sceVu0FVECTOR   *velocity;          /**< Velocity of each vertex. */
+    sceVu0FVECTOR   *world_init_vertex; /**< Loaded positions moved by the root frame's matrix, made each step while k is positive. */
+    int              fix_vertex_num;    /**< Number of entries the fix vertex table was made for. */
+    DA_FIX_VERTEX   *fix_vertex;        /**< Point each vertex is tied to, indexed by vertex. */
+    int              draw_frame_num;    /**< Number of entries in draw_frame. */
+    int             *draw_frame;        /**< Indices in frame of the frames drawn with the animation, -1 for none. */
+    int              bind_vertex_num;   /**< Number of entries in bind_vertex. */
+    DA_BIND_VERTEX  *bind_vertex;       /**< Pairs of vertices held at a fixed distance. */
+    int              bbox_num;          /**< Number of entries in bbox. */
+    DA_BOUNDING_BOX *bbox;              /**< Boxes read from the animation script. */
+    int              collision_num;     /**< Number of entries in collision. */
+    CDACollision   **collision;         /**< Volumes the vertices are pushed out of; an entry may be null. */
+    sceVu0FVECTOR    gravity;           /**< Velocity added to each vertex every step. */
+    float            k;                 /**< Value of the script's K tag; a positive value makes world_init_vertex each step. */
+    float            wind_scale;        /**< Factor applied to the wind, from the script's WIND tag. */
+    float            wind_power;        /**< Strength of the wind, or 0.0 for none. */
+    sceVu0FVECTOR    wind_dir;          /**< Unit direction the wind blows in. */
+    int              wind_seed;         /**< State of the random sequence that makes the wind gust. */
+    float            wind_gust;         /**< Current strength of the gust, kept between 0.0 and 1.0. */
+    int              floor_enable;      /**< Whether the vertices are kept above floor_y. */
+    float            floor_y;           /**< Height the vertices may not fall below while floor_enable is set. */
 
     /**
      * Makes an empty animation with its fields at their defaults.
@@ -252,7 +252,7 @@ public:
      * @address 0x17B2D0
      * @size 0x10
      */
-    void SetFloor(float y);
+    void SetFloor(float height);
 
     /**
      * Lets the vertices fall to any height.
@@ -299,7 +299,7 @@ public:
      * @address 0x17B7A0
      * @size 0xF0
      */
-    void NewFrameTable(int num, mgCMemory *stack);
+    void NewFrameTable(int count, mgCMemory *memory);
 
     /**
      * Makes the per-vertex position and velocity tables for a number of
@@ -309,7 +309,7 @@ public:
      * @address 0x17B890
      * @size 0x160
      */
-    void NewVertexTable(int num, mgCMemory *stack);
+    void NewVertexTable(int count, mgCMemory *memory);
 
     /**
      * Makes an empty fix vertex table of a size.
@@ -318,7 +318,7 @@ public:
      * @address 0x17B9F0
      * @size 0xA0
      */
-    void NewFixVertexTable(int num, mgCMemory *stack);
+    void NewFixVertexTable(int count, mgCMemory *memory);
 
     /**
      * Makes a draw frame table of a size with no frame in it.
@@ -327,7 +327,7 @@ public:
      * @address 0x17BA90
      * @size 0x90
      */
-    void NewDrawFrameTable(int num, mgCMemory *stack);
+    void NewDrawFrameTable(int count, mgCMemory *memory);
 
     /**
      * Makes an empty bind vertex table of a size.
@@ -336,7 +336,7 @@ public:
      * @address 0x17BB20
      * @size 0xA0
      */
-    void NewBindVertexTable(int num, mgCMemory *stack);
+    void NewBindVertexTable(int count, mgCMemory *memory);
 
     /**
      * Makes an empty bounding box table of a size.
@@ -345,7 +345,7 @@ public:
      * @address 0x17BBC0
      * @size 0xB0
      */
-    void NewBoundingBoxTable(int num, mgCMemory *stack);
+    void NewBoundingBoxTable(int count, mgCMemory *memory);
 
     /**
      * Makes a collision table of a size with no volume in it.
@@ -354,7 +354,7 @@ public:
      * @address 0x17BC70
      * @size 0x80
      */
-    void NewCollisionTable(int num, mgCMemory *stack);
+    void NewCollisionTable(int count, mgCMemory *memory);
 
     /**
      * Puts a frame into the frame table, if the index is in range.
@@ -410,7 +410,7 @@ public:
      * @address 0x17BE40
      * @size 0x60
      */
-    void GetInitVertex(int index, float *out_position);
+    void GetInitVertex(int index, float *pos);
 
     /**
      * Sets a vertex's current position, if the index is in range.
@@ -507,7 +507,7 @@ public:
      * @address 0x17C190
      * @size 0x410
      */
-    void Copy(CDynamicAnime &dest, mgCFrame *top_frame, mgCMemory *stack);
+    void Copy(CDynamicAnime &dest, mgCFrame *root, mgCMemory *memory);
 
     /**
      * Builds the animation from a script for a model, with the model held
@@ -517,7 +517,7 @@ public:
      * @address 0x17D340
      * @size 0x190
      */
-    void Load(char *script, int size, mgCFrame *top_frame, mgCMemory *stack);
+    void Load(char *name, int size, mgCFrame *top_frame, mgCMemory *memory);
 };
 
 STATIC_ASSERT(sizeof(CDynamicAnime) == 0x90);

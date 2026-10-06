@@ -45,7 +45,7 @@ enum EditRiverPiece {
  */
 class CGridData {
 public:
-    s32 river;                      /**< Nonzero when the cell holds river. */
+    s32 river;                       /**< Nonzero when the cell holds river. */
     s16 piece[EDIT_GRID_CORNER_MAX]; /**< River piece of each quarter, an EditRiverPiece shape. */
     s16 rot[EDIT_GRID_CORNER_MAX];   /**< Index into CEditGrid::rot of the turn each quarter's piece is drawn at. */
 
@@ -69,13 +69,13 @@ STATIC_ASSERT(sizeof(CGridData) == 0x14);
  */
 class CEditGrid {
 public:
-    s32 num_x;                           /**< Number of cells along the X axis. */
-    s32 num_z;                           /**< Number of cells along the Z axis. */
-    CGridData *data;                     /**< Cells, row by row along the X axis. */
-    float step_x;                        /**< Width of a cell along the X axis. */
-    float step_z;                        /**< Width of a cell along the Z axis. */
-    u8 unk_14[0xC];
-    sceVu0FVECTOR origin;                /**< World position of the grid's smallest corner; its height is that of the river. */
+    s32           num_x;  /**< Number of cells along the X axis. */
+    s32           num_z;  /**< Number of cells along the Z axis. */
+    CGridData    *data;   /**< Cells, row by row along the X axis. */
+    float         step_x; /**< Width of a cell along the X axis. */
+    float         step_z; /**< Width of a cell along the Z axis. */
+    u8            unk_14[0xC];
+    sceVu0FVECTOR origin;                 /**< World position of the grid's smallest corner; its height is that of the river. */
     sceVu0FMATRIX rot[EDIT_GRID_ROT_MAX]; /**< Matrices that turn a river piece by each quarter turn about the vertical axis. */
 
     /**
@@ -86,7 +86,7 @@ public:
      * @address 0x29B590
      * @size 0xC0
      */
-    void Create(int num_x, int num_z, mgCMemory *stack);
+    void Create(int w, int h, mgCMemory *mem);
 
     /**
      *
@@ -116,7 +116,7 @@ public:
      * @address 0x29B6D0
      * @size 0x50
      */
-    int Check(int x, int z);
+    int Check(int x, int y);
 
     /**
      *
@@ -126,7 +126,7 @@ public:
      * @address 0x29B720
      * @size 0x60
      */
-    CGridData *Get(int x, int z);
+    CGridData *Get(int x, int y);
 
     /**
      *
@@ -136,7 +136,7 @@ public:
      * @address 0x29B780
      * @size 0x30
      */
-    CGridData *GetFast(int x, int z);
+    CGridData *GetFast(int x, int y);
 
     /**
      *
@@ -146,7 +146,7 @@ public:
      * @address 0x29B7B0
      * @size 0xC0
      */
-    int GetLPos(int *lpos, float x, float z);
+    int GetLPos(int *cell, float x, float z);
 
     /**
      *
@@ -156,7 +156,7 @@ public:
      * @address 0x29B870
      * @size 0x50
      */
-    void GetWPos(float *pos, int x, int z);
+    void GetWPos(float *pos, int x, int y);
 
     /**
      *
@@ -236,7 +236,7 @@ public:
      * @address 0x29BF90
      * @size 0x90
      */
-    void GetRiverPos(int x, int z, float *pos);
+    void GetRiverPos(int x, int y, float *pos);
 
     /**
      *

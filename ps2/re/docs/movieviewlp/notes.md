@@ -1,5 +1,8 @@
 # movieviewlp notes
 
+`DataBuffer__2` and `Stack_ReadBuff__2` are native `mgCMemory` globals. Their constructors
+generate the 44-byte retail `__sinit_movieviewlp_cpp` in the same order.
+
 Debug movie viewer, a main-loop mode (entry in `mainloop`'s `LoopInit` table at offset 0x20).
 Reads `mv.cfg` with `CScriptInterpreter` using the one-tag table `tag_movie`, lists the movies and
 plays the chosen one with `CMovie`. Owns no class in `class_units.tsv`. No first-game counterpart.

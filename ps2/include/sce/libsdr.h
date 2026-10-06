@@ -35,12 +35,12 @@
  * Describes the reverberation of one core.
  */
 struct sceSdEffectAttr {
-    int core;      /**< Core the attributes apply to. */
-    int mode;      /**< Reverberation type, with the work-area clear flag. */
-    short depth_L; /**< Left reverberation depth. */
-    short depth_R; /**< Right reverberation depth. */
-    int delay;     /**< Echo and delay time. */
-    int feedback;  /**< Echo and delay feedback. */
+    int   core;     /**< Core the attributes apply to. */
+    int   mode;     /**< Reverberation type, with the work-area clear flag. */
+    short depth_L;  /**< Left reverberation depth. */
+    short depth_R;  /**< Right reverberation depth. */
+    int   delay;    /**< Echo and delay time. */
+    int   feedback; /**< Echo and delay feedback. */
 };
 
 #ifdef __cplusplus

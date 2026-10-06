@@ -1,19 +1,21 @@
 #include "common.h"
-#include "mg_memory.hpp"
-#include "mg_drawprim.hpp"
-#include "mg_texture.hpp"
-#include "mg_frame.hpp"
-#include "mg_drawenv.hpp"
-#include "mg_math.hpp"
-#include "mglib.hpp"
-#include "effect.hpp"
-#include "mg_sprite.hpp"
-#include "scriptinterpreter.hpp"
-#include "effectlist.hpp"
-#include "dataread.hpp"
+
 #include <cstring>
 
-extern "C" int fptosi(float value);
+#include "dataread.hpp"
+#include "effect.hpp"
+#include "effectlist.hpp"
+#include "mg_drawenv.hpp"
+#include "mg_drawprim.hpp"
+#include "mg_frame.hpp"
+#include "mg_math.hpp"
+#include "mg_memory.hpp"
+#include "mg_sprite.hpp"
+#include "mg_texture.hpp"
+#include "mglib.hpp"
+#include "scriptinterpreter.hpp"
+
+extern "C" int  fptosi(float value);
 extern "C" void __ct__11mgCDrawPrimFv(void *);
 
 void DivSpriteScreen(mgCDrawPrim &prim);
@@ -21,32 +23,33 @@ void DivSpriteScreen(mgCDrawPrim &prim, int left, int right, int mode);
 
 // Code (.text)
 void CEffectList::LoadEFPFile(char *name, u_int *pack, int block, mgCMemory *stack) {
-    int           sizes[64];
-    u_int        *files[64];
-    char         *names[64];
-    char          directory[32];
-    char          basename[32];
-    char          extension[16];
-    int           particle_num;
-    int           ctrl_num;
-    int           image_num;
-    int           i;
-    u_int         bytes;
-    u_int         quadwords;
-    CEffect      *particles;
-    CEffectCtrl  *ctrls;
+    int                sizes[64];
+    u_int             *files[64];
+    char              *names[64];
+    char               directory[32];
+    char               basename[32];
+    char               extension[16];
+    int                particle_num;
+    int                ctrl_num;
+    int                image_num;
+    int                i;
+    u_int              bytes;
+    u_int              quadwords;
+    CEffect           *particles;
+    CEffectCtrl       *ctrls;
     mgCTextureManager *textures = &mgTexManager;
 
     this->block = block;
     this->pack = pack;
     bytes = strlen(name) + 1;
     quadwords = bytes % 16 ? bytes / 16 + 1 : bytes / 16;
-    this->name = (char *)stack->Alloc(quadwords);
+    this->name = (char *) stack->Alloc(quadwords);
     strcpy(this->name, name);
 
     image_num = GetPackFileExt(pack, "img", files, 64, sizes, names);
+
     for (i = 0; i < image_num; i++) {
-        textures->EnterIMGFile((u_char *)files[i], block, NULL, NULL);
+        textures->EnterIMGFile((u_char *) files[i], block, NULL, NULL);
     }
 
     effect_num = GetPackFileExt(pack, "em", files, 64, sizes, names);
@@ -59,7 +62,7 @@ void CEffectList::LoadEFPFile(char *name, u_int *pack, int block, mgCMemory *sta
 
     for (i = 0; i < effect_num; i++) {
         DivPathNameExt(names[i], directory, basename, extension);
-        managers[i].GetBufferNums((char *)files[i], sizes[i], &particle_num, &ctrl_num);
+        managers[i].GetBufferNums((char *) files[i], sizes[i], &particle_num, &ctrl_num);
         bytes = particle_num * sizeof(CEffect);
         quadwords = bytes % 16 ? bytes / 16 + 1 : bytes / 16;
         particles = new (stack->Alloc(quadwords + 2)) CEffect[particle_num];
@@ -68,11 +71,12 @@ void CEffectList::LoadEFPFile(char *name, u_int *pack, int block, mgCMemory *sta
         ctrls = new (stack->Alloc(quadwords + 2)) CEffectCtrl[ctrl_num];
         managers[i].EntryEffCtrls(particles, particle_num, ctrls, ctrl_num);
         managers[i].Initialize();
-        managers[i].Load((char *)files[i], sizes[i]);
+        managers[i].Load((char *) files[i], sizes[i]);
         strcpy(managers[i].name, basename);
         managers[i].Run();
     }
 }
+
 int CEffectList::SaerchEffectIndex(char *name) {
     int i;
 
@@ -81,15 +85,19 @@ int CEffectList::SaerchEffectIndex(char *name) {
             return i;
         }
     }
+
     return -1;
 }
+
 mgC3DSprite *CEffectList::GetEffectVisual(int index) {
     if (index < 0 || index >= effect_num) {
         return NULL;
     }
+
     return sprites + index;
 }
-void CEffectList::Step(void) {
+
+void CEffectList::Step() {
     int i;
 
     for (i = 0; i < effect_num; i++) {
@@ -97,28 +105,30 @@ void CEffectList::Step(void) {
         managers[i].Step(1);
     }
 }
-void CEffectList::CreatePacket(void) {
+
+void CEffectList::CreatePacket() {
     int i;
 
     for (i = 0; i < effect_num; i++) {
         managers[i].CreatePacket(sprites + i);
     }
 }
+
 void CEffectManager::CreatePacket(mgC3DSprite *sprite) {
     if (sprite == NULL) {
         return;
     }
 
-    mgCDrawEnv    env = *mgGetpDrawEnv(0);
-    mgCTexture   *last_texture;
-    mgCTexture   *texture;
-    int           last_blend;
-    int           blend;
-    CEffect      *particle;
-    int           first;
-    int           texture_changed;
-    int           blend_changed;
-    int           i;
+    mgCDrawEnv  env = *mgGetpDrawEnv(0);
+    mgCTexture *last_texture;
+    mgCTexture *texture;
+    int         last_blend;
+    int         blend;
+    CEffect    *particle;
+    int         first;
+    int         texture_changed;
+    int         blend_changed;
+    int         i;
 
     sceGsTest *test = &env.test;
     test->bits.zte = 1;
@@ -128,8 +138,8 @@ void CEffectManager::CreatePacket(mgC3DSprite *sprite) {
     sprite->BeginCreatePacket(MG_3DSPRITE_MODE_ROTATE, NULL);
     sprite->CPSetDrawEnv(&env);
     sprite->BeginCPSprite();
-    sceVu0FVECTOR size = { 0.0f, 0.0f, 0.0f, 0.0f };
-    sceVu0FVECTOR color = { 128.0f, 128.0f, 128.0f, 128.0f };
+    sceVu0FVECTOR size = {0.0f, 0.0f, 0.0f, 0.0f};
+    sceVu0FVECTOR color = {128.0f, 128.0f, 128.0f, 128.0f};
     sceVu0FVECTOR uv0;
     sceVu0FVECTOR uv1;
     mgZeroVector(uv0);
@@ -140,8 +150,10 @@ void CEffectManager::CreatePacket(mgC3DSprite *sprite) {
 
     for (i = 0; i < effect_num; i++) {
         particle = &effects[i];
+
         if (particle->active) {
             texture = particle->param.texture;
+
             if (texture != NULL) {
                 if (particle->param.alpha_blend == EFFECT_ALPHA_BLEND_ADD) {
                     blend = MG_ALPHA_MACRO_ADD;
@@ -150,27 +162,35 @@ void CEffectManager::CreatePacket(mgC3DSprite *sprite) {
                 } else {
                     blend = MG_ALPHA_MACRO_OPAQUE;
                 }
+
                 size[0] = particle->param.width * particle->scale[0];
                 size[1] = particle->param.height * particle->scale[0];
                 color[3] = 128.0f * particle->alpha;
                 texture_changed = 0;
                 blend_changed = 0;
+
                 if (last_texture != texture) {
                     texture_changed = 1;
                 }
+
                 if (first || last_blend != blend) {
                     blend_changed = 1;
                 }
+
                 first = 0;
+
                 if (texture_changed || blend_changed) {
                     sprite->EndCPSprite();
                     env.SetAlpha(blend);
+
                     if (blend_changed) {
                         sprite->CPSetDrawEnv(&env);
                     }
+
                     sprite->CPSetTexture(texture);
                     sprite->BeginCPSprite();
                 }
+
                 last_texture = texture;
                 last_blend = blend;
                 uv0[0] = particle->tex_rect[0];
@@ -182,10 +202,12 @@ void CEffectManager::CreatePacket(mgC3DSprite *sprite) {
             }
         }
     }
+
     sprite->EndCPSprite();
     sprite->EndCreatePacket();
 }
-void CFadeInOut::Initialize(void) {
+
+void CFadeInOut::Initialize() {
     alpha = 0.0f;
     b = 0.0f;
     g = 0.0f;
@@ -197,27 +219,33 @@ void CFadeInOut::Initialize(void) {
     cross_texture = NULL;
     blur_alpha = 0;
 }
-void CFadeInOut::ResetFade(void) {
+
+void CFadeInOut::ResetFade() {
     mode = 0;
     alpha = 0.0f;
     cross = 0;
 }
+
 void CFadeInOut::FadeIn(int frames, float r, float g, float b) {
     if ((mode == 0) || (frames < 0)) {
         alpha = 128.0f;
     }
+
     mode = 1;
     end = 0;
+
     if (frames < 0) {
         speed = 0.0f;
     } else {
-        speed = 128.0f / (float)frames;
+        speed = 128.0f / (float) frames;
     }
+
     this->r = r;
     this->g = g;
     this->b = b;
     cross = 0;
 }
+
 void CFadeInOut::FadeIn(int frames) {
     if (mode >= 0) {
         FadeIn(frames, 0.0f, 0.0f, 0.0f);
@@ -225,31 +253,38 @@ void CFadeInOut::FadeIn(int frames) {
         FadeIn(frames, r, g, b);
     }
 }
+
 void CFadeInOut::FadeOut(int frames, float r, float g, float b) {
     if ((mode == 0) || (frames < 0)) {
         alpha = 0.0f;
     }
+
     mode = -1;
     end = 0;
+
     if (frames < 0) {
         speed = 0.0f;
     } else {
-        speed = 128.0f / (float)frames;
+        speed = 128.0f / (float) frames;
     }
+
     this->r = r;
     this->g = g;
     this->b = b;
     cross = 0;
 }
+
 void CFadeInOut::CrossFade(int duration, float alpha) {
     CrossFadeIn(0, duration, alpha);
 }
+
 void CFadeInOut::CrossFadeIn(int mode, int frames, float value) {
     cross_type = mode;
     FadeIn(frames, 128.0f, 128.0f, 128.0f);
     cross = 1;
     cross_alpha_rate = value;
 }
+
 void CFadeInOut::CrossFadeOut(int mode, int frames, float value) {
     cross_type = mode;
     FadeOut(frames, 128.0f, 128.0f, 128.0f);
@@ -257,16 +292,21 @@ void CFadeInOut::CrossFadeOut(int mode, int frames, float value) {
     cross = 1;
     cross_alpha_rate = value;
 }
+
 int CFadeInOut::FadeCheck() { return this->end; }
-int CFadeInOut::NowFade(void) {
+
+int CFadeInOut::NowFade() {
     return mode != 0;
 }
-int CFadeInOut::FadeStep(void) {
+
+int CFadeInOut::FadeStep() {
     if (mode == 0) {
         return 1;
     }
+
     if (mode > 0) {
         alpha -= speed;
+
         if (alpha <= 0.0f) {
             alpha = 0.0f;
             mode = 0;
@@ -274,27 +314,33 @@ int CFadeInOut::FadeStep(void) {
         }
     } else {
         alpha += speed;
+
         if (!(alpha < 128.0f)) {
             alpha = 128.0f;
             end = 1;
         }
     }
+
     if (end != 0 && cross != 0 && cross_type == CROSS_FADE_WIPE) {
         alpha = 0.0f;
     }
+
     return end;
 }
+
 void CFadeInOut::SetCrossTexture(mgCTexture *texture, u_long128 *image) {
     if (texture != NULL) {
         cross_texture = texture;
 
-        (*(mgCTexture *volatile *)&cross_texture)->image[0] = image;
+        (*(mgCTexture *volatile *) &cross_texture)->image[0] = image;
     }
 }
-void CFadeInOut::CaptureScreen(void) {
+
+void CFadeInOut::CaptureScreen() {
     if (cross_texture == NULL || cross_texture->image[0] == NULL) {
         return;
     }
+
     mgCTexture back_buffer;
 
     mgGetFrameBackBuffer(&back_buffer);
@@ -303,18 +349,18 @@ void CFadeInOut::CaptureScreen(void) {
 #ifdef NONMATCHING
 
 void DivSpriteScreen(mgCDrawPrim &prim) {
-    int           x;
-    int           y;
+    int x;
+    int y;
 
     prim.BeginPrim2(MG_PRIM_SPRITE, 0x43, 0, 2);
-    sceVu0IVECTOR offset = { 0, 0, 0, 0 };
+    sceVu0IVECTOR offset = {0, 0, 0, 0};
     offset[0] = mgScreenOffx * 16;
     offset[1] = mgScreenOffy * 16;
-    sceVu0IVECTOR vertex = { 0, 0, 0, 0 };
-    sceVu0IVECTOR uv = { 0, 0, 0, 0 };
+    sceVu0IVECTOR vertex = {0, 0, 0, 0};
+    sceVu0IVECTOR uv = {0, 0, 0, 0};
     for (x = 0; x < mgScreenWidth; x += 64) {
         for (y = 0; y < mgScreenHeight; y += 32) {
-            *(u_long128 *)vertex = *(u_long128 *)offset;
+            *(u_long128 *) vertex = *(u_long128 *) offset;
             uv[0] = x * 16;
             uv[1] = y * 16;
             prim.Data(uv);
@@ -337,17 +383,17 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", DivSpriteScreen__FR11mgCDrawP
 #ifdef NONMATCHING
 
 void DivSpriteScreen(mgCDrawPrim &prim, int left, int right, int jagged_left) {
-    int           row_height;
-    int           row;
+    int row_height;
+    int row;
 
     prim.BeginPrim2(MG_PRIM_TRIANGLE_STRIP, 0x43, 0, 2);
-    sceVu0IVECTOR offset = { 0, 0, 0, 0 };
+    sceVu0IVECTOR offset = {0, 0, 0, 0};
     offset[0] = mgScreenOffx * 16;
     offset[1] = mgScreenOffy * 16;
     row_height = mgScreenHeight / 16;
-    sceVu0IVECTOR vertex = { 0, 0, 0, 0 };
-    sceVu0IVECTOR uv = { 0, 0, 0, 0 };
-    int           edge_offset[2] = { -10, 10 };
+    sceVu0IVECTOR vertex = {0, 0, 0, 0};
+    sceVu0IVECTOR uv = {0, 0, 0, 0};
+    int           edge_offset[2] = {-10, 10};
     for (row = 0; row < 17; row++) {
         if (jagged_left) {
             uv[0] = (left + edge_offset[row % 2]) * 16;
@@ -381,58 +427,62 @@ void DivSpriteScreen(mgCDrawPrim &prim, int left, int right, int jagged_left) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", DivSpriteScreen__FR11mgCDrawPrimiii);
 #endif
-void CFadeInOut::Draw(void) {
+void CFadeInOut::Draw() {
     u_char prim[0x120];
     u_char prim2[0x120];
 
     if (alpha > 0.0f) {
         __ct__11mgCDrawPrimFv(prim);
-        ((mgCDrawPrim *)prim)->Initialize(NULL, NULL);
-        ((mgCDrawPrim *)prim)->DepthTestEnable(0);
-        ((mgCDrawPrim *)prim)->AlphaTestEnable(0);
-        ((mgCDrawPrim *)prim)->AlphaBlendEnable(1);
-        ((mgCDrawPrim *)prim)->AlphaBlend(1);
-        ((mgCDrawPrim *)prim)->ZMask(-1);
+        ((mgCDrawPrim *) prim)->Initialize(NULL, NULL);
+        ((mgCDrawPrim *) prim)->DepthTestEnable(0);
+        ((mgCDrawPrim *) prim)->AlphaTestEnable(0);
+        ((mgCDrawPrim *) prim)->AlphaBlendEnable(1);
+        ((mgCDrawPrim *) prim)->AlphaBlend(1);
+        ((mgCDrawPrim *) prim)->ZMask(-1);
+
         if (cross != 0) {
             if (cross_texture != NULL) {
                 cross_texture->tex0.bits.tcc = 0;
-                mgTexManager.ReloadTexture(cross_texture->block, (sceVif1Packet *)NULL);
-                ((mgCDrawPrim *)prim)->TextureMapEnable(1);
-                if (cross_type == CROSS_FADE_WIPE) {
-                    ((mgCDrawPrim *)prim)->Begin2();
-                    ((mgCDrawPrim *)prim)->BeginPrim2(6);
-                    ((mgCDrawPrim *)prim)->Texture(cross_texture);
+                mgTexManager.ReloadTexture(cross_texture->block, (sceVif1Packet *) NULL);
+                ((mgCDrawPrim *) prim)->TextureMapEnable(1);
 
-                    ((mgCDrawPrim *)prim)->Direct(0x3B, 0x8080 | ((u_long)0x80 << 32));
-                    ((mgCDrawPrim *)prim)->Color(0x80, 0x80, 0x80, 0x80);
-                    ((mgCDrawPrim *)prim)->EndPrim2();
+                if (cross_type == CROSS_FADE_WIPE) {
+                    ((mgCDrawPrim *) prim)->Begin2();
+                    ((mgCDrawPrim *) prim)->BeginPrim2(6);
+                    ((mgCDrawPrim *) prim)->Texture(cross_texture);
+
+                    ((mgCDrawPrim *) prim)->Direct(0x3B, 0x8080 | ((u_long) 0x80 << 32));
+                    ((mgCDrawPrim *) prim)->Color(0x80, 0x80, 0x80, 0x80);
+                    ((mgCDrawPrim *) prim)->EndPrim2();
+
                     if (mode > 0) {
-                        DivSpriteScreen(*(mgCDrawPrim *)prim, 0,
-                                        fptosi((alpha / 128.0f) * (float)mgScreenWidth), 0);
+                        DivSpriteScreen(*(mgCDrawPrim *) prim, 0,
+                                        fptosi((alpha / 128.0f) * (float) mgScreenWidth), 0);
                     } else {
                         int width = mgScreenWidth;
 
-                        DivSpriteScreen(*(mgCDrawPrim *)prim, fptosi((alpha / 128.0f) * (float)width),
+                        DivSpriteScreen(*(mgCDrawPrim *) prim, fptosi((alpha / 128.0f) * (float) width),
                                         width, 1);
                     }
-                    ((mgCDrawPrim *)prim)->End2();
+
+                    ((mgCDrawPrim *) prim)->End2();
                 } else {
                     int b;
                     int g;
                     int r;
 
-                    ((mgCDrawPrim *)prim)->Begin2();
-                    ((mgCDrawPrim *)prim)->BeginPrim2(6);
-                    ((mgCDrawPrim *)prim)->Texture(cross_texture);
+                    ((mgCDrawPrim *) prim)->Begin2();
+                    ((mgCDrawPrim *) prim)->BeginPrim2(6);
+                    ((mgCDrawPrim *) prim)->Texture(cross_texture);
 
-                    ((mgCDrawPrim *)prim)->Direct(0x3B, 0x8080 | ((u_long)0x80 << 32));
+                    ((mgCDrawPrim *) prim)->Direct(0x3B, 0x8080 | ((u_long) 0x80 << 32));
                     r = fptosi(this->r);
                     g = fptosi(this->g);
                     b = fptosi(this->b);
-                    ((mgCDrawPrim *)prim)->Color(r, g, b, fptosi(alpha * cross_alpha_rate));
-                    ((mgCDrawPrim *)prim)->EndPrim2();
-                    DivSpriteScreen(*(mgCDrawPrim *)prim);
-                    ((mgCDrawPrim *)prim)->End2();
+                    ((mgCDrawPrim *) prim)->Color(r, g, b, fptosi(alpha * cross_alpha_rate));
+                    ((mgCDrawPrim *) prim)->EndPrim2();
+                    DivSpriteScreen(*(mgCDrawPrim *) prim);
+                    ((mgCDrawPrim *) prim)->End2();
                 }
             }
         } else {
@@ -440,40 +490,41 @@ void CFadeInOut::Draw(void) {
             int g;
             int r;
 
-            ((mgCDrawPrim *)prim)->TextureMapEnable(0);
-            ((mgCDrawPrim *)prim)->Begin2();
-            ((mgCDrawPrim *)prim)->BeginPrim2(6);
+            ((mgCDrawPrim *) prim)->TextureMapEnable(0);
+            ((mgCDrawPrim *) prim)->Begin2();
+            ((mgCDrawPrim *) prim)->BeginPrim2(6);
             r = fptosi(this->r);
             g = fptosi(this->g);
             b = fptosi(this->b);
-            ((mgCDrawPrim *)prim)->Color(r, g, b, fptosi(alpha));
-            ((mgCDrawPrim *)prim)->EndPrim2();
-            DivSpriteScreen(*(mgCDrawPrim *)prim);
-            ((mgCDrawPrim *)prim)->End2();
+            ((mgCDrawPrim *) prim)->Color(r, g, b, fptosi(alpha));
+            ((mgCDrawPrim *) prim)->EndPrim2();
+            DivSpriteScreen(*(mgCDrawPrim *) prim);
+            ((mgCDrawPrim *) prim)->End2();
         }
     }
+
     if (blur_alpha != 0) {
         __ct__11mgCDrawPrimFv(prim2);
-        ((mgCDrawPrim *)prim2)->Initialize(NULL, NULL);
+        ((mgCDrawPrim *) prim2)->Initialize(NULL, NULL);
         mgCTexture back_tex;
 
         mgGetFrameBackBuffer(&back_tex);
         back_tex.tex0.bits.tcc = 0;
-        ((mgCDrawPrim *)prim2)->TextureMapEnable(1);
-        ((mgCDrawPrim *)prim2)->AlphaBlendEnable(1);
-        ((mgCDrawPrim *)prim2)->AlphaBlend(1);
-        ((mgCDrawPrim *)prim2)->DepthTestEnable(0);
-        ((mgCDrawPrim *)prim2)->ZMask(-1);
-        ((mgCDrawPrim *)prim2)->Begin(6);
+        ((mgCDrawPrim *) prim2)->TextureMapEnable(1);
+        ((mgCDrawPrim *) prim2)->AlphaBlendEnable(1);
+        ((mgCDrawPrim *) prim2)->AlphaBlend(1);
+        ((mgCDrawPrim *) prim2)->DepthTestEnable(0);
+        ((mgCDrawPrim *) prim2)->ZMask(-1);
+        ((mgCDrawPrim *) prim2)->Begin(6);
 
-        ((mgCDrawPrim *)prim2)->Direct( 0x3B, 0x80 | ((u_long)0x80 << 32));
-        ((mgCDrawPrim *)prim2)->Texture(&back_tex);
-        ((mgCDrawPrim *)prim2)->Color(0x80, 0x80, 0x80, blur_alpha);
-        ((mgCDrawPrim *)prim2)->TextureCrd(0, 0);
-        ((mgCDrawPrim *)prim2)->Vertex(0, 0, 0);
-        ((mgCDrawPrim *)prim2)->TextureCrd(back_tex.width, back_tex.height);
-        ((mgCDrawPrim *)prim2)->Vertex(back_tex.width, back_tex.height, 0);
-        ((mgCDrawPrim *)prim2)->End();
+        ((mgCDrawPrim *) prim2)->Direct(0x3B, 0x80 | ((u_long) 0x80 << 32));
+        ((mgCDrawPrim *) prim2)->Texture(&back_tex);
+        ((mgCDrawPrim *) prim2)->Color(0x80, 0x80, 0x80, blur_alpha);
+        ((mgCDrawPrim *) prim2)->TextureCrd(0, 0);
+        ((mgCDrawPrim *) prim2)->Vertex(0, 0, 0);
+        ((mgCDrawPrim *) prim2)->TextureCrd(back_tex.width, back_tex.height);
+        ((mgCDrawPrim *) prim2)->Vertex(back_tex.width, back_tex.height, 0);
+        ((mgCDrawPrim *) prim2)->End();
     }
 }
 

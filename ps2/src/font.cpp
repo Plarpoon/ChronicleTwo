@@ -1,13 +1,15 @@
 #include "common.h"
-#include "font.hpp"
-#include "mglib.hpp"
-#include "nd_meswin.hpp"
-#include "mg_drawprim.hpp"
-#include "mg_texture.hpp"
-#include "mainloop.hpp"
-#include "dataread.hpp"
+
 #include <cstdio>
 #include <cstring>
+
+#include "dataread.hpp"
+#include "font.hpp"
+#include "mainloop.hpp"
+#include "mg_drawprim.hpp"
+#include "mg_texture.hpp"
+#include "mglib.hpp"
+#include "nd_meswin.hpp"
 
 extern "C" void __ct__11mgCDrawPrimFv(void *);
 
@@ -19,6 +21,7 @@ extern "C" void __ct__11mgCDrawPrimFv(void *);
 struct GaijiCodeTable {
     u16 code[24]; /**< External glyph codes. */
 };
+
 /**
  *
  * Wide character codes for the half-width kana glyphs.
@@ -27,6 +30,7 @@ struct GaijiCodeTable {
 struct HankakuKanaWideTable {
     u16 code[63]; /**< Wide kana codes. */
 };
+
 /**
  *
  * Single byte character codes for the half-width kana glyphs.
@@ -35,75 +39,84 @@ struct HankakuKanaWideTable {
 struct HankakuKanaTable {
     u8 code[63]; /**< Single byte kana codes. */
 };
-extern mgRect<int> at_784__2;
-extern char at_812__3[];
-extern char at_813__3[];
-extern char FontTblBinBuff[];
-extern char at_848__4[];
-extern char at_849__3[];
-extern char at_850__3[];
-extern char at_936__5[26];
-extern HankakuKanaTable at_1041__5;
-extern char at_1089[];
-extern char at_1090[];
-extern char at_1091[];
-extern char at_1092[];
-extern char at_1093__2[];
-extern char at_1094[];
-extern char at_1095__2[];
-extern char at_1096[];
-extern char at_1097[];
-extern char at_1098[];
-extern char at_1099[];
+
+extern mgRect<int>          at_784__2;
+extern char                 at_812__3[];
+extern char                 at_813__3[];
+extern char                 FontTblBinBuff[];
+extern char                 at_848__4[];
+extern char                 at_849__3[];
+extern char                 at_850__3[];
+extern char                 at_936__5[26];
+extern HankakuKanaTable     at_1041__5;
+extern char                 at_1089[];
+extern char                 at_1090[];
+extern char                 at_1091[];
+extern char                 at_1092[];
+extern char                 at_1093__2[];
+extern char                 at_1094[];
+extern char                 at_1095__2[];
+extern char                 at_1096[];
+extern char                 at_1097[];
+extern char                 at_1098[];
+extern char                 at_1099[];
 extern HankakuKanaWideTable at_1120;
-extern GaijiCodeTable at_1137__2;
-extern char at_988__4[];
-extern char at_989__3[];
-extern char at_990__4[];
-extern char at_991__5[];
-extern char at_992__4[];
-extern char at_993__3[];
-extern char at_994__3[];
-extern char at_995__3[];
-extern char at_996__3[];
-extern char at_997__3[];
-extern const unsigned char at_1543[6];
-extern mgRect<int> at_817__4;
-extern "C" int fptosi(float value);
+extern GaijiCodeTable       at_1137__2;
+extern char                 at_988__4[];
+extern char                 at_989__3[];
+extern char                 at_990__4[];
+extern char                 at_991__5[];
+extern char                 at_992__4[];
+extern char                 at_993__3[];
+extern char                 at_994__3[];
+extern char                 at_995__3[];
+extern char                 at_996__3[];
+extern char                 at_997__3[];
+extern const unsigned char  at_1543[6];
+extern mgRect<int>          at_817__4;
+extern "C" int              fptosi(float value);
 
 // Code (.text)
 int GetGaijiW(int code) {
     if (code >= GAIJI_CODE_TOP && code < GAIJI_CODE_END) {
 
         s16 *first_width = &GaijiDataTbl[0].w;
-        return *(s16 *)((u8 *)first_width + (code - 0x8000 - 0x7D00) * sizeof(GAIJI_DATA));
+        return *(s16 *) ((u8 *) first_width + (code - 0x8000 - 0x7D00) * sizeof(GAIJI_DATA));
     }
+
     return 0;
 }
+
 int GetGaijiH(int code) {
     if (code >= GAIJI_CODE_TOP && code < GAIJI_CODE_END) {
 
         s16 *first_height = &GaijiDataTbl[0].h;
-        return *(s16 *)((u8 *)first_height + (code - 0x8000 - 0x7D00) * sizeof(GAIJI_DATA));
+        return *(s16 *) ((u8 *) first_height + (code - 0x8000 - 0x7D00) * sizeof(GAIJI_DATA));
     }
+
     return 0;
 }
+
 RECT GetRectFontTex(int font_no, int *tex_no) {
     int font = font_no;
+
     if (font_no >= 0xFDE0 && font_no < 0xFDF8) {
         if ((LanguageCode == 2 || LanguageCode == 3 || LanguageCode == 4) || LanguageCode == 5) {
-            font = (u16)GetFontNoFromFontGaijiCode((u16)font_no);
+            font = (u16) GetFontNoFromFontGaijiCode((u16) font_no);
         }
     }
+
     struct {
         int left;
         int top;
         int right;
         int bottom;
-    } __attribute__((aligned(16))) rect = *(typeof(rect) *)&at_784__2;
+    } __attribute__((aligned(16))) rect = *(typeof(rect) *) &at_784__2;
+
     if (font < 0) {
-        return *(RECT *)&rect;
+        return *(RECT *) &rect;
     }
+
     if (font < 0x260) {
         *tex_no = 0;
     } else if (font < 0x4C0) {
@@ -116,33 +129,40 @@ RECT GetRectFontTex(int font_no, int *tex_no) {
         *tex_no = 3;
         font -= 0x720;
     } else {
-        return *(RECT *)&rect;
+        return *(RECT *) &rect;
     }
+
     rect.left = font % 32;
     rect.top = font / 32;
     rect.left *= 16;
     rect.top *= 20;
     rect.right = 16;
     rect.bottom = 20;
-    return *(RECT *)&rect;
+    return *(RECT *) &rect;
 }
+
 void MySetTexMini(int page, mgCDrawPrim *prim) {
-    mgCTextureManager *texManager = &mgTexManager;
+    mgCTextureManager *tex_manager = &mgTexManager;
+
     if (page == 0) {
-        prim->Texture(texManager->GetTexture(at_812__3, -1));
+        prim->Texture(tex_manager->GetTexture(at_812__3, -1));
     } else {
-        prim->Texture(texManager->GetTexture(at_813__3, -1));
+        prim->Texture(tex_manager->GetTexture(at_813__3, -1));
     }
 }
+
 RECT GetRectFontTexMini(int code, int *page) {
-    return *(RECT *)&at_817__4;
+    return *(RECT *) &at_817__4;
 }
+
 #pragma global_optimizer off
+
 char *My_strncpy(char *dst, const char *src, u32 count) {
-    s8 *out = (s8 *)dst;
-    const s8 *in = (const s8 *)src;
-    u32 i = 0;
-    s8 c;
+    s8       *out = (s8 *) dst;
+    const s8 *in = (const s8 *) src;
+    u32       i = 0;
+    s8        c;
+
     while (i < count) {
         if (*in == '[') {
             while ((c = *in) != ']') {
@@ -151,229 +171,301 @@ char *My_strncpy(char *dst, const char *src, u32 count) {
                 in++;
             }
         }
+
         i++;
         *out = *in;
         in++;
         out++;
     }
+
     return dst;
 }
+
 #pragma global_optimizer reset
+
 u8 *GetYoyakuTblTop() {
-    return (u8 *)((FONT_TBL_BIN *)FontTblBinBuff)->yoyaku_tbl;
+    return (u8 *) ((FONT_TBL_BIN *) FontTblBinBuff)->yoyaku_tbl;
 }
+
 int LoadFontTblBin() {
     int size;
+
     if (LanguageCode == 1) {
         LoadFile(at_848__4, FontTblBinBuff, &size);
     } else {
         LoadFile(at_849__3, FontTblBinBuff, &size);
     }
+
     if (size > 0x1000) {
         printf(at_850__3);
         return 0;
     }
+
     return 1;
 }
+
 int GetYoyakuTblNum() {
-    return ((FONT_TBL_BIN *)FontTblBinBuff)->yoyaku_num;
+    return ((FONT_TBL_BIN *) FontTblBinBuff)->yoyaku_num;
 }
+
 int GetKanjiTopNo() {
-    return ((FONT_TBL_BIN *)FontTblBinBuff)->kanji_top_no;
+    return ((FONT_TBL_BIN *) FontTblBinBuff)->kanji_top_no;
 }
+
 int GetHalfFontNum() {
-    u16 *p = (u16 *)FontTblBinBuff;
+    u16 *p = (u16 *) FontTblBinBuff;
     return *p;
 }
+
 int CFont::CheckKanjiFont(int font_no) {
     if (LanguageCode == 6) {
         return 0;
     }
+
     if (GetKanjiTopNo() == 0) {
         return 0;
     }
+
     if (font_no < GetKanjiTopNo()) {
         return 0;
     }
+
     return (font_no >= GetYoyakuTblNum()) ^ 1;
 }
+
 int CFont::CheckHalfFont(int font_no) {
     if (font_no == 0xFF02) {
         return 1;
     }
+
     if (LanguageCode != 1) {
         if ((font_no >= 0x5E) && (font_no < 0x9D)) {
             return 1;
         }
+
         if ((font_no >= 0x9D) && (font_no < 0xB5)) {
             return 0;
         }
     }
+
     if (font_no < 0) {
         return 0;
     }
+
     return (font_no >= GetHalfFontNum()) ^ 1;
 }
+
 void CFont::SetDrawSize(s32 width, s32 height) {
     draw_w = width;
     draw_h = height;
 }
+
 void CFont::SetClearance(s32 width, s32 height) {
     clearance_w = width;
     clearance_h = height;
 }
+
 void CFont::SetPos(s32 x, s32 y) {
     pos_x = x;
     pos_y = y;
 }
+
 void CFont::SetColor(s32 r, s32 g, s32 b, s32 a) {
     color.r = r;
     color.g = g;
     color.b = b;
     color.a = a;
 }
+
 void CFont::SetColor(RGBAQ_TYPE color) {
     this->color.r = color.r;
     this->color.g = color.g;
     this->color.b = color.b;
     this->color.a = color.a;
 }
+
 void CFont::SetColor(u32 packed_color) {
     RGBAQ_TYPE color = RgbqToUint(packed_color);
     SetColor(color);
 }
+
 void CFont::SetFuchi(s32 style) {
     fuchi = style;
 }
+
 void CFont::SetStr(char *text) {
     memset(this->str, 0, 0x80);
+
     if (strlen(text) >= 0x80U) {
         printf(at_936__5);
         return;
     }
+
     strcpy(this->str, text);
 }
+
 static inline int GetTagLen(FCONV_CODE *table, int no) {
     return table[no].len;
 }
+
 u16 GetGaijiFontNo(char *text) {
     int i;
+
     for (i = 0; i < FCONV_CODE_NUM; i++) {
         int len = GetTagLen(FconvCodeTbl, i);
+
         if (strncmp(text, FconvCodeTbl[i].str, len) == 0) {
             return FconvCodeTbl[i].code;
         }
     }
+
     return 0;
 }
+
 int GetGaijiLen(u16 code) {
     int found = -1;
     int i;
+
     for (i = 0; i < 46; i++) {
         if (code == FconvCodeTbl[i].code) {
             found = i;
             break;
         }
     }
+
     if (found == -1) {
         return 0;
     }
+
     return FconvCodeTbl[found].len;
 }
+
 u16 GetAlphabeticalFontNo_uc(u8 ch) {
     HankakuKanaTable table = at_1041__5;
-    int i;
+    int              i;
+
     if (LanguageCode == 1) {
         return 0;
     }
+
     u8 key;
+
     if (ch == 0x9C) {
         key = 0xBE;
-    } else
+    } else {
         key = ch;
+    }
+
     for (i = 0; i < 63; i++) {
         if (key == table.code[i]) {
             return i + 0x5E;
         }
     }
+
     return 0;
 }
+
 u16 GetAlphabeticalFontNo_cp(char *text) {
     char code[12];
-    int i;
+    int  i;
+
     if (LanguageCode == 1) {
         return 0;
     }
+
     if (strncmp(text, at_1089, 5) != 0) {
         return 0;
     }
+
     strncpy(code, text + 5, 5);
+
     if (strncmp(code, at_1090, 4) == 0) {
         strncpy(code, at_1091, 4);
     }
+
     if (strncmp(code, at_1092, 4) == 0) {
         strncpy(code, at_1093__2, 4);
     }
+
     if (strncmp(code, at_1094, 4) == 0) {
         strncpy(code, at_1095__2, 4);
     }
+
     if (strncmp(code, at_1096, 4) == 0) {
         strncpy(code, at_1097, 4);
     }
+
     if (strncmp(code, at_1098, 4) == 0) {
         strncpy(code, at_1099, 4);
     }
+
     for (i = 0; i < 63; i++) {
         if (strncmp(code, alphabetical_chara_tbl[i], 4) == 0) {
             return i + 0x5E;
         }
     }
+
     return 0;
 }
+
 u16 GetFontGaijiFontNo(char *text) {
     int i;
+
     if (LanguageCode == 1) {
         return 0;
     }
+
     for (i = 0; i < FONT_GAIJI_CONV_NUM; i++) {
         int len = GetTagLen(FontGaijiConvTbl, i);
+
         if (strncmp(text, FontGaijiConvTbl[i].str, len) == 0) {
             return FontGaijiConvTbl[i].code;
         }
     }
+
     return 0;
 }
+
 u16 GetAlphabeticalFontNo_us(u16 code) {
     HankakuKanaWideTable table = at_1120;
-    int i;
+    int                  i;
+
     if (LanguageCode == 1) {
         return 0;
     }
+
     for (i = 0; i < 63; i++) {
         if (code == table.code[i]) {
             return i + 0x5E;
         }
     }
+
     return 0;
 }
+
 u16 GetFontNoFromFontGaijiCode(u16 code) {
     GaijiCodeTable table = at_1137__2;
-    int i;
+    int            i;
+
     if (LanguageCode == 1) {
         return 0;
     }
+
     for (i = 0; i < 24; i++) {
         if (code == table.code[i]) {
             return i + 0x9D;
         }
     }
+
     return 0;
 }
+
 int GetFontGaijiHankaku(u16 code) {
     if (code == 0xFDF3 || code == 0xFDF4 || code == 0xFDF5 ||
         code == 0xFDF6 || code == 0xFDF7) {
         return 1;
     }
+
     return 0;
 }
 #ifdef NONMATCHING
@@ -381,16 +473,17 @@ static inline u16 GetYoyakuCode(u8 *table, int no) {
     u8 *pair = &table[no * 2];
     return pair[1] + (pair[0] << 8);
 }
+
 int GetFontNo(char *text) {
     if (text[0] == '\n') {
         return FONT_NO_NEWLINE;
     }
-    int gaiji = (u16)GetFontGaijiFontNo(text);
+    int gaiji = (u16) GetFontGaijiFontNo(text);
     if (gaiji != 0) {
-        return (u16)gaiji;
+        return (u16) gaiji;
     }
     u8 *table = GetYoyakuTblTop();
-    u16 code = (u8)text[1] + ((u8)text[0] << 8);
+    u16 code = (u8) text[1] + ((u8) text[0] << 8);
     int low = 0;
     int high = GetYoyakuTblNum() - 1;
     u16 first = table[1] + (table[0] << 8);
@@ -419,48 +512,63 @@ int GetFontNo(char *text) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", GetFontNo__FPc);
 #endif
-extern "C" int GetHalfFontNo__Fc(int ch) {
+int GetHalfFontNo(char c) {
     char buf[8];
-    u16 no = GetAlphabeticalFontNo_uc(ch & 0xFF);
-    if (no != 0)
+    u16  no = GetAlphabeticalFontNo_uc((unsigned char) c);
+
+    if (no != 0) {
         return no & 0xFFFF;
+    }
+
     buf[1] = 0x20;
-    buf[0] = ch;
+    buf[0] = c;
     return GetFontNo(buf);
 }
+
 int CFont::GetDigitNo(int font_no) {
     if (font_no == GetFontNo(at_989__3)) {
         return 1;
     }
+
     if (font_no == GetFontNo(at_990__4)) {
         return 2;
     }
+
     if (font_no == GetFontNo(at_991__5)) {
         return 3;
     }
+
     if (font_no == GetFontNo(at_992__4)) {
         return 4;
     }
+
     if (font_no == GetFontNo(at_993__3)) {
         return 5;
     }
+
     if (font_no == GetFontNo(at_994__3)) {
         return 6;
     }
+
     if (font_no == GetFontNo(at_995__3)) {
         return 7;
     }
+
     if (font_no == GetFontNo(at_996__3)) {
         return 8;
     }
+
     if (font_no == GetFontNo(at_997__3)) {
         return 9;
     }
+
     if (font_no == GetFontNo(at_988__4)) {
         return 0;
     }
+
     return -1;
 }
+
 void set2DSpriteEasyFont(mgCDrawPrim *prim, mgRect<int> dst, mgRect<int> uv, RGBAQ_TYPE *color) {
     uv.right += uv.left;
     uv.bottom += uv.top;
@@ -474,8 +582,10 @@ void set2DSpriteEasyFont(mgCDrawPrim *prim, mgRect<int> dst, mgRect<int> uv, RGB
     prim->TextureCrd(uv.right, uv.bottom);
     prim->Vertex(dst.right, dst.bottom, 0);
 }
+
 void set2DSprite_Fuchi(mgCDrawPrim *prim, RECT destination, RECT texture, int style, int alpha) {
     RGBAQ_TYPE color;
+
     switch (style) {
         case FUCHI_NONE:
             break;
@@ -483,57 +593,71 @@ void set2DSprite_Fuchi(mgCDrawPrim *prim, RECT destination, RECT texture, int st
             color.r = color.g = color.b = 255;
             color.a = alpha * 64 / 128;
             set2DSpriteEasyFont(prim,
-                mgRect<int>(destination.x + 1, destination.y + 1, destination.width, destination.height),
-                mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
+                                mgRect<int>(destination.x + 1, destination.y + 1, destination.width, destination.height),
+                                mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
             break;
         case FUCHI_SHADOW_BLACK:
             color.r = color.g = color.b = 0;
             color.a = alpha * 64 / 128;
             set2DSpriteEasyFont(prim,
-                mgRect<int>(destination.x + 1, destination.y + 1, destination.width, destination.height),
-                mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
+                                mgRect<int>(destination.x + 1, destination.y + 1, destination.width, destination.height),
+                                mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
             break;
         case FUCHI_OUTLINE: {
-            int offsets[4][2] = {{0, -1}, {0, 1}, {1, 0}, {-1, 0}};
+            int offsets[4][2] = {
+                {0,  -1},
+                {0,  1 },
+                {1,  0 },
+                {-1, 0 }
+            };
+
             for (int point = 0; point < 4; point++) {
                 color.r = color.g = color.b = 0;
                 color.a = alpha * 128 / 128;
                 set2DSpriteEasyFont(prim,
-                    mgRect<int>(destination.x + offsets[point][0], destination.y + offsets[point][1],
-                                destination.width, destination.height),
-                    mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
+                                    mgRect<int>(destination.x + offsets[point][0], destination.y + offsets[point][1],
+                                                destination.width, destination.height),
+                                    mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
             }
+
             break;
         }
         case FUCHI_SHADOW_DOUBLE:
             color.r = color.g = color.b = 64;
             color.a = alpha * 128 / 128;
             set2DSpriteEasyFont(prim,
-                mgRect<int>(destination.x + 1, destination.y + 1, destination.width, destination.height),
-                mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
+                                mgRect<int>(destination.x + 1, destination.y + 1, destination.width, destination.height),
+                                mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
             color.r = color.g = color.b = 0;
             color.a = alpha * 128 / 128;
             set2DSpriteEasyFont(prim,
-                mgRect<int>(destination.x + 2, destination.y + 2, destination.width, destination.height),
-                mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
+                                mgRect<int>(destination.x + 2, destination.y + 2, destination.width, destination.height),
+                                mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
             break;
         case FUCHI_SHADOW_BLACK_WIDE:
             color.r = color.g = color.b = 0;
             color.a = alpha * 128 / 128;
             set2DSpriteEasyFont(prim,
-                mgRect<int>(destination.x + 2, destination.y + 2, destination.width, destination.height),
-                mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
+                                mgRect<int>(destination.x + 2, destination.y + 2, destination.width, destination.height),
+                                mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
             break;
         case FUCHI_OUTLINE_WIDE: {
-            int offsets[4][2] = {{0, -2}, {0, 2}, {2, 0}, {-2, 0}};
+            int offsets[4][2] = {
+                {0,  -2},
+                {0,  2 },
+                {2,  0 },
+                {-2, 0 }
+            };
             color.r = color.g = color.b = 0;
             color.a = alpha * 32 / 128;
+
             for (int point = 0; point < 4; point++) {
                 set2DSpriteEasyFont(prim,
-                    mgRect<int>(destination.x + offsets[point][0], destination.y + offsets[point][1],
-                                destination.width, destination.height),
-                    mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
+                                    mgRect<int>(destination.x + offsets[point][0], destination.y + offsets[point][1],
+                                                destination.width, destination.height),
+                                    mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
             }
+
             break;
         }
         case FUCHI_SHADOW_WHITE_BLUE:
@@ -542,33 +666,44 @@ void set2DSprite_Fuchi(mgCDrawPrim *prim, RECT destination, RECT texture, int st
             color.b = 255;
             color.a = alpha * 255 / 128;
             set2DSpriteEasyFont(prim,
-                mgRect<int>(destination.x + 1, destination.y + 1, destination.width, destination.height),
-                mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
+                                mgRect<int>(destination.x + 1, destination.y + 1, destination.width, destination.height),
+                                mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
             color.r = 42;
             color.g = 43;
             color.b = 49;
             color.a = alpha * 128 / 128;
             set2DSpriteEasyFont(prim,
-                mgRect<int>(destination.x - 1, destination.y - 1, destination.width, destination.height),
-                mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
+                                mgRect<int>(destination.x - 1, destination.y - 1, destination.width, destination.height),
+                                mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
             set2DSpriteEasyFont(prim,
-                mgRect<int>(destination.x - 2, destination.y - 2, destination.width, destination.height),
-                mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
+                                mgRect<int>(destination.x - 2, destination.y - 2, destination.width, destination.height),
+                                mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
             break;
         case FUCHI_OUTLINE_THICK: {
             int offsets[12][2] = {
-                {0, -1}, {0, 1}, {1, 0}, {-1, 0},
-                {-1, -1}, {-1, 1}, {1, -1}, {1, 1},
-                {0, -2}, {0, 2}, {2, 0}, {-2, 0}
+                {0,  -1},
+                {0,  1 },
+                {1,  0 },
+                {-1, 0 },
+                {-1, -1},
+                {-1, 1 },
+                {1,  -1},
+                {1,  1 },
+                {0,  -2},
+                {0,  2 },
+                {2,  0 },
+                {-2, 0 }
             };
+
             for (int point = 0; point < 12; point++) {
                 color.r = color.g = color.b = 0;
                 color.a = alpha * 128 / 128;
                 set2DSpriteEasyFont(prim,
-                    mgRect<int>(destination.x + offsets[point][0], destination.y + offsets[point][1],
-                                destination.width, destination.height),
-                    mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
+                                    mgRect<int>(destination.x + offsets[point][0], destination.y + offsets[point][1],
+                                                destination.width, destination.height),
+                                    mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
             }
+
             break;
         }
     }
@@ -576,10 +711,12 @@ void set2DSprite_Fuchi(mgCDrawPrim *prim, RECT destination, RECT texture, int st
 
 void CFont::DrawChar(mgCDrawPrim *prim, int font_no, int x, int y, int outline, RGBAQ_TYPE glyph_color, u8 alpha) {
     RECT texture;
-    int page;
+    int  page;
+
     if (font_no < 0) {
         return;
     }
+
     if (mini != 0) {
         texture = GetRectFontTexMini(font_no, &page);
         MySetTexMini(page, prim);
@@ -587,39 +724,48 @@ void CFont::DrawChar(mgCDrawPrim *prim, int font_no, int x, int y, int outline, 
         texture = GetRectFontTex(font_no, &page);
         MySetTex(page, prim);
     }
+
     RECT destination = {0, 0, 0, 0};
     destination.x = x;
     destination.y = y;
     destination.width = draw_w;
     destination.height = draw_h;
+
     if (CheckHalfFont(font_no) != 0) {
         texture.width /= 2;
         destination.width /= 2;
     }
+
     if (outline != 0) {
         set2DSprite_Fuchi(prim, destination, texture, fuchi, alpha);
     }
+
     glyph_color.a = alpha * glyph_color.a / 128;
     set2DSpriteEasyFont(prim,
-        mgRect<int>(destination.x, destination.y, destination.width, destination.height),
-        mgRect<int>(texture.x, texture.y, texture.width, texture.height), &glyph_color);
+                        mgRect<int>(destination.x, destination.y, destination.width, destination.height),
+                        mgRect<int>(texture.x, texture.y, texture.width, texture.height), &glyph_color);
 }
+
 void CFont::DrawChar(mgCDrawPrim *prim, char *text, int x, int y) {
 
-    DrawChar(prim, GetFontNo(text), x, y, 1, color, (int)alpha);
+    DrawChar(prim, GetFontNo(text), x, y, 1, color, (int) alpha);
 }
+
 void MySetTex(char *texture_name, mgCDrawPrim *prim) {
     prim->Texture(mgTexManager.GetTexture(texture_name, -1));
 }
+
 void MySetTex(int font_page, mgCDrawPrim *prim) {
     if ((font_page == 0) || (font_page == 1)) {
         prim->Texture(GetFontTexture(font_page));
     }
 }
+
 void DrawGaiji_sub(mgCDrawPrim *prim, int glyph, int x, int y, RGBAQ_TYPE color, int line_height) {
     mgRect<int> dst;
     mgRect<int> src;
-    int index = glyph - 0xFD00;
+    int         index = glyph - 0xFD00;
+
     if (LanguageCode != 0) {
         if (index + 0xFD00 == 0xFD06) {
             index = 8;
@@ -627,6 +773,7 @@ void DrawGaiji_sub(mgCDrawPrim *prim, int glyph, int x, int y, RGBAQ_TYPE color,
             index = 6;
         }
     }
+
     int width = GaijiDataTbl[index].w;
     int height = GaijiDataTbl[index].h;
     int offset_x = GaijiDataTbl[index].off_x;
@@ -635,61 +782,71 @@ void DrawGaiji_sub(mgCDrawPrim *prim, int glyph, int x, int y, RGBAQ_TYPE color,
     dst.Set(x + offset_x, y + offset_y + (line_height - height) / 2, width, height);
     set2DSpriteEasy(prim, dst, src, &color);
 }
+
 void CFont::DrawGaiji(mgCDrawPrim *prim, int glyph, int x, int y) {
     RGBAQ_TYPE neutral;
-    MySetTex((char *)at_1543, prim);
+    MySetTex((char *) at_1543, prim);
     neutral.a = 0x80;
     neutral.b = 0x80;
     neutral.g = 0x80;
     neutral.r = 0x80;
     DrawGaiji_sub(prim, glyph, x, y, neutral, clearance_h);
 }
+
 void UpDateWH(s32 *width, s32 *height, s32 new_width, s32 new_height) {
     if (*width < new_width) {
         *width = new_width;
     }
+
     if (*height < new_height) {
         *height = new_height;
     }
 }
+
 void CFont::CalcDrawWH(char *text, int *width, int *height) {
     int *height_out = height;
-    int len = strlen(text);
-    int max_width = 0;
-    int max_height = 0;
-    int pen_x = 0;
-    int pen_y = 0;
-    int pos = 0;
-    s8 *cursor;
-    int font_no;
-    u16 gaiji_no;
-    u16 gaiji;
-    int half;
+    int  len = strlen(text);
+    int  max_width = 0;
+    int  max_height = 0;
+    int  pen_x = 0;
+    int  pen_y = 0;
+    int  pos = 0;
+    s8  *cursor;
+    int  font_no;
+    u16  gaiji_no;
+    u16  gaiji;
+    int  half;
+
     if (0 < len) {
         do {
-            cursor = (s8 *)text + pos;
-            if (0 < GetAlphabeticalFontNo_cp((char *)cursor)) {
+            cursor = (s8 *) text + pos;
+
+            if (0 < GetAlphabeticalFontNo_cp((char *) cursor)) {
                 pen_x += clearance_w / 2;
                 pos += 9;
                 UpDateWH(&max_width, &max_height, pen_x, pen_y + clearance_h);
             } else {
-                gaiji = GetFontGaijiFontNo((char *)cursor);
+                gaiji = GetFontGaijiFontNo((char *) cursor);
+
                 if (gaiji != 0) {
                     if (GetFontGaijiHankaku(gaiji) != 0) {
                         pen_x += clearance_w / 2;
                     } else {
                         pen_x += clearance_w;
                     }
+
                     pos += 2;
                     UpDateWH(&max_width, &max_height, pen_x, pen_y + clearance_h);
                 } else {
-                    gaiji_no = GetGaijiFontNo((char *)cursor);
+                    gaiji_no = GetGaijiFontNo((char *) cursor);
+
                     if (gaiji_no >= 0xFD00 && gaiji_no < 0xFD32) {
                         pen_x += GetGaijiW(gaiji_no);
                         pos += GetGaijiLen(gaiji_no);
                         UpDateWH(&max_width, &max_height, pen_x, pen_y + GetGaijiH(gaiji_no));
                     } else {
-                        half = GetHalfFontNo__Fc(*cursor);
+                        half = GetHalfFontNo(*cursor);
+
                         if (half == -2) {
                             pen_x = 0;
                             pos += 1;
@@ -699,13 +856,14 @@ void CFont::CalcDrawWH(char *text, int *width, int *height) {
                             pos += 1;
                             UpDateWH(&max_width, &max_height, pen_x, pen_y + clearance_h);
                         } else {
-                            if (CheckKanjiFont(GetFontNo((char *)cursor)) != 0) {
+                            if (CheckKanjiFont(GetFontNo((char *) cursor)) != 0) {
                                 pen_x += clearance_w;
-                            } else if (CheckKanjiFont(GetFontNo((char *)cursor + 2)) != 0) {
+                            } else if (CheckKanjiFont(GetFontNo((char *) cursor + 2)) != 0) {
                                 pen_x += clearance_w;
                             } else {
                                 pen_x += clearance_w;
                             }
+
                             pos += 2;
                             UpDateWH(&max_width, &max_height, pen_x, pen_y + clearance_h);
                         }
@@ -714,25 +872,31 @@ void CFont::CalcDrawWH(char *text, int *width, int *height) {
             }
         } while (pos < len);
     }
+
     *width = max_width;
     *height_out = max_height;
 }
+
 #pragma optimization_level 4
+
 void CFont::DrawDirect(char *text, int x, int y) {
     SetPos(x, y);
+
     union {
         mgCDrawPrim prim;
+
         struct {
-            u8 padding[0x110];
+            u8  padding[0x110];
             int size_x;
             int size_y;
-            u8 tail[8];
+            u8  tail[8];
         } sizes;
     } local;
+
     MySetPrim(&local.prim, 1, 0);
 
-    int height = fptosi(*(float *)((u8 *)this + 0xB4));
-    local.sizes.size_x = fptosi(*(float *)((u8 *)this + 0xB0)) * 16;
+    int height = fptosi(*(float *) ((u8 *) this + 0xB4));
+    local.sizes.size_x = fptosi(*(float *) ((u8 *) this + 0xB0)) * 16;
     local.sizes.size_y = height * 16;
     (&local.prim)->Begin(6);
     int len = strlen(text);
@@ -744,51 +908,60 @@ void CFont::DrawDirect(char *text, int x, int y) {
     int font_no;
     int half;
     s8 *cursor;
+
     if (0 < len) {
         do {
-            cursor = (s8 *)text + pos;
-            font_no = GetAlphabeticalFontNo_cp((char *)cursor);
+            cursor = (s8 *) text + pos;
+            font_no = GetAlphabeticalFontNo_cp((char *) cursor);
+
             if (0 < font_no) {
-                DrawChar(&local.prim, font_no, pos_x + pen_x, pos_y + pen_y, 1, color, (int)alpha);
+                DrawChar(&local.prim, font_no, pos_x + pen_x, pos_y + pen_y, 1, color, (int) alpha);
                 pen_x += clearance_w / 2;
                 pos += 9;
             } else {
-                gaiji = GetFontGaijiFontNo((char *)cursor);
+                gaiji = GetFontGaijiFontNo((char *) cursor);
+
                 if (gaiji != 0) {
                     DrawChar(&local.prim, gaiji & 0xFFFF, pos_x + pen_x, pos_y + pen_y, 1, color,
-                             (int)alpha);
+                             (int) alpha);
+
                     if (GetFontGaijiHankaku(gaiji) != 0) {
                         pen_x += clearance_w / 2;
                     } else {
                         pen_x += clearance_w;
                     }
+
                     pos += 2;
                 } else {
-                    gaiji_no = GetGaijiFontNo((char *)cursor);
+                    gaiji_no = GetGaijiFontNo((char *) cursor);
+
                     if (gaiji_no >= 0xFD00 && gaiji_no < 0xFD32) {
                         DrawGaiji(&local.prim, gaiji_no, pos_x + pen_x, pos_y + pen_y);
                         pen_x += GetGaijiW(gaiji_no);
                         pos += GetGaijiLen(gaiji_no);
                     } else {
-                        half = GetHalfFontNo__Fc(*cursor);
+                        half = GetHalfFontNo(*cursor);
+
                         if (half == -2) {
                             pen_x = 0;
                             pos += 1;
                             pen_y += clearance_h;
                         } else if (CheckHalfFont(half) != 0) {
                             DrawChar(&local.prim, half, pos_x + pen_x, pos_y + pen_y, 1, color,
-                                     (int)alpha);
+                                     (int) alpha);
                             pen_x += clearance_w / 2;
                             pos += 1;
                         } else {
-                            DrawChar(&local.prim, (char *)cursor, pos_x + pen_x, pos_y + pen_y);
-                            if (CheckKanjiFont(GetFontNo((char *)cursor)) != 0) {
+                            DrawChar(&local.prim, (char *) cursor, pos_x + pen_x, pos_y + pen_y);
+
+                            if (CheckKanjiFont(GetFontNo((char *) cursor)) != 0) {
                                 pen_x += clearance_w;
-                            } else if (CheckKanjiFont(GetFontNo((char *)cursor + 2)) != 0) {
+                            } else if (CheckKanjiFont(GetFontNo((char *) cursor + 2)) != 0) {
                                 pen_x += clearance_w;
                             } else {
                                 pen_x += clearance_w;
                             }
+
                             pos += 2;
                         }
                     }
@@ -796,27 +969,31 @@ void CFont::DrawDirect(char *text, int x, int y) {
             }
         } while (pos < len);
     }
+
     (&local.prim)->End();
 }
+
 #pragma optimization_level reset
+
 void CFont::Preset(s32 preset) {
     switch (preset) {
-    case 0:
-    case 1:
-        this->SetColor(0x80202020U);
-        SetFuchi(FUCHI_SHADOW_BLACK);
-        break;
-    case 2:
-    case 3:
-        this->SetColor(0x80686A6BU);
-        SetFuchi(FUCHI_OUTLINE_THICK);
-        break;
-    case 4:
-        this->SetColor(0x80686A6BU);
-        SetFuchi(FUCHI_SHADOW_BLACK_WIDE);
-        break;
+        case 0:
+        case 1:
+            this->SetColor(0x80202020U);
+            SetFuchi(FUCHI_SHADOW_BLACK);
+            break;
+        case 2:
+        case 3:
+            this->SetColor(0x80686A6BU);
+            SetFuchi(FUCHI_OUTLINE_THICK);
+            break;
+        case 4:
+            this->SetColor(0x80686A6BU);
+            SetFuchi(FUCHI_SHADOW_BLACK_WIDE);
+            break;
     }
 }
+
 void CFont::Init() {
     memset(str, 0, sizeof(str));
     SetFuchi(FUCHI_OUTLINE);

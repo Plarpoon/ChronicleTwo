@@ -96,3 +96,10 @@ GYORACE_DATA: Init memset 0xA0; IsUsed = item_no > 1. Callers pass the GYORACE_D
 unadjusted to CGameDataUsed methods (GetName, CopyGameData), and the CSubGameData ctor constructs a
 CGameDataUsed at each entry, so it starts with a CGameDataUsed (0x6C). Declared as member `fish`;
 it could equally be a base class (same code). +0x6C..+0xA0 unseen.
+
+## Georama part count return type
+
+`CSaveData::GetBuildPartsNum` loads a signed 16-bit count from `build_parts_num`,
+but its C++ return type is `int`. Callers use the returned register directly.
+Declaring the function as `s16` adds a sign-extension sequence at call sites;
+`int` matches the retail body and its callers.

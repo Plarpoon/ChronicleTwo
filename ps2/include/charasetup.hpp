@@ -18,12 +18,12 @@ class CUserDataManager;
  *
  */
 enum ROBO_MODEL_SLOT {
-    ROBO_MODEL_LEG   = 0, /**< Legs, the character the other parts hang from. */
-    ROBO_MODEL_ARM   = 1, /**< Arm. */
-    ROBO_MODEL_BODY  = 2, /**< Body. */
+    ROBO_MODEL_LEG = 0,   /**< Legs, the character the other parts hang from. */
+    ROBO_MODEL_ARM = 1,   /**< Arm. */
+    ROBO_MODEL_BODY = 2,  /**< Body. */
     ROBO_MODEL_MINTS = 3, /**< Max riding in the body. */
     ROBO_MODEL_BPACK = 4, /**< Back pack. */
-    ROBO_MODEL_NUM   = 5, /**< Number of ridepod parts with a model file. */
+    ROBO_MODEL_NUM = 5,   /**< Number of ridepod parts with a model file. */
 };
 
 /**
@@ -81,7 +81,7 @@ extern ROBO_INFO_DATA robo_dat;
  * @address 0x1EA340
  * @size 0x100
  */
-void GetCharacterSnd(CUserDataManager *user_data, int chara_no, char *path);
+void GetCharacterSnd(CUserDataManager *user_data, int unit, char *path);
 
 /**
  * Loads the models, weapons, skins and action script of a main character
@@ -122,7 +122,7 @@ int GetCharaMemAllocPtr(mgCMemory *memory, mgCMemory *stacks, int chara_type, in
  * @address 0x1EB250
  * @size 0x100
  */
-void SetupUnitMan(CScene *scene, CUserDataManager *user_data, int chara_type, ROBO_INFO_DATA *robo_info);
+void SetupUnitMan(CScene *scene, CUserDataManager *user_data, int unit, ROBO_INFO_DATA *robo_info);
 
 /**
  * Gathers the files and behaviour of the ridepod from its equipped parts

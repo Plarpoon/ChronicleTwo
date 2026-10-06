@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+
 #include "mainloop.hpp"
 
 /**
@@ -18,6 +19,7 @@ struct MOVIE_LIST_ENTRY {
     char *file_name; /**< Name of the movie file to play. */
     int   bgm_no;    /**< Music played alongside the movie, or 0 or below (-1 when the tag omits it) for none. */
 };
+
 STATIC_ASSERT(sizeof(MOVIE_LIST_ENTRY) == 0xC);
 
 /**
@@ -27,7 +29,7 @@ STATIC_ASSERT(sizeof(MOVIE_LIST_ENTRY) == 0xC);
  */
 enum MOVIE_VIEW_MODE {
     MOVIE_VIEW_MODE_SELECT = 0, /**< Showing the list of movies and taking the player's choice. */
-    MOVIE_VIEW_MODE_PLAY   = 1, /**< Playing the chosen movie. */
+    MOVIE_VIEW_MODE_PLAY = 1,   /**< Playing the chosen movie. */
 };
 
 /**
@@ -36,8 +38,8 @@ enum MOVIE_VIEW_MODE {
  *
  */
 enum MOVIE_SPECIAL_MODE {
-    MOVIE_SPECIAL_MODE_NONE     = 0, /**< A single movie from the list. */
-    MOVIE_SPECIAL_MODE_PROMO    = 1, /**< The "PROMO<n>.PSS" sequence. */
+    MOVIE_SPECIAL_MODE_NONE = 0,     /**< A single movie from the list. */
+    MOVIE_SPECIAL_MODE_PROMO = 1,    /**< The "PROMO<n>.PSS" sequence. */
     MOVIE_SPECIAL_MODE_PROMO_TV = 2, /**< The "PROMO<n>TV.PSS" sequence. */
 };
 

@@ -70,4 +70,5 @@ public:
      */
     void SetAlphaBlend(int mode);
 };
+
 STATIC_ASSERT(sizeof(CPreSprite) == 0x130);

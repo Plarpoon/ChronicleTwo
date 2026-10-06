@@ -19,19 +19,19 @@ typedef struct {
 
 typedef struct {
     sceDmaChcr chcr;
-    u_int reserved_04[3];
-    u_int madr;
-    u_int reserved_14[3];
-    u_int qwc;
-    u_int reserved_24[3];
-    u_int tadr;
-    u_int reserved_34[3];
-    u_int asr0;
-    u_int reserved_44[3];
-    u_int asr1;
-    u_int reserved_54[11];
-    u_int sadr;
-    u_int reserved_84[3];
+    u_int      reserved_04[3];
+    u_int      madr;
+    u_int      reserved_14[3];
+    u_int      qwc;
+    u_int      reserved_24[3];
+    u_int      tadr;
+    u_int      reserved_34[3];
+    u_int      asr0;
+    u_int      reserved_44[3];
+    u_int      asr1;
+    u_int      reserved_54[11];
+    u_int      sadr;
+    u_int      reserved_84[3];
 } sceDmaChan;
 
 STATIC_ASSERT(sizeof(sceDmaChcr) == 4);
@@ -41,16 +41,16 @@ STATIC_ASSERT(sizeof(sceDmaChan) == 0x90);
  * Stores the DMA-controller environment exchanged with the SDK.
  */
 typedef struct sceDmaEnv {
-    u_char sts; /**< Source-channel stall-control state. */
-    u_char std; /**< Destination-channel stall-control state. */
-    u_char mbs; /**< Source memory-bus state. */
-    u_char mbd; /**< Destination memory-bus state. */
+    u_char  sts; /**< Source-channel stall-control state. */
+    u_char  std; /**< Destination-channel stall-control state. */
+    u_char  mbs; /**< Source memory-bus state. */
+    u_char  mbd; /**< Destination memory-bus state. */
     u_short unk_04;
     u_short notify; /**< DMA channels that issue completion notifications. */
     u_short unk_08;
     u_short unk_0A;
-    u_int unk_0C;
-    void *mem; /**< Memory region associated with the DMA environment. */
+    u_int   unk_0C;
+    void   *mem; /**< Memory region associated with the DMA environment. */
 } sceDmaEnv;
 
 STATIC_ASSERT(sizeof(sceDmaEnv) == 0x14);
@@ -58,8 +58,8 @@ STATIC_ASSERT(sizeof(sceDmaEnv) == 0x14);
 extern "C" {
 
 sceDmaChan *sceDmaGetChan(int channel);
-int sceDmaSend(sceDmaChan *chan, void *data);
-int sceDmaSync(sceDmaChan *chan, int mode, int timeout);
+int         sceDmaSend(sceDmaChan *chan, void *data);
+int         sceDmaSync(sceDmaChan *chan, int mode, int timeout);
 
 /**
  * Resets the DMA controller using the requested mode.

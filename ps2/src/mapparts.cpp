@@ -1,20 +1,22 @@
 #define sceVu0ApplyMatrix sceVu0ApplyMatrixSdk
-#include <cstring>
-#include "object.hpp"
-#include "mglib.hpp"
-#include "mg_math.hpp"
 #include "common.h"
+
+#include <cstring>
+
 #include "character.hpp"
 #include "collision.hpp"
 #include "funcpoint.hpp"
 #include "map.hpp"
 #include "mapload.hpp"
+#include "mapparts.hpp"
 #include "mdslist.hpp"
 #include "mg_drawenv.hpp"
 #include "mg_frame.hpp"
+#include "mg_math.hpp"
 #include "mg_memory.hpp"
+#include "mglib.hpp"
+#include "object.hpp"
 #include "occlusion.hpp"
-#include "mapparts.hpp"
 
 /**
  *
@@ -25,19 +27,22 @@ struct SphereVec {
     float v[3]; /**< Centre coordinates. */
     float w;    /**< Radius. */
 };
+
 /**
  *
  * Map part vector viewed as floats or a quadword.
  *
  */
 union PartsVector {
-    float values[4]; /**< Floating point components. */
-    u_long128 quad;   /**< The same components as one quadword. */
+    float     values[4]; /**< Floating point components. */
+    u_long128 quad;      /**< The same components as one quadword. */
 };
+
 extern char at_244[];
+#include <libvu0.h>
+
 #include <cmath>
 #include <cstring>
-#include <libvu0.h>
 
 #include "collision.hpp"
 #include "intersection.hpp"
@@ -52,20 +57,7 @@ extern char at_244[];
  * List node that tracks animation of a map part.
  *
  */
-struct PartsAnimeNode {
-    PartsAnimeNode *next; /**< Following animation node. */
-    PartsAnimeNode *prev; /**< Previous animation node. */
-    u_char unk_08[8];
-    CFuncPoint *func_point; /**< Function point tied to the animation. */
-    int frame; /**< Current animation frame. */
-    int piece; /**< Piece index. */
-    int parts; /**< Part index. */
-    int stop;  /**< Whether animation stops. */
-    int back;  /**< Whether animation runs backward. */
-    u_char unk_28[0x18];
-    void **vptr; /**< Virtual method table pointer. */
-    u_char unk_44[0xC];
-};
+
 /**
  *
  * List node holding one map piece.
@@ -74,25 +66,38 @@ struct PartsAnimeNode {
 struct PartsPieceNode {
     PartsPieceNode *next; /**< Following piece node. */
     PartsPieceNode *prev; /**< Previous piece node. */
-    u_char unk_08[8];
-    void **piece_vptr; /**< Virtual method table of the piece. */
-    u_char unk_14[0xAC];
-    void **vptr; /**< Virtual method table of the list node. */
-    u_char unk_c4[0xC];
+    u_char          unk_08[8];
+    void          **piece_vptr; /**< Virtual method table of the piece. */
+    u_char          unk_14[0xAC];
+    void          **vptr; /**< Virtual method table of the list node. */
+    u_char          unk_c4[0xC];
 };
+
+/**
+ *
+ * Supplies the retail list initialization entry used by animation nodes.
+ *
+ */
+class CList_9CObjAnime_ {
+public:
+    CList<CObjAnime> *next; /**< Next animation node. */
+    CList<CObjAnime> *prev; /**< Previous animation node. */
+
+    /** Clears the animation node's links. */
+    void Initialize();
+};
+
 extern "C" void *__vt__17CList_9CMapPiece_[];
 extern "C" void *__vt__9mgCObject[];
 extern "C" void *__vt__7CObject[];
 extern "C" void *__vt__12CObjectFrame[];
 extern "C" void *__vt__9CMapPiece[];
-extern "C" void *__vt__17CList_9CObjAnime_[];
-extern "C" void AssignFuncAnime__9CObjAnimeFP10CFuncPointP9CMapParts(void *, CFuncPoint *, CMapParts *);
 
 #undef sceVu0ApplyMatrix
 extern "C" void sceVu0ApplyMatrix(float *dest, float *matrix, float *source);
 
 // Code (.text)
-void CMapParts::Initialize(void) {
+void CMapParts::Initialize() {
     int i;
 
     piece_list = NULL;
@@ -116,9 +121,11 @@ void CMapParts::Initialize(void) {
     mgZeroVectorW(bound_box.max);
     mgZeroVectorW(bound_box.min);
     mgZeroVector(bound_sphere);
+
     for (i = 0; i < color_num; i++) {
         mgZeroVector(color[i]);
     }
+
     col_bound_valid = 0;
     mgZeroVectorW(col_bound_box.max);
     mgZeroVectorW(col_bound_box.min);
@@ -127,40 +134,55 @@ void CMapParts::Initialize(void) {
     fixed_time = -1.0f;
     CObject::Initialize();
 }
-void CMapParts::SetName(char *newName) {
-    if (newName == NULL || (u32)strlen(newName) > 0x1F) {
+
+void CMapParts::SetName(char *new_name) {
+    if (new_name == NULL || (u32) strlen(new_name) > 0x1F) {
         return;
     }
-    strcpy(name, newName);
+
+    strcpy(name, new_name);
 }
-void CMapParts::SetPartsName(char *newName) {
-    if (newName == NULL || (u32)strlen(newName) > 0x1F) {
+
+void CMapParts::SetPartsName(char *new_name) {
+    if (new_name == NULL || (u32) strlen(new_name) > 0x1F) {
         return;
     }
-    strcpy(parts_name, newName);
+
+    strcpy(parts_name, new_name);
 }
+
 void CMapParts::AddPiece(CList<CMapPiece> *node) {
     if (node == NULL) {
         return;
     }
+
     if (node->data.type & 4) {
         need_step = 1;
     }
+
     CList<CMapPiece> *last = piece_list;
+
     if (last == NULL) {
         piece_list = node;
         return;
     }
+
     CList<CMapPiece> *next;
+
     if (last != NULL) {
         do {
             next = last->next;
-            if (next == NULL)
+
+            if (next == NULL) {
                 break;
+            }
+
             last = next;
         } while (next);
     }
+
     last->next = node;
+
     if (node != NULL) {
         node->prev = last;
     }
@@ -176,6 +198,7 @@ CMapPiece *CMapParts::SearchPiece(char *piece_name) {
 
     for (node = piece_list; node != NULL; node = node->next) {
         piece = node->pGetData();
+
         if (strcmp(piece_name, piece->name) == 0) {
             return piece;
         }
@@ -194,6 +217,7 @@ CMapPiece *CMapParts::SearchPieceColType(int col_type) {
 
     for (node = piece_list; node != NULL; node = node->next) {
         piece = node->pGetData();
+
         if (piece->col_type == col_type) {
             return piece;
         }
@@ -201,41 +225,49 @@ CMapPiece *CMapParts::SearchPieceColType(int col_type) {
 
     return NULL;
 }
+
 int CMapParts::GetPoly(int kind, CCPoly *poly, mgVu0FBOX &box, int max) {
     CList<CMapPiece> *node;
-    int total;
-    CMapPiece *piece;
-    mgCFrame *pieceFrame;
-    int found;
+    int               total;
+    CMapPiece        *piece;
+    mgCFrame         *piece_frame;
+    int               found;
 
     if (this->GetShow() == 0) {
         return 0;
     }
+
     node = piece_list;
     this->UpDatePosition();
     total = 0;
+
     if (node != NULL) {
         do {
             piece = &node->data;
+
             if (piece != NULL) {
-                pieceFrame = piece->frame;
-                if (pieceFrame != NULL) {
-                    if (pieceFrame->parent == 0) {
-                        pieceFrame->SetReference(&frame);
+                piece_frame = piece->frame;
+
+                if (piece_frame != NULL) {
+                    if (piece_frame->parent == 0) {
+                        piece_frame->SetReference(&frame);
                         found = piece->GetPoly(kind, poly, box, max);
                         poly += found;
                         max -= found;
                         total += found;
-                        pieceFrame->DeleteReference();
+                        piece_frame->DeleteReference();
+
                         if (max <= 0) {
                             break;
                         }
                     }
                 }
             }
+
             node = node->next;
         } while (node != NULL);
     }
+
     return total;
 }
 
@@ -261,7 +293,7 @@ int CMapParts::SetColor(int no, float *rgba) {
         return 0;
     }
 
-    *(u_long128 *)color[no] = *(u_long128 *)rgba;
+    *(u_long128 *) color[no] = *(u_long128 *) rgba;
     color[no][3] = 1.0f;
     return 1;
 }
@@ -271,46 +303,57 @@ int CMapParts::GetColor(int no, float *out_rgba) {
         return 0;
     }
 
-    *(u_long128 *)out_rgba = *(u_long128 *)color[no];
+    *(u_long128 *) out_rgba = *(u_long128 *) color[no];
     return 1;
 }
-int CMapParts::GetDefColor(int id, float *outColor) {
+
+int CMapParts::GetDefColor(int id, float *out_color) {
     CList<CMapPiece> *node;
-    int i;
-    CMapPiece *piece;
-    int materialCount;
-    PieceMaterial *material;
+    int               i;
+    CMapPiece        *piece;
+    int               material_count;
+    PieceMaterial    *material;
+
     if (id < 0 || id >= color_num) {
         return 0;
     }
+
     for (node = piece_list; node != NULL; node = node->next) {
         piece = &node->data;
-        materialCount = piece->material_num;
-        for (i = 0; i < materialCount; i++) {
+        material_count = piece->material_num;
+
+        for (i = 0; i < material_count; i++) {
             material = piece->GetMaterial(i);
+
             if (material != NULL && material->material != 0 && id == material->unk_c) {
-                sceVu0CopyVector(outColor, material->color);
+                sceVu0CopyVector(out_color, material->color);
                 return 1;
             }
         }
     }
+
     return 0;
 }
-void CMapParts::UpdateColor(void) {
-    int id;
+
+void CMapParts::UpdateColor() {
+    int               id;
     CList<CMapPiece> *node;
-    int j;
-    CMapPiece *piece;
-    int materialCount;
-    PieceMaterial *material;
+    int               j;
+    CMapPiece        *piece;
+    int               material_count;
+    PieceMaterial    *material;
+
     for (id = 0; id < color_num; id++) {
         node = piece_list;
+
         if (color[id][3] > 0.0f) {
             for (; node != NULL; node = node->next) {
                 piece = &node->data;
-                materialCount = piece->material_num;
-                for (j = 0; j < materialCount; j++) {
+                material_count = piece->material_num;
+
+                for (j = 0; j < material_count; j++) {
                     material = piece->GetMaterial(j);
+
                     if (material != NULL && material->material != 0 && id == material->unk_c) {
                         sceVu0CopyVectorXYZ(material->color, color[id]);
                     }
@@ -391,47 +434,50 @@ int CMapParts::DrawSub(int direct) {
                 weight *= GetLightAnimeWeight(point, func_check.anime_frame);
 
                 switch (point->plight.light_type) {
-                case FUNC_PLIGHT_DIRECTIONAL:
-                    if (light_no >= 0) {
-                        frame.GetWorldDir(light_position, point->position);
-                        sceVu0Normalize(light_position, light_position);
+                    case FUNC_PLIGHT_DIRECTIONAL:
+                        if (light_no >= 0) {
+                            frame.GetWorldDir(light_position, point->position);
+                            sceVu0Normalize(light_position, light_position);
+                            sceVu0ScaleVector(light_color, point->plight.color, weight);
+                            light_color[3] = 128.0f;
+                            mgSetLight(light_no, light_position, light_color);
+                            light_no--;
+                        }
+
+                        break;
+
+                    case FUNC_PLIGHT_AMBIENT:
+                        mgGetAmbient(ambient);
+                        ambient[0] = point->plight.color[0] * weight;
+                        ambient[1] = point->plight.color[1] * weight;
+                        ambient[2] = point->plight.color[2] * weight;
+                        mgSetAmbient(ambient);
+                        break;
+
+                    case FUNC_PLIGHT_POINT:
+                        mgPlightEnable(1);
+
+                        if (plight_no >= 0 && point->plight.no_map_light == 0) {
+                            frame.GetWorldPosition(light_position, point->position);
+                            float plight_weight = GetLightAnimeWeight(point, 0);
+                            sceVu0ScaleVector(plight_color, point->plight.color, plight_weight * weight);
+                            mgSetPlight(plight_no, light_position, plight_color, point->plight.power, -1.0f);
+                            plight_no--;
+                        }
+
+                        break;
+
+                    case 3:
+                        mgGetAmbient(ambient);
+                        ambient_alpha = ambient[3];
                         sceVu0ScaleVector(light_color, point->plight.color, weight);
-                        light_color[3] = 128.0f;
-                        mgSetLight(light_no, light_position, light_color);
-                        light_no--;
-                    }
-                    break;
-
-                case FUNC_PLIGHT_AMBIENT:
-                    mgGetAmbient(ambient);
-                    ambient[0] = point->plight.color[0] * weight;
-                    ambient[1] = point->plight.color[1] * weight;
-                    ambient[2] = point->plight.color[2] * weight;
-                    mgSetAmbient(ambient);
-                    break;
-
-                case FUNC_PLIGHT_POINT:
-                    mgPlightEnable(1);
-                    if (plight_no >= 0 && point->plight.no_map_light == 0) {
-                        frame.GetWorldPosition(light_position, point->position);
-                        float plight_weight = GetLightAnimeWeight(point, 0);
-                        sceVu0ScaleVector(plight_color, point->plight.color, plight_weight * weight);
-                        mgSetPlight(plight_no, light_position, plight_color, point->plight.power, -1.0f);
-                        plight_no--;
-                    }
-                    break;
-
-                case 3:
-                    mgGetAmbient(ambient);
-                    ambient_alpha = ambient[3];
-                    sceVu0ScaleVector(light_color, point->plight.color, weight);
-                    mgAddVector(ambient, light_color);
-                    ambient[3] = ambient_alpha;
-                    mgSetAmbient(ambient);
-                    break;
+                        mgAddVector(ambient, light_color);
+                        ambient[3] = ambient_alpha;
+                        mgSetAmbient(ambient);
+                        break;
                 }
-            next_light:
-                ;
+
+            next_light:;
             } while ((point = func_point_mngr.Get()) != NULL);
         }
     }
@@ -440,9 +486,10 @@ int CMapParts::DrawSub(int direct) {
 
     for (pass = 0; pass < 1; pass++) {
         node = piece_list;
+
         if (node != NULL) {
             do {
-                piece = (CMapPiece *)((u_char *)node + 0x10);
+                piece = (CMapPiece *) ((u_char *) node + 0x10);
 
                 if (CheckTime(func_check.time, piece->time_start, piece->time_end)) {
                     piece->draw_off &= ~1;
@@ -451,6 +498,7 @@ int CMapParts::DrawSub(int direct) {
                 }
 
                 piece_frame = piece->frame;
+
                 if (piece_frame != NULL && piece_frame->parent == NULL) {
                     piece_frame->SetReference(&frame);
 
@@ -462,6 +510,7 @@ int CMapParts::DrawSub(int direct) {
 
                     piece_frame->DeleteReference();
                 }
+
                 node = node->next;
             } while (node != NULL);
         }
@@ -505,6 +554,7 @@ int CMapParts::CreateBoundBox() {
 
     for (node = piece_list; node != NULL; node = node->next) {
         piece = node->pGetData();
+
         if (piece == NULL || piece->frame == NULL || !piece->GetBoundBox(&box)) {
             continue;
         }
@@ -516,6 +566,7 @@ int CMapParts::CreateBoundBox() {
             } else {
                 mgVectorMaxMin(col_bound_box.max, col_bound_box.min, col_bound_box.max, col_bound_box.min, box.max, box.min);
             }
+
             col_found = 1;
         } else {
             if (first) {
@@ -524,6 +575,7 @@ int CMapParts::CreateBoundBox() {
             } else {
                 mgVectorMaxMin(bound_box.max, bound_box.min, bound_box.max, bound_box.min, box.max, box.min);
             }
+
             found = 1;
         }
     }
@@ -551,9 +603,9 @@ int CMapParts::CheckColBox(mgVu0FBOX *box) {
     }
 
     GetLWMatrix(lw_matrix);
-    *(u_long128 *)sphere = *(u_long128 *)col_bound_sphere;
+    *(u_long128 *) sphere = *(u_long128 *) col_bound_sphere;
     sphere[3] = 1.0f;
-    sceVu0ApplyMatrix(sphere, (float *)lw_matrix, sphere);
+    sceVu0ApplyMatrix(sphere, (float *) lw_matrix, sphere);
     sphere[3] = col_bound_sphere[3];
 
     // The sphere is tested first, on X and Z only.
@@ -576,13 +628,16 @@ int CMapParts::CheckColBox(mgVu0FBOX *box) {
     mgApplyMatrix(world_box.max, world_box.min, lw_matrix, col_bound_box.max, col_bound_box.min);
     return mgClipBox(world_box.max, world_box.min, box->max, box->min) != 0;
 }
-int CMapParts::GetBBox(mgVu0FBOX *box) {
-    int hasBox;
 
-    hasBox = bound_valid;
-    if (hasBox == 0) {
-        return hasBox;
+int CMapParts::GetBBox(mgVu0FBOX *box) {
+    int has_box;
+
+    has_box = bound_valid;
+
+    if (has_box == 0) {
+        return has_box;
     }
+
     (*box = bound_box);
     return bound_valid;
 }
@@ -598,19 +653,21 @@ int CMapParts::GetBoundBox(mgVu0FBOX *out_box) {
     mgApplyMatrix(out_box->max, out_box->min, lw_matrix, bound_box.max, bound_box.min);
     return 1;
 }
+
 int CMapParts::GetBoundSphere(float *sphere) {
     float matrix[16];
-    float sphereCenter[4];
+    float sphere_center[4];
     float radius;
 
     if (bound_valid == 0) {
         return 0;
     }
-    GetLWMatrix((float(*)[4])matrix);
-    *(PartsVector *)sphereCenter = *(PartsVector *)bound_sphere;
+
+    GetLWMatrix((float (*)[4]) matrix);
+    *(PartsVector *) sphere_center = *(PartsVector *) bound_sphere;
     radius = bound_sphere[3];
-    sphereCenter[3] = 1.0f;
-    sceVu0ApplyMatrix(sphere, matrix, sphereCenter);
+    sphere_center[3] = 1.0f;
+    sceVu0ApplyMatrix(sphere, matrix, sphere_center);
     sphere[3] = radius;
     return bound_valid;
 }
@@ -632,36 +689,43 @@ int CMapParts::InsideScreen() {
     GetLWMatrix(lw_matrix);
     return mgInsideScreen(&bound_box, lw_matrix, screen_max, screen_min);
 }
+
 int CMapParts::InsideScreen(COcclusion *occluders, int count) {
-    float matrix[16];
+    float     matrix[16];
     SphereVec sphere;
-    float radius;
-    int i;
+    float     radius;
+    int       i;
 
     if (bound_valid == 0) {
         return 0;
     }
-    GetLWMatrix((float(*)[4])matrix);
 
-    if (mgInsideScreen((mgVu0FBOX *)bound_box.max, (float(*)[4])matrix) == 0) {
+    GetLWMatrix((float (*)[4]) matrix);
+
+    if (mgInsideScreen((mgVu0FBOX *) bound_box.max, (float (*)[4]) matrix) == 0) {
         return 0;
     }
+
     if (count <= 0) {
         return 1;
     }
-    mgMulMatrix((float(*)[4])matrix, mgRenderInfo.view,
-                (float(*)[4])matrix);
-    *(PartsVector *)&sphere = *(PartsVector *)bound_sphere;
+
+    mgMulMatrix((float (*)[4]) matrix, mgRenderInfo.view,
+                (float (*)[4]) matrix);
+    *(PartsVector *) &sphere = *(PartsVector *) bound_sphere;
     radius = bound_sphere[3];
     sphere.w = 1.0f;
     sceVu0ApplyMatrix(&sphere.v[0], matrix, &sphere.v[0]);
     sphere.w = radius;
+
     for (i = 0; i < count; i++) {
         if (occluders->CheckSphere(&sphere.v[0]) != 0) {
             return 0;
         }
+
         occluders++;
     }
+
     return 1;
 }
 
@@ -693,6 +757,7 @@ CFuncPoint *CMapParts::InScreenFunc(InScreenFuncInfo *info) {
     mgCFrame *parts_frame = &frame;
     nearest = NULL;
     nearest_dist = nearest_aux;
+
     if ((point = func_point_mngr.Get()) != NULL) {
         do {
             if (!point->Check(NULL)) {
@@ -703,18 +768,19 @@ CFuncPoint *CMapParts::InScreenFunc(InScreenFuncInfo *info) {
             point->frame.GetLWMatrix(point_matrix);
 
             range = point->invent.range;
+
             if (range == 0.0f) {
                 range = 400.0f;
             }
 
             mgGetDirFromCamera(to_point, point_matrix[3]);
 
-
             if (!(point->invent.angle <= 0.0f)) {
                 sceVu0ScaleVector(facing, point_matrix[2], -1.0f);
                 sceVu0Normalize(facing, facing);
                 sceVu0Normalize(to_point, to_point);
                 facing_cos = sceVu0InnerProduct(to_point, facing);
+
                 if (facing_cos < cosf(point->invent.angle)) {
                     goto release_point;
                 }
@@ -724,7 +790,7 @@ CFuncPoint *CMapParts::InScreenFunc(InScreenFuncInfo *info) {
                 mgGetCameraPos(camera_pos);
                 mgGetCameraPose(camera_pose);
                 sceVu0Normalize(ray_far, camera_pose[2]);
-                *(u_long128 *)ray_near = *(u_long128 *)ray_far;
+                *(u_long128 *) ray_near = *(u_long128 *) ray_far;
                 sceVu0ScaleVector(ray_far, ray_far, range);
                 sceVu0ScaleVector(ray_near, ray_near, 1.0f);
                 sceVu0AddVector(ray_start, camera_pos, ray_near);
@@ -732,6 +798,7 @@ CFuncPoint *CMapParts::InScreenFunc(InScreenFuncInfo *info) {
 
                 if (IntersectionBox(ray_start, ray_end, &point->invent.box, point_matrix, hit) > 0) {
                     dist = mgDistVector(hit[0], camera_pos);
+
                     if (dist <= 10.0f + info->range) {
                         if (nearest == NULL || dist < nearest_dist) {
                             nearest = point;
@@ -744,8 +811,7 @@ CFuncPoint *CMapParts::InScreenFunc(InScreenFuncInfo *info) {
 
         release_point:
             point->frame.DeleteReference();
-        next_point:
-            ;
+        next_point:;
         } while ((point = func_point_mngr.Get()) != NULL);
     }
 
@@ -756,14 +822,15 @@ CFuncPoint *CMapParts::InScreenFunc(InScreenFuncInfo *info) {
 }
 
 #pragma global_optimizer off
+
 void CMapParts::DrawScreenFunc(mgCFrame *marker) {
-    float point_matrix[4][4];
-    float box_matrix[4][4];
-    float marker_matrix[4][4];
-    float extent[4];
-    float origin[4];
-    CFuncPoint   *point;
-    float         range;
+    float       point_matrix[4][4];
+    float       box_matrix[4][4];
+    float       marker_matrix[4][4];
+    float       extent[4];
+    float       origin[4];
+    CFuncPoint *point;
+    float       range;
 
     if (func_point_mngr.UpdateFlag(FUNC_POINT_INVENT, &func_check) <= 0) {
         return;
@@ -772,6 +839,7 @@ void CMapParts::DrawScreenFunc(mgCFrame *marker) {
     func_point_mngr.GetStart(FUNC_POINT_INVENT);
 
     mgCFrame *parts_frame = &frame;
+
     if ((point = func_point_mngr.Get()) != NULL) {
         do {
             if (!point->Check(NULL)) {
@@ -797,6 +865,7 @@ void CMapParts::DrawScreenFunc(mgCFrame *marker) {
                 box_matrix[3][2] = *origin_z = point->invent.box.min[2];
 
                 range = point->invent.range;
+
                 if (range == 0.0f) {
                     range = 400.0f;
                 }
@@ -811,8 +880,7 @@ void CMapParts::DrawScreenFunc(mgCFrame *marker) {
             }
 
             point->frame.DeleteReference();
-        next_point:
-            ;
+        next_point:;
         } while ((point = func_point_mngr.Get()) != NULL);
     }
 
@@ -820,26 +888,32 @@ void CMapParts::DrawScreenFunc(mgCFrame *marker) {
 }
 
 #pragma global_optimizer reset
-void CMapParts::Step(void) {
+
+void CMapParts::Step() {
     CList<CMapPiece> *node;
-    CMapPiece *piece;
-    mgCFrame *pieceFrame;
+    CMapPiece        *piece;
+    mgCFrame         *piece_frame;
 
     if (need_step == 0) {
         return;
     }
+
     node = piece_list;
-    if (node != NULL)
+
+    if (node != NULL) {
         do {
             piece = &node->data;
-            pieceFrame = piece->frame;
-            if (pieceFrame != NULL) {
-                pieceFrame->SetReference(&frame);
+            piece_frame = piece->frame;
+
+            if (piece_frame != NULL) {
+                piece_frame->SetReference(&frame);
                 piece->Step();
-                pieceFrame->DeleteReference();
+                piece_frame->DeleteReference();
             }
+
             node = node->next;
         } while (node != NULL);
+    }
 }
 
 void CMapParts::AnimeStep(CFuncPointCheck *check, CObjAnimeEnv *env) {
@@ -848,6 +922,7 @@ void CMapParts::AnimeStep(CFuncPointCheck *check, CObjAnimeEnv *env) {
 
     for (node = anime_list; node != NULL; node = node->next) {
         anime = node->pGetData();
+
         if (anime->func_point != NULL && anime->func_point->Check(check)) {
             anime->Step(env);
         }
@@ -872,116 +947,140 @@ void CMapParts::CopyFuncPointCheck(CFuncPointCheck &check) {
 }
 
 #pragma opt_common_subs off
+
 void CMapParts::Copy(CMapParts &dest, mgCMemory *memory) {
-    PartsPieceNode *new_list;
+    PartsPieceNode   *new_list;
     CList<CMapPiece> *node;
-    PartsPieceNode *new_node;
-    PartsPieceNode *last;
-    PartsPieceNode *next;
+    PartsPieceNode   *new_node;
+    PartsPieceNode   *last;
+    PartsPieceNode   *next;
 
     if (memory != NULL) {
         dest = *this;
         new_list = NULL;
         node = piece_list;
+
         if (node != NULL) {
             do {
                 if (node->pGetData()->col_type != 0) {
                     goto next_piece;
                 }
-                if ((new_node = (PartsPieceNode *)operator new(0xD0, (u_long128 *)memory->Alloc(15))) != NULL) {
+
+                if ((new_node = (PartsPieceNode *) operator new(0xD0, memory->Alloc(15))) != NULL) {
                     new_node->vptr = __vt__17CList_9CMapPiece_;
                     new_node->piece_vptr = __vt__9mgCObject;
-                    ((CMapPiece *)((u_char *)new_node + 0x10))->Initialize();
+                    ((CMapPiece *) ((u_char *) new_node + 0x10))->Initialize();
                     new_node->piece_vptr = __vt__7CObject;
-                    ((CMapPiece *)((u_char *)new_node + 0x10))->Initialize();
+                    ((CMapPiece *) ((u_char *) new_node + 0x10))->Initialize();
                     new_node->piece_vptr = __vt__12CObjectFrame;
-                    ((CMapPiece *)((u_char *)new_node + 0x10))->Initialize();
+                    ((CMapPiece *) ((u_char *) new_node + 0x10))->Initialize();
                     new_node->piece_vptr = __vt__9CMapPiece;
-                    ((CMapPiece *)((u_char *)new_node + 0x10))->Initialize();
-                    ((CList<CMapPiece> *)new_node)->Initialize();
+                    ((CMapPiece *) ((u_char *) new_node + 0x10))->Initialize();
+                    ((CList<CMapPiece> *) new_node)->Initialize();
                 }
+
                 if (new_node == NULL) {
                     return;
                 }
+
                 CMapPiece *source_piece = node->pGetData();
-                CMapPiece *dest_piece = (CMapPiece *)((u_char *)new_node + 0x10);
+                CMapPiece *dest_piece = (CMapPiece *) ((u_char *) new_node + 0x10);
                 source_piece->Copy(*dest_piece, memory);
+
                 if (new_list != NULL) {
                     last = new_list;
+
                     if (last != NULL) {
                         do {
                             next = last->next;
+
                             if (next == NULL) {
                                 break;
                             }
+
                             last = next;
                         } while (next != NULL);
                     }
+
                     last->next = new_node;
+
                     if (new_node != NULL) {
                         new_node->prev = last;
                     }
                 } else {
                     new_list = new_node;
                 }
+
             next_piece:
                 node = node->next;
             } while (node != NULL);
         }
-        dest.piece_list = (CList<CMapPiece> *)new_list;
+
+        dest.piece_list = (CList<CMapPiece> *) new_list;
         func_point_mngr.Copy(dest.func_point_mngr, memory);
         dest.AssignFuncAnime(memory);
     } else {
         dest = *this;
     }
 }
+
 #pragma opt_common_subs reset
+
 int CMapParts::AssignFuncAnime(mgCMemory *memory) {
-    CFuncPoint *point;
-    PartsAnimeNode *node;
-    PartsAnimeNode *last;
-    PartsAnimeNode *next;
-    func_point_mngr.GetStart(5);
+    CFuncPoint       *point;
+    CList<CObjAnime> *node;
+    CList<CObjAnime> *last;
+    CList<CObjAnime> *next;
+
+    func_point_mngr.GetStart(FUNC_POINT_ANIME);
+
     if ((point = func_point_mngr.Get()) != NULL) {
         do {
-            if ((node = (PartsAnimeNode *)operator new(0x50, (u_long128 *)memory->Alloc(7))) != NULL) {
-                node->vptr = __vt__17CList_9CObjAnime_;
-                node->frame = 0;
-                node->piece = 0;
-                node->parts = 0;
-                node->func_point = NULL;
-                node->back = 0;
-                node->stop = 0;
-                ((CList<CObjAnime> *)node)->Initialize();
-            }
+            node = new (memory->Alloc(7)) CList<CObjAnime>;
+
             if (node == NULL) {
                 return 0;
             }
-            ((CList<CObjAnime> *)node)->Initialize();
-            last = (PartsAnimeNode *)anime_list;
+
+            node->Initialize();
+
+            last = anime_list;
+
             if (last == NULL) {
-                anime_list = (CList<CObjAnime> *)node;
+                anime_list = node;
             } else {
                 if (last != NULL) {
                     do {
                         next = last->next;
+
                         if (next == NULL) {
                             break;
                         }
+
                         last = next;
-                    } while (next);
+                    } while (next != NULL);
                 }
+
                 last->next = node;
+
                 if (node != NULL) {
                     node->prev = last;
                 }
             }
-            AssignFuncAnime__9CObjAnimeFP10CFuncPointP9CMapParts(&node->func_point, point, this);
+
+            node->pGetData()->AssignFuncAnime(point, this);
         } while ((point = func_point_mngr.Get()) != NULL);
     }
+
     return 1;
 }
-void CMapTreasureBox::Initialize(void) {
+
+void CList_9CObjAnime_::Initialize() {
+    prev = NULL;
+    next = NULL;
+}
+
+void CMapTreasureBox::Initialize() {
     CCharacter2::Initialize();
     active = 0;
     flag_no = 0;
@@ -1001,9 +1100,11 @@ int CMapTreasureBox::AssignFuncPoint(CFuncPoint *point, CMapParts *owner) {
     flag_no = point->unk_c;
     item_no = point->event.unk_2c;
     item_num = point->event.unk_30;
+
     if (item_num == 0) {
         item_num = 1;
     }
+
     floor_id = point->event.unk_34;
     func_point = point;
     parts = owner;
@@ -1028,7 +1129,7 @@ void CMapTreasureBox::GetWorldPosition(float *out_position) {
 
 void CCharacter2::SetPosition(float x, float y, float z) {
     float new_position[4];
-    *(u_long128 *)new_position = *(u_long128 *)at_244;
+    *(u_long128 *) new_position = *(u_long128 *) at_244;
     new_position[0] = x;
     new_position[1] = y;
     new_position[2] = z;

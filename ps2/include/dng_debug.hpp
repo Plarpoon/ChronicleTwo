@@ -17,19 +17,19 @@
  *
  */
 enum DNG_DEBUG_COMMAND {
-    DNG_DEBUG_CMD_RUN_EVENT    = 0,  /**< Runs the event script whose number is the line's value. */
-    DNG_DEBUG_CMD_ENEMY_LOADER = 1,  /**< Loads the monster whose ID is the line's value next to the player. */
-    DNG_DEBUG_CMD_DEBUG_CAMERA = 2,  /**< Debug camera setting of the main loop's debug information. */
-    DNG_DEBUG_CMD_CHARA_MOVE   = 3,  /**< Character movement setting of the main loop's debug information. */
-    DNG_DEBUG_CMD_ENEMY_RESET  = 4,  /**< Removes every monster and sets the monster manager up again. */
-    DNG_DEBUG_CMD_LOCK_ON_MODE = 5,  /**< Lock-on mode of the battle area scene. */
-    DNG_DEBUG_CMD_INFORMATION  = 6,  /**< Selects the system parameter window that the dungeon draws. */
-    DNG_DEBUG_CMD_SKIP_FLOOR   = 7,  /**< Gives the player the items that open the current floor's exit. */
-    DNG_DEBUG_CMD_SOUND_FLAG   = 8,  /**< Pauses or plays the dungeon music. */
-    DNG_DEBUG_CMD_MONSTER_TALK = 9,  /**< Monster talk setting. */
-    DNG_DEBUG_CMD_EFFECT_ID    = 10, /**< Effect ID setting. */
-    DNG_DEBUG_CMD_EFFECT_VOL   = 11, /**< Effect volume setting. */
-    DNG_DEBUG_CMD_NUM          = 12  /**< Number of lines in the menu. */
+    DNG_DEBUG_CMD_RUN_EVENT = 0,    /**< Runs the event script whose number is the line's value. */
+    DNG_DEBUG_CMD_ENEMY_LOADER = 1, /**< Loads the monster whose ID is the line's value next to the player. */
+    DNG_DEBUG_CMD_DEBUG_CAMERA = 2, /**< Debug camera setting of the main loop's debug information. */
+    DNG_DEBUG_CMD_CHARA_MOVE = 3,   /**< Character movement setting of the main loop's debug information. */
+    DNG_DEBUG_CMD_ENEMY_RESET = 4,  /**< Removes every monster and sets the monster manager up again. */
+    DNG_DEBUG_CMD_LOCK_ON_MODE = 5, /**< Lock-on mode of the battle area scene. */
+    DNG_DEBUG_CMD_INFORMATION = 6,  /**< Selects the system parameter window that the dungeon draws. */
+    DNG_DEBUG_CMD_SKIP_FLOOR = 7,   /**< Gives the player the items that open the current floor's exit. */
+    DNG_DEBUG_CMD_SOUND_FLAG = 8,   /**< Pauses or plays the dungeon music. */
+    DNG_DEBUG_CMD_MONSTER_TALK = 9, /**< Monster talk setting. */
+    DNG_DEBUG_CMD_EFFECT_ID = 10,   /**< Effect ID setting. */
+    DNG_DEBUG_CMD_EFFECT_VOL = 11,  /**< Effect volume setting. */
+    DNG_DEBUG_CMD_NUM = 12          /**< Number of lines in the menu. */
 };
 
 /**
@@ -51,6 +51,7 @@ struct DNG_DEBUG_INFO {
     s32   effect_id;        /**< Effect ID setting. */
     float effect_vol;       /**< Effect volume setting. */
 };
+
 STATIC_ASSERT(sizeof(DNG_DEBUG_INFO) == 0x20);
 
 /**
@@ -119,6 +120,5 @@ int dngDebugKey();
  * @size 0x50
  */
 void DrawDebugWindow();
-
 
 void DBGCMD_ReloadEnemy(int monster_id, int reset);

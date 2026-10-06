@@ -109,12 +109,13 @@ enum MINIMAP_SYMBOL {
  *
  */
 struct AUTOMAP_PARTS_INFO {
-    char *name;      /**< Name of the part to place; NULL ends the table. */
-    s16 kind;        /**< Cell kind, an AUTOMAP_PARTS_KIND combination. */
-    u8 link;         /**< Sides the part opens onto, an AUTOMAP_LINK combination. */
-    u8 entrance;     /**< Side an entrance part's corridor arrives from, an AUTOMAP_LINK combination. */
-    s16 unk_8[8];
+    char *name;     /**< Name of the part to place; NULL ends the table. */
+    s16   kind;     /**< Cell kind, an AUTOMAP_PARTS_KIND combination. */
+    u8    link;     /**< Sides the part opens onto, an AUTOMAP_LINK combination. */
+    u8    entrance; /**< Side an entrance part's corridor arrives from, an AUTOMAP_LINK combination. */
+    s16   unk_8[8];
 };
+
 STATIC_ASSERT(sizeof(AUTOMAP_PARTS_INFO) == 0x18);
 
 /**
@@ -124,8 +125,9 @@ STATIC_ASSERT(sizeof(AUTOMAP_PARTS_INFO) == 0x18);
  */
 struct MINIMAP_INFO {
     char name[16];  /**< Name of the map the tiles belong to. */
-    s16 tile[320];  /**< Mini map tile of each AUTOMAP_PARTS_INFO entry, by its index. */
+    s16  tile[320]; /**< Mini map tile of each AUTOMAP_PARTS_INFO entry, by its index. */
 };
+
 STATIC_ASSERT(sizeof(MINIMAP_INFO) == 0x290);
 
 /**
@@ -143,6 +145,7 @@ struct MINIMAP_SYMBOL_INFO {
     s16 blink;        /**< Non-zero blinks the symbol. */
     s16 need_visible; /**< Non-zero draws the symbol only over cells already revealed. */
 };
+
 STATIC_ASSERT(sizeof(MINIMAP_SYMBOL_INFO) == 0x10);
 
 /**
@@ -151,13 +154,14 @@ STATIC_ASSERT(sizeof(MINIMAP_SYMBOL_INFO) == 0x10);
  *
  */
 struct AUTOMAP_ROOM_INFO {
-    s32 id;     /**< Number the script gives the layout. */
-    s32 w;      /**< Width of the layout in cells. */
-    s32 h;      /**< Height of the layout in cells. */
-    s32 fixed;  /**< Above zero keeps the layout out of random room selection. */
-    s32 rate;   /**< Chance out of 100 that random room selection keeps the layout. */
+    s32  id;    /**< Number the script gives the layout. */
+    s32  w;     /**< Width of the layout in cells. */
+    s32  h;     /**< Height of the layout in cells. */
+    s32  fixed; /**< Above zero keeps the layout out of random room selection. */
+    s32  rate;  /**< Chance out of 100 that random room selection keeps the layout. */
     s16 *table; /**< Part index and attribute of each cell, row by row; a part index of -1 leaves the cell empty. */
 };
+
 STATIC_ASSERT(sizeof(AUTOMAP_ROOM_INFO) == 0x18);
 
 /**
@@ -172,6 +176,7 @@ struct AUTOMAP_ROOM {
     s32 w; /**< Width of the room in cells. */
     s32 h; /**< Height of the room in rows. */
 };
+
 STATIC_ASSERT(sizeof(AUTOMAP_ROOM) == 0x14);
 
 /**
@@ -182,16 +187,16 @@ STATIC_ASSERT(sizeof(AUTOMAP_ROOM) == 0x14);
  */
 class CAutoMapParts {
 public:
-    u32 kind;          /**< Cell kind, an AUTOMAP_PARTS_KIND combination. */
-    s16 parts_no;      /**< Index into PartsInfoData of the part to place, or -1. */
-    s16 attr;          /**< Attribute flags, an AUTOMAP_ATTR combination. */
-    s16 room_no;       /**< Room or corridor the cell belongs to, or -1. */
-    u8 road_link;      /**< Sides a corridor opens onto, an AUTOMAP_LINK combination. */
-    u8 link;           /**< Sides the cell opens onto, an AUTOMAP_LINK combination. */
-    s16 visible;       /**< Non-zero once the mini map reveals the cell. */
-    CMapParts *parts;  /**< Part placed in the cell. */
-    u32 wall;          /**< Sides a wall closes, an AUTOMAP_WALL combination. */
-    s8 navi;           /**< Steps left to the navigation target, 0 if unreached, or -1 for an empty cell. */
+    u32        kind;      /**< Cell kind, an AUTOMAP_PARTS_KIND combination. */
+    s16        parts_no;  /**< Index into PartsInfoData of the part to place, or -1. */
+    s16        attr;      /**< Attribute flags, an AUTOMAP_ATTR combination. */
+    s16        room_no;   /**< Room or corridor the cell belongs to, or -1. */
+    u8         road_link; /**< Sides a corridor opens onto, an AUTOMAP_LINK combination. */
+    u8         link;      /**< Sides the cell opens onto, an AUTOMAP_LINK combination. */
+    s16        visible;   /**< Non-zero once the mini map reveals the cell. */
+    CMapParts *parts;     /**< Part placed in the cell. */
+    u32        wall;      /**< Sides a wall closes, an AUTOMAP_WALL combination. */
+    s8         navi;      /**< Steps left to the navigation target, 0 if unreached, or -1 for an empty cell. */
 
     void Initialize() {
         parts_no = -1;
@@ -205,6 +210,7 @@ public:
         parts = NULL;
     }
 };
+
 STATIC_ASSERT(sizeof(CAutoMapParts) == 0x1C);
 
 /**
@@ -215,26 +221,26 @@ STATIC_ASSERT(sizeof(CAutoMapParts) == 0x1C);
  */
 class CMiniMapSymbol {
 public:
-    CMap *map;                  /**< Map whose placed parts are drawn. */
-    CMapParts *parts_table;     /**< Placed parts of the map. */
-    s32 parts_num;              /**< Number of placed parts in parts_table. */
-    mgCTexture *texture;        /**< Texture holding the mini map tiles. */
-    CPreSprite prim;            /**< Primitive builder that draws the symbols. */
+    CMap          *map;         /**< Map whose placed parts are drawn. */
+    CMapParts     *parts_table; /**< Placed parts of the map. */
+    s32            parts_num;   /**< Number of placed parts in parts_table. */
+    mgCTexture    *texture;     /**< Texture holding the mini map tiles. */
+    CPreSprite     prim;        /**< Primitive builder that draws the symbols. */
     CAutoMapParts *grid;        /**< Grid of the generated floor, or NULL. */
-    MINIMAP_INFO *info;         /**< Tiles of the current map, or NULL. */
-    s16 grid_w;                 /**< Width of the grid in cells. */
-    s16 grid_h;                 /**< Height of the grid in cells. */
-    float cell_w;               /**< Width of a cell along X in world units. */
-    float cell_d;               /**< Depth of a cell along Z in world units. */
-    s32 unk_154[3];
-    sceVu0FVECTOR center;       /**< World position the mini map is centred on. */
-    s16 x;                      /**< Screen X of the mini map's centre. */
-    s16 y;                      /**< Screen Y of the mini map's centre. */
-    s16 w;                      /**< Screen width of the mini map. */
-    s16 h;                      /**< Screen height of the mini map. */
-    s32 blink_cnt;              /**< Frame counter that blinks symbols, from 0 to 30. */
-    s16 large;                  /**< Non-zero while the mini map is shown at its large size. */
-    u8  unk_17e[0x2];
+    MINIMAP_INFO  *info;        /**< Tiles of the current map, or NULL. */
+    s16            grid_w;      /**< Width of the grid in cells. */
+    s16            grid_h;      /**< Height of the grid in cells. */
+    float          cell_w;      /**< Width of a cell along X in world units. */
+    float          cell_d;      /**< Depth of a cell along Z in world units. */
+    s32            unk_154[3];
+    sceVu0FVECTOR  center;    /**< World position the mini map is centred on. */
+    s16            x;         /**< Screen X of the mini map's centre. */
+    s16            y;         /**< Screen Y of the mini map's centre. */
+    s16            w;         /**< Screen width of the mini map. */
+    s16            h;         /**< Screen height of the mini map. */
+    s32            blink_cnt; /**< Frame counter that blinks symbols, from 0 to 30. */
+    s16            large;     /**< Non-zero while the mini map is shown at its large size. */
+    u8             unk_17e[0x2];
 
     /**
      *
@@ -245,7 +251,7 @@ public:
      * @address 0x1D5D60
      * @size 0x1F0
      */
-    void SetMapInfo(CMap *map, CAutoMapParts *grid, int grid_w, int grid_h, float cell_w, float cell_d);
+    void SetMapInfo(CMap *map, CAutoMapParts *new_auto_map_parts, int width, int height, float cell_width, float cell_depth);
 
     /**
      *
@@ -297,6 +303,7 @@ public:
      */
     void Draw(float *pos);
 };
+
 STATIC_ASSERT(sizeof(CMiniMapSymbol) == 0x180);
 
 /**
@@ -332,6 +339,7 @@ public:
      */
     void Step();
 };
+
 STATIC_ASSERT(sizeof(CHealingPoint) == 0x8);
 
 /**
@@ -343,29 +351,29 @@ STATIC_ASSERT(sizeof(CHealingPoint) == 0x8);
  */
 class CAutoMapGen {
 public:
-    CMapParts *gio_parts;          /**< Placed "p01_gio" part. */
-    CMapParts *random_stone[12];   /**< Placed "obj01" parts used as random stones. */
-    CMapParts *pot_parts;          /**< Placed "obj02" part used by the pot. */
-    s16 random_map;                /**< Non-zero once a random floor has been generated. */
-    s16 minimap_enable;            /**< Non-zero once Build has run, letting the mini map reveal cells. */
-    u32 gen_flag;                  /**< Generation options, an AUTOMAP_GEN_FLAG combination. */
-    CMiniMapSymbol mini_map;       /**< Mini map of the floor. */
-    CHealingPoint healing_point;   /**< Healing point of the floor. */
-    s16 grid_w;                    /**< Width of the grid in cells. */
-    s16 grid_h;                    /**< Height of the grid in cells. */
-    float cell_w;                  /**< Width of a cell along X in world units. */
-    float cell_d;                  /**< Depth of a cell along Z in world units. */
-    AUTOMAP_ROOM_INFO *room_info;  /**< Preset room layouts read from the room script. */
-    s32 room_info_num;             /**< Number of entries of room_info in use. */
-    CAutoMapParts *grid;           /**< Cells of the grid, row by row. */
-    s32 place_parts_num;           /**< Number of parts placed in the map. */
-    AUTOMAP_ROOM room[8];          /**< Rooms of the generated floor. */
-    s32 room_num;                  /**< Number of entries of room in use. */
-    s32 door_room;                 /**< Room whose entrance has a door, or -1. */
-    s32 navi_valid;                /**< Non-zero once the navigation distances have been worked out. */
-    s32 navi_depth;                /**< Step count given to the navigation target. */
-    s32 navi_enable;               /**< Non-zero once Build has run, enabling navigation. */
-    s32 unk_298[2];
+    CMapParts         *gio_parts;        /**< Placed "p01_gio" part. */
+    CMapParts         *random_stone[12]; /**< Placed "obj01" parts used as random stones. */
+    CMapParts         *pot_parts;        /**< Placed "obj02" part used by the pot. */
+    s16                random_map;       /**< Non-zero once a random floor has been generated. */
+    s16                minimap_enable;   /**< Non-zero once Build has run, letting the mini map reveal cells. */
+    u32                gen_flag;         /**< Generation options, an AUTOMAP_GEN_FLAG combination. */
+    CMiniMapSymbol     mini_map;         /**< Mini map of the floor. */
+    CHealingPoint      healing_point;    /**< Healing point of the floor. */
+    s16                grid_w;           /**< Width of the grid in cells. */
+    s16                grid_h;           /**< Height of the grid in cells. */
+    float              cell_w;           /**< Width of a cell along X in world units. */
+    float              cell_d;           /**< Depth of a cell along Z in world units. */
+    AUTOMAP_ROOM_INFO *room_info;        /**< Preset room layouts read from the room script. */
+    s32                room_info_num;    /**< Number of entries of room_info in use. */
+    CAutoMapParts     *grid;             /**< Cells of the grid, row by row. */
+    s32                place_parts_num;  /**< Number of parts placed in the map. */
+    AUTOMAP_ROOM       room[8];          /**< Rooms of the generated floor. */
+    s32                room_num;         /**< Number of entries of room in use. */
+    s32                door_room;        /**< Room whose entrance has a door, or -1. */
+    s32                navi_valid;       /**< Non-zero once the navigation distances have been worked out. */
+    s32                navi_depth;       /**< Step count given to the navigation target. */
+    s32                navi_enable;      /**< Non-zero once Build has run, enabling navigation. */
+    s32                unk_298[2];
 
     /**
      *
@@ -375,7 +383,7 @@ public:
      * @address 0x1D6D80
      * @size 0x170
      */
-    void SetupRoomInfo(char *script, int size, mgCMemory *stack);
+    void SetupRoomInfo(char *name, int length, mgCMemory *mem);
 
     /**
      *
@@ -410,7 +418,7 @@ public:
      * @address 0x1D7480
      * @size 0x140
      */
-    void SetRoadLinkMark(int x, int y, int side);
+    void SetRoadLinkMark(int x, int y, int direction);
 
     /**
      *
@@ -543,7 +551,7 @@ public:
      * @address 0x1D9BF0
      * @size 0x200
      */
-    void CreatFixedMap(int info_no);
+    void CreatFixedMap(int preset_no);
 
     /**
      *
@@ -596,7 +604,7 @@ public:
      * @address 0x1DA820
      * @size 0xB0
      */
-    CMapParts *SearchRandomStone(float *pos, float range);
+    CMapParts *SearchRandomStone(float *pos, float radius);
 
     /**
      *
@@ -661,6 +669,7 @@ public:
      */
     void UpdateNaviMap(float *pos, int depth);
 };
+
 STATIC_ASSERT(sizeof(CAutoMapGen) == 0x2A0);
 
 /** Every kind of part the floor generator can place, ending with an entry whose name is NULL. */

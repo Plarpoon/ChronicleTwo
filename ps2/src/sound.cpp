@@ -1,27 +1,28 @@
 #include "common.h"
-#include "sound.hpp"
 
-#include <cstdio>
-#include <cstring>
 #include <eekernel.h>
 #include <libsdr.h>
 #include <modmsin.h>
 #include <sifrpc.h>
 
+#include <cstdio>
+#include <cstring>
+
 #include "ezbgm.hpp"
 #include "ezmidi.hpp"
+#include "sound.hpp"
 
-extern int bgm_info[2];
+extern int        bgm_info[2];
 extern MIDI_STATE midi_state;
-extern sceCslCtx msinCtx;
+extern sceCslCtx  msinCtx;
 
 #ifdef NONMATCHING
-static void          *iopMSINBuffAddr;              /**< IOP destination of the MIDI stream buffers. */
-static int            bd_size_total;                /**< Accumulated bank body size. */
-static sceCslBuffGrp  msinBfGrp[2];                 /**< Input and output buffer groups of the MIDI stream module. */
-static sceCslBuffCtx  msinBfCtx[MIDI_MSIN_PORT_COUNT]; /**< Contexts of the MIDI message buffers. */
-static MSIN_BUFFER    msinBf[MIDI_MSIN_PORT_COUNT];  /**< MIDI messages waiting to be sent to the IOP. */
-static MIDI_BANK      gBank;                        /**< Description of the bank being transferred. */
+static void         *iopMSINBuffAddr;                 /**< IOP destination of the MIDI stream buffers. */
+static int           bd_size_total;                   /**< Accumulated bank body size. */
+static sceCslBuffGrp msinBfGrp[2];                    /**< Input and output buffer groups of the MIDI stream module. */
+static sceCslBuffCtx msinBfCtx[MIDI_MSIN_PORT_COUNT]; /**< Contexts of the MIDI message buffers. */
+static MSIN_BUFFER   msinBf[MIDI_MSIN_PORT_COUNT];    /**< MIDI messages waiting to be sent to the IOP. */
+static MIDI_BANK     gBank;                           /**< Description of the bank being transferred. */
 #endif
 
 // Code (.text)
@@ -29,12 +30,14 @@ void CSound::StopVoice(int core) {
     sceSdRemote(1, rSdSetSwitch, core | SD_S_KOFF, 0xFFFFFF);
     printf("voice completed Core=%d\n", core);
 }
+
 void CSound::SndInReverb(bool enable) {
     if (enable) {
         sceSdRemote(1, rSdSetParam, 0x800, -4);
         sceSdRemote(1, rSdSetParam, 0x801, -4);
         return;
     }
+
     sceSdRemote(1, rSdSetParam, 0x800, -0x34);
     sceSdRemote(1, rSdSetParam, 0x801, -0x34);
 }
@@ -70,6 +73,7 @@ void set_spu(int mode0, int mode1, int depth0, int depth1) {
     sceSdRemoteInit();
     sceSdRemote(1, rSdInit, 0);
     sceSdRemote(1, rSdSetCoreAttr, SD_C_SPDIF_MODE, SD_SPDIF_COPY_PROHIBIT);
+
     for (core = 0; core < 2; core++) {
         sceSdRemote(1, rSdSetAddr, core | SD_A_EEA, 0x1FFFFF - core * 0x20000);
         effect.mode = mode[core] | SD_REV_MODE_CLEAR_WA;
@@ -112,26 +116,26 @@ int TransHdBd(int hd, int hd_size, int bd, int bd_size) {
         return -1;
     }
     printf("hd AllocIopHeap %d \n", header);
-    ezTransToIOP2(header, (void *)hd, hd_size);
+    ezTransToIOP2(header, (void *) hd, hd_size);
     gBank.hd_address = header;
     gBank.bd_size = bd_size;
     gBank.bd_address = iop_bd_addr;
     printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>SPU ADDR==%d size=%d!!!!!!!!!!\n", gBank.spu_address, bd_size);
-    if ((u32)gBank.spu_address < 0x18AE20 && (u32)(gBank.spu_address + bd_size) > 0x18AE20) {
+    if ((u32) gBank.spu_address < 0x18AE20 && (u32) (gBank.spu_address + bd_size) > 0x18AE20) {
         printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>SYS AREA HAKAI????addr=%d size=%d!!!!!!!!!!\n", gBank.spu_address, bd_size);
     }
     if (bd_size <= 0x6DE00) {
         sceSdRemote(1, rSdVoiceTransStatus, 1, SD_TRANS_STATUS_WAIT);
-        ezTransToIOP2(iop_bd_addr, (void *)bd, bd_size);
+        ezTransToIOP2(iop_bd_addr, (void *) bd, bd_size);
         FlushCache(0);
         sceSdRemote(1, rSdVoiceTrans, 1, SD_TRANS_MODE_WRITE, gBank.bd_address, gBank.spu_address, bd_size);
     } else {
         sceSdRemote(1, rSdVoiceTransStatus, 1, SD_TRANS_STATUS_WAIT);
-        ezTransToIOP2(iop_bd_addr, (void *)bd, 0x6DD00);
+        ezTransToIOP2(iop_bd_addr, (void *) bd, 0x6DD00);
         FlushCache(0);
         sceSdRemote(1, rSdVoiceTrans, 1, SD_TRANS_MODE_WRITE, gBank.bd_address, gBank.spu_address, 0x6DD00);
         sceSdRemote(1, rSdVoiceTransStatus, 1, SD_TRANS_STATUS_WAIT);
-        ezTransToIOP2(iop_bd_addr, (void *)(bd + 0x6DD00), bd_size - 0x6DD00);
+        ezTransToIOP2(iop_bd_addr, (void *) (bd + 0x6DD00), bd_size - 0x6DD00);
         FlushCache(0);
         sceSdRemote(1, rSdVoiceTrans, 1, SD_TRANS_MODE_WRITE, gBank.bd_address, gBank.spu_address + 0x6DD00, bd_size - 0x6DD00);
     }
@@ -153,7 +157,7 @@ int CSound::Init(int mode0, int mode1, int depth0, int depth1) {
         ezBgmInit();
         ezMidiInit();
         set_spu(mode0, mode1, depth0, depth1);
-        iopMSINBuffAddr = (void *)ezMidi(0x8010, 0x4000);
+        iopMSINBuffAddr = (void *) ezMidi(0x8010, 0x4000);
         sceSifInitIopHeap();
         printf("iopMSINBuffAddr %d\n", iopMSINBuffAddr);
         if (iop_bd_addr == NULL) {
@@ -296,9 +300,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", Init__6CSoundFiiii);
 
 #ifdef NONMATCHING
 int CSound::Exit() {
-    int         port;
-    int         slot;
-    MIDI_PORT  *state;
+    int        port;
+    int        slot;
+    MIDI_PORT *state;
 
     for (port = 0; port < MIDI_PORT_COUNT; port++) {
         ezMidi(port + 0x20, 0);
@@ -344,7 +348,7 @@ void CSound::DEL_PORT(int port) {
     ezMidi(port + 0x20, 0);
     state = &midi_state.port[port];
     if (state->sequence_count != 0) {
-        ezMidi(port + 0x40, (int)state->resident_sequence);
+        ezMidi(port + 0x40, (int) state->resident_sequence);
     }
     for (slot = 1; slot < state->sequence_count; slot++) {
         sceSifInitIopHeap();
@@ -358,7 +362,7 @@ void CSound::DEL_PORT(int port) {
         ezMidi(state->linked_port + 0x20, 0);
         linked = &midi_state.port[state->linked_port];
         if (linked->sequence_count != 0) {
-            ezMidi(state->linked_port + 0x40, (int)linked->resident_sequence);
+            ezMidi(state->linked_port + 0x40, (int) linked->resident_sequence);
         }
         for (slot = 1; slot < linked->sequence_count; slot++) {
             sceSifInitIopHeap();
@@ -377,7 +381,7 @@ void CSound::DEL_PORT(int port) {
         child->spu_address = state->spu_address;
         child->spu_next_address = state->spu_address;
         if (child->sequence_count != 0) {
-            ezMidi(dependent_port + 0x40, (int)child->resident_sequence);
+            ezMidi(dependent_port + 0x40, (int) child->resident_sequence);
         }
         for (slot = 1; slot < child->sequence_count; slot++) {
             sceSifInitIopHeap();
@@ -402,10 +406,10 @@ void CSound::SQ_Play(int port, int seq_no, int volume) {
     sequence = midi_state.port[port].sequence[seq_no];
     ezMidi(port + 0x20, 0);
     printf("MIDI start! port=%d \n", port);
-    ezMidi(port + 0x40, (int)sequence);
+    ezMidi(port + 0x40, (int) sequence);
     printf("###############PLAY SEQ_NO=%d PORT=%d#####################\n", seq_no, port);
     if (volume != 256) {
-        volume = (int)(volume * 2.015748f);
+        volume = (int) (volume * 2.015748f);
     }
     ezMidi(port + 0xB0, volume);
     ezMidi(port + 0x30, 0);
@@ -430,6 +434,7 @@ void CSound::SE_Play(int port, int bank, int program, int key, int pan, int velo
         printf(" ################################SE_ID ERR!! PORT NO=%d !!!\n", port);
         return;
     }
+
     if (midi_state.port[port].bank_count > 0) {
         stream_port = port - MIDI_PORT_MSIN_FIRST;
         sceMSIn_PutMsg(&msinCtx, stream_port, ((bank & 0x7F) << 16) | 0xB0);
@@ -470,6 +475,7 @@ void CSound::SE_SetVol(int port, int bank, int program, int key, int volume, int
         printf(" ################################SE_ID ERR!! PORT NO=%d !!!\n", port);
         return;
     }
+
     if (midi_state.port[port].bank_count > 0) {
         stream_port = port - MIDI_PORT_MSIN_FIRST;
         sceMSIn_PutMsg(&msinCtx, stream_port, ((bank & 0x7F) << 16) | 0xB0);
@@ -493,6 +499,7 @@ void CSound::SE_SetPan(int port, int bank, int program, int key, int pan, int id
         printf(" ################################SE_ID ERR!! PORT NO=%d !!!\n", port);
         return;
     }
+
     if (midi_state.port[port].bank_count > 0) {
         stream_port = port - MIDI_PORT_MSIN_FIRST;
         sceMSIn_PutMsg(&msinCtx, stream_port, ((bank & 0x7F) << 16) | 0xB0);
@@ -516,6 +523,7 @@ void CSound::SE_Stop(int port, int bank, int program, int key, int id) {
         printf(" ################################SE_ID ERR!! PORT NO=%d !!!\n", port);
         return;
     }
+
     if (midi_state.port[port].bank_count > 0) {
         stream_port = port - MIDI_PORT_MSIN_FIRST;
         sceMSIn_PutMsg(&msinCtx, stream_port, ((bank & 0x7F) << 16) | 0xB0);
@@ -542,25 +550,25 @@ void CSound::Step() {
         if (fade->active != 0) {
             fade->volume += fade->step;
             if (!(fade->step <= 0.0f)) {
-                if (!(fade->volume <= (float)fade->target_volume)) {
-                    fade->volume = (float)fade->target_volume;
+                if (!(fade->volume <= (float) fade->target_volume)) {
+                    fade->volume = (float) fade->target_volume;
                     fade->active = 0;
                 }
             }
             if (fade->step < 0.0f) {
-                if (fade->volume < (float)fade->target_volume) {
-                    fade->volume = (float)fade->target_volume;
+                if (fade->volume < (float) fade->target_volume) {
+                    fade->volume = (float) fade->target_volume;
                     fade->active = 0;
                 }
             }
-            SetVol(0, (int)fade->volume);
+            SetVol(0, (int) fade->volume);
         }
     }
     for (port = 0; port < MIDI_MSIN_PORT_COUNT; port++) {
         buffer = &msinBf[port];
         if (buffer->length != 0) {
-            if ((u32)buffer->length <= sizeof(MSIN_BUFFER)) {
-                if (ezTransToIOP2(&((MSIN_BUFFER *)iopMSINBuffAddr)[port], buffer, sizeof(MSIN_BUFFER)) != 0) {
+            if ((u32) buffer->length <= sizeof(MSIN_BUFFER)) {
+                if (ezTransToIOP2(&((MSIN_BUFFER *) iopMSINBuffAddr)[port], buffer, sizeof(MSIN_BUFFER)) != 0) {
                     printf("EX MIDI SEND ERR!! SIZE= %d\n", buffer->length);
                 }
             }
@@ -579,8 +587,9 @@ void CSound::Stop(int port) {
 
 void CSound::SetVol(int port, int volume) {
     if (volume != 256) {
-        volume = (int)(volume * 2.015748f);
+        volume = (int) (volume * 2.015748f);
     }
+
     ezMidi(port + 0xB0, volume);
 }
 
@@ -626,10 +635,10 @@ void CSound::LoadHdBd2(int port, int hd, int hd_size, int bd, int bd_size) {
     TransHdBd(hd, hd_size, bd, bd_size);
     gBank.bank_no = 0;
     ezMidi(port + 0x20, 0);
-    ezMidi(port + 0x9050, (int)&gBank);
+    ezMidi(port + 0x9050, (int) &gBank);
     if (state->linked_port >= 0) {
         ezMidi(state->linked_port + 0x20, 0);
-        ezMidi(state->linked_port + 0x9050, (int)&gBank);
+        ezMidi(state->linked_port + 0x9050, (int) &gBank);
     }
     for (slot = 0; slot < state->bank_count; slot++) {
         sceSifInitIopHeap();
@@ -638,7 +647,7 @@ void CSound::LoadHdBd2(int port, int hd, int hd_size, int bd, int bd_size) {
     }
     state->bank_count = 0;
     if (state->sequence_count != 0) {
-        ezMidi(port + 0x40, (int)state->resident_sequence);
+        ezMidi(port + 0x40, (int) state->resident_sequence);
     }
     for (slot = 1; slot < state->sequence_count; slot++) {
         sceSifInitIopHeap();
@@ -655,7 +664,7 @@ void CSound::LoadHdBd2(int port, int hd, int hd_size, int bd, int bd_size) {
         }
         linked->bank_count = 0;
         if (linked->sequence_count != 0) {
-            ezMidi(state->linked_port + 0x40, (int)linked->resident_sequence);
+            ezMidi(state->linked_port + 0x40, (int) linked->resident_sequence);
         }
         for (slot = 1; slot < linked->sequence_count; slot++) {
             sceSifInitIopHeap();
@@ -726,9 +735,9 @@ int CSound::LoadHdBdAdd(int port, int hd, int hd_size, int bd, int bd_size) {
         child->spu_address = state->spu_next_address;
         child->spu_next_address = state->spu_next_address;
     }
-    result = ezMidi(port + 0x9050, (int)&gBank);
+    result = ezMidi(port + 0x9050, (int) &gBank);
     if (state->linked_port >= 0) {
-        result = ezMidi(state->linked_port + 0x9050, (int)&gBank);
+        result = ezMidi(state->linked_port + 0x9050, (int) &gBank);
     }
     if (state->linked_port >= 0) {
         linked = &midi_state.port[state->linked_port];
@@ -763,9 +772,9 @@ int CSound::LoadSeq(int port, int address, int size) {
     printf("AllocIopHeap %d \n", sequence);
     state = &midi_state.port[port];
     state->sequence[state->sequence_count] = sequence;
-    ezTransToIOP2(sequence, (void *)address, size);
+    ezTransToIOP2(sequence, (void *) address, size);
     if (state->sequence_count == 0) {
-        ezMidi(port + 0x40, (int)sequence);
+        ezMidi(port + 0x40, (int) sequence);
         if (state->resident_sequence != NULL) {
             sceSifFreeSysMemory(state->resident_sequence);
         }
@@ -790,6 +799,7 @@ void CSound::SE_SetPitch(int port, int bank, int program, int key, int pitch, in
         printf(" ################################SE_ID ERR!! PORT NO=%d !!!\n", port);
         return;
     }
+
     stream_port = port - MIDI_PORT_MSIN_FIRST;
     sceMSIn_PutMsg(&msinCtx, stream_port, ((bank & 0x7F) << 16) | 0xB0);
     sceMSIn_PutMsg(&msinCtx, stream_port, ((program & 0x7F) << 8) | 0xC0);
@@ -808,7 +818,7 @@ void CSound::StreamOpenFast(int channel, char *name) {
 
     strcpy(file_name, name);
     ezBgm(channel | 0x80, 0);
-    bgm_info[channel] = ezBgm(channel | EZBGM_OPEN, (int)file_name);
+    bgm_info[channel] = ezBgm(channel | EZBGM_OPEN, (int) file_name);
 }
 
 void CSound::StreamOpenFromFPLFast(int channel, char *name, char *pack_name) {
@@ -817,7 +827,7 @@ void CSound::StreamOpenFromFPLFast(int channel, char *name, char *pack_name) {
     strcpy(request.name, name);
     strcpy(request.pack_name, pack_name);
     ezBgm(channel | 0x80, 0);
-    bgm_info[channel] = ezBgm(channel | EZBGM_OPEN_FROM_PACK, (int)&request);
+    bgm_info[channel] = ezBgm(channel | EZBGM_OPEN_FROM_PACK, (int) &request);
 }
 
 void CSound::StreamPlay(int channel) {
@@ -862,6 +872,7 @@ int CSound::StreamGetLevel(int channel) {
 
 void CSound::StreamStandBy(int channel) {
     bgm_info[channel] = ezBgm(channel | 0x80D0, 0);
+
     if (!(bgm_info[channel] & 0x1)) {
         printf("mono \n");
         ezBgm(channel | 0x8000, 0x3000);
@@ -871,13 +882,13 @@ void CSound::StreamStandBy(int channel) {
         ezBgm(channel | 0x8000, 0x4000);
         ezBgm(channel | 0x80C0, 0);
     }
+
     ezBgm(channel | EZBGM_PRELOAD, 0);
 }
 
 int CSound::TransBdState(int channel) {
     return sceSdRemote(1, rSdVoiceTransStatus, channel, SD_TRANS_STATUS_CHECK);
 }
-
 
 // Constants (.rodata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_218__DATA);

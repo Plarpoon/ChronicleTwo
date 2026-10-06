@@ -108,3 +108,11 @@ padded to even. LoadData printf("%d %d %d") of the position.
   CEditData 0x5110..0x550F: no reads found.
 - Names EditDataParts / EditDataHouse / EditDataAnalyze are neutral (no retail names); retail may have used
   unnamed or differently named structs.
+
+## Script loading types
+
+`buff_1271` is 0x300 aligned quadwords used as the backing buffer of
+`Stack_1272`. `LoadEditAnalyzeData` constructs a `CScriptInterpreter` after
+setting the active analyzer globals, then runs the loaded script. Typed
+`mgCMemory::stSetBuffer` and local `CScriptInterpreter` calls match both retail
+loading functions without mangled C-linkage aliases.

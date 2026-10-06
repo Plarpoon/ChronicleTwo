@@ -1,47 +1,46 @@
-#include "sound.hpp"
-#include "dataread.hpp"
-#include "prespr.hpp"
-#include "mg_drawprim.hpp"
+#include "common.h"
+
+#include <cmath>
 #include <cstdio>
+#include <cstring>
+
+#include "dataread.hpp"
 #include "font.hpp"
-#include "sysmes.hpp"
-#include "scenesnd.hpp"
-#include "savedata.hpp"
-#include "userdata.hpp"
 #include "gamedata.hpp"
-#include "scriptinterpreter.hpp"
+#include "gamepad.hpp"
+#include "mainloop.hpp"
+#include "mapload.hpp"
+#include "menucls1.hpp"
+#include "menucommon.hpp"
+#include "menudraw.hpp"
+#include "menumain.hpp"
+#include "menusys.hpp"
+#include "mg_drawprim.hpp"
 #include "mg_math.hpp"
 #include "mg_texture.hpp"
-#include "menudraw.hpp"
-#include "menusys.hpp"
-#include "menumain.hpp"
-#include "common.h"
-#include "menucls1.hpp"
-#include <cstring>
-#include "mainloop.hpp"
-#include "menucommon.hpp"
 #include "mglib.hpp"
-#include "mapload.hpp"
-#include "gamepad.hpp"
+#include "prespr.hpp"
+#include "savedata.hpp"
+#include "scenesnd.hpp"
+#include "scriptinterpreter.hpp"
+#include "sound.hpp"
+#include "sysmes.hpp"
+#include "userdata.hpp"
 
-extern "C" int GetNumberKeta__Fi(int);
-extern "C" double pow(double, double);
-
-extern char *MenuHatena_894;
-extern signed char init_895;
-extern char *MenuHatena_1byte_897;
-extern signed char init_898;
-extern char at_905__4[];
-extern char at_906__4[];
-extern char *MenuBigNum[];
+extern char        *MenuHatena_894;
+extern signed char  init_895;
+extern char        *MenuHatena_1byte_897;
+extern signed char  init_898;
+extern char         at_905__4[];
+extern char         at_906__4[];
+extern char        *MenuBigNum[];
 extern signed char *sn_944[];
-extern CItemUseTarget MenuUsedTarget;
-extern char at_1328[];
-extern char at_1512__3[];
-extern char at_1513__3[];
-extern char at_1514__3[];
-extern char at_1623__3[];
-extern "C" int GetShiledKitLimmit__Fi(int);
+CItemUseTarget      MenuUsedTarget;
+extern char         at_1328[];
+extern char         at_1512__3[];
+extern char         at_1513__3[];
+extern char         at_1514__3[];
+extern char         at_1623__3[];
 
 // Code (.text)
 char *GetHatena() {
@@ -49,34 +48,43 @@ char *GetHatena() {
         MenuHatena_894 = at_905__4;
         init_895 = 1;
     }
+
     if (init_898 == 0) {
         MenuHatena_1byte_897 = at_906__4;
         init_898 = 1;
     }
+
     if (LanguageCode >= 2 && LanguageCode < 6) {
         return MenuHatena_1byte_897;
     }
+
     return MenuHatena_894;
 }
+
 char *GetMenuBigNum(int number) {
     return MenuBigNum[number % 10];
 }
+
 #pragma divbyzerocheck on
+
 void SetMenuBigNum2(char *out, int number) {
     if (out != 0) {
         int rest = number;
         int pos = 0;
         int digits = GetNumberKeta(number);
+
         if (digits > 0) {
             do {
                 signed char *glyph;
+
                 if (digits == 1) {
-                    glyph = (signed char *)GetMenuBigNum(rest);
+                    glyph = (signed char *) GetMenuBigNum(rest);
                 } else {
-                    int divisor = (int)pow(10.0, (double)(digits - 1));
-                    glyph = (signed char *)GetMenuBigNum(rest / divisor);
+                    int divisor = (int) pow(10.0, (double) (digits - 1));
+                    glyph = (signed char *) GetMenuBigNum(rest / divisor);
                     rest = rest % divisor;
                 }
+
                 char *dst = out + pos;
                 digits -= 1;
                 pos += 2;
@@ -84,30 +92,36 @@ void SetMenuBigNum2(char *out, int number) {
                 dst[1] = glyph[1];
             } while (digits > 0);
         }
+
         out[pos] = 0;
     }
 }
+
 #pragma divbyzerocheck reset
 #pragma divbyzerocheck on
 
 #pragma divbyzerocheck on
+
 void SetMenuBigNum(char *out, int number) {
     if (out != 0) {
         int rest = number;
         int pos = 0;
-        int digits = GetNumberKeta__Fi(number);
+        int digits = GetNumberKeta(number);
+
         if (CheckNowEurope() != 0) {
             if (digits > 0) {
                 do {
                     signed char *glyph;
+
                     if (digits == 1) {
                         glyph = sn_944[rest];
                     } else {
-                        double e = (double)(digits - 1);
-                        int divisor = (int)pow(10.0, e);
+                        double e = (double) (digits - 1);
+                        int    divisor = (int) pow(10.0, e);
                         glyph = sn_944[rest / divisor];
                         rest = rest % divisor;
                     }
+
                     signed char c = glyph[0];
                     digits -= 1;
                     out[pos++] = c;
@@ -116,16 +130,18 @@ void SetMenuBigNum(char *out, int number) {
         } else if (digits > 0) {
             do {
                 signed char *glyph;
+
                 if (digits == 1) {
-                    glyph = (signed char *)GetMenuBigNum(rest);
+                    glyph = (signed char *) GetMenuBigNum(rest);
                 } else {
-                    double base = 10.0;
+                    double        base = 10.0;
                     const double &reference = base;
-                    double e = (double)(digits - 1);
-                    int divisor = (int)pow(reference, e);
-                    glyph = (signed char *)GetMenuBigNum(rest / divisor);
+                    double        e = (double) (digits - 1);
+                    int           divisor = (int) pow(reference, e);
+                    glyph = (signed char *) GetMenuBigNum(rest / divisor);
                     rest = rest % divisor;
                 }
+
                 char *dst = out + pos;
                 digits -= 1;
                 pos += 2;
@@ -133,21 +149,26 @@ void SetMenuBigNum(char *out, int number) {
                 dst[1] = glyph[1];
             } while (digits > 0);
         }
+
         out[pos] = 0;
     }
 }
+
 #pragma divbyzerocheck reset
 #pragma divbyzerocheck reset
+
 CMenuFont::CMenuFont() {
     Init();
     SetClearance(0x10, 0x14);
     SetFuchi(5);
     SetColor(0x80686A6BU);
-    *(int *)&unk_b0 = 0;
-    *(int *)&unk_b4 = 0;
+    *(int *) &unk_b0 = 0;
+    *(int *) &unk_b4 = 0;
 }
+
 void MenuMesInit(ClsMes *mes) {
     int a, b, c, d, e;
+
     if (mes != 0) {
         mes->npc_name_mode = 0;
         mes->char_num = 0;
@@ -155,17 +176,19 @@ void MenuMesInit(ClsMes *mes) {
         mes->text_h = 0;
         mes->page = 0;
         mes->page_num = 0;
+
         for (a = 0; a < 16; a++) {
             mes->page_chars[a] = 0;
         }
+
         mes->last_x = 0;
         mes->last_y = 0;
-        *(int *)&mes->fade = 0;
+        *(int *) &mes->fade = 0;
         mes->open = 1;
         mes->draw_speed = mes->GetDrawSpeedDef();
         mes->page_wait = 0;
         mes->scroll_wait = 0;
-        *(int *)&mes->reveal = 0;
+        *(int *) &mes->reveal = 0;
         mes->reveal_num = 0;
         mes->page_top = 0;
         mes->unk_1f4 = 0;
@@ -177,16 +200,20 @@ void MenuMesInit(ClsMes *mes) {
         mes->mes_no = -1;
         mes->unk_1e40 = 0;
         mes->alpha = 0x80;
+
         for (b = 0; b < 16; b++) {
             memset(mes->name[b], 0, 0x32);
         }
+
         for (c = 0; c < 16; c++) {
             mes->item_mes[c] = -1;
         }
+
         for (d = 0; d < 16; d++) {
             mes->values[d] = 0;
             mes->value_width[d] = 0;
         }
+
         mes->value = 0;
         mes->value_sign = 0;
         mes->value_zero = 1;
@@ -218,6 +245,7 @@ void MenuMesInit(ClsMes *mes) {
         mes->scissor.width = 0;
         mes->scissor.y = 0;
         mes->scissor.height = 0;
+
         for (e = 0; e < 20; e++) {
             mes->line_indent[e] = 0;
             mes->line_pos[e][0] = 0;
@@ -241,6 +269,7 @@ void MenuMesInit(ClsMes *mes) {
             mes->delta_x[e] = 0;
             mes->delta_y[e] = 0;
         }
+
         mes->abs_win.x = -1;
         mes->abs_win.y = -1;
         mes->abs_win.width = -10;
@@ -259,16 +288,19 @@ void MenuMesInit(ClsMes *mes) {
         mes->SetHalfFontWPercent(-1.0f);
         mes->font_w = 15;
         mes->font_h = 24;
+
         if (LanguageCode > 0) {
             mes->font_w = 15;
             mes->font_h = 24;
         }
+
         mes->draw_off_x = 0.0f;
         mes->draw_off_y = 0.0f;
-        *(int *)&mes->unk_b0 = 0;
-        *(int *)&mes->unk_b4 = 0;
+        *(int *) &mes->unk_b0 = 0;
+        *(int *) &mes->unk_b4 = 0;
     }
 }
+
 CDC2Mes::CDC2Mes() {
     scissor.Set(0, 0, 0, 0);
     msg_change = 0;
@@ -282,10 +314,12 @@ CDC2Mes::CDC2Mes() {
     scissor.Set(0, 0, 0x200, 0x19F);
     memset(str, 0, 0xC1);
 }
+
 void CDC2Mes::SetMessData(short *buff_system, short *buff) {
     SetBuff_system(buff_system);
     SetBuff(buff);
 }
+
 void CDC2Mes::MsgPreset(int preset) {
     MenuMesInit(this);
     SetMsgCursor(-1);
@@ -295,133 +329,153 @@ void CDC2Mes::MsgPreset(int preset) {
     put_centering = 0;
     scissor_on = 0;
     scissor.Set(0, 0, mgScreenWidth - 1, mgScreenHeight - 1);
+
     switch (preset) {
-    case 0:
-        SetWindowMode(MES_WIN_HELP);
-        break;
-    case 1:
-        SetWindowMode(MES_WIN_HELP);
-        fuchi = FUCHI_OUTLINE_WIDE;
-        break;
-    case 2:
-        SetWindowMode(MES_WIN_NONE);
-        break;
-    case 3:
-        SetWindowMode(MES_WIN_VERSATILE_4);
-        abs_win.width = 272;
-        abs_win.height = 102;
-        text_off_x = 16;
-        text_off_y = 16;
-        value_sign = 1;
-        centering = 0;
-        break;
-    case 4:
-    case 5:
-        SetWindowMode(MES_WIN_NONE);
-        rows = 1;
-        value_sign = 1;
-        if (preset == 5) {
-            fuchi = FUCHI_SHADOW_BLACK_WIDE;
-        }
-        break;
-    case 7:
-        SetWindowMode(MES_WIN_NONE);
-        rows = 1;
-        value_zero = 1;
-        fuchi = FUCHI_NONE;
-        SetDefColor(0x80141414);
-        break;
-    case 9:
-        SetWindowMode(MES_WIN_NONE);
-        fuchi = FUCHI_NONE;
-        SetFontColor(6, 6, 6, 128);
-        rows = 1;
-        value_zero = 1;
-        break;
-    case 6:
-        point_x = 40;
-        point_y = -60;
-        SetWindowMode(MES_WIN_FLOATING);
-        select_shade = MES_SELECT_SHADE_BRIGHT;
-        break;
-    case 10:
-    case 18:
-        SetWindowMode(MES_WIN_VERSATILE_1);
-        fuchi = FUCHI_NONE;
-        push_button = 1;
-        fade_speed = 0.1f;
-        if (preset == 18) {
-            push_button = 0;
-        }
-        break;
-    case 11:
-        SetWindowMode(MES_WIN_YESNO);
-        fuchi = FUCHI_NONE;
-        fade_speed = 0.1f;
-        break;
-    case 12:
-        SetWindowMode(MES_WIN_VERSATILE_3);
-        fade_speed = 0.1f;
-        break;
-    case 8:
-    case 13:
-        SetWindowMode(MES_WIN_VERSATILE_4);
-        if (preset == 8) {
+        case 0:
+            SetWindowMode(MES_WIN_HELP);
+            break;
+        case 1:
+            SetWindowMode(MES_WIN_HELP);
+            fuchi = FUCHI_OUTLINE_WIDE;
+            break;
+        case 2:
+            SetWindowMode(MES_WIN_NONE);
+            break;
+        case 3:
+            SetWindowMode(MES_WIN_VERSATILE_4);
+            abs_win.width = 272;
+            abs_win.height = 102;
             text_off_x = 16;
             text_off_y = 16;
-            abs_win.width = 236;
-            abs_win.height = 100;
-        }
-        break;
-    case 14:
-        SetWindowMode(MES_WIN_NONE);
-        break;
-    case 15:
-    case 16:
-        SetWindowMode(MES_WIN_NONE);
-        if (preset == 16) {
-            fuchi = FUCHI_SHADOW_BLACK_WIDE;
-        }
-        break;
-    case 17:
-        SetWindowMode(MES_WIN_NONE);
-        value_zero = 1;
-        font_h -= 2;
-        break;
-    case 19:
-        Preset(0);
-        fade_speed = 0.1f;
-        break;
+            value_sign = 1;
+            centering = 0;
+            break;
+        case 4:
+        case 5:
+            SetWindowMode(MES_WIN_NONE);
+            rows = 1;
+            value_sign = 1;
+
+            if (preset == 5) {
+                fuchi = FUCHI_SHADOW_BLACK_WIDE;
+            }
+
+            break;
+        case 7:
+            SetWindowMode(MES_WIN_NONE);
+            rows = 1;
+            value_zero = 1;
+            fuchi = FUCHI_NONE;
+            SetDefColor(0x80141414);
+            break;
+        case 9:
+            SetWindowMode(MES_WIN_NONE);
+            fuchi = FUCHI_NONE;
+            SetFontColor(6, 6, 6, 128);
+            rows = 1;
+            value_zero = 1;
+            break;
+        case 6:
+            point_x = 40;
+            point_y = -60;
+            SetWindowMode(MES_WIN_FLOATING);
+            select_shade = MES_SELECT_SHADE_BRIGHT;
+            break;
+        case 10:
+        case 18:
+            SetWindowMode(MES_WIN_VERSATILE_1);
+            fuchi = FUCHI_NONE;
+            push_button = 1;
+            fade_speed = 0.1f;
+
+            if (preset == 18) {
+                push_button = 0;
+            }
+
+            break;
+        case 11:
+            SetWindowMode(MES_WIN_YESNO);
+            fuchi = FUCHI_NONE;
+            fade_speed = 0.1f;
+            break;
+        case 12:
+            SetWindowMode(MES_WIN_VERSATILE_3);
+            fade_speed = 0.1f;
+            break;
+        case 8:
+        case 13:
+            SetWindowMode(MES_WIN_VERSATILE_4);
+
+            if (preset == 8) {
+                text_off_x = 16;
+                text_off_y = 16;
+                abs_win.width = 236;
+                abs_win.height = 100;
+            }
+
+            break;
+        case 14:
+            SetWindowMode(MES_WIN_NONE);
+            break;
+        case 15:
+        case 16:
+            SetWindowMode(MES_WIN_NONE);
+
+            if (preset == 16) {
+                fuchi = FUCHI_SHADOW_BLACK_WIDE;
+            }
+
+            break;
+        case 17:
+            SetWindowMode(MES_WIN_NONE);
+            value_zero = 1;
+            font_h -= 2;
+            break;
+        case 19:
+            Preset(0);
+            fade_speed = 0.1f;
+            break;
     }
+
     if (CheckNowEurope()) {
         value_half = 1;
     }
 }
+
 void CDC2Mes::MsgPreset(int preset, int unused) {
     MsgPreset(preset);
+
     if (LanguageCode == 1) {
         value_half = 1;
     }
 }
+
 void CDC2Mes::SetMsgCursor(int choice) {
     cursor = choice;
 }
+
 int CDC2Mes::AddMsgCursor2(int min, int max, int loop) {
     int step = 0;
+
     if (GamePad__2.Down(PAD_UP)) {
         step--;
     }
+
     if (GamePad__2.Down(PAD_DOWN)) {
         step++;
     }
+
     if (AddMsgCursor(step, min, max, loop)) {
         MenuSePlay(0);
     }
+
     return cursor;
 }
+
 int CDC2Mes::AddMsgCursor(int step, int min, int max, int loop) {
     int previous = cursor;
     cursor += step;
+
     if (loop == 1) {
         if (cursor < min) {
             cursor = max;
@@ -435,17 +489,23 @@ int CDC2Mes::AddMsgCursor(int step, int min, int max, int loop) {
             cursor = max;
         }
     }
+
     return previous != cursor;
 }
+
 int CDC2Mes::CommandMsgCursor() {
     int step = 0;
+
     if (GamePad__2.Down(PAD_UP)) {
         step--;
     }
+
     if (GamePad__2.Down(PAD_DOWN)) {
         step++;
     }
+
     int choices = 0;
+
     for (int index = 0; index < MES_ITEM_MAX; index++) {
         if (0 < item_mes[index]) {
             choices++;
@@ -453,182 +513,239 @@ int CDC2Mes::CommandMsgCursor() {
             break;
         }
     }
+
     if (choices <= 0) {
         choices = 1;
     }
+
     if (AddMsgCursor(step, 0, choices - 1, 1)) {
         MenuSePlay(0);
     }
+
     return cursor;
 }
+
 int CDC2Mes::YesNoCursor() {
     int step = 0;
+
     if (GamePad__2.Down(PAD_LEFT)) {
         step--;
     }
+
     if (GamePad__2.Down(PAD_RIGHT)) {
         step++;
     }
+
     if (AddMsgCursor(step, 0, 1, 0)) {
         MenuSePlay(0);
     }
+
     return cursor;
 }
+
 int CDC2Mes::YesNoCursor2(int alt_button) {
     int step = 0;
+
     if (GamePad__2.Down(PAD_LEFT)) {
         step--;
     }
+
     if (GamePad__2.Down(PAD_RIGHT)) {
         step++;
     }
+
     if (AddMsgCursor(step, 0, 1, 0)) {
         MenuSePlay(0);
     }
+
     int buttons = MenuCheckPushButton();
+
     if (buttons & 1) {
         return cursor == 0 ? 1 : 2;
     }
+
     if (alt_button == 1 && (buttons & 4)) {
         return cursor == 0 ? 1 : 2;
     }
+
     if (buttons & 2) {
         return 2;
     }
+
     return 0;
 }
+
 int CDC2Mes::GetMsgCursor() {
     return cursor;
 }
+
 int CDC2Mes::GetMsgItemNo(int index) {
     return item_mes[index];
 }
+
 void CDC2Mes::SetFontColor(int r, int g, int b, int a) {
     SetDefColor(r | (g << 8 | (a << 24 | b << 16)));
 }
+
 void CDC2Mes::SetPutPos(int x, int y, int w, int h) {
     abs_win.x = x;
     abs_win.y = y;
     abs_win.width = w;
     abs_win.height = h;
-    if (*(signed char *)&put_centering != 0) {
-        abs_win.x = (int)((unsigned int)mgScreenWidth - text_w) >> 1;
+
+    if (*(signed char *) &put_centering != 0) {
+        abs_win.x = (int) ((unsigned int) mgScreenWidth - text_w) >> 1;
     }
 }
+
 void CDC2Mes::SetPutPos(int *pos) {
     abs_win.x = pos[0];
     abs_win.y = pos[1];
-    if ((s8)put_centering != 0) {
-        abs_win.x = (int)((unsigned int)mgScreenWidth - text_w) >> 1;
+
+    if ((s8) put_centering != 0) {
+        abs_win.x = (int) ((unsigned int) mgScreenWidth - text_w) >> 1;
     }
+
     if (0 < abs_win.width) {
         abs_text_off_x = text_off_x;
         abs_text_off_y = text_off_y;
     }
+
     if (0 < fukidashi_pos) {
         abs_win.y = -1;
         abs_win.x = -1;
     }
 }
+
 void CDC2Mes::SetAbsPos(int pos) {
     fukidashi_pos = pos;
 }
+
 int CDC2Mes::GetStringDrawWidthDC(char *str) {
     int width = GetStrWidth(str);
+
     if (width >= 0) {
         return width;
     }
+
     return 0;
 }
+
 void CDC2Mes::SetMovePosCenteringGyou(int line, int centre_x, int y) {
     centre_x -= line_w[line] >> 1;
+
     if (line >= 0 && line < MES_LINE_MAX) {
         line_pos[line][0] = centre_x;
         line_pos[line][1] = y;
         line_pos_on[line] = 1;
     }
 }
+
 void CDC2Mes::SetMsgItemNo(int *messages, int count) {
     int previous[MES_ITEM_MAX];
+
     for (int index = 0; index < count && index < MES_ITEM_MAX; index++) {
         previous[index] = item_mes[index];
+
         if (previous[index] != messages[index]) {
             msg_change = 1;
         }
+
         int message = messages[index];
+
         if (index >= 0 && index < MES_ITEM_MAX) {
             item_mes[index] = message;
         }
+
         if (messages[index] <= -1) {
             for (; index < MES_ITEM_MAX; index++) {
                 if (index >= 0 && index < MES_ITEM_MAX) {
                     item_mes[index] = -1;
                 }
             }
+
             break;
         }
     }
 }
+
 void CDC2Mes::SetMsgItemNo(char **strings, int count) {
     char *previous[MES_ITEM_MAX];
+
     for (int index = 0; index < count && index < MES_ITEM_MAX; index++) {
         previous[index] = name[index];
+
         if (strings[index] == NULL) {
             if (strcmp(name[index], at_1328) != 0) {
                 msg_change = 1;
             }
+
             strcpy(name[index], at_1328);
         } else {
             if (strcmp(previous[index], strings[index]) != 0) {
                 msg_change = 1;
             }
+
             if (strings[index] != NULL) {
                 strcpy(name[index], strings[index]);
             }
         }
+
         if (strings[index] == NULL) {
             for (; index < MES_ITEM_MAX; index++) {
                 strcpy(name[index], at_1328);
             }
+
             break;
         }
     }
 }
+
 void CDC2Mes::SetMsgVolumeNo(int *numbers, int count) {
     int previous[MES_VALUE_MAX];
+
     for (int index = 0; index < count && index < MES_VALUE_MAX; index++) {
         previous[index] = values[index];
+
         if (previous[index] != numbers[index]) {
             msg_change = 1;
         }
+
         values[index] = numbers[index];
         value_width[index] = 0;
     }
 }
+
 void CDC2Mes::SetMsgVolumeNo(int *numbers, int *digit_widths, int count) {
     int previous[MES_VALUE_MAX];
+
     for (int index = 0; index < count && index < MES_VALUE_MAX; index++) {
         previous[index] = values[index];
+
         if (previous[index] != numbers[index]) {
             msg_change = 1;
         }
+
         int next = numbers[index];
         int digits = digit_widths[index];
         values[index] = next;
         value_width[index] = digits;
     }
 }
+
 void CDC2Mes::SetMsgVolumeNoOne(int value) {
     int numbers[2] = {0, -1};
     numbers[0] = value;
     SetMsgVolumeNo(numbers, 1);
 }
+
 void CDC2Mes::SetMsgItemPos(int *pos, int count) {
     for (int index = 0; index < count && index < MES_VALUE_MAX; index++) {
         int x;
         int y;
         y = pos[index * 2 + 1];
         x = pos[index * 2];
+
         if (index >= 0 && index < MES_LINE_MAX) {
             line_pos[index][0] = x;
             line_pos[index][1] = y;
@@ -636,31 +753,38 @@ void CDC2Mes::SetMsgItemPos(int *pos, int count) {
         }
     }
 }
+
 void CDC2Mes::MakeMsg(int message_no) {
     mes_no = message_no;
     str[0] = 0;
 }
+
 void CDC2Mes::MakeMsg(char *text) {
     mes_no = -1;
     str[0] = 0;
+
     if (text != NULL) {
         strcpy(str, text);
     }
 }
+
 void CDC2Mes::MakeMsg(CGameDataUsed *item) {
     if (item != NULL) {
-        int numbers[3] = {0, 0, 0};
+        int   numbers[3] = {0, 0, 0};
         char *names[2];
-        int message_no;
-        int item_no = item->item_no;
+        int   message_no;
+        int   item_no = item->item_no;
         message_no = 0;
+
         if (0 < item_no) {
             message_no = GetItemMessageNo(item_no, 1);
+
             if (item_no == 0x38) {
                 if (GetTimeBand(MenuNowTime) == MAP_TIME_BAND_NIGHT) {
                     message_no = 0xA2;
                 }
             }
+
             item->GetMsgAddInfo(&names[0], &names[1], numbers);
             SetMsgItemNo(names, 2);
             SetMsgVolumeNo(numbers, 2);
@@ -668,19 +792,23 @@ void CDC2Mes::MakeMsg(CGameDataUsed *item) {
             int messages[4] = {-1, -1, -1, -1};
             SetMsgItemNo(messages, 4);
         }
+
         value_sign = 1;
         value_zero = 0;
+
         if (item_no == 0xB9) {
             value_sign = 0;
         } else if (item_no == 0x137) {
             value_zero = 1;
             value_sign = 0;
         }
+
         MakeMsg(message_no);
     } else {
         MakeMsg(0);
     }
 }
+
 void CDC2Mes::MakeMsg(CGameDataUsed *attachment, CGameDataUsed *weapon) {
     if (attachment != NULL) {
         if (weapon == NULL) {
@@ -689,6 +817,7 @@ void CDC2Mes::MakeMsg(CGameDataUsed *attachment, CGameDataUsed *weapon) {
     } else {
         return;
     }
+
     if (weapon->used_type != USED_ITEM_TYPE_WEAPON || weapon->IsFishingRod()) {
         char *names[1] = {NULL};
         names[0] = weapon->GetName(1);
@@ -709,33 +838,43 @@ void CDC2Mes::MakeMsg(CGameDataUsed *attachment, CGameDataUsed *weapon) {
         }
     }
 }
+
 void CDC2Mes::StepMsg() {
     if (buff != NULL) {
         int message_no = mes_no;
-        if ((s8)msg_change != 0) {
+
+        if ((s8) msg_change != 0) {
             ClsMes::mes_no = -1;
             msg_change = 0;
         }
+
         int choice = cursor;
+
         if (select < 0) {
             cursor_time = 0;
         }
+
         select = choice;
-        if ((s8)str[0] == 0) {
+
+        if ((s8) str[0] == 0) {
             MakeMesWin(message_no);
             Step();
         } else {
             MakeMesWin(str, 1, 1);
+
             if (abs_win.width > 0 || abs_win.height > 0) {
                 open = 1;
             }
+
             Step();
         }
     }
 }
+
 void CDC2Mes::DrawMsg() {
     int saved_x;
     int saved_y;
+
     if (buff != NULL) {
         if (cursor_on == 0) {
             saved_x = cursor_x;
@@ -743,50 +882,67 @@ void CDC2Mes::DrawMsg() {
             cursor_x = -1000;
             cursor_y = -1000;
         }
+
         if (scissor_on != 0) {
             SetMenuScissor(scissor);
         }
+
         DrawMesWin();
+
         if (scissor_on != 0) {
             ResetMenuScissor();
         }
+
         if (cursor_on == 0) {
             cursor_x = saved_x;
             cursor_y = saved_y;
         }
     }
 }
+
 void CDC2Mes::SetMsgAlpha(int value) {
     alpha = value;
-    if (value < 0)
+
+    if (value < 0) {
         alpha = 0;
-    if (0x80 < value)
+    }
+
+    if (0x80 < value) {
         alpha = 0x80;
+    }
 }
+
 void CMenuMoveItem::Initialize() {
     move_on = 0;
+
     for (int index = 0; index < 2; index++) {
         form[index] = NULL;
         memset(&info[index], 0, sizeof(MENU_ITEM_MOVE_INFO));
     }
 }
+
 void CMenuMoveItem::AttachForm() {
-    form[0] = (CMenuPosDataForm *)MenuPosData->GetFormInfo(at_1512__3);
-    form[1] = (CMenuPosDataForm *)MenuPosData->GetFormInfo(at_1513__3);
+    form[0] = (CMenuPosDataForm *) MenuPosData->GetFormInfo(at_1512__3);
+    form[1] = (CMenuPosDataForm *) MenuPosData->GetFormInfo(at_1513__3);
+
     if (form[0] != NULL) {
         form[0]->draw_flag = 0;
         form[0]->SetNumber(at_1514__3, 0);
     }
+
     if (form[1] != NULL) {
         form[1]->draw_flag = 0;
         form[1]->SetNumber(at_1514__3, 0);
     }
 }
+
 int CMenuMoveItem::CheckMove() {
     int moving = 0;
+
     if (move_on != 0) {
         for (int index = 0; index < 2; index++) {
             MENU_ITEM_MOVE_INFO *entry = &info[index];
+
             if (entry->active != 0) {
                 if (form[index]->CheckMoveEnd()) {
                     if (entry->mode == 0 || entry->mode == 2) {
@@ -794,17 +950,19 @@ int CMenuMoveItem::CheckMove() {
                     } else if (entry->mode == 1) {
                         entry->dest->CopyDataItem(&entry->item);
                     }
+
                     entry->active = 0;
                     entry->item.Init();
                     entry->dest = NULL;
                     form[index]->draw_flag = 0;
                     CheckEnableHaveItemNum();
                 } else {
-                    int x;
-                    int y;
+                    int  x;
+                    int  y;
                     int &y_pos = y;
                     moving++;
                     form[index]->GetPutPosXY(NULL, x, y_pos);
+
                     if (286 < x && 302 < y_pos) {
                         form[index]->draw_flag = 0;
                     }
@@ -812,39 +970,50 @@ int CMenuMoveItem::CheckMove() {
             }
         }
     }
+
     if (moving == 0) {
         move_on = 0;
     }
+
     return move_on;
 }
+
 void CMenuMoveItem::SetMoveItemInfo(MENU_ITEM_MOVE_INFO *request, int *start, int *goal) {
     if (request == NULL) {
         return;
     }
+
     for (int index = 0; index < 2; index++) {
         MENU_ITEM_MOVE_INFO *entry = &info[index];
+
         if (entry->active == 0) {
             CMenuPosDataForm *moving_form = form[index];
             memcpy(entry, request, sizeof(MENU_ITEM_MOVE_INFO));
             moving_form->draw_flag = 1;
+
             if (entry->item.item_no <= 0) {
                 moving_form->draw_flag = 0;
             }
+
             if (entry->mode == 2) {
                 entry->item.DeleteNum(entry->item.GetNum() - 1);
             }
+
             moving_form->x = start[0];
             moving_form->y = start[1];
             moving_form->SetNextMovePos(goal, 2);
             MENUFORMPARTS_TYPE *part = moving_form->GetPartInfo(at_1623__3);
             part->etc_info[1] = entry->item.item_no;
             part->etc_info[2] = 0;
+
             if (part->etc_info[1] == 0xB9) {
                 part->etc_info[2] = entry->item.GetSpectolNo();
             }
+
             if (part->etc_info[1] == 0x1AA) {
                 part->etc_info[2] = entry->item.data.item.num;
             }
+
             part = moving_form->GetPartInfo(at_1514__3);
             part->etc_info[0] = 0;
             part->etc_info[1] = entry->item.GetNum();
@@ -855,46 +1024,60 @@ void CMenuMoveItem::SetMoveItemInfo(MENU_ITEM_MOVE_INFO *request, int *start, in
         }
     }
 }
+
 int CheckRoboShieldKit(CUserDataManager *manager, CGameDataUsed *item, int apply, int *kit_count,
                        int *applied_count) {
     if (item->item_type == 0xB) {
-        int limit = GetShiledKitLimmit__Fi(item->item_no);
+        int        limit = GetShiledKitLimmit(item->item_no);
         ROBO_DATA *robo = &manager->robo_data;
+
         if (robo == 0) {
             return -1;
         }
+
         if (robo->shield_kit_num < limit) {
             *kit_count += 1;
+
             if (apply != 0) {
                 *applied_count += 1;
                 robo->shield_kit_num += 1;
+
                 if (limit <= robo->shield_kit_num) {
                     robo->shield_kit_num = limit;
                 }
+
                 return 0xF;
             }
         }
     }
+
     return -1;
 }
+
 extern u32 st_bittable_1654[7];
 
 #ifdef NONMATCHING
 int MenuUseItemCheckFunc(CGameDataUsed *item, CItemUseTarget *target, int use) {
-    if (item == NULL || target == NULL) return 0;
+    if (item == NULL || target == NULL) {
+        return 0;
+    }
     USEITEM_EFFECT effect;
-    if (!GetUsedItemAfterEffect(item->item_no, &effect)) return 0;
-    int possible = 0;
-    int applied = 0;
-    int se = -1;
-    CScene *scene = GetMainScene();
+    if (!GetUsedItemAfterEffect(item->item_no, &effect)) {
+        return 0;
+    }
+    int               possible = 0;
+    int               applied = 0;
+    int               se = -1;
+    CScene           *scene = GetMainScene();
     CUserDataManager *user = GetUserDataMan();
-    if (scene == NULL || user == NULL) return 0;
+    if (scene == NULL || user == NULL) {
+        return 0;
+    }
     MenuUsedItemType = effect.use_flags;
     MenuUsedItemNo = item->item_no;
     MenuUsedNotErrorCode = 0;
     bool can_heal = !(scene->battle_area.pause_flag & 4);
-    int party = user->GetNowPartyMember();
+    int  party = user->GetNowPartyMember();
 
     if (target->type == ITEM_USE_TARGET_MONSTER) {
         if (can_heal) {
@@ -903,22 +1086,30 @@ int MenuUseItemCheckFunc(CGameDataUsed *item, CItemUseTarget *target, int use) {
             if ((effect.use_flags & 0x100) && chara != NULL && chara->hp.now < chara->hp.max) {
                 ++possible;
                 if (use) {
-                    chara->hp.AddPoint((float)effect.value[applied++]);
+                    chara->hp.AddPoint((float) effect.value[applied++]);
                     se = 10;
                 }
             }
         }
     } else if (target->type == ITEM_USE_TARGET_ROBO) {
         if (effect.target_flags & 8) {
-            ROBO_DATA *robo = (ROBO_DATA *)target->target.data;
+            ROBO_DATA *robo = (ROBO_DATA *) target->target.data;
             if (MenuUsedItemNo == 0x17D) {
                 if (user->robo_data.AddPoint(0.0f) < 1.0f && can_heal) {
                     ++possible;
-                    if (use) { user->robo_data.AddPoint(150.0f); ++applied; se = 9; }
+                    if (use) {
+                        user->robo_data.AddPoint(150.0f);
+                        ++applied;
+                        se = 9;
+                    }
                 }
             } else if (can_heal && (effect.use_flags & 0x400) && robo->hp.now < robo->hp.max) {
                 ++possible;
-                if (use) { robo->hp.now = robo->hp.max; ++applied; se = 10; }
+                if (use) {
+                    robo->hp.now = robo->hp.max;
+                    ++applied;
+                    se = 10;
+                }
             }
         }
     } else if (target->type == ITEM_USE_TARGET_ITEM) {
@@ -927,20 +1118,28 @@ int MenuUseItemCheckFunc(CGameDataUsed *item, CItemUseTarget *target, int use) {
             if (MenuUsedItemNo == 0x127) {
                 if (dest->used_type == 3 && !dest->IsLevelUp() && dest->IsFishingRod() != 1) {
                     ++possible;
-                    if (use) { dest->LevelUp(); ++applied; se = 0x1E; }
+                    if (use) {
+                        dest->LevelUp();
+                        ++applied;
+                        se = 0x1E;
+                    }
                 }
             } else if (MenuUsedItemNo == 0x1A7) {
                 se = CheckRoboShieldKit(user, dest, use, &possible, &applied);
             } else if (MenuUsedItemNo == 0x17D) {
                 if (dest == &user->robo_data.parts[2] && user->robo_data.AddPoint(0.0f) < 1.0f && can_heal) {
                     ++possible;
-                    if (use) { user->robo_data.AddPoint(150.0f); ++applied; se = 9; }
+                    if (use) {
+                        user->robo_data.AddPoint(150.0f);
+                        ++applied;
+                        se = 9;
+                    }
                 }
             } else {
                 if ((effect.use_flags & 0x400) && dest->IsRepair() && dest->IsEnableUseRepair(MenuUsedItemNo)) {
                     ++possible;
                     if (use) {
-                        int amount = dest->item_type == 0xD ? (int)(dest->data.robopart.gage1.max / 2.0f) : 999;
+                        int amount = dest->item_type == 0xD ? (int) (dest->data.robopart.gage1.max / 2.0f) : 999;
                         dest->Repair(amount);
                         ++applied;
                         se = 9;
@@ -948,33 +1147,58 @@ int MenuUseItemCheckFunc(CGameDataUsed *item, CItemUseTarget *target, int use) {
                 }
                 if ((effect.use_flags & 0x1000) && dest->data.robopart.gage1.now < dest->data.robopart.gage1.max) {
                     ++possible;
-                    if (use) { dest->data.robopart.gage1.now = dest->data.robopart.gage1.max; ++applied; se = 10; }
+                    if (use) {
+                        dest->data.robopart.gage1.now = dest->data.robopart.gage1.max;
+                        ++applied;
+                        se = 10;
+                    }
                 }
             }
         }
     } else if (target->type == ITEM_USE_TARGET_CHARA) {
         if ((effect.target_flags & 0x16) != 0) {
-            CHARA_DATA *chara = (CHARA_DATA *)target->target.data;
+            CHARA_DATA  *chara = (CHARA_DATA *) target->target.data;
             COMMON_GAGE *hp = &chara->hp;
-            bool empty = hp->GetRate() <= 0.0f;
-            bool blocked = (chara->status_attr & 0x40) && (effect.status_flags & 0x10);
+            bool         empty = hp->GetRate() <= 0.0f;
+            bool         blocked = (chara->status_attr & 0x40) && (effect.status_flags & 0x10);
             if (!empty || !(effect.status_flags & 0x10)) {
                 if (!blocked) {
                     if (((MenuUsedItemNo == 0x184 && chara->equip[0].item_type == 1) ||
-                         (MenuUsedItemNo == 0x185 && chara->equip[0].item_type == 3)) && (u16)chara->defence < 0x80) {
+                         (MenuUsedItemNo == 0x185 && chara->equip[0].item_type == 3)) &&
+                        (u16) chara->defence < 0x80) {
                         ++possible;
-                        if (use) { chara->defence += 4; if ((u16)chara->defence > 0x80) chara->defence = 0x80; ++applied; se = 10; }
+                        if (use) {
+                            chara->defence += 4;
+                            if ((u16) chara->defence > 0x80) {
+                                chara->defence = 0x80;
+                            }
+                            ++applied;
+                            se = 10;
+                        }
                     }
                     if (MenuUsedItemNo == 0x128 && hp->max < 255.0f) {
                         ++possible;
-                        if (use) { hp->max += 8.0f; if (hp->max > 255.0f) hp->max = 255.0f; ++applied; se = 10; }
+                        if (use) {
+                            hp->max += 8.0f;
+                            if (hp->max > 255.0f) {
+                                hp->max = 255.0f;
+                            }
+                            ++applied;
+                            se = 10;
+                        }
                     }
                 }
                 if (can_heal) {
                     if (MenuUsedItemNo == 0x111) {
                         if (empty) {
                             ++possible;
-                            if (use) { hp->SetFillRate(1.0f); chara->status_attr = 0; scene->battle_area.unk_98 |= 0x80; ++applied; se = 10; }
+                            if (use) {
+                                hp->SetFillRate(1.0f);
+                                chara->status_attr = 0;
+                                scene->battle_area.unk_98 |= 0x80;
+                                ++applied;
+                                se = 10;
+                            }
                         }
                     } else if (!blocked || item->item_no == 0x110) {
                         CHARA_DATA *max = user->GetCharaDataPtr(0);
@@ -985,20 +1209,35 @@ int MenuUseItemCheckFunc(CGameDataUsed *item, CItemUseTarget *target, int use) {
                                 ((party & 2) && !monica->hp.CheckFill() && monica->hp.GetRate() > 0.0f)) {
                                 ++possible;
                                 if (use) {
-                                    if (max->hp.GetRate() > 0.0f) max->hp.SetFillRate(1.0f);
-                                    if (monica->hp.GetRate() > 0.0f) monica->hp.SetFillRate(1.0f);
-                                    scene->battle_area.unk_98 |= 0x80; ++applied; se = 10;
+                                    if (max->hp.GetRate() > 0.0f) {
+                                        max->hp.SetFillRate(1.0f);
+                                    }
+                                    if (monica->hp.GetRate() > 0.0f) {
+                                        monica->hp.SetFillRate(1.0f);
+                                    }
+                                    scene->battle_area.unk_98 |= 0x80;
+                                    ++applied;
+                                    se = 10;
                                 }
                             }
                         } else if (MenuUsedItemNo == 0x1AA) {
                             if (!empty && hp->GetRate() < 1.0f) {
                                 ++possible;
-                                if (use) { hp->AddPoint((float)item->data.weapon.attribute[1]); scene->battle_area.unk_98 |= 0x80; ++applied; se = 10; }
+                                if (use) {
+                                    hp->AddPoint((float) item->data.weapon.attribute[1]);
+                                    scene->battle_area.unk_98 |= 0x80;
+                                    ++applied;
+                                    se = 10;
+                                }
                             }
                         } else if (MenuUsedItemNo != 0x124 || (!empty && hp->now < hp->max)) {
                             if ((effect.use_flags & 0x100) && !empty && hp->now < hp->max) {
                                 ++possible;
-                                if (use) { hp->AddPoint((float)effect.value[applied++]); scene->battle_area.unk_98 |= 0x80; se = 10; }
+                                if (use) {
+                                    hp->AddPoint((float) effect.value[applied++]);
+                                    scene->battle_area.unk_98 |= 0x80;
+                                    se = 10;
+                                }
                             }
                             int add = 0, cure = 0;
                             ConvertItemAttrToCharaAttr(effect.use_flags, &add, &cure);
@@ -1006,14 +1245,23 @@ int MenuUseItemCheckFunc(CGameDataUsed *item, CItemUseTarget *target, int use) {
                                 bool available = false, changed = false, cured = false;
                                 for (int i = 0; i < 7; ++i) {
                                     u32 bit = st_bittable_1654[i];
-                                    if (add && !(chara->status_attr & bit) && (u32)add == bit) {
+                                    if (add && !(chara->status_attr & bit) && (u32) add == bit) {
                                         available = true;
                                         if (use) {
-                                            chara->status_attr |= add; changed = true;
-                                            if (bit & 0x10) chara->status_time[0] = 0x2EE;
-                                            if (bit & 2) chara->status_time[1] = 0x2EE;
-                                            if (bit & 8) chara->status_time[2] = 0x2EE;
-                                            if (bit & 0x20) chara->status_time[2] = 0x2EE;
+                                            chara->status_attr |= add;
+                                            changed = true;
+                                            if (bit & 0x10) {
+                                                chara->status_time[0] = 0x2EE;
+                                            }
+                                            if (bit & 2) {
+                                                chara->status_time[1] = 0x2EE;
+                                            }
+                                            if (bit & 8) {
+                                                chara->status_time[2] = 0x2EE;
+                                            }
+                                            if (bit & 0x20) {
+                                                chara->status_time[2] = 0x2EE;
+                                            }
                                         }
                                     }
                                 }
@@ -1021,14 +1269,24 @@ int MenuUseItemCheckFunc(CGameDataUsed *item, CItemUseTarget *target, int use) {
                                     u32 bit = st_bittable_1654[i];
                                     if (cure && (chara->status_attr & bit) && (cure & bit)) {
                                         available = true;
-                                        if (use) { chara->status_attr &= ~cure; changed = true; cured = true; }
+                                        if (use) {
+                                            chara->status_attr &= ~cure;
+                                            changed = true;
+                                            cured = true;
+                                        }
                                     }
                                 }
-                                if (cured) se = 10;
-                                if (available) ++possible;
+                                if (cured) {
+                                    se = 10;
+                                }
+                                if (available) {
+                                    ++possible;
+                                }
                                 if (use && changed) {
                                     scene->battle_area.unk_98 |= 0x80;
-                                    if (se < 0) sndSePlay(scene->se_base_id, 0x56, 0);
+                                    if (se < 0) {
+                                        sndSePlay(scene->se_base_id, 0x56, 0);
+                                    }
                                     ++applied;
                                 }
                             }
@@ -1040,7 +1298,10 @@ int MenuUseItemCheckFunc(CGameDataUsed *item, CItemUseTarget *target, int use) {
             }
         }
     }
-    if (applied) { item->DeleteNum(1); MenuSePlay(se); }
+    if (applied) {
+        item->DeleteNum(1);
+        MenuSePlay(se);
+    }
     return use ? (use == 1 ? applied : 0) : possible;
 }
 #else
@@ -1048,41 +1309,43 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MenuUseItemCheckFunc__FP13CGame
 #endif
 int CMenuItemUse::CheckItemUseEnable(CGameDataUsed *item, int kind, void *ptr) {
     int target_data[2];
+
     if (item == NULL || ptr == NULL) {
         return 0;
     }
+
     target_data[0] = -1;
-    ((CItemUseTarget *)&target_data)->SetPtr(kind, ptr);
-    return MenuUseItemCheckFunc(item, (CItemUseTarget *)&target_data, 0);
+    ((CItemUseTarget *) &target_data)->SetPtr(kind, ptr);
+    return MenuUseItemCheckFunc(item, (CItemUseTarget *) &target_data, 0);
 }
+
 int CMenuItemUse::UseItem(CGameDataUsed *item, int kind, void *ptr) {
     u64 target_data;
-    ((CItemUseTarget *)&target_data)->SetPtr(kind, ptr);
+    ((CItemUseTarget *) &target_data)->SetPtr(kind, ptr);
     MenuUsedTarget.SetPtr(kind, ptr);
-    return UseItem(item, (CItemUseTarget *)&target_data);
+    return UseItem(item, (CItemUseTarget *) &target_data);
 }
+
 int CMenuItemUse::UseItem(CGameDataUsed *item, CItemUseTarget *target) {
     if (item == NULL) {
         return 0;
     }
-    item_no = (int)item->item_no;
+
+    item_no = (int) item->item_no;
     target_type = target->type;
     MenuUsedTarget.type = target->type;
     MenuUsedTarget.target.data = target->target.data;
     return MenuUseItemCheckFunc(item, target, 1);
 }
-void CMenuItemUse::Initialize(void) {
+
+void CMenuItemUse::Initialize() {
     item_no = 0;
     target_type = 0;
     unk_18 = 0;
 }
+
 int CheckNowStateUseThisItem(CGameDataUsed *item, CItemUseTarget *target) {
     return MenuUseItemCheckFunc(item, target, 0);
-}
-
-// Static initialiser (.init)
-extern "C" void __sinit_menucls1_cpp() {
-    MenuUsedTarget.type = ITEM_USE_TARGET_NONE;
 }
 
 // Initialised data (.data)
@@ -1136,7 +1399,6 @@ INCLUDE_BSS(at_1433__2, 0x4);
 INCLUDE_BSS(MenuUsedItemNo, 0x4);
 INCLUDE_BSS(MenuUsedItemType, 0x4);
 INCLUDE_BSS(MenuUsedNotErrorCode, 0x4);
-INCLUDE_BSS(MenuUsedTarget, 0x8);
 
 // Uninitialised data (.bss)
 INCLUDE_BSS(at_1407__2, 0x10);

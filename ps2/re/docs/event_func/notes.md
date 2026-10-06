@@ -166,6 +166,18 @@ SethitEffect/Step/DrawSpark/DrawBord`: +0x10 pos, +0x20 dir, +0x30 float (rnd*20
 this particle type, switch to it.
 
 ## Functions
+- `_OBJS_SYNC_OBJ` and the eight object-sequence delay commands evaluate the slot first and
+  the following frame argument second. The native calls pass both values explicitly to
+  `GetObjSeq(slot)` and the corresponding `CSceneObjSeq` member. The retail call sequence passed
+  the frame through `$a1` even though `GetObjSeq` itself accepts only the slot.
+- `_EOH_SET_STEP` passes the first script value as the handle number and the next as the
+  motion speed. `SetStack` writes through a pointer stack entry; the event command returns 1
+  after that write when its argument count is valid.
+- `_SET_GYORACE_ETC` dispatches race settings by script operation: aquarium, rank, class and
+  race number (0–3); tour count (4); fish name (5); formatted race time (6); and prize reload
+  (7). The time is clamped to 0–360000 sixtieths, split into hours, minutes and hundredths, and
+  assembled from Shift-JIS digit strings plus the separator before being copied into a message
+  name slot. The C++ draft is guarded and differs from retail; the normal build keeps assembly.
 - `VectMatMul__FPfPfPA4_f` exists twice: 0x260A70 here (global) and 0x282610 (local, another unit).
 - `_LOAD_CHARA_sub(int,char**,int,u_int*)` is a 0x10 tail call to the 5-argument form with 0.
 - `GetConfigCaptionOff` returns `lb` of SaveData+0x1C5A8 -> `char`.

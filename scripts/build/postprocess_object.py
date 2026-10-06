@@ -580,12 +580,16 @@ def pad_data(elf, unit, placeholders):
     pieces = disassemble.Pieces(references=[])
     cuts = {name: (start, end) for section, run in pieces.unit(unit)
             if section in ('.data', '.sdata', '.rodata', '.bss', '.sbss') for name, start, end in run}
+    declared_sizes = {name: size for _address, name, size, _is_function
+                      in layout.read_symbols(ROOT / layout.SYMBOLS) if size}
     for symbol in elf.symtab.symbols:
         index = symbol.st_shndx
         if (symbol.type != STT_OBJECT or symbol.st_value or index in placeholders
                 or not 0 < index < len(elf.sections) or symbol.name not in cuts):
             continue
         start, end = cuts[symbol.name]
+        if symbol.name in declared_sizes:
+            end = min(end, start + declared_sizes[symbol.name])
         section = elf.sections[index]
         size = section_size(section)
         if (section.sh_type == SHT_NOBITS and size and 0 < end - start - size < 16):
@@ -602,9 +606,10 @@ def order_sections(elf):
     addresses = retail_addresses()
     starts = {}
     for symbol in elf.symtab.symbols:
-        if (symbol.name in addresses and symbol.type != STT_SECTION
+        address = address_of(symbol.name, addresses)
+        if (address is not None and symbol.type != STT_SECTION
                 and 0 < symbol.st_shndx < len(elf.sections)):
-            starts[symbol.st_shndx] = addresses[symbol.name] - symbol.st_value
+            starts[symbol.st_shndx] = address - symbol.st_value
     order = list(range(len(elf.sections)))
     for name in FLAGS:
         indices = [index for index, section in enumerate(elf.sections)

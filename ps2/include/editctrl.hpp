@@ -62,8 +62,8 @@ enum EditCharaMotionMode {
  *
  */
 struct EditMoveCharaInfo {
-    int           poly_num;     /**< Number of extra collision polygons in polys. */
-    CCPoly       *polys;        /**< Extra collision polygons to move against, or null for none. */
+    int           poly_num; /**< Number of extra collision polygons in polys. */
+    CCPoly       *polys;    /**< Extra collision polygons to move against, or null for none. */
     u8            unk_8[8];
     MoveCheckInfo move_info;    /**< What the move ran into. */
     int           hard_landing; /**< Whether the character landed while falling faster than the hard-landing speed. */
@@ -130,7 +130,7 @@ int EditControl(CScene *scene, CPadControl *pad);
  * @address 0x1A5700
  * @size 0x50
  */
-char *GetFootEffName(int ground_kind);
+char *GetFootEffName(int index);
 
 /**
  *

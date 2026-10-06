@@ -70,6 +70,7 @@ struct GOLF_CLUB_DEF {
     float unk_4;
     int   unk_8;
 };
+
 STATIC_ASSERT(sizeof(GOLF_CLUB_DEF) == 0xC);
 
 /**
@@ -84,10 +85,10 @@ public:
     mgCTexture *texture;    /**< Texture that the gauge is drawn from; nothing is drawn while NULL. */
     float       power;      /**< Power of the shot, from 0 to 1. */
     int         safe_level; /**< Width, from 1 to 6, of the zone about the impact point in which a stop is accurate. */
-    int         code; /**< Result of the last swing (PowGageCode, or -3 to 3 for the stop's offset). */
-    int         count; /**< Position of the cursor, in steps from the impact point. */
-    int         state; /**< Stage of the swing (PowGageState). */
-    int         reverse; /**< Nonzero once the cursor has reached full power and runs back. */
+    int         code;       /**< Result of the last swing (PowGageCode, or -3 to 3 for the stop's offset). */
+    int         count;      /**< Position of the cursor, in steps from the impact point. */
+    int         state;      /**< Stage of the swing (PowGageState). */
+    int         reverse;    /**< Nonzero once the cursor has reached full power and runs back. */
 
     /**
      * Makes a gauge that waits for a swing.
@@ -124,6 +125,7 @@ public:
      */
     void Draw();
 };
+
 STATIC_ASSERT(sizeof(CPowGage) == 0x24);
 
 /**
@@ -134,35 +136,35 @@ STATIC_ASSERT(sizeof(CPowGage) == 0x24);
  */
 class CSphida {
 public:
-    CPowGage        pow_gage;        /**< Gauge on which the player swings. */
-    int             tex_bank; /**< Texture bank that the status panel and the par counter are drawn from. */
-    int             play_flag; /**< Nonzero while the game is played; nothing is stepped or drawn otherwise. */
-    int             minimap_flag; /**< 1 to let the player scroll the mini map while an event runs. */
-    int             mm_line_flag; /**< 1 to mark the points of mm_line_pos on the mini map. */
-    int             status_flag; /**< Nonzero to draw the status panel and the gauge. */
-    u_char              unk_38[0x8];
-    sceVu0FVECTOR   mm_line_pos[5];  /**< Points of the shot line that the mini map marks. */
-    sceVu0FVECTOR   pin_pos;         /**< Position of the pin. */
-    sceVu0FVECTOR   ball_pos;        /**< Position of the ball. */
-    int             pin_col; /**< Colour of the pin, 0 or 1, which picks its mini map marker. */
-    int             ball_col; /**< Colour of the ball, 0 or 1, which picks its mini map marker. */
-    int             par_count; /**< Shots of par for the hole, from 1 to 99. */
-    u_char              unk_bc[0x4];
-    CRedMarkModel   red_mark;        /**< Marker drawn over the ball while the player stands at it. */
-    u_char              unk_150[0x48];
-    u_char              unk_198[6];
-    u_char              unk_19e[0x42];
-    sceVu0FVECTOR   map_view_pos;    /**< Centre of the mini map while the player scrolls it during an event. */
-    int             mini_level; /**< Scale of the mini map that the event scripts read. */
-    float           spin_mark_pos_x; /**< Across position, from -1 to 1, of the spin mark on the ball panel. */
-    float           spin_mark_pos_y; /**< Down position, from -1 to 1, of the spin mark on the ball panel. */
-    int             club_no; /**< Club that the player holds, as GetSphidaClubDef takes it. */
-    float           carry;           /**< Angle, in radians, at which the ball is struck, which also lowers its speed. */
-    int             last_challenge; /**< Nonzero once the last challenge of the hole is under way. */
-    CColFrame      *col_model;       /**< Collision of the pin; NULL while none is loaded. */
-    int             omake_mode; /**< 1 while one of the bonus courses is played. */
-    int             unk_210[9];
-    u_char              unk_234[0xC];
+    CPowGage      pow_gage;     /**< Gauge on which the player swings. */
+    int           tex_bank;     /**< Texture bank that the status panel and the par counter are drawn from. */
+    int           play_flag;    /**< Nonzero while the game is played; nothing is stepped or drawn otherwise. */
+    int           minimap_flag; /**< 1 to let the player scroll the mini map while an event runs. */
+    int           mm_line_flag; /**< 1 to mark the points of mm_line_pos on the mini map. */
+    int           status_flag;  /**< Nonzero to draw the status panel and the gauge. */
+    u_char        unk_38[0x8];
+    sceVu0FVECTOR mm_line_pos[5]; /**< Points of the shot line that the mini map marks. */
+    sceVu0FVECTOR pin_pos;        /**< Position of the pin. */
+    sceVu0FVECTOR ball_pos;       /**< Position of the ball. */
+    int           pin_col;        /**< Colour of the pin, 0 or 1, which picks its mini map marker. */
+    int           ball_col;       /**< Colour of the ball, 0 or 1, which picks its mini map marker. */
+    int           par_count;      /**< Shots of par for the hole, from 1 to 99. */
+    u_char        unk_bc[0x4];
+    CRedMarkModel red_mark; /**< Marker drawn over the ball while the player stands at it. */
+    u_char        unk_150[0x48];
+    u_char        unk_198[6];
+    u_char        unk_19e[0x42];
+    sceVu0FVECTOR map_view_pos;    /**< Centre of the mini map while the player scrolls it during an event. */
+    int           mini_level;      /**< Scale of the mini map that the event scripts read. */
+    float         spin_mark_pos_x; /**< Across position, from -1 to 1, of the spin mark on the ball panel. */
+    float         spin_mark_pos_y; /**< Down position, from -1 to 1, of the spin mark on the ball panel. */
+    int           club_no;         /**< Club that the player holds, as GetSphidaClubDef takes it. */
+    float         carry;           /**< Angle, in radians, at which the ball is struck, which also lowers its speed. */
+    int           last_challenge;  /**< Nonzero once the last challenge of the hole is under way. */
+    CColFrame    *col_model;       /**< Collision of the pin; NULL while none is loaded. */
+    int           omake_mode;      /**< 1 while one of the bonus courses is played. */
+    int           unk_210[9];
+    u_char        unk_234[0xC];
 
     /**
      * Makes a sphida game that is not played yet.
@@ -191,7 +193,7 @@ public:
      * @address 0x2EE720
      * @size 0x480
      */
-    void SetUp(int tex_bank);
+    void SetUp(int arg);
 
     /**
      * Places the pin and the ball at the fixed positions of the story's
@@ -201,7 +203,7 @@ public:
      * @address 0x2EEBA0
      * @size 0x100
      */
-    void s17_SetUp(int tex_bank);
+    void s17_SetUp(int arg);
 
     /**
      * Places the pin and the ball of one of the bonus courses, gives it its
@@ -270,7 +272,7 @@ public:
      * @size 0x40
      * @return Nonzero when the collision was loaded.
      */
-    int SetCollisionModel(MDS_HEADER *model, mgCMemory *memory);
+    int SetCollisionModel(MDS_HEADER *header, mgCMemory *memory);
 
     /**
      * Gathers the polygons of the pin's collision that lie in a box, when the
@@ -281,7 +283,7 @@ public:
      * @size 0xD0
      * @return Number of polygons written.
      */
-    int PickupCollision(float *pos, CCPoly *poly, mgVu0FBOX box, int max);
+    int PickupCollision(float *pos, CCPoly *poly, mgVu0FBOX box, int capacity);
 
     /**
      * Marks the pin, the ball and, when asked for, the shot line on the mini
@@ -293,6 +295,7 @@ public:
      */
     void DrawMiniMapSymbol(CMiniMapSymbol *symbol);
 };
+
 STATIC_ASSERT(sizeof(CSphida) == 0x240);
 
 /**

@@ -157,26 +157,26 @@ enum MenuInterBGReadStep {
  *
  */
 struct MENU_INIT_ARG {
-    mgCMemory *stack;            /**< Memory whose free stack space the menu builds its work area in. */
-    mgCMemory *chara_stack;      /**< Memory that character models shown by the menu are read into. */
-    mgCMemory *base_chara_stack; /**< Memory holding the party characters' base data. */
-    s16 chara_tex_block;         /**< Texture block of the characters the menu shows. */
-    s16 unk_0E;
-    s32 unk_10;
-    s32 unk_14;
-    CScene *scene;               /**< Scene that the menu opens over. */
-    CUserDataManager *user_data; /**< Player data that the menu shows and changes. */
-    u_int *pack;                 /**< Pack file of menu data loaded by the game loop. */
-    int pack_size;               /**< Size of the pack file in bytes. */
-    int open_type;               /**< What to open. @see MenuOpenType */
-    int tex_block_top;           /**< First texture block the menu may use. */
-    int tex_block_num;           /**< Number of texture blocks the menu may use. */
-    int mes_tex_block;           /**< Texture block of the message font. */
-    int active_chara_no;         /**< Party character that is active. */
-    int end_code;                /**< How the menu ended, for the game loop to act on. */
-    int result[5];               /**< Values that the menu hands back with its end code. */
-    s32 unk_54;
-    int param[16];               /**< Values that an event passes to the menu it opens. */
+    mgCMemory        *stack;            /**< Memory whose free stack space the menu builds its work area in. */
+    mgCMemory        *chara_stack;      /**< Memory that character models shown by the menu are read into. */
+    mgCMemory        *base_chara_stack; /**< Memory holding the party characters' base data. */
+    s16               chara_tex_block;  /**< Texture block of the characters the menu shows. */
+    s16               unk_0E;
+    s32               unk_10;
+    s32               unk_14;
+    CScene           *scene;           /**< Scene that the menu opens over. */
+    CUserDataManager *user_data;       /**< Player data that the menu shows and changes. */
+    u_int            *pack;            /**< Pack file of menu data loaded by the game loop. */
+    int               pack_size;       /**< Size of the pack file in bytes. */
+    int               open_type;       /**< What to open. @see MenuOpenType */
+    int               tex_block_top;   /**< First texture block the menu may use. */
+    int               tex_block_num;   /**< Number of texture blocks the menu may use. */
+    int               mes_tex_block;   /**< Texture block of the message font. */
+    int               active_chara_no; /**< Party character that is active. */
+    int               end_code;        /**< How the menu ended, for the game loop to act on. */
+    int               result[5];       /**< Values that the menu hands back with its end code. */
+    s32               unk_54;
+    int               param[16]; /**< Values that an event passes to the menu it opens. */
 };
 
 STATIC_ASSERT(sizeof(MENU_INIT_ARG) == 0x98);
@@ -187,16 +187,23 @@ STATIC_ASSERT(sizeof(MENU_INIT_ARG) == 0x98);
  *
  */
 struct MENU_DRAW_ENV {
-    mgCCamera camera;           /**< Camera that menu models are viewed through. */
-    u8 unk_70[0x10];
-    sceVu0FVECTOR ref;          /**< Point that the camera looks at. */
-    sceVu0FVECTOR pos;          /**< Position of the camera. */
-    float speed;                /**< Number of steps the camera takes to reach its next position. */
-    float projection;           /**< Projection distance used while the menu draws. */
-    float old_projection;       /**< Projection distance to restore when the menu ends. */
-    s32 unk_AC;
-    sceVu0FVECTOR old_ambient;  /**< Ambient light to restore after menu models are drawn. */
-    sceVu0FVECTOR ambient;      /**< Ambient light that menu models are drawn with. */
+    /**
+     *
+     * Creates the menu camera with its initial movement speed.
+     *
+     */
+    MENU_DRAW_ENV() : camera(8.0f) {}
+
+    mgCCamera     camera; /**< Camera that menu models are viewed through. */
+    u8            unk_70[0x10];
+    sceVu0FVECTOR ref;            /**< Point that the camera looks at. */
+    sceVu0FVECTOR pos;            /**< Position of the camera. */
+    float         speed;          /**< Number of steps the camera takes to reach its next position. */
+    float         projection;     /**< Projection distance used while the menu draws. */
+    float         old_projection; /**< Projection distance to restore when the menu ends. */
+    s32           unk_AC;
+    sceVu0FVECTOR old_ambient; /**< Ambient light to restore after menu models are drawn. */
+    sceVu0FVECTOR ambient;     /**< Ambient light that menu models are drawn with. */
 };
 
 STATIC_ASSERT(sizeof(MENU_DRAW_ENV) == 0xD0);
@@ -207,8 +214,8 @@ STATIC_ASSERT(sizeof(MENU_DRAW_ENV) == 0xD0);
  *
  */
 struct MENU_ETC_INFO {
-    int tex_block;   /**< Texture block of the message font. */
-    mgCTexture *tex; /**< Main menu texture. */
+    int         tex_block; /**< Texture block of the message font. */
+    mgCTexture *tex;       /**< Main menu texture. */
 };
 
 STATIC_ASSERT(sizeof(MENU_ETC_INFO) == 0x8);
@@ -220,15 +227,15 @@ STATIC_ASSERT(sizeof(MENU_ETC_INFO) == 0x8);
  */
 class CMenuInter {
 public:
-    int select_no;    /**< Cursor position among the sub-menu icons; -1 while the menu closes. */
-    int select_num;   /**< Cursor limit that the selection check is given. */
-    int next_mode;    /**< Sub-menu picked and waiting to open, or -1. @see MenuModeID */
-    int *mode_list;   /**< Sub-menus offered, in icon order, ended by -1. @see MenuModeID */
-    s16 step;         /**< Phase of the top menu. @see MenuInterStep */
-    s8 bg_read_step;  /**< Progress of the background read. @see MenuInterBGReadStep */
-    s8 bg_read_wait;  /**< Frames to wait before the background read starts. */
-    s8 cursor_jump;   /**< Non-zero moves the cursor straight to its new icon instead of sliding. */
-    u8 help_update;   /**< Non-zero rewrites the help message for the icon under the cursor. */
+    int  select_no;    /**< Cursor position among the sub-menu icons; -1 while the menu closes. */
+    int  select_num;   /**< Cursor limit that the selection check is given. */
+    int  next_mode;    /**< Sub-menu picked and waiting to open, or -1. @see MenuModeID */
+    int *mode_list;    /**< Sub-menus offered, in icon order, ended by -1. @see MenuModeID */
+    s16  step;         /**< Phase of the top menu. @see MenuInterStep */
+    s8   bg_read_step; /**< Progress of the background read. @see MenuInterBGReadStep */
+    s8   bg_read_wait; /**< Frames to wait before the background read starts. */
+    s8   cursor_jump;  /**< Non-zero moves the cursor straight to its new icon instead of sliding. */
+    u8   help_update;  /**< Non-zero rewrites the help message for the icon under the cursor. */
 
     /**
      *
@@ -268,7 +275,7 @@ public:
      * @address 0x238540
      * @size 0x160
      */
-    int ReadBGTexture(int mode, int restart);
+    int ReadBGTexture(int bg_no, int restart);
 };
 
 STATIC_ASSERT(sizeof(CMenuInter) == 0x18);
@@ -421,7 +428,7 @@ void MenuMainImageDataEnter(int tex_block);
  * @address 0x234F30
  * @size 0x10
  */
-void SetMenuFrameRate(int rate);
+void SetMenuFrameRate(int value);
 
 /**
  *
@@ -431,7 +438,7 @@ void SetMenuFrameRate(int rate);
  * @address 0x234F40
  * @size 0xB0
  */
-void SetMenuKeyCtrlEnv(int env);
+void SetMenuKeyCtrlEnv(int layout);
 
 /**
  *
@@ -491,7 +498,7 @@ void MenuMainDraw();
  * @address 0x236620
  * @size 0x200
  */
-int NextMenuInit(int mode, mgCMemory *stack, int *tex_blocks);
+int NextMenuInit(int menu, mgCMemory *memory, int *args);
 
 /**
  *
@@ -501,7 +508,7 @@ int NextMenuInit(int mode, mgCMemory *stack, int *tex_blocks);
  * @address 0x236820
  * @size 0x50
  */
-void MenuCamInit(float speed);
+void MenuCamInit(float roll);
 
 /**
  *
@@ -511,7 +518,7 @@ void MenuCamInit(float speed);
  * @address 0x236970
  * @size 0x70
  */
-char *GetMenuCfgFileName(int cfg_no, int unused);
+char *GetMenuCfgFileName(int index, int unused);
 
 /**
  *
@@ -581,7 +588,7 @@ int CursorSaveOptionState();
  * @address 0x236B70
  * @size 0x50
  */
-void ReturnMenuIntern(int out);
+void ReturnMenuIntern(int index);
 
 /**
  *
@@ -601,7 +608,7 @@ void MenuAreaBoardNameStep();
  * @address 0x237B10
  * @size 0x130
  */
-void MenuCommonBaseDataEnter(mgCMemory *stack, u_int *pack, int pack_size, int tex_block);
+void MenuCommonBaseDataEnter(mgCMemory *pallet_memory, u_int *pack, int pack_size, int tex_block);
 
 /**
  *
@@ -621,7 +628,7 @@ void MenuBaseTextureReEnter();
  * @address 0x238E60
  * @size 0xB0
  */
-void CopyActiveItemAndWeapon(int chara_no, int unused);
+void CopyActiveItemAndWeapon(int slot, int unused);
 
 /**
  *
@@ -641,7 +648,7 @@ int CopyActiveIconTexture(mgCTexture **tex, int chara_no, u_int *unused);
  * @address 0x2392F0
  * @size 0x180
  */
-void BookshelfMessageMake(ClsMes *mes, int mes_offset, int item_no, int monster_no);
+void BookshelfMessageMake(ClsMes *mes, int base_window, int item_no, int monster_no);
 
 /** Scene that the menu opens over. */
 extern CScene *MenuMainScene;

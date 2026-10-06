@@ -1,4 +1,5 @@
 #include "common.h"
+
 #include "charaviewlp.hpp"
 #include "mainloop.hpp"
 

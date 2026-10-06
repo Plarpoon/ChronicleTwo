@@ -29,15 +29,16 @@ enum NpcModelPathType {
  *
  */
 struct NPC_BASE_DATA {
-    s16  chara_no;        /**< Party character number the entry describes. */
-    s8   debug_flag;      /**< Non-zero when the debug party-character selector lists the character. */
-    char name[0x1C];      /**< Character's display name. */
-    char model[0x10];     /**< Base name of the character's model files. */
-    s8   max_npc_point;   /**< Points the character's abilities draw on, given on joining and the limit they recover to. */
-    s8   ability_num;     /**< Number of abilities the character has. */
+    s16  chara_no;      /**< Party character number the entry describes. */
+    s8   debug_flag;    /**< Non-zero when the debug party-character selector lists the character. */
+    char name[0x1C];    /**< Character's display name. */
+    char model[0x10];   /**< Base name of the character's model files. */
+    s8   max_npc_point; /**< Points the character's abilities draw on, given on joining and the limit they recover to. */
+    s8   ability_num;   /**< Number of abilities the character has. */
     s8   unk_31;
     u8   ability_cost[4]; /**< Points each ability uses. */
 };
+
 STATIC_ASSERT(sizeof(NPC_BASE_DATA) == 0x36);
 
 /**

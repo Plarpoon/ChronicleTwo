@@ -91,15 +91,15 @@ struct SV_CONFIG_OPTION {
     s32 fast_time;     /**< Non-zero to make the time of day pass one and a half times as fast. */
     s32 map;           /**< Size of the dungeon mini-map: zero hides it, one is small, two is large. */
     u8  unk_18[4];
-    s32 enemy_hp;      /**< How the dungeon shows the enemies' life gauges. */
-    s32 damage_off;    /**< Non-zero to hide the damage numbers in battle. */
+    s32 enemy_hp;   /**< How the dungeon shows the enemies' life gauges. */
+    s32 damage_off; /**< Non-zero to hide the damage numbers in battle. */
     s32 unk_24;
     s32 monster_name;  /**< How the dungeon shows the enemies' names. */
     s32 anger_counter; /**< How the dungeon shows the enemies' anger counters. */
     s32 dof_off;       /**< Non-zero to turn off the depth of field blur. */
     u8  caption_off;   /**< Non-zero to hide the event captions. */
     u8  unk_35;
-    s8  eye_reverse;   /**< Zero to invert the vertical axis of the first-person camera. */
+    s8  eye_reverse; /**< Zero to invert the vertical axis of the first-person camera. */
     s8  unk_37;
     u8  unk_38[8];
 };
@@ -130,33 +130,33 @@ STATIC_ASSERT(sizeof(SAVE_TOUR_INFO) == 0x1C);
  */
 class CSaveData {
 public:
-    u32              bit_flag[SAVE_BIT_FLAG_MAX / 32];       /**< One-bit story flags, 32 to a word. */
-    s16              short_flag[SAVE_SHORT_FLAG_MAX];        /**< Sixteen-bit story counters. */
-    CMapFlagData     map_flag[SAVE_MAP_FLAG_MAX];            /**< Flags of each map, such as its opened treasure boxes. */
+    u32              bit_flag[SAVE_BIT_FLAG_MAX / 32]; /**< One-bit story flags, 32 to a word. */
+    s16              short_flag[SAVE_SHORT_FLAG_MAX];  /**< Sixteen-bit story counters. */
+    CMapFlagData     map_flag[SAVE_MAP_FLAG_MAX];      /**< Flags of each map, such as its opened treasure boxes. */
     u8               unk_1200[0x800];
-    s64              play_time;                              /**< Play time, in frames. */
-    s32              game_progress;                          /**< Point the story has reached, from which the chapter follows. */
-    s32              time_stop;                              /**< Non-zero to keep the time of day from passing in town. */
-    float            now_time;                               /**< Time of day, in hours. */
-    s32              day;                                    /**< Number of days that have passed. */
-    s16              map_no;                                 /**< Main map the player is on. */
-    s16              sub_map_no;                             /**< Interior the player is in, or -1 for none. */
-    s16              prev_map_no;                            /**< Main map the player was on before the last map change. */
-    s16              prev_sub_map_no;                        /**< Interior the player was in before the last interior change. */
-    s32              area_no;                                /**< Area of the last main map that belongs to one. */
-    s16              build_parts_num[SAVE_BUILD_PARTS_MAX];  /**< Number of copies of each Georama part the player holds. */
-    CEditData        edit_data[SAVE_EDIT_DATA_MAX];          /**< Georama layout of each town. */
-    SV_CONFIG_OPTION config;                                 /**< Game options. */
-    CSaveDataDungeon save_dungeon;                           /**< Progress through the dungeons. */
+    s64              play_time;                             /**< Play time, in frames. */
+    s32              game_progress;                         /**< Point the story has reached, from which the chapter follows. */
+    s32              time_stop;                             /**< Non-zero to keep the time of day from passing in town. */
+    float            now_time;                              /**< Time of day, in hours. */
+    s32              day;                                   /**< Number of days that have passed. */
+    s16              map_no;                                /**< Main map the player is on. */
+    s16              sub_map_no;                            /**< Interior the player is in, or -1 for none. */
+    s16              prev_map_no;                           /**< Main map the player was on before the last map change. */
+    s16              prev_sub_map_no;                       /**< Interior the player was in before the last interior change. */
+    s32              area_no;                               /**< Area of the last main map that belongs to one. */
+    s16              build_parts_num[SAVE_BUILD_PARTS_MAX]; /**< Number of copies of each Georama part the player holds. */
+    CEditData        edit_data[SAVE_EDIT_DATA_MAX];         /**< Georama layout of each town. */
+    SV_CONFIG_OPTION config;                                /**< Game options. */
+    CSaveDataDungeon save_dungeon;                          /**< Progress through the dungeons. */
     u8               unk_1D298[8];
-    CUserDataManager user_data;                              /**< The party, the inventory and the other player data. */
-    CQuestData       quest_data;                             /**< State of the side quests. */
-    CMonsterBook     monster_book;                           /**< Monster encyclopedia with kill counts. */
-    CMenuSystemData  menu_system_data;                       /**< State kept for the menus. */
-    u8               bit_ctrl;                               /**< Control bits set and cleared by the scripts and by map changes. */
+    CUserDataManager user_data;        /**< The party, the inventory and the other player data. */
+    CQuestData       quest_data;       /**< State of the side quests. */
+    CMonsterBook     monster_book;     /**< Monster encyclopedia with kill counts. */
+    CMenuSystemData  menu_system_data; /**< State kept for the menus. */
+    u8               bit_ctrl;         /**< Control bits set and cleared by the scripts and by map changes. */
     u8               unk_643C9;
     u8               unk_643CA[6];
-    SAVE_TOUR_INFO   tour;                                   /**< Schedule of the fishing tournament. */
+    SAVE_TOUR_INFO   tour; /**< Schedule of the fishing tournament. */
     u8               unk_643EC[0x1544];
 
     /**
@@ -177,7 +177,7 @@ public:
      * @address 0x2FB460
      * @size 0x20
      */
-    int CheckBitFlagNo(int no);
+    int CheckBitFlagNo(int bit);
 
     /**
      *
@@ -187,7 +187,7 @@ public:
      * @address 0x2FB480
      * @size 0xB0
      */
-    int SetBitFlag(int no, int on);
+    int SetBitFlag(int bit, int on);
 
     /**
      *
@@ -197,7 +197,7 @@ public:
      * @address 0x2FB530
      * @size 0x80
      */
-    int GetBitFlag(int no);
+    int GetBitFlag(int bit);
 
     /**
      *
@@ -207,7 +207,7 @@ public:
      * @address 0x2FB5B0
      * @size 0x40
      */
-    s16 SetShortFlag(int no, s16 value);
+    s16 SetShortFlag(int index, s16 value);
 
     /**
      *
@@ -217,7 +217,7 @@ public:
      * @address 0x2FB5F0
      * @size 0x40
      */
-    s16 GetShortFlag(int no);
+    s16 GetShortFlag(int index);
 
     /**
      *
@@ -227,7 +227,7 @@ public:
      * @address 0x2FB630
      * @size 0x60
      */
-    void SetBuildPartsNum(int parts_no, int num);
+    void SetBuildPartsNum(int index, int value);
 
     /**
      *
@@ -237,7 +237,7 @@ public:
      * @address 0x2FB690
      * @size 0x40
      */
-    s16 GetBuildPartsNum(int parts_no);
+    int GetBuildPartsNum(int index);
 
     /**
      *
@@ -247,7 +247,7 @@ public:
      * @address 0x2FB6D0
      * @size 0x70
      */
-    s16 AddBuildPartsNum(int parts_no, int add);
+    s16 AddBuildPartsNum(int index, int delta);
 
     /**
      *
@@ -257,7 +257,7 @@ public:
      * @address 0x2FB740
      * @size 0x40
      */
-    CEditData *GetEditData(int town_no);
+    CEditData *GetEditData(int index);
 
     /**
      *
@@ -277,7 +277,7 @@ public:
      * @address 0x2FB800
      * @size 0x30
      */
-    CMapFlagData *GetMapFlag(int map_no);
+    CMapFlagData *GetMapFlag(int index);
 
     /**
      *
@@ -327,7 +327,7 @@ public:
      * @address 0x2FB8C0
      * @size 0x10
      */
-    int GetItem(int item_no, int num);
+    int GetItem(int a, int b);
 
     /**
      *
@@ -387,7 +387,7 @@ public:
      * @address 0x2FBBA0
      * @size 0x70
      */
-    s8 AddTourCountEtc(int add);
+    s8 AddTourCountEtc(int delta);
 
     /**
      *
@@ -426,12 +426,12 @@ STATIC_ASSERT(sizeof(CSaveData) == 0x65930);
  *
  */
 struct SPHIDA_PLAYER_DATA {
-    char name[0x14];                     /**< Name of the player, or an empty string for an unused entry. */
+    char name[0x14]; /**< Name of the player, or an empty string for an unused entry. */
     u8   unk_14[4];
-    s32  password_key;                   /**< Random number that goes into the entry's password. */
+    s32  password_key; /**< Random number that goes into the entry's password. */
     u8   unk_1C[4];
-    s32  total_score;                    /**< Total score of the round, by which the table is ordered. */
-    u8   hole_score[SPHIDA_HOLE_MAX];    /**< Score of each hole. */
+    s32  total_score;                 /**< Total score of the round, by which the table is ordered. */
+    u8   hole_score[SPHIDA_HOLE_MAX]; /**< Score of each hole. */
     u8   unk_2D[0xB];
     s32  unk_38;
     u8   unk_3C[0x14];
@@ -447,12 +447,12 @@ STATIC_ASSERT(sizeof(SPHIDA_PLAYER_DATA) == 0x50);
 class CSphidaData {
 public:
     u8                 unk_0[0x48];
-    SPHIDA_PLAYER_DATA player[SPHIDA_PLAYER_MAX]; /**< Score table, best first. */
+    SPHIDA_PLAYER_DATA player[SPHIDA_PLAYER_MAX];   /**< Score table, best first. */
     u16                hole_score[SPHIDA_HOLE_MAX]; /**< Score of each hole of the round being played. */
     u8                 unk_145A[0x1E];
-    s16                now_hole;                  /**< Hole being played. */
+    s16                now_hole; /**< Hole being played. */
     u8                 unk_147A[2];
-    char               player_name[0x1C];         /**< Name of the player of the round being played. */
+    char               player_name[0x1C]; /**< Name of the player of the round being played. */
     u8                 unk_1498[0x3B0];
 
     /**
@@ -492,7 +492,7 @@ public:
      * @address 0x2FBC80
      * @size 0x50
      */
-    void SetHorlScore(int score, int hole);
+    void SetHorlScore(int score, int slot);
 
     /**
      *
@@ -512,7 +512,7 @@ public:
      * @address 0x2FBCE0
      * @size 0xD0
      */
-    int GetHorlScore(int hole);
+    int GetHorlScore(int slot);
 
     /**
      *
@@ -522,7 +522,7 @@ public:
      * @address 0x2FBDB0
      * @size 0xC0
      */
-    void ClearPlayerScore(int no);
+    void ClearPlayerScore(int index);
 
     /**
      *
@@ -542,7 +542,7 @@ public:
      * @address 0x2FC010
      * @size 0x40
      */
-    SPHIDA_PLAYER_DATA *GetPlayerData(int no);
+    SPHIDA_PLAYER_DATA *GetPlayerData(int index);
 
     /**
      *
@@ -563,7 +563,7 @@ STATIC_ASSERT(sizeof(CSphidaData) == 0x1848);
  *
  */
 struct GYORACE_DATA {
-    CGameDataUsed fish;  /**< The fish, as an item. */
+    CGameDataUsed fish; /**< The fish, as an item. */
     u8            unk_6C[0x34];
 
     /**
@@ -637,7 +637,7 @@ public:
      * @address 0x2FC110
      * @size 0x60
      */
-    GYORACE_DATA *SearchSpaceData(int *no);
+    GYORACE_DATA *SearchSpaceData(int *out_index);
 
     /**
      *
@@ -647,7 +647,7 @@ public:
      * @address 0x2FC170
      * @size 0x40
      */
-    GYORACE_DATA *GetData(int no);
+    GYORACE_DATA *GetData(int index);
 };
 
 STATIC_ASSERT(sizeof(CGyoRaceData) == 0x2C28);
@@ -659,12 +659,12 @@ STATIC_ASSERT(sizeof(CGyoRaceData) == 0x2C28);
  */
 class CSubGameData {
 public:
-    u8           incomplete;  /**< One while the bonus data file is being written. */
+    u8           incomplete; /**< One while the bonus data file is being written. */
     u8           unk_1[7];
     u32          play_enable; /**< One bit for each sub-game the player has unlocked. */
     u8           unk_C[0xF4];
-    CSphidaData  sphida;      /**< Spheda scores. */
-    CGyoRaceData gyorace;     /**< Finny Frenzy fish roster. */
+    CSphidaData  sphida;  /**< Spheda scores. */
+    CGyoRaceData gyorace; /**< Finny Frenzy fish roster. */
     u8           unk_4570[0xF00];
 
     /**
@@ -728,4 +728,4 @@ STATIC_ASSERT(sizeof(CSubGameData) == 0x5470);
  * @address 0x2FB260
  * @size 0x40
  */
-void InitSV_CONFIG_OPTION(SV_CONFIG_OPTION *option);
+void InitSV_CONFIG_OPTION(SV_CONFIG_OPTION *config);

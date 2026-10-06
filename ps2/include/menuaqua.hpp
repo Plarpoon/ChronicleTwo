@@ -33,14 +33,14 @@ class CAquaFishEff;
  *
  */
 enum AQUA_FISH_THINK {
-    AQUA_FISH_THINK_REST         = 0, /**< Slows to a stop and waits out think_timer before swimming again. */
-    AQUA_FISH_THINK_SWIM         = 1, /**< Swims about the tank in the way that swim_mode picks. */
-    AQUA_FISH_THINK_FOOD_LOOK    = 3, /**< Turns towards food that has entered the water, then swims on. */
-    AQUA_FISH_THINK_FOOD_EAT     = 4, /**< Swims to the sinking food to eat it. */
-    AQUA_FISH_THINK_BATTLE       = 5, /**< Charges at another fish of the tank. */
-    AQUA_FISH_THINK_BATTLE_REST  = 6, /**< Rests at a random point between charges, recovering from fatigue. */
-    AQUA_FISH_THINK_LOVE_SEARCH  = 7, /**< Looks for another fish to pair with. */
-    AQUA_FISH_THINK_LOVE_CHASE   = 8, /**< Follows the fish that pair_no names until the pair are bred. */
+    AQUA_FISH_THINK_REST = 0,        /**< Slows to a stop and waits out think_timer before swimming again. */
+    AQUA_FISH_THINK_SWIM = 1,        /**< Swims about the tank in the way that swim_mode picks. */
+    AQUA_FISH_THINK_FOOD_LOOK = 3,   /**< Turns towards food that has entered the water, then swims on. */
+    AQUA_FISH_THINK_FOOD_EAT = 4,    /**< Swims to the sinking food to eat it. */
+    AQUA_FISH_THINK_BATTLE = 5,      /**< Charges at another fish of the tank. */
+    AQUA_FISH_THINK_BATTLE_REST = 6, /**< Rests at a random point between charges, recovering from fatigue. */
+    AQUA_FISH_THINK_LOVE_SEARCH = 7, /**< Looks for another fish to pair with. */
+    AQUA_FISH_THINK_LOVE_CHASE = 8,  /**< Follows the fish that pair_no names until the pair are bred. */
 };
 
 /**
@@ -60,10 +60,10 @@ enum AQUA_FISH_SWIM {
  *
  */
 enum AQUA_FISH_COL {
-    AQUA_FISH_COL_WALL   = 0x1,  /**< The fish was held inside the walls of the tank. */
+    AQUA_FISH_COL_WALL = 0x1,    /**< The fish was held inside the walls of the tank. */
     AQUA_FISH_COL_OBJECT = 0x2,  /**< The fish was pushed off one of the tank's ornaments. */
-    AQUA_FISH_COL_FOOD   = 0x4,  /**< The fish touched the sinking food. */
-    AQUA_FISH_COL_FISH   = 0x8,  /**< The fish was pushed off another fish. */
+    AQUA_FISH_COL_FOOD = 0x4,    /**< The fish touched the sinking food. */
+    AQUA_FISH_COL_FISH = 0x8,    /**< The fish was pushed off another fish. */
     AQUA_FISH_COL_TARGET = 0x10, /**< The fish that pushed this one is its action target. */
 };
 
@@ -74,8 +74,8 @@ enum AQUA_FISH_COL {
  */
 enum AQUA_BUBBLE_STATE {
     AQUA_BUBBLE_RISE = 0, /**< Wobbles up towards the surface. */
-    AQUA_BUBBLE_POP  = 1, /**< Drifts at the surface and fades until its count runs out. */
-    AQUA_BUBBLE_END  = 2, /**< Gone, waiting for the emitter to end or to make it again. */
+    AQUA_BUBBLE_POP = 1,  /**< Drifts at the surface and fades until its count runs out. */
+    AQUA_BUBBLE_END = 2,  /**< Gone, waiting for the emitter to end or to make it again. */
 };
 
 /**
@@ -84,10 +84,10 @@ enum AQUA_BUBBLE_STATE {
  *
  */
 enum FISH_FOOD_STATE {
-    FISH_FOOD_HOLD  = 0, /**< Held above the tank, following the cursor. */
-    FISH_FOOD_DROP  = 1, /**< Falling through the air towards the water. */
+    FISH_FOOD_HOLD = 0,  /**< Held above the tank, following the cursor. */
+    FISH_FOOD_DROP = 1,  /**< Falling through the air towards the water. */
     FISH_FOOD_ENTER = 2, /**< Reached the water this step. */
-    FISH_FOOD_SINK  = 3, /**< Sinking through the water, ready to be eaten. */
+    FISH_FOOD_SINK = 3,  /**< Sinking through the water, ready to be eaten. */
 };
 
 /**
@@ -96,13 +96,13 @@ enum FISH_FOOD_STATE {
  *
  */
 struct AQUA_BUBBLE {
-    u8            pattern;  /**< Row of the wobble tables while rising; steps left before vanishing while popping. */
-    u8            state;    /**< Stage of the bubble, an AQUA_BUBBLE_STATE value. */
-    float         phase;    /**< Angle, in radians, of the bubble's side-to-side wobble. */
-    float         drift_x;  /**< Sideways drift along x added at the surface. */
-    float         drift_z;  /**< Sideways drift along z added at the surface. */
-    sceVu0FVECTOR pos;      /**< World position of the bubble. */
-    float         alpha;    /**< Alpha that the bubble draws with. */
+    u8            pattern; /**< Row of the wobble tables while rising; steps left before vanishing while popping. */
+    u8            state;   /**< Stage of the bubble, an AQUA_BUBBLE_STATE value. */
+    float         phase;   /**< Angle, in radians, of the bubble's side-to-side wobble. */
+    float         drift_x; /**< Sideways drift along x added at the surface. */
+    float         drift_z; /**< Sideways drift along z added at the surface. */
+    sceVu0FVECTOR pos;     /**< World position of the bubble. */
+    float         alpha;   /**< Alpha that the bubble draws with. */
     u8            unk_24[0xC];
 };
 
@@ -115,18 +115,18 @@ STATIC_ASSERT(sizeof(AQUA_BUBBLE) == 0x30);
  */
 class CBubble {
 public:
-    s8            one_shot;    /**< Nonzero to let finished bubbles end the emitter instead of rising again. */
-    s8            active;      /**< Nonzero while the emitter moves and draws its bubbles. */
-    u32           generated;   /**< Bubbles made since the emitter was last started. */
+    s8            one_shot;  /**< Nonzero to let finished bubbles end the emitter instead of rising again. */
+    s8            active;    /**< Nonzero while the emitter moves and draws its bubbles. */
+    u32           generated; /**< Bubbles made since the emitter was last started. */
     u8            unk_08[0x8];
-    sceVu0FVECTOR origin;      /**< Point that the bubbles rise from. */
-    float         surface_y;   /**< Height at which the bubbles reach the surface. */
-    float         height;      /**< Distance from the origin up to the surface. */
-    mgCTexture   *texture;     /**< Texture that the bubbles draw from. */
-    s16           tex_u;       /**< Left edge of the bubble image in the texture. */
-    s16           tex_v;       /**< Top edge of the bubble image in the texture. */
-    u32           bubble_num;  /**< Number of entries in bubble. */
-    AQUA_BUBBLE  *bubble;      /**< Bubbles of the emitter. */
+    sceVu0FVECTOR origin;     /**< Point that the bubbles rise from. */
+    float         surface_y;  /**< Height at which the bubbles reach the surface. */
+    float         height;     /**< Distance from the origin up to the surface. */
+    mgCTexture   *texture;    /**< Texture that the bubbles draw from. */
+    s16           tex_u;      /**< Left edge of the bubble image in the texture. */
+    s16           tex_v;      /**< Top edge of the bubble image in the texture. */
+    u32           bubble_num; /**< Number of entries in bubble. */
+    AQUA_BUBBLE  *bubble;     /**< Bubbles of the emitter. */
     u8            unk_38[0x8];
 
     /**
@@ -136,7 +136,7 @@ public:
      * @address 0x20E6B0
      * @size 0x110
      */
-    void Generate(int no);
+    void Generate(int index);
 
     /**
      * Moves the origin and starts the next bubble from it; says whether a bubble was left to start.
@@ -154,7 +154,7 @@ public:
      * @address 0x20E850
      * @size 0x10
      */
-    void SetTexture(mgCTexture *tex, int u, int v);
+    void SetTexture(mgCTexture *image, int u, int v);
 
     /**
      * Moves every bubble one step, rising, popping or starting it again.
@@ -181,7 +181,7 @@ public:
      * @address 0x20EC80
      * @size 0xF0
      */
-    void Initialize(mgCMemory *memory, float *origin, int num, float surface);
+    void Initialize(mgCMemory *memory, float *start_pos, int count, float top);
 
     /**
      * Stops the emitter and forgets the bubbles it has made.
@@ -202,15 +202,15 @@ STATIC_ASSERT(sizeof(CBubble) == 0x40);
  */
 class CAquaFishActionParam {
 public:
-    s16        phase;      /**< Stage of the action. */
-    s32        timer;      /**< Steps left in the stage. */
-    s16        target_no;  /**< Tank slot of the fish that the action is aimed at; below zero for none. */
-    CAquaFish *target;     /**< Fish that the action is aimed at. */
-    float      speed;      /**< Speed of the fish while it circles the tank. */
-    float      max_speed;  /**< Speed that speed builds up to. */
+    s16        phase;     /**< Stage of the action. */
+    s32        timer;     /**< Steps left in the stage. */
+    s16        target_no; /**< Tank slot of the fish that the action is aimed at; below zero for none. */
+    CAquaFish *target;    /**< Fish that the action is aimed at. */
+    float      speed;     /**< Speed of the fish while it circles the tank. */
+    float      max_speed; /**< Speed that speed builds up to. */
     u8         unk_18[0x18];
-    float      decel;      /**< Factor that the fish's movement is scaled by each step while it slows. */
-    s32        hit_count;  /**< Times the fish has bumped into others during the action. */
+    float      decel;     /**< Factor that the fish's movement is scaled by each step while it slows. */
+    s32        hit_count; /**< Times the fish has bumped into others during the action. */
     u8         unk_38[0x8];
 
     /**
@@ -231,10 +231,10 @@ STATIC_ASSERT(sizeof(CAquaFishActionParam) == 0x40);
  *
  */
 struct AQUA_FISH_ROUND {
-    s16   dir;        /**< Way round the tank, 0 or 1, that picks the turn-back angles. */
-    float width;      /**< Fraction of the tank's half width at which the fish turns back. */
-    float depth;      /**< Fraction of the tank's half depth at which the fish turns back. */
-    float wave;       /**< Angle, in radians, of the fish's up-and-down weave. */
+    s16   dir;   /**< Way round the tank, 0 or 1, that picks the turn-back angles. */
+    float width; /**< Fraction of the tank's half width at which the fish turns back. */
+    float depth; /**< Fraction of the tank's half depth at which the fish turns back. */
+    float wave;  /**< Angle, in radians, of the fish's up-and-down weave. */
 };
 
 STATIC_ASSERT(sizeof(AQUA_FISH_ROUND) == 0x10);
@@ -245,10 +245,10 @@ STATIC_ASSERT(sizeof(AQUA_FISH_ROUND) == 0x10);
  *
  */
 struct NEXT_THINK_PARAM {
-    sceVu0FVECTOR pos;        /**< Position of the food that the fish heads for. */
-    CAquaFishEff *effect;     /**< Icon of the fish, started when it goes to eat. */
-    CAquaFish    *target;     /**< Fish to fight. */
-    s16           target_no;  /**< Tank slot of target; below zero for none. */
+    sceVu0FVECTOR pos;       /**< Position of the food that the fish heads for. */
+    CAquaFishEff *effect;    /**< Icon of the fish, started when it goes to eat. */
+    CAquaFish    *target;    /**< Fish to fight. */
+    s16           target_no; /**< Tank slot of target; below zero for none. */
 };
 
 STATIC_ASSERT(sizeof(NEXT_THINK_PARAM) == 0x20);
@@ -261,35 +261,37 @@ STATIC_ASSERT(sizeof(NEXT_THINK_PARAM) == 0x20);
  */
 class CAquaFish : public CCharacter2 {
 public:
-    sceVu0FVECTOR        target_pos;      /**< Point that the fish heads for. */
-    sceVu0FVECTOR        move;            /**< Distance that the fish moves this step. */
-    sceVu0FVECTOR        target_rot;      /**< Rotation that the fish turns towards. */
-    sceVu0FVECTOR        turn;            /**< x: angle of pitch turned each step; y: steps to turn the yaw to target_rot. */
-    s16                  aqua_no;         /**< Tank slot of the fish, the index of its icon and bubbles. */
-    float                radius;          /**< Size of the fish's body for collisions. */
-    s32                  think_timer;     /**< Steps that the think mode has run or has left. */
-    s16                  pair_no;         /**< Tank slot of the fish chased in AQUA_FISH_THINK_LOVE_CHASE; -1 for none. */
-    s16                  think_mode;      /**< What the fish is doing, an AQUA_FISH_THINK value. */
-    s16                  swim_mode;       /**< Way of swimming, an AQUA_FISH_SWIM value. */
+    sceVu0FVECTOR        target_pos;  /**< Point that the fish heads for. */
+    sceVu0FVECTOR        move;        /**< Distance that the fish moves this step. */
+    sceVu0FVECTOR        target_rot;  /**< Rotation that the fish turns towards. */
+    sceVu0FVECTOR        turn;        /**< x: angle of pitch turned each step; y: steps to turn the yaw to target_rot. */
+    s16                  aqua_no;     /**< Tank slot of the fish, the index of its icon and bubbles. */
+    float                radius;      /**< Size of the fish's body for collisions. */
+    s32                  think_timer; /**< Steps that the think mode has run or has left. */
+    s16                  pair_no;     /**< Tank slot of the fish chased in AQUA_FISH_THINK_LOVE_CHASE; -1 for none. */
+    s16                  think_mode;  /**< What the fish is doing, an AQUA_FISH_THINK value. */
+    s16                  swim_mode;   /**< Way of swimming, an AQUA_FISH_SWIM value. */
     u8                   unk_6b2[0xE];
-    CAquaFishActionParam action;          /**< Steering of the current action. */
+    CAquaFishActionParam action; /**< Steering of the current action. */
+
     union {
-        AQUA_FISH_ROUND  round;           /**< Way of circling the tank in AQUA_FISH_SWIM_ROUND. */
-        float            charge_angle;    /**< Angle, in radians, of the swing of a charge in AQUA_FISH_THINK_BATTLE. */
+        AQUA_FISH_ROUND round;        /**< Way of circling the tank in AQUA_FISH_SWIM_ROUND. */
+        float           charge_angle; /**< Angle, in radians, of the swing of a charge in AQUA_FISH_THINK_BATTLE. */
     };
-    sceVu0FVECTOR        route[32];       /**< Points of the route of AQUA_FISH_SWIM_ROUTE. */
-    s16                  route_num;       /**< Number of points in route. */
-    s16                  route_no;        /**< Point of route that the fish heads for. */
-    s32                  route_time;      /**< Steps spent heading for the current point of route. */
-    u8                   unk_918[0x8];
-    s16                  eat_item;        /**< Item number of the food that the fish has just eaten; 0 for none. */
-    s8                   unk_922;
-    u32                  col_flags;       /**< What the fish touched this step, AQUA_FISH_COL bits. */
-    s32                  wall_time;       /**< Steps that the fish has kept touching the walls while circling. */
-    s32                  fatigue;         /**< Fatigue built up by fighting. */
-    s32                  fatigue_max;     /**< Fatigue at which the fish stops fighting to rest. */
-    s32                  flash_count;     /**< Counter, from 0 to 24, of the brightening of a fish low on life. */
-    CGameDataUsed       *data;            /**< Fish's data in the save; NULL for none. */
+
+    sceVu0FVECTOR  route[32];  /**< Points of the route of AQUA_FISH_SWIM_ROUTE. */
+    s16            route_num;  /**< Number of points in route. */
+    s16            route_no;   /**< Point of route that the fish heads for. */
+    s32            route_time; /**< Steps spent heading for the current point of route. */
+    u8             unk_918[0x8];
+    s16            eat_item; /**< Item number of the food that the fish has just eaten; 0 for none. */
+    s8             unk_922;
+    u32            col_flags;   /**< What the fish touched this step, AQUA_FISH_COL bits. */
+    s32            wall_time;   /**< Steps that the fish has kept touching the walls while circling. */
+    s32            fatigue;     /**< Fatigue built up by fighting. */
+    s32            fatigue_max; /**< Fatigue at which the fish stops fighting to rest. */
+    s32            flash_count; /**< Counter, from 0 to 24, of the brightening of a fish low on life. */
+    CGameDataUsed *data;        /**< Fish's data in the save; NULL for none. */
 
     /**
      * Makes a fish with no data.
@@ -316,7 +318,7 @@ public:
      * @address 0x20F060
      * @size 0x80
      */
-    void SetLiveParam(CGameDataUsed *data);
+    void SetLiveParam(CGameDataUsed *item);
 
     /**
      * Scales the fish to the size in its data and sizes its body to match.
@@ -334,7 +336,7 @@ public:
      * @address 0x20F170
      * @size 0x40
      */
-    int AddFatigue(int add);
+    int AddFatigue(int amount);
 
     /**
      * Gives the screen position of the fish as seen by the aquarium camera.
@@ -343,7 +345,7 @@ public:
      * @address 0x20F1B0
      * @size 0xA0
      */
-    void GetPosition2D(int *pos);
+    void GetPosition2D(int *out);
 
     /**
      * Gives the direction that the fish faces.
@@ -352,7 +354,7 @@ public:
      * @address 0x20F250
      * @size 0x80
      */
-    void GetDirVect(float *dir);
+    void GetDirVect(float *out);
 
     /**
      * Sets the fish moving straight at target_pos at a speed.
@@ -454,10 +456,10 @@ STATIC_ASSERT(sizeof(CAquaFish) == 0x940);
  */
 class CAquaFishEff {
 public:
-    CAquaFish  *fish;     /**< Fish that the icon floats above; NULL for none. */
-    mgCTexture *texture;  /**< Texture of the icons. */
-    u16         type;     /**< Icon shown, 1 to 5; 0 for none. */
-    s32         timer;    /**< Steps left to show the icon. */
+    CAquaFish  *fish;    /**< Fish that the icon floats above; NULL for none. */
+    mgCTexture *texture; /**< Texture of the icons. */
+    u16         type;    /**< Icon shown, 1 to 5; 0 for none. */
+    s32         timer;   /**< Steps left to show the icon. */
 
     /**
      * Clears the icon and its fish.
@@ -475,7 +477,7 @@ public:
      * @address 0x210AB0
      * @size 0x30
      */
-    void StartFishEffect(int type);
+    void StartFishEffect(int effect_kind);
 
     /**
      * Counts down the icon's time, hiding it when the time runs out.
@@ -561,30 +563,30 @@ STATIC_ASSERT(sizeof(CFishFood) == 0x6A0);
  */
 class CAquaMes {
 public:
-    mgCMemory *memory;          /**< Memory that the windows were allocated from; NULL for none. */
-    ClsMes    *title_mes;       /**< Window of the aquarium's title. */
-    s32        title_id;        /**< Message shown in title_mes. */
-    u8         title_draw;      /**< Nonzero to draw title_mes. */
-    ClsMes    *menu_mes;        /**< Window of the aquarium menu. */
-    s32        menu_cursor;     /**< Item of menu_mes under the cursor. */
-    u8         menu_draw;       /**< Nonzero to draw menu_mes. */
-    u8         cursor_snap;     /**< Nonzero to move the cursor straight to cursor_target on the next step. */
-    u8         cursor_draw;     /**< Nonzero to draw the hand cursor. */
-    float      cursor_target[2];/**< Screen position that the hand cursor moves to. */
-    float      cursor_pos[2];   /**< Screen position of the hand cursor. */
-    ClsMes    *question_mes;    /**< Window of a question with choices. */
-    s32        question_cursor; /**< Choice of question_mes under the cursor. */
-    u8         question_draw;   /**< Nonzero to draw question_mes. */
-    s16        question_num;    /**< Number of choices in question_mes. */
-    ClsMes    *guide_mes;       /**< Window of guidance about what is happening in the tank. */
-    s32        guide_id;        /**< Message shown in guide_mes. */
-    u8         guide_draw;      /**< Nonzero to draw guide_mes. */
-    ClsMes    *help_mes;        /**< Window of the button help at the bottom of the screen. */
-    u8         help_draw;       /**< Nonzero to draw help_mes. */
-    ClsMes    *info_mes;        /**< Window of information. */
-    u8         info_draw;       /**< Nonzero to draw info_mes. */
-    ClsMes    *fish_mes;        /**< Window about one fish, shown next to it. */
-    s32        fish_mes_time;   /**< Steps left to show fish_mes. */
+    mgCMemory *memory;           /**< Memory that the windows were allocated from; NULL for none. */
+    ClsMes    *title_mes;        /**< Window of the aquarium's title. */
+    s32        title_id;         /**< Message shown in title_mes. */
+    u8         title_draw;       /**< Nonzero to draw title_mes. */
+    ClsMes    *menu_mes;         /**< Window of the aquarium menu. */
+    s32        menu_cursor;      /**< Item of menu_mes under the cursor. */
+    u8         menu_draw;        /**< Nonzero to draw menu_mes. */
+    u8         cursor_snap;      /**< Nonzero to move the cursor straight to cursor_target on the next step. */
+    u8         cursor_draw;      /**< Nonzero to draw the hand cursor. */
+    float      cursor_target[2]; /**< Screen position that the hand cursor moves to. */
+    float      cursor_pos[2];    /**< Screen position of the hand cursor. */
+    ClsMes    *question_mes;     /**< Window of a question with choices. */
+    s32        question_cursor;  /**< Choice of question_mes under the cursor. */
+    u8         question_draw;    /**< Nonzero to draw question_mes. */
+    s16        question_num;     /**< Number of choices in question_mes. */
+    ClsMes    *guide_mes;        /**< Window of guidance about what is happening in the tank. */
+    s32        guide_id;         /**< Message shown in guide_mes. */
+    u8         guide_draw;       /**< Nonzero to draw guide_mes. */
+    ClsMes    *help_mes;         /**< Window of the button help at the bottom of the screen. */
+    u8         help_draw;        /**< Nonzero to draw help_mes. */
+    ClsMes    *info_mes;         /**< Window of information. */
+    u8         info_draw;        /**< Nonzero to draw info_mes. */
+    ClsMes    *fish_mes;         /**< Window about one fish, shown next to it. */
+    s32        fish_mes_time;    /**< Steps left to show fish_mes. */
     s32        unk_5c;
     s32        unk_60;
 
@@ -613,7 +615,7 @@ public:
      * @address 0x212D20
      * @size 0xA0
      */
-    void SettingAquaMes(int aqua_no);
+    void SettingAquaMes(int kind);
 
     /**
      * Shows a title, centred in the title box.
@@ -631,7 +633,7 @@ public:
      * @address 0x212E60
      * @size 0x50
      */
-    int AddMenuCursor(int add, int num);
+    int AddMenuCursor(int step, int count);
 
     /**
      * Shows a question; the food question lists the foods Max has with their counts.
@@ -734,50 +736,50 @@ STATIC_ASSERT(sizeof(CAquaMes) == 0x64);
  */
 class CAquarium {
 public:
-    s32               mode;                    /**< Stage of the menu that Step runs. */
-    u_long128        *load_buf;                /**< Buffer that files are loaded into. */
-    mgCMemory         load_stack;              /**< Memory over load_buf. */
-    s32               tex_block[13];           /**< Texture blocks that the menu was given, ending in -1. */
-    CUserDataManager *user_data;               /**< Max's data in the save. */
-    mgCMemory         aqua_stack;              /**< Memory of the tank's models and images. */
-    mgCFrame         *ground_frame;            /**< Model of the tank's floor. */
-    mgCFrame         *glass_frame;             /**< Model of the tank's glass. */
-    mgCFrame         *aqua_frame;              /**< Model of the tank. */
-    mgCFrame         *mizu_frame;              /**< Model of the water in the tank. */
-    s16               ground_tex_block;        /**< Texture block of the floor's images. */
-    s16               glass_tex_block;         /**< Texture block of the glass's images. */
-    s16               aqua_tex_block;          /**< Texture block of the tank's images. */
-    CWaterFrame      *water;                   /**< Rippling water surface. */
-    s16               water_tex_block;         /**< Texture block of the water's images. */
-    mgCFrame         *suimen_frame;            /**< Model of the water surface. */
-    float             ripple;                  /**< Strength of the surface's ripple, raised when food lands. */
-    mgCMemory         naka_stack;              /**< Memory of naka_frame. */
-    mgCFrame         *naka_frame;              /**< Model inside the first aquarium; NULL for the others. */
-    CAquaMes          mes;                     /**< Message windows of the menu. */
-    mgCMemory         mes_stack;               /**< Memory of the message windows and the menu's images. */
-    s16               menu_tex_block;          /**< Texture block of the menu's images. */
-    mgCMemory         fish_stack[6];           /**< Memory of each fish's model. */
-    CAquaFish        *fish[6];                 /**< Fish in each slot of the tank; NULL for none. */
-    s16               fish_tex_block[6];       /**< Texture block of each fish's images. */
-    s16               sel_fish;                /**< Slot of the fish under the cursor; -1 for none. */
-    char              target_name[0x20];       /**< Name of target_fish for the messages. */
-    char              partner_name[0x20];      /**< Name of partner_fish for the messages. */
-    s16               target_fish;             /**< Slot of the fish that a pairing or special food concerns. */
-    s16               partner_fish;            /**< Slot of the fish that target_fish pairs with. */
-    u8                fish_info_draw;          /**< Nonzero to draw the data of sel_fish. */
-    CFishFood        *food;                    /**< Food that Max drops; NULL for none. */
-    s16               food_tex_block;          /**< Texture block of the food's images. */
+    s32               mode;               /**< Stage of the menu that Step runs. */
+    u_long128        *load_buf;           /**< Buffer that files are loaded into. */
+    mgCMemory         load_stack;         /**< Memory over load_buf. */
+    s32               tex_block[13];      /**< Texture blocks that the menu was given, ending in -1. */
+    CUserDataManager *user_data;          /**< Max's data in the save. */
+    mgCMemory         aqua_stack;         /**< Memory of the tank's models and images. */
+    mgCFrame         *ground_frame;       /**< Model of the tank's floor. */
+    mgCFrame         *glass_frame;        /**< Model of the tank's glass. */
+    mgCFrame         *aqua_frame;         /**< Model of the tank. */
+    mgCFrame         *mizu_frame;         /**< Model of the water in the tank. */
+    s16               ground_tex_block;   /**< Texture block of the floor's images. */
+    s16               glass_tex_block;    /**< Texture block of the glass's images. */
+    s16               aqua_tex_block;     /**< Texture block of the tank's images. */
+    CWaterFrame      *water;              /**< Rippling water surface. */
+    s16               water_tex_block;    /**< Texture block of the water's images. */
+    mgCFrame         *suimen_frame;       /**< Model of the water surface. */
+    float             ripple;             /**< Strength of the surface's ripple, raised when food lands. */
+    mgCMemory         naka_stack;         /**< Memory of naka_frame. */
+    mgCFrame         *naka_frame;         /**< Model inside the first aquarium; NULL for the others. */
+    CAquaMes          mes;                /**< Message windows of the menu. */
+    mgCMemory         mes_stack;          /**< Memory of the message windows and the menu's images. */
+    s16               menu_tex_block;     /**< Texture block of the menu's images. */
+    mgCMemory         fish_stack[6];      /**< Memory of each fish's model. */
+    CAquaFish        *fish[6];            /**< Fish in each slot of the tank; NULL for none. */
+    s16               fish_tex_block[6];  /**< Texture block of each fish's images. */
+    s16               sel_fish;           /**< Slot of the fish under the cursor; -1 for none. */
+    char              target_name[0x20];  /**< Name of target_fish for the messages. */
+    char              partner_name[0x20]; /**< Name of partner_fish for the messages. */
+    s16               target_fish;        /**< Slot of the fish that a pairing or special food concerns. */
+    s16               partner_fish;       /**< Slot of the fish that target_fish pairs with. */
+    u8                fish_info_draw;     /**< Nonzero to draw the data of sel_fish. */
+    CFishFood        *food;               /**< Food that Max drops; NULL for none. */
+    s16               food_tex_block;     /**< Texture block of the food's images. */
     s16               unk_326;
-    sceVu0FVECTOR     drop_pos;                /**< Position that the food is held at before it drops. */
-    s32               food_time;               /**< Steps left before dropped food is taken away. */
+    sceVu0FVECTOR     drop_pos;  /**< Position that the food is held at before it drops. */
+    s32               food_time; /**< Steps left before dropped food is taken away. */
     u8                unk_344[0x40];
-    u8                drop_root_draw;          /**< Nonzero to draw the line below the held food. */
+    u8                drop_root_draw; /**< Nonzero to draw the line below the held food. */
     s16               unk_386;
-    s16               love_phase;              /**< Stage of the pairing of two fish; 0 for none. */
-    s16               love_time;               /**< Steps spent in love_phase. */
-    s16               love_tex_block;          /**< Texture block of love_chara's images. */
-    CCharacter2      *love_chara;              /**< Effect shown when two fish pair; NULL outside the third aquarium. */
-    mgCMemory         food_stack;              /**< Memory of the food's model. */
+    s16               love_phase;     /**< Stage of the pairing of two fish; 0 for none. */
+    s16               love_time;      /**< Steps spent in love_phase. */
+    s16               love_tex_block; /**< Texture block of love_chara's images. */
+    CCharacter2      *love_chara;     /**< Effect shown when two fish pair; NULL outside the third aquarium. */
+    mgCMemory         food_stack;     /**< Memory of the food's model. */
 
     /**
      * Makes the aquarium with its memories empty and no texture blocks.
@@ -804,7 +806,7 @@ public:
      * @address 0x214800
      * @size 0x800
      */
-    void Initialize(mgCMemory *memory, int *tex_block);
+    void Initialize(mgCMemory *memory, int *blocks);
 
     /**
      * Loads the model of a fish into a tank slot and puts it at a random place; says whether it loaded.
@@ -840,7 +842,7 @@ public:
      * @address 0x216440
      * @size 0xA0
      */
-    int GetBattleTarget(int no);
+    int GetBattleTarget(int slot);
 
     /**
      * Runs one step of the think mode of the fish in a slot and starts the mode that follows.
@@ -935,7 +937,7 @@ public:
      * @address 0x21B8B0
      * @size 0x80
      */
-    CGameDataUsed *GetRaceFish(int race_class, int no);
+    CGameDataUsed *GetRaceFish(int race_class, int index);
 };
 
 /**
@@ -958,7 +960,7 @@ STATIC_ASSERT(sizeof(FISH_PRIZE_INFO) == 0x8);
  * @address 0x20E5C0
  * @size 0x90
  */
-int GetUseableEsaNo(int *item_no);
+int GetUseableEsaNo(int *out);
 
 /**
  * Scales a fish's size against the size in its breeding data, capped at a
@@ -968,7 +970,7 @@ int GetUseableEsaNo(int *item_no);
  * @address 0x20EE30
  * @size 0x80
  */
-float SetFishAdjustScale(int size, int fish_no, float scale, float max);
+float SetFishAdjustScale(int length, int item_no, float scale, float max);
 
 /**
  * Draws a dotted line down from the food to a height, showing where it will
@@ -987,7 +989,7 @@ void DrawEsaDropRoot(CFishFood *food, float bottom);
  * @address 0x211590
  * @size 0xB0
  */
-void AquaMesDispAdjustPos(ClsMes *mes, int *pos);
+void AquaMesDispAdjustPos(ClsMes *window, int *pos);
 
 /**
  * Makes the path of the image file of a fish's colouring; says whether the
@@ -997,7 +999,7 @@ void AquaMesDispAdjustPos(ClsMes *mes, int *pos);
  * @address 0x213870
  * @size 0x90
  */
-int GetFishImgPath(char *path, int fish_no, BREEDFISH_USED *fish);
+int GetFishImgPath(char *out, int item_no, BREEDFISH_USED *fish);
 
 /**
  * Gives one of the two colour numbers of a fish's images.
@@ -1006,7 +1008,7 @@ int GetFishImgPath(char *path, int fish_no, BREEDFISH_USED *fish);
  * @address 0x213900
  * @size 0x70
  */
-int GetFishImageColor(int fish_no, int which);
+int GetFishImageColor(int item_no, int sex);
 
 /**
  * Replaces the images of a fish's model with those of its colouring.
@@ -1015,7 +1017,7 @@ int GetFishImageColor(int fish_no, int which);
  * @address 0x213970
  * @size 0x100
  */
-int FishIMGReplace(u_long128 *buffer, CCharacter2 *chara, int fish_no, BREEDFISH_USED *fish);
+int FishIMGReplace(u_long128 *data, CCharacter2 *chara, int item_no, BREEDFISH_USED *fish);
 
 /**
  * Draws the data panel of a fish.
@@ -1106,7 +1108,7 @@ CGameDataUsed *GetGyoRaceFish();
  * @address 0x21B420
  * @size 0x10
  */
-void SetGyoRaceAquariumNo(int no);
+void SetGyoRaceAquariumNo(int value);
 
 /**
  * Gives the aquarium that the racing fish comes from.
@@ -1124,7 +1126,7 @@ int GetGyoRaceAquariumNo();
  * @address 0x21B440
  * @size 0x10
  */
-void SetGyoRaceClass(int race_class);
+void SetGyoRaceClass(int value);
 
 /**
  * Gives the class of the fish race.
@@ -1142,7 +1144,7 @@ int GetGyoRaceClass();
  * @address 0x21B460
  * @size 0x20
  */
-void SetGyoRaceNo(int no);
+void SetGyoRaceNo(int value);
 
 /**
  * Gives how far the fish race has got.
@@ -1199,7 +1201,7 @@ int LoadFishPrize(int type);
  * @address 0x21BBD0
  * @size 0xD0
  */
-int LoadFishPrize(int type, mgCMemory *memory);
+int LoadFishPrize(int type, mgCMemory *pool);
 
 /**
  * Picks the prizes on offer from the counts of races and tournaments won
@@ -1218,7 +1220,7 @@ int RefreshFishPrize();
  * @address 0x21BE20
  * @size 0xA0
  */
-int GetFishPrize(int race_class, int rank, FISH_PRIZE_INFO *info);
+int GetFishPrize(int race_no, int rank, FISH_PRIZE_INFO *info);
 
 /**
  * Counts one more fishing tournament in the save.
@@ -1237,7 +1239,7 @@ void TuriTourCount();
  * @address 0x21BFE0
  * @size 0x50
  */
-int CheckSameRacerFish(int racer_no);
+int CheckSameRacerFish(int fish_no);
 
 /**
  * Gives the fish of the saved racers listed in a slot; NULL for none.
@@ -1246,7 +1248,7 @@ int CheckSameRacerFish(int racer_no);
  * @address 0x21C030
  * @size 0x70
  */
-CGameDataUsed *GetOmakeGyoracer2(int no);
+CGameDataUsed *GetOmakeGyoracer2(int slot);
 
 /**
  * Gives the tactics of the racer listed in a slot.
@@ -1255,7 +1257,7 @@ CGameDataUsed *GetOmakeGyoracer2(int no);
  * @address 0x21C0A0
  * @size 0x40
  */
-int GetOmakeGyoracerTactics(int no);
+int GetOmakeGyoracerTactics(int slot);
 
 /**
  * Sets the tactics of the racer listed in a slot.
@@ -1264,7 +1266,7 @@ int GetOmakeGyoracerTactics(int no);
  * @address 0x21C0E0
  * @size 0x40
  */
-void SetOmakeGyoracerTactics(int no, int tactics);
+void SetOmakeGyoracerTactics(int slot, int tactics);
 
 /**
  * Empties the list of racers and their tactics.
@@ -1311,7 +1313,7 @@ void GyoraceMenuDraw();
  * @address 0x21E400
  * @size 0x130
  */
-void DrawSubGameTitle(mgCTexture *tex, int size, int x, int y, int w);
+void DrawSubGameTitle(mgCTexture *tex, int large, int x, int y, int w);
 
 /**
  * Draws a list panel of a sub-game menu with its shadow.
@@ -1330,7 +1332,7 @@ void DrawSubGameListFix(mgCTexture *tex, int x, int y, int w, int h);
  * @address 0x21E760
  * @size 0x2A0
  */
-void DrawSubGameScrlList(mgCTexture *tex, int *rect, int *scroll);
+void DrawSubGameScrlList(mgCTexture *tex, int *box, int *thumb);
 
 /**
  * Draws an underline of a sub-game menu.

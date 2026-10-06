@@ -27,7 +27,8 @@ class mgRENDER_INFO;
 struct mgPOINT_LIGHT;
 struct mgVu0FBOX;
 struct sceGsClamp;
-template <typename T> class mgRect;
+template <typename T>
+class mgRect;
 
 /**
  *
@@ -47,10 +48,10 @@ enum mgSCREEN_MODE {
  *
  */
 enum mgVU_PROG_ID {
-    MG_VU_PROG_MAIN = 0,       /**< Main model microprogram (Vu_prog0). */
-    MG_VU_PROG_SHADOW = 1,     /**< Shadow microprogram (Vu_prog_sdw). */
-    MG_VU_PROG_3DSPRITE = 2,   /**< Camera-facing sprite microprogram (Vu_prog_3dsp). */
-    MG_VU_PROG_USER = 0x100,   /**< First identifier of the table registered with mgSetUserVuProg. */
+    MG_VU_PROG_MAIN = 0,     /**< Main model microprogram (Vu_prog0). */
+    MG_VU_PROG_SHADOW = 1,   /**< Shadow microprogram (Vu_prog_sdw). */
+    MG_VU_PROG_3DSPRITE = 2, /**< Camera-facing sprite microprogram (Vu_prog_3dsp). */
+    MG_VU_PROG_USER = 0x100, /**< First identifier of the table registered with mgSetUserVuProg. */
 };
 
 /**
@@ -86,10 +87,11 @@ extern u_long128 Vu_prog_3dsp[];
  */
 struct MG_PICKZ {
     int enable; /**< Non-zero to sample this position when the frame ends. */
-    int x; /**< Horizontal screen coordinate to sample. */
-    int y; /**< Vertical screen coordinate to sample. */
-    int z; /**< Nearest depth in the 8 by 8 block around the position, or -1 when it lies outside the screen. */
+    int x;      /**< Horizontal screen coordinate to sample. */
+    int y;      /**< Vertical screen coordinate to sample. */
+    int z;      /**< Nearest depth in the 8 by 8 block around the position, or -1 when it lies outside the screen. */
 };
+
 STATIC_ASSERT(sizeof(MG_PICKZ) == 0x10);
 
 /**
@@ -373,7 +375,7 @@ void mgInit(int screen_mode, int video_mode);
  * @address 0x142480
  * @size 0xE0
  */
-void mgInitVif1Packet(u_long128 *buffer0, u_long128 *buffer1, int size);
+void mgInitVif1Packet(u_long128 *buffer_a, u_long128 *buffer_b, int size);
 
 /**
  * Copies two memory managers into the pair the alternating frames take
@@ -383,7 +385,7 @@ void mgInitVif1Packet(u_long128 *buffer0, u_long128 *buffer1, int size);
  * @address 0x142560
  * @size 0x150
  */
-void mgSetPacketBuffer(mgCMemory *memory0, mgCMemory *memory1);
+void mgSetPacketBuffer(mgCMemory *pool_a, mgCMemory *pool_b);
 
 /**
  * Points the pair of per-frame data managers at the free stack space of two
@@ -393,7 +395,7 @@ void mgSetPacketBuffer(mgCMemory *memory0, mgCMemory *memory1);
  * @address 0x1426B0
  * @size 0xC0
  */
-void mgSetDataBuffer(mgCMemory *memory0, mgCMemory *memory1, int skip_head);
+void mgSetDataBuffer(mgCMemory *pool_a, mgCMemory *pool_b, int skip_head);
 
 /**
  * Gives the data memory manager of the frame being built.
@@ -451,7 +453,7 @@ void mgBeginPacket(mgCDrawManager *manager);
  * @address 0x142B70
  * @size 0x20
  */
-void mgBeginDraw(mgCMemory *memory, int *block_list, mgCDrawManager *manager);
+void mgBeginDraw(mgCMemory *memory, int *draw_size, mgCDrawManager *manager);
 
 /**
  * Writes the collected draw requests of a draw manager into the frame's
@@ -480,7 +482,7 @@ void mgPreEndDraw(mgCDrawManager *manager);
  * @address 0x142BD0
  * @size 0x20
  */
-int mgEndDrawReloadTexture(int block, mgCDrawManager *manager);
+int mgEndDrawReloadTexture(int texture, mgCDrawManager *manager);
 
 /**
  * Writes the draw requests a draw manager collected for one texture block
@@ -491,7 +493,7 @@ int mgEndDrawReloadTexture(int block, mgCDrawManager *manager);
  * @size 0x20
  * @unknownret
  */
-void mgEndDraw(int block, mgCDrawManager *manager);
+void mgEndDraw(int mode, mgCDrawManager *manager);
 
 /**
  * Saves the displayed frame to the host as a TGA image.
@@ -611,7 +613,7 @@ void mgDrawDirectEnd();
  * @address 0x143960
  * @size 0x30
  */
-int mgGetDrawRect(mgCFrame *frame, mgVu0FBOX *rect);
+int mgGetDrawRect(mgCFrame *frame, mgVu0FBOX *box);
 
 /**
  * Makes a texture the frame buffer and clears it, so that shadows can be
@@ -640,7 +642,7 @@ void mgEndDrawShadow(mgCTexture *shadow, mgCTexture *unused);
  * @address 0x143E00
  * @size 0x50
  */
-void mgSetRenderInfo(float projection, float near_z, float far_z);
+void mgSetRenderInfo(float fov, float clip_near, float clip_far);
 
 /**
  * Changes the projection scale, keeping the clip depths and the view.
@@ -649,7 +651,7 @@ void mgSetRenderInfo(float projection, float near_z, float far_z);
  * @address 0x143E50
  * @size 0x40
  */
-void mgSetProjection(float projection);
+void mgSetProjection(float fov);
 
 /**
  * Gives the projection scale.
@@ -704,7 +706,7 @@ void mgInitActiveLighting();
  * @address 0x143F50
  * @size 0x20
  */
-int mgActiveLighting(int set, int copy);
+int mgActiveLighting(int slot, int copy);
 
 /**
  * Sets the directions and colours of the parallel lights.
@@ -731,7 +733,7 @@ void mgGetLight(float (*direction)[4], float (*color)[4]);
  * @address 0x143FB0
  * @size 0x30
  */
-void mgSetLight(int light, float *direction, float *color);
+void mgSetLight(int index, float *direction, float *color);
 
 /**
  * Sets the colour that lights every face of a model.
@@ -740,7 +742,7 @@ void mgSetLight(int light, float *direction, float *color);
  * @address 0x143FE0
  * @size 0x20
  */
-void mgSetAmbient(float *ambient);
+void mgSetAmbient(float *color);
 
 /**
  * Reads the colour that lights every face of a model.
@@ -759,7 +761,7 @@ void mgGetAmbient(float *ambient);
  * @address 0x144010
  * @size 0x30
  */
-void mgSetPlight(int light, float *position, float *color, float intensity, float range);
+void mgSetPlight(int index, float *position, float *color, float attenuation, float range);
 
 /**
  * Sets one of the four point lights; NULL turns it off.
@@ -768,7 +770,7 @@ void mgSetPlight(int light, float *position, float *color, float intensity, floa
  * @address 0x144040
  * @size 0x20
  */
-void mgSetPlight(int light, mgPOINT_LIGHT *point_light);
+void mgSetPlight(int index, mgPOINT_LIGHT *point_light);
 
 /**
  * Reads one of the four point lights.
@@ -777,7 +779,7 @@ void mgSetPlight(int light, mgPOINT_LIGHT *point_light);
  * @address 0x144060
  * @size 0x20
  */
-void mgGetPlight(int light, mgPOINT_LIGHT *point_light);
+void mgGetPlight(int index, mgPOINT_LIGHT *out);
 
 /**
  * Turns all four point lights off.
@@ -796,7 +798,7 @@ void mgResetPlight();
  * @address 0x1440D0
  * @size 0x20
  */
-void mgSetViewMatrix(float (*view)[4], float *position);
+void mgSetViewMatrix(float (*matrix)[4], float *eye);
 
 /**
  * Sets the plane shadows are dropped onto and the light that casts them.
@@ -851,8 +853,8 @@ int mgGetPlightEnable();
  * @address 0x144150
  * @size 0x20
  */
-void mgSetFogParam(float near_z, float far_z, unsigned char r, unsigned char g, unsigned char b,
-                   float far_fog, float near_fog);
+void mgSetFogParam(float near_dist, float far_dist, unsigned char r, unsigned char g, unsigned char b,
+                   float far_value, float near_value);
 
 /**
  * Sets the fog from a fog parameter block.
@@ -870,7 +872,7 @@ void mgSetFogParam(mgFOG_PARAM *fog);
  * @address 0x1441A0
  * @size 0xA0
  */
-void mgGetFogParam(mgFOG_PARAM *fog);
+void mgGetFogParam(mgFOG_PARAM *param);
 
 /**
  * Sets whether every model is scissored against the screen.
@@ -898,7 +900,7 @@ void mgFlushRenderInfo();
  * @address 0x144320
  * @size 0x70
  */
-void mgSetPkTextureRepeat(int repeat);
+void mgSetPkTextureRepeat(int mode);
 
 /**
  * Writes a CLAMP_1 register value into the frame's VIF1 packet.
@@ -953,7 +955,7 @@ void mgGetFrameBackBuffer(mgCTexture *texture);
  * @address 0x144D70
  * @size 0x20
  */
-mgCDrawEnv *mgGetpDrawEnv(int index);
+mgCDrawEnv *mgGetpDrawEnv(int which);
 
 /**
  * Copies a rectangle of one texture into another at a position.
@@ -962,8 +964,8 @@ mgCDrawEnv *mgGetpDrawEnv(int index);
  * @address 0x144D90
  * @size 0x40
  */
-void mgSetPkMoveImage(mgCTexture *src, mgRect<int> src_rect, mgCTexture *dst, int dst_x, int dst_y,
-                      int direction);
+void mgSetPkMoveImage(mgCTexture *source, mgRect<int> src_rect, mgCTexture *destination, int extra0, int extra1,
+                      int extra2);
 
 /**
  * Copies a rectangle of video memory to a position with a GS local transfer.
@@ -982,7 +984,7 @@ void mgSetPkMoveImage(sceGsTex0 *src, mgRect<int> src_rect, sceGsTex0 *dst, int 
  * @address 0x145140
  * @size 0x60
  */
-void mgSetPkMoveImage(mgCTexture *src, mgRect<int> src_rect, mgCTexture *dst, mgRect<int> dst_rect,
+void mgSetPkMoveImage(mgCTexture *source, mgRect<int> source_rect, mgCTexture *destination, mgRect<int> destination_rect,
                       mgCDrawEnv *env);
 
 /**
@@ -1052,7 +1054,7 @@ mgCTexture *mgGetTextureZ(int index);
  * @address 0x145D20
  * @size 0xD0
  */
-int mgTransWorldPrim(int *prim, float *position);
+int mgTransWorldPrim(int *out, float *position);
 
 /**
  * Turns a world position into screen coordinates relative to the screen's
@@ -1062,7 +1064,7 @@ int mgTransWorldPrim(int *prim, float *position);
  * @address 0x145DF0
  * @size 0x50
  */
-int mgTransWorldScreen(int *screen, float *position);
+int mgTransWorldScreen(int *out, float *position);
 
 /**
  * Turns a view-space position into GS primitive coordinates, giving 1 while
@@ -1072,7 +1074,7 @@ int mgTransWorldScreen(int *screen, float *position);
  * @address 0x145E40
  * @size 0xD0
  */
-int mgTransViewPrim(int *prim, float *position);
+int mgTransViewPrim(int *out, float *position);
 
 /**
  * Turns a world position into view space.
@@ -1081,7 +1083,7 @@ int mgTransViewPrim(int *prim, float *position);
  * @address 0x145F10
  * @size 0x10
  */
-void mgTransWorldView(float *view, float *position);
+void mgTransWorldView(float *a, float *b);
 
 /**
  * Gives the GS depth value of a view depth.
@@ -1117,7 +1119,7 @@ void mgGetDirFromCamera(float *direction, float *position);
  * @address 0x145F80
  * @size 0x20
  */
-void mgGetCameraPos(float *position);
+void mgGetCameraPos(float *out);
 
 /**
  * Reads the camera's orientation and position as a matrix.
@@ -1157,7 +1159,7 @@ u_long128 *mgGetVuProgPacket(int id);
  * @address 0x1462C0
  * @size 0x80
  */
-int mgSendVuProg(unsigned int *packet, int id);
+int mgSendVuProg(unsigned int *tag, int id);
 
 /**
  * Registers the table of user microprogram packets, reached from
@@ -1176,7 +1178,7 @@ void mgSetUserVuProg(u_long128 **table, int count);
  * @address 0x146350
  * @size 0x40
  */
-void mgSetUserVuProgAdr(int index, u_long128 *packet);
+void mgSetUserVuProgAdr(int index, u_long128 *adr);
 
 /**
  * Opens the debug console at the screen's top left, giving its handle.

@@ -129,3 +129,6 @@ Name not retail. Only written: +0 = MenuArg.mes_tex_block, +4 = GetTexture("mnma
   ClsMes reset (the large block of stores) runs; that is an inlined ClsMes/CDC2Mes method, not
   menumain code.
 - MenuWorldTrans/MenuMainExit call camera vtable slot +0x18 (get view matrix) and slot +0x8.
+  In `MenuWorldTrans`, loading the camera speed into a separate local before
+  passing the literal `-1.0f` preserves the retail register assignment for
+  `mgCCamera::SetSpeed`.

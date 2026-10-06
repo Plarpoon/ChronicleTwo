@@ -29,11 +29,12 @@ enum mgSTACK_MODE {
  *
  */
 struct mgMEMORY_BLOCK {
-    u_long128 *data;      /**< Start of the block's contents, directly after this header. */
-    int size;             /**< Quadwords the block occupies, header included. */
-    int unk_8;
+    u_long128      *data; /**< Start of the block's contents, directly after this header. */
+    int             size; /**< Quadwords the block occupies, header included. */
+    int             unk_8;
     mgMEMORY_BLOCK *next; /**< Following block, or NULL for the terminating header. */
 };
+
 STATIC_ASSERT(sizeof(mgMEMORY_BLOCK) == 0x10);
 
 /**
@@ -44,17 +45,19 @@ STATIC_ASSERT(sizeof(mgMEMORY_BLOCK) == 0x10);
  */
 class mgCMemory {
 public:
-    char name[0x10];             /**< Name shown in overflow messages. */
-    u_int heap_size;             /**< Heap buffer size, in quadwords. */
-    u_long128 *heap;             /**< Heap buffer. */
-    mgMEMORY_BLOCK *heap_top;    /**< First block header of the heap, at the start of the heap buffer. */
-    int lock;                    /**< Non-zero refuses every stack allocation and alignment. */
+    char            name[0x10]; /**< Name shown in overflow messages. */
+    u_int           heap_size;  /**< Heap buffer size, in quadwords. */
+    u_long128      *heap;       /**< Heap buffer. */
+    mgMEMORY_BLOCK *heap_top;   /**< First block header of the heap, at the start of the heap buffer. */
+    int             lock;       /**< Non-zero refuses every stack allocation and alignment. */
+
     union {
         u_long128 *stack;
-        u8 *stack_bytes;
-    };                          /**< Stack region allocations are taken from. */
-    int stack_used;              /**< Quadwords of the stack region in use. */
-    int stack_size;              /**< Quadwords available in the stack region. */
+        u8        *stack_bytes;
+    }; /**< Stack region allocations are taken from. */
+
+    int             stack_used;  /**< Quadwords of the stack region in use. */
+    int             stack_size;  /**< Quadwords available in the stack region. */
     mgMEMORY_BLOCK *stack_block; /**< Heap block holding the stack region while stack mode is active. */
 
     /**
@@ -217,6 +220,7 @@ public:
      */
     void stSetBuffer(u_long128 *buffer, int size);
 };
+
 STATIC_ASSERT(sizeof(mgCMemory) == 0x30);
 
 /**
@@ -255,4 +259,4 @@ void *operator new[](size_t size, u_long128 *buffer);
  * @address 0x13A4F0
  * @size 0x90
  */
-char *mgCopyString(char *text, mgCMemory *memory);
+char *mgCopyString(char *source, mgCMemory *memory);

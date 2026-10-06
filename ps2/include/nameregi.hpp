@@ -67,10 +67,11 @@ enum NAMEREGI_MODE {
  *
  */
 struct NAMEREGI_TARGET_INFO {
-    s16 target;          /**< What is being named. @see NAMEREGI_TARGET */
-    CGameDataUsed *item; /**< Item or fish being named. */
-    char keyword[0x40];  /**< Keyword an event checks the input against, or the name the screen gives back. */
+    s16            target;        /**< What is being named. @see NAMEREGI_TARGET */
+    CGameDataUsed *item;          /**< Item or fish being named. */
+    char           keyword[0x40]; /**< Keyword an event checks the input against, or the name the screen gives back. */
 };
+
 STATIC_ASSERT(sizeof(NAMEREGI_TARGET_INFO) == 0x48);
 
 /**
@@ -89,8 +90,8 @@ struct MENU_SELECT_PARAM {
  *
  */
 struct NAMEREGI_KANJI_NODE {
-    u8 code[2];              /**< Shift-JIS code of the kanji. */
-    u8 unk_2[2];
+    u8                   code[2]; /**< Shift-JIS code of the kanji. */
+    u8                   unk_2[2];
     NAMEREGI_KANJI_NODE *next; /**< Next kanji of the reading, or NULL. */
 };
 
@@ -100,13 +101,14 @@ struct NAMEREGI_KANJI_NODE {
  *
  */
 struct NAMEREGI_KANJI_INDEX {
-    u8 code[2];              /**< Shift-JIS code the reading starts at. */
-    u8 unk_2[2];
-    s16 num;                   /**< Number of kanji in the list. */
-    u8 unk_6[2];
+    u8                   code[2]; /**< Shift-JIS code the reading starts at. */
+    u8                   unk_2[2];
+    s16                  num; /**< Number of kanji in the list. */
+    u8                   unk_6[2];
     NAMEREGI_KANJI_NODE *list; /**< Kanji of the reading the font has, or NULL. */
-    u8 unk_C[4];
+    u8                   unk_C[4];
 };
+
 STATIC_ASSERT(sizeof(NAMEREGI_KANJI_INDEX) == 0x10);
 
 /**
@@ -117,33 +119,33 @@ STATIC_ASSERT(sizeof(NAMEREGI_KANJI_INDEX) == 0x10);
  */
 class CNameRegiMenu : public CBaseMenuClass {
 public:
-    int select_mode;            /**< Row of NameStrSelectModeTable for the character set shown. */
-    MENU_SELECT_PARAM select;   /**< Cursor on the character grid. */
-    int command_pos;            /**< Button the cursor is on in the row below the grid. */
-    s32 unk_120;
-    int kanji_cell_num;         /**< Number of cells of the kanji grid, readings included. */
-    int kanji_page_num;         /**< Number of pages of six rows of the kanji grid. */
-    int kanji_line_max;         /**< Highest first row of the kanji grid. */
-    u8 cursor_snap;             /**< Non-zero to move the mark cursor straight to its place. */
-    float cursor_x;             /**< Screen x of the mark cursor. */
-    float cursor_y;             /**< Screen y of the mark cursor. */
-    int cursor_cnt;             /**< Frames counted to make the mark cursor bob. */
-    RECT waku;                  /**< Frame drawn around the message window. */
-    int password_input;         /**< Non-zero while a fish password is typed instead of a name. */
-    s32 unk_154;
-    s16 button_flash[16];       /**< Frames each button of the row below the grid stays lit after it is pressed. */
-    float select_box_x;         /**< Screen x of the box drawn behind the character the cursor is on. */
-    float select_box_y;         /**< Screen y of the box drawn behind the character the cursor is on. */
-    CFont name_font;            /**< Font that draws the name being typed. */
-    int caret_cnt;              /**< Frames counted to blink the caret; reset whenever the name changes. */
-    float wave_angle;           /**< Angle that makes the board sway. */
-    char old_name[0x61];        /**< Name before it is changed, to tell whether it changed. */
-    char name[0x61];            /**< Name being typed, in Shift-JIS. */
-    int name_pos;               /**< Character of the name the caret is at. */
-    CFont grid_font[1];         /**< Font that draws the character grid. */
-    int message_open;           /**< Non-zero while the second message window is shown over a dimmed screen. */
-    float tile_scroll;          /**< Offset of the scrolling background tiles. */
-    char jis_table[0x800];      /**< Shift-JIS code of each character of ascii_code_table, two bytes each. */
+    int               select_mode; /**< Row of NameStrSelectModeTable for the character set shown. */
+    MENU_SELECT_PARAM select;      /**< Cursor on the character grid. */
+    int               command_pos; /**< Button the cursor is on in the row below the grid. */
+    s32               unk_120;
+    int               kanji_cell_num; /**< Number of cells of the kanji grid, readings included. */
+    int               kanji_page_num; /**< Number of pages of six rows of the kanji grid. */
+    int               kanji_line_max; /**< Highest first row of the kanji grid. */
+    u8                cursor_snap;    /**< Non-zero to move the mark cursor straight to its place. */
+    float             cursor_x;       /**< Screen x of the mark cursor. */
+    float             cursor_y;       /**< Screen y of the mark cursor. */
+    int               cursor_cnt;     /**< Frames counted to make the mark cursor bob. */
+    RECT              waku;           /**< Frame drawn around the message window. */
+    int               password_input; /**< Non-zero while a fish password is typed instead of a name. */
+    s32               unk_154;
+    s16               button_flash[16]; /**< Frames each button of the row below the grid stays lit after it is pressed. */
+    float             select_box_x;     /**< Screen x of the box drawn behind the character the cursor is on. */
+    float             select_box_y;     /**< Screen y of the box drawn behind the character the cursor is on. */
+    CFont             name_font;        /**< Font that draws the name being typed. */
+    int               caret_cnt;        /**< Frames counted to blink the caret; reset whenever the name changes. */
+    float             wave_angle;       /**< Angle that makes the board sway. */
+    char              old_name[0x61];   /**< Name before it is changed, to tell whether it changed. */
+    char              name[0x61];       /**< Name being typed, in Shift-JIS. */
+    int               name_pos;         /**< Character of the name the caret is at. */
+    CFont             grid_font[1];     /**< Font that draws the character grid. */
+    int               message_open;     /**< Non-zero while the second message window is shown over a dimmed screen. */
+    float             tile_scroll;      /**< Offset of the scrolling background tiles. */
+    char              jis_table[0x800]; /**< Shift-JIS code of each character of ascii_code_table, two bytes each. */
 
     /**
      *
@@ -184,7 +186,7 @@ public:
      * @address 0x310C30
      * @size 0x1C0
      */
-    void ConvertPositionNameRegi(int to_command);
+    void ConvertPositionNameRegi(int mode);
 
     /**
      *
@@ -194,7 +196,7 @@ public:
      * @address 0x310DF0
      * @size 0x140
      */
-    int CheckKanjiPosition(int key, short *step, int limit_no);
+    int CheckKanjiPosition(int position, short *keys, int key_mode);
 
     /**
      *
@@ -286,6 +288,7 @@ public:
      */
     void DrawMessage();
 };
+
 STATIC_ASSERT(sizeof(CNameRegiMenu) == 0xBC8);
 
 /**
@@ -296,7 +299,7 @@ STATIC_ASSERT(sizeof(CNameRegiMenu) == 0xBC8);
  * @address 0x30F890
  * @size 0x80
  */
-void SetEventKeyword(char *keyword, char *topic, int code);
+void SetEventKeyword(char *target, char *topic, int code);
 
 /**
  *
@@ -316,7 +319,7 @@ int CheckDeleteNameRegisteItem(CGameDataUsed *item);
  * @address 0x30FBC0
  * @size 0x1D0
  */
-int CheckChronicleKanjiFont(mgCMemory *stack);
+int CheckChronicleKanjiFont(mgCMemory *memory);
 
 /**
  *
@@ -327,7 +330,7 @@ int CheckChronicleKanjiFont(mgCMemory *stack);
  * @address 0x30FD90
  * @size 0xD0
  */
-int GetNameRegistFontKanjiList(int cell, char *dst);
+int GetNameRegistFontKanjiList(int font_index, char *out);
 
 /**
  *
@@ -337,7 +340,7 @@ int GetNameRegistFontKanjiList(int cell, char *dst);
  * @address 0x30FE60
  * @size 0x90
  */
-void AdjustWaku(CDC2Mes *mes, RECT *waku);
+void AdjustWaku(CDC2Mes *mes, RECT *frame);
 
 /**
  *
@@ -397,7 +400,7 @@ void NameRegistDraw();
  * @address 0x312700
  * @size 0x40
  */
-int ConvertNameRegiBaseBoardTable(int font_mode);
+int ConvertNameRegiBaseBoardTable(int index);
 
 /**
  * What the name entry screen is to name.

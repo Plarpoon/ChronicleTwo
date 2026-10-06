@@ -140,55 +140,55 @@ STATIC_ASSERT(sizeof(GEORAMA_LIST_INFO) == 0x8);
  */
 class CMenuGeorama : public CBaseMenuClass {
 public:
-    CEditPartsInfo        *parts_info;                                            /**< Definition of the part shown, or NULL. */
-    CEditParts            *place_parts;                                           /**< Placed part shown, or NULL. */
-    CMapParts             *view_parts;                                            /**< Model of the part shown, or NULL. */
-    u8                     unk_11C[0x14];
-    sceVu0FVECTOR          paint_color;                                           /**< Paint colour picked, each channel from 0.0 to 2.0, and alpha. */
-    s32                    town_no;                                               /**< Town the menu edits, from 0 to 9. */
-    s32                    start_wait;                                            /**< Frames counted while the menu fades in. */
-    s32                    view_mode;                                             /**< Page the cursor is on. @see GeoramaViewMode. */
-    s8                     view_loaded;                                           /**< Non-zero once a part has been shown on entering the menu. */
-    s32                    top;                                                   /**< First line shown of the open page's list. */
-    s32                    select;                                                /**< Line the cursor is on in the open page's list. */
-    s32                    polygon_left;                                          /**< Polygons the town can still place. */
-    s32                    paint_select;                                          /**< Paint colour the cursor is on; GEORAMA_PENKI_NUM for leaving. */
-    s32                    paint_top;                                             /**< First paint colour line shown. */
-    s32                    free_color_select;                                     /**< Line of the free colour list the cursor is on. */
-    s32                    paint_return;                                          /**< Non-zero when the menu opened to pick a paint colour, and closes once one is picked. */
-    s32                    unk_16C;
-    mgCMemory              parts_stack;                                           /**< Memory that the part shown draws from. */
-    s32                    sort_mode[3];                                          /**< Order of the stock, build and house lists. @see GeoramaSortMode. */
-    s32                    unk_1AC;
-    s32                    place_num;                                             /**< Number of entries in place_no. */
-    s32                    place_no[GEORAMA_PARTS_LIST_MAX];                      /**< Number of every placed part of the town. */
-    char                   place_name[GEORAMA_PARTS_LIST_MAX][0x40];              /**< Name of each part of place_no. */
-    s32                    placed_num;                                            /**< Number of lines in placed_list. */
-    GEORAMA_PARTS_LIST_ITEM placed_list[GEORAMA_PARTS_LIST_MAX];                  /**< Every placed part, for GEORAMA_VIEW_PLACED. */
-    s32                    stock_num;                                             /**< Number of lines in stock_list. */
-    GEORAMA_PARTS_LIST_ITEM stock_list[GEORAMA_PARTS_LIST_MAX];                   /**< Built parts in stock, by part definition number, for GEORAMA_VIEW_STOCK. */
-    s32                    make_num;                                              /**< Number of lines in make_list. */
-    GEORAMA_PARTS_LIST_ITEM make_list[GEORAMA_PARTS_LIST_MAX];                    /**< Parts the town can build, by definition index, for GEORAMA_VIEW_MAKE. */
-    s32                    house_num;                                             /**< Number of lines in house_list. */
-    GEORAMA_PARTS_LIST_ITEM house_list[GEORAMA_PARTS_LIST_MAX];                   /**< Placed houses, for GEORAMA_VIEW_CHECK_POINT. */
-    MENUFORM_MAKEBRD_INFO  make_brd;                                              /**< Materials board shown while building a part. */
-    CEditPartsInfo        *make_parts;                                            /**< Definition of the part being built, or NULL. */
-    GEORAMA_LIST_INFO      list_info[GEORAMA_VIEW_MODE_NUM];                      /**< Cursor of each page's list, kept in the system data between visits. */
-    CMenuPosDataForm      *make_brd_form;                                         /**< Form of the materials board. */
-    CMenuPosDataForm      *free_color_form;                                       /**< Form of the free colour list. */
-    CMenuPosDataForm      *title_form;                                            /**< Form of the menu's title and page tabs. */
-    CMenuPosDataForm      *cpview_form;                                           /**< Form that shows the town's culture points. */
-    s32                    unk_1B83C;
-    float                  list_target_y[GEORAMA_VIEW_MODE_NUM];                  /**< Screen y that each page's list moves to. */
-    float                  scroll_bar_y[GEORAMA_VIEW_MODE_NUM];                   /**< Offset of each page's scroll bar from the top of its track. */
-    float                  scroll_bar_h[GEORAMA_VIEW_MODE_NUM];                   /**< Length of each page's scroll bar. */
-    float                  list_pos[GEORAMA_VIEW_MODE_NUM][2];                    /**< Screen x and y of each page's list. */
-    CMenuPosDataForm      *list_form[GEORAMA_VIEW_MODE_NUM];                      /**< Form of each page's list. */
-    CMenuPosDataForm      *analyze_form;                                          /**< Form of the analysis list. */
-    CMenuPosDataForm      *analyze_percent_form;                                  /**< Form of the analysis percentage bar. */
-    CMenuPosDataForm      *house_info_form;                                       /**< Form of the house information. */
-    s32                    sub_step;                                              /**< Step of the stock and house pages: 0 for the list, others for the choices on a line. */
-    u8                     unk_1B8F8[8];
+    CEditPartsInfo         *parts_info;  /**< Definition of the part shown, or NULL. */
+    CEditParts             *place_parts; /**< Placed part shown, or NULL. */
+    CMapParts              *view_parts;  /**< Model of the part shown, or NULL. */
+    u8                      unk_11C[0x14];
+    sceVu0FVECTOR           paint_color;       /**< Paint colour picked, each channel from 0.0 to 2.0, and alpha. */
+    s32                     town_no;           /**< Town the menu edits, from 0 to 9. */
+    s32                     start_wait;        /**< Frames counted while the menu fades in. */
+    s32                     view_mode;         /**< Page the cursor is on. @see GeoramaViewMode. */
+    s8                      view_loaded;       /**< Non-zero once a part has been shown on entering the menu. */
+    s32                     top;               /**< First line shown of the open page's list. */
+    s32                     select;            /**< Line the cursor is on in the open page's list. */
+    s32                     polygon_left;      /**< Polygons the town can still place. */
+    s32                     paint_select;      /**< Paint colour the cursor is on; GEORAMA_PENKI_NUM for leaving. */
+    s32                     paint_top;         /**< First paint colour line shown. */
+    s32                     free_color_select; /**< Line of the free colour list the cursor is on. */
+    s32                     paint_return;      /**< Non-zero when the menu opened to pick a paint colour, and closes once one is picked. */
+    s32                     unk_16C;
+    mgCMemory               parts_stack;  /**< Memory that the part shown draws from. */
+    s32                     sort_mode[3]; /**< Order of the stock, build and house lists. @see GeoramaSortMode. */
+    s32                     unk_1AC;
+    s32                     place_num;                                /**< Number of entries in place_no. */
+    s32                     place_no[GEORAMA_PARTS_LIST_MAX];         /**< Number of every placed part of the town. */
+    char                    place_name[GEORAMA_PARTS_LIST_MAX][0x40]; /**< Name of each part of place_no. */
+    s32                     placed_num;                               /**< Number of lines in placed_list. */
+    GEORAMA_PARTS_LIST_ITEM placed_list[GEORAMA_PARTS_LIST_MAX];      /**< Every placed part, for GEORAMA_VIEW_PLACED. */
+    s32                     stock_num;                                /**< Number of lines in stock_list. */
+    GEORAMA_PARTS_LIST_ITEM stock_list[GEORAMA_PARTS_LIST_MAX];       /**< Built parts in stock, by part definition number, for GEORAMA_VIEW_STOCK. */
+    s32                     make_num;                                 /**< Number of lines in make_list. */
+    GEORAMA_PARTS_LIST_ITEM make_list[GEORAMA_PARTS_LIST_MAX];        /**< Parts the town can build, by definition index, for GEORAMA_VIEW_MAKE. */
+    s32                     house_num;                                /**< Number of lines in house_list. */
+    GEORAMA_PARTS_LIST_ITEM house_list[GEORAMA_PARTS_LIST_MAX];       /**< Placed houses, for GEORAMA_VIEW_CHECK_POINT. */
+    MENUFORM_MAKEBRD_INFO   make_brd;                                 /**< Materials board shown while building a part. */
+    CEditPartsInfo         *make_parts;                               /**< Definition of the part being built, or NULL. */
+    GEORAMA_LIST_INFO       list_info[GEORAMA_VIEW_MODE_NUM];         /**< Cursor of each page's list, kept in the system data between visits. */
+    CMenuPosDataForm       *make_brd_form;                            /**< Form of the materials board. */
+    CMenuPosDataForm       *free_color_form;                          /**< Form of the free colour list. */
+    CMenuPosDataForm       *title_form;                               /**< Form of the menu's title and page tabs. */
+    CMenuPosDataForm       *cpview_form;                              /**< Form that shows the town's culture points. */
+    s32                     unk_1B83C;
+    float                   list_target_y[GEORAMA_VIEW_MODE_NUM]; /**< Screen y that each page's list moves to. */
+    float                   scroll_bar_y[GEORAMA_VIEW_MODE_NUM];  /**< Offset of each page's scroll bar from the top of its track. */
+    float                   scroll_bar_h[GEORAMA_VIEW_MODE_NUM];  /**< Length of each page's scroll bar. */
+    float                   list_pos[GEORAMA_VIEW_MODE_NUM][2];   /**< Screen x and y of each page's list. */
+    CMenuPosDataForm       *list_form[GEORAMA_VIEW_MODE_NUM];     /**< Form of each page's list. */
+    CMenuPosDataForm       *analyze_form;                         /**< Form of the analysis list. */
+    CMenuPosDataForm       *analyze_percent_form;                 /**< Form of the analysis percentage bar. */
+    CMenuPosDataForm       *house_info_form;                      /**< Form of the house information. */
+    s32                     sub_step;                             /**< Step of the stock and house pages: 0 for the list, others for the choices on a line. */
+    u8                      unk_1B8F8[8];
 
     /**
      * Creates the menu on the stock page with every list empty and no part
@@ -213,6 +213,7 @@ public:
         house_info_form = NULL;
         unk_1B83C = 0;
         sub_step = 0;
+
         for (int i = 0; i < GEORAMA_VIEW_MODE_NUM; i++) {
             list_form[i] = NULL;
             list_target_y[i] = 0.0f;
@@ -220,6 +221,7 @@ public:
             list_pos[i][1] = 0.0f;
             list_pos[i][0] = 0.0f;
         }
+
         analyze_form = NULL;
         analyze_percent_form = NULL;
         list_pos[GEORAMA_VIEW_ANALYZE][1] = 164.0f;
@@ -283,7 +285,7 @@ public:
      * @address 0x1FA260
      * @size 0x450
      */
-    int ArrangePartsList(int list, int next);
+    int ArrangePartsList(int list, int advance_sort);
 
     /**
      * Fills the placed, stock, build and house lists from the town and the
@@ -349,7 +351,7 @@ public:
      * @address 0x1FB4B0
      * @size 0x30
      */
-    void SetGeoListInfo(int mode, int select, int top);
+    void SetGeoListInfo(int list, int select, int top);
 
     /**
      * Leaves a page for the choice of pages, running one of two scripts.
@@ -386,7 +388,7 @@ public:
      * @address 0x1FB7D0
      * @size 0x3A0
      */
-    virtual int IsMakeObject(int key, int push);
+    virtual int IsMakeObject(int buttons_held, int buttons_pressed);
 
     /**
      * Moves the menu cursor towards the line or tab it is on.
@@ -428,35 +430,35 @@ STATIC_ASSERT(sizeof(CMenuGeorama) == 0x1B900);
  */
 class CRemovalMenu : public CBaseMenuClass {
 public:
-    mgCMemory           data_stack;                                  /**< Memory of the menu's form data. */
-    s32                 exit_wait;                                   /**< Frames counted while the menu closes. */
-    s32                 npc_list[REMOVAL_NPC_LIST_MAX];              /**< Villagers who can move into the house. */
-    s32                 npc_num;                                     /**< Number of entries in npc_list. */
-    s32                 place_no;                                    /**< Number of the placed house. */
-    mgCMemory           chara_stack;                                 /**< Memory of the villager model. */
-    s32                 special_house;                               /**< Non-zero when the house is of part definition 0x49. */
-    s32                 first_npc;                                   /**< Villager who lived in the house when the menu opened. */
-    CEditParts         *parts;                                       /**< Placed house, or NULL. */
-    CEditPartsInfo     *parts_info;                                  /**< Definition of the placed house. */
-    CEditHouse         *house;                                       /**< Villagers of the placed house, or NULL. */
-    s32                 model_state;                                 /**< Step of loading the villager model: 0 none, 1 asked for, 2 loading, 3 shown. */
-    s32                 model_wait;                                  /**< Frames left before the villager on the cursor is loaded. */
-    s32                 select_npc;                                  /**< Villager picked to move into the house. */
+    mgCMemory           data_stack;                     /**< Memory of the menu's form data. */
+    s32                 exit_wait;                      /**< Frames counted while the menu closes. */
+    s32                 npc_list[REMOVAL_NPC_LIST_MAX]; /**< Villagers who can move into the house. */
+    s32                 npc_num;                        /**< Number of entries in npc_list. */
+    s32                 place_no;                       /**< Number of the placed house. */
+    mgCMemory           chara_stack;                    /**< Memory of the villager model. */
+    s32                 special_house;                  /**< Non-zero when the house is of part definition 0x49. */
+    s32                 first_npc;                      /**< Villager who lived in the house when the menu opened. */
+    CEditParts         *parts;                          /**< Placed house, or NULL. */
+    CEditPartsInfo     *parts_info;                     /**< Definition of the placed house. */
+    CEditHouse         *house;                          /**< Villagers of the placed house, or NULL. */
+    s32                 model_state;                    /**< Step of loading the villager model: 0 none, 1 asked for, 2 loading, 3 shown. */
+    s32                 model_wait;                     /**< Frames left before the villager on the cursor is loaded. */
+    s32                 select_npc;                     /**< Villager picked to move into the house. */
     s32                 unk_46C;
-    CActionChara        chara;                                       /**< Model of the villager on the cursor. */
-    CMenuPosDataForm   *house_form;                                  /**< Form of the house information. */
-    u8                  list_jump;                                   /**< Non-zero to put the list at its place at once rather than moving it. */
-    s32                 list_scroll_dir;                             /**< 1 when the list last scrolled down, 0 when up. */
-    float               list_x;                                      /**< Screen x of the villager list. */
-    float               list_y;                                      /**< Screen y of the villager list, moving towards its place. */
-    CMenuPosDataForm   *list_form;                                   /**< Form of the villager list. */
-    MENUFORMPARTS_TYPE *scroll_parts[3];                             /**< Parts of the list's scroll bar. */
-    MENUFORMPARTS_TYPE *line_parts[REMOVAL_NAME_LINE_MAX];           /**< Parts behind each line of the list. */
-    CMenuPosDataForm   *npc_win_form;                                /**< Form of the villager's speech window. */
-    CMenuPosDataForm   *npc_chr_form;                                /**< Form that shows the villager model. */
-    CMenuPosDataForm   *clip_form;                                   /**< Form that clips the list. */
-    s32                 select;                                      /**< Line the cursor is on. */
-    s32                 top;                                         /**< First line shown. */
+    CActionChara        chara;                             /**< Model of the villager on the cursor. */
+    CMenuPosDataForm   *house_form;                        /**< Form of the house information. */
+    u8                  list_jump;                         /**< Non-zero to put the list at its place at once rather than moving it. */
+    s32                 list_scroll_dir;                   /**< 1 when the list last scrolled down, 0 when up. */
+    float               list_x;                            /**< Screen x of the villager list. */
+    float               list_y;                            /**< Screen y of the villager list, moving towards its place. */
+    CMenuPosDataForm   *list_form;                         /**< Form of the villager list. */
+    MENUFORMPARTS_TYPE *scroll_parts[3];                   /**< Parts of the list's scroll bar. */
+    MENUFORMPARTS_TYPE *line_parts[REMOVAL_NAME_LINE_MAX]; /**< Parts behind each line of the list. */
+    CMenuPosDataForm   *npc_win_form;                      /**< Form of the villager's speech window. */
+    CMenuPosDataForm   *npc_chr_form;                      /**< Form that shows the villager model. */
+    CMenuPosDataForm   *clip_form;                         /**< Form that clips the list. */
+    s32                 select;                            /**< Line the cursor is on. */
+    s32                 top;                               /**< First line shown. */
 
     /**
      * Creates the menu with no house, no villager list and no model.
@@ -482,9 +484,11 @@ public:
         list_y = 0.0f;
         npc_num = 0;
         memset(npc_list, 0, sizeof(npc_list));
+
         for (int i = 0; i < REMOVAL_NAME_LINE_MAX; i++) {
             line_parts[i] = NULL;
         }
+
         scroll_parts[0] = NULL;
         scroll_parts[1] = NULL;
         scroll_parts[2] = NULL;
@@ -534,7 +538,7 @@ void GetPenkiColor(int no, float *out_rgb);
  * @address 0x1F3DC0
  * @size 0x20
  */
-int ConvGeoramaDataNo(int data_no);
+int ConvGeoramaDataNo(int georama_no);
 
 /**
  * Keeps a list's first shown line and cursor within the list and the lines
@@ -544,7 +548,7 @@ int ConvGeoramaDataNo(int data_no);
  * @address 0x1F3DE0
  * @size 0xC0
  */
-void CheckMenuLine(int *select, int *top, int num, int line_num);
+void CheckMenuLine(int *select, int *top, int count, int visible);
 
 /**
  * Opens the Georama menu: reads its data, makes the menu and its messages
@@ -618,7 +622,7 @@ void InitDownLoadAnaunce(mgCMemory *stack);
  * @address 0x1F6F40
  * @size 0x10
  */
-void DrawDownLoadAnaunceSwitch(int draw);
+void DrawDownLoadAnaunceSwitch(int value);
 
 /**
  * Steps the announcement of the parts a Geostone gives one frame, moving to
@@ -628,7 +632,7 @@ void DrawDownLoadAnaunceSwitch(int draw);
  * @address 0x1F6F50
  * @size 0x430
  */
-int StepDownLoadAnaunce(int push);
+int StepDownLoadAnaunce(int confirm);
 
 /**
  * Draws the announcement of the parts a Geostone gives.
@@ -685,7 +689,7 @@ void MenuPlacedHouseDraw(int &tex_block);
  * @address 0x1F90D0
  * @size 0x180
  */
-void MenuMapPartsDraw(int &tex_block);
+void MenuMapPartsDraw(int &draw_wait);
 
 /**
  * Gives non-zero when a town's Georama menu shows the pictures of its
@@ -695,7 +699,7 @@ void MenuMapPartsDraw(int &tex_block);
  * @address 0x1F9A90
  * @size 0x40
  */
-int CheckGekkaViewMode(int town_no);
+int CheckGekkaViewMode(int view_mode);
 
 /**
  * Gives the item number of one of the paint colours, or -1.
@@ -704,7 +708,7 @@ int CheckGekkaViewMode(int town_no);
  * @address 0x1FA220
  * @size 0x40
  */
-int GetPenkiItemNo(int no);
+int GetPenkiItemNo(int slot);
 
 /**
  * Writes the name of a part and of the materials it needs into a message,

@@ -95,14 +95,14 @@ STATIC_ASSERT(sizeof(Mot_File_List) == 0x20);
  *
  */
 struct Mot_List {
-    s32           frame;      /**< Frame of the model that the keys drive. */
-    s32           target;     /**< Part of the frame that the keys drive: a vertex (counted from 1), a material or a bone frame. */
-    s32           type;       /**< What the keys set. @see MotionKeyType. */
-    u32           key_count;  /**< Number of keys. */
-    sceVu0FVECTOR *values;    /**< Value of each key. */
+    s32            frame;      /**< Frame of the model that the keys drive. */
+    s32            target;     /**< Part of the frame that the keys drive: a vertex (counted from 1), a material or a bone frame. */
+    s32            type;       /**< What the keys set. @see MotionKeyType. */
+    u32            key_count;  /**< Number of keys. */
+    sceVu0FVECTOR *values;     /**< Value of each key. */
     u32           *key_frames; /**< Motion frame of each key, in ascending order; for a skin list, the vertex each key weights. */
-    Mot_List      *next;      /**< Next key list, or NULL after the last. */
-    u8            unk_1C[4];
+    Mot_List      *next;       /**< Next key list, or NULL after the last. */
+    u8             unk_1C[4];
 };
 
 STATIC_ASSERT(sizeof(Mot_List) == 0x20);
@@ -113,12 +113,12 @@ STATIC_ASSERT(sizeof(Mot_List) == 0x20);
  *
  */
 struct tagFRAME_INF {
-    s32            parent;          /**< Index of the frame's parent in the model's frame array. */
-    u32            vertex_count;    /**< Number of vertices of the frame's visual. */
-    u32            normal_count;    /**< Number of normals of the frame's visual. */
-    s32            (*vertex_refs)[12]; /**< Per vertex, a count then up to eleven indices that the visual's primitives list after it. */
-    sceVu0FVECTOR *base_vertices;   /**< Copy of the visual's undeformed vertices. */
-    sceVu0FVECTOR *base_normals;    /**< Copy of the visual's undeformed normals. */
+    s32 parent;                   /**< Index of the frame's parent in the model's frame array. */
+    u32 vertex_count;             /**< Number of vertices of the frame's visual. */
+    u32 normal_count;             /**< Number of normals of the frame's visual. */
+    s32 (*vertex_refs)[12];       /**< Per vertex, a count then up to eleven indices that the visual's primitives list after it. */
+    sceVu0FVECTOR *base_vertices; /**< Copy of the visual's undeformed vertices. */
+    sceVu0FVECTOR *base_normals;  /**< Copy of the visual's undeformed normals. */
     u8             unk_18[8];
 };
 
@@ -134,7 +134,7 @@ struct tagMOTION_TYPE {
     Mot_List      *motion_list;   /**< Key lists that pose the frames, applied by SetMotionTime and ChangeMotion. */
     Mot_List      *skin_list;     /**< Key lists that skin the visuals, applied by DeformMesh. */
     u32            unk_0C;
-    tagFRAME_INF  *frame_info;    /**< Skinning data of each frame of the model. */
+    tagFRAME_INF  *frame_info; /**< Skinning data of each frame of the model. */
 };
 
 STATIC_ASSERT(sizeof(tagMOTION_TYPE) == 0x14);

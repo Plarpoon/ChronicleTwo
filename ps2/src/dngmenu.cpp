@@ -1,32 +1,37 @@
 #include "common.h"
-#include "dngmenu.hpp"
-#include "dngfloor.hpp"
-#include "gamedata.hpp"
-#include "mainloop.hpp"
-#include "mapselect.hpp"
-#include "menucommon.hpp"
-#include "menuaqua.hpp"
-#include "menudraw.hpp"
-#include "menumain.hpp"
-#include "menuop.hpp"
-#include "memcard.hpp"
-#include "mg_memory.hpp"
-#include "scenesnd.hpp"
-#include "sysmes.hpp"
-#include "userdata.hpp"
-#include "mg_drawprim.hpp"
-#include "mglib.hpp"
-#include "mg_texture.hpp"
+
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
+#include "dataread.hpp"
+#include "dngfloor.hpp"
+#include "dngmenu.hpp"
+#include "gamedata.hpp"
+#include "mainloop.hpp"
+#include "mapselect.hpp"
+#include "memcard.hpp"
+#include "menuaqua.hpp"
+#include "menucommon.hpp"
+#include "menudraw.hpp"
+#include "menumain.hpp"
+#include "menuop.hpp"
+#include "mg_drawprim.hpp"
+#include "mg_memory.hpp"
+#include "mg_texture.hpp"
+#include "mglib.hpp"
+#include "savedata.hpp"
+#include "savedatadungeon.hpp"
+#include "scenesnd.hpp"
+#include "sysmes.hpp"
+#include "userdata.hpp"
+
 #ifdef NONMATCHING
-extern float DngTreeMapActiveLightRate;
+extern float         DngTreeMapActiveLightRate;
 extern CMenuTreeMap *CMenuTreePt;
 extern mgRect<float> treemap_root_put;
-static void DrawDngRoomInfo(DNGMAP_ROOM_INFO *room);
+static void          DrawDngRoomInfo(DNGMAP_ROOM_INFO *room);
 #endif
 
 // Code (.text)
@@ -59,7 +64,7 @@ void CDngFreeMap::Initialize() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Initialize__11CDngFreeMapFv);
 #endif
-void CDngFreeMap::InitTexture(void) {
+void CDngFreeMap::InitTexture() {
     map_tex = NULL;
     last_tex = NULL;
     koma_tex = NULL;
@@ -79,8 +84,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", SetUserGlid__11CDngFreeMapFi);
 #ifdef NONMATCHING
 void CDngFreeMap::CalcGlidPutPos(GLID_INFO *glid, float &x, float &y, int board) {
     if (glid != NULL) {
-        x = (float)(glid->x * 52 - glid->y * 16);
-        y = (float)(glid->y * 20);
+        x = (float) (glid->x * 52 - glid->y * 16);
+        y = (float) (glid->y * 20);
         if (board == 0) {
             x += pos_x;
             y += pos_y;
@@ -94,20 +99,20 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", CalcGlidPutPos__11CDngFreeMapFP9
 void CDngFreeMap::CheckIsViewMove(int x, int y, float &move_x, float &move_y) {
     int clipped_x = x;
     int clipped_y = y;
-    if ((float)x < view_rect.left) {
-        clipped_x = (int)view_rect.left;
+    if ((float) x < view_rect.left) {
+        clipped_x = (int) view_rect.left;
     }
-    if ((float)clipped_x > view_rect.right - 10.0f) {
-        clipped_x = (int)(view_rect.right - 10.0f);
+    if ((float) clipped_x > view_rect.right - 10.0f) {
+        clipped_x = (int) (view_rect.right - 10.0f);
     }
-    if ((float)y < view_rect.top) {
-        clipped_y = (int)view_rect.top;
+    if ((float) y < view_rect.top) {
+        clipped_y = (int) view_rect.top;
     }
-    if ((float)(clipped_y - 10) > view_rect.bottom) {
-        clipped_y = (int)(view_rect.bottom - 10.0f);
+    if ((float) (clipped_y - 10) > view_rect.bottom) {
+        clipped_y = (int) (view_rect.bottom - 10.0f);
     }
-    move_x = (float)(clipped_x - x);
-    move_y = (float)(clipped_y - y);
+    move_x = (float) (clipped_x - x);
+    move_y = (float) (clipped_y - y);
 }
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", CheckIsViewMove__11CDngFreeMapFiiRfRf);
@@ -117,7 +122,7 @@ void CDngFreeMap::SetNextRoomPos(GLID_INFO *glid) {
     if (glid != NULL) {
         float x, y, move_x, move_y;
         CalcGlidPutPos(glid, x, y, 0);
-        CheckIsViewMove((int)x, (int)y, move_x, move_y);
+        CheckIsViewMove((int) x, (int) y, move_x, move_y);
         next_pos_x = pos_x + move_x;
         next_pos_y = pos_y + move_y;
     }
@@ -129,21 +134,27 @@ GLID_INFO *CDngFreeMap::GetNextGlid(GLID_INFO *glid, int *direction) {
     if (glid == NULL || floor_manager == NULL) {
         return NULL;
     }
+
     return floor_manager->GetNextGlid(glid, direction);
 }
+
 GLID_INFO *CDngFreeMap::GetRoomGlid(int room_no) {
     return floor_manager != NULL ? floor_manager->GetDngMapFloorGlidInfo(room_no) : NULL;
 }
+
 GLID_INFO *CDngFreeMap::GetEntranceRoomGlid() {
     if (floor_manager == NULL) {
         return NULL;
     }
+
     for (int i = 0; i < floor_manager->glid_num; i++) {
         GLID_INFO *glid = &floor_manager->glid_info[i];
+
         if (glid->type == GLID_TYPE_ROOM && (glid->room.flag & DNGMAP_ROOM_FLAG_START)) {
             return glid;
         }
     }
+
     return NULL;
 }
 #ifdef NONMATCHING
@@ -195,7 +206,7 @@ void CDngFreeMap::DrawBackPattern(int opacity) {
         DrawMenuTilePattern(prim, map_tex, back_scroll, back_scroll, tile, 1, NULL);
         back_scroll += 0.5f;
         if (back_scroll >= 0.0f) {
-            back_scroll -= (float)tile.right;
+            back_scroll -= (float) tile.right;
         }
     }
 }
@@ -211,7 +222,7 @@ void CDngFreeMap::DrawDngName(int opacity) {
         SetSpriteEnv(prim, 0);
         prim->Begin(6);
         prim->Texture(name_tex);
-        prim->Color(10, 10, 10, (int)(0.25f * (float)opacity));
+        prim->Color(10, 10, 10, (int) (0.25f * (float) opacity));
         PrimQuad(prim, 4.0f, 4.0f, tex_rect);
         prim->Color(128, 128, 128, 128);
         PrimQuad(prim, 0.0f, 0.0f, tex_rect);
@@ -247,12 +258,17 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DrawLast__11CDngFreeMapFv);
  * Offset of a passage mark from its grid cell.
  *
  */
-struct RootMarkOffset { s16 x; s16 y; };
+struct RootMarkOffset {
+    s16 x;
+    s16 y;
+};
+
 extern RootMarkOffset markOffsetTable_1092[];
 extern RootMarkOffset zerumaito_offset_1110;
-extern s16 root_type_texturecrd_1216[][2];
+extern s16            root_type_texturecrd_1216[][2];
+
 void CDngFreeMap::DrawRoot(mgRect<float> rect, DNGMAP_ROOT_INFO *root, int shadow, unsigned int marks, int opacity) {
-    if (root == NULL || (float)mgScreenWidth < rect.left || rect.top > (float)(mgScreenHeight + 20)) {
+    if (root == NULL || (float) mgScreenWidth < rect.left || rect.top > (float) (mgScreenHeight + 20)) {
         return;
     }
     mgRect<float> &put = treemap_root_put;
@@ -261,17 +277,17 @@ void CDngFreeMap::DrawRoot(mgRect<float> rect, DNGMAP_ROOT_INFO *root, int shado
         put.left += 8.0f;
         put.top += 8.0f;
     }
-    float red = mode == DNGMAP_MODE_EVENT ? 128.0f : 212.0f;
-    float green = mode == DNGMAP_MODE_EVENT ? 111.0f : 192.0f;
-    float blue = mode == DNGMAP_MODE_EVENT ? 0.0f : 144.0f;
-    float mark_color = mode == DNGMAP_MODE_EVENT ? 64.0f : 128.0f;
+    float           red = mode == DNGMAP_MODE_EVENT ? 128.0f : 212.0f;
+    float           green = mode == DNGMAP_MODE_EVENT ? 111.0f : 192.0f;
+    float           blue = mode == DNGMAP_MODE_EVENT ? 0.0f : 144.0f;
+    float           mark_color = mode == DNGMAP_MODE_EVENT ? 64.0f : 128.0f;
     RootMarkOffset *mark = markOffsetTable_1092;
-    mgCDrawPrim *prim = GetMenuPrim();
+    mgCDrawPrim    *prim = GetMenuPrim();
     SetSpriteEnv(prim, 2);
     prim->Begin(1);
-    prim->Color((int)red, (int)green, (int)blue, opacity);
+    prim->Color((int) red, (int) green, (int) blue, opacity);
     if (shadow != 0) {
-        prim->Color(0, 0, 0, (int)(0.05f * (float)opacity));
+        prim->Color(0, 0, 0, (int) (0.05f * (float) opacity));
     }
     if (root->shape == 1 || (root->shape >= 2 && root->shape < 4) ||
         (root->shape >= 4 && root->shape < 6) || (root->shape >= 6 && root->shape < 8)) {
@@ -283,17 +299,21 @@ void CDngFreeMap::DrawRoot(mgRect<float> rect, DNGMAP_ROOT_INFO *root, int shado
         case 0:
             put.left += 26.0f;
             for (int i = 0; i < 3; i++) {
-                prim->Vertex(put.left + (float)i, put.top, 0.0f);
-                prim->Vertex(put.left + (float)i - 16.0f, put.bottom, 0.0f);
+                prim->Vertex(put.left + (float) i, put.top, 0.0f);
+                prim->Vertex(put.left + (float) i - 16.0f, put.bottom, 0.0f);
             }
-            if (dng_no == 6) mark = &zerumaito_offset_1110;
+            if (dng_no == 6) {
+                mark = &zerumaito_offset_1110;
+            }
             break;
         case 1:
-            if (marks & 0x100) put.left += 14.0f;
+            if (marks & 0x100) {
+                put.left += 14.0f;
+            }
             put.top += 10.0f;
             for (int i = 0; i < 3; i++) {
-                prim->Vertex(put.left - (float)i, put.top + (float)i, 0.0f);
-                prim->Vertex(put.right - (float)i, put.top + (float)i, 0.0f);
+                prim->Vertex(put.left - (float) i, put.top + (float) i, 0.0f);
+                prim->Vertex(put.right - (float) i, put.top + (float) i, 0.0f);
             }
             mark = &markOffsetTable_1092[1];
             break;
@@ -301,12 +321,12 @@ void CDngFreeMap::DrawRoot(mgRect<float> rect, DNGMAP_ROOT_INFO *root, int shado
             put.left += 25.0f;
             put.top += 10.0f;
             for (int i = 0; i < 3; i++) {
-                prim->Vertex(put.left - (float)i, put.top + (float)i, 0.0f);
-                prim->Vertex(put.right - (float)i, put.top + (float)i, 0.0f);
+                prim->Vertex(put.left - (float) i, put.top + (float) i, 0.0f);
+                prim->Vertex(put.right - (float) i, put.top + (float) i, 0.0f);
             }
             for (int i = 0; i < 3; i++) {
-                prim->Vertex(put.left + (float)i, put.top, 0.0f);
-                prim->Vertex(put.left + (float)i - 10.0f, put.bottom, 0.0f);
+                prim->Vertex(put.left + (float) i, put.top, 0.0f);
+                prim->Vertex(put.left + (float) i - 10.0f, put.bottom, 0.0f);
             }
             mark = &markOffsetTable_1092[2];
             break;
@@ -314,12 +334,12 @@ void CDngFreeMap::DrawRoot(mgRect<float> rect, DNGMAP_ROOT_INFO *root, int shado
             put.right -= 27.0f;
             put.top += 10.0f;
             for (int i = 0; i < 3; i++) {
-                prim->Vertex(put.left - (float)i, put.top + (float)i, 0.0f);
-                prim->Vertex(put.right - (float)i, put.top + (float)i, 0.0f);
+                prim->Vertex(put.left - (float) i, put.top + (float) i, 0.0f);
+                prim->Vertex(put.right - (float) i, put.top + (float) i, 0.0f);
             }
             for (int i = 0; i < 3; i++) {
-                prim->Vertex(put.right + (float)i, put.top, 0.0f);
-                prim->Vertex(put.right + (float)i - 10.0f, put.bottom, 0.0f);
+                prim->Vertex(put.right + (float) i, put.top, 0.0f);
+                prim->Vertex(put.right + (float) i - 10.0f, put.bottom, 0.0f);
             }
             mark = &markOffsetTable_1092[3];
             break;
@@ -327,12 +347,12 @@ void CDngFreeMap::DrawRoot(mgRect<float> rect, DNGMAP_ROOT_INFO *root, int shado
             put.left += 26.0f;
             put.bottom -= 10.0f;
             for (int i = 0; i < 3; i++) {
-                prim->Vertex(put.left + (float)i, put.top, 0.0f);
-                prim->Vertex(put.left + (float)i - 10.0f, put.bottom + 2.0f, 0.0f);
+                prim->Vertex(put.left + (float) i, put.top, 0.0f);
+                prim->Vertex(put.left + (float) i - 10.0f, put.bottom + 2.0f, 0.0f);
             }
             for (int i = 0; i < 3; i++) {
-                prim->Vertex(put.left - 7.0f - (float)i, put.bottom + (float)i, 0.0f);
-                prim->Vertex(put.right - 5.0f - (float)i, put.bottom + (float)i, 0.0f);
+                prim->Vertex(put.left - 7.0f - (float) i, put.bottom + (float) i, 0.0f);
+                prim->Vertex(put.right - 5.0f - (float) i, put.bottom + (float) i, 0.0f);
             }
             mark = &markOffsetTable_1092[4];
             break;
@@ -341,12 +361,12 @@ void CDngFreeMap::DrawRoot(mgRect<float> rect, DNGMAP_ROOT_INFO *root, int shado
             put.bottom -= 10.0f;
             put.left += 1.0f;
             for (int i = 0; i < 3; i++) {
-                prim->Vertex(put.left - 6.0f - (float)i, put.bottom + (float)i, 0.0f);
-                prim->Vertex(put.right - 6.0f - (float)i, put.bottom + (float)i, 0.0f);
+                prim->Vertex(put.left - 6.0f - (float) i, put.bottom + (float) i, 0.0f);
+                prim->Vertex(put.right - 6.0f - (float) i, put.bottom + (float) i, 0.0f);
             }
             for (int i = 0; i < 3; i++) {
-                prim->Vertex(put.right + (float)i, put.top, 0.0f);
-                prim->Vertex(put.right + (float)i - 9.0f, put.bottom, 0.0f);
+                prim->Vertex(put.right + (float) i, put.top, 0.0f);
+                prim->Vertex(put.right + (float) i - 9.0f, put.bottom, 0.0f);
             }
             mark = &markOffsetTable_1092[5];
             put.left = put.right;
@@ -355,8 +375,8 @@ void CDngFreeMap::DrawRoot(mgRect<float> rect, DNGMAP_ROOT_INFO *root, int shado
             put.left += 15.5f;
             put.top += 10.0f;
             for (int i = 0; i < 3; i++) {
-                prim->Vertex(put.left + (float)i, put.bottom, 0.0f);
-                prim->Vertex(put.right - (float)i, put.top + (float)i, 0.0f);
+                prim->Vertex(put.left + (float) i, put.bottom, 0.0f);
+                prim->Vertex(put.right - (float) i, put.top + (float) i, 0.0f);
             }
             break;
         case 7:
@@ -364,8 +384,8 @@ void CDngFreeMap::DrawRoot(mgRect<float> rect, DNGMAP_ROOT_INFO *root, int shado
             put.right -= 35.0f;
             put.top += 10.0f;
             for (int i = 0; i < 3; i++) {
-                prim->Vertex(put.left - (float)i / 2.0f, put.top + (float)i, 0.0f);
-                prim->Vertex(put.right - (float)i, put.bottom, 0.0f);
+                prim->Vertex(put.left - (float) i / 2.0f, put.top + (float) i, 0.0f);
+                prim->Vertex(put.right - (float) i, put.bottom, 0.0f);
             }
             break;
         case 8:
@@ -373,8 +393,8 @@ void CDngFreeMap::DrawRoot(mgRect<float> rect, DNGMAP_ROOT_INFO *root, int shado
             put.right -= 5.5f;
             put.bottom -= 10.0f;
             for (int i = 0; i < 3; i++) {
-                prim->Vertex(put.left + 1.5f - (float)i, put.top, 0.0f);
-                prim->Vertex(put.right - (float)i / 2.0f, put.bottom + (float)i, 0.0f);
+                prim->Vertex(put.left + 1.5f - (float) i, put.top, 0.0f);
+                prim->Vertex(put.right - (float) i / 2.0f, put.bottom + (float) i, 0.0f);
             }
             break;
         case 9:
@@ -382,8 +402,8 @@ void CDngFreeMap::DrawRoot(mgRect<float> rect, DNGMAP_ROOT_INFO *root, int shado
             put.right -= 26.0f;
             put.bottom -= 10.0f;
             for (int i = 0; i < 3; i++) {
-                prim->Vertex(put.left - (float)i, put.bottom + (float)i, 0.0f);
-                prim->Vertex(put.right + (float)i, put.top, 0.0f);
+                prim->Vertex(put.left - (float) i, put.bottom + (float) i, 0.0f);
+                prim->Vertex(put.right + (float) i, put.top, 0.0f);
             }
             break;
     }
@@ -391,22 +411,22 @@ void CDngFreeMap::DrawRoot(mgRect<float> rect, DNGMAP_ROOT_INFO *root, int shado
     prim->Bilinear(0);
     prim->TextureMapEnable(1);
     prim->Begin(6);
-    prim->Color((int)red, (int)green, (int)blue, opacity);
+    prim->Color((int) red, (int) green, (int) blue, opacity);
     if (shadow != 0) {
-        prim->Color(0, 0, 0, (int)(0.05f * (float)opacity));
+        prim->Color(0, 0, 0, (int) (0.05f * (float) opacity));
     }
     prim->Texture(map_tex);
     if (root->type != 0 && root->opened != 0 && root->show_mark != 0 && mark != NULL) {
-        prim->Color((int)mark_color, (int)mark_color, (int)mark_color, opacity);
+        prim->Color((int) mark_color, (int) mark_color, (int) mark_color, opacity);
         if (shadow != 0) {
-            prim->Color(0, 0, 0, (int)(0.05f * (float)opacity));
+            prim->Color(0, 0, 0, (int) (0.05f * (float) opacity));
         }
         int u = root_type_texturecrd_1216[root->type][0];
         int v = root_type_texturecrd_1216[root->type][1];
         prim->TextureCrd(u, v);
-        prim->Vertex(rect.left + (float)mark->x, rect.top + (float)mark->y, 0.0f);
+        prim->Vertex(rect.left + (float) mark->x, rect.top + (float) mark->y, 0.0f);
         prim->TextureCrd(u + 22, v + 22);
-        prim->Vertex(rect.left + (float)mark->x + 22.0f, rect.top + (float)mark->y + 22.0f, 0.0f);
+        prim->Vertex(rect.left + (float) mark->x + 22.0f, rect.top + (float) mark->y + 22.0f, 0.0f);
     }
     prim->End();
 }
@@ -432,12 +452,20 @@ unsigned int CDngFreeMap::DrawGlidCheck(GLID_INFO *glid) {
         }
         if ((neighbour->room.flag & (DNGMAP_ROOM_FLAG_SUB | DNGMAP_ROOM_FLAG_BOSS)) && neighbour->room.visited != 0) {
             if (neighbour->x == glid->x) {
-                if (neighbour->y == glid->y - 1) marks |= 0x40;
-                if (neighbour->y == glid->y + 1) marks |= 0x80;
+                if (neighbour->y == glid->y - 1) {
+                    marks |= 0x40;
+                }
+                if (neighbour->y == glid->y + 1) {
+                    marks |= 0x80;
+                }
             }
             if (neighbour->y == glid->y) {
-                if (neighbour->x == glid->x - 1) marks |= 0x100;
-                if (neighbour->x == glid->x + 1) marks |= 0x200;
+                if (neighbour->x == glid->x - 1) {
+                    marks |= 0x100;
+                }
+                if (neighbour->x == glid->x + 1) {
+                    marks |= 0x200;
+                }
             }
         }
     }
@@ -452,24 +480,35 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DrawGlidCheck__11CDngFreeMapFP9G
  * Source rectangle of a room's letter or symbol.
  *
  */
-struct RoomGlyph { s16 x; s16 y; s16 w; s16 h; };
+struct RoomGlyph {
+    s16 x;
+    s16 y;
+    s16 w;
+    s16 h;
+};
+
 /**
  *
  * Offset of a room's letter or symbol within its picture.
  *
  */
-struct RoomGlyphOffset { s16 x; s16 y; };
-extern RoomGlyph get_moji_tbl_1524[];
+struct RoomGlyphOffset {
+    s16 x;
+    s16 y;
+};
+
+extern RoomGlyph       get_moji_tbl_1524[];
 extern RoomGlyphOffset put_moji_tbl_1525[];
-extern float stepCntTbl_1501[2];
+extern float           stepCntTbl_1501[2];
+
 void CDngFreeMap::DrawRoomOne(mgRect<float> rect, DNGMAP_ROOM_INFO *room, unsigned int unused, int opacity, float brightness) {
-    if (room == NULL || rect.left > (float)(mgScreenWidth + 20) || rect.top > (float)(mgScreenHeight + 30)) {
+    if (room == NULL || rect.left > (float) (mgScreenWidth + 20) || rect.top > (float) (mgScreenHeight + 30)) {
         return;
     }
     rect.left -= 30.0f;
     rect.top -= 42.0f;
     mgRect<float> picture = rect;
-    mgCDrawPrim *prim = GetMenuPrim();
+    mgCDrawPrim  *prim = GetMenuPrim();
     SetSpriteEnv(prim, 0);
     picture.right = 96.0f;
     picture.bottom = 66.0f;
@@ -500,22 +539,22 @@ void CDngFreeMap::DrawRoomOne(mgRect<float> rect, DNGMAP_ROOM_INFO *room, unsign
             tex.top = special.top + (room->tex_no / 3) * 96;
             tex.right = special.right;
             tex.bottom = room->tex_no >= 3 ? 90 : special.bottom;
-            picture.right = (float)special.right;
-            picture.bottom = (float)special.bottom;
+            picture.right = (float) special.right;
+            picture.bottom = (float) special.bottom;
         }
-        picture.left += (float)room->offset_x;
-        picture.top += (float)room->offset_y;
+        picture.left += (float) room->offset_x;
+        picture.top += (float) room->offset_y;
     }
-    int level = (int)(128.0f * brightness);
+    int   level = (int) (128.0f * brightness);
     float event_brightness = 1.0f;
     if (mode == DNGMAP_MODE_EVENT && user_glid != NULL && &user_glid->room != room) {
-        level = (int)(64.0f * brightness);
+        level = (int) (64.0f * brightness);
         event_brightness = 0.5f;
     }
     if (mode == DNGMAP_MODE_MENU) {
         prim->Begin(6);
         prim->Texture(map_tex);
-        prim->Color(0, 0, 0, (int)(0.25f * (float)opacity));
+        prim->Color(0, 0, 0, (int) (0.25f * (float) opacity));
         PrimQuad(prim, picture.left + 8.0f, picture.top + 8.0f, tex);
         prim->End();
     }
@@ -527,9 +566,15 @@ void CDngFreeMap::DrawRoomOne(mgRect<float> rect, DNGMAP_ROOM_INFO *room, unsign
     int red = 192;
     if (room->mark != 0) {
         float phase = room->mark_phase;
-        while (phase > 3.1415927f) phase -= 6.2831855f;
-        while (phase < -3.1415927f) phase += 6.2831855f;
-        if (phase > 0.0f) red = (int)(7.0f * (float)level / 8.0f);
+        while (phase > 3.1415927f) {
+            phase -= 6.2831855f;
+        }
+        while (phase < -3.1415927f) {
+            phase += 6.2831855f;
+        }
+        if (phase > 0.0f) {
+            red = (int) (7.0f * (float) level / 8.0f);
+        }
     } else {
         red = level;
     }
@@ -543,13 +588,13 @@ void CDngFreeMap::DrawRoomOne(mgRect<float> rect, DNGMAP_ROOM_INFO *room, unsign
         prim->Begin(6);
         prim->Color(red, red, red, opacity);
         prim->TextureCrd(492, 66);
-        prim->Vertex((int)(picture.left + 40.0f), (int)(picture.top + 25.0f), 0);
+        prim->Vertex((int) (picture.left + 40.0f), (int) (picture.top + 25.0f), 0);
         prim->TextureCrd(512, 96);
-        prim->Vertex((int)(picture.left + 60.0f), (int)(picture.top + 55.0f), 0);
+        prim->Vertex((int) (picture.left + 60.0f), (int) (picture.top + 55.0f), 0);
         prim->End();
     }
     if (room->mark != 0) {
-        float bob = 0.71875f * (6.0f * sinf(-room->mark_phase));
+        float          bob = 0.71875f * (6.0f * sinf(-room->mark_phase));
         mgRect<float> &mark = mark_rect[mark_num++];
         mark.left = picture.left + 64.0f;
         mark.top = picture.top + 4.0f - bob;
@@ -558,18 +603,22 @@ void CDngFreeMap::DrawRoomOne(mgRect<float> rect, DNGMAP_ROOM_INFO *room, unsign
     }
     if (name_tex != NULL && room->visited == 1) {
         for (int i = 0; i < 3; i++) {
-            if (!(room->flag & (1 << (i + 1)))) continue;
+            if (!(room->flag & (1 << (i + 1)))) {
+                continue;
+            }
             RoomGlyph *glyph = &get_moji_tbl_1524[i];
-            if (glyph->x < 0) continue;
+            if (glyph->x < 0) {
+                continue;
+            }
             RoomGlyphOffset *offset = &put_moji_tbl_1525[i];
             prim->TextureMapEnable(1);
             prim->Begin(6);
             prim->Texture(name_tex);
-            int tint = (int)(128.0f * event_brightness);
+            int tint = (int) (128.0f * event_brightness);
             prim->Color(tint, tint, tint, opacity);
             mgRect<int> glyph_rect;
             glyph_rect.Set(glyph->x, glyph->y, glyph->w, glyph->h);
-            PrimQuad(prim, picture.left + (float)offset->x, picture.top + (float)offset->y, glyph_rect);
+            PrimQuad(prim, picture.left + (float) offset->x, picture.top + (float) offset->y, glyph_rect);
             prim->End();
         }
     }
@@ -583,7 +632,7 @@ void CDngFreeMap::DrawGlid(mgRect<float> rect) {
     SetSpriteEnv(&prim, 1);
     prim.AntiAliasing(1);
     prim.Begin(2);
-    prim.Color(255, 0, 0, (int)alpha);
+    prim.Color(255, 0, 0, (int) alpha);
     prim.Vertex(rect.left, rect.top, 0.0f);
     prim.Vertex(rect.left + rect.right, rect.top, 0.0f);
     prim.Vertex(rect.left + rect.right - 16.0f, rect.top + 20.0f, 0.0f);
@@ -599,7 +648,7 @@ static int CheckGeoramaMateria(TRESURE_BOX_FLOOR_INFO *info, int floor_no, int *
     if (info == NULL || floor_no < 0) {
         return 0;
     }
-    int count = 0;
+    int                count = 0;
     TRESURE_BOX_FLOOR *floor = &info->floor[floor_no];
     for (int floor_group = 0; floor_group < floor->group_num; floor_group++) {
         int group_id = floor->group_id[floor_group];
@@ -631,23 +680,253 @@ static int CheckGeoramaMateria(TRESURE_BOX_FLOOR_INFO *info, int floor_no, int *
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", CheckGeoramaMateria__FP22TRESURE_BOX_FLOOR_INFOiPi);
 #endif
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DrawDngRoomInfo__FP16DNGMAP_ROOM_INFO);
 #ifdef NONMATCHING
-extern mgCTexture *Floor_InfoTex;
+extern "C" int         fptosi(float);
+extern mgCTexture     *Floor_InfoTex;
+extern mgRect<int>     Floor_Info;
+extern short           dngboardbrdtbl[24];
+extern short           dngboardbrdtbl_1[16];
+extern short           dngboardbrdtbl_2[12];
+extern short           DngInfoMedalNumMsg[16];
+extern int             DngInfoMedalMsgPutPos[2];
+extern CDC2Mes        *MenuDngMes[8];
+extern int             DngInfoRoomInfo;
+extern DNG_FLOOR_SAVE *DngInfoFloorInfo;
+extern int             DngInfoDrawAlpha;
+extern u8              dngfloor_infoview;
+extern float           AlphaRate_1743;
+extern u8              init_1744;
+
+void DrawDngRoomInfo(DNGMAP_ROOM_INFO *room) {
+    if (room == NULL || Floor_InfoTex == NULL) {
+        return;
+    }
+    if (dngfloor_infoview) {
+        CalcMenuAdd(&DngInfoDrawAlpha, 6, 128);
+    } else {
+        CalcMenuAdd(&DngInfoDrawAlpha, -8, 0);
+    }
+    int alpha = DngInfoDrawAlpha;
+    int language = LanguageCode;
+    int width = 0x19C;
+    int height = 0xE4;
+    if (language > 0) {
+        width = 0x1D6;
+        if (MenuDngMes[5] == NULL || MenuDngMes[5]->ClsMes::mes_no != 0x6C) {
+            height = 0xFA;
+        }
+    }
+    float             top = 92.0f;
+    short            *bottom_table = dngboardbrdtbl_1;
+    int               center = mgScreenWidth >> 1;
+    float             left = (float) ((0x200 - width) >> 1);
+    DNGMAP_ROOM_INFO *shown = (DNGMAP_ROOM_INFO *) DngInfoRoomInfo;
+    if (shown != NULL) {
+        if (!shown->geostone) {
+            bottom_table = dngboardbrdtbl_2;
+            height -= 0x20;
+            top = 112.0f;
+        }
+        if (!shown->spheda) {
+            height -= 0x16;
+            top += 14.0f;
+        }
+        if (!shown->fishing) {
+            height -= 0x16;
+            top += 14.0f;
+        }
+    }
+    DrawMenuFillBox(left + 6.0f, top + 6.0f, (float) (width - 8), (float) (height - 8),
+                    (alpha * 7) / 10, 12, 12, 12);
+    mgCDrawPrim *prim = GetMenuPrim();
+    SetSpriteEnv(prim, 0);
+    prim->Begin(6);
+    prim->Texture(Floor_InfoTex);
+    prim->Color(128, 128, 128, alpha);
+    int         ix = fptosi(left);
+    int         iy = fptosi(top);
+    mgRect<int> panel(ix, iy, width, 0x46);
+    Menu3DivideTextureDraw(prim, panel, dngboardbrdtbl, 1);
+    panel.Set(ix, iy + 0x46, width, height - 0x46 - dngboardbrdtbl[15]);
+    Menu3DivideTextureDraw(prim, panel, &dngboardbrdtbl[12], 1);
+    panel.Set(ix, iy + height - bottom_table[3], width, bottom_table[3]);
+    Menu3DivideTextureDraw(prim, panel, bottom_table, 1);
+    prim->End();
+    prim->Begin(6);
+    prim->Texture(Floor_InfoTex);
+    prim->Color(128, 128, 128, alpha);
+    PrimQuad(prim, (float) (center - (Floor_Info.right >> 1)) - 1.0f, top + 10.0f, Floor_Info);
+    prim->End();
+
+    int         right = ix + width;
+    int         right_text = right - (CheckNowEurope() ? 0x54 : 0x48);
+    float       row_top = top + 68.0f;
+    mgRect<int> mark(0x7C, 0, 0x16, 0x16);
+    mgRect<int> highlight(0x92, 0, 0x16, 0x16);
+    prim->Bilinear(1);
+    prim->Begin(6);
+    prim->Texture(Floor_InfoTex);
+    prim->Color(128, 128, 128, alpha);
+    if (MenuDngMes[0] != NULL) {
+        MenuDngMes[0]->SetMovePosCenteringGyou(0, center, iy + 0x26);
+    }
+    if (DngInfoFloorInfo != NULL && !(DngInfoFloorInfo->flag & 0x400) && room->seal > 0) {
+        if (!init_1744) {
+            AlphaRate_1743 = 0.0f;
+            init_1744 = 1;
+        }
+        AlphaRate_1743 += 0.034906585f;
+        if (AlphaRate_1743 >= 3.1415927f) {
+            AlphaRate_1743 -= 3.1415927f;
+        }
+        float seal_alpha = (float) alpha * sinf(AlphaRate_1743);
+        if (seal_alpha < 0.0f) {
+            seal_alpha = 0.0f;
+        }
+        if (seal_alpha > 128.0f) {
+            seal_alpha = 128.0f;
+        }
+        prim->Color(128, 128, 128, fptosi(seal_alpha));
+        mgRect<int> seal = language > 0 ? mgRect<int>(0xD8, 0xA6, 0x28, 0x18)
+                                        : mgRect<int>(0xB8, 0xD6, 0x18, 0x18);
+        if (language > 0) {
+            seal.top += (room->seal - 1) * 0x18;
+        } else {
+            seal.left += (room->seal - 1) * 0x18;
+        }
+        PrimQuad(prim, left + width - (language > 0 ? 56.0f : 40.0f), top + 35.0f, seal);
+        prim->Color(128, 128, 128, alpha);
+    }
+    int icon_x = fptosi(left + 20.0f);
+    int icon_y = fptosi((float) iy + 70.0f);
+    int text_x = icon_x + 0x1C;
+    PrimQuad(prim, (float) icon_x, row_top, mark);
+    if (DngInfoFloorInfo != NULL && (DngInfoFloorInfo->flag & 0x10)) {
+        PrimQuad(prim, (float) icon_x, (float) icon_y, highlight);
+    }
+    int current_y = icon_y;
+    if (MenuDngMes[1] != NULL) {
+        MenuDngMes[1]->line_pos[0][0] = text_x;
+        MenuDngMes[1]->line_pos[0][1] = current_y;
+        MenuDngMes[1]->line_pos_on[0] = 1;
+        MenuDngMes[1]->line_pos[1][0] = right - MenuDngMes[1]->line_w[1] - (CheckNowEurope() ? 0x16 : 0xE);
+        MenuDngMes[1]->line_pos[1][1] = current_y;
+        MenuDngMes[1]->line_pos_on[1] = 1;
+    }
+    current_y += 0x16;
+    if (shown != NULL && shown->fishing) {
+        PrimQuad(prim, (float) icon_x, (float) current_y, mark);
+        if (DngInfoFloorInfo != NULL && (DngInfoFloorInfo->flag & 0x20)) {
+            PrimQuad(prim, (float) icon_x, (float) current_y, highlight);
+        }
+        if (MenuDngMes[3] != NULL) {
+            MenuDngMes[3]->line_pos[0][0] = text_x;
+            MenuDngMes[3]->line_pos[0][1] = current_y;
+            MenuDngMes[3]->line_pos_on[0] = 1;
+            MenuDngMes[3]->line_pos[1][0] = MenuDngMes[3]->ClsMes::mes_no == 2 ? right_text
+                                                                               : right - MenuDngMes[3]->line_w[1] - 0x10;
+            MenuDngMes[3]->line_pos[1][1] = current_y;
+            MenuDngMes[3]->line_pos_on[1] = 1;
+        }
+        current_y += 0x16;
+    }
+    if (shown != NULL && shown->spheda) {
+        PrimQuad(prim, (float) icon_x, (float) current_y, mark);
+        if (DngInfoFloorInfo != NULL && (DngInfoFloorInfo->flag & 0x80)) {
+            PrimQuad(prim, (float) icon_x, (float) current_y, highlight);
+        }
+        if (MenuDngMes[4] != NULL) {
+            MenuDngMes[4]->line_pos[0][0] = text_x;
+            MenuDngMes[4]->line_pos[0][1] = current_y;
+            MenuDngMes[4]->line_pos_on[0] = 1;
+            int prize_x = right_text;
+            if (DngInfoFloorInfo != NULL && (DngInfoFloorInfo->flag & 0x80)) {
+                if (language > 0) {
+                    prize_x -= 9;
+                }
+            } else if (CheckBitFlagMenu(0x13D) && language > 0) {
+                prize_x -= 0x20;
+            }
+            if (CheckNowEurope()) {
+                prize_x = right - MenuDngMes[4]->line_w[1] - 0x10;
+            }
+            MenuDngMes[4]->line_pos[1][0] = prize_x;
+            MenuDngMes[4]->line_pos[1][1] = current_y;
+            MenuDngMes[4]->line_pos_on[1] = 1;
+        }
+        current_y += 0x16;
+    }
+    PrimQuad(prim, (float) icon_x, (float) current_y, mark);
+    if (DngInfoFloorInfo != NULL && (DngInfoFloorInfo->flag & 8)) {
+        PrimQuad(prim, (float) icon_x, (float) current_y, highlight);
+    }
+    if (MenuDngMes[5] != NULL) {
+        MenuDngMes[5]->line_pos[0][0] = text_x;
+        MenuDngMes[5]->line_pos[0][1] = current_y;
+        MenuDngMes[5]->line_pos_on[0] = 1;
+        if (language == 0) {
+            MenuDngMes[5]->line_pos[1][0] = right_text;
+            MenuDngMes[5]->line_pos[1][1] = current_y;
+            MenuDngMes[5]->line_pos_on[1] = 1;
+            current_y += 0x16;
+        } else if (MenuDngMes[5]->ClsMes::mes_no == 0x6C) {
+            MenuDngMes[5]->line_pos[1][0] = right - MenuDngMes[5]->line_w[1] - 0x10;
+            MenuDngMes[5]->line_pos[1][1] = current_y;
+            MenuDngMes[5]->line_pos_on[1] = 1;
+            current_y += 0x16;
+        } else {
+            MenuDngMes[5]->line_pos[1][0] = text_x;
+            MenuDngMes[5]->line_pos[1][1] = current_y + 0x16;
+            MenuDngMes[5]->line_pos_on[1] = 1;
+            MenuDngMes[5]->line_pos[2][0] = right - MenuDngMes[5]->line_w[2] - 0x10;
+            MenuDngMes[5]->line_pos[2][1] = current_y + 0x12;
+            MenuDngMes[5]->line_pos_on[2] = 1;
+            current_y += 0x2C;
+        }
+    }
+    prim->End();
+    if (MenuDngMes[6] != NULL) {
+        MenuDngMes[6]->line_pos[0][0] = text_x;
+        MenuDngMes[6]->line_pos[0][1] = current_y;
+        MenuDngMes[6]->line_pos_on[0] = 1;
+        MenuDngMes[6]->line_pos[1][0] = right - MenuDngMes[6]->line_w[1] - 0x1A;
+        MenuDngMes[6]->line_pos[1][1] = current_y;
+        MenuDngMes[6]->line_pos_on[1] = 1;
+    }
+    if (shown != NULL && shown->geostone && MenuDngMes[7] != NULL) {
+        MenuDngMes[7]->line_pos[0][0] = center - (MenuDngMes[7]->line_w[0] >> 1);
+        MenuDngMes[7]->line_pos[0][1] = current_y + 0x24;
+        MenuDngMes[7]->line_pos_on[0] = 1;
+    }
+    for (int i = 0; i < 8; ++i) {
+        MenuDngMes[i]->SetMsgAlpha(alpha);
+    }
+    if (MenuDCMsg[5] != NULL) {
+        DngInfoMedalMsgPutPos[0] = DngInfoMedalNumMsg[language * 2];
+        DngInfoMedalMsgPutPos[1] = DngInfoMedalNumMsg[language * 2 + 1];
+        MenuDCMsg[5]->SetPutPos(DngInfoMedalMsgPutPos);
+        MenuDCMsg[5]->SetMsgAlpha(alpha);
+    }
+}
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DrawDngRoomInfo__FP16DNGMAP_ROOM_INFO);
+#endif
+#ifdef NONMATCHING
+extern mgCTexture   *Floor_InfoTex;
 extern unsigned char GeoramaMateriaInfoDrawPage;
-extern short GeoramaMateriaNum;
-extern mgRect<int> Floor_Info;
-extern short dngboardbrdtbl[24];
-extern short dngboardbrdtbl_2[12];
-extern char at_1993[];
+extern short         GeoramaMateriaNum;
+extern mgRect<int>   Floor_Info;
+extern short         dngboardbrdtbl[24];
+extern short         dngboardbrdtbl_2[12];
+extern char          at_1993[];
 
 void DrawGeoramaMateria(int top_y, char *title, int unused_count, int *items, int tex_block) {
     int left = (mgScreenWidth - 0x1AE) >> 1;
     int column_left = mgScreenWidth / 3;
     int column_right = mgScreenWidth - column_left;
-    mgTexManager.ReloadTexture(tex_block, (sceVif1Packet *)NULL);
+    mgTexManager.ReloadTexture(tex_block, (sceVif1Packet *) NULL);
     CMenuFont font;
-    DrawMenuFillBox((float)(left + 6), (float)(top_y + 6), 422.0f, 272.0f,
+    DrawMenuFillBox((float) (left + 6), (float) (top_y + 6), 422.0f, 272.0f,
                     0x59, 0xC, 0xC, 0xC);
     mgCDrawPrim *prim = GetMenuPrim();
     SetSpriteEnv(prim, 0);
@@ -660,11 +939,11 @@ void DrawGeoramaMateria(int top_y, char *title, int unused_count, int *items, in
     Menu3DivideTextureDraw(prim, panel, &dngboardbrdtbl[12], 1);
     panel.Set(left, top_y + 0x118 - dngboardbrdtbl_2[3], 0x1AE, dngboardbrdtbl_2[3]);
     Menu3DivideTextureDraw(prim, panel, dngboardbrdtbl_2, 1);
-    PrimQuad(prim, (float)((mgScreenWidth >> 1) - (Floor_Info.right >> 1)) - 1.0f,
-             (float)top_y + 10.0f, Floor_Info);
+    PrimQuad(prim, (float) ((mgScreenWidth >> 1) - (Floor_Info.right >> 1)) - 1.0f,
+             (float) top_y + 10.0f, Floor_Info);
     prim->End();
 
-    mgTexManager.ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *)NULL);
+    mgTexManager.ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *) NULL);
     int text_w, text_h;
     font.SetStr(title);
     font.CalcDrawWH(font.str, &text_w, &text_h);
@@ -673,17 +952,23 @@ void DrawGeoramaMateria(int top_y, char *title, int unused_count, int *items, in
 
     int first = GeoramaMateriaInfoDrawPage * 14;
     int last = first + 14;
-    if (GeoramaMateriaNum < last) last = GeoramaMateriaNum;
+    if (GeoramaMateriaNum < last) {
+        last = GeoramaMateriaNum;
+    }
     int row_y = top_y + 0x47;
     for (int index = first; index < last; ++index) {
         char *name = GetItemMessage(items[index]);
-        if (name == NULL) continue;
+        if (name == NULL) {
+            continue;
+        }
         font.SetStr(name);
         font.CalcDrawWH(font.str, &text_w, &text_h);
         int column = (index % 2 == 0) ? column_left : column_right;
         font.SetPos(column - (text_w >> 1), row_y);
         font.DrawDirect(font.str, font.pos_x, font.pos_y);
-        if (index % 2 != 0) row_y += 0x18;
+        if (index % 2 != 0) {
+            row_y += 0x18;
+        }
     }
     char page[32];
     sprintf(page, at_1993, GeoramaMateriaInfoDrawPage + 1, GeoramaMateriaNum / 14 + 1);
@@ -696,12 +981,13 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DrawGeoramaMateria__FiPciPii);
 #endif
 #ifdef NONMATCHING
 extern mgRect<int> dng_light_circle;
+
 void CDngFreeMap::DrawTreeMap(int opacity) {
     mgRect<float> cell_rect;
     cell_rect.Set(0.0f, 0.0f, 52.0f, 20.0f);
     if (mode == DNGMAP_MODE_MENU) {
         mgCDrawPrim *prim = GetMenuPrim();
-        float x, y;
+        float        x, y;
         CalcGlidPutPos(select_glid, x, y, 0);
         x -= 38.0f;
         y -= 31.0f;
@@ -711,7 +997,7 @@ void CDngFreeMap::DrawTreeMap(int opacity) {
         prim->Bilinear(0);
         prim->Begin(6);
         prim->Texture(map_tex);
-        prim->Color(128, 128, 128, (int)(0.5f * (float)opacity));
+        prim->Color(128, 128, 128, (int) (0.5f * (float) opacity));
         prim->TextureCrd(dng_light_circle.left, dng_light_circle.top);
         prim->Vertex(x + reach_x, y + reach_y, 0.0f);
         prim->TextureCrd(dng_light_circle.left + dng_light_circle.right,
@@ -743,7 +1029,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DrawTreeMap__11CDngFreeMapFi);
 #endif
 #ifdef NONMATCHING
 extern float dng_player_pos[2];
-extern int dng_player_blink_cnt;
+extern int   dng_player_blink_cnt;
+
 void CDngFreeMap::DrawPlayer(int opacity) {
     if (user_glid == NULL || koma_tex == NULL) {
         return;
@@ -762,13 +1049,13 @@ void CDngFreeMap::DrawPlayer(int opacity) {
         y = dng_player_pos[1];
     }
     if (mode == DNGMAP_MODE_MENU) {
-        y -= 6.0f * sinf(0.06283186f * (float)dng_player_blink_cnt);
+        y -= 6.0f * sinf(0.06283186f * (float) dng_player_blink_cnt);
     }
     dng_player_blink_cnt++;
     if (dng_player_blink_cnt >= 50) {
         dng_player_blink_cnt = 0;
     }
-    float brightness = 16.0f + alpha + 16.0f * sinf(0.06283186f * (float)dng_player_blink_cnt);
+    float brightness = 16.0f + alpha + 16.0f * sinf(0.06283186f * (float) dng_player_blink_cnt);
     if (brightness < 0.0f) {
         brightness = 0.0f;
     }
@@ -777,7 +1064,7 @@ void CDngFreeMap::DrawPlayer(int opacity) {
     prim->Bilinear(1);
     prim->Begin(6);
     prim->Texture(koma_tex);
-    int level = (int)brightness;
+    int level = (int) brightness;
     prim->Color(level, level, level, opacity);
     mgRect<int> tex_rect;
     tex_rect.Set(0, 0, 30, 48);
@@ -805,10 +1092,10 @@ void CDngFreeMap::Step() {
     }
     pos_x += (next_pos_x - pos_x) / 5.0f;
     pos_y += (next_pos_y - pos_y) / 5.0f;
-    if (abs((int)(pos_x - next_pos_x)) < 1) {
+    if (abs((int) (pos_x - next_pos_x)) < 1) {
         pos_x = next_pos_x;
     }
-    if (abs((int)(pos_y - next_pos_y)) < 1) {
+    if (abs((int) (pos_y - next_pos_y)) < 1) {
         pos_y = next_pos_y;
     }
     blink_cnt++;
@@ -824,14 +1111,129 @@ void CDngFreeMap::Step() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Step__11CDngFreeMapFv);
 #endif
+#ifdef NONMATCHING
+extern int          MenuDngDebugFlagSelect;
+extern char        *RootTable_2119[4];
+extern char         Table_2133[8][32];
+extern unsigned int bittable_2134[8];
+extern char         at_2176[];
+extern char         at_2184[];
+
+void CDngFreeMap::Draw() {
+    if (active == 0 || alpha <= 0.0f || map_tex == NULL) {
+        return;
+    }
+    int opacity = (int) alpha;
+    if (opacity < 0) {
+        opacity = 0;
+    }
+    if (opacity > 128) {
+        opacity = 128;
+    }
+    mgTexManager.ReloadTexture(map_tex->block, (sceVif1Packet *) NULL);
+    DrawBackPattern(opacity);
+    DrawLast();
+    DrawTreeMap(opacity);
+    DrawPlayer(opacity);
+    if (mode != DNGMAP_MODE_EVENT) {
+        mgCDrawPrim *prim = GetMenuPrim();
+        SetSpriteEnv(prim, 0);
+        prim->Bilinear(1);
+        prim->Begin(6);
+        prim->Texture(name_tex);
+        prim->Color(128, 128, 128, opacity);
+        for (int i = 0; i < mark_num; i++) {
+            mgRect<int> tex_rect(192, 210, 64, 46);
+            PrimQuad(prim, mark_rect[i], tex_rect);
+        }
+        prim->End();
+    }
+    if (menu_debug_flag == 0) {
+        return;
+    }
+    int block = -1;
+    MenuReloadTexture(block, MenuDCMsg[2]->texture_block);
+    CMenuFont font;
+    DrawMenuFillBox(0.0f, 50.0f, 160.0f, 60.0f, 64, 0, 0, 0);
+    font.SetStr(at_2176);
+    font.SetPos(0, 50);
+    font.DrawDirect(font.str, font.pos_x, font.pos_y);
+    DrawMenuFillBox(0.0f, 110.0f, 160.0f, (float) (mgScreenHeight - 110), 64, 0, 0, 0);
+    if (select_glid == NULL || select_glid->type != GLID_TYPE_ROOM) {
+        return;
+    }
+    DNG_FLOOR_SAVE *save = MenuSaveDataDungeonPtr->GetFloorInfoPtr(dng_no, select_glid->room.floor_id);
+    if (save == NULL) {
+        return;
+    }
+    char detail[256];
+    char line[256];
+    int  floor_id = select_glid->room.floor_id;
+    sprintf(detail, "Room ID : %d", floor_id);
+    if (select_glid->room.flag & DNGMAP_ROOM_FLAG_START) {
+        strcat(detail, ":START ");
+    }
+    if (select_glid->room.flag & DNGMAP_ROOM_FLAG_EXIT) {
+        strcat(detail, ":EXIT");
+    }
+    if (select_glid->room.flag & DNGMAP_ROOM_FLAG_BOSS) {
+        strcat(detail, ":BOSS");
+    }
+    if (select_glid->room.flag & DNGMAP_ROOM_FLAG_SUB) {
+        strcat(detail, ":SUBMAP");
+    }
+    strcat(detail, "\n");
+    font.SetStr(detail);
+    font.SetPos(10, 112);
+    font.DrawDirect(font.str, font.pos_x, font.pos_y);
+    sprintf(line, "Normal:%d\nSun:%d\n Moon :%d\n Star :%d",
+            floor_manager->GetDngMapNextFloorID(floor_id, 0),
+            floor_manager->GetDngMapNextFloorID(floor_id, 1),
+            floor_manager->GetDngMapNextFloorID(floor_id, 2),
+            floor_manager->GetDngMapNextFloorID(floor_id, 3));
+    font.SetStr(line);
+    font.SetPos(20, 132);
+    font.DrawDirect(font.str, font.pos_x, font.pos_y);
+    strcpy(line, at_2184);
+    int links = floor_manager->GetDngMapNextRoot(floor_id);
+    for (int i = 0; i < 4; i++) {
+        if (links & (1 << i)) {
+            strcat(line, RootTable_2119[i]);
+        }
+    }
+    font.SetStr(line);
+    font.SetPos(10, 212);
+    font.DrawDirect(font.str, font.pos_x, font.pos_y);
+    sprintf(detail, "  VisitNum\x81\x40: %d\n", save->visit_count);
+    if (MenuDngDebugFlagSelect == 0) {
+        sprintf(detail, "> VisitNum\x81\x40: %d\n", save->visit_count);
+    }
+    font.SetStr(detail);
+    font.SetPos(10, 232);
+    font.DrawDirect(font.str, font.pos_x, font.pos_y);
+    int y = 252;
+    for (int i = 0; i < 8; i++) {
+        strcpy(detail, Table_2133[i]);
+        strcat(detail, (save->flag & bittable_2134[i]) ? "ON" : "OFF");
+        if (MenuDngDebugFlagSelect > 0 && MenuDngDebugFlagSelect - 1 == i) {
+            detail[0] = '>';
+        }
+        font.SetStr(detail);
+        font.SetPos(10, y);
+        font.DrawDirect(font.str, font.pos_x, font.pos_y);
+        y += 20;
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Draw__11CDngFreeMapFv);
+#endif
 #ifdef NONMATCHING
 void CDngFreeMap::FadeIn(int frames) {
     fade_mode = DNGMAP_FADE_IN;
     fade_time = frames;
     fade_step = 128.0f;
     if (frames > 0) {
-        fade_step = 128.0f / (float)frames;
+        fade_step = 128.0f / (float) frames;
     }
     alpha = 0.0f;
 }
@@ -844,7 +1246,7 @@ void CDngFreeMap::FadeOut(int frames) {
     fade_time = frames;
     fade_step = -128.0f;
     if (frames > 0) {
-        fade_step = -128.0f / (float)frames;
+        fade_step = -128.0f / (float) frames;
     }
 }
 #else
@@ -862,14 +1264,303 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DeleteTexBlock__11CDngFreeMapFv)
 void CDngFreeMap::SetKomaMove(int moving) {
     koma_move = moving;
     koma_now = koma_path;
+
     if (koma_now != NULL) {
         koma_now = koma_now->next;
     }
 }
+#ifdef NONMATCHING
+extern const short        *RootHokanTablePtrTable_2240__DATA[];
+extern const short        *RoomHokanTablePtrTable_2245__DATA[];
+extern const signed char   is_reverse_tbl_2246__DATA[];
+extern const unsigned char old_hokantbl_useno_2247__DATA[];
+extern const unsigned char is_reverse_tbl_room_2248__DATA[];
+
+int CDngFreeMap::LoadDngInfo(mgCMemory *stack, int block, int dungeon, int room, int next_room) {
+    if (stack == NULL || stack->stGetRest() <= 0) {
+        return 0;
+    }
+
+    save_dungeon = &GetSaveData()->save_dungeon;
+    mgCDrawPrim *prim = GetMenuPrim();
+    prim->offset_x = 0;
+    prim->offset_y = 0;
+    mgCMemory memory;
+    memory.stSetBuffer(stack->stGetTop(), stack->stGetRest());
+    memory.Align64();
+    floor_manager = &((DNG_BATTLE_AREA *) menu_GetBattleAreaScene())->floor_manager;
+    dng_no = dungeon;
+    floor_manager->CheckDrawGlidInfo();
+    user_room_no = room;
+    next_room_no = next_room;
+    GetRoomGlid(user_room_no);
+    if (next_room_no >= 0) {
+        GetRoomGlid(next_room_no);
+    }
+    select_glid = NULL;
+    mode = DNGMAP_MODE_EVENT;
+    InitTexture();
+    tex_block = block;
+    memory.Align64();
+    u_long128 *buffer = memory.stGetTop();
+    if (buffer != NULL) {
+        char filename[0x80];
+        sprintf(filename, "dmap%d.img", dungeon);
+        int size = LoadFileMenu(filename, buffer, 1);
+        memory.Alloc((size + 15) >> 4);
+        MenuEnterIMG(tex_block, (unsigned char *) buffer, "_dn");
+        koma_tex = mgTexManager.GetTexture("dngop_dn", -1);
+        map_tex = mgTexManager.GetTexture("dt_dn", -1);
+        name_tex = mgTexManager.GetTexture("dtname_dn", -1);
+    }
+    view_rect.Set(60.0f, 40.0f, (float) (mgScreenWidth - 40), (float) (mgScreenHeight - 40));
+    SetUserGlid(user_room_no);
+    ResetDngMapPos(user_room_no, 1);
+    koma_now = NULL;
+    koma_path = NULL;
+    koma_move = 0;
+    CalcGlidPutPos(user_glid, dng_player_pos[0], dng_player_pos[1], 0);
+    dng_player_pos[0] += 8.0f;
+    dng_player_pos[1] -= 28.0f;
+    if (next_room_no < 0) {
+        return memory.stGetUsed();
+    }
+
+    GLID_INFO *start = GetRoomGlid(user_room_no);
+    // Event jumps enter the first room of the branch between the two floors.
+    switch (dng_no) {
+        case 1:
+            if (user_room_no == 8 && next_room_no >= 9) {
+                next_room_no = next_room_no < 13 ? 9 : 13;
+            }
+            if (user_room_no >= 14 && next_room_no < user_room_no) {
+                next_room_no = user_room_no - 1;
+            }
+            if (user_room_no == 13) {
+                next_room_no = next_room_no < 14 ? 8 : 14;
+            }
+            break;
+        case 2:
+            if (user_room_no == 5 && next_room_no >= 6 && next_room_no < 9) {
+                next_room_no = 6;
+            }
+            if (user_room_no >= 6 && user_room_no < 9 && next_room_no >= 9) {
+                next_room_no = user_room_no - 1;
+            }
+            if (user_room_no >= 12 && user_room_no < 15 && next_room_no >= 16) {
+                next_room_no = user_room_no - 1;
+            }
+            if (user_room_no == 16) {
+                next_room_no = next_room_no < 16 ? 11 : 17;
+            }
+            if (user_room_no >= 17 && next_room_no < user_room_no) {
+                next_room_no = user_room_no - 1;
+            }
+            if (user_room_no == 11) {
+                next_room_no = next_room_no < 11 ? 10 : (next_room_no < 12 ? 16 : (next_room_no < 16 ? 12 : 16));
+            }
+            break;
+        case 3:
+            if (user_room_no >= 11 && user_room_no < 14 && next_room_no >= 16) {
+                next_room_no = user_room_no - 1;
+            }
+            if (user_room_no == 10 && next_room_no >= 11 && next_room_no < 15) {
+                next_room_no = 11;
+            }
+            if (user_room_no == 15) {
+                next_room_no = next_room_no < 15 ? 10 : 16;
+            }
+            if (user_room_no >= 16 && next_room_no < user_room_no) {
+                next_room_no = user_room_no - 1;
+            }
+            break;
+        case 4:
+            if (user_room_no == 4 && next_room_no >= 5 && next_room_no < 9) {
+                next_room_no = 5;
+            }
+            if (user_room_no >= 5 && user_room_no < 8 && next_room_no >= 9) {
+                next_room_no = user_room_no - 1;
+            }
+            if (user_room_no == 9) {
+                next_room_no = next_room_no < 9 ? 4 : 10;
+            }
+            if (user_room_no >= 10 && next_room_no < user_room_no) {
+                next_room_no = user_room_no - 1;
+            }
+            break;
+        case 5:
+            if (user_room_no == 4 && next_room_no >= 5 && next_room_no < 12) {
+                next_room_no = 5;
+            }
+            if (user_room_no >= 5 && user_room_no < 11 && next_room_no >= 12) {
+                next_room_no = user_room_no - 1;
+            }
+            if (user_room_no == 12) {
+                next_room_no = next_room_no < 12 ? 4 : 13;
+            }
+            if (user_room_no >= 13 && next_room_no < user_room_no) {
+                next_room_no = user_room_no - 1;
+            }
+            break;
+        case 6:
+            if (user_room_no >= 8 && user_room_no < 11 && next_room_no >= 11) {
+                next_room_no = user_room_no - 1;
+            }
+            if (user_room_no >= 13 && user_room_no < 17 && next_room_no >= 17) {
+                next_room_no = user_room_no - 1;
+            }
+            if (user_room_no == 20 && next_room_no >= 22) {
+                next_room_no = 19;
+            }
+            if (user_room_no >= 24 && user_room_no < 27 && next_room_no >= 27) {
+                next_room_no = user_room_no - 1;
+            }
+            if (user_room_no >= 29 && user_room_no < 33) {
+                next_room_no = next_room_no < user_room_no ? user_room_no - 1 : user_room_no + 1;
+            }
+            if (user_room_no == 6) {
+                next_room_no = next_room_no < 6 ? 5 : (next_room_no >= 11 ? 11 : 7);
+            }
+            if (user_room_no == 11) {
+                next_room_no = next_room_no < 11 ? 6 : (next_room_no >= 17 ? 17 : 12);
+            }
+            if (user_room_no == 18) {
+                next_room_no = next_room_no < 18 ? 17 : (next_room_no >= 22 ? 22 : 19);
+            }
+            if (user_room_no == 22) {
+                next_room_no = next_room_no < 22 ? 18 : (next_room_no >= 27 ? 27 : 23);
+            }
+            if (user_room_no == 28) {
+                next_room_no = next_room_no < 28 ? 27 : (next_room_no >= 34 ? 34 : 29);
+            }
+            if (user_room_no == 35) {
+                next_room_no = next_room_no == 34 ? 34 : (next_room_no >= 36 ? 36 : 33);
+            }
+            break;
+    }
+    GLID_INFO *target = GetRoomGlid(next_room_no);
+    if (target == NULL) {
+        return 0;
+    }
+    if (start != NULL && abs((int) start->room.order - (int) target->room.order) >= 2) {
+        GLID_INFO *candidate[4];
+        s16        candidate_room[4];
+        int        candidate_count = 0;
+        int        farthest = -1;
+        bool       reverse = start->room.order >= target->room.order;
+        for (int dir = 0; dir < GLID_DIR_NUM; ++dir) {
+            int adjacent = start->room.link[dir];
+            if (adjacent < 0) {
+                continue;
+            }
+            GLID_INFO *linked = GetRoomGlid(adjacent);
+            if (linked == NULL) {
+                continue;
+            }
+            if ((reverse && linked->room.order < start->room.order) || (!reverse && start->room.order < linked->room.order)) {
+                candidate[candidate_count] = linked;
+                candidate_room[candidate_count] = adjacent;
+                if (adjacent > farthest) {
+                    farthest = adjacent;
+                }
+                ++candidate_count;
+            }
+        }
+        for (int i = 0; i < candidate_count; ++i) {
+            if (reverse || (target->room.floor_id < farthest && abs((int) target->room.floor_id - candidate_room[i]) <= 0) || (farthest < target->room.floor_id && abs((int) target->room.floor_id - candidate_room[i]) > 0)) {
+                target = candidate[i];
+                next_room_no = candidate_room[i];
+                break;
+            }
+        }
+    }
+
+    koma_path = (DNGMAP_KOMA_POS *) memory.Alloc(1);
+    koma_now = koma_path;
+    koma_now->next = NULL;
+    DNGMAP_KOMA_POS *tail = koma_now;
+    float            x, y;
+    CalcGlidPutPos(target, x, y, 0);
+    tail->x = x;
+    tail->y = y;
+    int direction = -1;
+    for (int i = 0; i < GLID_DIR_NUM; ++i) {
+        if (target->room.link[i] == user_room_no) {
+            direction = i;
+            break;
+        }
+    }
+    if (direction < 0) {
+        return memory.stGetUsed();
+    }
+    int table = old_hokantbl_useno_2247__DATA[direction];
+    if (is_reverse_tbl_room_2248__DATA[table] <= 1) {
+        bool reverse = is_reverse_tbl_room_2248__DATA[table] != 0;
+        for (int i = 0; i < 10; ++i) {
+            int              j = reverse ? 9 - i : i;
+            const short     *point = &RoomHokanTablePtrTable_2245__DATA[table][j * 2];
+            DNGMAP_KOMA_POS *node = (DNGMAP_KOMA_POS *) memory.Alloc(1);
+            node->x = x + (float) point[0];
+            node->y = y + (float) point[1];
+            tail->next = node;
+            tail = node;
+        }
+    }
+    GLID_INFO *glid = target->link_glid[direction];
+    while (glid != NULL) {
+        float gx, gy;
+        CalcGlidPutPos(glid, gx, gy, 0);
+        glid->blink = 1;
+        int          route_table = -1;
+        int          point_count = 0;
+        bool         reverse = false;
+        const short *points = NULL;
+        if (glid->type == GLID_TYPE_ROOT) {
+            route_table = glid->root.shape;
+            int value = is_reverse_tbl_2246__DATA[route_table * 4 + direction];
+            if (value >= 0) {
+                reverse = value == 1;
+                point_count = 20;
+                points = RootHokanTablePtrTable_2240__DATA[route_table];
+            }
+        } else if (glid->type == GLID_TYPE_ROOM) {
+            route_table = old_hokantbl_useno_2247__DATA[direction + 4];
+            int value = is_reverse_tbl_room_2248__DATA[route_table + 4];
+            if (value <= 1) {
+                reverse = value == 1;
+                point_count = 10;
+                points = RoomHokanTablePtrTable_2245__DATA[route_table];
+            }
+        }
+        for (int i = 0; i < point_count; ++i) {
+            int              j = reverse ? point_count - 1 - i : i;
+            const short     *point = &points[j * 2];
+            DNGMAP_KOMA_POS *node = (DNGMAP_KOMA_POS *) memory.Alloc(1);
+            node->x = gx + (float) point[0];
+            node->y = gy + (float) point[1];
+            tail->next = node;
+            tail = node;
+        }
+        if (glid == start) {
+            break;
+        }
+        glid = GetNextGlid(glid, &direction);
+    }
+    tail->next = NULL;
+    if (koma_now->next != NULL) {
+        dng_player_pos[0] = koma_now->next->x;
+        dng_player_pos[1] = koma_now->next->y;
+    }
+    return memory.stGetUsed();
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", LoadDngInfo__11CDngFreeMapFP9mgCMemoryiiii);
+#endif
+
 #ifdef NONMATCHING
 extern unsigned char DngTreeMode;
 extern unsigned char TreeMapCallDungeonSubMap;
+
 int CheckDngTreeMapFuncType() {
     if (MenuCommonInfo->open_type == 3) {
         return 2;
@@ -884,6 +1575,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", CheckDngTreeMapFuncType__Fv);
 #endif
 #ifdef NONMATCHING
 extern char *name_tbl_2728[8];
+
 void MakeDngTreeMapJumpNo(int dng_no, int floor_id, int *loop_no, int *map_no) {
     if (dng_no == 0 && floor_id == 8) {
         *loop_no = 1;
@@ -912,10 +1604,93 @@ void MakeDngTreeMapJumpNo(int dng_no, int floor_id, int *loop_no, int *map_no) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", MakeDngTreeMapJumpNo__FiiPiPi);
 #endif
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", InitEnd__12CMenuTreeMapFv);
 #ifdef NONMATCHING
-extern short TreeMapSaveDispY;
+extern CDngFreeMap *MenuDngMap;
+extern u_long128   *MenuCursorDataBuff;
+extern mgCTexture  *Floor_InfoTex;
+extern s8           maxidtable_2752[7];
+extern char         at_2681[];
+extern char         at_2786[];
+extern char         at_2787__2[];
+extern char         at_2788[];
+extern char         at_2789[];
+extern char         at_2790[];
+extern int          DngInfoDrawAlpha;
+
+void CMenuTreeMap::InitEnd() {
+    BG_READ_INFO *read = GetReadBGFile(0);
+    char          map_name[32];
+    sprintf(map_name, at_2681, dng_no);
+    u8 *map_img = (u8 *) GetPackFile((u_int *) read->buffer, map_name, NULL);
+    int block = tex_block[0];
+    MenuWorkTextureEnter(block, at_2786, 0x200, 0x100, 0x18);
+    mgTexManager.EnterIMGFile(map_img, block, NULL, NULL);
+    if (CheckDngTreeMapFuncType() == 2) {
+        mgTexManager.EnterIMGFile((u8 *) MenuCursorDataBuff, block, NULL, NULL);
+    }
+    MenuDngMap->SetTextureInfo();
+    Floor_InfoTex = mgTexManager.GetTexture(at_2787__2, -1);
+    if (read != NULL) {
+        script = (char *) GetPackFile((u_int *) read->buffer, at_2788, &script_size);
+        MenuDngMap->floor_manager->CheckDrawGlidInfo();
+        int room_no = MenuSaveDataDungeonPtr->floor_id[dng_no];
+        if (room_no < 1 || room_no > maxidtable_2752[dng_no]) {
+            room_no = 1;
+        }
+        MenuDngMap->SetUserGlid(room_no);
+        select_glid = MenuDngMap->GetRoomGlid(room_no);
+        if (select_glid == NULL) {
+            select_glid = MenuDngMap->GetRoomGlid(room_no + 1);
+        }
+        int        active_room = room_no;
+        GLID_INFO *marked = NULL;
+        for (int i = 0; i < maxidtable_2752[dng_no]; ++i) {
+            GLID_INFO *cell = MenuDngMap->floor_manager->GetDngMapFloorGlidInfo(i);
+            if (cell != NULL && cell->room.mark != 0) {
+                active_room = cell->room.floor_id;
+                marked = cell;
+                break;
+            }
+        }
+        if (select_glid != NULL &&
+            (select_glid->room.flag & (DNGMAP_ROOM_FLAG_BOSS | DNGMAP_ROOM_FLAG_SUB))) {
+            active_room = room_no;
+            marked = select_glid;
+        }
+        if (marked != NULL) {
+            select_glid = marked;
+        }
+        MenuDngMap->ResetDngMapPos(active_room, 1);
+        float x, y;
+        MenuDngMap->CalcGlidPutPos(marked, x, y, 0);
+        cursor_pos[0] = x - 30.0f - 20.0f;
+        cursor_pos[1] = y;
+        FadeInMenu(40, 0.0f);
+        mes_data = (short *) GetPackFile((u_int *) read->buffer, at_2789, NULL);
+        MsgInit();
+        u_long128  buffer[0xA000 / sizeof(u_long128)];
+        u_long128 *aligned = MenuCalcBufAlignment(buffer);
+        char       treasure_name[64];
+        sprintf(treasure_name, at_2790, dng_no + 1);
+        int size = 0;
+        if (LoadFile2(treasure_name, aligned, &size, 0)) {
+            CreatTresuarBoxInfo(&tresure, (char *) aligned, size);
+            tresure_loaded = 1;
+        }
+    }
+    DngInfoDrawAlpha = 0;
+    MenuCommonInfo->key_enable = 1;
+    money_view = 1;
+    mode = 0;
+    key_arg_no = 0;
+}
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", InitEnd__12CMenuTreeMapFv);
+#endif
+#ifdef NONMATCHING
+extern short         TreeMapSaveDispY;
 extern unsigned char TreeMapSaveFlag;
+
 void CMenuTreeMap::MsgInit() {
     for (int i = 0; i < DNG_TREE_MAP_MES_MAX; i++) {
         mes[i].SetMessData(mes_data, mes_data);
@@ -955,41 +1730,562 @@ void CMenuTreeMap::MsgInit() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", MsgInit__12CMenuTreeMapFv);
 #endif
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Step__12CMenuTreeMapFv);
 #ifdef NONMATCHING
-extern CDC2Mes *MenuDngMes[DNG_TREE_MAP_MES_MAX];
-extern CDngFreeMap *MenuDngMap;
+extern int             old_direction_2830;
+extern u8              init_2831;
+extern GLID_INFO      *old_glid_2833;
+extern u8              init_2834;
+extern GLID_INFO      *NextFloorGlid_2836;
+extern u8              init_2837;
+extern int             bitTable_2900[12];
+extern u8              DngAskMessageDrawFlag;
+extern u8              DngInfoFishOkFlag;
+extern u8              DngInfoSphidaOkFlag;
+extern u8              dngfloor_infoview;
+extern u8              dngfloor_backdraw;
+extern u8              GeoramaMateriaInfoDrawFlag;
+extern u8              GeoramaMateriaInfoDrawPage;
+extern int             DngInfoDrawAlpha;
+extern DNG_FLOOR_SAVE *DngInfoFloorInfo;
+extern int             DngInfoRoomInfo;
+extern int             MenuDngDebugFlagSelect;
+extern float           DngTreeMapActiveLightRate;
+extern char            at_3342[];
+extern char            at_3343[];
+extern char            at_3344[];
+extern char            at_3345[];
+extern char            at_3346[];
+extern char            at_3347[];
+extern char            at_3348[];
+extern char            at_3349[];
+extern char            at_3350[];
+
+int CMenuTreeMap::Step() {
+    CDC2Mes      *message = MenuDCMsg[3];
+    CMenuKeyFunc *keys = MenuCommonInfo;
+    int           result = 0;
+    if (!init_2831) {
+        old_direction_2830 = -1;
+        init_2831 = 1;
+    }
+    if (!init_2834) {
+        old_glid_2833 = NULL;
+        init_2834 = 1;
+    }
+    int fade_done = FadeInOutMenu();
+    MenuDngMap->Step();
+    int  read_busy = ReadBGSync();
+    bool selection_changed = false;
+    if (!init_2837) {
+        NextFloorGlid_2836 = NULL;
+        init_2837 = 1;
+    }
+
+    if (mode == 12) {
+        if (step == 0 && FadeCheckMenu()) {
+            DngTreeMode = DNG_TREE_MODE_SAVE;
+        }
+        if (step == 1 && FadeCheckMenu()) {
+            mode = 0;
+        }
+    } else if (mode == 2) {
+        if (fade_done) {
+            DeleteTexBlock();
+            ExeScript(at_3342);
+            result = 1;
+            if (MenuArg.end_code == 5) {
+                result = 2;
+                if (TreeMapCallDungeonSubMap) {
+                    MenuArg.end_code = 6;
+                    MenuArg.result[0] = 1;
+                    MakeDngTreeMapJumpNo(dng_no, MenuArg.result[2], &MenuArg.result[0], &MenuArg.result[1]);
+                    GetSaveData()->ResetBitCtrl(0x10);
+                    if (MenuArg.result[2] == 0) {
+                        GetSaveData()->save_dungeon.SetFloorID(0);
+                    }
+                }
+                if (CheckDngTreeMapFuncType() == 0 && MenuArg.result[0] == 2) {
+                    MenuMainScene->skip_load_bgm = 1;
+                }
+                CheckDngTreeMapFuncType();
+                DNG_BATTLE_AREA *area = (DNG_BATTLE_AREA *) menu_GetBattleAreaScene();
+                if (area != NULL) {
+                    area->floor_status &= 0xFFF8;
+                }
+            }
+            old_glid_2833 = NULL;
+            old_direction_2830 = -1;
+        }
+    } else if (mode == 1) {
+        if (fade_done && !read_busy) {
+            InitEnd();
+            selection_changed = true;
+            cursor_reset = 1;
+            old_direction_2830 = -1;
+            old_glid_2833 = NULL;
+        }
+    } else {
+        keys->SelDataInit();
+        keys->CheckSelectKey();
+        int directions = keys->CheckLRKey();
+        int buttons = keys->CheckPushButton();
+        int action = -1;
+        if (key_arg_no == 2) {
+            if ((buttons & 4) || (buttons & 2)) {
+                action = 0x83;
+                MenuSePlay(1);
+            }
+        } else if (key_arg_no == 1) {
+            if (!DngAskMessageDrawFlag) {
+                if (buttons) {
+                    action = 0x78;
+                }
+            } else if (!dngfloor_infoview) {
+                int cursor = message->YesNoCursor();
+                if (buttons & 1) {
+                    action = cursor == 1 ? 0x78 : (cursor == 0 ? 0x6E : -1);
+                } else if (buttons & 2) {
+                    action = 0x78;
+                }
+            } else if (buttons & 1) {
+                action = CheckDngTreeMapFuncType() == 1 ? -1 : 0x6E;
+            } else if (buttons & 2) {
+                action = 0x78;
+            } else if ((buttons & 4) && GeoramaMateriaNum > 0) {
+                action = 0x82;
+            }
+        } else if (key_arg_no == 0) {
+            if (menu_debug_flag) {
+                DNG_FLOOR_SAVE *floor = MenuSaveDataDungeonPtr->GetFloorInfoPtr(dng_no, select_glid->room.floor_id);
+                if (directions & 1) {
+                    --MenuDngDebugFlagSelect;
+                }
+                if (directions & 2) {
+                    ++MenuDngDebugFlagSelect;
+                }
+                if (MenuDngDebugFlagSelect < 0) {
+                    MenuDngDebugFlagSelect = 0;
+                }
+                if (MenuDngDebugFlagSelect > 8) {
+                    MenuDngDebugFlagSelect = 8;
+                }
+                if (MenuDngDebugFlagSelect == 0) {
+                    if (((buttons & 1) || (directions & 8)) && floor != NULL && floor->visit_count < 30000) {
+                        ++floor->visit_count;
+                    }
+                    if (((buttons & 2) || (directions & 4)) && floor != NULL && floor->visit_count) {
+                        --floor->visit_count;
+                    }
+                } else if (floor != NULL) {
+                    if ((buttons & 1) || (directions & 8)) {
+                        floor->flag |= bitTable_2900[MenuDngDebugFlagSelect];
+                    }
+                    if ((buttons & 2) || (directions & 4)) {
+                        floor->flag &= ~bitTable_2900[MenuDngDebugFlagSelect];
+                    }
+                }
+                if (buttons & 4) {
+                    for (int id = 0;; ++id) {
+                        DNG_FLOOR_SAVE *entry = MenuSaveDataDungeonPtr->GetFloorInfoPtr(dng_no, id);
+                        if (entry == NULL) {
+                            break;
+                        }
+                        if (entry->visit_count < 30000) {
+                            ++entry->visit_count;
+                        }
+                        entry->flag = 0x1FB;
+                    }
+                }
+                if ((buttons & 7) || (directions & 0xC)) {
+                    MenuDngMap->floor_manager->CheckDrawGlidInfo();
+                }
+                if (directions & 0x20) {
+                    MenuActiveSaveData->SetBitFlag(0xDC, 1);
+                    MenuActiveSaveData->SetBitFlag(0x13D, 1);
+                }
+                return 0;
+            }
+            int dir = -1;
+            if (directions & 1) {
+                dir = 0;
+            } else if (directions & 2) {
+                dir = 1;
+            } else if (directions & 4) {
+                dir = 2;
+            } else if (directions & 8) {
+                dir = 3;
+            }
+            GLID_INFO *next = NULL;
+            if (dir >= 0) {
+                next = MenuDngMap->floor_manager->GetKeyNextRoom(select_glid->room.floor_id, dir, old_glid_2833);
+            }
+            if (next != NULL && next != select_glid && next->room.unk_44 == 1) {
+                MenuSePlay(0);
+                old_glid_2833 = select_glid;
+                old_direction_2830 = -1;
+                select_glid = next;
+                MenuDngMap->SetNextRoomPos(next);
+                DngTreeMapActiveLightRate = 0.0f;
+                selection_changed = true;
+            }
+            MenuDngMap->select_glid = select_glid;
+            if (buttons == 4) {
+                if (!TreeMapSaveFlag) {
+                    MenuSePlay(5);
+                } else {
+                    FadeOutMenu(40, 0.0f);
+                    mode = 12;
+                    step = 0;
+                    MenuSePlay(1);
+                }
+            } else if (buttons == 8 || buttons == 2) {
+                int kind = CheckDngTreeMapFuncType();
+                action = 200;
+                if ((buttons == 8 && kind != 0) || (buttons == 2 && kind == 2)) {
+                    action = 100;
+                    NextFloorGlid_2836 = MenuDngMap->GetEntranceRoomGlid();
+                }
+            } else if (buttons == 1) {
+                action = 100;
+                NextFloorGlid_2836 = select_glid ? select_glid : MenuDngMap->GetEntranceRoomGlid();
+                if (NextFloorGlid_2836 == MenuDngMap->GetEntranceRoomGlid() &&
+                    ((MenuMainScene->active_map >= 0 && MenuMainScene->active_map < 11 &&
+                      (GetMapType(MenuMainScene->now_map_no) == 2 ||
+                       GetMapType(MenuMainScene->now_map_no) == 4 ||
+                       GetMapType(MenuMainScene->now_map_no) == 6)) ||
+                     (MenuMainScene->active_map == 1 && MenuMainScene->now_map_no == 100))) {
+                    action = 200;
+                }
+            }
+        }
+        DNG_FLOOR_SAVE *target_save = NextFloorGlid_2836 ? MenuSaveDataDungeonPtr->GetFloorInfoPtr(dng_no, NextFloorGlid_2836->room.floor_id) : NULL;
+        if (action == 200) {
+            MenuSePlay(5);
+            FadeOutMenu(40, 0.0f);
+            unk_11a = 0;
+            mode = 2;
+            cursor_view = 0;
+        } else if (action == 0x78) {
+            MenuSePlay(5);
+            key_arg_no = 0;
+            dngfloor_infoview = 0;
+            dngfloor_backdraw = 0;
+            cursor_view = 1;
+            money_view = 0;
+        } else if (action == 0x83) {
+            if (GeoramaMateriaNum < 15 || GeoramaMateriaInfoDrawPage) {
+                DngInfoDrawAlpha = 128;
+                key_arg_no = 1;
+                dngfloor_infoview = 1;
+                GeoramaMateriaInfoDrawFlag = 0;
+            } else {
+                GeoramaMateriaInfoDrawPage = 1;
+            }
+        } else if (action == 0x82) {
+            dngfloor_infoview = 0;
+            dngfloor_backdraw = 1;
+            GeoramaMateriaInfoDrawFlag = 1;
+            GeoramaMateriaInfoDrawPage = 0;
+            DngInfoDrawAlpha = 0;
+            MenuSePlay(1);
+            key_arg_no = 2;
+        } else if (action == 0x6E) {
+            MenuSePlay(1);
+            if (jump_pay) {
+                int money = -MenuUserDataManPtr->money;
+                if (money < 0) {
+                    ++money;
+                }
+                MenuUserDataManPtr->AddMoney(money >> 1);
+            }
+            MenuArg.result[1] = 0;
+            MenuArg.end_code = 5;
+            MenuArg.result[0] = 1;
+            if (MenuDngMap->user_glid != NULL) {
+                MenuSaveDataDungeonPtr->stage_id = dng_no;
+                MenuArg.result[1] = MenuSaveDataDungeonPtr->prev_floor_id[dng_no];
+            }
+            MenuArg.result[2] = NextFloorGlid_2836->room.floor_id;
+            bool jump_event = false;
+            u32  room_flags = NextFloorGlid_2836->room.flag;
+            if (room_flags & (DNGMAP_ROOM_FLAG_SUB | DNGMAP_ROOM_FLAG_BOSS)) {
+                if (dng_no == 1 && MenuArg.result[2] == 6) {
+                    MenuMainScene->skip_play_bgm = 1;
+                } else {
+                    jump_event = true;
+                }
+                MenuSaveDataDungeonPtr->SetFloorID(MenuArg.result[2]);
+            }
+            if (dng_no == 0 && ((MenuArg.result[2] == 3 && !CheckBitFlagMenu(0x66)) ||
+                                (MenuArg.result[2] == 8 && !CheckBitFlagMenu(0xC9)) || MenuArg.result[2] == 6)) {
+                jump_event = true;
+            }
+            if (dng_no == 1 && ((MenuArg.result[2] == 2 && !CheckBitFlagMenu(0xD4)) || MenuArg.result[2] == 14)) {
+                jump_event = true;
+            }
+            if (dng_no == 2 && ((MenuArg.result[2] == 2 && !CheckBitFlagMenu(0x133)) ||
+                                (MenuArg.result[2] == 21 && !CheckBitFlagMenu(0x158)) || MenuArg.result[2] == 22)) {
+                jump_event = true;
+            }
+            if (dng_no == 3 && ((MenuArg.result[2] == 2 && !CheckBitFlagMenu(0x196)) ||
+                                (MenuArg.result[2] == 17 && !CheckBitFlagMenu(0x1A8)) || MenuArg.result[2] == 19)) {
+                jump_event = true;
+            }
+            if ((dng_no == 4 && MenuArg.result[2] == 21) || (dng_no == 5 && MenuArg.result[2] == 26) ||
+                (dng_no == 6 && MenuArg.result[2] == 37)) {
+                jump_event = true;
+            }
+            if (jump_event) {
+                MenuMainScene->skip_load_bgm = 1;
+            }
+            unk_11a = 0;
+            mode = 2;
+            FadeOutMenu(40, 0.0f);
+        } else if (action == 100) {
+            bool open_question = false;
+            if (NextFloorGlid_2836 == NULL || (target_save != NULL && !(target_save->flag & 1))) {
+                MenuSePlay(5);
+            } else if (CheckDngTreeMapFuncType() == 0 && TreeMapCallDungeonSubMap == 1) {
+                int loop_no, map_no;
+                MakeDngTreeMapJumpNo(dng_no, NextFloorGlid_2836->room.floor_id, &loop_no, &map_no);
+                if (map_no == MenuMainScene->now_map_no) {
+                    MenuSePlay(5);
+                } else {
+                    open_question = true;
+                }
+            } else {
+                open_question = true;
+            }
+            if (open_question) {
+                selection_changed = true;
+                DngAskMessageDrawFlag = 1;
+                if (CheckDngTreeMapFuncType() == 1 && !(NextFloorGlid_2836->room.flag & DNGMAP_ROOM_FLAG_START)) {
+                    DngAskMessageDrawFlag = 2;
+                }
+                u32 flags = NextFloorGlid_2836->room.flag;
+                if (DngAskMessageDrawFlag == 2 && (flags & (DNGMAP_ROOM_FLAG_SUB | DNGMAP_ROOM_FLAG_BOSS | DNGMAP_ROOM_FLAG_EXIT))) {
+                    MenuSePlay(5);
+                    message->SetAbsPos(5);
+                } else {
+                    MenuSePlay(0x13);
+                    dngfloor_infoview = 1;
+                    dngfloor_backdraw = 1;
+                    DngInfoRoomInfo = (int) &NextFloorGlid_2836->room;
+                    DngInfoFloorInfo = target_save;
+                    GetSaveData()->GetBitCtrl();
+                    DNG_BATTLE_AREA *area = (DNG_BATTLE_AREA *) menu_GetBattleAreaScene();
+                    jump_pay = (area->unk_5c == 0 && MenuCommonInfo->open_type == 1 && !TreeMapCallDungeonSubMap);
+                    int mes_no = 0x3C;
+                    if (flags & (DNGMAP_ROOM_FLAG_START | DNGMAP_ROOM_FLAG_SUB | DNGMAP_ROOM_FLAG_EXIT | DNGMAP_ROOM_FLAG_BOSS)) {
+                        mes_no = 0x3D;
+                        int name_id = NextFloorGlid_2836->room.floor_id + (dng_no + 1) * 1000;
+                        message->SetMsgItemNo(&name_id, 1);
+                    }
+                    if (jump_pay) {
+                        mes_no += 2;
+                    }
+                    message->SetAbsPos(-1);
+                    int put_pos[2] = {0x3C, 0x118};
+                    message->SetPutPos(put_pos);
+                    message->ClsMes::mes_no = -1;
+                    message->SetMsgCursor(0);
+                    message->fade = 0.0f;
+                    message->fade_speed = 0.1f;
+                    for (int i = 0; i < 3; ++i) {
+                        message->line_pos_on[i] = 0;
+                    }
+                    if (flags & (DNGMAP_ROOM_FLAG_START | DNGMAP_ROOM_FLAG_SUB | DNGMAP_ROOM_FLAG_EXIT | DNGMAP_ROOM_FLAG_BOSS)) {
+                        message->abs_win.x = -1;
+                        message->abs_win.y = -1;
+                        message->SetAbsPos(5);
+                        dngfloor_infoview = 0;
+                    }
+                    message->fuchi = 5;
+                    message->font_w = 15;
+                    message->SetMsgCursor(1);
+                    message->MakeMsg(mes_no);
+                    money_view = jump_pay ? 1 : 0;
+                    GeoramaMateriaNum = 0;
+                    if (dngfloor_infoview) {
+                        message->fuchi = 0;
+                        message->font_w = LanguageCode > 0 ? 17 : 8;
+                        message->fade_speed = 1.0f;
+                        message->fade = 1.0f;
+                        message->select_top = -1;
+                        message->SetMsgCursor(-1);
+                        GeoramaMateriaNum = CheckGeoramaMateria(&tresure, select_glid->room.floor_id, georama_materia);
+                        if (!(target_save->flag & 2)) {
+                            GeoramaMateriaNum = 0;
+                        }
+                        message->line_pos[0][0] = 0x46;
+                        message->line_pos[0][1] = mgScreenHeight - (GeoramaMateriaNum ? 0x46 : 0x32);
+                        message->line_pos_on[0] = 1;
+                        message->line_pos[1][0] = 0x14A;
+                        message->line_pos[1][1] = mgScreenHeight - 0x32;
+                        message->line_pos_on[1] = 1;
+                        if (GeoramaMateriaNum) {
+                            message->line_pos[2][0] = 0x46;
+                            message->line_pos[2][1] = mgScreenHeight - 0x2C;
+                            message->line_pos_on[2] = 1;
+                        }
+                        message->MakeMsg(GeoramaMateriaNum ? 0x41 : 0x40);
+                        if (GeoramaMateriaNum && (LanguageCode == 4 || LanguageCode == 5)) {
+                            message->line_pos[0][0] = message->line_pos[2][0] = 0x2E;
+                            message->line_pos[1][0] = 0x160;
+                        }
+                        if (GeoramaMateriaNum && CheckDngTreeMapFuncType() == 1) {
+                            message->line_pos[0][0] = message->line_pos[1][0] = 0x208;
+                        }
+                        money_view = 0;
+                    }
+                    cursor_view = 0;
+                    key_arg_no = 1;
+                }
+            }
+        }
+    }
+    if (select_glid != NULL && select_glid->type == 1) {
+        DngInfoFloorInfo = MenuSaveDataDungeonPtr->GetFloorInfoPtr(dng_no, select_glid->room.floor_id);
+        if (selection_changed) {
+            DNGMAP_ROOM_INFO *room = &select_glid->room;
+            int               messages[8] = {room->floor_id + (dng_no + 1) * 1000, 0x96, 0x97, 0x98,
+                                             0x99, room->practice_type + 100, 0x9B, 0x46};
+            int               challenge_values[2] = {0, 0};
+            if (room->practice_type == 0) {
+                int seconds = room->practice_param / 60;
+                challenge_values[0] = seconds / 60;
+                challenge_values[1] = seconds % 60;
+                if (challenge_values[1] == 0) {
+                    messages[5] = 0x5A;
+                } else {
+                    messages[5] = 0x5B;
+                }
+                mes[5].SetMsgVolumeNo(challenge_values, 2);
+            } else if (room->practice_type >= 1 && room->practice_type <= 4) {
+                messages[5] = room->practice_param + 0x65;
+            } else if (room->practice_type == 5) {
+                messages[5] = 0x6C;
+            }
+            if (room->fishing < 0) {
+                messages[3] = 0x79;
+            }
+            if (room->fishing > 0) {
+                messages[3] = 0x78;
+            }
+            mes[3].SetMsgVolumeNoOne(room->fishing_record);
+            DngInfoFishOkFlag = CheckBitFlagMenu(0xDC) != 0;
+            DngInfoSphidaOkFlag = CheckBitFlagMenu(0x13D) != 0;
+            if (!DngInfoFishOkFlag) {
+                messages[3] = 2;
+            }
+            if (!DngInfoSphidaOkFlag) {
+                messages[4] = 2;
+            }
+            int prize_no = (DngInfoFloorInfo->flag & 0x80) ? 0x28 : 41;
+            mes[4].SetMsgItemNo(&prize_no, 1);
+            int spheda_no = (DngInfoFloorInfo->flag & 8) ? 0x28 : 0x29;
+            mes[5].SetMsgItemNo(&spheda_no, 1);
+            if (CheckNowEurope()) {
+                mes[6].value_half = 1;
+            }
+            mes[6].SetMsgVolumeNoOne(DngInfoFloorInfo->kill_count);
+            int best_time = DngInfoFloorInfo->fast_destroy_time;
+            int target_time = room->fast_destroy_time;
+            int minutes = (best_time > 0 && best_time < target_time ? best_time : target_time) / 60;
+            if (!(DngInfoFloorInfo->flag & 0x10)) {
+                messages[1] = 0x9A;
+            }
+            int  seconds = minutes % 60;
+            int  hours = minutes / 60;
+            char time_text[72];
+            if (hours >= 100) {
+                strcpy(time_text, CheckNowEurope() ? at_3344 : at_3343);
+            } else if (!CheckNowEurope()) {
+                if (hours < 10) {
+                    strcpy(time_text, at_3349);
+                } else {
+                    strcpy(time_text, GetMenuBigNum(hours / 10));
+                }
+                strcat(time_text, GetMenuBigNum(hours % 10));
+                strcat(time_text, at_3350);
+                if (seconds < 10) {
+                    strcat(time_text, at_3349);
+                } else {
+                    strcat(time_text, GetMenuBigNum(seconds / 10));
+                }
+                strcat(time_text, GetMenuBigNum(seconds % 10));
+            } else if (hours < 10 && seconds < 10) {
+                sprintf(time_text, at_3345, hours, seconds);
+            } else if (hours < 10) {
+                sprintf(time_text, at_3346, hours, seconds / 10, seconds % 10);
+            } else if (seconds < 10) {
+                sprintf(time_text, at_3347, hours, seconds);
+            } else {
+                sprintf(time_text, at_3348, hours, seconds / 10, seconds % 10);
+            }
+            char *time_ptr = time_text;
+            mes[1].SetMsgItemNo(&time_ptr, 1);
+            messages[7] = (DngInfoFloorInfo->flag & 0x100) ? 0x46 : 0x47;
+            if (!room->geostone) {
+                messages[7] = 2;
+            }
+            for (int i = 0; i < 8; ++i) {
+                mes[i].MakeMsg(messages[i]);
+                mes[i].line_pos[0][0] = 600;
+                mes[i].line_pos[0][1] = 10;
+                mes[i].line_pos_on[0] = 1;
+                mes[i].line_pos[1][0] = 600;
+                mes[i].line_pos[1][1] = 10;
+                mes[i].line_pos_on[1] = 1;
+            }
+        }
+    }
+    return result;
+}
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Step__12CMenuTreeMapFv);
+#endif
+#ifdef NONMATCHING
+extern CDC2Mes      *MenuDngMes[DNG_TREE_MAP_MES_MAX];
+extern CDngFreeMap  *MenuDngMap;
 extern unsigned char dngfloor_infoview;
 extern unsigned char dngfloor_backdraw;
-extern int dngfloor_backdraw_alpha;
+extern int           dngfloor_backdraw_alpha;
 extern unsigned char GeoramaMateriaInfoDrawFlag;
 extern unsigned char DngAskMessageDrawFlag;
-extern short TreeMapSaveDispCount;
-extern short TreeMapSaveNum;
-extern float TreeMapSaveHopCount;
+extern short         TreeMapSaveDispCount;
+extern short         TreeMapSaveNum;
+extern float         TreeMapSaveHopCount;
+
 void CMenuTreeMap::Draw() {
     if ((mode & 2) && unk_11a == 1) {
         return;
     }
     MenuDngMap->Draw();
     int show_help = help_view != 0 && dngfloor_infoview == 0 && key_arg_no == 0;
-    if (menu_debug_flag != 0) show_help = 0;
+    if (menu_debug_flag != 0) {
+        show_help = 0;
+    }
     mgCDrawPrim *prim = GetMenuPrim();
     if (show_help) {
-        mgTexManager.ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *)NULL);
+        mgTexManager.ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *) NULL);
         MenuDCMsg[6]->StepMsg();
         MenuDCMsg[6]->DrawMsg();
         if (TreeMapSaveFlag == 1) {
             TreeMapSaveDispCount++;
-            if (TreeMapSaveDispCount >= 90) TreeMapSaveDispCount = 0;
+            if (TreeMapSaveDispCount >= 90) {
+                TreeMapSaveDispCount = 0;
+            }
             MenuDCMsg[6]->line_color[1] = 0x80E0E060;
             if (TreeMapSaveNum == 0) {
                 if (TreeMapSaveHopCount < 0.6829549f || TreeMapSaveHopCount > 2.4586377f) {
                     MenuDCMsg[6]->line_color[1] = 0x80686A6B;
                 }
                 TreeMapSaveHopCount += 0.06829549f;
-                if (TreeMapSaveHopCount >= 3.1415927f) TreeMapSaveHopCount -= 3.1415927f;
-                MenuDCMsg[6]->line_pos[1][1] = (int)((float)TreeMapSaveDispY - 10.0f * sinf(TreeMapSaveHopCount));
+                if (TreeMapSaveHopCount >= 3.1415927f) {
+                    TreeMapSaveHopCount -= 3.1415927f;
+                }
+                MenuDCMsg[6]->line_pos[1][1] = (int) ((float) TreeMapSaveDispY - 10.0f * sinf(TreeMapSaveHopCount));
                 MenuDCMsg[6]->line_pos_on[1] = 1;
             }
         }
@@ -1006,7 +2302,7 @@ void CMenuTreeMap::Draw() {
         int number_y = 0;
         int number_alpha = 0;
         if (Floor_InfoTex != NULL) {
-            mgTexManager.ReloadTexture(Floor_InfoTex->block, (sceVif1Packet *)NULL);
+            mgTexManager.ReloadTexture(Floor_InfoTex->block, (sceVif1Packet *) NULL);
             int alpha = dngfloor_backdraw_alpha * 2;
             SetSpriteEnv(prim, 0);
             prim->Begin(6);
@@ -1024,12 +2320,12 @@ void CMenuTreeMap::Draw() {
         DrawDngRoomInfo(&MenuDngMap->select_glid->room);
         if (GeoramaMateriaInfoDrawFlag != 0 && Floor_InfoTex != NULL) {
             DrawGeoramaMateria(94, MenuDngMap->select_glid->room.title,
-                                GeoramaMateriaNum, georama_materia, Floor_InfoTex->block);
+                               GeoramaMateriaNum, georama_materia, Floor_InfoTex->block);
         }
         MenuDngMap->DrawDngName(128);
-        mgTexManager.ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *)NULL);
+        mgTexManager.ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *) NULL);
         CMenuFont font;
-        char number[64];
+        char      number[64];
         SetMenuBigNum(number, medal);
         font.SetStr(number);
         font.SetPos(number_x, number_y);
@@ -1056,24 +2352,24 @@ void CMenuTreeMap::Draw() {
         if (cursor == NULL) {
             return;
         }
-        mgTexManager.ReloadTexture(cursor->block, (sceVif1Packet *)NULL);
+        mgTexManager.ReloadTexture(cursor->block, (sceVif1Packet *) NULL);
         MenuCursorDraw(cursor, cursor_pos, 0.0f, cursor_alpha);
     }
     if (money_view != 0 && Floor_InfoTex != NULL) {
-        mgTexManager.ReloadTexture(Floor_InfoTex->block, (sceVif1Packet *)NULL);
+        mgTexManager.ReloadTexture(Floor_InfoTex->block, (sceVif1Packet *) NULL);
         SetSpriteEnv(prim, 0);
         int y_money = mgScreenHeight - 76;
         prim->Begin(6);
         prim->Texture(Floor_InfoTex);
         prim->Color(128, 128, 128, 128);
         mgRect<int> money_rect(0, 144, 184, 36);
-        PrimQuad(prim, 302.0f, (float)y_money, money_rect);
+        PrimQuad(prim, 302.0f, (float) y_money, money_rect);
         mgRect<int> number_rect(0, 126, 12, 18);
         PrimDrawNumber(prim, GetUserDataMan()->money, 0, 426, y_money + 7,
                        number_rect, -1, 0);
         prim->End();
     }
-    mgTexManager.ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *)NULL);
+    mgTexManager.ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *) NULL);
     if (key_arg_no == 1 && DngAskMessageDrawFlag == 1) {
         MenuDCMsg[3]->StepMsg();
         MenuDCMsg[3]->DrawMsg();
@@ -1103,11 +2399,85 @@ int CMenuTreeMap::FadeInOutMenu() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", FadeInOutMenu__12CMenuTreeMapFv);
 #endif
+#ifdef NONMATCHING
+extern mgCMemory     MenuTreeMapStack;
+extern CMenuTreeMap *CMenuTreePt;
+extern CDngFreeMap  *MenuDngMap;
+extern CDC2Mes      *MenuDngMes[8];
+extern u_long128    *MenuCursorDataBuff;
+extern int           DngInfoRoomInfo;
+extern int           dngfloor_backdraw_alpha;
+extern u8            dngfloor_infoview;
+extern u8            dngfloor_backdraw;
+extern s16           TreeMapSaveDispCount;
+extern u8            DngInfoStageNo;
+extern char         *at_3478[2];
+extern char          at_3539[];
+extern char          at_3540[];
+
+void DngTreeMapInit(mgCMemory *stack, int *tex_block, int menu_mode, int dng_no) {
+    MenuTreeMapStack.stSetBuffer(stack->stGetTop(), stack->stGetRest());
+    MenuTreeMapStack.Align64();
+    CMenuTreePt = new (MenuTreeMapStack.Alloc(0x2FC0)) CMenuTreeMap;
+    for (int i = 0; i < 8; ++i) {
+        MenuDngMes[i] = &CMenuTreePt->mes[i];
+        MenuDngMes[i]->Init();
+        MenuDngMes[i]->SetBuff_system(GetSystemMesBuffer());
+    }
+    MenuDngMes[1]->digit_font = 0x10;
+    CMenuTreePt->SetTexBlock(tex_block);
+    MenuDngMap = new (MenuTreeMapStack.Alloc(0x13)) CDngFreeMap;
+    MenuDngMap->save_dungeon = MenuSaveDataDungeonPtr;
+    DNG_BATTLE_AREA *area = (DNG_BATTLE_AREA *) menu_GetBattleAreaScene();
+    MenuDngMap->floor_manager = &area->floor_manager;
+    DngTreeMode = DNG_TREE_MODE_MAP;
+    DngInfoRoomInfo = 0;
+    dngfloor_backdraw_alpha = 0;
+    if (menu_mode == 3 || menu_mode == 0) {
+        MenuTreeMapStack.Align64();
+        MenuCursorDataBuff = MenuTreeMapStack.stGetTop();
+        int size = LoadFileMenu(at_3539, MenuCursorDataBuff, 1);
+        MenuTreeMapStack.Alloc((size + 15) / 16);
+        CMenuTreePt->FadeOutMenu(1, 0.0f);
+        if (GetNowLoopNo() == 1 || menu_mode == 0) {
+            MenuDngMap->floor_manager->LoadDataTable(dng_no, &MenuTreeMapStack);
+            MenuDngMap->floor_manager->CheckDrawGlidInfo();
+            MenuTreeMapStack.Alloc(0x800);
+            MenuTreeMapStack.Align64();
+        }
+    } else {
+        if (MenuCommonInfo->cursor_form != NULL) {
+            MenuCommonInfo->cursor_form->draw_flag = 0;
+        }
+        MenuCommonInfo->SetVibeCnt(0, 0);
+        MenuCommonInfo->SetWakuType(-1);
+        MenuCommonInfo->key_enable = 0;
+        MenuCommonInfo->cursor = 0;
+        MenuCommonInfo->top_line = 0;
+        CMenuTreePt->FadeOutMenu(30, 0.0f);
+    }
+    dngfloor_infoview = 0;
+    dngfloor_backdraw = 0;
+    TreeMapSaveDispCount = 0;
+    if (dng_no < 0 || dng_no > 6) {
+        dng_no = 0;
+    }
+    CMenuTreePt->dng_no = dng_no;
+    MenuDngMap->dng_no = dng_no;
+    DngInfoStageNo = dng_no;
+    char filename[40];
+    sprintf(filename, at_3540, dng_no);
+    char *names[2] = {filename, at_3478[1]};
+    MenuCommonReadData(&MenuTreeMapStack, names, 0);
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DngTreeMapInit__FP9mgCMemoryPiii);
+#endif
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Init__6ClsMesFv);
 #ifdef NONMATCHING
-extern mgCMemory MenuTreeMapStack;
+extern mgCMemory    MenuTreeMapStack;
 extern CDngFreeMap *MenuDngMap;
+
 int DngTreeMapKey() {
     int result = 0;
     if (DngTreeMode == DNG_TREE_MODE_MAP) {
@@ -1152,17 +2522,33 @@ void DngTreeMapDraw() {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DngTreeMapDraw__Fv);
 #endif
 int CBaseMenuClass::IsCreateObject(int select_key, int push_button) { return 1; }
+
 int CBaseMenuClass::IsMakeObject(int select_key, int push_button) { return 0; }
+
 int CBaseMenuClass::IsAskExtend(int select_key, int push_button) { return 0; }
+
 int CBaseMenuClass::ItemCmdAfter(int cmd_ret, ITEMCMD_RET_PARA *ret) { return 0; }
+
 void CBaseMenuClass::ExitEnd() {}
+
+#ifdef NONMATCHING
+template <>
+void mgRect<float>::Set(float new_left, float new_top, float new_right, float new_bottom) {
+    left = new_left;
+    top = new_top;
+    right = new_right;
+    bottom = new_bottom;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Set__9mgRect_f_Fffff);
+#endif
 
 // Static initialiser (.init)
 #ifdef NONMATCHING
-extern mgRect<int> dngfreemap_num;
+extern mgRect<int>   dngfreemap_num;
 extern mgRect<float> treemap_root_put;
-extern mgRect<int> Floor_Info;
+extern mgRect<int>   Floor_Info;
+
 extern "C" void __sinit_dngmenu_cpp() {
     dng_light_circle.Set(388, 304, 124, 80);
     dngfreemap_num.Set(0, 0, 12, 18);

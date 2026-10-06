@@ -1,32 +1,38 @@
 #include "common.h"
-#include "mg_memory.hpp"
-#include "mg_drawprim.hpp"
-#include "mg_texture.hpp"
-#include "mg_frame.hpp"
+#include "mw_runtime.h"
+
 #include "mg_drawenv.hpp"
+#include "mg_drawprim.hpp"
+#include "mg_frame.hpp"
 #include "mg_math.hpp"
+#include "mg_memory.hpp"
+#include "mg_texture.hpp"
 #define mgDBuff mgDBuffDeclaration
 #include "mglib.hpp"
 #undef mgDBuff
 extern u_char mgDBuff[];
-#include "mg_visual.hpp"
-#include "mg_tanime.hpp"
-
-#include <cstring>
-#include <cstdio>
 #include <eekernel.h>
+#include <libdev.h>
+
+#include <cstdio>
+#include <cstring>
+
+#include "mg_tanime.hpp"
+#include "mg_visual.hpp"
 
 static const u_int timer0_count = 0x10000000;
 static const u_int gs_csr = 0x12001000;
 static const u_int dma_tag_call = 0x50000000;
-static const int builtin_vu_prog_count = 3;
-static const int user_vu_prog_base = 0x100;
+static const int   builtin_vu_prog_count = 3;
+static const int   user_vu_prog_base = 0x100;
+
 enum {
     dbuff_draw_env_a = 0x60,
     dbuff_draw_env_b = 0x150,
     dbuff_clear_a = 0x100,
     dbuff_clear_b = 0x1F0
 };
+
 enum {
     gs_prim = 0x00,
     gs_rgbaq = 0x01,
@@ -40,68 +46,45 @@ enum {
     gs_zbuf1 = 0x4E
 };
 
-extern int draw_performance_meter;
-extern int call_back_active;
-extern u_int VSyncCallBack2;
-extern int vcount;
-extern int rot_priority;
-extern u_int *packetbuf[2];
+extern int           draw_performance_meter;
+extern int           call_back_active;
+extern u_int         VSyncCallBack2;
+extern int           vcount;
+extern int           rot_priority;
+extern u_int        *packetbuf[2];
 extern sceVif1Packet vifpacket[2];
-extern int packet_size;
-extern mgCMemory packet_buf[2];
-extern mgCMemory data_buf[2];
-extern int mgDataID;
-extern int mgDBuffID;
-extern int h_count;
-extern int mgChangeLight;
-extern int now_prog_id;
-extern u_long128 *prog_adr[3];
-extern u_long128 **user_prog_adr;
-extern int user_prog_num;
-extern int font_cons;
-extern int font_draw_flag;
-struct mgFrameTextureCopy {
-    short block;
-    short width;
-    short height;
-    short bpp;
-    char name[0x20];
-    u_int vram_size;
-    u_int image_blocks;
-    u_int clut_size;
-    u_long tex0;
-    u_long tex1;
-    u_long clamp;
-    float image[4];
-    u_int clut;
-    u_int swizzled;
-    u_int next;
-};
-extern mgFrameTextureCopy frame_tex;
+extern int           packet_size;
+extern mgCMemory     packet_buf[2];
+extern mgCMemory     data_buf[2];
+extern int           mgDataID;
+extern int           mgDBuffID;
+extern int           h_count;
+extern int           mgChangeLight;
+extern int           now_prog_id;
+extern u_long128    *prog_adr[3];
+extern u_long128   **user_prog_adr;
+extern int           user_prog_num;
+extern int           font_cons;
+extern int           font_draw_flag;
+
+extern mgCTexture frame_tex;
 extern mgCTexture fixz_tex[2];
-extern float at_863[4];
-extern float at_1389[4];
-extern char at_715[];
-extern char at_716[];
-extern "C" int fptosi(float value);
-extern "C" void Exit__2(int code);
-#ifndef NONMATCHING
-extern "C" int sceDevConsInit();
-extern "C" int sceDevConsOpen(int x, int y, int columns, int rows);
-extern "C" void sceDevConsClose(int handle);
-#endif
-void StoreImage(int index);
+extern float      at_863[4];
+extern float      at_1389[4];
+extern char       at_715[];
+extern char       at_716[];
+void              StoreImage(int front_buffer);
+int               VSyncCallBack(int field);
 
 #include <sifdev.h>
 extern sceGsStoreImage gs_simage;
 #ifdef NONMATCHING
-#include <libdev.h>
-extern int old_vcount;
-extern int over_vsync;
-extern int capture_on;
-extern int cap_ture_cnt;
-extern int frame_buf0;
-extern int frame_buf1;
+extern int       old_vcount;
+extern int       over_vsync;
+extern int       capture_on;
+extern int       cap_ture_cnt;
+extern int       frame_buf0;
+extern int       frame_buf1;
 extern sceGsDimx mgDIMX;
 #endif
 
@@ -109,17 +92,19 @@ extern sceGsDimx mgDIMX;
 void mgPerformanceMeter(int enable) {
     draw_performance_meter = enable;
 }
-int mgGetPerformanceMeterFlag(void) {
+
+int mgGetPerformanceMeterFlag() {
     return draw_performance_meter;
 }
+
 #pragma global_optimizer off
 #ifdef NONMATCHING
-extern "C" int VSyncCallBack__Fi(int field) {
+int VSyncCallBack(int field) {
     call_back_active = 1;
-    u_long csr = *(volatile u_long *)gs_csr;
+    u_long csr = *(volatile u_long *) gs_csr;
     VSyncField = (((csr >> 13) & 1) == 0);
     if (VSyncCallBack2 != 0) {
-        ((int (*)(int))VSyncCallBack2)(field);
+        ((int (*)(int)) VSyncCallBack2)(field);
     }
     ++vcount;
     if (vcount < 0) {
@@ -132,24 +117,30 @@ extern "C" int VSyncCallBack__Fi(int field) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", VSyncCallBack__Fi);
 #endif
 #pragma global_optimizer reset
+
 void mgInitVSyncCallBack(int (*callback)(int)) {
-    VSyncCallBack2 = (unsigned int)callback;
+    VSyncCallBack2 = (unsigned int) callback;
 }
+
 void mgSetRotateThread(int priority) {
     rot_priority = priority;
 }
+
 void WaitVSync(int start, int frames) {
 wait:
     if ((mgGetVSyncCount() - start) < frames) {
         if (rot_priority > 0) {
             RotateThreadReadyQueue(rot_priority);
         }
+
         goto wait;
     }
 }
-int mgGetVSyncCount(void) {
+
+int mgGetVSyncCount() {
     return vcount;
 }
+
 int GetScreenSize(int mode, int *width, int *height, int *left, int *top, int *right, int *bottom) {
     switch (mode) {
         case 3:
@@ -171,6 +162,7 @@ int GetScreenSize(int mode, int *width, int *height, int *left, int *top, int *r
             *height = 0x1C0;
             break;
     }
+
     *left = -(*width >> 1);
     *top = -(*height >> 1);
     *right = *width + *left;
@@ -179,8 +171,8 @@ int GetScreenSize(int mode, int *width, int *height, int *left, int *top, int *r
 }
 #ifdef NONMATCHING
 void mgInit(int screen_mode, int video_mode) {
-    sceGsDBuff *buffers = (sceGsDBuff *)mgDBuff;
-    static signed char dimx[16] = { 10, 4, 6, 8, 12, 0, 2, 14, 7, 9, 11, 5, 3, 15, 13, 1 };
+    sceGsDBuff        *buffers = (sceGsDBuff *) mgDBuff;
+    static signed char dimx[16] = {10, 4, 6, 8, 12, 0, 2, 14, 7, 9, 11, 5, 3, 15, 13, 1};
     sceDmaEnv          dma_env;
     u_long128          clear_pixels[8192];
     sceGsLoadImage     load_image;
@@ -206,7 +198,7 @@ void mgInit(int screen_mode, int video_mode) {
     DmaCH2 = sceDmaGetChan(2);
     DmaCH8 = sceDmaGetChan(8);
     DmaCH1->chcr.TTE = 1;
-    *(u_long128 *)&mgGiftagAD = 0;
+    *(u_long128 *) &mgGiftagAD = 0;
     mgGiftagAD.EOP = 1;
     mgGiftagAD.NREG = 1;
     mgGiftagAD.REGS0 = SCE_GIF_PACKED_AD;
@@ -232,7 +224,7 @@ void mgInit(int screen_mode, int video_mode) {
         FlushCache(0);
         sceGsExecLoadImage(&load_image, clear_pixels);
     }
-    sceGsSetDefDBuff(buffers, SCE_GS_PSMCT32, (short)mgScreenWidth, (short)mgScreenHeight, SCE_GS_ZGEQUAL, SCE_GS_PSMZ24, 0);
+    sceGsSetDefDBuff(buffers, SCE_GS_PSMCT32, (short) mgScreenWidth, (short) mgScreenHeight, SCE_GS_ZGEQUAL, SCE_GS_PSMZ24, 0);
     frame_buf0 = 0;
     frame_buf1 = mgScreenDepth * (mgScreenWidth * aligned_height / 2048) / 32;
     mgBackColor[0] = 0.0f;
@@ -244,23 +236,23 @@ void mgInit(int screen_mode, int video_mode) {
     buffers->draw1.frame1.FBP = frame_buf0;
     buffers->draw1.zbuf1.bits.zbp = frame_buf1 * 2;
     buffers->draw0.zbuf1.bits.zbp = buffers->draw1.zbuf1.bits.zbp;
-    buffers->clear0.rgbaq.bytes.red = (int)mgBackColor[0];
-    buffers->clear0.rgbaq.bytes.green = (int)mgBackColor[1];
-    buffers->clear0.rgbaq.bytes.blue = (int)mgBackColor[2];
-    buffers->clear0.rgbaq.bytes.alpha = (int)mgBackColor[3];
+    buffers->clear0.rgbaq.bytes.red = (int) mgBackColor[0];
+    buffers->clear0.rgbaq.bytes.green = (int) mgBackColor[1];
+    buffers->clear0.rgbaq.bytes.blue = (int) mgBackColor[2];
+    buffers->clear0.rgbaq.bytes.alpha = (int) mgBackColor[3];
     buffers->clear1.rgbaq.bytes.red = buffers->clear0.rgbaq.bytes.red;
     buffers->clear1.rgbaq.bytes.green = buffers->clear0.rgbaq.bytes.green;
     buffers->clear1.rgbaq.bytes.blue = buffers->clear0.rgbaq.bytes.blue;
     buffers->clear1.rgbaq.bytes.alpha = buffers->clear0.rgbaq.bytes.alpha;
-    *(u_long *)&mgTEX1_1 = 0x261;
+    *(u_long *) &mgTEX1_1 = 0x261;
     mgTEX1_2 = mgTEX1_1;
-    *(u_long *)&mgTEST_1 = 0x5000B;
+    *(u_long *) &mgTEST_1 = 0x5000B;
     mgTEST_2 = mgTEST_1;
     mgZBUF_1 = buffers->draw0.zbuf1;
     mgZBUF_2 = buffers->draw0.zbuf1;
-    *(u_long *)&mgALPHA_1 = 0x44;
+    *(u_long *) &mgALPHA_1 = 0x44;
     mgALPHA_2 = mgALPHA_1;
-    *(u_long *)&mgTEXA_1 = 0x100400000ULL;
+    *(u_long *) &mgTEXA_1 = 0x100400000ULL;
     mgTEXA_2 = mgTEXA_1;
     mgDrawManager.texture_manager = &mgTexManager;
     mgDrawManager.render_info = &mgRenderInfo;
@@ -280,11 +272,11 @@ void mgInit(int screen_mode, int video_mode) {
         sceDmaSend(DmaCH1, program);
         sceGsSyncPath(0, 0);
     }
-    *(volatile u_int *)0x10000010 = 0x83;
+    *(volatile u_int *) 0x10000010 = 0x83;
     mgFrameRate = 2;
     vcount = 0;
     over_vsync = 0;
-    sceGsSyncVCallback((int (*)(int))VSyncCallBack__Fi);
+    sceGsSyncVCallback((int (*)(int)) VSyncCallBack);
     VSyncCallBack2 = 0;
     call_back_active = 0;
     FlushCache(0);
@@ -296,7 +288,7 @@ void mgInit(int screen_mode, int video_mode) {
     }
     packed_dimx = 0;
     for (i = 0; i < 16; i++) {
-        packed_dimx |= (u_long)(dimx[i] & 0x7) << (i * 4);
+        packed_dimx |= (u_long) (dimx[i] & 0x7) << (i * 4);
     }
     mgDIMX.value = packed_dimx;
     mgDIMX.bits.dm00 = dimx[0];
@@ -320,22 +312,27 @@ void mgInit(int screen_mode, int video_mode) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgInit__Fii);
 #endif
 void mgInitVif1Packet(u_long128 *buffer_a, u_long128 *buffer_b, int size) {
-    packetbuf[0] = (u_int *)buffer_a;
-    packetbuf[1] = (u_int *)buffer_b;
-    int misalign = (int)packetbuf[0] % 4;
+    packetbuf[0] = (u_int *) buffer_a;
+    packetbuf[1] = (u_int *) buffer_b;
+    int misalign = (int) packetbuf[0] % 4;
+
     if (misalign != 0) {
         packetbuf[0] += 4 - misalign;
     }
-    misalign = (int)packetbuf[1] % 4;
+
+    misalign = (int) packetbuf[1] % 4;
+
     if (misalign != 0) {
         packetbuf[1] += 4 - misalign;
     }
+
     sceVif1PkInit(vifpacket, packetbuf[0]);
     sceVif1PkInit(vifpacket + 1, packetbuf[1]);
     sceVif1PkReset(vifpacket);
     sceVif1PkReset(vifpacket + 1);
     packet_size = size;
 }
+
 void mgSetPacketBuffer(mgCMemory *pool_a, mgCMemory *pool_b) {
     packet_buf[0] = *pool_a;
     packet_buf[1] = *pool_b;
@@ -344,42 +341,53 @@ void mgSetPacketBuffer(mgCMemory *pool_a, mgCMemory *pool_b) {
     packet_buf[1].stack_used = 0;
     packet_buf[1].lock = 0;
 }
+
 void mgSetDataBuffer(mgCMemory *pool_a, mgCMemory *pool_b, int skip_header) {
-    u_char *base = (u_char *)pool_a->stAllocTest(1);
-    int size = pool_a->stack_size - pool_a->stack_used;
+    u_char *base = (u_char *) pool_a->stAllocTest(1);
+    int     size = pool_a->stack_size - pool_a->stack_used;
+
     if (skip_header != 0) {
         base += 0x4000;
         size -= 0x800;
     }
-    data_buf[0].stSetBuffer((u_long128 *)base, size);
-    base = (u_char *)pool_b->stAllocTest(1);
+
+    data_buf[0].stSetBuffer((u_long128 *) base, size);
+    base = (u_char *) pool_b->stAllocTest(1);
     size = pool_b->stack_size - pool_b->stack_used;
+
     if (skip_header != 0) {
         base += 0x4000;
         size -= 0x800;
     }
-    data_buf[1].stSetBuffer((u_long128 *)base, size);
+
+    data_buf[1].stSetBuffer((u_long128 *) base, size);
     data_buf[0].stack_used = 0;
     data_buf[0].lock = 0;
     data_buf[1].stack_used = 0;
     data_buf[1].lock = 0;
 }
-mgCMemory *mgGetDataBuffer(void) {
+
+mgCMemory *mgGetDataBuffer() {
     return &data_buf[mgDataID];
 }
-int mgGetTopVRAMAddress(void) {
+
+int mgGetTopVRAMAddress() {
     int height = mgScreenHeight;
+
     if (height % 32 != 0) {
         height += 32 - height % 32;
     }
+
     height = mgScreenWidth * height;
     int blocks = mgScreenDepth * height * 2 / 256 / 8;
     blocks += mgScreenZDepth * height / 256 / 8;
     return blocks;
 }
-float mgGetNowFrameRate(void) {
-    return (float)mgFrameRate;
+
+float mgGetNowFrameRate() {
+    return (float) mgFrameRate;
 }
+
 void mgBeginFrame(mgCDrawManager *manager) {
     if (manager == NULL) {
         mgDrawManager.texture_manager = &mgTexManager;
@@ -387,8 +395,8 @@ void mgBeginFrame(mgCDrawManager *manager) {
         mgDrawManager.render_info = &mgRenderInfo;
     }
 
-    *(int *)timer0_count = 0;
-    h_count = *(int *)timer0_count;
+    *(int *) timer0_count = 0;
+    h_count = *(int *) timer0_count;
 
     int red = fptosi(mgBackColor[0]);
     mgDBuff[dbuff_clear_a + 0] = red;
@@ -403,24 +411,26 @@ void mgBeginFrame(mgCDrawManager *manager) {
     mgDBuff[dbuff_clear_a + 3] = alpha;
     mgDBuff[dbuff_clear_b + 3] = alpha;
     mgBeginPacket(manager);
-    *(u_long128 *)&mgGiftagAD = 0;
+    *(u_long128 *) &mgGiftagAD = 0;
     mgGiftagAD.EOP = 1;
     mgGiftagAD.NREG = 1;
     mgGiftagAD.REGS0 = 0xE;
     sceVif1PkCnt(mgVif1Packet, 0);
     sceVif1PkOpenDirectCode(mgVif1Packet, 0);
-    sceVif1PkOpenGifTag(mgVif1Packet, *(u_long128 *)&mgGiftagAD);
+    sceVif1PkOpenGifTag(mgVif1Packet, *(u_long128 *) &mgGiftagAD);
     sceVif1PkAddGsAD(mgVif1Packet, gs_scanmsk, 0);
     sceVif1PkAddGsAD(mgVif1Packet, gs_texflush, 0);
     sceVif1PkCloseGifTag(mgVif1Packet);
     sceVif1PkCloseDirectCode(mgVif1Packet);
     mgSetPkTextureRepeat(1);
     long long *draw_env;
+
     if (mgDBuffID != 0) {
-        draw_env = (long long *)(mgDBuff + dbuff_draw_env_a);
+        draw_env = (long long *) (mgDBuff + dbuff_draw_env_a);
     } else {
-        draw_env = (long long *)(mgDBuff + dbuff_draw_env_b);
+        draw_env = (long long *) (mgDBuff + dbuff_draw_env_b);
     }
+
     mgFRAME_1.value = *draw_env;
     mgSetPkFrameBuffer(-1, -1, -1, -1);
     mgSetPkClearScreen(
@@ -428,12 +438,14 @@ void mgBeginFrame(mgCDrawManager *manager) {
         mgDBuff[dbuff_clear_a + 2], mgDBuff[dbuff_clear_a + 3]);
     mgFlushRenderInfo();
 }
+
 void mgBeginPacket(mgCDrawManager *manager) {
     mgCMemory *buffer;
 
     if (manager == NULL) {
         manager = &mgDrawManager;
     }
+
     mgVif1Packet = &vifpacket[mgDataID];
     sceVif1PkReset(mgVif1Packet);
     buffer = &packet_buf[mgDataID];
@@ -446,40 +458,55 @@ void mgBeginPacket(mgCDrawManager *manager) {
     manager->data_memory = &data_buf[mgDataID];
     manager->SetSortTable(1);
 }
+
 void mgBeginDraw(mgCMemory *memory, int *draw_size, mgCDrawManager *manager) {
     mgCDrawManager *mgr = manager;
-    if (mgr == NULL)
+
+    if (mgr == NULL) {
         mgr = &mgDrawManager;
+    }
+
     mgr->BeginDraw(memory, draw_size);
 }
+
 void mgEndDraw(mgCDrawManager *manager) {
     if (manager == NULL) {
         manager = &mgDrawManager;
     }
-    manager->EndDraw((sceVif1Packet *)mgVif1Packet);
+
+    manager->EndDraw((sceVif1Packet *) mgVif1Packet);
 }
+
 void mgPreEndDraw(mgCDrawManager *manager) {
     if (manager == NULL) {
         manager = &mgDrawManager;
     }
+
     manager->PreEndDraw();
 }
+
 int mgEndDrawReloadTexture(int texture, mgCDrawManager *manager) {
-    if (manager == NULL)
+    if (manager == NULL) {
         manager = &mgDrawManager;
+    }
+
     return manager->ReloadTexture(texture, mgVif1Packet);
 }
+
 void mgEndDraw(int mode, mgCDrawManager *manager) {
-    if (manager == NULL)
+    if (manager == NULL) {
         manager = &mgDrawManager;
+    }
+
     manager->Draw(mode, mgVif1Packet);
 }
-void mgStoreFrameImage(void) {
+
+void mgStoreFrameImage() {
     StoreImage(0);
 }
 #ifdef NONMATCHING
 void mgEndFrame(mgCDrawManager *manager) {
-    sceGsDBuff *buffers = (sceGsDBuff *)mgDBuff;
+    sceGsDBuff      *buffers = (sceGsDBuff *) mgDBuff;
     static int       count = 1;
     static float     cpu_ratio = 0.0f;
     static float     free_ratio = 0.0f;
@@ -499,13 +526,13 @@ void mgEndFrame(mgCDrawManager *manager) {
     u_long           display_base;
     u_long           display_position;
 
-    frame_ticks = (float)(mgFrameRate * 262);
-    cpu_ratio = 100.0f * ((u_int)(*(volatile u_int *)0x10000000 - h_count) / frame_ticks);
+    frame_ticks = (float) (mgFrameRate * 262);
+    cpu_ratio = 100.0f * ((u_int) (*(volatile u_int *) 0x10000000 - h_count) / frame_ticks);
     mgWaitFrame();
-    wait_start = *(volatile u_int *)0x10000000;
+    wait_start = *(volatile u_int *) 0x10000000;
     if (draw_performance_meter != 0) {
-        packet_free = 100.0f * (float)(mgDrawManager.packet_memory->stack_size - mgDrawManager.packet_memory->stack_used) / (float)mgDrawManager.packet_memory->stack_size;
-        data_free = 100.0f * (float)(mgDrawManager.data_memory->stack_size - mgDrawManager.data_memory->stack_used) / (float)mgDrawManager.data_memory->stack_size;
+        packet_free = 100.0f * (float) (mgDrawManager.packet_memory->stack_size - mgDrawManager.packet_memory->stack_used) / (float) mgDrawManager.packet_memory->stack_size;
+        data_free = 100.0f * (float) (mgDrawManager.data_memory->stack_size - mgDrawManager.data_memory->stack_used) / (float) mgDrawManager.data_memory->stack_size;
 
         mgCDrawPrim prim;
 
@@ -534,14 +561,14 @@ void mgEndFrame(mgCDrawManager *manager) {
             prim.Color(0, 0, 128, 64);
         }
         prim.Vertex(mgScreenWidth, top, 0);
-        prim.Vertex((float)mgScreenWidth - cpu_ratio, (float)(top + 8), 0.0f);
-        prim.Vertex((float)mgScreenWidth - (100.0f - free_ratio), (float)(top + 12), 0.0f);
+        prim.Vertex((float) mgScreenWidth - cpu_ratio, (float) (top + 8), 0.0f);
+        prim.Vertex((float) mgScreenWidth - (100.0f - free_ratio), (float) (top + 12), 0.0f);
         prim.Vertex(mgScreenWidth - 100, top + 16, 0);
         prim.Color(0, 128, 0, 64);
         prim.Vertex(mgScreenWidth, top + 20, 0);
-        prim.Vertex((float)mgScreenWidth - packet_free, (float)(top + 24), 0.0f);
+        prim.Vertex((float) mgScreenWidth - packet_free, (float) (top + 24), 0.0f);
         prim.Vertex(mgScreenWidth, top + 28, 0);
-        prim.Vertex((float)mgScreenWidth - data_free, (float)(top + 32), 0.0f);
+        prim.Vertex((float) mgScreenWidth - data_free, (float) (top + 32), 0.0f);
         prim.End();
     }
     mgEndPacket(NULL);
@@ -554,10 +581,10 @@ void mgEndFrame(mgCDrawManager *manager) {
                 FlushCache(0);
                 sceGsExecStoreImage(&store_image, store_data);
                 sceGsSyncPath(0, 0);
-                depth = ((u_int *)store_data)[0] & 0xFFFFFF;
+                depth = ((u_int *) store_data)[0] & 0xFFFFFF;
                 for (pixel = 0; pixel < 64; pixel++) {
-                    if ((int)(((u_int *)store_data)[pixel] & 0xFFFFFF) < depth) {
-                        depth = ((u_int *)store_data)[pixel] & 0xFFFFFF;
+                    if ((int) (((u_int *) store_data)[pixel] & 0xFFFFFF) < depth) {
+                        depth = ((u_int *) store_data)[pixel] & 0xFFFFFF;
                     }
                 }
                 mgPickZBuff[sample].z = depth;
@@ -592,7 +619,7 @@ void mgEndFrame(mgCDrawManager *manager) {
     if (mgAntialiasing != 0) {
         display->pmode = 0x7F23;
     } else {
-        *(volatile u_long *)0x12000000 = 0xFF23;
+        *(volatile u_long *) 0x12000000 = 0xFF23;
         display->pmode = 0xFF23;
     }
     display->bgcolor = 0;
@@ -603,23 +630,23 @@ void mgEndFrame(mgCDrawManager *manager) {
         magnification = 4;
     }
     display_base = frame->FBP | (frame->FBW << 9) | (frame->PSM << 15);
-    display_position = 0x290 | ((u_long)((524 - mgScreenHeight) / 2 + 72) << 12) | ((u_long)magnification << 23);
+    display_position = 0x290 | ((u_long) ((524 - mgScreenHeight) / 2 + 72) << 12) | ((u_long) magnification << 23);
     display->dispfb = display_base;
-    *(u_long *)&display->display = display_position | ((u_long)(mgScreenWidth * (magnification + 1) - 1) << 32) | ((u_long)(mgScreenHeight - 1) << 44);
+    *(u_long *) &display->display = display_position | ((u_long) (mgScreenWidth * (magnification + 1) - 1) << 32) | ((u_long) (mgScreenHeight - 1) << 44);
     FlushCache(0);
     sceGsSwapDBuff(buffers, mgDBuffID);
     sceDmaSync(DmaCH2, 0, 0);
     display_base = frame->FBP | (frame->FBW << 9) | (frame->PSM << 15);
-    *(volatile u_long *)0x12000070 = display_base | ((u_long)0x800 << 32);
-    *(volatile u_long *)0x12000080 = display_position | ((u_long)(mgScreenWidth * (magnification + 1) - 1) << 32) | ((u_long)(mgScreenHeight - 2) << 44);
-    *(volatile u_long *)0x12000090 = display_base;
-    *(volatile u_long *)0x120000A0 = display_position | ((u_long)(mgScreenWidth * (magnification + 1) - 1) << 32) | ((u_long)(mgScreenHeight - 2) << 44);
-    mgNowFrameRate = (u_int)(*(volatile u_int *)0x10000000 - h_count) / 262.0f;
-    if (mgNowFrameRate - (float)mgFrameRate > 1.0f) {
+    *(volatile u_long *) 0x12000070 = display_base | ((u_long) 0x800 << 32);
+    *(volatile u_long *) 0x12000080 = display_position | ((u_long) (mgScreenWidth * (magnification + 1) - 1) << 32) | ((u_long) (mgScreenHeight - 2) << 44);
+    *(volatile u_long *) 0x12000090 = display_base;
+    *(volatile u_long *) 0x120000A0 = display_position | ((u_long) (mgScreenWidth * (magnification + 1) - 1) << 32) | ((u_long) (mgScreenHeight - 2) << 44);
+    mgNowFrameRate = (u_int) (*(volatile u_int *) 0x10000000 - h_count) / 262.0f;
+    if (mgNowFrameRate - (float) mgFrameRate > 1.0f) {
         free_ratio = 0.0f;
-        mgNowFrameRate = 1.0f + (float)mgFrameRate;
+        mgNowFrameRate = 1.0f + (float) mgFrameRate;
     } else {
-        free_ratio = 100.0f * ((u_int)(*(volatile u_int *)0x10000000 - wait_start) / frame_ticks);
+        free_ratio = 100.0f * ((u_int) (*(volatile u_int *) 0x10000000 - wait_start) / frame_ticks);
     }
     count++;
     if (60 / mgFrameRate < count) {
@@ -638,74 +665,93 @@ void mgSendPacket(mgCDrawManager *manager) {
     sceDmaSend(DmaCH1, mgVif1Packet->pBase);
     mgDataID = !mgDataID;
 }
+
 void mgEndPacket(mgCDrawManager *manager) {
     sceVif1PkEnd(mgVif1Packet, 0);
     sceVif1PkTerminate(mgVif1Packet);
 }
-void mgWaitFrame(void) {
+
+void mgWaitFrame() {
     if (sceGsSyncPath(0, 0) < 0) {
         printf(at_715);
-        printf(at_716, *(int *)mgVif1Packet);
+        printf(at_716, *(int *) mgVif1Packet);
         Exit__2(-1);
     }
 }
+
 int mgDraw(mgCFrame *frame) {
-    if (frame != NULL)
+    if (frame != NULL) {
         return frame->Draw();
+    }
+
     return 0;
 }
+
 int mgDrawDirect(mgCFrame *frame) {
     if (frame == NULL) {
         return 0;
     }
+
     sceVif1PkTerminate(mgVif1Packet);
     int size = frame->Draw(mgVif1Packet->pCurrent);
     sceVif1PkReserve(mgVif1Packet, size * 4);
     return size;
 }
+
 int mgDrawDirect(mgCVisual *visual, float (*matrix)[4]) {
     if (visual == NULL) {
         return 0;
     }
+
     sceVif1PkTerminate(mgVif1Packet);
-    int size = visual->Draw((u_int *)*(int *)mgVif1Packet, matrix, 0);
+    int size = visual->Draw((u_int *) *(int *) mgVif1Packet, matrix, 0);
     sceVif1PkReserve(mgVif1Packet, size * 4);
     return size;
 }
-void mgDrawDirectStart(void) {
+
+void mgDrawDirectStart() {
     sceVif1PkTerminate(mgVif1Packet);
     ddraw_size = 0;
 }
+
 int mgDrawDirect2(mgCFrame *frame) {
     if (frame == NULL) {
         return 0;
     }
+
     int offset = ddraw_size << 4;
-    int size = frame->Draw((u_int *)(*(int *)mgVif1Packet + offset));
+    int size = frame->Draw((u_int *) (*(int *) mgVif1Packet + offset));
     ddraw_size += size;
     return size;
 }
-void mgDrawDirectEnd(void) {
-    if ((int)ddraw_size > 0) {
+
+void mgDrawDirectEnd() {
+    if (ddraw_size > 0) {
         sceVif1PkReserve(mgVif1Packet, ddraw_size * 4);
     }
 }
+
 int mgGetDrawRect(mgCFrame *frame, mgVu0FBOX *box) {
     if (frame != NULL) {
         return frame->GetDrawRect(box, NULL);
     }
+
     return 0;
 }
+
 void mgBeginDrawShadow(mgCTexture *shadow, mgCTexture *unused) {
     if (shadow != NULL) {
         int width = shadow->width;
         int height = shadow->height;
+
         if (width % 64 != 0) {
             width += 64 - width % 64;
         }
+
         if (height % 64 != 0) {
             height += 64 - height % 64;
         }
+
         mgSetPkFrameBuffer(shadow->tex0.TBP0 / 32, width, height, shadow->tex0.PSM);
         mgCDrawPrim prim;
         prim.Initialize(NULL, NULL);
@@ -748,11 +794,11 @@ void mgEndDrawShadow(mgCTexture *shadow, mgCTexture *unused) {
         alpha.bits.b = SCE_GS_ALPHA_CD;
         alpha.bits.c = SCE_GS_ALPHA_AS;
         alpha.bits.d = SCE_GS_ALPHA_CD;
-        prim.Direct(SCE_GS_ALPHA_1, *(u_long *)&alpha);
+        prim.Direct(SCE_GS_ALPHA_1, *(u_long *) &alpha);
         texa.TA0 = 48;
         texa.TA1 = 128;
         texa.AEM = 1;
-        prim.Direct(SCE_GS_TEXA, *(u_long *)&texa);
+        prim.Direct(SCE_GS_TEXA, *(u_long *) &texa);
         prim.TextureCrd(1, 1);
         prim.Vertex(0, 0, 0);
         prim.TextureCrd(texture.width - 1, texture.height - 1);
@@ -761,7 +807,7 @@ void mgEndDrawShadow(mgCTexture *shadow, mgCTexture *unused) {
         texa.TA1 = 128;
         texa.AEM = 1;
         prim.Direct(SCE_GS_TEXFLUSH, 0);
-        prim.Direct(SCE_GS_TEXA, *(u_long *)&texa);
+        prim.Direct(SCE_GS_TEXA, *(u_long *) &texa);
         prim.End();
     }
 }
@@ -770,124 +816,154 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgEndDrawShadow__FP10mgCTextureP10
 #endif
 void mgSetRenderInfo(float fov, float clip_near, float clip_far) {
     mgRenderInfo.SetRenderInfo(fov, mgScreenWidth, mgScreenHeight, clip_near, clip_far,
-                               mgScreenZDepth, 2096.0f / (3.0f * (float)mgScreenWidth));
+                               mgScreenZDepth, 2096.0f / (3.0f * (float) mgScreenWidth));
 }
+
 void mgSetProjection(float fov) {
     mgSetRenderInfo(fov, mgRenderInfo.clip_min[2], mgRenderInfo.clip_max[2]);
     mgSetViewMatrix(mgRenderInfo.view, mgRenderInfo.camera_pos);
 }
-float mgGetProjection(void) {
+
+float mgGetProjection() {
     return mgRenderInfo.projection;
 }
+
 void mgSetBackGround(float *color) {
     sceVu0CopyVector(mgBackColor, color);
 }
+
 void mgSetBackGround(float red, float green, float blue, float alpha) {
     float vector[4];
-    *(u_long128 *)vector = *(u_long128 *)at_863;
+    *(u_long128 *) vector = *(u_long128 *) at_863;
     vector[0] = red;
     vector[1] = green;
     vector[2] = blue;
     vector[3] = alpha;
     mgSetBackGround(vector);
 }
-void mgInitLighting(void) {
+
+void mgInitLighting() {
     mgRenderInfo.InitLighting();
     mgChangeLight = 1;
 }
-void mgInitActiveLighting(void) {
+
+void mgInitActiveLighting() {
     mgRenderInfo.InitActiveLighting();
     mgChangeLight = 1;
 }
+
 int mgActiveLighting(int slot, int copy_from_previous) {
     mgChangeLight = 1;
     return mgRenderInfo.ActiveLighting(slot, copy_from_previous);
 }
+
 void mgSetLight(float (*directions)[4], float (*colors)[4]) {
     mgChangeLight = 1;
     mgRenderInfo.SetLight(directions, colors);
 }
+
 void mgGetLight(float (*directions)[4], float (*colors)[4]) {
     mgRenderInfo.GetLight(directions, colors);
 }
+
 void mgSetLight(int index, float *direction, float *color) {
     mgChangeLight = 1;
     mgRenderInfo.SetLight(index, direction, color);
 }
+
 void mgSetAmbient(float *color) {
     mgChangeLight = 1;
     mgRenderInfo.SetAmbient(color);
 }
+
 void mgGetAmbient(float *ambient) {
     mgRenderInfo.GetAmbient(ambient);
 }
+
 void mgSetPlight(int index, float *position, float *color, float attenuation, float range) {
     mgChangeLight = 1;
     mgRenderInfo.SetPlight(index, position, color, attenuation, range);
 }
+
 void mgSetPlight(int index, mgPOINT_LIGHT *light) {
     mgChangeLight = 1;
     mgRenderInfo.SetPlight(index, light);
 }
+
 void mgGetPlight(int index, mgPOINT_LIGHT *out) {
     mgRenderInfo.GetPlight(index, out);
 }
-void mgResetPlight(void) {
+
+void mgResetPlight() {
     int index;
 
     mgChangeLight = 1;
     index = 0;
+
     do {
         mgRenderInfo.SetPlight(index, NULL);
         index += 1;
     } while (index < 4);
 }
+
 void mgSetViewMatrix(float (*matrix)[4], float *eye) {
     mgRenderInfo.SetViewMatrix(matrix, eye);
 }
+
 void mgSetDropShadowMatrix(float *light, float *position, float *normal) {
     mgRenderInfo.SetDropShadowMatrix(light, position, normal);
 }
+
 void mgFogEnable(int enabled) {
     mgRenderInfo.FogEnable(enabled);
 }
-int mgGetFogEnable(void) {
+
+int mgGetFogEnable() {
     return mgRenderInfo.GetFogEnable();
 }
+
 void mgPlightEnable(int enabled) {
     mgRenderInfo.PlightEnable(enabled);
 }
-int mgGetPlightEnable(void) {
+
+int mgGetPlightEnable() {
     return mgRenderInfo.GetPlightEnable();
 }
+
 void mgSetFogParam(float near_dist, float far_dist, u_char r, u_char g, u_char b, float far_value,
                    float near_value) {
     mgRenderInfo.SetFogParam(near_dist, far_dist, r, g, b, far_value, near_value);
 }
+
 void mgSetFogParam(mgFOG_PARAM *fog) {
     mgRenderInfo.SetFogParam(fog->near_dist, fog->far_dist, fog->r, fog->g, fog->b, fog->far_value,
                              fog->near_value);
 }
+
 struct mgFogColor {
     u_char values[4];
 };
+
 struct mgFogVector {
     float values[4];
 };
+
 void mgGetFogParam(mgFOG_PARAM *param) {
     param->near_dist = mgRenderInfo.fog.near_dist;
     param->far_dist = mgRenderInfo.fog.far_dist;
-    *(mgFogColor *)&param->r = *(mgFogColor *)&mgRenderInfo.fog.r;
+    *(mgFogColor *) &param->r = *(mgFogColor *) &mgRenderInfo.fog.r;
     param->offset = mgRenderInfo.fog.offset;
     param->far_value = mgRenderInfo.fog.far_value;
     param->near_value = mgRenderInfo.fog.near_value;
     param->scale = mgRenderInfo.fog.scale;
-    *(mgFogVector *)param->coef = *(mgFogVector *)mgRenderInfo.fog.coef;
+    *(mgFogVector *) param->coef = *(mgFogVector *) mgRenderInfo.fog.coef;
 }
+
 void mgSetAllScissorFlag(int flag) {
     mgRenderInfo.all_scissor = flag;
 }
-void mgFlushRenderInfo(void) {
+
+void mgFlushRenderInfo() {
     sceVif1Packet *packet = mgVif1Packet;
     sceVif1PkTerminate(mgVif1Packet);
     u_int *words = packet->pCurrent;
@@ -896,49 +972,55 @@ void mgFlushRenderInfo(void) {
     words[1] = 0;
     words[2] = 0;
     words[3] = 0x6C01003B;
-    words[4] = *(u_int *)&mgRenderInfo.fog.offset;
-    words[5] = *(u_int *)&mgRenderInfo.fog.near_value;
-    words[6] = *(u_int *)&mgRenderInfo.fog.far_value;
-    words[7] = *(u_int *)&mgRenderInfo.fog.scale;
+    words[4] = *(u_int *) &mgRenderInfo.fog.offset;
+    words[5] = *(u_int *) &mgRenderInfo.fog.near_value;
+    words[6] = *(u_int *) &mgRenderInfo.fog.far_value;
+    words[7] = *(u_int *) &mgRenderInfo.fog.scale;
     words[8] = 0;
     words[9] = 0;
     words[10] = 0;
 
     words[11] = 0x6C020039;
-    *(u_long128 *)&words[12] = *(u_long128 *)mgRenderInfo.guard_max;
-    *(u_long128 *)&words[16] = *(u_long128 *)mgRenderInfo.guard_min;
+    *(u_long128 *) &words[12] = *(u_long128 *) mgRenderInfo.guard_max;
+    *(u_long128 *) &words[16] = *(u_long128 *) mgRenderInfo.guard_min;
     sceVif1PkReserve(packet, 0x14);
 }
+
 void mgSetPkTextureRepeat(int mode) {
     sceGsClamp clamp;
     memset(&clamp, 0, 8);
+
     if (mode == 0) {
         clamp.WMS = 1;
         clamp.WMT = 1;
     }
+
     mgSetPkTextureRepeat(clamp);
 }
+
 void mgSetPkTextureRepeat(sceGsClamp clamp) {
     sceVif1Packet *packet = mgVif1Packet;
     sceVif1PkCnt(mgVif1Packet, 0);
     sceVif1PkOpenDirectCode(packet, 0);
-    sceVif1PkOpenGifTag(packet, *(u_long128 *)&mgGiftagAD);
-    sceVif1PkAddGsAD(packet, gs_clamp1, *(u_long *)&clamp);
+    sceVif1PkOpenGifTag(packet, *(u_long128 *) &mgGiftagAD);
+    sceVif1PkAddGsAD(packet, gs_clamp1, *(u_long *) &clamp);
     sceVif1PkCloseGifTag(packet);
     sceVif1PkCloseDirectCode(packet);
 }
+
 void mgSetPkFrameBuffer(mgCTexture *texture) {
     if (texture == NULL) {
         mgSetPkFrameBuffer(-1, -1, -1, -1);
         return;
     }
+
     mgSetPkFrameBuffer(texture->tex0.TBP0 / 32, texture->tex0.TBW << 6, texture->height,
                        texture->tex0.PSM);
 }
 #ifdef NONMATCHING
 void mgSetPkFrameBuffer(int fbp, int width, int height, int psm) {
-    sceGsDBuff *buffers = (sceGsDBuff *)mgDBuff;
-    mgCTexture *frame_texture = (mgCTexture *)&frame_tex;
+    sceGsDBuff    *buffers = (sceGsDBuff *) mgDBuff;
+    mgCTexture    *frame_texture = &frame_tex;
     sceGsFrame     frame;
     sceGsFrame    *default_frame;
     sceGsXyOffset  offset;
@@ -987,8 +1069,8 @@ void mgSetPkFrameBuffer(int fbp, int width, int height, int psm) {
     mgFRAME_1 = frame;
     mgScreenOffx = 0x800 - width / 2;
     mgScreenOffy = 0x800 - height / 2;
-    offset.OFX = (short)mgScreenOffx * 16;
-    offset.OFY = (short)mgScreenOffy * 16;
+    offset.OFX = (short) mgScreenOffx * 16;
+    offset.OFY = (short) mgScreenOffy * 16;
     scissor.SCAX0 = 0;
     scissor.SCAX1 = width - 1;
     scissor.SCAY0 = 0;
@@ -1004,14 +1086,14 @@ void mgSetPkFrameBuffer(int fbp, int width, int height, int psm) {
     packet[5] = 1 << MG_GIFTAG_NREG_SHIFT;
     packet[6] = SCE_GIF_PACKED_AD;
     packet[7] = 0;
-    registers = (u_long *)&packet[8];
+    registers = (u_long *) &packet[8];
     registers[0] = 0;
     registers[1] = SCE_GS_TEXFLUSH;
     registers[2] = frame.value;
     registers[3] = SCE_GS_FRAME_1;
-    registers[4] = *(u_long *)&offset;
+    registers[4] = *(u_long *) &offset;
     registers[5] = SCE_GS_XYOFFSET_1;
-    registers[6] = *(u_long *)&scissor;
+    registers[6] = *(u_long *) &scissor;
     registers[7] = SCE_GS_SCISSOR_1;
     registers[8] = 0;
     registers[9] = SCE_GS_SCANMSK;
@@ -1068,35 +1150,42 @@ void mgSetPkFrameBuffer(int fbp, int width, int height, int psm) {
     frame_texture->tex0.bits.th = height_shift;
     frame_texture->tex0.bits.tcc = 1;
     frame_texture->tex0.bits.tfx = 0;
-    *(u_long *)&frame_texture->tex1 = 0x261;
+    *(u_long *) &frame_texture->tex1 = 0x261;
 }
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgSetPkFrameBuffer__Fiiii);
 #endif
 void mgGetFrameBuffer(mgCTexture *texture) {
-    *(mgFrameTextureCopy *)texture = frame_tex;
+    *texture = frame_tex;
 }
+
 void mgGetFrameBackBuffer(mgCTexture *texture) {
     u_char *draw_env;
+
     if (mgDBuffID != 0) {
         draw_env = mgDBuff + dbuff_draw_env_b;
     } else {
         draw_env = mgDBuff + dbuff_draw_env_a;
     }
-    *(mgFrameTextureCopy *)texture = frame_tex;
-    texture->tex0.TBP0 = (*(u_short *)draw_env & 0x1FF) * 32;
+
+    *texture = frame_tex;
+    texture->tex0.TBP0 = (*(u_short *) draw_env & 0x1FF) * 32;
 }
+
 mgCDrawEnv *mgGetpDrawEnv(int which) {
-    u_int index = (u_int)which > 0;
+    u_int index = (u_int) which > 0;
     return &mgRenderInfo.draw_env[index];
 }
+
 void mgSetPkMoveImage(mgCTexture *source, mgRect<int> rect, mgCTexture *destination, int extra0,
                       int extra1, int extra2) {
     if (source == NULL || destination == NULL) {
         return;
     }
+
     mgSetPkMoveImage(&source->tex0, rect, &destination->tex0, extra0, extra1, extra2);
 }
+
 void mgSetPkMoveImage(sceGsTex0 *src, mgRect<int> src_rect, sceGsTex0 *dst, int dst_x, int dst_y, int direction) {
     int            dst_width;
     int            src_width;
@@ -1109,29 +1198,36 @@ void mgSetPkMoveImage(sceGsTex0 *src, mgRect<int> src_rect, sceGsTex0 *dst, int 
     vif = mgVif1Packet;
     dst_width = dst->TBW * 64;
     src_width = src->TBW * 64;
+
     if (dst_width < 64) {
         dst_width = 64;
     }
+
     if (src_width < 64) {
         src_width = 64;
     }
+
     right = src_rect.right;
+
     if (right - src_rect.left + 1 > 0 && (bottom = src_rect.bottom, bottom - src_rect.top + 1 > 0)) {
         left = src_rect.left / 16;
         top = src_rect.top / 16;
+
         if (right % 16 != 0) {
             right = right / 16;
         } else {
             right = right / 16;
         }
+
         if (bottom % 16 != 0) {
             bottom = bottom / 16;
         } else {
             bottom = bottom / 16;
         }
+
         sceVif1PkCnt(vif, 0);
         sceVif1PkOpenDirectCode(vif, 0);
-        sceVif1PkOpenGifTag(vif, *(u_long128 *)&mgGiftagAD);
+        sceVif1PkOpenGifTag(vif, *(u_long128 *) &mgGiftagAD);
         sceVif1PkAddGsAD(vif, SCE_GS_BITBLTBUF, SCE_GS_SET_BITBLTBUF(src->TBP0, src_width / 64, src->PSM, dst->TBP0, dst_width / 64, dst->PSM));
         sceVif1PkAddGsAD(vif, SCE_GS_TRXPOS, SCE_GS_SET_TRXPOS(left, top, dst_x >> 4, dst_y >> 4, direction));
         sceVif1PkAddGsAD(vif, SCE_GS_TRXREG, SCE_GS_SET_TRXREG(right - left + 1, bottom - top + 1));
@@ -1140,42 +1236,49 @@ void mgSetPkMoveImage(sceGsTex0 *src, mgRect<int> src_rect, sceGsTex0 *dst, int 
         sceVif1PkCloseDirectCode(vif);
         sceVif1PkCnt(vif, 0);
         sceVif1PkOpenDirectCode(vif, 0);
-        sceVif1PkOpenGifTag(vif, *(u_long128 *)&mgGiftagAD);
+        sceVif1PkOpenGifTag(vif, *(u_long128 *) &mgGiftagAD);
         sceVif1PkAddGsAD(vif, SCE_GS_TEXFLUSH, 0);
         sceVif1PkCloseGifTag(vif);
         sceVif1PkCloseDirectCode(vif);
     }
 }
+
 void mgSetPkMoveImage(mgCTexture *source, mgRect<int> source_rect, mgCTexture *destination,
                       mgRect<int> destination_rect, mgCDrawEnv *draw_env) {
     if (source == NULL || destination == NULL) {
         return;
     }
+
     mgSetPkMoveImage(&source->tex0, source_rect, &destination->tex0, destination->height,
                      destination_rect, draw_env);
 }
+
 void mgSetPkMoveImage(sceGsTex0 *src, mgRect<int> src_rect, sceGsTex0 *dst, int dst_height, mgRect<int> dst_rect, mgCDrawEnv *env) {
     sceVif1Packet *vif;
-    int width;
+    int            width;
 
     width = dst->TBW * 64;
+
     if (width % 64 != 0) {
         width += 64 - width % 64;
     }
+
     if (dst_height % 64 != 0) {
         dst_height += 64 - dst_height % 64;
     }
+
     mgSetPkFrameBuffer(dst->TBP0 / 32, width, dst_height, dst->PSM);
     vif = mgVif1Packet;
     sceVif1PkCnt(vif, 0);
     sceVif1PkOpenDirectCode(vif, 0);
-    sceVif1PkOpenGifTag(vif, *(u_long128 *)&mgGiftagAD);
+    sceVif1PkOpenGifTag(vif, *(u_long128 *) &mgGiftagAD);
     sceVif1PkAddGsAD(vif, SCE_GS_TEXFLUSH, 0);
+
     if (env != NULL) {
         sceVif1PkAddGsAD(vif, SCE_GS_TEST_1, env->test.value);
         sceGsZbuf zbuf = mgZBUF_1;
         zbuf.bits.zmsk = env->zbuf.bits.zmsk;
-        sceVif1PkAddGsAD(vif, SCE_GS_ZBUF_1, *(u_long *)&zbuf);
+        sceVif1PkAddGsAD(vif, SCE_GS_ZBUF_1, *(u_long *) &zbuf);
         sceVif1PkAddGsAD(vif, SCE_GS_ALPHA_1, env->alpha.value);
     } else {
         sceGsTest test = mgTEST_1;
@@ -1183,86 +1286,95 @@ void mgSetPkMoveImage(sceGsTex0 *src, mgRect<int> src_rect, sceGsTex0 *dst, int 
         test.bits.zte = 1;
         test.bits.ztst = SCE_GS_ALWAYS;
         test.bits.date = 0;
-        sceVif1PkAddGsAD(vif, SCE_GS_TEST_1, *(u_long *)&test);
+        sceVif1PkAddGsAD(vif, SCE_GS_TEST_1, *(u_long *) &test);
         sceGsZbuf zbuf = mgZBUF_1;
         zbuf.bits.zmsk = 1;
-        sceVif1PkAddGsAD(vif, SCE_GS_ZBUF_1, *(u_long *)&zbuf);
+        sceVif1PkAddGsAD(vif, SCE_GS_ZBUF_1, *(u_long *) &zbuf);
         sceGsAlpha alpha = mgALPHA_1;
         alpha.bits.a = SCE_GS_ALPHA_ZERO;
         alpha.bits.b = SCE_GS_ALPHA_ZERO;
         alpha.bits.c = SCE_GS_ALPHA_FIX;
         alpha.bits.d = SCE_GS_ALPHA_CS;
-        sceVif1PkAddGsAD(vif, SCE_GS_ALPHA_1, *(u_long *)&alpha);
+        sceVif1PkAddGsAD(vif, SCE_GS_ALPHA_1, *(u_long *) &alpha);
     }
+
     sceVif1PkAddGsAD(vif, SCE_GS_TEX1_1, 0x25);
-    sceVif1PkAddGsAD(vif, SCE_GS_TEX0_1, *(u_long *)src);
+    sceVif1PkAddGsAD(vif, SCE_GS_TEX0_1, *(u_long *) src);
     sceVif1PkAddGsAD(vif, SCE_GS_PRMODECONT, 1);
     sceVif1PkAddGsAD(vif, SCE_GS_PRIM, 0x116);
     sceVif1PkAddGsAD(vif, SCE_GS_RGBAQ, 0x80808080);
-    sceVif1PkAddGsAD(vif, SCE_GS_UV, (u_long)src_rect.left | ((u_long)src_rect.top << 16));
-    sceVif1PkAddGsAD(vif, SCE_GS_XYZF2, (u_long)((mgScreenOffx << 4) + dst_rect.left) | ((u_long)((mgScreenOffy << 4) + dst_rect.top) << 16));
-    sceVif1PkAddGsAD(vif, SCE_GS_UV, (u_long)src_rect.right | ((u_long)src_rect.bottom << 16));
-    sceVif1PkAddGsAD(vif, SCE_GS_XYZF2, (u_long)((mgScreenOffx << 4) + dst_rect.right) | ((u_long)((mgScreenOffy << 4) + dst_rect.bottom) << 16));
+    sceVif1PkAddGsAD(vif, SCE_GS_UV, (u_long) src_rect.left | ((u_long) src_rect.top << 16));
+    sceVif1PkAddGsAD(vif, SCE_GS_XYZF2, (u_long) ((mgScreenOffx << 4) + dst_rect.left) | ((u_long) ((mgScreenOffy << 4) + dst_rect.top) << 16));
+    sceVif1PkAddGsAD(vif, SCE_GS_UV, (u_long) src_rect.right | ((u_long) src_rect.bottom << 16));
+    sceVif1PkAddGsAD(vif, SCE_GS_XYZF2, (u_long) ((mgScreenOffx << 4) + dst_rect.right) | ((u_long) ((mgScreenOffy << 4) + dst_rect.bottom) << 16));
     sceVif1PkAddGsAD(vif, SCE_GS_TEXFLUSH, 0);
     sceVif1PkCloseGifTag(vif);
     sceVif1PkCloseDirectCode(vif);
     mgSetPkFrameBuffer(-1, -1, -1, -1);
 }
+
 void mgSetPkClearScreen(u_char red, u_char green, u_char blue, u_char alpha) {
     sceVif1Packet *packet = mgVif1Packet;
     sceVif1PkCnt(mgVif1Packet, 0);
     sceVif1PkOpenDirectCode(packet, 0);
-    sceVif1PkOpenGifTag(packet, *(u_long128 *)&mgGiftagAD);
+    sceVif1PkOpenGifTag(packet, *(u_long128 *) &mgGiftagAD);
     sceVif1PkAddGsAD(packet, gs_texflush, 0);
     sceVif1PkCloseGifTag(packet);
     sceVif1PkCloseDirectCode(packet);
     sceVif1PkCnt(packet, 0);
     sceVif1PkOpenDirectCode(packet, 0);
-    sceVif1PkOpenGifTag(packet, *(u_long128 *)&mgGiftagAD);
+    sceVif1PkOpenGifTag(packet, *(u_long128 *) &mgGiftagAD);
     sceGsTest test = mgTEST_1;
     test.bits.ate = 0;
     test.bits.zte = 1;
     test.bits.ztst = 1;
     test.bits.date = 0;
-    sceVif1PkAddGsAD(packet, gs_test1, *(u_long *)&test);
+    sceVif1PkAddGsAD(packet, gs_test1, *(u_long *) &test);
     sceGsZbuf zbuf = mgZBUF_1;
     zbuf.bits.zmsk = 0;
-    sceVif1PkAddGsAD(packet, gs_zbuf1, *(u_long *)&zbuf);
+    sceVif1PkAddGsAD(packet, gs_zbuf1, *(u_long *) &zbuf);
     sceGsAlpha blend = mgALPHA_1;
     blend.bits.a = 2;
     blend.bits.b = 2;
     blend.bits.c = 2;
     blend.bits.d = 0;
-    sceVif1PkAddGsAD(packet, gs_alpha1, *(u_long *)&blend);
+    sceVif1PkAddGsAD(packet, gs_alpha1, *(u_long *) &blend);
     sceVif1PkAddGsAD(packet, gs_tex1_1, 1);
     sceVif1PkAddGsAD(packet, gs_prim, 0x146);
     sceVif1PkAddGsAD(packet, gs_rgbaq,
-                     (u_long)red | ((u_long)green << 8) | ((u_long)blue << 16) |
-                         ((u_long)alpha << 24));
+                     (u_long) red | ((u_long) green << 8) | ((u_long) blue << 16) |
+                         ((u_long) alpha << 24));
+
     for (int x = 0; x < mgScreenWidth * 16; x += 0x200) {
         int left = (mgScreenOffx << 4) + x;
         sceVif1PkAddGsAD(packet, gs_xyzf2,
-                         ((long long)(int)(mgScreenOffy << 4) << 16) | (long long)left);
+                         ((long long) (mgScreenOffy << 4) << 16) | (long long) left);
         int right = (mgScreenOffx << 4) + x + 0x200;
         sceVif1PkAddGsAD(packet, gs_xyzf2,
-                         ((long long)(int)(((int)mgScreenOffy + mgScreenHeight) << 4) << 16) |
-                             (long long)right);
+                         ((long long) ((mgScreenOffy + mgScreenHeight) << 4) << 16) |
+                             (long long) right);
     }
+
     sceVif1PkAddGsAD(packet, gs_texflush, 0);
     sceVif1PkCloseGifTag(packet);
     sceVif1PkCloseDirectCode(packet);
 }
+
 int mgStoreImage(mgCTexture *texture, u_long128 *buffer) {
     sceGsStoreImage store_image;
-    int block_width;
+    int             block_width;
+
     if (texture == 0 || buffer == 0) {
         return 0;
     }
+
     mgWaitFrame();
     block_width = texture->width / 64;
+
     if (block_width == 0) {
         block_width = 1;
     }
+
     sceGsSetDefStoreImage(&store_image, texture->tex0.TBP0, block_width, texture->tex0.PSM, 0, 0,
                           texture->width, texture->height);
     FlushCache(0);
@@ -1270,6 +1382,7 @@ int mgStoreImage(mgCTexture *texture, u_long128 *buffer) {
     sceGsSyncPath(0, 0);
     return texture->bpp * (texture->width * texture->height);
 }
+
 int mgStoreZBuffImage(mgRect<int> &rect, u_long128 *buffer) {
     sceGsStoreImage image;
     int             width;
@@ -1279,49 +1392,65 @@ int mgStoreZBuffImage(mgRect<int> &rect, u_long128 *buffer) {
 
     width = rect.right - rect.left + 1;
     height = rect.bottom - rect.top + 1;
+
     if (width % 8 != 0) {
         width = width / 8 * 8;
     }
+
     if (height % 8 != 0) {
         height = height / 8 * 8;
     }
+
     if (width == 0 || height == 0) {
         return 0;
     }
+
     sceGsSetDefStoreImage(&image, mgZBUF_1.bits.zbp * 2048 / 64, mgScreenWidth / 64, 0x30, rect.left, rect.top, width, height);
     FlushCache(0);
     sceGsExecStoreImage(&image, buffer);
     sceGsSyncPath(0, 0);
-    depth = (u_int *)buffer;
+    depth = (u_int *) buffer;
+
     for (pixel = 0; pixel < width * height; pixel++) {
         *depth &= 0xFFFFFF;
         depth++;
     }
+
     return width * height / 4;
 }
+
 float mgConvZBuffToDist(u_int zbuf) {
-    return mgRenderInfo.view_screen[3][2] / ((float)zbuf - mgRenderInfo.view_screen[2][2]);
+    return mgRenderInfo.view_screen[3][2] / ((float) zbuf - mgRenderInfo.view_screen[2][2]);
 }
+
 mgCTexture *mgGetTextureZ(int index) {
     if (index < 0 || index > 1) {
         return 0;
     }
+
     return &fixz_tex[index];
 }
+
 static int prim_clip_check(float *vertex) {
     mgRENDER_INFO *info = &mgRenderInfo;
+
     if (vertex[0] < 0.0f || vertex[0] > 4095.0f) {
         return 0;
     }
+
     if (vertex[1] < 0.0f || vertex[1] > 4095.0f) {
         return 0;
     }
+
     float z = vertex[3];
+
     if (z < info->clip_min[2] || z > info->clip_max[2]) {
         return 0;
     }
+
     return 1;
 }
+
 int mgTransWorldPrim(int *out, float *pos) {
     float v[4];
     sceVu0ApplyMatrix(v, mgRenderInfo.world_screen, pos);
@@ -1335,12 +1464,14 @@ int mgTransWorldPrim(int *out, float *pos) {
     out[3] = 0;
     return prim_clip_check(v);
 }
+
 int mgTransWorldScreen(int *out, float *pos) {
     int visible = mgTransWorldPrim(out, pos);
     out[0] = out[0] - (mgScreenOffx << 4);
     out[1] = out[1] - (mgScreenOffy << 4);
     return visible;
 }
+
 int mgTransViewPrim(int *out, float *pos) {
     float v[4];
     sceVu0ApplyMatrix(v, mgRenderInfo.view_screen, pos);
@@ -1354,47 +1485,56 @@ int mgTransViewPrim(int *out, float *pos) {
     out[3] = 0;
     return prim_clip_check(v);
 }
+
 void mgTransWorldView(float *a, float *b) {
     sceVu0ApplyMatrix(a, mgRenderInfo.view, b);
 }
+
 int mgTransZPrim(float z) {
     float pos[4];
-    *(u_long128 *)pos = *(u_long128 *)at_1389;
+    *(u_long128 *) pos = *(u_long128 *) at_1389;
     int screen[4];
     pos[2] = z;
     mgTransViewPrim(screen, pos);
     return screen[2];
 }
+
 float mgGetDistFromCamera(float *pos) {
     return mgDistVector(pos, mgRenderInfo.camera_pos);
 }
+
 void mgGetDirFromCamera(float *dir, float *pos) {
     sceVu0SubVector(dir, pos, mgRenderInfo.camera_pos);
 }
+
 void mgGetCameraPos(float *out) {
-    *(u_long128 *)out = *(u_long128 *)mgRenderInfo.camera_pos;
+    *(u_long128 *) out = *(u_long128 *) mgRenderInfo.camera_pos;
 }
+
 void mgGetCameraPose(float (*pose)[4]) {
-    *(u_long128 *)pose[0] = *(u_long128 *)mgRenderInfo.camera_pose[0];
-    *(u_long128 *)pose[1] = *(u_long128 *)mgRenderInfo.camera_pose[1];
-    *(u_long128 *)pose[2] = *(u_long128 *)mgRenderInfo.camera_pose[2];
-    *(u_long128 *)pose[3] = *(u_long128 *)mgRenderInfo.camera_pose[3];
+    *(u_long128 *) pose[0] = *(u_long128 *) mgRenderInfo.camera_pose[0];
+    *(u_long128 *) pose[1] = *(u_long128 *) mgRenderInfo.camera_pose[1];
+    *(u_long128 *) pose[2] = *(u_long128 *) mgRenderInfo.camera_pose[2];
+    *(u_long128 *) pose[3] = *(u_long128 *) mgRenderInfo.camera_pose[3];
 }
+
 int mgTransWorldPrim3DSprite(int *top_left, int *bottom_right, float *position, float width, float height, int unused) {
     sceVu0FVECTOR first;
     sceVu0FVECTOR second;
     sceVu0FVECTOR projected;
-    float scaled_width;
-    float scaled_height;
-    float reciprocal;
-    int visible;
+    float         scaled_width;
+    float         scaled_height;
+    float         reciprocal;
+    int           visible;
 
     scaled_width = width * mgRenderInfo.view_screen[0][0];
     scaled_height = height * mgRenderInfo.view_screen[1][1];
     sceVu0ApplyMatrix(projected, mgRenderInfo.world_screen, position);
+
     if (projected[3] < 1.0f) {
         return 0;
     }
+
     reciprocal = 1.0f / projected[3];
     projected[0] *= reciprocal;
     projected[1] *= reciprocal;
@@ -1407,78 +1547,107 @@ int mgTransWorldPrim3DSprite(int *top_left, int *bottom_right, float *position, 
     first[1] -= 0.5f * scaled_height;
     second[0] += 0.5f * scaled_width;
     second[1] += 0.5f * scaled_height;
-    top_left[0] = (int)(16.0f * first[0]);
-    top_left[1] = (int)(16.0f * first[1]);
-    top_left[2] = (int)first[2];
+    top_left[0] = (int) (16.0f * first[0]);
+    top_left[1] = (int) (16.0f * first[1]);
+    top_left[2] = (int) first[2];
     top_left[3] = 0;
-    bottom_right[0] = (int)(16.0f * second[0]);
-    bottom_right[1] = (int)(16.0f * second[1]);
-    bottom_right[2] = (int)second[2];
+    bottom_right[0] = (int) (16.0f * second[0]);
+    bottom_right[1] = (int) (16.0f * second[1]);
+    bottom_right[2] = (int) second[2];
     bottom_right[3] = 0;
     visible = prim_clip_check(first);
     return visible & prim_clip_check(second);
 }
+
 #pragma global_optimizer off
+
 static int CheckVuProgID(int id) {
     if (id < user_vu_prog_base) {
-        if (id <= -1)
+        if (id <= -1) {
             return 0;
-        if (id >= builtin_vu_prog_count)
+        }
+
+        if (id >= builtin_vu_prog_count) {
             return 0;
+        }
+
         goto valid;
     }
-    if (id < user_vu_prog_base)
+
+    if (id < user_vu_prog_base) {
         return 0;
-    if (id >= user_prog_num + user_vu_prog_base)
+    }
+
+    if (id >= user_prog_num + user_vu_prog_base) {
         return 0;
-    if (user_prog_adr == 0)
+    }
+
+    if (user_prog_adr == 0) {
         return 0;
-    if (*(int *)((id << 2) + (int)user_prog_adr - user_vu_prog_base * 4) == 0)
+    }
+
+    if (*(int *) ((id << 2) + (int) user_prog_adr - user_vu_prog_base * 4) == 0) {
         return 0;
+    }
+
 valid:
     return 1;
 }
+
 #pragma global_optimizer reset
+
 u_long128 *mgGetVuProgPacket(int id) {
-    if (CheckVuProgID(id) == 0)
+    if (CheckVuProgID(id) == 0) {
         return NULL;
-    if (id < user_vu_prog_base)
+    }
+
+    if (id < user_vu_prog_base) {
         return prog_adr[id];
+    }
+
     u_long128 **user_table = user_prog_adr;
     return user_table[id - user_vu_prog_base];
 }
+
 int mgSendVuProg(u_int *tag, int id) {
     if (CheckVuProgID(id) == 0) {
         now_prog_id = -1;
         return 0;
     }
+
     if (id != now_prog_id) {
         void *packet = mgGetVuProgPacket(id);
         tag[0] = dma_tag_call;
-        tag[1] = (u_int)packet;
+        tag[1] = (u_int) packet;
         tag[2] = 0;
         tag[3] = 0;
         now_prog_id = id;
         return 4;
     }
+
     return 0;
 }
+
 void mgSetUserVuProg(u_long128 **table, int count) {
     user_prog_adr = table;
     user_prog_num = count;
 }
+
 #pragma global_optimizer off
+
 void mgSetUserVuProgAdr(int index, u_long128 *adr) {
-    if (index < 0 || index >= user_prog_num)
+    if (index < 0 || index >= user_prog_num) {
         return;
-    u_char *base = (u_char *)user_prog_adr;
-    index <<= 2;
-    *(u_long128 **)(base + index) = adr;
+    }
+
+    user_prog_adr[index] = adr;
 }
+
 #pragma global_optimizer reset
+
 void StoreImage(int front_buffer) {
     static int image_num = 0;
-    u_char     tga[18] = { 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0 };
+    u_char     tga[18] = {0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0};
     char       filename[128];
     char       device[128];
     char      *character;
@@ -1497,12 +1666,15 @@ void StoreImage(int front_buffer) {
     sprintf(filename, "%si%5d.tga", device, image_num++);
     character = filename;
     char current;
+
     while ((current = *character) != '\0') {
         if (current == ' ') {
             *character = '0';
         }
+
         character++;
     }
+
     file = sceOpen(filename, SCE_WRONLY | SCE_CREAT | SCE_TRUNC);
 
     mgCTexture texture;
@@ -1512,13 +1684,16 @@ void StoreImage(int front_buffer) {
     } else {
         mgGetFrameBuffer(&texture);
     }
+
     sceGsSetDefStoreImage(&gs_simage, texture.tex0.TBP0, mgScreenWidth / 64, SCE_GS_PSMCT32, 0, 0, mgScreenWidth, mgScreenHeight);
     FlushCache(0);
-    sceGsExecStoreImage(&gs_simage, (u_long128 *)0x2100000);
+    sceGsExecStoreImage(&gs_simage, (u_long128 *) 0x2100000);
     sceGsSyncPath(0, 0);
     sceWrite(file, tga, 18);
+
     for (y = 0; y < mgScreenHeight; y++) {
-        row = (u_char *)((u_long128 *)0x2100000 + mgScreenWidth * (mgScreenHeight - y - 1) / 4);
+        row = (u_char *) ((u_long128 *) 0x2100000 + mgScreenWidth * (mgScreenHeight - y - 1) / 4);
+
         for (output = 0, pixel = 0; pixel < mgScreenWidth * 4; output += 3, pixel += 4) {
             red = row[pixel];
             row[pixel] = row[pixel + 2];
@@ -1527,46 +1702,26 @@ void StoreImage(int front_buffer) {
             row[output + 1] = row[pixel + 1];
             row[output + 2] = row[pixel + 2];
         }
-        row = (u_char *)((u_long128 *)0x2100000 + mgScreenWidth * (mgScreenHeight - y - 1) / 4);
+
+        row = (u_char *) ((u_long128 *) 0x2100000 + mgScreenWidth * (mgScreenHeight - y - 1) / 4);
         sceWrite(file, row, mgScreenWidth * 3);
     }
+
     sceClose(file);
 }
-int mgInitFont(void) {
+
+int mgInitFont() {
     sceDevConsInit();
     font_cons = sceDevConsOpen((mgScreenOffx + 8) * 0x10, (mgScreenOffy + 8) * 0x10, 0x28, 0x18);
     return font_cons;
 }
-void mgCloseFont(void) {
-    if ((int)font_cons >= 0) {
+
+void mgCloseFont() {
+    if (font_cons >= 0) {
         sceDevConsClose(font_cons);
     }
-    font_draw_flag = 0;
-}
-extern "C" mgCMemory *__ct__9mgCMemoryFv(mgCMemory *memory) {
-    memory->Init();
-    return memory;
-}
 
-// Static initialiser (.init)
-extern "C" void *__construct_array(void *array, void *(*constructor)(void *), void *destructor,
-                                   unsigned int element_size, unsigned int count);
-extern "C" void *__ct__10mgCDrawEnvFv(void *);
-extern "C" void *__ct__10mgCTextureFv(void *);
-extern "C" void *__ct__14mgCDrawManagerFv(void *);
-extern "C" void *__ct__17mgCTextureManagerFv(void *);
-extern "C" void __sinit_mglib_cpp() {
-    mgCDrawEnv *draw_env = mgRenderInfo.draw_env;
-    do {
-        __ct__10mgCDrawEnvFv(draw_env);
-        draw_env++;
-    } while (draw_env < &mgRenderInfo.draw_env[2]);
-    __ct__17mgCTextureManagerFv(&mgTexManager);
-    __ct__14mgCDrawManagerFv(&mgDrawManager);
-    __construct_array(packet_buf, (void *(*)(void *))__ct__9mgCMemoryFv, NULL, sizeof(mgCMemory), 2);
-    __construct_array(data_buf, (void *(*)(void *))__ct__9mgCMemoryFv, NULL, sizeof(mgCMemory), 2);
-    __ct__10mgCTextureFv(&frame_tex);
-    __construct_array(fixz_tex, __ct__10mgCTextureFv, NULL, sizeof(mgCTexture), 2);
+    font_draw_flag = 0;
 }
 
 // Initialised data (.data)
@@ -1657,17 +1812,17 @@ INCLUDE_BSS(init_1536, 0x4);
 
 // Uninitialised data (.bss)
 INCLUDE_BSS(mgGiftagAD, 0x10);
-INCLUDE_BSS(mgRenderInfo, 0x1020);
+mgRENDER_INFO mgRenderInfo;
 INCLUDE_BSS(mgBackColor, 0x10);
-INCLUDE_BSS(mgTexManager, 0x220);
-INCLUDE_BSS(mgDrawManager, 0x80);
+mgCTextureManager mgTexManager;
+mgCDrawManager    mgDrawManager;
 INCLUDE_BSS(mgDBuff, 0x230);
 INCLUDE_BSS(mgPickZBuff, 0x40);
 INCLUDE_BSS(vifpacket, 0x40);
-INCLUDE_BSS(packet_buf, 0x60);
-INCLUDE_BSS(data_buf, 0x60);
-INCLUDE_BSS(frame_tex, 0x70);
+mgCMemory  packet_buf[2];
+mgCMemory  data_buf[2];
+mgCTexture frame_tex;
 INCLUDE_BSS(store_data_614, 0x1000);
 INCLUDE_BSS(at_863, 0x10);
-INCLUDE_BSS(fixz_tex, 0xE0);
+mgCTexture fixz_tex[2];
 INCLUDE_BSS(gs_simage, 0xA0);

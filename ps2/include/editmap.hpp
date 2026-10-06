@@ -68,8 +68,8 @@ enum EditBuildResult {
  *
  */
 struct EP_PLACE_INFO {
-    s32 num;                       /**< Number of placed parts in base. */
-    s32 base[EP_PLACE_BASE_MAX];   /**< Slot numbers of the placed parts the new part rests on. */
+    s32 num;                     /**< Number of placed parts in base. */
+    s32 base[EP_PLACE_BASE_MAX]; /**< Slot numbers of the placed parts the new part rests on. */
     s32 unk_44;
 };
 
@@ -100,45 +100,45 @@ public:
      *
      */
     struct RemoveInfo {
-        s32 force;                                    /**< Removes parts even when their definition protects them. */
-        s32 color_num;                                /**< Number of colours in color. */
-        float (*color)[4];                            /**< Paint colours whose use is given back. */
-        s32 *paint_num;                               /**< Paint given back for each colour in color. */
-        s32 parts_num[EDIT_REMOVE_INFO_ID_MAX];       /**< Parts removed of each definition ID. */
-        s32 house_num;                                /**< Number of villagers in house_npc. */
-        s32 house_npc[EDIT_REMOVE_HOUSE_MAX];         /**< Villagers whose house was removed. */
+        s32 force;                               /**< Removes parts even when their definition protects them. */
+        s32 color_num;                           /**< Number of colours in color. */
+        float (*color)[4];                       /**< Paint colours whose use is given back. */
+        s32 *paint_num;                          /**< Paint given back for each colour in color. */
+        s32  parts_num[EDIT_REMOVE_INFO_ID_MAX]; /**< Parts removed of each definition ID. */
+        s32  house_num;                          /**< Number of villagers in house_npc. */
+        s32  house_npc[EDIT_REMOVE_HOUSE_MAX];   /**< Villagers whose house was removed. */
     };
 
-    mgCMemory parts_heap;                                  /**< Heap that the models of the edit parts are built in. */
-    s32 edit_parts_max;                                    /**< Number of slots in edit_parts. */
-    CEditParts *edit_parts;                                /**< Slots of the edit parts that can be placed. */
-    CEditHouse house[EDIT_MAP_HOUSE_MAX];                  /**< Houses that placed buildings give. */
-    s32 place_log_max;                                     /**< Number of entries in place_log. */
-    EditPlaceLog *place_log;                               /**< Which placed part rests on which. */
-    s32 grid_max;                                          /**< Number of slots in grid. */
-    CEditGrid *grid[EDIT_MAP_GRID_MAX];                    /**< River grids laid on the ground parts, or NULL. */
-    s32 focus_parts;                                       /**< Slot number of the placed part drawn flashing, or -1. */
-    s32 frame;                                             /**< Steps counted for the flashing of focus_parts. */
-    mgCObjectStack<CList<EMAP_MESSAGE> > message;          /**< Messages of the edit map. */
-    s32 area_no;                                           /**< Georama area being built, copied from the scene, or -1. */
-    s32 balance_weight[EDIT_MAP_BALANCE_MAX];              /**< Weight resting on each balance ground piece. */
-    CEditInfoMngr info_mngr;                               /**< Definitions of the parts that can be placed, and the parts placed from the start. */
-    CMapParts *river_parts[EDIT_MAP_RIVER_PARTS_MAX];      /**< Ground parts that river pieces are made for, or NULL. */
-    CEditPartsInfo *river_info;                            /**< Definitions made from the collision of each of river_parts. */
-    CMapPiece *river_piece[EDIT_MAP_RIVER_PARTS_MAX];      /**< Models the river is drawn with on each of river_parts. */
-    CMapPiece *water_piece;                                /**< Model of the river's water surface. */
-    CMapPiece *mask_piece[EDIT_MAP_MASK_PIECE_MAX];        /**< Models that mask the ground under the river. */
-    float river_poly_margin;                               /**< Distance by which river polygons are grown for collision. */
-    s32 fence_num;                                         /**< Number of fences in fence_list during a paint. */
-    CEditParts **fence_list;                               /**< Fences not yet reached during a paint. */
-    CEditParts *fence_now;                                 /**< Fence being tested during a paint. */
-    sceVu0FVECTOR fence_color;                             /**< Colour a paint gives to fences. */
-    s32 paint_num;                                         /**< Paint left during a paint. */
-    u8 unk_1024[0x2C];
-    s32 balance_moved;                                     /**< Nonzero once balance_base_pos holds the balance pieces' positions before tilting. */
-    CMapParts *balance_parts[EDIT_MAP_BALANCE_MAX];        /**< Ground pieces that tilt to show the town's balance. */
-    sceVu0FVECTOR balance_pos[EDIT_MAP_BALANCE_MAX];       /**< Positions of the balance pieces, tilted for the weight on them. */
-    sceVu0FVECTOR balance_base_pos[EDIT_MAP_BALANCE_MAX];  /**< Positions of the balance pieces before tilting. */
+    mgCMemory                            parts_heap;                            /**< Heap that the models of the edit parts are built in. */
+    s32                                  edit_parts_max;                        /**< Number of slots in edit_parts. */
+    CEditParts                          *edit_parts;                            /**< Slots of the edit parts that can be placed. */
+    CEditHouse                           house[EDIT_MAP_HOUSE_MAX];             /**< Houses that placed buildings give. */
+    s32                                  place_log_max;                         /**< Number of entries in place_log. */
+    EditPlaceLog                        *place_log;                             /**< Which placed part rests on which. */
+    s32                                  grid_max;                              /**< Number of slots in grid. */
+    CEditGrid                           *grid[EDIT_MAP_GRID_MAX];               /**< River grids laid on the ground parts, or NULL. */
+    s32                                  focus_parts;                           /**< Slot number of the placed part drawn flashing, or -1. */
+    s32                                  frame;                                 /**< Steps counted for the flashing of focus_parts. */
+    mgCObjectStack<CList<EMAP_MESSAGE> > message;                               /**< Messages of the edit map. */
+    s32                                  area_no;                               /**< Georama area being built, copied from the scene, or -1. */
+    s32                                  balance_weight[EDIT_MAP_BALANCE_MAX];  /**< Weight resting on each balance ground piece. */
+    CEditInfoMngr                        info_mngr;                             /**< Definitions of the parts that can be placed, and the parts placed from the start. */
+    CMapParts                           *river_parts[EDIT_MAP_RIVER_PARTS_MAX]; /**< Ground parts that river pieces are made for, or NULL. */
+    CEditPartsInfo                      *river_info;                            /**< Definitions made from the collision of each of river_parts. */
+    CMapPiece                           *river_piece[EDIT_MAP_RIVER_PARTS_MAX]; /**< Models the river is drawn with on each of river_parts. */
+    CMapPiece                           *water_piece;                           /**< Model of the river's water surface. */
+    CMapPiece                           *mask_piece[EDIT_MAP_MASK_PIECE_MAX];   /**< Models that mask the ground under the river. */
+    float                                river_poly_margin;                     /**< Distance by which river polygons are grown for collision. */
+    s32                                  fence_num;                             /**< Number of fences in fence_list during a paint. */
+    CEditParts                         **fence_list;                            /**< Fences not yet reached during a paint. */
+    CEditParts                          *fence_now;                             /**< Fence being tested during a paint. */
+    sceVu0FVECTOR                        fence_color;                           /**< Colour a paint gives to fences. */
+    s32                                  paint_num;                             /**< Paint left during a paint. */
+    u8                                   unk_1024[0x2C];
+    s32                                  balance_moved;                          /**< Nonzero once balance_base_pos holds the balance pieces' positions before tilting. */
+    CMapParts                           *balance_parts[EDIT_MAP_BALANCE_MAX];    /**< Ground pieces that tilt to show the town's balance. */
+    sceVu0FVECTOR                        balance_pos[EDIT_MAP_BALANCE_MAX];      /**< Positions of the balance pieces, tilted for the weight on them. */
+    sceVu0FVECTOR                        balance_base_pos[EDIT_MAP_BALANCE_MAX]; /**< Positions of the balance pieces before tilting. */
 
     /**
      *
@@ -157,7 +157,7 @@ public:
      * @address 0x1B5560
      * @size 0x290
      */
-    virtual int DrawSub(int direct);
+    virtual int DrawSub(int mode);
 
     /**
      *
@@ -207,7 +207,7 @@ public:
      * @address 0x1B1BB0
      * @size 0x1E0
      */
-    virtual int GetPoly(int kind, CCPoly *polys, mgVu0FBOX &box, int max);
+    virtual int GetPoly(int mode, CCPoly *polys, mgVu0FBOX &box, int max);
 
     /**
      *
@@ -237,7 +237,7 @@ public:
      * @address 0x2F4630
      * @size 0xA0
      */
-    virtual void DrawScreenFunc(mgCFrame *marker);
+    virtual void DrawScreenFunc(mgCFrame *frame);
 
     /**
      *
@@ -247,7 +247,7 @@ public:
      * @address 0x2F46D0
      * @size 0x2E0
      */
-    virtual int GetSeSrcVolPan(int *se_no, float *vol, float *pan, int max);
+    virtual int GetSeSrcVolPan(int *ids, float *vol, float *pan, int max);
 
     /**
      *
@@ -337,7 +337,7 @@ public:
      * @address 0x1B1D90
      * @size 0x120
      */
-    void CreateTable(mgCMemory *stack, int parts_max, int heap_size);
+    void CreateTable(mgCMemory *memory, int parts_max, int heap_size);
 
     /**
      *
@@ -347,7 +347,7 @@ public:
      * @address 0x1B1F60
      * @size 0x10
      */
-    CEditPartsInfo *GetePartsInfo(int no);
+    CEditPartsInfo *GetePartsInfo(int index);
 
     /**
      *
@@ -387,7 +387,7 @@ public:
      * @address 0x1B1FA0
      * @size 0x30
      */
-    CEditPartsInfo *GetePartsInfoAtPlaceID(int no);
+    CEditPartsInfo *GetePartsInfoAtPlaceID(int index);
 
     /**
      *
@@ -417,7 +417,7 @@ public:
      * @address 0x1B2070
      * @size 0x60
      */
-    CEditParts *GetePlaceParts(int no);
+    CEditParts *GetePlaceParts(int index);
 
     /**
      *
@@ -447,7 +447,7 @@ public:
      * @address 0x1B2200
      * @size 0xE0
      */
-    void GetRotMatrix(float (*out_matrix)[4], int angle);
+    void GetRotMatrix(float (*out_matrix)[4], int step);
 
     /**
      *
@@ -457,7 +457,7 @@ public:
      * @address 0x1B22E0
      * @size 0x50
      */
-    int GetEditAngle90(int angle);
+    int GetEditAngle90(int step);
 
     /**
      *
@@ -467,7 +467,7 @@ public:
      * @address 0x1B2330
      * @size 0x50
      */
-    float GetEditAngle(int angle);
+    float GetEditAngle(int step);
 
     /**
      *
@@ -477,7 +477,7 @@ public:
      * @address 0x1B2380
      * @size 0xA0
      */
-    int ConvEditAngle(float rot);
+    int ConvEditAngle(float angle);
 
     /**
      *
@@ -527,7 +527,7 @@ public:
      * @address 0x1B26B0
      * @size 0xE0
      */
-    int GetGridPos(float *pos, float *out_pos, float *out_size);
+    int GetGridPos(float *pos, float *river, float *out_size);
 
     /**
      *
@@ -537,7 +537,7 @@ public:
      * @address 0x1B2790
      * @size 0x50
      */
-    void GetMatrix(float (*out_matrix)[4], float *pos, int angle);
+    void GetMatrix(float (*out_matrix)[4], float *pos, int step);
 
     /**
      *
@@ -547,7 +547,7 @@ public:
      * @address 0x1B27E0
      * @size 0x10
      */
-    void GetInversMatrix(float (*out_matrix)[4], float (*matrix)[4]);
+    void GetInversMatrix(float (*a)[4], float (*b)[4]);
 
     /**
      *
@@ -567,7 +567,7 @@ public:
      * @address 0x1B2820
      * @size 0xB0
      */
-    int GetSameParts(int no);
+    int GetSameParts(int index);
 
     /**
      *
@@ -587,7 +587,7 @@ public:
      * @address 0x1B2920
      * @size 0x140
      */
-    int GetTotalPolyn(int *out_polyn1, int *out_polyn2);
+    int GetTotalPolyn(int *vertex_total, int *texture_total);
 
     /**
      *
@@ -607,7 +607,7 @@ public:
      * @address 0x1B2C50
      * @size 0x80
      */
-    int DeleteEditParts(int no);
+    int DeleteEditParts(int index);
 
     /**
      *
@@ -617,7 +617,7 @@ public:
      * @address 0x1B2CD0
      * @size 0x3B0
      */
-    int RemoveEditParts(int no, float *pos, RemoveInfo *info);
+    int RemoveEditParts(int index, float *pos, RemoveInfo *remove_info_opaque);
 
     /**
      *
@@ -657,7 +657,7 @@ public:
      * @address 0x1B3430
      * @size 0x1D0
      */
-    CEditParts *PlaceEditParts(int no, EP_PLACE_INFO *place, float *pos, float *rot, int *out_same);
+    CEditParts *PlaceEditParts(int index, EP_PLACE_INFO *place, float *pos, float *rot, int *same_index);
 
     /**
      *
@@ -677,7 +677,7 @@ public:
      * @address 0x1B3650
      * @size 0x100
      */
-    int CreatePlaceLog(int no, EP_PLACE_INFO *place);
+    int CreatePlaceLog(int id, EP_PLACE_INFO *info);
 
     /**
      *
@@ -687,7 +687,7 @@ public:
      * @address 0x1B3750
      * @size 0x1B0
      */
-    int GetNearParts(CEditPartsInfo *info, float *pos, float rot_y, CEditParts **out_parts, int max);
+    int GetNearParts(CEditPartsInfo *info, float *pos, float angle, CEditParts **out_parts, int max);
 
     /**
      *
@@ -727,7 +727,7 @@ public:
      * @address 0x1B3E80
      * @size 0x90
      */
-    int CheckEditParts(CEditPartsInfo *info, float *pos, float rot_y, EP_PLACE_INFO *place);
+    int CheckEditParts(CEditPartsInfo *info, float *pos, float radius, EP_PLACE_INFO *place);
 
     /**
      *
@@ -737,7 +737,7 @@ public:
      * @address 0x1B3F10
      * @size 0x70
      */
-    float GetEditPartsAlt(CEditPartsInfo *info, float *pos, float rot_y);
+    float GetEditPartsAlt(CEditPartsInfo *info, float *pos, float angle);
 
     /**
      *
@@ -757,7 +757,7 @@ public:
      * @address 0x1B4EC0
      * @size 0x70
      */
-    int MagnetParts(CEditPartsInfo *info, float *pos, float *rot);
+    int MagnetParts(CEditPartsInfo *info, float *pos, float *magnet);
 
     /**
      *
@@ -807,7 +807,7 @@ public:
      * @address 0x29A6F0
      * @size 0x2B0
      */
-    void CreateGrid(float *max, float *min, mgCMemory *stack, float *ofs);
+    void CreateGrid(float *upper, float *lower, mgCMemory *mem, float *offset);
 
     /**
      *
@@ -817,7 +817,7 @@ public:
      * @address 0x29A9A0
      * @size 0x160
      */
-    int GetRiverNum(float *sphere);
+    int GetRiverNum(float *position);
 
     /**
      *
@@ -837,7 +837,7 @@ public:
      * @address 0x29ABC0
      * @size 0x90
      */
-    int GetRiverNum(int no, float range);
+    int GetRiverNum(int parts_index, float radius);
 
     /**
      *
@@ -897,7 +897,7 @@ public:
      * @address 0x2ADF10
      * @size 0x90
      */
-    int CultureAnalyze(int cpoint_no);
+    int CultureAnalyze(int mode);
 
     /**
      *
@@ -987,7 +987,7 @@ public:
      * @address 0x2F3660
      * @size 0x110
      */
-    int CheckLiveNPC(int npc_no, int id);
+    int CheckLiveNPC(int npc_id, int id);
 
     /**
      *
@@ -1007,7 +1007,7 @@ public:
      * @address 0x2F3920
      * @size 0x110
      */
-    int GetTerritoryParts(int no, int *out_no, int max);
+    int GetTerritoryParts(int id, int *out_no, int max);
 
     /**
      *
@@ -1017,7 +1017,7 @@ public:
      * @address 0x2F3A30
      * @size 0xC0
      */
-    int GetChildParts(int no, int *out_no, int max);
+    int GetChildParts(int parent, int *out_no, int max);
 
     /**
      *
@@ -1027,7 +1027,7 @@ public:
      * @address 0x2F3AF0
      * @size 0x20
      */
-    int RePaintNum(int num);
+    int RePaintNum(int count);
 
     /**
      *
@@ -1037,7 +1037,7 @@ public:
      * @address 0x2F3B10
      * @size 0x150
      */
-    int PaintFence(int no, float *color, int num);
+    int PaintFence(int index, float *color, int count);
 
     /**
      *
@@ -1047,7 +1047,7 @@ public:
      * @address 0x2F3DE0
      * @size 0xE0
      */
-    int PaintFence(CEditParts *parts);
+    int PaintFence(CEditParts *fence);
 
     /**
      *
@@ -1067,7 +1067,7 @@ public:
      * @address 0x2F40B0
      * @size 0x3D0
      */
-    void GroundBalance(int keep);
+    void GroundBalance(int animate);
 
     /**
      *

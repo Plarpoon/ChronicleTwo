@@ -48,13 +48,13 @@ enum EditEventType {
  *
  */
 enum EditEventResult {
-    EDIT_EVENT_RESULT_IDLE = -1,        /**< No event is running. */
-    EDIT_EVENT_RESULT_CONTINUE = 0,     /**< The event goes on next frame. */
-    EDIT_EVENT_RESULT_END = 1,          /**< The event has finished. */
-    EDIT_EVENT_RESULT_ENTER = 2,        /**< Enter the interior named by CEditEvent::map_name. */
-    EDIT_EVENT_RESULT_EXIT = 3,         /**< Leave the interior back to the town. */
-    EDIT_EVENT_RESULT_ENTER_HOUSE = 4,  /**< Enter the villager's house named by CEditEvent::map_name. */
-    EDIT_EVENT_RESULT_MENU = 5,         /**< Open the menu of the placed part; the event keeps running. */
+    EDIT_EVENT_RESULT_IDLE = -1,       /**< No event is running. */
+    EDIT_EVENT_RESULT_CONTINUE = 0,    /**< The event goes on next frame. */
+    EDIT_EVENT_RESULT_END = 1,         /**< The event has finished. */
+    EDIT_EVENT_RESULT_ENTER = 2,       /**< Enter the interior named by CEditEvent::map_name. */
+    EDIT_EVENT_RESULT_EXIT = 3,        /**< Leave the interior back to the town. */
+    EDIT_EVENT_RESULT_ENTER_HOUSE = 4, /**< Enter the villager's house named by CEditEvent::map_name. */
+    EDIT_EVENT_RESULT_MENU = 5,        /**< Open the menu of the placed part; the event keeps running. */
 };
 
 /**
@@ -117,16 +117,16 @@ enum EditBookStep {
  */
 class CEditEvent {
 public:
-    s32             count;          /**< Frames spent in the current step, or a countdown set by a step. */
-    s32             state;          /**< Progress of the event, an EditEventState. */
-    s32             step;           /**< Step of the event, of the enum for its type. */
+    s32             count; /**< Frames spent in the current step, or a countdown set by a step. */
+    s32             state; /**< Progress of the event, an EditEventState. */
+    s32             step;  /**< Step of the event, of the enum for its type. */
     s32             unk_c;
-    s32             type;           /**< Kind of event, an EditEventType. */
+    s32             type; /**< Kind of event, an EditEventType. */
     s32             unk_14;
     s32             unk_18;
     s32             unk_1c;
-    CSceneEventData data;           /**< Event point the event was started from. */
-    float           projection;     /**< Projection distance to restore when the part's menu has closed. */
+    CSceneEventData data;       /**< Event point the event was started from. */
+    float           projection; /**< Projection distance to restore when the part's menu has closed. */
     s32             unk_f4;
     s32             unk_f8;
     s32             unk_fc;
@@ -194,10 +194,10 @@ STATIC_ASSERT(sizeof(CEditEvent) == 0x150);
  *
  */
 enum GeoramaFuncCommand {
-    GEORAMA_FUNC_LOAD_INT_NPC = 1,        /**< Loads a villager into a scene character slot of an interior. */
-    GEORAMA_FUNC_LOAD_GEO_NPC = 2,        /**< Loads the villager shown in the town. */
-    GEORAMA_FUNC_CHECK_PLACE_BURN = 3,    /**< Returns whether a part that can burn is placed. */
-    GEORAMA_FUNC_TEST = 999,              /**< Prints a warning that the test function was called. */
+    GEORAMA_FUNC_LOAD_INT_NPC = 1,     /**< Loads a villager into a scene character slot of an interior. */
+    GEORAMA_FUNC_LOAD_GEO_NPC = 2,     /**< Loads the villager shown in the town. */
+    GEORAMA_FUNC_CHECK_PLACE_BURN = 3, /**< Returns whether a part that can burn is placed. */
+    GEORAMA_FUNC_TEST = 999,           /**< Prints a warning that the test function was called. */
 };
 
 /**
@@ -219,7 +219,7 @@ STATIC_ASSERT(sizeof(GeoFuncParam) == 0x4);
  * @address 0x2F5B60
  * @size 0xC0
  */
-int GeoramaFunc(GeoFuncParam *param, RS_STACKDATA *args, int argc);
+int GeoramaFunc(GeoFuncParam *param, RS_STACKDATA *stack, int mode);
 
 /**
  *

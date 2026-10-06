@@ -24,6 +24,7 @@ class ClsMes;
 class mgCDrawPrim;
 class mgCTexture;
 class CMenuPosDataForm;
+
 /**
  *
  * Kind of drawing a form performs, as the dtype keyword of a menu layout
@@ -61,6 +62,7 @@ enum MENUFORM_DTYPE {
 };
 
 // clang-format on
+
 /**
  *
  * Way a form moves towards its next position, as the mtype keyword of a menu
@@ -77,6 +79,7 @@ enum MENUFORM_MTYPE {
 };
 
 // clang-format on
+
 /**
  *
  * Kind of drawing a form part performs.
@@ -112,6 +115,7 @@ enum MENUFORMPARTS_DTYPE {
 };
 
 // clang-format on
+
 /**
  *
  * Kind of animation a part effect runs.
@@ -134,6 +138,7 @@ enum MENU_PARTS_EFFECT_TYPE {
 };
 
 // clang-format on
+
 /**
  *
  * Texture rectangle registered by name in a menu layout script, together
@@ -141,14 +146,15 @@ enum MENU_PARTS_EFFECT_TYPE {
  *
  */
 struct MENU_BASETEXINFO {
-    mgRect<int> rect; /**< Texel rectangle as x, y, width and height. */
-    char *name;       /**< Name the rectangle is looked up by. */
-    char *tex_name;   /**< Name of the texture the rectangle lies in. */
-    u8 tex_block;     /**< Texture block the texture is loaded into. */
-    u8 unk_19;
-    s16 tbl_no;       /**< Index of this entry in the manager's table. */
-    u8 unk_1c[0x4];
+    mgRect<int> rect;      /**< Texel rectangle as x, y, width and height. */
+    char       *name;      /**< Name the rectangle is looked up by. */
+    char       *tex_name;  /**< Name of the texture the rectangle lies in. */
+    u8          tex_block; /**< Texture block the texture is loaded into. */
+    u8          unk_19;
+    s16         tbl_no; /**< Index of this entry in the manager's table. */
+    u8          unk_1c[0x4];
 };
+
 STATIC_ASSERT(sizeof(MENU_BASETEXINFO) == 0x20);
 
 /**
@@ -158,11 +164,12 @@ STATIC_ASSERT(sizeof(MENU_BASETEXINFO) == 0x20);
  *
  */
 struct MENU_PARTS_EFFECT_STRUCT1 {
-    u8 active;       /**< Non-zero while the effect runs. */
-    u8 repeat;       /**< Non-zero to keep the effect running when a cycle ends. */
-    u16 type;        /**< Kind of effect, a MENU_PARTS_EFFECT_TYPE. */
-    float param[8];  /**< Counter, limit and per-kind parameters. */
+    u8    active;   /**< Non-zero while the effect runs. */
+    u8    repeat;   /**< Non-zero to keep the effect running when a cycle ends. */
+    u16   type;     /**< Kind of effect, a MENU_PARTS_EFFECT_TYPE. */
+    float param[8]; /**< Counter, limit and per-kind parameters. */
 };
+
 STATIC_ASSERT(sizeof(MENU_PARTS_EFFECT_STRUCT1) == 0x24);
 
 /**
@@ -172,32 +179,33 @@ STATIC_ASSERT(sizeof(MENU_PARTS_EFFECT_STRUCT1) == 0x24);
  *
  */
 struct MENUFORMPARTS_TYPE {
-    char *name;                         /**< Name the part is looked up by. */
-    u8 active;                          /**< Non-zero once the slot holds a part. */
-    u8 draw_flag;                       /**< Non-zero to draw the part. */
-    u8 dtype;                           /**< Kind of drawing, a MENUFORMPARTS_DTYPE. */
-    u8 rgba[4];                         /**< Colour and alpha. */
-    u8 viber[2];                        /**< Amplitude of the horizontal and vertical sway. */
-    u8 unk_d;
-    s16 vibe_cnt[2];                    /**< Half period of the horizontal and vertical sway, in frames; 0 for none. */
-    u8 unk_12[0x2];
-    mgCTexture *tex;                    /**< Texture the part is drawn with. */
-    u8 tex_info_no;                     /**< Index of the part's MENU_BASETEXINFO in the manager. */
-    u8 bilinear;                        /**< Bit 0 set to sample the texture bilinearly. */
-    s8 alpha_blend;                     /**< Blend equation the part is drawn with. */
-    u8 unk_1b;
-    float x;                            /**< Position relative to the form. */
-    float y;                            /**< Position relative to the form. */
-    float w;                            /**< Width. */
-    float h;                            /**< Height. */
-    float unk_2c;
-    int etc_info[4];                    /**< Extra values whose meaning depends on dtype, such as a number to draw. */
-    MENU_PARTS_EFFECT_STRUCT1 *effect;  /**< Animations attached to the part. */
-    u8 effect_num;                      /**< Number of entries in effect. */
-    u8 item_flag;                       /**< State bits of an item icon part. */
-    u8 shadow;                          /**< Non-zero to draw a drop shadow under the part. */
-    s8 shadow_offset;                   /**< Offset of the drop shadow, in pixels. */
+    char                      *name;      /**< Name the part is looked up by. */
+    u8                         active;    /**< Non-zero once the slot holds a part. */
+    u8                         draw_flag; /**< Non-zero to draw the part. */
+    u8                         dtype;     /**< Kind of drawing, a MENUFORMPARTS_DTYPE. */
+    u8                         rgba[4];   /**< Colour and alpha. */
+    u8                         viber[2];  /**< Amplitude of the horizontal and vertical sway. */
+    u8                         unk_d;
+    s16                        vibe_cnt[2]; /**< Half period of the horizontal and vertical sway, in frames; 0 for none. */
+    u8                         unk_12[0x2];
+    mgCTexture                *tex;         /**< Texture the part is drawn with. */
+    u8                         tex_info_no; /**< Index of the part's MENU_BASETEXINFO in the manager. */
+    u8                         bilinear;    /**< Bit 0 set to sample the texture bilinearly. */
+    s8                         alpha_blend; /**< Blend equation the part is drawn with. */
+    u8                         unk_1b;
+    float                      x; /**< Position relative to the form. */
+    float                      y; /**< Position relative to the form. */
+    float                      w; /**< Width. */
+    float                      h; /**< Height. */
+    float                      unk_2c;
+    int                        etc_info[4];   /**< Extra values whose meaning depends on dtype, such as a number to draw. */
+    MENU_PARTS_EFFECT_STRUCT1 *effect;        /**< Animations attached to the part. */
+    u8                         effect_num;    /**< Number of entries in effect. */
+    u8                         item_flag;     /**< State bits of an item icon part. */
+    u8                         shadow;        /**< Non-zero to draw a drop shadow under the part. */
+    s8                         shadow_offset; /**< Offset of the drop shadow, in pixels. */
 };
+
 STATIC_ASSERT(sizeof(MENUFORMPARTS_TYPE) == 0x48);
 
 /**
@@ -206,12 +214,13 @@ STATIC_ASSERT(sizeof(MENUFORMPARTS_TYPE) == 0x48);
  *
  */
 struct MENU_FORM_ACTION_MOVE {
-    s16 mtype;   /**< Way of moving, a MENUFORM_MTYPE. */
-    float x;     /**< Target position. */
-    float y;     /**< Target position. */
+    s16   mtype;  /**< Way of moving, a MENUFORM_MTYPE. */
+    float x;      /**< Target position. */
+    float y;      /**< Target position. */
     float rate_x; /**< Horizontal speed or divisor, depending on mtype. */
     float rate_y; /**< Vertical speed or divisor, depending on mtype. */
 };
+
 STATIC_ASSERT(sizeof(MENU_FORM_ACTION_MOVE) == 0x14);
 
 /**
@@ -220,9 +229,10 @@ STATIC_ASSERT(sizeof(MENU_FORM_ACTION_MOVE) == 0x14);
  *
  */
 struct MENU_FORM_ACTION {
-    char name[0x10];              /**< Name the action is set by. */
-    MENU_FORM_ACTION_MOVE *move;  /**< Movement the action performs. */
+    char                   name[0x10]; /**< Name the action is set by. */
+    MENU_FORM_ACTION_MOVE *move;       /**< Movement the action performs. */
 };
+
 STATIC_ASSERT(sizeof(MENU_FORM_ACTION) == 0x14);
 
 /**
@@ -231,9 +241,10 @@ STATIC_ASSERT(sizeof(MENU_FORM_ACTION) == 0x14);
  *
  */
 struct MENU_ETCINFO {
-    char *name;    /**< Name the entry is looked up by. */
-    int value[2];  /**< Values. */
+    char *name;     /**< Name the entry is looked up by. */
+    int   value[2]; /**< Values. */
 };
+
 STATIC_ASSERT(sizeof(MENU_ETCINFO) == 0xC);
 
 /**
@@ -242,9 +253,10 @@ STATIC_ASSERT(sizeof(MENU_ETCINFO) == 0xC);
  *
  */
 struct MENU_ETCINFO2 {
-    char *name;      /**< Name the entry is looked up by. */
-    float value[4];  /**< Values. */
+    char *name;     /**< Name the entry is looked up by. */
+    float value[4]; /**< Values. */
 };
+
 STATIC_ASSERT(sizeof(MENU_ETCINFO2) == 0x14);
 
 /**
@@ -253,11 +265,12 @@ STATIC_ASSERT(sizeof(MENU_ETCINFO2) == 0x14);
  *
  */
 struct MENUFORM_MAKEBRD_LINE {
-    u8 kind;      /**< Board style of the line; 0 hides the button icon. */
-    u8 button;    /**< Button icon shown on the line. */
-    s16 num;      /**< Number shown on the line. */
-    s16 sub_num;  /**< Second number, shown when positive. */
+    u8  kind;    /**< Board style of the line; 0 hides the button icon. */
+    u8  button;  /**< Button icon shown on the line. */
+    s16 num;     /**< Number shown on the line. */
+    s16 sub_num; /**< Second number, shown when positive. */
 };
+
 STATIC_ASSERT(sizeof(MENUFORM_MAKEBRD_LINE) == 0x6);
 
 /**
@@ -266,13 +279,14 @@ STATIC_ASSERT(sizeof(MENUFORM_MAKEBRD_LINE) == 0x6);
  *
  */
 struct MENUFORM_MAKEBRD_INFO {
-    MENUFORM_MAKEBRD_LINE line[4]; /**< Lines of the board. */
-    int material_num;              /**< Number of materials listed. */
-    int unk_1c;
-    int unk_20;
-    int unk_24;
-    int unk_28;
+    MENUFORM_MAKEBRD_LINE line[4];      /**< Lines of the board. */
+    int                   material_num; /**< Number of materials listed. */
+    int                   unk_1c;
+    int                   unk_20;
+    int                   unk_24;
+    int                   unk_28;
 };
+
 STATIC_ASSERT(sizeof(MENUFORM_MAKEBRD_INFO) == 0x2C);
 
 /**
@@ -285,8 +299,8 @@ struct MENU_EFFECT_INFO {
     float unk_0;
     float unk_4;
     float unk_8;
-    float x;      /**< Screen position. */
-    float y;      /**< Screen position. */
+    float x; /**< Screen position. */
+    float y; /**< Screen position. */
     float unk_14;
     float unk_18;
     float unk_1c;
@@ -299,6 +313,7 @@ struct MENU_EFFECT_INFO {
     float unk_38;
     float unk_3c;
 };
+
 STATIC_ASSERT(sizeof(MENU_EFFECT_INFO) == 0x40);
 
 /**
@@ -310,16 +325,17 @@ struct REPAIR_EFFECT_PARTICLE {
     float unk_0;
     float unk_4;
     float unk_8;
-    float alpha;   /**< Alpha; the spark ends when it reaches 0. */
-    float vx;      /**< Horizontal speed. */
+    float alpha; /**< Alpha; the spark ends when it reaches 0. */
+    float vx;    /**< Horizontal speed. */
     float unk_14;
     float x;       /**< Screen position. */
     float y;       /**< Screen position. */
-    int counter;   /**< Frames the spark has lived. */
-    u8 unk_24;
-    u8 active;     /**< Non-zero while the spark lives. */
-    u8 unk_26[0xa];
+    int   counter; /**< Frames the spark has lived. */
+    u8    unk_24;
+    u8    active; /**< Non-zero while the spark lives. */
+    u8    unk_26[0xa];
 };
+
 STATIC_ASSERT(sizeof(REPAIR_EFFECT_PARTICLE) == 0x30);
 
 /**
@@ -331,44 +347,44 @@ STATIC_ASSERT(sizeof(REPAIR_EFFECT_PARTICLE) == 0x30);
  */
 class CMenuPosDataForm {
 public:
-    u8 active;                     /**< Non-zero once the slot holds a form. */
-    u8 draw_flag;                  /**< Non-zero to draw the form. */
-    u8 dtype;                      /**< Kind of drawing, a MENUFORM_DTYPE. */
-    u8 step_stop;                  /**< Non-zero to skip the form's per-frame step. */
-    s16 clip_w;                    /**< Width of the scissor area of a clip form. */
-    s16 clip_h;                    /**< Height of the scissor area of a clip form. */
-    s16 vibe_cnt[2];               /**< Half period of the horizontal and vertical sway, in frames; 0 for none. */
-    float x;                       /**< Screen position. */
-    float y;                       /**< Screen position. */
-    char *name;                    /**< Name the form is looked up by. */
-    int counter;                   /**< Frames stepped, wrapping after 100000. */
-    u8 sub_no;                     /**< Message window or list the form draws. */
-    u8 unk_1d[0x3];
-    u8 mtype;                      /**< Way of moving to the next position, a MENUFORM_MTYPE; MENUFORM_MTYPE_N is stored as 0xFF. */
-    u8 unk_21[0x3];
-    int next_x;                    /**< Position the form moves to. */
-    int next_y;                    /**< Position the form moves to. */
-    float rate_x;                  /**< Horizontal speed or divisor of the movement. */
-    float rate_y;                  /**< Vertical speed or divisor of the movement. */
-    s16 chara_tex_block;           /**< Texture block of the model drawn by a poly form, or below 1 to draw its frame directly. */
-    s16 unk_36;
-    CActionChara *chara;           /**< Model drawn by a poly form. */
-    u8 unk_3c[0x4];
-    float ambient[4];              /**< Ambient light a poly form is drawn with, unused when negative. */
-    u8 rgba_bit;                   /**< Bits of the RGBA channels for which the form colour replaces the part colour. */
-    s8 rgba_add[4];                /**< Per-frame change of each colour channel; 0 when settled. */
-    u8 rgba[4];                    /**< Form colour and alpha. */
-    u8 rgba_target[4];             /**< Value each colour channel changes towards. */
-    u8 unk_5d;
-    s16 action_no;                 /**< Index of the running action, or -1 for none. */
-    s16 action_state;              /**< 1 while an action runs, 4 once its movement ends. */
-    s16 action_num;                /**< Number of entries in action. */
-    MENU_FORM_ACTION *action;      /**< Actions of the form. */
-    s16 parts_num;                 /**< Number of entries in parts. */
-    MENUFORMPARTS_TYPE *parts;     /**< Parts of the form. */
-    CMenuPosDataForm *prev;        /**< Previous form in the draw list. */
-    CMenuPosDataForm *next;        /**< Next form in the draw list. */
-    u8 unk_78[0x8];
+    u8                  active;      /**< Non-zero once the slot holds a form. */
+    u8                  draw_flag;   /**< Non-zero to draw the form. */
+    u8                  dtype;       /**< Kind of drawing, a MENUFORM_DTYPE. */
+    u8                  step_stop;   /**< Non-zero to skip the form's per-frame step. */
+    s16                 clip_w;      /**< Width of the scissor area of a clip form. */
+    s16                 clip_h;      /**< Height of the scissor area of a clip form. */
+    s16                 vibe_cnt[2]; /**< Half period of the horizontal and vertical sway, in frames; 0 for none. */
+    float               x;           /**< Screen position. */
+    float               y;           /**< Screen position. */
+    char               *name;        /**< Name the form is looked up by. */
+    int                 counter;     /**< Frames stepped, wrapping after 100000. */
+    u8                  sub_no;      /**< Message window or list the form draws. */
+    u8                  unk_1d[0x3];
+    u8                  mtype; /**< Way of moving to the next position, a MENUFORM_MTYPE; MENUFORM_MTYPE_N is stored as 0xFF. */
+    u8                  unk_21[0x3];
+    int                 next_x;          /**< Position the form moves to. */
+    int                 next_y;          /**< Position the form moves to. */
+    float               rate_x;          /**< Horizontal speed or divisor of the movement. */
+    float               rate_y;          /**< Vertical speed or divisor of the movement. */
+    s16                 chara_tex_block; /**< Texture block of the model drawn by a poly form, or below 1 to draw its frame directly. */
+    s16                 unk_36;
+    CActionChara       *chara; /**< Model drawn by a poly form. */
+    u8                  unk_3c[0x4];
+    float               ambient[4];     /**< Ambient light a poly form is drawn with, unused when negative. */
+    u8                  rgba_bit;       /**< Bits of the RGBA channels for which the form colour replaces the part colour. */
+    s8                  rgba_add[4];    /**< Per-frame change of each colour channel; 0 when settled. */
+    u8                  rgba[4];        /**< Form colour and alpha. */
+    u8                  rgba_target[4]; /**< Value each colour channel changes towards. */
+    u8                  unk_5d;
+    s16                 action_no;    /**< Index of the running action, or -1 for none. */
+    s16                 action_state; /**< 1 while an action runs, 4 once its movement ends. */
+    s16                 action_num;   /**< Number of entries in action. */
+    MENU_FORM_ACTION   *action;       /**< Actions of the form. */
+    s16                 parts_num;    /**< Number of entries in parts. */
+    MENUFORMPARTS_TYPE *parts;        /**< Parts of the form. */
+    CMenuPosDataForm   *prev;         /**< Previous form in the draw list. */
+    CMenuPosDataForm   *next;         /**< Next form in the draw list. */
+    u8                  unk_78[0x8];
 
     /**
      *
@@ -419,7 +435,7 @@ public:
      * @address 0x227D50
      * @size 0x10
      */
-    void SetActionCharaPtr(CActionChara *new_chara, int tex_block, int unk);
+    void SetActionCharaPtr(CActionChara *character, int texture_block, int secondary_block);
 
     /**
      *
@@ -429,7 +445,7 @@ public:
      * @address 0x227D60
      * @size 0x30
      */
-    void SetRGBACalcParam(int channel, int add, int target);
+    void SetRGBACalcParam(int index, int from, int to);
 
     /**
      *
@@ -616,8 +632,9 @@ public:
      * @address 0x22C930
      * @size 0x60
      */
-    void MenuFormDraw(int &tex_block);
+    void MenuFormDraw(int &state);
 };
+
 STATIC_ASSERT(sizeof(CMenuPosDataForm) == 0x80);
 
 /**
@@ -628,15 +645,15 @@ STATIC_ASSERT(sizeof(CMenuPosDataForm) == 0x80);
  */
 class CPosDataManage {
 public:
-    MENU_ETCINFO *etc_tbl;          /**< Named integer pairs. */
-    u16 etc_tbl_num;                /**< Number of entries in etc_tbl. */
-    MENU_ETCINFO2 *etc_tbl2;        /**< Named sets of four numbers. */
-    u16 etc_tbl2_num;               /**< Number of entries in etc_tbl2. */
+    MENU_ETCINFO     *etc_tbl;      /**< Named integer pairs. */
+    u16               etc_tbl_num;  /**< Number of entries in etc_tbl. */
+    MENU_ETCINFO2    *etc_tbl2;     /**< Named sets of four numbers. */
+    u16               etc_tbl2_num; /**< Number of entries in etc_tbl2. */
     MENU_BASETEXINFO *tex_info;     /**< Named texture rectangles. */
-    u16 tex_info_num;               /**< Number of entries in tex_info. */
+    u16               tex_info_num; /**< Number of entries in tex_info. */
     CMenuPosDataForm *form;         /**< Forms. */
-    u16 form_num;                   /**< Number of entries in form. */
-    u8 step_stop;                   /**< Non-zero to stop every form's per-frame step. */
+    u16               form_num;     /**< Number of entries in form. */
+    u8                step_stop;    /**< Non-zero to stop every form's per-frame step. */
 
     /**
      *
@@ -686,7 +703,7 @@ public:
      * @address 0x22CB40
      * @size 0x80
      */
-    void TexGetInfoClear(int start, int end);
+    void TexGetInfoClear(int from, int to);
 
     /**
      *
@@ -717,7 +734,7 @@ public:
      * @address 0x22CD20
      * @size 0x60
      */
-    void EtcTblClear(int start, int end);
+    void EtcTblClear(int from, int to);
 
     /**
      *
@@ -737,7 +754,7 @@ public:
      * @address 0x22CE10
      * @size 0x80
      */
-    void GetEtcTblValue(char *info_name, int &out_value0, int &out_value1);
+    void GetEtcTblValue(char *info_name, int &value1, int &value2);
 
     /**
      *
@@ -757,7 +774,7 @@ public:
      * @address 0x22CF20
      * @size 0xE0
      */
-    void GetEtcTbl2Value(char *info_name, float *out_values, int num);
+    void GetEtcTbl2Value(char *info_name, float *out_values, int count);
 
     /**
      *
@@ -767,7 +784,7 @@ public:
      * @address 0x22D000
      * @size 0x60
      */
-    void EtcTbl2Clear(int start, int end);
+    void EtcTbl2Clear(int from, int to);
 
     /**
      *
@@ -797,7 +814,7 @@ public:
      * @address 0x22D190
      * @size 0x90
      */
-    void FormInfoClear(int start, int end);
+    void FormInfoClear(int from, int to);
 
     /**
      *
@@ -837,7 +854,7 @@ public:
      * @address 0x22D350
      * @size 0xC0
      */
-    void FormReLink(char *form_name0, char *form_name1);
+    void FormReLink(char *form_name0, char *target);
 
     /**
      *
@@ -847,7 +864,7 @@ public:
      * @address 0x22D410
      * @size 0x140
      */
-    void FormReLink2(char *first0, char *last0, char *first1, char *last1);
+    void FormReLink2(char *form, char *target, char *third, char *fourth);
 
     /**
      *
@@ -878,8 +895,8 @@ public:
      * @size 0x50
      */
     void ClearPos();
-
 };
+
 STATIC_ASSERT(sizeof(CPosDataManage) == 0x20);
 
 /**
@@ -890,18 +907,18 @@ STATIC_ASSERT(sizeof(CPosDataManage) == 0x20);
  */
 class CMenuPosDataManage : public CPosDataManage {
 public:
-    u_long128 *pallet[3][2];          /**< Item icon palettes: normal, grey and sepia, for each icon texture. */
-    s16 trans_pallet_no[2];           /**< First transparent entry of each item icon palette. */
-    mgCTexture *common_tex;           /**< Common menu texture. */
-    int unk_40;
-    int unk_44;
-    int unk_48;
-    mgCTexture *icon_effect_tex;      /**< Texture of the item icon effects. */
-    mgCTexture *effect_tex;           /**< Texture of the menu effects. */
-    mgCTexture *item_icon_tex[4][2];  /**< Item icon textures: original, normal, grey and sepia, for each icon texture. */
-    float fish_jump_wait[150];        /**< Frames until each item board fish next jumps. */
-    float fish_jump_height[150];      /**< Height of the current jump of each item board fish. */
-    s8 fish_jump_count[150];          /**< Bounces left in the current jump of each item board fish. */
+    u_long128  *pallet[3][2];       /**< Item icon palettes: normal, grey and sepia, for each icon texture. */
+    s16         trans_pallet_no[2]; /**< First transparent entry of each item icon palette. */
+    mgCTexture *common_tex;         /**< Common menu texture. */
+    int         unk_40;
+    int         unk_44;
+    int         unk_48;
+    mgCTexture *icon_effect_tex;       /**< Texture of the item icon effects. */
+    mgCTexture *effect_tex;            /**< Texture of the menu effects. */
+    mgCTexture *item_icon_tex[4][2];   /**< Item icon textures: original, normal, grey and sepia, for each icon texture. */
+    float       fish_jump_wait[150];   /**< Frames until each item board fish next jumps. */
+    float       fish_jump_height[150]; /**< Height of the current jump of each item board fish. */
+    s8          fish_jump_count[150];  /**< Bounces left in the current jump of each item board fish. */
 
     /**
      *
@@ -922,7 +939,7 @@ public:
      * @address 0x22D7C0
      * @size 0x2F0
      */
-    int StepMainMenuIconMove(int *icon_list, int select, int mode);
+    int StepMainMenuIconMove(int *icons, int select, int mode);
 
     /**
      *
@@ -933,7 +950,7 @@ public:
      * @address 0x22E490
      * @size 0x110
      */
-    void GetPosMenuItemBrdKoma(int *out_pos, int no, int clip);
+    void GetPosMenuItemBrdKoma(int *position, int item_index, int clip);
 
     /**
      *
@@ -985,8 +1002,8 @@ public:
      * @size 0x90
      */
     void InitializeCMenuPosDataManage();
-
 };
+
 STATIC_ASSERT(sizeof(CMenuPosDataManage) == 0x5BC);
 
 /**
@@ -996,15 +1013,15 @@ STATIC_ASSERT(sizeof(CMenuPosDataManage) == 0x5BC);
  */
 class CRepairEffect {
 public:
-    u8 active;                         /**< Non-zero while any spark lives. */
-    int particle_num;                  /**< Number of entries in particle. */
-    int counter;                       /**< Frames the effect has run. */
-    int x;                             /**< Screen position. */
-    int y;                             /**< Screen position. */
-    int alpha;                         /**< Alpha of the flash. */
-    REPAIR_EFFECT_PARTICLE *particle;  /**< Sparks. */
-    mgCTexture *unk_1c;
-    mgCTexture *tex;                   /**< Texture the effect is drawn with. */
+    u8                      active;       /**< Non-zero while any spark lives. */
+    int                     particle_num; /**< Number of entries in particle. */
+    int                     counter;      /**< Frames the effect has run. */
+    int                     x;            /**< Screen position. */
+    int                     y;            /**< Screen position. */
+    int                     alpha;        /**< Alpha of the flash. */
+    REPAIR_EFFECT_PARTICLE *particle;     /**< Sparks. */
+    mgCTexture             *unk_1c;
+    mgCTexture             *tex; /**< Texture the effect is drawn with. */
 
     /**
      *
@@ -1024,7 +1041,7 @@ public:
      * @address 0x22F5F0
      * @size 0x190
      */
-    void Generate(mgCMemory *stack, int num);
+    void Generate(mgCMemory *memory, int particle_count);
 
     /**
      *
@@ -1045,8 +1062,8 @@ public:
      * @size 0x1F0
      */
     void Draw();
-
 };
+
 STATIC_ASSERT(sizeof(CRepairEffect) == 0x24);
 
 /**
@@ -1056,18 +1073,18 @@ STATIC_ASSERT(sizeof(CRepairEffect) == 0x24);
  */
 class CRepairManager {
 public:
-    u8 bg_load;                     /**< Non-zero while the repair data is read in the background. */
-    u8 data_ready;                  /**< Non-zero once the repair data is loaded. */
-    s16 tex_block;                  /**< Texture block of the repair textures. */
+    u8             bg_load;         /**< Non-zero while the repair data is read in the background. */
+    u8             data_ready;      /**< Non-zero once the repair data is loaded. */
+    s16            tex_block;       /**< Texture block of the repair textures. */
     CRepairEffect *effect[8];       /**< Running effects. */
-    mgCMemory effect_stack[8];      /**< Stack each effect is allocated from. */
-    mgCTexture *unk_1a4;
-    mgCTexture *tex;                /**< Texture of the effects. */
-    u32 *data;                      /**< Pack file of the repair data. */
-    CActionChara *model;            /**< Repair model, or NULL. */
-    mgCMemory model_stack;          /**< Stack the model is allocated from. */
-    float model_counter;            /**< Frames the model has run. */
-    u8 keep;                        /**< Non-zero to keep the data after the effects end. */
+    mgCMemory      effect_stack[8]; /**< Stack each effect is allocated from. */
+    mgCTexture    *unk_1a4;
+    mgCTexture    *tex;           /**< Texture of the effects. */
+    u32           *data;          /**< Pack file of the repair data. */
+    CActionChara  *model;         /**< Repair model, or NULL. */
+    mgCMemory      model_stack;   /**< Stack the model is allocated from. */
+    float          model_counter; /**< Frames the model has run. */
+    u8             keep;          /**< Non-zero to keep the data after the effects end. */
 
     /**
      *
@@ -1087,7 +1104,7 @@ public:
      * @address 0x22FB00
      * @size 0x110
      */
-    void SetStack(mgCMemory *stack, int mode);
+    void SetStack(mgCMemory *memory, int mode);
 
     /**
      *
@@ -1107,7 +1124,7 @@ public:
      * @address 0x22FC20
      * @size 0xC0
      */
-    void LoadDataBG(mgCMemory *stack);
+    void LoadDataBG(mgCMemory *memory);
 
     /**
      *
@@ -1127,7 +1144,7 @@ public:
      * @address 0x22FD80
      * @size 0xB0
      */
-    void SetRepairData(mgCMemory *stack, int new_tex_block, u32 *new_data);
+    void SetRepairData(mgCMemory *memory, int new_tex_block, u32 *pack);
 
     /**
      *
@@ -1137,7 +1154,7 @@ public:
      * @address 0x22FE30
      * @size 0x240
      */
-    void GeneratePoly(float *pos, int unk);
+    void GeneratePoly(float *pos, int block);
 
     /**
      *
@@ -1188,8 +1205,8 @@ public:
      * @size 0x90
      */
     void Draw();
-
 };
+
 STATIC_ASSERT(sizeof(CRepairManager) == 0x1EC);
 
 /**
@@ -1199,12 +1216,12 @@ STATIC_ASSERT(sizeof(CRepairManager) == 0x1EC);
  */
 class CLevelUpEffect {
 public:
-    u8 active;            /**< Non-zero while the effect runs. */
-    int counter;          /**< Frames the label has risen. */
-    int kind;             /**< Colour and label of the effect. */
-    sceVu0FVECTOR pos;    /**< Screen position of the label, or world position of the character. */
-    mgCTexture *tex;      /**< Texture the effect is drawn with. */
-    CCharacter2 *chara;   /**< Character the sparks rise from, or NULL for the label. */
+    u8            active;  /**< Non-zero while the effect runs. */
+    int           counter; /**< Frames the label has risen. */
+    int           kind;    /**< Colour and label of the effect. */
+    sceVu0FVECTOR pos;     /**< Screen position of the label, or world position of the character. */
+    mgCTexture   *tex;     /**< Texture the effect is drawn with. */
+    CCharacter2  *chara;   /**< Character the sparks rise from, or NULL for the label. */
 
     /**
      *
@@ -1224,7 +1241,7 @@ public:
      * @address 0x2304A0
      * @size 0x40
      */
-    void Generate(mgCTexture *new_tex, int new_kind, int x, int y);
+    void Generate(mgCTexture *spark_texture, int param, int x, int y);
 
     /**
      *
@@ -1234,7 +1251,7 @@ public:
      * @address 0x2304E0
      * @size 0x190
      */
-    void Generate(mgCTexture *new_tex, int new_kind, CCharacter2 *new_chara);
+    void Generate(mgCTexture *spark_texture, int param, CCharacter2 *target);
 
     /**
      *
@@ -1265,8 +1282,8 @@ public:
      * @size 0x230
      */
     void Draw();
-
 };
+
 STATIC_ASSERT(sizeof(CLevelUpEffect) == 0x30);
 
 /**
@@ -1276,9 +1293,9 @@ STATIC_ASSERT(sizeof(CLevelUpEffect) == 0x30);
  */
 class CLevelUpEffectManager {
 public:
-    mgCTexture *label_tex;      /**< Texture of the rising labels. */
-    mgCTexture *spark_tex;      /**< Texture of the sparks. */
-    CLevelUpEffect effect[8];   /**< Effects. */
+    mgCTexture    *label_tex; /**< Texture of the rising labels. */
+    mgCTexture    *spark_tex; /**< Texture of the sparks. */
+    CLevelUpEffect effect[8]; /**< Effects. */
 
     /**
      *
@@ -1308,7 +1325,7 @@ public:
      * @address 0x230BB0
      * @size 0xC0
      */
-    void Generate(int kind, int x, int y);
+    void Generate(int param, int x, int y);
 
     /**
      *
@@ -1318,7 +1335,7 @@ public:
      * @address 0x230C70
      * @size 0xA0
      */
-    void Generate(int kind, CCharacter2 *chara);
+    void Generate(int param, CCharacter2 *chara);
 
     /**
      *
@@ -1339,8 +1356,8 @@ public:
      * @size 0x60
      */
     void Draw();
-
 };
+
 STATIC_ASSERT(sizeof(CLevelUpEffectManager) == 0x190);
 
 /**
@@ -1352,8 +1369,8 @@ class CStarDust {
 public:
     float x;      /**< Screen position. */
     float y;      /**< Screen position. */
-    s16 life;     /**< Frames left to live. */
-    u8 active;    /**< Non-zero while the star lives. */
+    s16   life;   /**< Frames left to live. */
+    u8    active; /**< Non-zero while the star lives. */
 
     /**
      *
@@ -1373,7 +1390,7 @@ public:
      * @address 0x230DD0
      * @size 0x60
      */
-    void Generate(int new_x, int new_y, int base_life, int rand_life);
+    void Generate(int pos_x, int pos_y, int life_base, int life_range);
 
     /**
      *
@@ -1394,8 +1411,8 @@ public:
      * @size 0x120
      */
     void Draw(mgCTexture *tex, int u, int v);
-
 };
+
 STATIC_ASSERT(sizeof(CStarDust) == 0xC);
 
 /**
@@ -1406,16 +1423,16 @@ STATIC_ASSERT(sizeof(CStarDust) == 0xC);
  */
 class CEffVerticalLine {
 public:
-    sceVu0FVECTOR pos;  /**< World position. */
-    float w;            /**< Width. */
-    float h;            /**< Height. */
-    float speed;        /**< Rising speed. */
-    float r;            /**< Colour. */
-    float g;            /**< Colour. */
-    float b;            /**< Colour. */
-    float alpha;        /**< Peak alpha. */
-    float angle;        /**< Phase of the fade, from 0 to pi. */
-    float angle_add;    /**< Per-frame change of angle. */
+    sceVu0FVECTOR pos;       /**< World position. */
+    float         w;         /**< Width. */
+    float         h;         /**< Height. */
+    float         speed;     /**< Rising speed. */
+    float         r;         /**< Colour. */
+    float         g;         /**< Colour. */
+    float         b;         /**< Colour. */
+    float         alpha;     /**< Peak alpha. */
+    float         angle;     /**< Phase of the fade, from 0 to pi. */
+    float         angle_add; /**< Per-frame change of angle. */
 
     /**
      *
@@ -1446,8 +1463,8 @@ public:
      * @size 0x250
      */
     void Draw();
-
 };
+
 STATIC_ASSERT(sizeof(CEffVerticalLine) == 0x40);
 
 /**
@@ -1458,16 +1475,16 @@ STATIC_ASSERT(sizeof(CEffVerticalLine) == 0x40);
  */
 class CMenuEffect {
 public:
-    s16 tex_block;            /**< Texture block of the texture. */
-    mgCTexture *tex;          /**< Texture the effect is drawn with. */
-    u8 end;                   /**< Non-zero once the effect has ended. */
-    s8 type;                  /**< Kind of effect, or -1 for none. */
-    u8 run;                   /**< Non-zero while the effect runs. */
-    s16 info_num;             /**< Number of entries in info. */
-    MENU_EFFECT_INFO *info;   /**< Particles. */
-    s16 base_info[16];        /**< Base parameters, such as positions, given when the effect is set. */
-    s16 alpha;                /**< Alpha of the whole effect. */
-    s16 counter;              /**< Frames the effect has run. */
+    s16               tex_block;     /**< Texture block of the texture. */
+    mgCTexture       *tex;           /**< Texture the effect is drawn with. */
+    u8                end;           /**< Non-zero once the effect has ended. */
+    s8                type;          /**< Kind of effect, or -1 for none. */
+    u8                run;           /**< Non-zero while the effect runs. */
+    s16               info_num;      /**< Number of entries in info. */
+    MENU_EFFECT_INFO *info;          /**< Particles. */
+    s16               base_info[16]; /**< Base parameters, such as positions, given when the effect is set. */
+    s16               alpha;         /**< Alpha of the whole effect. */
+    s16               counter;       /**< Frames the effect has run. */
 
     /**
      *
@@ -1488,7 +1505,7 @@ public:
      * @address 0x231E00
      * @size 0x1B0
      */
-    void PresetEffect(mgCMemory *stack, mgCTexture *new_tex, int new_type, int *base);
+    void PresetEffect(mgCMemory *memory, mgCTexture *texture, int kind, int *base);
 
     /**
      *
@@ -1498,7 +1515,7 @@ public:
      * @address 0x231FB0
      * @size 0x50
      */
-    void SetMemory(mgCMemory *stack);
+    void SetMemory(mgCMemory *memory);
 
     /**
      *
@@ -1508,7 +1525,7 @@ public:
      * @address 0x232000
      * @size 0x20
      */
-    void SetTexInfo(mgCTexture *new_tex, int *new_tex_block);
+    void SetTexInfo(mgCTexture *texture, int *params);
 
     /**
      *
@@ -1518,7 +1535,7 @@ public:
      * @address 0x232020
      * @size 0xE0
      */
-    void SetBaseInfo(int *base, int preset, int mode, int num);
+    void SetBaseInfo(int *values, int preset, int kind, int count);
 
     /**
      *
@@ -1538,7 +1555,7 @@ public:
      * @address 0x232110
      * @size 0x80
      */
-    void PresetInfoAll(int mode);
+    void PresetInfoAll(int kind);
 
     /**
      *
@@ -1569,8 +1586,8 @@ public:
      * @size 0xA00
      */
     void Draw();
-
 };
+
 STATIC_ASSERT(sizeof(CMenuEffect) == 0x38);
 
 /**
@@ -1591,7 +1608,7 @@ void AttachMessageForm();
  * @address 0x221560
  * @size 0x10
  */
-void Init_MENUFORM_MAKEBRD_INFO(MENUFORM_MAKEBRD_INFO *info);
+void Init_MENUFORM_MAKEBRD_INFO(MENUFORM_MAKEBRD_INFO *board);
 
 /**
  *
@@ -1611,7 +1628,7 @@ void GetMenuItemIconTexGetXY(int item, mgRect<int> &out_rect);
  * @address 0x221620
  * @size 0xB0
  */
-mgCTexture *GetMenuItemIconTexInfo(int item, int kind);
+mgCTexture *GetMenuItemIconTexInfo(int item, int index);
 
 /**
  *
@@ -1631,7 +1648,7 @@ void SetSpriteEnv(mgCDrawPrim *prim, int mode);
  * @address 0x221DC0
  * @size 0xD0
  */
-void PrimQuad(mgCDrawPrim *prim, float x, float y, mgRect<int> tex_rect);
+void PrimQuad(mgCDrawPrim *prim, float x, float y, mgRect<int> cell);
 
 /**
  *
@@ -1641,7 +1658,7 @@ void PrimQuad(mgCDrawPrim *prim, float x, float y, mgRect<int> tex_rect);
  * @address 0x221E90
  * @size 0xE0
  */
-void PrimQuad(mgCTexture *tex, float x, float y, mgRect<int> tex_rect, int a, int r, int g, int b);
+void PrimQuad(mgCTexture *tex, float x, float y, mgRect<int> cell, int a, int r, int g, int b);
 
 /**
  *
@@ -1652,7 +1669,7 @@ void PrimQuad(mgCTexture *tex, float x, float y, mgRect<int> tex_rect, int a, in
  * @address 0x221F70
  * @size 0xE0
  */
-void PrimQuad(mgCDrawPrim *prim, mgCTexture *tex, float x, float y, mgRect<int> tex_rect, int a, int r, int g, int b);
+void PrimQuad(mgCDrawPrim *prim, mgCTexture *tex, float x, float y, mgRect<int> cell, int a, int r, int g, int b);
 
 /**
  *
@@ -1662,7 +1679,7 @@ void PrimQuad(mgCDrawPrim *prim, mgCTexture *tex, float x, float y, mgRect<int> 
  * @address 0x222050
  * @size 0xD0
  */
-void PrimQuad(mgCTexture *tex, mgRect<int> put_rect, mgRect<int> tex_rect, int a, int r, int g, int b);
+void PrimQuad(mgCTexture *tex, mgRect<int> dest, mgRect<int> source, int a, int r, int g, int b);
 
 /**
  *
@@ -1673,7 +1690,7 @@ void PrimQuad(mgCTexture *tex, mgRect<int> put_rect, mgRect<int> tex_rect, int a
  * @address 0x222120
  * @size 0xD0
  */
-void PrimQuad(mgCDrawPrim *prim, mgCTexture *tex, mgRect<int> put_rect, mgRect<int> tex_rect, int a, int r, int g, int b);
+void PrimQuad(mgCDrawPrim *prim, mgCTexture *tex, mgRect<int> dest, mgRect<int> source, int a, int r, int g, int b);
 
 /**
  *
@@ -1733,7 +1750,7 @@ void EnableUseItemAlphaStep();
  * @address 0x222860
  * @size 0xF0
  */
-void InitSpectolRasterTable(mgCMemory *stack);
+void InitSpectolRasterTable(mgCMemory *memory);
 
 /**
  *
@@ -1763,7 +1780,7 @@ void MenuPresentBoxView(int x, int y, int &tex_block, mgCTexture *tex, mgCTextur
  * @address 0x223BE0
  * @size 0xB0
  */
-void PrimDrawNumber(mgCDrawPrim *prim, int number, int keta, int x, int y, mgRect<int> tex_rect, int space, int unk);
+void PrimDrawNumber(mgCDrawPrim *prim, int number, int digit_count, int x, int y, mgRect<int> texture_rect, int spacing, int mode);
 
 /**
  *
@@ -1774,7 +1791,7 @@ void PrimDrawNumber(mgCDrawPrim *prim, int number, int keta, int x, int y, mgRec
  * @address 0x223C90
  * @size 0xB0
  */
-void PrimDrawNumber2(mgCDrawPrim *prim, int number, int keta, int x, int y, mgRect<int> tex_rect, int space, int unk);
+void PrimDrawNumber2(mgCDrawPrim *prim, int number, int digit_count, int x, int y, mgRect<int> texture_rect, int spacing, int mode);
 
 /**
  *
@@ -1794,7 +1811,7 @@ void PrimFillRect4(mgCDrawPrim *prim, mgRect<float> rect, float *rgba0, float *r
  * @address 0x223F60
  * @size 0x40
  */
-void MenuReloadTexture(int &tex_block, int new_tex_block);
+void MenuReloadTexture(int &loaded_tex, int tex_no);
 
 /**
  *
@@ -1804,7 +1821,7 @@ void MenuReloadTexture(int &tex_block, int new_tex_block);
  * @address 0x223FA0
  * @size 0x50
  */
-void MenuReloadCLUT(int no);
+void MenuReloadCLUT(int index);
 
 /**
  *
@@ -1864,7 +1881,7 @@ void InitMenuDl(mgCTexture *tex, int total_size);
  * @address 0x2246A0
  * @size 0x40
  */
-int StepMenuDl(int add_size);
+int StepMenuDl(int step);
 
 /**
  *
@@ -1875,7 +1892,7 @@ int StepMenuDl(int add_size);
  * @address 0x2246E0
  * @size 0x40
  */
-int StepMenuDl2(int size);
+int StepMenuDl2(int progress);
 
 /**
  *
@@ -1936,7 +1953,7 @@ void MenuCursorDraw(mgCTexture *tex, float *pos, float rot, int reverse, int alp
  * @address 0x225FF0
  * @size 0x20
  */
-void MenuCursorDraw(mgCTexture *tex, float *pos, float rot, int alpha);
+void MenuCursorDraw(mgCTexture *tex, float *pos, float value, int flag);
 
 /**
  *
@@ -1956,7 +1973,7 @@ void DrawMenuTilePattern(mgCDrawPrim *prim, mgCTexture *tex, float x, float y, m
  * @address 0x2261D0
  * @size 0xE0
  */
-void DrawMenuMainFrmImg(int &tex_block, mgRect<int> put_rect, mgRect<int> tex_rect, int unk, int r, int g, int b, int a);
+void DrawMenuMainFrmImg(int &loaded_tex_no, mgRect<int> dest, mgRect<int> source, int red, int green, int blue, int alpha, int a);
 
 /**
  *
@@ -1996,7 +2013,7 @@ float GetMenuMainFrameCount();
  * @address 0x226300
  * @size 0xC0
  */
-void MenuMainFrameModeSet(int mode, int reset);
+void MenuMainFrameModeSet(int mode, int restart);
 
 /**
  *
@@ -2016,7 +2033,7 @@ void MenuMainFrameStep();
  * @address 0x226B40
  * @size 0x4C0
  */
-void MenuMainFrameDraw(int &tex_block, int alpha);
+void MenuMainFrameDraw(int &loaded_tex, int alpha);
 
 /**
  *
@@ -2076,7 +2093,7 @@ void MenuPosDataTypeInit(MENUFORMPARTS_TYPE *part);
  * @address 0x227AC0
  * @size 0x30
  */
-void MenuFormPartsPresetItem(MENUFORMPARTS_TYPE *part, int draw, int item, int sub_item);
+void MenuFormPartsPresetItem(MENUFORMPARTS_TYPE *part, int visible, int value34, int value38);
 
 /**
  *
@@ -2086,7 +2103,7 @@ void MenuFormPartsPresetItem(MENUFORMPARTS_TYPE *part, int draw, int item, int s
  * @address 0x227C90
  * @size 0x60
  */
-void Func_MallocPartEffectInfo(MENUFORMPARTS_TYPE *part, mgCMemory *stack, int num);
+void Func_MallocPartEffectInfo(MENUFORMPARTS_TYPE *part, mgCMemory *memory, int effect_count);
 
 /**
  *
@@ -2096,7 +2113,7 @@ void Func_MallocPartEffectInfo(MENUFORMPARTS_TYPE *part, mgCMemory *stack, int n
  * @address 0x227CF0
  * @size 0x60
  */
-void Func_SetPartEffectInfo(MENU_PARTS_EFFECT_STRUCT1 *effect, unsigned int type, short *param);
+void Func_SetPartEffectInfo(MENU_PARTS_EFFECT_STRUCT1 *effect, unsigned int kind, short *values);
 
 /**
  *
@@ -2106,7 +2123,7 @@ void Func_SetPartEffectInfo(MENU_PARTS_EFFECT_STRUCT1 *effect, unsigned int type
  * @address 0x229020
  * @size 0x60
  */
-void MenuItemBrdSetInfo(int unk, int top_line, int max_line, int view_line);
+void MenuItemBrdSetInfo(int unk, int pos, int max_line, int view_line);
 
 /**
  *
@@ -2146,7 +2163,7 @@ void MenuItemModeItemDraw(int &tex_block, mgRect<int> clip_rect, float *pos, MEN
  * @address 0x22AF40
  * @size 0x1A0
  */
-void Menu3DivideTextureDraw(mgCDrawPrim *prim, mgRect<int> rect, short *tex_tbl, int unk);
+void Menu3DivideTextureDraw(mgCDrawPrim *prim, mgRect<int> rect, short *tex_tbl, int vertical);
 
 /**
  *
@@ -2187,7 +2204,7 @@ int CheckItemUseVariable(CGameDataUsed *item, CItemUseTarget *target);
  * @address 0x22DB20
  * @size 0xC0
  */
-void Func_MenuItemBrdPrepare(MENUFORMPARTS_TYPE *parts, CGameDataUsed *items, CGameDataUsed *target, int num);
+void Func_MenuItemBrdPrepare(MENUFORMPARTS_TYPE *parts, CGameDataUsed *items, CGameDataUsed *used, int target_kind);
 
 /**
  *
@@ -2197,7 +2214,7 @@ void Func_MenuItemBrdPrepare(MENUFORMPARTS_TYPE *parts, CGameDataUsed *items, CG
  * @address 0x22DBE0
  * @size 0xE0
  */
-void Func_MenuItemBrdPrepare2(MENUFORMPARTS_TYPE *parts, CGameDataUsed *items, CGameDataUsed *target);
+void Func_MenuItemBrdPrepare2(MENUFORMPARTS_TYPE *parts, CGameDataUsed *items, CGameDataUsed *used);
 
 /**
  *
@@ -2207,7 +2224,7 @@ void Func_MenuItemBrdPrepare2(MENUFORMPARTS_TYPE *parts, CGameDataUsed *items, C
  * @address 0x22DCC0
  * @size 0x300
  */
-int NowUseNeedItemCheck(CUserDataManager *user);
+int NowUseNeedItemCheck(CUserDataManager *manager);
 
 /**
  *
@@ -2217,7 +2234,7 @@ int NowUseNeedItemCheck(CUserDataManager *user);
  * @address 0x22DFC0
  * @size 0x250
  */
-void Func_MenuIconDrawPrepare(MENUFORMPARTS_TYPE *part, CGameDataUsed *item, int unk);
+void Func_MenuIconDrawPrepare(MENUFORMPARTS_TYPE *part, CGameDataUsed *item, int need_item);
 
 /**
  *
@@ -2227,7 +2244,7 @@ void Func_MenuIconDrawPrepare(MENUFORMPARTS_TYPE *part, CGameDataUsed *item, int
  * @address 0x22E210
  * @size 0xE0
  */
-void CheckItemBoardFunc_MenuIconDrawPrepare(CUserDataManager *user, MENUFORMPARTS_TYPE *parts);
+void CheckItemBoardFunc_MenuIconDrawPrepare(CUserDataManager *manager, MENUFORMPARTS_TYPE *parts);
 
 /**
  *
@@ -2237,7 +2254,7 @@ void CheckItemBoardFunc_MenuIconDrawPrepare(CUserDataManager *user, MENUFORMPART
  * @address 0x22E2F0
  * @size 0xA0
  */
-void MenuItemBrdScrlBarStep(int top_line, int y, int manner);
+void MenuItemBrdScrlBarStep(int top_line, int height, int mode);
 
 /**
  *
@@ -2267,7 +2284,7 @@ void Func_MenuItemIconSetEffectOne(MENUFORMPARTS_TYPE *part);
  * @address 0x22E780
  * @size 0xD0
  */
-void MenuItemBrdItemIconEffectMalloc(mgCMemory *stack, MENUFORMPARTS_TYPE *parts, int num);
+void MenuItemBrdItemIconEffectMalloc(mgCMemory *memory, MENUFORMPARTS_TYPE *parts, int count);
 
 /**
  *
@@ -2297,7 +2314,7 @@ void SetBGFrameForMenu(int tex_block, char *tex_name);
  * @address 0x230F80
  * @size 0x70
  */
-CStarDust *CheckNotRunStarDust(CStarDust *star, int num);
+CStarDust *CheckNotRunStarDust(CStarDust *dusts, int count);
 
 /**
  *
@@ -2307,7 +2324,7 @@ CStarDust *CheckNotRunStarDust(CStarDust *star, int num);
  * @address 0x230FF0
  * @size 0x60
  */
-int CheckRunStarDust(CStarDust *star, int num);
+int CheckRunStarDust(CStarDust *dusts, int count);
 
 /**
  *
@@ -2317,7 +2334,7 @@ int CheckRunStarDust(CStarDust *star, int num);
  * @address 0x2315D0
  * @size 0x70
  */
-void InitBuildUpInfoEffect(mgCMemory *stack, mgCTexture *tex, int num, float up_limit);
+void InitBuildUpInfoEffect(mgCMemory *memory, mgCTexture *tex, int num, float up_limit);
 
 /**
  *
@@ -2388,7 +2405,7 @@ void DrawFishBoiledEffect();
  * @address 0x231BF0
  * @size 0xE0
  */
-void SetEffectSpectolBreak(mgCMemory *stack, CMenuEffect *effect, int item);
+void SetEffectSpectolBreak(mgCMemory *memory, CMenuEffect *effect, int item);
 
 /**
  *
@@ -2398,7 +2415,7 @@ void SetEffectSpectolBreak(mgCMemory *stack, CMenuEffect *effect, int item);
  * @address 0x231CD0
  * @size 0x100
  */
-void SetEffectSpectolFusion(mgCMemory *stack, CMenuEffect **effect, CGameDataUsed *item, int unk);
+void SetEffectSpectolFusion(mgCMemory *memory, CMenuEffect **effect, CGameDataUsed *item, int is_fusion);
 
 /**
  *
@@ -2414,6 +2431,50 @@ void SetEffectSpectolFusion(mgCMemory *stack, CMenuEffect **effect, CGameDataUse
  */
 template <class T>
 void PrimQuad(mgCDrawPrim *prim, mgRect<T> put_rect, mgRect<int> tex_rect);
+
+/**
+ *
+ * Float rectangle passed by value to the retail rectangle primitive.
+ *
+ */
+struct mgRect_f_ {
+    float left;   /**< Left coordinate. */
+    float top;    /**< Top coordinate. */
+    float right;  /**< Width from the left coordinate. */
+    float bottom; /**< Height from the top coordinate. */
+} __attribute__((aligned(16)));
+
+/**
+ *
+ * Integer texture rectangle passed by value to the retail rectangle primitive.
+ *
+ */
+struct mgRect_i_ {
+    int left;   /**< Left texel. */
+    int top;    /**< Top texel. */
+    int right;  /**< Width in texels. */
+    int bottom; /**< Height in texels. */
+} __attribute__((aligned(16)));
+
+/**
+ *
+ * Draws the first and opposite textured corners of a float rectangle.
+ *
+ * @mangled PrimQuad_f___FP11mgCDrawPrim9mgRect_f_9mgRect_i_
+ * @address 0x234B20
+ * @size 0xB0
+ */
+void PrimQuad_f_(mgCDrawPrim *prim, mgRect_f_ rect, mgRect_i_ tex_rect);
+
+/**
+ *
+ * Draws the first and opposite textured corners of an integer rectangle.
+ *
+ * @mangled PrimQuad_i___FP11mgCDrawPrim9mgRect_i_9mgRect_i_
+ * @address 0x234BD0
+ * @size 0xB0
+ */
+void PrimQuad_i_(mgCDrawPrim *prim, mgRect_i_ rect, mgRect_i_ tex_rect);
 
 /**
  *

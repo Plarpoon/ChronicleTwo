@@ -46,8 +46,8 @@ STATIC_ASSERT(sizeof(FISH_POINT) == 0x30);
 struct FISH_BIND {
     FISH_POINT *point0; /**< First point held by the constraint. */
     FISH_POINT *point1; /**< Second point held by the constraint. */
-    float rate;         /**< Share of each correction applied to the first point; the second takes the rest. */
-    float length;       /**< Distance the two points are held at. */
+    float       rate;   /**< Share of each correction applied to the first point; the second takes the rest. */
+    float       length; /**< Distance the two points are held at. */
 };
 
 STATIC_ASSERT(sizeof(FISH_BIND) == 0x10);
@@ -60,8 +60,8 @@ STATIC_ASSERT(sizeof(FISH_BIND) == 0x10);
 struct FISH_FLOAT {
     FISH_POINT *point0; /**< Point that is slowed and lifted while the pair is in the water. */
     FISH_POINT *point1; /**< Point whose height with the first's sets how much of the pair is under water. */
-    int unk_8;
-    float buoyancy;     /**< Upward velocity added to the first point when the pair is fully submerged. */
+    int         unk_8;
+    float       buoyancy; /**< Upward velocity added to the first point when the pair is fully submerged. */
 };
 
 STATIC_ASSERT(sizeof(FISH_FLOAT) == 0x10);
@@ -72,9 +72,9 @@ STATIC_ASSERT(sizeof(FISH_FLOAT) == 0x10);
  *
  */
 struct FISH_ROD_SEGMENT {
-    float length;        /**< Rest length from the preceding rod point. */
-    float stiffness;     /**< Strength of the segment's distance correction. */
-    float damping;       /**< Share of motion retained during correction. */
+    float length;    /**< Rest length from the preceding rod point. */
+    float stiffness; /**< Strength of the segment's distance correction. */
+    float damping;   /**< Share of motion retained during correction. */
     float unk_c;
 };
 
@@ -87,12 +87,12 @@ STATIC_ASSERT(sizeof(FISH_ROD_SEGMENT) == 0x10);
  */
 class CFishObj {
 public:
-    int point_num; /**< Number of entries of point in use. */
-    FISH_POINT point[8];    /**< Point masses making up the object's shape. */
-    int bind_num; /**< Number of entries of bind in use. */
-    FISH_BIND bind[18];     /**< Constraints holding the points in shape. */
-    u_char unk_2b4[0xC];
-    int float_num; /**< Number of entries of float_info in use. */
+    int        point_num; /**< Number of entries of point in use. */
+    FISH_POINT point[8];  /**< Point masses making up the object's shape. */
+    int        bind_num;  /**< Number of entries of bind in use. */
+    FISH_BIND  bind[18];  /**< Constraints holding the points in shape. */
+    u_char     unk_2b4[0xC];
+    int        float_num;      /**< Number of entries of float_info in use. */
     FISH_FLOAT float_info[16]; /**< Point pairs that float the object at the water surface. */
 
     /**
@@ -146,7 +146,7 @@ STATIC_ASSERT(sizeof(CFishObj) == 0x3D0);
  * @address 0x314DB0
  * @size 0x10
  */
-void SetFishingMode(int mode);
+void SetFishingMode(int value);
 
 /**
  *
@@ -166,7 +166,7 @@ int GetFishingMode();
  * @address 0x314DD0
  * @size 0x10
  */
-void SetWaterLevel(float level);
+void SetWaterLevel(float value);
 
 /**
  *
@@ -186,7 +186,7 @@ float GetWaterLevel();
  * @address 0x314E50
  * @size 0x1C0
  */
-int ExtendLine(float length);
+int ExtendLine(float amount);
 
 /**
  *
@@ -246,7 +246,7 @@ void GetUkiPos(float *pos, float *old_pos);
  * @address 0x315650
  * @size 0x20
  */
-void PullUki(float power);
+void PullUki(float amount);
 
 /**
  *
@@ -256,7 +256,7 @@ void PullUki(float power);
  * @address 0x315670
  * @size 0x10
  */
-void SetShowHari(int show);
+void SetShowHari(int value);
 
 /**
  *
@@ -276,7 +276,7 @@ int GetShowHari();
  * @address 0x3156E0
  * @size 0xF0
  */
-int SetLurePose(mgCFrame *lure);
+int SetLurePose(mgCFrame *frame);
 
 /**
  *
@@ -316,7 +316,7 @@ void EndCastingLure();
  * @address 0x315B40
  * @size 0x150
  */
-int CatchLine(float *pos, float max_dist);
+int CatchLine(float *target, float reach);
 
 /**
  *
@@ -346,7 +346,7 @@ void ResetLineVelo();
  * @address 0x315DD0
  * @size 0x190
  */
-void ResetLine(float *pos);
+void ResetLine(float *tip);
 
 /**
  *
@@ -376,7 +376,7 @@ int EndFishBattle();
  * @address 0x316050
  * @size 0x70
  */
-int CheckRodActionChance(int dir, int *just);
+int CheckRodActionChance(int dir, int *at_start);
 
 /**
  *
@@ -436,7 +436,7 @@ void DrawFishingActionChance();
  * @address 0x317CE0
  * @size 0x440
  */
-void InitLureObj(int lure_no, mgCFrame *lure);
+void InitLureObj(int rod_type, mgCFrame *rod_frame);
 
 /**
  *

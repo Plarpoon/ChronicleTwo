@@ -130,6 +130,11 @@ buffer, 0x32 per line), 0x225C/0x2278/0x228C (cursor), 0x258C/0x2590 widths.
 - No row-type structs were declared for these tables; they belong in the .cpp with the data.
 
 ## Functions
+- File-scope `Aquarium_NameregistStack`, `Aquarium`, `GyoraceFishSelStack`, and
+  `GyoraceStack` construct in that order. Native C++ definitions generate the retail
+  `__sinit_menuaqua_cpp` instruction stream exactly; `CAquarium::CAquarium` also matches.
+- `CAquaFish::Initialize` and `CFishFood::CFishFood` invoke the base
+  `CCharacter2::Initialize` directly; qualified C++ calls match their retail bodies.
 - Local (static, in .cpp): Get_aquarium_paul_table, Get_aquarium_paul_table_xz,
   local_aquarium_limmit_check (returns wall bits: 1/2 x, 4/8 y, 0x20/1 z), GetEsaInfo,
   GetChildFishNo, GetFishPath, CombineParam, _GYORACE_LISTNUM, _GYORACE_DATA, _PRIZE_LISTNUM,

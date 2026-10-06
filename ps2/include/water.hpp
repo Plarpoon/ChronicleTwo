@@ -2,8 +2,9 @@
 
 #include "common.h"
 
-#include <cstring>
 #include <libvu0.h>
+
+#include <cstring>
 
 #include "mg_dataset.hpp"
 #include "mg_frame.hpp"
@@ -104,11 +105,11 @@ STATIC_ASSERT(sizeof(CFireRaster) == 0x2F0);
  */
 class CThunderEffect {
 public:
-    int unk_00;
-    u_char  unk_04[0x8C];
-    int unk_90;
-    int unk_94;
-    int unk_98;
+    int    unk_00;
+    u_char unk_04[0x8C];
+    int    unk_90;
+    int    unk_94;
+    int    unk_98;
 
     /**
      * Clears the thunder effect's state.
@@ -127,21 +128,21 @@ public:
  */
 class CWater : public mgCVisual {
 public:
-    float         *height_a; /**< First of the two wave-height buffers. */
-    float         *height_b; /**< Second of the two wave-height buffers. */
-    mgCTexture    *texture;  /**< Texture the surface is drawn with, or NULL for none. */
-    u_int          packet;   /**< Address of the packet that draws the grid, built by CreatePacket. */
-    int            color[4]; /**< Red, green, blue and alpha channels of the surface. */
-    float          speed;    /**< Speed the ripples travel across the grid at. */
-    float          damping;  /**< Rate the ripples lose height at. */
-    float          unk_48;
-    float          unk_4c;
-    int            unk_50;
-    int            rows;     /**< Grid points along the x axis. */
-    int            columns;  /**< Grid points along the z axis. */
-    float         *height;   /**< Wave-height buffer the surface currently draws from. */
-    sceVu0FVECTOR  min;      /**< Minimum corner of the surface. */
-    sceVu0FVECTOR  max;      /**< Maximum corner of the surface. */
+    float        *height_a; /**< First of the two wave-height buffers. */
+    float        *height_b; /**< Second of the two wave-height buffers. */
+    mgCTexture   *texture;  /**< Texture the surface is drawn with, or NULL for none. */
+    u_int         packet;   /**< Address of the packet that draws the grid, built by CreatePacket. */
+    int           color[4]; /**< Red, green, blue and alpha channels of the surface. */
+    float         speed;    /**< Speed the ripples travel across the grid at. */
+    float         damping;  /**< Rate the ripples lose height at. */
+    float         unk_48;
+    float         unk_4c;
+    int           unk_50;
+    int           rows;    /**< Grid points along the x axis. */
+    int           columns; /**< Grid points along the z axis. */
+    float        *height;  /**< Wave-height buffer the surface currently draws from. */
+    sceVu0FVECTOR min;     /**< Minimum corner of the surface. */
+    sceVu0FVECTOR max;     /**< Maximum corner of the surface. */
 
     /**
      * Advances the ripples one step, writing into whichever of the two height
@@ -160,7 +161,7 @@ public:
      * @address 0x185EF0
      * @size 0x18
      */
-    void SetVertex(float *corner0, float *corner1);
+    void SetVertex(float *a, float *b);
 
     /**
      * Raises one interior grid point, starting a ripple from it.
@@ -169,7 +170,7 @@ public:
      * @address 0x185F10
      * @size 0x90
      */
-    void Shake(int row, int column, float height_change);
+    void Shake(int x, int z, float amount);
 
     /**
      * Gives the surface its grid size and takes two cleared height buffers
@@ -179,7 +180,7 @@ public:
      * @address 0x186130
      * @size 0xDC
      */
-    void SetSize(int row_count, int column_count, mgCMemory *memory);
+    void SetSize(int x, int z, mgCMemory *memory);
 
     /**
      * Stores the ripple speed and damping and the two values the surface's
@@ -228,7 +229,7 @@ public:
      * @address 0x186750
      * @size 0x118
      */
-    virtual int Draw(u_int *packet, float (*matrix)[4], mgCDrawManager *draw_manager);
+    virtual int Draw(u_int *tag, float (*matrix)[4], mgCDrawManager *draw_manager);
 
     /**
      * Builds the packet that draws the grid from the current wave heights,
@@ -305,7 +306,7 @@ public:
      * @address 0x187170
      * @size 0x6C
      */
-    void SetParam(float speed, float damping, float param_48, float param_4c);
+    void SetParam(float p0, float p1, float p2, float p3);
 
     /**
      * Sets the red, green, blue and alpha channels of the surface.
@@ -324,7 +325,7 @@ public:
      * @address 0x187250
      * @size 0x5C
      */
-    void Shake(int row, int column, float height_change);
+    void Shake(int x, int z, float amount);
 
     /**
      * Rebuilds the packet that draws the surface's grid.

@@ -23,8 +23,8 @@ class mgCTexture;
  *
  */
 enum {
-    FIRE_POWDER_NUM = 0x100,       /**< Fire rain particles drifting around the camera. */
-    GEYSER_EFFECT_NUM = 4,         /**< Geyser emitters shared, by placed part index, among all placed geyser parts. */
+    FIRE_POWDER_NUM = 0x100,        /**< Fire rain particles drifting around the camera. */
+    GEYSER_EFFECT_NUM = 4,          /**< Geyser emitters shared, by placed part index, among all placed geyser parts. */
     GEYSER_EFFECT_POINT_NUM = 0x30, /**< Points each geyser emitter owns. */
 };
 
@@ -57,8 +57,8 @@ public:
     float rise_speed;  /**< Height added each frame. */
     float alpha;       /**< Opacity, fading each frame; the point ends when it falls below zero. */
     float scale;       /**< Size and sway multiplier, growing each frame. */
-    s32 active;        /**< Nonzero while the point is in use. */
-    s32 unk_2c;
+    s32   active;      /**< Nonzero while the point is in use. */
+    s32   unk_2c;
 
     /**
      *
@@ -80,16 +80,16 @@ STATIC_ASSERT(sizeof(CGeyserEffectPoint) == 0x30);
  */
 class CGeyserEffect {
 public:
-    s32 wait;                   /**< Frames left until the next eruption starts. */
-    s32 erupting;               /**< Nonzero while the eruption is emitting points. */
-    s32 erupt_frame;            /**< Frames since the eruption was armed. */
-    s32 erupt_count;            /**< Points the eruption has left to emit. */
-    s32 point_num;              /**< Number of points in point. */
-    CGeyserEffectPoint *point;  /**< Points of the emitter. */
-    u8 unk_18[0x8];
-    mgC3DSprite sprite;         /**< Visual the points are built into and drawn with. */
-    mgCTexture *texture;        /**< Texture the points are drawn with. */
-    u8 unk_74[0xC];
+    s32                 wait;        /**< Frames left until the next eruption starts. */
+    s32                 erupting;    /**< Nonzero while the eruption is emitting points. */
+    s32                 erupt_frame; /**< Frames since the eruption was armed. */
+    s32                 erupt_count; /**< Points the eruption has left to emit. */
+    s32                 point_num;   /**< Number of points in point. */
+    CGeyserEffectPoint *point;       /**< Points of the emitter. */
+    u8                  unk_18[0x8];
+    mgC3DSprite         sprite;  /**< Visual the points are built into and drawn with. */
+    mgCTexture         *texture; /**< Texture the points are drawn with. */
+    u8                  unk_74[0xC];
 
     /**
      *
@@ -232,7 +232,7 @@ void DrawFirePowder(CScene *scene);
  * @address 0x2FD8D0
  * @size 0x210
  */
-void InitGeyserEffect(int map_no, CScene *scene, int texb, mgCMemory *memory);
+void InitGeyserEffect(int scene_no, CScene *scene, int texb, mgCMemory *memory);
 
 /**
  *

@@ -45,24 +45,24 @@ STATIC_ASSERT(sizeof(MENU_SYSTEM_GHOBI) == 0x4);
  */
 class CMenuSystemData {
 public:
-    s16 item_board_select;                                         /**< Item under the cursor on the item menu's board. */
-    s16 item_board_top;                                            /**< Row of the item menu's board shown at the top. */
-    s16 unk_4;
-    s16 unk_6;
-    s16 item_key_arg_no;                                           /**< Cursor layout in use when the item menu closed. */
-    s16 item_cursor;                                               /**< Cursor position within that layout when the item menu closed. */
-    u8 unk_c[0x14];
-    MENU_SYSTEM_LIST_CURSOR invent_item;                           /**< Cursor of the invention menu's carried item list. */
-    u8 unk_24[0xA];
-    s16 invent_unk_2e;                                             /**< Value kept for the invention menu between visits. */
-    MENU_SYSTEM_LIST_CURSOR invent_card;                           /**< Cursor of the invention menu's card list. */
-    MENU_SYSTEM_LIST_CURSOR invent_photo;                          /**< Cursor of the invention menu's carried photo board. */
-    MENU_SYSTEM_LIST_CURSOR invent_album;                          /**< Cursor of the invention menu's album board. */
-    MENU_SYSTEM_LIST_CURSOR invent_memo;                           /**< Cursor of the invention menu's idea notebook. */
-    u8 unk_40[0x10];
+    s16                     item_board_select; /**< Item under the cursor on the item menu's board. */
+    s16                     item_board_top;    /**< Row of the item menu's board shown at the top. */
+    s16                     unk_4;
+    s16                     unk_6;
+    s16                     item_key_arg_no; /**< Cursor layout in use when the item menu closed. */
+    s16                     item_cursor;     /**< Cursor position within that layout when the item menu closed. */
+    u8                      unk_c[0x14];
+    MENU_SYSTEM_LIST_CURSOR invent_item; /**< Cursor of the invention menu's carried item list. */
+    u8                      unk_24[0xA];
+    s16                     invent_unk_2e; /**< Value kept for the invention menu between visits. */
+    MENU_SYSTEM_LIST_CURSOR invent_card;   /**< Cursor of the invention menu's card list. */
+    MENU_SYSTEM_LIST_CURSOR invent_photo;  /**< Cursor of the invention menu's carried photo board. */
+    MENU_SYSTEM_LIST_CURSOR invent_album;  /**< Cursor of the invention menu's album board. */
+    MENU_SYSTEM_LIST_CURSOR invent_memo;   /**< Cursor of the invention menu's idea notebook. */
+    u8                      unk_40[0x10];
     MENU_SYSTEM_LIST_CURSOR georama_list[MENU_SYSTEM_GEORAMA_LIST_NUM]; /**< Cursor of each Georama menu page's list. */
-    u8 unk_6c[0x21C];
-    MENU_SYSTEM_GHOBI ghobi[MENU_SYSTEM_GHOBI_NUM];                /**< Donny's goods already taken, filled from the front. */
+    u8                      unk_6c[0x21C];
+    MENU_SYSTEM_GHOBI       ghobi[MENU_SYSTEM_GHOBI_NUM]; /**< Donny's goods already taken, filled from the front. */
 
     /**
      *

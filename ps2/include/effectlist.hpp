@@ -51,12 +51,12 @@ public:
         sprites = NULL;
     }
 
-    char *name;                /**< Copy, in the list's memory, of the name the list was loaded under. */
-    u_int *pack;               /**< Pack file the effects and their textures were read from. */
-    int block;                 /**< Texture block the pack's textures were entered into. */
-    int effect_num;            /**< Effects in the list. */
-    CEffectManager *managers;  /**< Effect manager of each effect, named after its effect file. */
-    mgC3DSprite *sprites;      /**< 3D sprite each effect's particles are drawn with. */
+    char           *name;       /**< Copy, in the list's memory, of the name the list was loaded under. */
+    u_int          *pack;       /**< Pack file the effects and their textures were read from. */
+    int             block;      /**< Texture block the pack's textures were entered into. */
+    int             effect_num; /**< Effects in the list. */
+    CEffectManager *managers;   /**< Effect manager of each effect, named after its effect file. */
+    mgC3DSprite    *sprites;    /**< 3D sprite each effect's particles are drawn with. */
 
     /**
      * Enters every texture archive of a pack into a texture block, and builds
@@ -109,6 +109,7 @@ public:
      */
     void CreatePacket();
 };
+
 STATIC_ASSERT(sizeof(CEffectList) == 0x18);
 
 /**
@@ -125,18 +126,18 @@ public:
      */
     CFadeInOut() { Initialize(); }
 
-    float r;                     /**< Red of the cover colour, 0 to 128. */
-    float g;                     /**< Green of the cover colour, 0 to 128. */
-    float b;                     /**< Blue of the cover colour, 0 to 128. */
-    float alpha;                 /**< How far the screen is covered, 0 (clear) to 128 (full). */
-    int mode;                    /**< Direction of the running fade, a FadeMode. */
-    int end;                     /**< Non-zero once the running fade has reached its end. */
-    float speed;                 /**< Alpha the cover changes by in one frame. */
-    int cross_type;              /**< How the captured screen is taken away, a CrossFadeType. */
-    int cross;                   /**< Non-zero when the fade shows the captured screen instead of the cover colour. */
-    float cross_alpha_rate;      /**< Scale on the alpha of a dissolving captured screen. */
-    mgCTexture *cross_texture;   /**< Texture the screen is captured into for a cross-fade, or NULL. */
-    int blur_alpha;              /**< Alpha the previous frame is drawn over the screen with for motion blur, or 0 for none. */
+    float       r;                /**< Red of the cover colour, 0 to 128. */
+    float       g;                /**< Green of the cover colour, 0 to 128. */
+    float       b;                /**< Blue of the cover colour, 0 to 128. */
+    float       alpha;            /**< How far the screen is covered, 0 (clear) to 128 (full). */
+    int         mode;             /**< Direction of the running fade, a FadeMode. */
+    int         end;              /**< Non-zero once the running fade has reached its end. */
+    float       speed;            /**< Alpha the cover changes by in one frame. */
+    int         cross_type;       /**< How the captured screen is taken away, a CrossFadeType. */
+    int         cross;            /**< Non-zero when the fade shows the captured screen instead of the cover colour. */
+    float       cross_alpha_rate; /**< Scale on the alpha of a dissolving captured screen. */
+    mgCTexture *cross_texture;    /**< Texture the screen is captured into for a cross-fade, or NULL. */
+    int         blur_alpha;       /**< Alpha the previous frame is drawn over the screen with for motion blur, or 0 for none. */
 
     /**
      * Clears the cover, stops any fade and forgets the cross-fade texture
@@ -197,7 +198,7 @@ public:
      * @address 0x17ECE0
      * @size 0x10
      */
-    void CrossFade(int frames, float alpha_rate);
+    void CrossFade(int duration, float alpha_rate);
 
     /**
      * Takes the captured screen away in a CrossFadeType over a number of
@@ -207,7 +208,7 @@ public:
      * @address 0x17ECF0
      * @size 0x60
      */
-    void CrossFadeIn(int type, int frames, float alpha_rate);
+    void CrossFadeIn(int mode, int frames, float value);
 
     /**
      * Brings the captured screen up in a CrossFadeType over a number of
@@ -217,7 +218,7 @@ public:
      * @address 0x17ED50
      * @size 0x60
      */
-    void CrossFadeOut(int type, int frames, float alpha_rate);
+    void CrossFadeOut(int mode, int frames, float value);
 
     /**
      * Gives whether the running fade has reached its end.
@@ -255,7 +256,7 @@ public:
      * @address 0x17EE90
      * @size 0x20
      */
-    void SetCrossTexture(mgCTexture *texture, u_long128 *buffer);
+    void SetCrossTexture(mgCTexture *texture, u_long128 *image);
 
     /**
      * Reads the screen last drawn into the cross-fade texture's buffer, when
@@ -277,4 +278,5 @@ public:
      */
     void Draw();
 };
+
 STATIC_ASSERT(sizeof(CFadeInOut) == 0x30);

@@ -18,13 +18,14 @@ class mgCMemory;
  *
  */
 struct ePlaceData {
-    s32   id;          /**< ID of the part's definition, CEditPartsInfo::id. */
-    s32   angle;       /**< Placement angle step, as CEditMap::GetEditAngle takes it. */
+    s32   id;    /**< ID of the part's definition, CEditPartsInfo::id. */
+    s32   angle; /**< Placement angle step, as CEditMap::GetEditAngle takes it. */
     s32   unk_8;
     s32   unk_c;
     float position[3]; /**< Position the part is placed at. */
     s32   unk_1c;
 };
+
 STATIC_ASSERT(sizeof(ePlaceData) == 0x20);
 
 /**
@@ -88,7 +89,7 @@ public:
      * @address 0x2A92E0
      * @size 0x40
      */
-    CEditPartsInfo *GetePartsInfo(int no);
+    CEditPartsInfo *GetePartsInfo(int index);
 
     /**
      *
@@ -128,6 +129,7 @@ public:
      * @address 0x2A9DD0
      * @size 0x80
      */
-    void LoadEditInfo(char *script, int size, mgCMemory *stack);
+    void LoadEditInfo(char *script, int size, mgCMemory *memory);
 };
+
 STATIC_ASSERT(sizeof(CEditInfoMngr) == 0x18);

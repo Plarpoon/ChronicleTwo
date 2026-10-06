@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+
 #include "mg_visual.hpp"
 
 /**
@@ -63,7 +64,7 @@ public:
      * @address 0x13AA00
      * @size 0x1D0
      */
-    virtual FACES_ID *CreateFace(FACES_ID *faces, mgCMemory *memory, mgCMemory *index_memory, mgCFace **face);
+    virtual FACES_ID *CreateFace(FACES_ID *source, mgCMemory *memory, mgCMemory *index_memory, mgCFace **result);
 
     /**
      * Copies the model's data from an MDT file and creates its face lists;
@@ -73,8 +74,9 @@ public:
      * @address 0x13ADB0
      * @size 0xD0
      */
-    virtual int DataAssignMDT(MDT_HEADER *header, mgCMemory *memory, mgCTextureManager *texture_manager);
+    virtual int DataAssignMDT(MDT_HEADER *header, mgCMemory *memory, mgCTextureManager *textures);
 };
+
 STATIC_ASSERT(sizeof(mgCShadowMDT) == 0x50);
 
 /**
@@ -86,4 +88,5 @@ STATIC_ASSERT(sizeof(mgCShadowMDT) == 0x50);
 class mgCShadowFixMDT : public mgCShadowMDT {
 public:
 };
+
 STATIC_ASSERT(sizeof(mgCShadowFixMDT) == 0x50);

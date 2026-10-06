@@ -1,6 +1,7 @@
 #include "common.h"
-#include "texviewlp.hpp"
+
 #include "mainloop.hpp"
+#include "texviewlp.hpp"
 
 // Code (.text)
 void InitTextuerViewerMain(INIT_LOOP_ARG arg) {}

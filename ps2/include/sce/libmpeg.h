@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+
 #include <libipu.h>
 
 /**
@@ -8,16 +9,16 @@
  * recently decoded picture.
  */
 struct sceMpeg {
-    int width;       /**< Width of the stream's pictures, in pixels. */
-    int height;      /**< Height of the stream's pictures, in pixels. */
-    int frameCount;  /**< Number of pictures decoded since the stream began. */
-    long pts;        /**< Presentation time stamp of the last picture. */
-    long dts;        /**< Decoding time stamp of the last picture. */
-    u_long flags;    /**< Picture flags of the last picture. */
-    long pts2nd;     /**< Presentation time stamp of the second field. */
-    long dts2nd;     /**< Decoding time stamp of the second field. */
-    u_long flags2nd; /**< Picture flags of the second field. */
-    void *sys;       /**< Library-private decoder state. */
+    int    width;      /**< Width of the stream's pictures, in pixels. */
+    int    height;     /**< Height of the stream's pictures, in pixels. */
+    int    frameCount; /**< Number of pictures decoded since the stream began. */
+    long   pts;        /**< Presentation time stamp of the last picture. */
+    long   dts;        /**< Decoding time stamp of the last picture. */
+    u_long flags;      /**< Picture flags of the last picture. */
+    long   pts2nd;     /**< Presentation time stamp of the second field. */
+    long   dts2nd;     /**< Decoding time stamp of the second field. */
+    u_long flags2nd;   /**< Picture flags of the second field. */
+    void  *sys;        /**< Library-private decoder state. */
 };
 
 /**
@@ -48,8 +49,8 @@ enum sceMpegStrType {
  * Callback data for sceMpegCbError.
  */
 struct sceMpegCbDataError {
-    sceMpegCbType type; /**< Event being reported. */
-    char *errMessage;   /**< Description of the error. */
+    sceMpegCbType type;       /**< Event being reported. */
+    char         *errMessage; /**< Description of the error. */
 };
 
 /**
@@ -57,30 +58,30 @@ struct sceMpegCbDataError {
  */
 struct sceMpegCbDataTimeStamp {
     sceMpegCbType type; /**< Event being reported. */
-    long pts;           /**< Presentation time stamp of the next picture. */
-    long dts;           /**< Decoding time stamp of the next picture. */
+    long          pts;  /**< Presentation time stamp of the next picture. */
+    long          dts;  /**< Decoding time stamp of the next picture. */
 };
 
 /**
  * Callback data for sceMpegCbStr: one demultiplexed packet.
  */
 struct sceMpegCbDataStr {
-    sceMpegCbType type; /**< Event being reported. */
-    u_char *header;     /**< Packet header. */
-    u_char *data;       /**< Packet payload. */
-    u_int len;          /**< Payload length in bytes. */
-    long pts;           /**< Presentation time stamp carried by the packet. */
-    long dts;           /**< Decoding time stamp carried by the packet. */
+    sceMpegCbType type;   /**< Event being reported. */
+    u_char       *header; /**< Packet header. */
+    u_char       *data;   /**< Packet payload. */
+    u_int         len;    /**< Payload length in bytes. */
+    long          pts;    /**< Presentation time stamp carried by the packet. */
+    long          dts;    /**< Decoding time stamp carried by the packet. */
 };
 
 /**
  * Data passed to every decoder callback, interpreted by its type.
  */
 union sceMpegCbData {
-    sceMpegCbType type;        /**< Event being reported. */
-    sceMpegCbDataError error;  /**< Data of sceMpegCbError. */
-    sceMpegCbDataTimeStamp ts; /**< Data of sceMpegCbTimeStamp. */
-    sceMpegCbDataStr str;      /**< Data of sceMpegCbStr. */
+    sceMpegCbType          type;  /**< Event being reported. */
+    sceMpegCbDataError     error; /**< Data of sceMpegCbError. */
+    sceMpegCbDataTimeStamp ts;    /**< Data of sceMpegCbTimeStamp. */
+    sceMpegCbDataStr       str;   /**< Data of sceMpegCbStr. */
 };
 
 /**

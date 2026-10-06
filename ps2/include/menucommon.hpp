@@ -51,9 +51,9 @@ int menu_spi_analyze_func_strcut1(MENU_SPI_ANALYZE_STRUCT1 *table, char *name);
  *
  */
 struct MENU_COMMAND_ANALYZE_INFO {
-    char   command_name[0x48];  /**< Command whose block of the script runs; other blocks are skipped. */
-    short *system_mes_buff[4];  /**< System message buffers by number; null stands for the default system message buffer. */
-    short *mes_buff[4];         /**< Message buffers by number. */
+    char   command_name[0x48]; /**< Command whose block of the script runs; other blocks are skipped. */
+    short *system_mes_buff[4]; /**< System message buffers by number; null stands for the default system message buffer. */
+    short *mes_buff[4];        /**< Message buffers by number. */
 };
 
 STATIC_ASSERT(sizeof(MENU_COMMAND_ANALYZE_INFO) == 0x68);
@@ -66,7 +66,7 @@ STATIC_ASSERT(sizeof(MENU_COMMAND_ANALYZE_INFO) == 0x68);
  * @address 0x252CF0
  * @size 0x40
  */
-int GetRandI(int limit);
+int GetRandI(int range);
 
 /**
  *
@@ -76,7 +76,7 @@ int GetRandI(int limit);
  * @address 0x252D30
  * @size 0x30
  */
-float GetRandF(float limit);
+float GetRandF(float range);
 
 /**
  *
@@ -126,7 +126,7 @@ void AddRotationCharaY(CCharacter2 *chara, float angle);
  * @address 0x253000
  * @size 0x30
  */
-void MenuSePlay(int se_no);
+void MenuSePlay(int sound_no);
 
 /**
  *
@@ -136,7 +136,7 @@ void MenuSePlay(int se_no);
  * @address 0x253030
  * @size 0x20
  */
-void MenuSePlay(unsigned int snd_id, int se_no);
+void MenuSePlay(unsigned int handle, int sound_no);
 
 /**
  *
@@ -146,7 +146,7 @@ void MenuSePlay(unsigned int snd_id, int se_no);
  * @address 0x253050
  * @size 0x90
  */
-void MenuSePlay(int se_no, unsigned int *sound, mgCMemory *stack);
+void MenuSePlay(int sound_no, unsigned int *bank, mgCMemory *memory);
 
 /**
  *
@@ -156,7 +156,7 @@ void MenuSePlay(int se_no, unsigned int *sound, mgCMemory *stack);
  * @address 0x2530E0
  * @size 0xA0
  */
-void StopEnvSoundMenu(int stop_event);
+void StopEnvSoundMenu(int event_port);
 
 /**
  *
@@ -176,7 +176,7 @@ void ReStartEnvSoundMenu();
  * @address 0x253430
  * @size 0x190
  */
-int MenuSeiton(CGameDataUsed *items, int item_num);
+int MenuSeiton(CGameDataUsed *items, int count);
 
 /**
  *
@@ -186,7 +186,7 @@ int MenuSeiton(CGameDataUsed *items, int item_num);
  * @address 0x2535C0
  * @size 0x70
  */
-int GetSameAdrressUserData(CGameDataUsed *item, int bag);
+int GetSameAdrressUserData(CGameDataUsed *item, int kind);
 
 /**
  *
@@ -196,7 +196,7 @@ int GetSameAdrressUserData(CGameDataUsed *item, int bag);
  * @address 0x253630
  * @size 0x50
  */
-void local_sort1(int &select, int *num, int *list);
+void local_sort1(int &cursor, int *count, int *list);
 
 /**
  *
@@ -236,7 +236,7 @@ int LoadFileMenu(char *name, u_long128 *buffer, int mode);
  * @address 0x2537F0
  * @size 0x270
  */
-void ConvertFontCode(char *src, char *dst);
+void ConvertFontCode(char *source, char *destination);
 
 /**
  *
@@ -256,7 +256,7 @@ int CheckNowEurope();
  * @address 0x253A90
  * @size 0xD0
  */
-int MenuCommonReadData(mgCMemory *stack, char **names, int mode);
+int MenuCommonReadData(mgCMemory *memory, char **names, int mode);
 
 /**
  *
@@ -276,7 +276,7 @@ void MenuDeleteTextureBlock(int *blocks);
  * @address 0x253BE0
  * @size 0x90
  */
-void MenuWorkTextureEnter(int block, char *name, int width, int height, int bpp);
+void MenuWorkTextureEnter(int id, char *name, int width, int height, int format);
 
 /**
  *
@@ -286,7 +286,7 @@ void MenuWorkTextureEnter(int block, char *name, int width, int height, int bpp)
  * @address 0x253C70
  * @size 0x70
  */
-void MenuEnterIMG(int block, unsigned char *img, char *name_suffix);
+void MenuEnterIMG(int size, unsigned char *data, char *name_suffix);
 
 /**
  *
@@ -326,7 +326,7 @@ void CalcMenu1(int target, int *value, int divisor, int snap_range, int snap);
  * @address 0x253E30
  * @size 0x60
  */
-int CalcMenuAdd(int *value, int step, int limit);
+int CalcMenuAdd(int *cursor, int step, int limit);
 
 /**
  *
@@ -336,7 +336,7 @@ int CalcMenuAdd(int *value, int step, int limit);
  * @address 0x253E90
  * @size 0x90
  */
-int CalcMenuAdd(float *value, float step, float limit);
+int CalcMenuAdd(float *cursor, float step, float limit);
 
 /**
  *
@@ -346,7 +346,7 @@ int CalcMenuAdd(float *value, float step, float limit);
  * @address 0x253F20
  * @size 0x70
  */
-int CalcMenuAdd2(int *value, int step, int limit);
+int CalcMenuAdd2(int *value, int delta, int limit);
 
 /**
  *
@@ -366,7 +366,7 @@ int GetNumberKeta(int value);
  * @address 0x253FF0
  * @size 0x60
  */
-int GetDispVolumeForFloat(float value);
+int GetDispVolumeForFloat(float volume);
 
 /**
  *
@@ -396,7 +396,7 @@ int CalcScrlBarPutPos(int top, float pos, int length, float pos_max);
  * @address 0x2540D0
  * @size 0xA0
  */
-void Trans3DPosTo2DPos(mgCCamera *camera, mgCFrame *frame, int *screen_pos);
+void Trans3DPosTo2DPos(mgCCamera *camera, mgCFrame *frame, int *out);
 
 /**
  *
@@ -406,7 +406,7 @@ void Trans3DPosTo2DPos(mgCCamera *camera, mgCFrame *frame, int *screen_pos);
  * @address 0x256730
  * @size 0x70
  */
-int MenuDataAnalyze(char *script, int size, mgCMemory *stack);
+int MenuDataAnalyze(char *script, int size, mgCMemory *memory);
 
 /**
  *

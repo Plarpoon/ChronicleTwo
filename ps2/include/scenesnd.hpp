@@ -47,7 +47,7 @@ struct mgVu0FBOX;
  *
  */
 enum SND_FILE_NO {
-    SND_FILE_NO_NONE = -1,  /**< The scene uses no bank of this kind; the bank loaded before is released. */
+    SND_FILE_NO_NONE = -1,   /**< The scene uses no bank of this kind; the bank loaded before is released. */
     SND_FILE_NO_KEEP = 9999, /**< The scene keeps whatever bank of this kind is loaded ('*' in the table). */
 };
 
@@ -79,53 +79,55 @@ enum MINIMAP_REVEAL {
  *
  */
 struct DNG_BATTLE_AREA {
-    s32                 unk_0;
-    s32                 unk_4;
-    u32                 pause_flag;          /**< Flags of the dungeon systems paused by events and menus. */
-    u16                 floor_status;        /**< Status flags of the current floor, set and read by event scripts. */
-    u8                  unk_e[0x2];
-    s32                 timer;               /**< Frames counted since the dungeon timer was last reset. */
-    CDngFloorManager    floor_manager;       /**< Floor data of the current dungeon. */
-    char                map_name[0x20];      /**< Name of the dungeon map file loaded. */
-    SYSTEM_SCRIPT_INFO  script;              /**< Event the dungeon is to run. */
-    s8                  statusbar_show;      /**< Whether the status bar is shown. */
-    s8                  statusbar_show_old;  /**< Value of statusbar_show before it was last set. */
-    u8                  unk_4a[0x2];
-    float               statusbar_rate;      /**< How far the status bar is shown, 0 (hidden) to 1 (shown). */
-    float               statusbar_speed;     /**< Amount statusbar_rate moves by in one frame. */
-    s32                 unk_54;
-    s32                 boss_map;            /**< Non-zero on a boss floor, where the mini map symbols are hidden. */
-    s32                 unk_5c;
-    u8                  unk_60[0x4];
-    u32                 minimap_reveal;      /**< MINIMAP_REVEAL flags set by floor items for the rest of the floor. */
-    u8                  unk_68[0x4];
-    float               bright_rate;         /**< Scale applied to the colours the dungeon is drawn with. */
-    float               quake_power;         /**< Strength of the running camera quake. */
-    float               quake_step;          /**< Amount quake_power falls by in one frame. */
-    s16                 quake_count;         /**< Frames left in the running camera quake. */
-    u8                  unk_7a[0x2];
-    CTreasureBoxManager *treasure_box;       /**< Treasure boxes of the current floor, or NULL. */
-    BattleEffectMan    *battle_effect;       /**< Battle effects of the dungeon. */
-    s32                 battle_bgm_state;    /**< Step of the battle music change on entering and leaving a fight. */
-    float               battle_bgm_vol;      /**< Volume the battle music is played at. */
-    s8                  unk_8c;
-    u8                  unk_8d[0x3];
-    u64                 subject_counter;     /**< Play time at which the floor's subject counter was last reset. */
-    u32                 unk_98;
-    s8                  map_effect_id;       /**< Map effect number set by event scripts, or -1. */
-    u8                  unk_9d;
-    s16                 lock_on_mode;        /**< How the player picks a target: 0 nearest with lock-on, 2 the RockOn target selection; set by _SET_LOCKON_MODE. */
-    s32                 free_texb;           /**< First texture block left free after the dungeon's own textures. */
-    u8                  unk_a4[0x4];
+    s32                  unk_0;
+    s32                  unk_4;
+    u32                  pause_flag;   /**< Flags of the dungeon systems paused by events and menus. */
+    u16                  floor_status; /**< Status flags of the current floor, set and read by event scripts. */
+    u8                   unk_e[0x2];
+    s32                  timer;              /**< Frames counted since the dungeon timer was last reset. */
+    CDngFloorManager     floor_manager;      /**< Floor data of the current dungeon. */
+    char                 map_name[0x20];     /**< Name of the dungeon map file loaded. */
+    SYSTEM_SCRIPT_INFO   script;             /**< Event the dungeon is to run. */
+    s8                   statusbar_show;     /**< Whether the status bar is shown. */
+    s8                   statusbar_show_old; /**< Value of statusbar_show before it was last set. */
+    u8                   unk_4a[0x2];
+    float                statusbar_rate;  /**< How far the status bar is shown, 0 (hidden) to 1 (shown). */
+    float                statusbar_speed; /**< Amount statusbar_rate moves by in one frame. */
+    s32                  unk_54;
+    s32                  boss_map; /**< Non-zero on a boss floor, where the mini map symbols are hidden. */
+    s32                  unk_5c;
+    u8                   unk_60[0x4];
+    u32                  minimap_reveal; /**< MINIMAP_REVEAL flags set by floor items for the rest of the floor. */
+    u8                   unk_68[0x4];
+    float                bright_rate; /**< Scale applied to the colours the dungeon is drawn with. */
+    float                quake_power; /**< Strength of the running camera quake. */
+    float                quake_step;  /**< Amount quake_power falls by in one frame. */
+    s16                  quake_count; /**< Frames left in the running camera quake. */
+    u8                   unk_7a[0x2];
+    CTreasureBoxManager *treasure_box;     /**< Treasure boxes of the current floor, or NULL. */
+    BattleEffectMan     *battle_effect;    /**< Battle effects of the dungeon. */
+    s32                  battle_bgm_state; /**< Step of the battle music change on entering and leaving a fight. */
+    float                battle_bgm_vol;   /**< Volume the battle music is played at. */
+    s8                   unk_8c;
+    u8                   unk_8d[0x3];
+    u64                  subject_counter; /**< Play time at which the floor's subject counter was last reset. */
+    u32                  unk_98;
+    s8                   map_effect_id; /**< Map effect number set by event scripts, or -1. */
+    u8                   unk_9d;
+    s16                  lock_on_mode; /**< How the player picks a target: 0 nearest with lock-on, 2 the RockOn target selection; set by _SET_LOCKON_MODE. */
+    s32                  free_texb;    /**< First texture block left free after the dungeon's own textures. */
+    u8                   unk_a4[0x4];
 
     void SetStatusBar(int show, float speed) {
         statusbar_show_old = statusbar_show;
         statusbar_show = show;
+
         if (show) {
             statusbar_rate = 0.0f;
         } else {
             statusbar_rate = 1.0f;
         }
+
         statusbar_speed = speed;
     }
 
@@ -155,17 +157,17 @@ STATIC_ASSERT(sizeof(DNG_BATTLE_AREA) == 0xA8);
  *
  */
 struct SND_FILE_INFO {
-    s16 id;              /**< Map number the row is for; rows are sorted by it. */
-    s16 bgm_no;          /**< Music played by default, or SND_FILE_NO_NONE / SND_FILE_NO_KEEP. */
-    s16 se_base;         /**< Base sound effect bank (BS), or SND_FILE_NO_NONE / SND_FILE_NO_KEEP. */
-    s16 se_battle;       /**< Battle sound effect bank (FG), or SND_FILE_NO_NONE / SND_FILE_NO_KEEP. */
-    s16 se_env;          /**< Environment sound bank (SR), or SND_FILE_NO_NONE / SND_FILE_NO_KEEP. */
-    s16 env_bgm;         /**< Environment sound played, or -1 when it follows the time of day. */
-    s16 env_vol;         /**< Volume of the environment sound that follows the time of day, 0 to 127. */
-    s16 se_src[8];       /**< Map object sound effect banks (OB), -1 for none; se_src[0] may be SND_FILE_NO_KEEP. */
-    s16 event_se[2];     /**< Two numbers naming the event sound effect file (EV), or -1. */
-    u8  reverb_type;     /**< Reverb type of the map. */
-    u8  reverb_depth;    /**< Reverb depth of the map. */
+    s16 id;           /**< Map number the row is for; rows are sorted by it. */
+    s16 bgm_no;       /**< Music played by default, or SND_FILE_NO_NONE / SND_FILE_NO_KEEP. */
+    s16 se_base;      /**< Base sound effect bank (BS), or SND_FILE_NO_NONE / SND_FILE_NO_KEEP. */
+    s16 se_battle;    /**< Battle sound effect bank (FG), or SND_FILE_NO_NONE / SND_FILE_NO_KEEP. */
+    s16 se_env;       /**< Environment sound bank (SR), or SND_FILE_NO_NONE / SND_FILE_NO_KEEP. */
+    s16 env_bgm;      /**< Environment sound played, or -1 when it follows the time of day. */
+    s16 env_vol;      /**< Volume of the environment sound that follows the time of day, 0 to 127. */
+    s16 se_src[8];    /**< Map object sound effect banks (OB), -1 for none; se_src[0] may be SND_FILE_NO_KEEP. */
+    s16 event_se[2];  /**< Two numbers naming the event sound effect file (EV), or -1. */
+    u8  reverb_type;  /**< Reverb type of the map. */
+    u8  reverb_depth; /**< Reverb depth of the map. */
 };
 
 STATIC_ASSERT(sizeof(SND_FILE_INFO) == 0x24);
@@ -190,10 +192,10 @@ STATIC_ASSERT(sizeof(SND_REV_INFO) == 0x8);
  *
  */
 struct SE_SRC_PLAY_INFO {
-    s32   se_no;    /**< Sound effect requested, or -1 for a free entry. */
-    s32   num;      /**< Number of requests made this frame. */
-    float vol[16];  /**< Volume of each request. */
-    float pan[16];  /**< Pan of each request. */
+    s32   se_no;   /**< Sound effect requested, or -1 for a free entry. */
+    s32   num;     /**< Number of requests made this frame. */
+    float vol[16]; /**< Volume of each request. */
+    float pan[16]; /**< Pan of each request. */
 };
 
 STATIC_ASSERT(sizeof(SE_SRC_PLAY_INFO) == 0x88);
@@ -218,19 +220,19 @@ public:
      *
      */
     struct BGM_INFO {
-        s32       port;          /**< Sound port the bank is loaded into (sndPORT). */
-        s32       snd_id;        /**< Sound ID of the loaded bank, or -1. */
-        s32       load_no;       /**< Number of the music loaded, or -1. */
+        s32       port;    /**< Sound port the bank is loaded into (sndPORT). */
+        s32       snd_id;  /**< Sound ID of the loaded bank, or -1. */
+        s32       load_no; /**< Number of the music loaded, or -1. */
         float     unk_c;
-        s32       vol;           /**< Volume of the music, 0 to 127. */
-        float     volf;          /**< Scale applied to vol. */
-        float     fade_volf;     /**< Fade scale applied to vol, 0 to 1. */
-        float     fade_speed;    /**< Amount fade_volf changes by in one frame; zero when no fade runs. */
-        s32       play_no;       /**< Number of the music played, or the music last stopped. */
-        s32       time_vol;      /**< Non-zero when volf follows the lighting of the time of day. */
+        s32       vol;        /**< Volume of the music, 0 to 127. */
+        float     volf;       /**< Scale applied to vol. */
+        float     fade_volf;  /**< Fade scale applied to vol, 0 to 1. */
+        float     fade_speed; /**< Amount fade_volf changes by in one frame; zero when no fade runs. */
+        s32       play_no;    /**< Number of the music played, or the music last stopped. */
+        s32       time_vol;   /**< Non-zero when volf follows the lighting of the time of day. */
         u8        unk_28[0x8];
-        u_long128 buff[0x40];    /**< Memory the bank is loaded into. */
-        mgCMemory stack;         /**< Memory stack over buff. */
+        u_long128 buff[0x40]; /**< Memory the bank is loaded into. */
+        mgCMemory stack;      /**< Memory stack over buff. */
 
         /**
          *
@@ -249,9 +251,9 @@ public:
      *
      */
     struct BGM_STATUS {
-        s32   state;    /**< Playback state of the music (sndSQ_STATE); 1 plays, 2 pauses and below 1 stops it on restore. */
-        s32   load_no;  /**< Number of the music loaded. */
-        s32   play_no;  /**< Number of the music played. */
+        s32   state;   /**< Playback state of the music (sndSQ_STATE); 1 plays, 2 pauses and below 1 stops it on restore. */
+        s32   load_no; /**< Number of the music loaded. */
+        s32   play_no; /**< Number of the music played. */
         float unk_c;
         s32   vol;      /**< Volume of the music, 0 to 127. */
         float volf;     /**< Scale applied to vol. */
@@ -269,141 +271,147 @@ public:
         s32   in_center; /**< Non-zero when the character is within the inner part of the screen. */
     };
 
-    s32                stack_num;                 /**< Number of entries in stack. */
-    s32                stack_no;                  /**< Memory stack last assigned by AssignStack. */
-    mgCMemory         *stack[12];                 /**< Memory stacks data is loaded into. */
-    mgCMemory         *work_stack;                /**< Memory stack for temporary work memory. */
-    u_long128         *read_buff;                 /**< Buffer files are read into before they are loaded. */
-    s32                chara_num;                 /**< Number of entries in chara. */
-    CSceneCharacter    chara[128];                /**< Character slots. */
-    s32                camera_num;                /**< Number of entries in camera. */
-    CSceneCamera       camera[8];                 /**< Camera slots. */
-    s32                message_num;               /**< Number of entries in message. */
-    CSceneMessage      message[8];                /**< Message slots. */
-    u8                 unk_23cc[0x4];
-    CMdsListSet        mds_list_set;              /**< Model packs and image files loaded by the scene. */
-    CFireRaster        fire_raster;               /**< Heat haze effect drawn over the screen. */
-    s32                map_num;                   /**< Number of entries in map. */
-    CSceneMap          map[4];                    /**< Map slots. */
-    s32                sky_num;                   /**< Number of entries in sky. */
-    CSceneSky          sky[4];                    /**< Sky slots. */
-    s32                gameobj_num;               /**< Number of entries in gameobj. */
-    CSceneGameObj      gameobj[4];                /**< Game object slots. */
-    s32                effect_num;                /**< Number of entries in effect. */
-    CSceneEffect       effect[8];                 /**< Effect script slots. */
+    s32             stack_num;   /**< Number of entries in stack. */
+    s32             stack_no;    /**< Memory stack last assigned by AssignStack. */
+    mgCMemory      *stack[12];   /**< Memory stacks data is loaded into. */
+    mgCMemory      *work_stack;  /**< Memory stack for temporary work memory. */
+    u_long128      *read_buff;   /**< Buffer files are read into before they are loaded. */
+    s32             chara_num;   /**< Number of entries in chara. */
+    CSceneCharacter chara[128];  /**< Character slots. */
+    s32             camera_num;  /**< Number of entries in camera. */
+    CSceneCamera    camera[8];   /**< Camera slots. */
+    s32             message_num; /**< Number of entries in message. */
+    CSceneMessage   message[8];  /**< Message slots. */
+    u8              unk_23cc[0x4];
+    CMdsListSet     mds_list_set; /**< Model packs and image files loaded by the scene. */
+    CFireRaster     fire_raster;  /**< Heat haze effect drawn over the screen. */
+    s32             map_num;      /**< Number of entries in map. */
+    CSceneMap       map[4];       /**< Map slots. */
+    s32             sky_num;      /**< Number of entries in sky. */
+    CSceneSky       sky[4];       /**< Sky slots. */
+    s32             gameobj_num;  /**< Number of entries in gameobj. */
+    CSceneGameObj   gameobj[4];   /**< Game object slots. */
+    s32             effect_num;   /**< Number of entries in effect. */
+    CSceneEffect    effect[8];    /**< Effect script slots. */
 #pragma cpp_extensions on
+
     union {
-    CFadeInOut         fade;                      /**< Screen fade. */
+        CFadeInOut fade; /**< Screen fade. */
+
         struct {
-            u8 unk_2c70[0x2C];
-            int motion_blur;
+            u8  unk_2c70[0x2C];
+            int motion_blur; /**< Strength of the scene's motion blur effect. */
         };
     };
+
 #pragma cpp_extensions reset
-    s32                bg_load_step;              /**< Next step of the map loaded in the background, plus one; 0 when none is. */
-    u8                 unk_2ca4[0x4];
-    SCN_LOADMAP_INFO2  bg_load_info;              /**< Map loaded in the background. */
-    s32                player_chara;              /**< Character slot of the player, or -1. */
-    s32                active_camera;             /**< Camera slot drawn with, or -1. */
-    s32                before_camera;             /**< Camera slot used before the event camera took over, or -1. */
-    s32                active_map;                /**< Map slot the player is in (0 main map, 1 sub map), or -1. */
-    s32                now_map_no;                /**< Number of the main map, or -1. */
-    s32                now_sub_map_no;            /**< Number of the sub map, or -1. */
-    s32                old_map_no;                /**< Number of the main map before the last change, or -1. */
-    s32                old_sub_map_no;            /**< Number of the sub map before the last change, or -1. */
-    s32                chara_texb;                /**< Texture block of the characters in slots 0 to 7. */
-    s32                villager_texb;             /**< First texture block of the characters from slot 8. */
-    s32                villager_texb_num;         /**< Number of texture blocks from villager_texb. */
-    s32                event_texb;                /**< First texture block for the images events load. */
-    s32                event_texb_num;            /**< Number of texture blocks from event_texb. */
-    s32                unk_2e84;
-    s32                event_run;                 /**< Non-zero while an event runs. */
-    s32                event_no;                  /**< Number of the running event. */
+    s32               bg_load_step; /**< Next step of the map loaded in the background, plus one; 0 when none is. */
+    u8                unk_2ca4[0x4];
+    SCN_LOADMAP_INFO2 bg_load_info;      /**< Map loaded in the background. */
+    s32               player_chara;      /**< Character slot of the player, or -1. */
+    s32               active_camera;     /**< Camera slot drawn with, or -1. */
+    s32               before_camera;     /**< Camera slot used before the event camera took over, or -1. */
+    s32               active_map;        /**< Map slot the player is in (0 main map, 1 sub map), or -1. */
+    s32               now_map_no;        /**< Number of the main map, or -1. */
+    s32               now_sub_map_no;    /**< Number of the sub map, or -1. */
+    s32               old_map_no;        /**< Number of the main map before the last change, or -1. */
+    s32               old_sub_map_no;    /**< Number of the sub map before the last change, or -1. */
+    s32               chara_texb;        /**< Texture block of the characters in slots 0 to 7. */
+    s32               villager_texb;     /**< First texture block of the characters from slot 8. */
+    s32               villager_texb_num; /**< Number of texture blocks from villager_texb. */
+    s32               event_texb;        /**< First texture block for the images events load. */
+    s32               event_texb_num;    /**< Number of texture blocks from event_texb. */
+    s32               unk_2e84;
+    s32               event_run; /**< Non-zero while an event runs. */
+    s32               event_no;  /**< Number of the running event. */
 #pragma cpp_extensions on
+
     union {
-    CSceneEventData    event_data;                /**< Description of the running event. */
+        CSceneEventData event_data; /**< Description of the running event. */
+
         struct {
-            u32 map_jump_flags;
-            u8 unk_2e94[8];
-            int door_place_no[2];
-            u8 unk_2ea4[4];
-            char map_jump_name[1];
-            u8 unk_2ea9[0x77];
+            u32   map_jump_flags; /**< Options applied while changing maps. */
+            u8    unk_2e94[8];
+            int   door_place_no[2];
+            u8    unk_2ea4[4];
+            char  map_jump_name[1]; /**< Name of the destination map. */
+            u8    unk_2ea9[0x77];
             float door_dir_x;
-            u8 unk_2f24[4];
+            u8    unk_2f24[4];
             float door_dir_z;
-            u8 unk_2f2c[4];
+            u8    unk_2f2c[4];
             float door_vec[3];
-            u8 unk_2f3c[0x4];
-            int event_parts_id;
-            u8 unk_2f44[0x18];
-            int villager_id;
+            u8    unk_2f3c[0x4];
+            int   event_parts_id;
+            u8    unk_2f44[0x18];
+            int   villager_id;
         };
     };
+
 #pragma cpp_extensions reset
-    s32                map_event_no;              /**< Number of the event last reached on the map. */
-    s32                exit_flag;                 /**< Exit flag set and read by event scripts. */
-    s32                day;                       /**< Number of days passed. */
-    float              time;                      /**< Time of day, in hours from 0 to 24. */
-    float              time_speed;                /**< Hours passed in one time step. */
-    s32                time_step;                 /**< Non-zero while the time of day advances. */
-    float              wind_power;                /**< Strength of the wind, 0 for none. */
-    u8                 unk_2f7c[0x4];
-    sceVu0FVECTOR      wind_dir;                  /**< Direction of the wind, normalised. */
-    DNG_BATTLE_AREA    battle_area;               /**< Dungeon state. */
-    s32                skip_load_villager;        /**< When set, the next LoadVillager is skipped and the flag cleared. */
-    s32                skip_load_sub_villager;    /**< When set, the next LoadSubVillager is skipped and the flag cleared. */
-    CSaveData         *save_data;                 /**< Save data the time of day is kept in, or NULL. */
-    u8                 unk_3044[0xC];
-    CVillagerMngr      villager_mngr;             /**< Villagers placed in the town. */
-    s32                villager_time;             /**< Time band the villagers were loaded for, or -1. */
-    s32                sub_villager_time;         /**< Time band the sub villagers were loaded for, or -1. */
-    s32                unk_3e68;
-    s32                unk_3e6c;
-    CThunderEffect     thunder;                   /**< Thunder effect. */
-    u8                 unk_3f0c[0x154];
-    s32                snd_file_num;              /**< Number of rows in snd_file. */
-    SND_FILE_INFO      snd_file[512];             /**< Sound table, sorted by map number. */
-    s32                snd_rev_num;               /**< Number of rows in snd_rev. */
-    SND_REV_INFO       snd_rev[256];              /**< Reverb table. */
-    s32                snd_file_id;               /**< Map number whose sound table row is loaded, or -1. */
-    s32                skip_load_bgm;             /**< When set, the next LoadBGM is skipped and the flag cleared. */
-    s32                skip_load_sound;           /**< When set, the next LoadSound is skipped and the flag cleared. */
-    s32                skip_play_bgm;             /**< When set, the next PlayBGM is skipped and the flag cleared. */
-    u8                 unk_9078[0x8];
-    BGM_INFO           bgm[2];                    /**< Music ports. */
-    s32                bgm_no;                    /**< Index of the active entry of bgm. */
-    s32                se_src_id[16];             /**< Sound IDs of the map object sound effect banks, or -1. */
-    s32                se_src_no[16];             /**< Numbers of the map object sound effect banks, or -1. */
-    u8                 unk_99c4[0xC];
-    u_long128          se_src_buff[0x40];         /**< Memory the map object sound effect banks are loaded into. */
-    mgCMemory          se_src_stack;              /**< Memory stack over se_src_buff. */
-    SE_SRC_PLAY_INFO   se_src_play[4];            /**< Map object sound effects requested this frame. */
-    s32                se_src_play_no[4];         /**< Map object sound effects playing, or -1. */
-    s32                se_src_play_flag[4];       /**< Non-zero for the entries of se_src_play_no requested this frame. */
-    s32                se_env_id;                 /**< Sound ID of the environment sound bank, or -1. */
-    s32                se_env_no;                 /**< Number of the environment sound bank, or -1. */
-    u8                 unk_a048[0x8];
-    u_long128          se_env_buff[0x40];         /**< Memory the environment sound bank is loaded into. */
-    mgCMemory          se_env_stack;              /**< Memory stack over se_env_buff. */
-    s32                unk_a480;
-    s32                env_bgm_no;                /**< Environment sound playing, or -1. */
-    float              env_bgm_vol;               /**< Volume the environment sound plays at. */
-    float              env_bgm_volf;              /**< Volume the environment sound is to play at. */
-    s32                env_bgm_auto;              /**< Non-zero when the environment sound follows the time band of the map. */
-    s32                env_bgm_offset;            /**< Environment sound played for the first time band. */
-    s32                se_base_id;                /**< Sound ID of the base sound effect bank, or -1. */
-    s32                se_base_no;                /**< Number of the base sound effect bank, or -1. */
-    u_long128          se_base_buff[0x200];       /**< Memory the base sound effect bank is loaded into. */
-    mgCMemory          se_base_stack;             /**< Memory stack over se_base_buff. */
-    s32                se_battle_id;              /**< Sound ID of the battle sound effect bank, or -1. */
-    s32                se_battle_no;              /**< Number of the battle sound effect bank, or -1. */
-    u8                 unk_c4d8[0x8];
-    u_long128          se_battle_buff[0x200];     /**< Memory the battle sound effect bank is loaded into. */
-    mgCMemory          se_battle_stack;           /**< Memory stack over se_battle_buff. */
-    u_long128          loop_se_buff[0x200];       /**< Memory the looping sound effect manager is created in. */
-    mgCMemory          loop_se_stack;             /**< Memory stack over loop_se_buff. */
-    CLoopSeMngr        loop_se;                   /**< Looping sound effects. */
+    s32              map_event_no; /**< Number of the event last reached on the map. */
+    s32              exit_flag;    /**< Exit flag set and read by event scripts. */
+    s32              day;          /**< Number of days passed. */
+    float            time;         /**< Time of day, in hours from 0 to 24. */
+    float            time_speed;   /**< Hours passed in one time step. */
+    s32              time_step;    /**< Non-zero while the time of day advances. */
+    float            wind_power;   /**< Strength of the wind, 0 for none. */
+    u8               unk_2f7c[0x4];
+    sceVu0FVECTOR    wind_dir;               /**< Direction of the wind, normalised. */
+    DNG_BATTLE_AREA  battle_area;            /**< Dungeon state. */
+    s32              skip_load_villager;     /**< When set, the next LoadVillager is skipped and the flag cleared. */
+    s32              skip_load_sub_villager; /**< When set, the next LoadSubVillager is skipped and the flag cleared. */
+    CSaveData       *save_data;              /**< Save data the time of day is kept in, or NULL. */
+    u8               unk_3044[0xC];
+    CVillagerMngr    villager_mngr;     /**< Villagers placed in the town. */
+    s32              villager_time;     /**< Time band the villagers were loaded for, or -1. */
+    s32              sub_villager_time; /**< Time band the sub villagers were loaded for, or -1. */
+    s32              unk_3e68;
+    s32              unk_3e6c;
+    CThunderEffect   thunder; /**< Thunder effect. */
+    u8               unk_3f0c[0x154];
+    s32              snd_file_num;    /**< Number of rows in snd_file. */
+    SND_FILE_INFO    snd_file[512];   /**< Sound table, sorted by map number. */
+    s32              snd_rev_num;     /**< Number of rows in snd_rev. */
+    SND_REV_INFO     snd_rev[256];    /**< Reverb table. */
+    s32              snd_file_id;     /**< Map number whose sound table row is loaded, or -1. */
+    s32              skip_load_bgm;   /**< When set, the next LoadBGM is skipped and the flag cleared. */
+    s32              skip_load_sound; /**< When set, the next LoadSound is skipped and the flag cleared. */
+    s32              skip_play_bgm;   /**< When set, the next PlayBGM is skipped and the flag cleared. */
+    u8               unk_9078[0x8];
+    BGM_INFO         bgm[2];        /**< Music ports. */
+    s32              bgm_no;        /**< Index of the active entry of bgm. */
+    s32              se_src_id[16]; /**< Sound IDs of the map object sound effect banks, or -1. */
+    s32              se_src_no[16]; /**< Numbers of the map object sound effect banks, or -1. */
+    u8               unk_99c4[0xC];
+    u_long128        se_src_buff[0x40];   /**< Memory the map object sound effect banks are loaded into. */
+    mgCMemory        se_src_stack;        /**< Memory stack over se_src_buff. */
+    SE_SRC_PLAY_INFO se_src_play[4];      /**< Map object sound effects requested this frame. */
+    s32              se_src_play_no[4];   /**< Map object sound effects playing, or -1. */
+    s32              se_src_play_flag[4]; /**< Non-zero for the entries of se_src_play_no requested this frame. */
+    s32              se_env_id;           /**< Sound ID of the environment sound bank, or -1. */
+    s32              se_env_no;           /**< Number of the environment sound bank, or -1. */
+    u8               unk_a048[0x8];
+    u_long128        se_env_buff[0x40]; /**< Memory the environment sound bank is loaded into. */
+    mgCMemory        se_env_stack;      /**< Memory stack over se_env_buff. */
+    s32              unk_a480;
+    s32              env_bgm_no;          /**< Environment sound playing, or -1. */
+    float            env_bgm_vol;         /**< Volume the environment sound plays at. */
+    float            env_bgm_volf;        /**< Volume the environment sound is to play at. */
+    s32              env_bgm_auto;        /**< Non-zero when the environment sound follows the time band of the map. */
+    s32              env_bgm_offset;      /**< Environment sound played for the first time band. */
+    s32              se_base_id;          /**< Sound ID of the base sound effect bank, or -1. */
+    s32              se_base_no;          /**< Number of the base sound effect bank, or -1. */
+    u_long128        se_base_buff[0x200]; /**< Memory the base sound effect bank is loaded into. */
+    mgCMemory        se_base_stack;       /**< Memory stack over se_base_buff. */
+    s32              se_battle_id;        /**< Sound ID of the battle sound effect bank, or -1. */
+    s32              se_battle_no;        /**< Number of the battle sound effect bank, or -1. */
+    u8               unk_c4d8[0x8];
+    u_long128        se_battle_buff[0x200]; /**< Memory the battle sound effect bank is loaded into. */
+    mgCMemory        se_battle_stack;       /**< Memory stack over se_battle_buff. */
+    u_long128        loop_se_buff[0x200];   /**< Memory the looping sound effect manager is created in. */
+    mgCMemory        loop_se_stack;         /**< Memory stack over loop_se_buff. */
+    CLoopSeMngr      loop_se;               /**< Looping sound effects. */
 
     /**
      *
@@ -433,7 +441,7 @@ public:
      * @address 0x286F20
      * @size 0x34
      */
-    void SetStack(int no, mgCMemory *stack);
+    void SetStack(int index, mgCMemory *stack);
 
     /**
      *
@@ -443,7 +451,7 @@ public:
      * @address 0x286F60
      * @size 0x38
      */
-    mgCMemory *GetStack(int no);
+    mgCMemory *GetStack(int index);
 
     /**
      *
@@ -453,7 +461,7 @@ public:
      * @address 0x286FA0
      * @size 0x94
      */
-    void ClearStack(int no);
+    void ClearStack(int index);
 
     /**
      *
@@ -463,7 +471,7 @@ public:
      * @address 0x287040
      * @size 0xC8
      */
-    void AssignStack(int no);
+    void AssignStack(int index);
 
     /**
      *
@@ -473,7 +481,7 @@ public:
      * @address 0x287110
      * @size 0x34
      */
-    CSceneCharacter *GetSceneCharacter(int no);
+    CSceneCharacter *GetSceneCharacter(int index);
 
     /**
      *
@@ -483,7 +491,7 @@ public:
      * @address 0x287150
      * @size 0x3C
      */
-    CSceneMap *GetSceneMap(int no);
+    CSceneMap *GetSceneMap(int index);
 
     /**
      *
@@ -493,7 +501,7 @@ public:
      * @address 0x287190
      * @size 0x3C
      */
-    CSceneMessage *GetSceneMessage(int no);
+    CSceneMessage *GetSceneMessage(int index);
 
     /**
      *
@@ -503,7 +511,7 @@ public:
      * @address 0x2871D0
      * @size 0x3C
      */
-    CSceneCamera *GetSceneCamera(int no);
+    CSceneCamera *GetSceneCamera(int index);
 
     /**
      *
@@ -513,7 +521,7 @@ public:
      * @address 0x287210
      * @size 0x3C
      */
-    CSceneSky *GetSceneSky(int no);
+    CSceneSky *GetSceneSky(int index);
 
     /**
      *
@@ -523,7 +531,7 @@ public:
      * @address 0x287250
      * @size 0x34
      */
-    CSceneGameObj *GetSceneGameObj(int no);
+    CSceneGameObj *GetSceneGameObj(int index);
 
     /**
      *
@@ -533,7 +541,7 @@ public:
      * @address 0x287290
      * @size 0x3C
      */
-    CSceneEffect *GetSceneEffect(int no);
+    CSceneEffect *GetSceneEffect(int index);
 
     /**
      *
@@ -543,7 +551,7 @@ public:
      * @address 0x2872D0
      * @size 0xCC
      */
-    int CheckIMGName(int no, char *name);
+    int CheckIMGName(int excluded_map, char *name);
 
     /**
      *
@@ -553,7 +561,7 @@ public:
      * @address 0x2873A0
      * @size 0xCC
      */
-    int CheckMDSName(int no, char *name);
+    int CheckMDSName(int excluded_map, char *name);
 
     /**
      *
@@ -563,7 +571,7 @@ public:
      * @address 0x287470
      * @size 0x9C
      */
-    CSceneData *GetData(int kind, int no);
+    CSceneData *GetData(int kind, int index);
 
     /**
      *
@@ -573,7 +581,7 @@ public:
      * @address 0x287510
      * @size 0xE0
      */
-    int AssignCamera(int no, mgCCamera *camera, char *name);
+    int AssignCamera(int index, mgCCamera *camera, char *name);
 
     /**
      *
@@ -593,7 +601,7 @@ public:
      * @address 0x287690
      * @size 0x50
      */
-    mgCCamera *GetCamera(int no);
+    mgCCamera *GetCamera(int index);
 
     /**
      *
@@ -603,7 +611,7 @@ public:
      * @address 0x2876E0
      * @size 0xD0
      */
-    int AssignMessage(int no, ClsMes *message, char *name);
+    int AssignMessage(int index, ClsMes *message, char *name);
 
     /**
      *
@@ -613,7 +621,7 @@ public:
      * @address 0x2877B0
      * @size 0x50
      */
-    ClsMes *GetMessage(int no);
+    ClsMes *GetMessage(int index);
 
     /**
      *
@@ -623,7 +631,7 @@ public:
      * @address 0x287800
      * @size 0xD0
      */
-    int AssignChara(int no, CCharacter2 *chara, char *name);
+    int AssignChara(int index, CCharacter2 *chara, char *name);
 
     /**
      *
@@ -633,7 +641,7 @@ public:
      * @address 0x2878D0
      * @size 0x30
      */
-    void SetCharaNo(int no, int chara_no);
+    void SetCharaNo(int index, int value);
 
     /**
      *
@@ -643,7 +651,7 @@ public:
      * @address 0x287900
      * @size 0x30
      */
-    int GetCharaNo(int no);
+    int GetCharaNo(int index);
 
     /**
      *
@@ -653,7 +661,7 @@ public:
      * @address 0x287930
      * @size 0x50
      */
-    CCharacter2 *GetCharacter(int no);
+    CCharacter2 *GetCharacter(int index);
 
     /**
      *
@@ -663,7 +671,7 @@ public:
      * @address 0x287980
      * @size 0xE0
      */
-    int AssignMap(int no, CMap *map, char *name);
+    int AssignMap(int index, CMap *map, char *name);
 
     /**
      *
@@ -673,7 +681,7 @@ public:
      * @address 0x287A60
      * @size 0x30
      */
-    char *GetMapName(int no);
+    char *GetMapName(int index);
 
     /**
      *
@@ -693,7 +701,7 @@ public:
      * @address 0x287B30
      * @size 0x50
      */
-    CMap *GetMap(int no);
+    CMap *GetMap(int index);
 
     /**
      *
@@ -703,7 +711,7 @@ public:
      * @address 0x287B80
      * @size 0x50
      */
-    CMapSky *GetSky(int no);
+    CMapSky *GetSky(int index);
 
     /**
      *
@@ -743,7 +751,7 @@ public:
      * @address 0x288160
      * @size 0xD0
      */
-    int AssignSky(int no, CMapSky *sky, char *name);
+    int AssignSky(int index, CMapSky *sky, char *name);
 
     /**
      *
@@ -753,7 +761,7 @@ public:
      * @address 0x288230
      * @size 0x38
      */
-    int DeleteSky(int no);
+    int DeleteSky(int index);
 
     /**
      *
@@ -763,7 +771,7 @@ public:
      * @address 0x288270
      * @size 0x70
      */
-    int AssignEffect(int no, CEffectScriptMan *effect, char *name);
+    int AssignEffect(int index, CEffectScriptMan *effect, char *name);
 
     /**
      *
@@ -773,7 +781,7 @@ public:
      * @address 0x2882E0
      * @size 0x30
      */
-    void DeleteEffect(int no);
+    void DeleteEffect(int index);
 
     /**
      *
@@ -783,7 +791,7 @@ public:
      * @address 0x288310
      * @size 0x30
      */
-    CEffectScriptMan *GetEffect(int no);
+    CEffectScriptMan *GetEffect(int index);
 
     /**
      *
@@ -793,7 +801,7 @@ public:
      * @address 0x288340
      * @size 0x90
      */
-    void StepEffectScript(int no);
+    void StepEffectScript(int index);
 
     /**
      *
@@ -803,7 +811,7 @@ public:
      * @address 0x2883D0
      * @size 0x90
      */
-    void DrawEffectScript(int no);
+    void DrawEffectScript(int index);
 
     /**
      *
@@ -813,7 +821,7 @@ public:
      * @address 0x288460
      * @size 0x3C
      */
-    int IsActive(int kind, int no);
+    int IsActive(int kind, int index);
 
     /**
      *
@@ -823,7 +831,7 @@ public:
      * @address 0x2884A0
      * @size 0x30
      */
-    void SetActive(int kind, int no);
+    void SetActive(int kind, int index);
 
     /**
      *
@@ -833,7 +841,7 @@ public:
      * @address 0x2884D0
      * @size 0x34
      */
-    void ResetActive(int kind, int no);
+    void ResetActive(int kind, int index);
 
     /**
      *
@@ -843,7 +851,7 @@ public:
      * @address 0x288510
      * @size 0x38
      */
-    void SetStatus(int kind, int no, int flag);
+    void SetStatus(int kind, int index, int bits);
 
     /**
      *
@@ -853,7 +861,7 @@ public:
      * @address 0x288550
      * @size 0x3C
      */
-    void ResetStatus(int kind, int no, int flag);
+    void ResetStatus(int kind, int index, int bits);
 
     /**
      *
@@ -863,7 +871,7 @@ public:
      * @address 0x288590
      * @size 0x30
      */
-    int GetStatus(int kind, int no);
+    int GetStatus(int kind, int index);
 
     /**
      *
@@ -873,7 +881,7 @@ public:
      * @address 0x2885C0
      * @size 0x30
      */
-    void SetType(int kind, int no, int type);
+    void SetType(int kind, int index, int type);
 
     /**
      *
@@ -883,7 +891,7 @@ public:
      * @address 0x2885F0
      * @size 0x30
      */
-    int GetType(int kind, int no);
+    int GetType(int kind, int index);
 
     /**
      *
@@ -903,7 +911,7 @@ public:
      * @address 0x2886D0
      * @size 0x8C
      */
-    int GetCharaTexb(int no);
+    int GetCharaTexb(int index);
 
     /**
      *
@@ -913,7 +921,7 @@ public:
      * @address 0x288760
      * @size 0x30
      */
-    void SetCharaTexb(int no, int texb);
+    void SetCharaTexb(int index, int texb);
 
     /**
      *
@@ -923,7 +931,7 @@ public:
      * @address 0x288790
      * @size 0x98
      */
-    void SetTime(float time);
+    void SetTime(float hours);
 
     /**
      *
@@ -943,7 +951,7 @@ public:
      * @address 0x288840
      * @size 0xBC
      */
-    void TimeStep(float step);
+    void TimeStep(float frame_scale);
 
     /**
      *
@@ -953,7 +961,7 @@ public:
      * @address 0x288900
      * @size 0xC
      */
-    void SetWind(float power, float *dir);
+    void SetWind(float strength, float *dir);
 
     /**
      *
@@ -1005,7 +1013,7 @@ public:
      * @address 0x288F30
      * @size 0x244
      */
-    int LoadChara(int no, unsigned int *pack, char *name, mgCMemory *model_stack, mgCMemory *motion_stack, mgCMemory *image_stack, int image_block, int no_line);
+    int LoadChara(int index, unsigned int *pack, char *name, mgCMemory *model_stack, mgCMemory *motion_stack, mgCMemory *image_stack, int image_block, int no_outline);
 
     /**
      *
@@ -1015,7 +1023,7 @@ public:
      * @address 0x289180
      * @size 0x30
      */
-    void DeleteChara(int no);
+    void DeleteChara(int index);
 
     /**
      *
@@ -1025,7 +1033,7 @@ public:
      * @address 0x2891B0
      * @size 0x284
      */
-    int CopyChara(int no, int src_no, mgCMemory *stack);
+    int CopyChara(int index, int source_index, mgCMemory *memory);
 
     /**
      *
@@ -1065,7 +1073,7 @@ public:
      * @address 0x289AB0
      * @size 0xD0
      */
-    int LoadMap(int no, SCN_LOADMAP_INFO2 *info, int background);
+    int LoadMap(int no, SCN_LOADMAP_INFO2 *info, int deferred);
 
     /**
      *
@@ -1075,7 +1083,7 @@ public:
      * @address 0x289C40
      * @size 0x204
      */
-    int DeleteMap(int no, int clear_stack);
+    int DeleteMap(int map_index, int clear_stack);
 
     /**
      *
@@ -1215,7 +1223,7 @@ public:
      * @address 0x2AA770
      * @size 0x58
      */
-    void StopBGM(int bgm_no);
+    void StopBGM(int play_no);
 
     /**
      *
@@ -1255,7 +1263,7 @@ public:
      * @address 0x2AA890
      * @size 0x78
      */
-    void SetVolfBGM(float volf);
+    void SetVolfBGM(float rate);
 
     /**
      *
@@ -1325,7 +1333,7 @@ public:
      * @address 0x2AAB80
      * @size 0x8C
      */
-    void PlayEnvBGM(int env_no, float vol);
+    void PlayEnvBGM(int play_no, float vol);
 
     /**
      *
@@ -1395,7 +1403,7 @@ public:
      * @address 0x2AADE0
      * @size 0x50
      */
-    int GetSeSrcID(int se_src_no);
+    int GetSeSrcID(int key);
 
     /**
      *
@@ -1405,7 +1413,7 @@ public:
      * @address 0x2AAEC0
      * @size 0x40
      */
-    void GetBgmFile(char *path, int no);
+    void GetBgmFile(char *path, int number);
 
     /**
      *
@@ -1415,7 +1423,7 @@ public:
      * @address 0x2AAF00
      * @size 0x40
      */
-    void GetSeSrcFile(char *path, int no);
+    void GetSeSrcFile(char *path, int number);
 
     /**
      *
@@ -1425,7 +1433,7 @@ public:
      * @address 0x2AAF40
      * @size 0x40
      */
-    void GetSeEnvFile(char *path, int no);
+    void GetSeEnvFile(char *path, int number);
 
     /**
      *
@@ -1435,7 +1443,7 @@ public:
      * @address 0x2AAF80
      * @size 0x40
      */
-    void GetSeBaseFile(char *path, int no);
+    void GetSeBaseFile(char *path, int number);
 
     /**
      *
@@ -1445,7 +1453,7 @@ public:
      * @address 0x2AAFC0
      * @size 0x40
      */
-    void GetSeBattleFile(char *path, int no);
+    void GetSeBattleFile(char *path, int number);
 
     /**
      *
@@ -1465,7 +1473,7 @@ public:
      * @address 0x2AB040
      * @size 0x50
      */
-    int CheckLoadSeSrc(int no);
+    int CheckLoadSeSrc(int key);
 
     /**
      *
@@ -1595,7 +1603,7 @@ public:
      * @address 0x2AB780
      * @size 0xAC
      */
-    int LoadBGMPack(int no, unsigned int *pack);
+    int LoadBGMPack(int no, unsigned int *buff);
 
     /**
      *
@@ -1605,7 +1613,7 @@ public:
      * @address 0x2AB830
      * @size 0xD0
      */
-    int LoadSeSrcPack(int no, unsigned int *pack);
+    int LoadSeSrcPack(int no, unsigned int *buffer);
 
     /**
      *
@@ -1615,7 +1623,7 @@ public:
      * @address 0x2AB900
      * @size 0xB0
      */
-    int LoadSeEnvPack(int no, unsigned int *pack);
+    int LoadSeEnvPack(int no, unsigned int *buffer);
 
     /**
      *
@@ -1625,7 +1633,7 @@ public:
      * @address 0x2AB9B0
      * @size 0x9C
      */
-    int LoadSeBattlePack(int no, unsigned int *pack);
+    int LoadSeBattlePack(int no, unsigned int *buffer);
 
     /**
      *
@@ -1635,7 +1643,7 @@ public:
      * @address 0x2ABA50
      * @size 0x9C
      */
-    int LoadSeBasePack(int no, unsigned int *pack);
+    int LoadSeBasePack(int no, unsigned int *buffer);
 
     /**
      *
@@ -1665,7 +1673,7 @@ public:
      * @address 0x2ABCA0
      * @size 0xBC
      */
-    int check_se_play(int se_no);
+    int check_se_play(int id);
 
     /**
      *
@@ -1745,7 +1753,7 @@ public:
      * @address 0x2AC7F0
      * @size 0x1C
      */
-    void LoadSndRevInfo(char *data, int size);
+    void LoadSndRevInfo(char *src, int size);
 
     /**
      *
@@ -1755,7 +1763,7 @@ public:
      * @address 0x2AC810
      * @size 0x4C0
      */
-    void LoadSndFileInfo(char *data, int size);
+    void LoadSndFileInfo(char *src, int size);
 
     /**
      *
@@ -1805,7 +1813,7 @@ public:
      * @address 0x2CC7D0
      * @size 0x204
      */
-    int GetMapEvent(float *pos, int check_type, CSceneEventData *data);
+    int GetMapEvent(float *pos, int map_no, CSceneEventData *event);
 
     /**
      *
@@ -1865,7 +1873,7 @@ public:
      * @address 0x2CCCE0
      * @size 0x1A4
      */
-    void DrawSky(int no);
+    void DrawSky(int sky_index);
 
     /**
      *
@@ -1875,7 +1883,7 @@ public:
      * @address 0x2CCE90
      * @size 0x26C
      */
-    void DrawLensFlare(int texb, char *name0, char *name1);
+    void DrawLensFlare(int flare_type, char *texture, char *alpha_texture);
 
     /**
      *
@@ -1895,7 +1903,7 @@ public:
      * @address 0x2CD190
      * @size 0x1F8
      */
-    void DrawEffect(int mode);
+    void DrawEffect(int tex_block);
 
     /**
      *
@@ -1905,7 +1913,7 @@ public:
      * @address 0x2CD4E0
      * @size 0x74
      */
-    int CheckDrawChara(int no);
+    int CheckDrawChara(int index);
 
     /**
      *
@@ -1915,7 +1923,7 @@ public:
      * @address 0x2CD560
      * @size 0x74
      */
-    int CheckDrawCharaShadow(int no);
+    int CheckDrawCharaShadow(int index);
 
     /**
      *
@@ -1925,7 +1933,7 @@ public:
      * @address 0x2CD5E0
      * @size 0xF8
      */
-    int StepChara(int no);
+    int StepChara(int index);
 
     /**
      *
@@ -1935,7 +1943,7 @@ public:
      * @address 0x2CD6E0
      * @size 0x210
      */
-    void GetCharaLighting(float (*light)[4], float *pos);
+    void GetCharaLighting(float (*light)[4], float *ambient);
 
     void SetVillagerTexb(int texb, int num) {
         villager_texb = texb;
@@ -1959,7 +1967,7 @@ public:
      * @address 0x2CD8F0
      * @size 0x2F8
      */
-    int DrawChara(int no, int mode);
+    int DrawChara(int index, int pass);
 
     /**
      *
@@ -1989,7 +1997,7 @@ public:
      * @address 0x2CDE60
      * @size 0x9C
      */
-    int SearchCharaTexb(int chara_no);
+    int SearchCharaTexb(int slot);
 
     /**
      *
@@ -1999,7 +2007,7 @@ public:
      * @address 0x2CDF00
      * @size 0x94
      */
-    int PreLoadVillager(int map_no, u_long128 *cache);
+    int PreLoadVillager(int map_id, u_long128 *cache);
 
     /**
      *
@@ -2019,7 +2027,7 @@ public:
      * @address 0x2CDFB0
      * @size 0x20
      */
-    int DeleteVillager(int chara_no);
+    int DeleteVillager(int chara_id);
 
     /**
      *
@@ -2049,7 +2057,7 @@ public:
      * @address 0x2CE130
      * @size 0x68
      */
-    int SearchCharaID(int chara_no);
+    int SearchCharaID(int chara_id);
 
     /**
      *
@@ -2069,7 +2077,7 @@ public:
      * @address 0x2CE1F0
      * @size 0x100
      */
-    int GetLoadVillagerList(int map_no, int *chara_no, CVillagerPlaceInfo **place);
+    int GetLoadVillagerList(int map_id, int *chara_ids, CVillagerPlaceInfo **place);
 
     /**
      *
@@ -2079,7 +2087,7 @@ public:
      * @address 0x2CE2F0
      * @size 0xDC
      */
-    int SearchCopyModel(int chara_no);
+    int SearchCopyModel(int villager_id);
 
     /**
      *
@@ -2089,7 +2097,7 @@ public:
      * @address 0x2CE4F0
      * @size 0x1C0
      */
-    void CharaObjectOnOff(int no, mgCMemory *stack);
+    void CharaObjectOnOff(int index, mgCMemory *memory);
 
     /**
      *
@@ -2119,7 +2127,7 @@ public:
      * @address 0x2CED40
      * @size 0x54
      */
-    void RegisterVillager(int no, int chara_no, int place_no);
+    void RegisterVillager(int chara_id, int slot, int place_no);
 
     /**
      *
@@ -2129,7 +2137,7 @@ public:
      * @address 0x2CEDA0
      * @size 0x14
      */
-    int RegisterVillager(int no, int chara_no, CVillagerPlaceInfo *place);
+    int RegisterVillager(int chara_id, int slot, CVillagerPlaceInfo *place);
 
     /**
      *
@@ -2139,7 +2147,7 @@ public:
      * @address 0x2CEDC0
      * @size 0xF0
      */
-    int RegisterVillager(int no, int chara_no, mgCMemory *stack);
+    int RegisterVillager(int chara_id, int slot, mgCMemory *memory);
 
     /**
      *
@@ -2149,7 +2157,7 @@ public:
      * @address 0x2CEEB0
      * @size 0x184
      */
-    int GetTalkEvent(float *pos, CSceneEventData *data);
+    int GetTalkEvent(float *pos, CSceneEventData *event);
 
     /**
      *
@@ -2179,7 +2187,7 @@ public:
      * @address 0x2CF7D0
      * @size 0x80
      */
-    void CancelStayVillager(int *stay);
+    void CancelStayVillager(int *flags);
 
     /**
      *
@@ -2189,7 +2197,7 @@ public:
      * @address 0x2CF850
      * @size 0x3C
      */
-    void StayVillager(int chara_no);
+    void StayVillager(int chara_id);
 
     /**
      *
@@ -2199,7 +2207,7 @@ public:
      * @address 0x2CF890
      * @size 0xB0
      */
-    void CancelStayVillager(int chara_no);
+    void CancelStayVillager(int chara_id);
 
     /**
      *
@@ -2209,7 +2217,7 @@ public:
      * @address 0x2CF940
      * @size 0x3C
      */
-    void ExModeVillager(int chara_no);
+    void ExModeVillager(int chara_id);
 
     /**
      *
@@ -2239,7 +2247,7 @@ public:
      * @address 0x2CFF10
      * @size 0x358
      */
-    void LoadGameObject(int map_no, int texb, mgCMemory *stack);
+    void LoadGameObject(int map_no, int tex_block, mgCMemory *memory);
 
     /**
      *
@@ -2249,7 +2257,7 @@ public:
      * @address 0x2D0270
      * @size 0x19C
      */
-    int GetGameObjectEvent(float *pos, CSceneEventData *data);
+    int GetGameObjectEvent(float *pos, CSceneEventData *event);
 
     /**
      *
@@ -2259,7 +2267,7 @@ public:
      * @address 0x2D0410
      * @size 0x25C
      */
-    void DrawGameObject(int mode);
+    void DrawGameObject(int now_map_no);
 };
 
 STATIC_ASSERT(sizeof(CScene::BGM_INFO) == 0x460);

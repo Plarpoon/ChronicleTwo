@@ -42,7 +42,7 @@ int IntersectionPipeYPoly3(float *pipe, float (*poly)[4], float *normal, float (
  * @address 0x2E31D0
  * @size 0x270
  */
-int IntersectionPipePoly3(float *pipe, float *dir, float (*poly)[4], float *normal, float (*hits)[4]);
+int IntersectionPipePoly3(float *pipe, float *axis, float (*tri)[4], float *offset, float (*hits)[4]);
 
 /**
  *
@@ -52,7 +52,7 @@ int IntersectionPipePoly3(float *pipe, float *dir, float (*poly)[4], float *norm
  * @address 0x2E3440
  * @size 0x210
  */
-int IntersectionSpherePoly3(float *sphere, float (*poly)[4], float *normal, float *push);
+int IntersectionSpherePoly3(float *sphere, float (*tri)[4], float *normal, float *push);
 
 /**
  *
@@ -72,7 +72,7 @@ int IntersectionBox(float *from, float *to, mgVu0FBOX *box, float (*hits)[4]);
  * @address 0x2E3B00
  * @size 0x100
  */
-int IntersectionBox(float *from, float *to, mgVu0FBOX *box, float (*matrix)[4], float (*hits)[4]);
+int IntersectionBox(float *start, float *end, mgVu0FBOX *box, float (*matrix)[4], float (*hits)[4]);
 
 /**
  *

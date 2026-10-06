@@ -22,16 +22,16 @@ class mgCTexture;
  */
 class COutLineDraw {
 public:
-    COutLineDraw *next;      /**< Following outline of the same character, or NULL. */
-    mgVu0FBOX unk_10;
-    mgCTexture *texture;     /**< Off-screen texture the frame is rendered into before compositing. */
-    mgCFrame *frame;         /**< Frame of the character model the outline is drawn around. */
-    float width;             /**< Thickness of the edge, in pixels; zero draws the frame with no outline. */
-    int depth_from_pos;      /**< Non-zero to composite the frame at the screen depth of pos. */
-    sceVu0FVECTOR pos;       /**< World position of the character the outline belongs to. */
-    sceVu0FVECTOR color;     /**< Colour of the edge: red, green and blue from 0 to 255, then alpha. */
-    int enable;              /**< Non-zero when the outline and its frame are drawn at all. */
-    int hide_edge;           /**< Non-zero to composite the frame without drawing the edge around it. */
+    COutLineDraw *next; /**< Following outline of the same character, or NULL. */
+    mgVu0FBOX     unk_10;
+    mgCTexture   *texture;        /**< Off-screen texture the frame is rendered into before compositing. */
+    mgCFrame     *frame;          /**< Frame of the character model the outline is drawn around. */
+    float         width;          /**< Thickness of the edge, in pixels; zero draws the frame with no outline. */
+    int           depth_from_pos; /**< Non-zero to composite the frame at the screen depth of pos. */
+    sceVu0FVECTOR pos;            /**< World position of the character the outline belongs to. */
+    sceVu0FVECTOR color;          /**< Colour of the edge: red, green and blue from 0 to 255, then alpha. */
+    int           enable;         /**< Non-zero when the outline and its frame are drawn at all. */
+    int           hide_edge;      /**< Non-zero to composite the frame without drawing the edge around it. */
 
     /**
      *
@@ -83,4 +83,5 @@ public:
      */
     int Draw(float scale, float alpha);
 };
+
 STATIC_ASSERT(sizeof(COutLineDraw) == 0x70);

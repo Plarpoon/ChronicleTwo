@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+
 #include "subgame.hpp"
 
 /**
@@ -86,10 +87,11 @@ enum LIGHTING_EDIT_PAGE {
  *
  */
 struct EditDebugInfo : public SubGameInfo {
-    CEditData *edit_data; /**< Layout of the town being built, or NULL when none is loaded. */
-    int edit_data_no;     /**< Index of that town layout in the save data. */
-    int jump_map_no;      /**< Map the debug menu asked to jump to, or -1 for none. */
+    CEditData *edit_data;    /**< Layout of the town being built, or NULL when none is loaded. */
+    int        edit_data_no; /**< Index of that town layout in the save data. */
+    int        jump_map_no;  /**< Map the debug menu asked to jump to, or -1 for none. */
 };
+
 STATIC_ASSERT(sizeof(EditDebugInfo) == 0x3C);
 
 /**

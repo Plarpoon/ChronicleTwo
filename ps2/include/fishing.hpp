@@ -55,19 +55,20 @@ enum FISH_PLACE_AREA {
  *
  */
 struct FISH_PARAM {
-    char *name;                   /**< Display name of the fish. */
-    char *file_name;              /**< Base name of the fish's model file under sg/fish. */
-    int   item_no;                /**< Item number of the fish once caught. */
-    float base_size;              /**< Size at which the fish's model is drawn at its natural scale. */
-    float min_size;               /**< Smallest size a caught fish can have, before the rod's size rate. */
-    float max_size;               /**< Largest typical size of a caught fish, before the rod's size rate. */
+    char *name;      /**< Display name of the fish. */
+    char *file_name; /**< Base name of the fish's model file under sg/fish. */
+    int   item_no;   /**< Item number of the fish once caught. */
+    float base_size; /**< Size at which the fish's model is drawn at its natural scale. */
+    float min_size;  /**< Smallest size a caught fish can have, before the rod's size rate. */
+    float max_size;  /**< Largest typical size of a caught fish, before the rod's size rate. */
     float unk_18;
-    float weight_rate;            /**< Weight of the fish per unit of size. */
-    float fishing_point_rate;     /**< Fishing points awarded per unit of size. */
-    float pull_rate;              /**< Strength with which the fish pulls on the line, per 80 units of size. */
-    short   bait_affinity[18]; /**< FISH_AFFINITY of the fish for each bait. */
-    short   time_band_affinity[4]; /**< FISH_AFFINITY of the fish for each band of the time of day. */
+    float weight_rate;           /**< Weight of the fish per unit of size. */
+    float fishing_point_rate;    /**< Fishing points awarded per unit of size. */
+    float pull_rate;             /**< Strength with which the fish pulls on the line, per 80 units of size. */
+    short bait_affinity[18];     /**< FISH_AFFINITY of the fish for each bait. */
+    short time_band_affinity[4]; /**< FISH_AFFINITY of the fish for each band of the time of day. */
 };
+
 STATIC_ASSERT(sizeof(FISH_PARAM) == 0x54);
 
 /**
@@ -76,9 +77,10 @@ STATIC_ASSERT(sizeof(FISH_PARAM) == 0x54);
  *
  */
 struct FISHING_ROD_DATA {
-    int   status[5];     /**< Rod attributes, the first three scaled by the fourth. */
-    float status4_rate;  /**< Fifth attribute as a fraction of 100. */
+    int   status[5];    /**< Rod attributes, the first three scaled by the fourth. */
+    float status4_rate; /**< Fifth attribute as a fraction of 100. */
 };
+
 STATIC_ASSERT(sizeof(FISHING_ROD_DATA) == 0x18);
 
 /**
@@ -87,16 +89,17 @@ STATIC_ASSERT(sizeof(FISHING_ROD_DATA) == 0x18);
  *
  */
 struct FISH_DATA {
-    int   fish_no;          /**< Index of the fish in the fish table, or -1 for none. */
-    float size;             /**< Size of the fish. */
-    float weight;           /**< Weight of the fish. */
-    float length_scale;     /**< Scale of the fish's model along its length. */
-    float width_scale;      /**< Scale of the fish's model across its body. */
-    float pull_strength;    /**< Strength with which the fish pulls on the line. */
-    float vigour_recovery;  /**< Amount the fish's vigour regains each frame it is left alone. */
-    float vigour;           /**< Fighting vigour of the fish, from -1 to 1. */
-    int   fishing_point;    /**< Fishing points awarded when the fish is landed. */
+    int   fish_no;         /**< Index of the fish in the fish table, or -1 for none. */
+    float size;            /**< Size of the fish. */
+    float weight;          /**< Weight of the fish. */
+    float length_scale;    /**< Scale of the fish's model along its length. */
+    float width_scale;     /**< Scale of the fish's model across its body. */
+    float pull_strength;   /**< Strength with which the fish pulls on the line. */
+    float vigour_recovery; /**< Amount the fish's vigour regains each frame it is left alone. */
+    float vigour;          /**< Fighting vigour of the fish, from -1 to 1. */
+    int   fishing_point;   /**< Fishing points awarded when the fish is landed. */
 };
+
 STATIC_ASSERT(sizeof(FISH_DATA) == 0x24);
 
 /**
@@ -105,10 +108,11 @@ STATIC_ASSERT(sizeof(FISH_DATA) == 0x24);
  *
  */
 struct FISH_PLACE {
-    int   fish_no;    /**< Index of the fish in the fish table, or -1 for an empty entry. */
-    float rate;       /**< Weight of the fish when choosing which fish bites. */
-    float wait_bias;  /**< Shortens the wait for a bite when positive and lengthens it when negative. */
+    int   fish_no;   /**< Index of the fish in the fish table, or -1 for an empty entry. */
+    float rate;      /**< Weight of the fish when choosing which fish bites. */
+    float wait_bias; /**< Shortens the wait for a bite when positive and lengthens it when negative. */
 };
+
 STATIC_ASSERT(sizeof(FISH_PLACE) == 0xC);
 
 /**
@@ -118,13 +122,13 @@ STATIC_ASSERT(sizeof(FISH_PLACE) == 0xC);
  */
 class FISH_PLACE_MAP {
 public:
-    int        map_no;         /**< Map on which the place lies. */
-    int        exclusive;      /**< Whether the place's fish replace those of every other place rather than adding to them. */
-    int        area_type;      /**< FISH_PLACE_AREA shape of the place. */
-    char      *name;           /**< Name of the place. */
-    float      area_param[5];  /**< Shape parameters; a circle uses the centre X, the centre Z and the radius. */
-    int        fish_num;       /**< Number of entries used in fish. */
-    FISH_PLACE fish[8];        /**< Fish that can appear at the place. */
+    int        map_no;        /**< Map on which the place lies. */
+    int        exclusive;     /**< Whether the place's fish replace those of every other place rather than adding to them. */
+    int        area_type;     /**< FISH_PLACE_AREA shape of the place. */
+    char      *name;          /**< Name of the place. */
+    float      area_param[5]; /**< Shape parameters; a circle uses the centre X, the centre Z and the radius. */
+    int        fish_num;      /**< Number of entries used in fish. */
+    FISH_PLACE fish[8];       /**< Fish that can appear at the place. */
 
     /**
      * Merges the place's fish into a list of fish, or replaces the list with them when the place
@@ -145,6 +149,7 @@ public:
      */
     int CheckFishPlace(float *position);
 };
+
 STATIC_ASSERT(sizeof(FISH_PLACE_MAP) == 0x88);
 
 /**
@@ -260,7 +265,7 @@ void ResetUkiCamera(CCameraControl *camera);
  * @address 0x308800
  * @size 0x1E0
  */
-int GetAppearFish(int map_no, float *position, FISH_PLACE *place, int place_num);
+int GetAppearFish(int map_no, float *position, FISH_PLACE *place, int max_places);
 
 /**
  *
@@ -270,4 +275,4 @@ int GetAppearFish(int map_no, float *position, FISH_PLACE *place, int place_num)
  * @address 0x308F50
  * @size 0x70
  */
-void LoadFishPlaceData(char *script, int size, mgCMemory *memory);
+void LoadFishPlaceData(char *script, int size, mgCMemory *stack);

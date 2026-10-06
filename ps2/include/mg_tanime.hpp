@@ -41,9 +41,9 @@ enum mgTEX_ANIME_TYPE {
  *
  */
 enum {
-    MG_TEX_ANIME_ALPHA_BLEND_OFF = 4,  /**< alpha_blend value that draws without alpha blending. */
-    MG_TEX_ANIME_ALPHA_TEST_OFF = -1,  /**< alpha_test value that draws without an alpha test. */
-    MG_TEX_ANIME_WAIT_FOREVER = -1,    /**< wait value that keeps a record playing for good. */
+    MG_TEX_ANIME_ALPHA_BLEND_OFF = 4, /**< alpha_blend value that draws without alpha blending. */
+    MG_TEX_ANIME_ALPHA_TEST_OFF = -1, /**< alpha_test value that draws without an alpha test. */
+    MG_TEX_ANIME_WAIT_FOREVER = -1,   /**< wait value that keeps a record playing for good. */
 };
 
 /**
@@ -112,9 +112,11 @@ public:
     short bottom; /**< Bottom edge, inclusive. */
 
     mgRect() { Set(0, 0, 0, 0); }
+
     mgRect(short new_left, short new_top, short new_right, short new_bottom) {
         Set(new_left, new_top, new_right, new_bottom);
     }
+
     void Set(short new_left, short new_top, short new_right, short new_bottom) {
         left = new_left;
         top = new_top;
@@ -155,7 +157,7 @@ class CList {
 public:
     CList<T> *next; /**< Following node, or NULL at the end of the list. */
     CList<T> *prev; /**< Preceding node, or NULL at the start of the list. */
-    T data;         /**< Object the node carries. */
+    T         data; /**< Object the node carries. */
 
     /**
      *
@@ -195,36 +197,36 @@ void CList<T>::Initialize() {
  */
 class mgCTexAnimeData {
 public:
-    signed char type; /**< How the rectangle is moved, an mgTEX_ANIME_TYPE. */
-    signed char group; /**< Animation group the record is entered into. */
-    signed char link_group; /**< Group enabled while this record plays, or -1 for none. */
-    u_char clut_copy; /**< Non-zero copies the source's palette to the destination even when the rectangle is not the whole texture. */
-    mgCTexture *src_tex;      /**< Texture the rectangle is taken from. */
-    mgCTexture *dest_tex;     /**< Texture the rectangle is drawn into. */
-    short src_x; /**< Left edge of the source rectangle, in sixteenths of a texel. */
-    short src_y; /**< Top edge of the source rectangle, in sixteenths of a texel. */
-    short src_w; /**< Width of the source rectangle, in sixteenths of a texel. */
-    short src_h; /**< Height of the source rectangle, in sixteenths of a texel. */
-    short dest_x; /**< Left edge of the destination rectangle, in sixteenths of a texel. */
-    short dest_y; /**< Top edge of the destination rectangle, in sixteenths of a texel. */
-    short dest_w; /**< Width of the destination rectangle, in sixteenths of a texel. */
-    short dest_h; /**< Height of the destination rectangle, in sixteenths of a texel. */
-    short period_x; /**< Frames one horizontal cycle lasts; the sign gives the scroll direction and zero stops it. */
-    short period_y; /**< Frames one vertical cycle lasts; the sign gives the scroll direction and zero stops it. */
-    short phase_x; /**< Frame reached in the current horizontal cycle. */
-    short phase_y; /**< Frame reached in the current vertical cycle. */
-    short amplitude_x; /**< Horizontal sway of a wave record, in ten-thousandths of the destination width. */
-    short amplitude_y; /**< Vertical sway of a wave record, in ten-thousandths of the destination height. */
-    short wait; /**< Frames the record plays before the group moves on; zero also plays the next record, -1 holds forever. */
-    short bug_patch; /**< Non-zero ends the record after exactly wait frames rather than one frame later. */
-    u_char bilinear; /**< Non-zero filters a drawn rectangle bilinearly. */
-    u_char alpha_blend; /**< Alpha blending mode a drawn rectangle uses, or 4 for none. */
-    signed char alpha_test; /**< Alpha test method a drawn rectangle uses, or -1 for none. */
-    u_char alpha_ref; /**< Reference value of the alpha test. */
-    u_char r; /**< Red the drawn rectangle is tinted with, 0x80 for unchanged. */
-    u_char g; /**< Green the drawn rectangle is tinted with, 0x80 for unchanged. */
-    u_char b; /**< Blue the drawn rectangle is tinted with, 0x80 for unchanged. */
-    u_char a; /**< Alpha the drawn rectangle is drawn with, 0x80 for opaque. */
+    signed char type;        /**< How the rectangle is moved, an mgTEX_ANIME_TYPE. */
+    signed char group;       /**< Animation group the record is entered into. */
+    signed char link_group;  /**< Group enabled while this record plays, or -1 for none. */
+    u_char      clut_copy;   /**< Non-zero copies the source's palette to the destination even when the rectangle is not the whole texture. */
+    mgCTexture *src_tex;     /**< Texture the rectangle is taken from. */
+    mgCTexture *dest_tex;    /**< Texture the rectangle is drawn into. */
+    short       src_x;       /**< Left edge of the source rectangle, in sixteenths of a texel. */
+    short       src_y;       /**< Top edge of the source rectangle, in sixteenths of a texel. */
+    short       src_w;       /**< Width of the source rectangle, in sixteenths of a texel. */
+    short       src_h;       /**< Height of the source rectangle, in sixteenths of a texel. */
+    short       dest_x;      /**< Left edge of the destination rectangle, in sixteenths of a texel. */
+    short       dest_y;      /**< Top edge of the destination rectangle, in sixteenths of a texel. */
+    short       dest_w;      /**< Width of the destination rectangle, in sixteenths of a texel. */
+    short       dest_h;      /**< Height of the destination rectangle, in sixteenths of a texel. */
+    short       period_x;    /**< Frames one horizontal cycle lasts; the sign gives the scroll direction and zero stops it. */
+    short       period_y;    /**< Frames one vertical cycle lasts; the sign gives the scroll direction and zero stops it. */
+    short       phase_x;     /**< Frame reached in the current horizontal cycle. */
+    short       phase_y;     /**< Frame reached in the current vertical cycle. */
+    short       amplitude_x; /**< Horizontal sway of a wave record, in ten-thousandths of the destination width. */
+    short       amplitude_y; /**< Vertical sway of a wave record, in ten-thousandths of the destination height. */
+    short       wait;        /**< Frames the record plays before the group moves on; zero also plays the next record, -1 holds forever. */
+    short       bug_patch;   /**< Non-zero ends the record after exactly wait frames rather than one frame later. */
+    u_char      bilinear;    /**< Non-zero filters a drawn rectangle bilinearly. */
+    u_char      alpha_blend; /**< Alpha blending mode a drawn rectangle uses, or 4 for none. */
+    signed char alpha_test;  /**< Alpha test method a drawn rectangle uses, or -1 for none. */
+    u_char      alpha_ref;   /**< Reference value of the alpha test. */
+    u_char      r;           /**< Red the drawn rectangle is tinted with, 0x80 for unchanged. */
+    u_char      g;           /**< Green the drawn rectangle is tinted with, 0x80 for unchanged. */
+    u_char      b;           /**< Blue the drawn rectangle is tinted with, 0x80 for unchanged. */
+    u_char      a;           /**< Alpha the drawn rectangle is drawn with, 0x80 for opaque. */
 
     /**
      *
@@ -267,12 +269,12 @@ public:
      */
     static int stop_anime;
 
-    int group_num; /**< Number of groups in use by the arrays below. */
-    int enable[MG_TEX_ANIME_GROUP_MAX]; /**< Non-zero for each group that plays. */
-    CList<mgCTexAnimeData> *list[MG_TEX_ANIME_GROUP_MAX]; /**< First record of each group. */
-    CList<mgCTexAnimeData> *now[MG_TEX_ANIME_GROUP_MAX];  /**< Record each group is playing. */
-    char *name[MG_TEX_ANIME_GROUP_MAX];                   /**< Name each group is looked up by, or NULL. */
-    int frame[MG_TEX_ANIME_GROUP_MAX]; /**< Frames each group's current record has played. */
+    int                     group_num;                      /**< Number of groups in use by the arrays below. */
+    int                     enable[MG_TEX_ANIME_GROUP_MAX]; /**< Non-zero for each group that plays. */
+    CList<mgCTexAnimeData> *list[MG_TEX_ANIME_GROUP_MAX];   /**< First record of each group. */
+    CList<mgCTexAnimeData> *now[MG_TEX_ANIME_GROUP_MAX];    /**< Record each group is playing. */
+    char                   *name[MG_TEX_ANIME_GROUP_MAX];   /**< Name each group is looked up by, or NULL. */
+    int                     frame[MG_TEX_ANIME_GROUP_MAX];  /**< Frames each group's current record has played. */
 
     /**
      *

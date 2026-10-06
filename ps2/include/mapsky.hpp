@@ -21,20 +21,21 @@ class mgCMemory;
  *
  */
 struct MAP_SKY_INFO {
-    char  img_name[4][32];        /**< Texture pack of each time band, from the SKY_IMG tag. */
-    char  sky_mds_name[4][32];    /**< Sky model of each time band, from the SKY_MDS tag. */
-    float sky_rot_speed[4];       /**< Turn of each sky model per frame, in radians, from the SKY_MDS tag. */
-    char  sun_mds_name[4][32];    /**< Sun or moon model of each time band, from the SUN_MDS tag. */
-    char  skyb_mds_name[4][32];   /**< Back sky model of each time band, from the SKYB_MDS tag. */
-    float skyb_rot_speed[4];      /**< Turn of each back sky model per frame, in radians, from the SKYB_MDS tag. */
-    char  bg_mds_name[32];        /**< Background model drawn behind every time band, from the SKY_BG tag. */
-    int   sky_anime_id[16];       /**< Time band whose sky model holds each turning frame, from the SKY_ANIME tag. */
-    char  sky_anime_name[16][32]; /**< Name of each turning frame of a sky model, from the SKY_ANIME tag. */
-    float sky_anime_speed[16];    /**< Turn of each sky model frame per frame, in radians, from the SKY_ANIME tag. */
-    int   skyb_anime_id[16];      /**< Time band whose back sky model holds each turning frame, from the SKYB_ANIME tag. */
+    char  img_name[4][32];         /**< Texture pack of each time band, from the SKY_IMG tag. */
+    char  sky_mds_name[4][32];     /**< Sky model of each time band, from the SKY_MDS tag. */
+    float sky_rot_speed[4];        /**< Turn of each sky model per frame, in radians, from the SKY_MDS tag. */
+    char  sun_mds_name[4][32];     /**< Sun or moon model of each time band, from the SUN_MDS tag. */
+    char  skyb_mds_name[4][32];    /**< Back sky model of each time band, from the SKYB_MDS tag. */
+    float skyb_rot_speed[4];       /**< Turn of each back sky model per frame, in radians, from the SKYB_MDS tag. */
+    char  bg_mds_name[32];         /**< Background model drawn behind every time band, from the SKY_BG tag. */
+    int   sky_anime_id[16];        /**< Time band whose sky model holds each turning frame, from the SKY_ANIME tag. */
+    char  sky_anime_name[16][32];  /**< Name of each turning frame of a sky model, from the SKY_ANIME tag. */
+    float sky_anime_speed[16];     /**< Turn of each sky model frame per frame, in radians, from the SKY_ANIME tag. */
+    int   skyb_anime_id[16];       /**< Time band whose back sky model holds each turning frame, from the SKYB_ANIME tag. */
     char  skyb_anime_name[16][32]; /**< Name of each turning frame of a back sky model, from the SKYB_ANIME tag. */
-    float skyb_anime_speed[16];   /**< Turn of each back sky model frame per frame, in radians, from the SKYB_ANIME tag. */
+    float skyb_anime_speed[16];    /**< Turn of each back sky model frame per frame, in radians, from the SKYB_ANIME tag. */
 };
+
 STATIC_ASSERT(sizeof(MAP_SKY_INFO) == 0x740);
 
 /**
@@ -112,6 +113,6 @@ public:
      */
     void LoadPack(unsigned int *pack, int tex_block_base, mgCMemory *memory);
 };
+
 STATIC_ASSERT(sizeof(CMapSky::AnimeFrame) == 0x8);
 STATIC_ASSERT(sizeof(CMapSky) == 0x108);
-

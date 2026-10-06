@@ -1,8 +1,5 @@
 #include "common.h"
-#include "main.hpp"
-#include "dataread.hpp"
-#include "mainloop.hpp"
-#include <cstdio>
+
 #include <eekernel.h>
 #include <libcdvd.h>
 #include <libdma.h>
@@ -10,11 +7,17 @@
 #include <sifdev.h>
 #include <sifrpc.h>
 
+#include <cstdio>
+
+#include "dataread.hpp"
+#include "main.hpp"
+#include "mainloop.hpp"
+
 /** Vertical blanks counted since start-up, kept non-negative. */
 // Small uninitialised data (.sbss)
-static volatile int vcount__2;
-extern int MainThreadPriority;
-extern "C" int VSyncCallBack__Fi__2(int);
+static volatile int        vcount__2;
+extern int                 MainThreadPriority;
+extern "C" int             VSyncCallBack__Fi__2(int);
 extern const unsigned char at_846__DATA[];
 extern const unsigned char at_847__DATA[];
 extern const unsigned char at_848__DATA[];
@@ -87,46 +90,59 @@ static void init() {
     sceSifInitRpc(0);
     sceCdInit(0);
     sceCdMmode(2);
-    while (!sceSifRebootIop((const char *)at_846__DATA)) {
+
+    while (!sceSifRebootIop((const char *) at_846__DATA)) {
     }
+
     while (!sceSifSyncIop()) {
     }
+
     sceSifInitRpc(0);
     sceCdInit(0);
     sceCdMmode(2);
     sceFsReset();
-    printf((const char *)at_847__DATA, vcount__2);
+    printf((const char *) at_847__DATA, vcount__2);
 
-    while (sceSifLoadModule((const char *)at_848__DATA, 0, NULL) < 0) {
+    while (sceSifLoadModule((const char *) at_848__DATA, 0, NULL) < 0) {
     }
-    while (sceSifLoadModule((const char *)at_849__DATA, 0, NULL) < 0) {
+
+    while (sceSifLoadModule((const char *) at_849__DATA, 0, NULL) < 0) {
     }
-    while (sceSifLoadModule((const char *)at_850__DATA, 0, NULL) < 0) {
+
+    while (sceSifLoadModule((const char *) at_850__DATA, 0, NULL) < 0) {
     }
-    while (sceSifLoadModule((const char *)at_851__DATA, 0, NULL) < 0) {
+
+    while (sceSifLoadModule((const char *) at_851__DATA, 0, NULL) < 0) {
     }
-    while (sceSifLoadModule((const char *)at_852__DATA, 0, NULL) < 0) {
+
+    while (sceSifLoadModule((const char *) at_852__DATA, 0, NULL) < 0) {
     }
-    while (sceSifLoadModule((const char *)at_853__DATA, 0, NULL) < 0) {
+
+    while (sceSifLoadModule((const char *) at_853__DATA, 0, NULL) < 0) {
     }
-    while (sceSifLoadModule((const char *)at_854__DATA, 0, NULL) < 0) {
+
+    while (sceSifLoadModule((const char *) at_854__DATA, 0, NULL) < 0) {
     }
-    while (sceSifLoadModule((const char *)at_855__DATA, 0, NULL) < 0) {
+
+    while (sceSifLoadModule((const char *) at_855__DATA, 0, NULL) < 0) {
     }
-    while (sceSifLoadModule((const char *)at_856__DATA, 0, NULL) < 0) {
+
+    while (sceSifLoadModule((const char *) at_856__DATA, 0, NULL) < 0) {
     }
-    while (sceSifLoadModule((const char *)at_857__DATA, 0, NULL) < 0) {
+
+    while (sceSifLoadModule((const char *) at_857__DATA, 0, NULL) < 0) {
     }
 
     InitCDFile();
     sceDmaReset(1);
     sceGsResetPath();
 }
+
 int main() {
     MainThreadPriority = 10;
     ChangeThreadPriority(GetThreadId(), MainThreadPriority);
     init();
-    printf((const char *)at_847__DATA, vcount__2);
+    printf((const char *) at_847__DATA, vcount__2);
     MainLoop();
 
     sceGsSyncPath(0, 0);

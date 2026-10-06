@@ -186,3 +186,12 @@ of the next weapon's base status and attribute values, combines special ability
 bits, limits parameters, and sets save bit 0x31. It replaces the custom name
 only when the old name still equals the old item's default message. A guarded
 C++ draft compiles but differs from retail.
+
+## Question parameter copy layout
+
+`CBaseMenuClass::SetAskParam` copies three overlapping runs from `MENU_ASKMODE_PARA`:
+16 words beginning at `cmd_msg`, 16 words beginning at `cmd_color`, and 16 shorts
+beginning at `unk_48`. The named overlay arrays in the header keep each run
+inside its declared bounds while preserving the existing message, colour and
+mark fields. The function separately copies the selected argument and item
+pointer fields; it leaves `unk_6`, `unk_72`, `unk_8C` and `unk_90` untouched.

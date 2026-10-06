@@ -117,6 +117,7 @@ struct MAP_NAME_INFO {
     int   snd_data_id; /**< Sound data the map loads, or -1 for none. */
     int   area_no;     /**< Area the map belongs to. */
 };
+
 STATIC_ASSERT(sizeof(MAP_NAME_INFO) == 0x1C);
 
 /**
@@ -125,14 +126,15 @@ STATIC_ASSERT(sizeof(MAP_NAME_INFO) == 0x1C);
  *
  */
 struct EVENT_VIEW_INFO {
-    char *name;     /**< First text shown for the event in the list. */
-    char *detail;   /**< Second text shown for the event in the list. */
+    char *name;   /**< First text shown for the event in the list. */
+    char *detail; /**< Second text shown for the event in the list. */
     int   unk_8;
     int   event_no; /**< Event run when the mode is entered. */
     int   map_no;   /**< Map, or dungeon when dungeon is set, the event takes place in, or -1 when unknown. */
     int   floor_no; /**< Dungeon floor the event takes place on. */
     int   dungeon;  /**< Non-zero when the event is entered through the dungeon mode rather than the town mode. */
 };
+
 STATIC_ASSERT(sizeof(EVENT_VIEW_INFO) == 0x1C);
 
 /**
@@ -307,4 +309,4 @@ void LoadEventViewData(u_long128 *buffer, mgCMemory *stack);
  * @address 0x2D8930
  * @size 0x170
  */
-void AtraMiriaOnOff(int type, CCharacter2 *chara, int on);
+void AtraMiriaOnOff(int mode, CCharacter2 *chara, int enable);

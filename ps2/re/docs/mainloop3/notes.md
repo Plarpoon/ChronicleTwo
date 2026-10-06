@@ -14,6 +14,11 @@ functions and 3 enums. Every data symbol of the unit is LOCAL in retail
 | `EmergencyMessage__Fi` | `int EmergencyMessage(int error)` | registered via `SetIoErrCallBack(int (*)(int))` in MainLoop; returns 0 |
 | `__sinit_mainloop3_cpp` | static init | calls `mgCMemory::Init()` on the five 0x30-byte bss `mgCMemory` objects |
 
+Five file-scope `mgCMemory` definitions in BSS generate the retail initializer in that
+order. `Stack__2` has external linkage because another assembled unit refers to it.
+The native `__sinit_mainloop3_cpp` instructions match exactly, with one 0x30-byte
+section per object.
+
 Functions called from other units: `HddConectCheck(int*)`, `CheckAppInstall()`,
 `CheckInstallSpace()`, `CreateInstallThread(u_long128*, int)` (the call delay slot
 loads `0xA0000` as the work-buffer size), `StepInstallThread`, `DeleteInstallThread`, `InstallCancel`, `InstallPause`,

@@ -8,8 +8,8 @@
  *
  */
 union DngEventVector {
-    float f[4];   /**< Four floating point components. */
-    u_long128 qw; /**< The same components as one quadword. */
+    float     f[4]; /**< Four floating point components. */
+    u_long128 qw;   /**< The same components as one quadword. */
 };
 
 #include <libvu0.h>
@@ -98,9 +98,9 @@ STATIC_ASSERT(sizeof(TRESURE_BOX_ITEM) == 0xC);
  *
  */
 struct TRESURE_BOX_GROUP {
-    s32 group_id;                /**< Identifier that the floors use to name the group. */
-    s32 item_num;                /**< Number of entries of item in use. */
-    TRESURE_BOX_ITEM item[96];   /**< Items of the group. */
+    s32              group_id; /**< Identifier that the floors use to name the group. */
+    s32              item_num; /**< Number of entries of item in use. */
+    TRESURE_BOX_ITEM item[96]; /**< Items of the group. */
 };
 
 STATIC_ASSERT(sizeof(TRESURE_BOX_GROUP) == 0x488);
@@ -111,7 +111,7 @@ STATIC_ASSERT(sizeof(TRESURE_BOX_GROUP) == 0x488);
  *
  */
 struct TRESURE_BOX_FLOOR {
-    s32 group_num; /**< Number of entries of group_id in use. */
+    s32 group_num;    /**< Number of entries of group_id in use. */
     s32 group_id[64]; /**< Identifiers of the groups that the floor draws from. */
 };
 
@@ -123,12 +123,12 @@ STATIC_ASSERT(sizeof(TRESURE_BOX_FLOOR) == 0x104);
  *
  */
 struct TRESURE_BOX_FLOOR_INFO {
-    s16 rank_max;                  /**< Highest item rank among the groups of the current floor. */
-    s16 rank_min;                  /**< Lowest item rank among the groups of the current floor. */
+    s16               rank_max;    /**< Highest item rank among the groups of the current floor. */
+    s16               rank_min;    /**< Lowest item rank among the groups of the current floor. */
     TRESURE_BOX_GROUP group[64];   /**< Item groups of the dungeon. */
-    s32 group_num;                 /**< Number of entries of group in use. */
+    s32               group_num;   /**< Number of entries of group in use. */
     TRESURE_BOX_FLOOR floor[128];  /**< Groups that each floor draws from. */
-    s32 floor_start;               /**< Value that the script's FLOOR_START tag gives. */
+    s32               floor_start; /**< Value that the script's FLOOR_START tag gives. */
 };
 
 STATIC_ASSERT(sizeof(TRESURE_BOX_FLOOR_INFO) == 0x1A40C);
@@ -140,13 +140,13 @@ STATIC_ASSERT(sizeof(TRESURE_BOX_FLOOR_INFO) == 0x1A40C);
  */
 class CStartupEpisodeTitle {
 public:
-    s16 state;       /**< Stage of the title, an ::EpisodeTitleState. */
-    s16 wait;        /**< Frames the title stays on screen before it fades out. */
-    float alpha;     /**< Opacity of the frame, from 0 to 1. */
-    float reveal;    /**< How much of the title's backing is uncovered, from 0 to 1. */
-    float slide;     /**< How far the title has slid into place, from 0 to 1. */
-    s16 width;       /**< Width of the frame, at least 154 pixels. */
-    ClsMes *mes;     /**< Message window that writes the title. */
+    s16     state;  /**< Stage of the title, an ::EpisodeTitleState. */
+    s16     wait;   /**< Frames the title stays on screen before it fades out. */
+    float   alpha;  /**< Opacity of the frame, from 0 to 1. */
+    float   reveal; /**< How much of the title's backing is uncovered, from 0 to 1. */
+    float   slide;  /**< How far the title has slid into place, from 0 to 1. */
+    s16     width;  /**< Width of the frame, at least 154 pixels. */
+    ClsMes *mes;    /**< Message window that writes the title. */
 
     /**
      * Draws the frame and the title.
@@ -164,7 +164,7 @@ public:
      * @address 0x28F050
      * @size 0x160
      */
-    void Switch(int state);
+    void Switch(int on);
 
     /**
      * Advances the fades of the title and places its message window.
@@ -193,13 +193,13 @@ STATIC_ASSERT(sizeof(CStartupEpisodeTitle) == 0x18);
  *
  */
 struct MESSAGE_TASK {
-    char *message;      /**< Text to show, pointing at text; NULL while the slot is free. */
-    char text[128];     /**< Copy of the text. */
-    s8 priority;        /**< Messages with a lower value are shown first. */
-    s16 time;           /**< Frames the message has left on screen. */
-    s16 count;          /**< Frames the message has been on screen. */
-    s16 slot;           /**< Window position slot given to the message window. */
-    MESSAGE_TASK *next; /**< Next message in the queue. */
+    char         *message;   /**< Text to show, pointing at text; NULL while the slot is free. */
+    char          text[128]; /**< Copy of the text. */
+    s8            priority;  /**< Messages with a lower value are shown first. */
+    s16           time;      /**< Frames the message has left on screen. */
+    s16           count;     /**< Frames the message has been on screen. */
+    s16           slot;      /**< Window position slot given to the message window. */
+    MESSAGE_TASK *next;      /**< Next message in the queue. */
 };
 
 STATIC_ASSERT(sizeof(MESSAGE_TASK) == 0x90);
@@ -211,9 +211,9 @@ STATIC_ASSERT(sizeof(MESSAGE_TASK) == 0x90);
  */
 class MessageTaskManager {
 public:
-    u32 flag;              /**< Holds the queue back while bit 0 is set. */
-    ClsMes *mes;           /**< Message window that shows the messages. */
-    MESSAGE_TASK task[6];  /**< Message slots. */
+    u32           flag;    /**< Holds the queue back while bit 0 is set. */
+    ClsMes       *mes;     /**< Message window that shows the messages. */
+    MESSAGE_TASK  task[6]; /**< Message slots. */
     MESSAGE_TASK *top;     /**< Message shown now, at the head of the queue. */
 
     /**
@@ -271,8 +271,8 @@ STATIC_ASSERT(sizeof(MessageTaskManager) == 0x36C);
  */
 class CRedMarkModel : public CObjectFrame {
 public:
-    s32 draw_request; /**< Draws the marker on the next draw while nonzero; each draw clears it. */
-    float angle;      /**< Angle, in radians, that makes the marker bob. */
+    s32   draw_request; /**< Draws the marker on the next draw while nonzero; each draw clears it. */
+    float angle;        /**< Angle, in radians, that makes the marker bob. */
 
     /**
      * Clears the draw request, the bob and the frame.
@@ -311,9 +311,9 @@ STATIC_ASSERT(sizeof(CRedMarkModel) == 0x90);
  */
 class CGeoStone : public CCharacter2 {
 public:
-    s32 flag;    /**< Nonzero while the geostone is on the floor. */
+    s32   flag;  /**< Nonzero while the geostone is on the floor. */
     float angle; /**< Angle, in radians, that makes the geostone float up and down. */
-    s32 anime;   /**< Makes the geostone float and hides it beyond 1000 units while nonzero. */
+    s32   anime; /**< Makes the geostone float and hides it beyond 1000 units while nonzero. */
 
     /**
      * Draws the geostone, raised by its float, when the player is near.
@@ -322,7 +322,7 @@ public:
      * @address 0x28F8F0
      * @size 0xF0
      */
-    void GeoDraw(float *player_pos);
+    void GeoDraw(float *view_pos);
 
     /**
      * Puts the geostone's symbol on the mini map.
@@ -331,7 +331,7 @@ public:
      * @address 0x28F9E0
      * @size 0x50
      */
-    void DrawMiniMapSymbol(CMiniMapSymbol *mini_map);
+    void DrawMiniMapSymbol(CMiniMapSymbol *symbol_drawer);
 
     /**
      * Puts the geostone on the floor or takes it away, moving the automap's geostone part out of
@@ -381,10 +381,10 @@ STATIC_ASSERT(sizeof(CGeoStone) == 0x670);
  */
 class CRandomCircle {
 public:
-    sceVu0FVECTOR pos[3]; /**< World position of each circle. */
-    s32 active[3];        /**< Nonzero for each circle that is on the floor. */
-    s32 hit;              /**< Circle that the player last stood on, or -1 for none. */
-    CCharacter2 model;    /**< Model drawn at each circle. */
+    sceVu0FVECTOR pos[3];    /**< World position of each circle. */
+    s32           active[3]; /**< Nonzero for each circle that is on the floor. */
+    s32           hit;       /**< Circle that the player last stood on, or -1 for none. */
+    CCharacter2   model;     /**< Model drawn at each circle. */
 
     /**
      * Draws each circle within 1000 units of the player.
@@ -393,7 +393,7 @@ public:
      * @address 0x28FBC0
      * @size 0xF0
      */
-    void Draw(float *player_pos);
+    void Draw(float *view_pos);
 
     /**
      * Animates the circles' model.
@@ -420,7 +420,7 @@ public:
      * @address 0x28FD60
      * @size 0xB0
      */
-    int CheckArea(float *pos, float dist);
+    int CheckArea(float *pos, float radius);
 
     /**
      * Gets the position of a circle, or of the circle that the player last stood on when the
@@ -478,14 +478,14 @@ STATIC_ASSERT(sizeof(CRandomCircle) == 0x6A0);
  */
 class CTreasureBox : public mgCObject {
 public:
-    float lid_open;      /**< Opening of the lid; each 1.0 turns it 45 degrees. */
-    s8 state;            /**< State of the slot, a ::TreasureBoxState. */
-    s32 flags;           /**< Description of the box, a combination of ::TreasureBoxFlag bits. */
-    s16 item[2];         /**< Items that the box holds, or the monster of a mimic; -1 for none. */
-    s16 num[2];          /**< Number of each item. */
-    mgCFrame *lid_frame; /**< Lid of the box model ("tbox1"). */
-    mgCFrame *frame;     /**< Frame of the box model. */
-    CCharacter2 *model;  /**< Box model, shared by every box. */
+    float        lid_open;  /**< Opening of the lid; each 1.0 turns it 45 degrees. */
+    s8           state;     /**< State of the slot, a ::TreasureBoxState. */
+    s32          flags;     /**< Description of the box, a combination of ::TreasureBoxFlag bits. */
+    s16          item[2];   /**< Items that the box holds, or the monster of a mimic; -1 for none. */
+    s16          num[2];    /**< Number of each item. */
+    mgCFrame    *lid_frame; /**< Lid of the box model ("tbox1"). */
+    mgCFrame    *frame;     /**< Frame of the box model. */
+    CCharacter2 *model;     /**< Box model, shared by every box. */
 
     /**
      * Puts the box back to its initial state, with an empty slot.
@@ -502,7 +502,7 @@ public:
         flags = 1;
     }
 #else
-    ;
+        ;
 #endif
 
     /**
@@ -512,7 +512,7 @@ public:
      * @address 0x290040
      * @size 0x130
      */
-    void Draw(float *camera_pos);
+    void Draw(float *view_pos);
 
     /**
      * Draws the box's shadow cast by a light, when the camera is within 1000 units.
@@ -521,7 +521,7 @@ public:
      * @address 0x290170
      * @size 0x130
      */
-    void DrawShadow(float *camera_pos, float *light_dir);
+    void DrawShadow(float *view_pos, float *light_dir);
 };
 
 STATIC_ASSERT(sizeof(CTreasureBox) == 0x70);
@@ -533,17 +533,18 @@ STATIC_ASSERT(sizeof(CTreasureBox) == 0x70);
  */
 class CTreasureBoxManager {
 public:
-    s32 tex_block;          /**< Texture block of the box model. */
+    s32          tex_block; /**< Texture block of the box model. */
     CTreasureBox box[24];   /**< Box slots. */
-    s32 unk_A90;
+    s32          unk_A90;
     CCharacter2 *model;     /**< Box model. */
-    CColFrame *col_frame;   /**< Collision model of a box ("tbox_a.mds"). */
-    s32 near_box;           /**< Box that the player last stood at, or -1 for none. */
+    CColFrame   *col_frame; /**< Collision model of a box ("tbox_a.mds"). */
+    s32          near_box;  /**< Box that the player last stood at, or -1 for none. */
 
     void Initialize() {
         for (int i = 0; i < 24; i++) {
             box[i].Initialize();
         }
+
         unk_A90 = 0;
         model = NULL;
         col_frame = NULL;
@@ -557,7 +558,7 @@ public:
      * @address 0x2902A0
      * @size 0xD0
      */
-    void SetLargeModel(CCharacter2 *model, int tex_block);
+    void SetLargeModel(CCharacter2 *model, int value);
 
     /**
      * Loads the collision model of a box from a pack file.
@@ -584,7 +585,7 @@ public:
      * @address 0x2904E0
      * @size 0xB0
      */
-    int CheckArea(float *pos, float dist);
+    int CheckArea(float *pos, float radius);
 
     /**
      * Puts the symbol of each unopened box on the mini map.
@@ -593,7 +594,7 @@ public:
      * @address 0x290590
      * @size 0x90
      */
-    void DrawMiniMapSymbol(CMiniMapSymbol *mini_map);
+    void DrawMiniMapSymbol(CMiniMapSymbol *symbol_drawer);
 
     /**
      * Draws every box.
@@ -602,7 +603,7 @@ public:
      * @address 0x290620
      * @size 0x80
      */
-    void Draw(float *camera_pos);
+    void Draw(float *view_pos);
 
     /**
      * Draws the shadow of every box, cast by the scene's main light.
@@ -611,7 +612,7 @@ public:
      * @address 0x2906A0
      * @size 0xF0
      */
-    void DrawShadow(float *camera_pos);
+    void DrawShadow(float *view_pos);
 
     /**
      * Gathers the collision polygons of the boxes within 40 units of a position, and gives their
@@ -621,7 +622,7 @@ public:
      * @address 0x290790
      * @size 0x150
      */
-    int PickupCollision(float *pos, CCPoly *poly, mgVu0FBOX box, int max);
+    int PickupCollision(float *pos, CCPoly *poly, mgVu0FBOX box, int flag);
 
     /**
      * Counts the unopened mimics.
@@ -652,7 +653,7 @@ STATIC_ASSERT(sizeof(CTreasureBoxManager) == 0xAA0);
  * @address 0x290A10
  * @size 0x40
  */
-int GetGateKeyIndex(int dungeon, int floor);
+int GetGateKeyIndex(int floor, int level);
 
 /**
  * Gives the item that opens a dungeon's key door on a floor.
@@ -661,7 +662,7 @@ int GetGateKeyIndex(int dungeon, int floor);
  * @address 0x290A50
  * @size 0x40
  */
-int GetKeyDoorIndex(int dungeon, int floor);
+int GetKeyDoorIndex(int floor, int level);
 
 /**
  * Shows the weapon form that suits the time band when the player character holds one of the
@@ -680,7 +681,7 @@ int Lamb2WolfManager();
  * @address 0x290C30
  * @size 0x10
  */
-void LoopSoundManager(int mode);
+void LoopSoundManager(int sound_id);
 
 /**
  * Updates the battle music of the area and the warning sound of the player's status.
@@ -717,7 +718,7 @@ void XChgMapLighting();
  * @address 0x291170
  * @size 0x40
  */
-float XChgMapRotation(int rotation);
+float XChgMapRotation(int index);
 
 /**
  * Finds the first "way" part of a kind placed on the current map and its angle; gives 1 when
@@ -727,7 +728,7 @@ float XChgMapRotation(int rotation);
  * @address 0x2911B0
  * @size 0x150
  */
-int SearchMapEventParts(int kind, CMapParts **out_parts, float *out_rot, int max);
+int SearchMapEventParts(int kind, CMapParts **out_parts, float *rotation, int max);
 
 /**
  * Picks a random flat place on the generated floor; gives 0 when none is found.
@@ -755,7 +756,7 @@ int GetDungeonEventPoint(float *out_pos, float *out_rot, int kind);
  * @address 0x291D50
  * @size 0xB0
  */
-void CreatTresuarBoxInfo(TRESURE_BOX_FLOOR_INFO *info, char *script, int size);
+void CreatTresuarBoxInfo(TRESURE_BOX_FLOOR_INFO *table, char *script, int length);
 
 /**
  * Finds the first of sixteen directions around a position in which no map polygon blocks the
@@ -774,7 +775,7 @@ float ScanEyePoint(float *pos);
  * @address 0x2922F0
  * @size 0x30
  */
-void AutoSetTreasureBox(int item_no, float *pos, float rot_y);
+void AutoSetTreasureBox(int id, float *pos, float power);
 
 /**
  * Places the floor's treasure boxes, mimics, random circles, geostone, random stones and key
@@ -803,7 +804,7 @@ void AutoSetMonster();
  * @address 0x293110
  * @size 0x80
  */
-void AutoSetMonster(int monster_no, float *pos, float *rot, int param);
+void AutoSetMonster(int base_index, float *pos, float *direction, int option);
 
 /**
  * Does nothing.
@@ -859,7 +860,7 @@ void LoadMonsterFile();
  * @address 0x293D90
  * @size 0x130
  */
-void LoadMonsterFile(int monster_no, int reset);
+void LoadMonsterFile(int monster_id, int initialize);
 
 void StatusWarningSnd();
 
@@ -867,8 +868,8 @@ void BattleAreaBGMCtrl();
 
 void PickupRandomItemCheckMax(TRESURE_BOX_FLOOR_INFO *table, int floor_index);
 
-TRESURE_BOX_ITEM *PickupRandomItem(TRESURE_BOX_FLOOR_INFO *table, int floor_index, int rank);
+TRESURE_BOX_ITEM *PickupRandomItem(TRESURE_BOX_FLOOR_INFO *table, int floor_index, int value);
 
 int CheckObjectPutArea(float *pos);
 
-void CreatMonsterFloorInfo(char *script, int size);
+void CreatMonsterFloorInfo(char *script, int length);

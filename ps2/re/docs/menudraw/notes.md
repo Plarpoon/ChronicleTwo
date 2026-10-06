@@ -124,6 +124,10 @@ dynamically initialised in source; same for local `MenuMainFrame_PutRect`,
 `CGameDataUsed*`; it reads s16 at 0 and +0x10). `MenuCursorReverseFlag`,
 `MenuItemBrdCalcManner`, `GiftBoxViewFlag` are 1 byte.
 
+Defining the ten rectangle globals with their initial coordinates invokes the `mgRect<int>`
+constructor at startup. MWCC emits the retail `__sinit_menudraw_cpp` initializer exactly,
+including the order and calls to `mgRect<int>::Set`.
+
 ## Other
 - File-local functions (static, not in the header): ConvMGIRECTtoINTtbl, ConvMGFRECTtoFLOATtbl,
   both SetPartEffectInfoRandFunc, PushPrimRepeat, MenuWindowHelp, SetMenuDrawNumberKeta,

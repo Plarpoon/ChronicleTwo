@@ -1,79 +1,81 @@
 #include "menumap.hpp"
-#include "dngmenu.hpp"
-#include "mapselect.hpp"
-#include "menucommon.hpp"
-#include "menumain.hpp"
-#include "scriptinterpreter.hpp"
-#include "menusys.hpp"
-#include <cstdlib>
+
 #include <cmath>
-#include "menudraw.hpp"
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "dataread.hpp"
+#include "dngmenu.hpp"
+#include "effectlist.hpp"
+#include "mainloop.hpp"
+#include "mapselect.hpp"
 #include "menuaqua.hpp"
 #include "menucls1.hpp"
-#include "mainloop.hpp"
-#include "savedata.hpp"
+#include "menucommon.hpp"
+#include "menudraw.hpp"
+#include "menumain.hpp"
+#include "menusys.hpp"
+#include "mg_drawprim.hpp"
+#include "mg_math.hpp"
 #include "mg_texture.hpp"
 #include "mglib.hpp"
-#include "dataread.hpp"
-#include <cstring>
-#include "sysmes.hpp"
 #include "nameregi.hpp"
 #include "password.hpp"
-#include "effectlist.hpp"
-#include <cstdio>
-#include "mg_math.hpp"
-#include "mg_drawprim.hpp"
+#include "savedata.hpp"
 #include "scenesnd.hpp"
+#include "scriptinterpreter.hpp"
+#include "sysmes.hpp"
 
-extern signed char SfidaMoveInitFlag;
-extern mgCMemory SphidaStack;
-extern mgCMemory WorldMapStack;
-extern int SphidaMenuTexbk[16];
+extern signed char   SfidaMoveInitFlag;
+static mgCMemory     WorldMapStack;
+static mgCMemory     SphidaStack;
+extern int           SphidaMenuTexbk[16];
 extern CSubGameData *SubSaveData__2;
-extern CSphidaData *SubSphidaData;
-extern mgCTexture *SphidaTex;
-extern mgCTexture *SphidaTex_Sys;
-extern char at_1674[];
-extern char at_1675[];
-extern char at_1677[];
-extern char at_1310__4[];
-extern char at_1676[];
-extern int D_01F3C7FC[4];
-extern float SfidaBGXY;
-extern int DebugFlag;
-extern int menu_debug_flag;
-extern CDC2Mes *SphidaMenuMes;
-extern CDC2Mes *SphidaMenuQus;
-extern CDC2Mes *SphidaScore;
-extern char SphidaMenuQusDrawFlag;
-extern char SphidaInfoMsgDrawFlag;
-extern mgCTexture *SphidaTex2;
-extern mgCTexture *SphidaCursor;
-extern char SphidaCursorDrawFlag;
-extern float SphidaCursorY;
-extern int SphidaCursorCount;
-extern short SphidaMenuPhase;
-extern char at_1556__2[];
-extern char at_1557__2[];
-extern int SphidaSelect[2];
-extern short SfidaMakeLine;
-extern int LanguageCode;
+extern CSphidaData  *SubSphidaData;
+extern mgCTexture   *SphidaTex;
+extern mgCTexture   *SphidaTex_Sys;
+extern char          at_1674[];
+extern char          at_1675[];
+extern char          at_1677[];
+extern char          at_1310__4[];
+extern char          at_1676[];
+extern int           D_01F3C7FC[4];
+extern float         SfidaBGXY;
+extern int           DebugFlag;
+extern int           menu_debug_flag;
+extern CDC2Mes      *SphidaMenuMes;
+extern CDC2Mes      *SphidaMenuQus;
+extern CDC2Mes      *SphidaScore;
+extern char          SphidaMenuQusDrawFlag;
+extern char          SphidaInfoMsgDrawFlag;
+extern mgCTexture   *SphidaTex2;
+extern mgCTexture   *SphidaCursor;
+extern char          SphidaCursorDrawFlag;
+extern float         SphidaCursorY;
+extern int           SphidaCursorCount;
+extern short         SphidaMenuPhase;
+extern char          at_1556__2[];
+extern char          at_1557__2[];
+extern int           SphidaSelect[2];
+extern short         SfidaMakeLine;
+extern int           LanguageCode;
 
-extern CDC2Mes *MenuDCMsg[9];
-extern signed char WorldMapMenuType;
-extern CWorldMapMenu *WorldMapPtr;
-extern short Sfida_NowPlayHorlBlink;
-extern short WorldMap_NextLoopNo;
-extern short WorldMap_MapNo;
-extern short WorldMap_DngFloor;
-extern short spi_wmappos_tblnum;
-extern WMAP_POS_DATA *spi_wmappos_tbl;
-extern short spi_wmaparea_tblnum;
+extern CDC2Mes        *MenuDCMsg[9];
+extern signed char     WorldMapMenuType;
+extern CWorldMapMenu  *WorldMapPtr;
+extern short           Sfida_NowPlayHorlBlink;
+extern short           WorldMap_NextLoopNo;
+extern short           WorldMap_MapNo;
+extern short           WorldMap_DngFloor;
+extern short           spi_wmappos_tblnum;
+extern WMAP_POS_DATA  *spi_wmappos_tbl;
+extern short           spi_wmaparea_tblnum;
 extern WMAP_AREA_DATA *spi_wmaparea_tbl;
-extern mgCMemory *spi_wmapstack;
-extern short MapEnableNum;
-extern SPI_TAG_PARAM menu_wmap_analyze_tag[];
-extern "C" int fptosi(float value);
+extern mgCMemory      *spi_wmapstack;
+extern short           MapEnableNum;
+extern SPI_TAG_PARAM   menu_wmap_analyze_tag[];
+extern "C" int         fptosi(float value);
 
 // Code (.text)
 int _WMAP_POSNUM(SPI_STACK *stack, int) {
@@ -81,16 +83,19 @@ int _WMAP_POSNUM(SPI_STACK *stack, int) {
     unsigned int blocks;
     spi_wmappos_tblnum = spiGetStackInt(stack);
     bytes = spi_wmappos_tblnum * sizeof(WMAP_POS_DATA);
+
     if (bytes & 0xF) {
         blocks = (bytes >> 4) + 1;
     } else {
         blocks = bytes >> 4;
     }
-    spi_wmappos_tbl = (WMAP_POS_DATA *)spi_wmapstack->Alloc(blocks);
+
+    spi_wmappos_tbl = (WMAP_POS_DATA *) spi_wmapstack->Alloc(blocks);
     return 1;
 }
+
 int _WMAP_POS(SPI_STACK *stack, int) {
-    char converted_title[0x100];
+    char           converted_title[0x100];
     WMAP_POS_DATA *pos = &spi_wmappos_tbl[spiGetStackInt(stack++)];
     pos->map_no = spiGetStackInt(stack++);
     pos->loop_no = spiGetStackInt(stack++);
@@ -102,32 +107,40 @@ int _WMAP_POS(SPI_STACK *stack, int) {
     pos->flag_no = spiGetStackInt(stack++);
     int unlocked = CheckBitFlagMenu(pos->flag_no);
     pos->enable = 0;
+
     if (unlocked != 0) {
         pos->enable = 1;
     }
+
     pos->type = spiGetStackInt(stack);
+
     if (pos->type == 4 && CheckBitFlagMenu(0x2E0) != 0) {
         pos->enable = 0;
     }
+
     return 1;
 }
+
 int _WMAP_AREANUM(SPI_STACK *stack, int) {
     unsigned int bytes;
     unsigned int blocks;
     spi_wmaparea_tblnum = spiGetStackInt(stack);
     bytes = spi_wmaparea_tblnum * sizeof(WMAP_AREA_DATA);
+
     if (bytes & 0xF) {
         blocks = (bytes >> 4) + 1;
     } else {
         blocks = bytes >> 4;
     }
-    spi_wmaparea_tbl = (WMAP_AREA_DATA *)spi_wmapstack->Alloc(blocks);
+
+    spi_wmaparea_tbl = (WMAP_AREA_DATA *) spi_wmapstack->Alloc(blocks);
     return 1;
 }
+
 int _WMAP_AREA(SPI_STACK *stack, int) {
-    char converted_title[0x100];
-    int area_no = spiGetStackInt(stack++);
-    int map_no = spiGetStackInt(stack++);
+    char            converted_title[0x100];
+    int             area_no = spiGetStackInt(stack++);
+    int             map_no = spiGetStackInt(stack++);
     WMAP_AREA_DATA *area = &spi_wmaparea_tbl[area_no];
     area->area_no = area_no;
     area->unk_24 = map_no;
@@ -136,40 +149,49 @@ int _WMAP_AREA(SPI_STACK *stack, int) {
     area->name_x = spiGetStackInt(stack++);
     area->name_y = spiGetStackInt(stack++);
     area->name_side = spiGetStackInt(stack++);
-    area->y = fptosi(1.15f * (float)area->y);
-    area->name_y = fptosi(1.15f * (float)area->name_y);
+    area->y = fptosi(1.15f * (float) area->y);
+    area->name_y = fptosi(1.15f * (float) area->name_y);
     char *title = spiGetStackString(stack);
     memset(converted_title, 0, 0x100);
     ConvertFontCode(title, converted_title);
     area->name = mgCopyString(converted_title, spi_wmapstack);
     int position_count = 0;
     area->enable = 0;
+
     for (int i = 0; i < spi_wmappos_tblnum; i++) {
         if (area_no == spi_wmappos_tbl[i].area_no) {
             WMAP_POS_DATA *pos = &spi_wmappos_tbl[i];
             area->pos[position_count] = pos;
+
             if (area->pos[position_count]->enable != 0) {
                 area->enable = 1;
             }
+
             position_count++;
         }
     }
+
     if (area->area_no == 8) {
         if (CheckBitFlagMenu(0x268) != 0) {
             area->enable = 0;
         }
     }
+
     if (CheckBitFlagMenu(0x320) != 0 && (area->area_no == 6 || area->area_no == 7)) {
         area->enable = 0;
     }
+
     if (area->enable != 0) {
         MapEnableNum++;
     }
+
     for (int slot = position_count; slot < 8; slot++) {
         area->pos[slot] = 0;
     }
+
     return 1;
 }
+
 void worldmap_analyze(mgCMemory *stack, char *script, int size) {
     spi_wmapstack = stack;
     spi_wmappos_tbl = 0;
@@ -179,29 +201,31 @@ void worldmap_analyze(mgCMemory *stack, char *script, int size) {
     interpreter.SetScript(script, size);
     interpreter.Run();
 }
+
 void CWorldMapMenu::SetMsgBuffer() {
     MenuDCMsg[4]->SetMessData(menu_mes_data, menu_mes_data);
     MenuDCMsg[4]->MsgPreset(15);
-    ((ClsMes *)MenuDCMsg[4])->fuchi = 5;
+    ((ClsMes *) MenuDCMsg[4])->fuchi = 5;
     MenuDCMsg[2]->SetMessData(mes_data, menu_mes_data);
     MenuDCMsg[3]->SetMessData(mes_data, menu_mes_data);
-    ((ClsMes *)MenuDCMsg[3])->push_button = 0;
-    ((ClsMes *)MenuDCMsg[3])->fade_speed = 1.0f;
+    ((ClsMes *) MenuDCMsg[3])->push_button = 0;
+    ((ClsMes *) MenuDCMsg[3])->fade_speed = 1.0f;
 }
 #ifdef NONMATCHING
-extern char at_1302__4[];
-extern char at_1303__4[];
-extern char at_1304__5[];
-extern char at_1305__4[];
-extern char at_1306__4[];
-extern char at_1307__5[];
-extern char at_1308__5[];
-extern char at_1309__4[];
-extern char at_1311__3[];
-extern char at_1312[];
-extern char at_1313[];
-extern char at_1314[];
+extern char  at_1302__4[];
+extern char  at_1303__4[];
+extern char  at_1304__5[];
+extern char  at_1305__4[];
+extern char  at_1306__4[];
+extern char  at_1307__5[];
+extern char  at_1308__5[];
+extern char  at_1309__4[];
+extern char  at_1311__3[];
+extern char  at_1312[];
+extern char  at_1313[];
+extern char  at_1314[];
 extern char *geo_table_1183[];
+
 int CWorldMapMenu::KeyStep() {
     int result = WORLD_MOVE_CONTINUE;
     int i;
@@ -210,414 +234,414 @@ int CWorldMapMenu::KeyStep() {
     int push = MenuCommonInfo->CheckPushButton();
     MenuCommonInfo->CheckKeyInput();
     CDC2Mes *name_mes = MenuDCMsg[4];
-    int next_step = -1;
-    int close = 0;
+    int      next_step = -1;
+    int      close = 0;
     CDC2Mes *ask_mes = MenuDCMsg[2];
     CDC2Mes *list_mes = MenuDCMsg[3];
 
     switch (mode) {
-    case WORLD_MAP_MODE_OPEN: {
-        int faded = FadeCheckMenu();
-        u8 world_move = MenuCommonInfo->open_type == MENU_OPEN_WORLD_MOVE ||
-                        MenuCommonInfo->open_type == MENU_OPEN_WORLD_MOVE_B;
-        if (ReadBGSync() != 0 || !((world_move && faded) || !world_move)) {
-            break;
-        }
-        BG_READ_INFO *read = GetReadBGFile(0);
-        if (read != NULL) {
-            u_char *map_image = (u_char *)GetPackFile((u_int *)read->buffer, at_1302__4, NULL);
-            mgCTextureManager *textures = &mgTexManager;
-            textures->DeleteBlock(tex_block[0]);
-            textures->EnterIMGFile(map_image, tex_block[0], NULL, NULL);
-            u_char *capture_image = (u_char *)GetPackFile((u_int *)read->buffer, at_1303__4, NULL);
-            if (world_move) {
-                textures->EnterIMGFile(capture_image, tex_block[0], NULL, NULL);
+        case WORLD_MAP_MODE_OPEN: {
+            int faded = FadeCheckMenu();
+            u8  world_move = MenuCommonInfo->open_type == MENU_OPEN_WORLD_MOVE ||
+                             MenuCommonInfo->open_type == MENU_OPEN_WORLD_MOVE_B;
+            if (ReadBGSync() != 0 || !((world_move && faded) || !world_move)) {
+                break;
             }
-            char map_name[0x20];
-            sprintf(map_name, at_1304__5, map_type);
-            map_tex = textures->GetTexture(map_name, -1);
-            mark_tex = textures->GetTexture(at_1305__4, -1);
-            anim_tex = textures->GetTexture(at_1306__4, -1);
-            pulse_tex = textures->GetTexture(at_1307__5, -1);
-            if (map_type == 4) {
-                anim_tex = textures->GetTexture(at_1308__5, -1);
-                map_tex = textures->GetTexture(at_1309__4, -1);
+            BG_READ_INFO *read = GetReadBGFile(0);
+            if (read != NULL) {
+                u_char            *map_image = (u_char *) GetPackFile((u_int *) read->buffer, at_1302__4, NULL);
+                mgCTextureManager *textures = &mgTexManager;
+                textures->DeleteBlock(tex_block[0]);
+                textures->EnterIMGFile(map_image, tex_block[0], NULL, NULL);
+                u_char *capture_image = (u_char *) GetPackFile((u_int *) read->buffer, at_1303__4, NULL);
+                if (world_move) {
+                    textures->EnterIMGFile(capture_image, tex_block[0], NULL, NULL);
+                }
+                char map_name[0x20];
+                sprintf(map_name, at_1304__5, map_type);
+                map_tex = textures->GetTexture(map_name, -1);
+                mark_tex = textures->GetTexture(at_1305__4, -1);
+                anim_tex = textures->GetTexture(at_1306__4, -1);
+                pulse_tex = textures->GetTexture(at_1307__5, -1);
+                if (map_type == 4) {
+                    anim_tex = textures->GetTexture(at_1308__5, -1);
+                    map_tex = textures->GetTexture(at_1309__4, -1);
+                }
+                cursor_tex = textures->GetTexture(at_1310__4, -1);
+                mes_data = (short *) GetPackFile((u_int *) read->buffer, at_1311__3, NULL);
+                menu_mes_data = GetMenuMainMessageBuffer();
+                SetMsgBuffer();
             }
-            cursor_tex = textures->GetTexture(at_1310__4, -1);
-            mes_data = (short *)GetPackFile((u_int *)read->buffer, at_1311__3, NULL);
-            menu_mes_data = GetMenuMainMessageBuffer();
-            SetMsgBuffer();
-        }
-        step = -1;
-        next_step = WORLD_MAP_STEP_AREA;
-        opened = 1;
-        area_no = 0;
-        cursor_view = 1;
-        cursor_reset = 1;
-        cursor_pos[0] = 200.0f;
-        cursor_pos[1] = 200.0f;
-        name_view = 1;
-        exit_wait = 0;
-        back_alpha = 0.0f;
-        WorldMapStack.Align64();
-        unsigned int size;
-        u_long128 *script = WorldMapStack.stGetTop();
-        size = LoadFileMenu(at_1312, script, 1);
-        unsigned int blocks;
-        if (size & 0xF) {
-            blocks = (size >> 4) + 1;
-        } else {
-            blocks = size >> 4;
-        }
-        WorldMapStack.Alloc(blocks);
-        worldmap_analyze(&WorldMapStack, (char *)script, size);
-        area_no = GetSaveData()->area_no;
-        if (MapEnableNum <= 0) {
-            cursor_tex = NULL;
-            name_view = 0;
-        }
-        if (MenuArg.open_type == MENU_OPEN_WORLD_MOVE) {
-            int pos_no = MenuArg.param[0];
-            if (pos_no == 10) {
-                pos_no = 0x15;
-            } else if (pos_no == 9) {
-                pos_no = 0xF;
-            } else if (pos_no == 8) {
-                pos_no = 0xE;
-            }
-            if (spi_wmappos_tbl != NULL) {
-                here_area = spi_wmappos_tbl[pos_no].area_no + 1;
-            }
-            area_no = here_area;
+            step = -1;
+            next_step = WORLD_MAP_STEP_AREA;
+            opened = 1;
+            area_no = 0;
+            cursor_view = 1;
+            cursor_reset = 1;
+            cursor_pos[0] = 200.0f;
+            cursor_pos[1] = 200.0f;
             name_view = 1;
-        }
-        MenuCommonInfo->key_enable = 1;
-        FadeInMenu(40, 0.0f);
-        mode = WORLD_MAP_MODE_RUN;
-        break;
-    }
-    case WORLD_MAP_MODE_CLOSE:
-        if (FadeCheckMenu()) {
-            exit_wait++;
-            map_tex = NULL;
-            mark_tex = NULL;
-            anim_tex = NULL;
-            pulse_tex = NULL;
-            name_view = 0;
-            cursor_view = 0;
-            pos_list_view = 0;
-            ask_view = 0;
-            if (MenuCommonInfo->open_type != MENU_OPEN_WORLD_MOVE && exit_wait == 1 && MenuArg.end_code != 6) {
-                FadeInMenu(40, 0.0f);
+            exit_wait = 0;
+            back_alpha = 0.0f;
+            WorldMapStack.Align64();
+            unsigned int size;
+            u_long128   *script = WorldMapStack.stGetTop();
+            size = LoadFileMenu(at_1312, script, 1);
+            unsigned int blocks;
+            if (size & 0xF) {
+                blocks = (size >> 4) + 1;
             } else {
-                exit_wait++;
+                blocks = size >> 4;
             }
-        }
-        if (exit_wait == 1) {
-            CalcMenuAdd(&back_alpha, -8.0f, 0.0f);
-        }
-        if (exit_wait > 2) {
-            result = WORLD_MOVE_CLOSE;
-            if (MenuArg.end_code == 6) {
-                result = WORLD_MOVE_JUMP;
+            WorldMapStack.Alloc(blocks);
+            worldmap_analyze(&WorldMapStack, (char *) script, size);
+            area_no = GetSaveData()->area_no;
+            if (MapEnableNum <= 0) {
+                cursor_tex = NULL;
+                name_view = 0;
             }
-            short *system_mes = GetSystemMesBuffer();
-            name_mes->SetBuff_system(system_mes);
-            ask_mes->SetBuff_system(system_mes);
-            list_mes->SetBuff_system(system_mes);
-        }
-        break;
-    default:
-        if (MenuCommonInfo->open_type == MENU_OPEN_WORLD_MOVE) {
-            CalcMenuAdd(&back_alpha, 8.0f, 128.0f);
-            if (push != 0) {
-                close = 1;
-                MenuSePlay(close);
-            }
-            break;
-        }
-        if (view_only != 0) {
-            if (push != 0) {
-                close = 1;
-                MenuSePlay(1);
-            }
-            break;
-        }
-        if (menu_debug_flag != 0) {
-            if (GamePad__2.Down(0x20)) {
-                for (int i = 0; i < spi_wmappos_tblnum; i++) {
-                    spi_wmappos_tbl[i].enable = 1;
+            if (MenuArg.open_type == MENU_OPEN_WORLD_MOVE) {
+                int pos_no = MenuArg.param[0];
+                if (pos_no == 10) {
+                    pos_no = 0x15;
+                } else if (pos_no == 9) {
+                    pos_no = 0xF;
+                } else if (pos_no == 8) {
+                    pos_no = 0xE;
                 }
-                for (i = 0; i < spi_wmaparea_tblnum; i++) {
-                    spi_wmaparea_tbl[i].enable = 1;
+                if (spi_wmappos_tbl != NULL) {
+                    here_area = spi_wmappos_tbl[pos_no].area_no + 1;
                 }
-                MapEnableNum = spi_wmaparea_tblnum - 1;
-                cursor_tex = mgTexManager.GetTexture(at_1310__4, -1);
+                area_no = here_area;
                 name_view = 1;
             }
-            return WORLD_MOVE_CONTINUE;
+            MenuCommonInfo->key_enable = 1;
+            FadeInMenu(40, 0.0f);
+            mode = WORLD_MAP_MODE_RUN;
+            break;
         }
-        switch (step) {
-        case WORLD_MAP_STEP_AREA:
-            if (MapEnableNum <= 0 && push != 0) {
-                MenuSePlay(5);
-                close = 1;
-                break;
-            }
-            if (0 < lr_key) {
-                near_num = 0;
-                float dir[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-                if (lr_key & 1) {
-                    dir[1] -= 1.0f;
-                }
-                if (lr_key & 2) {
-                    dir[1] += 1.0f;
-                }
-                if (lr_key & 4) {
-                    dir[0] -= 1.0f;
-                }
-                if (lr_key & 8) {
-                    dir[0] += 1.0f;
-                }
-                sceVu0Normalize(dir, dir);
-                WMAP_AREA_DATA *next = NULL;
-                WMAP_AREA_DATA *now_area = &spi_wmaparea_tbl[area_no];
-                float now_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-                now_pos[0] = now_area->x;
-                now_pos[1] = now_area->y;
-                for (int i = 0; i < WMAP_NEAR_AREA_MAX; i++) {
-                    near_area[i] = NULL;
-                }
-                for (i = 1; i < spi_wmaparea_tblnum; i++) {
-                    near_area[i] = NULL;
-                    WMAP_AREA_DATA *area = &spi_wmaparea_tbl[i];
-                    if (area->enable != 0 && area_no != area->area_no) {
-                        float area_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-                        float area_dir[4];
-                        area_pos[0] = area->x;
-                        area_pos[1] = area->y;
-                        sceVu0SubVector(area_dir, area_pos, now_pos);
-                        sceVu0Normalize(area_dir, area_dir);
-                        float dot = sceVu0InnerProduct(dir, area_dir);
-                        near_area[near_num] = &spi_wmaparea_tbl[i];
-                        near_area[near_num]->dist = mgDistVector(area_pos, now_pos);
-                        near_area[near_num]->dir_dot = dot;
-                        near_num++;
-                    }
-                }
-                for (int i = 0; i < near_num; i++) {
-                    bool swapped = false;
-                    float dist = near_area[i]->dist;
-                    for (int j = i + 1; j < near_num; j++) {
-                        if (near_area[j]->dist < dist) {
-                            WMAP_AREA_DATA *swap = near_area[i];
-                            near_area[i] = near_area[j];
-                            near_area[j] = swap;
-                            swapped = true;
-                        }
-                    }
-                    if (swapped) {
-                        i = -1;
-                    }
-                }
-                float threshold = 0.72f;
-                bool searching = true;
-                while (searching && 0.0f < threshold) {
-                    for (i = 0; i < near_num; i++) {
-                        if (threshold < near_area[i]->dir_dot) {
-                            next = near_area[i];
-                            searching = false;
-                            break;
-                        }
-                    }
-                    threshold -= 0.05f;
-                }
-                if (next == NULL) {
-                    next = now_area;
-                }
-                for (i = 0; i < spi_wmaparea_tblnum; i++) {
-                    if (next == &spi_wmaparea_tbl[i]) {
-                        area_no = i;
-                        break;
-                    }
-                }
-                if (next != now_area) {
-                    MenuSePlay(0);
+        case WORLD_MAP_MODE_CLOSE:
+            if (FadeCheckMenu()) {
+                exit_wait++;
+                map_tex = NULL;
+                mark_tex = NULL;
+                anim_tex = NULL;
+                pulse_tex = NULL;
+                name_view = 0;
+                cursor_view = 0;
+                pos_list_view = 0;
+                ask_view = 0;
+                if (MenuCommonInfo->open_type != MENU_OPEN_WORLD_MOVE && exit_wait == 1 && MenuArg.end_code != 6) {
+                    FadeInMenu(40, 0.0f);
+                } else {
+                    exit_wait++;
                 }
             }
-            switch (push) {
-            case 1:
-                next_step = WORLD_MAP_STEP_POS;
-                select_area = &spi_wmaparea_tbl[area_no];
-                if (select_area == NULL) {
-                    MenuSePlay(5);
-                    break;
+            if (exit_wait == 1) {
+                CalcMenuAdd(&back_alpha, -8.0f, 0.0f);
+            }
+            if (exit_wait > 2) {
+                result = WORLD_MOVE_CLOSE;
+                if (MenuArg.end_code == 6) {
+                    result = WORLD_MOVE_JUMP;
                 }
-                pos_num = 0;
-                for (int i = 0; i < WMAP_AREA_POS_LIST; i++) {
-                    WMAP_POS_DATA *pos = select_area->pos[i];
-                    if (pos != NULL && pos->enable != 0) {
-                        pos_icon[pos_num] = pos->type;
-                        if (pos_icon[pos_num] == WMAP_POS_TYPE_GEORAMA) {
-                            pos_icon[pos_num] = 3;
-                        }
-                        pos_num++;
-                    }
-                }
-                list_mes->SetMsgCursor(0);
-                MenuSePlay(1);
-                break;
-            case 2:
-                MenuSePlay(5);
-                close = 1;
-                break;
+                short *system_mes = GetSystemMesBuffer();
+                name_mes->SetBuff_system(system_mes);
+                ask_mes->SetBuff_system(system_mes);
+                list_mes->SetBuff_system(system_mes);
             }
             break;
-        case WORLD_MAP_STEP_POS:
-            list_mes->AddMsgCursor2(0, pos_num - 1, 1);
-            switch (push) {
-            case 1:
-            case 4: {
-                select_pos = NULL;
-                int line = 0;
-                for (int i = 0; i < WMAP_AREA_POS_LIST; i++) {
-                    WMAP_POS_DATA *pos = select_area->pos[i];
-                    if (pos != NULL && pos->enable != 0) {
-                        if (line == list_mes->GetMsgCursor()) {
-                            select_pos = select_area->pos[i];
-                            break;
-                        }
-                        line++;
-                    }
+        default:
+            if (MenuCommonInfo->open_type == MENU_OPEN_WORLD_MOVE) {
+                CalcMenuAdd(&back_alpha, 8.0f, 128.0f);
+                if (push != 0) {
+                    close = 1;
+                    MenuSePlay(close);
                 }
-                if (select_pos == NULL) {
-                    MenuSePlay(5);
-                } else if (MenuMainScene->now_map_no == select_pos->map_no) {
-                    MenuSePlay(5);
-                } else {
-                    next_step = WORLD_MAP_STEP_ASK;
+                break;
+            }
+            if (view_only != 0) {
+                if (push != 0) {
+                    close = 1;
                     MenuSePlay(1);
                 }
                 break;
             }
-            case 2:
-                next_step = WORLD_MAP_STEP_AREA;
-                MenuSePlay(5);
-                break;
-            }
-            break;
-        case WORLD_MAP_STEP_ASK: {
-            int answer = ask_mes->YesNoCursor2(1);
-            if (answer == 1) {
-                MenuArg.end_code = 6;
-                WorldMap_NextLoopNo = select_pos->loop_no;
-                WorldMap_MapNo = select_pos->map_no;
-                if (select_pos->loop_no == LOOP_DUNGEON) {
-                    WorldMap_MapNo = select_pos->dng_no;
-                    if (select_pos->floor < 0) {
-                        step++;
-                        FadeOutMenu(40, 0.0f);
-                    } else {
-                        MenuArg.end_code = 6;
-                        close = 1;
-                        MenuArg.result[0] = WorldMap_NextLoopNo;
-                        MenuArg.result[1] = WorldMap_MapNo;
-                        MenuArg.result[2] = select_pos->floor;
+            if (menu_debug_flag != 0) {
+                if (GamePad__2.Down(0x20)) {
+                    for (int i = 0; i < spi_wmappos_tblnum; i++) {
+                        spi_wmappos_tbl[i].enable = 1;
                     }
-                } else {
-                    if (WorldMap_MapNo == SearchMapNo(at_1313) && CheckBitFlagMenu(0x2BC) != 0) {
-                        WorldMap_MapNo = SearchMapNo(at_1314);
+                    for (i = 0; i < spi_wmaparea_tblnum; i++) {
+                        spi_wmaparea_tbl[i].enable = 1;
                     }
-                    if (select_pos->type == WMAP_POS_TYPE_GEORAMA) {
-                        MenuMainScene->SetNowMapNo(SearchMapNo(geo_table_1183[select_pos->area_no]));
-                    }
-                    MenuArg.result[3] = 0;
-                    MenuArg.result[2] = 0;
-                    close = 1;
-                    MenuArg.result[0] = WorldMap_NextLoopNo;
-                    MenuArg.result[1] = WorldMap_MapNo;
-                    if (MenuMainScene->now_map_no == 0x22 && WorldMap_MapNo == 10) {
-                        WorldMap_MapNo = 11;
-                        MenuArg.result[1] = 11;
-                    }
+                    MapEnableNum = spi_wmaparea_tblnum - 1;
+                    cursor_tex = mgTexManager.GetTexture(at_1310__4, -1);
+                    name_view = 1;
                 }
-                MenuSePlay(1);
+                return WORLD_MOVE_CONTINUE;
             }
-            if (answer == 2) {
-                next_step = WORLD_MAP_STEP_POS;
-                MenuSePlay(5);
+            switch (step) {
+                case WORLD_MAP_STEP_AREA:
+                    if (MapEnableNum <= 0 && push != 0) {
+                        MenuSePlay(5);
+                        close = 1;
+                        break;
+                    }
+                    if (0 < lr_key) {
+                        near_num = 0;
+                        float dir[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+                        if (lr_key & 1) {
+                            dir[1] -= 1.0f;
+                        }
+                        if (lr_key & 2) {
+                            dir[1] += 1.0f;
+                        }
+                        if (lr_key & 4) {
+                            dir[0] -= 1.0f;
+                        }
+                        if (lr_key & 8) {
+                            dir[0] += 1.0f;
+                        }
+                        sceVu0Normalize(dir, dir);
+                        WMAP_AREA_DATA *next = NULL;
+                        WMAP_AREA_DATA *now_area = &spi_wmaparea_tbl[area_no];
+                        float           now_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+                        now_pos[0] = now_area->x;
+                        now_pos[1] = now_area->y;
+                        for (int i = 0; i < WMAP_NEAR_AREA_MAX; i++) {
+                            near_area[i] = NULL;
+                        }
+                        for (i = 1; i < spi_wmaparea_tblnum; i++) {
+                            near_area[i] = NULL;
+                            WMAP_AREA_DATA *area = &spi_wmaparea_tbl[i];
+                            if (area->enable != 0 && area_no != area->area_no) {
+                                float area_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+                                float area_dir[4];
+                                area_pos[0] = area->x;
+                                area_pos[1] = area->y;
+                                sceVu0SubVector(area_dir, area_pos, now_pos);
+                                sceVu0Normalize(area_dir, area_dir);
+                                float dot = sceVu0InnerProduct(dir, area_dir);
+                                near_area[near_num] = &spi_wmaparea_tbl[i];
+                                near_area[near_num]->dist = mgDistVector(area_pos, now_pos);
+                                near_area[near_num]->dir_dot = dot;
+                                near_num++;
+                            }
+                        }
+                        for (int i = 0; i < near_num; i++) {
+                            bool  swapped = false;
+                            float dist = near_area[i]->dist;
+                            for (int j = i + 1; j < near_num; j++) {
+                                if (near_area[j]->dist < dist) {
+                                    WMAP_AREA_DATA *swap = near_area[i];
+                                    near_area[i] = near_area[j];
+                                    near_area[j] = swap;
+                                    swapped = true;
+                                }
+                            }
+                            if (swapped) {
+                                i = -1;
+                            }
+                        }
+                        float threshold = 0.72f;
+                        bool  searching = true;
+                        while (searching && 0.0f < threshold) {
+                            for (i = 0; i < near_num; i++) {
+                                if (threshold < near_area[i]->dir_dot) {
+                                    next = near_area[i];
+                                    searching = false;
+                                    break;
+                                }
+                            }
+                            threshold -= 0.05f;
+                        }
+                        if (next == NULL) {
+                            next = now_area;
+                        }
+                        for (i = 0; i < spi_wmaparea_tblnum; i++) {
+                            if (next == &spi_wmaparea_tbl[i]) {
+                                area_no = i;
+                                break;
+                            }
+                        }
+                        if (next != now_area) {
+                            MenuSePlay(0);
+                        }
+                    }
+                    switch (push) {
+                        case 1:
+                            next_step = WORLD_MAP_STEP_POS;
+                            select_area = &spi_wmaparea_tbl[area_no];
+                            if (select_area == NULL) {
+                                MenuSePlay(5);
+                                break;
+                            }
+                            pos_num = 0;
+                            for (int i = 0; i < WMAP_AREA_POS_LIST; i++) {
+                                WMAP_POS_DATA *pos = select_area->pos[i];
+                                if (pos != NULL && pos->enable != 0) {
+                                    pos_icon[pos_num] = pos->type;
+                                    if (pos_icon[pos_num] == WMAP_POS_TYPE_GEORAMA) {
+                                        pos_icon[pos_num] = 3;
+                                    }
+                                    pos_num++;
+                                }
+                            }
+                            list_mes->SetMsgCursor(0);
+                            MenuSePlay(1);
+                            break;
+                        case 2:
+                            MenuSePlay(5);
+                            close = 1;
+                            break;
+                    }
+                    break;
+                case WORLD_MAP_STEP_POS:
+                    list_mes->AddMsgCursor2(0, pos_num - 1, 1);
+                    switch (push) {
+                        case 1:
+                        case 4: {
+                            select_pos = NULL;
+                            int line = 0;
+                            for (int i = 0; i < WMAP_AREA_POS_LIST; i++) {
+                                WMAP_POS_DATA *pos = select_area->pos[i];
+                                if (pos != NULL && pos->enable != 0) {
+                                    if (line == list_mes->GetMsgCursor()) {
+                                        select_pos = select_area->pos[i];
+                                        break;
+                                    }
+                                    line++;
+                                }
+                            }
+                            if (select_pos == NULL) {
+                                MenuSePlay(5);
+                            } else if (MenuMainScene->now_map_no == select_pos->map_no) {
+                                MenuSePlay(5);
+                            } else {
+                                next_step = WORLD_MAP_STEP_ASK;
+                                MenuSePlay(1);
+                            }
+                            break;
+                        }
+                        case 2:
+                            next_step = WORLD_MAP_STEP_AREA;
+                            MenuSePlay(5);
+                            break;
+                    }
+                    break;
+                case WORLD_MAP_STEP_ASK: {
+                    int answer = ask_mes->YesNoCursor2(1);
+                    if (answer == 1) {
+                        MenuArg.end_code = 6;
+                        WorldMap_NextLoopNo = select_pos->loop_no;
+                        WorldMap_MapNo = select_pos->map_no;
+                        if (select_pos->loop_no == LOOP_DUNGEON) {
+                            WorldMap_MapNo = select_pos->dng_no;
+                            if (select_pos->floor < 0) {
+                                step++;
+                                FadeOutMenu(40, 0.0f);
+                            } else {
+                                MenuArg.end_code = 6;
+                                close = 1;
+                                MenuArg.result[0] = WorldMap_NextLoopNo;
+                                MenuArg.result[1] = WorldMap_MapNo;
+                                MenuArg.result[2] = select_pos->floor;
+                            }
+                        } else {
+                            if (WorldMap_MapNo == SearchMapNo(at_1313) && CheckBitFlagMenu(0x2BC) != 0) {
+                                WorldMap_MapNo = SearchMapNo(at_1314);
+                            }
+                            if (select_pos->type == WMAP_POS_TYPE_GEORAMA) {
+                                MenuMainScene->SetNowMapNo(SearchMapNo(geo_table_1183[select_pos->area_no]));
+                            }
+                            MenuArg.result[3] = 0;
+                            MenuArg.result[2] = 0;
+                            close = 1;
+                            MenuArg.result[0] = WorldMap_NextLoopNo;
+                            MenuArg.result[1] = WorldMap_MapNo;
+                            if (MenuMainScene->now_map_no == 0x22 && WorldMap_MapNo == 10) {
+                                WorldMap_MapNo = 11;
+                                MenuArg.result[1] = 11;
+                            }
+                        }
+                        MenuSePlay(1);
+                    }
+                    if (answer == 2) {
+                        next_step = WORLD_MAP_STEP_POS;
+                        MenuSePlay(5);
+                    }
+                    break;
+                }
+                case WORLD_MAP_STEP_TREE_MAP:
+                    if (FadeCheckMenu()) {
+                        TreeMapCalledWorldMap = 1;
+                        WorldMapMenuType = 1;
+                        mgCMemory stack;
+                        int       rest = WorldMapStack.stGetRest();
+                        stack.stSetBuffer(WorldMapStack.stGetTop(), rest);
+                        DngTreeMapInit(&stack, &tex_block[2], 0, select_pos->dng_no);
+                    }
+                    break;
+                case WORLD_MAP_STEP_WAIT:
+                    if ((push & 1) || (push & 2)) {
+                        ask_view = 0;
+                        cursor_view = 1;
+                        step = WORLD_MAP_STEP_AREA;
+                        MenuSePlay(1);
+                    }
+                    break;
             }
             break;
-        }
-        case WORLD_MAP_STEP_TREE_MAP:
-            if (FadeCheckMenu()) {
-                TreeMapCalledWorldMap = 1;
-                WorldMapMenuType = 1;
-                mgCMemory stack;
-                int rest = WorldMapStack.stGetRest();
-                stack.stSetBuffer(WorldMapStack.stGetTop(), rest);
-                DngTreeMapInit(&stack, &tex_block[2], 0, select_pos->dng_no);
-            }
-            break;
-        case WORLD_MAP_STEP_WAIT:
-            if ((push & 1) || (push & 2)) {
-                ask_view = 0;
-                cursor_view = 1;
-                step = WORLD_MAP_STEP_AREA;
-                MenuSePlay(1);
-            }
-            break;
-        }
-        break;
     }
 
     if (0 <= next_step) {
         switch (next_step) {
-        case WORLD_MAP_STEP_AREA:
-            cursor_view = 1;
-            pos_list_view = 0;
-            ask_view = 0;
-            break;
-        case WORLD_MAP_STEP_POS: {
-            char *names[WMAP_AREA_POS_LIST];
-            int line = 0;
-            cursor_view = 0;
-            pos_list_view = 1;
-            ask_view = 0;
-            for (int i = 0; i < WMAP_AREA_POS_LIST; i++) {
-                if (select_area != NULL) {
-                    WMAP_POS_DATA *pos = select_area->pos[i];
-                    if (pos != NULL && pos->enable != 0 && line < pos_num) {
-                        names[line++] = pos->name;
+            case WORLD_MAP_STEP_AREA:
+                cursor_view = 1;
+                pos_list_view = 0;
+                ask_view = 0;
+                break;
+            case WORLD_MAP_STEP_POS: {
+                char *names[WMAP_AREA_POS_LIST];
+                int   line = 0;
+                cursor_view = 0;
+                pos_list_view = 1;
+                ask_view = 0;
+                for (int i = 0; i < WMAP_AREA_POS_LIST; i++) {
+                    if (select_area != NULL) {
+                        WMAP_POS_DATA *pos = select_area->pos[i];
+                        if (pos != NULL && pos->enable != 0 && line < pos_num) {
+                            names[line++] = pos->name;
+                        }
                     }
                 }
+                list_mes->MsgPreset(10);
+                list_mes->SetMsgCursor(0);
+                list_mes->cursor_on = 1;
+                ((ClsMes *) list_mes)->mes_no = -1;
+                list_mes->cursor_time = 0;
+                list_mes->fade_speed = 1.0f;
+                list_mes->fade = 1.0f;
+                list_mes->SetMsgItemNo(names, pos_num);
+                list_mes->MakeMsg(pos_num + 0x45);
+                break;
             }
-            list_mes->MsgPreset(10);
-            list_mes->SetMsgCursor(0);
-            list_mes->cursor_on = 1;
-            ((ClsMes *)list_mes)->mes_no = -1;
-            list_mes->cursor_time = 0;
-            list_mes->fade_speed = 1.0f;
-            list_mes->fade = 1.0f;
-            list_mes->SetMsgItemNo(names, pos_num);
-            list_mes->MakeMsg(pos_num + 0x45);
-            break;
-        }
-        case WORLD_MAP_STEP_ASK: {
-            pos_list_view = 0;
-            ask_view = 1;
-            list_mes->cursor_on = 0;
-            ask_mes->MsgPreset(11);
-            ask_mes->SetAbsPos(5);
-            char *names[1] = {NULL};
-            names[0] = select_pos->name;
-            ask_mes->SetMsgItemNo(names, 1);
-            ((ClsMes *)ask_mes)->mes_no = -1;
-            ask_mes->fade = 0.0f;
-            ask_mes->MakeMsg(0x9C6);
-            ask_mes->SetMsgCursor(0);
-            break;
-        }
+            case WORLD_MAP_STEP_ASK: {
+                pos_list_view = 0;
+                ask_view = 1;
+                list_mes->cursor_on = 0;
+                ask_mes->MsgPreset(11);
+                ask_mes->SetAbsPos(5);
+                char *names[1] = {NULL};
+                names[0] = select_pos->name;
+                ask_mes->SetMsgItemNo(names, 1);
+                ((ClsMes *) ask_mes)->mes_no = -1;
+                ask_mes->fade = 0.0f;
+                ask_mes->MakeMsg(0x9C6);
+                ask_mes->SetMsgCursor(0);
+                break;
+            }
         }
         step = next_step;
     }
@@ -633,15 +657,16 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumap", KeyStep__13CWorldMapMenuFv);
 #endif
 #ifdef NONMATCHING
 extern char at_1498__3[];
+
 void CWorldMapMenu::Draw() {
     mgCDrawPrim *prim = GetMenuPrim();
-    int loaded_tex = -1;
+    int          loaded_tex = -1;
     if (capture_view == 1 && capture_tex != NULL) {
         MenuReloadTexture(loaded_tex, capture_tex->block);
         PrimQuad(capture_tex, mgRect<int>(0, 0, mgScreenWidth, mgScreenHeight),
                  mgRect<int>(0, 0, mgScreenWidth >> 1, mgScreenHeight >> 1), 0x80, 0x80, 0x80, 0x80);
     }
-    DrawMenuFillBox((int)back_alpha, 0, 0, 0);
+    DrawMenuFillBox((int) back_alpha, 0, 0, 0);
     SetSpriteEnv(prim, 0);
     if (map_tex != NULL) {
         mgRect<int> map_source(0, 0, 0x200, 0x16E);
@@ -654,7 +679,7 @@ void CWorldMapMenu::Draw() {
             prim->Texture(anim_tex);
             prim->Color(0, 0, 0, 0x5E);
             for (int i = 0; i < 0xFF; i++) {
-                int x = (int)(250.0f + 8.0f * sinf(wave_x[i]));
+                int x = (int) (250.0f + 8.0f * sinf(wave_x[i]));
                 prim->TextureCrd(0, i);
                 prim->Vertex(x, i, 0);
                 prim->TextureCrd(0xFE, i + 1);
@@ -662,7 +687,7 @@ void CWorldMapMenu::Draw() {
                 wave_x[i] = mgAngleLimit(0.034906585f + wave_x[i]);
             }
             for (int i = 0; i < 0xFF; i++) {
-                int y = (int)(253.0f + 8.0f * sinf(wave_y[i]));
+                int y = (int) (253.0f + 8.0f * sinf(wave_y[i]));
                 prim->TextureCrd(i, 0);
                 prim->Vertex(i + 0xFF, 0, 0);
                 prim->TextureCrd(i + 1, 0xDC);
@@ -680,11 +705,14 @@ void CWorldMapMenu::Draw() {
             prim->Vertex(0x200, 0x126, 0);
             prim->End();
             SetSpriteEnv(prim, 0);
-            float pulse_color[2][4] = {{230.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 230.0f, 0.0f}};
+            float pulse_color[2][4] = {
+                {230.0f, 0.0f, 0.0f,   0.0f},
+                {0.0f,   0.0f, 230.0f, 0.0f}
+            };
             pulse_color[0][3] = 196.0f + 48.0f * sinf(pulse_angle[0]);
             pulse_color[1][3] = 196.0f + 48.0f * sinf(pulse_angle[1]);
             float pulse_speed[2] = {0.07853982f, 0.06283185f};
-            int shift = 0;
+            int   shift = 0;
             prim->Begin(6);
             prim->Texture(pulse_tex);
             for (int i = 0; i < 2; i++) {
@@ -753,10 +781,10 @@ void CWorldMapMenu::Draw() {
         prim->End();
     }
 
-    CDC2Mes *name_mes = MenuDCMsg[4];
+    CDC2Mes        *name_mes = MenuDCMsg[4];
     WMAP_AREA_DATA *now_area = &spi_wmaparea_tbl[area_no];
-    CDC2Mes *ask_mes = MenuDCMsg[2];
-    CDC2Mes *list_mes = MenuDCMsg[3];
+    CDC2Mes        *ask_mes = MenuDCMsg[2];
+    CDC2Mes        *list_mes = MenuDCMsg[3];
     if (name_view != 0) {
         char *name;
         for (int i = 0; i < spi_wmaparea_tblnum; i++) {
@@ -813,8 +841,8 @@ void CWorldMapMenu::Draw() {
         }
         list_mes->StepMsg();
         int put_pos[2] = {0, 0};
-        put_pos[0] = (int)(60.0f + area_x);
-        put_pos[1] = (int)area_y;
+        put_pos[0] = (int) (60.0f + area_x);
+        put_pos[1] = (int) area_y;
         int max_w = 0;
         int total_h = 0;
         for (int i = 0; select_area->pos[i] != NULL; i++) {
@@ -858,7 +886,7 @@ void CWorldMapMenu::Draw() {
     }
     if (cursor_tex != NULL && cursor_view != 0) {
         float target_y = now_area->y - 0xF;
-        CalcMenu1((float)(now_area->x - 0x32), &cursor_pos[0], 4.0f, 0.0f, cursor_reset);
+        CalcMenu1((float) (now_area->x - 0x32), &cursor_pos[0], 4.0f, 0.0f, cursor_reset);
         CalcMenu1(target_y, &cursor_pos[1], 4.0f, 0.0f, cursor_reset);
         cursor_reset = 0;
         MenuReloadTexture(loaded_tex, cursor_tex->block);
@@ -898,10 +926,12 @@ inline CWorldMapMenu::CWorldMapMenu() {
     cursor_tex = NULL;
     wave_x[0] = 0.0f;
     wave_y[0] = 0.0f;
+
     for (i = 0; i < WMAP_WAVE_LINE_NUM - 1; i++) {
         wave_x[i + 1] = mgAngleLimit(0.1308997f + wave_x[i]);
         wave_y[i + 1] = mgAngleLimit(0.10471976f + wave_y[i]);
     }
+
     float_angle = 0.0f;
     pulse_angle[0] = 0.0f;
     pulse_angle[1] = 0.0f;
@@ -913,9 +943,11 @@ inline CWorldMapMenu::CWorldMapMenu() {
     map_type = 1;
     mes_data = NULL;
     menu_mes_data = NULL;
+
     for (i = 0; i < WMAP_AREA_POS_MAX; i++) {
         pos_icon[i] = 0;
     }
+
     spi_wmaparea_tblnum = 0;
     spi_wmaparea_tbl = NULL;
     spi_wmappos_tblnum = 0;
@@ -924,52 +956,64 @@ inline CWorldMapMenu::CWorldMapMenu() {
     WorldMap_NextLoopNo = -1;
     WorldMap_DngFloor = -1;
 }
+
 int WorldMoveInit(mgCMemory *stack, int *tex_block, int open_type) {
-    char path[0x20];
-    u_long128 *buffer;
+    char         path[0x20];
+    u_long128   *buffer;
     unsigned int size;
     unsigned int blocks;
 
-    int available = stack->stGetRest();
+    int        available = stack->stGetRest();
     u_long128 *top = stack->stGetTop();
     WorldMapStack.stSetBuffer(top, available);
-    WorldMapPtr = new(WorldMapStack.Alloc(0xBD)) CWorldMapMenu;
+    WorldMapPtr = new (WorldMapStack.Alloc(0xBD)) CWorldMapMenu;
     WorldMapStack.Align64();
     WorldMapPtr->SetTexBlock(tex_block);
     WorldMapPtr->FadeOutMenu(40, 0.0f);
     WorldMapMenuType = 0;
     GetMapType(GetMainScene()->now_map_no);
+
     if (MenuCommonInfo->open_type == MENU_OPEN_WORLD_MOVE) {
         WorldMapPtr->back_alpha = 0.0f;
     }
+
     WorldMapPtr->capture_tex = mgTexManager.GetTexture(at_1556__2, -1);
     buffer = WorldMapStack.stGetTop();
+
     if (CheckBitFlagMenu(0x258) != 0) {
         WorldMapPtr->map_type = 2;
     }
+
     if (CheckBitFlagMenu(0x268) != 0) {
         WorldMapPtr->map_type = 4;
     }
+
     if (CheckBitFlagMenu(0x280) != 0) {
         WorldMapPtr->map_type = 3;
     }
+
     StartReadBG();
     sprintf(path, at_1557__2, WorldMapPtr->map_type);
     size = LoadFileMenu(path, buffer, 0);
+
     if (size & 0xF) {
         blocks = (size >> 4) + 1;
     } else {
         blocks = size >> 4;
     }
+
     WorldMapStack.Alloc(blocks);
     return 1;
 }
+
 int WorldMoveKey() {
     if (WorldMapMenuType == 0) {
         return WorldMapPtr->KeyStep();
     }
+
     if (WorldMapMenuType == 1) {
         int result = DngTreeMapKey();
+
         if (result == 1) {
             MenuArg.end_code = 0;
             MenuArg.result[0] = 0;
@@ -982,6 +1026,7 @@ int WorldMoveKey() {
             WorldMapPtr->SetMsgBuffer();
             return 0;
         }
+
         if (result == 2) {
             MenuArg.end_code = 6;
             TreeMapCalledWorldMap = 0;
@@ -993,75 +1038,91 @@ int WorldMoveKey() {
             return 2;
         }
     }
+
     return 0;
 }
+
 void WorldMoveDraw() {
     if (WorldMapMenuType == 0) {
         WorldMapPtr->Draw();
     }
+
     if (WorldMapMenuType == 1) {
         DngTreeMapDraw();
     }
 }
+
 void SphidaScreListUpdate(CDC2Mes *mes, int update) {
-    int top;
-    int line;
+    int                 top;
+    int                 line;
     SPHIDA_PLAYER_DATA *player;
 
     if (mes == NULL || SubSphidaData == NULL) {
         return;
     }
+
     top = SphidaSelect[1];
+
     if (SfidaMakeLine == 1) {
         top--;
+
         if (top < 0) {
             top = 0;
         }
     }
+
     if (update != 0) {
         for (line = 0; line < 9; line++) {
             player = SubSphidaData->GetPlayerData(top);
+
             if (player != NULL) {
                 if (player->name[0] == 0 && player->name[1] == 0) {
                     char *unregistered = Mitouroku[LanguageCode];
+
                     if (unregistered != NULL) {
                         strcpy(mes->name[line], unregistered);
                     }
                 } else if (player != NULL) {
                     strcpy(mes->name[line], player->name);
                 }
+
                 top++;
             }
         }
+
         mes->ClsMes::mes_no = -1;
         mes->MakeMsg(0x13EE);
     }
 }
+
 void SphidaMenuInit(mgCMemory *stack, int *tex_block, int open_type) {
-    int available = stack->stGetRest();
+    int        available = stack->stGetRest();
     u_long128 *top = stack->stGetTop();
     SphidaStack.stSetBuffer(top, available);
+
     for (int i = 0; i < 16; i++) {
         SphidaMenuTexbk[i] = tex_block[i];
     }
+
     D_01F3C7FC[0] = -1;
     MenuMainScene->fade.FadeIn(40);
     SubSaveData__2 = GetSubGameSaveData();
     SubSphidaData = NULL;
+
     if (SubSaveData__2 != NULL) {
         SubSphidaData = SubSaveData__2->GetSphidaData();
-        SphidaMenuMes = new(SphidaStack.Alloc(0x2A7)) CDC2Mes;
+        SphidaMenuMes = new (SphidaStack.Alloc(0x2A7)) CDC2Mes;
         SphidaMenuMes->SetMessData(GetSystemMesBuffer(), GetMenuMainMessageBuffer());
         SphidaMenuMes->MsgPreset(0x12);
         SphidaMenuMes->SetPutPos(0x100, 0x34, -1, -1);
         SphidaMenuMes->MakeMsg(0x13EC);
         SphidaMenuMes->SetMsgCursor(0);
-        SphidaMenuQus = new(SphidaStack.Alloc(0x2A7)) CDC2Mes;
+        SphidaMenuQus = new (SphidaStack.Alloc(0x2A7)) CDC2Mes;
         SphidaMenuQus->SetMessData(GetSystemMesBuffer(), GetMenuMainMessageBuffer());
         SphidaMenuQus->MsgPreset(0x12);
         SphidaMenuQus->MakeMsg(0x13F1);
         SphidaMenuQusDrawFlag = 0;
-        SphidaScore = new(SphidaStack.Alloc(0x2A7)) CDC2Mes;
+        SphidaScore = new (SphidaStack.Alloc(0x2A7)) CDC2Mes;
         SphidaScore->SetMessData(GetSystemMesBuffer(), GetMenuMainMessageBuffer());
         SphidaScore->MsgPreset(0x10);
         SphidaScore->SetPutPos(0x16, 0x14, -1, -1);
@@ -1075,18 +1136,20 @@ void SphidaMenuInit(mgCMemory *stack, int *tex_block, int open_type) {
         MenuCapture(MenuBGTextureBlock, &SphidaStack, 1);
         MenuPosData->AttachCommonTexInfo();
         MenuCommonInfo->key_enable = 1;
-        u_long128 *buffer = SphidaStack.stGetTop();
+        u_long128   *buffer = SphidaStack.stGetTop();
         unsigned int size = LoadFileMenu(at_1674, buffer, 1);
         unsigned int blocks;
+
         if (size & 15) {
             blocks = (size >> 4) + 1;
         } else {
             blocks = size >> 4;
         }
+
         SphidaStack.Alloc(blocks);
-        mgTexManager.EnterIMGFile((u8 *)buffer, SphidaMenuTexbk[1], NULL, NULL);
+        mgTexManager.EnterIMGFile((u8 *) buffer, SphidaMenuTexbk[1], NULL, NULL);
         SphidaTex = mgTexManager.GetTexture(at_1675, -1);
-        mgTexManager.EnterIMGFile((u8 *)GetMenuMainIMGPtr(), SphidaMenuTexbk[1], NULL, NULL);
+        mgTexManager.EnterIMGFile((u8 *) GetMenuMainIMGPtr(), SphidaMenuTexbk[1], NULL, NULL);
         SphidaCursor = mgTexManager.GetTexture(at_1310__4, -1);
         SphidaCursorY = 300.0f;
         SphidaCursorDrawFlag = 0;
@@ -1098,12 +1161,15 @@ void SphidaMenuInit(mgCMemory *stack, int *tex_block, int open_type) {
         SphidaScreListUpdate(SphidaScore, 1);
     }
 }
+
 int OmakeSfidaSelect(int key) {
     int movement = MenuListSelectKeyCheck(key, 8);
     int distance = abs(movement);
+
     if (distance > 2) {
         SfidaMoveInitFlag = 1;
     }
+
     return movement;
 }
 
@@ -1114,8 +1180,8 @@ int SphidaMenuKey() {
     if (SubSphidaData == NULL) {
         return 1;
     }
-    int list_changed = 0;
-    int old_top = SphidaSelect[1];
+    int      list_changed = 0;
+    int      old_top = SphidaSelect[1];
     CDC2Mes *question = SphidaMenuQus;
 
     switch (SphidaMenuPhase) {
@@ -1213,17 +1279,17 @@ int SphidaMenuKey() {
                     MenuSePlay(5);
                 } else {
                     char password_text[0x30];
-                    u8 password_data[16];
+                    u8   password_data[16];
                     char password_sjis[0x88];
-                    int i;
-                    int encoded;
+                    int  i;
+                    int  encoded;
 
                     memset(password_data, 0, sizeof(password_data));
                     for (i = 0; i < 10; i++) {
                         password_data[i] = player->hole_score[i];
                     }
-                    password_data[13] = *(u8 *)&player->password_key;
-                    encoded = EncodePassword(password_data, 0x10, (u8 *)player, 0x14, password_text, 0x48);
+                    password_data[13] = *(u8 *) &player->password_key;
+                    encoded = EncodePassword(password_data, 0x10, (u8 *) player, 0x14, password_text, 0x48);
                     ConvertAscii2ShitJiss(password_text, password_sjis);
                     password_sjis[0x2C] = 0;
                     password_sjis[0x2D] = 0;
@@ -1353,10 +1419,11 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumap", SphidaMenuKey__Fv);
 #ifdef NONMATCHING
 extern float SphidaScoreListY;
 extern float SphidaScoreListBarY;
-extern char at_1937__2[];
-extern char at_1938__2[];
+extern char  at_1937__2[];
+extern char  at_1938__2[];
+
 void SphidaMenuDraw() {
-    int list_rect[4];
+    int         list_rect[4];
     mgRect<int> clip;
     if (SphidaMenuPhase == 100) {
         NameRegistDraw();
@@ -1365,17 +1432,17 @@ void SphidaMenuDraw() {
     if (SubSphidaData == NULL) {
         return;
     }
-    CalcMenu1((float)(SphidaSelect[1] * -0x18), &SphidaScoreListY, 4.0f, 3.5f, SfidaMoveInitFlag);
+    CalcMenu1((float) (SphidaSelect[1] * -0x18), &SphidaScoreListY, 4.0f, 3.5f, SfidaMoveInitFlag);
     mgCDrawPrim *prim = GetMenuPrim();
     if (SphidaTex2 != NULL) {
-        mgTexManager.ReloadTexture(SphidaTex2->block, (sceVif1Packet *)NULL);
+        mgTexManager.ReloadTexture(SphidaTex2->block, (sceVif1Packet *) NULL);
         mgRect<int> tile(0x100, 0x100, 0x100, 0x100);
         DrawMenuTilePattern(prim, SphidaTex2, SfidaBGXY, SfidaBGXY, tile, 0, NULL);
     }
     SPHIDA_PLAYER_DATA *player = SubSphidaData->GetPlayerData(0);
     clip.Set(0, 0, 0, 0);
     if (SphidaTex != NULL) {
-        mgTexManager.ReloadTexture(SphidaTex->block, (sceVif1Packet *)NULL);
+        mgTexManager.ReloadTexture(SphidaTex->block, (sceVif1Packet *) NULL);
         if (LanguageCode == 0) {
             DrawSubGameTitle(SphidaTex, 1, 0x1E, 0x1E, 0xCA);
         } else {
@@ -1398,12 +1465,12 @@ void SphidaMenuDraw() {
         list_rect[1] = mgScreenHeight - 0x104;
         int scroll[2];
         scroll[1] = fptosi(25.75f);
-        CalcMenu1(3.21875f * (float)SphidaSelect[1], &SphidaScoreListBarY, 3.0f, 0.0f, SfidaMoveInitFlag);
+        CalcMenu1(3.21875f * (float) SphidaSelect[1], &SphidaScoreListBarY, 3.0f, 0.0f, SfidaMoveInitFlag);
         scroll[0] = fptosi(SphidaScoreListBarY);
         DrawSubGameScrlList(SphidaTex, list_rect, scroll);
         clip.Set(list_rect[0] + 4, list_rect[1] + 0xE, list_rect[0] + list_rect[2], list_rect[1] + list_rect[3] - 0x10);
         SetMenuScissor(clip);
-        int y = fptosi((float)(list_rect[1] + 0x22) + SphidaScoreListY);
+        int y = fptosi((float) (list_rect[1] + 0x22) + SphidaScoreListY);
         for (int rank = 0; rank < 0x40; rank++, y += 0x18, player++) {
             mgRect<int> digits(0, 0xEC, 0x12, 0x14);
             SetSpriteEnv(prim, 0);
@@ -1411,7 +1478,7 @@ void SphidaMenuDraw() {
             prim->Texture(SphidaTex);
             prim->Color(0x80, 0x80, 0x80, 0x80);
             PrimDrawNumber(prim, rank + 1, 1, list_rect[0] + 0x32, y - 0x14, digits, -2, 0);
-            int suffix_x = list_rect[0] + 0x32 + (GetNumberKeta(rank + 1) - 1) * 9;
+            int         suffix_x = list_rect[0] + 0x32 + (GetNumberKeta(rank + 1) - 1) * 9;
             mgRect<int> rank_suffix(0xC6, 0xEC, 0x12, 0x14);
             PrimQuad(prim, suffix_x, y - 0x14, rank_suffix);
             if (player->name[0] == 0 && player->name[1] == 0) {
@@ -1424,7 +1491,7 @@ void SphidaMenuDraw() {
                     unit_x = 264.0f + list_rect[0];
                 }
                 mgRect<int> unit(0x4A, 0x88, 0x34, 0x16);
-                PrimQuad(prim, unit_x, (float)y - 20.0f, unit);
+                PrimQuad(prim, unit_x, (float) y - 20.0f, unit);
             }
             prim->End();
             DrawSubGameUnderLine(SphidaTex, list_rect[0] + 0x16, y, list_rect[2] - 0x34);
@@ -1432,17 +1499,17 @@ void SphidaMenuDraw() {
         ResetMenuScissor();
     }
     if (SphidaCursorDrawFlag && SphidaCursor != NULL) {
-        mgTexManager.ReloadTexture(SphidaCursor->block, (sceVif1Packet *)NULL);
-        CalcMenu1((float)(list_rect[1] + 0xD + (SphidaSelect[0] - SphidaSelect[1]) * 0x18), &SphidaCursorY, 4.0f, 3.2f, 0);
+        mgTexManager.ReloadTexture(SphidaCursor->block, (sceVif1Packet *) NULL);
+        CalcMenu1((float) (list_rect[1] + 0xD + (SphidaSelect[0] - SphidaSelect[1]) * 0x18), &SphidaCursorY, 4.0f, 3.2f, 0);
         SphidaCursorCount++;
         if (SphidaCursorCount >= 59999999) {
             SphidaCursorCount = 0;
         }
-        float cursor_x = (float)(list_rect[0] - 0xC) + 8.0f * cosf(mgAngleLimit(0.05235988f * SphidaCursorCount));
+        float cursor_x = (float) (list_rect[0] - 0xC) + 8.0f * cosf(mgAngleLimit(0.05235988f * SphidaCursorCount));
         PrimQuad(prim, SphidaCursor, cursor_x, SphidaCursorY + 4.0f * sinf(mgAngleLimit(0.10471976f * SphidaCursorCount)),
                  menu_long_hand, 0x80, 0x80, 0x80, 0x80);
     }
-    mgTexManager.ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *)NULL);
+    mgTexManager.ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *) NULL);
     SphidaMenuMes->DrawMsg();
     if (SphidaScore != NULL) {
         clip.left += 0xA;
@@ -1456,8 +1523,8 @@ void SphidaMenuDraw() {
                 top = 0;
             }
         }
-        int line_x = list_rect[0] + 0x30;
-        float line_y = (float)(list_rect[1] + 0x22) + SphidaScoreListY - 20.0f + 24.0f * top;
+        int   line_x = list_rect[0] + 0x30;
+        float line_y = (float) (list_rect[1] + 0x22) + SphidaScoreListY - 20.0f + 24.0f * top;
         if (LanguageCode > 0) {
             line_x = list_rect[0] + 0x3A;
         }
@@ -1484,7 +1551,7 @@ void SphidaMenuDraw() {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumap", SphidaMenuDraw__Fv);
 #endif
 void SphidaScoreViewInit(mgCMemory *memory, int *tex_block, int) {
-    int available = memory->stGetRest();
+    int        available = memory->stGetRest();
     u_long128 *top = memory->stGetTop();
     SphidaStack.stSetBuffer(top, available);
     SphidaMenuTexbk[0] = tex_block[0];
@@ -1500,19 +1567,22 @@ void SphidaScoreViewInit(mgCMemory *memory, int *tex_block, int) {
     MenuPosData->AttachCommonTexInfo();
     SubSaveData__2 = GetSubGameSaveData();
     SubSphidaData = NULL;
+
     if (SubSaveData__2 != NULL) {
         SubSphidaData = SubSaveData__2->GetSphidaData();
         SphidaStack.Align64();
-        u_long128 *buffer = SphidaStack.stGetTop();
+        u_long128   *buffer = SphidaStack.stGetTop();
         unsigned int size = LoadFileMenu(at_1674, buffer, 1);
         unsigned int blocks;
+
         if (size & 15) {
             blocks = (size >> 4) + 1;
         } else {
             blocks = size >> 4;
         }
+
         SphidaStack.Alloc(blocks);
-        mgTexManager.EnterIMGFile((u8 *)buffer, SphidaMenuTexbk[1], NULL, NULL);
+        mgTexManager.EnterIMGFile((u8 *) buffer, SphidaMenuTexbk[1], NULL, NULL);
         SphidaTex = mgTexManager.GetTexture(at_1675, -1);
         SphidaTex_Sys = mgTexManager.GetTexture(at_1677, -1);
         MenuCommonInfo->key_enable = 1;
@@ -1525,38 +1595,41 @@ int SphidaScoreViewKey() {
         MenuSePlay(1);
         return 1;
     }
+
     Sfida_NowPlayHorlBlink = Sfida_NowPlayHorlBlink + 1;
+
     if (Sfida_NowPlayHorlBlink > 0x32) {
         Sfida_NowPlayHorlBlink = 0;
     }
+
     return 0;
 }
 #ifdef NONMATCHING
 void SphidaScoreViewDraw() {
     mgCTextureManager *textures = &mgTexManager;
-    mgRect<int> hole_digits;
-    mgRect<int> score_digits;
-    mgRect<int> number_digits;
-    mgRect<int> dest;
-    mgRect<int> source;
-    mgRect<int> dest_edge;
-    mgRect<int> source_edge;
-    mgRect<int> label_left;
-    mgRect<int> label_right;
-    mgRect<int> label_wide;
-    mgRect<int> title;
-    mgRect<int> hole_label;
-    mgRect<int> par_label;
-    mgRect<int> score_label;
-    mgCDrawPrim *prim;
-    int hole_no;
-    int row_y;
-    int row;
-    int loaded_tex_no;
-    int number_y;
-    int label_y;
+    mgRect<int>        hole_digits;
+    mgRect<int>        score_digits;
+    mgRect<int>        number_digits;
+    mgRect<int>        dest;
+    mgRect<int>        source;
+    mgRect<int>        dest_edge;
+    mgRect<int>        source_edge;
+    mgRect<int>        label_left;
+    mgRect<int>        label_right;
+    mgRect<int>        label_wide;
+    mgRect<int>        title;
+    mgRect<int>        hole_label;
+    mgRect<int>        par_label;
+    mgRect<int>        score_label;
+    mgCDrawPrim       *prim;
+    int                hole_no;
+    int                row_y;
+    int                row;
+    int                loaded_tex_no;
+    int                number_y;
+    int                label_y;
 
-    textures->ReloadTexture(SphidaMenuTexbk[0], (sceVif1Packet *)NULL);
+    textures->ReloadTexture(SphidaMenuTexbk[0], (sceVif1Packet *) NULL);
     loaded_tex_no = -1;
     source.Set(0, 0, mgScreenWidth / 2, mgScreenHeight / 2);
     dest.Set(0, 0, mgScreenWidth, mgScreenHeight);
@@ -1569,7 +1642,7 @@ void SphidaScoreViewDraw() {
     hole_no = SubSphidaData->GetNowHorl() + 1;
     if (SphidaTex_Sys != NULL) {
         hole_digits.Set(0, 0x60, 0x1C, 0x20);
-        textures->ReloadTexture(SphidaTex_Sys->block, (sceVif1Packet *)NULL);
+        textures->ReloadTexture(SphidaTex_Sys->block, (sceVif1Packet *) NULL);
         SetSpriteEnv(prim, 0);
         prim->Begin(6);
         prim->Texture(SphidaTex_Sys);
@@ -1577,9 +1650,9 @@ void SphidaScoreViewDraw() {
         if (LanguageCode == 0) {
             label_left.Set(0, 0, 0x24, 0x26);
             label_y = mgScreenHeight - 0x4C;
-            PrimQuad(prim, 42.0f, (float)label_y, label_left);
+            PrimQuad(prim, 42.0f, (float) label_y, label_left);
             label_right.Set(0x24, 0, 0x5A, 0x26);
-            PrimQuad(prim, 110.0f, (float)(mgScreenHeight - 0x4C), label_right);
+            PrimQuad(prim, 110.0f, (float) (mgScreenHeight - 0x4C), label_right);
             PrimDrawNumber(prim, hole_no, 0, 0x6A, mgScreenHeight - 0x4A, hole_digits, -2, 0);
         } else if (LanguageCode > 0) {
             label_wide.Set(0, 0, 0x88, 0x26);
@@ -1590,7 +1663,7 @@ void SphidaScoreViewDraw() {
         prim->End();
     }
     if (SphidaTex != NULL) {
-        textures->ReloadTexture(SphidaTex->block, (sceVif1Packet *)NULL);
+        textures->ReloadTexture(SphidaTex->block, (sceVif1Packet *) NULL);
         DrawSubGameTitle(SphidaTex, 0, 0x152, 0x2A, 0x78);
         title.Set(0, 0x88, 0x4A, 0x16);
         PrimQuad(prim, SphidaTex, 360.0f, 54.0f, title, 128, 128, 128, 128);
@@ -1628,12 +1701,6 @@ void SphidaScoreViewDraw() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumap", SphidaScoreViewDraw__Fv);
 #endif
-
-// Static initialiser (.init)
-extern "C" void __sinit_menumap_cpp() {
-    WorldMapStack.Init();
-    SphidaStack.Init();
-}
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menumap", menu_wmap_analyze_tag__DATA);
@@ -1726,6 +1793,4 @@ INCLUDE_BSS(at_1764__3, 0x8);
 INCLUDE_BSS(Sfida_NowPlayHorlBlink, 0x4);
 
 // Uninitialised data (.bss)
-INCLUDE_BSS(WorldMapStack, 0x30);
-INCLUDE_BSS(SphidaStack, 0x30);
 INCLUDE_BSS(SphidaMenuTexbk, 0x20);

@@ -1,5 +1,4 @@
 #include "common.h"
-#include "gameutil.hpp"
 
 #include <libvu0.h>
 
@@ -9,6 +8,7 @@
 
 #include "dng_main.hpp"
 #include "font.hpp"
+#include "gameutil.hpp"
 #include "intersection.hpp"
 #include "mg_camera.hpp"
 #include "mg_frame.hpp"
@@ -1736,7 +1736,7 @@ int MoveCheck(float *pos, float *velocity, float *out_pos, MoveCheckInfo *info, 
         info->second_poly = ground_poly;
         info->ground_found = 1;
         info->landed = 0;
-        *(u_long128 *)info->ground_point = *(u_long128 *)ground;
+        *(u_long128 *) info->ground_point = *(u_long128 *) ground;
         if (ground[1] > ((from[1] + velocity[1]) - 10.0f) - landing_margin) {
             info->landed = 1;
         }
@@ -1750,7 +1750,7 @@ int MoveCheck(float *pos, float *velocity, float *out_pos, MoveCheckInfo *info, 
         out_pos[1] = to[1];
         out_pos[2] = to[2];
     }
-    *(u_long128 *)wall_query = *(u_long128 *)out_pos;
+    *(u_long128 *) wall_query = *(u_long128 *) out_pos;
     wall_query[1] += 5.0f;
     info->width_result = CheckWidth(polys, count, wall_query, radius, to, ignore_mask);
     if (info->width_result != 0) {
@@ -1768,7 +1768,7 @@ int MoveCheck(float *pos, float *velocity, float *out_pos, MoveCheckInfo *info, 
     if (info->skip_ground == 0) {
         sceVu0CopyVector(ground_query, from);
         if (GetFootPoly(ground_query, 20.0f, &ground_poly, ground, polys, count, ignore_mask) != 0) {
-            *(u_long128 *)info->ground_point = *(u_long128 *)ground;
+            *(u_long128 *) info->ground_point = *(u_long128 *) ground;
             if (ground[1] > ((from[1] + velocity[1]) - 10.0f) - landing_margin) {
                 out_pos[1] = ground[1];
             }
@@ -1882,7 +1882,7 @@ void GetCPolyAttr(MoveCheckInfo *info, float *from, float *to, float height, CCP
             if (from[1] > to[1]) {
                 info->signed_distance *= -1.0f;
             }
-            *(u_long128 *)info->crossed_point = *(u_long128 *)hit_points[i];
+            *(u_long128 *) info->crossed_point = *(u_long128 *) hit_points[i];
         }
     }
     sceVu0CopyVector(above, to);
@@ -1894,7 +1894,7 @@ void GetCPolyAttr(MoveCheckInfo *info, float *from, float *to, float height, CCP
             area_kind = polys[hit_polys[i]].area_kind;
             if (area_kind == 7 || area_kind == 1) {
                 info->in_water = 1;
-                *(u_long128 *)info->water_surface = *(u_long128 *)hit_points[i];
+                *(u_long128 *) info->water_surface = *(u_long128 *) hit_points[i];
             }
         }
     }
@@ -2100,7 +2100,7 @@ int CheckWidthPipe(CCPoly *polys, int count, float *pos, float radius, float *ou
     to[0] = from[0] + probe_radius;
     to[2] = from[2];
     if (CheckHitsPipe(polys, count, from, to, 32, hit_polys, hit_points, 1, ignore_mask) > 0) {
-        *(u_long128 *)positive_hit = *(u_long128 *)hit_points[0];
+        *(u_long128 *) positive_hit = *(u_long128 *) hit_points[0];
         sceVu0Normalize(normal, polys[hit_polys[0]].normal);
         if (normal[1] < 0.5f && normal[1] > -0.5f) {
             positive = 1;
@@ -2110,7 +2110,7 @@ int CheckWidthPipe(CCPoly *polys, int count, float *pos, float radius, float *ou
     to[0] = from[0] - probe_radius;
     to[2] = from[2];
     if (CheckHitsPipe(polys, count, from, to, 32, hit_polys, hit_points, 1, ignore_mask) > 0) {
-        *(u_long128 *)negative_hit = *(u_long128 *)hit_points[0];
+        *(u_long128 *) negative_hit = *(u_long128 *) hit_points[0];
         sceVu0Normalize(normal, polys[hit_polys[0]].normal);
         if (normal[1] < 0.5f && normal[1] > -0.5f) {
             negative = 1;
@@ -2135,7 +2135,7 @@ int CheckWidthPipe(CCPoly *polys, int count, float *pos, float radius, float *ou
     to[0] = from[0];
     to[2] = from[2] + probe_radius;
     if (CheckHitsPipe(polys, count, from, to, 32, hit_polys, hit_points, 1, ignore_mask) > 0) {
-        *(u_long128 *)positive_hit = *(u_long128 *)hit_points[0];
+        *(u_long128 *) positive_hit = *(u_long128 *) hit_points[0];
         sceVu0Normalize(normal, polys[hit_polys[0]].normal);
         if (normal[1] < 0.5f && normal[1] > -0.5f) {
             positive = 1;
@@ -2145,7 +2145,7 @@ int CheckWidthPipe(CCPoly *polys, int count, float *pos, float radius, float *ou
     to[0] = from[0];
     to[2] = from[2] - probe_radius;
     if (CheckHitsPipe(polys, count, from, to, 32, hit_polys, hit_points, 1, ignore_mask) > 0) {
-        *(u_long128 *)negative_hit = *(u_long128 *)hit_points[0];
+        *(u_long128 *) negative_hit = *(u_long128 *) hit_points[0];
         sceVu0Normalize(normal, polys[hit_polys[0]].normal);
         if (normal[1] < 0.5f && normal[1] > -0.5f) {
             negative = 1;
@@ -2180,15 +2180,19 @@ int CreateCharaCPoly(CCPoly *polys, int max_polys, float *pos, float *target, fl
     if (max_polys < 2) {
         return 0;
     }
+
     sceVu0SubVector(direction, target, pos);
     direction[1] = 0.0f;
     wall_distance = mgDistVector(direction);
+
     if (wall_distance > distance) {
         wall_distance = distance;
     }
+
     if (wall_distance < distance) {
         wall_distance -= 1.0f;
     }
+
     sceVu0Normalize(direction, direction);
     upper_left[1] = half_size;
     upper_left[0] = -direction[2] * half_size;
@@ -2207,12 +2211,12 @@ int CreateCharaCPoly(CCPoly *polys, int max_polys, float *pos, float *target, fl
     sceVu0AddVector(upper_right, upper_right, centre);
     sceVu0AddVector(lower_left, lower_left, centre);
     sceVu0AddVector(lower_right, lower_right, centre);
-    *(u_long128 *)&polys[0].ground_kind = 0;
+    *(u_long128 *) &polys[0].ground_kind = 0;
     sceVu0CopyVector(polys[0].vertex[0], upper_left);
     sceVu0CopyVector(polys[0].vertex[1], upper_right);
     sceVu0CopyVector(polys[0].vertex[2], lower_left);
     sceVu0CopyVector(polys[0].normal, direction);
-    *(u_long128 *)&polys[1].ground_kind = 0;
+    *(u_long128 *) &polys[1].ground_kind = 0;
     sceVu0CopyVector(polys[1].vertex[0], lower_left);
     sceVu0CopyVector(polys[1].vertex[1], upper_right);
     sceVu0CopyVector(polys[1].vertex[2], lower_right);
@@ -2223,6 +2227,7 @@ int CreateCharaCPoly(CCPoly *polys, int max_polys, float *pos, float *target, fl
 float LinerInterpolation(float from, float to, float rate) {
     return from + (rate * (to - from));
 }
+
 int LinerInterpolationI(int from, int to, int step, int steps) {
     return from + step * (to - from) / steps;
 }
@@ -2250,18 +2255,24 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", RollPos__FPfPffPf);
 
 s32 CheckPosInOutForRect(RECT *rect, s32 x, s32 y) {
     s32 left = rect->x;
+
     if (x < left) {
         return 0;
     }
+
     if ((left + rect->width) < x) {
         return 0;
     }
+
     s32 top = rect->y;
+
     if (y < top) {
         return 0;
     }
+
     return (top + rect->height) >= y;
 }
+
 float GetDisPosToRect(RECT *rect, int x, int y) {
     float distance_x;
     float distance_y;
@@ -2276,35 +2287,44 @@ s32 CheckPosInOutFor2P(float x0, float y0, float x1, float y1, float x, float y)
     float max_x;
     float max_y;
     float min_y;
-    s32 outside;
+    s32   outside;
 
     max_x = x1;
     max_y = y1;
     min_x = max_x;
+
     if (x0 < max_x) {
         min_x = x0;
     } else {
         max_x = x0;
     }
+
     min_y = max_y;
+
     if (y0 < max_y) {
         min_y = y0;
     } else {
         max_y = y0;
     }
+
     if (x < min_x) {
         return 0;
     }
+
     if (max_x < x) {
         return 0;
     }
+
     if (y < min_y) {
         return 0;
     }
+
     outside = 1;
+
     if (!(max_y < y)) {
         outside = 0;
     }
+
     return outside ^ 1;
 }
 #ifdef NONMATCHING
@@ -2348,9 +2368,11 @@ s32 CalcIntersectionPoint2PAnd2P(float ax0, float ay0, float ax1, float ay1, flo
     if (CalcIntersectionPointLineAndLine(ax0, ay0, ax1, ay1, bx0, by0, bx1, by1, out_x, out_y) == 0) {
         return 0;
     }
+
     if (CheckPosInOutFor2P(ax0, ay0, ax1, ay1, *out_x, *out_y) == 0) {
         return 0;
     }
+
     return CheckPosInOutFor2P(bx0, by0, bx1, by1, *out_x, *out_y) != 0;
 }
 

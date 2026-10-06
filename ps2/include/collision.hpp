@@ -2,8 +2,9 @@
 
 #include "common.h"
 
-#include <cstring>
 #include <libvu0.h>
+
+#include <cstring>
 
 #include "mg_drawenv.hpp"
 #include "mg_frame.hpp"
@@ -42,12 +43,12 @@ enum ColFrameFlag {
 struct CCPoly {
     sceVu0FVECTOR vertex[3];   /**< Corners of the triangle. */
     sceVu0FVECTOR normal;      /**< Normal of the triangle's plane. */
-    short           ground_kind; /**< What the surface is made of. */
-    short           foot_sound; /**< Sound the character's feet play on it. */
-    short           area_kind; /**< Kind of area the surface marks. */
-    short           ignore_mask; /**< Collision query modes that pass through the surface. */
-    u_short           parts_no; /**< Index of the map part the triangle was gathered from. */
-    short           unk_4a;
+    short         ground_kind; /**< What the surface is made of. */
+    short         foot_sound;  /**< Sound the character's feet play on it. */
+    short         area_kind;   /**< Kind of area the surface marks. */
+    short         ignore_mask; /**< Collision query modes that pass through the surface. */
+    u_short       parts_no;    /**< Index of the map part the triangle was gathered from. */
+    short         unk_4a;
     float         unk_4c;
 };
 
@@ -226,7 +227,7 @@ STATIC_ASSERT(sizeof(CCollisionMDT) == 0x50);
  */
 class CColFrame : public mgCFrame {
 public:
-    u_int         flags; /**< Which geometry a query visits. @see ColFrameFlag. */
+    u_int       flags;     /**< Which geometry a query visits. @see ColFrameFlag. */
     CCollision *collision; /**< Geometry held by this frame, or null. */
 
     /**

@@ -120,3 +120,33 @@ The seven remaining `INCLUDE_ASM` functions all have C++ drafts behind `NONMATCH
 
 ## Matrix loop drafts
 The three vector loop functions now have guarded C++ representations of the VU0 matrix transform and four-component extrema operations. These compile but differ from the retail handwritten VU0 instruction streams; the assembly fallbacks remain active. The supported callers pass a positive count.
+
+## Guarded VU0 arithmetic drafts
+
+Thirty previously assembly-only functions now have `NONMATCHING` C++ bodies, each with the original
+`INCLUDE_ASM` in the default branch. `draft_check.py mg_math` compiles every body; none of these
+thirty matches its retail VU0 instruction sequence. The generated object therefore remains the
+assembly version in ordinary PS2 builds.
+
+- `mgFotI4` scales four lanes by 16 before integer conversion. The draft uses a C++ cast, which
+  approximates VU0 `vftoi4` for ordinary finite values; edge cases such as overflow and NaN may differ.
+- `mgCreateBox8` emits the eight corners in the VU0 store order: minimum; maximum x/y/z separately;
+  three maximum corners with x/y/z respectively replaced by minimum; maximum. The four-component
+  loads and stores preserve the input w components.
+- `mgZeroVector`, `mgZeroVectorW`, and `mgAddVector`/`mgSubVector` operate on all four lanes.
+- The five `mgClip*` drafts test whether any of the two vector differences has a negative lane,
+  as the cleared VU0 sticky sign bit does. The W forms test x, y, w; the others test x, y, z.
+  Floating-point status behavior for exceptional inputs remains an approximation.
+- `mgVectorMin`, `mgVectorMaxMin`, and `mgBoxMaxMin` compare four lanes; scalar conditional
+  comparisons may choose a different NaN operand than `vmini`/`vmax`.
+- `mgPlaneNormal` takes the cross product of the two edges starting at the first point. Its w lane
+  is modeled as zero; the retail VU0 operation only writes xyz, so the exact stored w value needs
+  a register-level match.
+- The seven `mgDistVector*` drafts sum squared x/y/z or x/z differences, then take a square root
+  for the distance forms. They do not reproduce VU0 accumulation, Q register, or rounding details.
+- `mgUnitMatrix` and `mgZeroMatrix` write all sixteen scalar elements. `mgMulMatrix` multiplies two
+  4x4 matrices, and file-local `MulMatrix3` computes `(matrix * second) * third` with temporaries
+  to preserve aliasing. The retail functions use VU0 multiply-add sequencing.
+- `mgInversMatrix` computes the inverse of the 3x3 linear portion using cofactors, then the
+  translated fourth row. Like retail, it has no singular-matrix guard. Division and accumulation
+  differ from VU0 at instruction and rounding level.

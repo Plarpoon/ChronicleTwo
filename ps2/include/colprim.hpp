@@ -93,26 +93,27 @@ enum ColPrimCoordType {
  *
  */
 struct DAMAGE_PARAM {
-    char name[0x10];                       /**< Name by which attacks and scripts look up the row. */
-    s8 shape;
-    u8 unk_11[3];
-    u_int  target; /**< DamageTarget flags. */
-    signed char   kind; /**< DamageKind of the attack. */
-    u_char   unk_19[0x3];
-    int  damage; /**< Damage that the primitive starts with. */
-    signed char   multi_hit; /**< Nonzero when the attack can hit the same character more than once. */
-    u_char   unk_21;
-    signed char   stagger; /**< Amount that a hit adds to the target's stagger count. */
-    u_char   unk_23;
-    short  critical_rate; /**< Percentage by which a critical hit scales the damage. */
-    u_short  hit_flags; /**< Flags that choose the hit effect and reaction. */
-    int  unk_28;
-    short  element[DAMAGE_ELEMENT_MAX]; /**< Elemental attribute values that the primitive starts with. */
-    int  source_type; /**< Kind of attacker, recorded on the monster that takes the hit. */
-    u_int  status; /**< Special status flags that a hit inflicts. */
-    short  stun_time; /**< Frames for which a hit stuns the target. */
-    short  hit_count; /**< Number of hits over which the attack's damage is divided. */
+    char        name[0x10]; /**< Name by which attacks and scripts look up the row. */
+    s8          shape;      /**< DAMAGE_SHAPE flags selecting the attack's collision shape. */
+    u8          unk_11[3];
+    u_int       target; /**< DamageTarget flags. */
+    signed char kind;   /**< DamageKind of the attack. */
+    u_char      unk_19[0x3];
+    int         damage;    /**< Damage that the primitive starts with. */
+    signed char multi_hit; /**< Nonzero when the attack can hit the same character more than once. */
+    u_char      unk_21;
+    signed char stagger; /**< Amount that a hit adds to the target's stagger count. */
+    u_char      unk_23;
+    short       critical_rate; /**< Percentage by which a critical hit scales the damage. */
+    u_short     hit_flags;     /**< Flags that choose the hit effect and reaction. */
+    int         unk_28;
+    short       element[DAMAGE_ELEMENT_MAX]; /**< Elemental attribute values that the primitive starts with. */
+    int         source_type;                 /**< Kind of attacker, recorded on the monster that takes the hit. */
+    u_int       status;                      /**< Special status flags that a hit inflicts. */
+    short       stun_time;                   /**< Frames for which a hit stuns the target. */
+    short       hit_count;                   /**< Number of hits over which the attack's damage is divided. */
 };
+
 STATIC_ASSERT(sizeof(DAMAGE_PARAM) == 0x48);
 
 /**
@@ -123,39 +124,39 @@ STATIC_ASSERT(sizeof(DAMAGE_PARAM) == 0x48);
  */
 class CColPrim {
 public:
-    int           id; /**< Index of the primitive in its manager. */
+    int           id;       /**< Index of the primitive in its manager. */
     int           param_no; /**< Index of the damage parameter row. */
-    DAMAGE_PARAM *param;                   /**< Damage parameter row of the attack. */
-    int           active; /**< Nonzero while the primitive is in use. */
-    int           owner; /**< Identifier of the character or script that created the primitive. */
+    DAMAGE_PARAM *param;    /**< Damage parameter row of the attack. */
+    int           active;   /**< Nonzero while the primitive is in use. */
+    int           owner;    /**< Identifier of the character or script that created the primitive. */
     int           unk_14;
-    u_long           hit_mask; /**< One bit per character identifier that the primitive has already hit. */
+    u_long        hit_mask;   /**< One bit per character identifier that the primitive has already hit. */
     int           step_count; /**< Steps since the primitive was set up. */
-    int           life; /**< Steps after which the primitive is deleted, or -1 to last until deleted. */
-    int           hit_num; /**< Number of hits that the primitive has dealt. */
-    int           attacker; /**< Battle character that deals the attack, or -1. */
-    u_int           coord_type; /**< ColPrimCoordType of the positions. */
+    int           life;       /**< Steps after which the primitive is deleted, or -1 to last until deleted. */
+    int           hit_num;    /**< Number of hits that the primitive has dealt. */
+    int           attacker;   /**< Battle character that deals the attack, or -1. */
+    u_int         coord_type; /**< ColPrimCoordType of the positions. */
     int           unk_34;
-    mgCFrame     *frame[2];                /**< Model frames whose world positions give the start and end of the shape. */
-    sceVu0FVECTOR pos[2];                  /**< Start and end of the shape this step. */
-    sceVu0FVECTOR old_pos[2];              /**< Start and end of the shape on the previous step. */
-    u_int           target; /**< DamageTarget flags. */
-    float         radius;                  /**< Radius of the sphere or line. */
-    int           damage; /**< Damage that a hit deals. */
+    mgCFrame     *frame[2];   /**< Model frames whose world positions give the start and end of the shape. */
+    sceVu0FVECTOR pos[2];     /**< Start and end of the shape this step. */
+    sceVu0FVECTOR old_pos[2]; /**< Start and end of the shape on the previous step. */
+    u_int         target;     /**< DamageTarget flags. */
+    float         radius;     /**< Radius of the sphere or line. */
+    int           damage;     /**< Damage that a hit deals. */
     int           unk_8c;
-    short           element[DAMAGE_ELEMENT_MAX]; /**< Elemental attribute values of the attack. */
-    u_int           status; /**< Special status flags that a hit inflicts. */
-    float         range;                   /**< Distance from the origin beyond which the attack deals no damage. */
-    u_char            unk_a8[0x8];
-    sceVu0FVECTOR origin;                  /**< Position where the primitive started, from which the range is measured. */
-    signed char            reversed; /**< Nonzero when an attack has knocked the primitive back. */
-    u_char            unk_c1[0xF];
-    sceVu0FVECTOR revers_vec;              /**< Direction in which the primitive was knocked back. */
-    short           gift[3]; /**< Item numbers of the gift that the primitive carries. */
-    signed char            has_gift; /**< Nonzero when the primitive carries a gift. */
-    u_char            unk_e7[0x9];
-    sceVu0FVECTOR hit_vec;                 /**< Direction of the last hit. */
-    sceVu0FVECTOR hit_pos;                 /**< Position of the last hit. */
+    short         element[DAMAGE_ELEMENT_MAX]; /**< Elemental attribute values of the attack. */
+    u_int         status;                      /**< Special status flags that a hit inflicts. */
+    float         range;                       /**< Distance from the origin beyond which the attack deals no damage. */
+    u_char        unk_a8[0x8];
+    sceVu0FVECTOR origin;   /**< Position where the primitive started, from which the range is measured. */
+    signed char   reversed; /**< Nonzero when an attack has knocked the primitive back. */
+    u_char        unk_c1[0xF];
+    sceVu0FVECTOR revers_vec; /**< Direction in which the primitive was knocked back. */
+    short         gift[3];    /**< Item numbers of the gift that the primitive carries. */
+    signed char   has_gift;   /**< Nonzero when the primitive carries a gift. */
+    u_char        unk_e7[0x9];
+    sceVu0FVECTOR hit_vec; /**< Direction of the last hit. */
+    sceVu0FVECTOR hit_pos; /**< Position of the last hit. */
 
     /**
      * Sets the primitive up from the damage parameter row of the given name.
@@ -191,7 +192,7 @@ public:
      * @address 0x1BB2E0
      * @size 0x50
      */
-    void SetCoord(mgCFrame *frame, float radius);
+    void SetCoord(mgCFrame *start, float radius);
 
     /**
      * Makes a line of the given radius follow two model frames.
@@ -218,7 +219,7 @@ public:
      * @address 0x1BB820
      * @size 0xB0
      */
-    int IsReversVec(CColPrim *attack);
+    int IsReversVec(CColPrim *other);
 
     /**
      * Gives the direction opposite to the primitive's last move.
@@ -227,7 +228,7 @@ public:
      * @address 0x1BB8D0
      * @size 0x40
      */
-    void GetReversVec(float *vec);
+    void GetReversVec(float *out_vector);
 
     /**
      * Draws the primitive for debugging; does nothing in retail.
@@ -254,7 +255,7 @@ public:
      * @address 0x1BBA60
      * @size 0x40
      */
-    void Delete(int owner);
+    void Delete(int id);
 
     /**
      * Clears the primitive to an unused state.
@@ -265,6 +266,7 @@ public:
      */
     void Initialize();
 };
+
 STATIC_ASSERT(sizeof(CColPrim) == 0x110);
 
 /**
@@ -275,8 +277,8 @@ STATIC_ASSERT(sizeof(CColPrim) == 0x110);
  */
 class CColPrimMan {
 public:
-    CScene  *scene;                        /**< Scene whose characters the primitives hit. */
-    CColPrim prim[COLPRIM_MAX];            /**< Primitives that the manager hands out. */
+    CScene  *scene;             /**< Scene whose characters the primitives hit. */
+    CColPrim prim[COLPRIM_MAX]; /**< Primitives that the manager hands out. */
 
     /**
      * Gives a primitive that is not in use, or null when every one is.
@@ -350,6 +352,7 @@ public:
      */
     void Initialize(CScene *scene);
 };
+
 STATIC_ASSERT(sizeof(CColPrimMan) == 0x4410);
 
 /** Damage parameters of every named attack. */

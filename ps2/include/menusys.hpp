@@ -47,6 +47,7 @@ enum MENU_ASK_MODE {
 };
 
 // clang-format on
+
 /**
  *
  * Bits of the direction keys, as CMenuKeyFunc::CheckSelectKey and CMenuKeyFunc::CheckLRKey return them.
@@ -65,6 +66,7 @@ enum MENU_SELECT_KEY {
 };
 
 // clang-format on
+
 /**
  *
  * Bits of the face and shoulder buttons, as MenuCheckPushButton returns them.
@@ -83,6 +85,7 @@ enum MENU_PUSH_BUTTON {
 };
 
 // clang-format on
+
 /**
  *
  * How the cursor of a key layout moves, as MENU_INPUTKEY_ARG::type holds it.
@@ -95,6 +98,7 @@ enum MENU_INPUTKEY_TYPE {
 };
 
 // clang-format on
+
 /**
  *
  * Where an item that is being moved came from, so that it can be put back or swapped.
@@ -116,6 +120,7 @@ struct MENU_SWAPITEM_INFO {
      */
     void Set(int type, int no, int chara, int flag);
 };
+
 STATIC_ASSERT(sizeof(MENU_SWAPITEM_INFO) == 0x8);
 
 /**
@@ -123,28 +128,51 @@ STATIC_ASSERT(sizeof(MENU_SWAPITEM_INFO) == 0x8);
  * Contents of the question box a menu opens: the commands on offer and what they act on.
  *
  */
+#pragma cpp_extensions on
+
 struct MENU_ASKMODE_PARA {
     s16 unk_0;
-    s16 mes_no;                 /**< Message window that shows the commands. */
-    s16 cmd_num;                /**< Number of commands on offer. */
+    s16 mes_no;  /**< Message window that shows the commands. */
+    s16 cmd_num; /**< Number of commands on offer. */
     s16 unk_6;
-    int cmd_msg[8];             /**< Message number of each command. */
-    u32 cmd_color[8];           /**< Colour each command is drawn in; 0x80202020 marks one that cannot be chosen. */
-    s16 unk_48[8];
-    s16 cmd_mark[8];           /**< Non-zero for a command the list marks as ready, such as a weapon that can be built up. */
-    s16 arg0;                   /**< Value that depends on the question, such as the character an item belongs to. */
-    s16 arg1;                   /**< Second value that depends on the question. */
-    s16 unk_6C;
-    s16 unk_6E;
-    s16 unk_70;
-    s32 unk_74;
-    CMenuPosDataForm *form;     /**< Form the question was opened from. */
-    CGameDataUsed *item;        /**< Item the question acts on. */
-    CGameDataUsed *item2;       /**< Second item the question acts on, such as the weapon to fuse into. */
-    s32 unk_84;
-    s32 unk_88;
-    s32 unk_8C;
-    s32 unk_90;
+
+    union {
+        struct {
+            int cmd_msg[8];   /**< Message number of each command. */
+            u32 cmd_color[8]; /**< Colour each command is drawn in; 0x80202020 marks one that cannot be chosen. */
+            s16 unk_48[8];
+            s16 cmd_mark[8]; /**< Non-zero for a command the list marks as ready, such as a weapon that can be built up. */
+        };
+
+        struct {
+            u32 cmd_message_and_color_words[16]; /**< Message and colour words copied together when a question opens. */
+            u8  unk_48_to_68[0x20];
+        };
+
+        struct {
+            u8  unk_08_to_28[0x20];
+            u32 cmd_color_and_mark_words[16]; /**< Colour and mark words copied together when a question opens. */
+        };
+
+        struct {
+            u8  unk_08_to_48[0x40];
+            s16 cmd_mark_words[16]; /**< Command mark shorts copied together when a question opens. */
+        };
+    };
+
+    s16               arg0; /**< Value that depends on the question, such as the character an item belongs to. */
+    s16               arg1; /**< Second value that depends on the question. */
+    s16               unk_6C;
+    s16               unk_6E;
+    s16               unk_70;
+    s32               unk_74;
+    CMenuPosDataForm *form;  /**< Form the question was opened from. */
+    CGameDataUsed    *item;  /**< Item the question acts on. */
+    CGameDataUsed    *item2; /**< Second item the question acts on, such as the weapon to fuse into. */
+    s32               unk_84;
+    s32               unk_88;
+    s32               unk_8C;
+    s32               unk_90;
 
     /**
      *
@@ -166,6 +194,9 @@ struct MENU_ASKMODE_PARA {
      */
     void Initialize();
 };
+
+#pragma cpp_extensions reset
+
 STATIC_ASSERT(sizeof(MENU_ASKMODE_PARA) == 0x94);
 
 /**
@@ -174,16 +205,17 @@ STATIC_ASSERT(sizeof(MENU_ASKMODE_PARA) == 0x94);
  *
  */
 struct ITEMCMD_RET_PARA {
-    s16 cmd;              /**< Command that was run, or -1 for none. */
-    s8 unk_2;
-    s8 chara;             /**< Character the item is equipped on. */
-    s16 result;           /**< Value the command returned, such as what using the item did. */
-    s16 item_no;          /**< Item number of the item the command acted on. */
-    s16 unk_8;
-    s16 unk_A;
+    s16            cmd; /**< Command that was run, or -1 for none. */
+    s8             unk_2;
+    s8             chara;   /**< Character the item is equipped on. */
+    s16            result;  /**< Value the command returned, such as what using the item did. */
+    s16            item_no; /**< Item number of the item the command acted on. */
+    s16            unk_8;
+    s16            unk_A;
     CGameDataUsed *item;  /**< Item the command acted on. */
     CGameDataUsed *item2; /**< Second item the command acted on. */
 };
+
 STATIC_ASSERT(sizeof(ITEMCMD_RET_PARA) == 0x14);
 
 /**
@@ -193,11 +225,11 @@ STATIC_ASSERT(sizeof(ITEMCMD_RET_PARA) == 0x14);
  */
 class CMENU_USERPARAM {
 public:
-    CHARA_DATA *chara[2];       /**< Data of the two main characters. */
-    ROBO_DATA *robo;            /**< Data of the ridepod. */
-    MOS_CHANGE_PARAM *monster;  /**< Monster badge data of the monster form in use. */
-    CGameDataUsed *used_data;   /**< The player's inventory. */
-    MOS_CHANGE_PARAM *monster1; /**< Monster badge data of the second monster badge slot. */
+    CHARA_DATA       *chara[2];  /**< Data of the two main characters. */
+    ROBO_DATA        *robo;      /**< Data of the ridepod. */
+    MOS_CHANGE_PARAM *monster;   /**< Monster badge data of the monster form in use. */
+    CGameDataUsed    *used_data; /**< The player's inventory. */
+    MOS_CHANGE_PARAM *monster1;  /**< Monster badge data of the second monster badge slot. */
 
     /**
      *
@@ -226,6 +258,7 @@ public:
      */
     void AttachInfo();
 };
+
 STATIC_ASSERT(sizeof(CMENU_USERPARAM) == 0x18);
 
 /**
@@ -238,13 +271,14 @@ struct MENU_INPUTKEY_ARG {
     int type;         /**< How the cursor moves. @see MENU_INPUTKEY_TYPE */
     s16 min;          /**< Lowest cursor position. */
     s16 max;          /**< Position one past the highest in a list. */
-    u8 disp_lines;    /**< Number of rows on screen at once. */
-    u8 disp_columns;  /**< Number of columns on screen at once. */
-    u8 rows;          /**< Number of rows of a grid. */
-    u8 columns;       /**< Number of columns of a grid. */
+    u8  disp_lines;   /**< Number of rows on screen at once. */
+    u8  disp_columns; /**< Number of columns on screen at once. */
+    u8  rows;         /**< Number of rows of a grid. */
+    u8  columns;      /**< Number of columns of a grid. */
     s16 limit[4];     /**< What each direction does at an edge, as MenuKeySelectCheck takes it. */
     s16 exit_no[4];   /**< Layout each direction leaves to when it passes an edge, or -1. */
 };
+
 STATIC_ASSERT(sizeof(MENU_INPUTKEY_ARG) == 0x24);
 
 /**
@@ -254,24 +288,24 @@ STATIC_ASSERT(sizeof(MENU_INPUTKEY_ARG) == 0x24);
  */
 class CBaseMenuClass {
 public:
-    s16 mode;                     /**< Question that is open. @see MENU_ASK_MODE */
-    s16 step;                     /**< Step within the open question. */
-    u8 opened;                    /**< Non-zero once the menu has run its opening script. */
-    s16 unk_6;
-    char *script;                 /**< Menu command script of the screen. */
-    int script_size;              /**< Size of the menu command script in bytes. */
-    s32 unk_10;
-    s16 key_arg_no;               /**< Cursor layout in use, as an index into the screen's layout table. */
-    int tex_block[16];            /**< Texture blocks the screen uses, ending at the first negative one. */
-    MENU_ASKMODE_PARA ask_para;   /**< Contents of the open question. */
-    MENU_SWAPITEM_INFO swap_info; /**< Where the item being moved came from. */
-    s16 cmd_arg_pos;              /**< Position of the item that the command list was opened for. */
-    s32 unk_F8;
-    s32 unk_FC;
-    int make_num;                 /**< Number of objects chosen to make. */
-    s32 unk_104;
-    s8 make_cursor;               /**< Row the cursor is on in the make question; 0 is the number. */
-    s16 make_num_max;             /**< Number of objects that can be made at most. */
+    s16                mode;   /**< Question that is open. @see MENU_ASK_MODE */
+    s16                step;   /**< Step within the open question. */
+    u8                 opened; /**< Non-zero once the menu has run its opening script. */
+    s16                unk_6;
+    char              *script;      /**< Menu command script of the screen. */
+    int                script_size; /**< Size of the menu command script in bytes. */
+    s32                unk_10;
+    s16                key_arg_no;    /**< Cursor layout in use, as an index into the screen's layout table. */
+    int                tex_block[16]; /**< Texture blocks the screen uses, ending at the first negative one. */
+    MENU_ASKMODE_PARA  ask_para;      /**< Contents of the open question. */
+    MENU_SWAPITEM_INFO swap_info;     /**< Where the item being moved came from. */
+    s16                cmd_arg_pos;   /**< Position of the item that the command list was opened for. */
+    s32                unk_F8;
+    s32                unk_FC;
+    int                make_num; /**< Number of objects chosen to make. */
+    s32                unk_104;
+    s8                 make_cursor;  /**< Row the cursor is on in the make question; 0 is the number. */
+    s16                make_num_max; /**< Number of objects that can be made at most. */
 
     /**
      *
@@ -371,7 +405,7 @@ public:
      * @address 0x239650
      * @size 0x80
      */
-    int MenuItemCommnadSelectPrepare(CGameDataUsed *item, int arg_pos, int chara);
+    int MenuItemCommnadSelectPrepare(CGameDataUsed *item, int slot, int arg);
 
     /**
      *
@@ -421,7 +455,7 @@ public:
      * @address 0x23B0A0
      * @size 0x280
      */
-    int CheckSpectolFusion(CGameDataUsed *item, int mes_no, CMenuPosDataForm *form);
+    int CheckSpectolFusion(CGameDataUsed *item, int panel, CMenuPosDataForm *form);
 
     /**
      *
@@ -441,7 +475,7 @@ public:
      * @address 0x23B850
      * @size 0x2D0
      */
-    int IsSpectolFusion(int select_key, int push_button);
+    int IsSpectolFusion(int select_key, int command);
 
     /**
      *
@@ -451,7 +485,7 @@ public:
      * @address 0x23BC10
      * @size 0x200
      */
-    int IsTrush(int select_key, int push_button);
+    int IsTrush(int select_key, int command);
 
     /**
      *
@@ -471,7 +505,7 @@ public:
      * @address 0x23BEC0
      * @size 0x1B0
      */
-    int SelectInGiftBox(int select_key, int push_button);
+    int SelectInGiftBox(int select_key, int command);
 
     /**
      *
@@ -481,7 +515,7 @@ public:
      * @address 0x23C130
      * @size 0xB0
      */
-    void SetAskHowMuchItemNum(MENU_SWAPITEM_INFO *swap, CGameDataUsed *item);
+    void SetAskHowMuchItemNum(MENU_SWAPITEM_INFO *info, CGameDataUsed *item);
 
     /**
      *
@@ -501,7 +535,7 @@ public:
      * @address 0x23C370
      * @size 0x20
      */
-    void ExeScript(char *command_name);
+    void ExeScript(char *script);
 
     /**
      *
@@ -511,7 +545,7 @@ public:
      * @address 0x23C390
      * @size 0x180
      */
-    int ExtendCommand(int select_key, int push_button);
+    int ExtendCommand(int select_key, int command);
 
     /**
      *
@@ -521,7 +555,7 @@ public:
      * @address 0x23C510
      * @size 0x120
      */
-    int SelectMakeObject(int select_key);
+    int SelectMakeObject(int keys);
 
     /**
      *
@@ -573,6 +607,7 @@ public:
      */
     void EffectDrawCheck(CMenuPosDataForm *form);
 };
+
 STATIC_ASSERT(sizeof(CBaseMenuClass) == 0x110);
 
 /**
@@ -583,49 +618,56 @@ STATIC_ASSERT(sizeof(CBaseMenuClass) == 0x110);
  */
 #pragma push
 #pragma cpp_extensions on
+
 class CMenuKeyFunc {
 public:
-    u8 unk_0;
-    u8 key_enable;                     /**< Non-zero while the menu takes key input. */
-    u8 key_input;                      /**< Non-zero once a direction key has been pressed. */
-    u32 select_key;                    /**< Direction keys pressed this frame. @see MENU_SELECT_KEY */
-    int push_button;                   /**< Buttons pressed this frame. @see MENU_PUSH_BUTTON */
-    int tex_block[16];                 /**< Texture blocks the menu system may use. */
-    s32 unk_4C;
-    s16 open_type;                     /**< What the menu was opened as. @see MenuOpenType */
-    int now_mode;                      /**< Menu mode that is running. @see MenuModeID */
-    int next_mode;                     /**< Menu mode waiting to start, or -1. @see MenuModeID */
-    s16 up_arrow_cnt;                  /**< Frames the up arrow of the how-many board stays lit. */
-    s16 down_arrow_cnt;                /**< Frames the down arrow of the how-many board stays lit. */
-    u_int *pack;                       /**< Pack file of menu data. */
-    int pack_size;                     /**< Size of the pack file in bytes. */
-    s16 waku_type;                     /**< Frame drawn around the cursor, or negative for none. */
-    s32 unk_6C;
+    u8     unk_0;
+    u8     key_enable;    /**< Non-zero while the menu takes key input. */
+    u8     key_input;     /**< Non-zero once a direction key has been pressed. */
+    u32    select_key;    /**< Direction keys pressed this frame. @see MENU_SELECT_KEY */
+    int    push_button;   /**< Buttons pressed this frame. @see MENU_PUSH_BUTTON */
+    int    tex_block[16]; /**< Texture blocks the menu system may use. */
+    s32    unk_4C;
+    s16    open_type;      /**< What the menu was opened as. @see MenuOpenType */
+    int    now_mode;       /**< Menu mode that is running. @see MenuModeID */
+    int    next_mode;      /**< Menu mode waiting to start, or -1. @see MenuModeID */
+    s16    up_arrow_cnt;   /**< Frames the up arrow of the how-many board stays lit. */
+    s16    down_arrow_cnt; /**< Frames the down arrow of the how-many board stays lit. */
+    u_int *pack;           /**< Pack file of menu data. */
+    int    pack_size;      /**< Size of the pack file in bytes. */
+    s16    waku_type;      /**< Frame drawn around the cursor, or negative for none. */
+    s32    unk_6C;
+
     union {
-        struct { int cursor; int top_line; };
+        struct {
+            int cursor;
+            int top_line;
+        };
+
         int select_pos[2];
     };
-    int save_cursor;                   /**< Cursor position saved by SelDataInit. */
-    int save_top_line;                 /**< First row shown saved by SelDataInit. */
-    u8 return_item;                    /**< Set once the held item has been put back. */
-    u8 unk_81[0xF];
-    mgRect<int> rect;                  /**< Rectangle of the menu system. */
-    CUserDataManager *user_data;       /**< Player data the menu acts on. */
-    u8 unk_A4[0x1C];
-    CGameDataUsed have_item;           /**< Item the cursor is carrying. */
-    MENU_SWAPITEM_INFO have_swap;      /**< Where the carried item came from. */
-    MENU_INPUTKEY_ARG *key_arg;        /**< Cursor layout in use. */
-    CMenuPosDataForm *cursor_form;     /**< Form of the cursor. */
-    CMenuPosDataForm *waku_form;       /**< Form of the frame around the cursor. */
-    CMenuPosDataForm *how_much_form;   /**< Form of the how-many board. */
+
+    int                 save_cursor;   /**< Cursor position saved by SelDataInit. */
+    int                 save_top_line; /**< First row shown saved by SelDataInit. */
+    u8                  return_item;   /**< Set once the held item has been put back. */
+    u8                  unk_81[0xF];
+    mgRect<int>         rect;      /**< Rectangle of the menu system. */
+    CUserDataManager   *user_data; /**< Player data the menu acts on. */
+    u8                  unk_A4[0x1C];
+    CGameDataUsed       have_item;     /**< Item the cursor is carrying. */
+    MENU_SWAPITEM_INFO  have_swap;     /**< Where the carried item came from. */
+    MENU_INPUTKEY_ARG  *key_arg;       /**< Cursor layout in use. */
+    CMenuPosDataForm   *cursor_form;   /**< Form of the cursor. */
+    CMenuPosDataForm   *waku_form;     /**< Form of the frame around the cursor. */
+    CMenuPosDataForm   *how_much_form; /**< Form of the how-many board. */
     MENUFORMPARTS_TYPE *have_icon;     /**< Icon of the carried item on the cursor. */
     MENUFORMPARTS_TYPE *have_shadow;   /**< Shadow of the carried item's icon. */
     MENUFORMPARTS_TYPE *have_num;      /**< Count of the carried item. */
-    int bgm_vol;                       /**< Background music volume before the menu faded it. */
-    int bgm_step;                      /**< Amount the volume changes each frame. */
-    s16 bgm_target;                    /**< Volume the fade ends at. */
-    s16 bgm_fading;                    /**< Non-zero while the volume is fading. */
-    s32 unk_15C;
+    int                 bgm_vol;       /**< Background music volume before the menu faded it. */
+    int                 bgm_step;      /**< Amount the volume changes each frame. */
+    s16                 bgm_target;    /**< Volume the fade ends at. */
+    s16                 bgm_fading;    /**< Non-zero while the volume is fading. */
+    s32                 unk_15C;
 
     /**
      *
@@ -755,7 +797,7 @@ public:
      * @address 0x23E5E0
      * @size 0x80
      */
-    void SetWakuWH(int no, int width, int height);
+    void SetWakuWH(int part, int width, int height);
 
     /**
      *
@@ -765,7 +807,7 @@ public:
      * @address 0x23E660
      * @size 0x50
      */
-    void SetVibeCnt(int count0, int count1);
+    void SetVibeCnt(int count0, int rate);
 
     /**
      *
@@ -775,7 +817,7 @@ public:
      * @address 0x23E6B0
      * @size 0x90
      */
-    void SetVibeR(int range0, int range1);
+    void SetVibeR(int strength, int speed);
 
     /**
      *
@@ -802,7 +844,7 @@ public:
      * @address 0x23E760
      * @size 0x90
      */
-    void CursorFadeIn(float frames, int alpha);
+    void CursorFadeIn(float speed, int steps);
 
     /**
      *
@@ -812,7 +854,7 @@ public:
      * @address 0x23E7F0
      * @size 0x90
      */
-    void CursorFadeOut(float frames, int alpha);
+    void CursorFadeOut(float speed, int steps);
 
     /**
      *
@@ -832,7 +874,7 @@ public:
      * @address 0x23EEB0
      * @size 0x90
      */
-    int GetItemAll(CGameDataUsed *item, MENU_SWAPITEM_INFO *swap);
+    int GetItemAll(CGameDataUsed *item, MENU_SWAPITEM_INFO *info);
 
     /**
      *
@@ -902,7 +944,7 @@ public:
      * @address 0x240A40
      * @size 0x210
      */
-    int GetDebugInputKey(int &x, int &y);
+    int GetDebugInputKey(int &held, int &pressed);
 
     /**
      *
@@ -912,7 +954,7 @@ public:
      * @address 0x240C50
      * @size 0xE0
      */
-    int MenuSwapItem(CGameDataUsed *item, MENU_SWAPITEM_INFO *swap, int num, bool flag);
+    int MenuSwapItem(CGameDataUsed *item, MENU_SWAPITEM_INFO *swap, int quantity, bool flag);
 
     /**
      *
@@ -942,7 +984,7 @@ public:
      * @address 0x240FF0
      * @size 0x1B0
      */
-    void SetHaveItemInfo(int visible, int update);
+    void SetHaveItemInfo(int visible, int detail);
 
     /**
      *
@@ -952,7 +994,7 @@ public:
      * @address 0x2411A0
      * @size 0xF0
      */
-    int menu_inputkey_limmit_check_line(int select_key);
+    int menu_inputkey_limmit_check_line(int keys);
 
     /**
      *
@@ -972,7 +1014,7 @@ public:
      * @address 0x241410
      * @size 0x60
      */
-    int CheckMoveSelect(int select_key);
+    int CheckMoveSelect(int arg);
 
     /**
      *
@@ -982,7 +1024,7 @@ public:
      * @address 0x241470
      * @size 0x70
      */
-    void FadeOutMenuBGMVol(int step, int target);
+    void FadeOutMenuBGMVol(int arg, int value);
 
     /**
      *
@@ -1004,6 +1046,7 @@ public:
      */
     s16 StepMenuBGM();
 };
+
 STATIC_ASSERT(sizeof(CMenuKeyFunc) == 0x160);
 #pragma pop
 
@@ -1014,52 +1057,52 @@ STATIC_ASSERT(sizeof(CMenuKeyFunc) == 0x160);
  */
 class CMenuItemInfo : public CBaseMenuClass {
 public:
-    s16 view_mode;                       /**< Page that is shown: a character, the ridepod or a monster form. */
-    s16 unk_112;
-    s16 sub_view;                        /**< Sub-page that is shown within the page. */
-    s16 view_chara;                      /**< Character whose model is shown. */
-    s16 load_item_no;                    /**< Item list the menu loads models for. */
-    s16 mos_id;                          /**< Monster form in use when the menu opened. */
-    s32 unk_11C;
-    s16 equip_list[8];                   /**< Item numbers of the equipment of the shown character. */
-    u8 equip_flag[8];                    /**< Flags of the equipment of the shown character. */
-    s16 load_weapon_no;                  /**< Item number of the weapon whose model is loaded. */
-    u8 unk_13A;
-    sceVu0FVECTOR camera_ref;            /**< Point the menu camera looks at. */
-    sceVu0FVECTOR camera_pos;            /**< Position of the menu camera. */
-    u8 unk_160;
-    u8 unk_161[0xB];
-    u8 unk_16C;
-    u8 effect_pos;                       /**< Non-zero once the place of the item effect is known. */
-    u8 sound_loaded;                     /**< Non-zero once the shown character's voices are loaded. */
-    u8 sound_load;                       /**< Non-zero when the shown character's voices must be loaded. */
-    u8 unk_170;
-    s16 unk_172;
-    s16 unk_174;
-    s16 sub_menu;                        /**< Screen opened from the item menu that is running, or -1 for the item menu itself. */
-    s16 next_sub_menu;                   /**< Screen to open from the item menu, or -1 for none. */
-    CGameDataUsed *view_weapon;          /**< Weapon whose status is shown. */
-    CMenuPosDataForm *view_form[6];      /**< Forms of the pages. */
-    s16 unk_198;
-    CMenuPosDataForm *item_board_form;   /**< Form of the inventory board. */
-    s32 unk_1A0;
-    CMenuPosDataForm *money_form;        /**< Form of the money board. */
-    CMenuPosDataForm *chara_poly_form[2];/**< Forms behind the two character models. */
-    CMenuPosDataForm *fill_form;         /**< Form that fills the main page. */
-    MENUFORMPARTS_TYPE *item_board_icon; /**< Icon part of the inventory board. */
-    MENUFORMPARTS_TYPE *wep_parts[2][16];/**< Parts of the two weapon slots of each character page, from index 4. */
-    u8 unk_238[0x68];
-    MENUFORMPARTS_TYPE *robo_parts[6];   /**< Parts of the ridepod page. */
-    MENUFORMPARTS_TYPE *hp_bar[2];       /**< Life bar of each character page. */
-    MENUFORMPARTS_TYPE *item_parts[2][3];/**< Item icons of each character page. */
-    MENUFORMPARTS_TYPE *item_num[2][3];  /**< Item counts of each character page. */
-    MENUFORMPARTS_TYPE *voice_part;      /**< Voice part of the ridepod page. */
-    CActionChara *build_up_chara;        /**< Model of the weapon being built up. */
-    s32 unk_2F8;
-    s16 unk_2FC;
-    s16 debug_item_no;                   /**< Item number the debug controls show. */
-    u8 unk_300;
-    CGameDataUsed debug_item;            /**< Item the debug controls show. */
+    s16                 view_mode; /**< Page that is shown: a character, the ridepod or a monster form. */
+    s16                 unk_112;
+    s16                 sub_view;     /**< Sub-page that is shown within the page. */
+    s16                 view_chara;   /**< Character whose model is shown. */
+    s16                 load_item_no; /**< Item list the menu loads models for. */
+    s16                 mos_id;       /**< Monster form in use when the menu opened. */
+    s32                 unk_11C;
+    s16                 equip_list[8];  /**< Item numbers of the equipment of the shown character. */
+    u8                  equip_flag[8];  /**< Flags of the equipment of the shown character. */
+    s16                 load_weapon_no; /**< Item number of the weapon whose model is loaded. */
+    u8                  unk_13A;
+    sceVu0FVECTOR       camera_ref; /**< Point the menu camera looks at. */
+    sceVu0FVECTOR       camera_pos; /**< Position of the menu camera. */
+    u8                  unk_160;
+    u8                  unk_161[0xB];
+    u8                  unk_16C;
+    u8                  effect_pos;   /**< Non-zero once the place of the item effect is known. */
+    u8                  sound_loaded; /**< Non-zero once the shown character's voices are loaded. */
+    u8                  sound_load;   /**< Non-zero when the shown character's voices must be loaded. */
+    u8                  unk_170;
+    s16                 unk_172;
+    s16                 unk_174;
+    s16                 sub_menu;      /**< Screen opened from the item menu that is running, or -1 for the item menu itself. */
+    s16                 next_sub_menu; /**< Screen to open from the item menu, or -1 for none. */
+    CGameDataUsed      *view_weapon;   /**< Weapon whose status is shown. */
+    CMenuPosDataForm   *view_form[6];  /**< Forms of the pages. */
+    s16                 unk_198;
+    CMenuPosDataForm   *item_board_form; /**< Form of the inventory board. */
+    s32                 unk_1A0;
+    CMenuPosDataForm   *money_form;         /**< Form of the money board. */
+    CMenuPosDataForm   *chara_poly_form[2]; /**< Forms behind the two character models. */
+    CMenuPosDataForm   *fill_form;          /**< Form that fills the main page. */
+    MENUFORMPARTS_TYPE *item_board_icon;    /**< Icon part of the inventory board. */
+    MENUFORMPARTS_TYPE *wep_parts[2][16];   /**< Parts of the two weapon slots of each character page, from index 4. */
+    u8                  unk_238[0x68];
+    MENUFORMPARTS_TYPE *robo_parts[6];    /**< Parts of the ridepod page. */
+    MENUFORMPARTS_TYPE *hp_bar[2];        /**< Life bar of each character page. */
+    MENUFORMPARTS_TYPE *item_parts[2][3]; /**< Item icons of each character page. */
+    MENUFORMPARTS_TYPE *item_num[2][3];   /**< Item counts of each character page. */
+    MENUFORMPARTS_TYPE *voice_part;       /**< Voice part of the ridepod page. */
+    CActionChara       *build_up_chara;   /**< Model of the weapon being built up. */
+    s32                 unk_2F8;
+    s16                 unk_2FC;
+    s16                 debug_item_no; /**< Item number the debug controls show. */
+    u8                  unk_300;
+    CGameDataUsed       debug_item; /**< Item the debug controls show. */
 
     /**
      *
@@ -1179,7 +1222,7 @@ public:
      * @address 0x242BC0
      * @size 0x60
      */
-    void CheckViewWeaponStatus(int returned);
+    void CheckViewWeaponStatus(int revert);
 
     /**
      *
@@ -1239,7 +1282,7 @@ public:
      * @address 0x245660
      * @size 0x80
      */
-    s16 GetActiveCharaIDForItemCmd();
+    int GetActiveCharaIDForItemCmd();
 
     /**
      *
@@ -1299,7 +1342,7 @@ public:
      * @address 0x24A890
      * @size 0x1BA0
      */
-    int PushKey(int select_key, int push_button);
+    int PushKey(int pad, int trigger);
 
     /**
      *
@@ -1319,7 +1362,7 @@ public:
      * @address 0x24EA80
      * @size 0x440
      */
-    int ModelReadStart(int mode, int chara, int flag);
+    int ModelReadStart(int mode, int check_item, int restart_read);
 
     /**
      *
@@ -1329,7 +1372,7 @@ public:
      * @address 0x24EEC0
      * @size 0x210
      */
-    void WeaponBuildCheck(CActionChara *chara, int chara_no, int flag);
+    void WeaponBuildCheck(CActionChara *chara, int chara_no, int tex_block);
 
     /**
      *
@@ -1391,6 +1434,7 @@ public:
      */
     int KeyStep();
 };
+
 STATIC_ASSERT(sizeof(CMenuItemInfo) == 0x370);
 
 /**
@@ -1400,23 +1444,23 @@ STATIC_ASSERT(sizeof(CMenuItemInfo) == 0x370);
  */
 class CItemSelect : public CBaseMenuClass {
 public:
-    int item_num;                 /**< Number of items in the list. */
-    CGameDataUsed *item_list[150];/**< Items that can be chosen. */
-    u8 limit_disp[150];           /**< Non-zero for each listed item that is shown as unavailable. */
-    s16 alpha_step;               /**< Amount the alpha changes each frame. */
-    int alpha;                    /**< Alpha the list is drawn with. */
-    int bg_alpha;                 /**< Alpha the background is drawn with. */
-    s32 unk_40C;
-    mgRect<float> list_rect;      /**< Rectangle of the list. */
-    mgRect<float> item_rect;      /**< Rectangle of one item in the list. */
-    float cursor_x;               /**< Drawn position of the cursor, which eases towards the item it is on. */
-    float cursor_y;               /**< Drawn position of the cursor, which eases towards the item it is on. */
-    float scroll;                 /**< Drawn scroll of the list, which eases towards the first row shown. */
-    mgCTexture *texture;          /**< Texture the list is drawn with. */
-    int cursor;                   /**< Item the cursor is on. */
-    int top_line;                 /**< First row shown. */
-    float line_num;               /**< Number of rows of the list. */
-    s32 unk_44C;
+    int            item_num;        /**< Number of items in the list. */
+    CGameDataUsed *item_list[150];  /**< Items that can be chosen. */
+    u8             limit_disp[150]; /**< Non-zero for each listed item that is shown as unavailable. */
+    s16            alpha_step;      /**< Amount the alpha changes each frame. */
+    int            alpha;           /**< Alpha the list is drawn with. */
+    int            bg_alpha;        /**< Alpha the background is drawn with. */
+    s32            unk_40C;
+    mgRect<float>  list_rect; /**< Rectangle of the list. */
+    mgRect<float>  item_rect; /**< Rectangle of one item in the list. */
+    float          cursor_x;  /**< Drawn position of the cursor, which eases towards the item it is on. */
+    float          cursor_y;  /**< Drawn position of the cursor, which eases towards the item it is on. */
+    float          scroll;    /**< Drawn scroll of the list, which eases towards the first row shown. */
+    mgCTexture    *texture;   /**< Texture the list is drawn with. */
+    int            cursor;    /**< Item the cursor is on. */
+    int            top_line;  /**< First row shown. */
+    float          line_num;  /**< Number of rows of the list. */
+    s32            unk_44C;
 
     /**
      *
@@ -1493,6 +1537,7 @@ public:
      */
     void Draw();
 };
+
 STATIC_ASSERT(sizeof(CItemSelect) == 0x450);
 
 /**
@@ -1501,12 +1546,13 @@ STATIC_ASSERT(sizeof(CItemSelect) == 0x450);
  *
  */
 struct MENU_ITEM_CURSOR_INFO {
-    u8 enable;      /**< Non-zero while the marks are drawn. */
-    u8 arrow[5];    /**< Non-zero for each arrow that is drawn. */
-    u8 chara_mark;  /**< Non-zero when the mark on the character is drawn. */
-    u8 unk_7;
-    int counter;    /**< Frame counter that makes the marks bob. */
+    u8  enable;     /**< Non-zero while the marks are drawn. */
+    u8  arrow[5];   /**< Non-zero for each arrow that is drawn. */
+    u8  chara_mark; /**< Non-zero when the mark on the character is drawn. */
+    u8  unk_7;
+    int counter; /**< Frame counter that makes the marks bob. */
 };
+
 STATIC_ASSERT(sizeof(MENU_ITEM_CURSOR_INFO) == 0xC);
 
 /**
@@ -1515,19 +1561,20 @@ STATIC_ASSERT(sizeof(MENU_ITEM_CURSOR_INFO) == 0xC);
  *
  */
 struct BUILDUP_WEAPON_INFO {
-    s16 unk_0;
-    s8 mode;
-    s8 select_no;
-    s16 build_up;
-    s16 unk_6;
-    int select_num;
-    int weapon_no[3];
-    int enable[3];
+    s16            unk_0;
+    s8             mode;
+    s8             select_no;
+    s16            build_up;
+    s16            unk_6;
+    int            select_num;
+    int            weapon_no[3];
+    int            enable[3];
     CGameDataUsed *weapon;
-    s32 unk_28;
-    CDataWeapon *weapon_data[3];
-    s32 unk_38[3];
+    s32            unk_28;
+    CDataWeapon   *weapon_data[3];
+    s32            unk_38[3];
 };
+
 STATIC_ASSERT(sizeof(BUILDUP_WEAPON_INFO) == 0x44);
 
 /**
@@ -1559,7 +1606,7 @@ int IsDispTrushCommand(CGameDataUsed *item);
  * @address 0x23C6F0
  * @size 0x130
  */
-void SetPreCmdTrush(CBaseMenuClass *menu, int mes_no, CGameDataUsed *item, CMenuPosDataForm *form);
+void SetPreCmdTrush(CBaseMenuClass *menu, int panel, CGameDataUsed *item, CMenuPosDataForm *form);
 
 /**
  *
@@ -1569,8 +1616,8 @@ void SetPreCmdTrush(CBaseMenuClass *menu, int mes_no, CGameDataUsed *item, CMenu
  * @address 0x23C820
  * @size 0xE0
  */
-void SetPreCmdSpectolBreak(CBaseMenuClass *menu, int mes_no, CMenuPosDataForm *form, CGameDataUsed *item,
-                           CGameDataUsed *item2);
+void SetPreCmdSpectolBreak(CBaseMenuClass *menu, int panel, CMenuPosDataForm *form, CGameDataUsed *item,
+                           CGameDataUsed *target);
 
 /**
  *
@@ -1580,7 +1627,7 @@ void SetPreCmdSpectolBreak(CBaseMenuClass *menu, int mes_no, CMenuPosDataForm *f
  * @address 0x23C900
  * @size 0x60
  */
-void SetPreCmdGiftBoxSelect(CBaseMenuClass *menu, CGameDataUsed *gift_box);
+void SetPreCmdGiftBoxSelect(CBaseMenuClass *menu, CGameDataUsed *item);
 
 /**
  *
@@ -1600,7 +1647,7 @@ int IsEnableChangeRoboParts(CGameDataUsed *part);
  * @address 0x23CC40
  * @size 0x10
  */
-void SetSpectolInfo(CGameDataUsed *item, CGameDataUsed *weapon);
+void SetSpectolInfo(CGameDataUsed *item, CGameDataUsed *part);
 
 /**
  *
@@ -1630,7 +1677,7 @@ int CheckNowRoboUseCapacity(int *capacity);
  * @address 0x23D4D0
  * @size 0x110
  */
-int ExchangeItemInfoMake(MENU_SWAPITEM_INFO *swap, int (*table)[4], int pos, int type);
+int ExchangeItemInfoMake(MENU_SWAPITEM_INFO *info, int (*row)[4], int mode, int is_equip);
 
 /**
  *
@@ -1640,7 +1687,7 @@ int ExchangeItemInfoMake(MENU_SWAPITEM_INFO *swap, int (*table)[4], int pos, int
  * @address 0x23D5E0
  * @size 0x50
  */
-void MenuCheckLine(int *top_line, int pos, int disp_lines);
+void MenuCheckLine(int *top_line, int cursor, int visible_rows);
 
 /**
  *
@@ -1650,7 +1697,7 @@ void MenuCheckLine(int *top_line, int pos, int disp_lines);
  * @address 0x23D630
  * @size 0x180
  */
-int MenuKeySelectCheck(int step, int *pos, int *top_line, int min, int max, int disp_lines, int limit);
+int MenuKeySelectCheck(int step, int *cursor, int *scroll, int min, int max, int visible, int mode);
 
 /**
  *
@@ -1660,7 +1707,7 @@ int MenuKeySelectCheck(int step, int *pos, int *top_line, int min, int max, int 
  * @address 0x23D7B0
  * @size 0x100
  */
-int MenuListKeyCheck(int select_key, int *pos, int *top_line, int min, int max, int disp_lines, int limit);
+int MenuListKeyCheck(int keys, int *cursor, int *top_line, int count, int visible_rows, int key_pair, int wrap_kind);
 
 /**
  *
@@ -1680,7 +1727,7 @@ int MenuGlidKeyCheck(int select_key, int *pos, int *top_line, int *size, int *di
  * @address 0x23DBB0
  * @size 0x50
  */
-int MenuListSelectKeyCheck(int select_key, int page_lines);
+int MenuListSelectKeyCheck(int keys, int page_size);
 
 /**
  *
@@ -1690,7 +1737,7 @@ int MenuListSelectKeyCheck(int select_key, int page_lines);
  * @address 0x23DC00
  * @size 0x180
  */
-int MenuItemBrdKey(int select_key, int *pos, int *top_line, int limit);
+int MenuItemBrdKey(int keys, int *cursor, int *scroll, int board);
 
 /**
  *
@@ -1710,7 +1757,7 @@ int MenuCheckPushButton();
  * @address 0x240880
  * @size 0x40
  */
-int ConvertCheckPushButton(int push_button);
+int ConvertCheckPushButton(int buttons);
 
 /**
  *
@@ -1720,7 +1767,7 @@ int ConvertCheckPushButton(int push_button);
  * @address 0x240D30
  * @size 0x100
  */
-CGameDataUsed *GetGameDataUsedForSWAPINFO(MENU_SWAPITEM_INFO *swap);
+CGameDataUsed *GetGameDataUsedForSWAPINFO(MENU_SWAPITEM_INFO *info);
 
 /**
  *
@@ -1740,7 +1787,7 @@ void CheckEnableHaveItemNum();
  * @address 0x244F30
  * @size 0x1D0
  */
-void MenuMoveItemPos(int *pos, int *top_line, int select_key);
+void MenuMoveItemPos(int *item, int *pos, int phase);
 
 /**
  *

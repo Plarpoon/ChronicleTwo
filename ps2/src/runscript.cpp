@@ -1,4 +1,5 @@
 #include "common.h"
+
 #include "runscript.hpp"
 #ifdef NONMATCHING
 #include <cmath>
@@ -41,32 +42,42 @@ void runerror(const char *message) {
     fprintf(stderr, at_168, message);
     exit(-1);
 }
-void stkoverflow(void) {
+
+void stkoverflow() {
     runerror(at_173);
 }
+
 int chk_int(RS_STACKDATA data, funcdata *func) {
     if (data.type == RS_INT) {
         return data.i;
     }
+
     fprintf(stderr, at_183__2, func->name);
     exit(-1);
     return 0;
 }
+
 u8 is_true(RS_STACKDATA data) {
     int is_zero = data.type == RS_INT;
+
     if (is_zero) {
         is_zero = data.i == 0;
     }
+
     return is_zero ^ 1;
 }
-void divby0error(void) {
+
+void divby0error() {
     runerror(at_197);
 }
-void modby0error(void) {
+
+void modby0error() {
     runerror(at_202);
 }
+
 void print(RS_STACKDATA *slots, int count) {
     int i = 0;
+
     if (0 < count) {
         do {
             if (slots->type == RS_INT) {
@@ -76,12 +87,14 @@ void print(RS_STACKDATA *slots, int count) {
             } else if (slots->type == RS_FLOAT) {
                 printf(at_225, slots->f);
             }
+
             fflush(stdout);
             i++;
             slots++;
         } while (i < count);
     }
 }
+
 CRunScript::CRunScript() {
     sp = stack;
     stack_end = stack;
@@ -95,23 +108,27 @@ CRunScript::CRunScript() {
     version = 1;
     DeleteProgram();
 }
-void CRunScript::DeleteProgram(void) {
+
+void CRunScript::DeleteProgram() {
     end = 0;
     skip_wait = 0;
     prog = NULL;
 }
-void CRunScript::check_stack(void) {
+
+void CRunScript::check_stack() {
     if (sp >= stack_end) {
         stkoverflow();
     }
 }
+
 void CRunScript::push(RS_STACKDATA data) {
     check_stack();
     RS_STACKDATA *slot = sp;
     sp++;
     slot->type = data.type;
-    *(float *)&slot->i = *(float *)&data.i;
+    *(float *) &slot->i = *(float *) &data.i;
 }
+
 void CRunScript::push_int(int value) {
     check_stack();
     sp->type = RS_INT;
@@ -119,6 +136,7 @@ void CRunScript::push_int(int value) {
     sp++;
     slot->i = value;
 }
+
 void CRunScript::push_str(char *value) {
     check_stack();
     sp->type = RS_STR;
@@ -126,6 +144,7 @@ void CRunScript::push_str(char *value) {
     sp++;
     slot->s = value;
 }
+
 void CRunScript::push_ptr(RS_STACKDATA *value) {
     check_stack();
     sp->type = RS_PTR;
@@ -133,6 +152,7 @@ void CRunScript::push_ptr(RS_STACKDATA *value) {
     sp++;
     slot->p = value;
 }
+
 void CRunScript::push_float(float value) {
     check_stack();
     sp->type = RS_FLOAT;
@@ -140,12 +160,14 @@ void CRunScript::push_float(float value) {
     sp++;
     slot->f = value;
 }
+
 RS_STACKDATA CRunScript::pop() {
     RS_STACKDATA *top = sp;
     top--;
     sp = top;
     return *top;
 }
+
 vmcode_t *CRunScript::call_func(funcdata *callee, vmcode_t *return_pc) {
     if (call_sp >= call_end) {
         printf("\202\261\202\352\210\310\217\343\212\326\220\224\214\304\202\321\217\157\202\265"
@@ -164,12 +186,14 @@ vmcode_t *CRunScript::call_func(funcdata *callee, vmcode_t *return_pc) {
     check_stack();
     return (vmcode_t *) (code + (int) callee->addr);
 }
+
 vmcode_t *CRunScript::ret_func() {
     call_sp--;
     frame = call_sp->frame;
     func = call_sp->func;
     return call_sp->ret;
 }
+
 void CRunScript::ext(RS_STACKDATA *command, int arg_count) {
     int index = command->i;
     int (*func)(RS_STACKDATA *, int);
@@ -178,15 +202,19 @@ void CRunScript::ext(RS_STACKDATA *command, int arg_count) {
         printf(at_292__3, index);
         return;
     }
+
     func = ext_func_table[index];
+
     if (func == 0) {
         printf(at_292__3, index);
         return;
     }
+
     if (func(command + 1, arg_count - 1) == 0) {
         printf(at_293__2, command->i);
     }
 }
+
 void CRunScript::load(RS_PROG_HEADER *program, RS_STACKDATA *values, int value_count, RS_CALLDATA *calls, int call_count) {
     stack = values;
     stack_num = value_count;
@@ -195,8 +223,9 @@ void CRunScript::load(RS_PROG_HEADER *program, RS_STACKDATA *values, int value_c
     stack_end = stack + value_count;
     call_end = call + call_count;
     prog = program;
-    code = (char *)program + program->code;
-    if (strncmp((char *)prog, at_300__3, 3) == 0) {
+    code = (char *) program + program->code;
+
+    if (strncmp((char *) prog, at_300__3, 3) == 0) {
         version = RS_VERSION_2;
         global = stack;
         stack += prog->global_num;
@@ -204,18 +233,22 @@ void CRunScript::load(RS_PROG_HEADER *program, RS_STACKDATA *values, int value_c
         memset(global, 0, prog->global_num * sizeof(RS_STACKDATA));
     }
 }
+
 void CRunScript::ext_func(int (**table)(RS_STACKDATA *, int), int count) {
     ext_func_table = table;
     ext_func_num = count;
 }
+
 void CRunScript::resume() {
     vmcode_t *point;
 
     point = pc;
+
     if (point != NULL) {
         exe(point);
     }
 }
+
 int CRunScript::run(int no) {
     RS_PROGDATA    *entry;
     int             i;
@@ -258,14 +291,17 @@ int CRunScript::run(int no) {
     skip_wait = 0;
     skip_end_count = 0;
     exe(start);
+
     if (end != 0) {
         return 0;
     }
+
     return 1;
 }
+
 int CRunScript::check_program(int no) {
     RS_PROG_HEADER *header = prog;
-    RS_PROGDATA    *entry = (RS_PROGDATA *)((char *)header + header->prog);
+    RS_PROGDATA    *entry = (RS_PROGDATA *) ((char *) header + header->prog);
     int             i;
 
     for (i = 0; i < header->prog_num; i++, entry++) {
@@ -273,9 +309,11 @@ int CRunScript::check_program(int no) {
             return 1;
         }
     }
+
     return 0;
 }
-void CRunScript::skip(void) {
+
+void CRunScript::skip() {
     skip_wait = 1;
     resume();
 }
@@ -374,7 +412,7 @@ void CRunScript::exe(vmcode_t *entry) {
                         push_str(code + pc->arg2);
                         break;
                     case RS_CONST_FLOAT:
-                        push_float(*(float *)&pc->arg2);
+                        push_float(*(float *) &pc->arg2);
                         break;
                 }
 
@@ -715,10 +753,12 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript", exe__10CRunScriptFP8vmcode_t);
 #endif
 int rsGetStackInt(RS_STACKDATA *data) {
     if (data->type == RS_FLOAT) {
-        return (int)data->f;
+        return (int) data->f;
     }
+
     return data->i;
 }
+
 void rsSetStack(RS_STACKDATA *data, int value) {
     if (data->type == RS_PTR) {
         data->p->i = value;

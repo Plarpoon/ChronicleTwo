@@ -125,7 +125,7 @@ void calcWeaponParam2(int type, int divisor);
  * @address 0x1E9E80
  * @size 0x160
  */
-void SetDamageParam(CColPrim *col_prim, int chara_no);
+void SetDamageParam(CColPrim *col_prim, int slot_no);
 
 /**
  * Adds absorption points to the active characters' weapons and announces any level up.
@@ -134,7 +134,7 @@ void SetDamageParam(CColPrim *col_prim, int chara_no);
  * @address 0x1E9FE0
  * @size 0x290
  */
-void AddExpWeaponParam(float exp, int chara_no, int type);
+void AddExpWeaponParam(float amount, int weapon_owner, int kind);
 
 /**
  * Creates a character's sword trail effect, drawing one region of the sword trail texture.

@@ -78,8 +78,8 @@ enum OBJ_ANIME_MODE {
  */
 class CFuncPointCheck {
 public:
-    float time;      /**< Time of day, in hours, that a point's time range must contain. */
-    s32 anime_frame; /**< Frames counted by the map, that light animations are timed by. */
+    float time;        /**< Time of day, in hours, that a point's time range must contain. */
+    s32   anime_frame; /**< Frames counted by the map, that light animations are timed by. */
 
     /**
      *
@@ -99,8 +99,8 @@ STATIC_ASSERT(sizeof(CFuncPointCheck) == 0x8);
 class CObjAnimeEnv {
 public:
     sceVu0FVECTOR chara_pos; /**< Position of the player, that looking animations turn towards. */
-    float time;              /**< Time of day, in hours, that clock and time animations follow. */
-    u8    unk_14[0x4C];
+    float         time;      /**< Time of day, in hours, that clock and time animations follow. */
+    u8            unk_14[0x4C];
 };
 
 /**
@@ -110,15 +110,18 @@ public:
  */
 class CObjAnime {
 public:
-    CFuncPoint *func_point; /**< Animation point that describes the motion. */
-    mgCFrame *frame;        /**< Frame of the piece that is moved, or NULL to move the piece or part as a whole. */
-    CMapPiece *piece;       /**< Piece of the part that the point names, or NULL. */
-    CMapParts *parts;       /**< Placed part the animation belongs to. */
-    s32 stop;               /**< Non-zero once the animation has finished and no longer steps. */
-    s32 back;               /**< Non-zero while a back-and-forth animation moves towards its start value. */
-    s32 unk_18;
-    s32 unk_1c;
-    sceVu0FVECTOR param;    /**< Value currently given to the frame, piece or part. */
+    /** Selects construction without initializing animation links for list nodes. */
+    struct NoInit {};
+
+    CFuncPoint   *func_point; /**< Animation point that describes the motion. */
+    mgCFrame     *frame;      /**< Frame of the piece that is moved, or NULL to move the piece or part as a whole. */
+    CMapPiece    *piece;      /**< Piece of the part that the point names, or NULL. */
+    CMapParts    *parts;      /**< Placed part the animation belongs to. */
+    s32           stop;       /**< Non-zero once the animation has finished and no longer steps. */
+    s32           back;       /**< Non-zero while a back-and-forth animation moves towards its start value. */
+    s32           unk_18;
+    s32           unk_1c;
+    sceVu0FVECTOR param; /**< Value currently given to the frame, piece or part. */
 
     /**
      *
@@ -128,7 +131,17 @@ public:
      * @address 0x1616B0
      * @size 0x20
      */
-    CObjAnime();
+    CObjAnime() {
+        frame = 0;
+        piece = 0;
+        parts = 0;
+        func_point = 0;
+        back = 0;
+        stop = 0;
+    }
+
+    /** Constructs animation storage for initialization by its owning list node. */
+    CObjAnime(NoInit) {}
 
     /**
      *
@@ -174,6 +187,58 @@ public:
 STATIC_ASSERT(sizeof(CObjAnime) == 0x30);
 
 template <>
+class CList<CObjAnime>;
+
+/**
+ *
+ * Dispatch table used by a list node containing a map animation.
+ *
+ */
+struct CObjAnimeListVTable {
+    void *unk_0;
+    void *unk_4;
+    void (*initialize)(CList<CObjAnime> *);
+};
+
+extern "C" CObjAnimeListVTable __vt__17CList_9CObjAnime_;
+
+/**
+ *
+ * Doubly linked list node containing one map animation.
+ *
+ */
+template <>
+class CList<CObjAnime> {
+public:
+    CList<CObjAnime>    *next; /**< Next animation node, or NULL. */
+    CList<CObjAnime>    *prev; /**< Previous animation node, or NULL. */
+    u8                   unk_8[8];
+    CObjAnime            data;   /**< Animation owned by this node. */
+    CObjAnimeListVTable *vtable; /**< Retail dispatch table for list operations. */
+    u8                   unk_44[0xC];
+
+    /** Constructs an unlinked list node and its animation. */
+    CList() : data(CObjAnime::NoInit()) {
+        vtable = &__vt__17CList_9CObjAnime_;
+        data.frame = NULL;
+        data.piece = NULL;
+        data.parts = NULL;
+        data.func_point = NULL;
+        data.back = 0;
+        data.stop = 0;
+        Initialize();
+    }
+
+    /** Gives the animation held by this list node. */
+    CObjAnime *pGetData() { return &data; }
+
+    /** Clears both list links through the retail dispatch table. */
+    void Initialize() { vtable->initialize(this); }
+};
+
+STATIC_ASSERT(sizeof(CList<CObjAnime>) == 0x50);
+
+template <>
 void CList<CFuncPoint>::Initialize();
 
 /**
@@ -183,9 +248,9 @@ void CList<CFuncPoint>::Initialize();
  */
 class CFuncPointMngr {
 public:
-    u32 flag;                                   /**< Kinds of point held, from FUNC_POINT_MNGR_FLAG. */
+    u32                flag;                      /**< Kinds of point held, from FUNC_POINT_MNGR_FLAG. */
     CList<CFuncPoint> *list[FUNC_POINT_TYPE_NUM]; /**< First node of the list of each kind of point, from FUNC_POINT_TYPE. */
-    CList<CFuncPoint> *now;                     /**< Node that Get gives back next. */
+    CList<CFuncPoint> *now;                       /**< Node that Get gives back next. */
 
     /**
      *
@@ -242,7 +307,7 @@ public:
      * @address 0x2A14C0
      * @size 0x70
      */
-    CFuncPoint *AddFromReserve(int type);
+    CFuncPoint *AddFromReserve(int kind);
 
     /**
      *
@@ -332,7 +397,7 @@ public:
      * @address 0x2A1DE0
      * @size 0x10
      */
-    void Step(int type, CFuncPointCheck *check);
+    void Step(int i, CFuncPointCheck *check);
 
     /**
      *
@@ -405,7 +470,7 @@ float LimitTime(float time);
  * @address 0x2A0410
  * @size 0x50
  */
-float SubTime(float time, float sub);
+float SubTime(float a, float sub);
 
 /**
  *
@@ -435,7 +500,7 @@ void DrawFireRaster(float (*lw_matrix)[4], CFuncPointMngr *mngr, CFuncPointCheck
  * @address 0x2A29B0
  * @size 0x2A0
  */
-int GetSeSrcVolPan(float (*lw_matrix)[4], CFuncPointMngr *mngr, CFuncPointCheck *check, int *out_se_no, float *out_vol, float *out_pan, int max);
+int GetSeSrcVolPan(float (*mat)[4], CFuncPointMngr *mgr, CFuncPointCheck *chk, int *kinds, float *vols, float *pans, int max);
 
 /**
  *

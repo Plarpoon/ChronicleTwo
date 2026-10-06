@@ -27,11 +27,11 @@ class mgCFace;
  *
  */
 enum mgFaceType {
-    MG_FACE_PRIM_MASK = 0x7,    /**< Bits holding the GS primitive the faces are drawn as, from mgPRIM_TYPE. */
-    MG_FACE_FLAT = 0x8,         /**< Faces are drawn with flat shading. */
-    MG_FACE_NO_TEXTURE = 0x10,  /**< Faces are drawn untextured, and their vertices carry no texture coordinate index. */
-    MG_FACE_COLOUR = 0x100,     /**< Vertices carry a per-vertex colour index. */
-    MG_FACE_NO_NORMAL = 0x200,  /**< Vertices carry no normal index. */
+    MG_FACE_PRIM_MASK = 0x7,   /**< Bits holding the GS primitive the faces are drawn as, from mgPRIM_TYPE. */
+    MG_FACE_FLAT = 0x8,        /**< Faces are drawn with flat shading. */
+    MG_FACE_NO_TEXTURE = 0x10, /**< Faces are drawn untextured, and their vertices carry no texture coordinate index. */
+    MG_FACE_COLOUR = 0x100,    /**< Vertices carry a per-vertex colour index. */
+    MG_FACE_NO_NORMAL = 0x200, /**< Vertices carry no normal index. */
 };
 
 /**
@@ -54,8 +54,9 @@ enum mgDestAlphaTest {
 struct mgMaterial {
     sceVu0FVECTOR diffuse; /**< Colour the material is drawn with, sent alone when only the colour is needed. */
     sceVu0FVECTOR unk_10;
-    mgCTexture *texture;   /**< Texture the material is mapped with, or NULL for an untextured material. */
+    mgCTexture   *texture; /**< Texture the material is mapped with, or NULL for an untextured material. */
 };
+
 STATIC_ASSERT(sizeof(mgMaterial) == 0x30);
 
 /**
@@ -65,15 +66,16 @@ STATIC_ASSERT(sizeof(mgMaterial) == 0x30);
  */
 class mgCFace {
 public:
-    u_short type;         /**< Primitive bits, from mgFaceType. */
-    short index_stride;   /**< Number of indices that make one vertex. */
-    short material;       /**< Index of the material the primitive is drawn with. */
-    short index_num;      /**< Number of indices, index_stride for each vertex. */
-    short vertex_num;     /**< Number of vertices in the primitive. */
-    int *index;           /**< Vertex indices: position, then normal, texture coordinate and colour as the type gives them. */
-    mgCFace *next;        /**< Following primitive of the same material, or NULL. */
-    u_long128 packet_tag; /**< DMA tag that calls the primitive's prebuilt packet, in a model whose packets are built at load time. */
+    u_short   type;         /**< Primitive bits, from mgFaceType. */
+    short     index_stride; /**< Number of indices that make one vertex. */
+    short     material;     /**< Index of the material the primitive is drawn with. */
+    short     index_num;    /**< Number of indices, index_stride for each vertex. */
+    short     vertex_num;   /**< Number of vertices in the primitive. */
+    int      *index;        /**< Vertex indices: position, then normal, texture coordinate and colour as the type gives them. */
+    mgCFace  *next;         /**< Following primitive of the same material, or NULL. */
+    u_long128 packet_tag;   /**< DMA tag that calls the primitive's prebuilt packet, in a model whose packets are built at load time. */
 };
+
 STATIC_ASSERT(sizeof(mgCFace) == 0x30);
 
 /**
@@ -82,15 +84,16 @@ STATIC_ASSERT(sizeof(mgCFace) == 0x30);
  *
  */
 struct mgFACE_GROUP {
-    int material;         /**< Index of the material the group is drawn with. */
-    mgCFace *face;        /**< First primitive of the group. */
-    mgFACE_GROUP *next;   /**< Following group of the model, or NULL. */
-    int vu_program;       /**< VU1 microprogram the group is drawn with, from mgVU_PROG_ID. */
-    u_long128 *packet;    /**< Packet that draws the group, registered with the draw manager. */
-    int packet_size;      /**< Size of the packet in quadwords. */
-    int unk_18;
-    int unk_1c;
+    int           material;    /**< Index of the material the group is drawn with. */
+    mgCFace      *face;        /**< First primitive of the group. */
+    mgFACE_GROUP *next;        /**< Following group of the model, or NULL. */
+    int           vu_program;  /**< VU1 microprogram the group is drawn with, from mgVU_PROG_ID. */
+    u_long128    *packet;      /**< Packet that draws the group, registered with the draw manager. */
+    int           packet_size; /**< Size of the packet in quadwords. */
+    int           unk_18;
+    int           unk_1c;
 };
+
 STATIC_ASSERT(sizeof(mgFACE_GROUP) == 0x20);
 
 /**
@@ -126,6 +129,7 @@ public:
      */
     void Initialize();
 };
+
 STATIC_ASSERT(sizeof(mgCVisualAttr) == 0x18);
 
 /**
@@ -136,17 +140,17 @@ STATIC_ASSERT(sizeof(mgCVisualAttr) == 0x18);
  */
 class mgCVisualMDT : public mgCVisual {
 public:
-    int vertex_num;             /**< Number of vertex positions. */
-    int normal_num;             /**< Number of normal vectors. */
-    int colour_num;             /**< Number of per-vertex colours. */
-    int uv_num;                 /**< Number of texture coordinates. */
-    sceVu0FVECTOR *vertex;      /**< Vertex positions. */
-    sceVu0FVECTOR *normal;      /**< Normal vectors. */
-    sceVu0FVECTOR *colour;      /**< Per-vertex colours. */
-    sceVu0FVECTOR *uv;          /**< Texture coordinates. */
-    int material_num;           /**< Number of materials. */
-    mgMaterial *material;       /**< Material table. */
-    mgFACE_GROUP *face_group;   /**< First group of primitives, one per material used. */
+    int            vertex_num;   /**< Number of vertex positions. */
+    int            normal_num;   /**< Number of normal vectors. */
+    int            colour_num;   /**< Number of per-vertex colours. */
+    int            uv_num;       /**< Number of texture coordinates. */
+    sceVu0FVECTOR *vertex;       /**< Vertex positions. */
+    sceVu0FVECTOR *normal;       /**< Normal vectors. */
+    sceVu0FVECTOR *colour;       /**< Per-vertex colours. */
+    sceVu0FVECTOR *uv;           /**< Texture coordinates. */
+    int            material_num; /**< Number of materials. */
+    mgMaterial    *material;     /**< Material table. */
+    mgFACE_GROUP  *face_group;   /**< First group of primitives, one per material used. */
 
     /**
      * Creates a model with no data.
@@ -203,7 +207,7 @@ public:
      * @address 0x13F630
      * @size 0x4C
      */
-    virtual int CreateBBox(float *max, float *min, float (*matrix)[4]);
+    virtual int CreateBBox(float *min, float *max, float (*matrix)[4]);
 
     /**
      * Writes and sends the packet that sets up drawing the model: its transforms, lighting, fog,
@@ -233,7 +237,7 @@ public:
      * @address 0x13FB50
      * @size 0x1BC
      */
-    virtual int Draw(u_int *packet, float (*matrix)[4], mgCDrawManager *draw_manager);
+    virtual int Draw(u_int *tag, float (*matrix)[4], mgCDrawManager *draw_manager);
 
     /**
      * Clears the model's data and resets the VU1 buffer layout to the model microprogram's.
@@ -294,7 +298,7 @@ public:
      * @size 0xC8
      */
     virtual int DataAssignMDT(MDT_HEADER *header, mgCMemory *memory,
-                              mgCTextureManager *texture_manager);
+                              mgCTextureManager *textures);
 
     /**
      * Writes the VIF packet that loads a material's colours into VU1 memory, with its texture
@@ -314,7 +318,7 @@ public:
      * @address 0x13EDB0
      * @size 0x70
      */
-    int SetPModeRef(u_long128 *packet, int type);
+    int SetPModeRef(u_long128 *packet, int flags);
 
     /**
      * Copies the counts, vertex data and materials of an MDT file into memory of the model's own.
@@ -342,8 +346,9 @@ public:
      * @address 0x13F620
      * @size 0x10
      */
-    sceVu0FVECTOR *GetColor(int *num);
+    sceVu0FVECTOR *GetColor(int *out);
 } __attribute__((aligned(16)));
+
 STATIC_ASSERT(sizeof(mgCVisualMDT) == 0x50);
 
 /**
@@ -410,8 +415,9 @@ public:
      * @size 0x180
      */
     virtual int DataAssignMDT(MDT_HEADER *header, mgCMemory *memory,
-                              mgCTextureManager *texture_manager);
+                              mgCTextureManager *textures);
 };
+
 STATIC_ASSERT(sizeof(mgCVisualFixMDT) == 0x50);
 
 /**
@@ -508,7 +514,7 @@ int mgSetPkTEX0(u_int *packet, u_long tex0, u_long tex1, u_long texa);
  * @address 0x13EBA0
  * @size 0x48
  */
-int mgSetPkTexFlush_TagCnt(u_int *packet);
+int mgSetPkTexFlush_TagCnt(u_int *buffer);
 
 /**
  * Writes the VIF packet that loads two point light matrices into VU1 memory and returns its length
@@ -518,7 +524,7 @@ int mgSetPkTexFlush_TagCnt(u_int *packet);
  * @address 0x13EBF0
  * @size 0x68
  */
-int SetPointLight(u_int *packet, float (*matrix0)[4], float (*matrix1)[4]);
+int SetPointLight(u_int *packet, float (*first)[4], float (*second)[4]);
 
 /**
  * Fills a material from an MDT material record, looking its texture up by name.
@@ -527,7 +533,7 @@ int SetPointLight(u_int *packet, float (*matrix0)[4], float (*matrix1)[4]);
  * @address 0x13F190
  * @size 0x74
  */
-void CopyMaterial(mgMaterial *material, MDT_MATERIAL_ *source, mgCTextureManager *texture_manager);
+void CopyMaterial(mgMaterial *dst, MDT_MATERIAL_ *src, mgCTextureManager *textures);
 
 /**
  * Writes a batch of vertices with position, normal and texture coordinate, and returns the end of
@@ -537,7 +543,7 @@ void CopyMaterial(mgMaterial *material, MDT_MATERIAL_ *source, mgCTextureManager
  * @address 0x1401C0
  * @size 0x88
  */
-u_long128 *SetData0(int vertex_num, int type, int **index, u_long128 *packet, u_long128 *vertex,
+u_long128 *SetData0(int count, int type, int **index, u_long128 *packet, u_long128 *vertex,
                     u_long128 *normal, u_long128 *uv, u_long128 *colour);
 
 /**
@@ -548,7 +554,7 @@ u_long128 *SetData0(int vertex_num, int type, int **index, u_long128 *packet, u_
  * @address 0x140250
  * @size 0xA8
  */
-u_long128 *SetData1(int vertex_num, int type, int **index, u_long128 *packet, u_long128 *vertex,
+u_long128 *SetData1(int count, int type, int **index, u_long128 *packet, u_long128 *vertex,
                     u_long128 *normal, u_long128 *uv, u_long128 *colour);
 
 /**
@@ -558,7 +564,7 @@ u_long128 *SetData1(int vertex_num, int type, int **index, u_long128 *packet, u_
  * @address 0x140300
  * @size 0x70
  */
-u_long128 *SetData2(int vertex_num, int type, int **index, u_long128 *packet, u_long128 *vertex,
+u_long128 *SetData2(int count, int type, int **index, u_long128 *packet, u_long128 *vertex,
                     u_long128 *normal, u_long128 *uv, u_long128 *colour);
 
 /**
@@ -569,7 +575,7 @@ u_long128 *SetData2(int vertex_num, int type, int **index, u_long128 *packet, u_
  * @address 0x140370
  * @size 0x88
  */
-u_long128 *SetData3(int vertex_num, int type, int **index, u_long128 *packet, u_long128 *vertex,
+u_long128 *SetData3(int count, int type, int **index, u_long128 *packet, u_long128 *vertex,
                     u_long128 *normal, u_long128 *uv, u_long128 *colour);
 
 /**
@@ -580,7 +586,7 @@ u_long128 *SetData3(int vertex_num, int type, int **index, u_long128 *packet, u_
  * @address 0x140400
  * @size 0x70
  */
-u_long128 *SetData4(int vertex_num, int type, int **index, u_long128 *packet, u_long128 *vertex,
+u_long128 *SetData4(int count, int type, int **index, u_long128 *packet, u_long128 *vertex,
                     u_long128 *normal, u_long128 *uv, u_long128 *colour);
 
 /**
@@ -591,7 +597,7 @@ u_long128 *SetData4(int vertex_num, int type, int **index, u_long128 *packet, u_
  * @address 0x140470
  * @size 0x88
  */
-u_long128 *SetData5(int vertex_num, int type, int **index, u_long128 *packet, u_long128 *vertex,
+u_long128 *SetData5(int count, int type, int **index, u_long128 *packet, u_long128 *vertex,
                     u_long128 *normal, u_long128 *uv, u_long128 *colour);
 
 /**
@@ -611,7 +617,7 @@ u_long128 *SetData6(int vertex_num, int type, int **index, u_long128 *packet, u_
  * @address 0x140560
  * @size 0x70
  */
-u_long128 *SetData7(int vertex_num, int type, int **index, u_long128 *packet, u_long128 *vertex,
+u_long128 *SetData7(int count, int type, int **index, u_long128 *packet, u_long128 *vertex,
                     u_long128 *normal, u_long128 *uv, u_long128 *colour);
 
 /**
@@ -633,9 +639,10 @@ void SetDrawEnv(mgCDrawEnv *env, mgCVisualAttr *attr, mgCDrawEnv *base);
  *
  */
 struct mgVisualGifTag {
-    u_int word0;
-    u_int words[3];
+    u_int word0;    /**< GIF tag loop count and flags. */
+    u_int words[3]; /**< Remaining words of the GIF tag. */
 };
+
 STATIC_ASSERT(sizeof(mgVisualGifTag) == 0x10);
 extern mgVisualGifTag giftag;
 

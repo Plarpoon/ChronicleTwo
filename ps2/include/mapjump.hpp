@@ -20,12 +20,12 @@ struct SCN_LOADMAP_INFO2;
  */
 class MapJumpMapInfo {
 public:
-    s32 map_no;          /**< Scene map slot the map is loaded into. */
-    s32 tex_block;       /**< First texture block the map's textures are entered into. */
-    s32 stack_no;        /**< Scene stack the map is built in. */
-    s32 efp_tex_block;   /**< Texture block the map's effect pack textures are entered into. */
-    s32 sky_tex_block;   /**< Texture block the sky's textures are entered into. */
-    u8 *load_buf;        /**< Buffer the map's files are loaded into. */
+    s32 map_no;        /**< Scene map slot the map is loaded into. */
+    s32 tex_block;     /**< First texture block the map's textures are entered into. */
+    s32 stack_no;      /**< Scene stack the map is built in. */
+    s32 efp_tex_block; /**< Texture block the map's effect pack textures are entered into. */
+    s32 sky_tex_block; /**< Texture block the sky's textures are entered into. */
+    u8 *load_buf;      /**< Buffer the map's files are loaded into. */
 
     /**
      *
@@ -37,6 +37,7 @@ public:
      */
     MapJumpMapInfo();
 };
+
 STATIC_ASSERT(sizeof(MapJumpMapInfo) == 0x18);
 
 /**
@@ -107,7 +108,7 @@ void SetScriptBuffer(mgCMemory *buffer);
  * @address 0x2E3D20
  * @size 0x30
  */
-void PreLoadSync();
+int PreLoadSync();
 
 /**
  *
@@ -117,7 +118,7 @@ void PreLoadSync();
  * @address 0x2E3D50
  * @size 0x1F0
  */
-int MapJump(CScene *scene, SCN_LOADMAP_INFO2 *info, int map_no);
+int MapJump(CScene *scene, SCN_LOADMAP_INFO2 *info, int map_index);
 
 /**
  *
@@ -137,7 +138,7 @@ int GetLoadMapInfo(SCN_LOADMAP_INFO2 *info, int map_no);
  * @address 0x2E41B0
  * @size 0x1C0
  */
-int LoadSubMap(CScene *scene, int map_no, int background);
+int LoadSubMap(CScene *scene, int sub_map_no, int flag);
 
 /**
  *
@@ -167,7 +168,7 @@ void ReloadMapScript();
  * @address 0x2E4430
  * @size 0x160
  */
-void LoadScript(char *file_name);
+void LoadScript(char *path);
 
 /**
  *
@@ -227,7 +228,7 @@ void SetInteriorDoorPos(CScene *scene);
  * @address 0x2E48D0
  * @size 0x160
  */
-void GotoInterior(CScene *scene, int map_no);
+void GotoInterior(CScene *scene, int interior_no);
 
 /**
  *
@@ -257,4 +258,4 @@ void ExitInterior(CScene *scene, int *sub_map_no);
  * @address 0x2E4CF0
  * @size 0xF0
  */
-int InteriorMapJump(CScene *scene, int map_no);
+int InteriorMapJump(CScene *scene, int interior_no);

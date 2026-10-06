@@ -71,7 +71,7 @@ enum EffSptState {
  */
 struct EFF_SPT_BASE_DEF {
     char name[0x20];   /**< Name that effects are started by; empty in the end row. */
-    int  type; /**< EffSptBaseType of the resource. */
+    int  type;         /**< EffSptBaseType of the resource. */
     char file[0x20];   /**< File name, without extension, of the model or texture image. */
     char script[0x20]; /**< File name, without extension, of the compiled script. */
 };
@@ -84,13 +84,13 @@ STATIC_ASSERT(sizeof(EFF_SPT_BASE_DEF) == 0x64);
  *
  */
 struct EFF_SPT_BASE {
-    int          base_no; /**< Row of the effect definition table. */
+    int          base_no;    /**< Row of the effect definition table. */
     CCharacter2 *chara;      /**< Model that running effects copy, or NULL for a texture base. */
-    int          texb; /**< Texture block that the base's textures are entered in. */
+    int          texb;       /**< Texture block that the base's textures are entered in. */
     int          texb_owned; /**< Nonzero when the texture block was taken from the manager's pool. */
     char        *script;     /**< Compiled script. */
-    int          level; /**< Load level the base belongs to. */
-    int          work_size; /**< Quadwords of work memory that one running effect needs. */
+    int          level;      /**< Load level the base belongs to. */
+    int          work_size;  /**< Quadwords of work memory that one running effect needs. */
 };
 
 STATIC_ASSERT(sizeof(EFF_SPT_BASE) == 0x1C);
@@ -102,33 +102,33 @@ STATIC_ASSERT(sizeof(EFF_SPT_BASE) == 0x1C);
  */
 struct _ES_SPRITE {
     int           draw_flag; /**< Nonzero to draw the sprite. */
-    int           alpha; /**< Alpha blending mode that the sprite is drawn with. */
-    u_char            unk_08[0x8];
-    sceVu0FVECTOR pos;                /**< Position, relative to the effect's origin. */
-    float         uv[4];              /**< Texture rectangle: left, top, width and height. */
-    sceVu0FVECTOR color;              /**< Colour and alpha, each from 0 to 255. */
-    float         scale[2];           /**< Horizontal and vertical scale of the drawn size. */
-    float         put_size[2];        /**< Drawn width and height before scaling. */
-    float         rotz;               /**< Angle, in radians, of the sprite about the view direction. */
-    u_char            unk_54[0xC];
-    sceVu0FVECTOR velo_pos;           /**< Change of the position in each step. */
-    sceVu0FVECTOR acc_pos;            /**< Change of the position velocity in each step. */
-    sceVu0FVECTOR velo_col;           /**< Change of the colour in each step. */
-    sceVu0FVECTOR acc_col;            /**< Change of the colour velocity in each step. */
-    float         velo_rotz;          /**< Change of the angle in each step. */
-    float         acc_rotz;           /**< Change of the angle velocity in each step. */
-    float         velo_scl[2];        /**< Change of the scale in each step. */
-    float         acc_scl[2];         /**< Change of the scale velocity in each step. */
-    float         scale_target[2];    /**< Scale that the sprite eases towards. */
-    float         scale_conv_div;     /**< Divisor of the scale's remaining distance moved in each step; easing stops at zero or below. */
-    u_char            unk_c4[0xC];
-    sceVu0FVECTOR color_target;       /**< Colour that the sprite eases towards. */
-    float         color_conv_div;     /**< Divisor of the colour's remaining distance moved in each step; easing stops at zero or below. */
-    u_char            unk_e4[0xC];
-    sceVu0FVECTOR blink_amp;          /**< Amount that blinking adds to each colour component at the peak of its wave. */
-    float         blink_speed;        /**< Change of the blink phase in each drawn frame; zero for no blinking. */
-    float         blink_phase;        /**< Angle, in radians, of the blink wave. */
-    u_char            unk_108[0x8];
+    int           alpha;     /**< Alpha blending mode that the sprite is drawn with. */
+    u_char        unk_08[0x8];
+    sceVu0FVECTOR pos;         /**< Position, relative to the effect's origin. */
+    float         uv[4];       /**< Texture rectangle: left, top, width and height. */
+    sceVu0FVECTOR color;       /**< Colour and alpha, each from 0 to 255. */
+    float         scale[2];    /**< Horizontal and vertical scale of the drawn size. */
+    float         put_size[2]; /**< Drawn width and height before scaling. */
+    float         rotz;        /**< Angle, in radians, of the sprite about the view direction. */
+    u_char        unk_54[0xC];
+    sceVu0FVECTOR velo_pos;        /**< Change of the position in each step. */
+    sceVu0FVECTOR acc_pos;         /**< Change of the position velocity in each step. */
+    sceVu0FVECTOR velo_col;        /**< Change of the colour in each step. */
+    sceVu0FVECTOR acc_col;         /**< Change of the colour velocity in each step. */
+    float         velo_rotz;       /**< Change of the angle in each step. */
+    float         acc_rotz;        /**< Change of the angle velocity in each step. */
+    float         velo_scl[2];     /**< Change of the scale in each step. */
+    float         acc_scl[2];      /**< Change of the scale velocity in each step. */
+    float         scale_target[2]; /**< Scale that the sprite eases towards. */
+    float         scale_conv_div;  /**< Divisor of the scale's remaining distance moved in each step; easing stops at zero or below. */
+    u_char        unk_c4[0xC];
+    sceVu0FVECTOR color_target;   /**< Colour that the sprite eases towards. */
+    float         color_conv_div; /**< Divisor of the colour's remaining distance moved in each step; easing stops at zero or below. */
+    u_char        unk_e4[0xC];
+    sceVu0FVECTOR blink_amp;   /**< Amount that blinking adds to each colour component at the peak of its wave. */
+    float         blink_speed; /**< Change of the blink phase in each drawn frame; zero for no blinking. */
+    float         blink_phase; /**< Angle, in radians, of the blink wave. */
+    u_char        unk_108[0x8];
 };
 
 STATIC_ASSERT(sizeof(_ES_SPRITE) == 0x110);
@@ -150,34 +150,34 @@ union EFF_SPT_VALUE {
  *
  */
 struct _EFF_SCRIPT {
-    u_long128    *work;                              /**< Work memory block that holds the effect. */
-    u_long128    *chara_work;                        /**< Work memory block of a character copied in by the starter, or NULL. */
-    CCharacter2  *chara;                             /**< Copy of the base's model that the effect moves, or NULL. */
-    u_long128    *sub_chara_work;                    /**< Work memory block of the extra character copies, or NULL. */
-    CCharacter2  *sub_chara[EFF_SPT_SUB_CHARA_MAX];  /**< Extra copies of the model, or NULL. */
-    int           texb; /**< Texture block that the effect's textures are taken from. */
-    int           level; /**< Load level of the base the effect was started from. */
-    _ES_SPRITE   *sprite;                            /**< Billboard sprites, or NULL when none are assigned. */
-    int           sprite_num; /**< Number of billboard sprites. */
-    char          tex_name[0x20];                    /**< Name of the texture that the sprites are drawn with. */
-    CRunScript    run;                               /**< Interpreter of the effect's script. */
-    int           prog_no; /**< Script program to start in the next step, or -1 to resume the running one. */
-    int           user_id; /**< Owner of the effect: its row in the slot table and the identifier its attacks carry. */
-    int           slot; /**< Column of the owner's slot table holding the effect, or -1. */
-    sceVu0FVECTOR origin;                            /**< Position that the effect's model and sprites are placed relative to. */
-    int           auto_offset; /**< Nonzero to add the target character's position, or its named frame's, to the origin. */
-    char          offset_frame[0x20];                /**< Name of the target character's frame that the origin follows; empty for the character itself. */
-    u_char            unk_e4[0xC];
-    sceVu0FVECTOR work_vect1;                        /**< First vector that the starter passes the script. */
-    sceVu0FVECTOR work_vect2;                        /**< Second vector that the starter passes the script. */
-    int           target_id; /**< Scene character that the effect aims at or follows, or -1. */
-    EFF_SPT_VALUE value[EFF_SPT_VALUE_MAX];          /**< Values that the starter and the script share. */
-    CColPrim     *colprim;                           /**< Collision primitive carrying the effect's attack, or NULL. */
-    int           light_flag; /**< Nonzero to colour the sprites with the scene lighting instead of their own colour. */
-    int           state; /**< EffSptState that the effect is paused in. */
-    _EFF_SCRIPT  *prev;                              /**< Previous effect in the manager's list, which is ordered by texture block. */
-    _EFF_SCRIPT  *next;                              /**< Next effect in the manager's list. */
-    u_char            unk_148[0x8];
+    u_long128    *work;                             /**< Work memory block that holds the effect. */
+    u_long128    *chara_work;                       /**< Work memory block of a character copied in by the starter, or NULL. */
+    CCharacter2  *chara;                            /**< Copy of the base's model that the effect moves, or NULL. */
+    u_long128    *sub_chara_work;                   /**< Work memory block of the extra character copies, or NULL. */
+    CCharacter2  *sub_chara[EFF_SPT_SUB_CHARA_MAX]; /**< Extra copies of the model, or NULL. */
+    int           texb;                             /**< Texture block that the effect's textures are taken from. */
+    int           level;                            /**< Load level of the base the effect was started from. */
+    _ES_SPRITE   *sprite;                           /**< Billboard sprites, or NULL when none are assigned. */
+    int           sprite_num;                       /**< Number of billboard sprites. */
+    char          tex_name[0x20];                   /**< Name of the texture that the sprites are drawn with. */
+    CRunScript    run;                              /**< Interpreter of the effect's script. */
+    int           prog_no;                          /**< Script program to start in the next step, or -1 to resume the running one. */
+    int           user_id;                          /**< Owner of the effect: its row in the slot table and the identifier its attacks carry. */
+    int           slot;                             /**< Column of the owner's slot table holding the effect, or -1. */
+    sceVu0FVECTOR origin;                           /**< Position that the effect's model and sprites are placed relative to. */
+    int           auto_offset;                      /**< Nonzero to add the target character's position, or its named frame's, to the origin. */
+    char          offset_frame[0x20];               /**< Name of the target character's frame that the origin follows; empty for the character itself. */
+    u_char        unk_e4[0xC];
+    sceVu0FVECTOR work_vect1;               /**< First vector that the starter passes the script. */
+    sceVu0FVECTOR work_vect2;               /**< Second vector that the starter passes the script. */
+    int           target_id;                /**< Scene character that the effect aims at or follows, or -1. */
+    EFF_SPT_VALUE value[EFF_SPT_VALUE_MAX]; /**< Values that the starter and the script share. */
+    CColPrim     *colprim;                  /**< Collision primitive carrying the effect's attack, or NULL. */
+    int           light_flag;               /**< Nonzero to colour the sprites with the scene lighting instead of their own colour. */
+    int           state;                    /**< EffSptState that the effect is paused in. */
+    _EFF_SCRIPT  *prev;                     /**< Previous effect in the manager's list, which is ordered by texture block. */
+    _EFF_SCRIPT  *next;                     /**< Next effect in the manager's list. */
+    u_char        unk_148[0x8];
 };
 
 STATIC_ASSERT(sizeof(_EFF_SCRIPT) == 0x150);
@@ -190,22 +190,22 @@ STATIC_ASSERT(sizeof(_EFF_SCRIPT) == 0x150);
  */
 class CEffectScriptMan {
 public:
-    mgCMemory     *memory;                                        /**< Memory that effect bases are built in when no other is given. */
-    mgCMemory     *work_memory;                                   /**< Memory that running effects, their characters and sprites are allocated from. */
-    u_long128     *load_buffer;                                   /**< Buffer that base files are read into before they are built. */
-    int            level; /**< Load level that bases built now belong to. */
-    int            texb_start; /**< First texture block of the manager's pool. */
-    int            texb_num; /**< Number of texture blocks in the pool. */
-    int            texb_used; /**< Number of texture blocks of the pool in use. */
-    int            level_texb_used[EFF_SPT_LEVEL_MAX]; /**< Number of pool texture blocks taken by each load level. */
-    int            unk_2c;
-    mgC3DSprite    sprite;                                        /**< Builds the packet that the running effects' billboards are drawn with. */
-    EFF_SPT_BASE  *base[EFF_SPT_BASE_MAX];                        /**< Loaded effect bases, or NULL for free entries. */
-    int            base_num; /**< Number of effect bases built. */
-    _EFF_SCRIPT   *slot[EFF_SPT_OWNER_MAX][EFF_SPT_OWNER_SLOT_MAX]; /**< Running effects by owner and slot, or NULL. */
-    _EFF_SCRIPT   *now;                                           /**< Effect started last, which calls given a negative slot act on. */
-    _EFF_SCRIPT   *head;                                          /**< First running effect. */
-    _EFF_SCRIPT   *tail;                                          /**< Last running effect. */
+    mgCMemory    *memory;                             /**< Memory that effect bases are built in when no other is given. */
+    mgCMemory    *work_memory;                        /**< Memory that running effects, their characters and sprites are allocated from. */
+    u_long128    *load_buffer;                        /**< Buffer that base files are read into before they are built. */
+    int           level;                              /**< Load level that bases built now belong to. */
+    int           texb_start;                         /**< First texture block of the manager's pool. */
+    int           texb_num;                           /**< Number of texture blocks in the pool. */
+    int           texb_used;                          /**< Number of texture blocks of the pool in use. */
+    int           level_texb_used[EFF_SPT_LEVEL_MAX]; /**< Number of pool texture blocks taken by each load level. */
+    int           unk_2c;
+    mgC3DSprite   sprite;                                          /**< Builds the packet that the running effects' billboards are drawn with. */
+    EFF_SPT_BASE *base[EFF_SPT_BASE_MAX];                          /**< Loaded effect bases, or NULL for free entries. */
+    int           base_num;                                        /**< Number of effect bases built. */
+    _EFF_SCRIPT  *slot[EFF_SPT_OWNER_MAX][EFF_SPT_OWNER_SLOT_MAX]; /**< Running effects by owner and slot, or NULL. */
+    _EFF_SCRIPT  *now;                                             /**< Effect started last, which calls given a negative slot act on. */
+    _EFF_SCRIPT  *head;                                            /**< First running effect. */
+    _EFF_SCRIPT  *tail;                                            /**< Last running effect. */
 
     /**
      * Creates a manager with no memory, texture pool, bases or effects.
@@ -250,7 +250,7 @@ public:
      * @address 0x2E4FA0
      * @size 0x160
      */
-    int LoadBaseEffSpt(int base_no, mgCMemory *memory, int texb);
+    int LoadBaseEffSpt(int base_no, mgCMemory *memory, int level);
 
     /**
      * Reads the files of the named effect base and builds it, unless it is
@@ -260,7 +260,7 @@ public:
      * @address 0x2E5100
      * @size 0x50
      */
-    int LoadBaseEffSpt(char *name, mgCMemory *memory, int texb);
+    int LoadBaseEffSpt(char *name, mgCMemory *memory, int level);
 
     /**
      * Stops the effects of a load level and frees its bases, listing the
@@ -270,7 +270,7 @@ public:
      * @address 0x2E5150
      * @size 0x160
      */
-    void ClearBaseFromLevel(int level, int *texb_list, int texb_list_max);
+    void ClearBaseFromLevel(int level, int *cleared, int texb_list_max);
 
     /**
      * Finds a loaded base with the same model file as a definition row,
@@ -320,7 +320,7 @@ public:
      * @address 0x2E5420
      * @size 0x630
      */
-    int BuildBase(int base_no, u_long128 *data, int data_size, u_long128 *script, int script_size, mgCMemory *memory, int texb);
+    int BuildBase(int base_no, u_long128 *data, int data_size, u_long128 *script, int script_size, mgCMemory *work, int texb);
 
     /**
      * Builds the named effect base from its model or texture data and its
@@ -331,7 +331,7 @@ public:
      * @size 0x90
      * @unknownret
      */
-    int BuildBase(char *name, u_long128 *data, int data_size, u_long128 *script, int script_size, mgCMemory *memory, int texb);
+    int BuildBase(char *name, u_long128 *path_file, int path_size, u_long128 *pack_file, int pack_size, mgCMemory *memory, int level);
 
     /**
      * Builds an effect base from the files that a loaded pack holds.
@@ -340,7 +340,7 @@ public:
      * @address 0x2E5AE0
      * @size 0x120
      */
-    int BuildPack(int base_no, u_int *pack, mgCMemory *memory, int texb);
+    int BuildPack(int base_no, u_int *pack, mgCMemory *memory, int level);
 
     /**
      * Builds the named effect base from the files that a loaded pack holds.
@@ -349,7 +349,7 @@ public:
      * @address 0x2E5C00
      * @size 0x60
      */
-    int BuildPack(char *name, u_int *pack, mgCMemory *memory, int texb);
+    int BuildPack(char *name, u_int *pack, mgCMemory *memory, int level);
 
     /**
      * Makes the paths of the resource file and the script file of an
@@ -359,7 +359,7 @@ public:
      * @address 0x2E5C60
      * @size 0xB0
      */
-    int GetNeedFilePath(int base_no, char *data_path, char *script_path);
+    int GetNeedFilePath(int base_no, char *data_path, char *pack);
 
     /**
      * Makes the paths of the resource file and the script file of the named
@@ -370,7 +370,7 @@ public:
      * @size 0x50
      * @unknownret
      */
-    int GetNeedFilePath(char *name, char *data_path, char *script_path);
+    int GetNeedFilePath(char *name, char *data_path, char *pack);
 
     /**
      * Starts an effect from a loaded base for an owner, optionally giving it
@@ -380,7 +380,7 @@ public:
      * @address 0x2E5D60
      * @size 0x500
      */
-    _EFF_SCRIPT *CreateEffSpt(int base_no, int user_id, int use_slot);
+    _EFF_SCRIPT *CreateEffSpt(int base_no, int group, int register_in_group);
 
     /**
      * Starts the named effect for an owner, giving its slot or -1.
@@ -398,7 +398,7 @@ public:
      * @address 0x2E62D0
      * @size 0x70
      */
-    void ClearEffectFromChrid(int user_id);
+    void ClearEffectFromChrid(int chrid);
 
     /**
      * Stops every effect of a load level.
@@ -425,7 +425,7 @@ public:
      * @address 0x2E64F0
      * @size 0x60
      */
-    int DeleteEffSpt(int user_id, int slot);
+    int DeleteEffSpt(int group, int slot);
 
     /**
      * Stops every running effect and empties the slot table.
@@ -464,7 +464,7 @@ public:
      * @address 0x2E6E70
      * @size 0xF0
      */
-    _ES_SPRITE *AssignSprite(int num);
+    _ES_SPRITE *AssignSprite(int count);
 
     /**
      * Frees billboard sprites allocated by AssignSprite.
@@ -482,7 +482,7 @@ public:
      * @address 0x2E6FA0
      * @size 0x1B0
      */
-    int AssignCharacter(_EFF_SCRIPT *script, int num);
+    int AssignCharacter(_EFF_SCRIPT *script, int count);
 
     /**
      * Sets the script program that an owner's effect starts in its next
@@ -492,7 +492,7 @@ public:
      * @address 0x2E7150
      * @size 0x60
      */
-    int SetScriptProgNo(int prog_no, int user_id, int slot);
+    int SetScriptProgNo(int prog_no, int group, int slot);
 
     /**
      * Sets the EffSptState of an owner's effect.
@@ -501,7 +501,7 @@ public:
      * @address 0x2E71B0
      * @size 0x60
      */
-    int Pause(int state, int user_id, int slot);
+    int Pause(int state, int group, int slot);
 
     /**
      * Sets the EffSptState of every effect of a load level.
@@ -520,7 +520,7 @@ public:
      * @address 0x2E7250
      * @size 0x80
      */
-    int SetScriptVect1(float *vect, int user_id, int slot);
+    int SetScriptVect1(float *vect, int group, int slot);
 
     /**
      * Gives the first work vector of an effect: the one in an owner's slot,
@@ -530,7 +530,7 @@ public:
      * @address 0x2E72D0
      * @size 0x90
      */
-    int GetScriptVect1(float *vect, int user_id, int slot);
+    int GetScriptVect1(float *vect, int group, int slot);
 
     /**
      * Sets the second work vector of an effect: the one in an owner's slot,
@@ -540,7 +540,7 @@ public:
      * @address 0x2E7360
      * @size 0x80
      */
-    int SetScriptVect2(float *vect, int user_id, int slot);
+    int SetScriptVect2(float *vect, int group, int slot);
 
     /**
      * Gives the second work vector of an effect: the one in an owner's slot,
@@ -550,7 +550,7 @@ public:
      * @address 0x2E73E0
      * @size 0x90
      */
-    int GetScriptVect2(float *vect, int user_id, int slot);
+    int GetScriptVect2(float *vect, int group, int slot);
 
     /**
      * Sets the target character of an effect: the one in an owner's slot,
@@ -560,7 +560,7 @@ public:
      * @address 0x2E7470
      * @size 0x80
      */
-    int SetScriptTargetId(int target_id, int user_id, int slot);
+    int SetScriptTargetId(int target_id, int group, int slot);
 
     /**
      * Gives the target character of an effect: the one in an owner's slot,
@@ -570,7 +570,7 @@ public:
      * @address 0x2E74F0
      * @size 0x90
      */
-    int GetScriptTargetId(int &target_id, int user_id, int slot);
+    int GetScriptTargetId(int &target_id, int group, int slot);
 
     /**
      * Sets the owner of an effect: the one in an owner's slot, or the last
@@ -580,7 +580,7 @@ public:
      * @address 0x2E7580
      * @size 0x80
      */
-    int SetScriptUserId(int new_user_id, int user_id, int slot);
+    int SetScriptUserId(int new_user_id, int group, int slot);
 
     /**
      * Gives the owner of an effect: the one in an owner's slot, or the last
@@ -590,7 +590,7 @@ public:
      * @address 0x2E7600
      * @size 0x90
      */
-    int GetScriptUserId(int &out_user_id, int user_id, int slot);
+    int GetScriptUserId(int &out_user_id, int group, int slot);
 
     /**
      * Sets the collision primitive of an effect: the one in an owner's
@@ -600,7 +600,7 @@ public:
      * @address 0x2E7690
      * @size 0x80
      */
-    int SetColPrim(CColPrim *colprim, int user_id, int slot);
+    int SetColPrim(CColPrim *colprim, int group, int slot);
 
     /**
      * Sets an integer script value of an effect: the one in an owner's
@@ -610,7 +610,7 @@ public:
      * @address 0x2E7710
      * @size 0xB0
      */
-    int SetValue(int index, int value, int user_id, int slot);
+    int SetValue(int index, int value, int group, int slot);
 
     /**
      * Sets a float script value of an effect: the one in an owner's slot,
@@ -620,7 +620,7 @@ public:
      * @address 0x2E77C0
      * @size 0xB0
      */
-    int SetValue(int index, float value, int user_id, int slot);
+    int SetValue(int index, float value, int group, int slot);
 
     /**
      * Sets the origin of an effect: the one in an owner's slot, or the last
@@ -630,7 +630,7 @@ public:
      * @address 0x2E7870
      * @size 0x80
      */
-    int SetOrigin(float *origin, int user_id, int slot);
+    int SetOrigin(float *vect, int group, int slot);
 
     /**
      * Gives the model copy of an effect: the one in an owner's slot, or the
@@ -640,7 +640,7 @@ public:
      * @address 0x2E78F0
      * @size 0x80
      */
-    CCharacter2 *GetCharacter(int user_id, int slot);
+    CCharacter2 *GetCharacter(int group, int slot);
 
     /**
      * Gives an effect a copy of the given character as its model: the one
@@ -650,7 +650,7 @@ public:
      * @address 0x2E7970
      * @size 0x2A0
      */
-    int SetCharacter(CCharacter2 *chara, int user_id, int slot);
+    int SetCharacter(CCharacter2 *source, int group, int slot);
 
     /**
      * Sets the texture block of an effect: the one in an owner's slot, or
@@ -660,7 +660,7 @@ public:
      * @address 0x2E7C10
      * @size 0x80
      */
-    int SetTexb(int texb, int user_id, int slot);
+    int SetTexb(int texb, int group, int slot);
 };
 
 STATIC_ASSERT(sizeof(CEffectScriptMan) == 0x1190);

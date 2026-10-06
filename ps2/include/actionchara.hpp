@@ -1,10 +1,10 @@
 #pragma once
 
 #include "common.h"
-#include <cstring>
+
+#include <libvu0.h>
 
 #include <cstring>
-#include <libvu0.h>
 
 #include "character.hpp"
 #include "dng_effect.hpp"
@@ -30,9 +30,9 @@ class CActionChara;
  *
  */
 enum ACTION_CHARA_TYPE {
-    ACTION_CHARA_MAX     = 0, /**< Max, and any other character set up with the first user-data slot. */
-    ACTION_CHARA_MONICA  = 1, /**< Monica. */
-    ACTION_CHARA_ROBO    = 2, /**< The ridepod. */
+    ACTION_CHARA_MAX = 0,     /**< Max, and any other character set up with the first user-data slot. */
+    ACTION_CHARA_MONICA = 1,  /**< Monica. */
+    ACTION_CHARA_ROBO = 2,    /**< The ridepod. */
     ACTION_CHARA_MONSTER = 3, /**< A monster. */
 };
 
@@ -42,15 +42,15 @@ enum ACTION_CHARA_TYPE {
  *
  */
 enum ACTION_MOVE_TYPE {
-    ACTION_MOVE_HUMAN      = 0, /**< Moves on foot with HumanMoveIF. */
-    ACTION_MOVE_ROBO_WALK  = 1, /**< Moves the ridepod on legs with RoboWalkMoveIF. */
-    ACTION_MOVE_ROBO_TANK  = 2, /**< Moves the ridepod on treads with RoboTankMoveIF. */
-    ACTION_MOVE_ROBO_BIKE  = 3, /**< Moves the ridepod on wheels with RoboBikeMoveIF. */
-    ACTION_MOVE_MONSTER    = 3, /**< Moves a monster with MonsterMoveIF. */
+    ACTION_MOVE_HUMAN = 0,      /**< Moves on foot with HumanMoveIF. */
+    ACTION_MOVE_ROBO_WALK = 1,  /**< Moves the ridepod on legs with RoboWalkMoveIF. */
+    ACTION_MOVE_ROBO_TANK = 2,  /**< Moves the ridepod on treads with RoboTankMoveIF. */
+    ACTION_MOVE_ROBO_BIKE = 3,  /**< Moves the ridepod on wheels with RoboBikeMoveIF. */
+    ACTION_MOVE_MONSTER = 3,    /**< Moves a monster with MonsterMoveIF. */
     ACTION_MOVE_ROBO_WALK2 = 4, /**< Moves the ridepod on legs with RoboWalkMoveIF. */
     ACTION_MOVE_ROBO_TANK2 = 5, /**< Moves the ridepod on treads with RoboTankMoveIF, with the differences that it checks for. */
-    ACTION_MOVE_ROBO_AIR   = 6, /**< Moves the ridepod through the air with RoboAirMoveIF. */
-    ACTION_MOVE_ROBO_AIR2  = 7, /**< Moves the ridepod through the air with RoboAirMoveIF, with the differences that it checks for. */
+    ACTION_MOVE_ROBO_AIR = 6,   /**< Moves the ridepod through the air with RoboAirMoveIF. */
+    ACTION_MOVE_ROBO_AIR2 = 7,  /**< Moves the ridepod through the air with RoboAirMoveIF, with the differences that it checks for. */
 };
 
 /**
@@ -59,8 +59,8 @@ enum ACTION_MOVE_TYPE {
  *
  */
 enum ACTION_CHARA_KIND {
-    ACTION_KIND_NONE   = 0, /**< A character with no action script. */
-    ACTION_KIND_PART   = 1, /**< A part that SetRef has attached to another character's frame. */
+    ACTION_KIND_NONE = 0,   /**< A character with no action script. */
+    ACTION_KIND_PART = 1,   /**< A part that SetRef has attached to another character's frame. */
     ACTION_KIND_SCRIPT = 2, /**< A character with a loaded action script. */
 };
 
@@ -70,8 +70,8 @@ enum ACTION_CHARA_KIND {
  *
  */
 enum ACTION_HOLD_TYPE {
-    ACTION_HOLD_NONE  = 0, /**< Holds nothing. */
-    ACTION_HOLD_ITEM  = 1, /**< Holds an item that it is about to throw. */
+    ACTION_HOLD_NONE = 0,  /**< Holds nothing. */
+    ACTION_HOLD_ITEM = 1,  /**< Holds an item that it is about to throw. */
     ACTION_HOLD_ENEMY = 3, /**< Holds a monster that it has caught. */
     ACTION_HOLD_STONE = 4, /**< Holds a stone from the map that it has picked up. */
 };
@@ -82,11 +82,11 @@ enum ACTION_HOLD_TYPE {
  *
  */
 enum ACTION_DAMAGE_REQ {
-    ACTION_DAMAGE_REQ_NONE  = 0, /**< Asks for nothing. */
+    ACTION_DAMAGE_REQ_NONE = 0,  /**< Asks for nothing. */
     ACTION_DAMAGE_REQ_SMALL = 1, /**< Runs ACTION_PROG_DAMAGE_SMALL. */
     ACTION_DAMAGE_REQ_LARGE = 2, /**< Runs ACTION_PROG_DAMAGE_LARGE. */
-    ACTION_DAMAGE_REQ_DEAD  = 4, /**< Runs ACTION_PROG_DEAD. */
-    ACTION_DAMAGE_REQ_HOLD  = 7, /**< Runs ACTION_PROG_HOLD. */
+    ACTION_DAMAGE_REQ_DEAD = 4,  /**< Runs ACTION_PROG_DEAD. */
+    ACTION_DAMAGE_REQ_HOLD = 7,  /**< Runs ACTION_PROG_HOLD. */
 };
 
 /**
@@ -95,15 +95,15 @@ enum ACTION_DAMAGE_REQ {
  *
  */
 enum ACTION_PROG {
-    ACTION_PROG_RUNNING      = -1,   /**< Resumes the program that is already running. */
-    ACTION_PROG_INIT         = 100,  /**< Sets the character up when its script is initialised. */
-    ACTION_PROG_RESET        = 150,  /**< Puts the character back into its normal state. */
-    ACTION_PROG_MAIN         = 200,  /**< Runs the character's normal behaviour. */
-    ACTION_PROG_DAMAGE_SMALL = 500,  /**< Reacts to a small hit. */
-    ACTION_PROG_HOLD         = 550,  /**< Holds the character in place. */
-    ACTION_PROG_DAMAGE_LARGE = 600,  /**< Reacts to a large hit. */
-    ACTION_PROG_DEAD         = 1400, /**< Runs the character's death. */
-    ACTION_PROG_LAND         = 1500, /**< Lands the character after a fall. */
+    ACTION_PROG_RUNNING = -1,       /**< Resumes the program that is already running. */
+    ACTION_PROG_INIT = 100,         /**< Sets the character up when its script is initialised. */
+    ACTION_PROG_RESET = 150,        /**< Puts the character back into its normal state. */
+    ACTION_PROG_MAIN = 200,         /**< Runs the character's normal behaviour. */
+    ACTION_PROG_DAMAGE_SMALL = 500, /**< Reacts to a small hit. */
+    ACTION_PROG_HOLD = 550,         /**< Holds the character in place. */
+    ACTION_PROG_DAMAGE_LARGE = 600, /**< Reacts to a large hit. */
+    ACTION_PROG_DEAD = 1400,        /**< Runs the character's death. */
+    ACTION_PROG_LAND = 1500,        /**< Lands the character after a fall. */
 };
 
 /**
@@ -124,13 +124,13 @@ STATIC_ASSERT(sizeof(RUN_SCRIPT_ENV) == 0x8);
  *
  */
 struct ACTION_SW_EFFECT {
-    s16   sword_no;  /**< Index into the character's sword after-image effects. */
-    char *chara;     /**< Name of the part in the chain whose motion is watched; NULL for the character itself. */
-    char *motion;    /**< Name of the motion that starts the after-image; NULL while the slot is free. */
-    float start;     /**< Motion frame from which the after-image starts. */
-    float end;       /**< Motion frame before which the after-image starts. */
-    char *frame0;    /**< Name of the frame at one end of the blade. */
-    char *frame1;    /**< Name of the frame at the other end of the blade. */
+    s16   sword_no; /**< Index into the character's sword after-image effects. */
+    char *chara;    /**< Name of the part in the chain whose motion is watched; NULL for the character itself. */
+    char *motion;   /**< Name of the motion that starts the after-image; NULL while the slot is free. */
+    float start;    /**< Motion frame from which the after-image starts. */
+    float end;      /**< Motion frame before which the after-image starts. */
+    char *frame0;   /**< Name of the frame at one end of the blade. */
+    char *frame1;   /**< Name of the frame at the other end of the blade. */
     s8    unk_1c;
     s8    unk_1d;
     s8    fade_time; /**< Number of steps over which the after-image fades. */
@@ -167,7 +167,7 @@ STATIC_ASSERT(sizeof(ACTION_DAMAGE) == 0x28);
 struct ACTION_OBJECT {
     mgCFrame     *frame; /**< Frame of the character; NULL while the slot is free. */
     s32           unk_4[3];
-    sceVu0FVECTOR pos;   /**< World position of the frame, worked out each time the character is drawn. */
+    sceVu0FVECTOR pos; /**< World position of the frame, worked out each time the character is drawn. */
 };
 
 STATIC_ASSERT(sizeof(ACTION_OBJECT) == 0x20);
@@ -197,7 +197,7 @@ struct ACTION_SOUND {
     float start_frame; /**< Motion frame from which the sound plays. */
     float end_frame;   /**< Motion frame before which the sound plays. */
     s32   unk_c;
-    char *chara;       /**< Name of the part in the chain whose motion is watched; NULL for the character itself. */
+    char *chara; /**< Name of the part in the chain whose motion is watched; NULL for the character itself. */
 };
 
 STATIC_ASSERT(sizeof(ACTION_SOUND) == 0x14);
@@ -223,7 +223,7 @@ STATIC_ASSERT(sizeof(ACTION_ACCELE) == 0x20);
  *
  */
 struct ACTION_ACCUME {
-    mgCFrame *frame;  /**< Frame of the object that the charging effect gathers on. */
+    mgCFrame *frame; /**< Frame of the object that the charging effect gathers on. */
     s16       unk_4;
     s16       active; /**< 1 once the charging effect has started. */
 };
@@ -249,82 +249,82 @@ STATIC_ASSERT(sizeof(ACTION_SHAKE) == 0x8);
  */
 class CActionChara : public CCharacter2 {
 public:
-    sceVu0FVECTOR    old_pos;        /**< Position of the character before this step's move. */
-    s32              chara_type;     /**< Kind of character, an ACTION_CHARA_TYPE value. */
-    CActionChara    *parent;         /**< Character that this part is chained onto; NULL for the head of the chain. */
-    CActionChara    *next;           /**< Next part in the chain; NULL for the last. */
-    CPalletAnime     unk_67c;
-    s16              chara_kind;     /**< What the character is in its chain, an ACTION_CHARA_KIND value. */
-    sceVu0FVECTOR    front_vec;      /**< Direction that the character faces. */
-    s32              mask_flag;      /**< Bits that monster scripts set and clear. */
-    s32              attack_type;    /**< Attack type that the action script reads. */
-    s32              move_type;      /**< Way of moving, an ACTION_MOVE_TYPE value. */
-    float            max_speed;      /**< Speed at which the ridepod moves at its fastest. */
-    s32              unk_6b0;
-    s16              unk_6b4;
-    char            *script_buf;     /**< Copy of the action script file that the interpreter runs. */
-    CRunScript       script;         /**< Interpreter that runs the action script. */
-    s16              prog_no;        /**< Program to run next, an ACTION_PROG value. */
-    s16              prog;           /**< Value that the action script keeps for itself. */
-    u32              pad_history;    /**< Buttons pressed since the action script last cleared them. */
-    char            *default_motion; /**< Name of the motion that the character returns to. */
-    s16              hold_type;      /**< What the character holds, an ACTION_HOLD_TYPE value. */
-    CMapParts       *hold_parts;     /**< Stone that the character holds. */
-    mgCFrame        *hold_frame;     /**< Frame of the character that carries what it holds. */
-    s16              release_timing; /**< What has just happened to what the character holds; cleared each step. */
-    s16              unk_72a;
-    mgCFrame        *catch_frame;    /**< Frame of the character that has caught this one. */
-    s16              catch_state;    /**< 1 while another character holds this one, 2 while it flies after being thrown. */
-    s16              no_hit_time;    /**< Steps left before this character's body collides again. */
-    CPalletAnime     pallet[3];      /**< Colour flashes over the character's lighting; the first one playing is used. */
-    s16              unk_75e;
-    float            unk_760;
-    s16              shot_wait;      /**< Steps left before the character can shoot again. */
-    s32              muteki_time;    /**< Steps left for which the character takes no damage. */
-    s8               menu_flag;      /**< Nonzero while the character may open the menu. */
-    s8               stand_flag;     /**< 1 while the stick is not pushed. */
-    s8               dir_gun;        /**< 1 when the action script has aimed the gun this step. */
-    s16              target_no;      /**< Scene character number of the lock-on target; -1 for none. */
-    s16              lock_on;        /**< 1 while the character is locked on to its target. */
-    s32              murderous_time; /**< Steps left for the character's murderous value. */
-    s32              murderous;      /**< Murderous value that the action script set. */
-    s32              now_status;     /**< Status that the action scripts of other characters read from this one. */
-    ACTION_ACCELE    accele;         /**< How fast the character speeds up and moves. */
-    sceVu0FVECTOR    add_vec;        /**< Direction of a movement added to the character's velocity. */
-    float            add_speed;      /**< Speed of the added movement. */
-    float            add_decel;      /**< Amount taken off the added movement's speed each step. */
-    s32              add_time;       /**< Steps left for the added movement; 0 for none. */
-    float            stick_angle;    /**< Direction of the stick relative to the character. */
-    s32              stick_time;     /**< Steps for which the stick has kept its direction. */
-    float            target_dot;     /**< Cosine of the angle between the character's velocity and its target. */
-    s32              unk_7c8;
-    void            *accume_effect;  /**< Charging effect that the character's weapon shows; NULL for none. */
-    ACTION_ACCUME    accume;         /**< Frame that the charging effect gathers on. */
-    s32              acumu_pad;      /**< Steps for which the charge button has been held. */
+    sceVu0FVECTOR     old_pos;    /**< Position of the character before this step's move. */
+    s32               chara_type; /**< Kind of character, an ACTION_CHARA_TYPE value. */
+    CActionChara     *parent;     /**< Character that this part is chained onto; NULL for the head of the chain. */
+    CActionChara     *next;       /**< Next part in the chain; NULL for the last. */
+    CPalletAnime      unk_67c;
+    s16               chara_kind;  /**< What the character is in its chain, an ACTION_CHARA_KIND value. */
+    sceVu0FVECTOR     front_vec;   /**< Direction that the character faces. */
+    s32               mask_flag;   /**< Bits that monster scripts set and clear. */
+    s32               attack_type; /**< Attack type that the action script reads. */
+    s32               move_type;   /**< Way of moving, an ACTION_MOVE_TYPE value. */
+    float             max_speed;   /**< Speed at which the ridepod moves at its fastest. */
+    s32               unk_6b0;
+    s16               unk_6b4;
+    char             *script_buf;     /**< Copy of the action script file that the interpreter runs. */
+    CRunScript        script;         /**< Interpreter that runs the action script. */
+    s16               prog_no;        /**< Program to run next, an ACTION_PROG value. */
+    s16               prog;           /**< Value that the action script keeps for itself. */
+    u32               pad_history;    /**< Buttons pressed since the action script last cleared them. */
+    char             *default_motion; /**< Name of the motion that the character returns to. */
+    s16               hold_type;      /**< What the character holds, an ACTION_HOLD_TYPE value. */
+    CMapParts        *hold_parts;     /**< Stone that the character holds. */
+    mgCFrame         *hold_frame;     /**< Frame of the character that carries what it holds. */
+    s16               release_timing; /**< What has just happened to what the character holds; cleared each step. */
+    s16               unk_72a;
+    mgCFrame         *catch_frame; /**< Frame of the character that has caught this one. */
+    s16               catch_state; /**< 1 while another character holds this one, 2 while it flies after being thrown. */
+    s16               no_hit_time; /**< Steps left before this character's body collides again. */
+    CPalletAnime      pallet[3];   /**< Colour flashes over the character's lighting; the first one playing is used. */
+    s16               unk_75e;
+    float             unk_760;
+    s16               shot_wait;      /**< Steps left before the character can shoot again. */
+    s32               muteki_time;    /**< Steps left for which the character takes no damage. */
+    s8                menu_flag;      /**< Nonzero while the character may open the menu. */
+    s8                stand_flag;     /**< 1 while the stick is not pushed. */
+    s8                dir_gun;        /**< 1 when the action script has aimed the gun this step. */
+    s16               target_no;      /**< Scene character number of the lock-on target; -1 for none. */
+    s16               lock_on;        /**< 1 while the character is locked on to its target. */
+    s32               murderous_time; /**< Steps left for the character's murderous value. */
+    s32               murderous;      /**< Murderous value that the action script set. */
+    s32               now_status;     /**< Status that the action scripts of other characters read from this one. */
+    ACTION_ACCELE     accele;         /**< How fast the character speeds up and moves. */
+    sceVu0FVECTOR     add_vec;        /**< Direction of a movement added to the character's velocity. */
+    float             add_speed;      /**< Speed of the added movement. */
+    float             add_decel;      /**< Amount taken off the added movement's speed each step. */
+    s32               add_time;       /**< Steps left for the added movement; 0 for none. */
+    float             stick_angle;    /**< Direction of the stick relative to the character. */
+    s32               stick_time;     /**< Steps for which the stick has kept its direction. */
+    float             target_dot;     /**< Cosine of the angle between the character's velocity and its target. */
+    s32               unk_7c8;
+    void             *accume_effect; /**< Charging effect that the character's weapon shows; NULL for none. */
+    ACTION_ACCUME     accume;        /**< Frame that the charging effect gathers on. */
+    s32               acumu_pad;     /**< Steps for which the charge button has been held. */
     CEffectScriptMan *effect_man;    /**< Effect scripts that the character starts. */
-    s8               throw_effect;   /**< Effect script of the item about to be thrown; below 0 for none. */
-    ACTION_SW_EFFECT sw_effect[9];   /**< Sword after-images that the character's motions start. */
-    s8               sw_effect_num;  /**< Number of sword after-images entered. */
-    MoveCheckInfo    move_check;     /**< Result of checking the character's move against the map. */
-    ACTION_DAMAGE    damage[11];     /**< Damage that the character's motions deal. */
-    s8               damage_num;     /**< Number of damage entries entered. */
-    s32              damage_req;     /**< Reaction that damage asks for, an ACTION_DAMAGE_REQ value. */
-    s32              unk_be0;
-    s32              unk_be4;
-    s32              damage_time;    /**< Steps left before the character can be hit again. */
-    s32              unk_bec;
-    s32              guard_flag;     /**< Nonzero while the character guards. */
-    s8               stagger;        /**< Stagger built up from recent hits. */
-    s8               stagger_time;   /**< Steps left before the built-up stagger is cleared. */
-    ACTION_SHAKE     shake;          /**< Shaking after a hit. */
-    ACTION_OBJECT    object[8];      /**< Frames that the action script refers to by number. */
-    ACTION_BODY_COL  body_col[16];   /**< Body collision spheres of the character. */
-    sceVu0FVECTOR    blow_vec;       /**< Direction in which the character is knocked back. */
-    float            blow_rate;      /**< Multiplier on the speed of a knock-back. */
-    float            blow_speed;     /**< Speed of the knock-back. */
-    float            blow_decel;     /**< Amount taken off the knock-back speed each step. */
-    s32              blow_time;      /**< Steps left for the knock-back; 0 for none. */
-    ACTION_SOUND     sound[10];      /**< Sounds that the character's motions play. */
+    s8                throw_effect;  /**< Effect script of the item about to be thrown; below 0 for none. */
+    ACTION_SW_EFFECT  sw_effect[9];  /**< Sword after-images that the character's motions start. */
+    s8                sw_effect_num; /**< Number of sword after-images entered. */
+    MoveCheckInfo     move_check;    /**< Result of checking the character's move against the map. */
+    ACTION_DAMAGE     damage[11];    /**< Damage that the character's motions deal. */
+    s8                damage_num;    /**< Number of damage entries entered. */
+    s32               damage_req;    /**< Reaction that damage asks for, an ACTION_DAMAGE_REQ value. */
+    s32               unk_be0;
+    s32               unk_be4;
+    s32               damage_time; /**< Steps left before the character can be hit again. */
+    s32               unk_bec;
+    s32               guard_flag;   /**< Nonzero while the character guards. */
+    s8                stagger;      /**< Stagger built up from recent hits. */
+    s8                stagger_time; /**< Steps left before the built-up stagger is cleared. */
+    ACTION_SHAKE      shake;        /**< Shaking after a hit. */
+    ACTION_OBJECT     object[8];    /**< Frames that the action script refers to by number. */
+    ACTION_BODY_COL   body_col[16]; /**< Body collision spheres of the character. */
+    sceVu0FVECTOR     blow_vec;     /**< Direction in which the character is knocked back. */
+    float             blow_rate;    /**< Multiplier on the speed of a knock-back. */
+    float             blow_speed;   /**< Speed of the knock-back. */
+    float             blow_decel;   /**< Amount taken off the knock-back speed each step. */
+    s32               blow_time;    /**< Steps left for the knock-back; 0 for none. */
+    ACTION_SOUND      sound[10];    /**< Sounds that the character's motions play. */
 
     /**
      * Makes a character with an empty interpreter and a cleared map check.
@@ -380,7 +380,7 @@ public:
      * @address 0x16B8F0
      * @size 0x30
      */
-    void SetMaskFlag(int flag, int on);
+    void SetMaskFlag(int flag, int set);
 
     /**
      * Enters a frame of the chain as an object, in the first free slot or the slot given.
@@ -407,7 +407,7 @@ public:
      * @address 0x16BA30
      * @size 0x8C
      */
-    ACTION_BODY_COL *EntryBodyCol(int object, float radius);
+    ACTION_BODY_COL *EntryBodyCol(int index, float value);
 
     /**
      * Enters damage dealt between two named frames while a motion plays between two points of it.
@@ -416,7 +416,7 @@ public:
      * @address 0x16BAC0
      * @size 0x194
      */
-    ACTION_DAMAGE *EntryDamage2(char *frame0, char *frame1, char *damage, float radius, char *motion, float start, float end, char *chara);
+    ACTION_DAMAGE *EntryDamage2(char *frame_name_a, char *frame_name_b, char *hit_name, float power, char *motion, float start, float end, char *chara);
 
     /**
      * Enters damage dealt between two frames while a motion plays between two points of it.
@@ -425,7 +425,7 @@ public:
      * @address 0x16BC60
      * @size 0x160
      */
-    ACTION_DAMAGE *EntryDamage2(mgCFrame *frame0, mgCFrame *frame1, char *damage, float radius, char *motion, float start, float end, char *chara);
+    ACTION_DAMAGE *EntryDamage2(mgCFrame *frame_a, mgCFrame *frame_b, char *hit_name, float power, char *motion, float start, float end, char *chara);
 
     /**
      * Deletes the collision primitive of every damage entry.
@@ -497,7 +497,7 @@ public:
      * @address 0x16BFB0
      * @size 0x40
      */
-    virtual void Show(int show, int all);
+    virtual void Show(int show, int chain);
 
     /**
      * Says whether the named part of the chain is shown, or the character itself for NULL.
@@ -506,7 +506,7 @@ public:
      * @address 0x16BFF0
      * @size 0x80
      */
-    virtual int GetShow(char *chara);
+    virtual int GetShow(char *name);
 
     /**
      * Kicks the stone nearest the named frame, or with kick unset only says whether there is one.
@@ -515,7 +515,7 @@ public:
      * @address 0x16C070
      * @size 0xCC
      */
-    int CheckKeri(char *name, int kick);
+    int CheckKeri(char *name, int flag);
 
     /**
      * Catches the monster or picks up the stone at the named frame.
@@ -569,7 +569,7 @@ public:
      * @address 0x16CB30
      * @size 0x60
      */
-    virtual void SetMotion(int no, int flags);
+    virtual void SetMotion(int no, int param);
 
     /**
      * Sets the named motion on the character, and with all set on every part in the chain.
@@ -578,7 +578,7 @@ public:
      * @address 0x16CB90
      * @size 0x78
      */
-    virtual void SetMotion(char *name, int flags, int all);
+    virtual void SetMotion(char *name, int param, int chain);
 
     /**
      * Resets the motion of every part in the chain.
@@ -596,7 +596,7 @@ public:
      * @address 0x16C830
      * @size 0x80
      */
-    virtual float GetNowFrameWait(char *chara);
+    virtual float GetNowFrameWait(char *name);
 
     /**
      * Gets the motion frame of the named part of the chain, or of the character itself for NULL.
@@ -605,7 +605,7 @@ public:
      * @address 0x16C8B0
      * @size 0x80
      */
-    virtual float GetNowFrame(char *chara);
+    virtual float GetNowFrame(char *name);
 
     /**
      * Says whether the motion of the named part of the chain, or of the character itself for NULL, has ended.
@@ -614,7 +614,7 @@ public:
      * @address 0x16C930
      * @size 0x8C
      */
-    virtual int CheckMotionEnd(char *chara);
+    virtual int CheckMotionEnd(char *name);
 
     /**
      * Gets the motion status of the named part of the chain, or of the character itself for NULL.
@@ -623,7 +623,7 @@ public:
      * @address 0x16C9C0
      * @size 0x80
      */
-    virtual int GetMotionStatus(char *chara);
+    virtual int GetMotionStatus(char *name);
 
     /**
      * Turns a point between 0 and 1 of a motion of the named part of the chain into a motion frame.
@@ -632,7 +632,7 @@ public:
      * @address 0x16CA40
      * @size 0xE8
      */
-    float GetWaitToFrame(char *motion, float rate, char *chara);
+    float GetWaitToFrame(char *motion, float ratio, char *chara);
 
     /**
      * Draws every part in the chain through the drawing list, shaking the character after a hit.
@@ -714,7 +714,7 @@ public:
      * @address 0x16D1A0
      * @size 0xC0
      */
-    int SetRef(CActionChara *part, char *name);
+    int SetRef(CActionChara *other, char *name);
 
     /**
      * Gets the distance to the lock-on target, or -1 when there is none.
@@ -840,7 +840,7 @@ public:
      * @address 0x1724D0
      * @size 0x94
      */
-    int LoadActionFile(char *data, int size, mgCMemory *memory);
+    int LoadActionFile(char *script, int size, mgCMemory *memory);
 
     /**
      * Clears what the script entered and runs the initialising program.
@@ -876,7 +876,7 @@ public:
      * @address 0x172DD0
      * @size 0x30
      */
-    int CheckReleaseTimming(int hold_type);
+    int CheckReleaseTimming(int id);
 
     /**
      * Works out the facing, adds the added movement and knock-back to the velocity and counts down the timers.

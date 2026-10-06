@@ -98,3 +98,12 @@ CEditMap adds no virtual functions, it only overrides CMap's (`Iam`, `Initialize
 ## First-game correspondence
 None. The first game's Georama editor (`editground`, `editarea`, `editpartsinfo` in
 `/home/adubbz/development/chronicle`) has no `CEditMap`; layouts were derived from this game only.
+
+## Native map and function-point calls
+
+`CEditMap` calls qualified `CMap` base methods for initialization, stepping,
+polygon collection, drawing and view setup. Its function-point check is the
+eight-byte `CFuncPointCheck` declared in `funcpoint.hpp`; the constructor clears
+the time before `CMap::CreateFuncCheck` fills the check. Placed parts then step
+or copy the check through `CMapParts` methods. These native calls produce the
+retail `PreDraw` and `DrawSub` functions without C-linkage aliases.

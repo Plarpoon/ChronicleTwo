@@ -147,6 +147,8 @@ the item number), 4 `int target_type` (UseItem stores `target->type`), 0x8..0x17
   `CGameDataUsed::GetName` (userdata).
 - `MenuUsedItemNo`, `MenuUsedItemType`, `MenuUsedNotErrorCode` (.sbss, 4 each), `MenuUsedTarget`
   (CItemUseTarget, 8). Read in menusys (SetItemEffect, MenuItemCommandSelect).
+- Native file-scope construction of `MenuUsedTarget` emits the exact retail
+  `__sinit_menucls1_cpp` initializer; its constructor sets the target type to none.
 - Skipped (local or compiler-generated): MenuHatena_894, init_895, MenuHatena_1byte_897, init_898,
   sn_944, st_bittable_1654, at_* literals.
 

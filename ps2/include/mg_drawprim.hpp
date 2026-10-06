@@ -77,23 +77,23 @@ enum mgZ_MASK {
  *
  */
 enum mgPACKET_CODE {
-    MG_DMA_CNT = 1 << 28,          /**< DMA tag ID CNT, in the tag's first word: the data follows the tag. */
-    MG_DMA_CALL = 5 << 28,         /**< DMA tag ID CALL, in the tag's first word: calls the packet at the tag's address. */
-    MG_DMA_RET = 6 << 28,          /**< DMA tag ID RET, in the tag's first word: returns to the caller of the packet. */
-    MG_VIF_DIRECT = 0x50 << 24,    /**< VIF DIRECT code: the given quadwords go to the GIF. */
-    MG_GIFTAG_EOP = 1 << 15,       /**< GIF tag end-of-packet bit, in the tag's first word. */
-    MG_GIFTAG_PRE = 1 << 14,       /**< GIF tag bit that writes the PRIM field to the PRIM register, in the tag's second word. */
-    MG_GIFTAG_PRIM_SHIFT = 15,     /**< Position of the GIF tag's PRIM field in the tag's second word. */
-    MG_GIFTAG_NREG_SHIFT = 28,     /**< Position of the GIF tag's NREG field in the tag's second word. */
-    MG_UNCACHED = 0x20000000,      /**< Address bit that selects uncached access to main memory. */
-    MG_VIF_OFFSET = 0x02 << 24,    /**< VIF OFFSET code: sets the VU1 double-buffer offset. */
-    MG_VIF_BASE = 0x03 << 24,      /**< VIF BASE code: sets the VU1 double-buffer base address. */
-    MG_VIF_FLUSHA = 0x13 << 24,    /**< VIF FLUSHA code: waits for the VU program and every GIF path to finish. */
-    MG_VIF_MSCAL = 0x14 << 24,     /**< VIF MSCAL code: starts the VU program at the given address. */
-    MG_VIF_MSCNT = 0x17 << 24,     /**< VIF MSCNT code: continues the VU program from where it stopped. */
+    MG_DMA_CNT = 1 << 28,             /**< DMA tag ID CNT, in the tag's first word: the data follows the tag. */
+    MG_DMA_CALL = 5 << 28,            /**< DMA tag ID CALL, in the tag's first word: calls the packet at the tag's address. */
+    MG_DMA_RET = 6 << 28,             /**< DMA tag ID RET, in the tag's first word: returns to the caller of the packet. */
+    MG_VIF_DIRECT = 0x50 << 24,       /**< VIF DIRECT code: the given quadwords go to the GIF. */
+    MG_GIFTAG_EOP = 1 << 15,          /**< GIF tag end-of-packet bit, in the tag's first word. */
+    MG_GIFTAG_PRE = 1 << 14,          /**< GIF tag bit that writes the PRIM field to the PRIM register, in the tag's second word. */
+    MG_GIFTAG_PRIM_SHIFT = 15,        /**< Position of the GIF tag's PRIM field in the tag's second word. */
+    MG_GIFTAG_NREG_SHIFT = 28,        /**< Position of the GIF tag's NREG field in the tag's second word. */
+    MG_UNCACHED = 0x20000000,         /**< Address bit that selects uncached access to main memory. */
+    MG_VIF_OFFSET = 0x02 << 24,       /**< VIF OFFSET code: sets the VU1 double-buffer offset. */
+    MG_VIF_BASE = 0x03 << 24,         /**< VIF BASE code: sets the VU1 double-buffer base address. */
+    MG_VIF_FLUSHA = 0x13 << 24,       /**< VIF FLUSHA code: waits for the VU program and every GIF path to finish. */
+    MG_VIF_MSCAL = 0x14 << 24,        /**< VIF MSCAL code: starts the VU program at the given address. */
+    MG_VIF_MSCNT = 0x17 << 24,        /**< VIF MSCNT code: continues the VU program from where it stopped. */
     MG_VIF_UNPACK_V4_32 = 0x6C << 24, /**< VIF UNPACK code for quadwords of four 32-bit values. */
-    MG_VIF_UNPACK_FLG = 1 << 15,   /**< VIF UNPACK bit that makes the address relative to the VU1 double buffer. */
-    MG_VIF_NUM_SHIFT = 16,         /**< Position of the NUM field in a VIF code. */
+    MG_VIF_UNPACK_FLG = 1 << 15,      /**< VIF UNPACK bit that makes the address relative to the VU1 double buffer. */
+    MG_VIF_NUM_SHIFT = 16,            /**< Position of the NUM field in a VIF code. */
 };
 
 /**
@@ -103,9 +103,9 @@ enum mgPACKET_CODE {
  *
  */
 enum mgGS_CODE {
-    MG_GS_PRMODECONT = 0x1A,  /**< PRMODECONT register: selects whether PRIM or PRMODE holds the attributes. */
-    MG_GS_ZGREATER = 3,       /**< TEST register depth comparison: greater than the stored depth. */
-    MG_GS_PRIM_FST = 1 << 8,  /**< PRIM register bit that takes texture coordinates from UV. */
+    MG_GS_PRMODECONT = 0x1A, /**< PRMODECONT register: selects whether PRIM or PRMODE holds the attributes. */
+    MG_GS_ZGREATER = 3,      /**< TEST register depth comparison: greater than the stored depth. */
+    MG_GS_PRIM_FST = 1 << 8, /**< PRIM register bit that takes texture coordinates from UV. */
 };
 
 /**
@@ -115,12 +115,13 @@ enum mgGS_CODE {
  *
  */
 struct mgSORT_PACKET {
-    u_long128 *common;   /**< Packet called before this one unless the previous packet called the same one. */
-    u_long128 *packet;   /**< The object's own packet. */
-    mgSORT_PACKET *next; /**< Packet registered before this one in the same sort bucket. */
-    s16 group;           /**< Position in draw order of the texture group the packet is drawn with. */
-    s16 vu_program;      /**< VU program sent before the packet is called. */
+    u_long128     *common;     /**< Packet called before this one unless the previous packet called the same one. */
+    u_long128     *packet;     /**< The object's own packet. */
+    mgSORT_PACKET *next;       /**< Packet registered before this one in the same sort bucket. */
+    s16            group;      /**< Position in draw order of the texture group the packet is drawn with. */
+    s16            vu_program; /**< VU program sent before the packet is called. */
 };
+
 STATIC_ASSERT(sizeof(mgSORT_PACKET) == 0x10);
 
 /**
@@ -132,32 +133,60 @@ STATIC_ASSERT(sizeof(mgSORT_PACKET) == 0x10);
 class mgCDrawPrim {
 public:
     mgCDrawManager *draw_manager; /**< Manager that supplies the render info, or NULL to use mgDrawManager. */
-    mgCMemory *memory;            /**< Stack memory the packet is built in. */
-    sceVif1Packet *vif_packet;    /**< VIF1 packet that calls the built packet. */
-    int detached;                 /**< Zero to call the built packet from the VIF1 packet and end it with a return tag. */
-    mgCDrawEnv draw_env;          /**< Texture, test, depth buffer and blend registers sent at the head of each packet. */
-    sceGsPrim prim;               /**< PRIM register written at the start of each primitive run. */
-    mgCTexture texture;           /**< Texture the primitives are drawn with. */
-    int bilinear;                 /**< Non-zero to filter the texture bilinearly. */
-    int z_mask;                   /**< Depth buffer write mode, an mgZ_MASK value. */
-    int disabled;                 /**< Non-zero when the last Begin found no memory, packet or render info to build with. */
-    u_long128 *packet_start;      /**< Uncached address where the current packet starts. */
-    u_long128 *packet_top;        /**< Start of the first packet built, kept once set. */
-    union { u_long128 *write; u_int *write_words; u_long *command_write; }; /**< Next quadword of the packet to write. */
-    union { u_long128 *dma_start; u_int *dma_start_words; }; /**< DMA tag that opens the current primitive run. */
-    union { u_long128 *direct_start; u_int *direct_start_words; }; /**< Quadword the VIF direct transfer of the current run counts from. */
-    u_int *giftag;                /**< GIF tag of the current primitive run, completed with its loop count at the end. */
-    union { u_int *dma_tag; int *dma_tag_words; }; /**< DMA tag word completed with the run's quadword count at the end. */
-    union { u_int *direct_code; int *direct_code_words; }; /**< VIF direct code word completed with the run's quadword count at the end. */
+    mgCMemory      *memory;       /**< Stack memory the packet is built in. */
+    sceVif1Packet  *vif_packet;   /**< VIF1 packet that calls the built packet. */
+    int             detached;     /**< Zero to call the built packet from the VIF1 packet and end it with a return tag. */
+    mgCDrawEnv      draw_env;     /**< Texture, test, depth buffer and blend registers sent at the head of each packet. */
+    sceGsPrim       prim;         /**< PRIM register written at the start of each primitive run. */
+    mgCTexture      texture;      /**< Texture the primitives are drawn with. */
+    int             bilinear;     /**< Non-zero to filter the texture bilinearly. */
+    int             z_mask;       /**< Depth buffer write mode, an mgZ_MASK value. */
+    int             disabled;     /**< Non-zero when the last Begin found no memory, packet or render info to build with. */
+    u_long128      *packet_start; /**< Uncached address where the current packet starts. */
+    u_long128      *packet_top;   /**< Start of the first packet built, kept once set. */
+
+    union {
+        u_long128 *write;
+        u_int     *write_words;
+        u_long    *command_write;
+    }; /**< Next quadword of the packet to write. */
+
+    union {
+        u_long128 *dma_start;
+        u_int     *dma_start_words;
+    }; /**< DMA tag that opens the current primitive run. */
+
+    union {
+        u_long128 *direct_start;
+        u_int     *direct_start_words;
+    }; /**< Quadword the VIF direct transfer of the current run counts from. */
+
+    u_int *giftag; /**< GIF tag of the current primitive run, completed with its loop count at the end. */
+
+    union {
+        u_int *dma_tag;
+        int   *dma_tag_words;
+    }; /**< DMA tag word completed with the run's quadword count at the end. */
+
+    union {
+        u_int *direct_code;
+        int   *direct_code_words;
+    }; /**< VIF direct code word completed with the run's quadword count at the end. */
+
     int unk_f4;
-    union { float q; u_int q_bits; }; /**< Q value written with every colour. */
-    int coord;                    /**< Zero to place vertices relative to the screen offset; non-zero to use raw GS coordinates. */
-    int packed;                   /**< Non-zero while the current run uses a packed GIF tag with its own register list. */
-    int nreg;                     /**< Registers per loop of the packed GIF tag. */
+
+    union {
+        float q;      /**< Perspective divisor of the texture coordinate. */
+        u_int q_bits; /**< Bitwise view of the texture coordinate's perspective divisor. */
+    }; /**< Q value written with every colour. */
+
+    int coord;  /**< Zero to place vertices relative to the screen offset; non-zero to use raw GS coordinates. */
+    int packed; /**< Non-zero while the current run uses a packed GIF tag with its own register list. */
+    int nreg;   /**< Registers per loop of the packed GIF tag. */
     int unk_108;
     int unk_10c;
-    int offset_x;                 /**< Horizontal offset, in sixteenths of a pixel, added to every vertex. */
-    int offset_y;                 /**< Vertical offset, in sixteenths of a pixel, added to every vertex. */
+    int offset_x; /**< Horizontal offset, in sixteenths of a pixel, added to every vertex. */
+    int offset_y; /**< Vertical offset, in sixteenths of a pixel, added to every vertex. */
     int unk_118;
     int unk_11c;
 
@@ -259,7 +288,7 @@ public:
      * @address 0x134F10
      * @size 0xB0
      */
-    void BeginPrim2(int type, unsigned int regs_lo, unsigned int regs_hi, int nreg);
+    void BeginPrim2(int type, unsigned int data_a, unsigned int data_b, int unit_count);
 
     /**
      * Closes the primitive run opened by either BeginPrim2.
@@ -418,7 +447,7 @@ public:
      * @address 0x135420
      * @size 0x120
      */
-    void Texture(mgCTexture *texture);
+    void Texture(mgCTexture *source);
 
     /**
      * Turns alpha blending of later primitive runs on or off.
@@ -486,7 +515,7 @@ public:
      * @address 0x135670
      * @size 0xA0
      */
-    void DepthTest(int method);
+    void DepthTest(int mode);
 
     /**
      * Sets whether later packets write the depth buffer, as an mgZ_MASK
@@ -562,6 +591,7 @@ public:
      */
     void GetOffset(int *x, int *y);
 };
+
 STATIC_ASSERT(sizeof(mgCDrawPrim) == 0x120);
 
 /**
@@ -572,38 +602,38 @@ STATIC_ASSERT(sizeof(mgCDrawPrim) == 0x120);
  */
 class mgCDrawManager {
 public:
-    int *draw_order;                  /**< Texture groups in the order they are drawn, ending in -1, or NULL for the natural order. */
-    int *order_index;                 /**< Position in draw order of each texture group, -1 for a group not drawn. */
-    int group_max;                    /**< Texture groups packets may be registered for. */
-    int group_num;                    /**< Texture groups drawn. */
-    mgSORT_PACKET ***packet_list;     /**< Registered packets of each drawn group, in registration order. */
-    int *unk_14;
-    int *packet_num;                  /**< Number of packets registered for each drawn group. */
-    int sort_num;                     /**< Buckets in the sort table. */
-    int sort_max;                     /**< Index of the last sort table bucket. */
-    float sort_num_f;                 /**< Buckets in the sort table, as a float. */
-    float near_clip;                  /**< Near clip distance of the render info. */
-    float far_clip;                   /**< Far clip distance of the render info. */
-    float clip_range;                 /**< Distance from the near to the far clip. */
-    int unk_34;
-    int unk_38;
-    int unk_3c;
-    int unk_40;
-    float sort_near;                  /**< Near clip distance, beside the clip ratio and bucket count. */
-    float sort_ratio;                 /**< Near clip distance divided by far clip distance. */
-    float sort_scale;                 /**< Buckets in the sort table, as a float. */
-    mgSORT_PACKET **sort_table;       /**< Packet lists of the sort table's buckets. */
-    mgCMemory *memory;                /**< Memory the frame's tables and packet entries are taken from. */
+    int               *draw_order;  /**< Texture groups in the order they are drawn, ending in -1, or NULL for the natural order. */
+    int               *order_index; /**< Position in draw order of each texture group, -1 for a group not drawn. */
+    int                group_max;   /**< Texture groups packets may be registered for. */
+    int                group_num;   /**< Texture groups drawn. */
+    mgSORT_PACKET   ***packet_list; /**< Registered packets of each drawn group, in registration order. */
+    int               *unk_14;
+    int               *packet_num; /**< Number of packets registered for each drawn group. */
+    int                sort_num;   /**< Buckets in the sort table. */
+    int                sort_max;   /**< Index of the last sort table bucket. */
+    float              sort_num_f; /**< Buckets in the sort table, as a float. */
+    float              near_clip;  /**< Near clip distance of the render info. */
+    float              far_clip;   /**< Far clip distance of the render info. */
+    float              clip_range; /**< Distance from the near to the far clip. */
+    int                unk_34;
+    int                unk_38;
+    int                unk_3c;
+    int                unk_40;
+    float              sort_near;       /**< Near clip distance, beside the clip ratio and bucket count. */
+    float              sort_ratio;      /**< Near clip distance divided by far clip distance. */
+    float              sort_scale;      /**< Buckets in the sort table, as a float. */
+    mgSORT_PACKET    **sort_table;      /**< Packet lists of the sort table's buckets. */
+    mgCMemory         *memory;          /**< Memory the frame's tables and packet entries are taken from. */
     mgCTextureManager *texture_manager; /**< Texture manager whose slots are the texture groups. */
-    mgCMemory *packet_memory;         /**< Frame's packet memory, used when BeginDraw is given none. */
-    mgCMemory *data_memory;           /**< Frame's data memory. */
-    mgRENDER_INFO *render_info;       /**< Render info that supplies the clip distances and depth buffer. */
-    int unk_68;
-    int unk_6c;
-    int unk_70;
-    mgSORT_PACKET ***packet_cursor;   /**< Next free entry of each drawn group's packet list. */
-    int unk_78;
-    int unk_7c;
+    mgCMemory         *packet_memory;   /**< Frame's packet memory, used when BeginDraw is given none. */
+    mgCMemory         *data_memory;     /**< Frame's data memory. */
+    mgRENDER_INFO     *render_info;     /**< Render info that supplies the clip distances and depth buffer. */
+    int                unk_68;
+    int                unk_6c;
+    int                unk_70;
+    mgSORT_PACKET   ***packet_cursor; /**< Next free entry of each drawn group's packet list. */
+    int                unk_78;
+    int                unk_7c;
 
     /**
      * Creates a manager with no frame state.
@@ -633,7 +663,7 @@ public:
      * @address 0x1358C0
      * @size 0x240
      */
-    void BeginDraw(mgCMemory *memory, int *order);
+    void BeginDraw(mgCMemory *memory, int *id_list);
 
     /**
      * Empties the group tables and the sort table.
@@ -694,4 +724,5 @@ public:
      */
     void AddPacket(int group, u_long128 *common, u_long128 *packet, int vu_program);
 };
+
 STATIC_ASSERT(sizeof(mgCDrawManager) == 0x80);

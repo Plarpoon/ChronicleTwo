@@ -147,3 +147,26 @@ CheckRunEvent/CheckReleaseTimming load s8/s16 fields; declared int.
   object +4..+0xC, accume +4.
 - ACTION_MOVE_TYPE values 4/5/7 vs 1/2/6 differences not analysed (named *2).
 - RoboAirMoveIF first int argument (always 1 from `_RUN_ROBO_MOVE`), Robo*MoveIF `mode` argument.
+
+## Typed access and compiler observations
+
+- `EntryObject` indexes the `ACTION_OBJECT object[8]` member at offset 0xC00.
+  Writing the entry's fields through `object[no]` or `object[index]` and returning
+  the indexed address reproduces the retail instruction order. Binding the indexed
+  address to a local pointer first reverses an `addu` operand order. The local
+  `mgCFrame *entry_frame` is the frame found by name.
+- `ThrowItemObject` selects `GetActiveItemInfo(0)[DngStatus.active_item]`. Assigning
+  `item = &item[DngStatus.active_item]` before `DeleteNum` retains the retail's
+  separate address addition and argument move; a direct indexed call combines them.
+- `RockOn` reads `CScene::battle_area.lock_on_mode` at scene offset 0x302E. Keeping
+  `&scene->battle_area` in a typed local pointer retains the retail's cached base
+  register and stack frame. A direct member expression loads the scene pointer again.
+- `Step` reads `CMonsterMan::active[target_no - 24]`; the array begins at offset
+  0x484 of `CMonsterMan` and corresponds to scene character slots 24 onward.
+  A separate typed `monster_index` local keeps the subtraction as an instruction;
+  direct indexing lets MWCC fold it into the member offset.
+- `GuardEffectSet` and `HitEffectSet` call `CHitEffectImage::SethitEffect`. The native
+  member calls emit the retail callee and arguments. `GuardEffectSet` keeps the
+  spread value in a local initialized to 50.0f before the call; this gives MWCC
+  the retail literal-load order. `HitEffectSet` copies its direction constant
+  into a typed `ActionVector`, then passes its `f` member at both call sites.

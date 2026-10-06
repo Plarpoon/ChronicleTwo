@@ -57,6 +57,7 @@ struct PAD_CTRL_BTN {
     int value;  /**< Result of the bound test this frame; nonzero when the button fires. */
     int config; /**< Controller buttons ORed with a trigger, or 0 when unbound. @see PadButton @see PadCtrlTrigger */
 };
+
 STATIC_ASSERT(sizeof(PAD_CTRL_BTN) == 0x8);
 
 /**
@@ -66,8 +67,9 @@ STATIC_ASSERT(sizeof(PAD_CTRL_BTN) == 0x8);
  */
 struct PAD_CTRL_ANALOG {
     float value; /**< Position of the bound axis this frame, from -1 to 1. */
-    int axis;    /**< Stick axis read. @see PadCtrlAxis */
+    int   axis;  /**< Stick axis read. @see PadCtrlAxis */
 };
+
 STATIC_ASSERT(sizeof(PAD_CTRL_ANALOG) == 0x8);
 
 /**
@@ -93,7 +95,7 @@ public:
      * @address 0x2F2460
      * @size 0x3C
      */
-    int RegisterBtn(int no, int button, int trigger);
+    int RegisterBtn(int index, int mask, int flags);
 
     /**
      * Binds a logical stick axis to a controller stick axis, returning 1 if the number is valid.
@@ -131,11 +133,12 @@ public:
      */
     void Update(CGamePad *pad);
 
-    float rx;                                    /**< Right stick horizontal position this frame. */
-    float ry;                                    /**< Right stick vertical position this frame. */
-    float lx;                                    /**< Left stick horizontal position this frame. */
-    float ly;                                    /**< Left stick vertical position this frame. */
-    PAD_CTRL_BTN btn[PAD_CTRL_BTN_MAX];          /**< Logical buttons, by number. */
+    float           rx;                          /**< Right stick horizontal position this frame. */
+    float           ry;                          /**< Right stick vertical position this frame. */
+    float           lx;                          /**< Left stick horizontal position this frame. */
+    float           ly;                          /**< Left stick vertical position this frame. */
+    PAD_CTRL_BTN    btn[PAD_CTRL_BTN_MAX];       /**< Logical buttons, by number. */
     PAD_CTRL_ANALOG analog[PAD_CTRL_ANALOG_MAX]; /**< Logical stick axes, by number. */
 };
+
 STATIC_ASSERT(sizeof(CPadControl) == 0x510);

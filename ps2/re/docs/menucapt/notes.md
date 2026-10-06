@@ -16,6 +16,10 @@ counterpart. The unit owns no class (`class_units.tsv` has no entry).
 | menu_snd_counter | .sbss 4 | int | frame counter for sound steps |
 | menu_chap_error_check_cnt | .sbss 4 | int | timeout: >0x5DC (1500) frames forces voice-done |
 | MenuChapterStack | .bss 0x30 | mgCMemory | `__sinit` calls `mgCMemory::Init`; stSetBuffer from caller stack top (`stack+0x20 + stack+0x24*16`) |
+
+Defining `MenuChapterStack` as a file-scope `mgCMemory` generates the retail
+`__sinit_menucapt_cpp` initializer automatically. Its instruction stream matches exactly,
+and the object keeps a 0x30-byte BSS section.
 | chap_voice_851 | .data 0x20 | `static char *[8]` local of MenuChapterInit | narration stream names "0060600.wav", "0270310.wav", "0360260.wav", "0420120.wav", "0500010.wav", "0600360.wav", "0700010.wav", "0800140.wav", indexed by `chapter` |
 | wait_cnt_918/init_919 | .sbss | function-local static int in MenuChapterKey | set 0, otherwise unused |
 | voiceflag_921/init_922 | .sbss | function-local static int in MenuChapterKey | set when the stream reports 0x8000 or the timeout passes |

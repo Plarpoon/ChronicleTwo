@@ -38,7 +38,7 @@ enum EVENT_REQUEST {
  *
  */
 enum EVENT_COMMAND_MODE {
-    EVENT_COMMAND_RUN = 0,      /**< The script is resumed every frame. */
+    EVENT_COMMAND_RUN = 0, /**< The script is resumed every frame. */
     EVENT_COMMAND_UNK_1 = 1,
     EVENT_COMMAND_UNK_2 = 2,
     EVENT_COMMAND_SUB_MODE = 3, /**< The script waits while a menu or other mode takes over. */
@@ -105,7 +105,7 @@ void InitEvent(CScene *scene);
  * @address 0x2578B0
  * @size 0x90
  */
-void SetEventScript(char *program, char *unused, mgCMemory *memory);
+void SetEventScript(char *script, char *unused, mgCMemory *memory);
 
 /**
  * Starts an entry of the loaded event script on a scene and returns the interpreter's start status.
@@ -114,7 +114,7 @@ void SetEventScript(char *program, char *unused, mgCMemory *memory);
  * @address 0x257940
  * @size 0x20
  */
-int RunEvent(int entry, CScene *scene);
+int RunEvent(int event_no, CScene *scene);
 
 /**
  * Plays one frame of the door-opening sequence: the character's motion, the door sound, the fade and the camera; returns 1 when it has finished.
@@ -177,7 +177,7 @@ int EventLoop();
  * @address 0x258350
  * @size 0x30
  */
-ClsMes *GetEventMessage(int no);
+ClsMes *GetEventMessage(int index);
 
 /**
  * Returns the active camera of the event scene, or null when there is no event scene.
@@ -195,4 +195,4 @@ mgCCamera *GetActiveCamera();
  * @address 0x2583B0
  * @size 0x30
  */
-CCharacter2 *GetCharacter(int no);
+CCharacter2 *GetCharacter(int index);

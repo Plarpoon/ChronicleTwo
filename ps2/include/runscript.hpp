@@ -208,11 +208,11 @@ STATIC_ASSERT(sizeof(RS_PROGDATA) == 0x8);
  *
  */
 struct RS_PROG_HEADER {
-    char magic[4];   /**< Format signature; "SB2" for a program with global variables. */
-    int  main;       /**< Offset of the main function's funcdata. */
-    int  code;       /**< Offset of the code section. */
-    int  prog;       /**< Offset of the program table. */
-    int  prog_num;   /**< Number of program-table entries. */
+    char magic[4]; /**< Format signature; "SB2" for a program with global variables. */
+    int  main;     /**< Offset of the main function's funcdata. */
+    int  code;     /**< Offset of the code section. */
+    int  prog;     /**< Offset of the program table. */
+    int  prog_num; /**< Number of program-table entries. */
     int  unk_14;
     int  global_num; /**< Number of global variable slots. */
 };
@@ -224,8 +224,8 @@ struct RS_PROG_HEADER {
  */
 class CRunScript {
 public:
-    int             version;                     /**< Format of the loaded program. @see RS_VERSION. */
-    int             ext_func_num;                /**< Number of registered external functions. */
+    int version;                                 /**< Format of the loaded program. @see RS_VERSION. */
+    int ext_func_num;                            /**< Number of registered external functions. */
     int (**ext_func_table)(RS_STACKDATA *, int); /**< External functions scripts can call. */
     int             stack_num;                   /**< Operand stack capacity, in slots. */
     RS_STACKDATA   *stack;                       /**< Bottom of the operand stack, above the global slots. */
@@ -282,7 +282,7 @@ public:
      * @address 0x188330
      * @size 0x50
      */
-    void push(RS_STACKDATA value);
+    void push(RS_STACKDATA data);
 
     /**
      * Pushes an integer onto the operand stack.
@@ -300,7 +300,7 @@ public:
      * @address 0x1883D0
      * @size 0x50
      */
-    void push_str(char *string);
+    void push_str(char *value);
 
     /**
      * Pushes a reference to a stack slot onto the operand stack.
@@ -309,7 +309,7 @@ public:
      * @address 0x188420
      * @size 0x50
      */
-    void push_ptr(RS_STACKDATA *pointer);
+    void push_ptr(RS_STACKDATA *value);
 
     /**
      * Pushes a float onto the operand stack.
@@ -355,7 +355,7 @@ public:
      * @address 0x188600
      * @size 0xA0
      */
-    void ext(RS_STACKDATA *args, int argc);
+    void ext(RS_STACKDATA *command, int arg_count);
 
     /**
      * Gives the interpreter a program and the stacks to run it on,
@@ -365,7 +365,7 @@ public:
      * @address 0x1886A0
      * @size 0xE0
      */
-    void load(RS_PROG_HEADER *prog, RS_STACKDATA *stack, int stack_num, RS_CALLDATA *call, int call_num);
+    void load(RS_PROG_HEADER *prog, RS_STACKDATA *values, int value_count, RS_CALLDATA *call, int call_count);
 
     /**
      * Registers the table of external functions scripts can call.

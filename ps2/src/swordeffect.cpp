@@ -1,23 +1,26 @@
 #include "common.h"
-#include "mg_memory.hpp"
-#include "mg_drawprim.hpp"
-#include "mg_texture.hpp"
-#include "mg_frame.hpp"
+
+#include <cstdio>
+
 #include "mg_drawenv.hpp"
+#include "mg_drawprim.hpp"
+#include "mg_frame.hpp"
 #include "mg_math.hpp"
+#include "mg_memory.hpp"
+#include "mg_texture.hpp"
 #include "mglib.hpp"
 #include "swordeffect.hpp"
-#include <cstdio>
 
 extern char at_356[];
 
 #ifdef NONMATCHING
+#include <cstdio>
+
 #include "mg_drawprim.hpp"
 #include "mg_frame.hpp"
 #include "mg_memory.hpp"
-#include "mglib.hpp"
 #include "mg_texture.hpp"
-#include <cstdio>
+#include "mglib.hpp"
 #endif
 
 #ifdef NONMATCHING
@@ -25,9 +28,9 @@ int CreatSmoothPassSW(float (*dst)[4], float (*src)[4], int num, int division, i
     sceVu0FMATRIX coefficients;
     sceVu0FMATRIX points;
     sceVu0FMATRIX basis;
-    float powers[4];
-    float result[4];
-    int control[4];
+    float         powers[4];
+    float         result[4];
+    int           control[4];
     if (num < 3) {
         return 0;
     }
@@ -125,14 +128,22 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", CreatSmoothPassSW__FPA4_fPA4
 
 #ifdef NONMATCHING
 void CSWordAfterEffect::Draw() {
-    if (!active || point_num <= 0) return;
+    if (!active || point_num <= 0) {
+        return;
+    }
     float opacity = alpha;
-    int count = (int)((float)length * opacity);
-    if (smooth_num < count) count = smooth_num;
-    if (count <= 0) return;
-    float alpha_step = opacity / (float)count;
+    int   count = (int) ((float) length * opacity);
+    if (smooth_num < count) {
+        count = smooth_num;
+    }
+    if (count <= 0) {
+        return;
+    }
+    float       alpha_step = opacity / (float) count;
     mgCDrawPrim prim;
-    if (texture != NULL) mgTexManager.ReloadTexture(tex_block, (sceVif1Packet *)NULL);
+    if (texture != NULL) {
+        mgTexManager.ReloadTexture(tex_block, (sceVif1Packet *) NULL);
+    }
     prim.Initialize(NULL, NULL);
     prim.AlphaBlendEnable(1);
     prim.AlphaBlend(2);
@@ -146,23 +157,31 @@ void CSWordAfterEffect::Draw() {
     prim.DepthTestEnable(1);
     prim.DepthTest(1);
     prim.Begin(4);
-    if (texture != NULL) prim.Texture(texture);
-    float u_step = (float)tex_w / (float)count;
-    float u = (float)tex_u;
+    if (texture != NULL) {
+        prim.Texture(texture);
+    }
+    float u_step = (float) tex_w / (float) count;
+    float u = (float) tex_u;
     for (int point = 0; point < count; ++point) {
         int projected[4];
         if (mgTransWorldPrim(projected, smooth0[point])) {
-            prim.Color(color0[0], color0[1], color0[2], (int)((float)color0[3] * opacity));
-            if (texture != NULL) prim.TextureCrd((int)u, tex_v);
+            prim.Color(color0[0], color0[1], color0[2], (int) ((float) color0[3] * opacity));
+            if (texture != NULL) {
+                prim.TextureCrd((int) u, tex_v);
+            }
             prim.Vertex4(projected);
         }
         if (mgTransWorldPrim(projected, smooth1[point])) {
             int *edge_color = texture != NULL ? color0 : color1;
-            prim.Color(edge_color[0], edge_color[1], edge_color[2], (int)((float)edge_color[3] * opacity));
-            if (texture != NULL) prim.TextureCrd((int)u, tex_v + tex_h);
+            prim.Color(edge_color[0], edge_color[1], edge_color[2], (int) ((float) edge_color[3] * opacity));
+            if (texture != NULL) {
+                prim.TextureCrd((int) u, tex_v + tex_h);
+            }
             prim.Vertex4(projected);
         }
-        if (texture != NULL) u += u_step;
+        if (texture != NULL) {
+            u += u_step;
+        }
         opacity -= alpha_step;
     }
     prim.End();
@@ -170,22 +189,25 @@ void CSWordAfterEffect::Draw() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", Draw__17CSWordAfterEffectFv);
 #endif
-void CSWordAfterEffect::CreatPointList(void) {
+void CSWordAfterEffect::CreatPointList() {
     if (active != 0 && point_num > 0) {
         smooth_num =
             CreatSmoothPassSW(smooth0, point0, point_num, division, head_index, point_max);
         CreatSmoothPassSW(smooth1, point1, point_num, division, head_index, point_max);
+
         if (smooth_num != 0) {
             int i = 0;
             goto check;
         body:
             i++;
         check:
-            if (i < point_num - 1)
+            if (i < point_num - 1) {
                 goto body;
+            }
         }
     }
 }
+
 void CSWordAfterEffect::SetTexture(int tex_no, mgCTexture *tex, int u0, int v0, int u1, int v1) {
     tex_block = tex_no;
     texture = tex;
@@ -198,8 +220,12 @@ void CSWordAfterEffect::SetTexture(int tex_no, mgCTexture *tex, int u0, int v0, 
 }
 
 void CSWordAfterEffect::SetTexture(int u, int v, int w, int h) {
-    tex_u = u; tex_v = v; tex_w = w; tex_h = h;
+    tex_u = u;
+    tex_v = v;
+    tex_w = w;
+    tex_h = h;
 }
+
 void CSWordAfterEffect::StartEffect(mgCFrame *start, mgCFrame *end, int value8_c, int frames,
                                     int hold) {
     frame0 = start;
@@ -208,57 +234,73 @@ void CSWordAfterEffect::StartEffect(mgCFrame *start, mgCFrame *end, int value8_c
     hold_time = hold;
     active = 1;
     alpha = 1.0f;
-    fade_speed = 1.0f / (float)frames;
+    fade_speed = 1.0f / (float) frames;
     smooth_num = 0;
     point_num = 0;
     write_index = point_max - 1;
     head_index = point_max - 1;
-    printf((char *)at_356);
+    printf((char *) at_356);
 }
 
 void CSWordAfterEffect::AddPoint(float *first, float *second) {
     sceVu0CopyVector(point0[write_index], first);
     sceVu0CopyVector(point1[write_index], second);
     head_index = write_index;
-    if (point_num < point_max) ++point_num;
+
+    if (point_num < point_max) {
+        ++point_num;
+    }
+
     --write_index;
-    if (write_index < 0) write_index = point_max - 1;
+
+    if (write_index < 0) {
+        write_index = point_max - 1;
+    }
 }
-void CSWordAfterEffect::Step(void) {
+
+void CSWordAfterEffect::Step() {
     float edge_a[4];
     float edge_b[4];
+
     if (active == 0) {
         return;
     }
+
     if (frame0 == NULL || frame1 == NULL) {
         return;
     }
+
     frame0->GetWorldPosition0(edge_a);
     frame1->GetWorldPosition0(edge_b);
     AddPoint(edge_a, edge_b);
+
     if (hold_time > 0) {
         hold_time--;
         return;
     }
+
     alpha -= fade_speed;
+
     if (alpha <= 0.0f) {
         active = 0;
     }
 }
-void CSWordAfterEffect::Clear(void) {
+
+void CSWordAfterEffect::Clear() {
     active = 0;
     frame1 = NULL;
     frame0 = NULL;
 }
+
 void CSWordAfterEffect::Initialize(mgCMemory *memory, int capacity, int subdivisions) {
     int point_size = capacity * 16;
     int smooth_size = capacity * (subdivisions + 2) * 16;
     frame1 = NULL;
     frame0 = NULL;
-    point0 = (sceVu0FVECTOR *)memory->Alloc(point_size / 16 + 1);
-    point1 = (sceVu0FVECTOR *)memory->Alloc(point_size / 16 + 1);
-    smooth0 = (sceVu0FVECTOR *)memory->Alloc(smooth_size / 16 + 1);
-    smooth1 = (sceVu0FVECTOR *)memory->Alloc(smooth_size / 16 + 1);
+    point0 = (sceVu0FVECTOR *) memory->Alloc(point_size / 16 + 1);
+    point1 = (sceVu0FVECTOR *) memory->Alloc(point_size / 16 + 1);
+    smooth0 = (sceVu0FVECTOR *) memory->Alloc(smooth_size / 16 + 1);
+    smooth1 = (sceVu0FVECTOR *) memory->Alloc(smooth_size / 16 + 1);
     color0[0] = 0x60;
     color0[1] = 0x40;
     color0[2] = 0x30;
@@ -285,8 +327,8 @@ void CSWordAfterEffect::Copy(CSWordAfterEffect &dst, mgCMemory *memory) {
     dst.point1 = point1;
     dst.smooth0 = smooth0;
     dst.smooth1 = smooth1;
-    *(u_long128 *)dst.color0 = *(u_long128 *)color0;
-    *(u_long128 *)dst.color1 = *(u_long128 *)color1;
+    *(u_long128 *) dst.color0 = *(u_long128 *) color0;
+    *(u_long128 *) dst.color1 = *(u_long128 *) color1;
     dst.unk_40 = unk_40;
     dst.unk_50 = unk_50;
     dst.division = division;
@@ -306,13 +348,14 @@ void CSWordAfterEffect::Copy(CSWordAfterEffect &dst, mgCMemory *memory) {
     dst.hold_time = hold_time;
     dst.alpha = alpha;
     dst.fade_speed = fade_speed;
+
     if (memory != NULL) {
         int point_size = point_max * 16;
         int smooth_size = point_max * (division + 2) * 16;
-        dst.point0 = (sceVu0FVECTOR *)memory->Alloc(point_size / 16 + 1);
-        dst.point1 = (sceVu0FVECTOR *)memory->Alloc(point_size / 16 + 1);
-        dst.smooth0 = (sceVu0FVECTOR *)memory->Alloc(smooth_size / 16 + 1);
-        dst.smooth1 = (sceVu0FVECTOR *)memory->Alloc(smooth_size / 16 + 1);
+        dst.point0 = (sceVu0FVECTOR *) memory->Alloc(point_size / 16 + 1);
+        dst.point1 = (sceVu0FVECTOR *) memory->Alloc(point_size / 16 + 1);
+        dst.smooth0 = (sceVu0FVECTOR *) memory->Alloc(smooth_size / 16 + 1);
+        dst.smooth1 = (sceVu0FVECTOR *) memory->Alloc(smooth_size / 16 + 1);
     }
 }
 

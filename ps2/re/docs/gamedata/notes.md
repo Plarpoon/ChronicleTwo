@@ -148,3 +148,17 @@ Static functions: all `_DATA*`/`_MES_SYS*` tags, `LoadGameDataAnalyze`, `ItemCmd
   `GetRidePodCore` lh -> s16; `GetOffsetNo` lbu -> u8.
 - `CDataRoboPart::GetOffsetNo` returns `offset_no` at +0x22 directly; the C++
   getter matches and links into a byte-identical game image.
+
+## Local object construction and item message table
+
+- `LoadGameDataAnalyze` constructs `CScriptInterpreter` only after a successful
+  file load. `LoadItemSystemMes` constructs it inside the successful-load branch.
+  Declaring either object at function entry moves the constructor call and does
+  not match the retail function.
+- `InitItemMes` clears `name` in eight `CDataCommon` records per loop iteration.
+  Eight records have a 0x160-byte stride. Directly writing the eight typed
+  `local_com_itemdata[index + n]` entries preserves the retail register order.
+  Binding the first indexed entry to a local pointer reverses two register
+  assignments even though it computes the same addresses.
+- `GetDataTypeStartListNo` loads a signed 16-bit table value but returns it as
+  `int`; this type preserves the retail callers' direct use of the result.

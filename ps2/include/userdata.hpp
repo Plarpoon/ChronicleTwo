@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+
 #include "gamedata.hpp"
 
 /**
@@ -22,11 +23,11 @@ struct BASE_MONSTER_TBL;
  *
  */
 enum USER_CHARA {
-    USER_CHARA_MAX     = 0, /**< Max. */
-    USER_CHARA_MONICA  = 1, /**< Monica. */
-    USER_CHARA_ROBO    = 2, /**< The ridepod. */
+    USER_CHARA_MAX = 0,     /**< Max. */
+    USER_CHARA_MONICA = 1,  /**< Monica. */
+    USER_CHARA_ROBO = 2,    /**< The ridepod. */
     USER_CHARA_MONSTER = 3, /**< The monster Monica has transformed into. */
-    USER_CHARA_NUM     = 4, /**< Number of playable characters. */
+    USER_CHARA_NUM = 4,     /**< Number of playable characters. */
 };
 
 /**
@@ -35,8 +36,8 @@ enum USER_CHARA {
  *
  */
 enum BATTLE_CHARA_TYPE {
-    BATTLE_CHARA_HUMAN   = 0, /**< Max or Monica, whose data is a CHARA_DATA. */
-    BATTLE_CHARA_ROBO    = 1, /**< The ridepod, whose data is a ROBO_DATA. */
+    BATTLE_CHARA_HUMAN = 0,   /**< Max or Monica, whose data is a CHARA_DATA. */
+    BATTLE_CHARA_ROBO = 1,    /**< The ridepod, whose data is a ROBO_DATA. */
     BATTLE_CHARA_MONSTER = 2, /**< A monster transformation, whose data is a MOS_CHANGE_PARAM. */
 };
 
@@ -47,13 +48,13 @@ enum BATTLE_CHARA_TYPE {
  */
 enum CHARA_STATUS_ATTR {
     CHARA_STATUS_POISON = 0x01, /**< Loses a little health every 100 steps while above 1. */
-    CHARA_STATUS_UNK_2  = 0x02, /**< Timed condition counted down by CHARA_DATA::status_time[1]. */
-    CHARA_STATUS_UNK_4  = 0x04,
-    CHARA_STATUS_UNK_8  = 0x08, /**< Timed condition that blocks changing character. */
-    CHARA_STATUS_POWER  = 0x10, /**< Timed boost that raises attack by half and wards off the first two bits. */
+    CHARA_STATUS_UNK_2 = 0x02,  /**< Timed condition counted down by CHARA_DATA::status_time[1]. */
+    CHARA_STATUS_UNK_4 = 0x04,
+    CHARA_STATUS_UNK_8 = 0x08,  /**< Timed condition that blocks changing character. */
+    CHARA_STATUS_POWER = 0x10,  /**< Timed boost that raises attack by half and wards off the first two bits. */
     CHARA_STATUS_UNK_20 = 0x20, /**< Timed condition that blocks changing character. */
     CHARA_STATUS_UNK_40 = 0x40,
-    CHARA_STATUS_ALL    = 0x7F, /**< Every status bit. */
+    CHARA_STATUS_ALL = 0x7F, /**< Every status bit. */
 };
 
 /**
@@ -71,11 +72,11 @@ enum BREEDFISH_FLAGS {
  *
  */
 enum SPECTOL_TYPE {
-    SPECTOL_TYPE_NONE         = 0, /**< An ordinary attachment. */
-    SPECTOL_TYPE_WEAPON       = 1, /**< A weapon of level 5 or more, whose parameters it keeps. */
-    SPECTOL_TYPE_ATTACH       = 2, /**< Attachments, whose parameters it multiplies by their count. */
-    SPECTOL_TYPE_WEAPON_LOW   = 3, /**< A weapon below level 5, which gives one random parameter. */
-    SPECTOL_TYPE_ITEM         = 4, /**< An item or a fish. */
+    SPECTOL_TYPE_NONE = 0,       /**< An ordinary attachment. */
+    SPECTOL_TYPE_WEAPON = 1,     /**< A weapon of level 5 or more, whose parameters it keeps. */
+    SPECTOL_TYPE_ATTACH = 2,     /**< Attachments, whose parameters it multiplies by their count. */
+    SPECTOL_TYPE_WEAPON_LOW = 3, /**< A weapon below level 5, which gives one random parameter. */
+    SPECTOL_TYPE_ITEM = 4,       /**< An item or a fish. */
 };
 
 /**
@@ -122,7 +123,7 @@ public:
      * @address 0x198230
      * @size 0x48
      */
-    void AddPoint(float point);
+    void AddPoint(float amount);
 
     /**
      * Adds a fraction of the capacity to the gauge, keeping it between empty and full.
@@ -133,6 +134,7 @@ public:
      */
     void AddRate(float rate);
 };
+
 STATIC_ASSERT(sizeof(COMMON_GAGE) == 0x8);
 
 /**
@@ -141,7 +143,7 @@ STATIC_ASSERT(sizeof(COMMON_GAGE) == 0x8);
  *
  */
 struct ITEM_USED {
-    s16 num;   /**< Count of the item held in this entry. */
+    s16 num; /**< Count of the item held in this entry. */
     s16 unk_2;
     u8  unk_4[0x58];
 };
@@ -152,16 +154,16 @@ struct ITEM_USED {
  *
  */
 struct ATTACH_USED {
-    u8   spectol_type;     /**< What a spectrumised attachment came from, a SPECTOL_TYPE. */
-    u8   spectol_value;    /**< Count, level or strength of what a spectrumised attachment came from. */
-    s16  status[2];        /**< First two parameters the attachment adds to a weapon. */
-    s16  attribute[8];     /**< Attribute parameters the attachment adds to a weapon. */
-    s16  spectol_item_no;  /**< Item number a spectrumised attachment came from. */
-    s16  level;            /**< Level of the weapon a spectrumised attachment came from. */
+    u8   spectol_type;    /**< What a spectrumised attachment came from, a SPECTOL_TYPE. */
+    u8   spectol_value;   /**< Count, level or strength of what a spectrumised attachment came from. */
+    s16  status[2];       /**< First two parameters the attachment adds to a weapon. */
+    s16  attribute[8];    /**< Attribute parameters the attachment adds to a weapon. */
+    s16  spectol_item_no; /**< Item number a spectrumised attachment came from. */
+    s16  level;           /**< Level of the weapon a spectrumised attachment came from. */
     u8   unk_1a[2];
-    u32  special;          /**< Special ability bits the attachment gives. */
-    char name[0x1A];       /**< Name of a spectrumised attachment. */
-    s16  num;              /**< Count of the attachment held in this entry. */
+    u32  special;    /**< Special ability bits the attachment gives. */
+    char name[0x1A]; /**< Name of a spectrumised attachment. */
+    s16  num;        /**< Count of the attachment held in this entry. */
     u8   unk_3c[0x20];
 };
 
@@ -182,7 +184,7 @@ struct WEAPON_USED {
     s16         unk_2e;
     s16         unk_30;
     u8          unk_32;
-    char        name[0x20];   /**< Name of the weapon. */
+    char        name[0x20]; /**< Name of the weapon. */
     u8          unk_53[9];
 };
 
@@ -208,28 +210,28 @@ struct ROBOPART_USED {
  *
  */
 struct BREEDFISH_USED {
-    char  name[0x15];   /**< Name of the fish. */
-    u8    sex;          /**< Sex of the fish, 0 or 1. */
+    char  name[0x15]; /**< Name of the fish. */
+    u8    sex;        /**< Sex of the fish, 0 or 1. */
     u8    unk_16;
     u8    unk_17;
-    u16   size;         /**< Size of the fish. */
-    u16   weight;       /**< Weight of the fish. */
+    u16   size;   /**< Size of the fish. */
+    u16   weight; /**< Weight of the fish. */
     int   unk_1c;
-    int   hp;           /**< Health of the fish, 0 to 100. */
-    s16   fatigue;      /**< Fatigue of the fish. */
-    u16   param[5];     /**< Racing parameters of the fish. */
-    u16   timer;        /**< Time left, counted down by the game clock. */
+    int   hp;       /**< Health of the fish, 0 to 100. */
+    s16   fatigue;  /**< Fatigue of the fish. */
+    u16   param[5]; /**< Racing parameters of the fish. */
+    u16   timer;    /**< Time left, counted down by the game clock. */
     u8    unk_32[3];
     s8    unk_35;
     u16   unk_36;
-    u16   flags;        /**< Flags; 0x2 marks an electric fish, which is never rubbish. */
+    u16   flags; /**< Flags; 0x2 marks an electric fish, which is never rubbish. */
     u8    unk_3a;
-    s8    grow_count;   /**< Food eaten towards the next growth; the fish grows past 10. */
+    s8    grow_count; /**< Food eaten towards the next growth; the fish grows past 10. */
     u8    unk_3c;
     u8    unk_3d;
     u8    unk_3e[2];
-    int   tank_day;     /**< Day the fish was put into the second aquarium tank. */
-    float tank_hour;    /**< Hour of the day the fish was put into the second aquarium tank. */
+    int   tank_day;  /**< Day the fish was put into the second aquarium tank. */
+    float tank_hour; /**< Hour of the day the fish was put into the second aquarium tank. */
     u8    unk_48[0x14];
 };
 
@@ -267,6 +269,7 @@ public:
     s8  item_type;   /**< Item type from the item's common data. */
     u8  rename_flag; /**< Non-zero when the item's name differs from its item name. */
     u8  unk_6[0xA];
+
     union {
         ITEM_USED      item;     /**< Data of a usable item. */
         ATTACH_USED    attach;   /**< Data of an attachment. */
@@ -329,7 +332,7 @@ public:
      * @address 0x1986E0
      * @size 0x30
      */
-int GetLevel();
+    int GetLevel();
 
     /**
      * Gives the colour palette of a weapon's model, or 0.
@@ -338,7 +341,7 @@ int GetLevel();
      * @address 0x198710
      * @size 0x50
      */
-int GetPalletColor();
+    int GetPalletColor();
 
     /**
      * Gives the item number a spectrumised attachment came from, or 0.
@@ -347,7 +350,7 @@ int GetPalletColor();
      * @address 0x198760
      * @size 0x20
      */
-int GetSpectolNo();
+    int GetSpectolNo();
 
     /**
      * Gives how many more of the item the place can hold.
@@ -365,7 +368,7 @@ int GetSpectolNo();
      * @address 0x1987F0
      * @size 0x7C
      */
-int GetNum();
+    int GetNum();
 
     /**
      * Gives whether the item can be set as an active item.
@@ -384,7 +387,7 @@ int GetNum();
      * @address 0x198880
      * @size 0x10C
      */
-    int AddNum(int num, int clear_empty);
+    int AddNum(int count, int clear_empty);
 
     /**
      * Gives the energy capacity a ridepod part uses.
@@ -393,7 +396,7 @@ int GetNum();
      * @address 0x198990
      * @size 0x38
      */
-int GetUseCapacity();
+    int GetUseCapacity();
 
     /**
      * Adds to a fish's health, keeping it between 0 and 100, and gives the new health.
@@ -402,7 +405,7 @@ int GetUseCapacity();
      * @address 0x1989D0
      * @size 0x48
      */
-    int AddFishHp(int hp);
+    int AddFishHp(int amount);
 
     /**
      * Turns a fish into a boiled fish.
@@ -438,7 +441,7 @@ int GetUseCapacity();
      * @address 0x198C20
      * @size 0x2E8
      */
-    char *GetName(int mode);
+    char *GetName(int name_type);
 
     /**
      * Packs a fish into its password form.
@@ -447,7 +450,7 @@ int GetUseCapacity();
      * @address 0x198F10
      * @size 0x21C
      */
-    void TransToPassword(char *password, int length);
+    void TransToPassword(char *data, int length);
 
     /**
      * Unpacks a fish from its password form.
@@ -456,7 +459,7 @@ int GetUseCapacity();
      * @address 0x199130
      * @size 0x114
      */
-    void TransToData(char *password, int length);
+    void TransToData(char *data, int length);
 
     /**
      * Takes some of the item away, emptying a place that cannot stack, and gives how many went.
@@ -465,7 +468,7 @@ int GetUseCapacity();
      * @address 0x199250
      * @size 0x90
      */
-    int DeleteNum(int num);
+    int DeleteNum(int count);
 
     /**
      * Gives a weapon's synthesis points, or 0.
@@ -474,7 +477,7 @@ int GetUseCapacity();
      * @address 0x1992E0
      * @size 0x20
      */
-int RemainFusion();
+    int RemainFusion();
 
     /**
      * Adds to a weapon's synthesis points and gives the new total.
@@ -483,7 +486,7 @@ int RemainFusion();
      * @address 0x199300
      * @size 0x88
      */
-int AddFusionPoint(int point);
+    int AddFusionPoint(int point);
 
     /**
      * Gives the effect names and strength of a weapon's element, and the element itself.
@@ -501,7 +504,7 @@ int AddFusionPoint(int point);
      * @address 0x199470
      * @size 0x170
      */
-    void GetMsgAddInfo(char **name, char **sub_name, int *value);
+    void GetMsgAddInfo(char **message, char **extra_message, int *value);
 
     /**
      * Gives the durability of a weapon or ridepod part as a fraction, and its current and full
@@ -556,7 +559,7 @@ int AddFusionPoint(int point);
      * @address 0x1998B0
      * @size 0x64
      */
-int GetRoboInfoType();
+    int GetRoboInfoType();
 
     /**
      * Builds the joint file name of a ridepod body or arm.
@@ -637,7 +640,7 @@ int GetRoboInfoType();
      * @address 0x19A330
      * @size 0x128
      */
-    void GetStatusParam(short *status);
+    void GetStatusParam(short *param);
 
     /**
      * Copies the ten status parameters, adjusting the attack of the weapon whose strength follows
@@ -647,7 +650,7 @@ int GetRoboInfoType();
      * @address 0x19A460
      * @size 0x80
      */
-    void GetStatusParam(short *status, float time);
+    void GetStatusParam(short *param, float time);
 
     /**
      * Gives how many weapons a weapon can build up into now, with the candidates and whether each
@@ -657,7 +660,7 @@ int GetRoboInfoType();
      * @address 0x19A4E0
      * @size 0x2EC
      */
-    int IsBuildUp(int *num, int *weapon_no, int *enable);
+    int IsBuildUp(int *count, int *item_nos, int *flags);
 
     /**
      * Gives whether the item is one of the two fishing rods.
@@ -684,7 +687,7 @@ int GetRoboInfoType();
      * @address 0x19A860
      * @size 0x64
      */
-int GetAttackType();
+    int GetAttackType();
 
     /**
      * Gives the model number of a weapon, or -1.
@@ -711,7 +714,7 @@ int GetAttackType();
      * @address 0x19AD50
      * @size 0x30
      */
-    void TimeCheck(int time);
+    void TimeCheck(int elapsed);
 
     /**
      * Gives how many items a gift box holds.
@@ -729,7 +732,7 @@ int GetAttackType();
      * @address 0x19ADD0
      * @size 0x68
      */
-    int SetGiftBoxItem(int item_no, int index);
+    int SetGiftBoxItem(int item_no, int slot);
 
     /**
      * Gives the item number at one place of a gift box, or 0.
@@ -738,7 +741,7 @@ int GetAttackType();
      * @address 0x19AE40
      * @size 0x3C
      */
-    int GetGiftBoxItemNo(int index);
+    int GetGiftBoxItemNo(int slot);
 
     /**
      * Gives how many of an item number a gift box holds.
@@ -757,7 +760,7 @@ int GetAttackType();
      * @address 0x19AED0
      * @size 0xA0
      */
-    void CopyGameData(CGameDataUsed *src);
+    void CopyGameData(CGameDataUsed *other);
 
     /**
      * Fills the place with a new weapon.
@@ -811,7 +814,7 @@ int GetAttackType();
      * @address 0x19B460
      * @size 0xF4
      */
-    int CopyDataItem(CGameDataUsed *src);
+    int CopyDataItem(CGameDataUsed *other);
 
     /**
      * Fills the place with a new ridepod part.
@@ -822,6 +825,7 @@ int GetAttackType();
      */
     int CopyDataRoboPart(int item_no);
 };
+
 STATIC_ASSERT(sizeof(CGameDataUsed) == 0x6C);
 
 /**
@@ -839,6 +843,7 @@ struct CHARA_DATA {
     CGameDataUsed active_item[3]; /**< Active items. */
     CGameDataUsed equip[5];       /**< Equipment, by slot; slots 0 and 1 are the two weapons. */
 };
+
 STATIC_ASSERT(sizeof(CHARA_DATA) == 0x38C);
 
 /**
@@ -848,9 +853,9 @@ STATIC_ASSERT(sizeof(CHARA_DATA) == 0x38C);
  */
 struct ROBO_DATA {
     u8            unk_0[2];
-    char          name[0x1A];     /**< Name of the ridepod. */
-    s8            voice_unit;     /**< Non-zero once the voice unit is fitted. */
-    s8            voice_flag;     /**< Non-zero while the ridepod's voice is on. */
+    char          name[0x1A]; /**< Name of the ridepod. */
+    s8            voice_unit; /**< Non-zero once the voice unit is fitted. */
+    s8            voice_flag; /**< Non-zero while the ridepod's voice is on. */
     u8            unk_1e[2];
     COMMON_GAGE   hp;             /**< Energy gauge. */
     COMMON_GAGE   abs;            /**< Absorption gauge. */
@@ -867,7 +872,7 @@ struct ROBO_DATA {
      * @address 0x19BD50
      * @size 0x30
      */
-    float AddPoint(float point);
+    float AddPoint(float amount);
 
     /**
      * Gives the defence of the ridepod.
@@ -878,6 +883,7 @@ struct ROBO_DATA {
      */
     int GetDefenceVol();
 };
+
 STATIC_ASSERT(sizeof(ROBO_DATA) == 0x220);
 
 /**
@@ -886,11 +892,13 @@ STATIC_ASSERT(sizeof(ROBO_DATA) == 0x220);
  *
  */
 struct MOS_HENGE_PARAM {
-    s16 monster_id; /**< Monster this row belongs to. */
-    s16 attack;     /**< Base attack. */
-    s16 defence;    /**< Base defence. */
-    u8  unk_6[0x16];
+    s16   monster_id; /**< Monster this row belongs to. */
+    s16   attack;     /**< Base attack. */
+    s16   defence;    /**< Base defence. */
+    u8    unk_6[6];
+    char *effect_name[4]; /**< Effect base names loaded for the monster. */
 };
+
 STATIC_ASSERT(sizeof(MOS_HENGE_PARAM) == 0x1C);
 
 /**
@@ -900,15 +908,15 @@ STATIC_ASSERT(sizeof(MOS_HENGE_PARAM) == 0x1C);
  */
 class MOS_CHANGE_PARAM {
 public:
-    s16         no;             /**< Index of the badge. */
-    s16         level;          /**< Level, up to 99. */
-    s16         class_level;    /**< Class the monster has reached, up to 3. */
-    s16         progress;       /**< Progress through the monster's family. */
-    s16         monster_id;     /**< Monster the badge transforms into. */
-    u8          enable;         /**< Non-zero once Monica can use the badge. */
+    s16         no;          /**< Index of the badge. */
+    s16         level;       /**< Level, up to 99. */
+    s16         class_level; /**< Class the monster has reached, up to 3. */
+    s16         progress;    /**< Progress through the monster's family. */
+    s16         monster_id;  /**< Monster the badge transforms into. */
+    u8          enable;      /**< Non-zero once Monica can use the badge. */
     u8          unk_b;
-    COMMON_GAGE hp;             /**< Health gauge. */
-    COMMON_GAGE abs;            /**< Absorption gauge; the monster levels up when it fills. */
+    COMMON_GAGE hp;  /**< Health gauge. */
+    COMMON_GAGE abs; /**< Absorption gauge; the monster levels up when it fills. */
     u8          unk_1c[0x20];
     s16         status_time_1;  /**< Time left of the 0x1 condition. */
     s16         status_time_10; /**< Time left of the CHARA_STATUS_POWER condition. */
@@ -921,7 +929,7 @@ public:
      * @address 0x19BE00
      * @size 0x9C
      */
-    int GetAttackVol(int monster_id);
+    int GetAttackVol(int monster_no);
 
     /**
      * Gives the defence of a monster, by default the badge's own, raised by the badge degree.
@@ -930,7 +938,7 @@ public:
      * @address 0x19BEA0
      * @size 0x88
      */
-    int GetDefenceVol(int monster_id);
+    int GetDefenceVol(int monster_no);
 
     /**
      * Gives whether the monster's level allows its next class.
@@ -959,6 +967,7 @@ public:
      */
     int LevelUp();
 };
+
 STATIC_ASSERT(sizeof(MOS_CHANGE_PARAM) == 0xBC);
 
 /**
@@ -1024,6 +1033,7 @@ public:
      */
     void AllCure();
 };
+
 STATIC_ASSERT(sizeof(CMonsterBox) == 0x2F00);
 
 /**
@@ -1040,9 +1050,9 @@ public:
     CGameDataUsed breed_tank[2]; /**< Breeding tank, which takes a pair of opposite sexes. */
     u8            unk_514[4];
     u64           unk_518;
-    s64           last_time;     /**< Save data clock at the last refresh. */
-    int           last_day;      /**< Day of the last fatigue step. */
-    float         last_hour;     /**< Hour of the day of the last fatigue step. */
+    s64           last_time; /**< Save data clock at the last refresh. */
+    int           last_day;  /**< Day of the last fatigue step. */
+    float         last_hour; /**< Hour of the day of the last fatigue step. */
 
     /**
      * Empties the aquarium.
@@ -1083,7 +1093,7 @@ public:
      * @address 0x19B7F0
      * @size 0x13C
      */
-    void FishIntoAquarium(int tank, int index, CGameDataUsed *fish);
+    void FishIntoAquarium(int tank, int slot, CGameDataUsed *fish);
 
     /**
      * Gives how many fish a tank holds.
@@ -1112,6 +1122,7 @@ public:
      */
     void RefreshParam();
 };
+
 STATIC_ASSERT(sizeof(CFishAquarium) == 0x530);
 
 /**
@@ -1127,6 +1138,7 @@ struct FISH_RECORD {
     int   num;         /**< Number caught, up to 999999. */
     u8    unk_14[0xC];
 };
+
 STATIC_ASSERT(sizeof(FISH_RECORD) == 0x20);
 
 /**
@@ -1155,7 +1167,7 @@ public:
      * @address 0x19C360
      * @size 0x3C
      */
-    FISH_RECORD *GetFishRecord(int item_no);
+    FISH_RECORD *GetFishRecord(int fish_no);
 
     /**
      * Counts a catch and keeps it when it beats the record; gives bit 0x1 for a size record and
@@ -1165,8 +1177,9 @@ public:
      * @address 0x19C3A0
      * @size 0xAC
      */
-    int CheckRecordFish(int item_no, float size, float weight);
+    int CheckRecordFish(int fish_no, float size, float weight);
 };
+
 STATIC_ASSERT(sizeof(CFishingRecord) == 0x340);
 
 /**
@@ -1180,6 +1193,7 @@ struct FISH_TOURNAMENT_ENTRY {
     s16 weight;  /**< Weight of the fish. */
     s16 unk_6;
 };
+
 STATIC_ASSERT(sizeof(FISH_TOURNAMENT_ENTRY) == 0x8);
 
 /**
@@ -1190,7 +1204,7 @@ STATIC_ASSERT(sizeof(FISH_TOURNAMENT_ENTRY) == 0x8);
 class CFishingTournament {
 public:
     u8                    unk_0[4];
-    s16                   rank;      /**< Rank reached, 0 to 100. */
+    s16                   rank; /**< Rank reached, 0 to 100. */
     u8                    unk_6[0x1A];
     FISH_TOURNAMENT_ENTRY entry[10]; /**< Fish entered. */
 
@@ -1224,7 +1238,7 @@ public:
      * @address 0x19C470
      * @size 0x48
      */
-    int EntryFish(int item_no, int size, int weight);
+    int EntryFish(int entrant, int fish, int weight);
 
     /**
      * Gives how many places are still free.
@@ -1271,6 +1285,7 @@ public:
      */
     int CalcTopWeight();
 };
+
 STATIC_ASSERT(sizeof(CFishingTournament) == 0x70);
 
 /**
@@ -1284,6 +1299,7 @@ struct PARTY_CHARA_INFO {
     s16 point;    /**< Ability points left. */
     u8  unk_6[6];
 };
+
 STATIC_ASSERT(sizeof(PARTY_CHARA_INFO) == 0xC);
 
 /**
@@ -1298,10 +1314,11 @@ struct USER_PICTURE_INFO {
     short npc_no;     /**< Townsperson the photo shows, or -1. */
     short monster_no; /**< Monster the photo shows, or -1. */
     short unk_8;
-    short neta_id;    /**< Idea (under 1000) or scoop (1000 and over) the photo shows, or 0 or less for none. */
+    short neta_id; /**< Idea (under 1000) or scoop (1000 and over) the photo shows, or 0 or less for none. */
     u8    unk_c[8];
-    char *image;      /**< 64x64 pixels of the photo. */
+    char *image; /**< 64x64 pixels of the photo. */
 };
+
 STATIC_ASSERT(sizeof(USER_PICTURE_INFO) == 0x18);
 
 /**
@@ -1313,6 +1330,7 @@ struct INVENT_CREATED_ITEM {
     short item_id; /**< Item the invention produced, or 0 or less for an empty slot. */
     short unk_2;
 };
+
 STATIC_ASSERT(sizeof(INVENT_CREATED_ITEM) == 0x4);
 
 /**
@@ -1325,6 +1343,7 @@ struct SCOOP_INFO {
     s8 obtained; /**< Non-zero once a photo or idea of the scoop has been obtained. */
     u8 unk_2[2];
 };
+
 STATIC_ASSERT(sizeof(SCOOP_INFO) == 0x4);
 
 /**
@@ -1394,14 +1413,14 @@ public:
  */
 class CInventUserData {
 public:
-    int                 shutter_num;               /**< Photos taken, up to 99999. */
-    int                 level;                     /**< Photographer level, less one. */
-    short               neta_id[0x200];            /**< Ideas learnt, packed from the start, 0 for an empty slot. */
-    USER_PICTURE_INFO   photo[30];                 /**< Photos carried. */
-    INVENT_CREATED_ITEM created_item[0x100];       /**< Invention cards made. */
-    CScoopDataManager   scoop;                     /**< Records of the scoops. */
+    int                 shutter_num;         /**< Photos taken, up to 99999. */
+    int                 level;               /**< Photographer level, less one. */
+    short               neta_id[0x200];      /**< Ideas learnt, packed from the start, 0 for an empty slot. */
+    USER_PICTURE_INFO   photo[30];           /**< Photos carried. */
+    INVENT_CREATED_ITEM created_item[0x100]; /**< Invention cards made. */
+    CScoopDataManager   scoop;               /**< Records of the scoops. */
     u8                  unk_cd8[0x88];
-    char                photo_work[30][0x2000];    /**< Pixels of the photos carried. */
+    char                photo_work[30][0x2000]; /**< Pixels of the photos carried. */
     u8                  unk_3cd60[0x100];
 
     CScoopDataManager *GetScoopData() {
@@ -1453,7 +1472,7 @@ public:
      * @address 0x200260
      * @size 0x40
      */
-    USER_PICTURE_INFO *GetPhotoInfo(int index);
+    USER_PICTURE_INFO *GetPhotoInfo(int slot);
 
     /**
      *
@@ -1473,7 +1492,7 @@ public:
      * @address 0x2002B0
      * @size 0x70
      */
-    USER_PICTURE_INFO *IsPhotoSpace(int *index);
+    USER_PICTURE_INFO *IsPhotoSpace(int *slot);
 
     /**
      *
@@ -1483,7 +1502,7 @@ public:
      * @address 0x200320
      * @size 0x50
      */
-    void DeletePhotoData(int index);
+    void DeletePhotoData(int slot);
 
     /**
      *
@@ -1503,7 +1522,7 @@ public:
      * @address 0x2003B0
      * @size 0x40
      */
-    int GetNetaID(int index);
+    int GetNetaID(int slot);
 
     /**
      *
@@ -1573,7 +1592,7 @@ public:
      * @address 0x200630
      * @size 0x40
      */
-    int GetPictureNum(int *num);
+    int GetPictureNum(int *counts);
 
     /**
      *
@@ -1593,7 +1612,7 @@ public:
      * @address 0x2006F0
      * @size 0x120
      */
-    int LevelCheck(USER_PICTURE_INFO *photo);
+    int LevelCheck(USER_PICTURE_INFO *info);
 
     /**
      *
@@ -1613,7 +1632,7 @@ public:
      * @address 0x200820
      * @size 0x70
      */
-    void SetCreateItemFlag(int index, int item_id);
+    void SetCreateItemFlag(int slot, int item_id);
 
     /**
      *
@@ -1623,7 +1642,7 @@ public:
      * @address 0x200890
      * @size 0x40
      */
-    int GetCreateItemID(int index);
+    int GetCreateItemID(int slot);
 
     /**
      *
@@ -1645,8 +1664,8 @@ public:
      */
     int GetHatsumeiNum();
 };
-STATIC_ASSERT(sizeof(CInventUserData) == 0x3CE60);
 
+STATIC_ASSERT(sizeof(CInventUserData) == 0x3CE60);
 
 /**
  *
@@ -1655,36 +1674,36 @@ STATIC_ASSERT(sizeof(CInventUserData) == 0x3CE60);
  */
 class CUserDataManager {
 public:
-    CGameDataUsed      used_data[150];       /**< Inventory; the item board followed by its overflow places. */
-    CHARA_DATA         chara_data[2];        /**< Status of Max and Monica. */
-    ROBO_DATA          robo_data;            /**< Status of the ridepod. */
-    CGameDataUsed      esa[2];               /**< Bait fitted to each of the two fishing rods. */
-    CFishAquarium      aquarium;             /**< The aquarium. */
+    CGameDataUsed      used_data[150]; /**< Inventory; the item board followed by its overflow places. */
+    CHARA_DATA         chara_data[2];  /**< Status of Max and Monica. */
+    ROBO_DATA          robo_data;      /**< Status of the ridepod. */
+    CGameDataUsed      esa[2];         /**< Bait fitted to each of the two fishing rods. */
+    CFishAquarium      aquarium;       /**< The aquarium. */
     u8                 unk_4e88[0x28];
-    CMonsterBox        monster_box;          /**< Monster badges. */
-    PARTY_CHARA_INFO   party_chara[32];      /**< Townsfolk who can join the party, by number less one. */
-    CInventUserData    invent_data;          /**< Inventions and photos. */
-    u16                party_member;         /**< Characters in the party, bits by USER_CHARA. */
-    u16                chara_change;         /**< Characters that can be changed to, bits by USER_CHARA. */
-    u8                 chara_change_mask;    /**< Characters that changing to is not masked off for. */
+    CMonsterBox        monster_box;       /**< Monster badges. */
+    PARTY_CHARA_INFO   party_chara[32];   /**< Townsfolk who can join the party, by number less one. */
+    CInventUserData    invent_data;       /**< Inventions and photos. */
+    u16                party_member;      /**< Characters in the party, bits by USER_CHARA. */
+    u16                chara_change;      /**< Characters that can be changed to, bits by USER_CHARA. */
+    u8                 chara_change_mask; /**< Characters that changing to is not masked off for. */
     u8                 unk_44d95;
-    s16                active_chr_no;        /**< Character being played, a USER_CHARA. */
-    s16                monster_id;           /**< Monster Monica transforms into. */
+    s16                active_chr_no; /**< Character being played, a USER_CHARA. */
+    s16                monster_id;    /**< Monster Monica transforms into. */
     u8                 unk_44d9a[2];
-    int                money;                /**< Money, up to 999999. */
-    s16                yarikomi_medal;       /**< Medals, up to 999. */
+    int                money;          /**< Money, up to 999999. */
+    s16                yarikomi_medal; /**< Medals, up to 999. */
     u8                 unk_44da2[0x1E];
     s16                unk_44dc0;
     u8                 unk_44dc2[6];
     u64                unk_44dc8;
     s16                photo_subject[0x200]; /**< Subject numbers of the photos taken, in order; 0 ends the list. */
     u64                unk_451d0;
-    s64                last_refresh_time;    /**< Save data clock at the last parameter refresh. */
-    int                npc_refresh_day;      /**< Day of the last townsfolk refresh. */
-    float              npc_refresh_hour;     /**< Hour of the day of the last townsfolk refresh. */
-    CFishingTournament fish_tournament;      /**< The fishing tournament. */
-    CFishingRecord     fish_record;          /**< The fishing records. */
-    unsigned long      costume_bit;          /**< Costumes collected, one bit each. */
+    s64                last_refresh_time; /**< Save data clock at the last parameter refresh. */
+    int                npc_refresh_day;   /**< Day of the last townsfolk refresh. */
+    float              npc_refresh_hour;  /**< Hour of the day of the last townsfolk refresh. */
+    CFishingTournament fish_tournament;   /**< The fishing tournament. */
+    CFishingRecord     fish_record;       /**< The fishing records. */
+    unsigned long      costume_bit;       /**< Costumes collected, one bit each. */
     u8                 unk_455a0[0x200];
 
     CInventUserData *GetInventUserData() {
@@ -1751,7 +1770,7 @@ public:
      * @address 0x19CA30
      * @size 0x50
      */
-    int AddHp(int chara, int hp);
+    int AddHp(int chara, int amount);
 
     /**
      * Gives a character's health.
@@ -1778,7 +1797,7 @@ public:
      * @address 0x19CB40
      * @size 0xC8
      */
-    COMMON_GAGE *GetWHpGage(int chara, int weapon);
+    COMMON_GAGE *GetWHpGage(int group, int member);
 
     /**
      * Gives the absorption gauge of a character's weapon, or null.
@@ -1787,7 +1806,7 @@ public:
      * @address 0x19CC10
      * @size 0xC8
      */
-    COMMON_GAGE *GetAbsGage(int chara, int weapon);
+    COMMON_GAGE *GetAbsGage(int group, int member);
 
     /**
      * Adds to a weapon's durability and gives the new durability.
@@ -1796,7 +1815,7 @@ public:
      * @address 0x19CCE0
      * @size 0x58
      */
-    int AddWhp(int chara, int weapon, int whp);
+    int AddWhp(int group, int member, int amount);
 
     /**
      * Gives a weapon's durability and its full value.
@@ -1805,7 +1824,7 @@ public:
      * @address 0x19CD40
      * @size 0x5C
      */
-    int GetWhp(int chara, int weapon, int *max);
+    int GetWhp(int group, int member, int *max);
 
     /**
      * Adds to a weapon's absorption and gives the new absorption.
@@ -1814,7 +1833,7 @@ public:
      * @address 0x19CDA0
      * @size 0x8C
      */
-    int AddAbs(int chara, int weapon, int abs);
+    int AddAbs(int group, int member, int amount);
 
     /**
      * Gives a weapon's absorption and its full value.
@@ -1823,7 +1842,7 @@ public:
      * @address 0x19CE30
      * @size 0x8C
      */
-    int GetAbs(int chara, int weapon, int *max);
+    int GetAbs(int group, int member, int *max);
 
     /**
      * Adds a character to the party.
@@ -1877,7 +1896,7 @@ public:
      * @address 0x19D050
      * @size 0x1D4
      */
-    int CheckEnableCharaChange(int chara, int *reason);
+    int CheckEnableCharaChange(int chara, int *out);
 
     /**
      * Gives the quick-change state of a character: bit 0x1 in the party, 0x2 changeable.
@@ -1886,7 +1905,7 @@ public:
      * @address 0x19D230
      * @size 0x1D4
      */
-    int CheckQuickChange(int chara, int *reason);
+    int CheckQuickChange(int chara, int *out);
 
     /**
      * Unmasks changing to a character.
@@ -1940,7 +1959,7 @@ public:
      * @address 0x19D5D0
      * @size 0xD0
      */
-    int SetCharaStatusAttirbute(int chara, unsigned int attr, int clear);
+    int SetCharaStatusAttirbute(int chara, unsigned int attr, int mode);
 
     /**
      * Sets status attribute bits of a character together with how long they last.
@@ -1949,7 +1968,7 @@ public:
      * @address 0x19D6A0
      * @size 0x124
      */
-    int SetCharaStatusAttirbuteVol(int chara, unsigned int attr, int time);
+    int SetCharaStatusAttirbuteVol(int chara, unsigned int attr, int value);
 
     /**
      * Gives the status attribute of a character, or 0.
@@ -1994,7 +2013,7 @@ public:
      * @address 0x19D860
      * @size 0x74
      */
-    int GetItemBoardMaxNum(int with_over);
+    int GetItemBoardMaxNum(int board);
 
     /**
      * Sets the character being played.
@@ -2052,7 +2071,7 @@ public:
      * @address 0x19D9B0
      * @size 0x8
      */
-    s8 CheckVoiceUnit();
+    int CheckVoiceUnit();
 
     /**
      * Turns the ridepod's voice on or off.
@@ -2061,7 +2080,7 @@ public:
      * @address 0x19D9C0
      * @size 0x8
      */
-    void SetRoboVoiceFlag(int on);
+    void SetRoboVoiceFlag(int flag);
 
     /**
      * Gives whether the ridepod speaks: the voice unit is fitted and the voice is on.
@@ -2079,7 +2098,7 @@ public:
      * @address 0x19D9F0
      * @size 0x54
      */
-    float AddRoboAbs(float abs);
+    float AddRoboAbs(float amount);
 
     /**
      * Gives the ridepod's absorption.
@@ -2178,7 +2197,7 @@ public:
      * @address 0x19DF10
      * @size 0xAC
      */
-    int UseNpcAbility(int chara_no, int ability, int use);
+    int UseNpcAbility(int npc_no, int ability, int consume);
 
     /**
      * Restores every ridepod part, the ridepod body and the ridepod's energy.
@@ -2260,7 +2279,7 @@ public:
      * @address 0x19E4C0
      * @size 0x1F0
      */
-    int GetFishInAquarium(int item_no, float size, float weight);
+    int GetFishInAquarium(int fish_no, float size, float weight);
 
     /**
      * Counts a catch in the fishing records.
@@ -2269,7 +2288,7 @@ public:
      * @address 0x19E6B0
      * @size 0x38
      */
-    int CheckFishRecordUpdate(int item_no, float size, float weight);
+    int CheckFishRecordUpdate(int fish_no, float size, float weight);
 
     /**
      * Gives the record size and weight of a fish.
@@ -2278,7 +2297,7 @@ public:
      * @address 0x19E6F0
      * @size 0x6C
      */
-    void GetFishRecord(int item_no, float *size, float *weight);
+    void GetFishRecord(int fish_no, float *size, float *weight);
 
     /**
      * Gives the first five attributes of the equipped fishing rod.
@@ -2287,7 +2306,7 @@ public:
      * @address 0x19E760
      * @size 0x68
      */
-    void GetRodStatus(int *status);
+    void GetRodStatus(int *out);
 
     /**
      * Adds synthesis points to the equipped fishing rod and gives the new total.
@@ -2350,7 +2369,7 @@ public:
      * @address 0x19ECC0
      * @size 0x70
      */
-    int AddFusionPoint(int chara, int weapon, int point);
+    int AddFusionPoint(int group, int member, int point);
 
     /**
      * Gives the first empty item board place, or -1.
@@ -2405,7 +2424,7 @@ public:
      * @address 0x19EFE0
      * @size 0x8C
      */
-    CGameDataUsed *SearchItemOnItemBrd(int item_no, int with_over);
+    CGameDataUsed *SearchItemOnItemBrd(int item_no, int use_alt_bag);
 
     /**
      * Gives how many overflow places hold an item.
@@ -2459,7 +2478,7 @@ public:
      * @address 0x19F460
      * @size 0x70
      */
-    s16 AddYarikomiMedal(int num);
+    int AddYarikomiMedal(int amount);
 
     /**
      * Gives the number of medals.
@@ -2477,7 +2496,7 @@ public:
      * @address 0x19F4E0
      * @size 0xB4
      */
-    int GetItem(int item_no, int num);
+    int GetItem(int item_no, int count);
 
     /**
      * Gives the player as many of an item number as fit on the item board and gives that count.
@@ -2495,7 +2514,7 @@ public:
      * @address 0x19F890
      * @size 0x194
      */
-    int GetOverItem(int item_no, int num);
+    int GetOverItem(int item_no, int count);
 
     /**
      * Gives the first item number owned beyond its limit, or 0.
@@ -2513,7 +2532,7 @@ public:
      * @address 0x19FD50
      * @size 0x114
      */
-    int DeleteItem(int item_no, int num);
+    int DeleteItem(int item_no, int count);
 
     /**
      * Fills a place with a new item of an item number, by its family.
@@ -2522,7 +2541,7 @@ public:
      * @address 0x19FE70
      * @size 0xF0
      */
-    int CopyGameData(CGameDataUsed *place, int item_no);
+    int CopyGameData(CGameDataUsed *item, int item_no);
 
     /**
      * Adds money, kept between 0 and 999999, and gives the new amount.
@@ -2531,7 +2550,7 @@ public:
      * @address 0x19FF60
      * @size 0x74
      */
-    int AddMoney(int money);
+    int AddMoney(int amount);
 
     /**
      * Sets the costumes collected.
@@ -2558,7 +2577,7 @@ public:
      * @address 0x1A0000
      * @size 0x54
      */
-    void GetCostume(int item_no);
+    void GetCostume(int costume_no);
 
     /**
      * Gives how many fish the inventory and the first aquarium tank hold.
@@ -2569,6 +2588,7 @@ public:
      */
     int CountFish();
 };
+
 STATIC_ASSERT(sizeof(CUserDataManager) == 0x457A0);
 
 /**
@@ -2582,6 +2602,7 @@ struct BATTLE_WEAPON_PARAM {
     s16 pallet_no;  /**< Colour palette of the weapon's model. */
     u8  unk_1a[2];
 };
+
 STATIC_ASSERT(sizeof(BATTLE_WEAPON_PARAM) == 0x1C);
 
 /**
@@ -2592,31 +2613,31 @@ STATIC_ASSERT(sizeof(BATTLE_WEAPON_PARAM) == 0x1C);
  */
 class CBattleCharaInfo {
 public:
-    s16                 chr_no;              /**< Character being played, a USER_CHARA. */
+    s16                 chr_no; /**< Character being played, a USER_CHARA. */
     s16                 unk_2;
-    s16                 now_npc;             /**< Townsperson in the party, or -1. */
-    s16                 chara_type;          /**< Kind of status read, a BATTLE_CHARA_TYPE. */
-    void               *chara_data;          /**< CHARA_DATA, ROBO_DATA or MOS_CHANGE_PARAM, by chara_type. */
-    float               robo_hp_drain;       /**< Energy the ridepod loses each step. */
-    float               monster_hp_drain;    /**< Health a monster loses each step. */
-    s16                 regen_count;         /**< Steps towards the next health regained. */
-    s16                 poison_count;        /**< Steps towards the next health lost to poison. */
-    s16                 magic_sword_elem;    /**< Element of Monica's charged magic sword, or -1. */
-    s16                 magic_sword_num;     /**< Number of magic sword charges. */
-    s16                 magic_sword_pow[7];  /**< Strength of each magic sword charge. */
+    s16                 now_npc;            /**< Townsperson in the party, or -1. */
+    s16                 chara_type;         /**< Kind of status read, a BATTLE_CHARA_TYPE. */
+    void               *chara_data;         /**< CHARA_DATA, ROBO_DATA or MOS_CHANGE_PARAM, by chara_type. */
+    float               robo_hp_drain;      /**< Energy the ridepod loses each step. */
+    float               monster_hp_drain;   /**< Health a monster loses each step. */
+    s16                 regen_count;        /**< Steps towards the next health regained. */
+    s16                 poison_count;       /**< Steps towards the next health lost to poison. */
+    s16                 magic_sword_elem;   /**< Element of Monica's charged magic sword, or -1. */
+    s16                 magic_sword_num;    /**< Number of magic sword charges. */
+    s16                 magic_sword_pow[7]; /**< Strength of each magic sword charge. */
     u8                  unk_2a[2];
-    CGameDataUsed      *active_item;         /**< Active items of the character, or null. */
-    CGameDataUsed      *equip;               /**< Equipment of the character. */
-    BATTLE_WEAPON_PARAM weapon_param[2];     /**< Parameters of the two weapons. */
-    s16                 defence;             /**< Defence of the character. */
+    CGameDataUsed      *active_item;     /**< Active items of the character, or null. */
+    CGameDataUsed      *equip;           /**< Equipment of the character. */
+    BATTLE_WEAPON_PARAM weapon_param[2]; /**< Parameters of the two weapons. */
+    s16                 defence;         /**< Defence of the character. */
     u8                  unk_6e[6];
-    COMMON_GAGE        *hp;                  /**< Health gauge of the character. */
-    float               hp_change_frames;    /**< Frames the shown health takes to reach the real health. */
-    float               hp_change_step;      /**< Change of the shown health each frame. */
+    COMMON_GAGE        *hp;               /**< Health gauge of the character. */
+    float               hp_change_frames; /**< Frames the shown health takes to reach the real health. */
+    float               hp_change_step;   /**< Change of the shown health each frame. */
     float               unk_80;
-    float               disp_hp;             /**< Health shown, which follows the real health. */
+    float               disp_hp; /**< Health shown, which follows the real health. */
     float               unk_88;
-    float               prev_hp;             /**< Health before the last change. */
+    float               prev_hp; /**< Health before the last change. */
 
     /**
      * Clears the battle view.
@@ -2648,7 +2669,7 @@ public:
      * @address 0x1A0400
      * @size 0x1E8
      */
-    void SetChrNo(int chara);
+    void SetChrNo(int new_chara_no);
 
     /**
      * Gives the monster Monica transforms into.
@@ -2702,7 +2723,7 @@ public:
      * @address 0x1A0860
      * @size 0x44
      */
-    u32 GetSpecialStatus(int weapon);
+    u32 GetSpecialStatus(int slot);
 
     /**
      * Gives the colour palette of a weapon of Max or Monica, or -1.
@@ -2711,7 +2732,7 @@ public:
      * @address 0x1A08B0
      * @size 0x44
      */
-    s16 GetPalletNo(int weapon);
+    s16 GetPalletNo(int slot);
 
     /**
      * Works the character's battle parameters out from its status and equipment.
@@ -2729,7 +2750,7 @@ public:
      * @address 0x1A0C70
      * @size 0x74
      */
-    COMMON_GAGE *GetNowAccessWHp(int weapon);
+    COMMON_GAGE *GetNowAccessWHp(int slot);
 
     /**
      * Gives the absorption gauge of a weapon, or null.
@@ -2738,7 +2759,7 @@ public:
      * @address 0x1A0CF0
      * @size 0x74
      */
-    COMMON_GAGE *GetNowAccessAbs(int weapon);
+    COMMON_GAGE *GetNowAccessAbs(int slot);
 
     /**
      * Adds to a weapon's durability and gives how full it is.
@@ -2747,7 +2768,7 @@ public:
      * @address 0x1A0D70
      * @size 0x78
      */
-    float AddWhp(int weapon, float whp);
+    float AddWhp(int slot, float amount);
 
     /**
      * Gives a weapon's durability and its full value.
@@ -2756,7 +2777,7 @@ public:
      * @address 0x1A0DF0
      * @size 0x50
      */
-    void GetNowWhp(int weapon, int *whp);
+    void GetNowWhp(int slot, int *out);
 
     /**
      * Gives a weapon's durability as shown.
@@ -2765,7 +2786,7 @@ public:
      * @address 0x1A0E40
      * @size 0x38
      */
-    int GetWhpNowVol(int weapon);
+    int GetWhpNowVol(int slot);
 
     /**
      * Adds a charge of an element to Monica's magic sword.
@@ -2828,7 +2849,7 @@ public:
      * @address 0x1A1110
      * @size 0x1A8
      */
-    float AddAbs(int weapon, float abs, int *level_up);
+    float AddAbs(int slot, float amount, int *leveled_up);
 
     /**
      * Adds a fraction of a weapon's absorption, levelling it up when full.
@@ -2837,7 +2858,7 @@ public:
      * @address 0x1A12C0
      * @size 0xFC
      */
-    int AddAbsRate(int weapon, float rate, int *level_up);
+    int AddAbsRate(int slot, float rate, int *leveled_up);
 
     /**
      * Gives a weapon's absorption and its full value.
@@ -2846,7 +2867,7 @@ public:
      * @address 0x1A13C0
      * @size 0x50
      */
-    void GetNowAbs(int weapon, int *abs);
+    void GetNowAbs(int slot, int *out);
 
     /**
      * Levels a weapon of Max or Monica up when it can.
@@ -2873,7 +2894,7 @@ public:
      * @address 0x1A1490
      * @size 0xF4
      */
-    float AddHp_Point(float hp, float frames);
+    float AddHp_Point(float point, float frames);
 
     /**
      * Adds a fraction of the character's health, in one of four ways, and gives how full it is.
@@ -2882,7 +2903,7 @@ public:
      * @address 0x1A1590
      * @size 0x1B8
      */
-    float AddHp_Rate(float rate, int mode, float frames);
+    float AddHp_Rate(float rate, int kind, float frames);
 
     /**
      * Fills the character's health to a fraction.
@@ -2918,7 +2939,7 @@ public:
      * @address 0x1A1800
      * @size 0x70
      */
-    int SetAttr(int attr, int clear);
+    int SetAttr(int attr, int value);
 
     /**
      * Sets status attribute bits of the character with how long they last.
@@ -2927,7 +2948,7 @@ public:
      * @address 0x1A1870
      * @size 0x70
      */
-    int SetAttrVol(int attr, int time);
+    int SetAttrVol(int attr, int value);
 
     /**
      * Gives the character's status attribute.
@@ -2965,6 +2986,7 @@ public:
      */
     void Step();
 };
+
 STATIC_ASSERT(sizeof(CBattleCharaInfo) == 0x90);
 
 /**
@@ -3037,7 +3059,7 @@ int CalcBreedFishParam(BREEDFISH_USED *fish);
  * @address 0x198330
  * @size 0x8
  */
-void SetFishingGamePreEquip(CGameDataUsed *weapon);
+void SetFishingGamePreEquip(CGameDataUsed *data);
 
 /**
  * Gives Max back the weapon he had before the fishing game.
@@ -3064,7 +3086,7 @@ int CheckFishingWeapon(CGameDataUsed *weapon);
  * @address 0x198390
  * @size 0x174
  */
-void GameDataSwap(CGameDataUsed *a, CGameDataUsed *b, int check_fishing);
+void GameDataSwap(CGameDataUsed *first, CGameDataUsed *second, int mode);
 
 /**
  * Gives the energy capacity the ridepod's parts use, and the capacity of its core.
@@ -3100,7 +3122,7 @@ int GetShiledKitLimmit(int item_no);
  * @address 0x19BDA0
  * @size 0x8
  */
-BASE_MONSTER_TBL *GetMonsterBaseInfo(int monster_id);
+BASE_MONSTER_TBL *GetMonsterBaseInfo(int monster_no);
 
 /**
  * Gives the transformation parameters of a monster, or null.
@@ -3109,7 +3131,7 @@ BASE_MONSTER_TBL *GetMonsterBaseInfo(int monster_id);
  * @address 0x19BDB0
  * @size 0x4C
  */
-MOS_HENGE_PARAM *GetMonsterHengeParam(int monster_id);
+MOS_HENGE_PARAM *GetMonsterHengeParam(int monster_no);
 
 /**
  * Sets which characters can be changed to in town or in a dungeon.
@@ -3118,7 +3140,7 @@ MOS_HENGE_PARAM *GetMonsterHengeParam(int monster_id);
  * @address 0x1A00D0
  * @size 0x80
  */
-void SetEnvUserDataMan(int dungeon);
+void SetEnvUserDataMan(int env);
 
 /**
  * Fills a list, ended by -1, with the item numbers of a character's starting equipment.
@@ -3127,7 +3149,7 @@ void SetEnvUserDataMan(int dungeon);
  * @address 0x1A0150
  * @size 0x9C
  */
-void GetCharaDefaultWeapon(int chara, int *item_no);
+void GetCharaDefaultWeapon(int chara, int *weapons);
 
 /**
  * Equips both characters with their starting equipment for the current language and names the
@@ -3182,7 +3204,7 @@ int CheckBadStatus(int attr);
  * @address 0x1A23E0
  * @size 0x64
  */
-unsigned int CheckWeaponAttribute(unsigned int weapon_attr, unsigned int attr);
+unsigned int CheckWeaponAttribute(unsigned int mask_a, unsigned int mask_b);
 
 /**
  * Gives whether every monster a weapon needs defeated to build up has been.
@@ -3200,7 +3222,7 @@ int CheckBuildUpMonsterCondition(CDataWeapon *weapon);
  * @address 0x1A24F0
  * @size 0x64
  */
-int KillMonsterCount(int monster_id, int mode);
+int KillMonsterCount(int monster_id, int amount);
 
 /**
  * Gives the item type a character's equipment slot takes, or 0.
@@ -3209,7 +3231,7 @@ int KillMonsterCount(int monster_id, int mode);
  * @address 0x1A2560
  * @size 0x70
  */
-int SearchEquipType(int chara, int slot);
+int SearchEquipType(int category, int slot);
 
 /**
  * Gives which character can equip an item number, and in which slot.
@@ -3236,7 +3258,7 @@ int IsCheckParty(int chara);
  * @address 0x1A26C0
  * @size 0x84
  */
-char *GetAquariumFish0(int index);
+char *GetAquariumFish0(int slot);
 
 /**
  * Gives how many of an item number the player owns.
@@ -3272,7 +3294,7 @@ int CheckItemLimmitOver();
  * @address 0x1A2870
  * @size 0x1C8
  */
-int CheckGetItemLimmitOver(int item_no, int num);
+int CheckGetItemLimmitOver(int item_no, int count);
 
 /**
  * Gives how many more of an item number the player can own.
@@ -3326,7 +3348,7 @@ void DeleteErekiFish();
  * @address 0x1A2CF0
  * @size 0x30
  */
-int GetNowBagMax(int with_over);
+int GetNowBagMax(int board);
 
 /**
  * Moves Monica's active items back to the inventory when she leaves.
@@ -3371,4 +3393,4 @@ int GetRandomCircleTrapID(int kind);
  * @address 0x1A1A90
  * @size 0x21C
  */
-int SetRandamCircleStatus(int trap, float &value);
+int SetRandamCircleStatus(int kind, float &amount_out);

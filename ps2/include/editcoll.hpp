@@ -31,7 +31,7 @@ public:
      * @address 0x1A4680
      * @size 0x1F0
      */
-    void Copy(CEditCollision &dest, int area_kind, mgCMemory *memory);
+    void Copy(CEditCollision &dest, int plane_no, mgCMemory *memory);
 
     /**
      * Returns the total area of the triangles projected onto the XZ

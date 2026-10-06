@@ -3,6 +3,7 @@
 #include "common.h"
 
 #include <libvu0.h>
+
 #include <cstring>
 
 /**
@@ -20,14 +21,14 @@ class COcclusion {
 public:
     COcclusion() { memset(this, 0, sizeof(COcclusion)); }
 
-    int enable;                   /**< Non-zero while the occluder is in use. */
-    u8 unk_4[0xC];
-    sceVu0FVECTOR vertex[4];      /**< Corners of the occluder in world space. */
-    int setup;                    /**< Non-zero once the view-space planes have been built. */
-    u8 unk_54[0xC];
-    sceVu0FVECTOR plane;          /**< Plane of the occluder in view space, facing away from the eye, with its distance term in w. */
-    sceVu0FVECTOR side_plane[4];  /**< Planes through the eye and each edge of the occluder, facing inwards, in view space. */
-    sceVu0FVECTOR view_min;       /**< Per-component minimum of the corners in view space; z is the nearest depth. */
+    int           enable; /**< Non-zero while the occluder is in use. */
+    u8            unk_4[0xC];
+    sceVu0FVECTOR vertex[4]; /**< Corners of the occluder in world space. */
+    int           setup;     /**< Non-zero once the view-space planes have been built. */
+    u8            unk_54[0xC];
+    sceVu0FVECTOR plane;         /**< Plane of the occluder in view space, facing away from the eye, with its distance term in w. */
+    sceVu0FVECTOR side_plane[4]; /**< Planes through the eye and each edge of the occluder, facing inwards, in view space. */
+    sceVu0FVECTOR view_min;      /**< Per-component minimum of the corners in view space; z is the nearest depth. */
 
     /**
      *
@@ -49,4 +50,5 @@ public:
      */
     int CheckSphere(sceVu0FVECTOR sphere);
 };
+
 STATIC_ASSERT(sizeof(COcclusion) == 0xC0);

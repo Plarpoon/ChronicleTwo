@@ -1,5 +1,15 @@
 # menuchr: reverse-engineering notes
 
+The seven `MenuActionCharaBuffer` stacks and the other eight `mgCMemory` globals use native
+C++ construction in BSS declaration order. MWCC generates the 148-byte retail
+`__sinit_menuchr_cpp` from those declarations. `CMosBookMenu` constructs its camera with speed
+8.0 and then its stack; this produces an exact retail `MonsterBookInit` when the normal
+compiler inline depth is used. The character and other menu constructors are still being
+matched after converting their manual constructor aliases to native C++.
+
+`MenuItemChrLoadEndCheck` obtains the background read's `buffer` at offset 0x110 and uses the
+texture manager's `name_suffix` at offset 0x1D8. Typed access to both fields matches retail.
+
 Header: `ps2/include/menuchr.hpp`. The unit has no first-game counterpart (no `menuchr` or
 equivalent classes exist in `/home/adubbz/development/chronicle`).
 
@@ -46,6 +56,10 @@ Slot order is the base's: `IsCreateObject`, `IsMakeObject`, `IsAskExtend`, `Item
   meaning of 2 should be re-confirmed against `KeyStep`'s return sites when its body is written.
 
 ### CMenuCostumeSel (0x2D0)
+- `MenuCostumeInit` constructs the camera and menu in 0x2F quadwords from the caller's stack,
+  sets the default outfit bitset to `0x1274521CB`, includes the optional costume bits when
+  `MenuArg.param[0]` is one, loads form data and begins a 40-frame fade. Its guarded constructor
+  and initializer are behavioral drafts; normal builds still use the retail assembly.
 - Size: `__nw__FUiP1(0x2D0, ...)` in `MenuCostumeInit`; instance in `MenuCosPtr`.
 - Inline ctor: `mgCCameraFollow(40, 30, 0, 8)` at 0x110 (0xC0 -> 0x1D0), `mgCMemory` Init at 0x228,
   0x2C0 = `GetCharaDataPtr(.., 0)`, 0x260 = 15.0f, 0x268 = 4.0f (chara_pos x/z), zeroes
@@ -53,7 +67,23 @@ Slot order is the base's: `IsCreateObject`, `IsMakeObject`, `IsAskExtend`, `Item
 - `costume_list[3][8]` s16 at 0x1E4, `list[3]` s16* at 0x214.
 - Unresolved: `unk_1D4`, `unk_220`, `unk_270[4]`, `unk_280`, `unk_2A8`, `unk_2AC`, `unk_2BC`.
 
+### CMenuChrCngMenu::EnterDataMenu
+
+The guarded draft registers the ring image, parses the menu layout once, installs repair data,
+then clones the base texture and darkens its 256 palette entries using a 32-step warm colour
+scale. It attaches forms, shows the party members and available characters, installs the two
+message buffers, and loads the current townsperson's command messages and ability costs. The
+m2c output mislabels several fields after offset 0x110 as `star` members; disassembly confirms
+that offsets 0x124/0x128 are `enable_change`/`party_member`, 0x140 is `form`, and 0x21C–0x248
+are the NPC and message fields in `menuchr.hpp`. The draft compiles but differs from retail.
+
 ### CMosBookMenu (0x980)
+- Its guarded `Draw` draft draws the scrolling background, layered panels, attribute icons,
+  monster model, three numeric stats and the monster's names and item drops. The model is clipped
+  to the central panel after load phase 4 and 17 frames of display. The list counter at offset
+  0x7E8 supplies the final page indicator; m2c mislabels it as `abs`. The `ic_5580` table has
+  seven entries although the retail loop tests eight attribute bits, so the last bit reads the
+  alignment bytes before `line_5595`. The draft compiles but differs from retail.
 - Size: `__nw__FUiP1(0x980, ...)` in `MonsterBookInit`; instance in `MonsterBookPtr` /
   `MenuMosBookPtr`.
 - Inline ctor: `mgCCamera(8.0f)` at 0x110 (0x70 -> 0x180), `mgCMemory` Init at 0x184, zeroes
@@ -117,3 +147,13 @@ Note: `MenuActionChara` is 0x1C in main.symbols.txt (BSS slot 0x20 with padding)
 - `ConvertCharaLoadDataPhase` returns an s16 from `tbl_992[chara*5 + part]`.
 - `get_gajji_id_from_monster_progress_table` returns s16 (row's first column) or -1.
 - `MenuCharaSoundLoad`, `MenuItemChrLoad` return u32 sizes.
+
+## Monster effect loading
+
+`MOS_HENGE_PARAM` holds four effect base names at offset 0xC. The loader keeps
+one script buffer, script length, pack buffer and pack length for each name.
+`MonsterEffectRead` fills those four parallel arrays and counts successfully
+read bases. `MonsterEffectEnter` temporarily replaces the effect manager's
+load buffer, builds the bases for that count, then restores the buffer. The
+scene's `read_buff` field is at offset 0x3C. Both functions match when their
+array indexing and member calls use the declared C++ types.

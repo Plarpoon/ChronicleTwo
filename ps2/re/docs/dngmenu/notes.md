@@ -98,6 +98,31 @@ two columns, using `GeoramaMateriaInfoDrawPage` for the starting item and
 for the frame, reloads the message texture for the names, then displays
 the page count in the lower right.
 
+`DngTreeMapInit` reserves a work buffer from the remaining menu stack,
+constructs the tree menu and floor map inside it, loads the floor grid when
+the opening mode requires it, and reads the menu's data list. It sets each
+of the eight message windows to use the system message buffer and gives
+the second window the digit font. The menu cursor texture file is
+`frametex.img`.
+
+`CMenuTreeMap::InitEnd` loads the dungeon map picture and floor information
+texture, chooses a room from saved progress (or the marked boss/sub room),
+centres the map on it, starts the opening fade, and loads `systree.mes`.
+It then reads the dungeon treasure script into an aligned buffer and
+builds the treasure tables if that read succeeds.
+
+`CMenuTreeMap::Draw` draws the floor map and, when enabled, the shared help
+message. It draws the selected floor's information and medals, eases the
+cursor towards that room, and draws the cursor or money board. During the
+save transition it animates the second help line and its colour.
+
+`CDngFreeMap::Draw` skips inactive or fully transparent maps and maps
+without a texture. It clamps opacity to 0–128, reloads `dt`, draws the
+backdrop, whole-screen overlay, cells and player piece, then composites
+queued room marks with `dtname` outside event mode. With
+`menu_debug_flag` set it additionally draws a diagnostic panel for the
+selected room, including its links, visit count and eight save flags.
+
 Unit: dungeon floor map (`CDngFreeMap`) and the dungeon menu's tree map (`CMenuTreeMap`).
 No first-game counterpart (Dark Cloud 1 has no class of either name; nothing equivalent found
 in `/home/adubbz/development/chronicle/ps2/include`).
@@ -159,7 +184,8 @@ globals in `__sinit_dngmenu_cpp` show a 4-argument constructor calling `Set`). `
 
 `DNGMAP_KOMA_POS` is an invented name (no retail symbol): `{float x, y; next}` nodes allocated
 with `mgCMemory::Alloc(1)` (one 16-byte unit; only 0xC used). Built from
-`RootHokanTable*`/`RoomHokanTable*` (10 s16 x/y pairs each) offsets in LoadDngInfo.
+`RootHokanTable*` (20 s16 x/y pairs each) and `RoomHokanTable*`
+(10 pairs each) offsets in LoadDngInfo.
 
 Not a virtual class (no vtable symbol, no vptr store).
 
@@ -233,3 +259,35 @@ GLID_INFO stride 0x70 (CDngFloorManager +4 array, +8 count, +0xC/+0xE grid width
 +0x18 s16 message no, +0x3E/+0x40 s16 draw offset, +0x42 s8 picture, +0x45 u8 (cleared/visited;
 also read as glid+0x65 in DrawGlidCheck), +0x46 u8 mark (bobbing mark, glid+0x66 in InitEnd),
 +0x48 float mark phase (DrawRoomOne).
+
+`LoadDngInfo` uses the unused portion of its caller's stack for a temporary
+arena. It loads `dmap%d.img` into the assigned texture block with the `_dn`
+suffix, then positions the board at the current room. When an event has a
+next room, dungeon-specific branch rules reduce jumps to a nearby room. The
+function creates a linked path of piece positions: ten interpolation points
+for the destination room, twenty for each intervening passage cell, and ten
+for any intervening room. Direction and passage shape select the point table
+and whether it is read forward or backward. The first path node is the
+piece's starting point; subsequent nodes drive event movement. The returned
+value is the number of quadwords consumed from the temporary arena.
+
+`CMenuTreeMap::Step` handles cursor navigation, floor detail messages,
+confirmation of travel to a floor, the save-menu handoff, and debug controls.
+Its persistent static state records the previous direction and selected
+cell so movement can distinguish a held key from a new selection.
+
+`DrawDngRoomInfo` draws the floor detail panel only when a room and its
+texture are available. Its height varies with the language and whether the
+floor has a geostone, spheda challenge or fishing test. The panel fades in
+six alpha units per frame and out eight. It draws the border and seal pulse,
+then places four challenge rows and their message windows; the medal message
+uses a language-specific position.
+
+The medal overlay's UV coordinates in `DrawDngRoomInfo` remain uncertain:
+retail copies packed words from `medal_xytbl_1736` into rectangle locals.
+The current draft uses the existing highlight rectangle for that overlay,
+so its placement needs further work during matching.
+
+`mgRect<float>::Set` stores its four arguments directly into the left, top,
+right and bottom fields. The explicit float specialization is a separate
+retail symbol from the generic template, so it has its own guarded draft.

@@ -1,23 +1,23 @@
 #include "common.h"
-#include "mg_memory.hpp"
-#include "mg_drawprim.hpp"
-#include "mg_texture.hpp"
-#include "mg_frame.hpp"
+
+#include <libvu0.h>
 
 #include <cstring>
-#include <libvu0.h>
 
 #include "mg_drawenv.hpp"
 #include "mg_drawprim.hpp"
+#include "mg_frame.hpp"
 #include "mg_math.hpp"
+#include "mg_memory.hpp"
+#include "mg_texture.hpp"
 #include "mglib.hpp"
 
-extern "C" u_char at_844[];
+extern u_char              at_844[];
 extern const unsigned char at_307__DATA[];
-extern u_char at_324[];
-extern u_char at_341[];
-extern u_char at_1118[];
-extern u_char at_1119[];
+extern u_char              at_324[];
+extern u_char              at_341[];
+extern u_char              at_1118[];
+extern u_char              at_1119[];
 
 static mgCFrameAttr dmy_attr;
 
@@ -41,7 +41,6 @@ void mgCFrameAttr::Initialize() {
     depth_bias = 0.0f;
     unk_84 = 0;
 }
-
 
 /**
  *
@@ -104,7 +103,45 @@ static void QuatToMat(float *quaternion, float (*matrix)[4]) {
  * registers vf10-vf17, and gets the box around them.
  *
  */
+#ifdef NONMATCHING
+static float projected_corners[8][4];
+
+void test1(float (*corners)[4], float (*screen)[4], float (*matrix)[4], float *out_max,
+           float *out_min) {
+    float combined[4][4];
+    for (int column = 0; column < 4; column++) {
+        for (int row = 0; row < 4; row++) {
+            combined[column][row] = screen[0][row] * matrix[column][0] +
+                                    screen[1][row] * matrix[column][1] +
+                                    screen[2][row] * matrix[column][2] +
+                                    screen[3][row] * matrix[column][3];
+        }
+    }
+
+    for (int corner = 0; corner < 8; corner++) {
+        for (int row = 0; row < 4; row++) {
+            float value = combined[0][row] * corners[corner][0] +
+                          combined[1][row] * corners[corner][1] +
+                          combined[2][row] * corners[corner][2] +
+                          combined[3][row] * corners[corner][3];
+            projected_corners[corner][row] = value;
+            if (corner == 0) {
+                out_max[row] = value;
+                out_min[row] = value;
+            } else {
+                if (value > out_max[row]) {
+                    out_max[row] = value;
+                }
+                if (value < out_min[row]) {
+                    out_min[row] = value;
+                }
+            }
+        }
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", test1__FPA4_fPA4_fPA4_fPfPf);
+#endif
 // clang-format on
 // clang-format off
 /**
@@ -113,8 +150,38 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", test1__FPA4_fPA4_fPA4_fPfPf);
  * the screen-space box around them.
  *
  */
+#ifdef NONMATCHING
+void test2(float *out_max, float *out_min) {
+    for (int corner = 0; corner < 8; corner++) {
+        float depth = projected_corners[corner][3];
+        if (depth < 0.0f) {
+            depth = -depth;
+        }
+        float x = projected_corners[corner][0] / depth;
+        float y = projected_corners[corner][1] / depth;
+        if (corner == 0) {
+            out_max[0] = out_min[0] = x;
+            out_max[1] = out_min[1] = y;
+            out_max[2] = out_min[2] = projected_corners[corner][2];
+            out_max[3] = out_min[3] = projected_corners[corner][3];
+        } else {
+            float values[4] = {x, y, projected_corners[corner][2], projected_corners[corner][3]};
+            for (int axis = 0; axis < 4; axis++) {
+                if (values[axis] > out_max[axis]) {
+                    out_max[axis] = values[axis];
+                }
+                if (values[axis] < out_min[axis]) {
+                    out_min[axis] = values[axis];
+                }
+            }
+        }
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", test2__FPfPf);
+#endif
 // clang-format on
+
 int mgInsideScreen(mgVu0FBOX *box) {
     sceVu0FMATRIX matrix;
     sceVu0FVECTOR corners[8];
@@ -123,25 +190,31 @@ int mgInsideScreen(mgVu0FBOX *box) {
     mgCreateBox8(corners, box->max, box->min);
     return mgInsideScreen(corners, matrix);
 }
+
 int mgInsideScreen(mgVu0FBOX *box, float (*matrix)[4]) {
     sceVu0FVECTOR corners[8];
 
     mgCreateBox8(corners, box->max, box->min);
     return mgInsideScreen(corners, matrix);
 }
+
 #pragma global_optimizer off
+
 int mgInsideScreen(mgVu0FBOX *box, float (*matrix)[4], float *out_max, float *out_min) {
     sceVu0FVECTOR corners[8];
     mgCreateBox8(corners, box->max, box->min);
     return mgInsideScreen(corners, matrix, out_max, out_min);
 }
+
 #pragma global_optimizer reset
+
 int mgInsideScreen(float (*corners)[4], float (*matrix)[4]) {
     sceVu0FVECTOR max;
     sceVu0FVECTOR min;
 
     return mgInsideScreen(corners, matrix, max, min);
 }
+
 #pragma global_optimizer off
 #ifdef NONMATCHING
 int mgInsideScreen(float (*corners)[4], float (*matrix)[4], float *out_max, float *out_min) {
@@ -152,7 +225,9 @@ int mgInsideScreen(float (*corners)[4], float (*matrix)[4], float *out_max, floa
         sceVu0FVECTOR transformed;
         sceVu0ApplyMatrix(transformed, screen_matrix, corners[i]);
         float depth = transformed[3];
-        if (depth < 0.0f) depth = -depth;
+        if (depth < 0.0f) {
+            depth = -depth;
+        }
         transformed[0] /= depth;
         transformed[1] /= depth;
         if (i == 0) {
@@ -160,8 +235,12 @@ int mgInsideScreen(float (*corners)[4], float (*matrix)[4], float *out_max, floa
             sceVu0CopyVector(out_min, transformed);
         } else {
             for (int axis = 0; axis < 4; axis++) {
-                if (out_max[axis] < transformed[axis]) out_max[axis] = transformed[axis];
-                if (out_min[axis] > transformed[axis]) out_min[axis] = transformed[axis];
+                if (out_max[axis] < transformed[axis]) {
+                    out_max[axis] = transformed[axis];
+                }
+                if (out_min[axis] > transformed[axis]) {
+                    out_min[axis] = transformed[axis];
+                }
             }
         }
     }
@@ -184,16 +263,18 @@ void mgCObject::SetPosition(float *position) {
 
 void mgCObject::SetPosition(float x, float y, float z) {
     float position[4];
-    *(u_long128 *)position = *(u_long128 *)at_307__DATA;
+    *(u_long128 *) position = *(u_long128 *) at_307__DATA;
     position[0] = x;
     position[1] = y;
     position[2] = z;
 
     mgCObject::SetPosition(position);
 }
+
 void mgCObject::GetPosition(float *out_position) {
     sceVu0CopyVector(out_position, position);
 }
+
 void mgCObject::SetRotation(float *rotation) {
     if (this->rotation[0] != rotation[0] || this->rotation[1] != rotation[1] ||
         this->rotation[2] != rotation[2]) {
@@ -203,18 +284,21 @@ void mgCObject::SetRotation(float *rotation) {
         this->rotation[3] = 0.0f;
     }
 }
+
 void mgCObject::SetRotation(float x, float y, float z) {
     float rotation[4];
-    *(u_long128 *)rotation = *(u_long128 *)at_324;
+    *(u_long128 *) rotation = *(u_long128 *) at_324;
     rotation[0] = x;
     rotation[1] = y;
     rotation[2] = z;
 
     mgCObject::SetRotation(rotation);
 }
+
 void mgCObject::GetRotation(float *out_rotation) {
     sceVu0CopyVector(out_rotation, rotation);
 }
+
 void mgCObject::SetScale(float *scale) {
     if (this->scale[0] != scale[0] || this->scale[1] != scale[1] || this->scale[2] != scale[2]) {
         use_srt = 1;
@@ -225,18 +309,21 @@ void mgCObject::SetScale(float *scale) {
         this->scale[3] = 0.0f;
     }
 }
+
 void mgCObject::SetScale(float x, float y, float z) {
     float scale[4];
-    *(u_long128 *)scale = *(u_long128 *)at_341;
+    *(u_long128 *) scale = *(u_long128 *) at_341;
     scale[0] = x;
     scale[1] = y;
     scale[2] = z;
 
     mgCObject::SetScale(scale);
 }
+
 void mgCObject::GetScale(float *out_scale) {
     sceVu0CopyVector(out_scale, scale);
 }
+
 void mgCObject::Initialize() {
     SetPosition(0.0f, 0.0f, 0.0f);
     SetRotation(0.0f, 0.0f, 0.0f);
@@ -244,6 +331,7 @@ void mgCObject::Initialize() {
     changed = 1;
     use_srt = 0;
 }
+
 mgCFrame::mgCFrame() {
     Initialize();
 }
@@ -271,28 +359,31 @@ void mgCFrame::Initialize() {
 void mgCFrame::SetName(char *name) {
     this->name = name;
 }
+
 void mgCFrame::SetTransMatrix(float *quaternion) {
     float saved_row[4];
     changed = 1;
-    *(u_long128 *)saved_row = *(u_long128 *)trans_matrix[3];
+    *(u_long128 *) saved_row = *(u_long128 *) trans_matrix[3];
     QuatToMat(quaternion, trans_matrix);
-    *(u_long128 *)trans_matrix[3] = *(u_long128 *)saved_row;
+    *(u_long128 *) trans_matrix[3] = *(u_long128 *) saved_row;
 }
 
 void mgCFrame::SetBBox(float *max, float *min) {
-    mgCFrame::BoundInfo *record = (mgCFrame::BoundInfo *)bound;
+    mgCFrame::BoundInfo *record = (mgCFrame::BoundInfo *) bound;
+
     if (record != 0) {
-        sceVu0CopyVector(((mgCFrame::BoundInfo *)bound)->max, max);
-        sceVu0CopyVector(((mgCFrame::BoundInfo *)bound)->min, min);
+        sceVu0CopyVector(((mgCFrame::BoundInfo *) bound)->max, max);
+        sceVu0CopyVector(((mgCFrame::BoundInfo *) bound)->min, min);
 
         float *extremes[4];
-        extremes[0] = ((mgCFrame::BoundInfo *)bound)->min;
-        extremes[1] = ((mgCFrame::BoundInfo *)bound)->max;
+        extremes[0] = ((mgCFrame::BoundInfo *) bound)->min;
+        extremes[1] = ((mgCFrame::BoundInfo *) bound)->max;
+
         for (s32 i = 0; i < 8; i++) {
-            ((mgCFrame::BoundInfo *)bound)->corner[i][3] = 1.0f;
-            ((mgCFrame::BoundInfo *)bound)->corner[i][0] = extremes[(i & 1) != 0][0];
-            ((mgCFrame::BoundInfo *)bound)->corner[i][1] = extremes[(i & 2) != 0][1];
-            ((mgCFrame::BoundInfo *)bound)->corner[i][2] = extremes[(i & 4) != 0][2];
+            ((mgCFrame::BoundInfo *) bound)->corner[i][3] = 1.0f;
+            ((mgCFrame::BoundInfo *) bound)->corner[i][0] = extremes[(i & 1) != 0][0];
+            ((mgCFrame::BoundInfo *) bound)->corner[i][1] = extremes[(i & 2) != 0][1];
+            ((mgCFrame::BoundInfo *) bound)->corner[i][2] = extremes[(i & 4) != 0][2];
         }
     }
 }
@@ -306,115 +397,136 @@ void mgCFrame::GetBBox(float *out_max, float *out_min) {
         sceVu0CopyVector(out_min, bound->min);
     }
 }
+
 void mgCFrame::SetBSphere(float *center, float radius) {
     if (bound != NULL) {
         sceVu0CopyVector(bound->center, center);
         bound->radius = radius;
     }
 }
+
 mgCFrame *mgCFrame::GetFrame(int index) {
     if (index < 0 || index > this->frame_num || this->frame_list == 0) {
         return 0;
     }
+
     return this->frame_list[index];
 }
 
 int mgCFrame::RemakeBBox(float *out_max, float *out_min) {
-    float matrix[4][4];
-    mgCVisual *frameVisual = visual;
-    if (frameVisual == 0) {
+    float      matrix[4][4];
+    mgCVisual *frame_visual = visual;
+
+    if (frame_visual == 0) {
         return 0;
     }
+
     GetLWMatrix(matrix);
-    if (frameVisual->CreateBBox(out_max, out_min, matrix) != 0) {
+
+    if (frame_visual->CreateBBox(out_max, out_min, matrix) != 0) {
         SetBBox(out_max, out_min);
         return 1;
     }
+
     return 0;
 }
 
-extern "C" int __as__9mgVu0FBOXFR9mgVu0FBOX(...);
 int mgCFrame::GetWorldBBox(mgVu0FBOX *box) {
-    float worldBox[8];
-    float matrix[4][4];
-    float center[4];
+    mgVu0FBOX world_box;
+    float     matrix[4][4];
+    float     center[4];
+
     struct {
         float x;
         float y;
         float z;
         u_int w;
     } half;
+
     mgVu0FBOX child_box;
-    s32 found = 0;
+    s32       found = 0;
+
     if (visual != 0 && bound != 0) {
         found = 1;
         GetLWMatrix(matrix);
 
-        mgApplyMatrix(&worldBox[0], &worldBox[4], matrix,
-                      ((mgCFrame::BoundInfo *)bound)->max,
-                      ((mgCFrame::BoundInfo *)bound)->min);
+        mgApplyMatrix(world_box.max, world_box.min, matrix,
+                      ((mgCFrame::BoundInfo *) bound)->max,
+                      ((mgCFrame::BoundInfo *) bound)->min);
+
         if (attr != 0 && attr->billboard != 0) {
             float extent;
-            sceVu0AddVector(center, &worldBox[0], &worldBox[4]);
+            sceVu0AddVector(center, world_box.max, world_box.min);
             sceVu0ScaleVector(center, center, 0.5f);
-            sceVu0SubVector(&half.x, &worldBox[0], center);
+            sceVu0SubVector(&half.x, world_box.max, center);
+
             if (half.x > half.y) {
                 extent = half.x > half.z ? half.x : half.z;
             } else {
                 extent = half.y > half.z ? half.y : half.z;
             }
+
             half.z = extent;
             half.y = extent;
             half.x = extent;
             half.w = 0;
-            sceVu0AddVector(&worldBox[0], center, &half.x);
-            sceVu0SubVector(&worldBox[4], center, &half.x);
+            sceVu0AddVector(world_box.max, center, &half.x);
+            sceVu0SubVector(world_box.min, center, &half.x);
         }
     }
+
     for (mgCFrame *node = child; node != 0; node = node->brother) {
         if (node->GetWorldBBox(&child_box) != 0) {
             if (found == 0) {
-                __as__9mgVu0FBOXFR9mgVu0FBOX(worldBox, &child_box);
+                world_box = child_box;
             } else {
-                mgVectorMaxMin(&worldBox[0], &worldBox[4], &worldBox[0], &worldBox[4], child_box.max,
+                mgVectorMaxMin(world_box.max, world_box.min, world_box.max, world_box.min, child_box.max,
                                child_box.min);
             }
+
             found = 1;
         }
     }
-    __as__9mgVu0FBOXFR9mgVu0FBOX(box, worldBox);
+
+    *box = world_box;
     return found;
 }
+
 #pragma global_optimizer reset
 
 int mgCFrame::GetFrameNum() {
-    s32 count;
+    s32       count;
     mgCFrame *node;
-    s32 childCount;
+    s32       child_count;
 
     node = child;
     count = 1;
+
     if (node != NULL) {
         do {
-            childCount = node->GetFrameNum();
+            child_count = node->GetFrameNum();
             node = node->brother;
-            count += childCount;
+            count += child_count;
         } while (node != NULL);
     }
+
     return count;
 }
 
 void mgCFrame::SetParent(mgCFrame *parent) {
     if (this->parent == NULL) {
         this->parent = parent;
+
         if (parent != NULL) {
             parent->SetChild(this);
         }
     }
 }
+
 void mgCFrame::SetBrother(mgCFrame *new_brother) {
     if (new_brother != 0) {
         mgCFrame *next = brother;
+
         if (next != 0) {
             next->SetBrother(new_brother);
         } else {
@@ -429,11 +541,13 @@ void mgCFrame::SetChild(mgCFrame *new_child) {
 
     if (new_child != NULL) {
         first = child;
+
         if (first != NULL) {
             first->SetBrother(new_child);
         } else {
             child = new_child;
         }
+
         new_child->parent = this;
     }
 }
@@ -443,21 +557,26 @@ void mgCFrame::DeleteParent() {
         if (parent->child == this) {
             parent->child = brother;
             parent = NULL;
+
             if (brother != NULL) {
                 brother->elder = NULL;
             }
+
             brother = NULL;
             elder = NULL;
         } else {
             parent = NULL;
+
             if (elder != NULL) {
                 elder->brother = brother;
             }
+
             brother = NULL;
             elder = NULL;
         }
     }
 }
+
 void mgCFrame::SetReference(mgCFrame *reference) {
     if (parent == NULL && reference != NULL) {
         parent = reference;
@@ -465,29 +584,36 @@ void mgCFrame::SetReference(mgCFrame *reference) {
         changed = 1;
     }
 }
+
 void mgCFrame::DeleteReference() {
     parent = NULL;
     reference = 0;
     changed = 1;
 }
+
 #pragma global_optimizer off
+
 void mgCFrame::ClearChildFlag() {
     mgCFrame *frame;
-    int flag = 1;
+    int       flag = 1;
 
     if (child != NULL) {
         child->changed = flag;
         frame = child;
+
         if (frame->brother != NULL) {
             mgCFrame *next;
+
             while ((next = frame->brother) != NULL) {
                 next->changed = flag;
                 frame = frame->brother;
             }
+
             return;
         }
     }
 }
+
 #pragma global_optimizer reset
 #pragma schedule reset
 
@@ -511,9 +637,15 @@ void mgCFrame::GetLocalMatrix(float (*matrix)[4]) {
         mgZeroVectorW(matrix[3]);
     }
     if (rot_type & MG_FRAME_ROT_APPLY) {
-        if (rotation[0] != 0.0f) sceVu0RotMatrixX(matrix, matrix, rotation[0]);
-        if (rotation[1] != 0.0f) sceVu0RotMatrixY(matrix, matrix, rotation[1]);
-        if (rotation[2] != 0.0f) sceVu0RotMatrixZ(matrix, matrix, rotation[2]);
+        if (rotation[0] != 0.0f) {
+            sceVu0RotMatrixX(matrix, matrix, rotation[0]);
+        }
+        if (rotation[1] != 0.0f) {
+            sceVu0RotMatrixY(matrix, matrix, rotation[1]);
+        }
+        if (rotation[2] != 0.0f) {
+            sceVu0RotMatrixZ(matrix, matrix, rotation[2]);
+        }
     }
     if (rot_type & MG_FRAME_ROT_LOCAL_ORIGIN) {
         sceVu0AddVector(matrix[3], translation, position);
@@ -570,7 +702,9 @@ void mgCFrame::GetBBoardMatrix(int mode, float (*matrix)[4], mgRENDER_INFO *rend
         mgMulMatrix(matrix, matrix, pitch);
     }
     for (int row = 0; row < 3; row++) {
-        for (int axis = 0; axis < 4; axis++) matrix[row][axis] *= dimensions[axis];
+        for (int axis = 0; axis < 4; axis++) {
+            matrix[row][axis] *= dimensions[axis];
+        }
     }
     matrix[3][0] = world[3][0];
     matrix[3][1] = world[3][1];
@@ -588,10 +722,14 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", GetBBoardMatrix__8mgCFrameFiPA4
 #pragma global_optimizer off
 #ifdef NONMATCHING
 void mgCFrame::GetLWMatrix(float (*matrix)[4]) {
-    if (reference) changed = 1;
+    if (reference) {
+        changed = 1;
+    }
     if (!changed) {
         mgCFrame *ancestor = parent;
-        while (ancestor != NULL && !ancestor->changed) ancestor = ancestor->parent;
+        while (ancestor != NULL && !ancestor->changed) {
+            ancestor = ancestor->parent;
+        }
         if (ancestor == NULL) {
             sceVu0CopyMatrix(matrix, lw_matrix);
             return;
@@ -649,8 +787,8 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", GetLWMatrixTopBottom__8mgCFrame
 void mgCFrame::GetInverseMatrix(float (*matrix)[4]) {
     sceVu0FMATRIX lw;
     sceVu0FVECTOR translation;
-    float det;
-    float inv_det;
+    float         det;
+    float         inv_det;
 
     GetLWMatrix(lw);
     det = 0.0f;
@@ -680,6 +818,7 @@ void mgCFrame::GetInverseMatrix(float (*matrix)[4]) {
     sceVu0ScaleVectorXYZ(matrix[3], translation, -1.0f);
     matrix[3][3] = 1.0f;
 }
+
 void mgCFrame::SetTransMatrix(float (*matrix)[4]) {
     sceVu0CopyMatrix(trans_matrix, matrix);
     changed = 1;
@@ -694,35 +833,44 @@ static int StrCmp(char *left, char *right) {
     if (left == 0 || right == 0) {
         return 0;
     }
-    s8 *endA = (s8 *)left;
-    s8 *endB = (s8 *)right;
+
+    s8 *end_a = (s8 *) left;
+    s8 *end_b = (s8 *) right;
     s32 ch;
-    s32 lengthA = 0;
-    s32 lengthB = 0;
-    while ((ch = *endA) != 0) {
-        if ((s8)ch == '-' && endA[1] == '-') {
+    s32 length_a = 0;
+    s32 length_b = 0;
+
+    while ((ch = *end_a) != 0) {
+        if ((s8) ch == '-' && end_a[1] == '-') {
             break;
         }
-        lengthA++;
-        endA++;
+
+        length_a++;
+        end_a++;
     }
-    while ((ch = *endB) != 0) {
-        if ((s8)ch == '-' && endB[1] == '-') {
+
+    while ((ch = *end_b) != 0) {
+        if ((s8) ch == '-' && end_b[1] == '-') {
             break;
         }
-        lengthB++;
-        endB++;
+
+        length_b++;
+        end_b++;
     }
-    if (lengthA != lengthB) {
+
+    if (length_a != length_b) {
         return 0;
     }
-    s8 *pa = (s8 *)left;
-    s8 *pb = (s8 *)right;
-    for (s32 i = 0; i < lengthA; i++, pa++, pb++) {
+
+    s8 *pa = (s8 *) left;
+    s8 *pb = (s8 *) right;
+
+    for (s32 i = 0; i < length_a; i++, pa++, pb++) {
         if (*pa != *pb) {
             return 0;
         }
     }
+
     return 1;
 }
 
@@ -733,14 +881,17 @@ int mgFrameNameComp(char *left, char *right) {
 mgCFrame *mgCFrame::SearchFrame(char *name) {
     mgCFrame *found;
     mgCFrame *node;
+
     if (StrCmp(this->name, name) != 0) {
         return this;
     }
+
     for (node = child; node != 0; node = node->brother) {
         if ((found = node->SearchFrame(name)) != 0) {
             return found;
         }
     }
+
     return 0;
 }
 
@@ -748,16 +899,21 @@ int mgCFrame::SearchFrameID(char *name) {
     if (frame_list == 0) {
         return -1;
     }
+
     s32 index = 0;
     s32 offset = 0;
+
     while (index < frame_num) {
-        mgCFrame *entry = *(mgCFrame **)((u8 *)frame_list + offset);
+        mgCFrame *entry = *(mgCFrame **) ((u8 *) frame_list + offset);
+
         if (entry != 0 && StrCmp(entry->name, name) != 0) {
             return index;
         }
+
         offset += 4;
         index++;
     }
+
     return -1;
 }
 
@@ -773,7 +929,7 @@ void mgCFrame::GetWorldPosition0(float *out_position) {
     sceVu0FMATRIX lw;
 
     GetLWMatrix(lw);
-    *(u_long128 *)out_position = *(u_long128 *)lw[3];
+    *(u_long128 *) out_position = *(u_long128 *) lw[3];
 }
 
 void mgCFrame::GetWorldDir(float *out_dir, float *local_dir) {
@@ -787,6 +943,7 @@ void mgCFrame::GetWorldDir(float *out_dir, float *local_dir) {
     sceVu0ApplyMatrix(out_dir, lw, local_dir);
     local_dir[3] = w;
 }
+
 void mgCFrame::SetRotation(float *rot) {
     rot_type |= 1;
     mgCObject::SetRotation(rot);
@@ -794,7 +951,7 @@ void mgCFrame::SetRotation(float *rot) {
 
 void mgCFrame::SetRotation(float x, float y, float z) {
     float rotation[4];
-    *(u_long128 *)rotation = *(u_long128 *)at_844;
+    *(u_long128 *) rotation = *(u_long128 *) at_844;
     rotation[0] = x;
     rotation[1] = y;
     rotation[2] = z;
@@ -804,12 +961,15 @@ void mgCFrame::SetRotation(float x, float y, float z) {
 
 void mgCFrame::SetRotType(int type) {
     rot_type = type;
+
     if (type & MG_FRAME_ROT_LOCAL_ORIGIN) {
         rot_type |= MG_FRAME_ROT_APPLY;
     }
 }
+
 void mgCFrame::SetAttrParam(mgCFrameAttr &attr, int recurse, int mask) {
     mgCFrameAttr *dst = this->attr;
+
     if (dst != 0) {
         if (mask == 0) {
             dst->alpha_ref = attr.alpha_ref;
@@ -832,9 +992,9 @@ void mgCFrame::SetAttrParam(mgCFrameAttr &attr, int recurse, int mask) {
             dst->obj_alpha = attr.obj_alpha;
             dst->no_cull = attr.no_cull;
             dst->ambient_boost = attr.ambient_boost;
-            *(mgVec4 *)&dst->unk_50[0] = *(mgVec4 *)&attr.unk_50[0];
+            *(mgVec4 *) &dst->unk_50[0] = *(mgVec4 *) &attr.unk_50[0];
             dst->no_light = attr.no_light;
-            *(mgVec4 *)dst->color = *(mgVec4 *)attr.color;
+            *(mgVec4 *) dst->color = *(mgVec4 *) attr.color;
             dst->point_light = attr.point_light;
             dst->unk_84 = attr.unk_84;
             dst->billboard = attr.billboard;
@@ -843,81 +1003,107 @@ void mgCFrame::SetAttrParam(mgCFrameAttr &attr, int recurse, int mask) {
             if (mask & 0x1) {
                 dst->draw = attr.draw;
             }
+
             if (mask & 0x2) {
                 this->attr->alpha_ref = attr.alpha_ref;
             }
+
             if (mask & 0x4) {
                 this->attr->alpha_blend = attr.alpha_blend;
             }
+
             if (mask & 0x8) {
                 this->attr->z_write = attr.z_write;
             }
+
             if (mask & 0x10) {
                 this->attr->z_test = attr.z_test;
             }
+
             if (mask & 0x20) {
                 this->attr->clip_enable = attr.clip_enable;
             }
+
             if (mask & 0x40) {
                 this->attr->unk_20 = attr.unk_20;
             }
+
             if (mask & 0x80) {
                 this->attr->unk_24 = attr.unk_24;
             }
+
             if (mask & 0x100) {
                 this->attr->unk_28 = attr.unk_28;
             }
+
             if (mask & 0x200) {
                 this->attr->program_option = attr.program_option;
             }
+
             if (mask & 0x400) {
                 this->attr->fog = attr.fog;
             }
+
             if (mask & 0x800) {
                 this->attr->unk_34 = attr.unk_34;
             }
+
             if (mask & 0x1000) {
                 this->attr->unk_38 = attr.unk_38;
             }
+
             if (mask & 0x2000) {
                 this->attr->unk_3c = attr.unk_3c;
             }
+
             if (mask & 0x4000) {
                 this->attr->program_mode = attr.program_mode;
             }
+
             if (mask & 0x8000) {
                 this->attr->no_light = attr.no_light;
             }
+
             if (mask & 0x10000) {
-                *(u_long128 *)this->attr->color = *(u_long128 *)attr.color;
+                *(u_long128 *) this->attr->color = *(u_long128 *) attr.color;
             }
+
             if (mask & 0x20000) {
                 this->attr->point_light = attr.point_light;
             }
+
             if (mask & 0x40000) {
                 this->attr->obj_alpha = attr.obj_alpha;
             }
+
             if (mask & 0x80000) {
                 this->attr->billboard = attr.billboard;
             }
+
             if (mask & 0x100000) {
                 this->attr->no_cull = attr.no_cull;
             }
+
             if (mask & 0x200000) {
                 this->attr->depth_bias = attr.depth_bias;
             }
+
             if (mask & 0x800000) {
                 this->attr->ambient_boost = attr.ambient_boost;
             }
+
             if (mask & 0x400000) {
                 this->attr->dest_alpha_test = attr.dest_alpha_test;
             }
         }
     }
+
     if (recurse == 0) {
         return;
     }
+
     mgCFrame *frame = child;
+
     if (frame != 0) {
         do {
             frame->SetAttrParam(attr, 1, mask);
@@ -925,13 +1111,18 @@ void mgCFrame::SetAttrParam(mgCFrameAttr &attr, int recurse, int mask) {
         } while (frame != 0);
     }
 }
+
 void mgCFrame::SetAttrParamObjAlpha(float alpha, int recurse) {
     if (attr != 0) {
         this->attr->obj_alpha = alpha;
     }
-    if (recurse == 0)
+
+    if (recurse == 0) {
         return;
+    }
+
     mgCFrame *frame = child;
+
     if (frame != 0) {
         do {
             frame->SetAttrParamObjAlpha(alpha, 1);
@@ -939,32 +1130,178 @@ void mgCFrame::SetAttrParamObjAlpha(float alpha, int recurse) {
         } while (frame != 0);
     }
 }
+
 void mgCFrame::SetAttrParamDraw(int value, int recurse) {
     mgCFrameAttr *attr;
-    mgCFrame *node;
+    mgCFrame     *node;
 
     attr = this->attr;
+
     if (attr != NULL) {
         this->attr->draw = value;
     }
+
     if (recurse == 0) {
         return;
     }
+
     for (node = child; node != NULL; node = node->brother) {
         node->SetAttrParamDraw(value, 1);
     }
 }
 
+#ifdef NONMATCHING
+int mgCFrame::Draw(unsigned int *packet) {
+    int           words = 0;
+    sceVu0FMATRIX world;
+    if (attr != NULL && attr->billboard != 0) {
+        GetBBoardMatrix(attr->billboard, world, &mgRenderInfo);
+    } else {
+        GetLWMatrixTopBottom(world);
+    }
 
+    if (attr != NULL && (attr->draw & MG_FRAME_DRAW_VISIBLE) && visual != NULL) {
+        bool visible = true;
+        if (!attr->no_cull && bound != NULL) {
+            sceVu0FVECTOR screen_max;
+            sceVu0FVECTOR screen_min;
+            visible = mgInsideScreen(bound->corner, world, screen_max, screen_min) != 0;
+            if (visible) {
+                mgRenderInfo.clip = mgClipInBoxW(screen_max, screen_min,
+                                                 mgRenderInfo.gs_box_max,
+                                                 mgRenderInfo.gs_box_min) == 0;
+                mgRenderInfo.scissor = (attr->program_mode & 2)
+                                           ? attr->clip_enable != 0
+                                           : (attr->clip_enable != 0 || mgRenderInfo.all_scissor != 0);
+            }
+        }
+        if (visible) {
+            mgRenderInfo.attr = attr;
+            sceVu0CopyVector(mgRenderInfo.object_color, attr->color);
+            mgRenderInfo.plight_hit = 0;
+            if (mgRenderInfo.plight_enable && attr->point_light &&
+                !attr->no_light && bound != NULL) {
+                sceVu0FMATRIX transposed;
+                sceVu0TransposeMatrix(transposed, world);
+                float scale = mgDistVector(transposed[0]);
+                float y_scale = mgDistVector(transposed[1]);
+                float z_scale = mgDistVector(transposed[2]);
+                if (y_scale > scale) {
+                    scale = y_scale;
+                }
+                if (z_scale > scale) {
+                    scale = z_scale;
+                }
+                float         radius = bound->radius * scale;
+                sceVu0FVECTOR center;
+                sceVu0CopyVector(center, bound->center);
+                center[3] = 1.0f;
+                sceVu0ApplyMatrix(center, world, center);
+                mgLIGHT_INFO *light = mgRenderInfo.GetpLightInfo();
+                for (int i = 0; i < 4; i++) {
+                    mgPOINT_LIGHT &point = light->point_light[i];
+                    if (point.power > 0.0f &&
+                        mgDistVector(point.pos, center) < radius + point.range) {
+                        mgRenderInfo.plight_hit = 1;
+                        break;
+                    }
+                }
+            }
+            words = visual->Draw(packet, world, NULL);
+        }
+    }
+    if (attr != NULL && (attr->draw & MG_FRAME_DRAW_SKIP_CHILDREN)) {
+        return words;
+    }
+    for (mgCFrame *node = child; node != NULL; node = node->brother) {
+        if (node->attr == NULL || (node->attr->draw & MG_FRAME_DRAW_SKIP_BY_PARENT) == 0) {
+            words += node->Draw(packet + words * 4);
+        }
+    }
+    return words;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", Draw__8mgCFrameFPUi);
-
-
-
-
-
+#endif
 
 #pragma global_optimizer off
+#ifdef NONMATCHING
+int mgCFrame::GetDrawRect(mgVu0FBOX *rect, mgCDrawManager *manager) {
+    if (manager == NULL) {
+        manager = &mgDrawManager;
+    }
+    mgRENDER_INFO *render = manager->render_info;
+    mgCFrameAttr  *draw_attr = attr != NULL ? attr : &dmy_attr;
+    sceVu0FMATRIX  world;
+    if (draw_attr->billboard != 0) {
+        GetBBoardMatrix(draw_attr->billboard, world, render);
+    } else {
+        GetLWMatrixTopBottom(world);
+    }
+
+    int found = 0;
+    if ((draw_attr->draw & MG_FRAME_DRAW_VISIBLE) && visual != NULL && bound != NULL) {
+        sceVu0FMATRIX screen;
+        sceVu0MulMatrix(screen, render->world_screen_rel, world);
+        sceVu0FVECTOR maximum;
+        sceVu0FVECTOR minimum;
+        for (int i = 0; i < 8; i++) {
+            sceVu0FVECTOR point;
+            sceVu0ApplyMatrix(point, screen, bound->corner[i]);
+            float depth = point[3] < 0.0f ? -point[3] : point[3];
+            point[0] /= depth;
+            point[1] /= depth;
+            if (i == 0) {
+                sceVu0CopyVector(maximum, point);
+                sceVu0CopyVector(minimum, point);
+            } else {
+                for (int axis = 0; axis < 4; axis++) {
+                    if (maximum[axis] < point[axis]) {
+                        maximum[axis] = point[axis];
+                    }
+                    if (minimum[axis] > point[axis]) {
+                        minimum[axis] = point[axis];
+                    }
+                }
+            }
+        }
+        float half_width = (float) mgScreenWidth * 0.5f;
+        float half_height = (float) mgScreenHeight * 0.5f;
+        if (maximum[0] >= -half_width && minimum[0] <= half_width &&
+            maximum[1] >= -half_height && minimum[1] <= half_height &&
+            minimum[3] >= (float) render->scissor) {
+            maximum[0] += half_width;
+            minimum[0] += half_width;
+            maximum[1] += half_height;
+            minimum[1] += half_height;
+            sceVu0CopyVector(rect->max, maximum);
+            sceVu0CopyVector(rect->min, minimum);
+            found = 1;
+        }
+    }
+    if (draw_attr->draw & MG_FRAME_DRAW_SKIP_CHILDREN) {
+        return found;
+    }
+    for (mgCFrame *node = child; node != NULL; node = node->brother) {
+        if (node->attr != NULL && (node->attr->draw & MG_FRAME_DRAW_SKIP_BY_PARENT)) {
+            continue;
+        }
+        mgVu0FBOX child_rect;
+        if (node->GetDrawRect(&child_rect, NULL)) {
+            if (found == 0) {
+                *rect = child_rect;
+            } else {
+                mgVectorMaxMin(rect->max, rect->min, rect->max, rect->min,
+                               child_rect.max, child_rect.min);
+            }
+            found = 1;
+        }
+    }
+    return found;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", GetDrawRect__8mgCFrameFP9mgVu0FBOXP14mgCDrawManager);
+#endif
 #pragma global_optimizer reset
 
 mgCFrame &mgCFrame::operator=(mgCFrame &other) {
@@ -975,35 +1312,43 @@ mgCFrame &mgCFrame::operator=(mgCFrame &other) {
 
     // The copy builds its matrix from its parts unless they are all at their defaults.
     use_srt = 0;
+
     if (position[0] != 0.0f || position[1] != 0.0f || position[2] != 0.0f) {
         use_srt = 1;
     }
+
     if (rotation[0] != 0.0f || rotation[1] != 0.0f || rotation[2] != 0.0f) {
         use_srt = 1;
     }
+
     if (scale[0] != 1.0f || scale[1] != 1.0f || scale[2] != 1.0f) {
         use_srt = 1;
     }
+
     return *this;
 }
+
 int mgCFrame::Draw() {
-    return Draw((u_int *)0);
+    return Draw((u_int *) 0);
 }
+
 void mgCObject::ChangeParam() {
     changed = 1;
 }
+
 void mgCObject::UseParam() {
     changed = 1;
 }
+
 int mgCObject::DrawDirect() {
     return 0;
 }
+
 int mgCObject::Draw() {
     return 0;
 }
 
 // Static initialiser (.init)
-
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_frame", at_307__DATA);

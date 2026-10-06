@@ -21,10 +21,10 @@ class CEditParts;
  *
  */
 enum EditAnalyzeMap {
-    EDIT_ANALYZE_MAP_SHARLOT     = 0, /**< Town analysed by AnalyzeSharlot. */
-    EDIT_ANALYZE_MAP_STERA       = 1, /**< Town analysed by AnalyzeStera. */
-    EDIT_ANALYZE_MAP_BENIETIO    = 2, /**< Town analysed by AnalyzeBenietio. */
-    EDIT_ANALYZE_MAP_HEIM        = 3, /**< Town analysed by AnalyzeHeim. */
+    EDIT_ANALYZE_MAP_SHARLOT = 0,     /**< Town analysed by AnalyzeSharlot. */
+    EDIT_ANALYZE_MAP_STERA = 1,       /**< Town analysed by AnalyzeStera. */
+    EDIT_ANALYZE_MAP_BENIETIO = 2,    /**< Town analysed by AnalyzeBenietio. */
+    EDIT_ANALYZE_MAP_HEIM = 3,        /**< Town analysed by AnalyzeHeim. */
     EDIT_ANALYZE_MAP_MOON_FLOWER = 4, /**< Town analysed by AnalyzeMoonFlower. */
 };
 
@@ -36,7 +36,7 @@ enum EditAnalyzeMap {
  * @address 0x31BDD0
  * @size 0xD0
  */
-void AnalyzeEditMap(int map_no, CEditMap *edit_map);
+void AnalyzeEditMap(int chara_no, CEditMap *edit_map);
 
 /**
  *
@@ -46,7 +46,7 @@ void AnalyzeEditMap(int map_no, CEditMap *edit_map);
  * @address 0x31BEA0
  * @size 0xC0
  */
-int CountPartsType(int parts_type, CEditMap *edit_map, int *list, int num);
+int CountPartsType(int parts_type, CEditMap *edit_map, int *parts_nos, int count);
 
 /**
  *
@@ -56,7 +56,7 @@ int CountPartsType(int parts_type, CEditMap *edit_map, int *list, int num);
  * @address 0x31BF60
  * @size 0xC0
  */
-int CountPartsInfoID(int info_id, CEditMap *edit_map, int *list, int num);
+int CountPartsInfoID(int info_id, CEditMap *edit_map, int *parts_nos, int count);
 
 /**
  *
@@ -66,7 +66,7 @@ int CountPartsInfoID(int info_id, CEditMap *edit_map, int *list, int num);
  * @address 0x31C130
  * @size 0xB0
  */
-int GetHouseParts(CEditMap *edit_map, int *list, int max);
+int GetHouseParts(CEditMap *edit_map, int *out, int max);
 
 /**
  *

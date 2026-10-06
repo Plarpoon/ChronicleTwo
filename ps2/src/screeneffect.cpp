@@ -1,11 +1,13 @@
 #include "common.h"
-#include "screeneffect.hpp"
+
+#include <cmath>
+
 #include "mg_drawprim.hpp"
 #include "mg_sprite.hpp"
 #include "mg_tanime.hpp"
 #include "mg_texture.hpp"
 #include "mglib.hpp"
-#include <cmath>
+#include "screeneffect.hpp"
 
 // Code (.text)
 #ifdef NONMATCHING
@@ -48,29 +50,29 @@ void DepthOfField(int levels, float *depths, mgCTexture *work_texture, float str
         destination.right += 8;
         destination.bottom += 8;
 
-        int z[2] = {mgTransZPrim(depths[level]), mgTransZPrim(depths[level] + depths[level] / 10.0f)};
-        int alpha[2] = {(int)(128.0f * strength), (int)(32.0f * strength)};
-        int parity = level & 1;
-        float step_x = (float)(source.right - source.left) / 16.0f;
-        float step_u = (float)(destination.right - destination.left) / 16.0f;
-        float x = (float)source.left;
-        float u = (float)destination.left;
+        int   z[2] = {mgTransZPrim(depths[level]), mgTransZPrim(depths[level] + depths[level] / 10.0f)};
+        int   alpha[2] = {(int) (128.0f * strength), (int) (32.0f * strength)};
+        int   parity = level & 1;
+        float step_x = (float) (source.right - source.left) / 16.0f;
+        float step_u = (float) (destination.right - destination.left) / 16.0f;
+        float x = (float) source.left;
+        float u = (float) destination.left;
 
         prim.Begin(MG_PRIM_TRIANGLE_STRIP);
         prim.Texture(&blur_texture);
         prim.Direct(0x3B, 0x8000000080ULL);
         prim.Color(0x80, 0x80, 0x80, alpha[0]);
-        prim.TextureCrd4((int)u, destination.top + 16);
-        prim.Vertex4((int)x, source.top, z[0]);
-        prim.TextureCrd4((int)u, destination.bottom - 16);
-        prim.Vertex4((int)x, source.bottom, z[0]);
-        while (x < (float)source.right) {
+        prim.TextureCrd4((int) u, destination.top + 16);
+        prim.Vertex4((int) x, source.top, z[0]);
+        prim.TextureCrd4((int) u, destination.bottom - 16);
+        prim.Vertex4((int) x, source.bottom, z[0]);
+        while (x < (float) source.right) {
             parity = !parity;
             prim.Color(0x80, 0x80, 0x80, alpha[0]);
-            prim.TextureCrd4((int)(u + step_u), destination.top + 16);
-            prim.Vertex4((int)(x + step_x), source.top, z[parity]);
-            prim.TextureCrd4((int)(u + step_u), destination.bottom - 16);
-            prim.Vertex4((int)(x + step_x), source.bottom, z[parity]);
+            prim.TextureCrd4((int) (u + step_u), destination.top + 16);
+            prim.Vertex4((int) (x + step_x), source.top, z[parity]);
+            prim.TextureCrd4((int) (u + step_u), destination.bottom - 16);
+            prim.Vertex4((int) (x + step_x), source.bottom, z[parity]);
             x += step_x;
             u += step_u;
         }
@@ -91,16 +93,16 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/screeneffect", DepthOfField__FiPfP10mgCTex
 
 #ifdef NONMATCHING
 void LensFlare(int *screen, float *color, int bank, char *texture_a, char *texture_b) {
-    int width = mgScreenWidth;
-    int height = mgScreenHeight;
-    float dx = (float)(screen[0] / 16 - width / 2);
-    float dy = (float)(screen[1] / 16 - height / 2);
+    int   width = mgScreenWidth;
+    int   height = mgScreenHeight;
+    float dx = (float) (screen[0] / 16 - width / 2);
+    float dy = (float) (screen[1] / 16 - height / 2);
     float distance = sqrtf(dx * dx + dy * dy);
-    if (distance > (float)width) {
+    if (distance > (float) width) {
         return;
     }
 
-    mgTexManager.ReloadTexture(bank, (sceVif1Packet *)NULL);
+    mgTexManager.ReloadTexture(bank, (sceVif1Packet *) NULL);
     mgCTexture *first = mgTexManager.GetTexture(texture_a, bank);
     mgCTexture *second = mgTexManager.GetTexture(texture_b, bank);
     if (first == NULL || second == NULL) {
@@ -146,7 +148,7 @@ void LensFlare(int *screen, float *color, int bank, char *texture_a, char *textu
     prim.Vertex4(width * 16 / 3, height * 16 / 3, 0);
     prim.End();
 
-    float fade = 1.0f - distance / (float)width;
+    float fade = 1.0f - distance / (float) width;
     if (fade > 1.0f) {
         fade = 1.0f;
     }
@@ -169,8 +171,8 @@ void LensFlare(int *screen, float *color, int bank, char *texture_a, char *textu
     for (int pass = 0; pass < 4; pass++) {
         int next = current ^ 1;
         mgSetPkFrameBuffer(textures[next]);
-        int brightness = (int)(128.0f * ((float)(4 - pass) / 4.0f));
-        int spread = (int)(10.0f * (float)(pass + 1));
+        int brightness = (int) (128.0f * ((float) (4 - pass) / 4.0f));
+        int spread = (int) (10.0f * (float) (pass + 1));
         int near_edge = spread - 8;
         int far_edge = -8 - spread;
         prim.AlphaBlendEnable(1);
@@ -214,10 +216,10 @@ void LensFlare(int *screen, float *color, int bank, char *texture_a, char *textu
     prim.Vertex4(centre_x, centre_y, 0);
     prim.Color(0xFF, 0xFF, 0xFF, 0x80);
     float angle = 0.0f;
-    int radius_index = 0;
+    int   radius_index = 0;
     while (angle < 6.2831855f) {
-        prim.Vertex4(centre_x + (int)((float)radii[radius_index] * sinf(angle)),
-                     centre_y + (int)((float)radii[radius_index] * cosf(angle)), 0);
+        prim.Vertex4(centre_x + (int) ((float) radii[radius_index] * sinf(angle)),
+                     centre_y + (int) ((float) radii[radius_index] * cosf(angle)), 0);
         radius_index = !radius_index;
         angle += 0.2617994f;
     }
@@ -237,7 +239,7 @@ void LensFlare(int *screen, float *color, int bank, char *texture_a, char *textu
     prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
     prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(textures[current]);
-    prim.Color((int)color[0], (int)color[1], (int)color[2], (int)(color[3] * (0.7f * fade * fade)));
+    prim.Color((int) color[0], (int) color[1], (int) color[2], (int) (color[3] * (0.7f * fade * fade)));
     for (int copy = 0; copy < 2; copy++) {
         prim.TextureCrd(0, 0);
         prim.Vertex(0, 0, 0);

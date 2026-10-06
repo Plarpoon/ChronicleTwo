@@ -1,5 +1,8 @@
 # vlgr_info: reverse-engineering notes
 
+`VlgrPlace` is a native `CVillagerPlace[VLGR_PLACE_MAX]` global. Its array constructor generates
+the 32-byte retail `__sinit_vlgr_info_cpp`, including the runtime array-construction call.
+
 Loads the town villager tables from three configuration scripts (run through `CScriptInterpreter`
 with tag tables) and answers lookups on them. No first-game counterpart.
 

@@ -1,27 +1,28 @@
 #include "common.h"
-#include "mg_math.hpp"
-#include "mg_drawprim.hpp"
-#include "mg_texture.hpp"
-#include "mg_memory.hpp"
-#include "dbg_font.hpp"
-#include "mg_drawprim.hpp"
-#include "mg_texture.hpp"
-#include "mglib.hpp"
+
 #include <cstdio>
 #include <cstring>
+
+#include "dbg_font.hpp"
+#include "mg_drawprim.hpp"
+#include "mg_math.hpp"
+#include "mg_memory.hpp"
+#include "mg_texture.hpp"
+#include "mglib.hpp"
 
 extern "C" int vsprintf(char *, const char *, char *);
 
 static inline char *VaStart(char *stack_arguments, int named_arguments) {
     int register_bytes;
+
     if (named_arguments >= 8) {
         register_bytes = 0;
     } else {
         register_bytes = (8 - named_arguments) * 8;
     }
+
     return stack_arguments - register_bytes;
 }
-
 
 // Code (.text)
 unsigned long SjisToJis(unsigned long sjis) {
@@ -33,7 +34,9 @@ unsigned long SjisToJis(unsigned long sjis) {
     } else if (hi >= 0xE0 && hi < 0xF0) {
         hi += 0xFFFFFFFFFFFFFF3FUL;
     }
+
     hi <<= 1;
+
     if (lo >= 0x40 && lo < 0x7F) {
         lo -= 0x40;
     } else if (lo >= 0x80 && lo < 0x9F) {
@@ -42,8 +45,10 @@ unsigned long SjisToJis(unsigned long sjis) {
         lo -= 0x9F;
         hi += 1;
     }
+
     return ((hi + 1) << 8) + lo + 0x2021;
 }
+
 unsigned long SjisToSerno(unsigned long sjis) {
     unsigned long jis = SjisToJis(sjis);
     unsigned long offset = 0xFFFFFFFFFFFFFFDFUL;
@@ -51,10 +56,12 @@ unsigned long SjisToSerno(unsigned long sjis) {
 
     return row * 94 + ((jis & 0xFF) + offset);
 }
+
 int ascii2serno(u8 ch) {
     int code;
 
     code = ch & 0xFF;
+
     switch (code) {
         case 0xA1:
             return 0x212C;
@@ -185,10 +192,12 @@ int ascii2serno(u8 ch) {
             return 0x227E;
     }
 }
+
 dbgCJISFont::dbgCJISFont() {
     Initialize();
 }
-void dbgCJISFont::Initialize(void) {
+
+void dbgCJISFont::Initialize() {
     texture_id[DBG_FONT_SHEET_FULL_WIDTH_0] = texture_id[DBG_FONT_SHEET_FULL_WIDTH_1] = texture_id[DBG_FONT_SHEET_HALF_WIDTH] = loaded_texture_id = -1;
     texture_name[DBG_FONT_SHEET_FULL_WIDTH_0][0] = texture_name[DBG_FONT_SHEET_FULL_WIDTH_1][0] = texture_name[DBG_FONT_SHEET_HALF_WIDTH][0] = 0;
     x = y = 0;
@@ -200,6 +209,7 @@ void dbgCJISFont::Initialize(void) {
     back_color[3] = 64;
     shadow_enable = 0;
 }
+
 void dbgCJISFont::InitTexture(int full0_id, char *full0_name, int full1_id, char *full1_name, int half_id, char *half_name) {
     texture_id[DBG_FONT_SHEET_FULL_WIDTH_0] = full0_id;
     texture_id[DBG_FONT_SHEET_FULL_WIDTH_1] = full1_id;
@@ -208,12 +218,15 @@ void dbgCJISFont::InitTexture(int full0_id, char *full0_name, int full1_id, char
     strcpy(texture_name[DBG_FONT_SHEET_FULL_WIDTH_1], full1_name);
     strcpy(texture_name[DBG_FONT_SHEET_HALF_WIDTH], half_name);
 }
-void dbgCJISFont::Clear(void) {
+
+void dbgCJISFont::Clear() {
     buffer[0] = 0;
 }
 #ifdef NONMATCHING
 void dbgCJISFont::__putc(unsigned long serno) {
-    if (serno >= DBG_FONT_SERNO_END) return;
+    if (serno >= DBG_FONT_SERNO_END) {
+        return;
+    }
     int sheet = DBG_FONT_SHEET_FULL_WIDTH_0;
     int glyph_width = 16;
     if (serno >= DBG_FONT_SERNO_HALF_WIDTH) {
@@ -224,7 +237,9 @@ void dbgCJISFont::__putc(unsigned long serno) {
         sheet = DBG_FONT_SHEET_FULL_WIDTH_1;
         serno -= DBG_FONT_SERNO_SHEET_1;
     }
-    if (loaded_texture_id != texture_id[sheet]) mgTexManager.ReloadTexture(texture_id[sheet], (sceVif1Packet *)NULL);
+    if (loaded_texture_id != texture_id[sheet]) {
+        mgTexManager.ReloadTexture(texture_id[sheet], (sceVif1Packet *) NULL);
+    }
     mgCTexture *texture = mgTexManager.GetTexture(texture_name[sheet], -1);
     loaded_texture_id = texture_id[sheet];
     mgCDrawPrim prim;
@@ -268,16 +283,16 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/dbg_font", __putc__11dbgCJISFontFUl);
 #endif
 #ifdef NONMATCHING
 void dbgCJISFont::PrintDirect(int start_x, int start_y, char *format, ...) {
-    char text[0x408];
-    char escape[8];
+    char  text[0x408];
+    char  escape[8];
     char *cursor = text;
-    char ch;
-    int length;
+    char  ch;
+    int   length;
 
     x = start_x;
     y = start_y;
     prev_serno = 0;
-    char *args = VaStart((char *)__builtin_next_arg(format), 4);
+    char *args = VaStart((char *) __builtin_next_arg(format), 4);
     vsprintf(text, format, args);
     while ((ch = *cursor) != 0) {
         long code = ch;
@@ -332,7 +347,7 @@ void dbgCJISFont::PrintDirect(int start_x, int start_y, char *format, ...) {
                 __putc(serno);
                 cursor++;
             } else {
-                unsigned long sjis = (((long)ch << 8) & 0xFF00) | (unsigned char)cursor[1];
+                unsigned long sjis = (((long) ch << 8) & 0xFF00) | (unsigned char) cursor[1];
                 cursor += 2;
                 __putc(SjisToSerno(sjis));
             }

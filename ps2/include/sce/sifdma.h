@@ -6,8 +6,8 @@
 struct sceSifDmaData {
     void *data; /**< EE source address of the transfer. */
     void *addr; /**< IOP destination address of the transfer. */
-    int size;   /**< Number of bytes transferred. */
-    int mode;   /**< SDK transfer-mode flags. */
+    int   size; /**< Number of bytes transferred. */
+    int   mode; /**< SDK transfer-mode flags. */
 };
 
 #ifdef __cplusplus

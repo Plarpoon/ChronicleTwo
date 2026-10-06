@@ -49,6 +49,7 @@ struct grFISH_PARAM {
     int  tactics;    /**< How the fish runs its race, from 0 to 5. */
     int  lane;       /**< Lane that the fish starts in, from 0. */
 };
+
 STATIC_ASSERT(sizeof(grFISH_PARAM) == 0x40);
 
 /**
@@ -57,15 +58,16 @@ STATIC_ASSERT(sizeof(grFISH_PARAM) == 0x40);
  *
  */
 struct grRACE_PROGRESS {
-    float pos;           /**< Distance swum along the course; the goal is at 16. */
-    int   lane;          /**< Lane that the fish swims in, from 0. */
-    float lane_pos;      /**< Lane that the fish swims in, as a value that moves smoothly between lanes. */
-    s8    state; /**< What the fish is doing. @see grRACE_STATE */
-    s8    battle; /**< 1 while the fish pushes against another fish. */
-    u_char    unk_e[2];
-    int   battle_target; /**< Entrant that the fish pushes against. */
-    int   battle_hits;   /**< Number of times the fish has gained the upper hand in its push. */
+    float  pos;      /**< Distance swum along the course; the goal is at 16. */
+    int    lane;     /**< Lane that the fish swims in, from 0. */
+    float  lane_pos; /**< Lane that the fish swims in, as a value that moves smoothly between lanes. */
+    s8     state;    /**< What the fish is doing. @see grRACE_STATE */
+    s8     battle;   /**< 1 while the fish pushes against another fish. */
+    u_char unk_e[2];
+    int    battle_target; /**< Entrant that the fish pushes against. */
+    int    battle_hits;   /**< Number of times the fish has gained the upper hand in its push. */
 };
+
 STATIC_ASSERT(sizeof(grRACE_PROGRESS) == 0x18);
 
 /**
@@ -74,7 +76,7 @@ STATIC_ASSERT(sizeof(grRACE_PROGRESS) == 0x18);
  *
  */
 struct grRACE_INFO {
-    u_int              seed; /**< Seed of the race's random numbers; 0 takes one made from the entrants. */
+    u_int            seed; /**< Seed of the race's random numbers; 0 takes one made from the entrants. */
     int              unk_4;
     int              fish_num;        /**< Number of entrants. */
     grFISH_PARAM     fish[6];         /**< Racing figures of each entrant. */
@@ -84,6 +86,7 @@ struct grRACE_INFO {
     int              rank[6];         /**< Place of each entrant in the race, from 1. */
     float            goal_time[6];    /**< Simulation step, with its fraction, at which each entrant reached the goal. */
 };
+
 STATIC_ASSERT(sizeof(grRACE_INFO) == 0x1DC);
 
 /**
@@ -92,15 +95,15 @@ STATIC_ASSERT(sizeof(grRACE_INFO) == 0x1DC);
  *
  */
 struct RACE_FISH_PARAM {
-    float            speed[5];      /**< Top speed of the fish over each division of the course. */
-    float            accel[5];      /**< Acceleration of the fish over each division of the course. */
-    u_char               unk_28[0x28];
-    float            velocity;      /**< Distance that the fish swims in one step. */
-    float            pos;           /**< Distance swum along the course; the goal is at 16. */
-    int              lane;          /**< Lane that the fish swims in, from 0 to 5. */
-    s8               state; /**< What the fish is doing. @see grRACE_STATE */
-    s8               battle; /**< 1 while the fish pushes against another fish. */
-    u_char               unk_5e[2];
+    float            speed[5]; /**< Top speed of the fish over each division of the course. */
+    float            accel[5]; /**< Acceleration of the fish over each division of the course. */
+    u_char           unk_28[0x28];
+    float            velocity; /**< Distance that the fish swims in one step. */
+    float            pos;      /**< Distance swum along the course; the goal is at 16. */
+    int              lane;     /**< Lane that the fish swims in, from 0 to 5. */
+    s8               state;    /**< What the fish is doing. @see grRACE_STATE */
+    s8               battle;   /**< 1 while the fish pushes against another fish. */
+    u_char           unk_5e[2];
     int              battle_target; /**< Entrant that the fish pushes against. */
     int              battle_hits;   /**< Number of times the fish has gained the upper hand in its push. */
     float            power;         /**< Strength of the fish when it pushes against another fish. */
@@ -113,6 +116,7 @@ struct RACE_FISH_PARAM {
     int              progress_num;  /**< Number of steps that the progress record holds. */
     grRACE_PROGRESS *progress;      /**< Progress record of the fish, filled step by step. */
 };
+
 STATIC_ASSERT(sizeof(RACE_FISH_PARAM) == 0xA0);
 
 /**
@@ -121,12 +125,13 @@ STATIC_ASSERT(sizeof(RACE_FISH_PARAM) == 0xA0);
  *
  */
 struct grFISH_DATA {
-    int   fish_no;     /**< Item number of the kind of fish. */
-    float power;       /**< Percentage applied to the power of the fish. */
-    float stamina;     /**< Percentage applied to the stamina of the fish. */
-    float speed[3];    /**< Percentage applied to each top speed of the fish. */
-    int   affinity;    /**< Affinity of the kind; an entrant with the same affinity has every figure raised by a tenth. */
+    int   fish_no;  /**< Item number of the kind of fish. */
+    float power;    /**< Percentage applied to the power of the fish. */
+    float stamina;  /**< Percentage applied to the stamina of the fish. */
+    float speed[3]; /**< Percentage applied to each top speed of the fish. */
+    int   affinity; /**< Affinity of the kind; an entrant with the same affinity has every figure raised by a tenth. */
 };
+
 STATIC_ASSERT(sizeof(grFISH_DATA) == 0x1C);
 
 /**
@@ -138,7 +143,7 @@ STATIC_ASSERT(sizeof(grFISH_DATA) == 0x1C);
  * @address 0x321B90
  * @size 0x2A0
  */
-int grGyoRaceSimulate(grRACE_INFO *info);
+int grGyoRaceSimulate(grRACE_INFO *race);
 
 /**
  *
@@ -149,7 +154,7 @@ int grGyoRaceSimulate(grRACE_INFO *info);
  * @address 0x321E30
  * @size 0x140
  */
-int grGetFishProgress(grRACE_INFO *info, int fish, float time, grRACE_PROGRESS *progress);
+int grGetFishProgress(grRACE_INFO *race, int fish, float time, grRACE_PROGRESS *out);
 
 /**
  *

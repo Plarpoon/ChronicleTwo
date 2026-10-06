@@ -1,48 +1,53 @@
 #include "common.h"
-#include "mg_memory.hpp"
-#include "mg_drawprim.hpp"
-#include "mg_texture.hpp"
-#include "mg_frame.hpp"
-#include "mg_drawenv.hpp"
-#include "mg_math.hpp"
-#include "mglib.hpp"
-#include "effectlist.hpp"
-#include "mg_sprite.hpp"
-#include "scriptinterpreter.hpp"
-#include "effect.hpp"
+
 #include <cstring>
 
+#include "effect.hpp"
+#include "effectlist.hpp"
+#include "mg_drawenv.hpp"
+#include "mg_drawprim.hpp"
+#include "mg_frame.hpp"
+#include "mg_math.hpp"
+#include "mg_memory.hpp"
+#include "mg_sprite.hpp"
+#include "mg_texture.hpp"
+#include "mglib.hpp"
+#include "scriptinterpreter.hpp"
+
 extern "C" int fptosi(float value);
-#include <cstdlib>
 #include <cmath>
+#include <cstdlib>
 
 extern CEffectManager *g_tmp_effm;
-extern CEffectCtrl *g_tmp_effc;
-extern char g_tmp_eff_name[];
-extern int g_eff_entry_flag;
-extern SPI_TAG_PARAM effm_tag[];
-extern char at_848__2[];
+extern CEffectCtrl    *g_tmp_effc;
+extern char            g_tmp_eff_name[];
+extern int             g_eff_entry_flag;
+extern SPI_TAG_PARAM   effm_tag[];
+extern char            at_848__2[];
 
 // Code (.text)
 float UniformityRand(float center, float range) {
-    float value = (float)rand() / 2147483648.0f;
+    float value = (float) rand() / 2147483648.0f;
 
     value *= range;
     value = center + value;
     return value - range / 2.0f;
 }
+
 float RegularityRand(float center, float range, int samples) {
     float sum = 0.0f;
-    int i;
+    int   i;
 
     for (i = 0; i < samples; i++) {
-        sum += (float)rand() / 2147483648.0f;
-        sum -= (float)rand() / 2147483648.0f;
+        sum += (float) rand() / 2147483648.0f;
+        sum -= (float) rand() / 2147483648.0f;
     }
-    sum /= (float)samples;
+
+    sum /= (float) samples;
     sum *= range;
     return center + sum;
 }
+
 void InitEffectParam(EFFECT_PARAM *param) {
     int i;
     int offset;
@@ -109,8 +114,9 @@ void InitEffectParam(EFFECT_PARAM *param) {
 
     i = 0;
     offset = 0;
+
     do {
-        int *entry = (int *)((u_char *)param + offset);
+        int *entry = (int *) ((u_char *) param + offset);
 
         i++;
         entry[62] = 0;
@@ -119,6 +125,7 @@ void InitEffectParam(EFFECT_PARAM *param) {
         entry[65] = 0;
         offset += 0x10;
     } while (i < 8);
+
     param->tex_get_type = 0;
     param->tex_frame = 0;
     param->gravity = 0;
@@ -129,10 +136,12 @@ void InitEffectParam(EFFECT_PARAM *param) {
     param->gravity_accel = 9.80665f;
     param->gravity_mass = 10.0f;
 }
+
 CEffect::CEffect() {
     Initialize();
 }
-void CEffect::Initialize(void) {
+
+void CEffect::Initialize() {
     active = 0;
     frame = 0;
     InitEffectParam(&param);
@@ -152,6 +161,7 @@ void CEffect::Initialize(void) {
     tex_index = 0;
     tex_count = 0;
 }
+
 void CEffect::SetEffect(EFFECT_PARAM *param) {
     active = 1;
     pos[0] = 0;
@@ -235,80 +245,80 @@ void CEffect::Step(int steps) {
 
     for (channel = 0; channel < 6; channel++) {
         switch (channel) {
-        case 0:
-        case 1:
-        case 2:
-            change = param.move_type[channel];
-            amount = param.move_p1[channel];
-            timing = param.move_p2[channel];
-            value = &pos[channel];
-            break;
-        case 3:
-        case 4:
-            change = param.scale_type[channel - 3];
-            amount = param.scale_p1[channel - 3];
-            timing = param.scale_p2[channel - 3];
-            value = &scale[channel - 3];
-            break;
-        case 5:
-            change = param.alpha_type;
-            amount = param.alpha_p1;
-            timing = param.alpha_p2;
-            value = &alpha;
-            break;
+            case 0:
+            case 1:
+            case 2:
+                change = param.move_type[channel];
+                amount = param.move_p1[channel];
+                timing = param.move_p2[channel];
+                value = &pos[channel];
+                break;
+            case 3:
+            case 4:
+                change = param.scale_type[channel - 3];
+                amount = param.scale_p1[channel - 3];
+                timing = param.scale_p2[channel - 3];
+                value = &scale[channel - 3];
+                break;
+            case 5:
+                change = param.alpha_type;
+                amount = param.alpha_p1;
+                timing = param.alpha_p2;
+                value = &alpha;
+                break;
         }
 
         life = param.life;
         elapsed = frame;
         switch (change) {
-        case EFFECT_CHANGE_ADD:
-            if (life > 0.0f) {
-                *value += timing * (amount / life) * elapsed;
-            }
-            break;
-        case EFFECT_CHANGE_SUB:
-            if (life > 0.0f) {
-                *value -= timing * (amount / life) * elapsed;
-            }
-            break;
-        case EFFECT_CHANGE_ADD_HEAD:
-            if (life > 0.0f) {
+            case EFFECT_CHANGE_ADD:
+                if (life > 0.0f) {
+                    *value += timing * (amount / life) * elapsed;
+                }
+                break;
+            case EFFECT_CHANGE_SUB:
+                if (life > 0.0f) {
+                    *value -= timing * (amount / life) * elapsed;
+                }
+                break;
+            case EFFECT_CHANGE_ADD_HEAD:
+                if (life > 0.0f) {
+                    duration = life * timing;
+                    rate = amount / duration;
+                    if (elapsed < duration) {
+                        *value += rate * elapsed;
+                    } else {
+                        *value += rate * duration;
+                    }
+                }
+                break;
+            case EFFECT_CHANGE_SUB_TAIL:
+                if (life > 0.0f) {
+                    duration = life * timing;
+                    rate = amount / duration;
+                    if (elapsed > duration) {
+                        *value -= rate * (elapsed - duration);
+                    }
+                }
+                break;
+            case EFFECT_CHANGE_ADD_HEAD_TAIL:
                 duration = life * timing;
-                rate = amount / duration;
-                if (elapsed < duration) {
-                    *value += rate * elapsed;
-                } else {
-                    *value += rate * duration;
+                if (life > 0.0f) {
+                    rate = amount / duration;
+                    if (elapsed < duration) {
+                        *value += rate * elapsed;
+                    } else if (elapsed > life - duration) {
+                        *value += rate * (param.life - frame);
+                    } else {
+                        *value += rate * duration;
+                    }
                 }
-            }
-            break;
-        case EFFECT_CHANGE_SUB_TAIL:
-            if (life > 0.0f) {
-                duration = life * timing;
-                rate = amount / duration;
-                if (elapsed > duration) {
-                    *value -= rate * (elapsed - duration);
+                break;
+            case EFFECT_CHANGE_SINE:
+                if (life > 0.0f) {
+                    *value += (float) (amount * sin((frame * (360.0f / (life * timing))) * 0.017453293005625408));
                 }
-            }
-            break;
-        case EFFECT_CHANGE_ADD_HEAD_TAIL:
-            duration = life * timing;
-            if (life > 0.0f) {
-                rate = amount / duration;
-                if (elapsed < duration) {
-                    *value += rate * elapsed;
-                } else if (elapsed > life - duration) {
-                    *value += rate * (param.life - frame);
-                } else {
-                    *value += rate * duration;
-                }
-            }
-            break;
-        case EFFECT_CHANGE_SINE:
-            if (life > 0.0f) {
-                *value += (float)(amount * sin((frame * (360.0f / (life * timing))) * 0.017453293005625408));
-            }
-            break;
+                break;
         }
     }
 
@@ -338,12 +348,12 @@ void CEffect::Step(int steps) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", Step__7CEffectFi);
 #endif
-void CEffect::Draw(void) {
+void CEffect::Draw() {
     mgCDrawPrim prim;
-    int corner_a[4];
-    int corner_b[4];
-    float width;
-    float height;
+    int         corner_a[4];
+    int         corner_b[4];
+    float       width;
+    float       height;
 
     if (active != 0) {
         prim.Initialize(NULL, NULL);
@@ -359,6 +369,7 @@ void CEffect::Draw(void) {
         } else {
             prim.AlphaBlend(4);
         }
+
         prim.DepthTest(1);
         prim.DepthTestEnable(1);
         prim.ZMask(-1);
@@ -368,6 +379,7 @@ void CEffect::Draw(void) {
         width *= scale[0];
         height = param.height;
         height *= scale[1];
+
         if (mgTransWorldPrim3DSprite(corner_a, corner_b, pos, width, height, 0) != 0) {
             prim.Begin(6);
             prim.Color(0x80, 0x80, 0x80, fptosi(128.0f * alpha));
@@ -380,57 +392,69 @@ void CEffect::Draw(void) {
         }
     }
 }
+
 CEffectCtrl::CEffectCtrl() {
     Initialize();
 }
+
 CEffectCtrl::~CEffectCtrl() {}
+
 #pragma divbyzerocheck on
+
 void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
-    int spawned;
-    int count;
-    int i;
+    int          spawned;
+    int          count;
+    int          i;
     EFFECT_PARAM param;
 
     if (run == 0 || entry == 0) {
         return;
     }
+
     if (repeat == 1) {
         repeat_timer += 1;
+
         if (repeat_timer < repeat_wait_now) {
             return;
         }
+
         switch (rep_rand_type) {
             case EFFECT_RAND_NONE:
                 break;
             case EFFECT_RAND_UNIFORMITY:
-                repeat_wait_now = fptosi(UniformityRand((float)repeat_wait, rep_rand));
+                repeat_wait_now = fptosi(UniformityRand((float) repeat_wait, rep_rand));
                 break;
             case EFFECT_RAND_REGULARITY:
                 repeat_wait_now =
-                    fptosi(RegularityRand((float)repeat_wait, rep_rand, rep_rand_count));
+                    fptosi(RegularityRand((float) repeat_wait, rep_rand, rep_rand_count));
                 break;
         }
+
         repeat_timer = 0;
         repeat_cnt += 1;
+
         if (repeat_num != -1 && repeat_cnt >= repeat_num) {
             run = 0;
         }
     } else {
         run = 0;
     }
+
     switch (num_rand_type) {
         case EFFECT_RAND_NONE:
             count = num;
             break;
         case EFFECT_RAND_UNIFORMITY:
-            count = fptosi(UniformityRand((float)num, num_rand));
+            count = fptosi(UniformityRand((float) num, num_rand));
             break;
         case EFFECT_RAND_REGULARITY:
-            count = fptosi(RegularityRand((float)num, num_rand, num_rand_count));
+            count = fptosi(RegularityRand((float) num, num_rand, num_rand_count));
             break;
     }
+
     for (spawned = 0; spawned < count; spawned++) {
         InitEffectParam(&param);
+
         switch (cnt_rand_type) {
             case EFFECT_RAND_NONE:
                 param.life = this->count;
@@ -442,9 +466,11 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
                 param.life = RegularityRand(this->count, cnt_rand, cnt_rand_count);
                 break;
         }
+
         param.width = width;
         param.height = height;
         param.dir = dir;
+
         switch (pos_rand_type) {
             case EFFECT_RAND_NONE:
                 sceVu0CopyVector(param.pos, pos);
@@ -460,12 +486,14 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
                 param.pos[2] = RegularityRand(pos[2], pos_rand[2], pos_rand_count);
                 break;
         }
+
         sceVu0AddVector(param.pos, param.pos, origin);
         param.move_type[0] = move_type.x;
         param.move_type[1] = move_type.y;
         param.move_type[2] = move_type.z;
         sceVu0CopyVector(param.velo_mul, velo_mul);
         sceVu0CopyVector(param.acc_mul, acc_mul);
+
         switch (velo_rand_type) {
             case EFFECT_RAND_NONE:
                 sceVu0CopyVector(param.velo, velo);
@@ -481,6 +509,7 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
                 param.velo[2] = RegularityRand(velo[2], velo_rand[2], velo_rand_count);
                 break;
         }
+
         switch (acc_rand_type) {
             case EFFECT_RAND_NONE:
                 sceVu0CopyVector(param.acc, acc);
@@ -496,6 +525,7 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
                 param.acc[2] = RegularityRand(acc[2], acc_rand[2], acc_rand_count);
                 break;
         }
+
         switch (move_p1_rand_type) {
             case EFFECT_RAND_NONE:
                 sceVu0CopyVector(param.move_p1, move_p1);
@@ -511,6 +541,7 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
                 param.move_p1[2] = RegularityRand(move_p1[2], move_p1_rand[2], move_p1_rand_count);
                 break;
         }
+
         switch (move_p2_rand_type) {
             case EFFECT_RAND_NONE:
                 sceVu0CopyVector(param.move_p2, move_p2);
@@ -526,9 +557,11 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
                 param.move_p2[2] = RegularityRand(move_p2[2], move_p2_rand[2], move_p2_rand_count);
                 break;
         }
+
         param.scale_type[0] = scale_type.x;
         param.scale_type[1] = scale_type.y;
         param.scale_type[2] = scale_type.z;
+
         switch (scale_rand_type) {
             case EFFECT_RAND_NONE:
                 sceVu0CopyVector(param.scale, scale);
@@ -542,6 +575,7 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
                 param.scale[1] = RegularityRand(scale[1], scale_rand[1], scale_rand_count);
                 break;
         }
+
         switch (svelo_rand_type) {
             case EFFECT_RAND_NONE:
                 sceVu0CopyVector(param.svelo, svelo);
@@ -557,6 +591,7 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
                     RegularityRand(svelo[1], svelo_rand[1], svelo_rand_count);
                 break;
         }
+
         switch (scale_p1_rand_type) {
             case EFFECT_RAND_NONE:
                 sceVu0CopyVector(param.scale_p1, scale_p1);
@@ -575,6 +610,7 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
                     RegularityRand(scale_p1[2], scale_p1_rand[2], scale_p1_rand_count);
                 break;
         }
+
         switch (scale_p2_rand_type) {
             case EFFECT_RAND_NONE:
                 sceVu0CopyVector(param.scale_p2, scale_p2);
@@ -593,9 +629,11 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
                     RegularityRand(scale_p2[2], scale_p2_rand[2], scale_p2_rand_count);
                 break;
         }
+
         param.alpha = alpha;
         param.alpha_blend = alpha_blend;
         param.alpha_type = alpha_type;
+
         switch (alpha_rand_type) {
             case EFFECT_RAND_NONE:
                 param.alpha = alpha;
@@ -607,6 +645,7 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
                 param.alpha = RegularityRand(alpha, alpha_rand, alpha_rand_count);
                 break;
         }
+
         switch (alpha_p1_rand_type) {
             case EFFECT_RAND_NONE:
                 param.alpha_p1 = alpha_p1;
@@ -618,6 +657,7 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
                 param.alpha_p1 = RegularityRand(alpha_p1, alpha_p1_rand, alpha_p1_rand_count);
                 break;
         }
+
         switch (alpha_p2_rand_type) {
             case EFFECT_RAND_NONE:
                 param.alpha_p2 = alpha_p2;
@@ -629,11 +669,14 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
                 param.alpha_p2 = RegularityRand(alpha_p2, alpha_p2_rand, alpha_p2_rand_count);
                 break;
         }
+
         param.tex_get_type = tex_get_type;
+
         if (tex_get_type == 0) {
             if (tex_rect_num <= 0) {
                 tex_rect_num = 1;
             }
+
             param.tex_rect_copy[0] = tex_rect_copy[rand() % tex_rect_num];
         } else {
             param.tex_rect_copy[0] = tex_rect_copy[0];
@@ -646,11 +689,13 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
             param.tex_rect_copy[7] = tex_rect_copy[7];
             param.tex_frame = param.life / tex_rect_num;
         }
+
         param.gravity = gravity;
         sceVu0AddVector(param.gravity_pos, gravity_pos, origin);
         param.gravity_accel = gravity_accel;
         param.gravity_mass = gravity_mass;
         param.texture = texture;
+
         for (i = 0; i < effect_num; i++) {
             if (effects[i].active == 0) {
                 effects[i].SetEffect(&param);
@@ -659,8 +704,10 @@ void CEffectCtrl::Ctrl(CEffect *effects, int effect_num) {
         }
     }
 }
+
 #pragma divbyzerocheck reset
-void CEffectCtrl::Initialize(void) {
+
+void CEffectCtrl::Initialize() {
     int i;
     int offset;
 
@@ -811,8 +858,9 @@ void CEffectCtrl::Initialize(void) {
 
     i = 0;
     offset = 0;
+
     do {
-        int *entry = (int *)((u_char *)this + offset);
+        int *entry = (int *) ((u_char *) this + offset);
 
         i++;
         entry[151] = 0;
@@ -821,6 +869,7 @@ void CEffectCtrl::Initialize(void) {
         entry[154] = 0;
         offset += 0x10;
     } while (i < 8);
+
     tex_get_type = 0;
     texture = 0;
     gravity = 0;
@@ -831,16 +880,19 @@ void CEffectCtrl::Initialize(void) {
     gravity_accel = 9.80665f;
     gravity_mass = 10.0f;
 }
-void CEffectCtrl::Run(void) {
+
+void CEffectCtrl::Run() {
     run = 1;
     repeat_timer = 0;
     repeat_cnt = 0;
 }
+
 void CEffectCtrl::SetOrigin(float *origin) {
     sceVu0CopyVector(this->origin, origin);
 }
+
 CEffectCtrl &CEffectCtrl::operator=(const CEffectCtrl &other) {
-    sceVu0CopyVector((float *)origin, (float *)other.origin);
+    sceVu0CopyVector((float *) origin, (float *) other.origin);
     run = other.run;
     entry = other.entry;
     repeat = other.repeat;
@@ -863,27 +915,27 @@ CEffectCtrl &CEffectCtrl::operator=(const CEffectCtrl &other) {
     width = other.width;
     height = other.height;
     dir = other.dir;
-    sceVu0CopyVector((float *)pos, (float *)other.pos);
+    sceVu0CopyVector((float *) pos, (float *) other.pos);
     pos_rand_type = other.pos_rand_type;
-    sceVu0CopyVector((float *)pos_rand, (float *)other.pos_rand);
+    sceVu0CopyVector((float *) pos_rand, (float *) other.pos_rand);
     pos_rand_count = other.pos_rand_count;
     this->move_type.x = other.move_type.x;
     this->move_type.y = other.move_type.y;
     this->move_type.z = other.move_type.z;
-    sceVu0CopyVector((float *)velo, (float *)other.velo);
-    sceVu0CopyVector((float *)acc, (float *)other.acc);
-    sceVu0CopyVector((float *)velo_mul, (float *)other.velo_mul);
-    sceVu0CopyVector((float *)acc_mul, (float *)other.acc_mul);
-    sceVu0CopyVector((float *)move_p1, (float *)other.move_p1);
-    sceVu0CopyVector((float *)move_p2, (float *)other.move_p2);
+    sceVu0CopyVector((float *) velo, (float *) other.velo);
+    sceVu0CopyVector((float *) acc, (float *) other.acc);
+    sceVu0CopyVector((float *) velo_mul, (float *) other.velo_mul);
+    sceVu0CopyVector((float *) acc_mul, (float *) other.acc_mul);
+    sceVu0CopyVector((float *) move_p1, (float *) other.move_p1);
+    sceVu0CopyVector((float *) move_p2, (float *) other.move_p2);
     velo_rand_type = other.velo_rand_type;
     acc_rand_type = other.acc_rand_type;
     move_p1_rand_type = other.move_p1_rand_type;
     move_p2_rand_type = other.move_p2_rand_type;
-    sceVu0CopyVector((float *)velo_rand, (float *)other.velo_rand);
-    sceVu0CopyVector((float *)acc_rand, (float *)other.acc_rand);
-    sceVu0CopyVector((float *)move_p1_rand, (float *)other.move_p1_rand);
-    sceVu0CopyVector((float *)move_p2_rand, (float *)other.move_p2_rand);
+    sceVu0CopyVector((float *) velo_rand, (float *) other.velo_rand);
+    sceVu0CopyVector((float *) acc_rand, (float *) other.acc_rand);
+    sceVu0CopyVector((float *) move_p1_rand, (float *) other.move_p1_rand);
+    sceVu0CopyVector((float *) move_p2_rand, (float *) other.move_p2_rand);
     velo_rand_count = other.velo_rand_count;
     acc_rand_count = other.acc_rand_count;
     move_p1_rand_count = other.move_p1_rand_count;
@@ -891,18 +943,18 @@ CEffectCtrl &CEffectCtrl::operator=(const CEffectCtrl &other) {
     this->scale_type.x = other.scale_type.x;
     this->scale_type.y = other.scale_type.y;
     this->scale_type.z = other.scale_type.z;
-    sceVu0CopyVector((float *)scale, (float *)other.scale);
-    sceVu0CopyVector((float *)svelo, (float *)other.svelo);
-    sceVu0CopyVector((float *)scale_p1, (float *)other.scale_p1);
-    sceVu0CopyVector((float *)scale_p2, (float *)other.scale_p2);
+    sceVu0CopyVector((float *) scale, (float *) other.scale);
+    sceVu0CopyVector((float *) svelo, (float *) other.svelo);
+    sceVu0CopyVector((float *) scale_p1, (float *) other.scale_p1);
+    sceVu0CopyVector((float *) scale_p2, (float *) other.scale_p2);
     scale_rand_type = other.scale_rand_type;
     svelo_rand_type = other.svelo_rand_type;
     scale_p1_rand_type = other.scale_p1_rand_type;
     scale_p2_rand_type = other.scale_p2_rand_type;
-    sceVu0CopyVector((float *)scale_rand, (float *)other.scale_rand);
-    sceVu0CopyVector((float *)svelo_rand, (float *)other.svelo_rand);
-    sceVu0CopyVector((float *)scale_p1_rand, (float *)other.scale_p1_rand);
-    sceVu0CopyVector((float *)scale_p2_rand, (float *)other.scale_p2_rand);
+    sceVu0CopyVector((float *) scale_rand, (float *) other.scale_rand);
+    sceVu0CopyVector((float *) svelo_rand, (float *) other.svelo_rand);
+    sceVu0CopyVector((float *) scale_p1_rand, (float *) other.scale_p1_rand);
+    sceVu0CopyVector((float *) scale_p2_rand, (float *) other.scale_p2_rand);
     scale_rand_count = other.scale_rand_count;
     svelo_rand_count = other.svelo_rand_count;
     scale_p1_rand_count = other.scale_p1_rand_count;
@@ -926,67 +978,80 @@ CEffectCtrl &CEffectCtrl::operator=(const CEffectCtrl &other) {
     texture = other.texture;
     tex_get_type = other.tex_get_type;
     gravity = other.gravity;
-    sceVu0CopyVector((float *)gravity_pos, (float *)other.gravity_pos);
+    sceVu0CopyVector((float *) gravity_pos, (float *) other.gravity_pos);
     gravity_accel = other.gravity_accel;
     gravity_mass = other.gravity_mass;
     return *this;
 }
+
 int __BUFFER_SIZE(SPI_STACK *args, int arg_count) {
     int effect_num = spiGetStackInt(args++);
     g_tmp_effm->SetEffectNums(effect_num, spiGetStackInt(args));
     return 1;
 }
+
 int __EFFECT_START(SPI_STACK *args, int arg_count) {
     strcpy(g_tmp_eff_name, spiGetStackString(args));
     g_tmp_effc = new CEffectCtrl;
     return 1;
 }
+
 int __EFFECT_END(SPI_STACK *args, int arg_count) {
     if (g_eff_entry_flag != 0) {
         g_tmp_effm->EnterEffectCtrl(*g_tmp_effc, g_tmp_eff_name);
     }
+
     delete g_tmp_effc;
     g_tmp_effc = NULL;
     return 1;
 }
+
 static int __WAIT_FRAME(SPI_STACK *stack, int argument_count) {
     int index = spiGetStackInt(stack++);
     g_tmp_effm->wait_frame[index] = spiGetStackInt(stack);
     return 1;
 }
+
 int __IMG_NAME(SPI_STACK *args, int arg_count) {
     strcpy(g_tmp_effm->img_name, spiGetStackString(args));
     return 1;
 }
+
 int __SIZE(SPI_STACK *args, int arg_count) {
     g_tmp_effc->width = spiGetStackFloat(args++);
     g_tmp_effc->height = spiGetStackFloat(args);
     return 1;
 }
+
 int __DIR(SPI_STACK *args, int arg_count) {
     g_tmp_effc->dir = spiGetStackInt(args);
     return 1;
 }
+
 int __NUM(SPI_STACK *args, int arg_count) {
     g_tmp_effc->num = spiGetStackInt(args);
     return 1;
 }
+
 int __NUM_RAND(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->num_rand_type = (EFFECT_RAND_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->num_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->num_rand = spiGetStackFloat(args++);
     g_tmp_effc->num_rand_count = spiGetStackInt(args);
     return 1;
 }
+
 int __COUNT(SPI_STACK *args, int arg_count) {
     g_tmp_effc->count = spiGetStackInt(args);
     return 1;
 }
+
 int __CNT_RAND(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->cnt_rand_type = (EFFECT_RAND_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->cnt_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->cnt_rand = spiGetStackFloat(args++);
     g_tmp_effc->cnt_rand_count = spiGetStackInt(args);
     return 1;
 }
+
 int __REPEAT(SPI_STACK *args, int arg_count) {
     g_tmp_effc->repeat = spiGetStackInt(args++);
 
@@ -995,216 +1060,254 @@ int __REPEAT(SPI_STACK *args, int arg_count) {
     g_tmp_effc->repeat_num = spiGetStackInt(args);
     return 1;
 }
+
 int __REP_RAND(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->rep_rand_type = (EFFECT_RAND_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->rep_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->rep_rand = spiGetStackFloat(args++);
     g_tmp_effc->rep_rand_count = spiGetStackInt(args);
     return 1;
 }
+
 int __POS(SPI_STACK *args, int arg_count) {
     g_tmp_effc->pos[0] = spiGetStackFloat(args++);
     g_tmp_effc->pos[1] = spiGetStackFloat(args++);
     g_tmp_effc->pos[2] = spiGetStackFloat(args);
     return 1;
 }
+
 int __POS_RAND(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->pos_rand_type = (EFFECT_RAND_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->pos_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->pos_rand[0] = spiGetStackFloat(args++);
     g_tmp_effc->pos_rand[1] = spiGetStackFloat(args++);
     g_tmp_effc->pos_rand[2] = spiGetStackFloat(args++);
     g_tmp_effc->pos_rand_count = spiGetStackInt(args);
     return 1;
 }
+
 int __VELO(SPI_STACK *args, int arg_count) {
     g_tmp_effc->velo[0] = spiGetStackFloat(args++);
     g_tmp_effc->velo[1] = spiGetStackFloat(args++);
     g_tmp_effc->velo[2] = spiGetStackFloat(args);
     return 1;
 }
+
 int __VELO_RAND(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->velo_rand_type = (EFFECT_RAND_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->velo_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->velo_rand[0] = spiGetStackFloat(args++);
     g_tmp_effc->velo_rand[1] = spiGetStackFloat(args++);
     g_tmp_effc->velo_rand[2] = spiGetStackFloat(args++);
     g_tmp_effc->velo_rand_count = spiGetStackInt(args);
     return 1;
 }
+
 int __VELO_MUL(SPI_STACK *args, int arg_count) {
     g_tmp_effc->velo_mul[0] = spiGetStackFloat(args++);
     g_tmp_effc->velo_mul[1] = spiGetStackFloat(args++);
     g_tmp_effc->velo_mul[2] = spiGetStackFloat(args);
     return 1;
 }
+
 int __ACC(SPI_STACK *args, int arg_count) {
     g_tmp_effc->acc[0] = spiGetStackFloat(args++);
     g_tmp_effc->acc[1] = spiGetStackFloat(args++);
     g_tmp_effc->acc[2] = spiGetStackFloat(args);
     return 1;
 }
+
 int __ACC_RAND(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->acc_rand_type = (EFFECT_RAND_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->acc_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->acc_rand[0] = spiGetStackFloat(args++);
     g_tmp_effc->acc_rand[1] = spiGetStackFloat(args++);
     g_tmp_effc->acc_rand[2] = spiGetStackFloat(args++);
     g_tmp_effc->acc_rand_count = spiGetStackInt(args);
     return 1;
 }
+
 int __ACC_MUL(SPI_STACK *args, int arg_count) {
     g_tmp_effc->acc_mul[0] = spiGetStackFloat(args++);
     g_tmp_effc->acc_mul[1] = spiGetStackFloat(args++);
     g_tmp_effc->acc_mul[2] = spiGetStackFloat(args);
     return 1;
 }
+
 int __MOVE_TYPE(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->move_type.x = (EFFECT_CHANGE_TYPE)spiGetStackInt(args++);
-    g_tmp_effc->move_type.y = (EFFECT_CHANGE_TYPE)spiGetStackInt(args++);
-    g_tmp_effc->move_type.z = (EFFECT_CHANGE_TYPE)spiGetStackInt(args);
+    g_tmp_effc->move_type.x = (EFFECT_CHANGE_TYPE) spiGetStackInt(args++);
+    g_tmp_effc->move_type.y = (EFFECT_CHANGE_TYPE) spiGetStackInt(args++);
+    g_tmp_effc->move_type.z = (EFFECT_CHANGE_TYPE) spiGetStackInt(args);
     return 1;
 }
+
 int __MOVE_P1(SPI_STACK *args, int arg_count) {
     g_tmp_effc->move_p1[0] = spiGetStackFloat(args++);
     g_tmp_effc->move_p1[1] = spiGetStackFloat(args++);
     g_tmp_effc->move_p1[2] = spiGetStackFloat(args);
     return 1;
 }
+
 int __MOVE_P1_RAND(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->move_p1_rand_type = (EFFECT_RAND_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->move_p1_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->move_p1_rand[0] = spiGetStackFloat(args++);
     g_tmp_effc->move_p1_rand[1] = spiGetStackFloat(args++);
     g_tmp_effc->move_p1_rand[2] = spiGetStackFloat(args++);
     g_tmp_effc->move_p1_rand_count = spiGetStackInt(args);
     return 1;
 }
+
 int __MOVE_P2(SPI_STACK *args, int arg_count) {
     g_tmp_effc->move_p2[0] = spiGetStackFloat(args++);
     g_tmp_effc->move_p2[1] = spiGetStackFloat(args++);
     g_tmp_effc->move_p2[2] = spiGetStackFloat(args);
     return 1;
 }
+
 int __MOVE_P2_RAND(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->move_p2_rand_type = (EFFECT_RAND_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->move_p2_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->move_p2_rand[0] = spiGetStackFloat(args++);
     g_tmp_effc->move_p2_rand[1] = spiGetStackFloat(args++);
     g_tmp_effc->move_p2_rand[2] = spiGetStackFloat(args++);
     g_tmp_effc->move_p2_rand_count = spiGetStackInt(args);
     return 1;
 }
+
 int __SCALE_TYPE(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->scale_type.x = (EFFECT_CHANGE_TYPE)spiGetStackInt(args++);
-    g_tmp_effc->scale_type.y = (EFFECT_CHANGE_TYPE)spiGetStackInt(args);
+    g_tmp_effc->scale_type.x = (EFFECT_CHANGE_TYPE) spiGetStackInt(args++);
+    g_tmp_effc->scale_type.y = (EFFECT_CHANGE_TYPE) spiGetStackInt(args);
     return 1;
 }
+
 int __SCALE(SPI_STACK *args, int arg_count) {
     g_tmp_effc->scale[0] = spiGetStackFloat(args++);
     g_tmp_effc->scale[1] = spiGetStackFloat(args);
     return 1;
 }
+
 int __SCALE_RAND(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->scale_rand_type = (EFFECT_RAND_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->scale_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->scale_rand[0] = spiGetStackFloat(args++);
     g_tmp_effc->scale_rand[1] = spiGetStackFloat(args++);
     g_tmp_effc->scale_rand_count = spiGetStackInt(args);
     return 1;
 }
+
 int __SVELO(SPI_STACK *args, int arg_count) {
     g_tmp_effc->svelo[0] = spiGetStackFloat(args++);
     g_tmp_effc->svelo[1] = spiGetStackFloat(args);
     return 1;
 }
+
 int __SVELO_RAND(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->svelo_rand_type = (EFFECT_RAND_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->svelo_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->svelo_rand[0] = spiGetStackFloat(args++);
     g_tmp_effc->svelo_rand[1] = spiGetStackFloat(args++);
     g_tmp_effc->svelo_rand_count = spiGetStackInt(args);
     return 1;
 }
+
 int __SCALE_P1(SPI_STACK *args, int arg_count) {
     g_tmp_effc->scale_p1[0] = spiGetStackFloat(args++);
     g_tmp_effc->scale_p1[1] = spiGetStackFloat(args);
     return 1;
 }
+
 int __SCALE_P1_RAND(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->scale_p1_rand_type = (EFFECT_RAND_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->scale_p1_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->scale_p1_rand[0] = spiGetStackFloat(args++);
     g_tmp_effc->scale_p1_rand[1] = spiGetStackFloat(args++);
     g_tmp_effc->scale_p1_rand_count = spiGetStackInt(args);
     return 1;
 }
+
 int __SCALE_P2(SPI_STACK *args, int arg_count) {
     g_tmp_effc->scale_p2[0] = spiGetStackFloat(args++);
     g_tmp_effc->scale_p2[1] = spiGetStackFloat(args);
     return 1;
 }
+
 int __SCALE_P2_RAND(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->scale_p2_rand_type = (EFFECT_RAND_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->scale_p2_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->scale_p2_rand[0] = spiGetStackFloat(args++);
     g_tmp_effc->scale_p2_rand[1] = spiGetStackFloat(args++);
     g_tmp_effc->scale_p2_rand_count = spiGetStackInt(args);
     return 1;
 }
+
 int __ALPHA_BLEND(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->alpha_blend = (EFFECT_ALPHA_BLEND)spiGetStackInt(args);
+    g_tmp_effc->alpha_blend = (EFFECT_ALPHA_BLEND) spiGetStackInt(args);
     return 1;
 }
+
 int __ALPHA_TYPE(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->alpha_type = (EFFECT_CHANGE_TYPE)spiGetStackInt(args);
+    g_tmp_effc->alpha_type = (EFFECT_CHANGE_TYPE) spiGetStackInt(args);
     return 1;
 }
+
 int __ALPHA(SPI_STACK *args, int arg_count) {
     g_tmp_effc->alpha = spiGetStackFloat(args);
     return 1;
 }
+
 int __ALPHA_RAND(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->alpha_rand_type = (EFFECT_RAND_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->alpha_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->alpha_rand = spiGetStackFloat(args++);
     g_tmp_effc->alpha_rand_count = spiGetStackInt(args);
     return 1;
 }
+
 int __ALPHA_P1(SPI_STACK *args, int arg_count) {
     g_tmp_effc->alpha_p1 = spiGetStackFloat(args);
     return 1;
 }
+
 int __ALPHA_P1_RAND(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->alpha_p1_rand_type = (EFFECT_RAND_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->alpha_p1_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->alpha_p1_rand = spiGetStackFloat(args++);
     g_tmp_effc->alpha_p1_rand_count = spiGetStackInt(args);
     return 1;
 }
+
 int __ALPHA_P2(SPI_STACK *args, int arg_count) {
     g_tmp_effc->alpha_p2 = spiGetStackFloat(args);
     return 1;
 }
+
 int __ALPHA_P2_RAND(SPI_STACK *args, int arg_count) {
-    g_tmp_effc->alpha_p2_rand_type = (EFFECT_RAND_TYPE)spiGetStackInt(args++);
+    g_tmp_effc->alpha_p2_rand_type = (EFFECT_RAND_TYPE) spiGetStackInt(args++);
     g_tmp_effc->alpha_p2_rand = spiGetStackFloat(args++);
     g_tmp_effc->alpha_p2_rand_count = spiGetStackInt(args);
     return 1;
 }
+
 int __TEX_GET_RECT(SPI_STACK *args, int arg_count) {
     int i;
 
     g_tmp_effc->tex_rect_num = spiGetStackInt(args++);
+
     for (i = 0; i < g_tmp_effc->tex_rect_num; i++) {
         g_tmp_effc->tex_rect[i][0] = spiGetStackInt(args++);
         g_tmp_effc->tex_rect[i][1] = spiGetStackInt(args++);
         g_tmp_effc->tex_rect[i][2] = spiGetStackInt(args++);
         g_tmp_effc->tex_rect[i][3] = spiGetStackInt(args++);
     }
+
     return 1;
 }
+
 int __TEX_GET_TYPE(SPI_STACK *args, int arg_count) {
     g_tmp_effc->tex_get_type = spiGetStackInt(args);
     return 1;
 }
+
 int __TEX_NAME(SPI_STACK *args, int arg_count) {
     char *name = spiGetStackString(args);
 
     if (name == NULL) {
         return 1;
     }
+
     g_tmp_effc->texture = mgTexManager.GetTexture(name, -1);
     return 1;
 }
+
 int __GRAVITY(SPI_STACK *args, int arg_count) {
     g_tmp_effc->gravity_pos[0] = spiGetStackFloat(args++);
     g_tmp_effc->gravity_pos[1] = spiGetStackFloat(args++);
@@ -1214,12 +1317,14 @@ int __GRAVITY(SPI_STACK *args, int arg_count) {
     g_tmp_effc->gravity = 1;
     return 1;
 }
+
 CEffectManager::CEffectManager() {
     EntryEffCtrls(NULL, 0, NULL, 0);
     Initialize();
     name[0] = 0;
 }
-void CEffectManager::Initialize(void) {
+
+void CEffectManager::Initialize() {
     int i;
 
     load = 0;
@@ -1227,15 +1332,19 @@ void CEffectManager::Initialize(void) {
     run = 0;
     wait_count = 0;
     next_ctrl = 0;
+
     for (i = 0; i < 8; i++) {
         wait_frame[i] = 0;
         strcpy(ctrl_name[i], at_848__2);
     }
+
     for (i = 0; i < ctrl_num; i++) {
         ctrls[i].Initialize();
     }
+
     strcpy(img_name, at_848__2);
 }
+
 void CEffectManager::EntryEffCtrls(CEffect *effects, int effect_num, CEffectCtrl *ctrls,
                                    int ctrl_num) {
     this->effects = effects;
@@ -1243,52 +1352,64 @@ void CEffectManager::EntryEffCtrls(CEffect *effects, int effect_num, CEffectCtrl
     this->ctrls = ctrls;
     this->ctrl_num = ctrl_num;
 }
+
 void CEffectManager::SetEffectNums(int particle_count, int emitter_count) {
     effect_num = particle_count;
     ctrl_num = emitter_count;
 }
-void CEffectManager::Ctrl(void) {
+
+void CEffectManager::Ctrl() {
     CEffectCtrl *ctrl;
 
     if (run == 0 || ctrls == NULL) {
         return;
     }
+
     if (ctrl_index == -1) {
         if (wait_count != 0x7FFFFFFF) {
             wait_count++;
         }
+
         if (next_ctrl < ctrl_num && wait_frame[next_ctrl] < wait_count) {
             ctrl = ctrls + next_ctrl;
+
             if (ctrl->entry != 0) {
                 ctrl->Run();
             }
+
             next_ctrl++;
             wait_count = 0;
         }
     } else if (next_ctrl == 0) {
         ctrl = ctrls + ctrl_index;
+
         if (ctrl->entry != 0) {
             ctrl->Run();
         }
+
         next_ctrl = 1;
     }
 }
+
 void CEffectManager::Step(int frames) {
     int i;
 
     if (ctrls == NULL || effects == NULL) {
         return;
     }
+
     for (i = 0; i < ctrl_num; i++) {
         if (ctrls[i].entry != 0) {
             ctrls[i].Ctrl(effects, effect_num);
         }
     }
+
     for (i = 0; i < effect_num; i++) {
         effects[i].Step(1);
     }
 }
-void CEffectManager::Draw(void) {
+
+void CEffectManager::Draw() {
     int i;
 
     if (effects != NULL) {
@@ -1297,20 +1418,24 @@ void CEffectManager::Draw(void) {
         }
     }
 }
-void CEffectManager::Run(void) {
+
+void CEffectManager::Run() {
     if (ctrls == NULL || effects == NULL) {
         return;
     }
+
     run = 1;
     wait_count = 0;
     next_ctrl = 0;
 }
-void CEffectManager::Stop(void) {
+
+void CEffectManager::Stop() {
     int i;
 
     run = 0;
     wait_count = 0;
     next_ctrl = 0;
+
     if (ctrls != NULL) {
         for (i = 0; i < ctrl_num; i++) {
             if (ctrls[i].entry != 0) {
@@ -1319,12 +1444,14 @@ void CEffectManager::Stop(void) {
         }
     }
 }
+
 int CEffectManager::EnterEffectCtrl(CEffectCtrl ctrl, char *name) {
     int i;
 
     if (ctrls == NULL) {
         return 1;
     }
+
     for (i = 0; i < ctrl_num; i++) {
         if (ctrls[i].entry == 0) {
             CEffectCtrl *slot;
@@ -1337,8 +1464,10 @@ int CEffectManager::EnterEffectCtrl(CEffectCtrl ctrl, char *name) {
             return 0;
         }
     }
+
     return 1;
 }
+
 void CEffectManager::GetBufferNums(char *script, int size, int *effect_num, int *ctrl_num) {
     CScriptInterpreter interpreter;
 
@@ -1350,6 +1479,7 @@ void CEffectManager::GetBufferNums(char *script, int size, int *effect_num, int 
     *effect_num = this->effect_num;
     *ctrl_num = this->ctrl_num;
 }
+
 void CEffectManager::Load(char *script, int size) {
     CScriptInterpreter interpreter;
 
@@ -1360,6 +1490,7 @@ void CEffectManager::Load(char *script, int size) {
     interpreter.Run();
     load = 1;
 }
+
 void CEffectManager::SetOrigin(float *origin) {
     int i;
 

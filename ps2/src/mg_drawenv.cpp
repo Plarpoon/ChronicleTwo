@@ -1,9 +1,9 @@
 #include "common.h"
-#include "mg_drawenv.hpp"
 
 #include <cmath>
 #include <cstring>
 
+#include "mg_drawenv.hpp"
 #include "mg_math.hpp"
 
 // Code (.text)
@@ -12,21 +12,22 @@ mgCDrawEnv::mgCDrawEnv() {
 }
 
 mgCDrawEnv &mgCDrawEnv::operator=(mgCDrawEnv &source) {
-    ((u_long128 *)this)[0] = ((u_long128 *)&source)[0];
-    ((u_long128 *)this)[1] = ((u_long128 *)&source)[1];
-    ((u_long128 *)this)[2] = ((u_long128 *)&source)[2];
-    ((u_long128 *)this)[3] = ((u_long128 *)&source)[3];
+    ((u_long128 *) this)[0] = ((u_long128 *) &source)[0];
+    ((u_long128 *) this)[1] = ((u_long128 *) &source)[1];
+    ((u_long128 *) this)[2] = ((u_long128 *) &source)[2];
+    ((u_long128 *) this)[3] = ((u_long128 *) &source)[3];
     return *this;
 }
 
 void mgCDrawEnv::Initialize(int context) {
-    *(u_long *)&giftag = 0;
+    *(u_long *) &giftag = 0;
     giftag.NLOOP = 3;
     giftag.EOP = 1;
     giftag.NREG = 1;
     giftag.REGS0 = SCE_GIF_PACKED_AD;
     test.value = SCE_GS_SET_TEST(1, SCE_GS_GEQUAL, 0, 0, 0, 0, 1, SCE_GS_ZGEQUAL);
     alpha.value = SCE_GS_SET_ALPHA(SCE_GS_ALPHA_CS, SCE_GS_ALPHA_CD, SCE_GS_ALPHA_AS, SCE_GS_ALPHA_CD, 0);
+
     if (context == 0) {
         test_addr = SCE_GS_TEST_1;
         zbuf_addr = SCE_GS_ZBUF_1;
@@ -41,49 +42,53 @@ void mgCDrawEnv::Initialize(int context) {
 void mgCDrawEnv::SetAlpha(int macro) {
     switch (macro) {
         case 0:
-        break;
+            break;
         case 1:
             alpha.value = 0x44;
-        break;
+            break;
         case 2:
             alpha.value = 0x48;
-        break;
+            break;
         case 3:
             alpha.value = 0x42;
-        break;
+            break;
         case 4:
             alpha.value = 0x800000002A;
             break;
         case 5:
             alpha.value = 0x8000000068;
-        break;
+            break;
     }
 }
 
-int mgCDrawEnv::GetAlphaMacroID(void) {
+int mgCDrawEnv::GetAlphaMacroID() {
     if (alpha.value == 0x48) {
         return 2;
     }
+
     if (alpha.value == 0x42) {
         return 3;
-}
+    }
+
     if (alpha.value == 0x44) {
         return 1;
     }
+
     if (alpha.value == 0x800000002A) {
         return 4;
     }
+
     return 0;
 }
 
 void mgCDrawEnv::SetZBuf(int mode) {
     switch (mode) {
-    case MG_ZBUF_NO_WRITE:
-        zbuf.bits.zmsk = 1;
-        break;
-    case MG_ZBUF_WRITE:
-        zbuf.bits.zmsk = 0;
-        break;
+        case MG_ZBUF_NO_WRITE:
+            zbuf.bits.zmsk = 1;
+            break;
+        case MG_ZBUF_WRITE:
+            zbuf.bits.zmsk = 0;
+            break;
     }
 }
 
@@ -124,8 +129,8 @@ void mgRENDER_INFO::SetRenderInfo(float projection, int width, int height, float
     clip_max[1] = 4095.9f;
     clip_max[2] = far_dist;
 
-    float guard_half_w = (float)width * 0.55f;
-    float guard_half_h = (float)height * 0.55f;
+    float guard_half_w = (float) width * 0.55f;
+    float guard_half_h = (float) height * 0.55f;
     guard_min[0] = 2048.0f - guard_half_w;
     guard_min[1] = 2048.0f - guard_half_h;
     guard_min[2] = 0.0f;
@@ -144,12 +149,12 @@ void mgRENDER_INFO::SetRenderInfo(float projection, int width, int height, float
     full_max[2] = 0.0f;
     full_max[3] = clip_max[2];
 
-    screen_box_min[0] = (float)(-width / 2);
-    screen_box_min[1] = (float)(-height / 2);
+    screen_box_min[0] = (float) (-width / 2);
+    screen_box_min[1] = (float) (-height / 2);
     screen_box_min[2] = 0.0f;
     screen_box_min[3] = clip_min[2];
-    screen_box_max[0] = screen_box_min[0] + (float)width;
-    screen_box_max[1] = screen_box_min[1] + (float)height;
+    screen_box_max[0] = screen_box_min[0] + (float) width;
+    screen_box_max[1] = screen_box_min[1] + (float) height;
     screen_box_max[2] = 0.0f;
     screen_box_max[3] = clip_max[2];
 
@@ -261,18 +266,23 @@ void mgRENDER_INFO::SetDropShadowMatrix(float *light_dir, float *plane_pos, floa
 
 int mgRENDER_INFO::ActiveLighting(int index, int copy) {
     int previous = active_light;
+
     if (index == previous) {
         return index;
     }
+
     if (index < 0 || index >= 8) {
         return previous;
     }
+
     light_changed = 1;
     previous = active_light;
     active_light = index;
+
     if (copy != 0) {
         light_info[active_light] = light_info[previous];
     }
+
     return previous;
 }
 
@@ -287,6 +297,7 @@ void mgRENDER_INFO::InitActiveLighting() {
 
 void mgRENDER_INFO::InitLighting() {
     light_changed = 1;
+
     for (int i = 0; i < 8; i++) {
         memset(&light_info[i], 0, sizeof(mgLIGHT_INFO));
     }
@@ -315,9 +326,11 @@ void mgRENDER_INFO::GetLight(float (*light_dir)[4], float (*light_color)[4]) {
 
 void mgRENDER_INFO::SetLight(int index, float *direction, float *color) {
     light_changed = 1;
+
     if (index < 0 || index >= 4) {
         return;
     }
+
     mgLIGHT_INFO *slot = GetpLightInfo();
     slot->light_dir[0][index] = direction[0];
     slot->light_dir[1][index] = direction[1];
@@ -350,18 +363,22 @@ void mgRENDER_INFO::SetPlight(int index, mgPOINT_LIGHT *light) {
     if (index < 0 || index >= 4) {
         return;
     }
+
     mgLIGHT_INFO *slot = GetpLightInfo();
+
     if (light == NULL) {
         slot->point_light[index].power = 0;
         return;
     }
+
     // Without a range of its own, the light reaches as far as its brightest colour component allows.
     float range = light->range;
+
     if (range <= 0) {
         float red = light->color[0];
         float green = light->color[1];
         float brightest = red > green ? (red > light->color[2] ? red : light->color[2])
-                                    : (green > light->color[2] ? green : light->color[2]);
+                                      : (green > light->color[2] ? green : light->color[2]);
         range = light->power * sqrtf(brightest);
     }
 
@@ -378,12 +395,12 @@ void mgRENDER_INFO::GetPlight(int index, mgPOINT_LIGHT *out) {
         return;
     }
 
-    mgPOINT_LIGHT *light = (mgPOINT_LIGHT *)(index * 0x30 + (int)GetpLightInfo() + 0x90);
+    mgPOINT_LIGHT *light = (mgPOINT_LIGHT *) (index * 0x30 + (int) GetpLightInfo() + 0x90);
     out->pos_copy = light->pos_copy;
     out->color_copy = light->color_copy;
     out->power = light->power;
     out->range = light->range;
-        }
+}
 
 void mgRENDER_INFO::FogEnable(int enable) {
     fog_enable = enable;
@@ -423,8 +440,8 @@ void mgRENDER_INFO::SetFogParam(float near, float far, u_char red, u_char green,
 }
 
 mgVu0FBOX &mgVu0FBOX::operator=(mgVu0FBOX &source) {
-    *(u_long128 *)max = *(u_long128 *)source.max;
-    *(u_long128 *)min = *(u_long128 *)source.min;
+    *(u_long128 *) max = *(u_long128 *) source.max;
+    *(u_long128 *) min = *(u_long128 *) source.min;
     return *this;
 }
 

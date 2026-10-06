@@ -57,17 +57,18 @@ enum EVENT_EDIT_PAS_ITEM {
  *
  */
 struct EventEditInfo {
-    int active;               /**< Non-zero while the event editor is open. */
-    int mode;                 /**< Page shown, an EVENT_EDIT_MODE. */
-    int disp;                 /**< Non-zero to draw the editor's panel and the event marker. */
-    mgCMemory *memory;        /**< Work buffer whose stack is released when the editor closes. */
-    int texb;                 /**< Texture bank the debug font is loaded into. */
-    int chara_no;             /**< Number of the event character being edited. */
-    int collision;            /**< Non-zero to keep the edited character on the ground below it while moving. */
-    int unk_1C;
+    int           active;    /**< Non-zero while the event editor is open. */
+    int           mode;      /**< Page shown, an EVENT_EDIT_MODE. */
+    int           disp;      /**< Non-zero to draw the editor's panel and the event marker. */
+    mgCMemory    *memory;    /**< Work buffer whose stack is released when the editor closes. */
+    int           texb;      /**< Texture bank the debug font is loaded into. */
+    int           chara_no;  /**< Number of the event character being edited. */
+    int           collision; /**< Non-zero to keep the edited character on the ground below it while moving. */
+    int           unk_1C;
     sceVu0FVECTOR camera_pos; /**< Camera position when the editor opened, restored on close. */
     sceVu0FVECTOR camera_ref; /**< Camera reference point when the editor opened, restored on close. */
 };
+
 STATIC_ASSERT(sizeof(EventEditInfo) == 0x40);
 
 /**
@@ -78,7 +79,7 @@ STATIC_ASSERT(sizeof(EventEditInfo) == 0x40);
  * @address 0x282FA0
  * @size 0x40
  */
-void InitEventEdit(int texb, mgCMemory *memory);
+void InitEventEdit(int font_id, mgCMemory *memory);
 
 /**
  * Opens the event editor when debugging is on and the left stick is

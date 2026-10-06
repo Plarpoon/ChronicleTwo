@@ -1,10 +1,12 @@
 #pragma once
 
 #include "common.h"
+
+#include <cstring>
+
 #include "mg_memory.hpp"
 #include "savedata.hpp"
 #include "scenesnd.hpp"
-#include <cstring>
 
 /**
  * @file
@@ -244,29 +246,31 @@ struct TITLE_INFO {
         memset(this, 0, sizeof(TITLE_INFO));
         InitSV_CONFIG_OPTION(&config);
     }
-    int mode;                        /**< Screen being shown. @see TitleMode */
-    int next_mode;                   /**< Screen to switch to at the end of the frame, or TITLE_MODE_NONE. @see TitleMode */
-    s16 select;                      /**< Row chosen in the title menu. @see TitleMenuItem */
-    s16 omake_select;                /**< Row chosen in the extras menu. */
-    s16 omake_dungeon;               /**< Non-zero when the extras menu lists the dungeon extra. */
-    s16 omake_gyorace;               /**< Non-zero when the extras menu lists the fish race extra. */
-    s16 omake_num;                   /**< Number of rows in the extras menu. */
-    s16 unk_12;
-    float push_alpha;                /**< Alpha of the PUSH START prompt, pulsed by CalcPushAlpha. */
-    int wait_count;                  /**< Frames left in TITLE_PHASE_WAIT. */
-    float title_alpha;               /**< Alpha of the title picture and the PUSH START prompt. */
-    float menu_alpha;                /**< Alpha of the title menu rows. */
-    float omake_alpha;               /**< Alpha of the extras menu rows. */
-    float cursor_alpha;              /**< Alpha of the menu cursor. */
-    int cursor_count;                /**< Frame counter driving the cursor's wobble. */
-    float cursor_x;                  /**< Horizontal position of the menu cursor. */
-    float cursor_y;                  /**< Vertical position of the menu cursor, eased towards the chosen row. */
-    int idle_count;                  /**< Frames without input on the title screen, compared with TitleRushWaitCount. */
-    u8 unk_3c[0xC];
-    SV_CONFIG_OPTION config;         /**< Game options, exchanged with the save data around the menus. */
-    mgCMemory chara_stack[5];        /**< Memory for the party characters' base data while a menu is open. */
-    CScene::BGM_STATUS bgm_status;   /**< Background music that was playing before a menu or the installer changed it. */
+
+    int                mode;          /**< Screen being shown. @see TitleMode */
+    int                next_mode;     /**< Screen to switch to at the end of the frame, or TITLE_MODE_NONE. @see TitleMode */
+    s16                select;        /**< Row chosen in the title menu. @see TitleMenuItem */
+    s16                omake_select;  /**< Row chosen in the extras menu. */
+    s16                omake_dungeon; /**< Non-zero when the extras menu lists the dungeon extra. */
+    s16                omake_gyorace; /**< Non-zero when the extras menu lists the fish race extra. */
+    s16                omake_num;     /**< Number of rows in the extras menu. */
+    s16                unk_12;
+    float              push_alpha;   /**< Alpha of the PUSH START prompt, pulsed by CalcPushAlpha. */
+    int                wait_count;   /**< Frames left in TITLE_PHASE_WAIT. */
+    float              title_alpha;  /**< Alpha of the title picture and the PUSH START prompt. */
+    float              menu_alpha;   /**< Alpha of the title menu rows. */
+    float              omake_alpha;  /**< Alpha of the extras menu rows. */
+    float              cursor_alpha; /**< Alpha of the menu cursor. */
+    int                cursor_count; /**< Frame counter driving the cursor's wobble. */
+    float              cursor_x;     /**< Horizontal position of the menu cursor. */
+    float              cursor_y;     /**< Vertical position of the menu cursor, eased towards the chosen row. */
+    int                idle_count;   /**< Frames without input on the title screen, compared with TitleRushWaitCount. */
+    u8                 unk_3c[0xC];
+    SV_CONFIG_OPTION   config;         /**< Game options, exchanged with the save data around the menus. */
+    mgCMemory          chara_stack[5]; /**< Memory for the party characters' base data while a menu is open. */
+    CScene::BGM_STATUS bgm_status;     /**< Background music that was playing before a menu or the installer changed it. */
 };
+
 STATIC_ASSERT(sizeof(TITLE_INFO) == 0x194);
 
 /**
@@ -275,14 +279,15 @@ STATIC_ASSERT(sizeof(TITLE_INFO) == 0x194);
  *
  */
 struct RUSH_INFO {
-    int phase;        /**< Step of the movie. @see RushPhase */
-    s16 count;        /**< Frames since the movie started. */
-    s16 movie_no;     /**< Movie number handed to InitRushMovie. */
+    int   phase;      /**< Step of the movie. @see RushPhase */
+    s16   count;      /**< Frames since the movie started. */
+    s16   movie_no;   /**< Movie number handed to InitRushMovie. */
     float push_alpha; /**< Alpha of the PUSH START prompt over the movie. */
-    int unk_c;
-    int unk_10;
-    s8 skipped;       /**< Non-zero when the player skipped the movie. */
+    int   unk_c;
+    int   unk_10;
+    s8    skipped; /**< Non-zero when the player skipped the movie. */
 };
+
 STATIC_ASSERT(sizeof(RUSH_INFO) == 0x18);
 
 /**
@@ -293,16 +298,18 @@ STATIC_ASSERT(sizeof(RUSH_INFO) == 0x18);
  */
 struct HDD_INFO {
     HDD_INFO() : connect(0), app_install(0), install_space(0) {}
-    int connect;       /**< Result of HddConectCheck: positive when a hard disk is usable, zero when there is none. */
-    int hdd_state;     /**< State HddConectCheck reports through its argument. */
-    int app_install;   /**< Result of CheckAppInstallForTitle: positive when the game is installed, negative on error. */
-    int install_space; /**< Result of CheckInstallSpace: positive when there is room to install, negative on error. */
-    int unk_10;
-    int installing;    /**< Non-zero once the installation thread has been started. */
-    int result;        /**< Last result of StepInstallThread once the installation stopped. */
-    int progress;      /**< Installation progress in percent. */
-    void *work;        /**< Work buffer handed to CreateInstallThread. */
+
+    int   connect;       /**< Result of HddConectCheck: positive when a hard disk is usable, zero when there is none. */
+    int   hdd_state;     /**< State HddConectCheck reports through its argument. */
+    int   app_install;   /**< Result of CheckAppInstallForTitle: positive when the game is installed, negative on error. */
+    int   install_space; /**< Result of CheckInstallSpace: positive when there is room to install, negative on error. */
+    int   unk_10;
+    int   installing; /**< Non-zero once the installation thread has been started. */
+    int   result;     /**< Last result of StepInstallThread once the installation stopped. */
+    int   progress;   /**< Installation progress in percent. */
+    void *work;       /**< Work buffer handed to CreateInstallThread. */
 };
+
 STATIC_ASSERT(sizeof(HDD_INFO) == 0x24);
 
 /**
@@ -363,7 +370,7 @@ int TitleLoop();
  * @address 0x2A8DA0
  * @size 0x100
  */
-void TitleLangSelInit(mgCMemory *stack);
+void TitleLangSelInit(mgCMemory *memory);
 
 /**
  * Runs one frame of the language selection, and returns the chosen

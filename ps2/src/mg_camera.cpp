@@ -1,36 +1,42 @@
 #include "common.h"
-#include "mg_memory.hpp"
-#include "mg_drawprim.hpp"
-#include "mg_texture.hpp"
-#include "mg_frame.hpp"
-#include "mg_drawenv.hpp"
-#include "mglib.hpp"
-#include "mg_camera.hpp"
-#include "mg_math.hpp"
 
 #include <libvu0.h>
 
 #include <cmath>
 
+#include "mg_camera.hpp"
+#include "mg_drawenv.hpp"
+#include "mg_drawprim.hpp"
+#include "mg_frame.hpp"
+#include "mg_math.hpp"
+#include "mg_memory.hpp"
+#include "mg_texture.hpp"
+#include "mglib.hpp"
+
 // Code (.text)
 void mgCCamera::Step(int frames) {
     mgCCamera *self = this;
-    float dir[4];
+    float      dir[4];
+
     struct {
         float x;
         float y;
         float z;
         float w;
     } flat;
+
     int frame;
     int i;
+
     if (self->suspended == 0 && mgCCamera::StopCamera == 0) {
         if (self->pos_speed <= 0.0f) {
             self->pos_speed = 1.0f;
         }
+
         if (self->ref_speed <= 0.0f) {
             self->ref_speed = 1.0f;
         }
+
         if (frames < 0) {
             self->pos[0] = self->next_pos[0];
             self->ref[0] = self->next_ref[0];
@@ -40,37 +46,47 @@ void mgCCamera::Step(int frames) {
             self->ref[2] = self->next_ref[2];
         } else if (0 < frames) {
             frame = 0;
+
             do {
                 i = 0;
+
                 do {
                     if (self->pos_speed <= 1.0f && self->ref_speed <= 1.0f) {
                         self->pos[i] = self->next_pos[i];
                         self->ref[i] = self->next_ref[i];
                     } else {
-                        float posStep = (self->next_pos[i] - self->pos[i]) / self->pos_speed;
-                        float refRate = self->ref_speed;
-                        if (refRate < 1.0f) {
-                            refRate = 1.0f;
+                        float pos_step = (self->next_pos[i] - self->pos[i]) / self->pos_speed;
+                        float ref_rate = self->ref_speed;
+
+                        if (ref_rate < 1.0f) {
+                            ref_rate = 1.0f;
                         }
-                        float refStep = (self->next_ref[i] - self->ref[i]) / refRate;
-                        self->pos[i] += posStep;
-                        self->ref[i] += refStep;
-                        float posError = self->pos[i] - self->next_pos[i];
-                        float refError = self->ref[i] - self->next_ref[i];
-                        posError = posError < 0.0f ? -posError : posError;
-                        if (posError < self->snap_range) {
+
+                        float ref_step = (self->next_ref[i] - self->ref[i]) / ref_rate;
+                        self->pos[i] += pos_step;
+                        self->ref[i] += ref_step;
+                        float pos_error = self->pos[i] - self->next_pos[i];
+                        float ref_error = self->ref[i] - self->next_ref[i];
+                        pos_error = pos_error < 0.0f ? -pos_error : pos_error;
+
+                        if (pos_error < self->snap_range) {
                             self->pos[i] = self->next_pos[i];
                         }
-                        refError = refError < 0.0f ? -refError : refError;
-                        if (refError < self->snap_range) {
+
+                        ref_error = ref_error < 0.0f ? -ref_error : ref_error;
+
+                        if (ref_error < self->snap_range) {
                             self->ref[i] = self->next_ref[i];
                         }
                     }
+
                     i++;
                 } while (i < 3);
+
                 frame++;
             } while (frame < frames);
         }
+
         self->GetDir(dir);
         flat.x = dir[0];
         flat.y = 0.0f;
@@ -146,10 +162,12 @@ void mgCCamera::GetCameraMatrix(float (*matrix)[4]) {
         float x, y, z;
         float w;
     } forward;
+
     struct {
-        float x, y, z;
+        float        x, y, z;
         unsigned int w;
     } up;
+
     GetDir(&forward.x);
     forward.x = forward.x;
     forward.y = forward.y;
@@ -228,10 +246,12 @@ void mgCCameraFollow::GetFollowNext(float *pos) {
 
 void mgCCameraFollow::Step(int frames) {
     float pos[4];
-    int i;
+    int   i;
     float rate;
+
     if (suspended == 0 && StopCamera == 0) {
         sceVu0AddVector(follow_next, follow, follow_offset);
+
         if (frames < 0) {
             if (follow_on != 0) {
                 angle = next_angle;
@@ -239,35 +259,46 @@ void mgCCameraFollow::Step(int frames) {
                 SetNextPos(pos);
                 SetNextRef(follow_next[0], follow_next[1], follow_next[2]);
             }
+
             mgCCamera::Step(frames);
             return;
         }
+
         if (!(next_angle <= 6.2831855f)) {
             next_angle -= 6.2831855f;
         }
+
         if (next_angle < 0.0f) {
             next_angle += 6.2831855f;
         }
+
         i = 0;
+
         if (0 < frames) {
             do {
                 if (follow_on != 0) {
                     rate = pos_speed / 2.0f;
+
                     if (rate < 1.0f) {
                         rate = 1.0f;
                     }
+
                     angle = mgAngleInterpolate(angle, next_angle, rate, 1);
+
                     if (pos_speed < 1.1f) {
                         angle = next_angle;
                     }
+
                     GetFollowNextPos(pos);
                     SetNextPos(pos);
                     SetNextRef(follow_next[0], follow_next[1], follow_next[2]);
                 }
+
                 mgCCamera::Step(1);
                 i++;
             } while (i < frames);
         }
+
         if (follow_on == 0) {
             next_angle = angle_h;
             angle = angle_h;
@@ -346,11 +377,11 @@ void mgCCameraFollow::SetFollowOffset(float x, float y, float z) {
 }
 
 void mgCCameraFollow::GetFollow(float *pos) {
-    *(u_long128 *)pos = *(u_long128 *)follow;
+    *(u_long128 *) pos = *(u_long128 *) follow;
 }
 
 void mgCCameraFollow::GetFollowOffset(float *offset) {
-    *(u_long128 *)offset = *(u_long128 *)follow_offset;
+    *(u_long128 *) offset = *(u_long128 *) follow_offset;
 }
 
 mgCCameraFollow::mgCCameraFollow(float distance, float height, float angle, float speed) : mgCCamera(speed) {
@@ -365,10 +396,10 @@ mgCCameraFollow::mgCCameraFollow(float distance, float height, float angle, floa
     mgZeroVector(follow_offset);
 }
 
-    // Defined in mg_camera.hpp.
-    // Defined in mg_camera.hpp.
-    // Defined in mg_camera.hpp.
-    // Defined in mg_camera.hpp.
+// Defined in mg_camera.hpp.
+// Defined in mg_camera.hpp.
+// Defined in mg_camera.hpp.
+// Defined in mg_camera.hpp.
 // Virtual tables (.vtables)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_camera", __vt__15mgCCameraFollow__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_camera", __vt__9mgCCamera__DATA);

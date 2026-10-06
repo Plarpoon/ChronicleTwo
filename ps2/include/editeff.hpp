@@ -71,10 +71,10 @@ enum EditPlaceAnimeType {
  */
 struct EditStarParticle {
     sceVu0FVECTOR position; /**< Offset of the star from the effect, before the effect's scale; w is 1. */
-    s32 unk_10;
-    s32 shape;              /**< Row of the size and texture coordinate tables the star is drawn with: 0 or 1. */
-    s32 unk_18;
-    s32 unk_1c;
+    s32           unk_10;
+    s32           shape; /**< Row of the size and texture coordinate tables the star is drawn with: 0 or 1. */
+    s32           unk_18;
+    s32           unk_1c;
 };
 
 STATIC_ASSERT(sizeof(EditStarParticle) == 0x20);
@@ -86,23 +86,23 @@ STATIC_ASSERT(sizeof(EditStarParticle) == 0x20);
  */
 class CStarEffect : public CObject {
 public:
-    s32 state;                    /**< Progress of the effect, an EditEffectState. */
-    float spin_speed;             /**< Angle added to the effect's yaw each frame. */
-    float rise_speed;             /**< Height added to the effect's position each frame. */
-    float alpha;                  /**< Opacity of the stars, from 1 down to 0. */
-    float star_angle;             /**< Angle each star is turned to on screen. */
-    float size;                   /**< Scale of each star's sprite, larger for larger parts. */
-    s32 frame;                    /**< Frames the effect has played. */
-    s32 particle_max;             /**< Capacity of particle. */
-    s32 particle_num;             /**< Number of stars in use. */
-    EditStarParticle *particle;   /**< Stars of the effect. */
-    s32 unk_98;
-    s32 unk_9c;
-    mgC3DSprite sprite;           /**< Billboards the stars are drawn with. */
-    mgCTexture *texture;          /**< Texture the stars are drawn with. */
-    s32 unk_f4;
-    s32 unk_f8;
-    s32 unk_fc;
+    s32               state;        /**< Progress of the effect, an EditEffectState. */
+    float             spin_speed;   /**< Angle added to the effect's yaw each frame. */
+    float             rise_speed;   /**< Height added to the effect's position each frame. */
+    float             alpha;        /**< Opacity of the stars, from 1 down to 0. */
+    float             star_angle;   /**< Angle each star is turned to on screen. */
+    float             size;         /**< Scale of each star's sprite, larger for larger parts. */
+    s32               frame;        /**< Frames the effect has played. */
+    s32               particle_max; /**< Capacity of particle. */
+    s32               particle_num; /**< Number of stars in use. */
+    EditStarParticle *particle;     /**< Stars of the effect. */
+    s32               unk_98;
+    s32               unk_9c;
+    mgC3DSprite       sprite;  /**< Billboards the stars are drawn with. */
+    mgCTexture       *texture; /**< Texture the stars are drawn with. */
+    s32               unk_f4;
+    s32               unk_f8;
+    s32               unk_fc;
 
     /**
      *
@@ -122,7 +122,7 @@ public:
      * @address 0x3001B0
      * @size 0x1A0
      */
-    void ParamInit(float *area, int num);
+    void ParamInit(float *spread, int count);
 
     /**
      *
@@ -154,20 +154,20 @@ STATIC_ASSERT(sizeof(CStarEffect) == 0x100);
  */
 class CPaintEffect : public CObject {
 public:
-    s32 state;                                     /**< Progress of the effect, an EditEffectState. */
-    s32 shape;                                     /**< Row of the texture coordinate tables the drops are drawn with: 1 for a river, else 0. */
-    s32 unk_78;
-    s32 unk_7c;
-    sceVu0FVECTOR color;                           /**< Colour of the drops, each of red, green and blue at most 255. */
-    mgCTexture *texture;                           /**< Texture the drops are drawn with. */
-    s32 unk_94;
-    s32 unk_98;
-    s32 unk_9c;
-    mgC3DSprite sprite;                            /**< Billboards the drops are drawn with. */
-    float alpha;                                   /**< Opacity of the drops, from 1 down to 0. */
-    s32 wait;                                      /**< Frames left before the drops start to fly. */
-    s32 unk_f8;
-    s32 unk_fc;
+    s32           state; /**< Progress of the effect, an EditEffectState. */
+    s32           shape; /**< Row of the texture coordinate tables the drops are drawn with: 1 for a river, else 0. */
+    s32           unk_78;
+    s32           unk_7c;
+    sceVu0FVECTOR color;   /**< Colour of the drops, each of red, green and blue at most 255. */
+    mgCTexture   *texture; /**< Texture the drops are drawn with. */
+    s32           unk_94;
+    s32           unk_98;
+    s32           unk_9c;
+    mgC3DSprite   sprite; /**< Billboards the drops are drawn with. */
+    float         alpha;  /**< Opacity of the drops, from 1 down to 0. */
+    s32           wait;   /**< Frames left before the drops start to fly. */
+    s32           unk_f8;
+    s32           unk_fc;
     sceVu0FVECTOR drop[EDIT_PAINT_DROP_NUM];       /**< Offset of each drop from the effect, with its size in w. */
     sceVu0FVECTOR drop_speed[EDIT_PAINT_DROP_NUM]; /**< Distance each drop moves each frame. */
 
@@ -189,7 +189,7 @@ public:
      * @address 0x300750
      * @size 0x100
      */
-    void ParamInit(float scale);
+    void ParamInit(float size);
 
     /**
      *
@@ -221,24 +221,24 @@ STATIC_ASSERT(sizeof(CPaintEffect) == 0x400);
  */
 class CPlaceAnime {
 public:
-    s32 state;                   /**< Progress of the animation, an EditEffectState. */
-    s32 type;                    /**< Animation played, an EditPlaceAnimeType. */
-    CMapParts *parts;            /**< Part animated; for a removal, a copy of the removed part. */
-    s32 unk_0c;
+    s32           state; /**< Progress of the animation, an EditEffectState. */
+    s32           type;  /**< Animation played, an EditPlaceAnimeType. */
+    CMapParts    *parts; /**< Part animated; for a removal, a copy of the removed part. */
+    s32           unk_0c;
     sceVu0FVECTOR rotation;      /**< Rotation given to the part while it animates. */
     sceVu0FVECTOR scale;         /**< Scale given to the part while it animates. */
     sceVu0FVECTOR position;      /**< Position given to the part while it animates. */
     sceVu0FVECTOR base_rotation; /**< Rotation the part had before the frame's animation was applied. */
     sceVu0FVECTOR base_scale;    /**< Scale the part had before the frame's animation was applied. */
     sceVu0FVECTOR base_position; /**< Position the part had before the frame's animation was applied. */
-    s32 frame;                   /**< Frames the animation has played. */
-    s32 phase;                   /**< Stage of a squash animation: 0 while hopping, 1 once landed. */
-    float power;                 /**< Strength of the sway or squash, decaying each frame. */
-    float height;                /**< Height the part is raised above its position. */
-    float height_speed;          /**< Height added each frame, falling under gravity. */
-    s32 unk_84;
-    s32 unk_88;
-    s32 unk_8c;
+    s32           frame;         /**< Frames the animation has played. */
+    s32           phase;         /**< Stage of a squash animation: 0 while hopping, 1 once landed. */
+    float         power;         /**< Strength of the sway or squash, decaying each frame. */
+    float         height;        /**< Height the part is raised above its position. */
+    float         height_speed;  /**< Height added each frame, falling under gravity. */
+    s32           unk_84;
+    s32           unk_88;
+    s32           unk_8c;
 
     /**
      *
@@ -320,7 +320,7 @@ int EditPlaceEffect(CEditParts *parts, float *position);
  * @address 0x2FFEB0
  * @size 0x160
  */
-int EditPaintEffect(CEditParts *parts, float *position, float *color, int river);
+int EditPaintEffect(CEditParts *parts, float *position, float *color, int shape);
 
 /**
  *
@@ -391,7 +391,7 @@ int EditNowPlaceAnime();
  * @address 0x300C40
  * @size 0x270
  */
-int EditSetPlaceAnime(int type, CMapParts *parts);
+int EditSetPlaceAnime(int kind, CMapParts *parts);
 
 /**
  *

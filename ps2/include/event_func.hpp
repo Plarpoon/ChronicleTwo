@@ -6,8 +6,8 @@
 
 #include "dng_effect.hpp"
 #include "runscript.hpp"
-#include "scenesnd.hpp"
 #include "sceneseq.hpp"
+#include "scenesnd.hpp"
 
 /**
  * @file
@@ -80,54 +80,54 @@ enum RASTER_STATE {
  *
  */
 struct ED_EVENT_INFO {
-    sceVu0FVECTOR world_coord_pos;    /**< Origin of the event's world coordinate. */
-    sceVu0FVECTOR world_coord_rot;    /**< Rotation, in radians, of the event's world coordinate. */
-    float projection;                 /**< Projection distance used while the event is drawn. */
-    u8 unk_24[0x40];
-    int jump_point;                   /**< Entry point on the map an event moves the player to, or -1. */
-    char jump_map_name[0x20];         /**< Name of the map or interior an event moves the player to. */
-    int event_no;                     /**< Event started after a map change or script load, or below zero for none. */
-    char script_name[0x40];           /**< Path of the event script file the event asks to load. */
-    int request;                      /**< Request the event leaves for the game loop. @see EVENT_REQUEST. */
-    int command_mode;                 /**< How the running script is advanced each frame. @see EVENT_COMMAND_MODE. */
-    int skip_state;                   /**< Progress of skipping the drama scene. @see EVENT_SKIP_STATE. */
-    int skip_button;                  /**< Pad button that skips the drama scene. */
-    s32 unk_dc;
-    float skip_fade_color[4];         /**< Colour the screen fades to when the drama scene is skipped. */
-    int start_button;                 /**< Pad button that the script reads as its start button. */
-    int snd_id[12];                   /**< Sound bank handle loaded into each sound port. */
-    int last_snd_id;                  /**< Sound bank handle loaded most recently. */
-    s32 unk_128;
-    float env_bgm_volume;             /**< Volume of the environment music the event started. */
-    int env_bgm_no;                   /**< Environment music the event started. */
-    int stream_playing;               /**< Non-zero while a voice stream the event started is playing. */
-    int stream_from_fpl;              /**< Non-zero when the open voice stream was opened from a voice pack. */
-    int func_iparam[16];              /**< Integer parameters of the door mode: character number, entry point and sound effect. */
-    float func_fparam[16];            /**< Float parameters of the door mode: position, facing, camera position and look-at offset. */
-    int monster_talk[3];              /**< Talk data of the monster the player spoke to in the dungeon. */
-    int door_type;                    /**< Kind of door the door mode opens, choosing its sound effect. */
-    int interior_entrance;            /**< Entrance of the interior an event moves the player into. */
-    u64 stopwatch_start;              /**< Play time at which the stopwatch started, or 0 while it is stopped. */
-    s64 stopwatch_limit;              /**< Time limit the stopwatch counts down from, or 0 to count up. */
-    int stopwatch_x;                  /**< Screen X position of the stopwatch. */
-    int stopwatch_y;                  /**< Screen Y position of the stopwatch. */
-    int stopwatch_style;              /**< Layout the stopwatch is drawn in. */
-    CMapParts *dng_event_parts;       /**< Dungeon map part the player triggered an event at. */
-    int dng_event_found;              /**< Non-zero once a dungeon event part has been found. */
-    int pack_loaded;                  /**< Non-zero while the read buffer holds a pack file that loads search first. */
-    int map_draw;                     /**< Non-zero while the map is drawn behind the event. */
-    int stream_reading;               /**< Non-zero while a stream reads the disc, so files may not be loaded. */
-    int stream_volume;                /**< Volume the event plays its voice stream at. */
-    int caption_enable;               /**< Non-zero while movie captions are drawn. */
-    int caption_start[EVENT_CAPTION_NUM];                  /**< Movie frame at which each caption appears. */
-    int caption_frames[EVENT_CAPTION_NUM];                 /**< Number of movie frames each caption stays. */
-    char caption_text[EVENT_CAPTION_NUM][0xE1];            /**< Text of each caption. */
-    u8 unk_126a[0x2];
-    char *npc_talk_text;              /**< Loaded NPC conversation text of the town. */
-    int npc_talk_size;                /**< Size of the loaded NPC conversation text. */
+    sceVu0FVECTOR      world_coord_pos; /**< Origin of the event's world coordinate. */
+    sceVu0FVECTOR      world_coord_rot; /**< Rotation, in radians, of the event's world coordinate. */
+    float              projection;      /**< Projection distance used while the event is drawn. */
+    u8                 unk_24[0x40];
+    int                jump_point;          /**< Entry point on the map an event moves the player to, or -1. */
+    char               jump_map_name[0x20]; /**< Name of the map or interior an event moves the player to. */
+    int                event_no;            /**< Event started after a map change or script load, or below zero for none. */
+    char               script_name[0x40];   /**< Path of the event script file the event asks to load. */
+    int                request;             /**< Request the event leaves for the game loop. @see EVENT_REQUEST. */
+    int                command_mode;        /**< How the running script is advanced each frame. @see EVENT_COMMAND_MODE. */
+    int                skip_state;          /**< Progress of skipping the drama scene. @see EVENT_SKIP_STATE. */
+    int                skip_button;         /**< Pad button that skips the drama scene. */
+    s32                unk_dc;
+    float              skip_fade_color[4]; /**< Colour the screen fades to when the drama scene is skipped. */
+    int                start_button;       /**< Pad button that the script reads as its start button. */
+    int                snd_id[12];         /**< Sound bank handle loaded into each sound port. */
+    int                last_snd_id;        /**< Sound bank handle loaded most recently. */
+    s32                unk_128;
+    float              env_bgm_volume;                        /**< Volume of the environment music the event started. */
+    int                env_bgm_no;                            /**< Environment music the event started. */
+    int                stream_playing;                        /**< Non-zero while a voice stream the event started is playing. */
+    int                stream_from_fpl;                       /**< Non-zero when the open voice stream was opened from a voice pack. */
+    int                func_iparam[16];                       /**< Integer parameters of the door mode: character number, entry point and sound effect. */
+    float              func_fparam[16];                       /**< Float parameters of the door mode: position, facing, camera position and look-at offset. */
+    int                monster_talk[3];                       /**< Talk data of the monster the player spoke to in the dungeon. */
+    int                door_type;                             /**< Kind of door the door mode opens, choosing its sound effect. */
+    int                interior_entrance;                     /**< Entrance of the interior an event moves the player into. */
+    u64                stopwatch_start;                       /**< Play time at which the stopwatch started, or 0 while it is stopped. */
+    s64                stopwatch_limit;                       /**< Time limit the stopwatch counts down from, or 0 to count up. */
+    int                stopwatch_x;                           /**< Screen X position of the stopwatch. */
+    int                stopwatch_y;                           /**< Screen Y position of the stopwatch. */
+    int                stopwatch_style;                       /**< Layout the stopwatch is drawn in. */
+    CMapParts         *dng_event_parts;                       /**< Dungeon map part the player triggered an event at. */
+    int                dng_event_found;                       /**< Non-zero once a dungeon event part has been found. */
+    int                pack_loaded;                           /**< Non-zero while the read buffer holds a pack file that loads search first. */
+    int                map_draw;                              /**< Non-zero while the map is drawn behind the event. */
+    int                stream_reading;                        /**< Non-zero while a stream reads the disc, so files may not be loaded. */
+    int                stream_volume;                         /**< Volume the event plays its voice stream at. */
+    int                caption_enable;                        /**< Non-zero while movie captions are drawn. */
+    int                caption_start[EVENT_CAPTION_NUM];      /**< Movie frame at which each caption appears. */
+    int                caption_frames[EVENT_CAPTION_NUM];     /**< Number of movie frames each caption stays. */
+    char               caption_text[EVENT_CAPTION_NUM][0xE1]; /**< Text of each caption. */
+    u8                 unk_126a[0x2];
+    char              *npc_talk_text; /**< Loaded NPC conversation text of the town. */
+    int                npc_talk_size; /**< Size of the loaded NPC conversation text. */
     CScene::BGM_STATUS bgm_status;    /**< Music state the event saved and can restore. */
-    float keep_time;                  /**< Time of day the event saved. */
-    u8 unk_1294[0xC];
+    float              keep_time;     /**< Time of day the event saved. */
+    u8                 unk_1294[0xC];
 };
 
 STATIC_ASSERT(sizeof(ED_EVENT_INFO) == 0x12A0);
@@ -145,11 +145,11 @@ public:
     int world_coord; /**< Non-zero when positions given to an object or function point are in the event's world coordinate. */
 
     union {
-        CCharacter2 *chara;      /**< Character the handle refers to. */
-        CObject *object;         /**< Map object the handle refers to. */
-        CEventSprite2 *sprite;   /**< Event sprite the handle refers to. */
-        mgCFrame *frame;         /**< Model frame the handle refers to. */
-        CFuncPoint *func_point;  /**< Function point the handle refers to. */
+        CCharacter2   *chara;      /**< Character the handle refers to. */
+        CObject       *object;     /**< Map object the handle refers to. */
+        CEventSprite2 *sprite;     /**< Event sprite the handle refers to. */
+        mgCFrame      *frame;      /**< Model frame the handle refers to. */
+        CFuncPoint    *func_point; /**< Function point the handle refers to. */
     };
 
     /**
@@ -168,7 +168,7 @@ public:
      * @address 0x260920
      * @size 0x40
      */
-    int Set(int type, CObject *object, int world_coord);
+    int Set(int new_kind, CObject *object, int new_flag);
 
     /**
      * Points the handle at a scene character; returns 1 when the type is EOH_TYPE_CHARA and the character exists, 0 otherwise.
@@ -177,7 +177,7 @@ public:
      * @address 0x260960
      * @size 0x40
      */
-    int Set(int type, int scene_no, CCharacter2 *chara);
+    int Set(int new_kind, int new_chara_no, CCharacter2 *chara);
 
     /**
      * Points the handle at an event sprite; returns 1 when the type is EOH_TYPE_SPRITE and the sprite exists, 0 otherwise.
@@ -186,7 +186,7 @@ public:
      * @address 0x2609A0
      * @size 0x40
      */
-    int Set(int type, CEventSprite2 *sprite);
+    int Set(int new_kind, CEventSprite2 *sprite);
 
     /**
      * Points the handle at a model frame; returns 1 when the type is EOH_TYPE_FRAME and the frame exists, 0 otherwise.
@@ -195,7 +195,7 @@ public:
      * @address 0x2609E0
      * @size 0x40
      */
-    int Set(int type, mgCFrame *frame);
+    int Set(int new_kind, mgCFrame *frame);
 
     /**
      * Points the handle at a function point; returns 1 when the type is EOH_TYPE_FUNC_POINT and the point exists, 0 otherwise.
@@ -204,7 +204,7 @@ public:
      * @address 0x260A20
      * @size 0x50
      */
-    int Set(int type, CFuncPoint *func_point);
+    int Set(int new_kind, CFuncPoint *new_func_point);
 };
 
 STATIC_ASSERT(sizeof(CEoh) == 0x10);
@@ -235,7 +235,7 @@ public:
      * @address 0x260E60
      * @size 0x40
      */
-    int Set(int no, int type, CObject *object, int world_coord);
+    int Set(int slot, int type, CObject *object, int flag);
 
     /**
      * Points a handle at a scene character; returns 1 on success, 0 for a bad handle number or character.
@@ -244,7 +244,7 @@ public:
      * @address 0x260EA0
      * @size 0x40
      */
-    int Set(int no, int type, int scene_no, CCharacter2 *chara);
+    int Set(int slot, int kind, int chara_no, CCharacter2 *chara);
 
     /**
      * Points a handle at an event sprite; returns 1 on success, 0 for a bad handle number or sprite.
@@ -253,7 +253,7 @@ public:
      * @address 0x260EE0
      * @size 0x40
      */
-    int Set(int no, int type, CEventSprite2 *sprite);
+    int Set(int slot, int kind, CEventSprite2 *sprite);
 
     /**
      * Points a handle at a model frame; returns 1 on success, 0 for a bad handle number or frame.
@@ -262,7 +262,7 @@ public:
      * @address 0x260F20
      * @size 0x40
      */
-    int Set(int no, int type, mgCFrame *frame);
+    int Set(int slot, int kind, mgCFrame *frame);
 
     /**
      * Points a handle at a function point; returns 1 on success, 0 for a bad handle number or point.
@@ -271,7 +271,7 @@ public:
      * @address 0x260F60
      * @size 0x40
      */
-    int Set(int no, int type, CFuncPoint *func_point);
+    int Set(int slot, int kind, CFuncPoint *func_point);
 
     /**
      * Moves what a handle refers to, converting from the event's world coordinate where it applies; returns 1 on success.
@@ -280,7 +280,7 @@ public:
      * @address 0x260FA0
      * @size 0x2A0
      */
-    int SetPos(int no, float x, float y, float z);
+    int SetPos(int slot, float x, float y, float z);
 
     /**
      * Turns what a handle refers to, adding the rotation of the event's world coordinate; returns 1 on success.
@@ -289,7 +289,7 @@ public:
      * @address 0x261240
      * @size 0x220
      */
-    int SetRot(int no, float x, float y, float z);
+    int SetRot(int slot, float x, float y, float z);
 
     /**
      * Gives the position of what a handle refers to in the event's world coordinate; returns 1 on success.
@@ -298,7 +298,7 @@ public:
      * @address 0x261460
      * @size 0x1C0
      */
-    int GetPos(int no, float *pos);
+    int GetPos(int slot, float *pos);
 
     /**
      * Gives the rotation of what a handle refers to in the event's world coordinate; returns 1 on success.
@@ -307,7 +307,7 @@ public:
      * @address 0x261620
      * @size 0x1E0
      */
-    int GetRot(int no, float *rot);
+    int GetRot(int slot, float *rot);
 
     /**
      * Starts a motion on a character handle, optionally at a given time; returns 1 on success.
@@ -316,7 +316,7 @@ public:
      * @address 0x261800
      * @size 0xE0
      */
-    int SetMotion(int no, char *name, int flag, float time);
+    int SetMotion(int slot, char *name, int type, float blend);
 
     /**
      * Returns whether the motion of a character handle has ended, or 0 for a handle that is not a character.
@@ -325,7 +325,7 @@ public:
      * @address 0x2618E0
      * @size 0xA0
      */
-    int CheckMotionEnd(int no);
+    int CheckMotionEnd(int slot);
 
     /**
      * Asks the motion sequence of a character handle to move on; returns 1 on success.
@@ -334,7 +334,7 @@ public:
      * @address 0x261980
      * @size 0x80
      */
-    int SetMotionTrg(int no);
+    int SetMotionTrg(int slot);
 
     /**
      * Returns the progress of the motion sequence of a character handle, or 0 when it has none.
@@ -343,7 +343,7 @@ public:
      * @address 0x261A00
      * @size 0x70
      */
-    int GetSeqStatus(int no);
+    int GetSeqStatus(int slot);
 
     /**
      * Sets the speed at which a character handle's motion plays; returns 1 on success.
@@ -352,7 +352,7 @@ public:
      * @address 0x261A70
      * @size 0x70
      */
-    int SetStep(int no, float step);
+    int SetStep(int slot, float step);
 
     /**
      * Sets the speed at which a character handle blends into its next motion; returns 1 on success.
@@ -361,7 +361,7 @@ public:
      * @address 0x261AE0
      * @size 0x80
      */
-    int SetChangeStep(int no, float step);
+    int SetChangeStep(int slot, float step);
 
     /**
      * Puts the motion of a character handle back to its start; returns 1 on success.
@@ -370,7 +370,7 @@ public:
      * @address 0x261B60
      * @size 0x70
      */
-    int ResetMotion(int no);
+    int ResetMotion(int slot);
 
     /**
      * Switches a texture animation of a character handle on or off, or all of them off; returns 1 on success.
@@ -379,7 +379,7 @@ public:
      * @address 0x261BD0
      * @size 0xC0
      */
-    int SetTexAnim(int no, int on, char *name);
+    int SetTexAnim(int slot, int on, char *name);
 
     /**
      * Scales what a handle refers to; returns 1 on success.
@@ -388,7 +388,7 @@ public:
      * @address 0x261C90
      * @size 0x140
      */
-    int SetScale(int no, float x, float y, float z);
+    int SetScale(int slot, float x, float y, float z);
 
     /**
      * Gives the scale of what a handle refers to; returns 1 on success.
@@ -397,7 +397,7 @@ public:
      * @address 0x261DD0
      * @size 0x120
      */
-    int GetScale(int no, float *scale);
+    int GetScale(int slot, float *scale);
 
     /**
      * Shows or hides what a handle refers to; returns 1 on success.
@@ -406,7 +406,7 @@ public:
      * @address 0x261EF0
      * @size 0xD0
      */
-    int SetShow(int no, int show);
+    int SetShow(int slot, int show);
 
     /**
      * Gives whether what a handle refers to is shown; returns 1 on success.
@@ -415,7 +415,7 @@ public:
      * @address 0x261FC0
      * @size 0xF0
      */
-    int GetShow(int no, int *show);
+    int GetShow(int slot, int *show);
 
     /**
      * Returns the frame of a character handle's model with a given name, or null.
@@ -424,7 +424,7 @@ public:
      * @address 0x2620B0
      * @size 0x70
      */
-    mgCFrame *SearchFrame(int no, char *name);
+    mgCFrame *SearchFrame(int slot, char *name);
 
     /**
      * Shows or hides a named frame of what a handle refers to; returns 1 on success.
@@ -433,7 +433,7 @@ public:
      * @address 0x262120
      * @size 0xE0
      */
-    int SetFrameShow(int no, char *name, int show);
+    int SetFrameShow(int slot, char *name, int show);
 
     /**
      * Turns the shadow of a character handle on or off; returns 1 on success.
@@ -442,7 +442,7 @@ public:
      * @address 0x262200
      * @size 0x80
      */
-    int SetShadow(int no, int on);
+    int SetShadow(int slot, int enable);
 
     /**
      * Shows or hides a named frame of a character handle's shadow model; returns 1 on success.
@@ -451,7 +451,7 @@ public:
      * @address 0x262280
      * @size 0xB0
      */
-    int SetShadowFrameShow(int no, char *name, int show);
+    int SetShadowFrameShow(int slot, char *name, int show);
 
     /**
      * Sets the translation of a frame handle or of a character handle's model; returns 1 on success.
@@ -460,7 +460,7 @@ public:
      * @address 0x262330
      * @size 0xD0
      */
-    int SetTranslate(int no, float *translate);
+    int SetTranslate(int slot, float *pos);
 
     /**
      * Sets the colour of an event sprite handle; returns 1 on success.
@@ -469,7 +469,7 @@ public:
      * @address 0x262400
      * @size 0x70
      */
-    int SetColor(int no, float *color);
+    int SetColor(int slot, float *color);
 
     /**
      * Gives the colour of an event sprite handle; returns 1 on success.
@@ -478,7 +478,7 @@ public:
      * @address 0x262470
      * @size 0x70
      */
-    int GetColor(int no, float *color);
+    int GetColor(int slot, float *color);
 
     /**
      * Returns the name of the motion a character handle is playing, or null.
@@ -487,7 +487,7 @@ public:
      * @address 0x2624E0
      * @size 0x60
      */
-    char *GetNowMotionName(int no);
+    char *GetNowMotionName(int slot);
 
     /**
      * Returns the state of the motion a character handle is playing, or 0.
@@ -496,7 +496,7 @@ public:
      * @address 0x262540
      * @size 0x60
      */
-    int GetNowMotionStatus(int no);
+    int GetNowMotionStatus(int slot);
 
     /**
      * Moves the motion of a character handle to a time; returns 1 on success.
@@ -505,7 +505,7 @@ public:
      * @address 0x2625A0
      * @size 0xD0
      */
-    int SetMotionNowTime(int no, float time);
+    int SetMotionNowTime(int slot, float time);
 
     /**
      * Moves the motion of a character handle to a share of its length; returns 1 on success.
@@ -514,7 +514,7 @@ public:
      * @address 0x262670
      * @size 0xD0
      */
-    int SetMotionWaitTime(int no, float rate);
+    int SetMotionWaitTime(int slot, float rate);
 
     /**
      * Sets the footstep sound of a character handle; returns 1 on success.
@@ -523,7 +523,7 @@ public:
      * @address 0x262740
      * @size 0x60
      */
-    int SetFootSoundID(int no, int id);
+    int SetFootSoundID(int slot, int id);
 
     /**
      * Gives the world position of a named frame of a character handle, in the event's world coordinate; returns 1 on success.
@@ -532,7 +532,7 @@ public:
      * @address 0x2627A0
      * @size 0xB0
      */
-    int GetFramePos(int no, char *name, float *pos);
+    int GetFramePos(int slot, char *name, float *pos);
 
     /**
      * Sets the sound bank a character handle plays its sound effects from; returns 1 on success.
@@ -541,7 +541,7 @@ public:
      * @address 0x262850
      * @size 0x60
      */
-    int SetSoundID(int no, unsigned int id);
+    int SetSoundID(int slot, unsigned int id);
 
     /**
      * Returns whether a named frame of what a handle refers to is shown, or 0.
@@ -550,7 +550,7 @@ public:
      * @address 0x2628B0
      * @size 0xD0
      */
-    int GetFrameShow(int no, char *name);
+    int GetFrameShow(int slot, char *name);
 
     /**
      * Sets whether a character handle fades out when the camera comes close; returns 1 on success.
@@ -559,7 +559,7 @@ public:
      * @address 0x262980
      * @size 0x70
      */
-    int SetFadeFlag(int no, int flag);
+    int SetFadeFlag(int slot, int flag);
 
     /**
      * Puts the dynamic-animation parts of a character handle back to rest; returns 1 on success.
@@ -568,7 +568,7 @@ public:
      * @address 0x2629F0
      * @size 0x80
      */
-    int ResetDAPosition(int no);
+    int ResetDAPosition(int slot);
 
     /**
      * Steps the motion of a character handle once; returns 1 on success.
@@ -577,7 +577,7 @@ public:
      * @address 0x262A70
      * @size 0x70
      */
-    int NormalDrive(int no);
+    int NormalDrive(int slot);
 
     /**
      * Applies the position of a character handle to its model; returns 1 on success.
@@ -586,7 +586,7 @@ public:
      * @address 0x262AE0
      * @size 0x70
      */
-    int UpdatePosition(int no);
+    int UpdatePosition(int slot);
 
     /**
      * Sets the transparency of a named frame of what a handle refers to; returns 1 on success.
@@ -595,7 +595,7 @@ public:
      * @address 0x262B50
      * @size 0x100
      */
-    int SetFrameObjAlpha(int no, char *name, float alpha);
+    int SetFrameObjAlpha(int slot, char *name, float alpha);
 
     /**
      * Sets the footstep sound effect of a character handle; returns 1 on success.
@@ -604,7 +604,7 @@ public:
      * @address 0x262C50
      * @size 0x70
      */
-    int SetFootSeId(int no, int id);
+    int SetFootSeId(int slot, int stamp);
 };
 
 STATIC_ASSERT(sizeof(CEohMother) == 0x200);
@@ -618,7 +618,7 @@ struct ARG_DATA {
     int type; /**< Kind of value held. @see RS_STACK_TYPE. */
 
     union {
-        int i;   /**< Value of an integer. */
+        int   i; /**< Value of an integer. */
         float f; /**< Value of a float. */
         char *s; /**< Value of a string. */
     };
@@ -632,10 +632,10 @@ STATIC_ASSERT(sizeof(ARG_DATA) == 0x8);
  *
  */
 struct ARG_LIST {
-    int id;          /**< Number the list is found by. */
-    ARG_DATA *args;  /**< Arguments of the list. */
-    int arg_num;     /**< Number of arguments. */
-    ARG_LIST *next;  /**< Next list, or null. */
+    int       id;      /**< Number the list is found by. */
+    ARG_DATA *args;    /**< Arguments of the list. */
+    int       arg_num; /**< Number of arguments. */
+    ARG_LIST *next;    /**< Next list, or null. */
 };
 
 STATIC_ASSERT(sizeof(ARG_LIST) == 0x10);
@@ -649,10 +649,10 @@ STATIC_ASSERT(sizeof(ARG_LIST) == 0x10);
 class CEventScriptArg {
 public:
     CEventScriptArg();
-    int next_id;        /**< Number the next list built is given. */
-    ARG_LIST *list;     /**< First list, or null. */
-    int list_num;       /**< Number of lists. */
-    mgCMemory *memory;  /**< Memory the lists and their strings are taken from. */
+    int        next_id;  /**< Number the next list built is given. */
+    ARG_LIST  *list;     /**< First list, or null. */
+    int        list_num; /**< Number of lists. */
+    mgCMemory *memory;   /**< Memory the lists and their strings are taken from. */
 
     /**
      * Runs an argument script program, which builds this object's argument lists.
@@ -675,17 +675,17 @@ STATIC_ASSERT(sizeof(CEventScriptArg) == 0x10);
 class CRaster {
 public:
     CRaster();
-    int state;             /**< Progress of the effect. @see RASTER_STATE. */
-    float amplitude;       /**< Distance, in pixels, lines are moved at most. */
-    float amplitude_step;  /**< Change of the amplitude each frame. */
-    float speed;           /**< Angle, in radians, the wave moves each frame. */
-    float speed_step;      /**< Change of the speed each frame. */
-    float pitch;           /**< Angle, in radians, between one screen line and the next. */
-    float pitch_step;      /**< Change of the pitch each frame. */
-    float phase;           /**< Angle, in radians, of the wave at the top line. */
-    s32 unk_20;
-    int frames;            /**< Number of frames the current change lasts, or -1. */
-    int frame;             /**< Frames passed in the current change. */
+    int   state;          /**< Progress of the effect. @see RASTER_STATE. */
+    float amplitude;      /**< Distance, in pixels, lines are moved at most. */
+    float amplitude_step; /**< Change of the amplitude each frame. */
+    float speed;          /**< Angle, in radians, the wave moves each frame. */
+    float speed_step;     /**< Change of the speed each frame. */
+    float pitch;          /**< Angle, in radians, between one screen line and the next. */
+    float pitch_step;     /**< Change of the pitch each frame. */
+    float phase;          /**< Angle, in radians, of the wave at the top line. */
+    s32   unk_20;
+    int   frames; /**< Number of frames the current change lasts, or -1. */
+    int   frame;  /**< Frames passed in the current change. */
 
     /**
      * Turns the effect off and clears its settings.
@@ -712,7 +712,7 @@ public:
      * @address 0x263490
      * @size 0x150
      */
-    void StartRaster(float amplitude, float speed, float pitch, int frames);
+    void StartRaster(float target0, float target1, float target2, int frames);
 
     /**
      * Turns the effect off, moving to the given amplitude, speed and pitch over a number of frames; -1 keeps a setting.
@@ -721,7 +721,7 @@ public:
      * @address 0x2635E0
      * @size 0x150
      */
-    void StopRaster(float amplitude, float speed, float pitch, int frames);
+    void StopRaster(float target0, float target1, float target2, int frames);
 
     /**
      * Moves the settings one frame towards their targets.
@@ -753,14 +753,14 @@ STATIC_ASSERT(sizeof(CRaster) == 0x2C);
 class CScreenEffect {
 public:
     CScreenEffect();
-    CRaster raster;                   /**< Raster wave effect. */
-    mgCTexture *sepia_texture;        /**< Texture the sepia picture is captured into, or null. */
-    int sepia;                        /**< Non-zero while the sepia picture is drawn. */
+    CRaster     raster;                /**< Raster wave effect. */
+    mgCTexture *sepia_texture;         /**< Texture the sepia picture is captured into, or null. */
+    int         sepia;                 /**< Non-zero while the sepia picture is drawn. */
     mgCTexture *mono_flash_texture[2]; /**< Textures the two monochrome pictures are captured into, or null. */
-    int mono_flash;                   /**< Non-zero while the monochrome pictures are drawn. */
-    int mono_flash_interval;          /**< Number of frames each monochrome picture is shown. */
-    int mono_flash_frame;             /**< Frames the current monochrome picture has been shown. */
-    int mono_flash_no;                /**< Monochrome picture shown now, 0 or 1. */
+    int         mono_flash;            /**< Non-zero while the monochrome pictures are drawn. */
+    int         mono_flash_interval;   /**< Number of frames each monochrome picture is shown. */
+    int         mono_flash_frame;      /**< Frames the current monochrome picture has been shown. */
+    int         mono_flash_no;         /**< Monochrome picture shown now, 0 or 1. */
 
     /**
      * Turns every effect off and forgets the textures.
@@ -805,7 +805,7 @@ public:
      * @address 0x263E70
      * @size 0x10
      */
-    void StartRaster(float amplitude, float speed, float pitch, int frames);
+    void StartRaster(float target0, float target1, float target2, int frames);
 
     /**
      * Turns the raster wave off over a number of frames.
@@ -814,7 +814,7 @@ public:
      * @address 0x263E80
      * @size 0x10
      */
-    void StopRaster(float amplitude, float speed, float pitch, int frames);
+    void StopRaster(float target0, float target1, float target2, int frames);
 
     /**
      * Gives the texture, and the image memory behind it, that the sepia picture is captured into.
@@ -841,7 +841,7 @@ public:
      * @address 0x264130
      * @size 0x20
      */
-    void SetSepiaFlag(int on);
+    void SetSepiaFlag(int enabled);
 
     /**
      * Gives the two textures, and the image memory behind them, that the monochrome pictures are captured into.
@@ -850,7 +850,7 @@ public:
      * @address 0x264150
      * @size 0x50
      */
-    void SetMonoFlashTexture(mgCTexture **texture, u_long128 **image);
+    void SetMonoFlashTexture(mgCTexture **texture, u_long128 **vram_images);
 
     /**
      * Captures the screen into the two monochrome textures.
@@ -868,7 +868,7 @@ public:
      * @address 0x264470
      * @size 0x40
      */
-    void SetMonoFlashFlag(int on, int interval);
+    void SetMonoFlashFlag(int enabled, int interval);
 };
 
 STATIC_ASSERT(sizeof(CScreenEffect) == 0x4C);
@@ -879,17 +879,17 @@ STATIC_ASSERT(sizeof(CScreenEffect) == 0x4C);
  *
  */
 struct HIT_EFFECT_PARTICLE {
-    u8 unk_0[0x10];
+    u8            unk_0[0x10];
     sceVu0FVECTOR pos; /**< Position of the spark. */
     sceVu0FVECTOR dir; /**< Direction the spark flies in. */
-    float unk_30;
-    float speed;       /**< Distance the spark flies each frame. */
-    float slow;        /**< Amount the speed falls each frame. */
-    int life;          /**< Frames left before the spark disappears. */
-    s32 unk_40;
-    float alpha;       /**< Opacity of the spark. */
-    float alpha_step;  /**< Amount the opacity falls each frame. */
-    s32 unk_4c;
+    float         unk_30;
+    float         speed; /**< Distance the spark flies each frame. */
+    float         slow;  /**< Amount the speed falls each frame. */
+    int           life;  /**< Frames left before the spark disappears. */
+    s32           unk_40;
+    float         alpha;      /**< Opacity of the spark. */
+    float         alpha_step; /**< Amount the opacity falls each frame. */
+    s32           unk_4c;
 };
 
 STATIC_ASSERT(sizeof(HIT_EFFECT_PARTICLE) == 0x50);
@@ -1021,7 +1021,7 @@ extern CScreenEffect EventScreenEffect;
  * @address 0x260A70
  * @size 0xB0
  */
-void VectMatMul(float *out, float *in, float (*matrix)[4]);
+void VectMatMul(float *out, float *vec, float (*matrix)[4]);
 
 /**
  * Converts a position from the event's world coordinate into the map's.
@@ -1075,7 +1075,7 @@ void InitWorldCoord();
  * @address 0x264500
  * @size 0x80
  */
-int GetLocalFlag(int no);
+int GetLocalFlag(int index);
 
 /**
  * Sets or clears an event local flag; returns the value set, or 0 for a bad flag number.
@@ -1084,7 +1084,7 @@ int GetLocalFlag(int no);
  * @address 0x264580
  * @size 0x90
  */
-int SetLocalFlag(int no, int on);
+int SetLocalFlag(int index, int value);
 
 /**
  * Returns an event local counter, or -1 for a bad counter number.
@@ -1093,7 +1093,7 @@ int SetLocalFlag(int no, int on);
  * @address 0x264610
  * @size 0x40
  */
-int GetLocalCnt(int no);
+int GetLocalCnt(int index);
 
 /**
  * Sets an event local counter; returns 1, or 0 for a bad counter number.
@@ -1102,7 +1102,7 @@ int GetLocalCnt(int no);
  * @address 0x264650
  * @size 0x40
  */
-int SetLocalCnt(int no, int value);
+int SetLocalCnt(int index, int value);
 
 /**
  * Returns the number of the first event local counter that holds a value, or -1.
@@ -1300,7 +1300,7 @@ unsigned int *GetLoadBGBuff(char *name, int *size);
  * @address 0x266790
  * @size 0x150
  */
-int _LOAD_CHARA_sub(int stack_no, char **name, int scene_no, unsigned int *data, int flag);
+int _LOAD_CHARA_sub(int stack_no, char **name, int chara_no, unsigned int *pack, int mode);
 
 /**
  * Loads a character into a scene character slot from a pack file; returns non-zero on success.
@@ -1309,7 +1309,7 @@ int _LOAD_CHARA_sub(int stack_no, char **name, int scene_no, unsigned int *data,
  * @address 0x2668E0
  * @size 0x10
  */
-int _LOAD_CHARA_sub(int stack_no, char **name, int scene_no, unsigned int *data);
+int _LOAD_CHARA_sub(int a, char **b, int c, unsigned int *data);
 
 /**
  * Loads a motion file for a scene character; returns non-zero on success.
@@ -1318,7 +1318,7 @@ int _LOAD_CHARA_sub(int stack_no, char **name, int scene_no, unsigned int *data)
  * @address 0x267030
  * @size 0x120
  */
-int _LOAD_MOTION_sub(int stack_no, char *name, int scene_no, unsigned int *data);
+int _LOAD_MOTION_sub(int stack_no, char *name, int chara_no, unsigned int *pack);
 
 /**
  * Returns the configuration setting that turns movie captions off.
@@ -1354,7 +1354,7 @@ int _LOAD_MES_sub(char *name, int no, ClsMes *mes);
  * @address 0x276B20
  * @size 0xC0
  */
-int CommandStreamOpenFromFPL(int port, char *pack, char *name);
+int CommandStreamOpenFromFPL(int stream, char *name, char *base);
 
 /**
  * Opens a voice stream from a file; returns 1.
@@ -1363,7 +1363,7 @@ int CommandStreamOpenFromFPL(int port, char *pack, char *name);
  * @address 0x276BE0
  * @size 0x70
  */
-int CommandStreamOpen(int port, char *name);
+int CommandStreamOpen(int stream, char *name);
 
 /**
  * Writes the name of the voice pack holding a voice number; returns 1, or 0 when no pack holds it.
@@ -1381,7 +1381,7 @@ int VpkFileNameFromVoiceNo(char *name, int voice_no);
  * @address 0x276EC0
  * @size 0xE0
  */
-int CommandStreamPlay(int port, int volume);
+int CommandStreamPlay(int stream, int volume);
 
 /**
  * Builds the path of a voice stream file without opening it; returns 1.
@@ -1403,8 +1403,8 @@ void SetEventFunc(CRunScript *script);
 
 class CCameraControl;
 
-int GetArgInt(ARG_DATA *arg);
+int   GetArgInt(ARG_DATA *arg);
 float GetArgFloat(ARG_DATA *arg);
 char *GetArgString(ARG_DATA *arg);
-void GetArgVector(float *out, ARG_DATA *arg);
-void FileNameConvLanguage(char *name);
+void  GetArgVector(float *vec, ARG_DATA *arg);
+void  FileNameConvLanguage(char *name);

@@ -32,9 +32,10 @@ enum MenuChapterModeID {
 struct MENU_CHAPTER_INFO {
     int   tex_block[2]; /**< Texture blocks the menu lends the screen; the chapter pictures go into the first. */
     u8    unk_8[0x10];
-    int   show_cnt;     /**< Frames spent in MENU_CHAPTER_MODE_SHOW. */
-    float logo_alpha;   /**< Alpha the chapter logo is drawn with, raised to 128 while fading in. */
+    int   show_cnt;   /**< Frames spent in MENU_CHAPTER_MODE_SHOW. */
+    float logo_alpha; /**< Alpha the chapter logo is drawn with, raised to 128 while fading in. */
 };
+
 STATIC_ASSERT(sizeof(MENU_CHAPTER_INFO) == 0x20);
 
 /**

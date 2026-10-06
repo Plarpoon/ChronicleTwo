@@ -1,56 +1,70 @@
-#include <cstring>
+#include "common.h"
+
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
-#include <cmath>
-#include "maintex.hpp"
-#include "mglib.hpp"
-#include "mg_math.hpp"
-#include "dng_main.hpp"
-#include "scenesnd.hpp"
-#include "savedatadungeon.hpp"
-#include "common.h"
+#include <cstring>
+
+#include "automap.hpp"
 #include "dng_effect.hpp"
+#include "dng_main.hpp"
+#include "mainloop.hpp"
+#include "maintex.hpp"
 #include "map.hpp"
 #include "mapload.hpp"
 #include "mapparts.hpp"
+#include "mg_math.hpp"
 #include "mg_memory.hpp"
+#include "mglib.hpp"
+#include "savedatadungeon.hpp"
+#include "scenesnd.hpp"
 #include "scriptinterpreter.hpp"
-#include "automap.hpp"
-#include "mainloop.hpp"
 
-enum { kMiniMapInfoCount = 18, kHealingCooldown = 0x708, kStepUp = 1, kStepDown = 2, kStepRight = 4, kStepLeft = 8, kTermRightMargin = 21, kDoorPartsBegin = 0xE8, kDoorPartsEnd = 0xF0, kDoorPartsLast = kDoorPartsEnd - 1 };
+enum {
+    kMiniMapInfoCount = 18,
+    kHealingCooldown = 0x708,
+    kStepUp = 1,
+    kStepDown = 2,
+    kStepRight = 4,
+    kStepLeft = 8,
+    kTermRightMargin = 21,
+    kDoorPartsBegin = 0xE8,
+    kDoorPartsEnd = 0xF0,
+    kDoorPartsLast = kDoorPartsEnd - 1
+};
+
 extern MINIMAP_SYMBOL_INFO symbol_table[];
-extern "C" int fptosi(float value);
-extern int cax;
-extern int cay;
-extern CAutoMapGen * auto_map;
-extern mgCMemory * nowPrisetStack;
-extern AUTOMAP_ROOM_INFO * nowPriset;
-extern int nowPrisetNum;
-extern s16 * nowPrisetTable;
-extern SPI_TAG_PARAM tag__4[];
-extern char at_1111[];
-extern char at_2119__2[];
-extern char at_2125__2[];
-extern char at_2126__2[];
-extern char at_2128__2[];
-extern char at_2270[];
-extern char at_2347[];
-extern char at_2348[];
-extern char at_2349[];
-extern char at_2289[];
-extern char at_2290[];
-extern char at_2377__2[];
-extern char at_1661[];
-extern char at_2561[];
-extern char at_2609[];
-int _ROOM_FIXED(SPI_STACK *stack, int argCount);
-int _GRID_SIZE(SPI_STACK *stack, int unused);
-int _ROOM_ID(SPI_STACK *stack, int argCount);
-int _ROOM_SIZE(SPI_STACK *stack, int argCount);
-int _ROOM_RATE(SPI_STACK *stack, int argCount);
-int _RD(SPI_STACK *stack, int argCount);
-int _ROOM_END(SPI_STACK *stack, int argCount);
+extern "C" int             fptosi(float value);
+extern int                 cax;
+extern int                 cay;
+extern CAutoMapGen        *auto_map;
+extern mgCMemory          *nowPrisetStack;
+extern AUTOMAP_ROOM_INFO  *nowPriset;
+extern int                 nowPrisetNum;
+extern s16                *nowPrisetTable;
+extern SPI_TAG_PARAM       tag__4[];
+extern char                at_1111[];
+extern char                at_2119__2[];
+extern char                at_2125__2[];
+extern char                at_2126__2[];
+extern char                at_2128__2[];
+extern char                at_2270[];
+extern char                at_2347[];
+extern char                at_2348[];
+extern char                at_2349[];
+extern char                at_2289[];
+extern char                at_2290[];
+extern char                at_2377__2[];
+extern char                at_1661[];
+extern char                at_2561[];
+extern char                at_2609[];
+int                        _ROOM_FIXED(SPI_STACK *stack, int arg_count);
+int                        _GRID_SIZE(SPI_STACK *stack, int unused);
+int                        _ROOM_ID(SPI_STACK *stack, int arg_count);
+int                        _ROOM_SIZE(SPI_STACK *stack, int arg_count);
+int                        _ROOM_RATE(SPI_STACK *stack, int arg_count);
+int                        _RD(SPI_STACK *stack, int arg_count);
+int                        _ROOM_END(SPI_STACK *stack, int arg_count);
 
 /**
  *
@@ -63,61 +77,75 @@ struct ROOM_LINK_POINT {
 };
 
 // Code (.text)
-void CMiniMapSymbol::SetMapInfo(CMap *newMap, CAutoMapParts *newAutoMapParts, int width, int height,
-                                float cellWidth, float cellDepth) {
-    if (newMap == 0) {
+void CMiniMapSymbol::SetMapInfo(CMap *new_map, CAutoMapParts *new_auto_map_parts, int width, int height,
+                                float cell_width, float cell_depth) {
+    if (new_map == 0) {
         return;
     }
-    map = newMap;
-    grid = newAutoMapParts;
+
+    map = new_map;
+    grid = new_auto_map_parts;
     grid_w = width;
     grid_h = height;
-    cell_w = cellWidth;
-    cell_d = cellDepth;
-    parts_table = (CMapParts *)newMap->GetPlacPartsTable(&parts_num);
+    cell_w = cell_width;
+    cell_d = cell_depth;
+    parts_table = (CMapParts *) new_map->GetPlacPartsTable(&parts_num);
     CMapParts *part = parts_table;
     parts_num = 0;
 
-    while ((*(s8 *)part->name == 0) == 0) {
+    while ((*(s8 *) part->name == 0) == 0) {
         part++;
         parts_num++;
     }
+
     texture = mgTexManager.GetTexture(at_1111, -1);
-    s8 *floorName = (s8 *)BattleAreaScene->map_name;
-    if (*floorName == 0) {
+    s8 *floor_name = (s8 *) BattleAreaScene->map_name;
+
+    if (*floor_name == 0) {
         return;
     }
+
     info = 0;
     char buffer[0x40];
-    strcpy(buffer, (char *)floorName);
+    strcpy(buffer, (char *) floor_name);
+
     if (strlen(buffer) == 7) {
         buffer[6] = 0;
     }
+
     for (int i = 0; i < kMiniMapInfoCount; i++) {
-        char *entryName = MiniMapInfoData[i].name;
-        if (entryName != 0 && strcmp(buffer, entryName) == 0) {
+        char *entry_name = MiniMapInfoData[i].name;
+
+        if (entry_name != 0 && strcmp(buffer, entry_name) == 0) {
             info = &MiniMapInfoData[i];
             break;
         }
     }
+
     if (info == 0) {
         return;
     }
+
     part = parts_table;
+
     if (part == 0) {
         return;
     }
+
     for (int i = 0; i < parts_num; i++) {
-        char *partsName = part->parts_name;
+        char *parts_name = part->parts_name;
         part->minimap_tile = -1;
+
         for (int j = 0; PartsInfoData[j].name != 0; j++) {
-            if (strcmp(PartsInfoData[j].name, partsName) == 0) {
+            if (strcmp(PartsInfoData[j].name, parts_name) == 0) {
                 part->minimap_tile = info->tile[j];
             }
         }
+
         part++;
     }
 }
+
 void CMiniMapSymbol::DrawSymbolOpen() {
     prim.Initialize(0, 0);
     prim.Preset2D();
@@ -126,10 +154,12 @@ void CMiniMapSymbol::DrawSymbolOpen() {
     prim.Texture(TEX_SystenFrame);
     prim.SetScirror(x - w / 2, y - h / 2, w, h);
 }
+
 void CMiniMapSymbol::DrawSymbolClose() {
     prim.SetScirror(0, 0, mgScreenWidth - 1, mgScreenHeight - 1);
     prim.End();
     blink_cnt++;
+
     if (blink_cnt > 30) {
         blink_cnt = 0;
     }
@@ -176,8 +206,8 @@ void CMiniMapSymbol::DrawSymbol_Chara(CCharacter2 *chara) {
     chara->GetPosition(position);
     chara->GetRotation(rotation);
     sceVu0SubVector(position, position, center);
-    int px = x + fptosi(16.0f * (position[0] / cell_w)) + 8;
-    int py = y + fptosi(16.0f * (position[2] / cell_d)) + 8;
+    int        px = x + fptosi(16.0f * (position[0] / cell_w)) + 8;
+    int        py = y + fptosi(16.0f * (position[2] / cell_d)) + 8;
     CPreSprite sprite;
     sprite.Initialize(NULL, NULL);
     sprite.Preset2D();
@@ -234,7 +264,7 @@ void CMiniMapSymbol::Draw(float *pos) {
     sprite.Color(0x80, 0x80, 0x80, 0x60);
     sprite.SetScirror(x - w / 2, y - h / 2, w, h);
     for (int i = 0; i < parts_num; i++) {
-        if (*(s8 *)parts->name != 0) {
+        if (*(s8 *) parts->name != 0) {
             int tile = parts->minimap_tile;
             if (tile == -1) {
                 parts++;
@@ -245,12 +275,12 @@ void CMiniMapSymbol::Draw(float *pos) {
             parts->GetPosition(part_pos);
             sceVu0SubVector(delta, part_pos, center);
             CAutoMapParts *cells = grid;
-            float sizeD = cell_d;
-            float screen_x = (float)x + 16.0f * (delta[0] / cell_w);
-            float screen_y = (float)y + 16.0f * (delta[2] / sizeD);
+            float          sizeD = cell_d;
+            float          screen_x = (float) x + 16.0f * (delta[0] / cell_w);
+            float          screen_y = (float) y + 16.0f * (delta[2] / sizeD);
             if (cells != NULL) {
-                s16 width = grid_w;
-                CAutoMapParts *cell = &cells[width * (int)(part_pos[2] / sizeD) + (int)(part_pos[0] / sizeD)];
+                s16            width = grid_w;
+                CAutoMapParts *cell = &cells[width * (int) (part_pos[2] / sizeD) + (int) (part_pos[0] / sizeD)];
                 if (cell->attr & AUTOMAP_ATTR_HIDE) {
                     parts++;
                     continue;
@@ -263,8 +293,8 @@ void CMiniMapSymbol::Draw(float *pos) {
                     sprite.Color(0x30, 0x30, 0x30, 0);
                 }
             }
-            int rect_x = (int)screen_x;
-            sprite.SetIRect(rect_x, (int)screen_y, 16, 16, tile_u, tile_v);
+            int rect_x = (int) screen_x;
+            sprite.SetIRect(rect_x, (int) screen_y, 16, 16, tile_u, tile_v);
         }
         parts++;
     }
@@ -278,90 +308,110 @@ int CHealingPoint::CheckHealingTime() {
     if (enable == 0) {
         return 0;
     }
+
     if (timer > 0) {
         return 0;
     }
+
     HealingEffectMan.SetMode(1);
     timer = kHealingCooldown;
     return 1;
 }
+
 void CHealingPoint::Step() {
     int remaining;
 
     if (enable != 0) {
         remaining = timer;
+
         if (remaining > 0) {
             timer = remaining - 1;
         }
+
         if (timer <= 0) {
             HealingEffectMan.SetMode(2);
         }
     }
 }
-int _ROOM_FIXED(SPI_STACK *stack, int argCount) {
+
+int _ROOM_FIXED(SPI_STACK *stack, int arg_count) {
     nowPriset->fixed = spiGetStackInt(stack);
     return 1;
 }
+
 int _GRID_SIZE(SPI_STACK *stack, int unused) {
-    float cellSizeX = spiGetStackFloat(stack++);
-    float cellSizeZ = spiGetStackFloat(stack);
+    float        cell_size_x = spiGetStackFloat(stack++);
+    float        cell_size_z = spiGetStackFloat(stack);
     CAutoMapGen *map = auto_map;
-    map->cell_w = cellSizeX;
-    map->cell_d = cellSizeZ;
+    map->cell_w = cell_size_x;
+    map->cell_d = cell_size_z;
     return 1;
 }
-int _ROOM_ID(SPI_STACK *stack, int argCount) {
+
+int _ROOM_ID(SPI_STACK *stack, int arg_count) {
     nowPriset->id = spiGetStackInt(stack);
     return 1;
 }
-int _ROOM_SIZE(SPI_STACK *stack, int argCount) {
-    if (argCount != 2) {
+
+int _ROOM_SIZE(SPI_STACK *stack, int arg_count) {
+    if (arg_count != 2) {
         return 0;
     }
+
     int width = spiGetStackInt(stack++);
     int height = spiGetStackInt(stack);
     u32 bytes = width * height * 4;
     nowPriset->w = width;
     nowPriset->h = height;
     u32 blocks;
+
     if (bytes & 0xF) {
         blocks = (bytes >> 4) + 1;
     } else {
         blocks = bytes >> 4;
     }
-    nowPriset->table = (s16 *)operator new[](bytes, (u_long128 *)nowPrisetStack->Alloc(blocks + 2));
+
+    nowPriset->table = (s16 *) operator new[](bytes, nowPrisetStack->Alloc(blocks + 2));
     nowPrisetTable = nowPriset->table;
     nowPrisetNum += 1;
     return 1;
 }
-int _ROOM_RATE(SPI_STACK *stack, int argCount) {
+
+int _ROOM_RATE(SPI_STACK *stack, int arg_count) {
     nowPriset->rate = spiGetStackInt(stack);
     return 1;
 }
-int _RD(SPI_STACK *stack, int argCount) {
-    if (argCount != nowPriset->w * 2) {
+
+int _RD(SPI_STACK *stack, int arg_count) {
+    if (arg_count != nowPriset->w * 2) {
         return 0;
     }
-    for (int i = 0; i < argCount / 2; i++) {
+
+    for (int i = 0; i < arg_count / 2; i++) {
         *nowPrisetTable++ = spiGetStackInt(stack++);
         *nowPrisetTable++ = spiGetStackInt(stack++);
     }
+
     return 1;
 }
-int _ROOM_END(SPI_STACK *stack, int argCount) {
+
+int _ROOM_END(SPI_STACK *stack, int arg_count) {
     nowPriset = nowPriset + 1;
     return 1;
 }
+
 void CAutoMapGen::SetupRoomInfo(char *name, int length, mgCMemory *mem) {
     int i;
 
-    room_info = (AUTOMAP_ROOM_INFO *)operator new[](0x600, mem->Alloc(0x62));
+    room_info = (AUTOMAP_ROOM_INFO *) operator new[](0x600, mem->Alloc(0x62));
+
     for (i = 0; i < 64; i++) {
         AUTOMAP_ROOM_INFO *preset = room_info + i;
         preset->id = -1;
         preset->fixed = 0;
         preset->table = 0;
     }
+
     room_info_num = 0;
     nowPrisetStack = mem;
     auto_map = this;
@@ -389,7 +439,7 @@ int CAutoMapGen::CreatRoom(int x, int y, int room_no, int info_no) {
         } while (pick == -1);
     }
     AUTOMAP_ROOM_INFO *info = &room_info[info_no];
-    s16 *table = info->table;
+    s16               *table = info->table;
     if (table == NULL) {
         return 0;
     }
@@ -451,43 +501,53 @@ int CAutoMapGen::LinkConnectCheck(int x, int y, int kind, int room_no, int exclu
         if (y > 0) {
             cell_kind = (grid + (y - 1) * grid_w)[x].kind;
             int cell_room = (grid + (y - 1) * grid_w)[x].room_no;
+
             if ((cell_kind & kind) && cell_room != room_no) {
                 sides[count++] = kStepUp;
             }
         }
     }
+
     if (exclude != kStepUp) {
         if (y < grid_h - 1) {
             cell_kind = (grid + (y + 1) * grid_w)[x].kind;
             int cell_room = (grid + (y + 1) * grid_w)[x].room_no;
+
             if ((cell_kind & kind) && cell_room != room_no) {
                 sides[count++] = kStepDown;
             }
         }
     }
+
     if (exclude != kStepLeft) {
         if (x < grid_w - 1) {
             cell_kind = (grid + y * grid_w + x + 1)->kind;
             int cell_room = (grid + y * grid_w + x + 1)->room_no;
+
             if ((cell_kind & kind) && cell_room != room_no) {
                 sides[count++] = kStepRight;
             }
         }
     }
+
     if (exclude != kStepRight) {
         if (x > 0) {
             cell_kind = (grid + y * grid_w + x - 1)->kind;
             int cell_room = (grid + y * grid_w + x - 1)->room_no;
+
             if ((cell_kind & kind) && cell_room != room_no) {
                 sides[count++] = kStepLeft;
             }
         }
     }
+
     if (count <= 0) {
         return 0;
     }
+
     return sides[iRand(count)];
 }
+
 void CAutoMapGen::SetRoadLinkMark(int x, int y, int direction) {
     int nx = x;
     int ny = y;
@@ -511,28 +571,29 @@ void CAutoMapGen::SetRoadLinkMark(int x, int y, int direction) {
             mark = 4;
             break;
     }
-    (grid + y * grid_w)[x].link |= (u8)mark;
-    (grid + y * grid_w)[x].road_link |= (u8)mark;
-    (grid + ny * grid_w)[nx].link |= (u8)direction;
-    (grid + ny * grid_w)[nx].road_link |= (u8)direction;
+
+    (grid + y * grid_w)[x].link |= (u8) mark;
+    (grid + y * grid_w)[x].road_link |= (u8) mark;
+    (grid + ny * grid_w)[nx].link |= (u8) direction;
+    (grid + ny * grid_w)[nx].road_link |= (u8) direction;
 }
 #ifdef NONMATCHING
 void CAutoMapGen::RoomLink(int from, int to) {
     ROOM_LINK_POINT starts[64];
-    AUTOMAP_ROOM *src = &room[from];
-    AUTOMAP_ROOM *dst = &room[to];
+    AUTOMAP_ROOM   *src = &room[from];
+    AUTOMAP_ROOM   *dst = &room[to];
 
-    int src_cx = src->x + src->w / 2;
-    int src_cy = src->y + src->h / 2;
-    int goal_x = dst->x + dst->w / 2;
-    int goal_y = dst->y + dst->h / 2;
-    int dx = src_cx - goal_x;
-    float dist_x = (float)dx;
+    int   src_cx = src->x + src->w / 2;
+    int   src_cy = src->y + src->h / 2;
+    int   goal_x = dst->x + dst->w / 2;
+    int   goal_y = dst->y + dst->h / 2;
+    int   dx = src_cx - goal_x;
+    float dist_x = (float) dx;
     if (dist_x < 0.0f) {
         dist_x = -dist_x;
     }
-    int dy = src_cy - goal_y;
-    float dist_y = (float)dy;
+    int   dy = src_cy - goal_y;
+    float dist_y = (float) dy;
     if (dist_y < 0.0f) {
         dist_y = -dist_y;
     }
@@ -618,15 +679,15 @@ void CAutoMapGen::RoomLink(int from, int to) {
         return;
     }
     ROOM_LINK_POINT *start = &starts[iRand(start_num)];
-    int x = start->x;
-    int y = start->y;
+    int              x = start->x;
+    int              y = start->y;
     (grid + y * grid_w)[x].kind |= AUTOMAP_KIND_ENTRANCE;
     int steps;
-    dist_x = (float)dx;
+    dist_x = (float) dx;
     if (dist_x < 0.0f) {
         dist_x = -dist_x;
     }
-    dist_y = (float)dy;
+    dist_y = (float) dy;
     if (dist_y < 0.0f) {
         dist_y = -dist_y;
     }
@@ -635,21 +696,21 @@ void CAutoMapGen::RoomLink(int from, int to) {
         if (dx < 0) {
             side = kStepRight;
         }
-        float d = (float)dx;
+        float d = (float) dx;
         if (d < 0.0f) {
             d = -d;
         }
-        steps = iRand((int)(d - (float)(src->w / 2))) + 1;
+        steps = iRand((int) (d - (float) (src->w / 2))) + 1;
     } else {
         side = kStepUp;
         if (dy < 0) {
             side = kStepDown;
         }
-        float d = (float)dy;
+        float d = (float) dy;
         if (d < 0.0f) {
             d = -d;
         }
-        steps = iRand((int)(d - (float)(src->h / 2))) + 1;
+        steps = iRand((int) (d - (float) (src->h / 2))) + 1;
     }
     int joined = 0;
     do {
@@ -699,12 +760,12 @@ void CAutoMapGen::RoomLink(int from, int to) {
             } while (steps > 0);
         }
         dx = x - goal_x;
-        dist_x = (float)dx;
+        dist_x = (float) dx;
         if (dist_x < 0.0f) {
             dist_x = -dist_x;
         }
         dy = y - goal_y;
-        dist_y = (float)dy;
+        dist_y = (float) dy;
         if (dist_y < 0.0f) {
             dist_y = -dist_y;
         }
@@ -714,22 +775,22 @@ void CAutoMapGen::RoomLink(int from, int to) {
             } else {
                 side = kStepLeft;
             }
-            float d = (float)dx;
+            float d = (float) dx;
             if (d < 0.0f) {
                 d = -d;
             }
-            steps = iRand((int)d) + 1;
+            steps = iRand((int) d) + 1;
         } else {
             if (dy < 0) {
                 side = kStepDown;
             } else {
                 side = kStepUp;
             }
-            float d = (float)dy;
+            float d = (float) dy;
             if (d < 0.0f) {
                 d = -d;
             }
-            steps = iRand((int)d) + 1;
+            steps = iRand((int) d) + 1;
         }
     } while (joined == 0);
 }
@@ -759,17 +820,17 @@ void CAutoMapGen::CreatDummyRoot(int room_no) {
     } while (occupied != 0);
 
     AUTOMAP_ROOM *target = &room[iRand(room_num)];
-    int goal_x = target->x + target->w / 2;
-    int goal_y = target->y + target->h / 2;
-    int side;
-    int steps;
-    int dx = x - goal_x;
-    float dist_x = (float)dx;
+    int           goal_x = target->x + target->w / 2;
+    int           goal_y = target->y + target->h / 2;
+    int           side;
+    int           steps;
+    int           dx = x - goal_x;
+    float         dist_x = (float) dx;
     if (dist_x < 0.0f) {
         dist_x = -dist_x;
     }
-    int dy = y - goal_y;
-    float dist_y = (float)dy;
+    int   dy = y - goal_y;
+    float dist_y = (float) dy;
     if (dist_y < 0.0f) {
         dist_y = -dist_y;
     }
@@ -778,21 +839,21 @@ void CAutoMapGen::CreatDummyRoot(int room_no) {
         if (dx < 0) {
             side = kStepRight;
         }
-        float d = (float)dx;
+        float d = (float) dx;
         if (d < 0.0f) {
             d = -d;
         }
-        steps = iRand((int)d) + 1;
+        steps = iRand((int) d) + 1;
     } else {
         side = kStepUp;
         if (dy < 0) {
             side = kStepDown;
         }
-        float d = (float)dy;
+        float d = (float) dy;
         if (d < 0.0f) {
             d = -d;
         }
-        steps = iRand((int)d) + 1;
+        steps = iRand((int) d) + 1;
     }
     if (steps >= 2) {
         steps = 2;
@@ -847,12 +908,12 @@ void CAutoMapGen::CreatDummyRoot(int room_no) {
             } while (steps > 0);
         }
         dx = x - goal_x;
-        dist_x = (float)dx;
+        dist_x = (float) dx;
         if (dist_x < 0.0f) {
             dist_x = -dist_x;
         }
         dy = y - goal_y;
-        dist_y = (float)dy;
+        dist_y = (float) dy;
         if (dist_y < 0.0f) {
             dist_y = -dist_y;
         }
@@ -862,22 +923,22 @@ void CAutoMapGen::CreatDummyRoot(int room_no) {
             } else {
                 side = kStepLeft;
             }
-            float d = (float)dx;
+            float d = (float) dx;
             if (d < 0.0f) {
                 d = -d;
             }
-            steps = iRand((int)d) + 1;
+            steps = iRand((int) d) + 1;
         } else {
             if (dy < 0) {
                 side = kStepDown;
             } else {
                 side = kStepUp;
             }
-            float d = (float)dy;
+            float d = (float) dy;
             if (d < 0.0f) {
                 d = -d;
             }
-            steps = iRand((int)d) + 1;
+            steps = iRand((int) d) + 1;
         }
         if (steps >= 2) {
             steps = 2;
@@ -889,50 +950,57 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/automap", CreatDummyRoot__11CAutoMapGenFi)
 #endif
 void CAutoMapGen::CreatTermParts() {
     CAutoMapParts *grid;
-    int openDirs;
-    int x;
-    int y;
-    int length;
-    int direction;
-    int steps;
-    int rowWidth;
-    int xOff;
-    int yOff;
+    int            open_dirs;
+    int            x;
+    int            y;
+    int            length;
+    int            direction;
+    int            steps;
+    int            row_width;
+    int            x_off;
+    int            y_off;
     CAutoMapParts *cell;
-    int pending;
-    int room_no;
+    int            pending;
+    int            room_no;
 
     do {
-        openDirs = 0;
+        open_dirs = 0;
         x = iRand(grid_w - 4) + 2;
         y = iRand(grid_h - 4) + 2;
-        rowWidth = grid_w;
+        row_width = grid_w;
         grid = this->grid;
-        xOff = x * sizeof(CAutoMapParts);
-        yOff = y * rowWidth;
-        yOff *= sizeof(CAutoMapParts);
-        cell = (CAutoMapParts *)((u8 *)grid + yOff + xOff);
+        x_off = x * sizeof(CAutoMapParts);
+        y_off = y * row_width;
+        y_off *= sizeof(CAutoMapParts);
+        cell = (CAutoMapParts *) ((u8 *) grid + y_off + x_off);
+
         if (cell->kind == 1) {
-            if (((CAutoMapParts *)((u8 *)grid + (y - 1) * rowWidth * sizeof(CAutoMapParts) + xOff))
+            if (((CAutoMapParts *) ((u8 *) grid + (y - 1) * row_width * sizeof(CAutoMapParts) + x_off))
                     ->kind == 0) {
-                openDirs |= kStepUp;
+                open_dirs |= kStepUp;
             }
-            if (((CAutoMapParts *)((u8 *)grid + (y + 1) * rowWidth * sizeof(CAutoMapParts) + xOff))
+
+            if (((CAutoMapParts *) ((u8 *) grid + (y + 1) * row_width * sizeof(CAutoMapParts) + x_off))
                     ->kind == 0) {
-                openDirs |= kStepDown;
+                open_dirs |= kStepDown;
             }
+
             if ((cell - 1)->kind == 0) {
-                openDirs |= kStepLeft;
+                open_dirs |= kStepLeft;
             }
+
             if ((cell + 1)->kind == 0) {
-                openDirs |= kStepRight;
+                open_dirs |= kStepRight;
             }
         }
-    } while (openDirs == 0);
-    room_no = ((CAutoMapParts *)(xOff + (yOff + (int)grid)))->room_no;
+    } while (open_dirs == 0);
+
+    room_no = ((CAutoMapParts *) (x_off + (y_off + (int) grid)))->room_no;
+
     do {
         direction = 1 << iRand(4);
-    } while (!(openDirs & direction));
+    } while (!(open_dirs & direction));
+
     switch (direction) {
         case kStepUp:
             y--;
@@ -947,141 +1015,183 @@ void CAutoMapGen::CreatTermParts() {
             x++;
             break;
     }
+
     (this->grid + y * grid_w + x)->kind |= 1;
     (this->grid + y * grid_w + x)->room_no = room_no;
     SetRoadLinkMark(x, y, direction);
     length = iRand(2);
     pending = 0;
+
     do {
         if (y > 0 && (this->grid + (y - 1) * grid_w + x)->kind == 0) {
             pending |= kStepUp;
         }
+
         if (y <= grid_h - 2 && (this->grid + (y + 1) * grid_w + x)->kind == 0) {
             pending |= kStepDown;
         }
+
         if (x > 0 && (this->grid + y * grid_w + x - 1)->kind == 0) {
             pending |= kStepLeft;
         }
+
         if (x <= grid_w - 2 && (this->grid + y * grid_w + x + 1)->kind == 0) {
             pending |= kStepRight;
         }
+
         if (pending == 0) {
             break;
         }
+
         do {
             direction = 1 << iRand(4);
         } while (!(pending & direction));
+
         steps = iRand(2);
         pending = 0;
+
         while (steps > 0) {
             switch (direction) {
                 case kStepUp:
                     y--;
+
                     if (y < 2) {
                         steps = 0;
                     }
+
                     break;
                 case kStepDown:
                     y++;
+
                     if (grid_h - 2 < y) {
                         steps = 0;
                     }
+
                     break;
                 case kStepLeft:
                     x--;
+
                     if (x < 2) {
                         steps = 0;
                     }
+
                     break;
                 case kStepRight:
                     x++;
+
                     if (grid_w - kTermRightMargin < x) {
                         steps = 0;
                     }
+
                     break;
             }
+
             (this->grid + y * grid_w + x)->kind |= 1;
             (this->grid + y * grid_w + x)->room_no = room_no;
             SetRoadLinkMark(x, y, direction);
+
             if (steps <= 0) {
                 break;
             }
+
             switch (direction) {
                 case kStepUp:
                     if ((this->grid + (y - 1) * grid_w + x)->kind != 0) {
                         steps = 0;
                     }
+
                     break;
                 case kStepDown:
                     if ((this->grid + (y + 1) * grid_w + x)->kind != 0) {
                         steps = 0;
                     }
+
                     break;
                 case kStepLeft:
                     if ((this->grid + y * grid_w + x - 1)->kind != 0) {
                         steps = 0;
                     }
+
                     break;
                 case kStepRight:
                     if ((this->grid + y * grid_w + x + 1)->kind != 0) {
                         steps = 0;
                     }
+
                     break;
             }
         }
+
         length--;
     } while (length > 0);
 }
+
 void CAutoMapGen::CreatDoorRoom() {
     if (iRand(100) < 50) {
         return;
     }
+
     int candidates[8];
+
     for (int i = 0; i < 8; i++) {
         candidates[i] = -1;
     }
+
     int candidate_num = 0;
+
     for (int i = 0; i < room_num; i++) {
         if (room[i].unk_0 != 0) {
             continue;
         }
+
         if ((gen_flag & AUTOMAP_GEN_FIXED_START) && i == 0) {
             continue;
         }
+
         int entrances = 0;
+
         for (int row = room[i].y; row < room[i].y + room[i].h; row++) {
             for (int col = room[i].x; col < room[i].x + room[i].w; col++) {
                 CAutoMapParts *cell = &(grid + row * grid_w)[col];
+
                 if (cell->parts_no >= kDoorPartsBegin && cell->parts_no < kDoorPartsEnd) {
                     entrances += 999;
                 } else if (cell->kind & AUTOMAP_KIND_ENTRANCE) {
                     u8 road_link = cell->road_link;
+
                     if (road_link & AUTOMAP_LINK_NEG_Z) {
                         entrances++;
                     }
+
                     if (road_link & AUTOMAP_LINK_POS_Z) {
                         entrances++;
                     }
+
                     if (road_link & AUTOMAP_LINK_POS_X) {
                         entrances++;
                     }
+
                     if (road_link & AUTOMAP_LINK_NEG_X) {
                         entrances++;
                     }
                 }
             }
         }
+
         if (entrances == 1) {
             candidates[candidate_num++] = i;
         }
     }
+
     if (candidate_num > 0) {
         door_room = -1;
-        int pick = iRand(candidate_num);
+        int           pick = iRand(candidate_num);
         AUTOMAP_ROOM *r = &room[candidates[pick]];
+
         for (int row = r->y; row < r->y + r->h; row++) {
             for (int col = r->x; col < r->x + r->w; col++) {
                 CAutoMapParts *cell = &(grid + row * grid_w)[col];
+
                 if (cell->parts_no < kDoorPartsBegin || cell->parts_no > kDoorPartsLast) {
                     if (cell->kind & AUTOMAP_KIND_ENTRANCE) {
                         cell->kind |= AUTOMAP_KIND_DOOR;
@@ -1093,6 +1203,7 @@ void CAutoMapGen::CreatDoorRoom() {
         }
     }
 }
+
 CMapParts *CAutoMapGen::SearchDoorParts() {
     int row;
     int col;
@@ -1100,6 +1211,7 @@ CMapParts *CAutoMapGen::SearchDoorParts() {
     if (grid == NULL) {
         return 0;
     }
+
     for (row = 0; grid_h != 0; row++) {
         for (col = 0; col < grid_w; col++) {
             if ((this->grid + row * grid_w)[col].kind & 0x10) {
@@ -1107,20 +1219,23 @@ CMapParts *CAutoMapGen::SearchDoorParts() {
             }
         }
     }
+
     return 0;
 }
+
 void CAutoMapGen::SetPartsIndex() {
-    int y;
-    int x;
-    int i;
-    int j;
-    int flags;
+    int            y;
+    int            x;
+    int            i;
+    int            j;
+    int            flags;
     CAutoMapParts *cell;
 
     for (y = 0; y < grid_h; y++) {
         for (x = 0; x < grid_w; x++) {
             cell = &(grid + y * grid_w)[x];
             flags = cell->kind;
+
             if (flags == 0) {
                 cell->parts_no = -1;
             } else if (flags & 1) {
@@ -1133,6 +1248,7 @@ void CAutoMapGen::SetPartsIndex() {
                 }
             } else if (flags & 8) {
                 printf(at_2119__2, x, y, flags, cell->road_link);
+
                 for (j = 0; j < 0x118; j++) {
                     if (PartsInfoData[j].kind == (grid + y * grid_w)[x].kind &&
                         PartsInfoData[j].entrance == (grid + y * grid_w)[x].road_link &&
@@ -1145,30 +1261,36 @@ void CAutoMapGen::SetPartsIndex() {
         }
     }
 }
+
 void CAutoMapGen::SetDummyMountain() {
     CMap *map = DngMainScene->GetMap(0);
+
     if (map != NULL) {
-        mgCMemory *stack = (mgCMemory *)DngMainScene->GetStack(2);
-        float pos[4];
-        float scale[4];
-        *(u_long128 *)pos = *(u_long128 *)at_2125__2;
-        *(u_long128 *)scale = *(u_long128 *)at_2126__2;
+        mgCMemory *stack = DngMainScene->GetStack(2);
+        float      pos[4];
+        float      scale[4];
+        *(u_long128 *) pos = *(u_long128 *) at_2125__2;
+        *(u_long128 *) scale = *(u_long128 *) at_2126__2;
         map->PlaceParts(at_2128__2, pos, pos, scale, stack);
     }
 }
+
 void CAutoMapGen::SetDummyTree() {
-    s16 field[0x4000];
+    s16   field[0x4000];
     float pos[4];
 
-    int width = grid_w + 8;
-    int height = grid_h + 8;
+    int   width = grid_w + 8;
+    int   height = grid_h + 8;
     CMap *map = DngMainScene->GetMap(0);
+
     if (map == NULL) {
         return;
     }
+
     for (int i = 0; i < height * width; i++) {
         field[i] = -1;
     }
+
     for (int row = 0; row < grid_h; row++) {
         for (int col = 0; col < grid_w; col++) {
             if ((grid + row * grid_w)[col].parts_no != -1) {
@@ -1176,92 +1298,118 @@ void CAutoMapGen::SetDummyTree() {
             }
         }
     }
+
     for (int row = 0; row < height; row++) {
         for (int col = 0; col < width; col++) {
             if (field[row * width + col] == -1) {
                 int touches = 0;
+
                 if (field[(row - 1) * width + col] == 1) {
                     touches = 1;
                 }
+
                 if (field[(row + 1) * width + col] == 1) {
                     touches = 1;
                 }
+
                 if (field[row * width + col - 1] == 1) {
                     touches = 1;
                 }
+
                 if (field[row * width + col + 1] == 1) {
                     touches = 1;
                 }
+
                 if (field[(row - 1) * width + col - 1] == 1) {
                     touches = 1;
                 }
+
                 if (field[(row - 1) * width + col + 1] == 1) {
                     touches = 1;
                 }
+
                 if (field[(row + 1) * width + col - 1] == 1) {
                     touches = 1;
                 }
+
                 if (field[(row + 1) * width + col + 1] == 1) {
                     touches = 1;
                 }
+
                 if (touches != 0) {
                     field[row * width + col] = 2;
                 }
             }
         }
     }
+
     for (int row = 0; row < height; row++) {
         for (int col = 0; col < width; col++) {
             if (field[row * width + col] == -1) {
                 int touches = 0;
+
                 if (field[(row - 1) * width + col] == 2) {
                     touches = 1;
                 }
+
                 if (field[(row + 1) * width + col] == 2) {
                     touches = 1;
                 }
+
                 if (field[row * width + col - 1] == 2) {
                     touches = 1;
                 }
+
                 if (field[row * width + col + 1] == 2) {
                     touches = 1;
                 }
+
                 if (field[(row - 1) * width + col - 1] == 2) {
                     touches = 1;
                 }
+
                 if (field[(row - 1) * width + col + 1] == 2) {
                     touches = 1;
                 }
+
                 if (field[(row + 1) * width + col - 1] == 2) {
                     touches = 1;
                 }
+
                 if (field[(row + 1) * width + col + 1] == 2) {
                     touches = 1;
                 }
+
                 if (touches != 0) {
                     field[row * width + col] = 3;
                 }
             }
         }
     }
-    mgCMemory *stack = (mgCMemory *)DngMainScene->GetStack(2);
+
+    mgCMemory *stack = DngMainScene->GetStack(2);
     CMapParts *parts;
-    float rot[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-    float scale[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    float      rot[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+    float      scale[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+
     for (int row = 0; row < height; row++) {
         for (int col = 0; col < width; col++) {
             s16 tile = field[row * width + col];
+
             if (tile > 1) {
-                pos[0] = (float)col * cell_w - 4.0f * cell_w;
+                pos[0] = (float) col * cell_w - 4.0f * cell_w;
                 pos[1] = 0.0f;
-                pos[2] = (float)row * cell_d - 4.0f * cell_d;
+                pos[2] = (float) row * cell_d - 4.0f * cell_d;
                 pos[3] = 1.0f;
+
                 if (tile == 2) {
                     parts = map->PlaceParts(at_2128__2, pos, rot, scale, stack);
                 }
+
                 if (field[row * width + col] == 3) {
                     parts = map->PlaceParts(at_2270, pos, rot, scale, stack);
                 }
+
                 if (parts != NULL) {
                     parts->minimap_tile = -1;
                 }
@@ -1269,82 +1417,102 @@ void CAutoMapGen::SetDummyTree() {
         }
     }
 }
+
 void CAutoMapGen::SearchHealingPoint(CMap *map) {
-    CMapParts *parts;
-    int i;
-    char name[64];
-    float pos[4];
-    float offset[4];
+    CMapParts  *parts;
+    int         i;
+    char        name[64];
+    float       pos[4];
+    float       offset[4];
     CFuncPoint *point;
 
     if (map == NULL) {
         return;
     }
+
     for (i = 0; i < 4; i++) {
         sprintf(name, at_2289, i + 6);
         parts = map->GetPlaceParts(name);
+
         if (parts != NULL) {
-            ((CMapParts *)parts)->GetPosition(pos);
+            (parts)->GetPosition(pos);
             point = parts->func_point_mngr.Search(at_2290);
+
             if (point != NULL) {
-                *(u_long128 *)offset = *(u_long128 *)point->position;
+                *(u_long128 *) offset = *(u_long128 *) point->position;
                 sceVu0AddVector(pos, pos, offset);
                 HealingEffectMan.Set(pos);
                 healing_point.enable = 1;
             }
+
             break;
         }
     }
 }
+
 void CAutoMapGen::IndexToPartsPlace() {
     float pos[4];
 
     CMap *map = DngMainScene->GetMap(0);
+
     if (map == NULL) {
         return;
     }
+
     DngMainScene->ClearStack(2);
     DngMainScene->AssignStack(2);
-    mgCMemory *stack = (mgCMemory *)DngMainScene->GetStack(2);
+    mgCMemory *stack = DngMainScene->GetStack(2);
+
     if (stack == NULL) {
         return;
     }
+
     map->ClearPlaceParts();
     float rot[4] = {0.0f, 0.0f, 0.0f, 1.0f};
     float scale[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+
     for (int row = 0; row < grid_h; row++) {
         for (int col = 0; col < grid_w; col++) {
             CAutoMapParts *cell = &(grid + row * grid_w)[col];
+
             if (cell->parts_no != -1) {
                 char *name = PartsInfoData[cell->parts_no].name;
-                pos[0] = (float)col * cell_w;
+                pos[0] = (float) col * cell_w;
                 pos[1] = 0.0f;
-                pos[2] = (float)row * cell_d;
+                pos[2] = (float) row * cell_d;
                 pos[3] = 1.0f;
                 (grid + row * grid_w)[col].parts = map->PlaceParts(name, pos, rot, scale, stack);
             }
         }
     }
+
     SearchHealingPoint(map);
+
     if (gen_flag & AUTOMAP_GEN_DUMMY_TREE) {
         SetDummyTree();
     }
+
     if (gen_flag & AUTOMAP_GEN_DUMMY_MOUNTAIN) {
         SetDummyMountain();
     }
+
     pos[1] = -99999.0f;
     pos[3] = 1.0f;
     pos[0] = 0.0f;
     pos[2] = 0.0f;
     gio_parts = map->PlaceParts(at_2347, pos, rot, scale, stack);
+
     for (int i = 0; i < 12; i++) {
         random_stone[i] = map->PlaceParts(at_2348, pos, rot, scale, stack);
     }
+
     pot_parts = map->PlaceParts(at_2349, pos, rot, scale, stack);
     map->PlacePartsEnd();
+
     for (int row = 0; row < grid_h; row++) {
         for (int col = 0; col < grid_w; col++) {
             CAutoMapParts *cell = &(grid + row * grid_w)[col];
+
             if (cell->parts_no != -1) {
                 if (cell->parts != NULL) {
                     cell->wall = cell->parts->move_flag;
@@ -1353,6 +1521,7 @@ void CAutoMapGen::IndexToPartsPlace() {
         }
     }
 }
+
 void CAutoMapGen::SetInOutPartsIndex(int offset) {
     int candidates[64];
     int count = 0;
@@ -1366,19 +1535,23 @@ void CAutoMapGen::SetInOutPartsIndex(int offset) {
             if (count >= 64) {
                 break;
             }
+
             base = y * grid_w;
             s16 parts = (grid + base)[x].parts_no;
+
             if (parts >= 0x1C && parts < 0x20) {
                 candidates[count++] = x + base;
             }
         }
     }
+
     if (count > 0) {
         printf(at_2377__2, count);
         pick = iRand(count);
         grid[candidates[pick]].parts_no += offset;
     }
 }
+
 void CAutoMapGen::SetHealingPointIndex() {
     int candidates[64];
     int count = 0;
@@ -1393,35 +1566,41 @@ void CAutoMapGen::SetHealingPointIndex() {
                 if (count >= 64) {
                     break;
                 }
+
                 base = y * grid_w;
                 s16 parts = (grid + base)[x].parts_no;
+
                 if (parts >= 0x6C && parts < 0x74) {
                     candidates[count++] = x + base;
                 }
             }
         }
+
         if (count > 0) {
             pick = iRand(count);
             s16 parts = grid[candidates[pick]].parts_no;
             int next;
+
             if (parts < 0x70) {
                 next = parts + 0x1C;
             } else {
                 next = parts + 0x18;
             }
+
             grid[candidates[pick]].parts_no = next;
         }
     }
 }
-void CAutoMapGen::CreatFixedMap(int presetNo) {
-    CAutoMapParts *cell;
-    int i;
-    AUTOMAP_ROOM_INFO *preset = room_info + presetNo;
-    int presetWidth;
-    int presetHeight;
-    s16 *table;
-    int y;
-    int x;
+
+void CAutoMapGen::CreatFixedMap(int preset_no) {
+    CAutoMapParts     *cell;
+    int                i;
+    AUTOMAP_ROOM_INFO *preset = room_info + preset_no;
+    int                preset_width;
+    int                preset_height;
+    s16               *table;
+    int                y;
+    int                x;
 
     for (i = 0; i < grid_w * grid_h; i++) {
         cell = grid + i;
@@ -1435,17 +1614,21 @@ void CAutoMapGen::CreatFixedMap(int presetNo) {
         cell->wall = -1;
         cell->parts = 0;
     }
+
     for (i = 0; i < 8; i++) {
         room[i].unk_0 = 0;
     }
-    presetHeight = preset->h;
-    presetWidth = preset->w;
+
+    preset_height = preset->h;
+    preset_width = preset->w;
     table = preset->table;
-    for (y = 0; y < presetHeight; y++) {
-        for (x = 0; x < presetWidth; x++) {
+
+    for (y = 0; y < preset_height; y++) {
+        for (x = 0; x < preset_width; x++) {
             s16 parts_no = table[0];
             s16 attr = table[1];
             table += 2;
+
             if (parts_no != -1) {
                 (grid + y * grid_w)[x].parts_no = parts_no;
                 (grid + y * grid_w)[x].attr = attr;
@@ -1456,10 +1639,11 @@ void CAutoMapGen::CreatFixedMap(int presetNo) {
             }
         }
     }
+
     room[0].x = 0;
     room[0].y = 0;
-    room[0].w = presetWidth;
-    room[0].h = presetHeight;
+    room[0].w = preset_width;
+    room[0].h = preset_height;
 }
 #ifdef NONMATCHING
 void CAutoMapGen::RandomMapMainProc() {
@@ -1469,7 +1653,7 @@ void CAutoMapGen::RandomMapMainProc() {
         printf(at_2561, seed);
     }
     srand(seed);
-    int floor_id = DngSaveDataDungeon->floor_id[DngSaveDataDungeon->stage_id];
+    int               floor_id = DngSaveDataDungeon->floor_id[DngSaveDataDungeon->stage_id];
     CDngFloorManager *manager = &BattleAreaScene->floor_manager;
     for (int i = 0; i < grid_w * grid_h; i++) {
         grid[i].Initialize();
@@ -1559,47 +1743,53 @@ void CAutoMapGen::RandomMapMainProc() {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/automap", RandomMapMainProc__11CAutoMapGenFv);
 #endif
 void CAutoMapGen::Build() {
-    int floorNo;
-    int room;
-    int mode;
-    CMap *map;
+    int        floor_no;
+    int        room;
+    int        mode;
+    CMap      *map;
     CMapParts *parts;
 
     minimap_enable = 1;
     navi_enable = 1;
     mode = gen_flag;
+
     if (mode & 0x40) {
         AUTOMAP_ROOM_INFO *preset = room_info;
-        int h = preset->h;
+        int                h = preset->h;
         grid_w = preset->w;
         grid_h = h;
         CreatFixedMap(0);
         IndexToPartsPlace();
         return;
     }
+
     if (mode & 2) {
-        floorNo = DngSaveDataDungeon->floor_id[DngSaveDataDungeon->stage_id];
-        printf(at_2609, floorNo);
+        floor_no = DngSaveDataDungeon->floor_id[DngSaveDataDungeon->stage_id];
+        printf(at_2609, floor_no);
         room = 0;
-        if (floorNo < 8) {
-            if (floorNo == 5) {
+
+        if (floor_no < 8) {
+            if (floor_no == 5) {
                 room = 0;
             } else {
                 room = iRand(19) + 1;
             }
         }
-        if (floorNo < 19) {
-            if (floorNo >= 8) {
-                if (floorNo == 11) {
+
+        if (floor_no < 19) {
+            if (floor_no >= 8) {
+                if (floor_no == 11) {
                     room = 0;
                 } else {
                     room = iRand(19) + 1;
                 }
             }
         }
-        if (floorNo >= 19) {
+
+        if (floor_no >= 19) {
             room = iRand(10);
         }
+
         int h = room_info[room].h;
         grid_w = room_info[room].w;
         grid_h = h;
@@ -1607,68 +1797,82 @@ void CAutoMapGen::Build() {
         IndexToPartsPlace();
         return;
     }
+
     if (mode & 8) {
         grid_w = 20;
         grid_h = 16;
         RandomMapMainProc();
         return;
     }
+
     grid_w = 14;
     grid_h = 14;
     RandomMapMainProc();
     map = DngMainScene->GetMap(0);
+
     if (map != NULL) {
         parts = map->GetPlacPartsTable(&place_parts_num);
         place_parts_num = 0;
+
         if (place_parts_num > 0) {
-            while ((*(s8 *)parts->name == 0) == 0) {
+            while ((*(s8 *) parts->name == 0) == 0) {
                 parts++;
                 place_parts_num++;
             }
         }
     }
 }
+
 void CAutoMapGen::MinimapVisTest(float *pos) {
-    float sizeX;
-    float sizeZ;
-    int x;
-    int z;
+    float          size_x;
+    float          size_z;
+    int            x;
+    int            z;
     CAutoMapParts *cell;
-    int i;
-    int row;
-    int col;
+    int            i;
+    int            row;
+    int            col;
     CAutoMapParts *grid = this->grid;
 
     if (grid != NULL && minimap_enable != 0) {
-        sizeX = cell_w;
-        x = (int)((pos[0] + 0.5f * sizeX) / sizeX);
-        sizeZ = cell_d;
-        z = (int)((pos[2] + 0.5f * sizeZ) / sizeZ);
+        size_x = cell_w;
+        x = (int) ((pos[0] + 0.5f * size_x) / size_x);
+        size_z = cell_d;
+        z = (int) ((pos[2] + 0.5f * size_z) / size_z);
+
         if (x < 0) {
             x = 0;
         }
+
         if (z < 0) {
             z = 0;
         }
+
         (grid + z * grid_w)[x].visible = 1;
         cell = &(this->grid + z * grid_w)[x];
+
         if (z > 0) {
             CAutoMapParts *up = cell - grid_w;
+
             if (!(up->wall & 8)) {
                 up->visible = 1;
             }
         }
+
         if (z < grid_h - 1) {
             if (!(cell[grid_w].wall & 2)) {
                 cell[grid_w].visible = 1;
             }
         }
+
         if (x > 0 && !(cell[-1].wall & 4)) {
             cell[-1].visible = 1;
         }
+
         if (x < grid_w - 1 && !(cell[1].wall & 1)) {
             cell[1].visible = 1;
         }
+
         if (!(gen_flag & 2)) {
             for (i = 0; i < room_num; i++) {
                 if (x >= room[i].x && z >= room[i].y && x < room[i].x + room[i].w &&
@@ -1683,51 +1887,63 @@ void CAutoMapGen::MinimapVisTest(float *pos) {
         }
     }
 }
+
 void CAutoMapGen::MinimapDoorOpen(float *pos) {
-    int x;
-    int z;
+    int        x;
+    int        z;
     CMapParts *door;
-    int opened;
+    int        opened;
 
     if (grid == NULL) {
         return;
     }
-    x = (int)((pos[0] + 0.5f * cell_w) / cell_w);
-    z = (int)((pos[2] + 0.5f * cell_d) / cell_d);
+
+    x = (int) ((pos[0] + 0.5f * cell_w) / cell_w);
+    z = (int) ((pos[2] + 0.5f * cell_d) / cell_d);
     door = (grid + z * grid_w)[x].parts;
+
     if (door != NULL) {
         door->minimap_tile -= 4;
         u8 link = (grid + z * grid_w)[x].road_link;
         opened = 0;
+
         if (link == 1) {
             opened = 2;
         }
+
         if (link == 2) {
             opened = 8;
         }
+
         if (link == 4) {
             opened = 4;
         }
+
         if (link == 8) {
             opened = 1;
         }
+
         (grid + z * grid_w)[x].wall &= ~opened;
     }
 }
+
 CMapParts *CAutoMapGen::SearchRandomStone(float *pos, float radius) {
-    float stonePos[4];
-    int i;
+    float stone_pos[4];
+    int   i;
 
     for (i = 0; i < 12; i++) {
         if (random_stone[i] != NULL) {
-            random_stone[i]->GetPosition(stonePos);
-            if (mgDistVector(pos, stonePos) < radius) {
+            random_stone[i]->GetPosition(stone_pos);
+
+            if (mgDistVector(pos, stone_pos) < radius) {
                 return random_stone[i];
             }
         }
     }
+
     return NULL;
 }
+
 void CAutoMapGen::ClearRandomStone() {
     int i;
 
@@ -1737,31 +1953,38 @@ void CAutoMapGen::ClearRandomStone() {
         }
     }
 }
+
 void CAutoMapGen::Step() {
     healing_point.Step();
 }
+
 int CAutoMapGen::GetAttrStatus(float *pos) {
     CAutoMapParts *grid = this->grid;
-    float sizeX;
-    float sizeZ;
-    int x;
-    int z;
+    float          size_x;
+    float          size_z;
+    int            x;
+    int            z;
 
     if (grid == NULL) {
         return 0;
     }
-    sizeX = cell_w;
-    x = (int)((pos[0] + 0.5f * sizeX) / sizeX);
-    sizeZ = cell_d;
-    z = (int)((pos[2] + 0.5f * sizeZ) / sizeZ);
-    if (x < 0 || !((float)x < sizeX)) {
+
+    size_x = cell_w;
+    x = (int) ((pos[0] + 0.5f * size_x) / size_x);
+    size_z = cell_d;
+    z = (int) ((pos[2] + 0.5f * size_z) / size_z);
+
+    if (x < 0 || !((float) x < size_x)) {
         return 1;
     }
-    if (z < 0 || !((float)z < sizeZ)) {
+
+    if (z < 0 || !((float) z < size_z)) {
         return 1;
     }
+
     return (grid + z * grid_w)[x].attr;
 }
+
 void CAutoMapGen::MinimapAllVisible() {
     int i;
 
@@ -1769,32 +1992,39 @@ void CAutoMapGen::MinimapAllVisible() {
         grid[i].visible = 1;
     }
 }
+
 float CAutoMapGen::GetNaviDistance(float *pos) {
-    float sizeX;
-    float sizeZ;
-    int x;
-    int z;
-    s8 step;
+    float size_x;
+    float size_z;
+    int   x;
+    int   z;
+    s8    step;
 
     if (navi_valid == 0 || navi_enable == 0) {
         return 0.0f;
     }
-    sizeX = cell_w;
-    x = (int)((pos[0] + 0.5f * sizeX) / sizeX);
-    sizeZ = cell_d;
-    z = (int)((pos[2] + 0.5f * sizeZ) / sizeZ);
+
+    size_x = cell_w;
+    x = (int) ((pos[0] + 0.5f * size_x) / size_x);
+    size_z = cell_d;
+    z = (int) ((pos[2] + 0.5f * size_z) / size_z);
+
     if (x < 0) {
         x = 0;
     }
+
     if (z < 0) {
         z = 0;
     }
+
     step = (grid + z * grid_w)[x].navi;
+
     if (step <= 0) {
         return -1.0f;
     }
-    float distance = (float)(navi_depth - step);
-    distance *= (sizeX + sizeZ) / 2.0f;
+
+    float distance = (float) (navi_depth - step);
+    distance *= (size_x + size_z) / 2.0f;
     return distance;
 }
 #ifdef NONMATCHING
@@ -1805,9 +2035,9 @@ void CAutoMapGen::UpdateNaviMap(float *pos, int depth) {
         }
         navi_depth = depth;
         float sizeX = cell_w;
-        int x = (int)((pos[0] + 0.5f * sizeX) / sizeX);
+        int   x = (int) ((pos[0] + 0.5f * sizeX) / sizeX);
         float sizeZ = cell_d;
-        int z = (int)((pos[2] + 0.5f * sizeZ) / sizeZ);
+        int   z = (int) ((pos[2] + 0.5f * sizeZ) / sizeZ);
         if (x < 0) {
             x = 0;
         }
@@ -1833,11 +2063,11 @@ void CAutoMapGen::UpdateNaviMap(float *pos, int depth) {
                 changed = 0;
                 for (int row = 0; row < grid_h; row++) {
                     for (int col = 0; col < grid_w; col++) {
-                        s8 steps = cell->navi;
+                        s8  steps = cell->navi;
                         u32 wall = cell->wall;
                         if (steps > 0) {
                             if (row > 0 && !(wall & AUTOMAP_WALL_NEG_Z)) {
-                                int next = steps - 1;
+                                int            next = steps - 1;
                                 CAutoMapParts *up = cell - grid_w;
                                 if (up->navi < next && !(up->wall & AUTOMAP_WALL_POS_Z)) {
                                     up->navi = next;
@@ -1845,7 +2075,7 @@ void CAutoMapGen::UpdateNaviMap(float *pos, int depth) {
                                 }
                             }
                             if (row < grid_h - 1 && !(wall & AUTOMAP_WALL_POS_Z)) {
-                                int next = steps - 1;
+                                int            next = steps - 1;
                                 CAutoMapParts *down = cell + grid_w;
                                 if (down->navi < next && !(down->wall & AUTOMAP_WALL_NEG_Z)) {
                                     down->navi = next;

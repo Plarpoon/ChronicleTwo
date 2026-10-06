@@ -131,35 +131,35 @@ STATIC_ASSERT(sizeof(DNGMAP_ROOT_INFO) == 0x5);
  */
 struct DNGMAP_ROOM_INFO {
     char *unk_0;
-    char *title;                                   /**< Name of the floor, from the dungeon's floor title file. */
-    s8    floor_id;                                /**< Floor the room stands for. */
-    s8    order;                                   /**< Position of the floor along the dungeon; links lead onward to rooms with a greater value. */
+    char *title;    /**< Name of the floor, from the dungeon's floor title file. */
+    s8    floor_id; /**< Floor the room stands for. */
+    s8    order;    /**< Position of the floor along the dungeon; links lead onward to rooms with a greater value. */
     u8    unk_a[0x2];
-    u32   flag;                                    /**< Kind of room, a set of DNGMAP_ROOM_FLAG. */
-    s32   fast_destroy_time;                       /**< Target clear time, in 1/60 seconds, of the floor's fast destroy challenge. */
-    s8    seal;                                    /**< Seal on the floor, a DNGMAP_SEAL. */
-    s8    spheda;                                  /**< Non-zero when the floor has a spheda challenge. */
-    s8    geostone;                                /**< Non-zero when the floor holds a geostone. */
-    s8    fishing;                                 /**< Fishing record test: below zero to beat at most fishing_record, above zero at least; zero for none. */
-    s16   fishing_record;                          /**< Size, in hundredths, that the floor's fishing record test compares with. */
-    s8    practice_type;                           /**< Kind of practice condition the floor sets, or -1 for none. */
+    u32   flag;              /**< Kind of room, a set of DNGMAP_ROOM_FLAG. */
+    s32   fast_destroy_time; /**< Target clear time, in 1/60 seconds, of the floor's fast destroy challenge. */
+    s8    seal;              /**< Seal on the floor, a DNGMAP_SEAL. */
+    s8    spheda;            /**< Non-zero when the floor has a spheda challenge. */
+    s8    geostone;          /**< Non-zero when the floor holds a geostone. */
+    s8    fishing;           /**< Fishing record test: below zero to beat at most fishing_record, above zero at least; zero for none. */
+    s16   fishing_record;    /**< Size, in hundredths, that the floor's fishing record test compares with. */
+    s8    practice_type;     /**< Kind of practice condition the floor sets, or -1 for none. */
     u8    unk_1b;
-    s32   practice_param;                          /**< Value the practice condition is tested against. */
+    s32   practice_param; /**< Value the practice condition is tested against. */
     u8    unk_20[0x4];
     s16   spheda_prize_item[DNGMAP_SPHEDA_PRIZE_NUM]; /**< Prize of the spheda challenge, by rank. */
     s8    spheda_prize_num[DNGMAP_SPHEDA_PRIZE_NUM];  /**< Number given of each spheda prize, by rank. */
     u8    unk_2d;
-    s16   link[GLID_DIR_NUM];                      /**< Floor reached in each GLID_DIR, or a negative number for none. */
-    s16   key_room[GLID_DIR_NUM];                  /**< Floor that GetKeyNextRoom gives for each GLID_DIR. */
-    s16   offset_x;                                /**< Horizontal offset the room is drawn at. */
-    s16   offset_y;                                /**< Vertical offset the room is drawn at. */
-    s8    tex_no;                                  /**< Picture the room is drawn with. */
+    s16   link[GLID_DIR_NUM];     /**< Floor reached in each GLID_DIR, or a negative number for none. */
+    s16   key_room[GLID_DIR_NUM]; /**< Floor that GetKeyNextRoom gives for each GLID_DIR. */
+    s16   offset_x;               /**< Horizontal offset the room is drawn at. */
+    s16   offset_y;               /**< Vertical offset the room is drawn at. */
+    s8    tex_no;                 /**< Picture the room is drawn with. */
     u8    unk_43;
     u8    unk_44;
-    u8    visited;                                 /**< Non-zero once the floor has been entered. */
-    u8    mark;                                    /**< Non-zero to draw the bobbing mark over the room. */
+    u8    visited; /**< Non-zero once the floor has been entered. */
+    u8    mark;    /**< Non-zero to draw the bobbing mark over the room. */
     u8    unk_47;
-    float mark_phase;                              /**< Angle, in radians, of the bobbing mark's motion. */
+    float mark_phase; /**< Angle, in radians, of the bobbing mark's motion. */
     s32   unk_4c;
 };
 
@@ -172,15 +172,16 @@ STATIC_ASSERT(sizeof(DNGMAP_ROOM_INFO) == 0x50);
  *
  */
 struct GLID_INFO {
-    s16        type;                    /**< Kind of cell, a GLID_TYPE. */
-    s16        x;                       /**< Column of the cell. */
-    s16        y;                       /**< Row of the cell. */
+    s16        type; /**< Kind of cell, a GLID_TYPE. */
+    s16        x;    /**< Column of the cell. */
+    s16        y;    /**< Row of the cell. */
     s16        unk_6;
     s16        unk_8;
     u8         unk_a[0x2];
     GLID_INFO *link_glid[GLID_DIR_NUM]; /**< Cell beside this one in each GLID_DIR, or NULL. */
     u8         blink;                   /**< Non-zero to blink the cell on the map. */
     u8         unk_1d[0x3];
+
     union {
         DNGMAP_ROOM_INFO room; /**< Description of a GLID_TYPE_ROOM cell. */
         DNGMAP_ROOT_INFO root; /**< Description of a GLID_TYPE_ROOT cell. */
@@ -197,7 +198,7 @@ STATIC_ASSERT(sizeof(GLID_INFO) == 0x70);
  */
 class CDngFloorManager {
 public:
-    s8         dng_no;    /**< Dungeon whose data table is loaded. */
+    s8         dng_no; /**< Dungeon whose data table is loaded. */
     u8         unk_1[0x3];
     GLID_INFO *glid_info; /**< Cells of the tree map grid. */
     s32        glid_num;  /**< Number of cells in glid_info. */
@@ -222,7 +223,7 @@ public:
      * @address 0x2FE4D0
      * @size 0x90
      */
-    void AnalyzeFile(char *script, int size, mgCMemory *stack);
+    void AnalyzeFile(char *data, int size, mgCMemory *memory);
 
     /**
      *
@@ -232,7 +233,7 @@ public:
      * @address 0x2FE560
      * @size 0x160
      */
-    void LoadDataTable(int dng_no, mgCMemory *stack);
+    void LoadDataTable(int dungeon, mgCMemory *memory);
 
     /**
      *
@@ -262,7 +263,7 @@ public:
      * @address 0x2FE770
      * @size 0xA0
      */
-    int GetSphedaPrize(int floor_id, int rank, int *item, int *num);
+    int GetSphedaPrize(int floor_id, int index, int *prize, int *count);
 
     /**
      *
@@ -272,7 +273,7 @@ public:
      * @address 0x2FE810
      * @size 0x80
      */
-    int GetSphedaPrize(int rank, int *item, int *num);
+    int GetSphedaPrize(int index, int *prize, int *count);
 
     /**
      *
@@ -312,7 +313,7 @@ public:
      * @address 0x2FEB50
      * @size 0x330
      */
-    int IsClearPractice(int check_type);
+    int IsClearPractice(int difficulty);
 
     /**
      *
@@ -363,7 +364,7 @@ public:
      * @address 0x2FF3A0
      * @size 0xF0
      */
-    GLID_INFO *GetNextGlid(GLID_INFO *glid, int *dir);
+    GLID_INFO *GetNextGlid(GLID_INFO *glid, int *index);
 
     /**
      *
@@ -374,7 +375,7 @@ public:
      * @address 0x2FF490
      * @size 0x130
      */
-    GLID_INFO *GetNextRoom(int floor_id, int dir, GLID_INFO *glid, int unused, int *found_dir);
+    GLID_INFO *GetNextRoom(int floor_id, int dir, GLID_INFO *glid, int unused, int *out_dir);
 
     /**
      *

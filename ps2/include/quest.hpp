@@ -17,10 +17,10 @@ class mgCMemory;
  *
  */
 enum QUEST_LIMIT {
-    QUEST_PLAY_DATA_MAX = 0x40,      /**< Number of requests whose progress the save data keeps. */
-    QUEST_INFO_COMMENT_MAX = 4,      /**< Number of reaction comment slots of a request. */
-    MONSTER_BOOK_ENTRY_MAX = 0x180,  /**< Number of monsters the monster book keeps a record of. */
-    MONSTER_BOOK_KILL_MAX = 60000,   /**< Highest defeat count the monster book records for one monster. */
+    QUEST_PLAY_DATA_MAX = 0x40,     /**< Number of requests whose progress the save data keeps. */
+    QUEST_INFO_COMMENT_MAX = 4,     /**< Number of reaction comment slots of a request. */
+    MONSTER_BOOK_ENTRY_MAX = 0x180, /**< Number of monsters the monster book keeps a record of. */
+    MONSTER_BOOK_KILL_MAX = 60000,  /**< Highest defeat count the monster book records for one monster. */
 };
 
 /**
@@ -29,10 +29,10 @@ enum QUEST_LIMIT {
  *
  */
 enum QUEST_REQUEST_STATUS {
-    QUEST_REQUEST_STATUS_INVALID = -1,  /**< No save data, or the request number is out of range. */
-    QUEST_REQUEST_STATUS_NONE = 0,      /**< The request has not been taken on. */
-    QUEST_REQUEST_STATUS_ACCEPTED = 1,  /**< The request has been taken on but not fulfilled. */
-    QUEST_REQUEST_STATUS_CLEARED = 2,   /**< The request has been fulfilled. */
+    QUEST_REQUEST_STATUS_INVALID = -1, /**< No save data, or the request number is out of range. */
+    QUEST_REQUEST_STATUS_NONE = 0,     /**< The request has not been taken on. */
+    QUEST_REQUEST_STATUS_ACCEPTED = 1, /**< The request has been taken on but not fulfilled. */
+    QUEST_REQUEST_STATUS_CLEARED = 2,  /**< The request has been fulfilled. */
 };
 
 /**
@@ -41,9 +41,9 @@ enum QUEST_REQUEST_STATUS {
  *
  */
 struct QUEST_INFO {
-    s32  id;                                    /**< Request number, as the save data and the event scripts identify the request. */
-    char name[0x84];                            /**< Title of the request shown in the request list. */
-    char comment[0x140];                        /**< Description of the request given by the townsperson who asks it. */
+    s32  id;                                     /**< Request number, as the save data and the event scripts identify the request. */
+    char name[0x84];                             /**< Title of the request shown in the request list. */
+    char comment[0x140];                         /**< Description of the request given by the townsperson who asks it. */
     char reaction[QUEST_INFO_COMMENT_MAX][0x82]; /**< Further comments: slot 0 is shown while the request is open, slot 1 once it is cleared. */
 };
 
@@ -94,7 +94,7 @@ public:
      * @address 0x31FE00
      * @size 0x64
      */
-    void LoadCfg(mgCMemory *stack, char *script, int script_size);
+    void LoadCfg(mgCMemory *memory, char *script, int length);
 };
 
 STATIC_ASSERT(sizeof(CQuestManager) == 0x8);
@@ -105,8 +105,8 @@ STATIC_ASSERT(sizeof(CQuestManager) == 0x8);
  *
  */
 struct QUEST_PLAY_DATA {
-    s8 accepted;   /**< Non-zero once the request has been taken on; the event script sets the value. */
-    s8 cleared;    /**< Non-zero once the request has been fulfilled. */
+    s8 accepted; /**< Non-zero once the request has been taken on; the event script sets the value. */
+    s8 cleared;  /**< Non-zero once the request has been fulfilled. */
     u8 unk_2[0xE];
 };
 
@@ -147,7 +147,7 @@ public:
      * @address 0x31FE80
      * @size 0x30
      */
-    void SetQuestFlag(int id, int flag);
+    void SetQuestFlag(int index, int value);
 
     /**
      *
@@ -157,7 +157,7 @@ public:
      * @address 0x31FEB0
      * @size 0x34
      */
-    void QuestClear(int id);
+    void QuestClear(int index);
 
     /**
      *
@@ -167,7 +167,7 @@ public:
      * @address 0x31FEF0
      * @size 0x2C
      */
-    QUEST_PLAY_DATA *GetPlayQuestData(int id);
+    QUEST_PLAY_DATA *GetPlayQuestData(int index);
 };
 
 STATIC_ASSERT(sizeof(CQuestData) == 0x480);
@@ -202,7 +202,7 @@ public:
      * @address 0x320020
      * @size 0x68
      */
-    int CountKill(int monster_id, int count);
+    int CountKill(int monster_id, int amount);
 };
 
 STATIC_ASSERT(sizeof(CMonsterBook) == 0x1200);
@@ -236,4 +236,3 @@ void QuestRequestClear(int id, int unused);
  * @size 0x68
  */
 int GetQuestRequestStatus(int id);
-

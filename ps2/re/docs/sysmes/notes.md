@@ -1,5 +1,8 @@
 # sysmes: reverse-engineering notes
 
+`SystemMesStack` and the three `SystemMessage` instances are native globals. Their inline
+constructors generate the 68-byte retail `__sinit_sysmes_cpp` in declaration order.
+
 ## Types
 No class is owned by `sysmes` (`build/re/class_units.tsv`). The unit uses:
 - `ClsMes` (owner `nd_meswin`; `nd_meswin.hpp` did not exist when this header was written, so it

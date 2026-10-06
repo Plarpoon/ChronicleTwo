@@ -81,3 +81,7 @@ draft guards. `PrintV` was stopped by `mwccgap` source lookup of the mangled
 template argument `mgRect<int>`. The other two first attempts reached the
 whole-image comparison and differed. The default linked image remains
 byte-identical.
+
+## Number glyph calls
+
+All status-board callers pass `mgRect<int>` glyph bounds to `PrintV` by value. The MWCC ABI passes the aggregate through its address, so native `PrintV(..., rect, ...)` calls reproduce the same code as the former linker-name aliases.

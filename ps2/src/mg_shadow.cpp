@@ -1,5 +1,4 @@
 #include "common.h"
-#include "mg_shadow.hpp"
 
 #include <libgraph.h>
 #include <libvu0.h>
@@ -8,10 +7,12 @@
 #include "mg_drawprim.hpp"
 #include "mg_math.hpp"
 #include "mg_memory.hpp"
+#include "mg_shadow.hpp"
 #include "mg_visual.hpp"
 
 // Code (.text)
 #pragma schedule off
+
 /**
  * Writes the packet that loads the shadow projection matrix into VU1 memory, followed by the GS
  * packets the shadow microprogram sends, and returns its length in quadwords.
@@ -22,11 +23,11 @@ static int SetShadowData(u_int *packet, float (*matrix)[4]) {
     packet[1] = 0;
     packet[2] = 0;
     packet[3] = 0x6C080028;
-    u_long128 *dst = (u_long128 *)(packet + 4);
-    dst[0] = *(u_long128 *)matrix[0];
-    dst[1] = *(u_long128 *)matrix[1];
-    dst[2] = *(u_long128 *)matrix[2];
-    dst[3] = *(u_long128 *)matrix[3];
+    u_long128 *dst = (u_long128 *) (packet + 4);
+    dst[0] = *(u_long128 *) matrix[0];
+    dst[1] = *(u_long128 *) matrix[1];
+    dst[2] = *(u_long128 *) matrix[2];
+    dst[3] = *(u_long128 *) matrix[3];
     packet[0x14] = 0x8001;
     packet[0x15] = 0x102E8000;
     packet[0x16] = 0xE;
@@ -45,6 +46,7 @@ static int SetShadowData(u_int *packet, float (*matrix)[4]) {
     packet[0x23] = 0;
     return 9;
 }
+
 #pragma schedule reset
 
 #ifdef NONMATCHING
@@ -58,16 +60,16 @@ int mgCShadowMDT::CreateFacePacket(u_int *packet, mgCFace *face) {
 
     // A packet in uncached memory is built in the scratchpad and copied out by DMA.
     int scratchpad = 0;
-    if (((u_int)packet & 0xF0000000) == 0x20000000) {
+    if (((u_int) packet & 0xF0000000) == 0x20000000) {
         scratchpad = 1;
     }
 
     u_int *start = packet;
-    int remain = face->vertex_num;
-    int *index = face->index;
+    int    remain = face->vertex_num;
+    int   *index = face->index;
 
     sceGifTag tag;
-    *(u_long128 *)&tag = 0;
+    *(u_long128 *) &tag = 0;
     tag.EOP = 1;
     tag.PRE = 1;
     if ((face->type & MG_FACE_PRIM_MASK) != MG_PRIM_TRIANGLE) {
@@ -93,23 +95,23 @@ int mgCShadowMDT::CreateFacePacket(u_int *packet, mgCFace *face) {
         u_int *unpack = &write[3];
         u_int *data = &write[4];
         tag.NLOOP = num;
-        ((u_long128 *)write)[1] = *(u_long128 *)&tag;
+        ((u_long128 *) write)[1] = *(u_long128 *) &tag;
         write[8] = num;
         write[9] = num;
         write[10] = face->type;
 
         sceVu0FVECTOR *vertex = this->vertex;
-        u_long128 *out = &((u_long128 *)write)[3];
+        u_long128     *out = &((u_long128 *) write)[3];
         for (; num > 0; num--) {
-            out[0] = *(u_long128 *)vertex[index[0]];
-            out[1] = *(u_long128 *)vertex[index[1]];
-            out[2] = *(u_long128 *)vertex[index[2]];
+            out[0] = *(u_long128 *) vertex[index[0]];
+            out[1] = *(u_long128 *) vertex[index[1]];
+            out[2] = *(u_long128 *) vertex[index[2]];
             index += 3;
             out += 3;
         }
-        *unpack = (((u_int)((u_int *)out - data) / 4) << 16) | 0x6C008000;
-        *out = *(u_long128 *)prog_vif;
-        write = (u_int *)(out + 1);
+        *unpack = (((u_int) ((u_int *) out - data) / 4) << 16) | 0x6C008000;
+        *out = *(u_long128 *) prog_vif;
+        write = (u_int *) (out + 1);
 
         int size = write - block;
         if (size > 0x514) {
@@ -130,7 +132,7 @@ int mgCShadowMDT::CreateFacePacket(u_int *packet, mgCFace *face) {
 
     // VIF FLUSHA.
     u_int flush[4] = {0x13000000, 0, 0, 0};
-    *(u_long128 *)packet = *(u_long128 *)flush;
+    *(u_long128 *) packet = *(u_long128 *) flush;
     return (packet + 4 - start) / 4;
 }
 #else
@@ -139,72 +141,86 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_shadow", CreateFacePacket__12mgCShadowM
 
 #pragma schedule off
 #pragma global_optimizer off
+
 FACES_ID *mgCShadowMDT::CreateFace(FACES_ID *source, mgCMemory *face_memory, mgCMemory *index_memory,
-                               mgCFace **result) {
-    mgCFace *face = new ((u_long128 *)face_memory->Alloc(5)) mgCFace;
-    face->vertex_num = (int)source->face_num / 3;
+                                   mgCFace **result) {
+    mgCFace *face = new (face_memory->Alloc(5)) mgCFace;
+    face->vertex_num = (int) source->face_num / 3;
     face->type = source->type;
     face->index_stride = 3;
     face->index_num = face->vertex_num * face->index_stride;
     // Only the position index of each of a triangle's three vertices is kept.
     face->material = source->material;
     u_char *vertex;
-    source = (FACES_ID *)(vertex = (u_char *)source->index);
-    int *index = (int *)index_memory->Alloc(face->index_num * 4 / 16 + 0x10);
+    source = (FACES_ID *) (vertex = (u_char *) source->index);
+    int *index = (int *) index_memory->Alloc(face->index_num * 4 / 16 + 0x10);
     face->index = index;
+
     for (int i = 0; i < face->vertex_num; i++) {
-        index[0] = *(int *)(vertex + 0x0);
-        index[1] = *(int *)(vertex + 0xC);
-        index[2] = *(int *)(vertex + 0x18);
+        index[0] = *(int *) (vertex + 0x0);
+        index[1] = *(int *) (vertex + 0xC);
+        index[2] = *(int *) (vertex + 0x18);
         index += 3;
         vertex += 0x24;
     }
+
     face->next = NULL;
     mgFACE_GROUP *group = face_group;
+
     if (group == NULL) {
-        group = (mgFACE_GROUP *)face_memory->Alloc(0x12);
+        group = (mgFACE_GROUP *) face_memory->Alloc(0x12);
         group->next = 0;
         group->face = NULL;
-        group->material = (short)face->material;
+        group->material = face->material;
         group->vu_program = 1; // MG_VU_PROG_SHADOW
         face_group = group;
     }
+
     mgCFace *last = group->face;
+
     if (last == NULL) {
         group->face = face;
     } else {
         mgCFace *following;
+
         while ((following = last->next) != NULL) {
             last = following;
         }
+
         last->next = face;
     }
+
     if (result != NULL) {
         *result = face;
     }
-    return (FACES_ID *)vertex;
+
+    return (FACES_ID *) vertex;
 }
+
 #pragma global_optimizer reset
 #pragma schedule reset
 
-int mgSetPkTexFlush_TagCnt(u_int *);
+int mgSetPkTexFlush_TagCnt(u_int *packet);
 #pragma schedule off
 #pragma global_optimizer off
+
 u_int mgCShadowMDT::CreatePacket(mgCDrawManager *draw_manager) {
 
     GetTextureManager();
     mgFACE_GROUP *node = face_group;
-    mgCMemory *packet_memory = (mgCMemory *)draw_manager->packet_memory;
-    mgCMemory *face_memory = (mgCMemory *)draw_manager->data_memory;
-    u_int *packet_start = (u_int *)&packet_memory->stack[packet_memory->stack_used];
-    int face_start = (int)&face_memory->stack[face_memory->stack_used];
-    int face_cursor = face_start;
-    u_int *cursor = packet_start;
-    u_int *tag;
+    mgCMemory    *packet_memory = (mgCMemory *) draw_manager->packet_memory;
+    mgCMemory    *face_memory = (mgCMemory *) draw_manager->data_memory;
+    u_int        *packet_start = (u_int *) &packet_memory->stack[packet_memory->stack_used];
+    int           face_start = (int) &face_memory->stack[face_memory->stack_used];
+    int           face_cursor = face_start;
+    u_int        *cursor = packet_start;
+    u_int        *tag;
+
     while (node != NULL) {
-        node->packet = (u_long128 *)cursor;
+        node->packet = (u_long128 *) cursor;
         mgCFace *group = node->face;
-            // DMA REF to the face's packet, built through the uncached mirror of the data memory.
+
+        // DMA REF to the face's packet, built through the uncached mirror of the data memory.
         while (group != NULL) {
             tag = cursor;
             cursor += 4;
@@ -212,11 +228,12 @@ u_int mgCShadowMDT::CreatePacket(mgCDrawManager *draw_manager) {
             tag[1] = face_cursor;
             tag[2] = 0;
             tag[3] = 0;
-            int count = CreateFacePacket((u_int *)(face_cursor | 0x20000000), group);
+            int count = CreateFacePacket((u_int *) (face_cursor | 0x20000000), group);
             face_cursor += count * 16;
             group = group->next;
             tag[0] |= count;
-    }
+        }
+
         cursor += mgSetPkTexFlush_TagCnt(cursor) * 4;
         u_int *flush = cursor;
         cursor += 4;
@@ -225,43 +242,50 @@ u_int mgCShadowMDT::CreatePacket(mgCDrawManager *draw_manager) {
         flush[1] = 0;
         flush[2] = 0;
         flush[3] = 0;
-        node->packet_size = (int)((u_char *)cursor - (u_char *)node->packet) / 16;
+        node->packet_size = (int) ((u_char *) cursor - (u_char *) node->packet) / 16;
         node = node->next;
-}
-    packet_memory->Alloc((int)((u_char *)cursor - (u_char *)packet_start) / 16);
+    }
+
+    packet_memory->Alloc((int) ((u_char *) cursor - (u_char *) packet_start) / 16);
     face_memory->Alloc((face_cursor - face_start) / 16);
-    return (int)packet_start & 0x0FFFFFFF;
+    return (int) packet_start & 0x0FFFFFFF;
 }
+
 #pragma global_optimizer reset
 #pragma schedule reset
 
 #pragma schedule off
 #pragma global_optimizer off
+
 int mgCShadowMDT::DataAssignMDT(MDT_HEADER *header, mgCMemory *memory,
                                 mgCTextureManager *textures) {
     if (header == NULL) {
         return 0;
     }
+
     texture_manager = textures;
     // A shadow needs neither normals nor texture coordinates.
     header->uv_num = 0;
     header->normal_num = 0;
     mgCVisualMDT::CopyMDTData(header, memory);
     face_group = 0;
-    u_char *table = (u_char *)header + header->faces_ofs;
-    FACES_ID *cursor = (FACES_ID *)(table + 0x10);
-    int count = *(int *)(table + 8);
+    u_char   *table = (u_char *) header + header->faces_ofs;
+    FACES_ID *cursor = (FACES_ID *) (table + 0x10);
+    int       count = *(int *) (table + 8);
+
     for (int i = 0; i < count; i++) {
         cursor = CreateFace(cursor, memory, memory, 0);
     }
+
     return 1;
 }
+
 #pragma global_optimizer reset
 #pragma schedule reset
 
 #ifdef NONMATCHING
 int mgCShadowMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_INFO *info) {
-    u_int zero[4] = {0, 0, 0, 0};
+    u_int         zero[4] = {0, 0, 0, 0};
     sceVu0FMATRIX world_screen;
     mgMulMatrix(world_screen, info->world_screen, matrix);
 
@@ -278,47 +302,47 @@ int mgCShadowMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
     write[5] = vu1_base | 0x03000000;
     write[6] = vu1_offset | 0x02000000;
 
-    u_long128 *vu = (u_long128 *)write;
-    vu[2] = *(u_long128 *)zero;
-    vu[3] = *(u_long128 *)zero;
-    vu[4] = *(u_long128 *)zero;
+    u_long128 *vu = (u_long128 *) write;
+    vu[2] = *(u_long128 *) zero;
+    vu[3] = *(u_long128 *) zero;
+    vu[4] = *(u_long128 *) zero;
     write[20] = info->unk_fb0[3];
     write[21] = info->unk_fb0[0];
     write[22] = info->unk_fb0[1];
     write[23] = info->unk_fb0[2];
-    sceVu0CopyMatrix((sceVu0FVECTOR *)&vu[6], world_screen);
-    sceVu0CopyMatrix((sceVu0FVECTOR *)&vu[10], matrix);
-    vu[14] = *(u_long128 *)zero;
-    vu[15] = *(u_long128 *)zero;
-    vu[16] = *(u_long128 *)zero;
-    ((float *)write)[56] = info->shadow_light_dir[0];
-    ((float *)write)[60] = info->shadow_light_dir[1];
-    ((float *)write)[64] = info->shadow_light_dir[2];
-    vu[23] = *(u_long128 *)info->full_max;
-    vu[24] = *(u_long128 *)info->full_min;
+    sceVu0CopyMatrix((sceVu0FVECTOR *) &vu[6], world_screen);
+    sceVu0CopyMatrix((sceVu0FVECTOR *) &vu[10], matrix);
+    vu[14] = *(u_long128 *) zero;
+    vu[15] = *(u_long128 *) zero;
+    vu[16] = *(u_long128 *) zero;
+    ((float *) write)[56] = info->shadow_light_dir[0];
+    ((float *) write)[60] = info->shadow_light_dir[1];
+    ((float *) write)[64] = info->shadow_light_dir[2];
+    vu[23] = *(u_long128 *) info->full_max;
+    vu[24] = *(u_long128 *) info->full_min;
 
     sceVu0FMATRIX view_clip;
     mgMulMatrix(view_clip, info->view_clip_full, info->view);
     mgMulMatrix(view_clip, view_clip, matrix);
-    vu[27] = *(u_long128 *)view_clip[0];
-    vu[28] = *(u_long128 *)view_clip[1];
-    vu[29] = *(u_long128 *)view_clip[2];
-    vu[30] = *(u_long128 *)view_clip[3];
-    vu[31] = *(u_long128 *)info->clip_screen_full[0];
-    vu[32] = *(u_long128 *)info->clip_screen_full[1];
-    vu[33] = *(u_long128 *)info->clip_screen_full[2];
-    vu[34] = *(u_long128 *)info->clip_screen_full[3];
-    write[7] = ((((u_int)((u_int *)&vu[35] - &write[4]) / 4) - 1) << 16) | 0x6C000000;
+    vu[27] = *(u_long128 *) view_clip[0];
+    vu[28] = *(u_long128 *) view_clip[1];
+    vu[29] = *(u_long128 *) view_clip[2];
+    vu[30] = *(u_long128 *) view_clip[3];
+    vu[31] = *(u_long128 *) info->clip_screen_full[0];
+    vu[32] = *(u_long128 *) info->clip_screen_full[1];
+    vu[33] = *(u_long128 *) info->clip_screen_full[2];
+    vu[34] = *(u_long128 *) info->clip_screen_full[3];
+    write[7] = ((((u_int) ((u_int *) &vu[35] - &write[4]) / 4) - 1) << 16) | 0x6C000000;
 
     // VIF MSCAL of the shadow microprogram.
     write[140] = 0;
     write[141] = 0;
     write[142] = 0;
     write[143] = 0x14000000;
-    write[0] |= ((u_int *)&vu[36] - &write[4]) / 4;
+    write[0] |= ((u_int *) &vu[36] - &write[4]) / 4;
 
     // DMA CNT and VIF DIRECT of the GS packet: PRMODECONT, PRMODE, RGBAQ, then the draw environment.
-    write = (u_int *)&vu[36];
+    write = (u_int *) &vu[36];
     write[0] = 0x10000008;
     write[1] = 0;
     write[2] = 0;
@@ -327,7 +351,7 @@ int mgCShadowMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
     write[5] = 0x10000000;
     write[6] = SCE_GIF_PACKED_AD;
     write[7] = 0;
-    u_long *ad = (u_long *)&write[8];
+    u_long *ad = (u_long *) &write[8];
     ad[0] = 0;
     ad[1] = SCE_GS_PRMODECONT;
     ad[2] = 0x40;
@@ -335,7 +359,7 @@ int mgCShadowMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
     ad[4] = SCE_GS_SET_RGBAQ(1, 1, 1, 0x80, 0);
     ad[5] = SCE_GS_RGBAQ;
 
-    mgCDrawEnv *env = (mgCDrawEnv *)&ad[6];
+    mgCDrawEnv *env = (mgCDrawEnv *) &ad[6];
     if (draw_env != NULL) {
         *env = *draw_env;
     } else {
@@ -347,7 +371,7 @@ int mgCShadowMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
     env->test.bits.ate = 0;
     env->test.bits.afail = 0;
     env->test.bits.date = 0;
-    write = (u_int *)(env + 1);
+    write = (u_int *) (env + 1);
 
     sceVu0FMATRIX shadow;
     mgMulMatrix(shadow, info->shadow, matrix);

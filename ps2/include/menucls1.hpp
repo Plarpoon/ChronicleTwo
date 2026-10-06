@@ -56,6 +56,7 @@ public:
      */
     CMenuFont();
 };
+
 STATIC_ASSERT(sizeof(CMenuFont) == 0xB8);
 
 /**
@@ -66,18 +67,18 @@ STATIC_ASSERT(sizeof(CMenuFont) == 0xB8);
  */
 class CDC2Mes : public ClsMes {
 public:
-    u8 msg_change;          /**< Non-zero when an inserted string or number changed, so the message is laid out again. */
-    s8 cursor;              /**< Choice the cursor is on; -1 for none. */
-    s16 text_off_x;         /**< Distance of the text from the fixed frame's left edge; negative to use the frame's margins. */
-    s16 text_off_y;         /**< Distance of the text from the fixed frame's top edge; negative to use the frame's margins. */
-    s16 mes_no;             /**< System message the window shows; -1 to show str. */
-    u8 cursor_on;           /**< Non-zero to draw the choice cursor. */
-    u8 put_centering;       /**< Non-zero to centre the window horizontally on screen. */
-    u8 scissor_on;          /**< Non-zero to clip the window to scissor. */
-    u8 unk_2963[0xD];
-    mgRect<int> scissor;    /**< Screen rectangle the window is clipped to. */
-    char str[0xC1];         /**< Text the window shows when mes_no is -1. */
-    u8 unk_2a41[0xF];
+    u8          msg_change;    /**< Non-zero when an inserted string or number changed, so the message is laid out again. */
+    s8          cursor;        /**< Choice the cursor is on; -1 for none. */
+    s16         text_off_x;    /**< Distance of the text from the fixed frame's left edge; negative to use the frame's margins. */
+    s16         text_off_y;    /**< Distance of the text from the fixed frame's top edge; negative to use the frame's margins. */
+    s16         mes_no;        /**< System message the window shows; -1 to show str. */
+    u8          cursor_on;     /**< Non-zero to draw the choice cursor. */
+    u8          put_centering; /**< Non-zero to centre the window horizontally on screen. */
+    u8          scissor_on;    /**< Non-zero to clip the window to scissor. */
+    u8          unk_2963[0xD];
+    mgRect<int> scissor;   /**< Screen rectangle the window is clipped to. */
+    char        str[0xC1]; /**< Text the window shows when mes_no is -1. */
+    u8          unk_2a41[0xF];
 
     /**
      *
@@ -128,7 +129,7 @@ public:
      * @address 0x21F5F0
      * @size 0x10
      */
-    void SetMsgCursor(int cursor);
+    void SetMsgCursor(int choice);
 
     /**
      *
@@ -270,7 +271,7 @@ public:
      * @address 0x21FAF0
      * @size 0xD0
      */
-    void SetMsgItemNo(int *mes_no, int num);
+    void SetMsgItemNo(int *messages, int count);
 
     /**
      *
@@ -280,7 +281,7 @@ public:
      * @address 0x21FBC0
      * @size 0x170
      */
-    void SetMsgItemNo(char **str, int num);
+    void SetMsgItemNo(char **str, int count);
 
     /**
      *
@@ -290,7 +291,7 @@ public:
      * @address 0x21FD30
      * @size 0x80
      */
-    void SetMsgVolumeNo(int *values, int num);
+    void SetMsgVolumeNo(int *numbers, int count);
 
     /**
      *
@@ -300,7 +301,7 @@ public:
      * @address 0x21FDB0
      * @size 0x80
      */
-    void SetMsgVolumeNo(int *values, int *width, int num);
+    void SetMsgVolumeNo(int *numbers, int *digit_widths, int count);
 
     /**
      *
@@ -320,7 +321,7 @@ public:
      * @address 0x21FE60
      * @size 0x70
      */
-    void SetMsgItemPos(int *pos, int num);
+    void SetMsgItemPos(int *pos, int count);
 
     /**
      *
@@ -330,7 +331,7 @@ public:
      * @address 0x21FED0
      * @size 0x10
      */
-    void MakeMsg(int mes_no);
+    void MakeMsg(int message_no);
 
     /**
      *
@@ -340,7 +341,7 @@ public:
      * @address 0x21FEE0
      * @size 0x30
      */
-    void MakeMsg(char *str);
+    void MakeMsg(char *text);
 
     /**
      *
@@ -361,7 +362,7 @@ public:
      * @address 0x220060
      * @size 0x150
      */
-    void MakeMsg(CGameDataUsed *item, CGameDataUsed *weapon);
+    void MakeMsg(CGameDataUsed *attachment, CGameDataUsed *weapon);
 
     /**
      *
@@ -391,8 +392,9 @@ public:
      * @address 0x220310
      * @size 0x30
      */
-    void SetMsgAlpha(int alpha);
+    void SetMsgAlpha(int value);
 };
+
 STATIC_ASSERT(sizeof(CDC2Mes) == 0x2A50);
 
 /**
@@ -401,13 +403,14 @@ STATIC_ASSERT(sizeof(CDC2Mes) == 0x2A50);
  *
  */
 struct MENU_ITEM_MOVE_INFO {
-    u8 active;             /**< Non-zero while the item is on its way. */
-    u8 mode;               /**< How the item is written into dest on arrival, a MenuMoveItemMode. */
-    u8 unk_2[2];
-    CGameDataUsed *dest;   /**< Slot the item is written into on arrival. */
-    CGameDataUsed item;    /**< Item being carried. */
-    s16 from[4];           /**< Slot the item comes from: kind, character, list and index. */
+    u8             active; /**< Non-zero while the item is on its way. */
+    u8             mode;   /**< How the item is written into dest on arrival, a MenuMoveItemMode. */
+    u8             unk_2[2];
+    CGameDataUsed *dest;    /**< Slot the item is written into on arrival. */
+    CGameDataUsed  item;    /**< Item being carried. */
+    s16            from[4]; /**< Slot the item comes from: kind, character, list and index. */
 };
+
 STATIC_ASSERT(sizeof(MENU_ITEM_MOVE_INFO) == 0x7C);
 
 /**
@@ -418,9 +421,9 @@ STATIC_ASSERT(sizeof(MENU_ITEM_MOVE_INFO) == 0x7C);
  */
 class CMenuMoveItem {
 public:
-    s8 move_on;                     /**< Non-zero while any item is moving. */
-    CMenuPosDataForm *form[2];      /**< Form each carried item is drawn with as it moves. */
-    MENU_ITEM_MOVE_INFO info[2];    /**< Items being carried. */
+    s8                  move_on; /**< Non-zero while any item is moving. */
+    CMenuPosDataForm   *form[2]; /**< Form each carried item is drawn with as it moves. */
+    MENU_ITEM_MOVE_INFO info[2]; /**< Items being carried. */
 
     /**
      *
@@ -468,8 +471,9 @@ public:
      * @address 0x2205C0
      * @size 0x180
      */
-    void SetMoveItemInfo(MENU_ITEM_MOVE_INFO *info, int *start, int *goal);
+    void SetMoveItemInfo(MENU_ITEM_MOVE_INFO *request, int *start, int *goal);
 };
+
 STATIC_ASSERT(sizeof(CMenuMoveItem) == 0x104);
 
 /**
@@ -479,9 +483,9 @@ STATIC_ASSERT(sizeof(CMenuMoveItem) == 0x104);
  */
 class CMenuItemUse {
 public:
-    int item_no;       /**< Item last used. */
-    int target_type;   /**< Kind of target the item was last used on, an ITEM_USE_TARGET_TYPE. */
-    u8 unk_8[0x10];
+    int item_no;     /**< Item last used. */
+    int target_type; /**< Kind of target the item was last used on, an ITEM_USE_TARGET_TYPE. */
+    u8  unk_8[0x10];
     s32 unk_18;
 
     /**
@@ -492,7 +496,7 @@ public:
      * @address 0x2213A0
      * @size 0x60
      */
-    int CheckItemUseEnable(CGameDataUsed *item, int target_type, void *target);
+    int CheckItemUseEnable(CGameDataUsed *item, int kind, void *ptr);
 
     /**
      *
@@ -502,7 +506,7 @@ public:
      * @address 0x221400
      * @size 0x80
      */
-    int UseItem(CGameDataUsed *item, int target_type, void *target);
+    int UseItem(CGameDataUsed *item, int kind, void *ptr);
 
     /**
      *
@@ -524,6 +528,7 @@ public:
      */
     void Initialize();
 };
+
 STATIC_ASSERT(sizeof(CMenuItemUse) == 0x1C);
 
 /**
@@ -555,7 +560,7 @@ char *GetMenuBigNum(int num);
  * @address 0x21EB70
  * @size 0x100
  */
-void SetMenuBigNum2(char *buff, int num);
+void SetMenuBigNum2(char *out, int num);
 
 /**
  *
@@ -566,7 +571,7 @@ void SetMenuBigNum2(char *buff, int num);
  * @address 0x21EC70
  * @size 0x1B0
  */
-void SetMenuBigNum(char *buff, int num);
+void SetMenuBigNum(char *out, int num);
 
 /**
  *
@@ -587,8 +592,8 @@ void MenuMesInit(ClsMes *mes);
  * @address 0x220740
  * @size 0xD0
  */
-int CheckRoboShieldKit(CUserDataManager *user, CGameDataUsed *target, int use, int *enable_num,
-                       int *use_num);
+int CheckRoboShieldKit(CUserDataManager *manager, CGameDataUsed *item, int apply, int *kit_count,
+                       int *applied_count);
 
 /**
  *

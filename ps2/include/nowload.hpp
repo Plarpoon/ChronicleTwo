@@ -33,7 +33,7 @@ enum NowLoadingStep {
  *
  */
 struct NowLoadingInfo {
-    int       tex_block;  /**< Texture block the loading image is entered into, reloaded and deleted from. */
+    int       tex_block; /**< Texture block the loading image is entered into, reloaded and deleted from. */
     int       unk_4;
     mgCMemory memory;     /**< Memory the loading image is read into and allocated from. */
     int       step_count; /**< Number of progress steps that fill the bar. */

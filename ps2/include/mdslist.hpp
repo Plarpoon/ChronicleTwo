@@ -33,6 +33,7 @@ enum MdsType {
 };
 
 // clang-format on
+
 /**
  *
  * One entry of a PCP pack file: the data it was loaded as and the far-clip settings it gives the pieces that use it.
@@ -41,7 +42,7 @@ enum MdsType {
 class CMdsInfo {
 public:
     char        *name;     /**< Name the entry is found by. */
-    int          type; /**< Kind of data the entry holds, an MdsType. */
+    int          type;     /**< Kind of data the entry holds, an MdsType. */
     mgCFrame    *frame;    /**< Frame built from the entry's data, or NULL. */
     CCharacter2 *chara;    /**< Character built from the entry's data when it is an MDS_TYPE_CHARA, or NULL. */
     float        far_dist; /**< Distance beyond which a piece using the entry is not drawn, or a negative value for none. */
@@ -80,7 +81,7 @@ STATIC_ASSERT(sizeof(CMdsInfo) == 0x20);
 class CMdsList {
 public:
     char     *name; /**< Name of the pack file the entries were loaded from, or NULL while the slot is free. */
-    int       num; /**< Number of entries. */
+    int       num;  /**< Number of entries. */
     CMdsInfo *list; /**< Entries, num long. */
     int       unk_c;
 
@@ -122,7 +123,7 @@ public:
      * @address 0x16AAC0
      * @size 0x1C8
      */
-    void LoadPCPFile(char *name, unsigned int *pack, mgCMemory *stack, int all_scissor);
+    void LoadPCPFile(char *name, unsigned int *pack, mgCMemory *memory, int type);
 };
 
 STATIC_ASSERT(sizeof(CMdsList) == 0x10);
@@ -145,7 +146,7 @@ public:
      * @address 0x16A690
      * @size 0x110
      */
-    int LoadIMGFile(char *name, mgCEnterIMGInfo *info, mgCMemory *stack);
+    int LoadIMGFile(char *name, mgCEnterIMGInfo *info, mgCMemory *memory);
 };
 
 STATIC_ASSERT(sizeof(CIMGList) == 0x8);
@@ -158,8 +159,9 @@ STATIC_ASSERT(sizeof(CIMGList) == 0x8);
 class CMdsListSet {
 public:
     CMdsListSet() { Initialize(); }
+
     int      mds_list_num; /**< Number of slots in mds_list. */
-    u_char       unk_4[0xC];
+    u_char   unk_4[0xC];
     CMdsList mds_list[8];  /**< Loaded pack files. */
     int      img_list_num; /**< Number of slots in img_list. */
     CIMGList img_list[16]; /**< Loaded IMG files. */
@@ -202,7 +204,7 @@ public:
      * @address 0x16A0F0
      * @size 0x108
      */
-    int LoadPCPFile(char *name, unsigned int *pack, mgCMemory *stack, int all_scissor);
+    int LoadPCPFile(char *name, unsigned int *pack, mgCMemory *memory, int type);
 
     /**
      *
@@ -222,7 +224,7 @@ public:
      * @address 0x16A240
      * @size 0xD0
      */
-    int LoadIMGFile(char *name, mgCEnterIMGInfo *info, mgCMemory *stack);
+    int LoadIMGFile(char *name, mgCEnterIMGInfo *info, mgCMemory *memory);
 
     /**
      *
@@ -273,15 +275,15 @@ public:
 class CMapPiece : public CObjectFrame {
 public:
     char          *name;         /**< Name of the entry of model data the piece uses. */
-    int            type; /**< Kind of data the piece uses, an MdsType. */
-    int            draw_enable; /**< Non-zero lets the piece be drawn. */
+    int            type;         /**< Kind of data the piece uses, an MdsType. */
+    int            draw_enable;  /**< Non-zero lets the piece be drawn. */
     int            material_num; /**< Number of materials in material. */
     PieceMaterial *material;     /**< Materials whose colour the piece sets while it is drawn, material_num long. */
     float          time_start;   /**< Start of the time of day the piece shows in. */
     float          time_end;     /**< End of the time of day the piece shows in. */
     CCharacter2   *chara;        /**< Character the piece moves when its data is an MDS_TYPE_CHARA, or NULL. */
-    short            col_type; /**< Collision type the map script gives the piece; only pieces of type 0 give collision triangles. */
-    short            col_param; /**< Second value the map script gives with the collision type. */
+    short          col_type;     /**< Collision type the map script gives the piece; only pieces of type 0 give collision triangles. */
+    short          col_param;    /**< Second value the map script gives with the collision type. */
 
     /**
      *
@@ -313,7 +315,7 @@ public:
      */
     void SetMaterial(PieceMaterial *material, int num) {
         this->material = material;
-        material_num   = num;
+        material_num = num;
     }
 
     /**
@@ -364,7 +366,7 @@ public:
      * @address 0x169980
      * @size 0xAC
      */
-    int GetPoly(int type, CCPoly *poly, mgVu0FBOX &box, int max);
+    int GetPoly(int type, CCPoly *poly, mgVu0FBOX &box, int num);
 
     /**
      *
@@ -424,7 +426,7 @@ public:
      * @address 0x169C60
      * @size 0x268
      */
-    void Copy(CMapPiece &dest, mgCMemory *stack);
+    void Copy(CMapPiece &dest, mgCMemory *memory);
 };
 
 STATIC_ASSERT(sizeof(CMapPiece) == 0xB0);

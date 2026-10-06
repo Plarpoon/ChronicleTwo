@@ -1,9 +1,9 @@
 #pragma once
-#include <cstring>
-
 #include "common.h"
 
 #include <libvu0.h>
+
+#include <cstring>
 
 #include "map.hpp"
 #include "mapload.hpp"
@@ -20,25 +20,36 @@
  * Pair of floating point values in the scene event data.
  *
  */
-struct EventFloat2 { float v[2]; /**< Floating point values. */ };
+struct EventFloat2 {
+    float v[2]; /**< Floating point values. */
+};
+
 /**
  *
  * Four floating point values in the scene event data.
  *
  */
-struct EventFloat4 { float v[4]; /**< Floating point values. */ };
+struct EventFloat4 {
+    float v[4]; /**< Floating point values. */
+};
+
 /**
  *
  * Pair of quadwords in the scene event data.
  *
  */
-struct EventVector2 { u_long128 v[2]; /**< Quadword values. */ };
+struct EventVector2 {
+    u_long128 v[2]; /**< Quadword values. */
+};
+
 /**
  *
  * Four quadwords in the scene event data.
  *
  */
-struct EventVector4 { u_long128 v[4]; /**< Quadword values. */ };
+struct EventVector4 {
+    u_long128 v[4]; /**< Quadword values. */
+};
 
 /**
  *
@@ -47,32 +58,36 @@ struct EventVector4 { u_long128 v[4]; /**< Quadword values. */ };
  */
 #pragma push
 #pragma cpp_extensions on
+
 struct CSceneEventData {
     CSceneEventData() { memset(this, 0, sizeof(*this)); }
+
     union {
         struct {
-    CFuncPoint::EventData event;      /**< Settings of the event point, or the event number of a villager or game object. */
-    sceVu0FVECTOR         position;   /**< Position of the event point or game object. */
-    sceVu0FVECTOR         rotation;   /**< Rotation of the event point, zero for a game object. */
-    sceVu0FVECTOR         scale;      /**< Scale of the event point. */
-    MapEventInfo          map_event;  /**< Event point found on a map, with the matrix that places it. */
-            int chara_no; /**< Character number of the villager talked to. */
-            int chara_slot; /**< Scene character slot of the villager talked to. */
-            int gameobj_no; /**< Index of the game object position within its map's entry. */
-            int unk_cc;
-};
+            CFuncPoint::EventData event;      /**< Settings of the event point, or the event number of a villager or game object. */
+            sceVu0FVECTOR         position;   /**< Position of the event point or game object. */
+            sceVu0FVECTOR         rotation;   /**< Rotation of the event point, zero for a game object. */
+            sceVu0FVECTOR         scale;      /**< Scale of the event point. */
+            MapEventInfo          map_event;  /**< Event point found on a map, with the matrix that places it. */
+            int                   chara_no;   /**< Character number of the villager talked to. */
+            int                   chara_slot; /**< Scene character slot of the villager talked to. */
+            int                   gameobj_no; /**< Index of the game object position within its map's entry. */
+            int                   unk_cc;
+        };
+
         struct {
-            EventFloat4 head;
-            EventFloat4 group_1;
-            EventFloat2 group_2;
-            EventFloat4 group_3 __attribute__((aligned(16)));
-            EventFloat4 group_4;
-            EventFloat4 group_5;
+            EventFloat4  head;
+            EventFloat4  group_1;
+            EventFloat2  group_2;
+            EventFloat4  group_3 __attribute__((aligned(16)));
+            EventFloat4  group_4;
+            EventFloat4  group_5;
             EventVector4 vectors_a;
             EventVector2 vectors_b;
         };
     };
 };
+
 #pragma pop
 
 STATIC_ASSERT(sizeof(CSceneEventData) == 0xD0);

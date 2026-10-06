@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+
 #include "mg_memory.hpp"
 
 /**

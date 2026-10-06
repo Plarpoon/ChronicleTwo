@@ -1,13 +1,16 @@
 #include "common.h"
+
+#include <sifrpc.h>
+
+#include <cstdio>
+
 #include "ezbgm.hpp"
 #include "sound.hpp"
-#include <sifrpc.h>
-#include <cstdio>
 
 /** Client connection to the EZBGM IOP server. */
 extern sceSifClientData gCd2;
 /** Command send and response buffer shared with the EZBGM server. */
-extern int sbuff__3[16];
+extern int        sbuff__3[16];
 extern const char at_32[];
 extern const char at_33__2[];
 extern const char at_52[];
@@ -22,7 +25,8 @@ int ezBgmInit() {
     do {
         if (sceSifBindRpc(&gCd2, 0x12345, 0) < 0) {
             printf(at_33__2);
-            for (;;) {}
+            for (;;) {
+            }
         }
         int wait = 10000;
         do {
@@ -32,7 +36,7 @@ int ezBgmInit() {
     return 1;
 }
 #else
-int ezBgmInit(void) {
+int ezBgmInit() {
     int previous;
     int delay;
 
@@ -45,13 +49,16 @@ retry:
         goto hang;
     }
     delay = 0x2710;
+
     do {
         previous = delay;
         delay -= 1;
     } while (previous != 0);
+
     if (gCd2.server != 0) {
         return 1;
     }
+
     goto retry;
 }
 #endif
@@ -59,31 +66,31 @@ retry:
 #ifdef NONMATCHING
 int ezBgm(int command, int argument) {
     switch (command & EZBGM_COMMAND_MASK) {
-    case EZBGM_PRELOAD:
-        if (sceSifCheckStatRpc(&gCd2)) {
-            printf(at_53);
-            return 0;
-        }
-        sbuff__3[0] = argument;
-        sceSifCallRpc(&gCd2, command, 1, sbuff__3, 0x10, sbuff__3, 0x40, 0, 0);
-        break;
-    case EZBGM_OPEN_FROM_PACK:
-    case EZBGM_UNK_8A00:
-    case EZBGM_OPEN:
-        if (sceSifCheckStatRpc(&gCd2)) {
-            printf(at_52);
-            return 0;
-        }
-        sceSifCallRpc(&gCd2, command, 1, (void *)argument, 0x40, sbuff__3, 0x40, 0, 0);
-        break;
-    default:
-        if (sceSifCheckStatRpc(&gCd2)) {
-            printf(at_54);
-            return 0;
-        }
-        sbuff__3[0] = argument;
-        sceSifCallRpc(&gCd2, command, 0, sbuff__3, 0x10, sbuff__3, 0x40, 0, 0);
-        break;
+        case EZBGM_PRELOAD:
+            if (sceSifCheckStatRpc(&gCd2)) {
+                printf(at_53);
+                return 0;
+            }
+            sbuff__3[0] = argument;
+            sceSifCallRpc(&gCd2, command, 1, sbuff__3, 0x10, sbuff__3, 0x40, 0, 0);
+            break;
+        case EZBGM_OPEN_FROM_PACK:
+        case EZBGM_UNK_8A00:
+        case EZBGM_OPEN:
+            if (sceSifCheckStatRpc(&gCd2)) {
+                printf(at_52);
+                return 0;
+            }
+            sceSifCallRpc(&gCd2, command, 1, (void *) argument, 0x40, sbuff__3, 0x40, 0, 0);
+            break;
+        default:
+            if (sceSifCheckStatRpc(&gCd2)) {
+                printf(at_54);
+                return 0;
+            }
+            sbuff__3[0] = argument;
+            sceSifCallRpc(&gCd2, command, 0, sbuff__3, 0x10, sbuff__3, 0x40, 0, 0);
+            break;
     }
     return sbuff__3[0];
 }
@@ -97,7 +104,8 @@ int ezBgm(int command, int argument) {
                 printf(at_52);
                 return 0;
             }
-            sceSifCallRpc(&gCd2, command, 1, (void *)argument, 0x40, sbuff__3, 0x40, NULL,
+
+            sceSifCallRpc(&gCd2, command, 1, (void *) argument, 0x40, sbuff__3, 0x40, NULL,
                           NULL);
             break;
         case 0x40:
@@ -105,6 +113,7 @@ int ezBgm(int command, int argument) {
                 printf(at_53);
                 return 0;
             }
+
             sbuff__3[0] = argument;
             sceSifCallRpc(&gCd2, command, 1, sbuff__3, 0x10, sbuff__3, 0x40, NULL,
                           NULL);
@@ -114,11 +123,13 @@ int ezBgm(int command, int argument) {
                 printf(at_54);
                 return 0;
             }
+
             sbuff__3[0] = argument;
             sceSifCallRpc(&gCd2, command, 0, sbuff__3, 0x10, sbuff__3, 0x40, NULL,
                           NULL);
             break;
     }
+
     return sbuff__3[0];
 }
 #endif

@@ -132,9 +132,9 @@ STATIC_ASSERT(sizeof(GAIJI_DATA) == 0xE);
  *
  */
 struct FCONV_CODE {
-    char *str; /**< Tag as written in the text. */
-    s32 len;   /**< Bytes of the tag. */
-    u16 code;  /**< Gaiji or font gaiji code the tag stands for. */
+    char *str;  /**< Tag as written in the text. */
+    s32   len;  /**< Bytes of the tag. */
+    u16   code; /**< Gaiji or font gaiji code the tag stands for. */
 };
 
 STATIC_ASSERT(sizeof(FCONV_CODE) == 0xC);
@@ -146,11 +146,11 @@ STATIC_ASSERT(sizeof(FCONV_CODE) == 0xC);
  *
  */
 struct FONT_TBL_BIN {
-    u16 half_font_num;              /**< Number of half-width font numbers. */
-    u16 kanji_top_no;               /**< First kanji font number; zero when the font has no kanji. */
-    u16 yoyaku_num;                 /**< Codes in yoyaku_tbl. */
+    u16 half_font_num; /**< Number of half-width font numbers. */
+    u16 kanji_top_no;  /**< First kanji font number; zero when the font has no kanji. */
+    u16 yoyaku_num;    /**< Codes in yoyaku_tbl. */
     u16 unk_6;
-    u8 yoyaku_tbl[0x7FC][2];        /**< Big-endian Shift-JIS code of each font number, sorted. */
+    u8  yoyaku_tbl[0x7FC][2]; /**< Big-endian Shift-JIS code of each font number, sorted. */
 };
 
 STATIC_ASSERT(sizeof(FONT_TBL_BIN) == FONT_TBL_BIN_SIZE);
@@ -163,20 +163,20 @@ STATIC_ASSERT(sizeof(FONT_TBL_BIN) == FONT_TBL_BIN_SIZE);
  */
 class CFont {
 public:
-    char str[FONT_STR_MAX]; /**< String SetStr copies. */
-    s32 fuchi;              /**< Outline drawn behind each character, a FontFuchi. */
-    s32 unk_84;
+    char       str[FONT_STR_MAX]; /**< String SetStr copies. */
+    s32        fuchi;             /**< Outline drawn behind each character, a FontFuchi. */
+    s32        unk_84;
     RGBAQ_TYPE color;       /**< Colour of the text. */
-    s32 alpha;              /**< Scale applied to the colour's alpha; 0x80 leaves it unchanged. */
-    s32 pos_x;              /**< Screen x DrawDirect starts the text at. */
-    s32 pos_y;              /**< Screen y DrawDirect starts the text at. */
-    s32 clearance_w;        /**< Advance after a full-width character; half of it after a half-width one. */
-    s32 clearance_h;        /**< Advance from one line to the next. */
-    s32 draw_w;             /**< Width a full-width character is drawn at. */
-    s32 draw_h;             /**< Height a character is drawn at. */
-    s32 mini;               /**< Non-zero to draw with the small font texture. */
-    float unk_b0;
-    float unk_b4;
+    s32        alpha;       /**< Scale applied to the colour's alpha; 0x80 leaves it unchanged. */
+    s32        pos_x;       /**< Screen x DrawDirect starts the text at. */
+    s32        pos_y;       /**< Screen y DrawDirect starts the text at. */
+    s32        clearance_w; /**< Advance after a full-width character; half of it after a half-width one. */
+    s32        clearance_h; /**< Advance from one line to the next. */
+    s32        draw_w;      /**< Width a full-width character is drawn at. */
+    s32        draw_h;      /**< Height a character is drawn at. */
+    s32        mini;        /**< Non-zero to draw with the small font texture. */
+    float      unk_b0;
+    float      unk_b4;
 
     /**
      *
@@ -273,7 +273,7 @@ public:
      * @address 0x2D90D0
      * @size 0x10
      */
-    void SetFuchi(int fuchi);
+    void SetFuchi(int style);
 
     /**
      *
@@ -283,7 +283,7 @@ public:
      * @address 0x2D90E0
      * @size 0x70
      */
-    void SetStr(char *str);
+    void SetStr(char *text);
 
     /**
      *
@@ -303,7 +303,7 @@ public:
      * @address 0x2DA1B0
      * @size 0x210
      */
-    void DrawChar(mgCDrawPrim *prim, int font_no, int x, int y, int fuchi_on, RGBAQ_TYPE color, unsigned char alpha);
+    void DrawChar(mgCDrawPrim *prim, int font_no, int x, int y, int outline, RGBAQ_TYPE color, unsigned char alpha);
 
     /**
      *
@@ -313,7 +313,7 @@ public:
      * @address 0x2DA3C0
      * @size 0x70
      */
-    void DrawChar(mgCDrawPrim *prim, char *str, int x, int y);
+    void DrawChar(mgCDrawPrim *prim, char *text, int x, int y);
 
     /**
      *
@@ -323,7 +323,7 @@ public:
      * @address 0x2DA640
      * @size 0x90
      */
-    void DrawGaiji(mgCDrawPrim *prim, int code, int x, int y);
+    void DrawGaiji(mgCDrawPrim *prim, int glyph, int x, int y);
 
     /**
      *
@@ -333,7 +333,7 @@ public:
      * @address 0x2DA700
      * @size 0x2F0
      */
-    void CalcDrawWH(char *str, int *w, int *h);
+    void CalcDrawWH(char *text, int *w, int *h);
 
     /**
      *
@@ -343,7 +343,7 @@ public:
      * @address 0x2DA9F0
      * @size 0x350
      */
-    void DrawDirect(char *str, int x, int y);
+    void DrawDirect(char *text, int x, int y);
 
     /**
      *
@@ -407,7 +407,7 @@ RECT GetRectFontTex(int font_no, int *tex_no);
  * @address 0x2D8CF0
  * @size 0x80
  */
-void MySetTexMini(int tex_no, mgCDrawPrim *prim);
+void MySetTexMini(int page, mgCDrawPrim *prim);
 
 /**
  *
@@ -427,7 +427,7 @@ RECT GetRectFontTexMini(int font_no, int *tex_no);
  * @address 0x2D8DA0
  * @size 0x80
  */
-char *My_strncpy(char *dst, const char *src, unsigned int n);
+char *My_strncpy(char *dst, const char *src, unsigned int count);
 
 /**
  *
@@ -487,7 +487,7 @@ int GetHalfFontNum();
  * @address 0x2D9150
  * @size 0x90
  */
-unsigned short GetGaijiFontNo(char *str);
+unsigned short GetGaijiFontNo(char *text);
 
 /**
  *
@@ -517,7 +517,7 @@ unsigned short GetAlphabeticalFontNo_uc(unsigned char c);
  * @address 0x2D9310
  * @size 0x1A0
  */
-unsigned short GetAlphabeticalFontNo_cp(char *str);
+unsigned short GetAlphabeticalFontNo_cp(char *text);
 
 /**
  *
@@ -527,7 +527,7 @@ unsigned short GetAlphabeticalFontNo_cp(char *str);
  * @address 0x2D94B0
  * @size 0xA0
  */
-unsigned short GetFontGaijiFontNo(char *str);
+unsigned short GetFontGaijiFontNo(char *text);
 
 /**
  *
@@ -588,7 +588,7 @@ int GetHalfFontNo(char c);
  * @address 0x2D9970
  * @size 0x140
  */
-void set2DSpriteEasyFont(mgCDrawPrim *prim, mgRect<int> xy, mgRect<int> uv, RGBAQ_TYPE *color);
+void set2DSpriteEasyFont(mgCDrawPrim *prim, mgRect<int> dst, mgRect<int> uv, RGBAQ_TYPE *color);
 
 /**
  *
@@ -598,7 +598,7 @@ void set2DSpriteEasyFont(mgCDrawPrim *prim, mgRect<int> xy, mgRect<int> uv, RGBA
  * @address 0x2D9AB0
  * @size 0x700
  */
-void set2DSprite_Fuchi(mgCDrawPrim *prim, RECT xy, RECT uv, int fuchi, int alpha);
+void set2DSprite_Fuchi(mgCDrawPrim *prim, RECT destination, RECT texture, int style, int alpha);
 
 /**
  *
@@ -618,7 +618,7 @@ void MySetTex(char *name, mgCDrawPrim *prim);
  * @address 0x2DA480
  * @size 0x50
  */
-void MySetTex(int tex_no, mgCDrawPrim *prim);
+void MySetTex(int font_page, mgCDrawPrim *prim);
 
 /**
  *
@@ -628,7 +628,7 @@ void MySetTex(int tex_no, mgCDrawPrim *prim);
  * @address 0x2DA4D0
  * @size 0x170
  */
-void DrawGaiji_sub(mgCDrawPrim *prim, int code, int x, int y, RGBAQ_TYPE color, int line_h);
+void DrawGaiji_sub(mgCDrawPrim *prim, int glyph, int x, int y, RGBAQ_TYPE color, int line_h);
 
 /**
  *
@@ -638,7 +638,7 @@ void DrawGaiji_sub(mgCDrawPrim *prim, int code, int x, int y, RGBAQ_TYPE color, 
  * @address 0x2DA6D0
  * @size 0x30
  */
-void UpDateWH(int *w, int *h, int x, int y);
+void UpDateWH(int *w, int *h, int new_width, int new_height);
 
 /** Size and texture position of each gaiji symbol, from GAIJI_CODE_TOP on. */
 extern GAIJI_DATA GaijiDataTbl[GAIJI_DATA_NUM];

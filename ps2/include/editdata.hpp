@@ -76,13 +76,13 @@ class CEditParts;
  */
 class EditAnalyzeDataSrc {
 public:
-    char *message;                       /**< Text of the request, or NULL for an unused entry. */
-    s16   percent;                       /**< Share of the town's future the request is worth once met. */
-    s16   geo_floor;                     /**< Dungeon floor (dungeon * 100 + floor) whose geostone reveals the request, or 0 or below when always known. */
+    char *message;                         /**< Text of the request, or NULL for an unused entry. */
+    s16   percent;                         /**< Share of the town's future the request is worth once met. */
+    s16   geo_floor;                       /**< Dungeon floor (dungeon * 100 + floor) whose geostone reveals the request, or 0 or below when always known. */
     s8    con_no[EDIT_ANALYZE_CON_NO_MAX]; /**< Conditions the request needs, ended by -1. */
     s32   unk_10;
-    char *on_parts;                      /**< Names of the map parts shown while the request is met. */
-    char *off_parts;                     /**< Names of the map parts hidden while the request is met. */
+    char *on_parts;  /**< Names of the map parts shown while the request is met. */
+    char *off_parts; /**< Names of the map parts hidden while the request is met. */
 
     /**
      *
@@ -139,12 +139,12 @@ STATIC_ASSERT(sizeof(EditAnalyzeSrc) == 0x340);
  *
  */
 struct EditDataParts {
-    s32 id;                                /**< Definition ID of the part, or 0 for an unused entry. */
-    s8  state;                             /**< How the part stood in the town, EditPartsState. */
-    s8  angle;                             /**< Turn of the part, in EDIT_ANGLE_MAX steps. */
-    s16 pos[3];                            /**< Position of the part on the edit map. */
-    u8  color[EDIT_DATA_COLOR_MAX][3];     /**< Paint colours of the part, 0x80 for full intensity. */
-    s16 house_no;                          /**< Number of the part's house plus one, or 0 for none. */
+    s32 id;                            /**< Definition ID of the part, or 0 for an unused entry. */
+    s8  state;                         /**< How the part stood in the town, EditPartsState. */
+    s8  angle;                         /**< Turn of the part, in EDIT_ANGLE_MAX steps. */
+    s16 pos[3];                        /**< Position of the part on the edit map. */
+    u8  color[EDIT_DATA_COLOR_MAX][3]; /**< Paint colours of the part, 0x80 for full intensity. */
+    s16 house_no;                      /**< Number of the part's house plus one, or 0 for none. */
     u8  unk_1a[0xA];
 
     /**
@@ -166,9 +166,9 @@ STATIC_ASSERT(sizeof(EditDataParts) == 0x24);
  *
  */
 struct EditDataGrid {
-    u8  num_x;     /**< Number of cells along the X axis. */
-    u8  num_z;     /**< Number of cells along the Z axis. */
-    s16 pos[3];    /**< Position of the grid on the edit map. */
+    u8  num_x;  /**< Number of cells along the X axis. */
+    u8  num_z;  /**< Number of cells along the Z axis. */
+    s16 pos[3]; /**< Position of the grid on the edit map. */
     u8  unk_8[0x10];
 };
 
@@ -180,7 +180,7 @@ STATIC_ASSERT(sizeof(EditDataGrid) == 0x18);
  *
  */
 struct EditDataHouse {
-    s16 npc_no;      /**< First villager who lives in the house. */
+    s16 npc_no; /**< First villager who lives in the house. */
     u8  unk_2[0xE];
 
     /**
@@ -288,7 +288,7 @@ public:
      * @address 0x2AE390
      * @size 0x130
      */
-    s8 Analyze(int data_no, int map_no, int *con_src, int depth);
+    s8 Analyze(int entry, int area, int *pending, int depth);
 
     /**
      * Sets every condition of a map: those whose con_src entry is below
@@ -299,7 +299,7 @@ public:
      * @address 0x2AE4C0
      * @size 0xD0
      */
-    void Analize(int map_no, int *con_value, int *con_src);
+    void Analize(int area, int *flags, int *pending);
 
     /**
      *
@@ -309,7 +309,7 @@ public:
      * @address 0x2AE590
      * @size 0x10
      */
-    EditAnalyzeDataSrc *GetAnalyzeData(int map_no, int data_no);
+    EditAnalyzeDataSrc *GetAnalyzeData(int area, int entry);
 
     /**
      *
@@ -319,7 +319,7 @@ public:
      * @address 0x2AE5A0
      * @size 0x50
      */
-    EditAnalyzeSrc *GetAnalyzeSrc(int map_no);
+    EditAnalyzeSrc *GetAnalyzeSrc(int index);
 
     /**
      *
@@ -329,7 +329,7 @@ public:
      * @address 0x2AE5F0
      * @size 0xB0
      */
-    int GetAnalyzePercent(int map_no);
+    int GetAnalyzePercent(int area);
 
     /**
      * Gives back non-zero when every condition of a request is met, filling
@@ -339,7 +339,7 @@ public:
      * @address 0x2AE6A0
      * @size 0xA0
      */
-    int GetAnalyzeFlag(int map_no, int data_no, int *con_no, int *con_flag);
+    int GetAnalyzeFlag(int area, int entry, int *condition_nos, int *condition_values);
 
     /**
      *
@@ -359,7 +359,7 @@ public:
      * @address 0x2AE760
      * @size 0x30
      */
-    void dbgSetContintionFlag(int map_no, int con_no, int flag);
+    void dbgSetContintionFlag(int map_no, int flag_no, int value);
 
     /**
      *
@@ -389,7 +389,7 @@ public:
      * @address 0x2AE860
      * @size 0xB0
      */
-    int dbgGetContintionFlag(int map_no, int con_no, char *name);
+    int dbgGetContintionFlag(int area, int flag_no, char *name);
 };
 
 STATIC_ASSERT(sizeof(CEditData) == 0x5510);
@@ -402,7 +402,7 @@ STATIC_ASSERT(sizeof(CEditData) == 0x5510);
  * @address 0x2AE910
  * @size 0xE0
  */
-void LoadEditAnalyzeData(int language, u_long128 *buffer);
+void LoadEditAnalyzeData(int area_no, u_long128 *dest);
 
 /**
  *

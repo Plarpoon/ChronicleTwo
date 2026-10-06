@@ -46,18 +46,18 @@ enum SG_PLAY_VOICE_STEP {
  *
  */
 struct SubGameInfo {
-    CScene *scene;        /**< Scene in which the sub game runs. */
-    int texb;             /**< First texture block the sub game may load into, taken from the scene. */
-    int texb_num;         /**< Number of texture blocks the sub game may use, taken from the scene. */
-    int unk_c;
-    mgCMemory *menu_buff; /**< Memory whose stack buffer fishing reuses for its reads, or NULL to use the scene's buffer. */
-    int dungeon;          /**< Non-zero when started from a dungeon, where the fishing motions load with the game data. */
-    int no_map_event;     /**< Non-zero stops fishing from running map events where Max stands. */
-    int record_check;     /**< Non-zero lets a landed fish set a fishing record. */
-    int rod_no;           /**< Item number of the fishing rod in use. */
-    int esa_no;           /**< Item number of the bait in use. */
-    int keep_bgm;         /**< Non-zero keeps the scene's BGM playing, as when fishing restarts with another rod. */
-    mgCMemory *load_buff; /**< Memory fishing loads its data into, or NULL to use a scene stack. */
+    CScene    *scene;    /**< Scene in which the sub game runs. */
+    int        texb;     /**< First texture block the sub game may load into, taken from the scene. */
+    int        texb_num; /**< Number of texture blocks the sub game may use, taken from the scene. */
+    int        unk_c;
+    mgCMemory *menu_buff;    /**< Memory whose stack buffer fishing reuses for its reads, or NULL to use the scene's buffer. */
+    int        dungeon;      /**< Non-zero when started from a dungeon, where the fishing motions load with the game data. */
+    int        no_map_event; /**< Non-zero stops fishing from running map events where Max stands. */
+    int        record_check; /**< Non-zero lets a landed fish set a fishing record. */
+    int        rod_no;       /**< Item number of the fishing rod in use. */
+    int        esa_no;       /**< Item number of the bait in use. */
+    int        keep_bgm;     /**< Non-zero keeps the scene's BGM playing, as when fishing restarts with another rod. */
+    mgCMemory *load_buff;    /**< Memory fishing loads its data into, or NULL to use a scene stack. */
 
     /**
      *
@@ -84,11 +84,11 @@ STATIC_ASSERT(sizeof(SubGameInfo) == 0x30);
  */
 class sgCPlayVoice {
 public:
-    int step;    /**< Current SG_PLAY_VOICE_STEP. */
-    int file_no; /**< Number of the voice file, opened as "<file_no>.wav". */
-    int play;    /**< Non-zero once playing is requested. */
-    float vol_r; /**< Right stream volume, from 0 to 1. */
-    float vol_l; /**< Left stream volume, from 0 to 1. */
+    int   step;    /**< Current SG_PLAY_VOICE_STEP. */
+    int   file_no; /**< Number of the voice file, opened as "<file_no>.wav". */
+    int   play;    /**< Non-zero once playing is requested. */
+    float vol_r;   /**< Right stream volume, from 0 to 1. */
+    float vol_l;   /**< Left stream volume, from 0 to 1. */
 
     /**
      *
@@ -213,7 +213,7 @@ int sgMenuOpenEnable();
  * @address 0x3090D0
  * @size 0x8
  */
-void sgSetMenuOpenEnableFlag(int enable);
+void sgSetMenuOpenEnableFlag(int value);
 
 /**
  *

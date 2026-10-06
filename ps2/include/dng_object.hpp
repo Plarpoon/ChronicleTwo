@@ -48,28 +48,28 @@ enum SHOT_DRAW_FLAG {
  */
 class CRocketLauncher {
 public:
-    int           target_chara;    /**< Scene index of the character the rocket homes in on, or -1 for none. */
+    int           target_chara; /**< Scene index of the character the rocket homes in on, or -1 for none. */
     u32           unk_04;
     u32           unk_08;
     u32           unk_0c;
-    sceVu0FVECTOR pos;             /**< Current world position of the rocket's head. */
-    sceVu0FVECTOR start_pos;       /**< World position the rocket was fired from. */
-    sceVu0FVECTOR target_pos;      /**< World position the rocket homes in on. */
-    sceVu0FVECTOR dir;             /**< Unit direction of flight. */
-    sceVu0FVECTOR trail[16];       /**< Ring of past head positions the smoke trail is drawn through. */
-    int           trail_len;       /**< Number of trail sprites drawn. */
-    int           trail_index;     /**< Ring slot the next trail position is written to. */
-    int           trail_timer;     /**< Frames since a trail position was last recorded. */
-    float         speed;           /**< Distance flown each frame. */
-    int           col_prim_id;     /**< Identifier of the collision primitive that deals the rocket's damage, or -1. */
-    u32           draw_flags;      /**< Parts drawn, as SHOT_DRAW_FLAG bits. */
-    int           homing_delay;    /**< Frames left before the rocket starts homing. */
-    int           homing_time;     /**< Frames left during which the rocket homes. */
-    int           life;            /**< Frames left before the rocket bursts by itself. */
-    SHOT_STATE    state;           /**< Life stage of the rocket. */
-    mgCTexture   *trail_texture;   /**< Texture of the smoke trail sprites. */
-    mgCFrame     *model;           /**< Frame that draws the rocket's model. */
-    int           tex_block;       /**< Texture block of the model, uploaded before drawing. */
+    sceVu0FVECTOR pos;           /**< Current world position of the rocket's head. */
+    sceVu0FVECTOR start_pos;     /**< World position the rocket was fired from. */
+    sceVu0FVECTOR target_pos;    /**< World position the rocket homes in on. */
+    sceVu0FVECTOR dir;           /**< Unit direction of flight. */
+    sceVu0FVECTOR trail[16];     /**< Ring of past head positions the smoke trail is drawn through. */
+    int           trail_len;     /**< Number of trail sprites drawn. */
+    int           trail_index;   /**< Ring slot the next trail position is written to. */
+    int           trail_timer;   /**< Frames since a trail position was last recorded. */
+    float         speed;         /**< Distance flown each frame. */
+    int           col_prim_id;   /**< Identifier of the collision primitive that deals the rocket's damage, or -1. */
+    u32           draw_flags;    /**< Parts drawn, as SHOT_DRAW_FLAG bits. */
+    int           homing_delay;  /**< Frames left before the rocket starts homing. */
+    int           homing_time;   /**< Frames left during which the rocket homes. */
+    int           life;          /**< Frames left before the rocket bursts by itself. */
+    SHOT_STATE    state;         /**< Life stage of the rocket. */
+    mgCTexture   *trail_texture; /**< Texture of the smoke trail sprites. */
+    mgCFrame     *model;         /**< Frame that draws the rocket's model. */
+    int           tex_block;     /**< Texture block of the model, uploaded before drawing. */
     u32           unk_184;
     u32           unk_188;
     u32           unk_18c;
@@ -82,7 +82,7 @@ public:
      * @address 0x1B7400
      * @size 0xE0
      */
-    void SetPos(float *start, float *target, float *direction);
+    void SetPos(float *pos, float *muzzle_vec, float *direction);
 
     /**
      *
@@ -114,6 +114,7 @@ public:
      */
     void Initialize();
 };
+
 STATIC_ASSERT(sizeof(CRocketLauncher) == 0x190);
 
 /**
@@ -173,8 +174,9 @@ public:
      * @address 0x1B7DE0
      * @size 0x90
      */
-    void Initialize(mgCFrame *model, int tex_block, mgCTexture *trail_texture);
+    void Initialize(mgCFrame *frame, int texture_id, mgCTexture *trail_texture);
 };
+
 STATIC_ASSERT(sizeof(CRocketLauncherMan) == 0x2580);
 
 /**
@@ -201,7 +203,7 @@ public:
      * @address 0x1B7E70
      * @size 0x120
      */
-    void Set(float *start, float *direction);
+    void Set(float *position, float *direction);
 
     /**
      *
@@ -213,6 +215,7 @@ public:
      */
     void Step();
 };
+
 STATIC_ASSERT(sizeof(CMachineGun) == 0x390);
 
 /**
@@ -222,30 +225,30 @@ STATIC_ASSERT(sizeof(CMachineGun) == 0x390);
  */
 class CLaserGun {
 public:
-    int           target_chara;  /**< Scene index of the character the shot homes in on, or -1 for none. */
+    int           target_chara; /**< Scene index of the character the shot homes in on, or -1 for none. */
     u32           unk_04;
     u32           unk_08;
     u32           unk_0c;
-    sceVu0FVECTOR pos;           /**< Current world position of the shot's head. */
-    sceVu0FVECTOR start_pos;     /**< World position the shot was fired from. */
-    sceVu0FVECTOR target_pos;    /**< World position the shot homes in on. */
-    sceVu0FVECTOR dir;           /**< Unit direction of flight. */
-    sceVu0FVECTOR trail[8];      /**< Ring of past head positions the trail is drawn through. */
-    int           trail_len;     /**< Number of trail sprites drawn. */
-    int           trail_index;   /**< Ring slot the next trail position is written to. */
-    int           trail_timer;   /**< Frames since a trail position was last recorded. */
-    float         speed;         /**< Distance flown each frame. */
-    float         speed_add;     /**< Amount the speed grows each frame. */
-    float         speed_max;     /**< Speed the growth stops at. */
-    int           col_prim_id;   /**< Identifier of the collision primitive that deals the shot's damage, or -1. */
-    u32           draw_flags;    /**< Parts drawn, as SHOT_DRAW_FLAG bits. */
-    int           homing_delay;  /**< Frames left before the shot starts homing. */
-    int           homing_time;   /**< Frames left during which the shot homes. */
-    int           life;          /**< Frames left before the shot bursts by itself. */
-    float         scale;         /**< Scale of the model and the trail sprites. */
-    float         scale_add;     /**< Amount the scale grows each frame. */
-    float         scale_max;     /**< Scale the growth stops at. */
-    s16           visual_code;   /**< Look of the shot, as SetVisualCode chose it. */
+    sceVu0FVECTOR pos;          /**< Current world position of the shot's head. */
+    sceVu0FVECTOR start_pos;    /**< World position the shot was fired from. */
+    sceVu0FVECTOR target_pos;   /**< World position the shot homes in on. */
+    sceVu0FVECTOR dir;          /**< Unit direction of flight. */
+    sceVu0FVECTOR trail[8];     /**< Ring of past head positions the trail is drawn through. */
+    int           trail_len;    /**< Number of trail sprites drawn. */
+    int           trail_index;  /**< Ring slot the next trail position is written to. */
+    int           trail_timer;  /**< Frames since a trail position was last recorded. */
+    float         speed;        /**< Distance flown each frame. */
+    float         speed_add;    /**< Amount the speed grows each frame. */
+    float         speed_max;    /**< Speed the growth stops at. */
+    int           col_prim_id;  /**< Identifier of the collision primitive that deals the shot's damage, or -1. */
+    u32           draw_flags;   /**< Parts drawn, as SHOT_DRAW_FLAG bits. */
+    int           homing_delay; /**< Frames left before the shot starts homing. */
+    int           homing_time;  /**< Frames left during which the shot homes. */
+    int           life;         /**< Frames left before the shot bursts by itself. */
+    float         scale;        /**< Scale of the model and the trail sprites. */
+    float         scale_add;    /**< Amount the scale grows each frame. */
+    float         scale_max;    /**< Scale the growth stops at. */
+    s16           visual_code;  /**< Look of the shot, as SetVisualCode chose it. */
     s16           unk_10a;
     u32           unk_10c;
     sceVu0FVECTOR color;         /**< Colour (red, green, blue, alpha, 0 to 128) of the model, the trail and the hit effect. */
@@ -304,6 +307,7 @@ public:
      */
     void Initialize();
 };
+
 STATIC_ASSERT(sizeof(CLaserGun) == 0x130);
 
 /**
@@ -363,8 +367,9 @@ public:
      * @address 0x1B9300
      * @size 0x90
      */
-    void Initialize(mgCFrame *model, int tex_block, mgCTexture *trail_texture);
+    void Initialize(mgCFrame *frame, int texture_id, mgCTexture *trail_texture);
 };
+
 STATIC_ASSERT(sizeof(CLaserGunMan) == 0x1300);
 
 /**
@@ -405,38 +410,38 @@ enum PULL_ITEM_STATE {
  */
 class CPullItem {
 public:
-    sceVu0FVECTOR   pos;          /**< World position of the pickup. */
-    sceVu0FVECTOR   velocity;     /**< Distance the pickup moves each frame while falling. */
-    sceVu0FVECTOR   draw_pos;     /**< World position the pickup's sprite was last drawn at. */
-    s16             tex_u;        /**< Left edge of the sprite in the texture. */
-    s16             tex_v;        /**< Top edge of the sprite in the texture. */
-    s16             tex_w;        /**< Width of the sprite in the texture. */
-    s16             tex_h;        /**< Height of the sprite in the texture. */
-    float           width;        /**< Width the sprite is drawn at. */
-    float           height;       /**< Height the sprite is drawn at. */
-    s16             fall_time;    /**< Frames left to fall before the pickup fades out. */
-    s16             wait_time;    /**< Frames left lying on the ground, then frames left fading out. */
-    s16             anim_frame;   /**< Frame of the coin's spin animation, 0 to 15. */
+    sceVu0FVECTOR   pos;        /**< World position of the pickup. */
+    sceVu0FVECTOR   velocity;   /**< Distance the pickup moves each frame while falling. */
+    sceVu0FVECTOR   draw_pos;   /**< World position the pickup's sprite was last drawn at. */
+    s16             tex_u;      /**< Left edge of the sprite in the texture. */
+    s16             tex_v;      /**< Top edge of the sprite in the texture. */
+    s16             tex_w;      /**< Width of the sprite in the texture. */
+    s16             tex_h;      /**< Height of the sprite in the texture. */
+    float           width;      /**< Width the sprite is drawn at. */
+    float           height;     /**< Height the sprite is drawn at. */
+    s16             fall_time;  /**< Frames left to fall before the pickup fades out. */
+    s16             wait_time;  /**< Frames left lying on the ground, then frames left fading out. */
+    s16             anim_frame; /**< Frame of the coin's spin animation, 0 to 15. */
     s16             unk_46;
-    float           angle;        /**< Phase of the floating bob and of the collecting flight, in radians. */
-    float           bob_height;   /**< Height of the floating bob. */
-    s16             can_get;      /**< Non-zero once the pickup has settled and may be collected. */
-    s16             get_delay;    /**< Frames left before the pickup may be collected. */
-    float           pull_speed;   /**< Speed the pickup flies to the player at. */
-    float           pull_accel;   /**< Amount the flying speed grows each frame. */
-    float           get_range;    /**< Collection distance, in units of 20. */
-    s8              type;         /**< Kind of pickup, a PULL_ITEM_TYPE. */
-    s8              glow;         /**< Non-zero to draw the pickup with additive blending and a glow sprite. */
+    float           angle;      /**< Phase of the floating bob and of the collecting flight, in radians. */
+    float           bob_height; /**< Height of the floating bob. */
+    s16             can_get;    /**< Non-zero once the pickup has settled and may be collected. */
+    s16             get_delay;  /**< Frames left before the pickup may be collected. */
+    float           pull_speed; /**< Speed the pickup flies to the player at. */
+    float           pull_accel; /**< Amount the flying speed grows each frame. */
+    float           get_range;  /**< Collection distance, in units of 20. */
+    s8              type;       /**< Kind of pickup, a PULL_ITEM_TYPE. */
+    s8              glow;       /**< Non-zero to draw the pickup with additive blending and a glow sprite. */
     u8              unk_62[2];
-    float           exp;          /**< Growth the weapon exp pickup adds. */
-    s16             num;          /**< Number of items given. */
-    s16             exp_param;    /**< Weapon parameter the weapon exp pickup adds growth to. */
-    s16             item_no;      /**< Item, badge or amount of money given. */
+    float           exp;       /**< Growth the weapon exp pickup adds. */
+    s16             num;       /**< Number of items given. */
+    s16             exp_param; /**< Weapon parameter the weapon exp pickup adds growth to. */
+    s16             item_no;   /**< Item, badge or amount of money given. */
     s16             unk_6e;
-    float           alpha;        /**< Alpha the pickup is drawn with, 0 to 128. */
-    s8              wire_index;   /**< Index of the after-image wire following the pickup, or -1. */
+    float           alpha;      /**< Alpha the pickup is drawn with, 0 to 128. */
+    s8              wire_index; /**< Index of the after-image wire following the pickup, or -1. */
     u8              unk_75[7];
-    PULL_ITEM_STATE state;        /**< Life stage of the pickup. */
+    PULL_ITEM_STATE state; /**< Life stage of the pickup. */
 
     /**
      *
@@ -476,7 +481,7 @@ public:
      * @address 0x1BA590
      * @size 0x3E0
      */
-    void SetItem(float *position, float *velo, int item_type);
+    void SetItem(float *position, float *new_velocity, int kind);
 
     /**
      *
@@ -498,6 +503,7 @@ public:
      */
     void Initialize();
 };
+
 STATIC_ASSERT(sizeof(CPullItem) == 0x80);
 
 /**
@@ -530,6 +536,7 @@ public:
      */
     void Clear();
 };
+
 STATIC_ASSERT(sizeof(CPullItemManager) == 0x8);
 
 /**
@@ -553,15 +560,15 @@ enum ROBO_VOICE_STATUS {
  */
 class CRoboVoiceSystem {
 public:
-    s16 status;      /**< Stage of the voice player, a ROBO_VOICE_STATUS. */
+    s16 status; /**< Stage of the voice player, a ROBO_VOICE_STATUS. */
     s16 unk_02;
     int stream_open; /**< Non-zero while the voice stream is open. */
     u32 unk_08;
-    int voice_no;    /**< Voice to play next, or -1 to choose one. */
+    int voice_no; /**< Voice to play next, or -1 to choose one. */
     s16 unk_10;
-    s16 wait_time;   /**< Frames left before the next voice is chosen. */
-    s16 play_time;   /**< Frames the voice system has run. */
-    s16 pause_time;  /**< Frames left during which the voice system is held. */
+    s16 wait_time;  /**< Frames left before the next voice is chosen. */
+    s16 play_time;  /**< Frames the voice system has run. */
+    s16 pause_time; /**< Frames left during which the voice system is held. */
 
     /**
      *
@@ -591,7 +598,7 @@ public:
      * @address 0x1BAAF0
      * @size 0x70
      */
-    void StopVoice(int pause);
+    void StopVoice(int frames);
 
     /**
      *
@@ -603,4 +610,5 @@ public:
      */
     void Step();
 };
+
 STATIC_ASSERT(sizeof(CRoboVoiceSystem) == 0x18);

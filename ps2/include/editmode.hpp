@@ -49,19 +49,19 @@ enum EditPutSideMode {
  *
  */
 enum EditHelpMes {
-    EDIT_HELP_NONE = -1,         /**< No help line is shown. */
-    EDIT_HELP_PLACE = 0,         /**< Place and rotate, with undo when it is available. */
-    EDIT_HELP_PLACE_WALL = 1,    /**< Place and switch wall, with undo when it is available. */
-    EDIT_HELP_PLACE_MAGNET = 2,  /**< Place, rotate and magnet on or off, with undo when it is available. */
-    EDIT_HELP_REMOVE = 3,        /**< Remove. */
-    EDIT_HELP_SELECT_WALL = 4,   /**< Choose a wall. */
-    EDIT_HELP_PAINT = 5,         /**< Paint a part of one colour, with the paint it costs and the paint held. */
-    EDIT_HELP_PAINT_HOUSE = 6,   /**< Paint a house's walls or roof, with the paint it costs and the paint held. */
-    EDIT_HELP_PAINT_FENCE = 7,   /**< Paint a fence or the whole fence, with the paint it costs and the paint held. */
-    EDIT_HELP_REPAINT = 8,       /**< Return a part of one colour to its own colour. */
-    EDIT_HELP_REPAINT_HOUSE = 9, /**< Return a house's walls or roof to their own colours. */
+    EDIT_HELP_NONE = -1,          /**< No help line is shown. */
+    EDIT_HELP_PLACE = 0,          /**< Place and rotate, with undo when it is available. */
+    EDIT_HELP_PLACE_WALL = 1,     /**< Place and switch wall, with undo when it is available. */
+    EDIT_HELP_PLACE_MAGNET = 2,   /**< Place, rotate and magnet on or off, with undo when it is available. */
+    EDIT_HELP_REMOVE = 3,         /**< Remove. */
+    EDIT_HELP_SELECT_WALL = 4,    /**< Choose a wall. */
+    EDIT_HELP_PAINT = 5,          /**< Paint a part of one colour, with the paint it costs and the paint held. */
+    EDIT_HELP_PAINT_HOUSE = 6,    /**< Paint a house's walls or roof, with the paint it costs and the paint held. */
+    EDIT_HELP_PAINT_FENCE = 7,    /**< Paint a fence or the whole fence, with the paint it costs and the paint held. */
+    EDIT_HELP_REPAINT = 8,        /**< Return a part of one colour to its own colour. */
+    EDIT_HELP_REPAINT_HOUSE = 9,  /**< Return a house's walls or roof to their own colours. */
     EDIT_HELP_REPAINT_FENCE = 10, /**< Return a fence to its own colour. */
-    EDIT_HELP_UNDO = 11,         /**< Undo. */
+    EDIT_HELP_UNDO = 11,          /**< Undo. */
 };
 
 /**
@@ -74,8 +74,8 @@ struct UNDO_DATA {
     s32           parts_no; /**< Slot number of the placed part in the edit map, or -1 for a river. */
     s32           unk_8;
     s32           unk_c;
-    sceVu0FVECTOR pos;      /**< Position the part was placed at. */
-    sceVu0FVECTOR rot;      /**< Rotation the part was placed with; Y is its turn. */
+    sceVu0FVECTOR pos; /**< Position the part was placed at. */
+    sceVu0FVECTOR rot; /**< Rotation the part was placed with; Y is its turn. */
 };
 
 STATIC_ASSERT(sizeof(UNDO_DATA) == 0x30);
@@ -114,7 +114,7 @@ void EditModeControlUnLock();
  * @address 0x2DDB20
  * @size 0x10
  */
-void EditPreMenuAnime(int frames);
+void EditPreMenuAnime(int max_count);
 
 /**
  * Loads the Georama mode system texture into a texture block, and the
@@ -275,7 +275,7 @@ int RemoveMtnStep(CScene *scene);
  * @address 0x2DED60
  * @size 0x200
  */
-int RemoveEditParts(CScene *scene, int parts_no, float *pos);
+int RemoveEditParts(CScene *scene, int parts_index, float *pos);
 
 /**
  * Uses the chosen part on a placed part that it completes: removes the
@@ -367,4 +367,4 @@ int CheckWalkToEdit(CScene *scene, float *pos);
  * @address 0x2E2B70
  * @size 0x270
  */
-int CheckEditToWalk(CScene *scene, float *out_pos);
+int CheckEditToWalk(CScene *scene, float *position);

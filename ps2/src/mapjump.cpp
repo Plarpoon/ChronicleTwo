@@ -1,21 +1,23 @@
-#include <cstdio>
-#include "vlgr_info.hpp"
-#include "scene.hpp"
-#include "mglib.hpp"
-#include "mg_math.hpp"
-#include "mapselect.hpp"
-#include "mainloop.hpp"
-#include "event.hpp"
-#include "dataread.hpp"
 #include "common.h"
+
+#include <cstdio>
+#include <cstring>
+
+#include "dataread.hpp"
 #include "editmap.hpp"
-#include "mg_memory.hpp"
+#include "event.hpp"
+#include "mainloop.hpp"
+#include "mapjump.hpp"
+#include "mapselect.hpp"
 #include "mg_camera.hpp"
+#include "mg_math.hpp"
+#include "mg_memory.hpp"
+#include "mglib.hpp"
 #include "savedata.hpp"
+#include "scene.hpp"
 #include "sceneload.hpp"
 #include "scenesnd.hpp"
-#include "mapjump.hpp"
-#include <cstring>
+#include "vlgr_info.hpp"
 
 /**
  *
@@ -25,68 +27,73 @@
 struct ScriptPathBuffer {
     char text[0x80]; /**< Script path text. */
 };
-extern int NowMainMapNo;
-extern int NowSubMapNo;
-extern int NowInteriorMapNo;
-extern int OldInteriorMapNo;
-extern mgCMemory * ScriptBuffer;
-extern int InteriorFlag;
-static MapJumpMapInfo MainMapInfo__2;
-static MapJumpMapInfo SubMapInfo;
-extern ScriptPathBuffer at_912__4;
-extern char now_script_file[0x40];
-extern char old_mapname[0x40];
-extern char PrevInterior[0x40];
-extern char NowInterior[0x40];
-extern int old_bgm_no;
-extern sceVu0FVECTOR OldPos;
-extern sceVu0FVECTOR OldRot;
-extern sceVu0FVECTOR OldCamPos;
-extern sceVu0FVECTOR OldCamRef;
+
+extern int                NowMainMapNo;
+extern int                NowSubMapNo;
+extern int                NowInteriorMapNo;
+extern int                OldInteriorMapNo;
+extern mgCMemory         *ScriptBuffer;
+extern int                InteriorFlag;
+static MapJumpMapInfo     MainMapInfo__2;
+static MapJumpMapInfo     SubMapInfo;
+extern ScriptPathBuffer   at_912__4;
+extern char               now_script_file[0x40];
+extern char               old_mapname[0x40];
+extern char               PrevInterior[0x40];
+extern char               NowInterior[0x40];
+extern int                old_bgm_no;
+extern sceVu0FVECTOR      OldPos;
+extern sceVu0FVECTOR      OldRot;
+extern sceVu0FVECTOR      OldCamPos;
+extern sceVu0FVECTOR      OldCamRef;
 extern CScene::BGM_STATUS OldBgmStatus;
-extern char at_1047__2[];
-extern char at_863__3[];
-extern char at_890__4[];
-extern char at_891__3[];
-extern char at_892__2[];
-extern char at_893__2[];
-extern char at_894__2[];
-extern char at_914__4[];
-extern char at_950__4[];
-extern char at_1091__2[];
-int GetMainMapNo(void);
-int GetSubMapNo(void);
-void ClearSubMapNo(void);
-void SetMainMapInfo(MapJumpMapInfo *info);
-void SetSubMapInfo(MapJumpMapInfo *info);
-void SetScriptBuffer(mgCMemory *buffer);
-void PreLoadSync(void);
-int MapJump(CScene *scene, SCN_LOADMAP_INFO2 *info, int mapIndex);
-int GetLoadMapInfo(SCN_LOADMAP_INFO2 *info, int mapNo);
-int LoadSubMap(CScene *scene, int subMapNo, int flag);
-void LoadMapScript(char *mapName);
-void ReloadMapScript(void);
-void LoadScript(char *path);
-int GetOldInteriorMapNo(void);
-void InitInterior(void);
-int InInterior(void);
-void GotoInterior(CScene *scene, int interiorNo);
-void DeleteInterior(CScene *scene);
-int InteriorMapJump(CScene *scene, int interiorNo);
+extern char               at_1047__2[];
+extern char               at_863__3[];
+extern char               at_890__4[];
+extern char               at_891__3[];
+extern char               at_892__2[];
+extern char               at_893__2[];
+extern char               at_894__2[];
+extern char               at_914__4[];
+extern char               at_950__4[];
+extern char               at_1091__2[];
+int                       GetMainMapNo();
+int                       GetSubMapNo();
+void                      ClearSubMapNo();
+void                      SetMainMapInfo(MapJumpMapInfo *info);
+void                      SetSubMapInfo(MapJumpMapInfo *info);
+void                      SetScriptBuffer(mgCMemory *buffer);
+int                       PreLoadSync();
+int                       MapJump(CScene *scene, SCN_LOADMAP_INFO2 *info, int map_index);
+int                       GetLoadMapInfo(SCN_LOADMAP_INFO2 *info, int map_no);
+int                       LoadSubMap(CScene *scene, int sub_map_no, int flag);
+void                      LoadMapScript(char *map_name);
+void                      ReloadMapScript();
+void                      LoadScript(char *path);
+int                       GetOldInteriorMapNo();
+void                      InitInterior();
+int                       InInterior();
+void                      GotoInterior(CScene *scene, int interior_no);
+void                      DeleteInterior(CScene *scene);
+int                       InteriorMapJump(CScene *scene, int interior_no);
 
 // Code (.text)
-int GetMainMapNo(void) {
+int GetMainMapNo() {
     return NowMainMapNo;
 }
-int GetSubMapNo(void) {
+
+int GetSubMapNo() {
     return NowSubMapNo;
 }
-void ClearSubMapNo(void) {
+
+void ClearSubMapNo() {
     NowSubMapNo = -1;
 }
+
 MapJumpMapInfo::MapJumpMapInfo() {
     memset(this, 0, 0x18);
 }
+
 void SetMainMapInfo(MapJumpMapInfo *info) {
     MainMapInfo__2.map_no = info->map_no;
     MainMapInfo__2.tex_block = info->tex_block;
@@ -95,6 +102,7 @@ void SetMainMapInfo(MapJumpMapInfo *info) {
     MainMapInfo__2.sky_tex_block = info->sky_tex_block;
     MainMapInfo__2.load_buf = info->load_buf;
 }
+
 void SetSubMapInfo(MapJumpMapInfo *info) {
     SubMapInfo.map_no = info->map_no;
     SubMapInfo.tex_block = info->tex_block;
@@ -103,180 +111,217 @@ void SetSubMapInfo(MapJumpMapInfo *info) {
     SubMapInfo.sky_tex_block = info->sky_tex_block;
     SubMapInfo.load_buf = info->load_buf;
 }
+
 void SetScriptBuffer(mgCMemory *buffer) {
     ScriptBuffer = buffer;
 }
-void PreLoadSync(void) {
+
+int PreLoadSync() {
     ReadBG();
-    ReadBGSync();
+    return ReadBGSync();
 }
-int MapJump(CScene *scene, SCN_LOADMAP_INFO2 *info, int mapIndex) {
-    char *mapName = GetMapName(mapIndex, NULL);
-    if (mapName == NULL) {
-        printf(at_863__3, mapIndex);
+
+int MapJump(CScene *scene, SCN_LOADMAP_INFO2 *info, int map_index) {
+    char *map_name = GetMapName(map_index, NULL);
+
+    if (map_name == NULL) {
+        printf(at_863__3, map_index);
         return 0;
     }
+
     scene->StopSeSrc();
     sndSeAllStop(1);
-    int charaIndex;
+    int chara_index;
 
-    CSaveData *saveData = GetSaveData();
-    s16 *mapNos = (&saveData->map_no);
-    (&saveData->map_no)[2] = (s16)NowMainMapNo;
+    CSaveData *save_data = GetSaveData();
+    s16       *map_nos = (&save_data->map_no);
+    (&save_data->map_no)[2] = (s16) NowMainMapNo;
     mgWaitFrame();
     mgInitLighting();
     scene->DeleteMap(SubMapInfo.map_no, 1);
     scene->DeleteMap(MainMapInfo__2.map_no, 1);
     NowMainMapNo = -1;
     NowSubMapNo = -1;
-    for (charaIndex = 0; charaIndex < 0x38; charaIndex++) {
-        scene->DeleteChara(charaIndex + 8);
+
+    for (chara_index = 0; chara_index < 0x38; chara_index++) {
+        scene->DeleteChara(chara_index + 8);
     }
+
     scene->ClearStack(1);
-    NowMainMapNo = SearchMapNo(mapName);
+    NowMainMapNo = SearchMapNo(map_name);
     scene->SetNowMapNo(NowMainMapNo);
-    mapNos[0] = (s16)NowMainMapNo;
-    mapNos[3] = -1;
-    mapNos[1] = -1;
-    int areaNo = GetMapAreaNo(NowMainMapNo);
-    if (areaNo > 0) {
-        *(int *)(mapNos + 4) = areaNo;
+    map_nos[0] = (s16) NowMainMapNo;
+    map_nos[3] = -1;
+    map_nos[1] = -1;
+    int area_no = GetMapAreaNo(NowMainMapNo);
+
+    if (area_no > 0) {
+        *(int *) (map_nos + 4) = area_no;
     }
+
     info->load_sky = 1;
+
     if (scene->LoadMap(MainMapInfo__2.map_no, info, 0) < 0) {
         return 0;
     }
+
     scene->SetActive(2, MainMapInfo__2.map_no);
     scene->active_map = MainMapInfo__2.map_no;
-    CEditMap *map = (CEditMap *)scene->GetMap(scene->active_map);
+    CEditMap *map = (CEditMap *) scene->GetMap(scene->active_map);
+
     if (map != NULL) {
         map->now_time = scene->time;
     }
-    LoadMapScript(mapName);
+
+    LoadMapScript(map_name);
     InitInterior();
     NowInteriorMapNo = -1;
     OldInteriorMapNo = -1;
     GetSaveData()->ResetBitCtrl(1);
     return 1;
 }
-int GetLoadMapInfo(SCN_LOADMAP_INFO2 *info, int mapNo) {
-    char mapPath[0x40];
-    char fileName[0x20];
-    char addPath[0x80];
-    char addDirectory[0x40];
-    char *mapName = GetMapName(mapNo, NULL);
-    if (mapName == NULL) {
-        printf(at_863__3, mapNo);
+
+int GetLoadMapInfo(SCN_LOADMAP_INFO2 *info, int map_no) {
+    char  map_path[0x40];
+    char  file_name[0x20];
+    char  add_path[0x80];
+    char  add_directory[0x40];
+    char *map_name = GetMapName(map_no, NULL);
+
+    if (map_name == NULL) {
+        printf(at_863__3, map_no);
         return 0;
     }
+
     info->tex_block = MainMapInfo__2.tex_block;
     info->stack_no = MainMapInfo__2.stack_no;
     info->load_buf = MainMapInfo__2.load_buf;
     info->efp_tex_block = MainMapInfo__2.efp_tex_block;
     info->sky_tex_block = MainMapInfo__2.sky_tex_block;
+
     if (info->place_parts_max <= 0) {
         info->place_parts_max = 0x140;
     }
+
     GAME_PROGRESS_INFO *progress = GetGameProgressInfo(GetSaveData()->game_progress);
-    GetMapPath(mapPath, mapName);
-    DivPathName(mapPath, info->files[0].dir, fileName);
+    GetMapPath(map_path, map_name);
+    DivPathName(map_path, info->files[0].dir, file_name);
     info->files[0].enable = 1;
-    strcpy(info->files[0].map_name, fileName);
-    strcpy(info->files[0].cfg_name, fileName);
-    strcpy(info->files[0].mpk_name, fileName);
-    strcpy(info->files[0].ipk_name, fileName);
-    strcpy(info->files[0].efp_name, fileName);
-    strcpy(info->files[0].sky_name, fileName);
+    strcpy(info->files[0].map_name, file_name);
+    strcpy(info->files[0].cfg_name, file_name);
+    strcpy(info->files[0].mpk_name, file_name);
+    strcpy(info->files[0].ipk_name, file_name);
+    strcpy(info->files[0].efp_name, file_name);
+    strcpy(info->files[0].sky_name, file_name);
     strcpy(info->files[0].def_sky_name, at_890__4);
+
     if (progress != NULL) {
         s16 chapter = progress->chapter;
+
         if (chapter >= 8 && chapter < 10) {
             strcat(info->files[0].sky_name, at_891__3);
             strcat(info->files[0].def_sky_name, at_891__3);
         }
     }
-    strcpy(info->name, fileName);
-    char *addMapPath = GetAddMapPath(mapNo);
-    if (addMapPath != NULL && *addMapPath != 0) {
-        strcpy(addPath, (char *)addMapPath);
+
+    strcpy(info->name, file_name);
+    char *add_map_path = GetAddMapPath(map_no);
+
+    if (add_map_path != NULL && *add_map_path != 0) {
+        strcpy(add_path, add_map_path);
         info->files[1].enable = 1;
+
         if (progress != NULL) {
             s16 chapter = progress->chapter;
+
             if (chapter >= 6) {
-                if (chapter < 8 && strcmp(addPath, at_892__2) == 0) {
-                    strcpy(addPath, at_893__2);
+                if (chapter < 8 && strcmp(add_path, at_892__2) == 0) {
+                    strcpy(add_path, at_893__2);
                 }
             }
         }
-        DivPathName(addPath, addDirectory, fileName);
+
+        DivPathName(add_path, add_directory, file_name);
         strcpy(info->files[1].dir, at_894__2);
-        strcat(info->files[1].dir, addDirectory);
-        strcpy(info->files[1].map_name, fileName);
-        strcpy(info->files[1].cfg_name, fileName);
-        strcpy(info->files[1].mpk_name, fileName);
-        strcpy(info->files[1].ipk_name, fileName);
-        strcpy(info->files[1].efp_name, fileName);
+        strcat(info->files[1].dir, add_directory);
+        strcpy(info->files[1].map_name, file_name);
+        strcpy(info->files[1].cfg_name, file_name);
+        strcpy(info->files[1].mpk_name, file_name);
+        strcpy(info->files[1].ipk_name, file_name);
+        strcpy(info->files[1].efp_name, file_name);
     }
+
     return 1;
 }
-int LoadSubMap(CScene *scene, int subMapNo, int flag) {
-    char *mapName = GetMapName(subMapNo, NULL);
-    if (mapName == NULL) {
-        printf(at_863__3, subMapNo);
+
+int LoadSubMap(CScene *scene, int sub_map_no, int flag) {
+    char *map_name = GetMapName(sub_map_no, NULL);
+
+    if (map_name == NULL) {
+        printf(at_863__3, sub_map_no);
         return 0;
     }
+
     mgWaitFrame();
     scene->DeleteMap(SubMapInfo.map_no, 1);
     scene->DeleteSubVillager();
     SCN_LOADMAP_INFO2 info;
-    char mapPath[0x40];
-    char fileName[0x20];
+    char              map_path[0x40];
+    char              file_name[0x20];
     info.tex_block = SubMapInfo.tex_block;
     info.stack_no = SubMapInfo.stack_no;
     info.load_buf = SubMapInfo.load_buf;
     info.efp_tex_block = SubMapInfo.efp_tex_block;
-    strcpy(info.name, mapName);
+    strcpy(info.name, map_name);
+
     if (info.place_parts_max <= 0) {
         info.place_parts_max = 0x140;
     }
-    GetMapPath(mapPath, mapName);
-    DivPathName(mapPath, info.files[0].dir, fileName);
+
+    GetMapPath(map_path, map_name);
+    DivPathName(map_path, info.files[0].dir, file_name);
     info.files[0].enable = 1;
-    strcpy(info.files[0].map_name, fileName);
-    strcpy(info.files[0].cfg_name, fileName);
-    strcpy(info.files[0].mpk_name, fileName);
-    strcpy(info.files[0].ipk_name, fileName);
-    strcpy(info.files[0].efp_name, fileName);
-    strcpy(info.name, fileName);
+    strcpy(info.files[0].map_name, file_name);
+    strcpy(info.files[0].cfg_name, file_name);
+    strcpy(info.files[0].mpk_name, file_name);
+    strcpy(info.files[0].ipk_name, file_name);
+    strcpy(info.files[0].efp_name, file_name);
+    strcpy(info.name, file_name);
+
     if (scene->LoadMap(SubMapInfo.map_no, &info, flag) < 0) {
         return 0;
     }
-    CSaveData *saveData = GetSaveData();
 
-    s16 *subMapNos = (&saveData->map_no);
-    subMapNos[3] = NowSubMapNo;
-    scene->SetNowSubMapNo(subMapNo);
-    NowSubMapNo = subMapNo;
-    subMapNos[1] = subMapNo;
+    CSaveData *save_data = GetSaveData();
+
+    s16 *sub_map_nos = (&save_data->map_no);
+    sub_map_nos[3] = NowSubMapNo;
+    scene->SetNowSubMapNo(sub_map_no);
+    NowSubMapNo = sub_map_no;
+    sub_map_nos[1] = sub_map_no;
     return 1;
 }
-void LoadMapScript(char *mapName) {
-    char mapPath[0x80];
+
+void LoadMapScript(char *map_name) {
+    char             map_path[0x80];
     ScriptPathBuffer script = at_912__4;
-    GetMapPath(mapPath, mapName);
-    strcat(script.text, mapPath);
+    GetMapPath(map_path, map_name);
+    strcat(script.text, map_path);
     strcat(script.text, at_914__4);
     LoadScript(script.text);
-    strcpy((char *)now_script_file, script.text);
+    strcpy((char *) now_script_file, script.text);
 }
-void ReloadMapScript(void) {
-    if (now_script_file[0] != 0)
-        LoadScript((char *)now_script_file);
+
+void ReloadMapScript() {
+    if (now_script_file[0] != 0) {
+        LoadScript((char *) now_script_file);
+    }
 }
+
 void LoadScript(char *path) {
-    char localizedPath[0x100];
-    char languageSuffix[0x1C];
-    int fileSize;
+    char localized_path[0x100];
+    char language_suffix[0x1C];
+    int  file_size;
 
     {
         mgCMemory *memory = ScriptBuffer;
@@ -284,134 +329,167 @@ void LoadScript(char *path) {
         memory->lock = 0;
     }
     ScriptBuffer->Align64();
-    u8 *buffer = (u8 *)(ScriptBuffer->stack + ScriptBuffer->stack_used);
+    u8 *buffer = (u8 *) (ScriptBuffer->stack + ScriptBuffer->stack_used);
     int length = strlen(path);
+
     if (length >= 5) {
-        strncpy(localizedPath, path, length - 4);
-        localizedPath[length - 4] = 0;
-        sprintf(languageSuffix, at_950__4, LanguageCode);
-        strcat(localizedPath, languageSuffix);
-        if (LoadFile2(localizedPath, buffer, &fileSize, 0) != 0) {
+        strncpy(localized_path, path, length - 4);
+        localized_path[length - 4] = 0;
+        sprintf(language_suffix, at_950__4, LanguageCode);
+        strcat(localized_path, language_suffix);
+
+        if (LoadFile2(localized_path, buffer, &file_size, 0) != 0) {
             u32 blocks;
-            if (fileSize & 0xF) {
-                blocks = ((u32)fileSize >> 4) + 1;
+
+            if (file_size & 0xF) {
+                blocks = ((u32) file_size >> 4) + 1;
             } else {
-                blocks = (u32)fileSize >> 4;
+                blocks = (u32) file_size >> 4;
             }
+
             ScriptBuffer->Alloc(blocks);
-            SetEventScript((char *)buffer, NULL, ScriptBuffer);
+            SetEventScript((char *) buffer, NULL, ScriptBuffer);
             return;
         }
 
-        if (LoadFile2(path, buffer, &fileSize, 0) != 0) {
+        if (LoadFile2(path, buffer, &file_size, 0) != 0) {
             u32 blocks;
-            if (fileSize & 0xF) {
-                blocks = ((u32)fileSize >> 4) + 1;
+
+            if (file_size & 0xF) {
+                blocks = ((u32) file_size >> 4) + 1;
             } else {
-                blocks = (u32)fileSize >> 4;
+                blocks = (u32) file_size >> 4;
             }
+
             ScriptBuffer->Alloc(blocks);
-            SetEventScript((char *)buffer, NULL, ScriptBuffer);
+            SetEventScript((char *) buffer, NULL, ScriptBuffer);
             return;
         }
+
         SetEventScript(NULL, NULL, NULL);
     }
 }
-int GetOldInteriorMapNo(void) {
+
+int GetOldInteriorMapNo() {
     if (InInterior() != 0) {
         return -1;
     }
+
     return OldInteriorMapNo;
 }
-void InitInterior(void) {
+
+void InitInterior() {
     old_mapname[0] = 0;
     InteriorFlag = 0;
     PrevInterior[0] = 0;
     NowInterior[0] = 0;
 }
-int InInterior(void) {
+
+int InInterior() {
     return InteriorFlag;
 }
+
 void SaveBeforeInterior(CScene *scene) {
     char *map_name = scene->GetMapName(SubMapInfo.map_no);
+
     if (map_name != NULL) {
         strcpy(old_mapname, map_name);
     }
+
     CCharacter2 *chara = scene->GetCharacter(scene->player_chara);
+
     if (chara != NULL) {
         chara->GetPosition(OldPos);
         chara->GetRotation(OldRot);
     }
+
     old_bgm_no = scene->GetActiveBgmInfo()->load_no;
     scene->GetActiveBgmStatus(&OldBgmStatus);
     mgCCamera *camera = scene->GetCamera(scene->active_camera);
+
     if (camera != NULL) {
         camera->GetPos(OldCamPos);
         camera->GetRef(OldCamRef);
     }
 }
+
 void SetInteriorDoorPos(CScene *scene) {
-    CFuncPoint *point;
-    CMap *map = scene->GetMap(scene->active_map);
+    CFuncPoint  *point;
+    CMap        *map = scene->GetMap(scene->active_map);
     CCharacter2 *chara = scene->GetCharacter(scene->player_chara);
+
     if (map == NULL || chara == NULL) {
         return;
     }
+
     char door_name[0x40] = "exit";
+
     if (PrevInterior[0] != 0) {
         strcpy(door_name, PrevInterior);
     }
+
     chara->SetPosition(0.0f, 0.0f, 0.0f);
     chara->SetRotation(0.0f, 0.0f, 0.0f);
     map->func_point.GetStart(FUNC_POINT_EVENT);
+
     while ((point = map->func_point.Get()) != NULL) {
         if ((point->event.flag & FUNC_EVENT_DOOR) && strcmp(door_name, point->event.unk_38) == 0) {
             sceVu0FVECTOR position;
             sceVu0FVECTOR rotation;
-            *(u_long128 *)position = *(u_long128 *)point->position;
-            *(u_long128 *)rotation = *(u_long128 *)point->rotation;
+            *(u_long128 *) position = *(u_long128 *) point->position;
+            *(u_long128 *) rotation = *(u_long128 *) point->rotation;
             rotation[2] = 0.0f;
             rotation[0] = 0.0f;
             rotation[1] = mgAngleLimit(3.1415927f + rotation[1]);
             chara->SetPosition(position);
             chara->SetRotation(rotation);
             mgCCamera *camera = scene->GetCamera(scene->active_camera);
+
             if (camera != NULL) {
                 camera->Step(-1);
             }
+
             return;
         }
     }
 }
-void GotoInterior(CScene *scene, int interiorNo) {
-    char *mapName = GetMapName(interiorNo, NULL);
-    if (mapName != NULL && InInterior() == 0) {
+
+void GotoInterior(CScene *scene, int interior_no) {
+    char *map_name = GetMapName(interior_no, NULL);
+
+    if (map_name != NULL && InInterior() == 0) {
         mgWaitFrame();
         SaveBeforeInterior(scene);
-        if (LoadSubMap(scene, interiorNo, 0) != 0) {
+
+        if (LoadSubMap(scene, interior_no, 0) != 0) {
             scene->SetActive(2, SubMapInfo.map_no);
             scene->ResetActive(2, MainMapInfo__2.map_no);
             scene->active_map = SubMapInfo.map_no;
             SetInteriorDoorPos(scene);
         }
-        if (GetMapType(interiorNo) == 2) {
+
+        if (GetMapType(interior_no) == 2) {
             LoadMapScript(at_1047__2);
         } else {
-            LoadMapScript(mapName);
+            LoadMapScript(map_name);
         }
+
         scene->SetNowMapNo(-1);
         scene->SetNowMapNo(NowMainMapNo);
         OldInteriorMapNo = NowInteriorMapNo;
         NowInteriorMapNo = NowMainMapNo;
-        CEditMap *map = (CEditMap *)scene->GetMap(scene->active_map);
+        CEditMap *map = (CEditMap *) scene->GetMap(scene->active_map);
+
         if (map != NULL) {
             map->now_time = scene->time;
         }
-        strcpy(NowInterior, mapName);
+
+        strcpy(NowInterior, map_name);
         PrevInterior[0] = 0;
         InteriorFlag = 1;
     }
 }
+
 void DeleteInterior(CScene *scene) {
     if (InInterior() != 0) {
         mgWaitFrame();
@@ -422,12 +500,15 @@ void DeleteInterior(CScene *scene) {
         *p = -1;
     }
 }
+
 void ExitInterior(CScene *scene, int *map_no) {
     if (!InInterior()) {
         return;
     }
+
     DeleteInterior(scene);
     CCharacter2 *chara = scene->GetCharacter(scene->player_chara);
+
     if (chara != NULL) {
         chara->SetMotion(at_1091__2, 4);
         chara->SetPosition(OldPos);
@@ -436,61 +517,76 @@ void ExitInterior(CScene *scene, int *map_no) {
         chara->Step();
         chara->StepDA(10);
     }
+
     mgCCamera *camera = scene->GetCamera(scene->active_camera);
+
     if (camera != NULL) {
         camera->SetPos(OldCamPos);
         camera->SetRef(OldCamRef);
     }
+
     ClearSubMapNo();
+
     if (map_no != NULL) {
         *map_no = -1;
     }
+
     if (old_mapname[0] != 0) {
         int old_map_no = SearchMapNo(old_mapname);
+
         if (map_no != NULL) {
             *map_no = old_map_no;
         }
+
         if (old_map_no >= 0 && LoadSubMap(scene, old_map_no, 0) != 0) {
             scene->SetActive(2, SubMapInfo.map_no);
         }
     } else {
         scene->SetNowSubMapNo(-1);
     }
+
     scene->SetActive(2, MainMapInfo__2.map_no);
     scene->active_map = MainMapInfo__2.map_no;
     OldInteriorMapNo = NowInteriorMapNo;
     NowInteriorMapNo = -1;
     CMap *map = scene->GetMap(scene->active_map);
+
     if (map != NULL) {
         map->now_time = scene->time;
     }
+
     LoadMapScript(scene->GetMapName(MainMapInfo__2.map_no));
     PrevInterior[0] = 0;
     NowInterior[0] = 0;
     InitInterior();
+
     if (old_bgm_no >= 0) {
         scene->LoadBGM(old_bgm_no, read_buffer);
         scene->SetActiveBgmStatus(&OldBgmStatus);
     }
 }
-int InteriorMapJump(CScene *scene, int interiorNo) {
-    if (LoadSubMap(scene, interiorNo, 0) != 0) {
+
+int InteriorMapJump(CScene *scene, int interior_no) {
+    if (LoadSubMap(scene, interior_no, 0) != 0) {
         scene->SetActive(2, SubMapInfo.map_no);
         scene->ResetActive(2, MainMapInfo__2.map_no);
         scene->active_map = SubMapInfo.map_no;
-        char *mapName = GetMapName(interiorNo, NULL);
+        char *map_name = GetMapName(interior_no, NULL);
         strcpy(PrevInterior, NowInterior);
-        if (mapName != NULL) {
-            strcpy(NowInterior, mapName);
+
+        if (map_name != NULL) {
+            strcpy(NowInterior, map_name);
         } else {
             NowInterior[0] = 0;
         }
+
         SetInteriorDoorPos(scene);
-        LoadMapScript(mapName);
+        LoadMapScript(map_name);
         OldInteriorMapNo = NowInteriorMapNo;
-        NowInteriorMapNo = interiorNo;
+        NowInteriorMapNo = interior_no;
         return 1;
     }
+
     return 0;
 }
 

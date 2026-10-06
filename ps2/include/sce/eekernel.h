@@ -8,12 +8,12 @@ extern "C" {
  * Describes an EE semaphore and its initial and maximum counts.
  */
 struct SemaParam {
-    int          currentCount;    /**< Current semaphore count. */
-    int          maxCount;        /**< Maximum semaphore count. */
-    int          initCount;       /**< Initial semaphore count. */
-    int          numWaitThreads;  /**< Number of threads waiting on the semaphore. */
-    unsigned int attr;            /**< Semaphore attributes. */
-    unsigned int option;          /**< Semaphore options. */
+    int          currentCount;   /**< Current semaphore count. */
+    int          maxCount;       /**< Maximum semaphore count. */
+    int          initCount;      /**< Initial semaphore count. */
+    int          numWaitThreads; /**< Number of threads waiting on the semaphore. */
+    unsigned int attr;           /**< Semaphore attributes. */
+    unsigned int option;         /**< Semaphore options. */
 };
 
 /**
@@ -36,12 +36,39 @@ int WaitSema(int sema_id);
  */
 int SignalSema(int sema_id);
 
+/** Disables interrupts and returns their previous state. */
+int DIntr(void);
+
+/** Restores interrupt handling. */
+int EIntr(...);
+
+/** Registers a handler for an EE interrupt source. */
+int AddIntcHandler(int cause, int (*handler)(int), int next);
+
+/** Removes an EE interrupt handler. */
+int RemoveIntcHandler(int cause, int handler);
+
+/** Enables an EE interrupt source. */
+int EnableIntc(int cause);
+
+/** Registers a handler for a DMA channel interrupt. */
+int AddDmacHandler(int channel, int (*handler)(int), int next);
+
+/** Removes a DMA channel interrupt handler. */
+int RemoveDmacHandler(int channel, int handler);
+
+/** Enables a DMA channel interrupt. */
+int EnableDmac(int channel);
+
+/** Disables a DMA channel interrupt. */
+int DisableDmac(int channel);
+
 /**
  * Describes a thread for CreateThread.
  */
 struct ThreadParam {
-    int          status;          /**< Thread state, filled in by ReferThreadStatus. */
-    void       (*entry)(void *);  /**< Function the thread runs. */
+    int status;                   /**< Thread state, filled in by ReferThreadStatus. */
+    void (*entry)(void *);        /**< Function the thread runs. */
     void        *stack;           /**< Lowest address of the thread's stack. */
     int          stackSize;       /**< Size of the thread's stack in bytes. */
     void        *gpReg;           /**< Value of the global pointer register in the thread. */

@@ -1,18 +1,20 @@
 #include "common.h"
-#include "gamepad.hpp"
-#include "dataread.hpp"
-#include "mglib.hpp"
 
-#include <cstdio>
 #include <eekernel.h>
 #include <libgraph.h>
 #include <libpad.h>
 
+#include <cstdio>
+
+#include "dataread.hpp"
+#include "gamepad.hpp"
+#include "mglib.hpp"
+
 extern "C" {
-extern int old_vsync__2;
-extern int TheadID; /**< Identifier of the controller thread. */
-extern u8 pad_dma_buf[0x400];
-extern u8 /**< First controller port's DMA buffer. */ pad_dma_buf2[0x400];
+extern int                                             old_vsync__2;
+extern int                                             TheadID; /**< Identifier of the controller thread. */
+extern u8                                              pad_dma_buf[0x400];
+extern u8 /**< First controller port's DMA buffer. */  pad_dma_buf2[0x400];
 extern u8 /**< Second controller port's DMA buffer. */ ThreadStack[0x400]; /**< Stack of the controller thread. */
 }
 extern const char at_248[];
@@ -187,42 +189,50 @@ static int read_pad(PAD_STATUS *status, int port, int slot) {
                     }
                 }
             }
+
             break;
         case PAD_PHASE_ANALOG_CHECK:
             if (scePadInfoMode(port, slot, InfoModeCurExID, 0) == 0) {
                 *phase = PAD_PHASE_READY;
                 break;
             }
+
             (*phase)++;
 
         case PAD_PHASE_ANALOG_SET:
             if (scePadSetMainMode(port, slot, 1, 3) == 1) {
                 (*phase)++;
             }
+
             break;
         case PAD_PHASE_ANALOG_WAIT:
             if (scePadGetState(port, slot) != scePadStateExecCmd) {
                 *phase = PAD_PHASE_QUERY;
             }
+
             break;
         case PAD_PHASE_ACTUATOR_CHECK:
             if (scePadInfoAct(port, slot, -1, 0) == 0) {
                 *phase = PAD_PHASE_READY;
             }
+
             status->actuator[0] = 0;
             status->actuator[1] = 1;
             status->actuator[2] = 0xFF;
             status->actuator[3] = 0xFF;
             status->actuator[4] = 0xFF;
             status->actuator[5] = 0xFF;
+
             if (scePadSetActAlign(port, slot, status->actuator) != 0) {
                 (*phase)++;
             }
+
             break;
         case PAD_PHASE_ACTUATOR_WAIT:
             if (scePadGetState(port, slot) != scePadStateExecCmd) {
                 *phase = PAD_PHASE_READY;
             }
+
             break;
         default:
             if (*state == scePadStateStable || *state == scePadStateFindCTP1) {
@@ -233,9 +243,11 @@ static int read_pad(PAD_STATUS *status, int port, int slot) {
                     } else {
                         valid = 1;
                     }
+
                     *previous_pad_mode = *pad_mode;
                 }
             }
+
             break;
     }
 
@@ -462,8 +474,8 @@ int CGamePad::GetRX2() {
 }
 
 void CGamePad::CancelAutoRepeat(int mask) {
-    int i;
-    int bit = 1;
+    int         i;
+    int         bit = 1;
     PAD_REPEAT *auto_repeat = &repeat[0];
 
     for (i = 0; i < 32; i++, bit <<= 1) {
@@ -478,8 +490,8 @@ void CGamePad::CancelAutoRepeat(int mask) {
 }
 
 void CGamePad::CancelAutoRepeat2(int mask) {
-    int i;
-    int bit = 1;
+    int         i;
+    int         bit = 1;
     PAD_REPEAT *auto_repeat = &repeat[1];
 
     for (i = 0; i < 32; i++, bit <<= 1) {
@@ -506,6 +518,7 @@ void CGamePad::SetAutoRepeat(int mask, int initial_delay, int repeat_delay) {
     }
 
     PAD_REPEAT *auto_repeat = &repeat[0];
+
     for (i = 0; i < 32; i++, bit <<= 1) {
         if (mask & bit) {
             auto_repeat->enabled |= bit;
@@ -530,6 +543,7 @@ void CGamePad::SetAutoRepeat2(int mask, int initial_delay, int repeat_delay) {
     }
 
     PAD_REPEAT *auto_repeat = &repeat[1];
+
     for (i = 0; i < 32; i++, bit <<= 1) {
         if (!(auto_repeat->enabled & bit) && (mask & bit)) {
             auto_repeat->enabled |= bit;
@@ -715,11 +729,12 @@ void CGamePad::Capture(PAD_STATUS *status) {
 }
 #else
 void CGamePad::Capture(PAD_STATUS *pad) {
-    u8 *entry = (u8 *)PAD_CAPTURE_BUFFER;
+    u8 *entry = (u8 *) PAD_CAPTURE_BUFFER;
     u32 frame = capture_frame;
+
     if (frame < PAD_CAPTURE_FRAME_MAX) {
         entry += frame * sizeof(PAD_CAPTURE_FRAME);
-        *(s16 *)entry = pad->button;
+        *(s16 *) entry = pad->button;
         entry[2] = pad->left_y;
         entry[3] = pad->left_x;
         entry[4] = pad->right_y;
@@ -731,7 +746,8 @@ void CGamePad::Capture(PAD_STATUS *pad) {
 
 void CGamePad::Play(PAD_STATUS *status) {
     PAD_CAPTURE_FRAME *frame;
-    u32 index = capture_frame;
+    u32                index = capture_frame;
+
     if (index < PAD_CAPTURE_FRAME_MAX) {
         frame = PAD_CAPTURE_BUFFER;
         frame += index;

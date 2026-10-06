@@ -131,7 +131,7 @@ int EditMapJump(int map_no);
  * @address 0x1B1000
  * @size 0x140
  */
-int EditGotoInterior(int map_no, int delete_villager);
+int EditGotoInterior(int interior_no, int delete_villager);
 
 /**
  * Leaves an interior map and returns to the town outside; the argument is unused; returns 1.

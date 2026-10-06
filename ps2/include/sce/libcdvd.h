@@ -6,10 +6,10 @@
  * Describes a file located through the CD/DVD library.
  */
 struct sceCdlFILE {
-    u_int lsn;      /**< Starting logical sector number. */
-    u_int size;     /**< File size in bytes. */
-    char name[16];  /**< ISO 9660 file name. */
-    u_char date[8]; /**< ISO 9660 recording date. */
+    u_int  lsn;      /**< Starting logical sector number. */
+    u_int  size;     /**< File size in bytes. */
+    char   name[16]; /**< ISO 9660 file name. */
+    u_char date[8];  /**< ISO 9660 recording date. */
 };
 
 /**
@@ -31,4 +31,10 @@ int sceCdRead(u_int lsn, u_int sectors, void *buffer, sceCdRMode *mode);
 int sceCdSync(int mode);
 int sceCdGetError(void);
 int sceCdBreak(void);
+int sceCdDiskReady(int mode);
+int sceCdStInit(int sectors, int banks, void *buffer);
+int sceCdStStart(unsigned int sector, sceCdRMode *mode);
+int sceCdStSeekF(unsigned int sector);
+int sceCdStStop(void);
+int sceCdStRead(unsigned int sectors, void *buffer, unsigned int mode, unsigned int *error);
 }

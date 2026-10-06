@@ -1,46 +1,286 @@
 #include "common.h"
-#include "mg_math.hpp"
 
 #include <libvu0.h>
 
 #include <cmath>
 #include <cstdlib>
 
+#include "mg_drawenv.hpp"
+#include "mg_math.hpp"
 
-int Check_Point_Poly3(float x, float y, float x0, float y0, float x1, float y1, float x2, float y2);
+int         Check_Point_Poly3(float x, float y, float x0, float y0, float x1, float y1, float x2, float y2);
 static void MulMatrix3(float (*matrix)[4], float (*second)[4], float (*third)[4]);
 
 // Code (.text)
+#ifdef NONMATCHING
+void mgFotI4(int *out, float *in) {
+    for (int i = 0; i < 4; ++i) {
+        out[i] = static_cast<int>(in[i] * 16.0f);
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgFotI4__FPiPf);
+#endif
+#ifdef NONMATCHING
+void mgCreateBox8(float (*corners)[4], float *max, float *min) {
+    for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            corners[i][j] = min[j];
+        }
+    }
+    for (int j = 0; j < 4; ++j) {
+        corners[7][j] = max[j];
+    }
+    corners[1][0] = max[0];
+    corners[2][1] = max[1];
+    corners[4][2] = max[2];
+    for (int j = 0; j < 4; ++j) {
+        corners[6][j] = max[j];
+    }
+    corners[6][0] = min[0];
+    for (int j = 0; j < 4; ++j) {
+        corners[5][j] = max[j];
+    }
+    corners[5][1] = min[1];
+    for (int j = 0; j < 4; ++j) {
+        corners[3][j] = max[j];
+    }
+    corners[3][2] = min[2];
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgCreateBox8__FPA4_fPfPf);
+#endif
+#ifdef NONMATCHING
+void mgZeroVector(float *vector) {
+    for (int i = 0; i < 4; ++i) {
+        vector[i] = 0.0f;
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgZeroVector__FPf);
+#endif
+#ifdef NONMATCHING
+void mgZeroVectorW(float *vector) {
+    vector[0] = vector[1] = vector[2] = 0.0f;
+    vector[3] = 1.0f;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgZeroVectorW__FPf);
+#endif
+#ifdef NONMATCHING
+int mgClipBoxVertex(float *point, float *max, float *min) {
+    for (int axis = 0; axis < 3; ++axis) {
+        int i = axis;
+        if (max[i] - point[i] < 0.0f || point[i] - min[i] < 0.0f) {
+            return 0;
+        }
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgClipBoxVertex__FPfPfPf);
+#endif
+#ifdef NONMATCHING
+int mgClipBox(float *max0, float *min0, float *max1, float *min1) {
+    for (int axis = 0; axis < 3; ++axis) {
+        int i = axis;
+        if (max0[i] - min1[i] < 0.0f || max1[i] - min0[i] < 0.0f) {
+            return 0;
+        }
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgClipBox__FPfPfPfPf);
+#endif
+#ifdef NONMATCHING
+int mgClipBoxW(float *max0, float *min0, float *max1, float *min1) {
+    for (int axis = 0; axis < 3; ++axis) {
+        int i = axis == 2 ? 3 : axis;
+        if (max0[i] - min1[i] < 0.0f || max1[i] - min0[i] < 0.0f) {
+            return 0;
+        }
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgClipBoxW__FPfPfPfPf);
+#endif
+#ifdef NONMATCHING
+int mgClipInBox(float *max0, float *min0, float *max1, float *min1) {
+    for (int axis = 0; axis < 3; ++axis) {
+        int i = axis;
+        if (max1[i] - max0[i] < 0.0f || min0[i] - min1[i] < 0.0f) {
+            return 0;
+        }
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgClipInBox__FPfPfPfPf);
+#endif
+#ifdef NONMATCHING
+int mgClipInBoxW(float *max0, float *min0, float *max1, float *min1) {
+    for (int axis = 0; axis < 3; ++axis) {
+        int i = axis == 2 ? 3 : axis;
+        if (max1[i] - max0[i] < 0.0f || min0[i] - min1[i] < 0.0f) {
+            return 0;
+        }
+    }
+    return 1;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgClipInBoxW__FPfPfPfPf);
+#endif
+#ifdef NONMATCHING
+void mgAddVector(float *vector, float *add) {
+    for (int i = 0; i < 4; ++i) {
+        vector[i] += add[i];
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgAddVector__FPfPf);
+#endif
+#ifdef NONMATCHING
+void mgSubVector(float *vector, float *sub) {
+    for (int i = 0; i < 4; ++i) {
+        vector[i] -= sub[i];
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgSubVector__FPfPf);
+#endif
+
 void mgNormalizeVector(float *out, float *in, float length) {
     sceVu0FVECTOR unit;
 
     sceVu0Normalize(unit, in);
     sceVu0ScaleVector(out, unit, length);
 }
+
+#ifdef NONMATCHING
+void mgVectorMin(float *min, float *a, float *b) {
+    for (int i = 0; i < 4; ++i) {
+        min[i] = a[i] < b[i] ? a[i] : b[i];
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgVectorMin__FPfPfPf);
+#endif
+#ifdef NONMATCHING
+void mgVectorMin(float *min, float *a, float *b, float *c, float *d) {
+    for (int i = 0; i < 4; ++i) {
+        float v = a[i] < b[i] ? a[i] : b[i];
+        v = v < c[i] ? v : c[i];
+        min[i] = v < d[i] ? v : d[i];
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgVectorMin__FPfPfPfPfPf);
+#endif
+#ifdef NONMATCHING
+void mgVectorMaxMin(float *max, float *min, float *a, float *b) {
+    for (int i = 0; i < 4; ++i) {
+        float hi = a[i], lo = a[i];
+        if (b[i] > hi) {
+            hi = b[i];
+        }
+        if (b[i] < lo) {
+            lo = b[i];
+        }
+        max[i] = hi;
+        min[i] = lo;
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgVectorMaxMin__FPfPfPfPf);
+#endif
+#ifdef NONMATCHING
+void mgVectorMaxMin(float *max, float *min, float *a, float *b, float *c) {
+    for (int i = 0; i < 4; ++i) {
+        float hi = a[i], lo = a[i];
+        if (b[i] > hi) {
+            hi = b[i];
+        }
+        if (b[i] < lo) {
+            lo = b[i];
+        }
+        if (c[i] > hi) {
+            hi = c[i];
+        }
+        if (c[i] < lo) {
+            lo = c[i];
+        }
+        max[i] = hi;
+        min[i] = lo;
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgVectorMaxMin__FPfPfPfPfPf);
+#endif
+#ifdef NONMATCHING
+void mgVectorMaxMin(float *max, float *min, float *a, float *b, float *c, float *d) {
+    for (int i = 0; i < 4; ++i) {
+        float hi = a[i], lo = a[i];
+        if (b[i] > hi) {
+            hi = b[i];
+        }
+        if (b[i] < lo) {
+            lo = b[i];
+        }
+        if (c[i] > hi) {
+            hi = c[i];
+        }
+        if (c[i] < lo) {
+            lo = c[i];
+        }
+        if (d[i] > hi) {
+            hi = d[i];
+        }
+        if (d[i] < lo) {
+            lo = d[i];
+        }
+        max[i] = hi;
+        min[i] = lo;
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgVectorMaxMin__FPfPfPfPfPfPf);
+#endif
+#ifdef NONMATCHING
+void mgBoxMaxMin(mgVu0FBOX *box, mgVu0FBOX *other) {
+    for (int i = 0; i < 4; ++i) {
+        if (other->max[i] > box->max[i]) {
+            box->max[i] = other->max[i];
+        }
+        if (other->min[i] < box->min[i]) {
+            box->min[i] = other->min[i];
+        }
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgBoxMaxMin__FP9mgVu0FBOXP9mgVu0FBOX);
+#endif
+#ifdef NONMATCHING
+void mgPlaneNormal(float *normal, float *v0, float *v1, float *v2) {
+    float ax = v1[0] - v0[0], ay = v1[1] - v0[1], az = v1[2] - v0[2];
+    float bx = v2[0] - v0[0], by = v2[1] - v0[1], bz = v2[2] - v0[2];
+    normal[0] = ay * bz - az * by;
+    normal[1] = az * bx - ax * bz;
+    normal[2] = ax * by - ay * bx;
+    normal[3] = 0.0f;
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgPlaneNormal__FPfPfPfPf);
+#endif
+
 float mgDistPlanePoint(float *normal, float *on_plane, float *point) {
     sceVu0FVECTOR offset;
 
     sceVu0SubVector(offset, point, on_plane);
     return sceVu0InnerProduct(normal, offset);
 }
+
 float mgDistLinePoint(float *point, float *start, float *end, float *nearest) {
     float to_start[4];
     float to_end[4];
@@ -48,7 +288,7 @@ float mgDistLinePoint(float *point, float *start, float *end, float *nearest) {
     float foot[4];
     float along[4];
     float line_length;
-    float         t;
+    float t;
     float dist_start;
     float dist_end;
     sceVu0SubVector(to_start, start, point);
@@ -57,21 +297,26 @@ float mgDistLinePoint(float *point, float *start, float *end, float *nearest) {
     line_length = mgDistVector(along);
     line_length = line_length * line_length;
     t = -sceVu0InnerProduct(to_start, along) / line_length;
+
     if (t < 0.0f || !(t <= 1.0f)) {
         dist_start = mgDistVector(point, start);
         dist_end = mgDistVector(point, end);
+
         if (dist_start < dist_end) {
             sceVu0CopyVector(nearest, start);
             return dist_start;
         }
+
         sceVu0CopyVector(nearest, end);
         return dist_end;
     }
+
     sceVu0ScaleVector(foot, along, t);
     sceVu0AddVector(foot, to_start, foot);
     sceVu0AddVector(nearest, foot, point);
     return mgDistVector(foot);
 }
+
 float mgReflectionPlane(float *normal, float *on_plane, float *point, float *reflection) {
     sceVu0FVECTOR step;
     float         distance;
@@ -82,17 +327,18 @@ float mgReflectionPlane(float *normal, float *on_plane, float *point, float *ref
     sceVu0SubVector(reflection, reflection, step);
     return distance;
 }
+
 int mgIntersectionSphereLine0(float radius, float *from, float *to, float (*hits)[4]) {
     float delta[4];
     float scaled[4];
-    float         a;
-    float         b;
+    float a;
+    float b;
     float c;
-    float         discriminant;
-    float         root;
+    float discriminant;
+    float root;
     float t1;
     float t2;
-    int           count;
+    int   count;
 
     // Solves |from + line * t|^2 = radius^2 for t within the segment.
     sceVu0SubVector(delta, to, from);
@@ -100,31 +346,38 @@ int mgIntersectionSphereLine0(float radius, float *from, float *to, float (*hits
     b = sceVu0InnerProduct(delta, from);
     c = mgDistVector2(from) - radius * radius;
     discriminant = b * b - a * c;
+
     if (discriminant < 0.0f) {
         return 0;
     }
+
     root = sqrtf(discriminant);
     count = 0;
     t1 = (-b - root) / a;
     t2 = (-b + root) / a;
+
     if (!(t1 < 0.0f) && t1 <= 1.0f) {
         sceVu0ScaleVector(scaled, delta, t1);
         sceVu0AddVector(hits[0], from, scaled);
         count++;
     }
+
     // A grazing line touches the sphere once.
     if (discriminant == 0.0f) {
         return 1;
     }
+
     if (!(t2 < 0.0f)) {
         if (t2 <= 1.0f) {
             sceVu0ScaleVector(scaled, delta, t2);
             sceVu0AddVector(hits[count], from, scaled);
-        count++;
+            count++;
+        }
     }
-    }
+
     return count;
 }
+
 int mgIntersectionSphereLine(float *sphere, float *from, float *to, float (*hits)[4]) {
     sceVu0FVECTOR local_from;
     sceVu0FVECTOR local_to;
@@ -143,6 +396,7 @@ int mgIntersectionSphereLine(float *sphere, float *from, float *to, float (*hits
 
     return count;
 }
+
 int mgIntersectionPoint_line_poly3(float *from, float *to, float *v0, float *v1, float *v2, float *normal, float *hit) {
     sceVu0FVECTOR line;
     sceVu0FVECTOR e0;
@@ -166,6 +420,7 @@ int mgIntersectionPoint_line_poly3(float *from, float *to, float *v0, float *v1,
     sceVu0AddVector(hit, hit, from);
     return mgCheckPointPoly3_XYZ(hit, v0, v1, v2, normal);
 }
+
 int mgCheckPointPoly3_XYZ(float *point, float *v0, float *v1, float *v2, float *normal) {
     sceVu0FVECTOR p0;
     sceVu0FVECTOR p1;
@@ -203,9 +458,11 @@ int mgCheckPointPoly3_XYZ(float *point, float *v0, float *v1, float *v2, float *
 
     return 0;
 }
+
 int mgCheckPointPoly3_XZ(float *point, float *v0, float *v1, float *v2) {
     return Check_Point_Poly3(point[0], point[2], v0[0], v0[2], v1[0], v1[2], v2[0], v2[2]);
 }
+
 /**
  * Returns where a 2D point lies relative to a 2D triangle, as an mgPointPoly3Result.
  */
@@ -219,36 +476,49 @@ int Check_Point_Poly3(float x, float y, float x0, float y0, float x1, float y1, 
     float max_y;
 
     min_x = (x0 < x1) ? ((x0 < x2) ? x0 : x2) : ((x1 < x2) ? x1 : x2);
+
     if (!(min_x <= x)) {
         return MG_POINT_POLY3_OUTSIDE;
     }
+
     max_x = (x0 > x1) ? ((x0 > x2) ? x0 : x2) : ((x1 > x2) ? x1 : x2);
+
     if (!(x <= max_x)) {
         return MG_POINT_POLY3_OUTSIDE;
     }
+
     min_y = (y0 < y1) ? ((y0 < y2) ? y0 : y2) : ((y1 < y2) ? y1 : y2);
+
     if (!(min_y <= y)) {
         return MG_POINT_POLY3_OUTSIDE;
     }
+
     max_y = (y0 > y1) ? ((y0 > y2) ? y0 : y2) : ((y1 > y2) ? y1 : y2);
+
     if (!(y <= max_y)) {
         return MG_POINT_POLY3_OUTSIDE;
     }
+
     edge_01 = ((x1 - x0) * (y - y0)) - ((y1 - y0) * (x - x0));
     edge_12 = ((x2 - x1) * (y - y1)) - ((y2 - y1) * (x - x1));
     edge_20 = ((x0 - x2) * (y - y2)) - ((y0 - y2) * (x - x2));
+
     if (edge_01 == 0.0f) {
         return MG_POINT_POLY3_EDGE_01;
     }
+
     if (edge_12 == 0.0f) {
         return MG_POINT_POLY3_EDGE_12;
     }
+
     if (edge_20 == 0.0f) {
         return MG_POINT_POLY3_EDGE_20;
     }
+
     if (!(edge_01 <= 0.0f) && !(edge_12 <= 0.0f) && !(edge_20 <= 0.0f)) {
         return MG_POINT_POLY3_INSIDE;
     }
+
     if (edge_01 < 0.0f) {
         if (edge_12 < 0.0f) {
             if (edge_20 < 0.0f) {
@@ -256,24 +526,134 @@ int Check_Point_Poly3(float x, float y, float x0, float y0, float x1, float y1, 
             }
         }
     }
+
     return MG_POINT_POLY3_OUTSIDE;
 }
 
+#ifdef NONMATCHING
+float mgDistVector(float *a) { return sqrtf(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]); }
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgDistVector__FPf);
+#endif
+#ifdef NONMATCHING
+float mgDistVectorXZ(float *a) { return sqrtf(a[0] * a[0] + a[2] * a[2]); }
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgDistVectorXZ__FPf);
+#endif
+#ifdef NONMATCHING
+float mgDistVector2(float *a) { return (a[0] * a[0] + a[1] * a[1] + a[2] * a[2]); }
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgDistVector2__FPf);
+#endif
+#ifdef NONMATCHING
+float mgDistVector(float *a, float *b) { return sqrtf((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1]) + (b[2] - a[2]) * (b[2] - a[2])); }
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgDistVector__FPfPf);
+#endif
+#ifdef NONMATCHING
+float mgDistVectorXZ(float *a, float *b) { return sqrtf((b[0] - a[0]) * (b[0] - a[0]) + (b[2] - a[2]) * (b[2] - a[2])); }
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgDistVectorXZ__FPfPf);
+#endif
+#ifdef NONMATCHING
+float mgDistVector2(float *a, float *b) { return ((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1]) + (b[2] - a[2]) * (b[2] - a[2])); }
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgDistVector2__FPfPf);
+#endif
+#ifdef NONMATCHING
+float mgDistVectorXZ2(float *a, float *b) { return ((b[0] - a[0]) * (b[0] - a[0]) + (b[2] - a[2]) * (b[2] - a[2])); }
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgDistVectorXZ2__FPfPf);
+#endif
+#ifdef NONMATCHING
+void mgUnitMatrix(float (*matrix)[4]) {
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            matrix[i][j] = i == j ? 1.0f : 0.0f;
+        }
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgUnitMatrix__FPA4_f);
+#endif
+#ifdef NONMATCHING
+void mgZeroMatrix(float (*matrix)[4]) {
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            matrix[i][j] = 0.0f;
+        }
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgZeroMatrix__FPA4_f);
+#endif
 /**
  * Multiplies a matrix in place by two further matrices.
  */
+#ifdef NONMATCHING
+static void MulMatrix3(float (*matrix)[4], float (*second)[4], float (*third)[4]) {
+    float intermediate[4][4];
+    mgMulMatrix(intermediate, matrix, second);
+    mgMulMatrix(matrix, intermediate, third);
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", MulMatrix3__FPA4_fPA4_fPA4_f);
+#endif
+#ifdef NONMATCHING
+void mgMulMatrix(float (*product)[4], float (*left_matrix)[4], float (*right_matrix)[4]) {
+    float result[4][4];
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            result[i][j] = 0.0f;
+            for (int k = 0; k < 4; ++k) {
+                result[i][j] += left_matrix[i][k] * right_matrix[k][j];
+            }
+        }
+    }
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            product[i][j] = result[i][j];
+        }
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgMulMatrix__FPA4_fPA4_fPA4_f);
+#endif
+#ifdef NONMATCHING
+void mgInversMatrix(float (*inverse)[4], float (*matrix)[4]) {
+    float cof[3][3];
+    for (int i = 0; i < 3; ++i) {
+        int i1 = (i + 1) % 3, i2 = (i + 2) % 3;
+        for (int j = 0; j < 3; ++j) {
+            int j1 = (j + 1) % 3, j2 = (j + 2) % 3;
+            cof[i][j] = matrix[i1][j1] * matrix[i2][j2] - matrix[i1][j2] * matrix[i2][j1];
+        }
+    }
+    float det = matrix[0][0] * cof[0][0] + matrix[0][1] * cof[0][1] + matrix[0][2] * cof[0][2];
+    float inv_det = 1.0f / det;
+    float result[4][4];
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            result[i][j] = cof[j][i] * inv_det;
+        }
+    }
+    for (int i = 0; i < 3; ++i) {
+        result[i][3] = 0.0f;
+    }
+    for (int j = 0; j < 3; ++j) {
+        result[3][j] = -(matrix[3][0] * result[0][j] + matrix[3][1] * result[1][j] + matrix[3][2] * result[2][j]);
+    }
+    result[3][3] = 1.0f;
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            inverse[i][j] = result[i][j];
+        }
+    }
+}
+#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgInversMatrix__FPA4_fPA4_f);
+#endif
+
 void mgRotMatrixX(float (*matrix)[4], float angle_x) {
     mgUnitMatrix(matrix);
     matrix[2][2] = cosf(angle_x);
@@ -281,6 +661,7 @@ void mgRotMatrixX(float (*matrix)[4], float angle_x) {
     matrix[1][2] = sinf(angle_x);
     matrix[2][1] = -matrix[1][2];
 }
+
 void mgRotMatrixY(float (*matrix)[4], float angle_y) {
     mgUnitMatrix(matrix);
     matrix[2][2] = cosf(angle_y);
@@ -288,6 +669,7 @@ void mgRotMatrixY(float (*matrix)[4], float angle_y) {
     matrix[2][0] = sinf(angle_y);
     matrix[0][2] = -matrix[2][0];
 }
+
 void mgRotMatrixZ(float (*matrix)[4], float angle_z) {
     mgUnitMatrix(matrix);
     matrix[1][1] = cosf(angle_z);
@@ -295,6 +677,7 @@ void mgRotMatrixZ(float (*matrix)[4], float angle_z) {
     matrix[0][1] = sinf(angle_z);
     matrix[1][0] = -matrix[0][1];
 }
+
 void mgRotMatrixXYZ(float (*matrix)[4], float *rotation) {
     sceVu0FMATRIX rotate_x;
     sceVu0FMATRIX rotate_y;
@@ -304,12 +687,14 @@ void mgRotMatrixXYZ(float (*matrix)[4], float *rotation) {
     mgRotMatrixZ(matrix, rotation[2]);
     MulMatrix3(matrix, rotate_y, rotate_x);
 }
+
 void mgCreateMatrixPY(float (*matrix)[4], float *position, float angle_y) {
     mgUnitMatrix(matrix);
     sceVu0RotMatrixY(matrix, matrix, angle_y);
-    *(u_long128 *)matrix[3] = *(u_long128 *)position;
+    *(u_long128 *) matrix[3] = *(u_long128 *) position;
     matrix[3][3] = 1.0f;
 }
+
 void mgLookAtMatrixZ(float (*matrix)[4], float *direction) {
     sceVu0FMATRIX pitch;
     sceVu0FMATRIX yaw;
@@ -344,21 +729,23 @@ void mgLookAtMatrixZ(float (*matrix)[4], float *direction) {
     pitch[1][2] = -unit[1];
     mgMulMatrix(matrix, yaw, pitch);
 }
+
 #pragma optimization_level 3
+
 void mgShadowMatrix(float (*matrix)[4], float *light_direction, float *on_plane, float *plane_normal) {
     float light_dir[4];
     float plane_point[4];
     float normal_copy[4];
     float dot;
     float facing;
-    float         nx;
+    float nx;
     float inv_dot;
     float ly;
-    float         ny;
+    float ny;
     float lx;
     float lz;
-    float         scale;
-    float         nz;
+    float scale;
+    float nz;
     light_dir[0] = light_direction[0];
     light_dir[1] = light_direction[1];
     light_dir[2] = light_direction[2];
@@ -366,6 +753,7 @@ void mgShadowMatrix(float (*matrix)[4], float *light_direction, float *on_plane,
     sceVu0CopyVector(plane_point, on_plane);
     sceVu0CopyVector(normal_copy, plane_normal);
     dot = sceVu0InnerProduct(normal_copy, plane_point);
+
     // A plane through the origin cannot be scaled to n.x = 1, so it is moved slightly first.
     if (dot == 0.0f) {
         plane_point[0] -= 0.1f * normal_copy[0];
@@ -373,6 +761,7 @@ void mgShadowMatrix(float (*matrix)[4], float *light_direction, float *on_plane,
         plane_point[2] -= 0.1f * normal_copy[2];
         dot = sceVu0InnerProduct(normal_copy, plane_point);
     }
+
     inv_dot = 1.0f / dot;
     nx = normal_copy[0] * inv_dot;
     ny = normal_copy[1] * inv_dot;
@@ -400,6 +789,7 @@ void mgShadowMatrix(float (*matrix)[4], float *light_direction, float *on_plane,
     matrix[2][3] = 0.0f;
     matrix[3][3] = scale * -facing;
 }
+
 #pragma optimization_level reset
 #pragma schedule off
 #pragma global_optimizer off
@@ -408,8 +798,7 @@ void mgApplyMatrixN(float (*out)[4], float (*matrix)[4], float (*in)[4], int cou
     for (int i = 0; i < count; ++i) {
         float vector[4] = {in[i][0], in[i][1], in[i][2], in[i][3]};
         for (int axis = 0; axis < 4; ++axis) {
-            out[i][axis] = matrix[0][axis] * vector[0] + matrix[1][axis] * vector[1]
-                         + matrix[2][axis] * vector[2] + matrix[3][axis] * vector[3];
+            out[i][axis] = matrix[0][axis] * vector[0] + matrix[1][axis] * vector[1] + matrix[2][axis] * vector[2] + matrix[3][axis] * vector[3];
         }
     }
 }
@@ -429,8 +818,12 @@ void mgApplyMatrixN_MaxMin(float (*out)[4], float (*matrix)[4], float (*in)[4], 
     }
     for (int i = 1; i < count; ++i) {
         for (int axis = 0; axis < 4; ++axis) {
-            if (max[axis] < out[i][axis]) max[axis] = out[i][axis];
-            if (min[axis] > out[i][axis]) min[axis] = out[i][axis];
+            if (max[axis] < out[i][axis]) {
+                max[axis] = out[i][axis];
+            }
+            if (min[axis] > out[i][axis]) {
+                min[axis] = out[i][axis];
+            }
         }
     }
 }
@@ -447,8 +840,12 @@ void mgVectorMinMaxN(float *max, float *min, float (*vectors)[4], int count) {
     }
     for (int i = 1; i < count; ++i) {
         for (int axis = 0; axis < 4; ++axis) {
-            if (max[axis] < vectors[i][axis]) max[axis] = vectors[i][axis];
-            if (min[axis] > vectors[i][axis]) min[axis] = vectors[i][axis];
+            if (max[axis] < vectors[i][axis]) {
+                max[axis] = vectors[i][axis];
+            }
+            if (min[axis] > vectors[i][axis]) {
+                min[axis] = vectors[i][axis];
+            }
         }
     }
 }
@@ -456,12 +853,14 @@ void mgVectorMinMaxN(float *max, float *min, float (*vectors)[4], int count) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgVectorMinMaxN__FPfPfPA4_fi);
 #endif
 #pragma global_optimizer reset
+
 void mgApplyMatrix(float *max, float *min, float (*matrix)[4], float *box_max, float *box_min) {
     sceVu0FVECTOR corners[8];
 
     mgCreateBox8(corners, box_max, box_min);
     mgApplyMatrixN_MaxMin(corners, matrix, corners, 8, max, min);
 }
+
 void mgVectorInterpolate(float *out, float *from, float *to, float step, int mode) {
     sceVu0FVECTOR gap;
 
@@ -485,6 +884,7 @@ void mgVectorInterpolate(float *out, float *from, float *to, float step, int mod
             break;
     }
 }
+
 float mgAngleInterpolate(float from, float to, float step, int mode) {
     float delta;
     float offset;
@@ -543,6 +943,7 @@ float mgAngleInterpolate(float from, float to, float step, int mode) {
 
     return result;
 }
+
 int mgAngleCmp(float a, float b, float tolerance) {
     float delta;
 
@@ -570,6 +971,7 @@ int mgAngleCmp(float a, float b, float tolerance) {
 
     return 0;
 }
+
 float mgAngleLimit(float angle) {
     if (angle < 3.1415927f && angle > -3.1415927f) {
         return angle;
@@ -587,13 +989,16 @@ float mgAngleLimit(float angle) {
 
     return angle;
 }
+
 float mgRnd() {
     return (float) rand() / 2147483648.0f;
 }
+
 float mgNRnd() {
     // The sum of twelve uniform samples has unit variance about six.
     return mgRnd() + mgRnd() + mgRnd() + mgRnd() + mgRnd() + mgRnd() + mgRnd() + mgRnd() + mgRnd() + mgRnd() + mgRnd() + mgRnd() - 6.0f;
 }
+
 void mgCreateSinTable() {
     int i;
 
@@ -604,6 +1009,7 @@ void mgCreateSinTable() {
         SinTable[i] = sinf(3.1415927f * (2.0f * (float) i) / sin_table_num);
     }
 }
+
 float mgSinf(float angle) {
     if (angle >= 0.0f) {
         return SinTable[(int) (angle * sin_table_unit_1) % 1024];
@@ -611,6 +1017,7 @@ float mgSinf(float angle) {
 
     return -SinTable[(int) (-angle * sin_table_unit_1) % 1024];
 }
+
 float mgCosf(float angle) {
     return mgSinf(1.5707964f + angle);
 }

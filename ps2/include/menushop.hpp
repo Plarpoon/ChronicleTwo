@@ -39,14 +39,14 @@ enum SHOP_SELL_MODE {
  *
  */
 enum SHOP_MENU_MODE {
-    SHOP_MENU_MODE_BUY_LIST = 0,    /**< Choosing one of the shop's goods. */
-    SHOP_MENU_MODE_BAG = 1,         /**< Choosing an item in the bag to sell or move. */
-    SHOP_MENU_MODE_BUY_NUM = 2,     /**< Choosing how many of the goods to buy. */
-    SHOP_MENU_MODE_SELL_NUM = 3,    /**< Choosing how many of the item to sell. */
-    SHOP_MENU_MODE_BUY_ASK = 4,     /**< Confirming the purchase. */
-    SHOP_MENU_MODE_SELL_ASK = 5,    /**< Confirming the sale. */
-    SHOP_MENU_MODE_BUY_ERROR = 6,   /**< Showing why the goods cannot be bought or the item sold, until a button is pressed. */
-    SHOP_MENU_MODE_SELL_ERROR = 7,  /**< Bag-side message screen, left on a button press like SHOP_MENU_MODE_BUY_ERROR; never entered. */
+    SHOP_MENU_MODE_BUY_LIST = 0,   /**< Choosing one of the shop's goods. */
+    SHOP_MENU_MODE_BAG = 1,        /**< Choosing an item in the bag to sell or move. */
+    SHOP_MENU_MODE_BUY_NUM = 2,    /**< Choosing how many of the goods to buy. */
+    SHOP_MENU_MODE_SELL_NUM = 3,   /**< Choosing how many of the item to sell. */
+    SHOP_MENU_MODE_BUY_ASK = 4,    /**< Confirming the purchase. */
+    SHOP_MENU_MODE_SELL_ASK = 5,   /**< Confirming the sale. */
+    SHOP_MENU_MODE_BUY_ERROR = 6,  /**< Showing why the goods cannot be bought or the item sold, until a button is pressed. */
+    SHOP_MENU_MODE_SELL_ERROR = 7, /**< Bag-side message screen, left on a button press like SHOP_MENU_MODE_BUY_ERROR; never entered. */
 };
 
 /**
@@ -89,10 +89,10 @@ enum QUEST_VIEW_MODE {
  *
  */
 enum {
-    SHOP_ITEM_MAX = 0x40,         /**< Goods one shop can offer. */
-    SHOP_PRICE_MAX = 0x200,       /**< Item numbers the price list covers. */
-    SHOP_LIST_LINE = 6,           /**< Lines of goods the shop list shows at once. */
-    QUEST_VIEW_PHOTO_MAX = 0x1E,  /**< Photo album slots the quest viewer reads. */
+    SHOP_ITEM_MAX = 0x40,          /**< Goods one shop can offer. */
+    SHOP_PRICE_MAX = 0x200,        /**< Item numbers the price list covers. */
+    SHOP_LIST_LINE = 6,            /**< Lines of goods the shop list shows at once. */
+    QUEST_VIEW_PHOTO_MAX = 0x1E,   /**< Photo album slots the quest viewer reads. */
     QUEST_VIEW_SCOOP_COUNT = 0x35, /**< Number of selectable photo scoops. */
 };
 
@@ -103,7 +103,7 @@ enum {
  */
 struct DONY_SHOP_ITEM {
     s16 item_no; /**< Item offered, or a negative number to end the list. */
-    s8 level;    /**< Donny's level has to be above this for the item to be offered. */
+    s8  level;   /**< Donny's level has to be above this for the item to be offered. */
 };
 
 STATIC_ASSERT(sizeof(DONY_SHOP_ITEM) == 0x4);
@@ -128,13 +128,13 @@ STATIC_ASSERT(sizeof(SHOP_PRICE_INFO) == 0x8);
  */
 class CShop {
 public:
-    s16 shop_id;                              /**< Number of the shop, whose entry is read from the shop script. */
-    u8 unk_2[0x2];
-    s32 item_num;                             /**< Number of goods on offer. */
-    s32 item_no[SHOP_ITEM_MAX];               /**< Item number of each of the goods. */
-    s32 have_num[SHOP_ITEM_MAX];              /**< Number of each of the goods the player already holds. */
-    s32 once_item_chosen;                     /**< Set once item 0x1A7, sold one per visit, has been chosen; removes it from the goods. */
-    SHOP_PRICE_INFO price[SHOP_PRICE_MAX];    /**< Buying and selling price of each item, by item number. */
+    s16             shop_id; /**< Number of the shop, whose entry is read from the shop script. */
+    u8              unk_2[0x2];
+    s32             item_num;                /**< Number of goods on offer. */
+    s32             item_no[SHOP_ITEM_MAX];  /**< Item number of each of the goods. */
+    s32             have_num[SHOP_ITEM_MAX]; /**< Number of each of the goods the player already holds. */
+    s32             once_item_chosen;        /**< Set once item 0x1A7, sold one per visit, has been chosen; removes it from the goods. */
+    SHOP_PRICE_INFO price[SHOP_PRICE_MAX];   /**< Buying and selling price of each item, by item number. */
 
     /**
      *
@@ -152,6 +152,7 @@ public:
         if (no < 0 || no >= item_num) {
             return 0;
         }
+
         return item_no[no];
     }
 
@@ -164,6 +165,7 @@ public:
         if (no < 0 || no >= item_num) {
             return 0;
         }
+
         return have_num[no];
     }
 
@@ -218,7 +220,7 @@ public:
      * @address 0x295940
      * @size 0xB0
      */
-    int AddMoney(int money);
+    int AddMoney(int amount);
 
     /**
      *
@@ -229,7 +231,7 @@ public:
      * @address 0x295C10
      * @size 0xA0
      */
-    void AnalyzeShopList(char *script, int size);
+    void AnalyzeShopList(char *script, int length);
 };
 
 STATIC_ASSERT(sizeof(CShop) == 0x120C);
@@ -241,43 +243,43 @@ STATIC_ASSERT(sizeof(CShop) == 0x120C);
  */
 class CShopMenu : public CBaseMenuClass {
 public:
-    CMenuPosDataForm *trade_brd;              /**< Board asking how many to buy or sell and showing the total ("売買ボード"). */
-    CMenuPosDataForm *item_list;              /**< Scrolling list of the shop's goods ("品物リスト"). */
-    CMenuPosDataForm *shop_name_brd;          /**< Board showing the shop's name ("店名ボード"). */
-    CMenuPosDataForm *money_brd;              /**< Board showing the player's money ("moneybrd"). */
-    CMenuPosDataForm *exp_brd;                /**< Board showing the robot's energy ("EXPBRD"). */
-    CMenuPosDataForm *medal_brd;              /**< Board showing the player's medals ("MEDALBRD"). */
-    float scrl_bar_step;                      /**< Distance the scroll bar moves for each line the list scrolls. */
-    MENUFORMPARTS_TYPE *scrl_bar_top;         /**< Top end of the list's scroll bar ("b0"). */
-    MENUFORMPARTS_TYPE *scrl_bar_body;        /**< Middle of the list's scroll bar, stretched to its length ("b1"). */
-    MENUFORMPARTS_TYPE *scrl_bar_bottom;      /**< Bottom end of the list's scroll bar ("b2"). */
-    CMenuPosDataForm *item_brd;               /**< Board framing the list of goods ("品物ボード"). */
-    u_int *pack;                              /**< Contents of "shop.pac", the shop's textures, forms and messages. */
-    s32 pack_size;                            /**< Size of "shop.pac", in bytes. */
-    u_int se_handle;                          /**< Sound of a completed sale ("SP_042.snd"). */
-    CGameDataUsed shop_item;                  /**< Goods under the list cursor, as an item the player could hold. */
-    s32 bag_pos;                              /**< Bag slot under the cursor. */
-    s32 bag_top;                              /**< First line of the bag shown. */
-    s32 list_pos;                             /**< Line of the goods list under the cursor. */
-    s32 list_top;                             /**< First line of the goods list shown. */
-    s32 total;                                /**< Total price of the quantity being bought or sold. */
-    s16 num_cursor;                           /**< Choice on the quantity board: 0 the quantity, 1 cancel. */
-    s16 num;                                  /**< Quantity being bought or sold. */
-    s16 num_max;                              /**< Largest quantity that can be bought or sold. */
-    u8 unk_1ce[0x2];
-    s32 arrow_flash[2];                       /**< Frames the quantity board's up and down arrows stay lit. */
-    float list_x;                             /**< Screen position of the goods list's first line, horizontally. */
-    float list_y;                             /**< Screen position of the goods list's first line, vertically. */
-    s16 shop_name_ofs_x;                      /**< Half the width of the shop's name, to centre it on its board. */
-    s16 shop_name_ofs_y;                      /**< Vertical offset of the shop's name on its board. */
-    s16 price_mes_width;                      /**< Width of the window telling an item's selling price. */
-    s16 unk_1e6;
-    s16 no_price_mes_width;                   /**< Width of the window telling that the shop will not buy an item. */
-    s16 unk_1ea;
-    CScene::BGM_STATUS bgm_status;            /**< Music that was playing when the shop opened, restored when it closes. */
-    s32 error;                                /**< Why the last purchase or sale was refused, a SHOP_MENU_ERROR. */
-    u8 cursor_reset;                          /**< Non-zero to put the cursor onto its target at once. */
-    u8 unk_20d[0x3];
+    CMenuPosDataForm   *trade_brd;       /**< Board asking how many to buy or sell and showing the total ("売買ボード"). */
+    CMenuPosDataForm   *item_list;       /**< Scrolling list of the shop's goods ("品物リスト"). */
+    CMenuPosDataForm   *shop_name_brd;   /**< Board showing the shop's name ("店名ボード"). */
+    CMenuPosDataForm   *money_brd;       /**< Board showing the player's money ("moneybrd"). */
+    CMenuPosDataForm   *exp_brd;         /**< Board showing the robot's energy ("EXPBRD"). */
+    CMenuPosDataForm   *medal_brd;       /**< Board showing the player's medals ("MEDALBRD"). */
+    float               scrl_bar_step;   /**< Distance the scroll bar moves for each line the list scrolls. */
+    MENUFORMPARTS_TYPE *scrl_bar_top;    /**< Top end of the list's scroll bar ("b0"). */
+    MENUFORMPARTS_TYPE *scrl_bar_body;   /**< Middle of the list's scroll bar, stretched to its length ("b1"). */
+    MENUFORMPARTS_TYPE *scrl_bar_bottom; /**< Bottom end of the list's scroll bar ("b2"). */
+    CMenuPosDataForm   *item_brd;        /**< Board framing the list of goods ("品物ボード"). */
+    u_int              *pack;            /**< Contents of "shop.pac", the shop's textures, forms and messages. */
+    s32                 pack_size;       /**< Size of "shop.pac", in bytes. */
+    u_int               se_handle;       /**< Sound of a completed sale ("SP_042.snd"). */
+    CGameDataUsed       shop_item;       /**< Goods under the list cursor, as an item the player could hold. */
+    s32                 bag_pos;         /**< Bag slot under the cursor. */
+    s32                 bag_top;         /**< First line of the bag shown. */
+    s32                 list_pos;        /**< Line of the goods list under the cursor. */
+    s32                 list_top;        /**< First line of the goods list shown. */
+    s32                 total;           /**< Total price of the quantity being bought or sold. */
+    s16                 num_cursor;      /**< Choice on the quantity board: 0 the quantity, 1 cancel. */
+    s16                 num;             /**< Quantity being bought or sold. */
+    s16                 num_max;         /**< Largest quantity that can be bought or sold. */
+    u8                  unk_1ce[0x2];
+    s32                 arrow_flash[2];  /**< Frames the quantity board's up and down arrows stay lit. */
+    float               list_x;          /**< Screen position of the goods list's first line, horizontally. */
+    float               list_y;          /**< Screen position of the goods list's first line, vertically. */
+    s16                 shop_name_ofs_x; /**< Half the width of the shop's name, to centre it on its board. */
+    s16                 shop_name_ofs_y; /**< Vertical offset of the shop's name on its board. */
+    s16                 price_mes_width; /**< Width of the window telling an item's selling price. */
+    s16                 unk_1e6;
+    s16                 no_price_mes_width; /**< Width of the window telling that the shop will not buy an item. */
+    s16                 unk_1ea;
+    CScene::BGM_STATUS  bgm_status;   /**< Music that was playing when the shop opened, restored when it closes. */
+    s32                 error;        /**< Why the last purchase or sale was refused, a SHOP_MENU_ERROR. */
+    u8                  cursor_reset; /**< Non-zero to put the cursor onto its target at once. */
+    u8                  unk_20d[0x3];
 
     /**
      *
@@ -417,9 +419,9 @@ STATIC_ASSERT(sizeof(CShopMenu) == 0x210);
  */
 class CMenuQuestView : public CBaseMenuClass {
 public:
-    s32 select;                               /**< Line under the cursor. */
-    s32 top;                                  /**< First line shown. */
-    s32 photo_no[QUEST_VIEW_PHOTO_MAX];       /**< Photo held in each album slot, or -1 when the slot is empty. */
+    s32 select;                         /**< Line under the cursor. */
+    s32 top;                            /**< First line shown. */
+    s32 photo_no[QUEST_VIEW_PHOTO_MAX]; /**< Photo held in each album slot, or -1 when the slot is empty. */
 
     /**
      *
@@ -476,7 +478,7 @@ STATIC_ASSERT(sizeof(CMenuQuestView) == 0x190);
  * @address 0x295160
  * @size 0x150
  */
-int GetDonyShopLineUp(int *item_no, int *status);
+int GetDonyShopLineUp(int *item_list, int *status);
 
 /**
  *

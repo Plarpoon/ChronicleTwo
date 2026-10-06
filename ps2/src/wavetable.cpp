@@ -1,12 +1,15 @@
 #include "common.h"
-#include "wavetable.hpp"
+
 #include <cstdlib>
 
-extern int cnt_302;
+#include "wavetable.hpp"
+
+extern int         cnt_302;
 extern signed char init_303;
 
-#include <cstdlib>
 #include <libvu0.h>
+
+#include <cstdlib>
 
 #include "mg_drawprim.hpp"
 #include "mg_texture.hpp"
@@ -26,6 +29,7 @@ CWaveTable::CWaveTable() {
 
     current = 0;
 }
+
 CWaveTable::~CWaveTable() {
 }
 
@@ -52,23 +56,31 @@ void CWaveTable::CreateTexture(mgCTexture *output_texture) {
     for (int row = 0; row < WAVE_TABLE_DIM - 1; ++row) {
         prim.BeginPrim2(4, 0x4141U, 0U, 4);
         for (int column = 0; column < WAVE_TABLE_DIM; ++column) {
-            int sample_column = column == WAVE_TABLE_DIM - 1 ? 0 : column;
-            int next_column = (sample_column + 1) % WAVE_TABLE_DIM;
+            int   sample_column = column == WAVE_TABLE_DIM - 1 ? 0 : column;
+            int   next_column = (sample_column + 1) % WAVE_TABLE_DIM;
             float position[4] = {origin_x + column * cell_width,
                                  origin_y + row * cell_height, 0.0f, 0.0f};
             float intensity = 40.0f + 540.0f *
-                (height[current][row][sample_column] - height[current][row][next_column]);
-            if (intensity > 200.0f) intensity = 200.0f;
-            if (intensity < 0.0f) intensity = 0.0f;
+                                          (height[current][row][sample_column] - height[current][row][next_column]);
+            if (intensity > 200.0f) {
+                intensity = 200.0f;
+            }
+            if (intensity < 0.0f) {
+                intensity = 0.0f;
+            }
             float color[4] = {intensity, intensity, intensity, 96.0f};
             prim.Data0(color);
             prim.Data4(position);
 
             int next_row = (row + 1) % WAVE_TABLE_DIM;
             intensity = 40.0f + 540.0f *
-                (height[current][next_row][sample_column] - height[current][next_row][next_column]);
-            if (intensity < 0.0f) intensity = 0.0f;
-            if (intensity > 200.0f) intensity = 200.0f;
+                                    (height[current][next_row][sample_column] - height[current][next_row][next_column]);
+            if (intensity < 0.0f) {
+                intensity = 0.0f;
+            }
+            if (intensity > 200.0f) {
+                intensity = 200.0f;
+            }
             float next_color[4] = {intensity, intensity, intensity, 96.0f};
             position[1] += cell_height;
             prim.Data0(next_color);
@@ -107,6 +119,7 @@ void CWaveTable::GetEffect() {
     }
 
     cnt++;
+
     if (cnt > 4) {
         cnt = 0;
     }
@@ -120,19 +133,16 @@ void CWaveTable::Effect() {
     const int previous = 1 - current;
     for (int row = 1; row < WAVE_TABLE_DIM - 1; ++row) {
         for (int column = 1; column < WAVE_TABLE_DIM - 1; ++column) {
-            float neighbors = height[current][row - 1][column]
-                            + height[current][row + 1][column]
-                            + height[current][row][column - 1]
-                            + height[current][row][column + 1];
+            float neighbors = height[current][row - 1][column] + height[current][row + 1][column] + height[current][row][column - 1] + height[current][row][column + 1];
             float now = height[current][row][column];
             float before = height[previous][row][column];
-            height[previous][row][column] = neighbors * 0.0196f
-                + (now * 1.9216f - before) - (now - before) * 0.0015f;
+            height[previous][row][column] = neighbors * 0.0196f + (now * 1.9216f - before) - (now - before) * 0.0015f;
         }
     }
     for (int row = 1; row < WAVE_TABLE_DIM - 1; ++row) {
         float seam = (height[previous][row][1] +
-                      height[previous][row][WAVE_TABLE_DIM - 2]) * 0.5f;
+                      height[previous][row][WAVE_TABLE_DIM - 2]) *
+                     0.5f;
         height[previous][row][1] = seam;
         height[previous][row][WAVE_TABLE_DIM - 2] = seam;
     }

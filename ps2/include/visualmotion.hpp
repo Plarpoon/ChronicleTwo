@@ -23,7 +23,7 @@ class mgCFace;
  *
  */
 struct mgVertexWeight {
-    int matrix[4];   /**< VU1 quadword offset of each influencing bone's matrix: four times its bone slot. */
+    int   matrix[4]; /**< VU1 quadword offset of each influencing bone's matrix: four times its bone slot. */
     float weight[4]; /**< Blend weight of each influencing bone; the weights of a vertex sum to one. */
 
     /**
@@ -35,6 +35,7 @@ struct mgVertexWeight {
      */
     mgVertexWeight();
 };
+
 STATIC_ASSERT(sizeof(mgVertexWeight) == 0x20);
 
 /**
@@ -45,12 +46,13 @@ STATIC_ASSERT(sizeof(mgVertexWeight) == 0x20);
  */
 class mgCVMotionData {
 public:
-    u_int *weight_data;           /**< Weight records of every model of the scene, each block naming the model and bone it belongs to. */
-    int frame_id;                 /**< Index in the frame table of the frame the model is attached to. */
-    mgCFrame **frame;             /**< Table of the skeleton's frames, indexed by frame number. */
-    float (*base_matrix)[4][4];   /**< Base matrix of each frame of the table, indexed by frame number. */
+    u_int     *weight_data;     /**< Weight records of every model of the scene, each block naming the model and bone it belongs to. */
+    int        frame_id;        /**< Index in the frame table of the frame the model is attached to. */
+    mgCFrame **frame;           /**< Table of the skeleton's frames, indexed by frame number. */
+    float (*base_matrix)[4][4]; /**< Base matrix of each frame of the table, indexed by frame number. */
     int unk_10;
 };
+
 STATIC_ASSERT(sizeof(mgCVMotionData) == 0x14);
 
 /**
@@ -62,11 +64,11 @@ STATIC_ASSERT(sizeof(mgCVMotionData) == 0x14);
 class mgCVisualMotionMDT : public mgCVisualFixMDT {
 public:
     mgCFrame **frame;           /**< Table of the skeleton's frames the bones are taken from, indexed by frame number. */
-    int frame_id;               /**< Index in the frame table of the frame the model is attached to. */
+    int        frame_id;        /**< Index in the frame table of the frame the model is attached to. */
     float (*base_matrix)[4][4]; /**< Base matrix of each frame of the table, indexed by frame number. */
-    mgVu0FBOX base_box;         /**< Bounds of the model in its base pose, moved with each bone to bound the posed model. */
-    int bone[32];               /**< Frame number of each bone slot whose matrix is sent to VU1, ended by -1. */
-    int weight_num;             /**< Number of vertex weights, one per vertex position. */
+    mgVu0FBOX       base_box;   /**< Bounds of the model in its base pose, moved with each bone to bound the posed model. */
+    int             bone[32];   /**< Frame number of each bone slot whose matrix is sent to VU1, ended by -1. */
+    int             weight_num; /**< Number of vertex weights, one per vertex position. */
     mgVertexWeight *weight;     /**< Bones and blend weights of each vertex position. */
 
     /**
@@ -146,8 +148,8 @@ public:
      * @address 0x28D710
      * @size 0x200
      */
-    virtual int DataAssignMotionMDT(MDT_HEADER *header, mgCVMotionData *motion, mgCMemory *memory,
-                                    mgCMemory *work_memory, mgCTextureManager *texture_manager);
+    virtual int DataAssignMotionMDT(MDT_HEADER *header, mgCVMotionData *data, mgCMemory *memory,
+                                    mgCMemory *work_memory, mgCTextureManager *textures);
 
     /**
      * Writes the VU1 packet for one primitive with each vertex's weights, split into batches that
@@ -167,7 +169,7 @@ public:
      * @address 0x28D280
      * @size 0x3A0
      */
-    void CreateVertexWeight(u_int *weight_data, int frame_id, mgCMemory *memory);
+    void CreateVertexWeight(u_int *weight_data, int selected_frame, mgCMemory *memory);
 
     /**
      * Moves the model onto another skeleton, finding each bone's frame there by name.
@@ -176,7 +178,7 @@ public:
      * @address 0x28D650
      * @size 0xC0
      */
-    void ChangeWeight(mgCFrame **frame, float (*base_matrix)[4][4], int frame_id);
+    void ChangeWeight(mgCFrame **new_frames, float (*base_matrix)[4][4], int count);
 
     /**
      * Sets the bounds of the model in its base pose, and sets the w of both given corners to one.
@@ -187,4 +189,5 @@ public:
      */
     void SetBaseBox(float *max, float *min);
 };
+
 STATIC_ASSERT(sizeof(mgCVisualMotionMDT) == 0x110);

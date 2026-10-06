@@ -8,19 +8,20 @@
 #include <libgraph.h>
 #include <libpad.h>
 
-#ifdef NONMATCHING
-static int       TheadID;                                           /**< Identifier of the controller thread. */
-static u8        pad_dma_buf[0x400] __attribute__((aligned(64)));  /**< First controller port's DMA buffer. */
-static u8        pad_dma_buf2[0x400] __attribute__((aligned(64))); /**< Second controller port's DMA buffer. */
-static u8        ThreadStack[0x400];                                /**< Stack of the controller thread. */
-#endif
+extern "C" {
+extern int old_vsync__2;
+extern int TheadID; /**< Identifier of the controller thread. */
+extern u8 pad_dma_buf[0x400];
+extern u8 /**< First controller port's DMA buffer. */ pad_dma_buf2[0x400];
+extern u8 /**< Second controller port's DMA buffer. */ ThreadStack[0x400]; /**< Stack of the controller thread. */
+}
+extern const char at_248[];
 
 static CGamePad *GamePad; /**< Controller manager the controller thread steps. */
 
 static int read_pad(PAD_STATUS *status, int port, int slot);
 
 // Code (.text)
-#ifdef NONMATCHING
 void CGamePad::Init() {
     key_lock = 0;
     key_lock2 = 0;
@@ -63,7 +64,7 @@ void CGamePad::Init() {
     }
 
     if (!scePadPortOpen(0, 0, pad_dma_buf)) {
-        printf("ERROR: scePadPortOpen\n");
+        printf(at_248);
         return;
     }
 
@@ -71,16 +72,13 @@ void CGamePad::Init() {
     sceGsSyncV(0);
 
     if (!scePadPortOpen(1, 0, pad_dma_buf2)) {
-        printf("ERROR: scePadPortOpen\n");
+        printf(at_248);
         return;
     }
 
     sceGsSyncV(0);
     sceGsSyncV(0);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamepad", Init__8CGamePadFv);
-#endif
 
 void CGamePad::Close() {
     scePadPortClose(0, 0);
@@ -88,7 +86,6 @@ void CGamePad::Close() {
     scePadEnd();
 }
 
-#ifdef NONMATCHING
 /**
  * Reads one controller's buttons and sticks into its state and gives the
  * controller type the data reports, or 0 when nothing was read.
@@ -97,158 +94,152 @@ static int pad_button_read(PAD_STATUS *status, int port, int slot) {
     static u16  rpad;
     static char init;
     u8          data[32];
+    int         extended_id;
+    int         button;
 
-    if (!init) {
+    if (init == 0) {
         rpad = 0;
         init = 1;
     }
 
-    if (!scePadRead(port, slot, data)) {
+    extended_id = 0;
+
+    if (scePadRead(port, slot, data) == 0) {
         return 0;
     }
 
-    int mode = 0;
-
     if (data[0] == 0) {
-        u16 button = ((data[2] << 8) | data[3]) ^ 0xFFFF;
+        button = (data[2] << 8) | data[3];
+        button = button ^ 0xFFFF;
         status->button = button & 0xFFFF;
         status->right_x = data[4];
         status->right_y = data[5];
         status->left_x = data[6];
         status->left_y = data[7];
         rpad = button;
-        mode = data[1] >> 4;
+        extended_id = data[1] >> 4;
     }
 
-    return mode;
+    return extended_id;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamepad", pad_button_read__FP10PAD_STATUSii);
-#endif
 
-#ifdef NONMATCHING
 /**
  * Advances one controller's setup and, once it is ready, reads it; gives
  * nonzero when the controller's buttons and sticks were read.
  */
 static int read_pad(PAD_STATUS *status, int port, int slot) {
-    status->state = scePadGetState(port, slot);
+    int  valid;
+    int  terminal_id;
+    int *phase = &status->phase;
+    int *state = &status->state;
+    int *extended_id = &status->extended_id;
+    int *pad_mode = &status->pad_mode;
+    int *previous_pad_mode = &status->previous_pad_mode;
 
-    if (status->state == scePadStateDiscon) {
-        status->phase = PAD_PHASE_QUERY;
+    *state = scePadGetState(port, slot);
+
+    if (*state == scePadStateDiscon) {
+        *phase = PAD_PHASE_QUERY;
     }
 
-    int valid = 0;
+    valid = 0;
 
-    switch (status->phase) {
+    switch (*phase) {
         case PAD_PHASE_QUERY:
-            if (status->state == scePadStateStable || status->state == scePadStateFindCTP1) {
-                int terminal_id = scePadInfoMode(port, slot, InfoModeCurID, 0);
+            if (*state == scePadStateStable || *state == scePadStateFindCTP1) {
+                terminal_id = scePadInfoMode(port, slot, InfoModeCurID, 0);
 
                 if (terminal_id != 0) {
-                    status->extended_id = scePadInfoMode(port, slot, InfoModeCurExID, 0);
+                    *extended_id = scePadInfoMode(port, slot, InfoModeCurExID, 0);
 
-                    if (status->extended_id > 0) {
-                        terminal_id = status->extended_id;
+                    if (*extended_id > 0) {
+                        terminal_id = *extended_id;
                     }
 
                     switch (terminal_id) {
                         case PAD_TERMINAL_NEGCON:
-                            status->phase = PAD_PHASE_READY;
+                            *phase = PAD_PHASE_READY;
                             break;
                         case PAD_TERMINAL_KONAMI_GUN:
-                            status->phase = PAD_PHASE_READY;
+                            *phase = PAD_PHASE_READY;
                             break;
                         case PAD_TERMINAL_DIGITAL:
-                            status->phase = PAD_PHASE_ANALOG_CHECK;
+                            *phase = PAD_PHASE_ANALOG_CHECK;
                             break;
                         case PAD_TERMINAL_ANALOG_JOYSTICK:
-                            status->phase = PAD_PHASE_READY;
+                            *phase = PAD_PHASE_READY;
                             break;
                         case PAD_TERMINAL_NAMCO_GUN:
-                            status->phase = PAD_PHASE_READY;
+                            *phase = PAD_PHASE_READY;
                             break;
                         case PAD_TERMINAL_DUALSHOCK:
-                            status->phase = PAD_PHASE_ACTUATOR_CHECK;
+                            *phase = PAD_PHASE_ACTUATOR_CHECK;
                             break;
                         case PAD_TERMINAL_EX_TSURICON:
-                            status->phase = PAD_PHASE_READY;
+                            *phase = PAD_PHASE_READY;
                             break;
                         case PAD_TERMINAL_EX_JOGCON:
-                            status->phase = PAD_PHASE_READY;
+                            *phase = PAD_PHASE_READY;
                             break;
                         default:
-                            status->phase = PAD_PHASE_READY;
+                            *phase = PAD_PHASE_READY;
                             break;
                     }
                 }
             }
-
             break;
         case PAD_PHASE_ANALOG_CHECK:
             if (scePadInfoMode(port, slot, InfoModeCurExID, 0) == 0) {
-                status->phase = PAD_PHASE_READY;
+                *phase = PAD_PHASE_READY;
                 break;
             }
+            (*phase)++;
 
-            status->phase++;
-            // Fall through.
         case PAD_PHASE_ANALOG_SET:
             if (scePadSetMainMode(port, slot, 1, 3) == 1) {
-                status->phase++;
+                (*phase)++;
             }
-
             break;
         case PAD_PHASE_ANALOG_WAIT:
             if (scePadGetState(port, slot) != scePadStateExecCmd) {
-                status->phase = PAD_PHASE_QUERY;
+                *phase = PAD_PHASE_QUERY;
             }
-
             break;
         case PAD_PHASE_ACTUATOR_CHECK:
             if (scePadInfoAct(port, slot, -1, 0) == 0) {
-                status->phase = PAD_PHASE_READY;
+                *phase = PAD_PHASE_READY;
             }
-
             status->actuator[0] = 0;
             status->actuator[1] = 1;
-
-            for (int i = 2; i < 6; i++) {
-                status->actuator[i] = 0xFF;
+            status->actuator[2] = 0xFF;
+            status->actuator[3] = 0xFF;
+            status->actuator[4] = 0xFF;
+            status->actuator[5] = 0xFF;
+            if (scePadSetActAlign(port, slot, status->actuator) != 0) {
+                (*phase)++;
             }
-
-            if (scePadSetActAlign(port, slot, status->actuator)) {
-                status->phase++;
-            }
-
             break;
         case PAD_PHASE_ACTUATOR_WAIT:
             if (scePadGetState(port, slot) != scePadStateExecCmd) {
-                status->phase = PAD_PHASE_READY;
+                *phase = PAD_PHASE_READY;
             }
-
             break;
         default:
-            if (status->state == scePadStateStable || status->state == scePadStateFindCTP1) {
-                status->pad_mode = pad_button_read(status, port, slot);
-
-                if (status->pad_mode != 0) {
-                    // A change of controller type restarts the setup.
-                    if (status->previous_pad_mode != 0 && status->pad_mode != status->previous_pad_mode) {
-                        status->previous_pad_mode = 0;
-                        status->phase = PAD_PHASE_QUERY;
+            if (*state == scePadStateStable || *state == scePadStateFindCTP1) {
+                if ((*pad_mode = pad_button_read(status, port, slot)) != 0) {
+                    if (*previous_pad_mode != 0 && *pad_mode != *previous_pad_mode) {
+                        *previous_pad_mode = 0;
+                        *phase = PAD_PHASE_QUERY;
                     } else {
                         valid = 1;
                     }
-
-                    status->previous_pad_mode = status->pad_mode;
+                    *previous_pad_mode = *pad_mode;
                 }
             }
-
             break;
     }
 
-    if (!valid) {
+    if (valid == 0) {
         status->button = 0;
         status->left_y = 0x80;
         status->left_x = 0x80;
@@ -256,7 +247,7 @@ static int read_pad(PAD_STATUS *status, int port, int slot) {
         status->right_x = 0x80;
     }
 
-    if (status->pad_mode == PAD_TERMINAL_DIGITAL) {
+    if (*pad_mode == PAD_TERMINAL_DIGITAL) {
         status->left_y = 0x80;
         status->left_x = 0x80;
         status->right_y = 0x80;
@@ -265,9 +256,6 @@ static int read_pad(PAD_STATUS *status, int port, int slot) {
 
     return valid;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamepad", read_pad__FP10PAD_STATUSii);
-#endif
 
 void CGamePad::WaitEnable() {
     sceGsSyncV(0);
@@ -299,11 +287,11 @@ int CGamePad::Connect() {
     return state == scePadStateFindCTP1;
 }
 
-#ifdef NONMATCHING
 void CGamePad::UpDate() {
     static int  cnt;
     static char init;
     int         i;
+    int         j;
 
     if (!init) {
         cnt = 0;
@@ -350,27 +338,26 @@ void CGamePad::UpDate() {
         }
     }
 
-    for (i = 0; i < 2; i++) {
-        PAD_REPEAT *auto_repeat = &repeat[i];
+    for (j = 0; j < 2; j++) {
         int         bit = 1;
+        PAD_REPEAT *auto_repeat = &repeat[j];
 
-        for (int j = 0; j < 32; j++, bit <<= 1) {
+        for (i = 0; i < 32; i++, bit <<= 1) {
             if (auto_repeat->enabled & bit) {
-                if ((pad[i].button & auto_repeat->enabled) & bit) {
-                    auto_repeat->counter[j]++;
+                if ((pad[j].button & auto_repeat->enabled) & bit) {
+                    auto_repeat->counter[i]++;
 
-                    if (auto_repeat->counter[j] >= auto_repeat->initial_delay[j]) {
+                    if (auto_repeat->counter[i] >= auto_repeat->initial_delay[i]) {
                         auto_repeat->active |= bit;
                     }
                 } else {
-                    auto_repeat->counter[j] = 0;
+                    auto_repeat->counter[i] = 0;
                     auto_repeat->active &= ~bit;
                 }
 
-                // A repeating button reads as released for one frame each repeat.
-                if (auto_repeat->counter[j] >= auto_repeat->repeat_delay[j] && (auto_repeat->active & bit)) {
-                    pad[i].button &= ~bit;
-                    auto_repeat->counter[j] = 0;
+                if (auto_repeat->counter[i] >= auto_repeat->repeat_delay[i] && (auto_repeat->active & bit)) {
+                    pad[j].button &= ~bit;
+                    auto_repeat->counter[i] = 0;
                 }
             }
         }
@@ -402,9 +389,6 @@ void CGamePad::UpDate() {
     cnt = !cnt;
     SwitchGamePadThread();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamepad", UpDate__8CGamePadFv);
-#endif
 
 void CGamePad::Step(int elapsed) {
     vibration_elapsed += elapsed;
@@ -477,12 +461,12 @@ int CGamePad::GetRX2() {
     return AxisCalibration(pad[1].right_x);
 }
 
-#ifdef NONMATCHING
 void CGamePad::CancelAutoRepeat(int mask) {
+    int i;
+    int bit = 1;
     PAD_REPEAT *auto_repeat = &repeat[0];
-    int         bit = 1;
 
-    for (int i = 0; i < 32; i++, bit <<= 1) {
+    for (i = 0; i < 32; i++, bit <<= 1) {
         if (mask & bit) {
             auto_repeat->enabled &= ~bit;
             auto_repeat->active &= ~bit;
@@ -492,16 +476,13 @@ void CGamePad::CancelAutoRepeat(int mask) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamepad", CancelAutoRepeat__8CGamePadFi);
-#endif
 
-#ifdef NONMATCHING
 void CGamePad::CancelAutoRepeat2(int mask) {
+    int i;
+    int bit = 1;
     PAD_REPEAT *auto_repeat = &repeat[1];
-    int         bit = 1;
 
-    for (int i = 0; i < 32; i++, bit <<= 1) {
+    for (i = 0; i < 32; i++, bit <<= 1) {
         if (mask & bit) {
             auto_repeat->enabled &= ~bit;
             auto_repeat->active &= ~bit;
@@ -511,14 +492,10 @@ void CGamePad::CancelAutoRepeat2(int mask) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamepad", CancelAutoRepeat2__8CGamePadFi);
-#endif
 
-#ifdef NONMATCHING
 void CGamePad::SetAutoRepeat(int mask, int initial_delay, int repeat_delay) {
-    PAD_REPEAT *auto_repeat = &repeat[0];
-    int         bit = 1;
+    int i;
+    int bit = 1;
 
     if (repeat_delay < 2) {
         repeat_delay = 2;
@@ -528,7 +505,8 @@ void CGamePad::SetAutoRepeat(int mask, int initial_delay, int repeat_delay) {
         initial_delay = 2;
     }
 
-    for (int i = 0; i < 32; i++, bit <<= 1) {
+    PAD_REPEAT *auto_repeat = &repeat[0];
+    for (i = 0; i < 32; i++, bit <<= 1) {
         if (mask & bit) {
             auto_repeat->enabled |= bit;
             auto_repeat->active &= ~bit;
@@ -538,14 +516,10 @@ void CGamePad::SetAutoRepeat(int mask, int initial_delay, int repeat_delay) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamepad", SetAutoRepeat__8CGamePadFiii);
-#endif
 
-#ifdef NONMATCHING
 void CGamePad::SetAutoRepeat2(int mask, int initial_delay, int repeat_delay) {
-    PAD_REPEAT *auto_repeat = &repeat[1];
-    int         bit = 1;
+    int i;
+    int bit = 1;
 
     if (repeat_delay < 2) {
         repeat_delay = 2;
@@ -555,7 +529,8 @@ void CGamePad::SetAutoRepeat2(int mask, int initial_delay, int repeat_delay) {
         initial_delay = 2;
     }
 
-    for (int i = 0; i < 32; i++, bit <<= 1) {
+    PAD_REPEAT *auto_repeat = &repeat[1];
+    for (i = 0; i < 32; i++, bit <<= 1) {
         if (!(auto_repeat->enabled & bit) && (mask & bit)) {
             auto_repeat->enabled |= bit;
             auto_repeat->active &= ~bit;
@@ -565,9 +540,6 @@ void CGamePad::SetAutoRepeat2(int mask, int initial_delay, int repeat_delay) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamepad", SetAutoRepeat2__8CGamePadFiii);
-#endif
 
 void CGamePad::KeyLock(int lock) {
     key_lock = lock;
@@ -729,8 +701,10 @@ void CGamePad::CapturePlay() {
 
 #ifdef NONMATCHING
 void CGamePad::Capture(PAD_STATUS *status) {
+    PAD_CAPTURE_FRAME *frame;
     if (capture_frame < PAD_CAPTURE_FRAME_MAX) {
-        PAD_CAPTURE_FRAME *frame = &PAD_CAPTURE_BUFFER[capture_frame];
+        frame = PAD_CAPTURE_BUFFER;
+        frame += capture_frame;
         frame->button = status->button;
         frame->left_y = status->left_y;
         frame->left_x = status->left_x;
@@ -740,24 +714,35 @@ void CGamePad::Capture(PAD_STATUS *status) {
     }
 }
 #else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamepad", Capture__8CGamePadFP10PAD_STATUS);
+void CGamePad::Capture(PAD_STATUS *pad) {
+    u8 *entry = (u8 *)PAD_CAPTURE_BUFFER;
+    u32 frame = capture_frame;
+    if (frame < PAD_CAPTURE_FRAME_MAX) {
+        entry += frame * sizeof(PAD_CAPTURE_FRAME);
+        *(s16 *)entry = pad->button;
+        entry[2] = pad->left_y;
+        entry[3] = pad->left_x;
+        entry[4] = pad->right_y;
+        entry[5] = pad->right_x;
+        capture_frame = capture_frame + 1;
+    }
+}
 #endif
 
-#ifdef NONMATCHING
 void CGamePad::Play(PAD_STATUS *status) {
-    if (capture_frame < PAD_CAPTURE_FRAME_MAX) {
-        PAD_CAPTURE_FRAME *frame = &PAD_CAPTURE_BUFFER[capture_frame];
+    PAD_CAPTURE_FRAME *frame;
+    u32 index = capture_frame;
+    if (index < PAD_CAPTURE_FRAME_MAX) {
+        frame = PAD_CAPTURE_BUFFER;
+        frame += index;
         status->button = frame->button;
         status->left_y = frame->left_y;
         status->left_x = frame->left_x;
         status->right_y = frame->right_y;
         status->right_x = frame->right_x;
-        capture_frame++;
+        capture_frame = capture_frame + 1;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamepad", Play__8CGamePadFP10PAD_STATUS);
-#endif
 
 void CGamePad::SaveCapture() {
     WriteFile("host0:key_cap.bin", PAD_CAPTURE_BUFFER, capture_frame * sizeof(PAD_CAPTURE_FRAME));
@@ -778,11 +763,9 @@ void SwitchGamePadThread() {
  * the vertical blanks elapsed since its last turn, then yields.
  */
 static void GamePadStep(void *arg) {
-    static int old_vsync;
-
     while (true) {
         int now = mgGetVSyncCount();
-        int elapsed = now - old_vsync;
+        int elapsed = now - old_vsync__2;
 
         if (elapsed < 0) {
             elapsed = 1;
@@ -793,11 +776,10 @@ static void GamePadStep(void *arg) {
         }
 
         SwitchGamePadThread();
-        old_vsync = now;
+        old_vsync__2 = now;
     }
 }
 
-#ifdef NONMATCHING
 void CreateGamePadThread(CGamePad *game_pad) {
     ThreadParam param;
     param.entry = GamePadStep;
@@ -810,10 +792,6 @@ void CreateGamePadThread(CGamePad *game_pad) {
     GamePad = game_pad;
     StartThread(TheadID, NULL);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gamepad", CreateGamePadThread__FP8CGamePad);
-#endif
-
 
 // Constants (.rodata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gamepad", at_248__DATA);

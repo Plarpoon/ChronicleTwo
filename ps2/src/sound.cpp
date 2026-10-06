@@ -11,16 +11,17 @@
 #include "ezbgm.hpp"
 #include "ezmidi.hpp"
 
+extern int bgm_info[2];
+extern MIDI_STATE midi_state;
+extern sceCslCtx msinCtx;
+
 #ifdef NONMATCHING
 static void          *iopMSINBuffAddr;              /**< IOP destination of the MIDI stream buffers. */
-static int            bgm_info[2];                  /**< Layout information returned for each stream channel. */
 static int            bd_size_total;                /**< Accumulated bank body size. */
-static sceCslCtx      msinCtx;                      /**< Context of the MIDI stream input module. */
 static sceCslBuffGrp  msinBfGrp[2];                 /**< Input and output buffer groups of the MIDI stream module. */
 static sceCslBuffCtx  msinBfCtx[MIDI_MSIN_PORT_COUNT]; /**< Contexts of the MIDI message buffers. */
 static MSIN_BUFFER    msinBf[MIDI_MSIN_PORT_COUNT];  /**< MIDI messages waiting to be sent to the IOP. */
 static MIDI_BANK      gBank;                        /**< Description of the bank being transferred. */
-static MIDI_STATE     midi_state;                   /**< Banks, sequences and fades of each MIDI port. */
 #endif
 
 // Code (.text)
@@ -28,7 +29,6 @@ void CSound::StopVoice(int core) {
     sceSdRemote(1, rSdSetSwitch, core | SD_S_KOFF, 0xFFFFFF);
     printf("voice completed Core=%d\n", core);
 }
-
 void CSound::SndInReverb(bool enable) {
     if (enable) {
         sceSdRemote(1, rSdSetParam, 0x800, -4);
@@ -415,23 +415,18 @@ void CSound::SQ_Play(int port, int seq_no, int volume) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", SQ_Play__6CSoundFiii);
 #endif
 
-#ifdef NONMATCHING
 void CSound::SQ_RePlay(int port) {
     if (midi_state.port[port].sequence_count > 0) {
         printf("MIDI restart! port=%d \n", port);
         ezMidi(port, 0);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", SQ_RePlay__6CSoundFi);
-#endif
 
-#ifdef NONMATCHING
 void CSound::SE_Play(int port, int bank, int program, int key, int pan, int velocity, int volume, int pitch, int id) {
     u8  message[7];
     u32 stream_port;
 
-    if (id >= 0x7F) {
+    if (id > 0x7E) {
         printf(" ################################SE_ID ERR!! PORT NO=%d !!!\n", port);
         return;
     }
@@ -445,6 +440,7 @@ void CSound::SE_Play(int port, int bank, int program, int key, int pan, int velo
         message[3] = volume;
         message[4] = 0;
         sceMSIn_PutHsMsg(&msinCtx, stream_port, message);
+        message[0] = 0xF9;
         message[1] = 2;
         message[2] = 0;
         message[3] = pitch & 0x7F;
@@ -465,16 +461,12 @@ void CSound::SE_Play(int port, int bank, int program, int key, int pan, int velo
         sceMSIn_PutHsMsg(&msinCtx, stream_port, message);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", SE_Play__6CSoundFiiiiiiiii);
-#endif
 
-#ifdef NONMATCHING
 void CSound::SE_SetVol(int port, int bank, int program, int key, int volume, int id) {
     u8  message[7];
     u32 stream_port;
 
-    if (id >= 0x7F) {
+    if (id > 0x7E) {
         printf(" ################################SE_ID ERR!! PORT NO=%d !!!\n", port);
         return;
     }
@@ -492,16 +484,12 @@ void CSound::SE_SetVol(int port, int bank, int program, int key, int volume, int
         sceMSIn_PutHsMsg(&msinCtx, stream_port, message);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", SE_SetVol__6CSoundFiiiiii);
-#endif
 
-#ifdef NONMATCHING
 void CSound::SE_SetPan(int port, int bank, int program, int key, int pan, int id) {
     u8  message[7];
     u32 stream_port;
 
-    if (id >= 0x7F) {
+    if (id > 0x7E) {
         printf(" ################################SE_ID ERR!! PORT NO=%d !!!\n", port);
         return;
     }
@@ -519,16 +507,12 @@ void CSound::SE_SetPan(int port, int bank, int program, int key, int pan, int id
         sceMSIn_PutHsMsg(&msinCtx, stream_port, message);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", SE_SetPan__6CSoundFiiiiii);
-#endif
 
-#ifdef NONMATCHING
 void CSound::SE_Stop(int port, int bank, int program, int key, int id) {
     u8  message[7];
     u32 stream_port;
 
-    if (id >= 0x7F) {
+    if (id > 0x7E) {
         printf(" ################################SE_ID ERR!! PORT NO=%d !!!\n", port);
         return;
     }
@@ -546,9 +530,6 @@ void CSound::SE_Stop(int port, int bank, int program, int key, int id) {
         sceMSIn_PutHsMsg(&msinCtx, stream_port, message);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", SE_Stop__6CSoundFiiiii);
-#endif
 
 #ifdef NONMATCHING
 void CSound::Step() {
@@ -801,12 +782,11 @@ int CSound::LoadSeq(int port, int address, int size) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", LoadSeq__6CSoundFiii);
 #endif
 
-#ifdef NONMATCHING
 void CSound::SE_SetPitch(int port, int bank, int program, int key, int pitch, int id) {
     u8  message[7];
     u32 stream_port;
 
-    if (id >= 0x7F) {
+    if (id > 0x7E) {
         printf(" ################################SE_ID ERR!! PORT NO=%d !!!\n", port);
         return;
     }
@@ -822,11 +802,7 @@ void CSound::SE_SetPitch(int port, int bank, int program, int key, int pitch, in
     message[6] = (pitch >> 7) & 0x7F;
     sceMSIn_PutHsMsg(&msinCtx, stream_port, message);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", SE_SetPitch__6CSoundFiiiiii);
-#endif
 
-#ifdef NONMATCHING
 void CSound::StreamOpenFast(int channel, char *name) {
     char file_name[64];
 
@@ -834,11 +810,7 @@ void CSound::StreamOpenFast(int channel, char *name) {
     ezBgm(channel | 0x80, 0);
     bgm_info[channel] = ezBgm(channel | EZBGM_OPEN, (int)file_name);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", StreamOpenFast__6CSoundFiPc);
-#endif
 
-#ifdef NONMATCHING
 void CSound::StreamOpenFromFPLFast(int channel, char *name, char *pack_name) {
     STREAM_PACK_REQUEST request;
 
@@ -847,9 +819,6 @@ void CSound::StreamOpenFromFPLFast(int channel, char *name, char *pack_name) {
     ezBgm(channel | 0x80, 0);
     bgm_info[channel] = ezBgm(channel | EZBGM_OPEN_FROM_PACK, (int)&request);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", StreamOpenFromFPLFast__6CSoundFiPcPc);
-#endif
 
 void CSound::StreamPlay(int channel) {
     ezBgm(channel | 0x50, 0);
@@ -891,7 +860,6 @@ int CSound::StreamGetLevel(int channel) {
     return ezBgm(channel | 0x80E0, 0);
 }
 
-#ifdef NONMATCHING
 void CSound::StreamStandBy(int channel) {
     bgm_info[channel] = ezBgm(channel | 0x80D0, 0);
     if (!(bgm_info[channel] & 0x1)) {
@@ -905,9 +873,6 @@ void CSound::StreamStandBy(int channel) {
     }
     ezBgm(channel | EZBGM_PRELOAD, 0);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", StreamStandBy__6CSoundFi);
-#endif
 
 int CSound::TransBdState(int channel) {
     return sceSdRemote(1, rSdVoiceTransStatus, channel, SD_TRANS_STATUS_CHECK);

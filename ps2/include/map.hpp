@@ -121,6 +121,8 @@ STATIC_ASSERT(sizeof(CList<CMapParts *>) == 0x10);
  */
 class CPartsGroup {
 public:
+    CPartsGroup() { Initialize(); }
+
     char *name;                   /**< Name the group is looked up by, or NULL when the slot is free. */
     s32 off;                      /**< Hides the group's parts while nonzero. */
     s32 camera_off;               /**< Hides the group's parts for the frame a fixed camera asks it to. */
@@ -155,6 +157,12 @@ STATIC_ASSERT(sizeof(CPartsGroup) == 0x10);
  *
  */
 struct MapDrawOffRect {
+    MapDrawOffRect() {
+        outside = 0;
+        used = 0;
+        parts = NULL;
+    }
+
     mgVu0FBOX area;               /**< Box that the viewpoint is tested against. */
     s32 used;                     /**< Nonzero once the slot holds an area. */
     s32 outside;                  /**< Hides the parts while the viewpoint is outside the area instead of inside. */
@@ -171,8 +179,6 @@ STATIC_ASSERT(sizeof(MapDrawOffRect) == 0x30);
 struct MapEventInfo {
     s32 check_type;               /**< Kind of check the event was searched for. */
     s32 event_no;                 /**< Event number of the point, or of the last event point passed through. */
-    s32 unk_8;
-    s32 unk_c;
     sceVu0FMATRIX matrix;         /**< World matrix of the event point. */
     s32 parts_no;                 /**< Placed parts the point belongs to, or -1 for a point of the map itself. */
     s32 point_no;                 /**< Number assigned to the point, such as its treasure box index. */

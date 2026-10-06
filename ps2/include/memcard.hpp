@@ -342,7 +342,7 @@ public:
      * @address 0x2F69D0
      * @size 0x10
      */
-    int FinishForMC();
+    void FinishForMC();
 
     /**
      *
@@ -453,7 +453,7 @@ public:
      * @address 0x2F6EB0
      * @size 0x50
      */
-    s16 CheckDebugCode();
+    int CheckDebugCode();
 
     /**
      *
@@ -689,7 +689,7 @@ STATIC_ASSERT(sizeof(CMemoryCardManager) == 0x1100);
  * @address 0x2F6390
  * @size 0xC0
  */
-char *CopyMCBrowserName(int name_no, char *dest, unsigned short *nl_offset);
+void CopyMCBrowserName(int name_no, char *dest, unsigned short *nl_offset);
 
 /**
  *

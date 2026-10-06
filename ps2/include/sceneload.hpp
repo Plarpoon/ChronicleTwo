@@ -44,13 +44,7 @@ enum SCN_LOADMAP_STEP {
  *
  */
 struct SCN_LOADMAP_INFO2 {
-    /**
-     *
-     * Creates an empty map loading description.
-     *
-     */
     SCN_LOADMAP_INFO2() { Initialize(); }
-
     /**
      *
      * Names and loaded contents of the files of one map: the map itself, or the map added to it.
@@ -100,16 +94,6 @@ struct SCN_LOADMAP_INFO2 {
      * @size 0x10
      */
     void Initialize();
-
-    /**
-     *
-     * Copies every name, buffer and setting of another map description into this one.
-     *
-     * @mangled __as__17SCN_LOADMAP_INFO2FRC17SCN_LOADMAP_INFO2
-     * @address 0x289B80
-     * @size 0xC0
-     */
-    SCN_LOADMAP_INFO2 &operator=(const SCN_LOADMAP_INFO2 &other);
 };
 STATIC_ASSERT(sizeof(SCN_LOADMAP_INFO2::MapFiles) == 0xB4);
 STATIC_ASSERT(sizeof(SCN_LOADMAP_INFO2) == 0x1A8);
@@ -128,12 +112,30 @@ public:
 
     /**
      *
+     * Makes an empty stack.
+     *
+     */
+    mgCObjectStack() {
+        Initialize();
+    }
+
+    /**
+     *
      * Empties the stack.
      *
      * @mangled Initialize__39mgCObjectStack_21CList_12EMAP_MESSAGE__Fv
      * @address 0x289900
      * @size 0x10
      */
-    void Initialize() { unk_8 = 0; }
+    void Initialize();
 };
+
+template <typename T>
+void mgCObjectStack<T>::Initialize() {
+    unk_8 = 0;
+}
+
+template <>
+void mgCObjectStack<CList<EMAP_MESSAGE> >::Initialize();
+
 STATIC_ASSERT(sizeof(mgCObjectStack<CList<EMAP_MESSAGE> >) == 0x14);

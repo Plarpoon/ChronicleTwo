@@ -141,7 +141,9 @@ public:
     /**
      * Creates an event with nothing running.
      */
-    CEditEvent() { Reset(); }
+    CEditEvent() {
+        Reset();
+    }
 
     /**
      *

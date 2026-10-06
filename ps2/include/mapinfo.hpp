@@ -39,7 +39,7 @@ public:
      * @address 0x1642C0
      * @size 0x60
      */
-    CCameraInfo() { Initialize(); }
+    CCameraInfo();
 
     /**
      * Clears every position, collision shape and part group of the area.
@@ -68,6 +68,8 @@ STATIC_ASSERT(sizeof(CCameraInfo) == 0xD0);
  */
 class CMapInfo {
 public:
+    CMapInfo() { Initialize(); }
+
     int               img_num;                     /**< Capacity of img_name. */
     char             *img_name[16];                /**< Names of the texture packs of the map, null after the last. */
     int               pcp_num;                     /**< Capacity of pcp_name. */

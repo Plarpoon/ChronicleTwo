@@ -85,7 +85,7 @@ enum sndREVERB_TYPE {
  * requested again within a number of frames.
  */
 struct SND_LOOP_SE_SEQ {
-    int se_id;     /**< Sound ID with the sound effect number, or -1 when the entry is free. */
+    u32 se_id;     /**< Sound ID with the sound effect number, or -1 when the entry is free. */
     s16 keep_time; /**< Frames the sound keeps playing after the last request. */
     s16 count;     /**< Frames since the last request; 0 until the sound has been started. */
     s16 voice;     /**< Voice number the sound effect plays with. */
@@ -100,11 +100,7 @@ struct SND_LOOP_SE_SEQ {
      * @address 0x18DAE0
      * @size 0x20
      */
-    SND_LOOP_SE_SEQ() {
-        se_id = -1;
-        vol = -1.0f;
-        pan = 0.0f;
-    }
+    SND_LOOP_SE_SEQ();
 };
 STATIC_ASSERT(sizeof(SND_LOOP_SE_SEQ) == 0x14);
 
@@ -223,10 +219,7 @@ struct sndSeInfo {
      * @address 0x191520
      * @size 0x10
      */
-    sndSeInfo() {
-        unk_0 = 0;
-        type = SND_SE_TYPE_NONE;
-    }
+    sndSeInfo();
 };
 STATIC_ASSERT(sizeof(sndSeInfo) == 0xC);
 
@@ -248,14 +241,29 @@ public:
      * Creates the bank empty.
      */
     sndBankInfo() {
-        unk_0 = 0;
+        seseq_num = 0;
+        sq_num = 0;
         se_num = 0;
         se = NULL;
-        sq_num = 0;
         sq_name = NULL;
-        seseq_num = 0;
         seseq = NULL;
+        unk_0 = 0;
     }
+
+    /**
+     * Finds a sound effect table entry by number, or NULL when it is out of range.
+     */
+    sndSeInfo *GetSe(int se_no) {
+        if (se_no < 0 || se_no >= se_num) {
+            return NULL;
+        }
+        return &se[se_no];
+    }
+
+    /**
+     * Finds a sound-effect sequence by number, or NULL when it is out of range.
+     */
+    inline sndCSeSeqData *GetSeSeqData(int seseq_no);
 
     /**
      * Finds how a sound effect named in the sound effect table is played:
@@ -327,15 +335,51 @@ public:
         for (i = 0; i < 16; i++) {
             seseq[i].seseq_no = -1;
         }
-        for (i = 0; i < 16; i++) {
-            bank[i].unk_0 = 0;
-            bank[i].se_num = 0;
-            bank[i].se = NULL;
-            bank[i].sq_num = 0;
-            bank[i].sq_name = NULL;
-            bank[i].seseq_num = 0;
-            bank[i].seseq = NULL;
+        for (int j = 0; j < 16; j++) {
+            bank[j].seseq_num = 0;
+            bank[j].sq_num = 0;
+            bank[j].se_num = 0;
+            bank[j].se = NULL;
+            bank[j].sq_name = NULL;
+            bank[j].seseq = NULL;
+            bank[j].unk_0 = 0;
         }
+    }
+
+    /**
+     * Finds a loaded bank by number, or NULL when it is out of range.
+     */
+    sndBankInfo *GetBank(int bank_no) {
+        if (bank_no < 0 || bank_no >= bank_num) {
+            return NULL;
+        }
+        return &bank[bank_no];
+    }
+
+    /**
+     * Finds a free sequence entry, or NULL when all sixteen are playing.
+     */
+    sndPortSeSeq *GetFreeSeSeq() {
+        for (int i = 0; i < 16; i++) {
+            if (seseq[i].seseq_no < 0) {
+                return &seseq[i];
+            }
+        }
+        return NULL;
+    }
+
+    /**
+     * Finds the playing sequence entry started for a sound effect of a bank
+     * with a voice, or NULL when there is none.
+     */
+    sndPortSeSeq *SearchSeSeq(int bank_no, int se_no, int voice) {
+        for (int i = 0; i < 16; i++) {
+            sndPortSeSeq *entry = &seseq[i];
+            if (entry->seseq_no >= 0 && entry->bank == bank_no && entry->se_no == se_no && entry->voice == voice) {
+                return entry;
+            }
+        }
+        return NULL;
     }
 
     /**
@@ -556,7 +600,7 @@ void sndSeAllStop(int port_no);
  * @address 0x18EE40
  * @size 0x30
  */
-s8 sndGetSeDefVol(unsigned int snd_id, int se_no);
+int sndGetSeDefVol(unsigned int snd_id, int se_no);
 
 /**
  * Loads a sound pack into a port as a new bank: its wave data, driver

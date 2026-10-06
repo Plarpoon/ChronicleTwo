@@ -63,6 +63,18 @@ struct SYSTEM_SCRIPT_INFO {
 
 /**
  *
+ * What the mini map shows of the parts of a floor not yet explored, as DNG_BATTLE_AREA::minimap_reveal holds it.
+ *
+ */
+// clang-format off
+enum MINIMAP_REVEAL {
+    MINIMAP_REVEAL_ROOMS   = 1, /**< Unexplored cells are drawn dimmed instead of hidden. */
+    MINIMAP_REVEAL_SYMBOLS = 2, /**< Monster and object symbols are drawn in unexplored cells. */
+};
+// clang-format on
+
+/**
+ *
  * Dungeon state a scene keeps: pause and floor flags, the floor manager, the status bar, camera quake and battle music.
  *
  */
@@ -85,7 +97,7 @@ struct DNG_BATTLE_AREA {
     s32                 boss_map;            /**< Non-zero on a boss floor, where the mini map symbols are hidden. */
     s32                 unk_5c;
     u8                  unk_60[0x4];
-    u32                 unk_64;
+    u32                 minimap_reveal;      /**< MINIMAP_REVEAL flags set by floor items for the rest of the floor. */
     u8                  unk_68[0x4];
     float               bright_rate;         /**< Scale applied to the colours the dungeon is drawn with. */
     float               quake_power;         /**< Strength of the running camera quake. */
@@ -102,14 +114,18 @@ struct DNG_BATTLE_AREA {
     u32                 unk_98;
     s8                  map_effect_id;       /**< Map effect number set by event scripts, or -1. */
     u8                  unk_9d;
-    s16                 unk_9e;
+    s16                 lock_on_mode;        /**< How the player picks a target: 0 nearest with lock-on, 2 the RockOn target selection; set by _SET_LOCKON_MODE. */
     s32                 free_texb;           /**< First texture block left free after the dungeon's own textures. */
     u8                  unk_a4[0x4];
 
     void SetStatusBar(int show, float speed) {
         statusbar_show_old = statusbar_show;
         statusbar_show = show;
-        statusbar_rate = show ? 0.0f : 1.0f;
+        if (show) {
+            statusbar_rate = 0.0f;
+        } else {
+            statusbar_rate = 1.0f;
+        }
         statusbar_speed = speed;
     }
 
@@ -194,7 +210,7 @@ public:
      * Creates a scene with all data slots and playback state reset.
      *
      */
-    CScene() { InitAllData(); }
+    CScene() : event_data() { InitAllData(); }
 
     /**
      *
@@ -275,7 +291,15 @@ public:
     CSceneGameObj      gameobj[4];                /**< Game object slots. */
     s32                effect_num;                /**< Number of entries in effect. */
     CSceneEffect       effect[8];                 /**< Effect script slots. */
+#pragma cpp_extensions on
+    union {
     CFadeInOut         fade;                      /**< Screen fade. */
+        struct {
+            u8 unk_2c70[0x2C];
+            int motion_blur;
+        };
+    };
+#pragma cpp_extensions reset
     s32                bg_load_step;              /**< Next step of the map loaded in the background, plus one; 0 when none is. */
     u8                 unk_2ca4[0x4];
     SCN_LOADMAP_INFO2  bg_load_info;              /**< Map loaded in the background. */
@@ -295,7 +319,28 @@ public:
     s32                unk_2e84;
     s32                event_run;                 /**< Non-zero while an event runs. */
     s32                event_no;                  /**< Number of the running event. */
+#pragma cpp_extensions on
+    union {
     CSceneEventData    event_data;                /**< Description of the running event. */
+        struct {
+            u32 map_jump_flags;
+            u8 unk_2e94[8];
+            int door_place_no[2];
+            u8 unk_2ea4[4];
+            char map_jump_name[1];
+            u8 unk_2ea9[0x77];
+            float door_dir_x;
+            u8 unk_2f24[4];
+            float door_dir_z;
+            u8 unk_2f2c[4];
+            float door_vec[3];
+            u8 unk_2f3c[0x4];
+            int event_parts_id;
+            u8 unk_2f44[0x18];
+            int villager_id;
+        };
+    };
+#pragma cpp_extensions reset
     s32                map_event_no;              /**< Number of the event last reached on the map. */
     s32                exit_flag;                 /**< Exit flag set and read by event scripts. */
     s32                day;                       /**< Number of days passed. */
@@ -941,6 +986,8 @@ public:
      * @size 0x18
      */
     void SetNowMapNo(int map_no);
+
+    int GetNowMapNo() { return now_map_no; }
 
     /**
      *
@@ -2092,7 +2139,7 @@ public:
      * @address 0x2CEDA0
      * @size 0x14
      */
-    void RegisterVillager(int no, int chara_no, CVillagerPlaceInfo *place);
+    int RegisterVillager(int no, int chara_no, CVillagerPlaceInfo *place);
 
     /**
      *

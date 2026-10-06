@@ -46,6 +46,8 @@ No class in the unit has virtual functions (no `__vt__` symbol, no vtable stores
 
 ## CGameDataUsed (0x6C)
 Size from `Init` memset 0x6C, every array stride, `memcpy(...,0x6C)` in `CopyGameData`.
+`GetUseCapacity` reads `CDataRoboPart::use_capacity` at offset zero; accessing the named field
+instead of casting the record to `short *` produces byte-identical code for the whole unit.
 - 0x0 s16 `used_type`: `ConvertUsedItemType` result (`CopyDataItem(int)`), 1 item, 2 attach, 3 weapon,
   4 item family 4, 5 ridepod part, 6 fish, 7 gift box, 8 boiled (`Boiled`). 0x2 s16 `item_no`.
   0x4 s8 `item_type` (common data type; `IsWhoEquip` compares as `(char)`). 0x5 u8 `rename_flag`

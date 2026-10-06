@@ -126,3 +126,13 @@ relocation rebinding alone cannot restore the retail instruction stream.
 The script's local `GetStackString` returns the pointer stored in a stack
 slot. Typing its return as `char*` removes the integer-to-pointer casts at
 its call sites; all affected functions remain exact.
+
+A direct native allocation, `script = new (work_memory->Alloc(0x17)) _EFF_SCRIPT`,
+constructs the `CRunScript` member and preserves the 0x500-byte function size,
+but scores 97.20%. At the allocation site it puts `beqz v0` before the move
+into the saved script register, while retail moves first and branches on that
+register. It places the constructor argument in the call delay slot; retail
+places it in the branch delay slot and leaves the call delay slot empty. The
+new expression also swaps the saved registers used for the script and work
+token through the rest of `CreateEffSpt`. The original explicit call restores
+100% and remains pending a native C++ source form with the same schedule.

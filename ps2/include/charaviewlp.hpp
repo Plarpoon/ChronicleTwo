@@ -26,7 +26,7 @@ void InitCharaViewerMain(INIT_LOOP_ARG arg);
 
 /**
  *
- * Exit hook for the character viewer, with no cleanup work.
+ * Exit hook for the character viewer.
  *
  * @mangled FinishCharaVieweMain__Fv
  * @address 0x1A3470

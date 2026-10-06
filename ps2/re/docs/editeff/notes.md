@@ -121,3 +121,14 @@ remain until an exact typed form is found.
 ## Native static initialization
 
 Native `_StarEffect[3]` and `CurPartsBuff` globals emit the retail array-construction and memory-initialization calls. The generated 64-byte initializer matches exactly. The existing data/vtable objdiff scores are unchanged from the handwritten initializer.
+
+Further native-constructor trials confirm the remaining obstacle. A placement
+`operator new(size_t, mgCFrame&)` overload returning the member address still
+makes MWCC emit an extra `beqz` before `__ct__8mgCFrameFv` (98.30%). The
+source expressions `target->frame.mgCFrame()` and
+`target->frame.mgCFrame::mgCFrame()` compile to a temporary at `sp+0x50`,
+not the frame at `target+0xC0`; each scores 99.95% but is semantically wrong.
+The exact retail call passes `target+0xC0` in `a0` and uses the `CMapParts`
+vtable store as the constructor call's delay slot. Restoring the explicit
+constructor alias leaves `EditSetPlaceAnime` and every other function in the
+unit at 100%.

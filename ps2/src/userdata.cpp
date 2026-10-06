@@ -486,10 +486,10 @@ int CGameDataUsed::AddNum(int count, int clear) {
 }
 
 int CGameDataUsed::GetUseCapacity() {
-    short *robo_data = (short *) GameItemDataManage.GetRoboData(item_no);
+    CDataRoboPart *robo_data = GameItemDataManage.GetRoboData(item_no);
 
     if (robo_data != NULL) {
-        return *robo_data;
+        return robo_data->use_capacity;
     }
 
     return 0;

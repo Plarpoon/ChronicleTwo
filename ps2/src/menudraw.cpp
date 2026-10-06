@@ -659,6 +659,11 @@ mgCTexture *GetMenuItemIconTexInfo(int item_no, int index) {
     return 0;
 }
 
+/**
+ *
+ * Expands an integer rectangle into its four drawing corners.
+ *
+ */
 void ConvMGIRECTtoINTtbl(mgRect<int> rect, int *corners) {
     corners[0] = rect.left;
     corners[1] = rect.top;
@@ -670,6 +675,11 @@ void ConvMGIRECTtoINTtbl(mgRect<int> rect, int *corners) {
     corners[7] = corners[5];
 }
 
+/**
+ *
+ * Expands a floating-point rectangle into its four drawing corners.
+ *
+ */
 void ConvMGFRECTtoFLOATtbl(mgRect<float> rect, float *corners) {
     corners[0] = rect.left;
     corners[1] = rect.top;
@@ -681,6 +691,11 @@ void ConvMGFRECTtoFLOATtbl(mgRect<float> rect, float *corners) {
     corners[7] = corners[5];
 }
 
+/**
+ *
+ * Seeds an item part effect with randomized parameters for its effect type.
+ *
+ */
 void SetPartEffectInfoRandFunc(MENU_PARTS_EFFECT_STRUCT1 *effect) {
     if (effect != 0) {
         int rand_a = rand();
@@ -709,6 +724,11 @@ void SetPartEffectInfoRandFunc(MENU_PARTS_EFFECT_STRUCT1 *effect) {
     }
 }
 
+/**
+ *
+ * Copies scripted values into an item part effect's parameter array.
+ *
+ */
 void SetPartEffectInfoRandFunc(MENU_PARTS_EFFECT_STRUCT1 *effect, short *values, int count) {
     for (int i = 0; i < count; i++) {
         effect->param[i] = values[i];
@@ -793,6 +813,11 @@ void SetSpriteEnv(mgCDrawPrim *prim, int mode) {
     }
 }
 
+/**
+ *
+ * Appends vertices and texture coordinates for a repeated menu primitive.
+ *
+ */
 void PushPrimRepeat(mgCDrawPrim *prim, float *positions, int *tex_coords, int count) {
     for (int i = 0; i < count; i++) {
         prim->TextureCrd(tex_coords[i * 2], tex_coords[i * 2 + 1]);
@@ -1292,6 +1317,11 @@ void MenuPresentBoxView(int x, int y, int &tex_block, mgCTexture *tex, mgCTextur
     }
 }
 
+/**
+ *
+ * Sets the minimum digit width used when drawing menu numbers.
+ *
+ */
 static void SetMenuDrawNumberKeta(char value) {
     MenuDrawNumberKeta = value;
 }
@@ -1423,6 +1453,11 @@ void DrawMenuFillBox(mgCDrawPrim *prim, float x, float y, float width, float hei
     prim->End();
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Generates wandering points for a decorative menu line.
+ *
+ */
 void GenarateRandamLine(int *origin, int width, int height, int *points, int count, int unused) {
     int   rising = 1;
     float progress;
@@ -1460,6 +1495,11 @@ void GenarateRandamLine(int *origin, int width, int height, int *points, int cou
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", GenarateRandamLine__FPiiiPiii);
 #endif
+/**
+ *
+ * Draws a smoothed decorative line from its generated points.
+ *
+ */
 void DrawRandamLine(mgCDrawPrim *prim, int *points, int smoothing, int count, u8 *color) {
     float source[1000][4];
     float smoothed[2000][4];
@@ -2337,6 +2377,11 @@ void DrawWakuCircle(mgCDrawPrim *prim, mgCTexture *tex, mgRect<float> rect, mgRe
     prim->End();
 }
 
+/**
+ *
+ * Clears a menu base texture record and its rectangle.
+ *
+ */
 void MENU_BASETEXINFO_Init(MENU_BASETEXINFO *info) {
     info->name = 0;
     info->tex_name = 0;
@@ -2851,6 +2896,11 @@ void CMenuPosDataForm::MenuPartsStep() {
     }
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Draws the animated star effects around an item icon.
+ *
+ */
 static void DrawItemIconEffect2(mgCDrawPrim *prim, mgCTexture *tex, MENUFORMPARTS_TYPE *parts, mgRect<float> rect) {
     MENU_PARTS_EFFECT_STRUCT1 *effect;
     int                        i;
@@ -6067,6 +6117,11 @@ void CEffVerticalLine::Draw() {
     prim.End();
 }
 
+/**
+ *
+ * Regenerates the positions and angles of build-up display line effects.
+ *
+ */
 void InitInitBuildUpInfoEffectPos() {
     int i;
     int offset = 0;

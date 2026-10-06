@@ -164,6 +164,11 @@ extern char          *config_str[1];
 #endif
 
 // Code (.text)
+/**
+ *
+ * Reserves map name records and string storage from the scripted record count.
+ *
+ */
 int mlMAP_NAME_NUM(SPI_STACK *stack, int argc) {
     pMapNameBuff = 0;
     pCharBuff = 0;
@@ -181,6 +186,11 @@ int mlMAP_NAME_NUM(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Stores one scripted map's names, type, and optional sound and area identifiers.
+ *
+ */
 int mlMAP_NAME(SPI_STACK *stack, int argc) {
     char *args[3];
     char *copies[3];
@@ -235,6 +245,11 @@ void LoadMapName(int language, u_long128 *buffer) {
     }
 }
 
+/**
+ *
+ * Finds a loaded map name record by its map number.
+ *
+ */
 static MAP_NAME_INFO *GetMapNameInfo(int map_no) {
 
     if (map_no < 0 || map_no >= MapNameNum) {
@@ -430,6 +445,11 @@ void InitMapSelect(mgCMemory *stack) {
     }
 }
 
+/**
+ *
+ * Handles and draws the map category selection screen.
+ *
+ */
 int MapTypeSelect() {
     char  text[0x800];
     char *cursor = text;
@@ -488,6 +508,11 @@ int MapTypeSelect() {
     return 0;
 }
 
+/**
+ *
+ * Handles and draws the map list for the selected category.
+ *
+ */
 int MapSelect() {
     char  text[0x800];
     char *name;
@@ -971,6 +996,11 @@ void LoadEventViewData(u_long128 *buffer, mgCMemory *stack) {
     }
 }
 
+/**
+ *
+ * Splits a map event data line into tab-separated columns and returns the next line.
+ *
+ */
 static char *GetLine(char **columns, char *position, char *end) {
     LineBreakPair line_break_pair;
     int           field;

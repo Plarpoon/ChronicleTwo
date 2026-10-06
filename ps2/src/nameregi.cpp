@@ -345,6 +345,14 @@ union NameRegiWindowPosition {
 
 extern NameRegiWindowPosition at_1081__4;
 
+/**
+ *
+ * Centers a message window and updates its surrounding frame.
+ *
+ * @mangled AdjustWaku__FP7CDC2MesP4RECT
+ * @address 0x30FE60
+ * @size 0x8C
+ */
 void AdjustWaku(CDC2Mes *message, RECT *frame) {
     message->StepMsg();
     int                    width = message->line_w[0];
@@ -359,6 +367,14 @@ void AdjustWaku(CDC2Mes *message, RECT *frame) {
 
 extern s8 txt_table2[0x3B][2];
 
+/**
+ *
+ * Finds a two-byte JIS character in the name-entry character table.
+ *
+ * @mangled search_txt_jis__FPc
+ * @address 0x30FEF0
+ * @size 0x58
+ */
 int search_txt_jis(char *text) {
     int index = 0;
 
@@ -373,6 +389,14 @@ int search_txt_jis(char *text) {
     return -1;
 }
 
+/**
+ *
+ * Finds an ASCII character in the name-entry character table.
+ *
+ * @mangled search_txt_asci__FPc
+ * @address 0x30FF50
+ * @size 0x44
+ */
 static int search_txt_asci(char *text) {
     s8 *character = (s8 *) text;
     int table_index = 0;
@@ -503,6 +527,11 @@ inline CNameRegiMenu::CNameRegiMenu() {
     ChangeFontSelectMode(GetActiveFontMode());
 }
 
+/**
+ *
+ * Rounds a byte count up to the number of sixteen-byte memory blocks it occupies.
+ *
+ */
 static inline u_int Align16Blocks(u_int n) {
     if (n & 0xF) {
         return (n >> 4) + 1;
@@ -697,6 +726,14 @@ void NameRegistDraw() {
     NameRegiMenuPtr->DrawMessage();
 }
 
+/**
+ *
+ * Removes trailing spaces or full-width blanks from a name before accepting it.
+ *
+ * @mangled CheckInputWord__FPc
+ * @address 0x310990
+ * @size 0xC4
+ */
 void CheckInputWord(char *word) {
     int index = strlen(word) - 1;
 

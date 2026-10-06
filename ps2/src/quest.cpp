@@ -27,6 +27,11 @@ static SPI_TAG_PARAM quest_cmd_tag[] = {
 #endif
 
 // Code (.text)
+/**
+ *
+ * Returns the saved quest progress when save data is available.
+ *
+ */
 static CQuestData *GetQuestData() {
     CSaveData *save_data = GetSaveData();
     return save_data != NULL ? &save_data->quest_data : NULL;
@@ -47,6 +52,11 @@ QUEST_INFO *CQuestManager::GetQuestInfo(int id) {
     return NULL;
 }
 
+/**
+ *
+ * Allocates the quest entries requested by a quest configuration script.
+ *
+ */
 int quest_NUM(SPI_STACK *stack, int arg_count) {
     int num;
     u32 size;
@@ -68,6 +78,11 @@ int quest_NUM(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the identifier and name of the current quest entry.
+ *
+ */
 int quest_NEW(SPI_STACK *stack, int arg_count) {
     int   id = spiGetStackInt(stack++);
     char *name = spiGetStackString(stack);
@@ -76,6 +91,11 @@ int quest_NEW(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the main comment or a reaction text of the current quest entry.
+ *
+ */
 int quest_COMMENT(SPI_STACK *stack, int arg_count) {
     int   index = spiGetStackInt(stack++);
     char *text = spiGetStackString(stack);
@@ -91,6 +111,11 @@ int quest_COMMENT(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Advances the quest configuration cursor to the next entry.
+ *
+ */
 int quest_END(SPI_STACK *stack, int arg_count) {
     spi_quest_info++;
     return 1;

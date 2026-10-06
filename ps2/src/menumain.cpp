@@ -62,6 +62,11 @@ void        MenuWorldTrans();
 void        MenuDebugModeDraw();
 void        DrawMenuTopic();
 
+/**
+ *
+ * Sets a menu form's position from integer screen coordinates.
+ *
+ */
 static inline void SetFormPoint(CMenuPosDataForm *form, int x, int y) {
     form->x = (float) x;
     form->y = (float) y;

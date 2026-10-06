@@ -136,6 +136,11 @@ struct DownLoadEntry {
     u8             unk_a[2];
     DownLoadEntry *next; /**< Next entry in the download list. */
 
+    /**
+     *
+     * Creates an empty download entry.
+     *
+     */
     DownLoadEntry() {
         kind = 0;
         name = NULL;
@@ -168,6 +173,11 @@ struct GeoStoneDmyCnt {
     int             frames;          /**< Frames elapsed in the current step. */
     GeoStoneDmyCnt *next;            /**< Next count animation entry. */
 
+    /**
+     *
+     * Creates a count animation before its steps are assigned.
+     *
+     */
     GeoStoneDmyCnt() {
         frames = 0;
         step = 0;
@@ -507,6 +517,11 @@ void CheckMenuLine(int *selected, int *top, int count, int visible) {
     }
 }
 
+/**
+ *
+ * Sets the initial drawing state and position of the Georama menu form.
+ *
+ */
 void SetEditMenuEnv() {
     CMenuPosDataForm *form;
 
@@ -699,6 +714,11 @@ int MenuGeoramaInit(mgCMemory *stack, int arg) {
     return 1;
 }
 
+/**
+ *
+ * Handles debug key shortcuts while the Georama menu is open.
+ *
+ */
 void MenuGeoDebugKey() {
     if (GamePad__2.Down(0x10) != 0) {
         CMenuGeoPt->ExeScript(at_1189__2);
@@ -2029,6 +2049,11 @@ void MenuPlacedHouseDraw(int &tex_block) {
     }
 }
 
+/**
+ *
+ * Builds the displayed names of a placed house and its residents.
+ *
+ */
 void MenuPlacedHouseMessMake(CEditPartsInfo *info, CEditHouse *house, int update) {
     if (update == 0 || info == NULL) {
         return;
@@ -2073,6 +2098,11 @@ void MenuPlacedHouseMessMake(CEditPartsInfo *info, CEditHouse *house, int update
     }
 }
 
+/**
+ *
+ * Moves the placed-house list and cursor toward their selected positions.
+ *
+ */
 void MenuPlacedHousePosLinkMes() {
     CalcMenu1(-HouseInfoSelectLine * 24, &HouseInfoSelectY, 3, 3, HouseInfoSelectMoveInit);
     CalcMenu1((HouseInfoSelectSelect - HouseInfoSelectLine) * 24, &HouseInfoCursorY, 3, 0,
@@ -2116,6 +2146,11 @@ void MenuMapPartsDraw(int &draw_wait) {
     }
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Builds the visible message rows for each Georama menu page.
+ *
+ */
 void MenuGeoramaMessageMake(int mode) {
     int force_pos = GeoramaMesPosForceSetFlag;
     GeoramaMesPosForceSetFlag = 0;
@@ -3293,6 +3328,11 @@ void CMenuGeorama::CalcMakeBrd() {
     }
 }
 
+/**
+ *
+ * Handles the Georama menu's base page controls and download announcement.
+ *
+ */
 int MenuGeoramaBasePush(CMenuGeorama *menu, int buttons_held, int buttons_pressed) {
     int result;
     int moved;
@@ -3468,6 +3508,11 @@ int MenuGeoramaBasePush(CMenuGeorama *menu, int buttons_held, int buttons_presse
     return result;
 }
 
+/**
+ *
+ * Converts menu key input into a list step and requests a position snap for large moves.
+ *
+ */
 int georama_menu_local_key(int keys) {
     int step = MenuListSelectKeyCheck(keys, GEORAMA_LIST_LINE_NUM);
 
@@ -3478,6 +3523,11 @@ int georama_menu_local_key(int keys) {
     return step;
 }
 
+/**
+ *
+ * Handles selection and placement of a stocked Georama part.
+ *
+ */
 int MenuGeoramaPlacePush(CMenuGeorama *menu, int buttons_held, int buttons_pressed) {
     int               result;
     CDC2Mes          *msg;
@@ -3776,6 +3826,11 @@ int MenuGeoramaPlacePush(CMenuGeorama *menu, int buttons_held, int buttons_press
     return result;
 }
 
+/**
+ *
+ * Handles part selection and construction from the Georama build list.
+ *
+ */
 int MenuGeoramaMakePush(CMenuGeorama *menu, int keys, int pushed) {
     GeoramaVector   position;
     CEditPartsInfo *parts;
@@ -3885,6 +3940,11 @@ int MenuGeoramaMakePush(CMenuGeorama *menu, int keys, int pushed) {
     return 0;
 }
 
+/**
+ *
+ * Handles the checkpoint page and loads its selected town picture.
+ *
+ */
 int MenuGeoramaCheckPointPush(CMenuGeorama *menu, int keys, int pushed) {
     mgCTextureManager *tex_manager = &mgTexManager;
     char               name[64];
@@ -4057,6 +4117,11 @@ int MenuGeoramaCheckPointPush(CMenuGeorama *menu, int keys, int pushed) {
     return 0;
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Moves the analysis-page selection and handles leaving the selection mode.
+ *
+ */
 int MenuGeoramaAnalyzeSelect(CMenuGeorama *menu, int keys, int pushed) {
     int old_top = menu->top;
     int max = menu->GetNowViewModeMax(GEORAMA_VIEW_ANALYZE);
@@ -4100,6 +4165,11 @@ int MenuGeoramaAnalyzeSelect(CMenuGeorama *menu, int keys, int pushed) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmenu", MenuGeoramaAnalyzeSelect__FP12CMenuGeoramaii);
 #endif
+/**
+ *
+ * Handles paint-colour selection on the Georama paint page.
+ *
+ */
 int MenuGeoramaPaintSelect(CMenuGeorama *menu, int keys, int pushed) {
     int    done = 0;
     int    step = 0;
@@ -4174,6 +4244,11 @@ int MenuGeoramaPaintSelect(CMenuGeorama *menu, int keys, int pushed) {
     return done;
 }
 
+/**
+ *
+ * Dispatches Georama menu input to the active page and starts a requested page transition.
+ *
+ */
 int MenuGeoramaPushKey(int keys, int pushed) {
     if (MenuCommonInfo->key_enable == 0) {
         return 0;

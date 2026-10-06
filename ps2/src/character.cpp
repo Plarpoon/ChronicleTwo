@@ -88,6 +88,11 @@ union VisualTypeData {
 
 extern VisualTypeData at_1575;
 
+/**
+ *
+ * Rounds a byte count up to a number of 16-byte allocation blocks.
+ *
+ */
 static inline u32 DynAnimeAlign16Blocks(u32 n) {
     if (n & 0xF) {
         return (n >> 4) + 1;
@@ -1765,7 +1770,9 @@ int _OUTLINE(SPI_STACK *stack, int argc) {
 }
 
 /**
- * Loads the model with the visual classes needed by its animated vertices.
+ *
+ * Loads the character model with visual classes for its animated vertices.
+ *
  */
 static int _MODEL(SPI_STACK *stack, int count) {
     char               weight_name[64];
@@ -2260,6 +2267,11 @@ int _KEY_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Allocates a named motion sequence and links it to the current motion.
+ *
+ */
 static int _SEQ_START(SPI_STACK *stack, int count) {
     if (count <= 0) {
         return 0;
@@ -2549,6 +2561,11 @@ int _EFFECT_START(SPI_STACK *stack, int argc) {
     return eff_pack_ptr != 0;
 }
 
+/**
+ *
+ * Loads and registers a character effect from the effect pack.
+ *
+ */
 static int _EFFECT(SPI_STACK *stack, int count) {
     char                  *script;
     CHRINFO_EFFECT        *entry;
@@ -2941,6 +2958,11 @@ mgCFrame *CreateChangeFrame(mgLoadData *data, mgCFrame *target) {
 
 #ifdef NONMATCHING
 
+/**
+ *
+ * Loads a skinned motion and binds it to the character model.
+ *
+ */
 static int _SKIN_MOTION(SPI_STACK *stack, int count) {
     mgCMemory          work_memory;
     mgCreateVisualType visual_type[64];
@@ -3078,6 +3100,11 @@ CCharaLOD::CCharaLOD() {
     motion = 0;
 }
 
+/**
+ *
+ * Loads and configures a level-of-detail model for the character.
+ *
+ */
 static int _LOD_MODEL(SPI_STACK *stack, int count) {
     mgCreateVisualType visual_type[64];
     mgLoadData         load;

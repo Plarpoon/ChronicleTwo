@@ -219,6 +219,11 @@ static void InitPadTable(int language) {
     }
 }
 
+/**
+ *
+ * Advances saved play time once per video synchronization when counting is enabled.
+ *
+ */
 static void VSyncCallBack(int unused) {
     if (PlayTimeCountFlag != 0) {
         s64        ticks = GetSaveData()->play_time;

@@ -292,6 +292,11 @@ int _MENU_EXE_RESET_TEXINFO(SPI_STACK *stack, int argc);
 
 int _MENU_DEBUG_PRINTF(SPI_STACK *stack, int argc);
 
+/**
+ *
+ * Rounds a byte count up to the number of 16-byte allocation blocks.
+ *
+ */
 static inline unsigned int align16_blocks(unsigned int n) {
     if (n & 0xF) {
         return (n >> 4) + 1;
@@ -311,6 +316,11 @@ float GetRandF(float range) {
     return range * mgRnd();
 }
 
+/**
+ *
+ * Recenters a bounding box around its midpoint.
+ *
+ */
 static void ReCalcBox(mgVu0FBOX *out, mgVu0FBOX box) {
     float center_x = (box.max[0] + box.min[0]) / 2.0f;
     float center_y = (box.max[1] + box.min[1]) / 2.0f;
@@ -442,6 +452,11 @@ void ReStartEnvSoundMenu() {
     GetMainScene()->SetEnvBGMVol(SndPortVol_Env);
 }
 
+/**
+ *
+ * Compares item identifiers by their configured inventory category and item number.
+ *
+ */
 int CompGameData(int item_a, int item_b) {
     CGameData   *game_data;
     CDataCommon *record_a;
@@ -490,6 +505,11 @@ int CompGameData(int item_a, int item_b) {
     return 0;
 }
 
+/**
+ *
+ * Sorts an item board using the current inventory category order.
+ *
+ */
 int SeitonItemBoardSub(CGameDataUsed *items, int count) {
     CGameDataUsed *board;
     int            i;

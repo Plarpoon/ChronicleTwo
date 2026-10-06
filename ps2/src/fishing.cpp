@@ -328,10 +328,20 @@ int         fpFISH_PLACE(SPI_STACK *args, int arg_count);
 int         fpFISH(SPI_STACK *args, int arg_count);
 int         fpFISH_MAP_END(SPI_STACK *args, int arg_count);
 
+/**
+ *
+ * Returns the unused allocation capacity of a stack memory buffer.
+ *
+ */
 static inline int FreeSize(mgCMemory *memory) {
     return memory->stack_size - memory->stack_used;
 }
 
+/**
+ *
+ * Returns the start of unused allocation space in a stack memory buffer.
+ *
+ */
 static inline u_char *FreeTop(mgCMemory *memory) {
     return (u_char *) (memory->stack + memory->stack_used);
 }
@@ -1243,6 +1253,11 @@ int sgSystemDrawFishing(SubGameInfo *info) {
     return 1;
 }
 
+/**
+ *
+ * Updates player movement and camera control during fishing.
+ *
+ */
 static void CharaControl(CScene *scene, CPadControl *pad) {
     mgCCameraFollow  *camera;
     CCharacter2      *chara;

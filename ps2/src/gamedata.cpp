@@ -1177,6 +1177,11 @@ int GetRidePodCore(int index) {
     return table_1553[index];
 }
 
+/**
+ *
+ * Clears item use effect flags and values.
+ *
+ */
 static void Init_USEITEM_EFFECT(USEITEM_EFFECT *effect) {
     effect->target_flags = 0;
     effect->use_flags = 0;

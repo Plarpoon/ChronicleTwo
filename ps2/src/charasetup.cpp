@@ -566,6 +566,11 @@ int SetupMonica(CScene *scene, CUserDataManager *user_data) {
     return 1;
 }
 
+/**
+ *
+ * Assembles the ridepod character parts and configures its equipped joints.
+ *
+ */
 static int SetupRobo(CScene *scene, CUserDataManager *user_data, ROBO_INFO_DATA *robo_info) {
     CActionChara  *parts[6];
     char           arm_joint[64];

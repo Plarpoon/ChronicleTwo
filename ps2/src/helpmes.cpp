@@ -51,6 +51,11 @@ void LoadHelpMes(u_long128 *scratch) {
     }
 }
 
+/**
+ *
+ * Returns the shared help message state record.
+ *
+ */
 static HELP_MES_INFO *GetHepMesInfo() {
     return &HelpMesInfo;
 }

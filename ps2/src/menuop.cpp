@@ -1710,6 +1710,11 @@ void CSaveMenuClass::EnvSetSave(int kind) {
     SetDlInfoMsg(0, 1);
 }
 
+/**
+ *
+ * Returns the memory card state for a valid save menu port.
+ *
+ */
 static inline MC_CARD_INFO *GetSaveMenuCard(int port) {
     if (port == 0 || port == 1) {
         return &MemoryCardPtr->card[port];
@@ -2927,6 +2932,11 @@ void SubGameSaveInit(mgCMemory *memory, int *tex_block, int mode) {
     MenuMainScene->fade.Initialize();
 }
 
+/**
+ *
+ * Returns the memory card state for the selected subgame save port.
+ *
+ */
 static inline MC_CARD_INFO *GetSubGameCard(CMemoryCardManager *manager) {
     int port = SubGameMCPort;
 

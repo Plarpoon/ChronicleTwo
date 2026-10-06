@@ -93,6 +93,11 @@ extern "C" u8                   now_balance_h[16];
 extern "C" u8                   at_2213__3[10];
 
 // Code (.text)
+/**
+ *
+ * Returns the current editor control lock count.
+ *
+ */
 static int CheckControl() {
     return CtrlLockFlag;
 }
@@ -109,12 +114,22 @@ void EditModeControlUnLock() {
     }
 }
 
+/**
+ *
+ * Selects the editor help message and its formatting parameters.
+ *
+ */
 static void SetHelpMes(int message_no, int param, int param2) {
     EditHelpMesNo = message_no;
     EditHelpMesParam = param;
     EditHelpMesParam2 = param2;
 }
 
+/**
+ *
+ * Returns the user data manager from the current save.
+ *
+ */
 static CUserDataManager *GetUserData() {
     CSaveData *save;
 
@@ -127,16 +142,31 @@ static CUserDataManager *GetUserData() {
     return NULL;
 }
 
+/**
+ *
+ * Converts a paint color component to the editor color scale.
+ *
+ */
 static float ConvColor(float component) {
     return component / 128.0f;
 }
 
+/**
+ *
+ * Converts the RGB components of a paint color to the editor color scale.
+ *
+ */
 static void ConvColorV(float *color) {
     color[0] /= 128.0f;
     color[1] /= 128.0f;
     color[2] /= 128.0f;
 }
 
+/**
+ *
+ * Finds the paint item color index matching an editor color.
+ *
+ */
 static int emSearchColorCode(float *color) {
     float penki_color[4];
     int   i;
@@ -153,6 +183,11 @@ static int emSearchColorCode(float *color) {
     return -1;
 }
 
+/**
+ *
+ * Returns the paint item number for a valid color index.
+ *
+ */
 static int emGetPenkiItemNo(int slot) {
     if ((slot < 0) || (slot >= 8)) {
         return -1;
@@ -161,15 +196,30 @@ static int emGetPenkiItemNo(int slot) {
     return GetPenkiItemNo(slot);
 }
 
+/**
+ *
+ * Returns the paint item number matching an editor color.
+ *
+ */
 static int emGetPenkiItemNo(float *color) {
     return emGetPenkiItemNo(emSearchColorCode(color));
 }
 
+/**
+ *
+ * Resets the editor system message timer and selection.
+ *
+ */
 static void IntiSystemMes() {
     SysMesCnt = 0;
     SysMesNo = -1;
 }
 
+/**
+ *
+ * Opens a timed editor system message in the scene.
+ *
+ */
 static void OpenSystemMes(CScene *scene, int message_no, int frames) {
     ClsMes *message;
 
@@ -185,6 +235,11 @@ static void OpenSystemMes(CScene *scene, int message_no, int frames) {
     }
 }
 
+/**
+ *
+ * Closes the scene editor system message window.
+ *
+ */
 static void SystemMesClose(CScene *scene) {
     ClsMes *message = scene->GetMessage(1);
 
@@ -205,6 +260,11 @@ static void SystemMesClose(CScene *scene) {
     }
 }
 
+/**
+ *
+ * Counts down and closes the active editor system message.
+ *
+ */
 static void SystemMesStep(CScene *scene) {
     if (SysMesNo >= 0) {
         if (SysMesCnt < 0) {
@@ -216,6 +276,11 @@ static void SystemMesStep(CScene *scene) {
     }
 }
 
+/**
+ *
+ * Starts placement animation and visual effects for an edit part.
+ *
+ */
 static int EditStartPlaceEffect(CEditParts *parts, float *pos) {
     int             anime_result;
     CEditPartsInfo *info;
@@ -229,6 +294,11 @@ static int EditStartPlaceEffect(CEditParts *parts, float *pos) {
     return anime_result;
 }
 
+/**
+ *
+ * Checks whether the placement animation and effect have ended.
+ *
+ */
 static int EditEndPlaceEffect() {
     int anime_end = EditPlaceAnimeEndCheck();
     int effect_end = EditPEffectEndCheck();
@@ -354,6 +424,11 @@ int GetSelPartsInfoID() {
     return PartsInfoID;
 }
 
+/**
+ *
+ * Clears the river, cursor lock, and mountain removal counters.
+ *
+ */
 static void ClearEditStepCnt() {
     PlaceRiverCnt = 0;
     CursorLockCnt = 0;
@@ -537,14 +612,29 @@ int StartEditModeFromMenu(CScene *scene, int mode, int *params) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmode", StartEditModeFromMenu__FP6CSceneiPi);
 #endif
+/**
+ *
+ * Returns the current editor undo record.
+ *
+ */
 static void *GetUndoData() {
     return &UndoData;
 }
 
+/**
+ *
+ * Reports whether an editor undo record is available.
+ *
+ */
 static int UndoEnable() {
     return *(int *) GetUndoData() >= 0;
 }
 
+/**
+ *
+ * Removes the last placed part and restores its placement state.
+ *
+ */
 static void UndoPlaceParts(CScene *scene) {
     UNDO_DATA      *undo;
     CEditMap       *map = (CEditMap *) scene->GetMap(scene->active_map);
@@ -588,6 +678,11 @@ static void UndoPlaceParts(CScene *scene) {
     }
 }
 
+/**
+ *
+ * Stores a placed part and its transform in the editor undo record.
+ *
+ */
 static void StackUndoData(UNDO_DATA *data) {
     UndoData.info_id = data->info_id;
     UndoData.parts_no = data->parts_no;
@@ -885,6 +980,11 @@ int PaintEditParts(CEditMap *map, int parts_no, int color_no, float *color) {
     return 1;
 }
 
+/**
+ *
+ * Checks the allowed placement altitude relative to the map ground.
+ *
+ */
 static int CheckPlaceAlt(int map_no, CEditMap *map, float *position, int parts_no, float *altitude) {
     float      height = position[1];
     float      ground_position[4];
@@ -924,6 +1024,11 @@ static int CheckPlaceAlt(int map_no, CEditMap *map, float *position, int parts_n
     return 1;
 }
 
+/**
+ *
+ * Returns the maximum georama map height for a map kind.
+ *
+ */
 static float GetGeoMapLimitHeight(int map_kind) {
     if (map_kind == 0) {
         return 700.0f;
@@ -1967,6 +2072,11 @@ void DrawEditHelpMes() {
     EditHelpMesNo = -1;
 }
 
+/**
+ *
+ * Checks whether the editor cursor lies inside a balance part footprint.
+ *
+ */
 static int CheckFocusBalanceParts(CEditMap *map, int index, float *cursor) {
     float      box[8];
     CMapParts *parts = (CMapParts *) map->balance_parts[index];
@@ -2000,6 +2110,11 @@ static int CheckFocusBalanceParts(CEditMap *map, int index, float *cursor) {
     return outside ^ 1;
 }
 
+/**
+ *
+ * Updates ground balance and its display offsets for the active map.
+ *
+ */
 static void InitBalanceDraw(CScene *scene) {
     CEditMap *map;
 
@@ -2012,6 +2127,11 @@ static void InitBalanceDraw(CScene *scene) {
     GetBalanceHeight(scene, (float *) now_balance_h);
 }
 
+/**
+ *
+ * Calculates clamped ground balance display offsets.
+ *
+ */
 static void GetBalanceHeight(CScene *scene, float *balance) {
     CEditMap *map = (CEditMap *) scene->GetMap(scene->active_map);
     int       num_x = map->balance_weight[1] - map->balance_weight[0];
@@ -2149,6 +2269,11 @@ void DrawEditSystem(int block, CScene *scene, float *pos, int edit) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmode", DrawEditSystem__FiP6CScenePfi);
 #endif
+/**
+ *
+ * Finds the map part used for the walk-to-edit transition check.
+ *
+ */
 static CMapParts *GetGeoCheckPts(CMap *map) {
     if (map != NULL) {
         return map->GetPlaceParts((char *) at_2213__3);
@@ -2157,6 +2282,11 @@ static CMapParts *GetGeoCheckPts(CMap *map) {
     return NULL;
 }
 
+/**
+ *
+ * Collects collision polygons from the walk-to-edit check part.
+ *
+ */
 static int GetGeoCheckCol(CMap *map, mgVu0FBOX &box, CCPoly *polys, int max) {
     if (map == NULL) {
         return 0;
@@ -2174,6 +2304,11 @@ static int GetGeoCheckCol(CMap *map, mgVu0FBOX &box, CCPoly *polys, int max) {
     return count;
 }
 
+/**
+ *
+ * Collects camera polygons from the walk-to-edit check part.
+ *
+ */
 static int GetGeoCheckCamCol(CMap *map, mgVu0FBOX &box, CCPoly *polys, int max) {
     if (map == NULL) {
         return 0;

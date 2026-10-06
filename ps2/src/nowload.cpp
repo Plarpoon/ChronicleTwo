@@ -94,6 +94,11 @@ void SwitchNowLoadingThread() {
     RotateThreadReadyQueue(10);
 }
 
+/**
+ *
+ * Draws the loading image and progress bar until the main thread requests shutdown.
+ *
+ */
 void NowLoadingLoop(void *unused) {
     mgRect<int> image_rect(0, 0, 256, 192);
     int         image_y = mgScreenHeight - 186;

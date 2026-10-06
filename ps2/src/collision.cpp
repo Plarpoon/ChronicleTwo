@@ -27,6 +27,11 @@ struct CollisionTri {
     CollisionQuad q[5];
 };
 
+/**
+ *
+ * Rounds a byte count up to a number of 16-byte allocation blocks.
+ *
+ */
 static inline u_int Align16Blocks(u_int n) {
     if (n & 0xF) {
         return (n >> 4) + 1;

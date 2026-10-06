@@ -100,6 +100,11 @@ extern char at_3495[];
 
 extern char at_3536[];
 
+/**
+ *
+ * Rounds a byte count up to a number of 16-byte blocks.
+ *
+ */
 static inline u_int align16_blocks(u_int size) {
     if (size & 0xF) {
         return (size >> 4) + 1;
@@ -1675,6 +1680,11 @@ EFF_SPT_BASE_DEF *GetEffSptBaseDefPtr(int index) {
 
 extern EffectVector at_2067;
 
+/**
+ *
+ * Draws visible effect sprites with their color, lighting, and alpha settings.
+ *
+ */
 static void DrawEffSptSprite(_EFF_SCRIPT *script, mgCTexture *texture, sceVu0FVECTOR offset, mgC3DSprite *renderer, CMapLightingInfo *lighting) {
     _ES_SPRITE *sprites = script->sprite;
     int         count = script->sprite_num;
@@ -1768,6 +1778,11 @@ static void DrawEffSptSprite(_EFF_SCRIPT *script, mgCTexture *texture, sceVu0FVE
     renderer->EndCPSprite();
 }
 
+/**
+ *
+ * Returns an effect sprite at a valid slot index.
+ *
+ */
 static _ES_SPRITE *GetSpritePtr(_EFF_SCRIPT *script, int index) {
     if (script == 0 || index >= script->sprite_num) {
         return 0;
@@ -1776,6 +1791,11 @@ static _ES_SPRITE *GetSpritePtr(_EFF_SCRIPT *script, int index) {
     return &script->sprite[index];
 }
 
+/**
+ *
+ * Reads an effect script argument as an integer.
+ *
+ */
 static int GetStackInt(RS_STACKDATA *slot) {
     if (slot->type == 1) {
         return fptosi(*(float *) &slot->i);
@@ -1784,6 +1804,11 @@ static int GetStackInt(RS_STACKDATA *slot) {
     return slot->i;
 }
 
+/**
+ *
+ * Reads an effect script argument as a float.
+ *
+ */
 static float GetStackFloat(RS_STACKDATA *slot) {
     if (slot->type == 0) {
         return (float) slot->i;
@@ -1792,6 +1817,11 @@ static float GetStackFloat(RS_STACKDATA *slot) {
     return *(float *) &slot->i;
 }
 
+/**
+ *
+ * Reads three effect script values into a homogeneous vector.
+ *
+ */
 static void GetStackVector(float *vector, RS_STACKDATA *slot) {
     vector[0] = GetStackFloat(slot++);
     vector[1] = GetStackFloat(slot++);
@@ -1799,22 +1829,42 @@ static void GetStackVector(float *vector, RS_STACKDATA *slot) {
     vector[3] = 1.0f;
 }
 
+/**
+ *
+ * Returns the string address stored in an effect script slot.
+ *
+ */
 static int GetStackString(RS_STACKDATA *slot) {
     return slot->i;
 }
 
+/**
+ *
+ * Writes an integer through an effect script reference slot.
+ *
+ */
 static void SetStack(RS_STACKDATA *slot, int value) {
     if (slot->type == 3) {
         slot->p->i = value;
     }
 }
 
+/**
+ *
+ * Writes a float through an effect script reference slot.
+ *
+ */
 static void SetStack(RS_STACKDATA *slot, float value) {
     if (slot->type == 3) {
         slot->p->f = value;
     }
 }
 
+/**
+ *
+ * Writes a zero vector to three effect script outputs.
+ *
+ */
 static int _ZERO_VECTOR(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 3) {
         return 0;
@@ -1826,6 +1876,11 @@ static int _ZERO_VECTOR(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Normalizes a vector stored in three effect script outputs.
+ *
+ */
 static int _NORMAL_VECTOR(RS_STACKDATA *stack, int argument_count) {
     float vector[4];
 
@@ -1844,6 +1899,11 @@ static int _NORMAL_VECTOR(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Copies three script vector components to output slots.
+ *
+ */
 static int _COPY_VECTOR(RS_STACKDATA *stack, int argument_count) {
     float vector[4];
 
@@ -1858,6 +1918,11 @@ static int _COPY_VECTOR(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Adds a script vector to three output components.
+ *
+ */
 static int _ADD_VECTOR(RS_STACKDATA *stack, int argument_count) {
     float vector[4];
 
@@ -1872,6 +1937,11 @@ static int _ADD_VECTOR(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Subtracts a script vector from three output components.
+ *
+ */
 static int _SUB_VECTOR(RS_STACKDATA *stack, int argument_count) {
     float vector[4];
 
@@ -1886,6 +1956,11 @@ static int _SUB_VECTOR(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Scales three output vector components by a script value.
+ *
+ */
 static int _SCALE_VECTOR(RS_STACKDATA *stack, int argument_count) {
     float scale;
 
@@ -1900,6 +1975,11 @@ static int _SCALE_VECTOR(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Divides three output vector components by a nonzero script value.
+ *
+ */
 static int _DIV_VECTOR(RS_STACKDATA *stack, int argument_count) {
     float divisor;
 
@@ -1919,6 +1999,11 @@ static int _DIV_VECTOR(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns the length of a script vector.
+ *
+ */
 static int _DIST_VECTOR(RS_STACKDATA *stack, int argument_count) {
     float vector[3];
 
@@ -1932,6 +2017,11 @@ static int _DIST_VECTOR(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns the distance between two script vectors.
+ *
+ */
 static int _DIST_VECTOR2(RS_STACKDATA *stack, int argument_count) {
     float from[3];
     float to[3];
@@ -1947,6 +2037,11 @@ static int _DIST_VECTOR2(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns the square root of a script value.
+ *
+ */
 static int _SQRT(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 2) {
         return 0;
@@ -1957,6 +2052,11 @@ static int _SQRT(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns the angle of two script values using atan2.
+ *
+ */
 static int _ATAN2F(RS_STACKDATA *stack, int argument_count) {
     float y;
     float x;
@@ -1971,6 +2071,11 @@ static int _ATAN2F(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Compares two script angles with a supplied tolerance.
+ *
+ */
 static int _ANGLE_CMP(RS_STACKDATA *stack, int argument_count) {
     float a;
     float b;
@@ -1987,6 +2092,11 @@ static int _ANGLE_CMP(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Wraps a script angle into the engine angle range.
+ *
+ */
 static int _ANGLE_LIMIT(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 1) {
         return 0;
@@ -1996,6 +2106,11 @@ static int _ANGLE_LIMIT(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns a random integer or float within a script range.
+ *
+ */
 static int _GET_RAND(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 2) {
         return 0;
@@ -2013,6 +2128,11 @@ static int _GET_RAND(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Returns the yaw or full rotation from one script position to another.
+ *
+ */
 static int _GET_REF_ROT(RS_STACKDATA *stack, int argument_count) {
     if (argument_count != 7 && argument_count != 9) {
         return 0;

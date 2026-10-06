@@ -74,6 +74,11 @@ void EditDebugStart(int texb, mgCMemory *buffer) {
     EditDebugTexb = texb;
 }
 
+/**
+ *
+ * Writes the selection marker for an editor debug menu row.
+ *
+ */
 static int PrintCursor(char *text, int row) {
     if (row == Select) {
         int length = sprintf(text, "->");
@@ -570,6 +575,11 @@ int tagGyoFish(SPI_STACK *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Loads and runs the host gyorace configuration script.
+ *
+ */
 static void LoadGyorace() {
     char script[0x4000];
     int  size;

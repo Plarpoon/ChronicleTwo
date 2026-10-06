@@ -68,6 +68,11 @@ void EditAnalyzeSrc::Init() {
     }
 }
 
+/**
+ *
+ * Returns an initialized analysis entry for a valid area and index.
+ *
+ */
 static EditAnalyzeDataSrc *GetAnalyzeDataSrc(int area, int entry) {
     if (area < 0 || area >= kAnalyzeSrcCount) {
         return 0;

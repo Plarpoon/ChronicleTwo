@@ -22,6 +22,8 @@ and each was re-verified here.
 | `CopyFrameSub(src, mem, copy_visual, table)` | static | returns new `mgCFrame*` (0x110, `Alloc(mem,0x13)`), recurses over children |
 | `mgCopyFrame(frame, mem, copy_visual)` | global | returns `mgCFrame*` |
 | mgCMDTBuilder members | global | see layout below |
+| `mgCMDTBuilder::Begin(mgCMemory*)` | member | allocates and clears an MDT header, writes its magic and size, and places the output cursor after the header. |
+| `mgCMDTBuilder::AddFace(int)` | member | appends a vertex index to the face cursor and increments the primitive's index count; advancing the typed `s32` array matches retail. |
 | `mgCFrame::SetVisual` | inline, owner mg_frame | `frame+0xF8 = visual`; it is virtual (mgCFrame vtable +0x48) |
 | `mgCVisualFixMDT::Initialize` | inline, owner mg_visual | just calls `mgCVisualMDT::Initialize` |
 | `mgCVisualMDT::Iam/GetMaterialNum/GetpMaterial/Draw(float(*)[4],mgCDrawManager*)` | inline, owner mg_visual | Iam=1; `+0x40` material count; `+0x44` material table; Draw = `Draw(NULL, m, dm)` via slot +0x2C |

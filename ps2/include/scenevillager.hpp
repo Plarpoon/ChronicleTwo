@@ -123,7 +123,42 @@ STATIC_ASSERT(sizeof(GAMEOBJ_INFO) == 0x50);
 class CCharacter2;
 class mgCFrame;
 
-int  GetChrFileSize(unsigned int *pack, int file_size);
-int  GetObjectNameList(char *names, CCharacter2 *chara, mgCFrame **frames, int max);
-int  GetMotionID(char *name);
+/**
+ *
+ * Computes the aligned memory size needed to load a character pack and its extension files.
+ *
+ * @mangled GetChrFileSize__FPUii
+ * @address 0x2CD390
+ * @size 0x148
+ */
+int GetChrFileSize(unsigned int *pack, int file_size);
+
+/**
+ *
+ * Resolves a semicolon-separated list of model names to frames on a character.
+ *
+ * @mangled GetObjectNameList__FPcP11CCharacter2PP8mgCFramei
+ * @address 0x2CE3D0
+ * @size 0x120
+ */
+int GetObjectNameList(char *names, CCharacter2 *chara, mgCFrame **frames, int max);
+
+/**
+ *
+ * Finds the village motion number associated with a motion name.
+ *
+ * @mangled GetMotionID__FPc
+ * @address 0x2CF0E0
+ * @size 0x80
+ */
+int GetMotionID(char *name);
+
+/**
+ *
+ * Selects a named village motion for a character, falling back when a key list is unavailable.
+ *
+ * @mangled SetCharaMotion__FP11CCharacter2ii
+ * @address 0x2CF160
+ * @size 0x90
+ */
 void SetCharaMotion(CCharacter2 *chara, int motion_id, int mode);

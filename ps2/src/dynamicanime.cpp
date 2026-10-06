@@ -30,6 +30,11 @@ extern char           at_978[];
 extern char           at_979[];
 extern char           at_1025[];
 
+/**
+ *
+ * Rounds a byte count up to a number of 16-byte allocation blocks.
+ *
+ */
 static inline u_int align16_blocks(u_int size) {
     if (size & 15) {
         return (size >> 4) + 1;
@@ -980,6 +985,11 @@ int dynCOLLISION_START(SPI_STACK *stack, int argc) {
 }
 #ifdef NONMATCHING
 
+/**
+ *
+ * Adds a scripted pipe collision shape to the current dynamic animation.
+ *
+ */
 static int dynCOLLISION(SPI_STACK *stack, int count) {
     char       *kind;
     CDAColPipe *pipe;

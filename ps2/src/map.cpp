@@ -276,6 +276,11 @@ void CMap::Initialize() {
     piece_load_skip = 0;
 }
 
+/**
+ *
+ * Rounds a byte count up to the number of 16-byte map allocation blocks.
+ *
+ */
 static inline unsigned int map_alloc_size(unsigned int bytes) {
     if (bytes & 0xF) {
         return (bytes >> 4) + 1;

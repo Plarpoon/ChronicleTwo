@@ -45,6 +45,11 @@ extern char at_1051[];
 extern char at_1214__2[];
 
 // Code (.text)
+/**
+ *
+ * Converts an effect strength byte to a float capped at one.
+ *
+ */
 float trans_effect_rate(int rate) {
     float f = (float) rate / 255.0f;
 
@@ -55,6 +60,11 @@ float trans_effect_rate(int rate) {
     return f;
 }
 
+/**
+ *
+ * Copies three vector components to or from a homogeneous SCE vector.
+ *
+ */
 static void trans_float_to_sceVector(float *sce, float *vec, int to_vec) {
     if (to_vec == 0) {
         sce[0] = vec[0];
@@ -198,6 +208,11 @@ void CChillAfterHit::Step() {
     }
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Rotates a primitive corner and converts it to screen-space coordinates.
+ *
+ */
 static inline void LocalPrimCorner(int *out, float *corner, float *center, float half_w, float half_h, float angle) {
     float reach_x = 1.0f * half_w;
     float reach_y = 1.0f * half_h;
@@ -2447,6 +2462,11 @@ void CMapEffectsManeger::Draw(mgCCamera *camera) {
 
 #pragma opt_propagation reset
 
+/**
+ *
+ * Rounds a byte count up to a number of 16-byte allocation blocks.
+ *
+ */
 static inline u_int align16_blocks(u_int size) {
     if (size & 15) {
         return (size >> 4) + 1;

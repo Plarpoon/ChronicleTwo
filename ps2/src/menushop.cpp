@@ -1267,6 +1267,11 @@ extern CursorPoint t_offxy_1832;
 extern CursorPoint cursor_offsetxy_1836;
 extern char       *cursortbl_1838[2];
 
+/**
+ *
+ * Sets a shop menu form's position from integer screen coordinates.
+ *
+ */
 static inline void SetFormPoint(CMenuPosDataForm *form, int x, int y) {
     form->x = (float) x;
     form->y = (float) y;

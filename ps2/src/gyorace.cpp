@@ -925,6 +925,11 @@ int sgCharaDrawGyoRace(SubGameInfo *info) {
     return 0;
 }
 
+/**
+ *
+ * Draws the race screen texture as rotated horizontal strips.
+ *
+ */
 static void DivSpriteScreen(mgCDrawPrim &prim) {
     int strip_height;
     int screen_width;

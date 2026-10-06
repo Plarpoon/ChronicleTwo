@@ -1044,6 +1044,11 @@ void PieceMaterial::Initialize() { memset(this, 0, sizeof(PieceMaterial)); }
 
 #pragma inline_depth(0)
 
+/**
+ *
+ * Assigns a named frame material and color to the current map piece.
+ *
+ */
 int mapPIECE_MATERIAL(SPI_STACK *stack, int argc) {
     CMapPiece     *piece;
     PieceMaterial *slot;
@@ -1091,12 +1096,22 @@ int mapPIECE_MATERIAL(SPI_STACK *stack, int argc) {
 
 #pragma inline_depth reset
 
+/**
+ *
+ * Accepts the end marker of a map piece material list.
+ *
+ */
 s32 mapPIECE_MATERIAL_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
 #pragma inline_depth(0)
 
+/**
+ *
+ * Sets the collision type and optional collision parameter of a map piece.
+ *
+ */
 int mapPIECE_COL_TYPE(SPI_STACK *stack, int argc) {
     if (mapNowMapPiece == NULL) {
         return 0;
@@ -1115,6 +1130,11 @@ int mapPIECE_COL_TYPE(SPI_STACK *stack, int argc) {
 #pragma inline_depth reset
 #pragma inline_depth(0)
 
+/**
+ *
+ * Sets the time interval in which the current map piece is active.
+ *
+ */
 int mapPIECE_TIME(SPI_STACK *stack, int argc) {
     if (mapNowMapPiece == NULL) {
         return 0;
@@ -1129,6 +1149,11 @@ int mapPIECE_TIME(SPI_STACK *stack, int argc) {
 #pragma inline_depth reset
 #pragma inline_depth(0)
 
+/**
+ *
+ * Adds the completed piece to the current map part definition.
+ *
+ */
 int mapPIECE_END(SPI_STACK *stack, int argc) {
     if (mapNowMapParts == NULL || mapNowMapPiece == NULL) {
         return 0;
@@ -1147,6 +1172,11 @@ int mapPIECE_END(SPI_STACK *stack, int argc) {
 #pragma inline_depth reset
 #pragma inline_depth(0)
 
+/**
+ *
+ * Adds the completed map part definition and builds its bounding box.
+ *
+ */
 int mapPARTS_END(SPI_STACK *stack, int argc) {
     if (mapNowMapParts == NULL) {
         return 0;
@@ -1160,6 +1190,11 @@ int mapPARTS_END(SPI_STACK *stack, int argc) {
 
 #pragma inline_depth reset
 
+/**
+ *
+ * Starts a placed map part with default transform and drawing settings.
+ *
+ */
 int mapMAP_PARTS(SPI_STACK *stack, int argc) {
     char *name;
 
@@ -1190,12 +1225,22 @@ int mapMAP_PARTS(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the far clipping distance and fade mode for a placed map part.
+ *
+ */
 int mapMAP_FAR_CLIP(SPI_STACK *stack, int argc) {
     mapFarDist = spiGetStackFloat(stack++);
     mapFarAlpha = spiGetStackInt(stack);
     return 1;
 }
 
+/**
+ *
+ * Sets the definition name of the placed map part being parsed.
+ *
+ */
 int mapPARTS_NAME(SPI_STACK *stack, int argc) {
     char *text = spiGetStackString(stack);
 
@@ -1207,6 +1252,11 @@ int mapPARTS_NAME(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the group name for the placed map part being parsed.
+ *
+ */
 int mapPARTS_GROUP(SPI_STACK *stack, int argc) {
     char *text = spiGetStackString(stack);
 
@@ -1218,21 +1268,41 @@ int mapPARTS_GROUP(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the position of the placed map part being parsed.
+ *
+ */
 int mapPARTS_POS(SPI_STACK *stack, int argc) {
     spiGetStackVector(mapPos, stack);
     return 1;
 }
 
+/**
+ *
+ * Sets the rotation of the placed map part being parsed.
+ *
+ */
 int mapPARTS_ROT(SPI_STACK *stack, int argc) {
     spiGetStackVector(mapRot, stack);
     return 1;
 }
 
+/**
+ *
+ * Sets the scale of the placed map part being parsed.
+ *
+ */
 int mapPARTS_SCALE(SPI_STACK *stack, int argc) {
     spiGetStackVector(mapScale, stack);
     return 1;
 }
 
+/**
+ *
+ * Places the configured map part and applies its visibility, clipping, and group settings.
+ *
+ */
 int mapMAP_PARTS_END(SPI_STACK *stack, int argc) {
     CMapParts *parts = mapMap->PlaceParts(mapMapPartsName, mapPos, mapRot, mapScale, mapStack);
 
@@ -1256,10 +1326,20 @@ int mapMAP_PARTS_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Accepts the top-level map information section marker.
+ *
+ */
 s32 map_MAP_INFO_TOP(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Allocates the fixed camera information table for a map.
+ *
+ */
 int mapCAMERA_INFO(SPI_STACK *stack, int argc) {
     if (IsAddMode()) {
         return 1;
@@ -1289,6 +1369,11 @@ void CCameraDrawInfo::Initialize() {
     group_no = -1;
 }
 
+/**
+ *
+ * Starts a fixed camera record and resets its rectangle index.
+ *
+ */
 int mapFIX_CAMERA(SPI_STACK *stack, int argc) {
     if (IsAddMode() != 0) {
         return 1;
@@ -1298,6 +1383,11 @@ int mapFIX_CAMERA(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the first position of the current fixed camera.
+ *
+ */
 int mapFIX_CAMERA_POS(SPI_STACK *stack, int argc) {
     CCameraInfo *info;
 
@@ -1315,6 +1405,11 @@ int mapFIX_CAMERA_POS(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets an indexed position of the current fixed camera.
+ *
+ */
 int mapFIX_CAMERA_POS2(SPI_STACK *stack, int argc) {
     CCameraInfo *info;
     int          index;
@@ -1340,6 +1435,11 @@ int mapFIX_CAMERA_POS2(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Associates a fixed camera draw entry with a named map part group.
+ *
+ */
 int mapFIX_CAMERA_OFF_GROUP(SPI_STACK *stack, int argument_count) {
     if (IsAddMode()) {
         return 1;
@@ -1375,6 +1475,11 @@ int mapFIX_CAMERA_OFF_GROUP(SPI_STACK *stack, int argument_count) {
 
 #pragma inline_depth(0)
 
+/**
+ *
+ * Adds a collision rectangle and optional transform to a fixed camera.
+ *
+ */
 int mapFIX_CAMERA_RECT(SPI_STACK *stack, int argc) {
     CCameraInfo *info;
     char        *name;
@@ -1443,6 +1548,11 @@ int mapFIX_CAMERA_RECT(SPI_STACK *stack, int argc) {
 
 #pragma inline_depth reset
 
+/**
+ *
+ * Finishes the current fixed camera record.
+ *
+ */
 int mapFIX_CAMERA_END(SPI_STACK *stack, int argc) {
     if (IsAddMode() != 0) {
         return 1;
@@ -1452,6 +1562,11 @@ int mapFIX_CAMERA_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Accepts the end marker of the map camera information section.
+ *
+ */
 s32 mapCAMERA_INFO_END(SPI_STACK *stack, s32 argument_count) {
     if (IsAddMode() != 0) {
         return 1;
@@ -1460,6 +1575,11 @@ s32 mapCAMERA_INFO_END(SPI_STACK *stack, s32 argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Starts a map function point section and resets its entry index.
+ *
+ */
 int mapFUNC_POINT(SPI_STACK *stack, int argc) {
     spiGetStackInt(stack);
     mapFuncPointIdx = 0;
@@ -1468,6 +1588,11 @@ int mapFUNC_POINT(SPI_STACK *stack, int argc) {
 
 #pragma inline_depth(0)
 
+/**
+ *
+ * Creates a map or part function point of the scripted kind.
+ *
+ */
 int mapFUNC_DATA(SPI_STACK *stack, int argc) {
     char *name;
     int   kind;
@@ -1523,6 +1648,11 @@ int mapFUNC_DATA(SPI_STACK *stack, int argc) {
 
 #pragma inline_depth reset
 
+/**
+ *
+ * Stores a copy of the current function point's name.
+ *
+ */
 int mapFUNC_NAME(SPI_STACK *stack, int argc) {
     if (mapNowFuncPoint == 0) {
         return 0;
@@ -1544,6 +1674,11 @@ int mapFUNC_NAME(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the current function point's flags and active time interval.
+ *
+ */
 int mapFUNC_FLAG(SPI_STACK *stack, int argc) {
     if (mapNowFuncPoint == 0) {
         return 0;
@@ -1556,6 +1691,11 @@ int mapFUNC_FLAG(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the current fire function point's color and effect options.
+ *
+ */
 int mapFUNC_FIRE_DATA(SPI_STACK *stack, int argc) {
     float color[4];
 
@@ -1589,6 +1729,11 @@ int mapFUNC_FIRE_DATA(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the current point light's power, color, range, and optional animation settings.
+ *
+ */
 int mapFUNC_PLIGHT_DATA(SPI_STACK *stack, int argc) {
     float       color[4];
     float       largest;
@@ -1647,6 +1792,11 @@ int mapFUNC_PLIGHT_DATA(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Configures the current function point's target frame and animation parameters.
+ *
+ */
 int mapFUNC_ANIME_DATA(SPI_STACK *stack, int argc) {
     CFuncPoint::AnimeData *anime;
 
@@ -1677,6 +1827,11 @@ int mapFUNC_ANIME_DATA(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Configures an invention function point's idea number and trigger region.
+ *
+ */
 int mapFUNC_INVENT_DATA(SPI_STACK *stack, int argc) {
     CFuncPoint::InventData *invent = &mapNowFuncPoint->invent;
 
@@ -1696,6 +1851,11 @@ int mapFUNC_INVENT_DATA(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Configures the current event function point's event identifiers and flags.
+ *
+ */
 int mapFUNC_EVENT_DATA(SPI_STACK *stack, int argc) {
     char                  *kind_name;
     int                    kind;
@@ -1774,6 +1934,11 @@ int mapFUNC_EVENT_DATA(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Configures the current sound function point's sound and spatial region.
+ *
+ */
 int mapFUNC_SOUND_DATA(SPI_STACK *stack, int argc) {
     CFuncPoint::SoundData *sound = &mapNowFuncPoint->sound;
 
@@ -1795,6 +1960,11 @@ int mapFUNC_SOUND_DATA(SPI_STACK *stack, int argc) {
 
 #pragma inline_depth(0)
 
+/**
+ *
+ * Resolves an effect name and assigns its bounds to the current function point.
+ *
+ */
 int mapFUNC_EFFECT_NAME(SPI_STACK *stack, int argc) {
     char *name;
     char *copy;
@@ -1833,6 +2003,11 @@ int mapFUNC_EFFECT_NAME(SPI_STACK *stack, int argc) {
 
 #pragma inline_depth reset
 
+/**
+ *
+ * Sets the current function point's transform and adjusts event trigger bounds.
+ *
+ */
 int mapFUNC_POS(SPI_STACK *stack, int argc) {
     float                  pos[4];
     float                  rot[4];
@@ -1921,6 +2096,11 @@ void CFuncPoint::SetPosition(float *pos) {
     frame.SetPosition(pos);
 }
 
+/**
+ *
+ * Finishes the current function point entry.
+ *
+ */
 int mapFUNC_DATA_END(SPI_STACK *stack, int argc) {
     mapNowFuncPoint = 0;
     mapFuncPointIdx++;
@@ -1929,6 +2109,11 @@ int mapFUNC_DATA_END(SPI_STACK *stack, int argc) {
 
 #pragma inline_depth(0)
 
+/**
+ *
+ * Updates status for function points parsed on the map or current part.
+ *
+ */
 int mapFUNC_POINT_END(SPI_STACK *stack, int argc) {
     CFuncPointMngr *mngr;
 
@@ -1971,6 +2156,11 @@ void CMap::SetPieceLoadSkip(s32 skip) {
     piece_load_skip = skip;
 }
 
+/**
+ *
+ * Adds a map region excluded from normal drawing.
+ *
+ */
 int cfgDRAW_OFF_RECT(SPI_STACK *stack, int argc) {
     mgVu0FBOX first_box;
     mgVu0FBOX second_box;
@@ -1982,6 +2172,11 @@ int cfgDRAW_OFF_RECT(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a map occlusion plane from four scripted corners.
+ *
+ */
 int cfgOCCLUSION_PLANE(SPI_STACK *stack, int argc) {
     float plane[4][4];
     int   i;
@@ -1996,6 +2191,11 @@ int cfgOCCLUSION_PLANE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Reserves and creates an event function point from the map configuration.
+ *
+ */
 int cfgFUNC_DATA(SPI_STACK *stack, int argc) {
     char *kind_name;
 
@@ -2020,6 +2220,11 @@ int cfgFUNC_DATA(SPI_STACK *stack, int argc) {
     return mapNowFuncPoint != 0;
 }
 
+/**
+ *
+ * Sets the configured event point's identifier and event mode.
+ *
+ */
 int cfgFUNC_EVENT_DATA(SPI_STACK *stack, int argc) {
     char *mode_name;
 
@@ -2056,11 +2261,21 @@ int cfgFUNC_EVENT_DATA(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Finishes the current configured function point.
+ *
+ */
 int cfgFUNC_DATA_END(SPI_STACK *stack, int argc) {
     mapNowFuncPoint = 0;
     return 1;
 }
 
+/**
+ *
+ * Allocates the map's water surface frame table.
+ *
+ */
 int cfgWATER_SURFACE_NUM(SPI_STACK *stack, int argc) {
     int i;
 
@@ -2083,10 +2298,20 @@ int cfgWATER_SURFACE_NUM(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Accepts the start marker of a water surface definition.
+ *
+ */
 s32 cfgWATER_SURFACE_START(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a water surface grid from its dimensions and opposite corners.
+ *
+ */
 int cfgWATER_VERTEX(SPI_STACK *stack, int argc) {
     float corner0[4];
     float corner1[4];
@@ -2100,6 +2325,11 @@ int cfgWATER_VERTEX(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the current water surface frame's position.
+ *
+ */
 int cfgWATER_POS(SPI_STACK *stack, int argc) {
     float pos[4];
 
@@ -2112,6 +2342,11 @@ int cfgWATER_POS(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Applies four scripted parameters to the current water surface.
+ *
+ */
 int cfgWATER_PARAM(SPI_STACK *stack, int argc) {
     float first = spiGetStackFloat(stack++);
     float second = spiGetStackFloat(stack++);
@@ -2121,10 +2356,20 @@ int cfgWATER_PARAM(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Accepts the water shake configuration tag.
+ *
+ */
 s32 cfgWATER_SHAKE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Stores the completed water surface frame in the map table.
+ *
+ */
 int cfgWATER_SURFACE_END(SPI_STACK *stack, int argc) {
     if (WaterIndex >= mapMap->water_surface_num) {
         return 0;
@@ -2136,6 +2381,11 @@ int cfgWATER_SURFACE_END(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Allocates the map's water drawing records and their part lists.
+ *
+ */
 int cfgWATER_DRAW_NUM(SPI_STACK *stack, int argument_count) {
     mapMap->water_num = spiGetStackInt(stack);
     int water_count = mapMap->water_num;
@@ -2161,6 +2411,11 @@ int cfgWATER_DRAW_NUM(SPI_STACK *stack, int argument_count) {
 
 CMapWater::CMapWater() {}
 
+/**
+ *
+ * Links a configured water surface to a drawing record and its map parts.
+ *
+ */
 int cfgWATER_DRAW(SPI_STACK *stack, int argc) {
     CMapWater *slot;
     char      *name;

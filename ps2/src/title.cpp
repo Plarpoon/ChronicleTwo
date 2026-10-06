@@ -193,6 +193,11 @@ extern float               title_lang_curxy[2];
 extern mgRect<short>       start_button_tbl_1826[];
 extern s16                 btn_tblxy_1830[][2];
 
+/**
+ *
+ * Rounds a byte count up to the number of 16-byte memory blocks it occupies.
+ *
+ */
 static inline u_int Align16Blocks(u_int size) {
     if (size & 0xF) {
         return (size >> 4) + 1;
@@ -202,10 +207,20 @@ static inline u_int Align16Blocks(u_int size) {
 }
 
 // Code (.text)
+/**
+ *
+ * Seeds title-screen random choices from the current vertical sync count.
+ *
+ */
 void title_init_rand() {
     srand(mgGetVSyncCount());
 }
 
+/**
+ *
+ * Applies the saved sound channel setting to the sound manager.
+ *
+ */
 void SetSoundMode() {
     CSaveData *save = GetSaveData();
 
@@ -223,11 +238,21 @@ void SetSoundMode() {
     }
 }
 
+/**
+ *
+ * Clears the title extras flags before processing title input.
+ *
+ */
 void InitTitleOmakeFlag() {
     TitleOmakeFlag = 0;
     OmakeFlag = 0;
 }
 
+/**
+ *
+ * Marks a title extra as selected.
+ *
+ */
 void TitleOmakeOn() {
     TitleOmakeFlag = 1;
 }
@@ -344,6 +369,11 @@ void TitleInit(INIT_LOOP_ARG arg) {
 #ifdef NONMATCHING
 #pragma inline_depth(8)
 
+/**
+ *
+ * Loads the assets, scene, and state needed before the title sequence starts.
+ *
+ */
 void TitleBootInit() {
     RushMovie = new ((u_long128 *) DataBuffer.Alloc(0x2396)) CMovie;
     TitleMCFuncFlag = 1;
@@ -908,6 +938,11 @@ int TitleLoop() {
     return result;
 }
 
+/**
+ *
+ * Draws the title phase currently selected by the title state.
+ *
+ */
 void TitleDraw() {
     mgSetRenderInfo(TitleProjection, 3.0f, 30000.0f);
 
@@ -937,6 +972,11 @@ void TitleDraw() {
     }
 }
 
+/**
+ *
+ * Loads and starts the opening movie and resets its skip and fade state.
+ *
+ */
 void InitRushMovie(int movie_no) {
     mgFrameRate = 2;
     TitleScene->StopEnvBGM();
@@ -964,6 +1004,11 @@ void InitRushMovie(int movie_no) {
     debug_start_drawflag = 0;
 }
 
+/**
+ *
+ * Advances the opening movie and handles skip input and its exit result.
+ *
+ */
 int RushMovieKey() {
     switch (RushInfo.phase) {
         case RUSH_PHASE_INIT:
@@ -1030,6 +1075,11 @@ int RushMovieKey() {
     return 0;
 }
 
+/**
+ *
+ * Draws the opening movie and its overlays for the current movie phase.
+ *
+ */
 void RushMovieDraw() {
     mgTexManager.ReloadTexture(0x43, (sceVif1Packet *) NULL);
     RushMovie->SwitchThread();
@@ -1064,6 +1114,11 @@ void RushMovieDraw() {
     }
 }
 
+/**
+ *
+ * Sets up the title menu, its scene, cursor, and initial fade.
+ *
+ */
 void TitleModeInit() {
     TitleScene->PlayEnvBgm();
     mgFrameRate = 1;
@@ -1122,6 +1177,11 @@ void TitleModeInit() {
     }
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Processes title menu input and returns the requested next title mode.
+ *
+ */
 int TitleModeKey() {
     int start_pushed;
     int start;
@@ -1404,6 +1464,11 @@ int TitleModeKey() {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleModeKey__Fv);
 #endif
 #ifdef NONMATCHING
+/**
+ *
+ * Draws the title menu scene, prompts, and cursor.
+ *
+ */
 void TitleModeDraw() {
     int i;
     int x;
@@ -1508,6 +1573,11 @@ void TitleModeDraw() {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleModeDraw__Fv);
 #endif
 #ifdef NONMATCHING
+/**
+ *
+ * Draws the title map and advances its camera movement.
+ *
+ */
 void TitleMapDraw() {
     float              pos[4];
     float              ref[4];
@@ -1662,6 +1732,11 @@ void TitleMapDraw() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleMapDraw__Fv);
 #endif
+/**
+ *
+ * Updates the pulsing alpha used by the title start prompt.
+ *
+ */
 void CalcPushAlpha(int index, float *alpha) {
     if (TitlePushStart_AlphaPlus != 0) {
         *alpha += cnttbl_2026[index];
@@ -1680,6 +1755,11 @@ void CalcPushAlpha(int index, float *alpha) {
     }
 }
 
+/**
+ *
+ * Starts the title memory card check for the selected boot mode.
+ *
+ */
 void TitleMCCheckInit(int boot_mode) {
     TitleMCCheckBootMode = boot_mode != 0;
     OmakePlayEnableAttr = 0;
@@ -1713,6 +1793,11 @@ void TitleMCCheckInit(int boot_mode) {
     }
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Advances the title memory card check and reports when it finishes.
+ *
+ */
 int TitleMCCheckKey() {
     MC_CARD_INFO *cards[2];
     u8            inserted[2];
@@ -1850,6 +1935,11 @@ int TitleMCCheckKey() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleMCCheckKey__Fv);
 #endif
+/**
+ *
+ * Draws the title memory card check message.
+ *
+ */
 void TitleMCCheckDraw() {
     if (TitleMCCheckMes != NULL) {
         mgTexManager.ReloadTexture(0x46, (sceVif1Packet *) NULL);
@@ -1858,10 +1948,20 @@ void TitleMCCheckDraw() {
     }
 }
 
+/**
+ *
+ * Returns the demo runner title transition result for a phase.
+ *
+ */
 s32 DCTitleStep(s32 phase) {
     return 0;
 }
 
+/**
+ *
+ * Resets the copyright display and begins its opening fade.
+ *
+ */
 void TitleCopyRightInit() {
     TitleCopyRightDispPhase = 0;
     TitleCopyRightDispCounter = 0;
@@ -1870,6 +1970,11 @@ void TitleCopyRightInit() {
     TitleScene->fade.FadeOut(1, 0.0f, 0.0f, 0.0f);
 }
 
+/**
+ *
+ * Advances the copyright display and reports when it ends.
+ *
+ */
 int TitleCopyRightStep() {
     switch (TitleCopyRightDispPhase) {
         case COPYRIGHT_PHASE_DELAY:
@@ -1970,6 +2075,11 @@ int TitleCopyRightStep() {
     return 0;
 }
 
+/**
+ *
+ * Draws the copyright and trial disc messages for the current display phase.
+ *
+ */
 void TitleCopyRightDraw() {
     if (Tex_Logo == NULL) {
         return;
@@ -2021,6 +2131,11 @@ void TitleCopyRightDraw() {
     }
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Prepares the title hard drive installation screen and its assets.
+ *
+ */
 void TitleHDDInstallInit() {
     char               image_name[32];
     char               message_path[0x4C];
@@ -2096,6 +2211,11 @@ void TitleHDDInstallInit() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleHDDInstallInit__Fv);
 #endif
+/**
+ *
+ * Advances hard drive installation and handles input to leave the screen.
+ *
+ */
 int TitleHDDInstallKey() {
     int next_phase = -1;
     int push = MenuCheckPushButton();
@@ -2456,6 +2576,11 @@ int TitleHDDInstallKey() {
     return 0;
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Draws a title menu progress bar at the requested position and fill rate.
+ *
+ */
 void DrawMenuDl(int x, int y, int width, int alpha, float progress) {
     mgCDrawPrim prim;
     SetSpriteEnv(&prim, 0);
@@ -2495,6 +2620,11 @@ void DrawMenuDl(int x, int y, int width, int alpha, float progress) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", DrawMenuDl__Fiiiif);
 #endif
+/**
+ *
+ * Draws the hard drive installation image, progress, and messages.
+ *
+ */
 void TitleHDDInstallDraw() {
     union {
         CMenuFont font;
@@ -2579,6 +2709,11 @@ void TitleHDDInstallDraw() {
     }
 }
 
+/**
+ *
+ * Checks whether the title can use an installed game image.
+ *
+ */
 int CheckAppInstallForTitle() {
     if (GetMainFileDev() == 3) {
         return 1;
@@ -2587,6 +2722,11 @@ int CheckAppInstallForTitle() {
     return CheckAppInstall();
 }
 
+/**
+ *
+ * Checks for a connected hard drive with an installed game image.
+ *
+ */
 int CheckHDDInstall() {
     if (0 < HddConectCheck(NULL)) {
         if (0 < CheckAppInstallForTitle()) {
@@ -2669,6 +2809,11 @@ int TitleLangSelKey() {
     return 0;
 }
 
+/**
+ *
+ * Returns the language number selected by the title language menu.
+ *
+ */
 int GetSelectLanguageNo() {
     return title_lang_select + 1;
 }

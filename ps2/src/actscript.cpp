@@ -134,6 +134,11 @@ union ScriptVector {
 
 // Code (.text)
 
+/**
+ *
+ * Reads an action script value as an integer, converting a float slot when needed.
+ *
+ */
 static int GetStackInt(RS_STACKDATA *slot) {
     if (slot->type == 1) {
         return (int) slot->f;
@@ -142,6 +147,11 @@ static int GetStackInt(RS_STACKDATA *slot) {
     return slot->i;
 }
 
+/**
+ *
+ * Reads an action script value as a float, converting an integer slot when needed.
+ *
+ */
 static float GetStackFloat(RS_STACKDATA *slot) {
     if (slot->type == 0) {
         return (float) slot->i;
@@ -150,27 +160,52 @@ static float GetStackFloat(RS_STACKDATA *slot) {
     return *(float *) &slot->i;
 }
 
+/**
+ *
+ * Returns the string pointer stored in an action script slot.
+ *
+ */
 static char *GetStackString(RS_STACKDATA *slot) {
     return (char *) slot->i;
 }
 
+/**
+ *
+ * Writes an integer through an action script reference slot.
+ *
+ */
 static void SetStack(RS_STACKDATA *slot, int value) {
     if (slot->type == 3) {
         ((RS_STACKDATA *) slot->i)->i = value;
     }
 }
 
+/**
+ *
+ * Writes a float through an action script reference slot.
+ *
+ */
 static void SetStack(RS_STACKDATA *slot, float value) {
     if (slot->type == 3) {
         *(float *) &((RS_STACKDATA *) slot->i)->i = value;
     }
 }
 
+/**
+ *
+ * Resets the current action character script.
+ *
+ */
 int _INIT_SCRIPT(RS_STACKDATA *stack, int argc) {
     action_info.chara->ResetScript();
     return 1;
 }
 
+/**
+ *
+ * Sets the current action character program number from the script.
+ *
+ */
 int _PROG_SET(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -180,6 +215,11 @@ int _PROG_SET(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the current action character program number to the script.
+ *
+ */
 int _PROG_GET(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -189,6 +229,11 @@ int _PROG_GET(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the current action character attack type to the script.
+ *
+ */
 int _GET_ATTK_TYPE(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -198,6 +243,11 @@ int _GET_ATTK_TYPE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the current action character movement type to the script.
+ *
+ */
 int _GET_MOVE_TYPE(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -207,6 +257,11 @@ int _GET_MOVE_TYPE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the action character movement speed, using the default for nonpositive input.
+ *
+ */
 int _SET_MOVE_SPEED(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -222,6 +277,11 @@ int _SET_MOVE_SPEED(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Starts a palette color animation on the action character.
+ *
+ */
 int _SET_PALLET(RS_STACKDATA *stack, int argc) {
     if (argc < 5 || argc > 6) {
         return 0;
@@ -242,6 +302,11 @@ int _SET_PALLET(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the equipped item number for the selected equipment slot.
+ *
+ */
 int _CHECK_EQUIP(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -253,6 +318,11 @@ int _CHECK_EQUIP(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Starts a dungeon camera quake with the requested strength and duration.
+ *
+ */
 static int _CAMERA_QUAKE(RS_STACKDATA *stack, int argc) {
     DNG_BATTLE_AREA *area = &nowScene__2->battle_area;
 
@@ -268,6 +338,11 @@ static int _CAMERA_QUAKE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Reports whether a requested dungeon battle pause flag is set.
+ *
+ */
 static int _CHECK_PAUSE(RS_STACKDATA *stack, int argc) {
     DNG_BATTLE_AREA *pause;
 
@@ -285,6 +360,11 @@ static int _CHECK_PAUSE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the battle character status attributes.
+ *
+ */
 int _GET_STATUS_ATTR(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -295,6 +375,11 @@ int _GET_STATUS_ATTR(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Plays a sound effect from the action character sound bank.
+ *
+ */
 int _SE_PLAY(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -316,6 +401,11 @@ int _SE_PLAY(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Starts or stops a looped sound effect for the action character.
+ *
+ */
 int _SE_LOOP_PLAY(RS_STACKDATA *stack, int argc) {
     if (argc != 3) {
         return 0;
@@ -343,6 +433,11 @@ int _SE_LOOP_PLAY(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the attack type of the battle character ranged weapon.
+ *
+ */
 int _GET_SHOT_TYPE(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -353,6 +448,11 @@ int _GET_SHOT_TYPE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the active monster form identifier, or minus one for another character.
+ *
+ */
 int _GET_MONS_ID(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -367,6 +467,11 @@ int _GET_MONS_ID(RS_STACKDATA *stack, int argc) {
     SetStack(stack, monster_id);
 }
 
+/**
+ *
+ * Writes the action character facing direction to script outputs.
+ *
+ */
 int _GET_FRONT_VEC(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR front;
 
@@ -380,6 +485,11 @@ int _GET_FRONT_VEC(RS_STACKDATA *stack, int argc) {
     SetStack(stack, front[2]);
 }
 
+/**
+ *
+ * Returns the current gamepad buttons held down.
+ *
+ */
 static int _GET_PADON(RS_STACKDATA *stack, int argc) {
     if (argc <= 0) {
         return 0;
@@ -389,6 +499,11 @@ static int _GET_PADON(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns gamepad buttons pressed this frame.
+ *
+ */
 static int _GET_PADDOWN(RS_STACKDATA *stack, int argc) {
     if (argc <= 0) {
         return 0;
@@ -398,6 +513,11 @@ static int _GET_PADDOWN(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns gamepad buttons released this frame.
+ *
+ */
 static int _GET_PADUP(RS_STACKDATA *stack, int argc) {
     if (argc <= 0) {
         return 0;
@@ -407,6 +527,11 @@ static int _GET_PADUP(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the state of a selected logical gamepad button.
+ *
+ */
 int _GET_BTN(RS_STACKDATA *stack, int argc) {
     if (argc <= 0) {
         return 0;
@@ -416,6 +541,11 @@ int _GET_BTN(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the action character recorded gamepad history.
+ *
+ */
 int _GET_PAD_HISTORY(RS_STACKDATA *stack, int argc) {
     if (argc <= 0) {
         return 0;
@@ -425,21 +555,41 @@ int _GET_PAD_HISTORY(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Clears the action character recorded gamepad history.
+ *
+ */
 int _RESET_PAD_HISTORY(RS_STACKDATA *stack, int argc) {
     action_info.chara->pad_history = 0;
     return 1;
 }
 
+/**
+ *
+ * Returns the accumulated gamepad input for the action character.
+ *
+ */
 int _GET_ACUMU_PAD(RS_STACKDATA *stack, int argc) {
     SetStack(stack, action_info.chara->acumu_pad);
     return 1;
 }
 
+/**
+ *
+ * Clears the accumulated gamepad input for the action character.
+ *
+ */
 int _RESET_ACUMU_PAD(RS_STACKDATA *stack, int argc) {
     action_info.chara->acumu_pad = 0;
     return 1;
 }
 
+/**
+ *
+ * Runs human or monster movement according to the character movement type.
+ *
+ */
 int _RUN_MAIN_MOVE(RS_STACKDATA *stack, int argc) {
     int chara_type;
 
@@ -457,16 +607,31 @@ int _RUN_MAIN_MOVE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Runs the human throw movement handler.
+ *
+ */
 int _RUN_SHROW_MOVE(RS_STACKDATA *stack, int argc) {
     action_info.chara->HumanShrowMoveIF();
     return 1;
 }
 
+/**
+ *
+ * Runs the human taming movement handler.
+ *
+ */
 int _RUN_TAME_MOVE(RS_STACKDATA *stack, int argc) {
     action_info.chara->HumanTameMoveIF();
     return 1;
 }
 
+/**
+ *
+ * Runs human gun movement using two named motion resources.
+ *
+ */
 int _RUN_HOLD_MOVE(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -477,6 +642,11 @@ int _RUN_HOLD_MOVE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Runs the robot movement handler selected by its movement type.
+ *
+ */
 int _RUN_ROBO_MOVE(RS_STACKDATA *stack, int argc) {
     int input = GetStackInt(stack);
 
@@ -501,6 +671,11 @@ int _RUN_ROBO_MOVE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the action character menu state flag.
+ *
+ */
 int _SET_MENU_FLAG(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -510,6 +685,11 @@ int _SET_MENU_FLAG(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the action character world position to three script outputs.
+ *
+ */
 static int _GET_POS(RS_STACKDATA *stack, int argc) {
     float pos[4];
 
@@ -524,6 +704,11 @@ static int _GET_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the action character rotation to three script outputs.
+ *
+ */
 static int _GET_ROT(RS_STACKDATA *stack, int argc) {
     float rot[4];
 
@@ -538,6 +723,11 @@ static int _GET_ROT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns how closely the camera-relative stick input aligns with the character facing direction.
+ *
+ */
 int _CHECK_FRONT_KEY(RS_STACKDATA *stack, int argc) {
     float facing[4];
     float stick[4];
@@ -563,6 +753,11 @@ int _CHECK_FRONT_KEY(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Reports whether stick input points behind a locked-on character.
+ *
+ */
 int _CHECK_BACK_KEY(RS_STACKDATA *stack, int argc) {
     float rot[4];
 
@@ -596,6 +791,11 @@ int _CHECK_BACK_KEY(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Turns the action character opposite its knockback vector.
+ *
+ */
 int _SET_BLOW_ANGLE(RS_STACKDATA *stack, int argc) {
     if (argc != 0) {
         return 0;
@@ -607,6 +807,11 @@ int _SET_BLOW_ANGLE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets a timed movement impulse in the character-relative direction.
+ *
+ */
 int _SET_BLOW_MOVE(RS_STACKDATA *stack, int argc) {
     float rot[4];
     float dir[4];
@@ -644,6 +849,11 @@ int _SET_BLOW_MOVE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Starts a timed knockback with speed, deceleration and duration from the script.
+ *
+ */
 static int _BLOW_START(RS_STACKDATA *stack, int argc) {
     if (argc != 3) {
         return 0;
@@ -657,6 +867,11 @@ static int _BLOW_START(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Registers a named damage attack and sets its power rate.
+ *
+ */
 static int _SET_DMG2(RS_STACKDATA *stack, int argc) {
     if (argc < 8 || argc > 9) {
         return 0;
@@ -688,6 +903,11 @@ static int _SET_DMG2(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Registers a named frame as an action object slot.
+ *
+ */
 static int _SET_OBJ(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -704,6 +924,11 @@ static int _SET_OBJ(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Registers a body collision primitive for the action character.
+ *
+ */
 static int _SET_BODY(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -713,6 +938,11 @@ static int _SET_BODY(RS_STACKDATA *stack, int argc) {
     return action_info.chara->EntryBodyCol(number, 2.0f * GetStackFloat(stack)) != 0;
 }
 
+/**
+ *
+ * Schedules a sword effect between named frames during a motion.
+ *
+ */
 static int _SW_EFFECT(RS_STACKDATA *stack, int argc) {
     if (argc < 9 || argc > 10) {
         return 0;
@@ -763,6 +993,11 @@ static int _SW_EFFECT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Schedules a sound effect between frames of a named motion.
+ *
+ */
 int _SET_SND(RS_STACKDATA *stack, int argc) {
     int   sound_id = GetStackInt(stack++);
     char *motion = GetStackString(stack++);
@@ -790,6 +1025,11 @@ int _SET_SND(RS_STACKDATA *stack, int argc) {
     return 0;
 }
 
+/**
+ *
+ * Associates an action object frame and effect number with the charge effect.
+ *
+ */
 int _SET_ACCUME_FX(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -813,6 +1053,11 @@ int _SET_ACCUME_FX(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Changes the action character charge effect mode and input accumulation state.
+ *
+ */
 int _SET_ACCUME_FLAG(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -865,6 +1110,11 @@ int _SET_ACCUME_FLAG(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the current status of the targeted monster.
+ *
+ */
 int _GET_MONSTER_NOWSTS(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -885,6 +1135,11 @@ int _GET_MONSTER_NOWSTS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the action character aggression value and its duration.
+ *
+ */
 int _SET_MURDEROUS(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -895,6 +1150,11 @@ int _SET_MURDEROUS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the distance from the action character to its target.
+ *
+ */
 int _GET_TRG_DISTANCE(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -904,6 +1164,11 @@ int _GET_TRG_DISTANCE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Turns the action character toward a nearby target at a limited rate.
+ *
+ */
 int _SET_TRG_ANGLE(RS_STACKDATA *stack, int argc) {
     float target_position[4];
     float position[4];
@@ -941,6 +1206,11 @@ int _SET_TRG_ANGLE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the action character guard flag.
+ *
+ */
 int _SET_GUARD_FLAG(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -950,6 +1220,11 @@ int _SET_GUARD_FLAG(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the action character invulnerability duration.
+ *
+ */
 static int _SET_MUTEKI(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -959,21 +1234,41 @@ static int _SET_MUTEKI(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the type of object held by the action character.
+ *
+ */
 int _CHECK_HAND_OBJ(RS_STACKDATA *stack, int argc) {
     SetStack(stack, action_info.chara->hold_type);
     return 1;
 }
 
+/**
+ *
+ * Runs the held item action and returns its result.
+ *
+ */
 int _SET_ITEM_USED(RS_STACKDATA *stack, int argc) {
     SetStack(stack, action_info.chara->UsedItemAction());
     return 1;
 }
 
+/**
+ *
+ * Throws the item object held by the action character.
+ *
+ */
 int _THROW_HAND_OBJECT(RS_STACKDATA *stack, int argc) {
     action_info.chara->ThrowItemObject();
     return 1;
 }
 
+/**
+ *
+ * Checks whether the action character can catch an enemy or perform a kick.
+ *
+ */
 int _CHECK_CATCH(RS_STACKDATA *stack, int argc) {
     char *name = GetStackString(stack++);
 
@@ -990,6 +1285,11 @@ int _CHECK_CATCH(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Releases or throws held characters and clears the held object state.
+ *
+ */
 int _RELEASE_OBJ(RS_STACKDATA *stack, int argc) {
     float held_pos[4];
     float start_pos[4];
@@ -1081,6 +1381,11 @@ int _RELEASE_OBJ(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates Monica ranged magic effect and its damage collision primitive.
+ *
+ */
 void ShotMonicaMagic(float *position, float *direction, float scale) {
     char *effect_name;
     char *unused_name;
@@ -1108,6 +1413,11 @@ void ShotMonicaMagic(float *position, float *direction, float scale) {
     sndSePlay(action_info.chara->sound_info.se_bank, 13, 0);
 }
 
+/**
+ *
+ * Creates a normal gun shot effect and its damage collision primitive.
+ *
+ */
 void ShotNormalGun(float *position, float *direction) {
     action_info.chara->effect_man->CreateEffSpt(at_1458__3, 0, 0);
     action_info.chara->effect_man->SetScriptVect1(position, 0, -1);
@@ -1128,6 +1438,11 @@ void ShotNormalGun(float *position, float *direction) {
     sndSePlay(action_info.chara->sound_info.se_bank, 5, 0);
 }
 
+/**
+ *
+ * Creates a machine gun shot and stores its collision primitive for the active burst.
+ *
+ */
 void ShotMachineGun(float *position, float *direction, char *damage_name, float damage) {
     MachineGun.Set(position, direction);
     CColPrim *prim = ColPrimMan.GetPrim();
@@ -1152,6 +1467,11 @@ void ShotMachineGun(float *position, float *direction, char *damage_name, float 
     }
 }
 
+/**
+ *
+ * Creates a grenade projectile with a linked damage collision primitive.
+ *
+ */
 void ShotGrenadGun(float *position, float *direction) {
     float muzzle[4];
     sceVu0ScaleVector(muzzle, direction, 500.0f);
@@ -1185,6 +1505,11 @@ void ShotGrenadGun(float *position, float *direction) {
     sndSePlay(action_info.chara->sound_info.se_bank, 5, 0);
 }
 
+/**
+ *
+ * Creates a colored laser projectile with a linked damage collision primitive.
+ *
+ */
 void ShotLaserGun(float *position, float *direction, int type) {
     float muzzle[4];
     float target[4];
@@ -1253,6 +1578,11 @@ void ShotLaserGun(float *position, float *direction, int type) {
 }
 
 #ifdef NONMATCHING
+/**
+ *
+ * Fires the equipped ranged weapon from a named action object.
+ *
+ */
 int _SET_SHOT(RS_STACKDATA *stack, int argc) {
     float position[4];
     float direction[4];
@@ -1332,6 +1662,11 @@ int _SET_SHOT(RS_STACKDATA *stack, int argc) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/actscript", _SET_SHOT__FP12RS_STACKDATAi);
 #endif
+/**
+ *
+ * Fires a charged magic sword projectile from a named action object.
+ *
+ */
 int _SET_SPECIAL_SHOT(RS_STACKDATA *stack, int argc) {
     float facing[4];
     float position[4];
@@ -1383,6 +1718,11 @@ int _SET_SPECIAL_SHOT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Fires the equipped robot weapon from its current muzzle.
+ *
+ */
 int _SHOT(RS_STACKDATA *stack, int argc) {
     float            position[4];
     float            target_pos[4];
@@ -1566,6 +1906,11 @@ int _SHOT(RS_STACKDATA *stack, int argc) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/actscript", _SHOT__FP12RS_STACKDATAi);
 #endif
+/**
+ *
+ * Writes the world position of a named action object to script outputs.
+ *
+ */
 int _GET_OBJECT_POS(RS_STACKDATA *stack, int argc) {
     float pos[4];
 
@@ -1587,11 +1932,21 @@ int _GET_OBJECT_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Enables directional gun aiming for the action character.
+ *
+ */
 int _SET_DIR_GUN(RS_STACKDATA *stack, int argc) {
     action_info.chara->dir_gun = 1;
     return 1;
 }
 
+/**
+ *
+ * Returns the current battle character HP divided by maximum HP.
+ *
+ */
 int _GET_NOW_HP_RATE(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -1604,11 +1959,21 @@ int _GET_NOW_HP_RATE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Reduces the battle character HP to five percent.
+ *
+ */
 int _SET_BOMB(RS_STACKDATA *stack, int argc) {
     GetBattleCharaInfo()->SetHpRate(0.05f);
     return 1;
 }
 
+/**
+ *
+ * Returns the model number of the battle character primary equipment.
+ *
+ */
 int _GET_ACTION_CODE(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -1619,6 +1984,11 @@ int _GET_ACTION_CODE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the attack status value of a selected weapon parameter slot.
+ *
+ */
 int _GET_ATTK_POINT(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -1630,6 +2000,11 @@ int _GET_ATTK_POINT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the RGB color of the equipped ring effect.
+ *
+ */
 int _GET_RING_COLOR(RS_STACKDATA *stack, int argc) {
     char *effect_name;
     char *unused_name;
@@ -1653,6 +2028,11 @@ int _GET_RING_COLOR(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Starts a named motion on the action character or a named linked character.
+ *
+ */
 static int _SET_MOS(RS_STACKDATA *stack, int argc) {
     char         *motion = NULL;
     char         *chara_name = NULL;
@@ -1703,6 +2083,11 @@ static int _SET_MOS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Reports whether the current or named motion has ended.
+ *
+ */
 static int _CHECK_MOS_END(RS_STACKDATA *stack, int argc) {
     float result;
 
@@ -1724,6 +2109,11 @@ static int _CHECK_MOS_END(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the remaining frame wait of the current or named motion.
+ *
+ */
 static int _NOW_MOS_WAIT(RS_STACKDATA *stack, int argc) {
     float result;
 
@@ -1745,6 +2135,11 @@ static int _NOW_MOS_WAIT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the action character motion change wait.
+ *
+ */
 int _NOW_MOS_CHGWAIT(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -1754,6 +2149,11 @@ int _NOW_MOS_CHGWAIT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Returns the status of the current or named motion.
+ *
+ */
 static int _GET_MOS_STATUS(RS_STACKDATA *stack, int argc) {
     int status;
 
@@ -1775,6 +2175,11 @@ static int _GET_MOS_STATUS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the action character motion blend speed.
+ *
+ */
 int _SET_XCHG_STEP(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -1791,6 +2196,11 @@ int _SET_XCHG_STEP(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the playback step of the action character motion.
+ *
+ */
 int _SET_MOS_STEP(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -1800,16 +2210,31 @@ int _SET_MOS_STEP(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Requests advancement of the action character motion sequence.
+ *
+ */
 int _TRG_ON_MOS(RS_STACKDATA *stack, int argc) {
     action_info.chara->seq_advance = 1;
     return 1;
 }
 
+/**
+ *
+ * Resets the action character motion.
+ *
+ */
 int _RESET_MOS(RS_STACKDATA *stack, int argc) {
     action_info.chara->ResetMotion();
     return 1;
 }
 
+/**
+ *
+ * Sets the default motion name for the action character.
+ *
+ */
 int _SET_DEFAULT_MOS(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -1819,6 +2244,11 @@ int _SET_DEFAULT_MOS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Slows motion playback when the battle character has the selected status attribute.
+ *
+ */
 int _SET_NEBA2(RS_STACKDATA *stack, int argc) {
     if ((GetBattleCharaInfo())->GetAttr() & 2) {
         action_info.chara->SetStep(0.7f * action_info.chara->GetDefaultStep());
@@ -1827,6 +2257,11 @@ int _SET_NEBA2(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Creates a named effect script and optionally returns its effect slot.
+ *
+ */
 static int _ESM_CREATE(RS_STACKDATA *stack, int argc) {
     if (action_info.chara->effect_man == NULL) {
         return 0;
@@ -1853,6 +2288,11 @@ static int _ESM_CREATE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the first script vector of an effect slot.
+ *
+ */
 static int _ESM_SET_VECT1(RS_STACKDATA *stack, int argc) {
     float vect[4];
 
@@ -1873,6 +2313,11 @@ static int _ESM_SET_VECT1(RS_STACKDATA *stack, int argc) {
     return action_info.chara->effect_man->SetScriptVect1(vect, 0, -1);
 }
 
+/**
+ *
+ * Sets the second script vector of an effect slot.
+ *
+ */
 static int _ESM_SET_VECT2(RS_STACKDATA *stack, int argc) {
     float vect[4];
 
@@ -1893,6 +2338,11 @@ static int _ESM_SET_VECT2(RS_STACKDATA *stack, int argc) {
     return action_info.chara->effect_man->SetScriptVect2(vect, 0, -1);
 }
 
+/**
+ *
+ * Requests the finish program for an effect script slot.
+ *
+ */
 static int _ESM_FINISH(RS_STACKDATA *stack, int argc) {
     CEffectScriptMan *effect_script;
     int               effect_id;
@@ -1913,6 +2363,11 @@ static int _ESM_FINISH(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Deletes an effect script slot owned by the action character.
+ *
+ */
 static int _ESM_DELETE(RS_STACKDATA *stack, int argc) {
     CEffectScriptMan *effect_script;
     int               effect_id;
@@ -1933,6 +2388,11 @@ static int _ESM_DELETE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets an integer or float value in an effect script slot.
+ *
+ */
 static int _ESM_SET_VALUE(RS_STACKDATA *stack, int argc) {
     if (argc != 3) {
         return 0;
@@ -1957,6 +2417,11 @@ static int _ESM_SET_VALUE(RS_STACKDATA *stack, int argc) {
     return result;
 }
 
+/**
+ *
+ * Loads an action script with allocated stack and call data and registers its external functions.
+ *
+ */
 int SetActionScript(CRunScript *script, char *program, mgCMemory *memory) {
     int stack = (int) memory->Alloc(0x40);
     int call_data = (int) memory->Alloc(0x180);
@@ -1966,6 +2431,11 @@ int SetActionScript(CRunScript *script, char *program, mgCMemory *memory) {
     return 1;
 }
 
+/**
+ *
+ * Builds the action script external function lookup table.
+ *
+ */
 void SetActionExtendTable() {
     int i;
     int j;
@@ -2002,6 +2472,11 @@ void SetActionExtendTable() {
     }
 }
 
+/**
+ *
+ * Calculates an initial velocity between two points for a timed parabolic flight.
+ *
+ */
 void ParabolicInitialVector(float *result, float *from, float *to, float gravity, float flight_time) {
     float fall_distance = gravity * flight_time;
     result[0] = (to[0] - from[0]) / flight_time;

@@ -127,6 +127,11 @@ static CFishObj         UkiObj;
 static CFishObj         HariObj;
 static sceVu0FVECTOR    ChanceBarPos;
 
+/**
+ *
+ * Sets a fishing physics point position in homogeneous coordinates.
+ *
+ */
 static void SetObjectPoint(FISH_POINT &point, float x, float y, float z) {
     point.pos[0] = x;
     point.pos[1] = y;
@@ -134,6 +139,11 @@ static void SetObjectPoint(FISH_POINT &point, float x, float y, float z) {
     point.pos[3] = 1.0f;
 }
 
+/**
+ *
+ * Connects two fishing physics points at their current separation.
+ *
+ */
 static void SetObjectBind(FISH_BIND &bind, FISH_POINT &first, FISH_POINT &second) {
     bind.length = mgDistVector(first.pos, second.pos);
     bind.point0 = &first;
@@ -159,6 +169,11 @@ float GetWaterLevel() {
     return WaterLevel;
 }
 
+/**
+ *
+ * Returns the active hook or lure physics object for the fishing mode.
+ *
+ */
 CFishObj *GetActiveHariObj() {
     if (NowMode == 2) {
         return &LureObj;
@@ -167,6 +182,11 @@ CFishObj *GetActiveHariObj() {
     return &HariObj;
 }
 
+/**
+ *
+ * Returns the float physics object when bait fishing is active.
+ *
+ */
 CFishObj *GetActiveUkiObj() {
     if (NowMode == 2) {
         return NULL;
@@ -322,6 +342,11 @@ void InitRodPoint(mgCFrame *reference, mgCFrame *rod) {
 
 static void GetTriPose(sceVu0FMATRIX pose, sceVu0FVECTOR points[3], int axes[3]);
 #ifdef NONMATCHING
+/**
+ *
+ * Constructs oriented axes from a triangle and signed axis selections.
+ *
+ */
 static void GetTriPose(sceVu0FMATRIX pose, sceVu0FVECTOR points[3], int axes[3]) {
     sceVu0FVECTOR vertices[3];
     memcpy(vertices, points, sizeof(vertices));
@@ -569,6 +594,11 @@ void ResetLine(float *tip) {
     mgZeroVector(HariObj.point[0].velo);
 }
 
+/**
+ *
+ * Returns a randomized delay until the next fishing action chance.
+ *
+ */
 int GetNextChanceCnt() {
     return (rand() % 80) + 0x3C;
 }
@@ -702,6 +732,11 @@ void GetFishPosVelo(float *pos, float *velo) {
     *(u_long128 *) velo = *(volatile u_long128 *) &FishPoint.velo;
 }
 
+/**
+ *
+ * Solves line, hook, and float distance constraints over four passes.
+ *
+ */
 static void BindFishObj() {
     CFishObj   *hari = GetActiveHariObj();
     CFishObj   *uki = GetActiveUkiObj();
@@ -1048,6 +1083,11 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", RodStep__FP6CSceneP1);
 #endif
+/**
+ *
+ * Moves two points toward their required separation at a chosen share.
+ *
+ */
 static void BindPosition(float *point0, float *point1, float length, float rate) {
     float delta[4];
     float move_a[4];
@@ -1540,6 +1580,11 @@ void CFishObj::Correct(CCPoly *poly, int poly_num, float damping) {
     }
 }
 
+/**
+ *
+ * Interpolates a fishing line point along a cubic curve.
+ *
+ */
 void ParaBlend(float *out, float t, float (*point)[4], int count) {
     Matrix4 basis;
     Matrix4 geometry;

@@ -111,6 +111,11 @@ void CMonsterMan::RunScript(int index) {
     }
 }
 
+/**
+ *
+ * Reads a script number as an integer, converting a floating point value when needed.
+ *
+ */
 static int GetStackInt(RS_STACKDATA *stack) {
     if (stack->type == 1) {
         return (int) stack->f;
@@ -119,6 +124,11 @@ static int GetStackInt(RS_STACKDATA *stack) {
     return stack->i;
 }
 
+/**
+ *
+ * Reads a script number as a float, converting an integer value when needed.
+ *
+ */
 static float GetStackFloat(RS_STACKDATA *stack) {
     if (stack->type == 0) {
         return (float) stack->i;
@@ -127,22 +137,42 @@ static float GetStackFloat(RS_STACKDATA *stack) {
     return *(float *) &stack->i;
 }
 
+/**
+ *
+ * Reads the string pointer held in a script stack slot.
+ *
+ */
 static char *GetStackString(RS_STACKDATA *stack) {
     return (char *) stack->i;
 }
 
+/**
+ *
+ * Writes an integer through a script output reference.
+ *
+ */
 static void SetStack(RS_STACKDATA *stack, int value) {
     if (stack->type == 3) {
         ((RS_STACKDATA *) stack->i)->i = value;
     }
 }
 
+/**
+ *
+ * Writes a floating point value through a script output reference.
+ *
+ */
 static void SetStack(RS_STACKDATA *stack, float value) {
     if (stack->type == 3) {
         *(float *) &((RS_STACKDATA *) stack->i)->i = value;
     }
 }
 
+/**
+ *
+ * Reads three numeric script arguments into a homogeneous position vector.
+ *
+ */
 static void GetStackVector(float *vec, RS_STACKDATA **stack) {
     vec[0] = GetStackFloat((*stack)++);
     vec[1] = GetStackFloat((*stack)++);
@@ -150,18 +180,33 @@ static void GetStackVector(float *vec, RS_STACKDATA **stack) {
     vec[3] = 1.0f;
 }
 
+/**
+ *
+ * Writes three vector components through script output arguments.
+ *
+ */
 static void SetStackVector(float *vec, RS_STACKDATA **stack) {
     SetStack((*stack)++, vec[0]);
     SetStack((*stack)++, vec[1]);
     SetStack((*stack)++, vec[2]);
 }
 
+/**
+ *
+ * Writes the square root of a script argument to an output slot.
+ *
+ */
 int _SQRT(RS_STACKDATA *stack, int argument_count) {
     float value = GetStackFloat(stack++);
     SetStack(stack, (float) sqrt(value));
     return 1;
 }
 
+/**
+ *
+ * Writes the angle of two script arguments to an output slot.
+ *
+ */
 int _ATAN2F(RS_STACKDATA *stack, int argument_count) {
     float y = GetStackFloat(stack++);
     float x = GetStackFloat(stack++);
@@ -169,10 +214,20 @@ int _ATAN2F(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Accepts the test opcode without changing script state.
+ *
+ */
 int _ND_TEST(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the current target character rotation to three output slots.
+ *
+ */
 int _GET_TARGET_ROT(RS_STACKDATA *stack, int argument_count) {
     float        pos[4];
     CCharacter2 *target;
@@ -194,11 +249,21 @@ int _GET_TARGET_ROT(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Writes the active monster instance identifier to an output slot.
+ *
+ */
 int _GET_MONSTER_INDEX(RS_STACKDATA *stack, int argument_count) {
     SetStack(stack, nowMonster->monster_id);
     return 1;
 }
 
+/**
+ *
+ * Sets the active monster life from an absolute value or fraction of maximum life.
+ *
+ */
 int _SET_MONSTER_LIFE(RS_STACKDATA *stack, int argument_count) {
     int life;
 
@@ -230,21 +295,41 @@ int _SET_MONSTER_LIFE(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Writes the active monster character type to an output slot.
+ *
+ */
 int _GET_USERID(RS_STACKDATA *stack, int argument_count) {
     SetStack(stack, nowMonster->chara_type);
     return 1;
 }
 
+/**
+ *
+ * Writes the active monster reference number to an output slot.
+ *
+ */
 int _GET_MONSTER_ID(RS_STACKDATA *stack, int argument_count) {
     SetStack(stack, nowMonster->refer_no);
     return 1;
 }
 
+/**
+ *
+ * Resets the active monster motion.
+ *
+ */
 int _RESET_MOTION(RS_STACKDATA *, int) {
     nowMonster->ResetMotion();
     return 1;
 }
 
+/**
+ *
+ * Finds an active monster by instance identifier and writes its position.
+ *
+ */
 int _GET_INDEX_POS(RS_STACKDATA *stack, int argument_count) {
     int             index = GetStackInt(stack++);
     int             count = ActiveMonster->GetMonsterNum(-1.0f);
@@ -267,6 +352,11 @@ int _GET_INDEX_POS(RS_STACKDATA *stack, int argument_count) {
     return 0;
 }
 
+/**
+ *
+ * Disables active camera control and sets its next focus point.
+ *
+ */
 int _SET_CAMERA_NEXT_REF(RS_STACKDATA *stack,
                          int           argument_count) {
     CCameraControl *camera;
@@ -289,12 +379,22 @@ int _SET_CAMERA_NEXT_REF(RS_STACKDATA *stack,
     return 1;
 }
 
+/**
+ *
+ * Sets the active monster alpha value.
+ *
+ */
 int _SET_ALPHA(RS_STACKDATA *stack, int argument_count) {
     float value = GetStackFloat(stack);
     nowMonster->alpha = value;
     return 1;
 }
 
+/**
+ *
+ * Finds an active monster by instance identifier and sets its alpha value.
+ *
+ */
 int _SET_INDEX_ALPHA(RS_STACKDATA *stack, int argument_count) {
     int             index = GetStackInt(stack++);
     int             count = ActiveMonster->GetMonsterNum(-1.0f);
@@ -313,6 +413,11 @@ int _SET_INDEX_ALPHA(RS_STACKDATA *stack, int argument_count) {
     return 0;
 }
 
+/**
+ *
+ * Enables or disables active camera follow and control.
+ *
+ */
 int _SET_CAMERA_FOLLOW(RS_STACKDATA *stack, int argument_count) {
     CCameraControl *camera;
 
@@ -333,6 +438,11 @@ int _SET_CAMERA_FOLLOW(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Disables active camera control and sets its next eye position.
+ *
+ */
 int _SET_CAMERA_NEXT_POS(RS_STACKDATA *stack,
                          int           argument_count) {
     CCameraControl *camera;
@@ -355,6 +465,11 @@ int _SET_CAMERA_NEXT_POS(RS_STACKDATA *stack,
     return 1;
 }
 
+/**
+ *
+ * Writes the length of a vector supplied by script arguments.
+ *
+ */
 int _GET_DIST_VECTOR(RS_STACKDATA *stack, int argument_count) {
     float vec[4];
 
@@ -366,6 +481,11 @@ int _GET_DIST_VECTOR(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Writes the distance between two positions supplied by script arguments.
+ *
+ */
 int _GET_DIST_VECTOR2(RS_STACKDATA *stack, int argument_count) {
     float from[4];
     float to[4];
@@ -382,6 +502,11 @@ int _GET_DIST_VECTOR2(RS_STACKDATA *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the active monster scale from three script arguments.
+ *
+ */
 int _SET_SCALE(RS_STACKDATA *stack, int argc) {
     float scale[4];
     scale[0] = GetStackFloat(stack++);
@@ -392,6 +517,11 @@ int _SET_SCALE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Configures the active monster palette pulse color, timing, and repeat count.
+ *
+ */
 int _SET_PALLET_ANIM(RS_STACKDATA *stack, int argc) {
     int first;
     int second;
@@ -420,6 +550,11 @@ int _SET_PALLET_ANIM(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Stops the active monster palette pulse and clears its elapsed time.
+ *
+ */
 int _RESET_PALLET_ANIM(RS_STACKDATA *stack, int argc) {
     CActiveMonster *monster = nowMonster;
     monster->unk_67c.duration = 0;
@@ -427,6 +562,11 @@ int _RESET_PALLET_ANIM(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the intersections of a horizontal line and circle.
+ *
+ */
 int _CALC_IP_CIRCLE_LINE(RS_STACKDATA *stack, int argc) {
     float center[4];
     float line_a[4];
@@ -470,6 +610,11 @@ int _CALC_IP_CIRCLE_LINE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes yaw or full rotation from one position toward another.
+ *
+ */
 int _GET_POSREF_ANGLE(RS_STACKDATA *stack, int argc) {
     float from[4];
     float to[4];
@@ -502,6 +647,11 @@ int _GET_POSREF_ANGLE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Normalizes a three-component vector held in script output slots.
+ *
+ */
 int _NORMAL_VECTOR(RS_STACKDATA *stack, int argc) {
     float vec[4];
     vec[0] = stack[0].p->f;
@@ -515,6 +665,11 @@ int _NORMAL_VECTOR(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Copies three numeric script arguments into vector output slots.
+ *
+ */
 int _COPY_VECTOR(RS_STACKDATA *stack, int argc) {
     RS_STACKDATA *source = stack;
     source += 3;
@@ -527,6 +682,11 @@ int _COPY_VECTOR(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Adds a three-component script vector to vector output slots.
+ *
+ */
 int _ADD_VECTOR(RS_STACKDATA *stack, int argc) {
     RS_STACKDATA *source = stack;
     source += 3;
@@ -539,6 +699,11 @@ int _ADD_VECTOR(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Subtracts a three-component script vector from vector output slots.
+ *
+ */
 int _SUB_VECTOR(RS_STACKDATA *stack, int argc) {
     RS_STACKDATA *source = stack;
     source += 3;
@@ -551,6 +716,11 @@ int _SUB_VECTOR(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Scales vector output slots by a numeric script argument.
+ *
+ */
 int _SCALE_VECTOR(RS_STACKDATA *stack, int argc) {
     float scale = GetStackFloat(stack + 3);
     SetStack(stack, stack[0].p->f * scale);
@@ -559,6 +729,11 @@ int _SCALE_VECTOR(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Divides vector output slots by a nonzero numeric script argument.
+ *
+ */
 int _DIV_VECTOR(RS_STACKDATA *stack, int argc) {
     float divisor = GetStackFloat(stack + 3);
 
@@ -572,6 +747,11 @@ int _DIV_VECTOR(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes whether an angle is within a requested tolerance of another angle.
+ *
+ */
 int _ANGLE_CMP(RS_STACKDATA *stack, int argc) {
     float angle = GetStackFloat(stack++);
     float target = GetStackFloat(stack++);
@@ -580,11 +760,21 @@ int _ANGLE_CMP(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Wraps an angle output slot into the supported angle range.
+ *
+ */
 int _ANGLE_LIMIT(RS_STACKDATA *stack, int unused) {
     SetStack(stack, mgAngleLimit(stack->p->f));
     return 1;
 }
 
+/**
+ *
+ * Writes the previous position of the active monster target.
+ *
+ */
 int _GET_TARGET_OLD_POS(RS_STACKDATA *stack, int argc) {
     float         old_pos[4];
     CActionChara *target = (CActionChara *) nowScene->GetCharacter(nowMonster->target_no);
@@ -600,6 +790,11 @@ int _GET_TARGET_OLD_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the distance the active monster target moved since its previous position.
+ *
+ */
 int _GET_TARGET_SPEED(RS_STACKDATA *stack, int argc) {
     float         pos[4];
     float         old_pos[4];
@@ -615,6 +810,11 @@ int _GET_TARGET_SPEED(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the next position along a requested move and its calculation result.
+ *
+ */
 int _CALC_MOVE_NEXT_POS(RS_STACKDATA *stack, int argc) {
     float from[4];
     float to[4];
@@ -634,6 +834,11 @@ int _CALC_MOVE_NEXT_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes current monster life as an integer or fraction of maximum life.
+ *
+ */
 int _GET_MONSTER_LIFE(RS_STACKDATA *stack, int argc) {
     if (stack->type != 3) {
         return 0;
@@ -652,11 +857,21 @@ int _GET_MONSTER_LIFE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the active monster damage immunity countdown.
+ *
+ */
 int _GET_NO_DAMAGE_CNT(RS_STACKDATA *stack, int argc) {
     SetStack(stack, nowMonster->no_damage_cnt);
     return 1;
 }
 
+/**
+ *
+ * Writes the integer life of a selected active monster.
+ *
+ */
 int _GET_ACTIVE_MONS_LIFEI(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -680,6 +895,11 @@ int _GET_ACTIVE_MONS_LIFEI(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the life fraction of a selected active monster.
+ *
+ */
 int _GET_ACTIVE_MONS_LIFEF(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -703,6 +923,11 @@ int _GET_ACTIVE_MONS_LIFEF(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the integer life of a selected active monster.
+ *
+ */
 int _SET_ACTIVE_MONS_LIFEI(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -744,6 +969,11 @@ int _SET_ACTIVE_MONS_LIFEI(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets a selected active monster life from a fraction of its maximum.
+ *
+ */
 int _SET_ACTIVE_MONS_LIFEF(RS_STACKDATA *stack, int argc) {
     CActiveMonster *monster;
     int             id;
@@ -787,6 +1017,11 @@ int _SET_ACTIVE_MONS_LIFEF(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the maximum life of a selected active monster.
+ *
+ */
 int _GET_ACTIVE_MONS_MAX_LIFE(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -810,6 +1045,11 @@ int _GET_ACTIVE_MONS_MAX_LIFE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Shows a damage number above the selected monster.
+ *
+ */
 int _SET_DAMAGE_SCORE(RS_STACKDATA *stack, int argc) {
     float         pos[4];
     int           color_flag;
@@ -851,6 +1091,11 @@ int _SET_DAMAGE_SCORE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the grade of a selected active monster.
+ *
+ */
 int _GET_MONS_GRADE(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -874,6 +1119,11 @@ int _GET_MONS_GRADE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Scales the selected monster escape rates from their base values.
+ *
+ */
 int _SET_ESCAPE_RATE(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -908,6 +1158,11 @@ int _SET_ESCAPE_RATE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Scales the selected monster guard rate from its base value.
+ *
+ */
 int _SET_GUARD_RATE(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -937,6 +1192,11 @@ int _SET_GUARD_RATE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Scales selected monster extension parameters from their base values.
+ *
+ */
 int _SET_EXT_PARAM_RATE(RS_STACKDATA *stack, int argc) {
     if (argc != 3) {
         return 0;
@@ -972,6 +1232,11 @@ int _SET_EXT_PARAM_RATE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes whether the active monster base data marks it as a boss.
+ *
+ */
 int _GET_BOSS_FLAG(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -981,6 +1246,11 @@ int _GET_BOSS_FLAG(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Resets the current battle area timer.
+ *
+ */
 int _RESET_TIMER(RS_STACKDATA *stack, int argc) {
     DNG_BATTLE_AREA *block;
 
@@ -994,6 +1264,11 @@ int _RESET_TIMER(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the current battle area timer value.
+ *
+ */
 int _GET_TIMER(RS_STACKDATA *stack, int argc) {
     DNG_BATTLE_AREA *block;
 
@@ -1007,6 +1282,11 @@ int _GET_TIMER(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the world position of a named frame on the active monster.
+ *
+ */
 int _GET_FRAME_POS(RS_STACKDATA *stack, int argc) {
     float     pos[4];
     char     *name = GetStackString(stack++);
@@ -1029,6 +1309,11 @@ int _GET_FRAME_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Plays a positional sound effect from the active monster sound bank.
+ *
+ */
 int _MY_SE_PLAY(RS_STACKDATA *stack, int argc) {
     float pos[4];
     float volume;
@@ -1044,12 +1329,22 @@ int _MY_SE_PLAY(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Stops a sound effect from the active monster sound bank.
+ *
+ */
 int _MY_SE_STOP(RS_STACKDATA *stack, int argc) {
     int id = GetStackInt(stack);
     sndSeStop(nowMonster->sound_info.se_bank, id, 0);
     return 1;
 }
 
+/**
+ *
+ * Writes the event stopwatch limit for its supported selector.
+ *
+ */
 int _GET_EVENT_INFO(RS_STACKDATA *stack, int argc) {
     int selector = GetStackInt(stack++);
 
@@ -1064,6 +1359,11 @@ int _GET_EVENT_INFO(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Clears effects associated with the requested character identifier.
+ *
+ */
 int _ESM_ALL_CLEAR(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -1073,6 +1373,11 @@ int _ESM_ALL_CLEAR(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the dot product of two horizontal directions built from angles.
+ *
+ */
 int _GET_ANGLE_INNER(RS_STACKDATA *stack, int argc) {
     ScriptVector first;
     ScriptVector second;
@@ -1096,6 +1401,11 @@ int _GET_ANGLE_INNER(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Starts a battle-area camera quake with amplitude and duration.
+ *
+ */
 int _CAMERA_QUAKE(RS_STACKDATA *stack, int argc) {
     DNG_BATTLE_AREA *quake = (&nowScene->battle_area);
     RS_STACKDATA    *next = stack + 1;
@@ -1112,6 +1422,11 @@ int _CAMERA_QUAKE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the current battle-area camera mode value.
+ *
+ */
 int _SET_CAMERA_MODE(RS_STACKDATA *stack, int argc) {
     int              mode;
     DNG_BATTLE_AREA *area;
@@ -1127,6 +1442,11 @@ int _SET_CAMERA_MODE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the active camera movement speed.
+ *
+ */
 int _SET_CAMERA_SPEED(RS_STACKDATA *stack, int argc) {
     mgCCamera *camera = nowScene->GetCamera(nowScene->active_camera);
 
@@ -1138,6 +1458,11 @@ int _SET_CAMERA_SPEED(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Updates active camera distance and near/far height limits.
+ *
+ */
 int _SET_CAMERA_CTRL_PARAM1(RS_STACKDATA *args, int argc) {
     CameraCtrlParam *param;
     float            value;
@@ -1183,6 +1508,11 @@ int _SET_CAMERA_CTRL_PARAM1(RS_STACKDATA *args, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Updates active camera height and ground clearance limits.
+ *
+ */
 int _SET_CAMERA_CTRL_PARAM2(RS_STACKDATA *args, int argc) {
     CameraCtrlParam *param;
     float            value;
@@ -1244,6 +1574,11 @@ int _SET_CAMERA_CTRL_PARAM2(RS_STACKDATA *args, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Restores default active camera control distances and heights.
+ *
+ */
 int _RESET_CAMERA_CTRL_PARAM(RS_STACKDATA *stack, int argc) {
 
     CameraCtrlParam *param;
@@ -1262,6 +1597,11 @@ int _RESET_CAMERA_CTRL_PARAM(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes a random integer below the requested range.
+ *
+ */
 int _GET_RND(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -1274,6 +1614,11 @@ int _GET_RND(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes a float holding a random integer below the requested range.
+ *
+ */
 int _GET_RNDF(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -1284,6 +1629,11 @@ int _GET_RNDF(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Stores an integer or float in a monster-local or shared script variable.
+ *
+ */
 int _V_PUSH(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -1330,6 +1680,11 @@ int _V_PUSH(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Reads a monster-local or shared script variable into an output slot.
+ *
+ */
 int _V_POP(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -1376,6 +1731,11 @@ int _V_POP(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Stores an integer or float in the active monster secondary variable table.
+ *
+ */
 int _V_PUSH2(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -1412,6 +1772,11 @@ int _V_PUSH2(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Reads an active monster secondary variable into an output slot.
+ *
+ */
 int _V_POP2(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -1452,6 +1817,11 @@ int _V_POP2(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the battle area lock-on mode.
+ *
+ */
 int _SET_LOCKON_MODE(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -1462,6 +1832,11 @@ int _SET_LOCKON_MODE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the number of active monsters.
+ *
+ */
 int _GET_MONSTER_NUM(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -1472,6 +1847,11 @@ int _GET_MONSTER_NUM(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the distance from the active monster to a script position.
+ *
+ */
 int _GET_DIST(RS_STACKDATA *stack, int argc) {
     float target[4];
     float self_pos[4];
@@ -1488,6 +1868,11 @@ int _GET_DIST(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Registers a named object on the active monster at a requested index.
+ *
+ */
 int _SET_OBJ(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -1498,16 +1883,31 @@ int _SET_OBJ(RS_STACKDATA *stack, int argc) {
     return ((CActionChara *) nowMonster)->EntryObject(name, index) != 0;
 }
 
+/**
+ *
+ * Prints the body command diagnostic.
+ *
+ */
 int _SET_BODY(RS_STACKDATA *stack, int argc) {
     printf(at_1728);
     return 1;
 }
 
+/**
+ *
+ * Prints the damage command diagnostic.
+ *
+ */
 int _SET_DMG(RS_STACKDATA *stack, int argc) {
     printf(at_1733);
     return 1;
 }
 
+/**
+ *
+ * Registers a damage hit using named motion and entry-object frames.
+ *
+ */
 int _SET_DMG2(RS_STACKDATA *stack, int argc) {
     float               pos[4];
     mgCFrame           *frame_a;
@@ -1552,6 +1952,11 @@ int _SET_DMG2(RS_STACKDATA *stack, int argc) {
     return LastCInfo2 != NULL;
 }
 
+/**
+ *
+ * Writes the world position of a named character object.
+ *
+ */
 int _GET_OBJ_POS(RS_STACKDATA *stack, int argc) {
     float         pos[4];
     char         *object_name;
@@ -1591,6 +1996,11 @@ int _GET_OBJ_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the world position of a named frame on the linked map piece.
+ *
+ */
 int _GET_MAPOBJ_POS(RS_STACKDATA *stack, int argc) {
     float matrix[4][4];
     float pos[4];
@@ -1626,6 +2036,11 @@ int _GET_MAPOBJ_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Links the active monster to a named map part.
+ *
+ */
 int _LINK_MAP_TO_OBJECT(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -1646,6 +2061,11 @@ int _LINK_MAP_TO_OBJECT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Links the active monster to a named piece of a map part.
+ *
+ */
 int _LINK_OBJECT_TO_PIECE(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -1673,6 +2093,11 @@ int _LINK_OBJECT_TO_PIECE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Configures the active monster scoop trigger or motion interval.
+ *
+ */
 int _SET_SCOOP(RS_STACKDATA *stack, int argc) {
     if (argc != 1 && argc != 4) {
         return 0;
@@ -1694,6 +2119,11 @@ int _SET_SCOOP(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Loads an image file into one of the active monster reserved image slots.
+ *
+ */
 int _LOAD_RESERV_IMG(RS_STACKDATA *stack, int argc) {
     int file_size;
 
@@ -1729,6 +2159,11 @@ int _LOAD_RESERV_IMG(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the active monster priority limit within its supported range.
+ *
+ */
 int _SET_PRIORITY_LIMMIT(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -1744,6 +2179,11 @@ int _SET_PRIORITY_LIMMIT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the active monster configured place position.
+ *
+ */
 int _GET_PLACE_POS(RS_STACKDATA *stack, int argc) {
     if (argc != 3) {
         return 0;
@@ -1755,6 +2195,11 @@ int _GET_PLACE_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the active monster configured place position.
+ *
+ */
 int _SET_PLACE_POS(RS_STACKDATA *stack, int argc) {
     if (argc != 3) {
         return 0;
@@ -1766,6 +2211,11 @@ int _SET_PLACE_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Searches from the active monster along a rotated horizontal direction.
+ *
+ */
 int _SEARCH_AREA(RS_STACKDATA *stack, int argc) {
     ScriptVector dir;
     float        pos[4];
@@ -1793,6 +2243,11 @@ int _SEARCH_AREA(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Searches the scene along a segment between two script positions.
+ *
+ */
 int _SEARCH_AREA2(RS_STACKDATA *stack, int argc) {
     float from[4];
     float to[4];
@@ -1807,6 +2262,11 @@ int _SEARCH_AREA2(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Enables or disables model lighting on the root or a named frame.
+ *
+ */
 int _SET_MODEL_LIGHT_SWITCH(RS_STACKDATA *stack, int argc) {
     mgCFrame     *frame;
     char         *name;
@@ -1851,6 +2311,11 @@ int _SET_MODEL_LIGHT_SWITCH(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets model lighting color on the root or a named frame.
+ *
+ */
 int _SET_MODEL_LIGHT_COLOR(RS_STACKDATA *stack, int argc) {
     mgCFrame     *frame;
     char         *name;
@@ -1894,6 +2359,11 @@ int _SET_MODEL_LIGHT_COLOR(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Scales active monster defense from its table value.
+ *
+ */
 int _SET_DEF_RATE(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -1906,6 +2376,11 @@ int _SET_DEF_RATE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the active monster position to three output slots.
+ *
+ */
 int _GET_POS(RS_STACKDATA *stack, int argc) {
     float pos[4];
 
@@ -1920,6 +2395,11 @@ int _GET_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Teleports the active monster to a script position.
+ *
+ */
 int _SET_POS(RS_STACKDATA *stack, int argc) {
     if (argc != 3) {
         return 0;
@@ -1932,6 +2412,11 @@ int _SET_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes rotation of the active monster or a selected monster.
+ *
+ */
 int _GET_ROT(RS_STACKDATA *stack, int argc) {
     float rot[4];
 
@@ -1958,6 +2443,11 @@ int _GET_ROT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets active monster rotation and clears its turn speed.
+ *
+ */
 int _SET_ROT(RS_STACKDATA *stack, int argc) {
     if (argc != 3) {
         return 0;
@@ -1971,6 +2461,11 @@ int _SET_ROT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the active monster target facing and turn speed.
+ *
+ */
 int _SET_NEXT_ROT(RS_STACKDATA *stack, int argc) {
     if (argc != 2) {
         return 0;
@@ -1981,6 +2476,11 @@ int _SET_NEXT_ROT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets an active monster movement target, speed, and arrival distance.
+ *
+ */
 int _SET_NEXT_POS(RS_STACKDATA *stack, int argc) {
     float target[4];
     float pos[4];
@@ -2011,6 +2511,11 @@ int _SET_NEXT_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes whether the active monster is within arrival distance of its target.
+ *
+ */
 int _CHK_MOVE_END(RS_STACKDATA *stack, int argc) {
     float pos[4];
     int   arrived;
@@ -2030,11 +2535,21 @@ int _CHK_MOVE_END(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Stops active monster movement by clearing its movement speed.
+ *
+ */
 int _RESET_MOVE(RS_STACKDATA *stack, int argument_count) {
     nowMonster->move_speed = 0.0f;
     return 1;
 }
 
+/**
+ *
+ * Writes the target position and optionally its distance from the monster.
+ *
+ */
 int _GET_TARGET_POS(RS_STACKDATA *stack, int argc) {
     float pos[4];
     float self_pos[4];
@@ -2062,6 +2577,11 @@ int _GET_TARGET_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the distance from the active monster to its target.
+ *
+ */
 int _GET_TARGET_DIST(RS_STACKDATA *stack, int argc) {
     float target_pos[4];
     float self_pos[4];
@@ -2082,6 +2602,11 @@ int _GET_TARGET_DIST(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the horizontal angle from the active monster to its target.
+ *
+ */
 int _GET_TARGET_ANGLE(RS_STACKDATA *stack, int argc) {
     float delta[4];
     float self_pos[4];
@@ -2103,6 +2628,11 @@ int _GET_TARGET_ANGLE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes a point at a given angle and distance from the target.
+ *
+ */
 int _GET_TARGET_REF_POS(RS_STACKDATA *stack, int argc) {
     float matrix[4][4];
     float pos[4];
@@ -2137,6 +2667,11 @@ int _GET_TARGET_REF_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Classifies a point as ahead, behind, left, or right of the monster.
+ *
+ */
 int _GET_REF_DIR(RS_STACKDATA *args, int argc) {
     sceVu0FVECTOR target_position;
     sceVu0FVECTOR position;
@@ -2193,6 +2728,11 @@ int _GET_REF_DIR(RS_STACKDATA *args, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes a point offset from the monster along its rotated facing direction.
+ *
+ */
 int _GET_REFANGLE_POS(RS_STACKDATA *stack, int argc) {
     float matrix[4][4];
     float pos[4];
@@ -2218,6 +2758,11 @@ int _GET_REFANGLE_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the horizontal angle from the monster toward a script position.
+ *
+ */
 int _GET_REF_ANGLE(RS_STACKDATA *stack, int argc) {
     float self_pos[4];
     float target[4];
@@ -2236,6 +2781,11 @@ int _GET_REF_ANGLE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes zero when grounded or the monster height when airborne.
+ *
+ */
 int _GET_HIGH(RS_STACKDATA *stack, int argc) {
     float height;
 
@@ -2253,6 +2803,11 @@ int _GET_HIGH(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes a selected monster position and optionally its distance from the active monster.
+ *
+ */
 int _GET_ACTIVE_MONS_POS(RS_STACKDATA *stack, int argc) {
     float pos[4];
     float self_pos[4];
@@ -2282,6 +2837,11 @@ int _GET_ACTIVE_MONS_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the rotation of a selected active monster.
+ *
+ */
 int _GET_ACTIVE_MONS_ROT(RS_STACKDATA *stack, int argc) {
     float rot[4];
 
@@ -2304,6 +2864,11 @@ int _GET_ACTIVE_MONS_ROT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the distance to a selected active monster.
+ *
+ */
 int _GET_ACTIVE_MONS_DIST(RS_STACKDATA *stack, int argc) {
     float self_pos[4];
     float other_pos[4];
@@ -2326,6 +2891,11 @@ int _GET_ACTIVE_MONS_DIST(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the yaw angle of a selected active monster.
+ *
+ */
 int _GET_ACTIVE_MONS_ANGLE(RS_STACKDATA *stack, int argc) {
     float rot[4];
 
@@ -2346,6 +2916,11 @@ int _GET_ACTIVE_MONS_ANGLE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes pitch and yaw from the monster toward a script position.
+ *
+ */
 int _GET_REF_ROT(RS_STACKDATA *stack, int argc) {
     float self_pos[4];
     float target[4];
@@ -2366,6 +2941,11 @@ int _GET_REF_ROT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes yaw or the normalized direction between two script positions.
+ *
+ */
 int _GET_REF_ROT2(RS_STACKDATA *stack, int argc) {
     float start[4];
     float target[4];
@@ -2392,6 +2972,11 @@ int _GET_REF_ROT2(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Searches from the monster along a horizontal flight direction.
+ *
+ */
 int _FLYING_SEARCH_AREA(RS_STACKDATA *stack, int argc) {
     ScriptVector dir;
     float        pos[4];
@@ -2417,6 +3002,11 @@ int _FLYING_SEARCH_AREA(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the height above collision geometry below a script position.
+ *
+ */
 static int _GET_HIGH2(RS_STACKDATA *args, int argc) {
     CCPoly        polygons[128];
     sceVu0FVECTOR position;
@@ -2463,6 +3053,11 @@ static int _GET_HIGH2(RS_STACKDATA *args, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the ranked identifier of a different-type monster within range.
+ *
+ */
 int _GET_RANGE_MONS_ID(RS_STACKDATA *stack, int argc) {
     RangeEntry  entries[24];
     float       self_pos[4];
@@ -2520,6 +3115,11 @@ int _GET_RANGE_MONS_ID(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Writes the position of a selected entry object on a monster.
+ *
+ */
 int _GET_ENTRY_OBJ_POS(RS_STACKDATA *stack, int argc) {
     float pos[4];
 

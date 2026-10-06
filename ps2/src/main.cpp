@@ -33,8 +33,12 @@ extern const unsigned char at_857__DATA[];
 
 // Code (.text)
 /**
- * Vertical-blank interrupt handler: counts the frame and re-enables
- * interrupts before returning.
+ *
+ * Counts vertical blank interrupts and resets the count if it wraps negative.
+ *
+ * @mangled VSyncCallBack__Fi__2
+ * @address 0x15D470
+ * @size 0x2C
  */
 #ifdef NONMATCHING
 static int VSyncCallBack(int event) {

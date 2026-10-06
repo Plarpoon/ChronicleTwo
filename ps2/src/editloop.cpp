@@ -167,6 +167,11 @@ void editLoadSound(int map_no);
 #endif
 
 // Code (.text)
+/**
+ *
+ * Returns the user data manager from the current save.
+ *
+ */
 static CUserDataManager *GetUserData() {
     CSaveData *save;
 
@@ -183,10 +188,20 @@ void InitLockCharaCtrl() {
     LockChara = 0;
 }
 
+/**
+ *
+ * Increments the edit mode character control lock count.
+ *
+ */
 static void LockCharaCtrl() {
     LockChara++;
 }
 
+/**
+ *
+ * Decrements the edit mode character control lock count without going below zero.
+ *
+ */
 static void UnLockCharaCtrl() {
     LockChara -= 1;
 

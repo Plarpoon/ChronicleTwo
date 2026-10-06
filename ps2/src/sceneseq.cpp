@@ -31,6 +31,11 @@ extern char at_2863[];
     }
 
 // Code (.text)
+/**
+ *
+ * Clears a spline key before camera or character path setup.
+ *
+ */
 static void InitSplineKey(SPLINE_KEY *key) {
     key->frame = 0;
     key->length = 0;
@@ -644,6 +649,11 @@ int CCharaPas::GetFrame() {
     return frame;
 }
 
+/**
+ *
+ * Waits the requested number of frames before the next camera position command.
+ *
+ */
 int scsPRDelay(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     int frame_count;
 
@@ -658,6 +668,11 @@ int scsPRDelay(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Sets the camera eye position and recomputes its angle, height, and distance.
+ *
+ */
 int scsSetPos(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     float delta[4];
     float direction[4];
@@ -680,6 +695,11 @@ int scsSetPos(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     return 0;
 }
 
+/**
+ *
+ * Sets the camera focus position and recomputes its angle, height, and distance.
+ *
+ */
 int scsSetRef(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     float delta[4];
     float direction[4];
@@ -702,6 +722,11 @@ int scsSetRef(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     return 0;
 }
 
+/**
+ *
+ * Waits the requested number of frames before the next angle-height-distance command.
+ *
+ */
 int scsAHDDelay(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     int frame_count;
 
@@ -716,6 +741,11 @@ int scsAHDDelay(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Sets the camera orbit angle while keeping its focus and distance.
+ *
+ */
 int scsSetAngle(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     owner->pos[0] = owner->ref[0] + owner->dist * sinf(node->value);
     owner->pos[2] = owner->ref[2] + owner->dist * cosf(node->value);
@@ -723,12 +753,22 @@ int scsSetAngle(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     return 0;
 }
 
+/**
+ *
+ * Sets the camera height above its focus point.
+ *
+ */
 int scsSetHeight(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     owner->pos[1] = node->value + owner->ref[1];
     owner->height = node->value;
     return 0;
 }
 
+/**
+ *
+ * Sets the camera distance from its focus point.
+ *
+ */
 int scsSetDist(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     owner->pos[0] = owner->ref[0] + node->value * sinf(owner->angle);
     owner->pos[2] = owner->ref[2] + node->value * cosf(owner->angle);
@@ -736,6 +776,11 @@ int scsSetDist(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     return 0;
 }
 
+/**
+ *
+ * Sets the camera orbit angle, height, and distance, including synchronized values.
+ *
+ */
 int scsSetAHD(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     if (owner->sync != 0) {
         owner->sync_angle = node->vec0[0];
@@ -753,6 +798,11 @@ int scsSetAHD(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     return 0;
 }
 
+/**
+ *
+ * Moves camera eye and focus linearly toward the command positions.
+ *
+ */
 int scsMove(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     float delta[4];
 
@@ -783,6 +833,11 @@ int scsMove(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Moves camera eye and focus with the requested easing mode.
+ *
+ */
 int scsMove2(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     float pos_delta[4];
     float ref_delta[4];
@@ -857,6 +912,11 @@ int scsMove2(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Moves the camera focus toward the command position.
+ *
+ */
 int scsMoveRef(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     float delta[4];
 
@@ -879,6 +939,11 @@ int scsMoveRef(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Moves the camera eye toward the command position.
+ *
+ */
 int scsMovePos(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     float delta[4];
 
@@ -901,6 +966,11 @@ int scsMovePos(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Changes camera orbit angle, height, and distance over the command duration.
+ *
+ */
 int scsMoveAHD(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     float angle_delta;
 
@@ -972,6 +1042,11 @@ int scsMoveAHD(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     return 1;
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Changes camera orbit values with the requested easing mode.
+ *
+ */
 int scsMoveAHD2(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     float angle_delta;
     int   ended;
@@ -1101,6 +1176,11 @@ int scsMoveAHD2(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsMoveAHD2__FP12_SEN_CMR_SEQP12CSceneCmrSeq);
 #endif
+/**
+ *
+ * Attaches the camera orbit to a frame of a synchronized object.
+ *
+ */
 int scsSetSyncObj(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     owner->sync_obj = seq->frame;
     owner->sync_mode = seq->mode;
@@ -1119,6 +1199,11 @@ int scsSetSyncObj(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     return 0;
 }
 
+/**
+ *
+ * Clears the camera orbit synchronization target and offsets.
+ *
+ */
 int scsReleaseSyncObj(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     owner->sync = 0;
     owner->sync_obj = 0;
@@ -1131,6 +1216,11 @@ int scsReleaseSyncObj(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     return 0;
 }
 
+/**
+ *
+ * Damps the camera orbit velocity until the slowdown period ends.
+ *
+ */
 int scsAHDSlowing(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     if (owner->ahd_cnt <= 0) {
         owner->ahd_cnt++;
@@ -1176,30 +1266,60 @@ int scsAHDSlowing(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Keeps the current camera orbit command for sequence playback.
+ *
+ */
 int scsAHDKeep(_SEN_CMR_SEQ *sequence, CSceneCmrSeq *owner) {
     owner->ahd_keep = sequence;
     return SCENE_SEQ_NEXT;
 }
 
+/**
+ *
+ * Signals the camera orbit command sequence to return.
+ *
+ */
 int scsAHDReturn(_SEN_CMR_SEQ *sequence, CSceneCmrSeq *owner) {
     return SCENE_SEQ_RETURN;
 }
 
+/**
+ *
+ * Clears the camera path before new path points are added.
+ *
+ */
 int scsInitPas(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     owner->pas.Initialize();
     return 0;
 }
 
+/**
+ *
+ * Sets the duration of the camera path.
+ *
+ */
 int scsSetPasFrm(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     owner->pas.SetFrame(seq->frame);
     return 0;
 }
 
+/**
+ *
+ * Adds an eye and focus pair to the camera path.
+ *
+ */
 int scsAddPas(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     owner->pas.AddCameraPas(seq->vec0, seq->vec1);
     return 0;
 }
 
+/**
+ *
+ * Steps the camera eye and focus along their configured paths.
+ *
+ */
 int scsStartPas(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     float eye_point[4];
     float look_point[4];
@@ -1224,6 +1344,11 @@ int scsStartPas(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Damps camera eye and focus velocity until the slowdown period ends.
+ *
+ */
 int scsPRSlowing(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     if (owner->pr_cnt <= 0) {
         owner->pr_cnt++;
@@ -1245,15 +1370,30 @@ int scsPRSlowing(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Keeps the current eye and focus command for sequence playback.
+ *
+ */
 int scsPRKeep(_SEN_CMR_SEQ *sequence, CSceneCmrSeq *owner) {
     owner->pr_keep = sequence;
     return SCENE_SEQ_NEXT;
 }
 
+/**
+ *
+ * Signals the eye and focus command sequence to return.
+ *
+ */
 int scsPRReturn(_SEN_CMR_SEQ *sequence, CSceneCmrSeq *owner) {
     return SCENE_SEQ_RETURN;
 }
 
+/**
+ *
+ * Waits the requested number of frames before a camera fade command.
+ *
+ */
 int scsFadeDelay(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     int elapsed;
 
@@ -1268,10 +1408,20 @@ int scsFadeDelay(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Advances past the camera fade initialization command.
+ *
+ */
 int scsFadeInit(_SEN_CMR_SEQ *sequence, CSceneCmrSeq *owner) {
     return SCENE_SEQ_NEXT;
 }
 
+/**
+ *
+ * Runs and draws the scene fade-in until it finishes.
+ *
+ */
 int scsFadeIn(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     if (owner->fade_cnt <= 0) {
         EventScene->fade.FadeIn(seq->frame, seq->vec0[0], seq->vec0[1], seq->vec0[2]);
@@ -1289,6 +1439,11 @@ int scsFadeIn(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Runs and draws the scene fade-out until it finishes.
+ *
+ */
 int scsFadeOut(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     if (owner->fade_cnt <= 0) {
         EventScene->fade.FadeOut(seq->frame, seq->vec0[0], seq->vec0[1], seq->vec0[2]);
@@ -1306,6 +1461,11 @@ int scsFadeOut(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Waits the requested number of frames before a camera quake command.
+ *
+ */
 int scsQuakeDelay(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     int elapsed;
 
@@ -1320,6 +1480,11 @@ int scsQuakeDelay(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Shakes the camera eye and focus, optionally reducing its amplitude over time.
+ *
+ */
 int scsQuake(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     float amplitude[4];
 
@@ -1369,6 +1534,11 @@ int scsQuake(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Shakes the camera focus, optionally reducing its amplitude over time.
+ *
+ */
 int scsQuake2(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     if (node->frame <= -1) {
         owner->quake = 1;
@@ -1417,6 +1587,11 @@ int scsQuake2(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Waits the requested number of frames before a character attachment command.
+ *
+ */
 int scsCharaDelay(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     int elapsed;
 
@@ -1431,6 +1606,11 @@ int scsCharaDelay(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Positions a character at a fixed distance along the camera view direction.
+ *
+ */
 int scsCharaAttach(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     CCharacter2 *chara;
     float        direction[4];
@@ -1456,10 +1636,20 @@ int scsCharaAttach(_SEN_CMR_SEQ *seq, CSceneCmrSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Keeps the camera sequence waiting without changing its state.
+ *
+ */
 int scsDummy(_SEN_CMR_SEQ *sequence, CSceneCmrSeq *owner) {
     return SCENE_SEQ_WAIT;
 }
 
+/**
+ *
+ * Clears a camera sequence command and its links.
+ *
+ */
 void InitSceneCmrSeq(_SEN_CMR_SEQ *seq) {
     seq->cmd = 0;
     mgZeroVector(seq->vec0);
@@ -2350,6 +2540,11 @@ void CSceneCmrSeq::CharaAttach(int kind, float factor, int frames) {
     }
 }
 
+/**
+ *
+ * Waits the requested number of frames before an object position command.
+ *
+ */
 int scsPosDelay(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     int elapsed;
 
@@ -2364,11 +2559,21 @@ int scsPosDelay(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Sets the event object sequence position immediately.
+ *
+ */
 int scsSetPos(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     sceVu0CopyVector(owner->pos, seq->vec);
     return 0;
 }
 
+/**
+ *
+ * Moves the event object toward a position, with optional ground collision.
+ *
+ */
 int scsMove(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     if (!(owner->pos_cnt < seq->frame)) {
         if (seq->mode == 0) {
@@ -2458,6 +2663,11 @@ int scsMove(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Moves the event object toward a position with the requested easing mode.
+ *
+ */
 int scsMove2(_SEN_OBJ_SEQ *node, CSceneObjSeq *owner) {
     float delta[4];
     int   ended;
@@ -2516,21 +2726,41 @@ int scsMove2(_SEN_OBJ_SEQ *node, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Clears the event object path before new points are added.
+ *
+ */
 int scsInitPas(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     owner->pas.Initialize();
     return 0;
 }
 
+/**
+ *
+ * Sets the duration of the event object path.
+ *
+ */
 int scsSetPasFrm(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     owner->pas.SetFrame(seq->frame);
     return 0;
 }
 
+/**
+ *
+ * Adds a position to the event object path.
+ *
+ */
 int scsAddPas(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     owner->pas.AddCharaPas(seq->vec);
     return 0;
 }
 
+/**
+ *
+ * Steps the event object along its path and updates its facing.
+ *
+ */
 int scsStartPas(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     float     previous_pos[4];
     mgVu0FBOX box;
@@ -2578,6 +2808,11 @@ int scsStartPas(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Moves the event object along a parabolic jump to the command position.
+ *
+ */
 int scsJump(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     int elapsed;
 
@@ -2600,6 +2835,11 @@ int scsJump(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Positions the event object at a named frame of another event object.
+ *
+ */
 int scsSetEohFramePos(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     float frame_pos[4];
 
@@ -2621,6 +2861,11 @@ int scsSetEohFramePos(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Adds the command displacement to the event object over several frames.
+ *
+ */
 int scsAddPos(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     int elapsed;
 
@@ -2636,6 +2881,11 @@ int scsAddPos(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Positions the event object at a fixed distance along the active camera view.
+ *
+ */
 int scsAttachCamera(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     mgCCamera *camera;
     float      camera_pos[4];
@@ -2660,6 +2910,11 @@ int scsAttachCamera(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Applies the sequence pose to the event object and resets its DA position.
+ *
+ */
 int scsResetDAPosition(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     EventObjHandleMother.SetPos(owner->eoh_no, owner->pos[0], owner->pos[1], owner->pos[2]);
     EventObjHandleMother.SetRot(owner->eoh_no, owner->rot[0], owner->rot[1], owner->rot[2]);
@@ -2668,6 +2923,11 @@ int scsResetDAPosition(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 0;
 }
 
+/**
+ *
+ * Waits the requested number of frames before an object rotation command.
+ *
+ */
 int scsRotDelay(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     int elapsed;
 
@@ -2682,11 +2942,21 @@ int scsRotDelay(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Sets the event object sequence rotation immediately.
+ *
+ */
 int scsSetRot(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     sceVu0CopyVector(owner->rot, seq->vec);
     return 0;
 }
 
+/**
+ *
+ * Turns the event object toward the command rotation over time.
+ *
+ */
 int scsRotation(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     int   i;
     int   j;
@@ -2740,6 +3010,11 @@ int scsRotation(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Turns the event object with the requested easing mode.
+ *
+ */
 int scsRotation2(_SEN_OBJ_SEQ *node, CSceneObjSeq *owner) {
     float delta[4];
     int   ended;
@@ -2819,6 +3094,11 @@ int scsRotation2(_SEN_OBJ_SEQ *node, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Turns the event object to face a target position.
+ *
+ */
 int scsReference(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     float direction[4];
     float target[4];
@@ -2871,6 +3151,11 @@ int scsReference(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Waits the requested number of frames before an object motion command.
+ *
+ */
 int scsMotionDelay(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     int elapsed;
 
@@ -2885,6 +3170,11 @@ int scsMotionDelay(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Starts the named motion on the event object.
+ *
+ */
 int scsSetMotion(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     if (seq->started == 0) {
         EventObjHandleMother.SetMotion(owner->eoh_no, seq->name, seq->no, seq->step);
@@ -2903,6 +3193,11 @@ int scsSetMotion(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 0;
 }
 
+/**
+ *
+ * Waits for the current motion to end before starting the next motion.
+ *
+ */
 int scsNextMotion(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     if (seq->started == 0) {
         if (EventObjHandleMother.CheckMotionEnd(owner->eoh_no) != 0) {
@@ -2922,49 +3217,99 @@ int scsNextMotion(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 0;
 }
 
+/**
+ *
+ * Waits until the event object motion finishes.
+ *
+ */
 int scsMotionWait(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return (EventObjHandleMother.CheckMotionEnd(owner->eoh_no) != 0) ^ 1;
 }
 
+/**
+ *
+ * Triggers the current event object motion.
+ *
+ */
 int scsMotionTrg(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     EventObjHandleMother.SetMotionTrg(owner->eoh_no);
     return 0;
 }
 
+/**
+ *
+ * Sets the event object motion playback step.
+ *
+ */
 int scsSetMotStep(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     EventObjHandleMother.SetStep(owner->eoh_no, seq->value);
     return 0;
 }
 
+/**
+ *
+ * Sets the event object motion transition step.
+ *
+ */
 int scsSetMotChangeStep(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     EventObjHandleMother.SetChangeStep(owner->eoh_no, seq->value);
     return 0;
 }
 
+/**
+ *
+ * Resets the event object motion.
+ *
+ */
 int scsResetMotion(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     EventObjHandleMother.ResetMotion(owner->eoh_no);
     return 0;
 }
 
+/**
+ *
+ * Sets the current playback time of the event object motion.
+ *
+ */
 int scsSetMotionNowTime(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     EventObjHandleMother.SetMotionNowTime(owner->eoh_no, seq->value);
     return 0;
 }
 
+/**
+ *
+ * Sets the waiting time of the event object motion.
+ *
+ */
 int scsSetMotionWaitTime(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     EventObjHandleMother.SetMotionWaitTime(owner->eoh_no, seq->value);
     return 0;
 }
 
+/**
+ *
+ * Restores normal event object motion playback.
+ *
+ */
 int scsNormalDrive(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     EventObjHandleMother.NormalDrive(owner->eoh_no);
     return 0;
 }
 
+/**
+ *
+ * Waits for the event object sequence status to reach its trigger state.
+ *
+ */
 int scsMotionTrgWait(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return (EventObjHandleMother.GetSeqStatus(owner->eoh_no) == 3) ^ 1;
 }
 
+/**
+ *
+ * Waits the requested number of frames before a texture animation command.
+ *
+ */
 int scsTexAnimeDelay(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     int elapsed;
 
@@ -2979,6 +3324,11 @@ int scsTexAnimeDelay(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Selects a texture animation for the event object.
+ *
+ */
 int scsTexAnime(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     if (strcmp(seq->name, at_1527__2) == 0) {
         EventObjHandleMother.SetTexAnim(owner->eoh_no, seq->frame, NULL);
@@ -2989,6 +3339,11 @@ int scsTexAnime(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 0;
 }
 
+/**
+ *
+ * Waits the requested number of frames before an object color command.
+ *
+ */
 int scsColorDelay(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     int elapsed;
 
@@ -3003,6 +3358,11 @@ int scsColorDelay(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Changes the event object color toward the command color over time.
+ *
+ */
 int scsSetColor(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     float delta[4];
     float current[4];
@@ -3028,6 +3388,11 @@ int scsSetColor(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Waits the requested number of frames before an object scale command.
+ *
+ */
 int scsScaleDelay(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     int elapsed;
 
@@ -3042,6 +3407,11 @@ int scsScaleDelay(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Changes the event object scale toward the command scale over time.
+ *
+ */
 int scsSetScale(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     float delta[4];
     float current[4];
@@ -3067,6 +3437,11 @@ int scsSetScale(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Waits the requested number of frames before a sound effect command.
+ *
+ */
 int scsSeDelay(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     int elapsed;
 
@@ -3081,15 +3456,30 @@ int scsSeDelay(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Plays the sound effect specified by an object sequence command.
+ *
+ */
 int scsSePlay(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     sndSePlay(seq->no, seq->se_no, 0);
     return 0;
 }
 
+/**
+ *
+ * Keeps the object sequence waiting without changing its state.
+ *
+ */
 int scsDummy(_SEN_OBJ_SEQ *seq, CSceneObjSeq *owner) {
     return 1;
 }
 
+/**
+ *
+ * Clears an event object sequence command and its links.
+ *
+ */
 void InitSceneObjSeq(_SEN_OBJ_SEQ *seq) {
     seq->cmd = 0;
     mgZeroVector(seq->vec);

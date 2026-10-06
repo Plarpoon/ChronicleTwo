@@ -77,6 +77,11 @@ struct EditGsTest {
 
 STATIC_ASSERT(sizeof(EditGsTest) == 8);
 
+/**
+ *
+ * Rounds a byte count up to a number of 16-byte allocation blocks.
+ *
+ */
 static inline u32 align16_blocks(u32 bytes) {
     if (bytes & 0xF) {
         return (bytes >> 4) + 1;

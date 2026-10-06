@@ -130,6 +130,11 @@ union EditEventNames {
     u_long128 qw;      /**< The same pointers as one quadword. */
 };
 
+/**
+ *
+ * Resets and closes an edit event message window.
+ *
+ */
 static inline void close_message(ClsMes *message) {
     if (message->select < 0) {
         message->cursor_time = 0;
@@ -592,6 +597,11 @@ int GeoramaFunc(GeoFuncParam *param, RS_STACKDATA *stack, int mode) {
     }
 }
 
+/**
+ *
+ * Returns whether the active edit map can place burn parts.
+ *
+ */
 static int CheckPlaceBurnParts(GeoFuncParam *param, RS_STACKDATA *args, int argc) {
     if (argc != 1) {
         return 0;

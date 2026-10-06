@@ -2043,10 +2043,20 @@ void CMenuInvent::AttachFormInfo() {
     AttachMessageForm();
 }
 
+/**
+ *
+ * Calculates 16-byte stack blocks for an object with two reserve blocks.
+ *
+ */
 static inline int StackBlocks(int bytes) {
     return (bytes + 15) / 16 + 2;
 }
 
+/**
+ *
+ * Constructs an action character in the inventory memory stack.
+ *
+ */
 static inline CActionChara *NewInventActionChara(mgCMemory *stack) {
     return new (stack->Alloc(StackBlocks(sizeof(CActionChara)))) CActionChara;
 }

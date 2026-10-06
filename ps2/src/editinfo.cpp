@@ -42,6 +42,11 @@ extern int            emapFixNum__2;
 extern int            emapFixIdx__2;
 extern SPI_TAG_PARAM  emap_tag__2[];
 
+/**
+ *
+ * Rounds a byte count up to a number of 16-byte allocation blocks.
+ *
+ */
 static inline u32 align16_blocks(u32 n) {
     if (n & 0xF) {
         return (n >> 4) + 1;

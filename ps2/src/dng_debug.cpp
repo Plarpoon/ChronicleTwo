@@ -188,6 +188,11 @@ void dngDebugDraw() {
     }
 }
 
+/**
+ *
+ * Restores dungeon debug settings and resumes normal gamepad behavior.
+ *
+ */
 static void dngDebugExit() {
     dbinfo.active = 0;
     GamePad__2.AutoRepeatOff();

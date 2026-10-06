@@ -123,33 +123,68 @@ union WornCostumes {
     u_long128 qw;    /**< Combined 128-bit representation. */
 };
 
+/**
+ *
+ * Returns the unused size of a character model stack.
+ *
+ */
 static inline int stack_free_size(mgCMemory *memory) {
     return memory->stack_size - memory->stack_used;
 }
 
+/**
+ *
+ * Returns the current allocation position in a character model stack.
+ *
+ */
 static inline u8 *stack_free_top(mgCMemory *memory) {
     return (u8 *) (memory->stack + memory->stack_used);
 }
 
+/**
+ *
+ * Returns the unused size of a character menu memory region.
+ *
+ */
 static inline int memory_free_size(mgCMemory *memory) {
     return memory->stack_size - memory->stack_used;
 }
 
+/**
+ *
+ * Returns the current allocation position in a character menu memory region.
+ *
+ */
 static inline u8 *memory_free_top(mgCMemory *memory) {
     return (u8 *) (memory->stack + memory->stack_used);
 }
 
+/**
+ *
+ * Names a memory region when the name fits its fixed-size buffer.
+ *
+ */
 static inline void SetMemoryName(mgCMemory *memory, char *name) {
     if (strlen(name) < sizeof(memory->name)) {
         strcpy(memory->name, name);
     }
 }
 
+/**
+ *
+ * Sets the position of a character menu form.
+ *
+ */
 static inline void SetFormPoint(CMenuPosDataForm *form, int x, int y) {
     form->x = x;
     form->y = y;
 }
 
+/**
+ *
+ * Rounds a byte count up to the number of 16-byte memory blocks.
+ *
+ */
 static inline unsigned int blocks_for(unsigned int size) {
     return (size & 0xF) != 0 ? (size >> 4) + 1 : size >> 4;
 }
@@ -842,6 +877,11 @@ void SetMenuLoadItemNo(int who) {
     }
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Partitions character menu memory among its work buffers.
+ *
+ */
 static int MenuMemoryDivide(mgCMemory *memory, mgCMemory **list, int chara) {
     int total;
     memory->Align64();

@@ -40,6 +40,11 @@ const int kBagSlotCount = 0x96;
 #include "userdata.hpp"
 #undef MenuEffect
 
+/**
+ *
+ * Rounds a byte count up to the number of 16-byte allocation blocks.
+ *
+ */
 inline unsigned int QuadwordsFor(int bytes) {
     return ((unsigned int) bytes & 0xF) ? ((unsigned int) bytes >> 4) + 1 : ((unsigned int) bytes >> 4);
 }
@@ -368,6 +373,11 @@ extern s8 menu_camera_reference_id;
 extern s8 menu_camera_reference_no;
 
 // Code (.text)
+/**
+ *
+ * Advances and draws the active message windows in the trash menu.
+ *
+ */
 void DrawTrushMenuMessage() {
     int i;
     mgTexManager.ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *) 0);
@@ -1011,6 +1021,11 @@ void CBaseMenuClass::SetItemCmdMsgPos(int *item_pos) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", SetItemCmdMsgPos__14CBaseMenuClassFPi);
 #endif
+/**
+ *
+ * Changes the selected item quantity within the available or supplied limit.
+ *
+ */
 int MenuHowMuchNumSelect(int key, CGameDataUsed *item, int limit) {
     short step = 0;
     int   max_num;
@@ -5439,6 +5454,11 @@ extern u8 __vt__12CObjectFrame[];
 extern u8 __vt__11CCharacter2[];
 extern u8 __vt__12CActionChara[];
 
+/**
+ *
+ * Constructs an action character in the menu memory stack.
+ *
+ */
 static inline CActionChara *NewMenuActionChara(mgCMemory *stack) {
     CActionChara *chara;
 
@@ -7445,6 +7465,11 @@ extern char  at_6811[];
 extern char  at_6812[];
 extern char  at_6813[];
 #ifdef NONMATCHING
+/**
+ *
+ * Draws debug text at a specified menu position.
+ *
+ */
 static inline void DebugPrint(CMenuFont *font, char *text, int x, int y) {
     font->SetStr(text);
     font->SetPos(x, y);

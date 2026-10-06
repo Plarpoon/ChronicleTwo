@@ -645,6 +645,11 @@ void CDngFreeMap::DrawGlid(mgRect<float> rect) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DrawGlid__11CDngFreeMapF9mgRect_f_);
 #endif
 #ifdef NONMATCHING
+/**
+ *
+ * Collects qualifying georama material items for a treasure floor.
+ *
+ */
 static int CheckGeoramaMateria(TRESURE_BOX_FLOOR_INFO *info, int floor_no, int *items) {
     if (info == NULL || floor_no < 0) {
         return 0;

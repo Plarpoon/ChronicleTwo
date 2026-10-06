@@ -140,10 +140,20 @@ int grGetFishProgress(grRACE_INFO *race, int fish, float time, grRACE_PROGRESS *
     return 1;
 }
 
+/**
+ *
+ * Compares two fish's projected positions after one velocity step.
+ *
+ */
 float FishDist(RACE_FISH_PARAM *fish, RACE_FISH_PARAM *other) {
     return (fish->pos + fish->velocity) - (other->pos + other->velocity);
 }
 
+/**
+ *
+ * Advances one fish and records its state for a race simulation step.
+ *
+ */
 int StepFish(int index, RACE_FISH_PARAM *fish) {
     grRACE_PROGRESS *sample;
     int              division;
@@ -226,6 +236,11 @@ int StepFish(int index, RACE_FISH_PARAM *fish) {
     return 0;
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Resolves lane changes and pushing battles among nearby racing fish.
+ *
+ */
 void LaneBattleStep(RACE_FISH_PARAM *fish, int count) {
     int lane_count[6] = {0, 0, 0, 0, 0, 0};
     int lane_fish[6][6];
@@ -383,6 +398,11 @@ void LaneBattleStep(RACE_FISH_PARAM *fish, int count) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyoracesim", LaneBattleStep__FP15RACE_FISH_PARAMi);
 #endif
 #ifdef NONMATCHING
+/**
+ *
+ * Separates fish that overlap within the same race lane.
+ *
+ */
 static void CollisionFish(RACE_FISH_PARAM *fish, int count) {
     int   i;
     int   order[6];
@@ -430,6 +450,11 @@ static void CollisionFish(RACE_FISH_PARAM *fish, int count) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyoracesim", CollisionFish__FP15RACE_FISH_PARAMi);
 #endif
 #ifdef NONMATCHING
+/**
+ *
+ * Simulates a complete fish race and records finishing times and ranks.
+ *
+ */
 int StepGyoRace(RACE_FISH_PARAM *fish, grRACE_INFO *race) {
     int finished[6];
     for (int i = 0; i < 6; ++i) {
@@ -486,6 +511,11 @@ int StepGyoRace(RACE_FISH_PARAM *fish, grRACE_INFO *race) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyoracesim", StepGyoRace__FP15RACE_FISH_PARAMP11grRACE_INFO);
 #endif
 
+/**
+ *
+ * Selects the course division for a fish's traveled distance.
+ *
+ */
 int GetRaceDivision(float distance) {
     int division;
 
@@ -516,6 +546,11 @@ int GetRaceDivision(float distance) {
     return division;
 }
 
+/**
+ *
+ * Returns the course length of a race division.
+ *
+ */
 static float GetRaceDivisionLength(int division) {
     if (division < 0) {
         return 0.0f;
@@ -532,6 +567,11 @@ static float GetRaceDivisionLength(int division) {
     return 4.0f;
 }
 
+/**
+ *
+ * Supplies the course-position scale used during fish movement.
+ *
+ */
 float GetCourseR(float pos, float unused) {
     int phase = fptosi(pos) % 8;
 
@@ -542,6 +582,11 @@ float GetCourseR(float pos, float unused) {
     return 1.0f;
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Derives randomized race stats from a fish's stored stats and tactics.
+ *
+ */
 void FishModifyParam(grFISH_PARAM *source, float *output, float average) {
     int i;
     output[0] = (float) source->stamina;
@@ -660,6 +705,11 @@ void FishModifyParam(grFISH_PARAM *source, float *output, float average) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyoracesim", FishModifyParam__FP12grFISH_PARAMPff);
 #endif
+/**
+ *
+ * Sets a fish's speed adjustment across ranks for its character bonus.
+ *
+ */
 void CharacterBonus(grFISH_PARAM *source, RACE_FISH_PARAM *fish, int count) {
     int type = source->bonus_type;
     fish->rank_ratio[0] = 1.0f;
@@ -710,6 +760,11 @@ void CharacterBonus(grFISH_PARAM *source, RACE_FISH_PARAM *fish, int count) {
     fish->rank_ratio[0] = 1.0f;
 }
 
+/**
+ *
+ * Randomly varies a fish's speed and acceleration for a race.
+ *
+ */
 void RndFishParam(RACE_FISH_PARAM *fish) {
     for (int i = 0; i < 5; ++i) {
         float mean = 1.0f;
@@ -728,6 +783,11 @@ void RndFishParam(RACE_FISH_PARAM *fish) {
     }
 }
 
+/**
+ *
+ * Assigns equal pace ratios to the five race divisions.
+ *
+ */
 static void GetPaseRatio(int tactics, float *ratio) {
     for (int division = 0; division < 5; ++division) {
         ratio[division] = 1.0f;
@@ -744,6 +804,11 @@ static void GetPaseRatio(int tactics, float *ratio) {
     }
 }
 
+/**
+ *
+ * Initializes simulation state and progress buffers for the race entrants.
+ *
+ */
 void SetRaceFishParam(RACE_FISH_PARAM *fish, grRACE_INFO *race) {
     float            average;
     RACE_FISH_PARAM *slot;
@@ -809,6 +874,11 @@ void SetRaceFishParam(RACE_FISH_PARAM *fish, grRACE_INFO *race) {
     }
 }
 
+/**
+ *
+ * Finds species-specific race stat modifiers by fish number.
+ *
+ */
 grFISH_DATA *GetFishData(int fish_no) {
     for (int fish_index = 0; fish_index < 18; ++fish_index) {
         if (fish_data[fish_index].fish_no == fish_no) {
@@ -819,6 +889,11 @@ grFISH_DATA *GetFishData(int fish_no) {
     return NULL;
 }
 
+/**
+ *
+ * Advances the subtractive random generator's 55-value state array.
+ *
+ */
 static void irn55() {
     int i;
 
@@ -843,6 +918,11 @@ static void irn55() {
     }
 }
 
+/**
+ *
+ * Seeds the subtractive random generator used by the fish race.
+ *
+ */
 void init_rnd(u_int seed) {
     int i;
     int j;
@@ -871,6 +951,11 @@ void init_rnd(u_int seed) {
     jrand = 55;
 }
 
+/**
+ *
+ * Draws the next integer from the race simulation's random generator.
+ *
+ */
 static int irnd() {
     int next = jrand + 1;
     jrand = next;
@@ -883,10 +968,20 @@ static int irnd() {
     return ia[jrand];
 }
 
+/**
+ *
+ * Draws a random fraction from the race simulation generator.
+ *
+ */
 static float rnd() {
     return (float) irnd() / 1000000000.0f;
 }
 
+/**
+ *
+ * Draws an approximately normal random value centered on zero.
+ *
+ */
 static float nrnd() {
     float total = 0.0f;
 
@@ -897,6 +992,11 @@ static float nrnd() {
     return total - 6.0f;
 }
 
+/**
+ *
+ * Draws a normally distributed value around the requested mean.
+ *
+ */
 float GetRandomNumber(float mean, float range) {
     float value = nrnd();
     float scale = range / 3.0f;

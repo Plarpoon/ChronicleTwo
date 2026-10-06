@@ -10,6 +10,11 @@
 #include "mg_texture.hpp"
 #include "mglib.hpp"
 
+/**
+ *
+ * Finds the first variadic argument after register-backed named arguments.
+ *
+ */
 static inline char *VaStart(char *stack_arguments, int named_arguments) {
     int register_bytes;
 

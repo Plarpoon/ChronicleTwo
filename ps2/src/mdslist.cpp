@@ -48,6 +48,11 @@ extern char at_829[];
 
 extern char at_830[];
 
+/**
+ *
+ * Rounds a byte count up to the number of 16-byte allocation blocks.
+ *
+ */
 static inline u_int align16_blocks(u_int size) {
     if (size & 15) {
         return (size >> 4) + 1;
@@ -431,10 +436,20 @@ CIMGList *CMdsListSet::SearchIMGList(char *name) {
     return NULL;
 }
 
+/**
+ *
+ * Checks whether a texture group index addresses the supported group table.
+ *
+ */
 static inline u_char IsImgGroup(int group) {
     return group >= 0 && group < MG_TEXTURE_IMG_GROUP_MAX;
 }
 
+/**
+ *
+ * Gets a texture group's starting block, or -1 for an invalid group.
+ *
+ */
 static inline int GetImgBlock(mgCEnterIMGInfo *info, int group) {
     if (IsImgGroup(group) != 0) {
         return info->block[group];
@@ -443,6 +458,11 @@ static inline int GetImgBlock(mgCEnterIMGInfo *info, int group) {
     return -1;
 }
 
+/**
+ *
+ * Gets a texture group's block count, or zero for an invalid group.
+ *
+ */
 static inline int GetImgBlockNum(mgCEnterIMGInfo *info, int group) {
     if (IsImgGroup(group) != 0) {
         return info->block_num[group];
@@ -589,6 +609,11 @@ int CIMGList::LoadIMGFile(char *name, mgCEnterIMGInfo *info, mgCMemory *memory) 
     return 1;
 }
 
+/**
+ *
+ * Starts a model-pack entry and stores a copy of its scripted name.
+ *
+ */
 int pcpMDS(SPI_STACK *stack, int arg) {
     char *name;
     char *copy;
@@ -625,6 +650,11 @@ int pcpMDS(SPI_STACK *stack, int arg) {
     return 1;
 }
 
+/**
+ *
+ * Converts a scripted model-pack type to its stored model category.
+ *
+ */
 int pcpTYPE(SPI_STACK *stack, int argc) {
     int type;
 
@@ -654,6 +684,11 @@ int pcpTYPE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Sets the current model-pack entry's far clipping distance and fade mode.
+ *
+ */
 int pcpFAR_CLIP(SPI_STACK *stack, int argc) {
     if (pcpNowMdsInfo == NULL) {
         return 0;
@@ -664,6 +699,11 @@ int pcpFAR_CLIP(SPI_STACK *stack, int argc) {
     return 1;
 }
 
+/**
+ *
+ * Loads the current model-pack entry as a model, collision frame, or character.
+ *
+ */
 int pcpMDS_END(SPI_STACK *stack, int argc) {
     int          size;
     u_int       *file;
@@ -759,6 +799,11 @@ CMdsInfo::CMdsInfo() {
     Initialize();
 }
 
+/**
+ *
+ * Constructs a character and loads its visual data from a model pack.
+ *
+ */
 CCharacter2 *CreateChara(u_int *pack, char *config, mgCMemory *memory) {
     CCharacter2 *chara;
 

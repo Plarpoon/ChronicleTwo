@@ -55,6 +55,11 @@ float PhotoAddProjection() {
     return 0.0f;
 }
 
+/**
+ *
+ * Clears the photo title text and its display countdown.
+ *
+ */
 static void InitPhotoTitle() {
     ShowTitleCnt = 0;
     PhotoTitle[0] = 0;

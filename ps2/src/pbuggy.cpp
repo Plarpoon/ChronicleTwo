@@ -603,6 +603,11 @@ int sgSystemDrawBuggy(SubGameInfo *info) {
     return 1;
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Moves the player character and handles bomb input during the buggy game.
+ *
+ */
 void CharaControl(CScene *scene, CPadControl *pad) {
     char             *walk_motion;
     char             *idle_motion;
@@ -822,6 +827,11 @@ void CharaControl(CScene *scene, CPadControl *pad) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/pbuggy", CharaControl__FP6CSceneP11CPadControl__3);
 #endif
+/**
+ *
+ * Places the buggy and resets its health, movement, and visual effects.
+ *
+ */
 void InitBuggy(CScene *scene) {
     float x = 225.0f;
     float y = 0.0f;
@@ -840,6 +850,11 @@ void InitBuggy(CScene *scene) {
     GunHitEffDraw = 0;
 }
 
+/**
+ *
+ * Starts a buggy damage reaction and subtracts one health point.
+ *
+ */
 void BuggyDamage(int damage_motion) {
     if (BuggyStatus != 1) {
         BuggyDamageMotion = damage_motion;
@@ -851,6 +866,11 @@ void BuggyDamage(int damage_motion) {
     }
 }
 
+/**
+ *
+ * Updates a positional looping buggy sound for the selected state.
+ *
+ */
 void PlayBuggyLoopSe(CScene *scene, int state) {
     float        position[4];
     float        volume;
@@ -873,6 +893,11 @@ void PlayBuggyLoopSe(CScene *scene, int state) {
     }
 }
 
+/**
+ *
+ * Advances the buggy, its attacks, collisions, damage, and movement.
+ *
+ */
 void BuggyControl(CScene *scene) {
     float     position[4];
     CCPoly    polys[0x200];
@@ -1148,6 +1173,11 @@ void BuggyControl(CScene *scene) {
 extern float StarbullPos[4];
 extern char  at_1316__3[];
 
+/**
+ *
+ * Places the bomb and its carrier in their initial state.
+ *
+ */
 void InitBomb(CScene *scene) {
     BombStatus = 3;
     scene->SetActive(1, 67);
@@ -1161,11 +1191,21 @@ void InitBomb(CScene *scene) {
     StarbullChara->SetMotion(at_1316__3, 0);
 }
 
+/**
+ *
+ * Reports whether the bomb is available to pick up.
+ *
+ */
 int TakeBombCheck() {
 
     return (BombStatus != 3) ^ 1;
 }
 
+/**
+ *
+ * Marks the available bomb as carried by the player.
+ *
+ */
 int TakeBomb() {
     if (TakeBombCheck() == 0) {
         return 0;
@@ -1175,6 +1215,11 @@ int TakeBomb() {
     return 1;
 }
 
+/**
+ *
+ * Detaches the bomb from its carrier and starts its thrown motion.
+ *
+ */
 int ThrowBomb(float *velocity) {
     float matrix[4][4];
     BombCount = 0x32;
@@ -1190,6 +1235,11 @@ int ThrowBomb(float *velocity) {
     return 1;
 }
 
+/**
+ *
+ * Stops a thrown bomb when it hits an object.
+ *
+ */
 int BombBomb() {
     if (BombStatus == 6) {
         mgZeroVector(BombVelo);
@@ -1201,10 +1251,20 @@ int BombBomb() {
     return 0;
 }
 
+/**
+ *
+ * Reports whether the bomb is resting in its placed state.
+ *
+ */
 int NowPutBomb() {
     return BombStatus == 3;
 }
 
+/**
+ *
+ * Advances the bomb through its carried, thrown, and explosion states.
+ *
+ */
 void BombControl(CScene *scene) {
     float     matrix[4][4];
     float     rest_position[4];
@@ -1350,6 +1410,11 @@ void BombControl(CScene *scene) {
     }
 }
 
+/**
+ *
+ * Checks bomb proximity to the buggy and handles a nearby hit.
+ *
+ */
 void BombCheck(CScene *scene) {
     sceVu0FVECTOR bomb_position;
     sceVu0FVECTOR buggy_position;

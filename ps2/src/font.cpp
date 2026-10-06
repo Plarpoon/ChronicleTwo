@@ -304,6 +304,11 @@ void CFont::SetStr(char *text) {
     strcpy(this->str, text);
 }
 
+/**
+ *
+ * Gets the byte length of a font conversion tag.
+ *
+ */
 static inline int GetTagLen(FCONV_CODE *table, int no) {
     return table[no].len;
 }
@@ -469,6 +474,11 @@ int GetFontGaijiHankaku(u16 code) {
     return 0;
 }
 #ifdef NONMATCHING
+/**
+ *
+ * Reads a two-byte reserved-font code from the sorted lookup table.
+ *
+ */
 static inline u16 GetYoyakuCode(u8 *table, int no) {
     u8 *pair = &table[no * 2];
     return pair[1] + (pair[0] << 8);

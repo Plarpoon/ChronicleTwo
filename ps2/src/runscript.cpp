@@ -38,15 +38,30 @@ extern char at_698[];
 extern char at_697[];
 
 // Code (.text)
+/**
+ *
+ * Reports a script execution error and stops the process.
+ *
+ */
 void runerror(const char *message) {
     fprintf(stderr, at_168, message);
     exit(-1);
 }
 
+/**
+ *
+ * Reports that the script evaluation stack overflowed.
+ *
+ */
 void stkoverflow() {
     runerror(at_173);
 }
 
+/**
+ *
+ * Reads an integer script argument or reports its type mismatch.
+ *
+ */
 int chk_int(RS_STACKDATA data, funcdata *func) {
     if (data.type == RS_INT) {
         return data.i;
@@ -57,6 +72,11 @@ int chk_int(RS_STACKDATA data, funcdata *func) {
     return 0;
 }
 
+/**
+ *
+ * Returns whether a script value is true under script boolean rules.
+ *
+ */
 u8 is_true(RS_STACKDATA data) {
     int is_zero = data.type == RS_INT;
 
@@ -67,14 +87,29 @@ u8 is_true(RS_STACKDATA data) {
     return is_zero ^ 1;
 }
 
+/**
+ *
+ * Reports integer division by zero in a script expression.
+ *
+ */
 void divby0error() {
     runerror(at_197);
 }
 
+/**
+ *
+ * Reports a zero divisor in a script remainder expression.
+ *
+ */
 void modby0error() {
     runerror(at_202);
 }
 
+/**
+ *
+ * Prints integer, string, and floating point script values to standard output.
+ *
+ */
 void print(RS_STACKDATA *slots, int count) {
     int i = 0;
 

@@ -37,6 +37,11 @@ extern u_long128       at_796__4;
 
 // Code (.text)
 #ifdef NONMATCHING
+/**
+ *
+ * Calculates the horizontal plane normal from three positions.
+ *
+ */
 static void PlaneNormalXZ(float *normal, float *p0, float *p1, float *p2) {
     sceVu0FVECTOR edge1 = {p1[0] - p0[0], 0.0f, p1[2] - p0[2], 0.0f};
     sceVu0FVECTOR edge2 = {p2[0] - p0[0], 0.0f, p2[2] - p0[2], 0.0f};
@@ -592,6 +597,11 @@ int CEditMap::PaintFence(int index, float *color, int count) {
     }
 }
 
+/**
+ *
+ * Checks whether two fence parts meet closely enough to form a chain.
+ *
+ */
 int CheckFenceChain(CEditParts *a, CEditParts *b) {
     float sphere_a[4];
     float sphere_b[4];

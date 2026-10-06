@@ -1071,7 +1071,7 @@ void mgCMDTBuilder::Begin(mgCMemory *memory) {
             memset(header, 0, sizeof(MDT_HEADER));
             strcpy(header->magic, "MDT");
             header->header_size = sizeof(MDT_HEADER);
-            end = (char *) (header + 1);
+            end = reinterpret_cast<char *>(&header[1]);
             data_type = MG_MDT_DATA_NONE;
             memset(&material, 0, sizeof(material));
         }
@@ -1297,7 +1297,7 @@ void mgCMDTBuilder::BeginPrim(int type, int material) {
 
 void mgCMDTBuilder::AddFace(int vertex) {
     s32 *p = face_cursor;
-    face_cursor = (s32 *) ((u8 *) p + 4);
+    face_cursor = &p[1];
     *p = vertex;
     index_num += 1;
 }

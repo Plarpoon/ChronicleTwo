@@ -252,6 +252,11 @@ CWeaponElement *GetWeaponEffect() {
     return effect;
 }
 
+/**
+ *
+ * Allocates dungeon rendering buffers and resets weapon effects.
+ *
+ */
 void memoryInit() {
     u_long128 *buffer0;
     u_long128 *buffer1;
@@ -305,6 +310,11 @@ void memoryInit() {
     BuffReadData = MainBuffer->stAlloc64(200000);
 }
 
+/**
+ *
+ * Rounds a byte count up to a number of 16-byte allocation blocks.
+ *
+ */
 static inline unsigned int DngAlign16Size(unsigned int size) {
     if (size & 15) {
         return (size >> 4) + 1;
@@ -885,6 +895,11 @@ void CommonStageClassInit() {
     wep_effect_cnt = 0;
 }
 
+/**
+ *
+ * Initializes common dungeon classes and battle effect storage.
+ *
+ */
 void CommonClassInit() {
     CommonStageClassInit();
     BattleFX.hit_prim = NULL;
@@ -2099,6 +2114,11 @@ void DngStep() {
     }
 }
 
+/**
+ *
+ * Advances the active dungeon event and updates dungeon mode from its request.
+ *
+ */
 int RunMainEvent() {
     switch (EventLoop()) {
         case EVENT_REQUEST_END:
@@ -2984,6 +3004,11 @@ int EventScriptSetup(SYSTEM_SCRIPT_INFO *script) {
     return 0;
 }
 
+/**
+ *
+ * Requests character death when battle HP or monster weapon HP is depleted.
+ *
+ */
 int IsRunDeadEvent(CActionChara *chara) {
     CBattleCharaInfo *info;
 
@@ -3008,6 +3033,11 @@ int IsRunDeadEvent(CActionChara *chara) {
     return 0;
 }
 
+/**
+ *
+ * Chooses the next playable unit for a requested quick-change direction.
+ *
+ */
 int ChangeSetUnit(int dir) {
     CUserDataManager *user = GetUserDataMan();
     int               next = -1;
@@ -3135,6 +3165,11 @@ void InitEyeCamera(CActionChara *chara) {
     mgSetAllScissorFlag(1);
 }
 
+/**
+ *
+ * Updates character and weapon visibility for the battle pause state.
+ *
+ */
 void CheckWeaponEnable() {
     CActionChara *weapon;
 
@@ -3183,6 +3218,11 @@ void ResetEyeView(CActionChara *chara) {
     }
 }
 
+/**
+ *
+ * Updates the dungeon eye camera orientation from gamepad input.
+ *
+ */
 static void EyeCamera(mgCCamera *camera, CCharacter2 *chara, int mode) {
     float             lx;
     float             ly;
@@ -3323,6 +3363,11 @@ void DebugMainDraw() {
     }
 }
 
+/**
+ *
+ * Starts a dungeon event script from the debug command interface.
+ *
+ */
 void DBGCMD_RunScript(int no) {
     mgCMemory *stack;
 

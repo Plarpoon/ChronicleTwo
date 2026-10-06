@@ -259,6 +259,11 @@ void CMapSky::LoadPack(unsigned int *pack, int tex_block_base, mgCMemory *memory
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapsky", LoadPack__7CMapSkyFPUiiP9mgCMemory);
 #endif
+/**
+ *
+ * Parses sky configuration tags into the supplied sky information record.
+ *
+ */
 static void LoadSkyPack(MAP_SKY_INFO *info, char *script, int size) {
     skyInfo = info;
     skyAnmNum = 0;
@@ -291,6 +296,11 @@ static s32 CheckSkyID(s32 sky_id) {
     return valid;
 }
 
+/**
+ *
+ * Records the texture pack name for a sky time band.
+ *
+ */
 static s32 _SKY_IMG(SPI_STACK *stack, s32 arg_count) {
     s32   sky_id = spiGetStackInt(stack++);
     char *name;
@@ -308,6 +318,11 @@ static s32 _SKY_IMG(SPI_STACK *stack, s32 arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Records a sky model and its rotation speed for a time band.
+ *
+ */
 static s32 _SKY_MDS(SPI_STACK *stack, s32 arg_count) {
     s32   sky_id = spiGetStackInt(stack++);
     char *name;
@@ -326,6 +341,11 @@ static s32 _SKY_MDS(SPI_STACK *stack, s32 arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Records the sun or moon model name for a time band.
+ *
+ */
 static s32 _SUN_MDS(SPI_STACK *stack, s32 arg_count) {
     s32   sky_id = spiGetStackInt(stack++);
     char *name;
@@ -343,6 +363,11 @@ static s32 _SUN_MDS(SPI_STACK *stack, s32 arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Records a background sky model and its rotation speed for a time band.
+ *
+ */
 static s32 _SKYB_MDS(SPI_STACK *stack, s32 arg_count) {
     s32   sky_id = spiGetStackInt(stack++);
     char *name;
@@ -361,6 +386,11 @@ static s32 _SKYB_MDS(SPI_STACK *stack, s32 arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Records the shared sky background model name.
+ *
+ */
 static int _SKY_BG(SPI_STACK *stack, int argument_count) {
     char *name = spiGetStackString(&stack[0]);
 
@@ -371,6 +401,11 @@ static int _SKY_BG(SPI_STACK *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Adds a named sky model animation for a time band.
+ *
+ */
 static int _SKY_ANIME(SPI_STACK *stack, int argument_count) {
     if (skyAnmNum >= 16) {
         return 0;
@@ -394,6 +429,11 @@ static int _SKY_ANIME(SPI_STACK *stack, int argument_count) {
     return 1;
 }
 
+/**
+ *
+ * Adds a named background sky animation for a time band.
+ *
+ */
 static int _SKYB_ANIME(SPI_STACK *stack, int argument_count) {
     if (skybAnmNum >= 16) {
         return 0;

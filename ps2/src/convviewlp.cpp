@@ -238,6 +238,11 @@ int SVConvViewLoop() {
     return 0;
 }
 
+/**
+ *
+ * Resets the save conversion state and file information table.
+ *
+ */
 static void InitSaveFileInfoTablePtr() {
     FileListNum = 0;
     ConvertPhase = SAVEDATA_CONVERT_PHASE_CHECK_CARD;

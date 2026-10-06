@@ -2326,6 +2326,11 @@ void CMonsterBox::AllCure() {
     }
 }
 
+/**
+ *
+ * Finds the fishing record slot assigned to a fish item number.
+ *
+ */
 static int GetConvertIndexFromFishNo(int fish_no) {
     for (int index = 0; 0 < fish_record_dataindex_convert[index]; index++) {
         if (fish_no == fish_record_dataindex_convert[index]) {
@@ -4305,6 +4310,11 @@ int CUserDataManager::CheckItemLimmitOver() {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", CheckItemLimmitOver__16CUserDataManagerFv);
 #endif
 
+/**
+ *
+ * Removes an item count from a carried item or matching gift box contents.
+ *
+ */
 int DeleteItem_Local(CGameDataUsed *item, int item_no, int count) {
     int removed;
 

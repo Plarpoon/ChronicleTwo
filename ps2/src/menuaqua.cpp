@@ -565,6 +565,11 @@ inline void copy_name(ClsMes *window, int line, char *name) {
     }
 }
 
+/**
+ *
+ * Rounds a byte count up to the number of 16-byte allocation blocks.
+ *
+ */
 static inline unsigned int align16_blocks(unsigned int bytes) {
     if (bytes & 0xF) {
         return (bytes >> 4) + 1;
@@ -576,6 +581,11 @@ static inline unsigned int align16_blocks(unsigned int bytes) {
 #include "common.h"
 
 // Code (.text)
+/**
+ *
+ * Finds an aquarium grid cell, falling back to the first cell for an invalid index.
+ *
+ */
 static aqua_grid_cell *Get_aquarium_paul_table(int index) {
     if ((index < 0) || (index >= 0x3C)) {
         index = 0;
@@ -584,10 +594,20 @@ static aqua_grid_cell *Get_aquarium_paul_table(int index) {
     return aquarium_paul_table + index;
 }
 
+/**
+ *
+ * Finds an aquarium grid cell by its horizontal coordinates.
+ *
+ */
 static aqua_grid_cell *Get_aquarium_paul_table_xz(int x, int z) {
     return Get_aquarium_paul_table(x + z * 10);
 }
 
+/**
+ *
+ * Clamps an aquarium position to the tank walls and reports the walls touched.
+ *
+ */
 static int local_aquarium_limmit_check(float *pos, float radius, int check_y, float height) {
     int hit = 0;
 
@@ -641,6 +661,11 @@ int GetUseableEsaNo(int *out) {
     return count;
 }
 
+/**
+ *
+ * Finds aquarium food information by item number.
+ *
+ */
 static aqua_food_info *GetEsaInfo(int item_no) {
     int i;
 
@@ -832,6 +857,11 @@ void CBubble::RunOff() {
     generated = 0;
 }
 
+/**
+ *
+ * Looks up the offspring species for a pair of aquarium fish.
+ *
+ */
 static int GetChildFishNo(int first_fish, int second_fish) {
     for (int index = 0; index < 171; index++) {
         int first_parent = first_fish - 310;
@@ -2375,6 +2405,11 @@ void CAquaMes::DrawTitleMes() {
     }
 }
 
+/**
+ *
+ * Builds the aquarium fish asset path for an item number.
+ *
+ */
 static int GetFishPath(int item_no, char *out) {
     char *file_name;
 
@@ -3149,6 +3184,11 @@ int CalcFishParam(BREEDFISH_USED *fish) {
     return sum;
 }
 
+/**
+ *
+ * Combines two inherited fish parameters and caps the result at 100.
+ *
+ */
 static int CombineParam(int a, int b) {
     int result;
 
@@ -5496,6 +5536,11 @@ int GetGyoRaceRanking() {
     return GyoRaceRankingData;
 }
 
+/**
+ *
+ * Allocates the fish records for one race class from a script count.
+ *
+ */
 static int _GYORACE_LISTNUM(SPI_STACK *stack, int arg_count) {
     int          race_class;
     int          count;
@@ -5518,6 +5563,11 @@ static int _GYORACE_LISTNUM(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Populates the next scripted fish record for the current race class.
+ *
+ */
 static int _GYORACE_DATA(SPI_STACK *stack, int arg_count) {
     CGameDataUsed *entry;
     u8            *fields;
@@ -5592,6 +5642,11 @@ CGameDataUsed *CGyoraceFishData::GetRaceFish(int race_class, int index) {
     return &fish[race_class][index];
 }
 
+/**
+ *
+ * Allocates the tournament prize group table from its scripted count.
+ *
+ */
 static int _PRIZE_LISTNUM(SPI_STACK *stack, int arg_count) {
     unsigned int bytes;
 
@@ -5602,6 +5657,11 @@ static int _PRIZE_LISTNUM(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Starts a tournament prize group and allocates its prize records.
+ *
+ */
 static int _PRIZE_GROUP(SPI_STACK *stack, int arg_count) {
     int          prize_count;
     int          i;
@@ -5630,6 +5690,11 @@ static int _PRIZE_GROUP(SPI_STACK *stack, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Adds a scripted rank prize to the current tournament group.
+ *
+ */
 static int _PRIZE(SPI_STACK *stack, int arg_count) {
     SPI_STACK *arg;
 
@@ -5788,10 +5853,20 @@ void TuriTourCount() {
     save_data->SetShortFlag(short_flag_tour_count, count);
 }
 
+/**
+ *
+ * Applies a gyorace menu configuration command to its script buffer.
+ *
+ */
 static void GyoraceCFGAnalyze(char *command) {
     MenuCommandAnalyze(GyoraceExeCfgBuffer, GyoraceExeCfgBufferSize, command);
 }
 
+/**
+ *
+ * Finds an empty bonus racer slot or retrieves the racer index in a given slot.
+ *
+ */
 static int SearchOmakeGyoracer(int slot) {
     int i;
 
@@ -5859,6 +5934,11 @@ void SetOmakeGyoracerTactics(int slot, int tactics) {
     GyoracerTacticsNo.tactics_no[slot] = tactics;
 }
 
+/**
+ *
+ * Refreshes the displayed names of registered bonus racers.
+ *
+ */
 static void GyoracerListUpdate() {
     ((ClsMes *) GyoraceFishMes)->mes_no = -1;
 
@@ -5988,6 +6068,11 @@ void GyoraceMenuInit(mgCMemory *memory, int *tex_block, int) {
     GyoraceStack.Alloc(align16_blocks(LoadFileMenu(at_5140, GyoraceStack.stGetTop(), 0) + 0xC00));
 }
 
+/**
+ *
+ * Converts race menu input to list movement and flags long scrolls.
+ *
+ */
 static int OmakeGyoraceSelect(int key) {
     int movement = MenuListSelectKeyCheck(key, 8);
     int distance = abs(movement);
@@ -5999,6 +6084,11 @@ static int OmakeGyoraceSelect(int key) {
     return movement;
 }
 
+/**
+ *
+ * Keeps the fish list viewport and cursor aligned with an available entry.
+ *
+ */
 static void ForceSetGyoList() {
     int slot = -1;
 

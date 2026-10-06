@@ -29,6 +29,11 @@ static const u_int timer0_count = 0x10000000;
 extern char        at_959__2[];
 
 // Code (.text)
+/**
+ *
+ * Loads each enabled map file into the scene stack, optionally through background I/O.
+ *
+ */
 static int LoadMapData(SCN_LOADMAP_INFO2 &info, int deferred) {
     char       path[0x80];
     mgCMemory *stack = info.stack;

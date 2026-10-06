@@ -1001,6 +1001,11 @@ int __EFFECT_END(SPI_STACK *args, int arg_count) {
     return 1;
 }
 
+/**
+ *
+ * Sets the wait duration for a scripted effect frame slot.
+ *
+ */
 static int __WAIT_FRAME(SPI_STACK *stack, int argument_count) {
     int index = spiGetStackInt(stack++);
     g_tmp_effm->wait_frame[index] = spiGetStackInt(stack);

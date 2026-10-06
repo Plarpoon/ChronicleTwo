@@ -1075,6 +1075,11 @@ void ResetViewMode(CScene *scene) {
     EndTakePhoto();
 }
 
+/**
+ *
+ * Updates the editor eye camera orientation from gamepad input.
+ *
+ */
 static void EyeCamera(mgCCamera *camera, CCharacter2 *chara, int use_right_stick) {
     SV_CONFIG_OPTION *options;
     float             angle;

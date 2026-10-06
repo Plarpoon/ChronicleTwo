@@ -370,6 +370,11 @@ int CScene::GetSeSrcID(int key) {
     return -1;
 }
 
+/**
+ *
+ * Formats a number as at least three decimal digits for an audio file name.
+ *
+ */
 void GetNumber3(char *out, int number) {
     char digits[8];
     out[0] = 0;

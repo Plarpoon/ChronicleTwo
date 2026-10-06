@@ -280,10 +280,20 @@ static sndCSeSeq *GetEmptySeSeq(int *seq_id) {
     return NULL;
 }
 
+/**
+ *
+ * Extracts the sound port number encoded in a sound identifier.
+ *
+ */
 static u32 GetPortNo(u32 sound_id) {
     return (sound_id >> 24) & 0xFF;
 }
 
+/**
+ *
+ * Extracts the sound bank number encoded in a sound identifier.
+ *
+ */
 static u32 GetBankNo(u32 sound_id) {
     return (sound_id >> 16) & 0xFF;
 }
@@ -440,6 +450,11 @@ void sndStopVoice(int voice) {
     sndSignalSema();
 }
 
+/**
+ *
+ * Clamps and applies the master volume for one sound core.
+ *
+ */
 static void SetMasterVol(int core, float vol) {
     if (core < 0 || core > 1) {
         return;
@@ -458,6 +473,11 @@ static void SetMasterVol(int core, float vol) {
     sndSignalSema();
 }
 
+/**
+ *
+ * Advances active master-volume fades toward their target values.
+ *
+ */
 static void FadeMasterVol() {
     int core;
 
@@ -602,6 +622,11 @@ void sndWaitTransBd() {
     }
 }
 
+/**
+ *
+ * Steps the sound driver at most once per vertical sync interval.
+ *
+ */
 static int CSndStep() {
     int frame = mgGetVSyncCount();
     int stepped;
@@ -664,6 +689,11 @@ void sndFlush() {
     sndSignalSema();
 }
 
+/**
+ *
+ * Stops playback on the selected sound port.
+ *
+ */
 static void SeAllStop_Sub(int port_no) {
     sndPortInfo *info;
 
@@ -733,6 +763,11 @@ static int IsBgmPort(int port) {
     return 0;
 }
 
+/**
+ *
+ * Maps a game sound port to driver ports and its initial volume.
+ *
+ */
 static int GetCSndPortNo(int port_no, int *port, int *sq_port, int *vol) {
     *vol = -1;
 
@@ -943,6 +978,11 @@ void sndDeletePort(int port_no) {
     sndInitPort(port_no);
 }
 
+/**
+ *
+ * Resolves a sound identifier to its loaded driver port and bank.
+ *
+ */
 static int GetPortBankNo(unsigned int snd_id, int *port, int *bank) {
     sndPortInfo *info;
     sndBankInfo *bank_info;
@@ -1980,6 +2020,11 @@ static int PlaySeSeq(unsigned int snd_id, sndCSeSeqData *data, int vol) {
     return index;
 }
 
+/**
+ *
+ * Stops the sound-effect sequence with the requested identifier.
+ *
+ */
 static void StopSeSeq(int seq_id) {
     sndCSeSeq *seq;
 

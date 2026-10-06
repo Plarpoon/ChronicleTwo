@@ -22,20 +22,40 @@
 #include "scriptinterpreter.hpp"
 #include "water.hpp"
 
+/**
+ *
+ * Copies a map light's four-component vector.
+ *
+ */
 struct map_light_vector {
-    float v[4];
+    float v[4]; /**< Four components of a light or ambient vector. */
 };
 
+/**
+ *
+ * Copies four rows of map light direction or colour values.
+ *
+ */
 struct map_light_rows {
-    float v[4][4];
+    float v[4][4]; /**< Four rows of direction or colour values. */
 };
 
+/**
+ *
+ * Copies the map's point light table as twelve quadwords.
+ *
+ */
 struct map_light_points {
-    u_long128 quad[12];
+    u_long128 quad[12]; /**< Point light entries copied in quadwords. */
 };
 
+/**
+ *
+ * Copies the map's fog parameters as three quadwords.
+ *
+ */
 struct map_light_fog {
-    u_long128 quad[3];
+    u_long128 quad[3]; /**< Fog parameters copied in quadwords. */
 };
 
 extern CFuncPoint   *mapNowFuncPoint;

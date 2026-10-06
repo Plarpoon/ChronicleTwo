@@ -1139,9 +1139,9 @@ int MenuItemRoboDataLoadEndCheck(MENU_BGREAD_INFO2 **info, mgCMemory *stack, CAc
  *
  * @mangled MenuRoboPartsLightOff__FP8mgCFrame
  * @address 0x2BF450
- * @size 0x40
+ * @size 0x34
  */
-void MenuRoboPartsLightOff(mgCFrame *arg0);
+void MenuRoboPartsLightOff(mgCFrame *frame);
 
 /**
  *

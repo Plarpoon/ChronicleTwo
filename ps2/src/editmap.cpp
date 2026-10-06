@@ -19,9 +19,14 @@
 #include "mglib.hpp"
 #include "scriptinterpreter.hpp"
 
+/**
+ *
+ * Views an editor vector as four components or one quadword.
+ *
+ */
 union EditVector {
-    float     values[4];
-    u_long128 quad;
+    float     values[4]; /**< Vector components. */
+    u_long128 quad;      /**< Quadword copy view. */
 };
 
 const int kPartsInfoColorCountOffset = 0x1C;

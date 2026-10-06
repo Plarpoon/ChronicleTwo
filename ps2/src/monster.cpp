@@ -50,16 +50,26 @@ extern short             gift_item_tbl[][3];
 extern int               LanguageCode;
 extern char             *dung_progtxt_notlift_mons[];
 
+/**
+ *
+ * Holds one effect direction as four floats or one quadword.
+ *
+ */
 union EffectVector {
-    float     f[4];
-    u_long128 qw;
+    float     f[4]; /**< Direction components. */
+    u_long128 qw;   /**< The same components packed in one quadword. */
 };
 
+/**
+ *
+ * Holds the texture rectangle copied to a monster hit effect.
+ *
+ */
 struct HitRectangle {
-    int left;
-    int top;
-    int right;
-    int bottom;
+    int left;   /**< Left texture coordinate. */
+    int top;    /**< Top texture coordinate. */
+    int right;  /**< Right texture coordinate. */
+    int bottom; /**< Bottom texture coordinate. */
 } __attribute__((aligned(16)));
 
 extern EffectVector      at_2031;

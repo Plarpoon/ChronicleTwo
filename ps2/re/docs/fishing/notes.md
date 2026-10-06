@@ -81,3 +81,7 @@ Native `mgCMemory` and `CCameraControl` globals emit the eight calls in the reta
 0x100000 bytes into it, which is element 0x10000. Using `read_buff[0x10000]`
 in `ReplayPrevBGM` and `sgInitFishing` removes byte-pointer arithmetic and
 the return cast; both functions remain exact in objdiff.
+
+`mgCMemory::stGetTop()` already returns the first unused stack quadword.
+`InitSuccess` passes it directly to `FishStack.stSetBuffer`, eliminating the
+`u_char*` intermediate and its two pointer casts while retaining exact code.

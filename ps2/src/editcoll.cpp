@@ -6,8 +6,13 @@
 #include "mg_math.hpp"
 #include "mg_memory.hpp"
 
+/**
+ *
+ * Holds one quadword of editable collision polygon data.
+ *
+ */
 struct CollisionRow {
-    float value[4];
+    float value[4]; /**< Four words copied together. */
 };
 
 #pragma global_optimizer off

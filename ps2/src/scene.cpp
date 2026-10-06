@@ -113,43 +113,39 @@ int CRipple::Step() {
 }
 
 void CRipple::Draw() {
-    struct {
-        u_long128 data[18];
-    } prim_storage;
-
-    float corner[4][4];
-    int   vertex[4][4];
-    RECT  rect_a;
-    RECT  rect_b;
-    int   tex_no;
     float size;
     float alpha;
-    float half;
-    int   u;
-    int   v;
-    int   w;
-    int   h;
-
     size = this->size * (float) count / (float) life;
     alpha = (float) ((life - count) * 40) / (float) life;
 
-    new ((u_long128 *) &prim_storage) mgCDrawPrim;
-    ((mgCDrawPrim *) &prim_storage)->Initialize(0, 0);
-    ((mgCDrawPrim *) &prim_storage)->AlphaBlendEnable(1);
-    ((mgCDrawPrim *) &prim_storage)->AlphaBlend(1);
-    ((mgCDrawPrim *) &prim_storage)->AlphaTestEnable(1);
-    ((mgCDrawPrim *) &prim_storage)->AlphaTest(1, 0);
-    ((mgCDrawPrim *) &prim_storage)->DepthTestEnable(0);
-    ((mgCDrawPrim *) &prim_storage)->ZMask(-1);
-    ((mgCDrawPrim *) &prim_storage)->Bilinear(0);
-    ((mgCDrawPrim *) &prim_storage)->TextureMapEnable(1);
-    ((mgCDrawPrim *) &prim_storage)->DepthTestEnable(1);
-    ((mgCDrawPrim *) &prim_storage)->DepthTest(1);
-    ((mgCDrawPrim *) &prim_storage)->Bilinear(1);
-    ((mgCDrawPrim *) &prim_storage)->Coord(1);
-    ((mgCDrawPrim *) &prim_storage)->AlphaBlend(2);
-    ((mgCDrawPrim *) &prim_storage)->AlphaTestEnable(1);
-    ((mgCDrawPrim *) &prim_storage)->AntiAliasing(1);
+    mgCDrawPrim prim;
+    float       corner[4][4];
+    int         vertex[4][4];
+    RECT        rect_a;
+    RECT        rect_b;
+    int         tex_no;
+    float       half;
+    int         u;
+    int         v;
+    int         w;
+    int         h;
+
+    prim.Initialize(0, 0);
+    prim.AlphaBlendEnable(1);
+    prim.AlphaBlend(1);
+    prim.AlphaTestEnable(1);
+    prim.AlphaTest(1, 0);
+    prim.DepthTestEnable(0);
+    prim.ZMask(-1);
+    prim.Bilinear(0);
+    prim.TextureMapEnable(1);
+    prim.DepthTestEnable(1);
+    prim.DepthTest(1);
+    prim.Bilinear(1);
+    prim.Coord(1);
+    prim.AlphaBlend(2);
+    prim.AlphaTestEnable(1);
+    prim.AntiAliasing(1);
     half = size / 2.0f;
     corner[0][0] = pos[0] - half;
     corner[0][1] = pos[1];
@@ -172,7 +168,7 @@ void CRipple::Draw() {
         mgTransWorldPrim(vertex[1], corner[1]) != 0 &&
         mgTransWorldPrim(vertex[2], corner[2]) != 0 &&
         mgTransWorldPrim(vertex[3], corner[3]) != 0) {
-        ((mgCDrawPrim *) &prim_storage)->Begin(3);
+        prim.Begin(3);
 
         if (LanguageCode == 0 || LanguageCode == 1) {
             rect_a = GetRectFontTex(GetFontNo(at_853__3), &tex_no);
@@ -188,21 +184,21 @@ void CRipple::Draw() {
             h = rect_b.height;
         }
 
-        MySetTex(tex_no, (mgCDrawPrim *) &prim_storage);
-        ((mgCDrawPrim *) &prim_storage)->Color(0x80, 0x80, 0x80, (int) alpha);
-        ((mgCDrawPrim *) &prim_storage)->TextureCrd(u, v);
-        ((mgCDrawPrim *) &prim_storage)->Vertex4(vertex[0]);
-        ((mgCDrawPrim *) &prim_storage)->TextureCrd(u, v + h);
-        ((mgCDrawPrim *) &prim_storage)->Vertex4(vertex[1]);
-        ((mgCDrawPrim *) &prim_storage)->TextureCrd(u + w, v);
-        ((mgCDrawPrim *) &prim_storage)->Vertex4(vertex[2]);
-        ((mgCDrawPrim *) &prim_storage)->TextureCrd(u, v + h);
-        ((mgCDrawPrim *) &prim_storage)->Vertex4(vertex[1]);
-        ((mgCDrawPrim *) &prim_storage)->TextureCrd(u + w, v);
-        ((mgCDrawPrim *) &prim_storage)->Vertex4(vertex[2]);
-        ((mgCDrawPrim *) &prim_storage)->TextureCrd(u + w, v + h);
-        ((mgCDrawPrim *) &prim_storage)->Vertex4(vertex[3]);
-        ((mgCDrawPrim *) &prim_storage)->End();
+        MySetTex(tex_no, &prim);
+        prim.Color(0x80, 0x80, 0x80, (int) alpha);
+        prim.TextureCrd(u, v);
+        prim.Vertex4(vertex[0]);
+        prim.TextureCrd(u, v + h);
+        prim.Vertex4(vertex[1]);
+        prim.TextureCrd(u + w, v);
+        prim.Vertex4(vertex[2]);
+        prim.TextureCrd(u, v + h);
+        prim.Vertex4(vertex[1]);
+        prim.TextureCrd(u + w, v);
+        prim.Vertex4(vertex[2]);
+        prim.TextureCrd(u + w, v + h);
+        prim.Vertex4(vertex[3]);
+        prim.End();
     }
 }
 

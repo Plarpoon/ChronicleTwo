@@ -940,12 +940,22 @@ void mgSetFogParam(mgFOG_PARAM *fog) {
                              fog->near_value);
 }
 
+/**
+ *
+ * Copies the four fog colour channels as one value.
+ *
+ */
 struct mgFogColor {
-    u_char values[4];
+    u_char values[4]; /**< Four fog colour channels. */
 };
 
+/**
+ *
+ * Copies the four fog coefficient floats as one vector.
+ *
+ */
 struct mgFogVector {
-    float values[4];
+    float values[4]; /**< Four fog coefficients. */
 };
 
 void mgGetFogParam(mgFOG_PARAM *param) {

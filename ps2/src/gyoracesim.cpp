@@ -5,22 +5,32 @@
 
 #include "gyoracesim.hpp"
 
+/**
+ *
+ * Copies the position and battle state of a racing fish at one time step.
+ *
+ */
 struct RaceProgressCopy {
-    float pos;
-    int   lane;
-    float lane_pos;
-    s8    state;
-    s8    battle;
-    int   detail[2];
+    float pos;       /**< Distance travelled along the course. */
+    int   lane;      /**< Current lane number. */
+    float lane_pos;  /**< Smooth position between lanes. */
+    s8    state;     /**< Current race action. */
+    s8    battle;    /**< Whether the fish is pushing another entrant. */
+    int   detail[2]; /**< Opponent index and number of successful pushes. */
 };
 
+/**
+ *
+ * Holds the movement and battle attributes calculated for one racing fish.
+ *
+ */
 struct FISH_STATS {
-    float pace;
-    float low;
-    float mid;
-    float high;
-    float unknown_a;
-    float unknown_b;
+    float pace;       /**< Base pace used to calculate acceleration. */
+    float low;        /**< Lowest speed tier. */
+    float mid;        /**< Middle speed tier. */
+    float high;       /**< Highest speed tier. */
+    float power;      /**< Strength used when fish collide. */
+    float aggression; /**< Tendency to challenge other fish. */
 };
 
 extern int         jrand;
@@ -852,8 +862,8 @@ void SetRaceFishParam(RACE_FISH_PARAM *fish, grRACE_INFO *race) {
             slot->accel[k] = scaled / (10.0f * GetRaceDivisionLength(k));
         }
 
-        slot->power = stats.unknown_a;
-        slot->aggression = stats.unknown_b;
+        slot->power = stats.power;
+        slot->aggression = stats.aggression;
         RndFishParam(slot);
         slot->boost = 0;
         slot->velocity = GetRandomNumber(0.02f, 0.02f);

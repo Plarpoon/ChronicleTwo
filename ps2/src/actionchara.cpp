@@ -2653,7 +2653,7 @@ void HitEffectSet(CScene *scene, float *point) {
     }
 
     if (hit != NULL) {
-        hit->SethitEffect(pos, dir.f, 30.0f, speed, 0.4f, 0.1f, 30, 32);
+        hit->SethitEffect(pos, dir.f, 30.0f, speed * 1.0f, 0.4f, 0.1f, 30, 32);
         hit->kind = 0;
     }
 

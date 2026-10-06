@@ -170,3 +170,8 @@ array indexing and member calls use the declared C++ types.
 `monster_progress_tbl` has 19 rows of five signed halfwords. Each row starts with a badge number and holds four monster forms. The search functions walk the row and form columns, while `get_monster_tbl_bajjilevel` filters a row by badge and level before gathering its next form. Typed indexing preserves the latter function's PAL code; two search loops currently differ in induction-variable code generation.
 
 `CMenuCostumeSel::UpdateCostumeList` reads the worn outfit IDs from equipment slots 2, 4, and 3. These are the `item_no` fields of `CHARA_DATA::equip`; typed member access matches PAL. `MenuNPCLoadCheck` writes a temporary texture manager name suffix while loading the party model, then clears its first character.
+
+`MenuRoboPartsLightOff` finds the child frame named `light` and clears its
+`mgCFrameAttr::draw` field. The two anonymous offset structs previously used
+for this access are the existing `mgCFrame` and `mgCFrameAttr` types. Using
+those types and the literal name matches the 0x34-byte PAL function exactly.

@@ -19,12 +19,22 @@ int CCollision::InsidePoint(float *point) {
     return mgClipBoxVertex(point, bbox.max, bbox.min) != 0;
 }
 
+/**
+ *
+ * Holds one quadword of collision polygon data for block copying.
+ *
+ */
 struct CollisionQuad {
-    float v[4];
+    float v[4]; /**< Four words copied together. */
 };
 
+/**
+ *
+ * Holds the five quadwords copied for one collision triangle.
+ *
+ */
 struct CollisionTri {
-    CollisionQuad q[5];
+    CollisionQuad q[5]; /**< Polygon data blocks. */
 };
 
 /**

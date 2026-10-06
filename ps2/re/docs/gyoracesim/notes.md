@@ -119,3 +119,8 @@ No equivalent in Dark Cloud 1 (no fish race).
 
 ## StepGyoRace draft
 `StepGyoRace` records the first completed step of each fish as a fractional goal time, assigns a current rank by position each step, resolves collisions and lane battles, then assigns final ranks by goal time. It records up to `after_goal_step + 1` further steps and returns the next step index. The guarded C++ draft compiles; the assembly fallback remains active.
+
+`FISH_STATS` is the six-float output buffer passed to `FishModifyParam`.
+`SetRaceFishParam` maps its fifth and sixth floats directly to the race
+entrant's power and aggression fields, so those members use those names.
+The promoted function remains exact in objdiff.

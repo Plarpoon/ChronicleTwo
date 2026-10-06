@@ -96,44 +96,33 @@ mgCTexture::mgCTexture() {
 }
 
 #pragma schedule reset
-#pragma schedule off
-#pragma global_optimizer off
+#pragma optimization_level 2
 
 void mgCTexture::Initialize() {
-    u_char *self = (u_char *) this;
-    int     i;
-    *(signed char *) (self + 8) = 0;
-    this->block = -1;
+    name[0] = '\0';
+    block = -1;
 
-    for (i = 0; i < 4; i++) {
-        *(int *) ((i << 2) + (int) self + 0x50) = 0;
+    for (int i = 0; i < MG_TEXTURE_LEVEL_MAX; i++) {
+        image[i] = NULL;
     }
 
-    *(int *) (self + 0x60) = 0;
-    *(long long *) (self + 0x48) = 0;
-    *(long long *) (self + 0x40) = 0;
-    *(long long *) (self + 0x38) = 0;
-
-    struct TexFlags {
-        u_char flags_low : 2;
-        u_char flags_mid : 2;
-        u_char flags_high : 4;
-    };
-
-    ((TexFlags *) (self + 0x48))->flags_low = 1;
-    ((TexFlags *) (self + 0x48))->flags_mid = 1;
-    *(short *) (self + 6) = 0;
-    this->height = 0;
-    this->width = 0;
-    *(int *) (self + 0x64) = 0;
-    *(int *) (self + 0x28) = 0;
-    *(int *) (self + 0x2C) = 0;
-    *(int *) (self + 0x30) = 0;
-    *(int *) (self + 0x68) = 0;
+    clut = NULL;
+    *(u_long *) &clamp = 0;
+    *(u_long *) &tex1 = 0;
+    tex0.value = 0;
+    clamp.WMS = 1;
+    clamp.WMT = 1;
+    bpp = 0;
+    height = 0;
+    width = 0;
+    swizzled = 0;
+    vram_size = 0;
+    image_blocks = 0;
+    clut_size = 0;
+    next = NULL;
 }
 
-#pragma global_optimizer reset
-#pragma schedule reset
+#pragma optimization_level reset
 #pragma schedule off
 #pragma global_optimizer off
 

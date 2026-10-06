@@ -184,6 +184,12 @@ reinterpretation. These changes retain exact object code. `GuardEffectSet`
 and `HitEffectSet` retain their C-style camera cast: MWCC schedules their
 literal loads differently with `static_cast`, despite the same target type.
 
+Declaring the two StepParam direction constants as `ActionVector` instead of
+`float[4]` also changes `HitEffectSet`'s first effect call: MWCC loads the
+0.4f argument before the 30.0f and 50.0f arguments. Expressing the speed as
+`speed * 1.0f` keeps the named speed local while restoring the retail load
+order; MWCC folds the multiplication and the full actionchara object matches.
+
 ## Typed array traversal
 
 `CalcCollision` and `GetSwEffectPtr` advance typed entries with `&entry[1]` and `&slot[1]`; `CheckEquipSetItem` and the corresponding item check advance with `&item[1]`. These forms keep the retail pointer increment instructions while making the array element type explicit. Effect selection uses `&BattleFX.hit[index]` and `&BattleFX.flush[index]`. In `HitEffectSet`, binding `hit_next` to a local integer before indexing preserves MWCC’s argument scheduling; direct indexing changes the function score to 96.83%. All affected functions compare exactly.

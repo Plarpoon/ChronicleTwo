@@ -27,8 +27,13 @@ extern char               at_1020__4[], at_1021__4[], at_1022__3[], at_1023__5[]
 extern char               at_1024__4[], at_1025__5[], at_1026__4[], at_1027__5[];
 extern char               at_1028__10[], at_1029__7[], at_1030__6[], at_1031__7[];
 
+/**
+ *
+ * Holds one save-directory name used while converting card data.
+ *
+ */
 struct SAVE_CONVERT_NAME {
-    char text[128];
+    char text[128]; /**< Directory name including its terminator. */
 };
 
 extern SAVE_CONVERT_NAME at_1072__4, at_1073__4, at_1074__5;

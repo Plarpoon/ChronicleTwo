@@ -216,16 +216,6 @@ void               SetupUnitMan(CScene *scene, CUserDataManager *user_data, int 
 void               GetBajjiPosition(CMenuPosDataForm *form, int slot, int unused, int *pos);
 void               SetSwordBlurEffect(CCharacter2 *chara, mgCMemory *stack, int blur_type);
 
-struct temp_v0_champs_a42004 {
-    char                        pad0[0xF4];
-    struct unkF4_champs_a42004 *unk_f4;
-};
-
-struct unkF4_champs_a42004 {
-    char pad0[0x18];
-    int  unk18;
-};
-
 /**
  *
  * Stores a 64-byte block of monster book data.
@@ -5448,14 +5438,14 @@ int MenuItemRoboDataLoadEndCheck(MENU_BGREAD_INFO2 **info, mgCMemory *stack, CAc
     return 0;
 }
 
-void MenuRoboPartsLightOff(mgCFrame *arg0) {
-    struct temp_v0_champs_a42004 *temp_v0;
+void MenuRoboPartsLightOff(mgCFrame *frame) {
+    mgCFrame *part;
 
-    if (arg0 != NULL) {
-        temp_v0 = (struct temp_v0_champs_a42004 *) arg0->SearchFrame((char *) at_4517__2);
+    if (frame != NULL) {
+        part = frame->SearchFrame("light");
 
-        if (temp_v0 != NULL) {
-            temp_v0->unk_f4->unk18 = 0;
+        if (part != NULL) {
+            part->attr->draw = 0;
         }
     }
 }

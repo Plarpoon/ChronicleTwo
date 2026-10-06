@@ -45,6 +45,12 @@ DIFFs: retail copies the returned value through a second stack temp (0x28 -> 0x2
 ## Functions
 - All 45 are global (none in `local_symbols.tsv`). `FontTblBinBuff` (0x1F455C0, 0x1000) IS local:
   `static FONT_TBL_BIN FontTblBinBuff` belongs in font.cpp, not the header.
+  Declaring the current assembly-backed symbol as `FONT_TBL_BIN` makes MWCC
+  emit field-offset relocations in `GetYoyakuTblTop`, `GetYoyakuTblNum`,
+  `GetKanjiTopNo`, and `GetHalfFontNum` (scores 75%, 72.5%, 72.5%, 72.5%).
+  Retail instead forms the symbol base first, then adds or loads the field
+  offset. The assembly-backed `char[]` declaration and local typed view retain
+  exact code until a typed declaration can reproduce those relocations.
 - `GetRectFontTex(font_no, &tex_no)`: if font_no is a font gaiji code (0xFDE0..0xFDF7) and
   LanguageCode is French/German/Italian/Spanish (2..5), converts via
   `GetFontNoFromFontGaijiCode`. Negative or >= 0x980 -> returns `at_784__2` (static zero RECT in

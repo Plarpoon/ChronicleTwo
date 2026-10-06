@@ -27,8 +27,13 @@ static const int   kChildIdMax = 0x200;
 extern "C" char at_1042__4[];
 extern "C" char at_1043__4[];
 
+/**
+ *
+ * Holds a short live character name used for house occupants.
+ *
+ */
 struct NpcLiveName {
-    char text[10];
+    char text[10]; /**< Name text and terminator. */
 };
 
 extern "C" NpcLiveName at_983__3;

@@ -342,8 +342,8 @@ static inline int FreeSize(mgCMemory *memory) {
  * Returns the start of unused allocation space in a stack memory buffer.
  *
  */
-static inline u_char *FreeTop(mgCMemory *memory) {
-    return (u_char *) (memory->stack + memory->stack_used);
+static inline u_long128 *FreeTop(mgCMemory *memory) {
+    return memory->stGetTop();
 }
 
 extern "C" void *__vt__9mgCObject[];
@@ -2669,7 +2669,7 @@ int InitSuccess(CScene *scene) {
         }
 
         int size = FreeSize(&MotionBuff);
-        FishStack.stSetBuffer((u_long128 *) FreeTop(&MotionBuff), size);
+        FishStack.stSetBuffer(FreeTop(&MotionBuff), size);
         FishStack.stack_used = 0;
         FishStack.lock = 0;
 

@@ -219,8 +219,13 @@ void CMapPiece::Copy(CMapPiece &dest, mgCMemory *memory) {
             to->material = from->material;
             to->unk_c = from->unk_c;
 
+            /**
+             *
+             * Copies the material's four colour components together.
+             *
+             */
             struct Color {
-                float v[4];
+                float v[4]; /**< Four material colour components. */
             };
 
             *(Color *) to->color = *(Color *) from->color;
@@ -598,8 +603,13 @@ int CIMGList::LoadIMGFile(char *name, mgCEnterIMGInfo *info, mgCMemory *memory) 
             (mgCEnterIMGInfo *) operator new(sizeof(mgCEnterIMGInfo), memory->Alloc(0x12));
         copy = slot->info;
 
+        /**
+         *
+         * Copies the texture archive's block index tables.
+         *
+         */
         struct Blocks {
-            int v[32];
+            int v[32]; /**< Thirty-two texture archive block entries. */
         };
 
         *(Blocks *) copy->block = *(Blocks *) info->block;

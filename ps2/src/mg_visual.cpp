@@ -17,26 +17,41 @@ extern void  *__vt__9mgCVisual[];
 extern void  *__vt__12mgCVisualMDT[];
 extern void  *__vt__15mgCVisualFixMDT[];
 
+/**
+ *
+ * Exposes the allocation state used while building a visual's packet.
+ *
+ */
 struct VisualScratchMemory {
     u_char pad_00[0x1C];
-    int    lock;
-    int    stack;
-    int    stack_used;
-    int    stack_size;
-    int    stack_block;
+    int    lock;        /**< Prevents allocation while the stack is locked. */
+    int    stack;       /**< Base address of the packet scratch stack. */
+    int    stack_used;  /**< Number of occupied quadwords. */
+    int    stack_size;  /**< Capacity of the scratch stack. */
+    int    stack_block; /**< Address of the heap block holding the stack. */
 };
 
+/**
+ *
+ * Holds the material table copied into a fixed MDT visual.
+ *
+ */
 struct FixMDTCopy {
     u_char      pad_00[0x1C];
-    void      **vptr;
+    void      **vptr; /**< Fixed MDT visual's virtual method table. */
     u_char      pad_20[0x20];
-    int         material_num;
-    mgMaterial *material;
+    int         material_num; /**< Number of materials in the copied table. */
+    mgMaterial *material;     /**< Material table allocated for the visual. */
     u_char      pad_48[8];
 };
 
+/**
+ *
+ * Copies a material's four float channels together.
+ *
+ */
 struct mgMaterialVector {
-    float values[4];
+    float values[4]; /**< Material channel values. */
 };
 
 #ifdef NONMATCHING

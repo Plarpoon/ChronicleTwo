@@ -33,6 +33,10 @@ falls off the end without `return`. Step: 0 inactive, 1 alive, -1 on expiry (als
 Draw: quad side `size*count/life`, alpha `(life-count)*40/life`; texture is a font glyph:
 `GetFontNo("\x81\x9b")` (Shift-JIS circle, at_853__3) when `LanguageCode` is 0 or 1, else
 `GetHalfFontNo('O')`; `GetRectFontTex`, `MySetTex`.
+The draw primitive is a local `mgCDrawPrim` constructed after size and alpha
+are calculated. Declaring the corner, vertex and rectangle locals after that
+primitive gives the retail stack layout and a 100% PAL object match; the former
+raw quadword storage and placement construction produced an oversized body.
 
 ## CParticle (0x50)
 Size: stride 0x50. 0x0 active, 0x10 pos, 0x20 speed, 0x30 accel (Birth: (0,-0.5,0,1)),

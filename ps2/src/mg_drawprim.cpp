@@ -354,12 +354,17 @@ void mgCDrawPrim::Direct(unsigned long reg, unsigned long data) {
     write++;
 }
 
+/**
+ *
+ * Copies the texture state cached in a drawing primitive.
+ *
+ */
 struct mgCTextureFields {
     short  word0;
     short  word1;
     short  word2;
     short  word3;
-    char   name[32];
+    char   name[32]; /**< Texture name copied with its register state. */
     int    field28;
     int    field2_c;
     int    field30;
@@ -372,12 +377,17 @@ struct mgCTextureFields {
     int    field68;
 };
 
+/**
+ *
+ * Exposes the texture cache and packet cursor of a drawing primitive.
+ *
+ */
 struct mgCDrawPrimTexture {
     u_char           pad0[0x58];
-    mgCTextureFields texture;
-    int              bilinear;
+    mgCTextureFields texture;  /**< Texture state copied for this primitive. */
+    int              bilinear; /**< Filter mode applied before drawing. */
     u_char           pad_cc[0x10];
-    u_long          *command_write;
+    u_long          *command_write; /**< Next GS command word in the packet. */
 };
 
 void mgCDrawPrim::Texture(mgCTexture *source) {
@@ -419,10 +429,15 @@ void mgCDrawPrim::DAlphaTest(int enable, int mode) {
     draw_env.test.bits.datm = mode;
 }
 
+/**
+ *
+ * Exposes the depth test enable and comparison mode bits.
+ *
+ */
 struct mgCDrawPrimDepthState {
     u_char pad0[2];
-    u_char enable : 1;
-    u_char mode : 2;
+    u_char enable : 1; /**< Depth testing enable bit. */
+    u_char mode : 2;   /**< Depth comparison mode. */
     u_char rest : 5;
 };
 

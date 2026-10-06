@@ -22,28 +22,43 @@ int get_default_monster_progresstbl(int bajji_no);
 #include "scene.hpp"
 #include "scenesnd.hpp"
 
+/**
+ *
+ * Packs a fish's inventory data into its password representation.
+ *
+ */
 struct PackedFish {
-    u16 item_no : 9;
-    u8  sex : 1;
+    u16 item_no : 9; /**< Inventory item number of the fish. */
+    u8  sex : 1;     /**< Sex of the fish. */
     u8  field_4a : 5;
     u8  param_3 : 7;
     u16 unknown_3c : 7;
-    u16 length : 15;
-    u16 weight : 15;
+    u16 length : 15; /**< Fish length. */
+    u16 weight : 15; /**< Fish weight. */
     u8  param_0 : 7;
     u16 param_1 : 7;
-    u8  color_no : 2;
+    u8  color_no : 2; /**< Fish colour number. */
     u8  param_2 : 7;
-    u16 flags : 8;
+    u16 flags : 8; /**< Fish state flags. */
 };
 
+/**
+ *
+ * Views a packed fish as fields or as password bytes.
+ *
+ */
 union PackedFishBuffer {
-    signed char bytes[14];
-    PackedFish  fish;
+    signed char bytes[14]; /**< Bytes written to or read from the password. */
+    PackedFish  fish;      /**< Fish fields carried by those bytes. */
 };
 
+/**
+ *
+ * Holds party-membership bits used when filtering character changes.
+ *
+ */
 struct CharaBitTable {
-    int bit[4];
+    int bit[4]; /**< Party bit corresponding to each selectable character. */
 };
 
 extern CharaBitTable   at_3192;
@@ -78,9 +93,14 @@ extern char            at_2018[];
 extern char            at_2019[];
 extern char            at_5773[];
 
+/**
+ *
+ * Gives an item and quantity for a debug inventory preset.
+ *
+ */
 struct DEBUG_ITEM {
-    short item_no;
-    short num;
+    short item_no; /**< Item number to grant. */
+    short num;     /**< Quantity to grant. */
 };
 
 extern DEBUG_ITEM cureItemtable_5744[];

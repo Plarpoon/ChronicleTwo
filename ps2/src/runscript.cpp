@@ -260,7 +260,7 @@ void CRunScript::load(RS_PROG_HEADER *program, RS_STACKDATA *values, int value_c
     prog = program;
     code = (char *) program + program->code;
 
-    if (strncmp((char *) prog, at_300__3, 3) == 0) {
+    if (strncmp(prog->magic, at_300__3, 3) == 0) {
         version = RS_VERSION_2;
         global = stack;
         stack += prog->global_num;

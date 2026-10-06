@@ -93,9 +93,9 @@ struct DNG_BATTLE_AREA {
     u8                   unk_4a[0x2];
     float                statusbar_rate;  /**< How far the status bar is shown, 0 (hidden) to 1 (shown). */
     float                statusbar_speed; /**< Amount statusbar_rate moves by in one frame. */
-    s32                  unk_54;
+    s32                  camera_mode;
     s32                  boss_map; /**< Non-zero on a boss floor, where the mini map symbols are hidden. */
-    s32                  unk_5c;
+    s32                  battle_clear;
     u8                   unk_60[0x4];
     u32                  minimap_reveal; /**< MINIMAP_REVEAL flags set by floor items for the rest of the floor. */
     u8                   unk_68[0x4];
@@ -359,8 +359,8 @@ public:
     CVillagerMngr    villager_mngr;     /**< Villagers placed in the town. */
     s32              villager_time;     /**< Time band the villagers were loaded for, or -1. */
     s32              sub_villager_time; /**< Time band the sub villagers were loaded for, or -1. */
-    s32              unk_3e68;
-    s32              unk_3e6c;
+    s32              tex_block_base;
+    s32              tex_block_count;
     CThunderEffect   thunder; /**< Thunder effect. */
     u8               unk_3f0c[0x154];
     s32              snd_file_num;    /**< Number of rows in snd_file. */

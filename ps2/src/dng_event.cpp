@@ -81,39 +81,46 @@ static MapJumpMapInfo          MainMapInfo;
 
 // Code (.text)
 #ifdef NONMATCHING
+extern "C" void *__ct__11mgCDrawPrimFv(void *);
+// 99.9% match, 2 words off
+// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void CStartupEpisodeTitle::DrawEpisode(int mes_tex_block, int frame_tex_block) {
+    union { CPreSprite prim; };
+
     if (mes == NULL || state == 0) {
         return;
     }
-    mgTexManager.ReloadTexture(mes_tex_block, (sceVif1Packet *) NULL);
+    mgTexManager.ReloadTexture(mes_tex_block, (sceVif1Packet *)NULL);
     mes->DrawMesWin();
-    mgTexManager.ReloadTexture(frame_tex_block, (sceVif1Packet *) NULL);
-    CPreSprite sprite;
-    sprite.Initialize(NULL, NULL);
-    sprite.Preset2D();
-    sprite.Coord(0);
-    sprite.TextureMapEnable(1);
-    sprite.Begin(6);
-    sprite.Texture(TEX_SystenFrame2);
-    int y = mgScreenHeight - 0x38;
-    sprite.Color(0x80, 0x80, 0x80, fptosi(128.0f * alpha));
-    sprite.SetIRect(0x16, y, 10, 8, 0x62, 0x38);
-    int fill_width = fptosi((float) width * alpha);
-    sprite.SetIStretch(0x20, y, fill_width, 8, 0x6C, 0x38, 10, 8);
-    sprite.SetIRect(fill_width + 0x20, y, 10, 8, 0x76, 0x38);
-    y = mgScreenHeight - 0x34;
-    int half = width / 2;
-    int revealed = fptosi(154.0f * reveal);
-    if (LanguageCode == 3) {
-        sprite.SetScirror(half + 0x92 - revealed, y, revealed, 0xE);
-        sprite.SetIRect(half - 8, y, 0x48, 0xE, 0, 0x24);
+    mgTexManager.ReloadTexture(frame_tex_block, (sceVif1Packet *)NULL);
+    __ct__11mgCDrawPrimFv(&prim);
+    prim.Initialize(NULL, NULL);
+    prim.Preset2D();
+    prim.Coord(0);
+    prim.TextureMapEnable(1);
+    prim.Begin(6);
+    prim.Texture(TEX_SystenFrame2);
+    int bar_y = mgScreenHeight - 0x38;
+    prim.Color(0x80, 0x80, 0x80, (int)(128.0f * alpha));
+    prim.SetIRect(0x16, bar_y, 0xA, 8, 0x62, 0x38);
+    int bar_w = (int)((float)width * alpha);
+    prim.SetIStretch(0x20, bar_y, bar_w, 8, 0x6C, 0x38, 0xA, 8);
+    prim.SetIRect(bar_w + 0x20, bar_y, 0xA, 8, 0x76, 0x38);
+    int title_y = mgScreenHeight - 0x34;
+    if (LanguageCode == LANG_GERMAN) {
+        int title_x = width / 2 - 8;
+        int shown = (int)(154.0f * reveal);
+        prim.SetScirror(title_x + 0x9A - shown, title_y, shown, 0xE);
+        prim.SetIRect(title_x, title_y, 0x48, 0xE, 0, 0x24);
     } else {
-        sprite.SetScirror(half + 0x69 - revealed, y, revealed, 0xE);
-        sprite.SetIRect(half - 0x31, y, 0x48, 0xE, 0, 0x24);
-        sprite.SetIRect(half + 0x17, y, 0x52, 0xE, 0, 0x32);
+        int title_x = width / 2 - 0x31;
+        int shown = (int)(154.0f * reveal);
+        prim.SetScirror(title_x + 0x9A - shown, title_y, shown, 0xE);
+        prim.SetIRect(title_x, title_y, 0x48, 0xE, 0, 0x24);
+        prim.SetIRect(title_x + 0x48, title_y, 0x52, 0xE, 0, 0x32);
     }
-    sprite.SetScirror(0, 0, mgScreenWidth - 1, mgScreenHeight - 1);
-    sprite.End();
+    prim.SetScirror(0, 0, mgScreenWidth - 1, mgScreenHeight - 1);
+    prim.End();
 }
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", DrawEpisode__20CStartupEpisodeTitleFii);
@@ -151,7 +158,7 @@ void CStartupEpisodeTitle::Switch(int on) {
         current = mes;
         current->draw_speed = current->GetDrawSpeedDef();
         current->mes_no = -1;
-        current->unk_1e40 = 0;
+        current->text_ptr = 0;
         current->open = 0;
         current->fade = 0.0f;
         current->fukidashi_centre_x = -1;
@@ -221,7 +228,7 @@ void CStartupEpisodeTitle::Step() {
                 mes_win = mes;
                 mes_win->draw_speed = mes_win->GetDrawSpeedDef();
                 mes_win->mes_no = -1;
-                mes_win->unk_1e40 = 0;
+                mes_win->text_ptr = 0;
                 mes_win->open = 0;
                 mes_win->fade = 0.0f;
                 mes_win->fukidashi_centre_x = -1;
@@ -282,7 +289,7 @@ void MessageTaskManager::Step() {
                 current = this->mes;
                 current->draw_speed = current->GetDrawSpeedDef();
                 current->mes_no = -1;
-                current->unk_1e40 = 0;
+                current->text_ptr = 0;
                 current->open = 0;
                 current->fade = 0.0f;
                 current->fukidashi_centre_x = -1;
@@ -364,7 +371,7 @@ void MessageTaskManager::Clear() {
             if (line->time > 0) {
                 current->draw_speed = current->GetDrawSpeedDef();
                 current->mes_no = -1;
-                current->unk_1e40 = 0;
+                current->text_ptr = 0;
                 current->open = 0;
                 current->fade = 0.0f;
                 current->fukidashi_centre_x = -1;
@@ -1220,28 +1227,26 @@ int SearchMapEventParts(int kind, CMapParts **parts, float *rotation, int unused
     return result;
 }
 #ifdef NONMATCHING
+// 99.6% match, 51 words off
 int SearchMapFlatPosition(float *out_pos, CAutoMapGen *map_gen) {
     CMapParts *place_parts;
-    int        tries_left;
-    CMap      *map;
-    float      center[4];
-    float      from[4];
-    float      to[4];
-    CCPoly     polys[128];
-    mgVu0FBOX  box;
-    int        hit_polys[32];
-    float      hit_points[32][4];
-    float      found[4];
-    int        place_num;
-    int        cell_num;
-    int        poly_num;
-    int        hit_num;
-    int        axis;
-    int        attempt;
-    int        i;
+    int attempt;
+    float center[4];
+    float from[4];
+    float to[4];
+    CCPoly polys[128];
+    mgVu0FBOX box;
+    int hit_polys[32];
+    float hit_points[32][4];
+    float found[4];
+    int place_num;
+    int poly_num;
+    int hit_num;
+    int axis;
+    int tries_left;
+    CMap *map;
 
-    map = DngMainScene->GetMap(DngMainScene->active_map);
-    if (map == NULL) {
+    if ((map = DngMainScene->GetMap(DngMainScene->active_map)) == NULL) {
         return 0;
     }
     place_parts = map->GetPlacPartsTable(&place_num);
@@ -1253,7 +1258,7 @@ int SearchMapFlatPosition(float *out_pos, CAutoMapGen *map_gen) {
     }
     CMapParts *placed = place_parts;
     place_num = 0;
-    while (placed->name[0] != 0) {
+    while ((placed->name[0] == 0) == 0) {
         placed++;
         place_num++;
     }
@@ -1265,11 +1270,10 @@ int SearchMapFlatPosition(float *out_pos, CAutoMapGen *map_gen) {
     box.max[3] = 1.0f;
     while (1) {
         CMapParts *parts = &place_parts[iRand(place_num)];
-        short      attr = 0;
+        int attr = 0;
         if (map_gen != NULL) {
             CAutoMapParts *cell = map_gen->grid;
-            cell_num = map_gen->grid_w * map_gen->grid_h;
-            for (i = 0; i < cell_num; i++) {
+            for (int i = 0; i < map_gen->grid_w * map_gen->grid_h; i++) {
                 if (cell->parts_no >= 0 && cell->parts == parts) {
                     attr = cell->attr;
                     break;
@@ -1299,7 +1303,7 @@ int SearchMapFlatPosition(float *out_pos, CAutoMapGen *map_gen) {
             from[1] += 4200.0f;
             to[1] -= 4200.0f;
             hit_num = CheckHits(polys, poly_num, from, to, 0x20, hit_polys, hit_points, 0, 0);
-            for (i = 0; i < hit_num; i++) {
+            for (int i = 0; i < hit_num; i++) {
                 short area_kind = polys[hit_polys[i]].area_kind;
                 if (area_kind == 0xB) {
                     break;
@@ -1328,62 +1332,66 @@ int SearchMapFlatPosition(float *out_pos, CAutoMapGen *map_gen) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", SearchMapFlatPosition__FPfP11CAutoMapGen);
 #endif
 #ifdef NONMATCHING
+// 99.6% match, 10 words off
 int GetDungeonEventPoint(float *out_pos, float *out_rot, int kind) {
-    CMap                *map;
-    CMapParts           *parts;
-    float                rotation;
-    float                euler[4];
-    CTreasureBoxManager *boxes;
-    CTreasureBox        *box;
-
+    float euler[4];
     if (kind == DUNGEON_EVENT_POINT_PLAYER) {
         CCharacter2 *player = DngMainScene->GetCharacter(0);
         if (player == NULL) {
             return 0;
         }
         player->GetPosition(out_pos);
-        out_pos[0] = fptosi((80.0f + out_pos[0]) / 160.0f) * 160;
+        out_pos[0] = (int)((80.0f + out_pos[0]) / 160.0f) * 160;
         out_pos[1] = 0;
-        out_pos[2] = fptosi((80.0f + out_pos[2]) / 160.0f) * 160;
+        out_pos[2] = (int)((80.0f + out_pos[2]) / 160.0f) * 160;
         *out_rot = 0;
     }
     if (kind == DUNGEON_EVENT_POINT_WAY_20) {
-        map = DngMainScene->GetMap(DngMainScene->active_map);
+        CMapParts *parts[8];
+        float rotation[8];
+        CMap *map = DngMainScene->GetMap(DngMainScene->active_map);
         if (map == NULL) {
             return 0;
         }
-        if (SearchMapEventParts(0, &parts, &rotation, 8) <= 0) {
+        if (SearchMapEventParts(0, parts, rotation, 8) <= 0) {
             return 0;
         }
-        parts->GetPosition(out_pos);
-        *out_rot = rotation;
-        DngMainScene->event_parts_id = map->ConvertParts(parts);
-        EdEventInfo.dng_event_parts = parts;
+        CMapParts *found = parts[0];
+        found->GetPosition(out_pos);
+        *out_rot = rotation[0];
+        CSceneEventData *event = &DngMainScene->event_data;
+        event->map_event.parts_no = map->ConvertParts(found);
+        EdEventInfo.dng_event_parts = found;
         EdEventInfo.dng_event_found = 1;
     }
     if (kind == DUNGEON_EVENT_POINT_WAY_24) {
-        map = DngMainScene->GetMap(DngMainScene->active_map);
+        CMapParts *parts[16];
+        float rotation[16];
+        CMap *map = DngMainScene->GetMap(DngMainScene->active_map);
         if (map == NULL) {
             return 0;
         }
-        if (SearchMapEventParts(2, &parts, &rotation, 0x10) <= 0) {
+        if (SearchMapEventParts(2, parts, rotation, 0x10) <= 0) {
             return 0;
         }
-        parts->GetPosition(out_pos);
-        *out_rot = rotation;
-        DngMainScene->event_parts_id = map->ConvertParts(parts);
-        EdEventInfo.dng_event_parts = parts;
+        CMapParts *found = parts[0];
+        found->GetPosition(out_pos);
+        *out_rot = rotation[0];
+        CSceneEventData *event = &DngMainScene->event_data;
+        event->map_event.parts_no = map->ConvertParts(found);
+        EdEventInfo.dng_event_parts = found;
         EdEventInfo.dng_event_found = 1;
     }
     if (kind == DUNGEON_EVENT_POINT_TREASURE_BOX) {
-        boxes = DngMainScene->battle_area.treasure_box;
-        if (&DngMainScene->battle_area == NULL) {
+        DNG_BATTLE_AREA *area = &DngMainScene->battle_area;
+        if (area == NULL) {
             return 0;
         }
+        CTreasureBoxManager *boxes = area->treasure_box;
         if (boxes == NULL) {
             return 0;
         }
-        box = &boxes->box[boxes->near_box];
+        CTreasureBox *box = &boxes->box[boxes->near_box];
         if (box == NULL) {
             return 0;
         }
@@ -1673,165 +1681,208 @@ void AutoSetTreasureBox(int id, float *position, float power) {
 
 extern char at_2159[];
 #ifdef NONMATCHING
-void AutoSetTreasureBox() {
-    CTreasureBoxManager *boxes = DngMainScene->battle_area.treasure_box;
-    int                  stage = DngSaveDataDungeon->stage_id;
-    int                  floor = DngSaveDataDungeon->floor_id[stage];
-    sceVu0FVECTOR        event_pos;
-    float                event_extra;
-    GetDungeonEventPoint(event_pos, &event_extra, DUNGEON_EVENT_POINT_WAY_20);
+// 99.9% match, 3 words off
+// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
+void AutoSetTreasureBox(void) {
+    DNG_BATTLE_AREA *area = &DngMainScene->battle_area;
+    CTreasureBoxManager *manager = DngMainScene->battle_area.treasure_box;
+    int stage = DngSaveDataDungeon->stage_id;
+    u32 floor = DngSaveDataDungeon->floor_id[stage];
+    float event_pos[4];
+    float event_rot;
+    float angle;
+    int box;
+    int i;
+
+    GetDungeonEventPoint(event_pos, &event_rot, 2);
     event_pos[3] = 1.0f;
-    mgCMemory memory;
-    memory.Init();
+    mgCMemory stack;
     char path[0x40];
-    int  size;
+    float pos[4];
+    float mimic_pos[4];
+    int size;
     sprintf(path, at_2159, stage + 1);
     LoadFile(path, BuffReadData, &size);
-    memory.stSetBuffer(&BuffReadData[(size + 15) / 16 + 1], 0x4000);
-    TRESURE_BOX_FLOOR_INFO *table =
-        (TRESURE_BOX_FLOOR_INFO *) operator new(sizeof(TRESURE_BOX_FLOOR_INFO), memory.Alloc(0x1A43));
-    CreatTresuarBoxInfo(table, (char *) BuffReadData, size);
-    PickupRandomItemCheckMax(table, floor);
-    for (int i = 0; i < 8; ++i) {
-        sceVu0FVECTOR pos;
-        while (1) {
-            if (SearchMapFlatPosition(pos, &AutoMapGen) == 0 ||
-                mgDistVector(event_pos, pos) <= 320.0f || boxes->CheckArea(pos, 60.0f) == 0) {
-                continue;
-            }
-            int   item0 = 0;
-            int   num0 = 1;
-            int   item1 = -1;
-            int   num1 = 1;
-            int   flags;
-            float rot = 2.0f * 3.1415927f * (float) rand() / 2.1474836e9f - 3.1415927f;
-            if (i < 2) {
-                item0 = i == 0 ? 0x132 : 0x131;
-                flags = 0x41;
-            } else {
-                int roll = iRand(100);
-                flags = roll >= 97 ? 4 : roll >= 93 ? 2
-                                                    : 1;
-                int appearance = iRand(3);
-                flags |= appearance == 2 ? 0x20 : appearance == 1 ? 0x10
-                                                                  : 8;
-                roll = iRand(100);
-                flags |= roll >= 97 ? 0x80 : roll >= 95 ? 0x200
-                                                        : 0x40;
-                TRESURE_BOX_ITEM *item;
-                if (flags & TREASURE_BOX_FLAG_TWO_ITEMS) {
-                    item = PickupRandomItem(table, floor, 60);
-                    item0 = item->item_no;
-                    num0 = item->num;
-                    item = PickupRandomItem(table, floor, -50);
-                    item1 = item->item_no;
-                    num1 = item->num;
-                    rot = ScanEyePoint(pos);
+    stack.stSetBuffer(BuffReadData + size / 16 + 1, 0x4000);
+    TRESURE_BOX_FLOOR_INFO *info = new (stack.Alloc(0x1A43)) TRESURE_BOX_FLOOR_INFO;
+    CreatTresuarBoxInfo(info, (char *)BuffReadData, size);
+    PickupRandomItemCheckMax(info, floor);
+
+    for (box = 0; box < 8; box++) {
+        int searching = 1;
+        while (searching) {
+            if (SearchMapFlatPosition(pos, &AutoMapGen) && !(mgDistVector(event_pos, pos) <= 320.0f) &&
+                manager->CheckArea(pos, 60.0f)) {
+                angle = (2.0f * (3.1415927f * (float)rand())) / 2.1474836e9f - 3.1415927f;
+                int flags;
+                int num0 = 1;
+                int item0 = 0;
+                int item1 = -1;
+                int num1 = 1;
+                if (box < 2) {
+                    if (box == 0) {
+                        item0 = 0x132;
+                    }
+                    if (box == 1) {
+                        item0 = 0x131;
+                    }
+                    flags = 0x41;
                 } else {
-                    int rank = flags & 2 ? -30 : (iRand(100) + iRand(100)) / 2;
-                    item = PickupRandomItem(table, floor, rank);
-                    item0 = item->item_no;
-                    num0 = item->num;
+                    int roll = iRand(100);
+                    flags = 1;
+                    if (roll > 92) {
+                        flags = 2;
+                    }
+                    if (roll > 96) {
+                        flags = 4;
+                    }
+                    switch (iRand(3)) {
+                    default:
+                        flags |= 8;
+                        break;
+                    case 1:
+                        flags |= 0x10;
+                        break;
+                    case 2:
+                        flags |= 0x20;
+                        break;
+                    }
+                    roll = iRand(100);
+                    int kind = 0x40;
+                    if (roll > 94) {
+                        kind = 0x200;
+                    }
+                    if (roll > 96) {
+                        kind = 0x80;
+                    }
+                    flags |= kind;
+                    if (flags & 0x80) {
+                        TRESURE_BOX_ITEM *item = PickupRandomItem(info, floor, 60);
+                        item0 = item->item_no;
+                        num0 = item->num;
+                        item = PickupRandomItem(info, floor, -50);
+                        item1 = item->item_no;
+                        num1 = item->num;
+                        angle = ScanEyePoint(pos);
+                    } else {
+                        TRESURE_BOX_ITEM *item;
+                        if (flags & 2) {
+                            item = PickupRandomItem(info, floor, -30);
+                        } else {
+                            item = PickupRandomItem(info, floor, (iRand(100) + iRand(100)) / 2);
+                        }
+                        item0 = item->item_no;
+                        num0 = item->num;
+                    }
                 }
+                if (num0 >= 3 && num0 < 10) {
+                    num0 += iRand(3) - 1;
+                }
+                if (num0 >= 10) {
+                    num0 = (int)(0.8f * (float)num0 + fRand(0.4f * (float)num0) + 0.5f);
+                }
+                if (num1 >= 3 && num1 < 10) {
+                    num1 += iRand(3) - 1;
+                }
+                if (num1 >= 10) {
+                    num1 = (int)(0.8f * (float)num1 + fRand(0.4f * (float)num1) + 0.5f);
+                }
+                manager->PutTreasureBox(-1, pos, angle, flags, item0, num0, item1, num1);
+                searching = 0;
             }
-            if (num0 >= 3 && num0 < 10) {
-                num0 += iRand(3) - 1;
-            }
-            if (num0 >= 10) {
-                num0 = fptosi(0.5f + 0.8f * (float) num0 + fRand(0.4f * (float) num0));
-            }
-            if (num1 >= 3 && num1 < 10) {
-                num1 += iRand(3) - 1;
-            }
-            if (num1 >= 10) {
-                num1 = fptosi(0.5f + 0.8f * (float) num1 + fRand(0.4f * (float) num1));
-            }
-            boxes->PutTreasureBox(-1, pos, rot, flags, item0, num0, item1, num1);
-            break;
         }
     }
-    for (int i = 0; i < ActiveMonster->locate.num; ++i) {
-        int monster = ActiveMonster->locate.monster_id[i];
-        if (monster < 0xF5 || monster >= 0x10D) {
-            continue;
+
+    for (i = 0; i < ActiveMonster->locate.num; i++) {
+        int monster_id = ActiveMonster->locate.monster_id[i];
+        if (monster_id >= 0xF5 && monster_id < 0x10D) {
+            int placed = 0;
+            int param = ActiveMonster->locate.param[i];
+            do {
+                if (SearchMapFlatPosition(mimic_pos, &AutoMapGen) && !(mgDistVector(event_pos, mimic_pos) <= 320.0f) &&
+                    CheckObjectPutArea(mimic_pos)) {
+                    manager->PutTreasureBox(-1, mimic_pos,
+                                            (2.0f * (3.1415927f * (float)rand())) / 2.1474836e9f - 3.1415927f,
+                                            0x101, monster_id, param, -1, 0);
+                    placed = 1;
+                }
+            } while (placed == 0);
         }
-        sceVu0FVECTOR pos;
-        while (SearchMapFlatPosition(pos, &AutoMapGen) == 0 ||
-               mgDistVector(event_pos, pos) <= 320.0f || CheckObjectPutArea(pos) == 0) {
-        }
-        float rot = 2.0f * 3.1415927f * (float) rand() / 2.1474836e9f - 3.1415927f;
-        boxes->PutTreasureBox(-1, pos, rot, 0x101, monster,
-                              ActiveMonster->locate.param[i], -1, 0);
     }
-    int circles = iRand(100) >= 76 ? 1 : 0;
-    if (iRand(100) >= 81) {
-        ++circles;
+
+    int circle_num = 0;
+    if (iRand(100) > 75) {
+        circle_num++;
     }
-    if (iRand(100) >= 91) {
-        ++circles;
+    if (iRand(100) > 80) {
+        circle_num++;
     }
-    for (int i = 0; i < circles; ++i) {
-        sceVu0FVECTOR pos;
-        int           failed = 0;
+    if (iRand(100) > 90) {
+        circle_num++;
+    }
+    for (int circle = 0; circle < circle_num; circle++) {
+        int retry = 0;
         while (1) {
-            if (SearchMapFlatPosition(pos, &AutoMapGen) == 0) {
+            if (!SearchMapFlatPosition(pos, &AutoMapGen)) {
                 break;
             }
             if (mgDistVector(event_pos, pos) <= 320.0f) {
                 continue;
             }
-            if (CheckObjectPutArea(pos) != 0) {
+            if (CheckObjectPutArea(pos)) {
                 RandomCircle.SetCircle(pos);
                 break;
             }
-            if (++failed >= 101) {
+            retry++;
+            if (retry > 100) {
                 break;
             }
         }
     }
-    int geostone = DngMainScene->battle_area.floor_manager.IsGeoStone(floor);
-    if (geostone != 0 &&
-        (DngSaveDataDungeon->GetFloorInfoPtr(stage, floor)->flag & DNG_FLOOR_FLAG_GEOSTONE_FOUND)) {
-        geostone = 0;
+
+    int geo_stone = area->floor_manager.IsGeoStone(floor);
+    if (geo_stone && (DngSaveDataDungeon->GetFloorInfoPtr(stage, floor)->flag & DNG_FLOOR_FLAG_GEOSTONE_FOUND)) {
+        geo_stone = 0;
     }
-    if (geostone != 0) {
-        sceVu0FVECTOR pos;
-        while (SearchMapFlatPosition(pos, &AutoMapGen) != 0) {
-            if (CheckObjectPutArea(pos) != 0 && mgDistVector(event_pos, pos) > 320.0f) {
-                pos[3] = 1.0f;
-                pos[1] += 20.0f;
-                GeoStone.SetPosition(pos);
-                GeoStone.angle = 0.0f;
-                GeoStone.flag = 1;
-                GeoStone.anime = 1;
-                if (AutoMapGen.gio_parts != NULL) {
-                    AutoMapGen.gio_parts->SetPosition(pos);
-                }
-                break;
+    while (geo_stone) {
+        if (!SearchMapFlatPosition(pos, &AutoMapGen)) {
+            break;
+        }
+        if (CheckObjectPutArea(pos) && !(mgDistVector(event_pos, pos) <= 320.0f)) {
+            pos[1] += 20.0f;
+            pos[3] = 1.0f;
+            CGeoStone *stone = &GeoStone;
+            stone->SetPosition(pos);
+            stone->angle = 0.0f;
+            stone->flag = 1;
+            stone->anime = 1;
+            if (AutoMapGen.gio_parts != NULL) {
+                AutoMapGen.gio_parts->SetPosition(pos);
             }
+            break;
         }
     }
-    for (int i = 0; i < 12 && AutoMapGen.random_stone[i] != NULL; ++i) {
-        sceVu0FVECTOR pos;
-        while (SearchMapFlatPosition(pos, &AutoMapGen) != 0) {
-            if (CheckObjectPutArea(pos) != 0 && mgDistVector(event_pos, pos) > 320.0f) {
-                AutoMapGen.random_stone[i]->SetPosition(pos);
-                break;
-            }
+
+    for (int stone_no = 0; stone_no < 12 && AutoMapGen.random_stone[stone_no] != NULL;) {
+        if (!SearchMapFlatPosition(pos, &AutoMapGen)) {
+            break;
+        }
+        if (CheckObjectPutArea(pos) && !(mgDistVector(event_pos, pos) <= 320.0f)) {
+            AutoMapGen.random_stone[stone_no]->SetPosition(pos);
+            stone_no++;
         }
     }
-    if (AutoMapGen.door_room >= 0) {
-        sceVu0FVECTOR pos;
-        while (SearchMapFlatPosition(pos, &AutoMapGen) != 0) {
-            if (CheckObjectPutArea(pos) == 0 || mgDistVector(event_pos, pos) <= 320.0f) {
-                continue;
-            }
-            int           col = fptosi((pos[0] + 0.5f * AutoMapGen.cell_w) / AutoMapGen.cell_w);
-            int           row = fptosi((pos[2] + 0.5f * AutoMapGen.cell_d) / AutoMapGen.cell_d);
+
+    while (AutoMapGen.door_room >= 0) {
+        if (!SearchMapFlatPosition(pos, &AutoMapGen)) {
+            break;
+        }
+        if (CheckObjectPutArea(pos) && !(mgDistVector(event_pos, pos) <= 320.0f)) {
             AUTOMAP_ROOM *room = &AutoMapGen.room[AutoMapGen.door_room];
-            if (col < room->x || col >= room->x + room->w ||
-                row < room->y || row >= room->y + room->h) {
-                boxes->PutTreasureBox(-1, pos, 0.0f, 1, GetKeyDoorIndex(stage, floor), 1, -1, 0);
+            int x = (int)((pos[0] + 0.5f * AutoMapGen.cell_w) / AutoMapGen.cell_w);
+            int y = (int)((pos[2] + 0.5f * AutoMapGen.cell_d) / AutoMapGen.cell_d);
+            if (room->x > x || x >= room->x + room->w || room->y > y || room->y + room->h <= y) {
+                manager->PutTreasureBox(-1, pos, 0.0f, 1, GetKeyDoorIndex(stage, floor), 1, -1, 0);
                 break;
             }
         }
@@ -1840,49 +1891,34 @@ void AutoSetTreasureBox() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", AutoSetTreasureBox__Fv);
 #endif
-#ifdef NONMATCHING
-/**
- *
- * Selects a floor for scripted monster placement.
- *
- */
 int _FLS(SPI_STACK *stack, int argc) {
     FLS_FLOOR_ID = spiGetStackInt(stack++);
     spiGetStackInt(stack);
-    int floor = DngSaveDataDungeon->floor_id[DngSaveDataDungeon->stage_id];
-    if (floor == FLS_FLOOR_ID) {
-        ((CMonsterMan *) ActiveMonster)->locate.num = 0;
+    int current_floor = DngSaveDataDungeon->floor_id[DngSaveDataDungeon->stage_id];
+    int floor = current_floor;
+    if (FLS_FLOOR_ID == floor) {
+        ((CMonsterMan *)ActiveMonster)->locate.num = 0;
     }
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", _FLS__FP9SPI_STACKi);
-#endif
-#ifdef NONMATCHING
-/**
- *
- * Adds scripted monster placements on the selected floor.
- *
- */
 int _FL(SPI_STACK *stack, int argc) {
     int i;
     int entry;
-    if (DngSaveDataDungeon->floor_id[DngSaveDataDungeon->stage_id] != FLS_FLOOR_ID) {
+    int current_floor = DngSaveDataDungeon->floor_id[DngSaveDataDungeon->stage_id];
+    int floor = current_floor;
+    if (FLS_FLOOR_ID != floor) {
         return 1;
     }
     {
         for (i = 0; i < argc / 2; i++) {
-            entry = ((CMonsterMan *) ActiveMonster)->locate.num;
-            ((CMonsterMan *) ActiveMonster)->locate.monster_id[entry] = spiGetStackInt(stack++);
-            ((CMonsterMan *) ActiveMonster)->locate.param[entry] = spiGetStackInt(stack++);
-            ((CMonsterMan *) ActiveMonster)->locate.num++;
+            entry = ((CMonsterMan *)ActiveMonster)->locate.num;
+            ((CMonsterMan *)ActiveMonster)->locate.monster_id[entry] = spiGetStackInt(stack++);
+            ((CMonsterMan *)ActiveMonster)->locate.param[entry] = spiGetStackInt(stack++);
+            ((CMonsterMan *)ActiveMonster)->locate.num++;
         }
     }
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", _FL__FP9SPI_STACKi);
-#endif
 /**
  *
  * Ends the scripted monster placement floor.
@@ -1992,7 +2028,6 @@ void DungeonFloorInit() {
 
 void DungeonFloorFinish() {
 }
-#ifdef NONMATCHING
 extern char at_2446[];
 extern char at_2447[];
 extern char at_2448[];
@@ -2004,21 +2039,33 @@ extern char at_2453[];
 extern char at_2454[];
 extern char at_2455__2[];
 extern char at_2456[];
-
 void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
-    char image_path[0x40];
-    char stage_path[0x30];
-    char room_path[0x80];
-    int  image_size;
-    int  stage_size;
-    int  room_size;
+    mgCMemory *stack;
+    u_long128 *image;
+    mgCTextureManager *textures;
+    int new_map;
+    int image_size;
+    CMap *map;
+    int box;
+    mgCCamera *camera;
+    int map_no;
+    CTreasureBoxManager *boxes;
+    int cell;
+    int snd_id;
+    int stage_size;
+    int seal;
+    int step;
+    int bgm_no;
+    int room_size;
+    u_long128 *stage_image;
+    int room;
 
     DNG_BATTLE_AREA *area = &DngMainScene->battle_area;
-    DngMainScene->battle_area.unk_5c = 1;
-    area->unk_5c = 1;
+    DngMainScene->battle_area.battle_clear = 1;
+    area->battle_clear = 1;
     area->battle_bgm_state = 0;
     area->battle_bgm_vol = 0.0f;
-    area->unk_54 = 0;
+    area->camera_mode = 0;
     area->pause_flag = 0;
     area->timer = 0;
     area->minimap_reveal = 0;
@@ -2038,7 +2085,7 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
     int stage = DngSaveDataDungeon->stage_id;
     int floor = DngSaveDataDungeon->floor_id[stage];
     NowFloorInfoPtr = DngSaveDataDungeon->GetFloorInfoPtr(stage, floor);
-    int seal = area->floor_manager.IsSealFloor(floor);
+    seal = area->floor_manager.IsSealFloor(floor);
     if (0 < seal) {
         area->floor_status |= 1 << (seal - 1);
     }
@@ -2052,10 +2099,10 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
     DngMainScene->StopSeSrc();
     sndSeAllStop(-1);
     sndStopVoice(1);
-    int snd_id = GetMapSndDataID(SearchMapNo(map_name));
+    snd_id = GetMapSndDataID(SearchMapNo(map_name));
     DngMainScene->LoadSound(snd_id, BuffReadData);
     if (DngMainScene->skip_load_bgm == 0) {
-        int bgm_no = DngMainScene->GetDefBgmNo(snd_id);
+        bgm_no = DngMainScene->GetDefBgmNo(snd_id);
         if (bgm_no == -1) {
             DngMainScene->StopBGM(0);
         }
@@ -2076,7 +2123,6 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
     } else {
         DngMainScene->skip_load_bgm = 0;
     }
-    int new_map;
     if (strcmp(area->map_name, map_name) == 0) {
         new_map = 0;
     } else {
@@ -2084,7 +2130,7 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
         new_map = 1;
     }
     if (new_map) {
-        int map_no = SearchMapNo(map_name);
+        map_no = SearchMapNo(map_name);
         if (map_no < 0) {
             printf(at_2446, map_name);
         }
@@ -2093,29 +2139,30 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
         MainMapInfo.stack_no = 1;
         MainMapInfo.efp_tex_block = 0xF;
         MainMapInfo.tex_block = 0;
-        MainMapInfo.load_buf = (u8 *) BuffReadData;
+        MainMapInfo.load_buf = (u8 *)BuffReadData;
         SetMainMapInfo(&MainMapInfo);
         GetLoadMapInfo(&load_info, map_no);
         load_info.sky_tex_block = 0x4C;
-        load_info.place_parts_max = 400;
         load_info.load_sky = 1;
+        load_info.place_parts_max = 400;
         DngMainScene->DeleteMap(0, 1);
         DngMainScene->LoadMap(0, &load_info, 0);
         DngMainScene->SetNowMapNo(map_no);
         DngMainScene->SetActive(2, 0);
         DngMainMap = DngMainScene->GetMap(DngMainScene->active_map);
-        mgCMemory *stack = DngMainScene->GetStack(1);
+        stack = DngMainScene->GetStack(1);
         if (stack != NULL && cfg_name != NULL) {
             stack->lock = 0;
             stack->Align64();
-            u_long128 *image = (u_long128 *) stack->stAllocTest(1);
+            image = (u_long128 *)stack->stAllocTest(1);
             if (image != NULL) {
-                mgCTextureManager *textures = &mgTexManager;
+                textures = &mgTexManager;
                 textures->DeleteBlock(0x66);
+                char image_path[0x40];
                 sprintf(image_path, at_2447, map_name);
                 if (LoadFile2(image_path, image, &image_size, 0)) {
                     stack->Alloc(image_size / 16 + 1);
-                    textures->EnterIMGFile((u_char *) image, 0x66, stack, NULL);
+                    textures->EnterIMGFile((u_char *)image, 0x66, stack, NULL);
                 }
             }
         }
@@ -2137,17 +2184,18 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
         }
         if (map_effect.type >= 0) {
             map_effect.Init_LightBoll(stack, 0x30);
-            mgCCamera *camera = DngMainScene->GetCamera(0);
+            camera = DngMainScene->GetCamera(0);
             if (camera != NULL) {
-                for (int step = 0; step < 16; step++) {
+                for (step = 0; step < 16; step++) {
                     map_effect.Step(camera);
                 }
             }
         }
         stack->lock = 0;
         stack->Align64();
-        u_long128 *stage_image = (u_long128 *) stack->stAllocTest(1);
+        stage_image = (u_long128 *)stack->stAllocTest(1);
         if (stage_image != NULL) {
+            char stage_path[0x30];
             if (stage != 4) {
                 sprintf(stage_path, at_2453, stage + 1);
             } else if (floor < 16) {
@@ -2158,16 +2206,16 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
             LoadFile(stage_path, stage_image, &stage_size);
             stack->Alloc(stage_size / 16 + 1);
             mgTexManager.DeleteBlock(0x6A);
-            mgTexManager.EnterIMGFile((u_char *) stage_image, 0x6A, stack, NULL);
+            mgTexManager.EnterIMGFile((u_char *)stage_image, 0x6A, stack, NULL);
         }
         stack->lock = 1;
     }
     if (AutoMapGen.grid != NULL) {
-        for (int cell = 0; cell < AutoMapGen.grid_w * AutoMapGen.grid_h; cell++) {
+        for (cell = 0; cell < AutoMapGen.grid_w * AutoMapGen.grid_h; cell++) {
             AutoMapGen.grid[cell].Initialize();
         }
     }
-    for (int room = 0; room < 8; room++) {
+    for (room = 0; room < 8; room++) {
         AutoMapGen.room[room].unk_0 = 0;
     }
     AutoMapGen.healing_point.enable = 0;
@@ -2186,11 +2234,12 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
     AutoMapGen.random_map = 0;
     AutoMapGen.minimap_enable = 0;
     if (cfg_name != NULL) {
+        char room_path[0x80];
         sprintf(room_path, at_2456, cfg_name);
         mgCMemory room_stack;
         LoadFile(room_path, BuffReadData, &room_size);
-        room_stack.stSetBuffer(BuffReadData + room_size / 16 + 1, 0x4000);
-        AutoMapGen.SetupRoomInfo((char *) BuffReadData, room_size, &room_stack);
+        room_stack.stSetBuffer(BuffReadData + room_size / 16 + 1, 0x8000);
+        AutoMapGen.SetupRoomInfo((char *)BuffReadData, room_size, &room_stack);
         AutoMapGen.gen_flag |= gen_flag;
         AutoMapGen.Build();
     }
@@ -2202,7 +2251,7 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
     if (ActiveMonster != NULL) {
         ActiveMonster->Initialize(DngMainScene);
     }
-    CMap *map = DngMainScene->GetMap(DngMainScene->active_map);
+    map = DngMainScene->GetMap(DngMainScene->active_map);
     AutoMapGen.mini_map.map = NULL;
     AutoMapGen.mini_map.parts_table = NULL;
     AutoMapGen.mini_map.grid = NULL;
@@ -2211,7 +2260,10 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
     AutoMapGen.mini_map.large = 0;
     AutoMapGen.mini_map.SetMapInfo(map, AutoMapGen.grid, AutoMapGen.grid_w, AutoMapGen.grid_h, AutoMapGen.cell_w,
                                    AutoMapGen.cell_d);
-    area->treasure_box->Initialize();
+    boxes = area->treasure_box;
+    for (box = 0; box < TREASURE_BOX_MAX; box++) {
+        boxes->box[box].Initialize();
+    }
     RandomCircle.Clear();
     GeoStone.SetFlag(0);
     PullItemMan.Clear();
@@ -2219,9 +2271,6 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
     FxScriptMan->AllClearEffSpt();
     InitS51Thunder();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", LoadDungeonMapFile__FPcPci);
-#endif
 void MinimapDoorEnable(float *pos) {
     AutoMapGen.MinimapDoorOpen(pos);
     AutoMapGen.UpdateNaviMap(pos, 4);

@@ -557,34 +557,36 @@ u_long128 *SetData7(int count, int type, int **index, u_long128 *packet, u_long1
 }
 #ifdef NONMATCHING
 static u_long128 *(*set_data_func[8])(int, int, int **, u_long128 *, u_long128 *, u_long128 *, u_long128 *, u_long128 *, mgVertexWeight *) = {
-    SetData0, SetData1, SetData2, SetData3, SetData4, SetData5, SetData6, SetData7};
-
+    SetData0, SetData1, SetData2, SetData3, SetData4, SetData5, SetData6, SetData7
+};
+// 84.4% match, 135 words off
 int mgCVisualMotionMDT::CreateFaceMotionPacket(u_int *packet, mgCFace *face, mgCVMotionData *motion) {
     static u_int prog_vif[4] __attribute__((aligned(16))) = {0, 0, 0, MG_VIF_MSCAL | 0x2};
     static u_int progf_vif[4] __attribute__((aligned(16))) = {0, 0, 0, MG_VIF_MSCNT};
-    sceGifTag    batch_tag;
-    sceGifTag    end_tag;
-    int         *indices;
-    u_int       *destination;
-    u_int       *write;
-    u_int       *buffer_start;
-    u_int       *unpack;
-    u_int       *batch;
-    u_long128   *end;
-    int          remaining;
-    int          batch_limit;
-    int          count;
-    int          variant;
-    int          primitive;
-    int          use_scratchpad;
-    int          started;
-    int          words;
+    sceGifTag  batch_tag;
+    sceGifTag  end_tag;
+    int       *indices;
+    u_int     *start;
+    u_int     *write;
+    u_int     *buffer_start;
+    u_int     *unpack;
+    u_int     *batch;
+    u_long128 *end;
+    int        remaining;
+    int        batch_limit;
+    int        count;
+    int        variant;
+    int        primitive;
+    int        use_scratchpad;
+    int        started;
+    int        words;
 
     if (face == NULL) {
         return 0;
     }
+    start = packet;
     use_scratchpad = 0;
-    if (((u_int) packet & 0xF0000000) == MG_UNCACHED) {
+    if (((u_int)packet & 0xF0000000) == MG_UNCACHED) {
         use_scratchpad = 1;
     }
     variant = 0;
@@ -603,7 +605,7 @@ int mgCVisualMotionMDT::CreateFaceMotionPacket(u_int *packet, mgCFace *face, mgC
     if (face->type & MG_FACE_NO_NORMAL) {
         variant += 4;
     }
-    *(u_long128 *) &batch_tag = 0;
+    *(u_long128 *)&batch_tag = 0;
     batch_tag.EOP = 1;
     batch_tag.PRE = 1;
     end_tag = batch_tag;
@@ -625,9 +627,9 @@ int mgCVisualMotionMDT::CreateFaceMotionPacket(u_int *packet, mgCFace *face, mgC
     packet[1] = 0;
     packet[2] = 0;
     packet[3] = MG_VIF_UNPACK_V4_32 | (1 << MG_VIF_NUM_SHIFT) | 0x0027;
-    *(u_long128 *) &packet[4] = *(u_long128 *) &end_tag;
-    destination = packet + 8;
-    write = use_scratchpad ? GetScrPad() : destination;
+    *(u_long128 *)&packet[4] = *(u_long128 *)&end_tag;
+    packet += 8;
+    write = use_scratchpad ? GetScrPad() : packet;
     buffer_start = write;
     while (remaining > 0) {
         count = batch_limit;
@@ -641,18 +643,18 @@ int mgCVisualMotionMDT::CreateFaceMotionPacket(u_int *packet, mgCFace *face, mgC
         unpack = write + 3;
         batch = write + 4;
         batch_tag.NLOOP = count | 0x8000;
-        *(u_long128 *) batch = *(u_long128 *) &batch_tag;
-        end = set_data_func[variant](count, face->type, &indices, (u_long128 *) (batch + 4),
-                                     (u_long128 *) vertex, (u_long128 *) normal, (u_long128 *) uv,
-                                     (u_long128 *) colour, weight);
-        *unpack = (((u_int) ((u_int *) end - batch) / 4) << MG_VIF_NUM_SHIFT) | MG_VIF_UNPACK_V4_32 | MG_VIF_UNPACK_FLG;
+        *(u_long128 *)batch = *(u_long128 *)&batch_tag;
+        end = set_data_func[variant](count, face->type, &indices, (u_long128 *)(batch + 4),
+                                     (u_long128 *)vertex, (u_long128 *)normal, (u_long128 *)uv,
+                                     (u_long128 *)colour, weight);
+        *unpack = (((u_int)((u_int *)end - batch) / 4) << MG_VIF_NUM_SHIFT) | MG_VIF_UNPACK_V4_32 | MG_VIF_UNPACK_FLG;
         if (started == 0) {
             started = 1;
-            *end = *(u_long128 *) prog_vif;
+            *end = *(u_long128 *)prog_vif;
         } else {
-            *end = *(u_long128 *) progf_vif;
+            *end = *(u_long128 *)progf_vif;
         }
-        write = (u_int *) (end + 1);
+        write = (u_int *)(end + 1);
         if (primitive == MG_PRIM_TRIANGLE_STRIP && batch_limit < remaining) {
             remaining += 2;
             indices -= face->index_stride * 2;
@@ -660,23 +662,23 @@ int mgCVisualMotionMDT::CreateFaceMotionPacket(u_int *packet, mgCFace *face, mgC
         words = write - buffer_start;
         if (words > 0x514) {
             if (use_scratchpad != 0) {
-                SendDMA(destination, words / 4);
+                SendDMA(packet, words / 4);
             }
-            destination += words;
-            write = use_scratchpad ? GetScrPad() : destination;
+            packet += words;
+            write = use_scratchpad ? GetScrPad() : packet;
             buffer_start = write;
         }
         remaining -= batch_limit;
     }
     words = write - buffer_start;
     if (use_scratchpad != 0 && words > 0) {
-        SendDMA(destination, words / 4);
+        SendDMA(packet, words / 4);
     }
-    destination += words;
+    packet += words;
     u_int finish[4] __attribute__((aligned(16))) = {MG_VIF_FLUSHA, 0, 0, 0};
-    *(u_long128 *) destination = *(u_long128 *) finish;
-    destination += 4;
-    return (destination - packet) / 4;
+    *(u_long128 *)packet = *(u_long128 *)finish;
+    packet += 4;
+    return (packet - start) / 4;
 }
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/visualmotion", CreateFaceMotionPacket__18mgCVisualMotionMDTFPUiP7mgCFaceP14mgCVMotionData);

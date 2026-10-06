@@ -334,7 +334,7 @@ public:
     MENUFORM_MAKEBRD_INFO make_board;   /**< Materials shown on the building board. */
     CGameDataUsed         create_item;  /**< Item shown for the invention card under the cursor. */
     MC_ICON_DATA          icon_data[3]; /**< Memory card icons of the album save. */
-    u8                    unk_24c;
+    u8                    card_scroll_dir;
     u8                    album_scroll_reset; /**< Requests a reset of album scrolling. */
     u8                    unk_24e[2];
     float                 album_scroll_x; /**< Horizontal album scroll position. */
@@ -352,9 +352,9 @@ public:
     u8                    unk_364[0xC];
     float                 neta_color[4];  /**< Colour of the frame of a photo showing an idea. */
     float                 scoop_color[4]; /**< Colour of the frame of a photo showing a scoop. */
-    short                 unk_390;
+    short                 neta_effect_time;
     short                 unk_392;
-    u_int                *unk_394;
+    u_int                *create_sound_buffer;
     mgCMemory             data_stack;     /**< Memory the menu layout data is read into. */
     mgCTexture           *photo_tex[30];  /**< Texture of each carried photo. */
     mgCTexture           *album_tex[50];  /**< Texture of each album photo. */
@@ -364,33 +364,33 @@ public:
     u8                   *create_model_file;  /**< Loaded model data for the item being built. */
     u8                   *create_motion_file; /**< Loaded motion data for the item being built. */
     CActionChara         *create_chara;       /**< Model of the item being built. */
-    void                 *unk_578;
+    void                 *load_sound_buffer;
     INVENT_MATERIAL_LIST *make_material;  /**< Materials of the recipe being built. */
     short                 create_step;    /**< Stage of the building sequence. */
     short                 create_item_id; /**< Item being built. */
-    int                   unk_584;
+    int                   create_partial_match;
     int                   create_photo_neta[3]; /**< Idea identifiers associated with the selected photos. */
-    int                   unk_594;
+    int                   create_missing_slot;
     s8                    create_photo_name[32]; /**< Name displayed for the selected invention photo. */
-    s8                    unk_5b8;
+    s8                    blink_time;
     u8                    unk_5b9[3];
     int                   neta_circle_snap;     /**< Snap state of the idea board selection circle. */
     float                 neta_flash_angle;     /**< Angle of the idea flash effect. */
     u8                    new_neta_photo[0x20]; /**< Non-zero for each carried photo whose idea the idea board confirmation teaches. */
-    float                 unk_5e4;
+    float                 create_spin_angle;
     float                 create_scale; /**< Scale of the model of the item being built. */
-    float                 unk_5ec;
-    float                 unk_5f0;
-    u8                    unk_5f4;
+    float                 create_wobble_amp;
+    float                 create_wobble_phase;
+    u8                    create_show_phase;
     u8                    unk_5f5[3];
-    float                 unk_5f8;
-    s8                    unk_5fc;
+    float                 create_scale_in;
+    s8                    create_load_state;
     u8                    unk_5fd[3];
-    int                   unk_600;
-    short                 unk_604;
-    short                 unk_606;
-    short                 unk_608;
-    short                 unk_60a;
+    int                   create_timer;
+    short                 jingle_state;
+    short                 jingle_pending;
+    short                 jingle_time;
+    short                 create_wait_time;
     short                 neta_select_num; /**< Number of ideas placed on the idea board. */
     u8                    unk_60e[2];
     int                   neta_select_index[3]; /**< Photo slot or notebook line of each idea on the board, or -1. */
@@ -422,8 +422,8 @@ public:
     float                 chara_make_pos[4]; /**< Target position of the character during creation. */
     int                   line_pos[50][2];   /**< Points of the random line drawn by the menu forms. */
     u8                    unk_820[0x528];
-    mgCMemory             unk_d48;
-    int                   unk_d78;
+    mgCMemory             item_model_memory;
+    int                   download_base;
     int                   unk_d7c;
     float                 neta_effect_pos[30][2]; /**< Screen position of each new idea's star effect. */
     short                 neta_effect_alpha[30];  /**< Alpha of each new idea's star effect. */

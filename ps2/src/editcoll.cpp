@@ -2,6 +2,7 @@
 #include "mw_runtime.h"
 
 #include "editcoll.hpp"
+#include "mapload.hpp"
 #include "mg_frame.hpp"
 #include "mg_math.hpp"
 #include "mg_memory.hpp"
@@ -22,23 +23,32 @@ struct CollisionRow {
 #include "mg_memory.hpp"
 
 // Code (.text)
-#ifdef NONMATCHING
 int ClipBoxXZ(float *max_a, float *min_a, float *max_b, float *min_b) {
-    // VU0's sticky sign flag rejects the boxes when either X or Z gap is negative.
-    if (max_a[0] - min_b[0] < 0.0f || max_a[2] - min_b[2] < 0.0f) {
-        return 0;
+    int flags;
+    asm {
+        lqc2 vf10, 0(max_a)
+        lqc2 vf11, 0(min_a)
+        lqc2 vf1, 0(max_b)
+        lqc2 vf2, 0(min_b)
+        vnop
+        vnop
+        vnop
+        ctc2.ni zero, vi16
+        vsub.xz vf25, vf10, vf2
+        vsub.xz vf25, vf1, vf11
+        vnop
+        vnop
+        vnop
+        vnop
+        vnop
+        cfc2.ni flags, vi16
     }
-    if (max_b[0] - min_a[0] < 0.0f || max_b[2] - min_a[2] < 0.0f) {
-        return 0;
-    }
-    return 1;
+    return (flags & 0x80) == 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editcoll", ClipBoxXZ__FPfPfPfPf);
-#endif
 #pragma global_optimizer reset
 
 #ifdef NONMATCHING
+// 92.1% match, 129 words off
 float OverlapPoly3AreaXZ(sceVu0FVECTOR *clipped, sceVu0FVECTOR *clipper, mgVu0FBOX *box) {
     union Vector {
         float     value[4];
@@ -357,63 +367,31 @@ float CEditCollision::OverlapXZ(CEditCollision &other, float (*matrix)[4], mgVu0
     return total;
 }
 
-#ifdef NONMATCHING
 int CEditCollision::OverlapPoly3XZ(float (*triangle)[4], float (*matrix)[4], float *area) {
-    float   tri_max[4];
-    float   tri_min[4];
-    float   transformed_max[4];
-    float   transformed_min[4];
-    float   transformed[3][4];
+    float tri_max[4];
+    float tri_min[4];
+    float transformed_max[4];
+    float transformed_min[4];
+    float transformed[3][4];
     CCPoly *source = poly;
-    int     index;
-    float   total;
-    if (source == NULL) {
-        return 0;
-    }
+    int index;
+    float total;
+    if (source == NULL) return 0;
     mgVectorMaxMin(tri_max, tri_min, triangle[0], triangle[1], triangle[2]);
-    if (area != NULL) {
-        *area = 0.0f;
-    }
+    if (area != NULL) *area = 0.0f;
     mgApplyMatrix(transformed_max, transformed_min, matrix, bbox.max, bbox.min);
-    if (!ClipBoxXZ(tri_max, tri_min, transformed_max, transformed_min)) {
-        return 0;
-    }
+    if (!ClipBoxXZ(tri_max, tri_min, transformed_max, transformed_min)) return 0;
     total = 0.0f;
     for (index = 0; index < poly_count; index++, source++) {
         mgApplyMatrixN(transformed, matrix, source->vertex, 3);
-        unsigned int check = (transformed[0][1] <= 0.1f ? 0u : 1u);
-        float        first = check;
-        first = first < 0.0f ? -first : first;
-        float first_zero = 0.0f;
-        if (first == first_zero) {
-            unsigned int check = (transformed[1][1] <= 0.1f ? 0u : 1u);
-            float        second = check;
-            second = second < 0.0f ? -second : second;
-            float second_zero = 0.0f;
-            if (second == second_zero) {
-                unsigned int check = (transformed[2][1] <= 0.1f ? 0u : 1u);
-                float        third = check;
-                third = third < 0.0f ? -third : third;
-                float third_zero = 0.0f;
-                if (third == third_zero) {
-                    float overlap = OverlapPoly3AreaXZ(triangle, transformed, NULL);
-                    overlap = overlap < 0.0f ? -overlap : overlap;
-                    total += overlap;
-                }
-            }
+        if (!mgAbs(transformed[0][1] > 0.1f) && !mgAbs(transformed[1][1] > 0.1f) && !mgAbs(transformed[2][1] > 0.1f)) {
+            total += mgAbs(OverlapPoly3AreaXZ(triangle, transformed, NULL));
         }
     }
-    if (area != NULL) {
-        *area = total;
-    }
-    if (!(total <= 0.0f)) {
-        return 1;
-    }
+    if (area != NULL) *area = total;
+    if (!(total <= 0.0f)) return 1;
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editcoll", OverlapPoly3XZ__14CEditCollisionFPA4_fPA4_fPf);
-#endif
 
 void CEditCollision::ApplyMatrix(float (*matrix)[4]) {
     CCPoly *p;

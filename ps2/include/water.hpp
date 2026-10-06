@@ -135,8 +135,8 @@ public:
     int           color[4]; /**< Red, green, blue and alpha channels of the surface. */
     float         speed;    /**< Speed the ripples travel across the grid at. */
     float         damping;  /**< Rate the ripples lose height at. */
-    float         unk_48;
-    float         unk_4c;
+    float         surface_param0;
+    float         surface_param1;
     int           unk_50;
     int           rows;    /**< Grid points along the x axis. */
     int           columns; /**< Grid points along the z axis. */

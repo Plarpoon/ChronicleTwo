@@ -14,6 +14,15 @@
  * Declares the base class of the menus, the shared key and cursor handling of the menu system, the item menu and the
  * item choice that an event asks for.
  */
+enum MENU_SWAP_TYPE {
+    MENU_SWAP_TYPE_ACTIVE_ITEM = 0,
+    MENU_SWAP_TYPE_EQUIP = 1,
+    MENU_SWAP_TYPE_ROBO_PART = 2,
+    MENU_SWAP_TYPE_ITEM_BOARD = 3,
+    MENU_SWAP_TYPE_UNK_4 = 4,
+    MENU_SWAP_TYPE_UNK_9 = 9,
+    MENU_SWAP_TYPE_ACTIVE_ESA = 10,
+};
 
 class CActionChara;
 class CCharacter2;
@@ -140,7 +149,7 @@ struct MENU_ASKMODE_PARA {
         struct {
             int cmd_msg[8];   /**< Message number of each command. */
             u32 cmd_color[8]; /**< Colour each command is drawn in; 0x80202020 marks one that cannot be chosen. */
-            s16 unk_48[8];
+            s16 cmd_shade[8];
             s16 cmd_mark[8]; /**< Non-zero for a command the list marks as ready, such as a weapon that can be built up. */
         };
 
@@ -164,7 +173,7 @@ struct MENU_ASKMODE_PARA {
     s16               arg1; /**< Second value that depends on the question. */
     s16               unk_6C;
     s16               unk_6E;
-    s16               unk_70;
+    s16               ask_mode;
     s32               unk_74;
     CMenuPosDataForm *form;  /**< Form the question was opened from. */
     CGameDataUsed    *item;  /**< Item the question acts on. */
@@ -206,12 +215,12 @@ STATIC_ASSERT(sizeof(MENU_ASKMODE_PARA) == 0x94);
  */
 struct ITEMCMD_RET_PARA {
     s16            cmd; /**< Command that was run, or -1 for none. */
-    s8             unk_2;
+    s8             menu_cmd;
     s8             chara;   /**< Character the item is equipped on. */
     s16            result;  /**< Value the command returned, such as what using the item did. */
     s16            item_no; /**< Item number of the item the command acted on. */
     s16            unk_8;
-    s16            unk_A;
+    s16            num;
     CGameDataUsed *item;  /**< Item the command acted on. */
     CGameDataUsed *item2; /**< Second item the command acted on. */
 };
@@ -301,9 +310,9 @@ public:
     MENU_SWAPITEM_INFO swap_info;     /**< Where the item being moved came from. */
     s16                cmd_arg_pos;   /**< Position of the item that the command list was opened for. */
     s32                unk_F8;
-    s32                unk_FC;
+    s32                make_item_no;
     int                make_num; /**< Number of objects chosen to make. */
-    s32                unk_104;
+    s32                make_space_no;
     s8                 make_cursor;  /**< Row the cursor is on in the make question; 0 is the number. */
     s16                make_num_max; /**< Number of objects that can be made at most. */
 
@@ -1067,23 +1076,23 @@ public:
     s16                 equip_list[8];  /**< Item numbers of the equipment of the shown character. */
     u8                  equip_flag[8];  /**< Flags of the equipment of the shown character. */
     s16                 load_weapon_no; /**< Item number of the weapon whose model is loaded. */
-    u8                  unk_13A;
+    u8                  reset_cursor_pos;
     sceVu0FVECTOR       camera_ref; /**< Point the menu camera looks at. */
     sceVu0FVECTOR       camera_pos; /**< Position of the menu camera. */
-    u8                  unk_160;
+    u8                  viewing_weapon;
     u8                  unk_161[0xB];
-    u8                  unk_16C;
+    u8                  repair_running;
     u8                  effect_pos;   /**< Non-zero once the place of the item effect is known. */
     u8                  sound_loaded; /**< Non-zero once the shown character's voices are loaded. */
     u8                  sound_load;   /**< Non-zero when the shown character's voices must be loaded. */
-    u8                  unk_170;
-    s16                 unk_172;
-    s16                 unk_174;
+    u8                  item_consumed;
+    s16                 equipped_model_no;
+    s16                 chara_reload;
     s16                 sub_menu;      /**< Screen opened from the item menu that is running, or -1 for the item menu itself. */
     s16                 next_sub_menu; /**< Screen to open from the item menu, or -1 for none. */
     CGameDataUsed      *view_weapon;   /**< Weapon whose status is shown. */
     CMenuPosDataForm   *view_form[6];  /**< Forms of the pages. */
-    s16                 unk_198;
+    s16                 status_check_ready;
     CMenuPosDataForm   *item_board_form; /**< Form of the inventory board. */
     s32                 unk_1A0;
     CMenuPosDataForm   *money_form;         /**< Form of the money board. */
@@ -1098,10 +1107,10 @@ public:
     MENUFORMPARTS_TYPE *item_num[2][3];   /**< Item counts of each character page. */
     MENUFORMPARTS_TYPE *voice_part;       /**< Voice part of the ridepod page. */
     CActionChara       *build_up_chara;   /**< Model of the weapon being built up. */
-    s32                 unk_2F8;
+    s32                 build_loading;
     s16                 unk_2FC;
     s16                 debug_item_no; /**< Item number the debug controls show. */
-    u8                  unk_300;
+    u8                  debug_item_count;
     CGameDataUsed       debug_item; /**< Item the debug controls show. */
 
     /**
@@ -1446,7 +1455,7 @@ class CItemSelect : public CBaseMenuClass {
 public:
     int            item_num;        /**< Number of items in the list. */
     CGameDataUsed *item_list[150];  /**< Items that can be chosen. */
-    u8             limit_disp[150]; /**< Non-zero for each listed item that is shown as unavailable. */
+    s8             limit_disp[150]; /**< Non-zero for each listed item that is shown as unavailable. */
     s16            alpha_step;      /**< Amount the alpha changes each frame. */
     int            alpha;           /**< Alpha the list is drawn with. */
     int            bg_alpha;        /**< Alpha the background is drawn with. */

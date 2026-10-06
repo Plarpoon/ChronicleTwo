@@ -12,6 +12,12 @@
 
 class ClsMes;
 
+extern ClsMes SystemMessage;
+extern ClsMes SystemMessage2;
+extern ClsMes SystemMessage3;
+extern short  SystemMesBuffer[];
+extern short  SysMesBuffer[];
+
 /**
  * Memory stack reserved for the system message windows.
  */

@@ -261,6 +261,7 @@ static void InitSaveFileInfoTablePtr() {
     }
 }
 #ifdef NONMATCHING
+// 99.8% match, 55 words off
 int SaveDataConvertLoop() {
     MC_DIR_ENTRY dir_entries[64];
     MC_DIR_ENTRY inside_entries[16];

@@ -87,6 +87,7 @@ extern CDamageScore      DamageScoreMons[8];
 extern int               dmg_sc_cnt_2104;
 extern s8                init_2105;
 extern SPI_TAG_PARAM     mos_data_anlyze_tag[];
+extern "C" CCameraControl *GetCamera__6CSceneFi(CScene *, int);
 extern CUserDataManager *DngUserData;
 extern CEffectScriptMan *FxScriptMan;
 float                    SearchArea(CScene *scene, float *from, float *to, float range);
@@ -273,7 +274,7 @@ void CActiveMonster::Initialize() {
     unk_1322 = 0;
     whp = 0;
     defense = 0;
-    unk_134c = -1;
+    message_no = -1;
     locate_param = 0;
     gate_key = -1;
     no_damage_cnt = 0;
@@ -320,11 +321,15 @@ void CMonsterLocateInfo::SetPutFlag(int slot, int put) {
 }
 
 #ifdef NONMATCHING
+// 92.3% match, 36 words off
 void CMonsterMan::Initialize(CScene *scene) {
     mgCTextureManager *textures;
-    int                i;
-    DNG_BATTLE_AREA   *area = &scene->battle_area;
-    int                texb;
+    int i;
+    DNG_BATTLE_AREA *area = &scene->battle_area;
+    int texb;
+    int j;
+    int k;
+    int m;
 
     SetMonsterExtendTable();
     textures = &mgTexManager;
@@ -332,15 +337,15 @@ void CMonsterMan::Initialize(CScene *scene) {
     effect_man = FxScriptMan;
     priority_limit = 5;
     for (i = 0; i < MONSTER_ACTIVE_MAX; i++) {
-        active[i] = (CActiveMonster *) scene->GetCharacter(i + MONSTER_ACTIVE_MAX);
+        active[i] = (CActiveMonster *)scene->GetCharacter(i + MONSTER_ACTIVE_MAX);
         active[i]->Initialize();
     }
-    for (i = 0; i < MONSTER_REFER_MAX; i++) {
-        textures->DeleteBlock(i + 0x28);
-        refer[i].id = -1;
+    for (j = 0; j < MONSTER_REFER_MAX; j++) {
+        textures->DeleteBlock(j + 0x28);
+        refer[j].id = -1;
     }
-    for (i = 0; i < MONSTER_SHARE_MAX; i++) {
-        share_var[i].i = 0;
+    for (k = 0; k < MONSTER_SHARE_MAX; k++) {
+        share_var[k].i = 0;
     }
     FxScriptMan->ClearBaseFromLevel(3, NULL, -1);
     for (texb = area->free_texb; texb < 0xAA; texb++) {
@@ -348,12 +353,13 @@ void CMonsterMan::Initialize(CScene *scene) {
     }
     boss_life_gage.Initialize(0);
     boss_max_life = 0;
-    locate.num = 0;
-    locate.put_num = 0;
-    locate.put_flag = 0;
-    for (i = 0; i < MONSTER_LOCATE_MAX; i++) {
-        locate.param[i] = -1;
-        locate.monster_id[i] = -1;
+    CMonsterLocateInfo *loc = &locate;
+    loc->num = 0;
+    loc->put_num = 0;
+    loc->put_flag = 0;
+    for (m = 0; m < MONSTER_LOCATE_MAX; m++) {
+        loc->param[m] = -1;
+        loc->monster_id[m] = -1;
     }
 }
 #else
@@ -382,7 +388,7 @@ void CMonsterMan::StepEffectScript() {
 
 float CMonsterMan::IsBattleStyleDist() {
     int             i;
-    int             mons_base = GetBattleCharaInfo()->unk_2;
+    int             mons_base = GetBattleCharaInfo()->user_mons_id;
     CActiveMonster *found;
     float           nearest;
 
@@ -409,12 +415,13 @@ float CMonsterMan::IsBattleStyleDist() {
     return nearest;
 }
 
-#ifdef NONMATCHING
 int CMonsterMan::CheckMonsterTolk(float *pos) {
+    int j;
     CActiveMonster *monster;
-    int             found;
-    int             i;
-    float           nearest;
+    float nearest;
+    int found;
+    int mons_base;
+    int i;
 
     if (dbinfo.monster_talk != 0) {
         found = -1;
@@ -433,33 +440,30 @@ int CMonsterMan::CheckMonsterTolk(float *pos) {
         } while (i < MONSTER_ACTIVE_MAX);
         return found;
     }
-    if (DngUserData->active_chr_no != 3) {
+    if (DngUserData->active_chr_no != USER_CHARA_MONSTER) {
         return -1;
     }
-    int mons_base = GetBattleCharaInfo()->unk_2;
+    mons_base = GetBattleCharaInfo()->user_mons_id;
     if (mons_base == -1) {
         return -1;
     }
+    j = 0;
     found = -1;
-    i = 0;
     nearest = 90.0f;
     do {
-        monster = active[i];
+        monster = active[j];
         if (monster != NULL && monster->IsDraw(1)) {
-            monster = active[i];
+            monster = active[j];
             if (monster->tbl->user_mons_id == mons_base && monster->tbl->boss == 0 &&
                 monster->locate_param != -1 && monster->gekirin > 0.0f && nearest > monster->target_dist) {
                 nearest = monster->target_dist;
-                found = i;
+                found = j;
             }
         }
-        i++;
-    } while (i < MONSTER_ACTIVE_MAX);
+        j++;
+    } while (j < MONSTER_ACTIVE_MAX);
     return found;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/monster", CheckMonsterTolk__11CMonsterManFPf);
-#endif
 
 CActiveMonster *CMonsterMan::CheckThrowTarget(mgCFrame *frame) {
     float           frame_pos[4];
@@ -591,7 +595,6 @@ int CMonsterMan::EntryRefer(int monster_id, mgCMemory *memory) {
 
     return 1;
 }
-#ifdef NONMATCHING
 extern char at_1421__2[];
 extern char at_1422__2[];
 extern char at_1423[];
@@ -603,16 +606,15 @@ extern char at_1428__3[];
 extern char at_1429__2[];
 extern char at_1430__2[];
 extern char at_1431__2[];
-
 int CMonsterMan::LoadReferMonsterFile(int id, BASE_MONSTER_TBL *tbl, mgCMemory *memory) {
-    char               path[0x40];
-    char               config_path[0x40];
-    int                size;
-    int                slot = SearchReferBlock();
-    MONSTER_REFER     *entry;
-    int                sound;
-    int                i;
-    int                blocks;
+    char path[0x40];
+    char config_path[0x40];
+    int size;
+    int slot = SearchReferBlock();
+    MONSTER_REFER *entry;
+    int sound;
+    int i;
+    int blocks;
     mgCTextureManager *textures;
 
     if (slot == -1) {
@@ -624,16 +626,15 @@ int CMonsterMan::LoadReferMonsterFile(int id, BASE_MONSTER_TBL *tbl, mgCMemory *
     }
     sprintf(config_path, at_1421__2, tbl->model);
     sprintf(path, at_1422__2, tbl->model);
-    textures = &mgTexManager;
-    textures->DeleteBlock(slot + 0x28);
+    (textures = &mgTexManager)->DeleteBlock(slot + 0x28);
     LoadFile(path, BuffReadData, &size);
     strcpy(textures->name_suffix, at_1423);
     entry->chara.Initialize();
     if (strcmp(tbl->model, at_1424) == 0 || strcmp(tbl->model, at_1425) == 0 ||
         strcmp(tbl->model, at_1426) == 0 || strcmp(tbl->model, at_1427__2) == 0) {
-        entry->chara.LoadPackNoLine((unsigned int *) BuffReadData, config_path, memory, memory, memory, slot + 0x28, NULL);
+        entry->chara.LoadPackNoLine((unsigned int *)BuffReadData, config_path, memory, memory, memory, slot + 0x28, NULL);
     } else {
-        entry->chara.LoadPack((unsigned int *) BuffReadData, config_path, memory, memory, memory, slot + 0x28, NULL);
+        entry->chara.LoadPack((unsigned int *)BuffReadData, config_path, memory, memory, memory, slot + 0x28, NULL);
     }
     textures->name_suffix[0] = 0;
     entry->chara.tbl = tbl;
@@ -647,18 +648,18 @@ int CMonsterMan::LoadReferMonsterFile(int id, BASE_MONSTER_TBL *tbl, mgCMemory *
             sprintf(path, at_1430__2, tbl->sound_no);
         }
         LoadFile(path, BuffReadData, &size);
-        sound = sndLoadSound(5, (unsigned int *) BuffReadData, memory);
+        sound = sndLoadSound(5, (unsigned int *)BuffReadData, memory);
     }
     entry->chara.sound_info.se_bank = sound;
     for (i = 0; i < tbl->sw_effect_num; i++) {
-        entry->chara.sword_effect[i] = new ((u_long128 *) memory->Alloc(0xC)) CSWordAfterEffect;
+        entry->chara.sword_effect[i] = new ((u_long128 *)memory->Alloc(0xC)) CSWordAfterEffect;
         entry->chara.sword_effect[i]->Initialize(memory, 0xC, 8);
         entry->chara.sword_effect[i]->SetTexture(0x4A, TEX_SystemEffectSw, 0, 0x20, 0x40, 0x20);
     }
     sprintf(path, at_1431__2, tbl->script);
     LoadFile(path, BuffReadData, &size);
     blocks = size / 16;
-    entry->script = (char *) memory->stAlloc64(blocks + 1);
+    entry->script = (char *)memory->stAlloc64(blocks + 1);
     if (entry->script == NULL) {
         return 0;
     }
@@ -666,39 +667,42 @@ int CMonsterMan::LoadReferMonsterFile(int id, BASE_MONSTER_TBL *tbl, mgCMemory *
     entry->id = id;
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/monster", LoadReferMonsterFile__11CMonsterManFiP16BASE_MONSTER_TBLP9mgCMemory);
-#endif
 #ifdef NONMATCHING
-CActiveMonster *CMonsterMan::SetActiveMonster(int refer_no, float *pos, float *rot, int param) {
+// 99.6% match, 10 words off
+CActiveMonster *CMonsterMan::SetActiveMonster(int refer_no, float pos[], float rot[], int param) {
+    int slot;
+    CActiveMonster *monster;
+    int npc;
+    BASE_MONSTER_TBL *tbl;
+    int i;
+    DNG_BATTLE_AREA *area;
     if (refer_no < 0 || refer_no >= MONSTER_REFER_MAX) {
         return NULL;
     }
     if (refer[refer_no].chara.GetFrame() == NULL) {
         return NULL;
     }
-    int slot = SearchActiveMonsterBlock();
+    slot = SearchActiveMonsterBlock();
     if (slot < 0) {
         return NULL;
     }
-    DNG_BATTLE_AREA *area = &scene->battle_area;
-    int              npc = GetBattleCharaInfo()->GetNowNPC();
-    active[slot] = (CActiveMonster *) scene->GetCharacter(slot + MONSTER_ACTIVE_MAX);
+    area = &scene->battle_area;
+    npc = GetBattleCharaInfo()->GetNowNPC();
+    active[slot] = (CActiveMonster *)scene->GetCharacter(slot + MONSTER_ACTIVE_MAX);
     if (active[slot] == NULL) {
         return NULL;
     }
     memory[slot].stReset();
     locate.SetPutFlag(slot, 1);
-    CActiveMonster   *monster = active[slot];
-    MONSTER_REFER    *source = &refer[refer_no];
-    BASE_MONSTER_TBL *tbl = GetReferPtr2(source->id);
+    monster = active[slot];
+    tbl = GetReferPtr2(refer[refer_no].id);
     if (tbl->unk_b4 == 0) {
-        source->chara.SetPosition(0.0f, 0.0f, 0.0f);
-        source->chara.SetRotation(0.0f, 0.0f, 0.0f);
-        source->chara.Copy(*monster, &memory[slot]);
+        refer[refer_no].chara.SetPosition(0.0f, 0.0f, 0.0f);
+        refer[refer_no].chara.SetRotation(0.0f, 0.0f, 0.0f);
+        refer[refer_no].chara.Copy(*monster, &memory[slot]);
     } else {
-        *monster = source->chara;
-        monster->unk_500 = (s32) monster->motion[0].frame_info;
+        *monster = refer[refer_no].chara;
+        monster->main_frame_info = (s32)monster->motion[0].frame_info;
         monster->shadow_frame_info = monster->shadow_motion[0].frame_info;
         monster->now_key = 0;
     }
@@ -713,9 +717,9 @@ CActiveMonster *CMonsterMan::SetActiveMonster(int refer_no, float *pos, float *r
     monster->param = *tbl;
     monster->base_tbl = tbl;
     monster->tbl = &monster->param;
-    monster->monster_id = source->id;
+    monster->monster_id = refer[refer_no].id;
     monster->chara_type = slot + MONSTER_ACTIVE_MAX;
-    monster->chara_kind = 2;
+    monster->chara_kind = ACTION_KIND_SCRIPT;
     monster->Show(1, 1);
     monster->refer_no = refer_no;
     monster->view_state = MONSTER_VIEW_INIT;
@@ -727,8 +731,8 @@ CActiveMonster *CMonsterMan::SetActiveMonster(int refer_no, float *pos, float *r
     monster->next_pos[3] = 1.0f;
     monster->move_speed = 0.0f;
     monster->max_life = monster->life = tbl->life;
-    monster->reward_exp = tbl->unk_56;
-    monster->reward_money = tbl->unk_58;
+    monster->reward_exp = tbl->reward_exp;
+    monster->reward_money = tbl->reward_money;
     monster->unk_1322 = tbl->unk_5a;
     monster->whp = tbl->whp;
     monster->attack = tbl->attack;
@@ -750,7 +754,7 @@ CActiveMonster *CMonsterMan::SetActiveMonster(int refer_no, float *pos, float *r
     monster->gift_mark.Initialize();
     monster->drop_badge = 0;
     monster->sound_info.loop_se = &scene->loop_se;
-    monster->unk_134c = param;
+    monster->message_no = param;
     monster->locate_param = -1;
     monster->attrib = 0;
     monster->state = ACTIVE_MONSTER_LIVE;
@@ -766,13 +770,13 @@ CActiveMonster *CMonsterMan::SetActiveMonster(int refer_no, float *pos, float *r
     monster->stagger_time = 0;
     monster->target_dist = 0.0f;
     monster->priority = -1;
-    for (int i = 0; i < MONSTER_VAR_MAX; i++) {
+    for (i = 0; i < MONSTER_VAR_MAX; i++) {
         monster->var[i].i = 0;
     }
-    for (int i = 0; i < MONSTER_VAR2_MAX; i++) {
+    for (i = 0; i < MONSTER_VAR2_MAX; i++) {
         monster->var2[i].i = 0;
     }
-    SetMonsterScript(&monster->mons_script, source->script, &memory[slot]);
+    SetMonsterScript(&monster->mons_script, refer[refer_no].script, &memory[slot]);
     monster->req_prog = MONSTER_PROG_INIT;
     RunScript(slot);
     monster->req_prog = MONSTER_PROG_MAIN;
@@ -1378,24 +1382,25 @@ int CheckGiftPack(CActiveMonster *monster, CColPrim *prim) {
     return 1;
 }
 #ifdef NONMATCHING
-extern MONSTER_REACT  react_tbl[];
-extern s16            vs_attk_index[];
-extern CFireAfterHit  fireAfterHit[];
+extern MONSTER_REACT react_tbl[];
+extern s16 vs_attk_index[];
+extern CFireAfterHit fireAfterHit[];
 extern CChillAfterHit chillAfterHit[];
-extern CThunder       thunder[];
-extern CTornado       tornado[];
-extern char           at_2485[];
-extern char           at_2486[];
-extern char           at_2487[];
-extern char           at_2488[];
-
+extern CThunder thunder[];
+extern CTornado tornado[];
+extern char at_2485[];
+extern char at_2486[];
+extern char at_2487[];
+extern char at_2488[];
+// 90.1% match, 472 words off
+#pragma divbyzerocheck on
 void CMonsterMan::CheckDamage() {
-    CScene           *now_scene = scene;
-    DNG_BATTLE_AREA  *area = &now_scene->battle_area;
-    u_int             se_id = now_scene->se_battle_id;
-    CActionChara     *player = (CActionChara *) now_scene->GetCharacter(0);
+    CScene *now_scene = scene;
+    DNG_BATTLE_AREA *area = &now_scene->battle_area;
+    u_int se_id = now_scene->se_battle_id;
+    CActionChara *player = (CActionChara *)now_scene->GetCharacter(0);
     CBattleCharaInfo *chara_info = GetBattleCharaInfo();
-    int               gift_pack_num = GetUserItemHaveNum(0x134);
+    int gift_pack_num = GetUserItemHaveNum(0x134);
 
     for (int i = 0; i < MONSTER_ACTIVE_MAX; i++) {
         CActiveMonster *monster = active[i];
@@ -1442,8 +1447,8 @@ void CMonsterMan::CheckDamage() {
             }
             float damage = prim->damage - monster->defense;
             if (prim->status & 0x1000) {
-                damage = (float) monster->max_life * (0.01f * (float) prim->param->damage) *
-                         (0.01f * (float) monster->tbl->unk_ae);
+                damage = (float)monster->max_life * (0.01f * (float)prim->param->damage) *
+                         (0.01f * (float)monster->tbl->ratio_damage_rate);
             }
             if (prim->status & 0x40000) {
                 if (monster->tbl->user_mons_id != 9) {
@@ -1453,11 +1458,11 @@ void CMonsterMan::CheckDamage() {
             }
             float element_rate[8] = {0.6f, 1.2f, 1.4f, 0.8f, 1.0f, 1.0f, 1.0f, 1.0f};
             float element_damage = 0.0f;
-            damage *= 0.01f * (float) tbl->ext_param[vs_attk_index[prim->param->kind]];
+            damage *= 0.01f * (float)tbl->ext_param[vs_attk_index[prim->param->kind]];
             BASE_MONSTER_TBL *resist_tbl = monster->tbl;
             for (int e = 0; e < 8; e++) {
-                float power = 0.007843138f * (float) prim->element[e];
-                float resist = 0.01f * (float) resist_tbl->unk_6c[e];
+                float power = 0.007843138f * (float)prim->element[e];
+                float resist = 0.01f * (float)resist_tbl->element_resist[e];
                 if (area->unk_8c != 2) {
                     element_damage += resist * (damage * power);
                 } else {
@@ -1480,7 +1485,7 @@ void CMonsterMan::CheckDamage() {
                 damage *= 1.2f;
             }
             if (prim->param->hit_count > 1) {
-                damage /= (float) prim->param->hit_count;
+                damage /= (float)prim->param->hit_count;
             }
             float dist = mgDistVector(prim->pos[0], prim->origin);
             printf(at_2486, dist, prim->range);
@@ -1498,7 +1503,7 @@ void CMonsterMan::CheckDamage() {
             if (!(damage < 0.0f)) {
                 damage = GetDispVolumeForFloat(damage);
             }
-            if ((int) damage <= 0) {
+            if ((int)damage <= 0) {
                 damage = 0.0f;
                 monster->no_damage_cnt++;
             }
@@ -1512,10 +1517,10 @@ void CMonsterMan::CheckDamage() {
                     monster->status.attr &= ~(MONSTER_STATUS_UNK_8 | MONSTER_STATUS_UNK_20);
                 }
             }
-            int               greyed = 0;
+            int greyed = 0;
             BASE_MONSTER_TBL *status_tbl = monster->tbl;
-            s16               status_rate = status_tbl->unk_ac / prim->param->hit_count;
-            int               hit_damage = (int) damage;
+            s16 status_rate = status_tbl->status_chance / prim->param->hit_count;
+            int hit_damage = (int)damage;
             if (hit_damage > 0) {
                 if ((prim->status & 0x4) && !(status_tbl->resist_attr & 0x4) && status_rate >= iRand(100)) {
                     monster->status.attr |= MONSTER_STATUS_POISON;
@@ -1541,13 +1546,13 @@ void CMonsterMan::CheckDamage() {
             if (hit_damage > 0 && (prim->status & 0x200) && (prim->attacker == 0 || prim->attacker == 1)) {
                 damage *= 1.5f;
                 if (chara_info->GetNowHp_i() > 1) {
-                    chara_info->AddHp_Point(-(0.01f * (float) chara_info->GetMaxHp_i()), 0.0f);
+                    chara_info->AddHp_Point(-(0.01f * (float)chara_info->GetMaxHp_i()), 0.0f);
                 }
             }
-            if ((int) damage > 0 && (prim->status & 0x400) && iRand(10) == 0) {
+            if ((int)damage > 0 && (prim->status & 0x400) && iRand(10) == 0) {
                 damage *= 1.8f;
             }
-            int final_damage = (int) damage;
+            int final_damage = (int)damage;
             if (final_damage > 0 && (prim->status & 0x80) && prim->attacker == chara_info->chr_no) {
                 int drain_rate = 25 / prim->param->hit_count;
                 if (drain_rate <= 1) {
@@ -1604,10 +1609,10 @@ void CMonsterMan::CheckDamage() {
                 guard = 0;
             }
             if (guard) {
-                damage *= 0.01f * (float) prim->param->critical_rate;
+                damage *= 0.01f * (float)prim->param->critical_rate;
             }
             calcWeaponParamWhp(monster, prim);
-            int dealt = (int) damage;
+            int dealt = (int)damage;
             monster->life -= dealt;
             if (monster->life <= 0) {
                 monster->life = 0;
@@ -1623,7 +1628,7 @@ void CMonsterMan::CheckDamage() {
                     HitScoreSet(prim->hit_pos, 1, 0);
                 }
                 if (melee) {
-                    player->unk_bec = 1;
+                    player->melee_hit = 1;
                 }
                 continue;
             }
@@ -1641,53 +1646,53 @@ void CMonsterMan::CheckDamage() {
             }
             monster->damage_time = prim->param->stun_time;
             switch (element) {
-                case 2:
-                    monster->pallet[0].SetAnim(0xB4, 0xB4, 0, 4, 0x18, 0);
-                    break;
-                case 0:
-                    monster->pallet[0].SetAnim(0xFF, 0x60, 0, 1, 0x18, 0);
-                    break;
-                case 3:
-                    monster->pallet[0].SetAnim(0x60, 0xA0, 0x60, 1, 0x18, 0);
-                    break;
-                case 1:
-                    monster->pallet[0].SetAnim(0, 0xB4, 0xFF, 1, 0x18, 0);
-                    break;
-                case -1:
-                default:
-                    monster->pallet[0].SetAnim(0xFF, 0xB4, 0x80, 2, 0xA, 0);
-                    break;
+            case 2:
+                monster->pallet[0].SetAnim(0xB4, 0xB4, 0, 4, 0x18, 0);
+                break;
+            case 0:
+                monster->pallet[0].SetAnim(0xFF, 0x60, 0, 1, 0x18, 0);
+                break;
+            case 3:
+                monster->pallet[0].SetAnim(0x60, 0xA0, 0x60, 1, 0x18, 0);
+                break;
+            case 1:
+                monster->pallet[0].SetAnim(0, 0xB4, 0xFF, 1, 0x18, 0);
+                break;
+            case -1:
+            default:
+                monster->pallet[0].SetAnim(0xFF, 0xB4, 0x80, 2, 0xA, 0);
+                break;
             }
             monster->shake.time = 4;
             int se_no = -1;
             switch (prim->param->kind) {
-                case DAMAGE_KIND_MONSTER:
-                case 21:
-                case DAMAGE_KIND_ITEM:
-                case DAMAGE_KIND_MAX_MELEE:
-                    se_no = 0x1C;
-                    break;
-                case DAMAGE_KIND_MAX_GUN:
-                    se_no = 0x1A;
-                    break;
-                case DAMAGE_KIND_MONICA_MELEE:
-                case DAMAGE_KIND_RIDEPOD_SWORD:
-                    se_no = 0x1B;
-                    break;
-                case DAMAGE_KIND_RIDEPOD_PUNCH:
-                    se_no = 0x19;
-                    break;
-                case 14:
-                case DAMAGE_KIND_RIDEPOD_GUN:
-                case DAMAGE_KIND_MONICA_MAGIC:
-                case DAMAGE_KIND_LASER_GUN:
-                case DAMAGE_KIND_GRENADE:
-                    break;
+            case DAMAGE_KIND_MONSTER:
+            case 21:
+            case DAMAGE_KIND_ITEM:
+            case DAMAGE_KIND_MAX_MELEE:
+                se_no = 0x1C;
+                break;
+            case DAMAGE_KIND_MAX_GUN:
+                se_no = 0x1A;
+                break;
+            case DAMAGE_KIND_MONICA_MELEE:
+            case DAMAGE_KIND_RIDEPOD_SWORD:
+                se_no = 0x1B;
+                break;
+            case DAMAGE_KIND_RIDEPOD_PUNCH:
+                se_no = 0x19;
+                break;
+            case 14:
+            case DAMAGE_KIND_RIDEPOD_GUN:
+            case DAMAGE_KIND_MONICA_MAGIC:
+            case DAMAGE_KIND_LASER_GUN:
+            case DAMAGE_KIND_GRENADE:
+                break;
             }
             if (se_no >= 0) {
                 sndSePlay(se_id, se_no, 0);
             }
-            HitEffectSet(scene, prim->hit_pos, (s16) prim->param->hit_flags);
+            HitEffectSet(scene, prim->hit_pos, (s16)prim->param->hit_flags);
             if (element >= 0 || dbinfo.effect_id > 0) {
                 float power = prim->element[element];
                 if (dbinfo.effect_id > 0) {
@@ -1707,21 +1712,21 @@ void CMonsterMan::CheckDamage() {
                 }
                 if (contact) {
                     switch (element) {
-                        case 0:
-                            fireAfterHit[0].SetPos(monster->center_pos, 5.0f * monster->body_width, (int) power);
-                            break;
-                        case 1:
-                            chillAfterHit[0].SetPos(monster->center_pos, 5.0f * monster->body_width, (int) power);
-                            break;
-                        case 2:
-                            thunder[0].SetPos(monster->center_pos, 5.0f * monster->body_width, power);
-                            break;
-                        case 3: {
-                            float tornado_pos[4];
-                            monster->GetPosition(tornado_pos);
-                            tornado[0].SetPos(tornado_pos, 5.0f * monster->body_width, power);
-                            break;
-                        }
+                    case 0:
+                        fireAfterHit[0].SetPos(monster->center_pos, 5.0f * monster->body_width, (int)power);
+                        break;
+                    case 1:
+                        chillAfterHit[0].SetPos(monster->center_pos, 5.0f * monster->body_width, (int)power);
+                        break;
+                    case 2:
+                        thunder[0].SetPos(monster->center_pos, 5.0f * monster->body_width, power);
+                        break;
+                    case 3: {
+                        float tornado_pos[4];
+                        monster->GetPosition(tornado_pos);
+                        tornado[0].SetPos(tornado_pos, 5.0f * monster->body_width, power);
+                        break;
+                    }
                     }
                 }
             }
@@ -1755,54 +1760,54 @@ void CMonsterMan::CheckDamage() {
                 }
             }
             if (dealt > 0 && !(monster->gekirin <= 0.0f)) {
-                monster->gekirin -= 1.0f / (float) prim->param->hit_count;
+                monster->gekirin -= 1.0f / (float)prim->param->hit_count;
                 if (monster->gekirin <= 0.0f) {
                     monster->gekirin = 0.0f;
                     monster->gekirin_time = 900;
                     monster->pallet[1].SetAnim(0xC8, 0xC8, 0x80, 1, 0x1E, -1);
                     if (monster->tbl->boss == 0) {
-                        monster->attack = 1.3f * (u16) monster->tbl->attack;
+                        monster->attack = 1.3f * monster->tbl->attack;
                     }
                 }
             }
             switch (reaction) {
-                case 3:
-                    monster->req_prog = MONSTER_PROG_STATUS;
-                    sndSePlay(monster->sound_info.se_bank, 0xB, 0);
+            case 3:
+                monster->req_prog = MONSTER_PROG_STATUS;
+                sndSePlay(monster->sound_info.se_bank, 0xB, 0);
+                break;
+            case 2:
+                if (guard) {
+                    monster->req_prog = MONSTER_PROG_GUARD;
                     break;
-                case 2:
-                    if (guard) {
-                        monster->req_prog = MONSTER_PROG_GUARD;
+                }
+                if ((tbl->flags & 1) || monster->piyori_time > 0) {
+                    break;
+                }
+                if (monster->tbl->stagger > 0) {
+                    monster->stagger += prim->param->stagger;
+                    monster->stagger_time = 60;
+                    if (monster->stagger < monster->tbl->stagger) {
                         break;
                     }
-                    if ((tbl->unk_94 & 1) || monster->piyori_time > 0) {
-                        break;
-                    }
-                    if (monster->tbl->stagger > 0) {
-                        monster->stagger += prim->param->stagger;
-                        monster->stagger_time = 60;
-                        if (monster->stagger < monster->tbl->stagger) {
-                            break;
-                        }
-                    }
-                    monster->req_prog = MONSTER_PROG_DAMAGE;
-                    sndSePlay(monster->sound_info.se_bank, 0xB, 0);
+                }
+                monster->req_prog = MONSTER_PROG_DAMAGE;
+                sndSePlay(monster->sound_info.se_bank, 0xB, 0);
+                break;
+            case 4:
+                if (tbl->flags & 4) {
                     break;
-                case 4:
-                    if (tbl->unk_94 & 4) {
-                        break;
-                    }
-                    monster->req_prog = MONSTER_PROG_KNOCK;
-                    monster->piyori.Reset();
-                    monster->stagger = 0;
-                    monster->stagger_time = 0;
-                    break;
-                case 1:
-                    break;
-                case 6:
-                    monster->req_prog = MONSTER_PROG_DEAD;
-                    monster->piyori.Reset();
-                    break;
+                }
+                monster->req_prog = MONSTER_PROG_KNOCK;
+                monster->piyori.Reset();
+                monster->stagger = 0;
+                monster->stagger_time = 0;
+                break;
+            case 1:
+                break;
+            case 6:
+                monster->req_prog = MONSTER_PROG_DEAD;
+                monster->piyori.Reset();
+                break;
             }
         }
         if ((monster->req_prog == MONSTER_PROG_DAMAGE || monster->req_prog == MONSTER_PROG_KNOCK) && prim != NULL &&
@@ -1812,7 +1817,7 @@ void CMonsterMan::CheckDamage() {
         }
     }
 }
-
+#pragma divbyzerocheck reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/monster", CheckDamage__11CMonsterManFv);
 #endif
@@ -1966,28 +1971,27 @@ void CMonsterMan::MoveUnit(CActiveMonster *monster, CCPoly *poly, int poly_num) 
         monster->link_parts->SetRotation(rotation);
     }
 }
-#ifdef NONMATCHING
 extern EffectVector at_2699;
-
 void CMonsterMan::ThinkHost() {
     sceVu0FVECTOR monster_pos;
-    CCPoly        polys[0x80];
+    CCPoly polys[0x80];
     sceVu0FVECTOR camera_pos;
     sceVu0FVECTOR target_pos;
     sceVu0FVECTOR own_pos;
-    mgVu0FBOX     box;
+    mgVu0FBOX box;
     sceVu0FVECTOR item_pos;
-    CMap         *map = scene->GetMap(scene->active_map);
+    DNG_BATTLE_AREA *battle = &scene->battle_area;
+    CMap *map = scene->GetMap(scene->active_map);
     if (map == NULL) {
         return;
     }
-    CCameraControl *camera = (CCameraControl *) scene->GetCamera(scene->active_camera);
+    CCameraControl *camera = GetCamera__6CSceneFi(scene, scene->active_camera);
     if (camera != NULL) {
         camera->GetPos(camera_pos);
     }
     int user_monster = -1;
-    if (DngUserData->active_chr_no == 3) {
-        user_monster = GetBattleCharaInfo()->unk_2;
+    if (DngUserData->active_chr_no == USER_CHARA_MONSTER) {
+        user_monster = GetBattleCharaInfo()->user_mons_id;
     }
     for (int i = 0; i < MONSTER_ACTIVE_MAX; i++) {
         CActiveMonster *monster = active[i];
@@ -2000,7 +2004,7 @@ void CMonsterMan::ThinkHost() {
         if (monster->scoop.type & MONSTER_SCOOP_ALWAYS) {
             scoop->ok = 1;
         }
-        if (monster->scoop.type != 0 && (monster->scoop.type & MONSTER_SCOOP_MOTION)) {
+        if (scoop->type != 0 && (scoop->type & MONSTER_SCOOP_MOTION)) {
             char *motion = monster->GetNowMotionName();
             if (motion != NULL && strcmp(motion, scoop->motion) == 0) {
                 float frame = monster->GetNowFrameWait(NULL);
@@ -2009,7 +2013,7 @@ void CMonsterMan::ThinkHost() {
                 }
             }
         }
-        if (scene->battle_area.pause_flag & 0x1000) {
+        if (battle->pause_flag & 0x1000) {
             if (monster->tbl->user_mons_id == user_monster) {
                 monster->Step();
             }
@@ -2034,9 +2038,9 @@ void CMonsterMan::ThinkHost() {
         monster->CheckStatusAttr();
         monster->GetPosition(monster_pos);
         BASE_MONSTER_TBL *tbl = monster->tbl;
-        CActionChara     *target = NULL;
+        CActionChara *target = NULL;
         if (monster->target_no != -1) {
-            target = (CActionChara *) scene->GetCharacter(monster->target_no);
+            target = (CActionChara *)scene->GetCharacter(monster->target_no);
         }
         if (target != NULL) {
             target->GetPosition(target_pos);
@@ -2052,22 +2056,22 @@ void CMonsterMan::ThinkHost() {
                 continue;
             }
         }
-        box.max[3] = 1.0f;
-        box.min[3] = 1.0f;
         box.max[0] = monster_pos[0] + 40.0f;
         box.min[0] = monster_pos[0] - 40.0f;
         box.max[2] = monster_pos[2] + 40.0f;
         box.min[2] = monster_pos[2] - 40.0f;
         box.max[1] = monster_pos[1] + 200.0f;
         box.min[1] = monster_pos[1] - 200.0f;
-        CTreasureBoxManager *treasure = scene->battle_area.treasure_box;
-        int                  poly_num = map->GetPoly(0, polys, box, 0x80);
+        box.max[3] = 1.0f;
+        box.min[3] = 1.0f;
+        int poly_num = map->GetColPoly(polys, box, 0x80);
+        CTreasureBoxManager *treasure = battle->treasure_box;
         if (treasure != NULL) {
             poly_num += treasure->PickupCollision(monster_pos, &polys[poly_num], box, 0x80 - poly_num);
         }
         if (target != NULL && monster->state == ACTIVE_MONSTER_LIVE && target->murderous_time > 0 &&
             target->target_no == i + MONSTER_ACTIVE_MAX) {
-            int chance = fptosi(100.0f * (float) rand() / 2147483648.0f);
+            int chance = fptosi(100.0f * (float)rand() / 2147483648.0f);
             if (monster->mask_flag & 2) {
                 chance = 100;
             }
@@ -2097,7 +2101,7 @@ void CMonsterMan::ThinkHost() {
                     if (damage->prim != NULL) {
                         damage->prim->SetDamage(damage->damage, monster->chara_type);
                         damage->prim->SetCoord(damage->frame0, damage->frame1, damage->radius);
-                        damage->prim->unk_8c = monster->attack;
+                        damage->prim->damage = monster->attack;
                     }
                 }
             } else if (frame < damage->start_frame || !(frame <= damage->end_frame)) {
@@ -2107,7 +2111,7 @@ void CMonsterMan::ThinkHost() {
         }
         if (monster->state == ACTIVE_MONSTER_DEAD && monster->dead_alpha > 0) {
             monster->dead_alpha -= 3;
-            monster->alpha = (float) monster->dead_alpha / 128.0f;
+            monster->alpha = (float)monster->dead_alpha / 128.0f;
             monster->damage_time = 0;
             if (monster->attrib & MONSTER_ATTRIB_QUICK_DEAD) {
                 monster->alpha = 0.0f;
@@ -2118,7 +2122,7 @@ void CMonsterMan::ThinkHost() {
                 KillMonsterCount(monster->tbl->id, 1);
                 monster->dead_alpha = 0;
                 monster->state = ACTIVE_MONSTER_NONE;
-                monster->chara_kind = 0;
+                monster->chara_kind = ACTION_KIND_NONE;
                 if (NowFloorInfoPtr != NULL) {
                     NowFloorInfoPtr->kill_count++;
                 }
@@ -2190,9 +2194,6 @@ void CMonsterMan::ThinkHost() {
     }
     PriorityLevelCheck();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/monster", ThinkHost__11CMonsterManFv);
-#endif
 int _MONSTER_NAME(SPI_STACK *stack, int argument_count) {
     char              name[0x80];
     int               monster_id;

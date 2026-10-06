@@ -36,8 +36,8 @@ void InitSubGame(CScene *scene) {
     if (scene->GetCharacter(scene->player_chara) != 0) {
         mgCTextureManager *tex_manager = &mgTexManager;
 
-        for (int i = 0; i < scene->unk_3e6c; i++) {
-            tex_manager->DeleteBlock(scene->unk_3e68 + i);
+        for (int i = 0; i < scene->tex_block_count; i++) {
+            tex_manager->DeleteBlock(scene->tex_block_base + i);
         }
 
         for (int j = 0; j < 0x28; j++) {
@@ -93,8 +93,8 @@ int sgInitSubGame(int type, SubGameInfo *info) {
 
     result = 0;
     GameInfo = *info;
-    GameInfo.texb = GameInfo.scene->unk_3e68;
-    GameInfo.texb_num = GameInfo.scene->unk_3e6c;
+    GameInfo.texb = GameInfo.scene->tex_block_base;
+    GameInfo.texb_num = GameInfo.scene->tex_block_count;
 
     switch (type) {
         case SUBGAME_FISHING:
@@ -106,7 +106,7 @@ int sgInitSubGame(int type, SubGameInfo *info) {
         case SUBGAME_BUGGY:
             result = sgInitBuggy(&GameInfo);
             break;
-        case SUBGAME_UNK_4:
+        case SUBGAME_UNUSED:
             break;
     }
 
@@ -136,7 +136,7 @@ int sgLoopSubGame() {
         case SUBGAME_BUGGY:
             finished = sgLoopBuggy(&GameInfo);
             break;
-        case SUBGAME_UNK_4:
+        case SUBGAME_UNUSED:
             finished = 1;
             break;
     }
@@ -159,7 +159,7 @@ int sgLoopSubGame2() {
             break;
         case SUBGAME_GYORACE:
         case SUBGAME_BUGGY:
-        case SUBGAME_UNK_4:
+        case SUBGAME_UNUSED:
             break;
     }
 
@@ -179,7 +179,7 @@ int sgExitSubGame() {
             break;
         case SUBGAME_GYORACE:
         case SUBGAME_BUGGY:
-        case SUBGAME_UNK_4:
+        case SUBGAME_UNUSED:
             break;
     }
 
@@ -200,7 +200,7 @@ int sgRestartSubGame(SubGameInfo *info) {
             break;
         case SUBGAME_GYORACE:
         case SUBGAME_BUGGY:
-        case SUBGAME_UNK_4:
+        case SUBGAME_UNUSED:
             break;
     }
 
@@ -220,7 +220,7 @@ int sgBreakSubGame() {
             break;
         case SUBGAME_GYORACE:
         case SUBGAME_BUGGY:
-        case SUBGAME_UNK_4:
+        case SUBGAME_UNUSED:
             break;
     }
 
@@ -251,7 +251,7 @@ int sgDrawSubGameCharaShadow() {
             break;
         case SUBGAME_BUGGY:
             return sgDrawShadowBuggy(&GameInfo);
-        case SUBGAME_UNK_4:
+        case SUBGAME_UNUSED:
             break;
     }
 
@@ -271,7 +271,7 @@ int sgDrawSubGameChara() {
         case SUBGAME_BUGGY:
             return sgDrawBuggy(&GameInfo);
         default:
-        case SUBGAME_UNK_4:
+        case SUBGAME_UNUSED:
             return 0;
     }
 }
@@ -304,7 +304,7 @@ int sgDrawSubGameSystem() {
         case SUBGAME_BUGGY:
             return sgSystemDrawBuggy(&GameInfo);
         default:
-        case SUBGAME_UNK_4:
+        case SUBGAME_UNUSED:
             return 0;
     }
 }

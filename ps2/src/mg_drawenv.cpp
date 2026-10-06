@@ -97,13 +97,14 @@ void mgRENDER_INFO::Initialize() {
     draw_env[1].Initialize(1);
     fog_enable = 0;
     plight_enable = 0;
-    unk_fac = 1;
+    lighting_enabled = 1;
     motion = 0;
     all_scissor = 0;
     light_changed = 1;
 }
 
 #ifdef NONMATCHING
+// 80.9% match, 123 words off
 void mgRENDER_INFO::SetRenderInfo(float projection, int width, int height, float near_dist,
                                   float far_dist, int zdepth, float aspect_y) {
     float z_range = 1.67e7f;

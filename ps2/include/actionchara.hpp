@@ -131,8 +131,8 @@ struct ACTION_SW_EFFECT {
     float end;      /**< Motion frame before which the after-image starts. */
     char *frame0;   /**< Name of the frame at one end of the blade. */
     char *frame1;   /**< Name of the frame at the other end of the blade. */
-    s8    unk_1c;
-    s8    unk_1d;
+    s8    length;
+    s8    hold_time;
     s8    fade_time; /**< Number of steps over which the after-image fades. */
     s8    wait;      /**< Steps left before the after-image can start again. */
 };
@@ -253,7 +253,7 @@ public:
     s32               chara_type; /**< Kind of character, an ACTION_CHARA_TYPE value. */
     CActionChara     *parent;     /**< Character that this part is chained onto; NULL for the head of the chain. */
     CActionChara     *next;       /**< Next part in the chain; NULL for the last. */
-    CPalletAnime      unk_67c;
+    CPalletAnime      script_pallet;
     s16               chara_kind;  /**< What the character is in its chain, an ACTION_CHARA_KIND value. */
     sceVu0FVECTOR     front_vec;   /**< Direction that the character faces. */
     s32               mask_flag;   /**< Bits that monster scripts set and clear. */
@@ -277,8 +277,8 @@ public:
     s16               catch_state; /**< 1 while another character holds this one, 2 while it flies after being thrown. */
     s16               no_hit_time; /**< Steps left before this character's body collides again. */
     CPalletAnime      pallet[3];   /**< Colour flashes over the character's lighting; the first one playing is used. */
-    s16               unk_75e;
-    float             unk_760;
+    s16               battle_stance;
+    float             battle_stance_rate;
     s16               shot_wait;      /**< Steps left before the character can shoot again. */
     s32               muteki_time;    /**< Steps left for which the character takes no damage. */
     s8                menu_flag;      /**< Nonzero while the character may open the menu. */
@@ -312,7 +312,7 @@ public:
     s32               unk_be0;
     s32               unk_be4;
     s32               damage_time; /**< Steps left before the character can be hit again. */
-    s32               unk_bec;
+    s32               melee_hit;
     s32               guard_flag;   /**< Nonzero while the character guards. */
     s8                stagger;      /**< Stagger built up from recent hits. */
     s8                stagger_time; /**< Steps left before the built-up stagger is cleared. */

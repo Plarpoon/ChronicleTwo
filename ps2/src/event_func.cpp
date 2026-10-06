@@ -2056,8 +2056,10 @@ void CEventScriptArg::BuildArgData(u32 *program) {
     nowScriptArg = NULL;
 }
 #ifdef NONMATCHING
+// 95.8% match, 58 words off
 int _DATA(RS_STACKDATA *stack, int argc) {
     CEventScriptArg *script = nowScriptArg;
+    char *source;
     if (script == NULL) {
         return 0;
     }
@@ -2112,9 +2114,9 @@ int _DATA(RS_STACKDATA *stack, int argc) {
                 arg->f = GetStackFloat(stack++);
                 break;
             case RS_STR: {
-                char            *source = GetStackString(stack++);
+                source = GetStackString(stack++);
                 CEventScriptArg *owner = nowScriptArg;
-                char            *copy = NULL;
+                char *copy = NULL;
                 if (owner->memory != NULL) {
                     u_int length = strlen(source) + 1;
                     copy = new (owner->memory->Alloc(((length & 0xF) ? (length >> 4) + 1 : length >> 4) + 2)) char[strlen(source) + 1];
@@ -2550,6 +2552,8 @@ void CScreenEffect::SetSepiaTexture(mgCTexture *texture, u_long128 *image) {
     }
 }
 #ifdef NONMATCHING
+// 97.3% match, 50 words off
+// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void CScreenEffect::CaptureSepiaScreen(void) {
     if (sepia_texture == NULL) {
         return;
@@ -2557,12 +2561,12 @@ void CScreenEffect::CaptureSepiaScreen(void) {
     mgCTexture screen;
     mgGetFrameBackBuffer(&screen);
     mgStoreImage(&screen, sepia_texture->image[0]);
-    u_char *pixels = (u_char *) sepia_texture->image[0];
-    for (int i = 0; i < mgScreenWidth * mgScreenHeight * 4; i += 4) {
+    u_char *pixels = (u_char *)sepia_texture->image[0];
+    for (int i = 0; i < mgScreenHeight * mgScreenWidth * 4; i += 4) {
         u_char *red = &pixels[i];
         u_char *green = &pixels[i + 1];
         u_char *blue = &pixels[i + 2];
-        int     gray = fptoui(0.229f * (float) (u_int) *red + 0.587f * (float) (u_int) *green + 0.114f * (float) (u_int) *blue) & 0xFF;
+        int gray = (u_int)(0.229f * (float)(u_int)*red + 0.587f * (float)(u_int)*green + 0.114f * (float)(u_int)*blue) & 0xFF;
         if (gray > 0x40) {
             *red = (gray - 0x40) * 180 / 191 + 75;
             *green = (gray - 0x40) * 193 / 191 + 62;
@@ -2597,6 +2601,7 @@ void CScreenEffect::SetMonoFlashTexture(mgCTexture **textures, u_long128 **vram_
     mono_flash_texture[1]->image[0] = vram_images[1];
 }
 #ifdef NONMATCHING
+// 91.8% match, 25 words off
 void CScreenEffect::CaptureMonoFlashScreen(void) {
     if (mono_flash_texture[0] == NULL || mono_flash_texture[1] == NULL) {
         return;
@@ -2605,18 +2610,18 @@ void CScreenEffect::CaptureMonoFlashScreen(void) {
     mgGetFrameBackBuffer(&screen);
     mgStoreImage(&screen, mono_flash_texture[0]->image[0]);
     mgStoreImage(&screen, mono_flash_texture[1]->image[0]);
-    u_char *positive = (u_char *) mono_flash_texture[0]->image[0];
-    u_char *negative = (u_char *) mono_flash_texture[1]->image[0];
-    for (int i = 0; i < mgScreenWidth * mgScreenHeight * 4; i += 4) {
+    u_char *positive = (u_char *)mono_flash_texture[0]->image[0];
+    u_char *negative = (u_char *)mono_flash_texture[1]->image[0];
+    for (int i = 0; i < mgScreenHeight * mgScreenWidth * 4; i += 4) {
         u_char *red = &positive[i];
         u_char *green = &positive[i + 1];
         u_char *blue = &positive[i + 2];
-        *blue = *green = *red = fptoui(0.229f * (float) (u_int) *red + 0.587f * (float) (u_int) *green + 0.114f * (float) (u_int) *blue);
+        *red = *green = *blue = (u_int)(0.229f * (float)(u_int)*red + 0.587f * (float)(u_int)*green + 0.114f * (float)(u_int)*blue);
         red = &negative[i];
         green = &negative[i + 1];
         blue = &negative[i + 2];
-        char gray = fptoui(0.229f * (float) (u_int) *red + 0.587f * (float) (u_int) *green + 0.114f * (float) (u_int) *blue);
-        *blue = *green = *red = 255 - gray;
+        char gray = (u_int)(0.229f * (float)(u_int)*red + 0.587f * (float)(u_int)*green + 0.114f * (float)(u_int)*blue);
+        *red = *green = *blue = 255 - gray;
     }
 }
 #else
@@ -2900,11 +2905,9 @@ void EdEventInit() {
     EventScriptArg.memory = 0;
     EventScreenEffect.Initialize();
 }
-#ifdef NONMATCHING
 void EventTimeDraw(void) {
-    int        digit[10];
-    int        glyph[32];
-    int        label[32];
+    int digit[10];
+    int glyph[32];
     CSaveData *saveData = GetSaveData();
     if (saveData != NULL && EdEventInfo.stopwatch_start != 0) {
         u64 elapsed;
@@ -2916,15 +2919,22 @@ void EventTimeDraw(void) {
         } else {
             elapsed = saveData->play_time - EdEventInfo.stopwatch_start;
         }
-        if (elapsed >= 0x57E40) {
+        if (0x57E40 <= elapsed) {
             elapsed = 0x57E40;
         }
         int hours = elapsed / 3600;
         int minutes = elapsed % 3600 / 60;
         int hundredths = elapsed % 60 * 100 / 60;
-        for (int i = 0; i < 10; i++) {
-            digit[i] = GetHalfFontNo('0' + i);
-        }
+        digit[0] = GetHalfFontNo('0');
+        digit[1] = GetHalfFontNo('1');
+        digit[2] = GetHalfFontNo('2');
+        digit[3] = GetHalfFontNo('3');
+        digit[4] = GetHalfFontNo('4');
+        digit[5] = GetHalfFontNo('5');
+        digit[6] = GetHalfFontNo('6');
+        digit[7] = GetHalfFontNo('7');
+        digit[8] = GetHalfFontNo('8');
+        digit[9] = GetHalfFontNo('9');
         for (int i = 0; i < 32; i++) {
             glyph[i] = -1;
         }
@@ -2944,7 +2954,7 @@ void EventTimeDraw(void) {
         mgCDrawPrim prim;
         if (EdEventInfo.stopwatch_style == 0) {
             prim.Begin(6);
-            RECT       window;
+            RECT window;
             RGBAQ_TYPE windowColor;
             window.width = 0x9E;
             window.height = 0x36;
@@ -2958,9 +2968,8 @@ void EventTimeDraw(void) {
         prim.Begin(6);
         for (int i = 0; i < 32; i++) {
             if (glyph[i] >= 0) {
-                int  page;
-                RECT texture;
-                texture = GetRectFontTex(glyph[i], &page);
+                int page;
+                RECT texture = GetRectFontTex(glyph[i], &page);
                 MySetTex(page, &prim);
                 RECT destination;
                 destination.x = EdEventInfo.stopwatch_x + texture.width * i;
@@ -2972,13 +2981,14 @@ void EventTimeDraw(void) {
                 destination.height = texture.height;
                 set2DSprite_Fuchi(&prim, destination, texture, 8, 0x80);
                 RGBAQ_TYPE color;
-                color.r = color.g = color.b = color.a = 0x80;
+                color.a = color.r = color.g = color.b = 0x80;
                 set2DSpriteEasyFont(&prim,
-                                    mgRect<int>(destination.x, destination.y, destination.width, destination.height),
-                                    mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
+                    mgRect<int>(destination.x, destination.y, destination.width, destination.height),
+                    mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
             }
         }
         if (EdEventInfo.stopwatch_style == 1) {
+            int label[32];
             for (int i = 0; i < 32; i++) {
                 label[i] = -1;
             }
@@ -2992,78 +3002,79 @@ void EventTimeDraw(void) {
                         label[4] = GetFontNo(at_1908);
                         break;
                     case 2:
-                        label[0] = GetHalfFontNo('C');
-                        label[1] = GetHalfFontNo('h');
-                        label[2] = GetHalfFontNo('u');
-                        label[3] = GetHalfFontNo('t');
-                        label[4] = GetHalfFontNo('e');
-                        label[5] = GetHalfFontNo('s');
-                        label[6] = GetHalfFontNo(' ');
-                        label[7] = GetHalfFontNo('d');
-                        label[8] = GetHalfFontNo('e');
-                        label[9] = GetHalfFontNo(' ');
-                        label[10] = GetHalfFontNo('l');
-                        label[11] = GetHalfFontNo('u');
-                        label[12] = GetHalfFontNo('n');
-                        label[13] = GetHalfFontNo('e');
+                label[0] = GetHalfFontNo('C');
+                label[1] = GetHalfFontNo('h');
+                label[2] = GetHalfFontNo('u');
+                label[3] = GetHalfFontNo('t');
+                label[4] = GetHalfFontNo('e');
+                label[5] = GetHalfFontNo('s');
+                label[6] = GetHalfFontNo(' ');
+                label[7] = GetHalfFontNo('d');
+                label[8] = GetHalfFontNo('e');
+                label[9] = GetHalfFontNo(' ');
+                label[10] = GetHalfFontNo('l');
+                label[11] = GetHalfFontNo('u');
+                label[12] = GetHalfFontNo('n');
+                label[13] = GetHalfFontNo('e');
                         break;
                     case 4:
-                        label[0] = GetHalfFontNo('L');
-                        label[1] = GetHalfFontNo('e');
-                        label[2] = GetHalfFontNo(' ');
-                        label[3] = GetHalfFontNo('C');
-                        label[4] = GetHalfFontNo('a');
-                        label[5] = GetHalfFontNo('s');
-                        label[6] = GetHalfFontNo('c');
-                        label[7] = GetHalfFontNo('a');
-                        label[8] = GetHalfFontNo('t');
-                        label[9] = GetHalfFontNo('e');
-                        label[10] = GetHalfFontNo(' ');
-                        label[11] = GetHalfFontNo('d');
-                        label[12] = GetHalfFontNo('e');
-                        label[13] = GetHalfFontNo('l');
-                        label[14] = GetHalfFontNo('l');
-                        label[15] = GetHalfFontNo('a');
-                        label[16] = GetHalfFontNo(' ');
-                        label[17] = GetHalfFontNo('L');
-                        label[18] = GetHalfFontNo('u');
-                        label[19] = GetHalfFontNo('n');
-                        label[20] = GetHalfFontNo('a');
+                label[0] = GetHalfFontNo('L');
+                label[1] = GetHalfFontNo('e');
+                label[2] = GetHalfFontNo(' ');
+                label[3] = GetHalfFontNo('C');
+                label[4] = GetHalfFontNo('a');
+                label[5] = GetHalfFontNo('s');
+                label[6] = GetHalfFontNo('c');
+                label[7] = GetHalfFontNo('a');
+                label[8] = GetHalfFontNo('t');
+                label[9] = GetHalfFontNo('e');
+                label[10] = GetHalfFontNo(' ');
+                label[11] = GetHalfFontNo('d');
+                label[12] = GetHalfFontNo('e');
+                label[13] = GetHalfFontNo('l');
+                label[14] = GetHalfFontNo('l');
+                label[15] = GetHalfFontNo('a');
+                label[16] = GetHalfFontNo(' ');
+                label[17] = GetHalfFontNo('L');
+                label[18] = GetHalfFontNo('u');
+                label[19] = GetHalfFontNo('n');
+                label[20] = GetHalfFontNo('a');
                         break;
                     case 5:
-                        label[0] = GetHalfFontNo('C');
-                        label[1] = GetHalfFontNo('a');
-                        label[2] = GetHalfFontNo('t');
-                        label[3] = GetHalfFontNo('a');
-                        label[4] = GetHalfFontNo('r');
-                        label[5] = GetHalfFontNo('a');
-                        label[6] = GetHalfFontNo('t');
-                        label[7] = GetHalfFontNo('a');
-                        label[8] = GetHalfFontNo('s');
-                        label[9] = GetHalfFontNo(' ');
-                        label[10] = GetHalfFontNo('L');
-                        label[11] = GetHalfFontNo('u');
-                        label[12] = GetHalfFontNo('n');
-                        label[13] = GetHalfFontNo('a');
+                label[0] = GetHalfFontNo('C');
+                label[1] = GetHalfFontNo('a');
+                label[2] = GetHalfFontNo('t');
+                label[3] = GetHalfFontNo('a');
+                label[4] = GetHalfFontNo('r');
+                label[5] = GetHalfFontNo('a');
+                label[6] = GetHalfFontNo('t');
+                label[7] = GetHalfFontNo('a');
+                label[8] = GetHalfFontNo('s');
+                label[9] = GetHalfFontNo(' ');
+                label[10] = GetHalfFontNo('L');
+                label[11] = GetHalfFontNo('u');
+                label[12] = GetHalfFontNo('n');
+                label[13] = GetHalfFontNo('a');
                         break;
+                    case 1:
+                    case 3:
                     default:
-                        label[0] = GetHalfFontNo('M');
-                        label[1] = GetHalfFontNo('o');
-                        label[2] = GetHalfFontNo('o');
-                        label[3] = GetHalfFontNo('n');
-                        label[4] = GetHalfFontNo('F');
-                        label[5] = GetHalfFontNo('a');
-                        label[6] = GetHalfFontNo('l');
-                        label[7] = GetHalfFontNo('l');
-                        label[8] = GetHalfFontNo('s');
+                label[0] = GetHalfFontNo('M');
+                label[1] = GetHalfFontNo('o');
+                label[2] = GetHalfFontNo('o');
+                label[3] = GetHalfFontNo('n');
+                label[4] = GetHalfFontNo('F');
+                label[5] = GetHalfFontNo('a');
+                label[6] = GetHalfFontNo('l');
+                label[7] = GetHalfFontNo('l');
+                label[8] = GetHalfFontNo('s');
                         break;
                 }
             }
             for (int i = 0; i < 32; i++) {
                 if (label[i] >= 0) {
-                    int  page;
-                    RECT texture;
-                    texture = GetRectFontTex(label[i], &page);
+                    int page;
+                    RECT texture = GetRectFontTex(label[i], &page);
                     MySetTex(page, &prim);
                     RECT destination;
                     switch (LanguageCode) {
@@ -3072,14 +3083,15 @@ void EventTimeDraw(void) {
                             break;
                         case 2:
                         case 5:
-                            destination.x = (int) (EdEventInfo.stopwatch_x + 0.75 * texture.width * i - 28.0);
+                            destination.x = (int)(EdEventInfo.stopwatch_x + 0.75 * texture.width * i - 28.0);
                             break;
                         case 3:
-                            destination.x = (int) (8.0 + (EdEventInfo.stopwatch_x + 0.75 * texture.width * i));
+                            destination.x = (int)(8.0 + (EdEventInfo.stopwatch_x + 0.75 * texture.width * i));
                             break;
                         case 4:
-                            destination.x = (int) (EdEventInfo.stopwatch_x + 0.5 * texture.width * i - 28.0);
+                            destination.x = (int)(EdEventInfo.stopwatch_x + 0.5 * texture.width * i - 28.0);
                             break;
+                        case 1:
                         default:
                             destination.x = EdEventInfo.stopwatch_x + texture.width * i - 4;
                             break;
@@ -3092,19 +3104,16 @@ void EventTimeDraw(void) {
                     destination.height = texture.height;
                     set2DSprite_Fuchi(&prim, destination, texture, 8, 0x80);
                     RGBAQ_TYPE color;
-                    color.r = color.g = color.b = color.a = 0x80;
+                    color.a = color.r = color.g = color.b = 0x80;
                     set2DSpriteEasyFont(&prim,
-                                        mgRect<int>(destination.x, destination.y, destination.width, destination.height),
-                                        mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
+                        mgRect<int>(destination.x, destination.y, destination.width, destination.height),
+                        mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
                 }
             }
         }
         prim.End();
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", EventTimeDraw__Fv);
-#endif
 void EdEventDraw() {
     int hit_no;
     int sprite_no;
@@ -3338,7 +3347,7 @@ void EdEventMapInit() {
     if (message != NULL) {
         message->draw_speed = message->GetDrawSpeedDef();
         message->mes_no = -1;
-        message->unk_1e40 = 0;
+        message->text_ptr = 0;
         message->open = 0;
         message->fade = 0;
         message->fukidashi_centre_x = -1;
@@ -3350,7 +3359,7 @@ void EdEventMapInit() {
     if (message != NULL) {
         message->draw_speed = message->GetDrawSpeedDef();
         message->mes_no = -1;
-        message->unk_1e40 = 0;
+        message->text_ptr = 0;
         message->open = 0;
         message->fade = 0;
         message->fukidashi_centre_x = -1;
@@ -3362,7 +3371,7 @@ void EdEventMapInit() {
     if (message != NULL) {
         message->draw_speed = message->GetDrawSpeedDef();
         message->mes_no = -1;
-        message->unk_1e40 = 0;
+        message->text_ptr = 0;
         message->open = 0;
         message->fade = 0;
         message->fukidashi_centre_x = -1;
@@ -3647,51 +3656,49 @@ int _LOAD_CHARA_sub(int stack_no, char **name, int chara_no, u32 *pack, int mode
 int _LOAD_CHARA_sub(int a, char **b, int c, u32 *d) {
     return _LOAD_CHARA_sub(a, b, c, d, 0);
 }
-#ifdef NONMATCHING
 int _LOAD_CHARA(RS_STACKDATA *stack, int argc) {
     char *name[0x20];
-    char  directory[0x40];
-    char  fileName[0x20];
-    int   stackNo;
+    char directory[0x40];
+    char fileName[0x20];
+    int stackNo;
+    int charaNo;
+    int mode;
     char *path;
-    int   charaNo;
-    int   mode;
-    if (argc != 5) {
-        switch (argc) {
-            case 1: {
-                ARG_DATA *args = FindArgData(GetStackInt(stack));
-                if (args == NULL) {
-                    return 0;
-                }
-                stackNo = GetArgInt(args++);
-                path = GetArgString(args++);
-                name[0] = GetArgString(args++);
-                charaNo = GetArgInt(args);
-                mode = 0;
-                break;
-            }
-            case 4:
-                stackNo = GetStackInt(stack++);
-                path = GetStackString(stack++);
-                name[0] = GetStackString(stack++);
-                charaNo = GetStackInt(stack);
-                mode = 0;
-                break;
-            default:
+    switch (argc) {
+        case 1: {
+            ARG_DATA *args = FindArgData(GetStackInt(stack));
+            if (args == NULL) {
                 return 0;
+            }
+            stackNo = GetArgInt(args++);
+            path = GetArgString(args++);
+            name[0] = GetArgString(args++);
+            charaNo = GetArgInt(args);
+            mode = 0;
+            break;
         }
-    } else {
-        stackNo = GetStackInt(stack++);
-        path = GetStackString(stack++);
-        name[0] = GetStackString(stack++);
-        charaNo = GetStackInt(stack++);
-        mode = GetStackInt(stack);
+        case 4:
+            stackNo = GetStackInt(stack++);
+            path = GetStackString(stack++);
+            name[0] = GetStackString(stack++);
+            charaNo = GetStackInt(stack);
+            mode = 0;
+            break;
+        case 5:
+            stackNo = GetStackInt(stack++);
+            path = GetStackString(stack++);
+            name[0] = GetStackString(stack++);
+            charaNo = GetStackInt(stack++);
+            mode = GetStackInt(stack);
+            break;
+        default:
+            return 0;
     }
     u32 *pack = GetLoadBGBuff(path, NULL);
     if (pack == NULL) {
         return 0;
     }
-    int        result = _LOAD_CHARA_sub(stackNo, name, charaNo, pack, mode);
+    int result = _LOAD_CHARA_sub(stackNo, name, charaNo, pack, mode);
     CSaveData *saveData = GetSaveData();
     if (saveData != NULL) {
         if (saveData->GetBitCtrl() & 8) {
@@ -3708,9 +3715,6 @@ int _LOAD_CHARA(RS_STACKDATA *stack, int argc) {
     }
     return result;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _LOAD_CHARA__FP12RS_STACKDATAi);
-#endif
 int _CHARA_ACTIVE(RS_STACKDATA *stack, int arg_count) {
     int enable;
     int chara_no;
@@ -4061,22 +4065,23 @@ int _GET_DUN_WORLD_COORD(RS_STACKDATA *stack, int argc) {
     return 0;
 }
 #ifdef NONMATCHING
+// 83.6% match, 23 words off
 int _LOAD_IMG(RS_STACKDATA *stack, int argc) {
-    int   size;
-    int   stackNo = GetStackInt(stack++);
+    int size;
+    int stackNo = GetStackInt(stack++);
     char *fileName = GetStackString(stack++);
-    int   imageNo = GetStackInt(stack++);
-    int   block = EventScene->event_texb + imageNo;
+    int imageNo = GetStackInt(stack++);
     if (EventScene->event_texb_num <= 0 || EventScene->event_texb_num < imageNo) {
         return 0;
     }
-    u_char *file = (u_char *) GetLoadBGBuff(fileName, &size);
+    int block = EventScene->event_texb + imageNo;
+    u_char *file = (u_char *)GetLoadBGBuff(fileName, &size);
     if (file == NULL) {
         return 0;
     }
-    mgCMemory *memory = (mgCMemory *) EventScene->GetStack(stackNo);
+    mgCMemory *memory = (mgCMemory *)EventScene->GetStack(stackNo);
     memory->Align64();
-    u_char *image = (u_char *) memory->stAllocTest(size / 16 + 1);
+    u_char *image = (u_char *)memory->stAllocTest(size / 16 + 1);
     if (image == NULL) {
         return 0;
     }
@@ -4447,16 +4452,17 @@ int GetConfigCaptionOff() {
     return caption_off;
 }
 #ifdef NONMATCHING
+// 98.9% match, 68 words off
 int LoadMovie(char *name, mgCMemory *memory, bool skip) {
-    CMovie      movie;
-    int         captionWidth;
-    int         captionHeight;
-    int         captionBlock;
-    int         captionOff;
-    int         fontBlock;
+    CMovie movie;
+    int captionWidth;
+    int captionHeight;
+    int captionBlock;
+    int captionOff;
+    int fontBlock;
     mgCTexture *movieTexture;
-    int         movieBlock;
-    int         frame;
+    int movieBlock;
+    int frame;
 
     movie.Load(name, memory, 0x200, 0x1A0, true, false, skip);
     printf(at_2836, (memory->stack_size - memory->stack_used) * 0x10 / 0x400);
@@ -4482,7 +4488,7 @@ int LoadMovie(char *name, mgCMemory *memory, bool skip) {
             EdEventInfo.caption_enable = 0;
         }
     }
-    textures->ReloadTexture(movieBlock, (sceVif1Packet *) NULL);
+    textures->ReloadTexture(movieBlock, (sceVif1Packet *)NULL);
     movieTexture = textures->GetTexture(at_2837, movieBlock);
     movie.Play(at_2837);
     movie.SwitchThread();
@@ -4505,13 +4511,40 @@ int LoadMovie(char *name, mgCMemory *memory, bool skip) {
             mgBeginFrame(NULL);
         }
         GamePad__2.UpDate();
-        if (movie.EndCheck() != 0) {
-            break;
+        if (movie.EndCheck() != 0 || (DebugFlag != 0 && GamePad__2.Down(PAD_START) != 0)) {
+        movie.Term();
+        textures->ReloadTexture(movieBlock, (sceVif1Packet *)NULL);
+        mgBeginFrame(NULL);
+        mgCDrawPrim endDraw;
+        endDraw.Initialize(NULL, NULL);
+        endDraw.AlphaTestEnable(0);
+        endDraw.TextureMapEnable(1);
+        endDraw.Begin(6);
+        endDraw.Color(0, 0, 0, 0x80);
+        endDraw.Vertex(0, 0, 0);
+        endDraw.Vertex(mgScreenWidth, mgScreenHeight, 0);
+        endDraw.Texture(movieTexture);
+        endDraw.Color(0x80, 0x80, 0x80, 0x80);
+        endDraw.TextureCrd(1, 1);
+        endDraw.Vertex(0, 0, 0);
+        endDraw.TextureCrd(0x1FE, 0x19E);
+        endDraw.Vertex(mgScreenWidth, mgScreenHeight, 0);
+        endDraw.End();
+        EventScene->fade.FadeOut(1, 0.0f, 0.0f, 0.0f);
+        mgEndFrame(NULL);
+        mgBeginFrame(NULL);
+        memory->stack_used = 0;
+        memory->lock = 0;
+        textures->DeleteBlock(movieBlock);
+        if (EdEventInfo.caption_enable != 0 && captionOff == 0) {
+            textures->DeleteBlock(captionBlock);
+            textures->EnterIMGFile(GetGaijiImgPtr(), fontBlock, NULL, NULL);
+            ReLoadFontTexture(fontBlock);
+            textures->EnterIMGFile(GetFontTex2ImgPtr(), fontBlock, NULL, NULL);
         }
-        if (DebugFlag != 0 && GamePad__2.Down(0x800) != 0) {
-            break;
+            return 1;
         }
-        textures->ReloadTexture(movieBlock, (sceVif1Packet *) NULL);
+        textures->ReloadTexture(movieBlock, (sceVif1Packet *)NULL);
         movie.SwitchThread();
         mgCDrawPrim frameDraw;
         frameDraw.Initialize(NULL, NULL);
@@ -4534,22 +4567,22 @@ int LoadMovie(char *name, mgCMemory *memory, bool skip) {
             char *text = NULL;
             if (captionOff == 0) {
                 char caption[0xE1];
-                int  x;
-                int  y;
+                int x;
+                int y;
                 for (int i = 0; i < 18; i++) {
                     if (frame >= EdEventInfo.caption_start[i] &&
                         EdEventInfo.caption_start[i] + EdEventInfo.caption_frames[i] >= frame) {
                         char *line = EdEventInfo.caption_text[i];
                         font.CalcDrawWH(line, &captionWidth, &captionHeight);
-                        x = fptosi(CalcAutoPosSet(0.0f, 512.0f, (float) captionWidth, 0.5f));
-                        y = fptosi(CalcAutoPosSet(0.0f, 480.0f, (float) captionHeight, 0.95f));
+                        x = fptosi(CalcAutoPosSet(0.0f, 512.0f, (float)captionWidth, 0.5f));
+                        y = fptosi(CalcAutoPosSet(0.0f, 480.0f, (float)captionHeight, 0.95f));
                         memset(caption, 0, 0xE1);
                         My_strncpy(caption, line, (frame - EdEventInfo.caption_start[i]) / 2 * 2);
                         text = caption;
                     }
                 }
                 if (text != NULL) {
-                    textures->ReloadTexture(captionBlock, (sceVif1Packet *) NULL);
+                    textures->ReloadTexture(captionBlock, (sceVif1Packet *)NULL);
                     font.DrawDirect(caption, x, y);
                 }
             }
@@ -4557,37 +4590,6 @@ int LoadMovie(char *name, mgCMemory *memory, bool skip) {
         mgEndFrame(NULL);
         frame++;
     }
-    movie.Term();
-    textures->ReloadTexture(movieBlock, (sceVif1Packet *) NULL);
-    mgBeginFrame(NULL);
-    mgCDrawPrim endDraw;
-    endDraw.Initialize(NULL, NULL);
-    endDraw.AlphaTestEnable(0);
-    endDraw.TextureMapEnable(1);
-    endDraw.Begin(6);
-    endDraw.Color(0, 0, 0, 0x80);
-    endDraw.Vertex(0, 0, 0);
-    endDraw.Vertex(mgScreenWidth, mgScreenHeight, 0);
-    endDraw.Texture(movieTexture);
-    endDraw.Color(0x80, 0x80, 0x80, 0x80);
-    endDraw.TextureCrd(1, 1);
-    endDraw.Vertex(0, 0, 0);
-    endDraw.TextureCrd(0x1FE, 0x19E);
-    endDraw.Vertex(mgScreenWidth, mgScreenHeight, 0);
-    endDraw.End();
-    EventScene->fade.FadeOut(1, 0.0f, 0.0f, 0.0f);
-    mgEndFrame(NULL);
-    mgBeginFrame(NULL);
-    memory->stack_used = 0;
-    memory->lock = 0;
-    textures->DeleteBlock(movieBlock);
-    if (EdEventInfo.caption_enable != 0 && captionOff == 0) {
-        textures->DeleteBlock(captionBlock);
-        textures->EnterIMGFile(GetGaijiImgPtr(), fontBlock, NULL, NULL);
-        ReLoadFontTexture(fontBlock);
-        textures->EnterIMGFile(GetFontTex2ImgPtr(), fontBlock, NULL, NULL);
-    }
-    return 1;
 }
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", LoadMovie__FPcP9mgCMemoryb);
@@ -4728,27 +4730,27 @@ int _TRG_PAKU_ANIM(RS_STACKDATA *stack, int argc) {
 
     return 1;
 }
-#ifdef NONMATCHING
 int _RESET_CAMERA(RS_STACKDATA *stack, int argc) {
-    float            follow[4];
-    float            followOffset[4];
-    float            charaPos[4];
-    float            cameraPos[4];
-    float            pos[4];
-    float            rot[4];
-    float            target[4];
-    CCameraControl  *camera;
+    int mode;
+    float follow[4];
+    float followOffset[4];
+    float charaPos[4];
+    float cameraPos[4];
+    float pos[4];
+    float rot[4];
+    float target[4];
+    CCameraControl *camera;
     mgCCameraFollow *referenceCamera;
     mgCCameraFollow *beforeCamera;
-    CCharacter2     *chara;
-    float            angle = 0.0f;
-    float            height = 0.0f;
-    float            dx;
-    float            dy;
-    float            dz;
-    float            distance;
-    int              mode;
+    CCharacter2 *chara;
+    float dx;
+    float dy;
+    float dz;
+    float distance;
     mode = GetStackInt(stack++);
+    float angle;
+float height;
+height = angle = 0.0f;
     if (argc > 1) {
         angle = GetStackFloat(stack++);
     }
@@ -4757,15 +4759,15 @@ int _RESET_CAMERA(RS_STACKDATA *stack, int argc) {
     }
     camera = NULL;
     if (mode == 0) {
-        camera = (CCameraControl *) EventScene->GetCamera(EventScene->active_camera);
+        camera = (CCameraControl *)EventScene->GetCamera(EventScene->active_camera);
     }
     if (mode == 1) {
-        camera = (CCameraControl *) EventScene->GetCamera(EventScene->before_camera);
+        camera = (CCameraControl *)EventScene->GetCamera(EventScene->before_camera);
     }
     if (camera == NULL) {
         return 0;
     }
-    referenceCamera = (mgCCameraFollow *) EventScene->GetCamera(EventScene->before_camera);
+    referenceCamera = (mgCCameraFollow *)EventScene->GetCamera(EventScene->before_camera);
     if (referenceCamera == NULL) {
         return 0;
     }
@@ -4789,14 +4791,17 @@ int _RESET_CAMERA(RS_STACKDATA *stack, int argc) {
         if (argc < 2) {
             angle = atan2f(dx, dz);
         }
+        float fx = charaPos[0];
+        float fy = charaPos[1];
+        float fz = charaPos[2];
         camera->FollowOn();
-        camera->SetFollow(charaPos[0], charaPos[1], charaPos[2]);
+        camera->SetFollow(fx, fy, fz);
         camera->SetFollowOffset(followOffset[0], followOffset[1], followOffset[2]);
         camera->SetDistance(distance);
         camera->SetHeight(height);
         camera->SetAngleSoon(angle);
-        beforeCamera = (mgCCameraFollow *) EventScene->GetCamera(EventScene->before_camera);
-        referenceCamera = (mgCCameraFollow *) EventScene->GetCamera(EventScene->active_camera);
+        beforeCamera = (mgCCameraFollow *)EventScene->GetCamera(EventScene->before_camera);
+        referenceCamera = (mgCCameraFollow *)EventScene->GetCamera(EventScene->active_camera);
         *beforeCamera = *referenceCamera;
         SetWorldCoordFlg = 0;
         return 1;
@@ -4835,9 +4840,6 @@ int _RESET_CAMERA(RS_STACKDATA *stack, int argc) {
     }
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _RESET_CAMERA__FP12RS_STACKDATAi);
-#endif
 int _GET_ACTIVE_CHR_NO(RS_STACKDATA *stack, int argc) {
     CUserDataManager *user_data = NULL;
     CSaveData        *save = GetSaveData();
@@ -6824,85 +6826,166 @@ int _GOTO_SUBGAME(RS_STACKDATA *stack, int argc) {
     int         type = GetStackInt(stack);
     SubGameInfo info;
     info.scene = EventScene;
-    info.texb = EventScene->unk_3e68;
-    info.texb_num = EventScene->unk_3e6c;
+    info.texb = EventScene->tex_block_base;
+    info.texb_num = EventScene->tex_block_count;
     return sgInitSubGame(type, &info) != 0;
 }
-#ifdef NONMATCHING
 int _SET_GYORACE_ETC(RS_STACKDATA *stack, int argc) {
-    int operation = GetStackInt(stack++);
-    switch (operation) {
+    int digit[8];
+    char text[0x14];
+    ClsMes *mes;
+    float time;
+    int minutes;
+    int seconds;
+    int hundredths;
+    int resultNo;
+    int nameNo;
+    int i;
+    switch (GetStackInt(stack++)) {
         case 0:
             SetGyoRaceAquariumNo(GetStackInt(stack));
-            return 1;
+            break;
         case 1:
             SetGyoRaceRanking(GetStackInt(stack));
-            return 1;
+            break;
         case 2:
             SetGyoRaceClass(GetStackInt(stack));
-            return 1;
+            break;
         case 3:
             SetGyoRaceNo(GetStackInt(stack));
-            return 1;
+            break;
         case 4: {
-            CSaveData *save = GetSaveData();
-            if (save == NULL) {
+            CSaveData *saveData = GetSaveData();
+            if (saveData == NULL) {
                 return 0;
             }
-            save->AddTourCountEtc(1);
-            return 1;
+            saveData->AddTourCountEtc(1);
+            break;
         }
-        case 5: {
-            ClsMes *message = GetEventMessage(GetStackInt(stack++));
-            if (message == NULL) {
+        case 5:
+            mes = GetEventMessage(GetStackInt(stack++));
+            if (mes == NULL) {
                 return 0;
             }
-            int             name_index = GetStackInt(stack++) - 1;
-            GYORACE_RESULT *fish = &fish_game_data[GetStackInt(stack)];
-            strcpy(message->name[name_index], fish->name);
-            return 1;
-        }
-        case 6: {
-            ClsMes *message = GetEventMessage(GetStackInt(stack++));
-            if (message == NULL) {
+            nameNo = GetStackInt(stack++);
+            resultNo = GetStackInt(stack);
+            if (&fish_game_data[resultNo] == NULL) {
                 return 0;
             }
-            int   name_index = GetStackInt(stack++) - 1;
-            float time = fish_game_data[GetStackInt(stack)].time;
+            if (&fish_game_data[resultNo] != NULL) {
+                strcpy(mes->name[nameNo - 1], fish_game_data[resultNo].name);
+            }
+            break;
+        case 6:
+            mes = GetEventMessage(GetStackInt(stack++));
+            if (mes == NULL) {
+                return 0;
+            }
+            nameNo = GetStackInt(stack++);
+            resultNo = GetStackInt(stack);
+            time = fish_game_data[resultNo].time;
             if (time < 0.0f) {
                 time = 0.0f;
             }
-            if (time >= 360000.0f) {
+            if (360000.0f <= time) {
                 time = 360000.0f;
             }
-            int   hours = fptosi(time / 3600.0f);
-            float minutes_remain = time - 3600.0f * (float) hours;
-            int   minutes = fptosi(minutes_remain / 60.0f);
-            int   hundredths = fptosi(100.0f * (minutes_remain - 60.0f * (float) minutes) / 60.0f);
-            int   chars[8] = {hours / 10, hours % 10, -1, minutes / 10, minutes % 10,
-                              -1, hundredths / 10, hundredths % 10};
-            char *glyph[11] = {at_4261__2, at_4262__2, at_4263__2, at_4264__2,
-                               at_4265__2, at_4266__2, at_4267__2, at_4268__2,
-                               at_4269__2, at_4270__2, at_4271__2};
-            char  text[20] = "";
-            for (int i = 0; i < 8; i++) {
-                int digit = chars[i];
-                strcat(text, glyph[(digit >= 0 && digit <= 9) ? digit : 10]);
+            minutes = (int)(time / 3600.0f);
+            time -= minutes * 3600.0f;
+            seconds = (int)(time / 60.0f);
+            hundredths = (int)(100.0f * (time - seconds * 60.0f) / 60.0f);
+            digit[0] = minutes / 10;
+            digit[1] = minutes % 10;
+            digit[2] = -1;
+            digit[3] = seconds / 10;
+            digit[4] = seconds % 10;
+            digit[5] = -1;
+            digit[6] = hundredths / 10;
+            digit[7] = hundredths % 10;
+            memset(text, 0, 0x14);
+            switch (digit[0]) {
+                case 0:
+                    sprintf(text, at_4261__2);
+                    break;
+                case 1:
+                    sprintf(text, at_4262__2);
+                    break;
+                case 2:
+                    sprintf(text, at_4263__2);
+                    break;
+                case 3:
+                    sprintf(text, at_4264__2);
+                    break;
+                case 4:
+                    sprintf(text, at_4265__2);
+                    break;
+                case 5:
+                    sprintf(text, at_4266__2);
+                    break;
+                case 6:
+                    sprintf(text, at_4267__2);
+                    break;
+                case 7:
+                    sprintf(text, at_4268__2);
+                    break;
+                case 8:
+                    sprintf(text, at_4269__2);
+                    break;
+                case 9:
+                    sprintf(text, at_4270__2);
+                    break;
+                default:
+                    sprintf(text, at_4271__2);
+                    break;
             }
-            strcpy(message->name[name_index], text);
-            return 1;
-        }
+            for (i = 1; i < 8; i++) {
+                switch (digit[i]) {
+                    case 0:
+                        strcat(text, at_4261__2);
+                        break;
+                    case 1:
+                        strcat(text, at_4262__2);
+                        break;
+                    case 2:
+                        strcat(text, at_4263__2);
+                        break;
+                    case 3:
+                        strcat(text, at_4264__2);
+                        break;
+                    case 4:
+                        strcat(text, at_4265__2);
+                        break;
+                    case 5:
+                        strcat(text, at_4266__2);
+                        break;
+                    case 6:
+                        strcat(text, at_4267__2);
+                        break;
+                    case 7:
+                        strcat(text, at_4268__2);
+                        break;
+                    case 8:
+                        strcat(text, at_4269__2);
+                        break;
+                    case 9:
+                        strcat(text, at_4270__2);
+                        break;
+                    default:
+                        strcat(text, at_4271__2);
+                        break;
+                }
+            }
+            strcpy(mes->name[nameNo - 1], text);
+            break;
         case 7:
             InitFishPrize();
             LoadFishPrize(0);
-            return 1;
+            break;
         default:
             return 0;
     }
+    return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_GYORACE_ETC__FP12RS_STACKDATAi);
-#endif
 int _GET_GYORACE_ETC(RS_STACKDATA *stack, int argc) {
     FISH_PRIZE_INFO info;
     int             race_no;
@@ -7005,7 +7088,7 @@ int _SET_SAVEDATA_ETC(RS_STACKDATA *stack, int argc) {
                 return 0;
             }
 
-            save->unk_643C9 = GetStackInt(stack);
+            save->skip_load_bgm = GetStackInt(stack);
             break;
         case 4:
             DeleteErekiFish();
@@ -7473,13 +7556,13 @@ int _SET_EVENT_DATA(RS_STACKDATA *stack, int argc) {
             event_data->event.point_no = GetStackInt(value);
             break;
         case 3:
-            event_data->event.unk_2c = GetStackInt(value);
+            event_data->event.arg1 = GetStackInt(value);
             break;
         case 4:
-            event_data->event.unk_30 = GetStackInt(value);
+            event_data->event.arg2 = GetStackInt(value);
             break;
         case 5:
-            event_data->event.unk_34 = GetStackInt(value);
+            event_data->event.arg3 = GetStackInt(value);
             break;
         case 6:
             event_data->map_event.check_type = GetStackInt(value);
@@ -7499,7 +7582,6 @@ int _SET_EVENT_DATA(RS_STACKDATA *stack, int argc) {
 
     return 1;
 }
-#ifdef NONMATCHING
 int _STOPWATCH(RS_STACKDATA *stack, int argc) {
     CSaveData *saveData = GetSaveData();
     if (saveData == NULL) {
@@ -7522,16 +7604,10 @@ int _STOPWATCH(RS_STACKDATA *stack, int argc) {
         } else {
             u64 elapsed = saveData->play_time - EdEventInfo.stopwatch_start;
             EdEventInfo.stopwatch_start = 0;
-#ifdef NONMATCHING
-            SetStack(stack++, (int) (elapsed / 3600));
-            SetStack(stack++, (int) (elapsed % 3600 / 60));
-            SetStack(stack++, (int) (elapsed % 60 * 100 / 60));
-#else
-            SetStack(stack++, elapsed / 3600);
-            SetStack(stack++, elapsed % 3600 / 60);
-            SetStack(stack++, elapsed % 60 * 100 / 60);
-#endif
-            SetStack(stack, elapsed < 7261);
+            SetStack(stack++, (int)(elapsed / 3600));
+            SetStack(stack++, (int)(elapsed % 3600 / 60));
+            SetStack(stack++, (int)(elapsed % 60 * 100 / 60));
+            SetStack(stack++, elapsed < 7261);
             return 1;
         }
     }
@@ -7547,9 +7623,6 @@ int _STOPWATCH(RS_STACKDATA *stack, int argc) {
     }
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _STOPWATCH__FP12RS_STACKDATAi);
-#endif
 int _SET_FUNC_ETC(RS_STACKDATA *stack, int argc) {
     u32 *flags;
 
@@ -8308,8 +8381,8 @@ int _MES_MAKE(RS_STACKDATA *stack, int argc) {
                     return 0;
                 }
 
-                mes->unk_1e40 = (s32) text;
-                mes->MakeMesWin((char *) mes->unk_1e40, 0, 1);
+                mes->text_ptr = (s32) text;
+                mes->MakeMesWin((char *) mes->text_ptr, 0, 1);
             } else if (id == 0 && EdEventInfo.npc_talk_text != NULL) {
                 if (EdEventInfo.npc_talk_text == NULL) {
                     return 0;
@@ -8325,8 +8398,8 @@ int _MES_MAKE(RS_STACKDATA *stack, int argc) {
                     return 0;
                 }
 
-                mes->unk_1e40 = (s32) text;
-                mes->MakeMesWin((char *) mes->unk_1e40, 0, 1);
+                mes->text_ptr = (s32) text;
+                mes->MakeMesWin((char *) mes->text_ptr, 0, 1);
             } else {
                 mes->MakeMesWin(no);
             }
@@ -8355,7 +8428,7 @@ int _MES_CLOSE(RS_STACKDATA *stack, int argc) {
 
     mes->draw_speed = mes->GetDrawSpeedDef();
     mes->mes_no = -1;
-    mes->unk_1e40 = 0;
+    mes->text_ptr = 0;
     mes->open = 0;
     mes->fade = 0;
     mes->fukidashi_centre_x = -1;
@@ -9085,6 +9158,7 @@ int _GET_MES_OKURI(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 #ifdef NONMATCHING
+// ~28.5% match, 188 words off
 int _GET_FISHINGTOURNAMENT_ETC(RS_STACKDATA *stack, int argc) {
     char                text[0x200];
     char                itemName[0x20];
@@ -10657,11 +10731,10 @@ int _OBJS_SET_EOH_FRAME_POS(RS_STACKDATA *stack, int argc) {
     seq->SetEohFramePos(eoh_no, frame_name, frames, offset);
     return 1;
 }
-#ifdef NONMATCHING
 int _OBJS_ADD_POS(RS_STACKDATA *stack, int argc) {
     float add[4];
-    int   index;
-    int   frame = 1;
+    int index;
+    int frame = 1;
     switch (argc) {
         case 1: {
             ARG_DATA *args = FindArgData(GetStackInt(stack));
@@ -10679,7 +10752,7 @@ int _OBJS_ADD_POS(RS_STACKDATA *stack, int argc) {
             GetStackVector(add, stack);
             stack += 3;
             if (argc >= 5) {
-                frame = GetStackInt(stack);
+                frame = GetStackInt(stack++);
             }
             break;
         default:
@@ -10692,9 +10765,6 @@ int _OBJS_ADD_POS(RS_STACKDATA *stack, int argc) {
     seq->AddPos(add, frame);
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _OBJS_ADD_POS__FP12RS_STACKDATAi);
-#endif
 int _OBJS_ATTACH_CAMERA(RS_STACKDATA *stack, int argc) {
     CSceneObjSeq *seq;
     int           slot;
@@ -11597,7 +11667,6 @@ int VpkFileNameFromVoiceNo(char *name, int voice_no) {
 
     return 0;
 }
-#ifdef NONMATCHING
 int _STREAM_OPEN(RS_STACKDATA *stack, int argc) {
     char voicePack[0x80];
     char voicePath[0x80];
@@ -11617,7 +11686,6 @@ int _STREAM_OPEN(RS_STACKDATA *stack, int argc) {
                 case RS_STR:
                     EdEventInfo.stream_from_fpl = 0;
                     CommandStreamOpen(1, GetStackString(stack));
-                    return 0;
                 default:
                     return 0;
             }
@@ -11628,9 +11696,6 @@ int _STREAM_OPEN(RS_STACKDATA *stack, int argc) {
     }
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _STREAM_OPEN__FP12RS_STACKDATAi);
-#endif
 int CommandStreamPlay(int stream, int volume) {
     int reverb = sndGetReverbDepth(1);
     int scaled = (int) ((double) volume - 256.0 * (1.5 * (double) reverb));
@@ -12100,37 +12165,31 @@ int _BGM_PLAY_ENABLE(RS_STACKDATA *stack, int argc) {
     (&EventScene->skip_load_sound)[1] = 0;
     return 1;
 }
-#ifdef NONMATCHING
 int _GET_DEF_BGM_NO(RS_STACKDATA *stack, int argc) {
     int sndId;
+    int bgmNo;
     if (argc == 1) {
-        CScene *scene = EventScene;
-        int     subMapNo = scene->now_sub_map_no;
-        if (0 < subMapNo) {
-            sndId = GetMapSndDataID(subMapNo);
-        } else {
-            sndId = GetMapSndDataID(scene->now_map_no);
-        }
-        SetStack(stack, EventScene->GetDefBgmNo(sndId));
-    } else if (argc == 2) {
-        sndId = GetMapSndDataID(GetStackInt(stack++));
-        SetStack(stack, EventScene->GetDefBgmNo(sndId));
-    } else {
-        return 0;
+        CScene *scene = EventScene; int map = scene->now_map_no; int sub = scene->now_sub_map_no;
+if (0 < sub) { sndId = GetMapSndDataID(sub); } else { sndId = GetMapSndDataID(map); }
+        bgmNo = EventScene->GetDefBgmNo(sndId);
+        SetStack(stack, bgmNo);
+        return 1;
     }
-    return 1;
+    if (argc == 2) {
+        sndId = GetMapSndDataID(GetStackInt(stack++));
+        bgmNo = EventScene->GetDefBgmNo(sndId);
+        SetStack(stack, bgmNo);
+        return 1;
+    }
+    return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_DEF_BGM_NO__FP12RS_STACKDATAi);
-#endif
-#ifdef NONMATCHING
 int _SET_MOVIE_CC(RS_STACKDATA *stack, int argc) {
-    int   no;
-    int   frames;
+    int i;
+    int no;
+    int start;
     char *text;
-    int   start;
-    int   i;
-    int   mode = GetStackInt(stack++);
+    int frames;
+    int mode = GetStackInt(stack++);
     switch (mode) {
         case 0:
             EdEventInfo.caption_enable = GetStackInt(stack);
@@ -12153,18 +12212,17 @@ int _SET_MOVIE_CC(RS_STACKDATA *stack, int argc) {
             if (no >= 18) {
                 return 0;
             }
-            EdEventInfo.caption_start[no] = start * 50 / 60;
+            start = start * 50 / 60;
+            frames = frames * 50 / 60;
+            EdEventInfo.caption_start[no] = start;
             strcpy(EdEventInfo.caption_text[no], text);
-            EdEventInfo.caption_frames[no] = frames * 50 / 60;
+            EdEventInfo.caption_frames[no] = frames;
             break;
         default:
             return 0;
     }
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_MOVIE_CC__FP12RS_STACKDATAi);
-#endif
 int _REGISTER_VILLAGER2(RS_STACKDATA *stack, int argc) {
     int        villager_no;
     int        mode;
@@ -12540,7 +12598,6 @@ void _EOH_SET_STEP(RS_STACKDATA *stack, int argc) {
     argc = GetStackInt(stack++);
     EventObjHandleMother.SetStep(argc, GetStackFloat(stack));
 }
-#ifdef NONMATCHING
 int _EOH_SET_TEX_ANIM(RS_STACKDATA *stack, int argc) {
     int no = GetStackInt(stack);
     switch (stack[1].type) {
@@ -12549,10 +12606,9 @@ int _EOH_SET_TEX_ANIM(RS_STACKDATA *stack, int argc) {
                 return EventObjHandleMother.SetTexAnim(no, 0, NULL);
             }
             if (argc == 3) {
-                return EventObjHandleMother.SetTexAnim(no, GetStackInt(stack + 1), GetStackString(stack + 2));
+                int result = EventObjHandleMother.SetTexAnim(no, GetStackInt(stack + 1), GetStackString(stack + 2));
+                return result;
             }
-            return 0;
-        default:
             return 0;
         case RS_STR: {
             if (argc == 2) {
@@ -12563,10 +12619,8 @@ int _EOH_SET_TEX_ANIM(RS_STACKDATA *stack, int argc) {
             return EventObjHandleMother.SetTexAnim(no, 0, offName) ? EventObjHandleMother.SetTexAnim(no, 1, onName) : 0;
         }
     }
+    return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _EOH_SET_TEX_ANIM__FP12RS_STACKDATAi);
-#endif
 int _EOH_SET_SCALE(RS_STACKDATA *stack, int argc) {
     int   no = GetStackInt(stack++);
     float x = GetStackFloat(stack++);
@@ -13536,6 +13590,7 @@ static int _GET_RAND(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 #ifdef NONMATCHING
+// 96.7% match, 4 words off
 int _LINE_POINT_DIST(RS_STACKDATA *stack, int argc) {
     float segmentStart[4];
     float segmentEnd[4];
@@ -14132,13 +14187,13 @@ int _GET_EVENT_DATA(RS_STACKDATA *stack, int argc) {
             SetStack(stack, event_data->event.point_no);
             break;
         case 3:
-            SetStack(stack, event_data->event.unk_2c);
+            SetStack(stack, event_data->event.arg1);
             break;
         case 4:
-            SetStack(stack, event_data->event.unk_30);
+            SetStack(stack, event_data->event.arg2);
             break;
         case 5:
-            SetStack(stack, event_data->event.unk_34);
+            SetStack(stack, event_data->event.arg3);
             break;
         case 6:
             SetStack(stack, event_data->map_event.check_type);
@@ -15296,8 +15351,8 @@ int _CHECK_MC_LOAD(RS_STACKDATA *stack, int arg_count) {
         return 0;
     }
 
-    SetStack(stack, arg->unk_4c);
-    arg->unk_4c = 0;
+    SetStack(stack, arg->mc_load);
+    arg->mc_load = 0;
     return 1;
 }
 
@@ -15347,19 +15402,27 @@ int _CANCEL_NOW_LOADING(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 #ifdef NONMATCHING
+extern "C" void *__vt__9mgCVisual[];
+extern "C" void *__vt__11mgC3DSprite[];
+// 99.4% match, 9 words off
 int _ESM_INITIALIZE(RS_STACKDATA *stack, int argc) {
-    int        texbOffset = 0;
-    int        stackNo;
+    int texbOffset = 0;
+    int stackNo = GetStackInt(stack++);
     mgCMemory *memory;
-    stackNo = GetStackInt(stack++);
     if (argc >= 2) {
         texbOffset = GetStackInt(stack);
     }
-    if ((memory = (mgCMemory *) EventScene->GetStack(stackNo)) == NULL) {
+    if ((memory = (mgCMemory *)EventScene->GetStack(stackNo)) == NULL) {
         return 0;
     }
     CEffectScriptMan *manager;
-    manager = new (memory->Alloc(0x11B)) CEffectScriptMan;
+    if ((manager = (CEffectScriptMan *)operator new(sizeof(CEffectScriptMan), memory->Alloc(0x11B))) != NULL) {
+        ((void ***)&manager->sprite)[7] = __vt__9mgCVisual;
+        manager->sprite.Initialize();
+        *(void ***)((u_int)&manager->sprite + 0x1C) = __vt__11mgC3DSprite;
+        manager->sprite.Initialize();
+        manager->Initialize(NULL, -1, -1);
+    }
     EventEffectScript = manager;
     if (EventEffectScript == NULL) {
         return 0;
@@ -15799,13 +15862,11 @@ int _IS_CLEAR_DESTROY(RS_STACKDATA *stack, int argc) {
     SetStack(stack, floor_manager->IsClearMostFastDestroy());
     return 1;
 }
-#ifdef NONMATCHING
 int _IS_CLEAR_PRACTICE(RS_STACKDATA *stack, int argc) {
-    int bonus;
     if (argc != 3) {
         return 0;
     }
-    DNG_BATTLE_AREA  *area = &EventScene->battle_area;
+    DNG_BATTLE_AREA *area = &EventScene->battle_area;
     CDngFloorManager *floorManager = &area->floor_manager;
     if (area == NULL) {
         return 0;
@@ -15813,7 +15874,7 @@ int _IS_CLEAR_PRACTICE(RS_STACKDATA *stack, int argc) {
     if (floorManager == NULL) {
         return 0;
     }
-    int        cleared = floorManager->IsClearPractice(GetStackInt(stack++));
+    int cleared = floorManager->IsClearPractice(GetStackInt(stack++));
     CSaveData *saveData = GetSaveData();
     if (saveData == NULL) {
         return 0;
@@ -15826,24 +15887,24 @@ int _IS_CLEAR_PRACTICE(RS_STACKDATA *stack, int argc) {
     if (info == NULL) {
         return 0;
     }
-    if (info->practice_type == 2) {
-        int param = info->practice_param;
-        switch (param) {
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-                bonus = param + 5;
-                break;
+    int bonus = info->practice_type;
+    switch (bonus) {
+        case 2: {
+            int param = info->practice_param;
+            switch (param) {
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    bonus = param + 5;
+                    break;
+            }
         }
     }
     SetStack(stack++, cleared);
     SetStack(stack, bonus);
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _IS_CLEAR_PRACTICE__FP12RS_STACKDATAi);
-#endif
 int _IS_PLAY_SUB_GAME(RS_STACKDATA *stack, int argc) {
     CDngFloorManager *floor_manager;
     DNG_BATTLE_AREA  *dng_scene;
@@ -16108,19 +16169,21 @@ int _FUNC_POINT_GET_POS(RS_STACKDATA *stack, int argc) {
     SetStack(stack, pos[2]);
     return 1;
 }
-#ifdef NONMATCHING
+static inline CMap *GetActiveEventMap() {
+    return EventScene->GetMap(EventScene->active_map);
+}
 int _FUNC_POINT_GET_ROT(RS_STACKDATA *stack, int argc) {
-    float       rot[4];
-    CMap       *map;
+    float rot[4];
+    CMap *map;
     CFuncPoint *funcPoint;
-    map = EventScene->GetMap(EventScene->active_map);
+    map = GetActiveEventMap();
     if (map == NULL) {
         return 0;
     }
     switch (stack->type) {
         case RS_INT: {
-            int        partsNo = GetStackInt(stack++);
-            char      *name = GetStackString(stack++);
+            int partsNo = GetStackInt(stack++);
+            char *name = GetStackString(stack++);
             CMapParts *parts = map->GetPlaceParts(partsNo);
             if (parts == NULL) {
                 return 0;
@@ -16146,7 +16209,7 @@ int _FUNC_POINT_GET_ROT(RS_STACKDATA *stack, int argc) {
     if (funcPoint == NULL) {
         return 0;
     }
-    *(u_long128 *) rot = *(u_long128 *) funcPoint->rotation;
+    *(u_long128 *)rot = *(u_long128 *)funcPoint->rotation;
     switch (argc) {
         case 3:
             SetStack(stack, rot[1]);
@@ -16161,9 +16224,6 @@ int _FUNC_POINT_GET_ROT(RS_STACKDATA *stack, int argc) {
     }
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _FUNC_POINT_GET_ROT__FP12RS_STACKDATAi);
-#endif
 int _ACTCHR_SET_DEF_MOTION(RS_STACKDATA *stack, int argc) {
     int           chara_no;
     int           motion_arg = 0;
@@ -16755,6 +16815,7 @@ int _CLEAR_RND_STONE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 #ifdef NONMATCHING
+// 96.8% match, 2 words off
 int _GET_FLOOR_STATUS(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -16763,7 +16824,7 @@ int _GET_FLOOR_STATUS(RS_STACKDATA *stack, int argc) {
     if (info == NULL) {
         return 0;
     }
-    SetStack(stack, info->floor_status);
+    SetStack(stack, (int)(u_long) info->floor_status);
     return 1;
 }
 #else

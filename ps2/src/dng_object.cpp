@@ -1246,6 +1246,7 @@ void CPullItem::Draw(mgCTexture *texture) {
     }
 }
 #ifdef NONMATCHING
+// 99.6% match, 12 words off
 void CPullItem::Step() {
     CCharacter2  *player;
     sceVu0FVECTOR collect_pos;

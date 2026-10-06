@@ -339,6 +339,7 @@ int CScene::LoadMapFromMemory(int map_no, SCN_LOADMAP_INFO2 *info) {
     return map_no;
 }
 #ifdef NONMATCHING
+// 90.7% match, 65 words off
 int CScene::LoadMapFromMemory(int map_no, int step, SCN_LOADMAP_INFO2 *info) {
     mgCMemory                   *stack = info->stack;
     int                          tex_block = info->tex_block;
@@ -455,6 +456,7 @@ void mgCObjectStack<CList<EMAP_MESSAGE> >::Initialize() {
     unk_8 = 0;
 }
 #ifdef NONMATCHING
+// 91.2% match, 7 words off
 CMap::CMap() {
     Initialize();
 }

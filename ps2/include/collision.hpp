@@ -48,8 +48,8 @@ struct CCPoly {
     short         area_kind;   /**< Kind of area the surface marks. */
     short         ignore_mask; /**< Collision query modes that pass through the surface. */
     u_short       parts_no;    /**< Index of the map part the triangle was gathered from. */
-    short         unk_4a;
-    float         unk_4c;
+    short         attr;
+    float         attr_value;
 };
 
 STATIC_ASSERT(sizeof(CCPoly) == 0x50);

@@ -274,7 +274,7 @@ public:
     s32         page_time;            /**< Frames the window has been drawn since the page began. */
     s32         page_auto_time;       /**< Frames a page shows for before turning by itself. */
     s32         mes_no;               /**< Message the window holds; -1 for none, -2 for a string. */
-    s32         unk_1e40;
+    s32         text_ptr;
     char       *mes_data;                         /**< Message text loaded for the window. */
     s32         mes_data_size;                    /**< Bytes of mes_data. */
     s32         push_button;                      /**< Non-zero to draw the button prompt when the text is shown. */
@@ -1093,7 +1093,7 @@ public:
         page_time = 0;
         page_auto_time = 30;
         mes_no = -1;
-        unk_1e40 = 0;
+        text_ptr = 0;
         alpha = 0x80;
         name_count = 0;
 

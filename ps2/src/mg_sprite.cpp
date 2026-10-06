@@ -82,25 +82,26 @@ extern SpriteGifTagBuf sprite_giftag;
 
 // Code (.text)
 #ifdef NONMATCHING
-int mgC3DSprite::CreateRenderInfoPacket(u_int         *dest, float (*matrix)[4],
+// 88.9% match, 160 words off
+int mgC3DSprite::CreateRenderInfoPacket(u_int *dest, float (*matrix)[4],
                                         mgRENDER_INFO *render_info) {
-    sceVu0FMATRIX         local_screen;
-    sceVu0IVECTOR         zero = {0, 0, 0, 0};
-    u_int                *packet;
+    sceVu0FMATRIX local_screen;
+    sceVu0IVECTOR zero = {0, 0, 0, 0};
+    u_int *packet;
     mg3DSpriteRenderHead *head;
     mg3DSpriteRenderTail *tail;
-    mgCFrameAttr         *attr;
-    float                 scale_x;
-    float                 scale_y;
-    float                 scale_z;
-    u_int                 flags;
-    u_int                 fog_color;
-    int                   size;
+    mgCFrameAttr *attr;
+    float scale_x;
+    float scale_y;
+    float scale_z;
+    u_int flags;
+    u_int fog_color;
+    int size;
 
     mgMulMatrix(local_screen, render_info->world_screen, matrix);
-    packet = (u_int *) GetScrPad();
-    head = (mg3DSpriteRenderHead *) packet;
-    tail = (mg3DSpriteRenderTail *) (head + 1);
+    packet = (u_int *)GetScrPad();
+    head = (mg3DSpriteRenderHead *)packet;
+    tail = (mg3DSpriteRenderTail *)(head + 1);
     render_info->GetpLightInfo();
 
     head->dma_tag[0] = MG_DMA_CNT;
@@ -110,13 +111,13 @@ int mgC3DSprite::CreateRenderInfoPacket(u_int         *dest, float (*matrix)[4],
     head->vif_code[0] = 0;
     head->vif_code[1] = MG_VIF_BASE | 0x3C;
     head->vif_code[2] = MG_VIF_OFFSET | 0xB4;
-    *(u_long128 *) head->unk_20[0] = *(u_long128 *) zero;
-    *(u_long128 *) head->unk_20[1] = *(u_long128 *) zero;
-    *(u_long128 *) head->unk_20[2] = *(u_long128 *) zero;
-    head->unk_50[0] = render_info->unk_fb0[3];
-    head->unk_50[1] = render_info->unk_fb0[0];
-    head->unk_50[2] = render_info->unk_fb0[1];
-    head->unk_50[3] = render_info->unk_fb0[2];
+    *(u_long128 *)head->unk_20[0] = *(u_long128 *)zero;
+    *(u_long128 *)head->unk_20[1] = *(u_long128 *)zero;
+    *(u_long128 *)head->unk_20[2] = *(u_long128 *)zero;
+    head->unk_50[0] = render_info->render_params[3];
+    head->unk_50[1] = render_info->render_params[0];
+    head->unk_50[2] = render_info->render_params[1];
+    head->unk_50[3] = render_info->render_params[2];
     sceVu0CopyMatrix(head->local_screen, local_screen);
     sceVu0CopyMatrix(head->local_world, matrix);
     render_info->scissor = 0;
@@ -129,15 +130,15 @@ int mgC3DSprite::CreateRenderInfoPacket(u_int         *dest, float (*matrix)[4],
     scale_x = mgDistVector(matrix[0]);
     scale_y = mgDistVector(matrix[1]);
     scale_z = mgDistVector(matrix[2]);
-    *(u_long128 *) tail->view_screen[0] = *(u_long128 *) render_info->view_screen[0];
-    *(u_long128 *) tail->view_screen[1] = *(u_long128 *) render_info->view_screen[1];
-    *(u_long128 *) tail->view_screen[2] = *(u_long128 *) render_info->view_screen[2];
-    *(u_long128 *) tail->view_screen[3] = *(u_long128 *) render_info->view_screen[3];
+    *(u_long128 *)tail->view_screen[0] = *(u_long128 *)render_info->view_screen[0];
+    *(u_long128 *)tail->view_screen[1] = *(u_long128 *)render_info->view_screen[1];
+    *(u_long128 *)tail->view_screen[2] = *(u_long128 *)render_info->view_screen[2];
+    *(u_long128 *)tail->view_screen[3] = *(u_long128 *)render_info->view_screen[3];
     sceVu0ScaleVectorXYZ(tail->view_screen[0], tail->view_screen[0], scale_x);
     sceVu0ScaleVectorXYZ(tail->view_screen[1], tail->view_screen[1], scale_y);
     sceVu0ScaleVectorXYZ(tail->view_screen[2], tail->view_screen[2], scale_z);
 
-    head->vif_code[3] = MG_VIF_UNPACK_V4_32 | (((u_int *) tail->program_call - head->vif_code) / 4 -
+    head->vif_code[3] = MG_VIF_UNPACK_V4_32 | (((u_int *)tail->program_call - head->vif_code) / 4 -
                                                1) << MG_VIF_NUM_SHIFT;
     tail->program_call[0] = 0;
     tail->program_call[1] = 0;
@@ -207,7 +208,7 @@ int mgC3DSprite::CreateRenderInfoPacket(u_int         *dest, float (*matrix)[4],
     tail->ret_tag[2] = 0;
     tail->ret_tag[3] = 0;
 
-    size = ((u_int *) (tail + 1) - packet) / 4;
+    size = ((u_int *)(tail + 1) - packet) / 4;
     SendDMA(dest, size);
     return size;
 }

@@ -117,7 +117,7 @@ struct mgFOG_PARAM {
     u_char r;         /**< Red component of the fog colour. */
     u_char g;         /**< Green component of the fog colour. */
     u_char b;         /**< Blue component of the fog colour. */
-    u_char unk_b;
+    u_char a;
 
     union {
         struct {
@@ -262,8 +262,8 @@ public:
     int           all_scissor;      /**< Non-zero scissors every object that needs clipping, whatever its attributes. */
     int           fog_enable;       /**< Non-zero draws fog. */
     int           plight_enable;    /**< Non-zero lights objects with the point lights. */
-    int           unk_fac;
-    u_int         unk_fb0[4];
+    int           lighting_enabled;
+    u_int         render_params[4];
     int           clip;         /**< Non-zero while the visible object being drawn is not wholly inside the GS drawing range. */
     int           scissor;      /**< Non-zero while the object being drawn needs scissoring, as its attributes or all_scissor ask. */
     int           plight_hit;   /**< Non-zero while a point light reaches the object being drawn. */

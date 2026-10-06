@@ -62,6 +62,7 @@ void mgCTexAnimeData::Initialize() {
 #ifdef NONMATCHING
 #pragma global_optimizer off
 
+// 99.7% match, 7 words off
 void mgCTextureAnime::TexAnime(int texb, sceVif1Packet *packet) {
     int                      i;
     int                      group;

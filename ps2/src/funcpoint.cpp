@@ -18,6 +18,9 @@
 #include "sound.hpp"
 #include "water.hpp"
 
+extern "C" void *__vt__19CList_10CFuncPoint_[];
+extern "C" void __ct__8mgCFrameFv(mgCFrame *frame);
+
 // Code (.text)
 int CheckTime(float time, float start, float end) {
     int outside;
@@ -491,18 +494,19 @@ int CObjAnime::AssignFuncAnime(CFuncPoint *point, CMapParts *map_parts) {
     SetParam(initial_value);
     return 1;
 }
-#ifdef NONMATCHING
 CFuncPoint *CFuncPointMngr::Add(int type, mgCMemory *stack) {
-    CList<CFuncPoint> *node = new ((u_long128 *) stack->Alloc(0x20)) CList<CFuncPoint>;
+    CList<CFuncPoint> *node;
+    if ((node = (CList<CFuncPoint> *)operator new(sizeof(CList<CFuncPoint>), stack->Alloc(0x20))) != NULL) {
+        *(void ***)((u_int)node + 0x1D0) = __vt__19CList_10CFuncPoint_;
+        __ct__8mgCFrameFv(&node->data.frame);
+        node->Initialize();
+    }
     if (node == NULL) {
         return NULL;
     }
     node->data.Initialize();
     return Add(type, node);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", Add__14CFuncPointMngrFiP9mgCMemory);
-#endif
 
 CFuncPoint *CFuncPointMngr::Add(int type, CList<CFuncPoint> *node) {
     if (node == NULL) {
@@ -538,29 +542,20 @@ CFuncPoint *CFuncPointMngr::Add(int type, CList<CFuncPoint> *node) {
     node->data.type = type;
     return &node->data;
 }
-#ifdef NONMATCHING
-void CFuncPointMngr::Reserve(int num, mgCMemory *stack) {
-    int          index;
-    unsigned int size = num * sizeof(CList<CFuncPoint>);
-    int          blocks;
-    if (size & 0xF) {
-        blocks = (size >> 4) + 1;
-    } else {
-        blocks = size >> 4;
+static inline u_int Align16Blocks(u_int n) {
+    if (n & 0xF) {
+        return (n >> 4) + 1;
     }
-    CList<CFuncPoint> *nodes = new ((u_long128 *) stack->Alloc(blocks + 2)) CList<CFuncPoint>[num];
+    return n >> 4;
+}
+void CFuncPointMngr::Reserve(int num, mgCMemory *stack) {
+    CList<CFuncPoint> *nodes = new ((u_long128 *)stack->Alloc(Align16Blocks(num * sizeof(CList<CFuncPoint>)) + 2)) CList<CFuncPoint>[num];
     if (num > 0) {
-        for (index = 0; index < num; index++) {
+        for (int index = 0; index < num; index++) {
             Add(FUNC_POINT_NONE, &nodes[index]);
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", Reserve__14CFuncPointMngrFiP9mgCMemory);
-#endif
-#ifndef NONMATCHING
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", __ct__19CList_10CFuncPoint_Fv);
-#endif
 template <>
 void CList<CFuncPoint>::Initialize() {
     prev = NULL;
@@ -737,16 +732,17 @@ CFuncPoint *CFuncPointMngr::Search(char *name) {
     return NULL;
 }
 #ifdef NONMATCHING
+// 93.3% match, 102 words off
 int CFuncPointMngr::GetLight(float *sphere, CFuncPoint *out_lights, int max, CFuncPointCheck *check, int mode) {
-    float       distance[64];
+    float distance[64];
     CFuncPoint *candidate[64];
     CFuncPoint *first;
     CFuncPoint *next;
     CFuncPoint *point;
-    int         count;
-    int         skip_unlit;
-    int         i;
-    int         j;
+    int count;
+    int skip_unlit;
+    int i;
+    int j;
 
     if (max <= 0) {
         return 0;
@@ -838,7 +834,7 @@ int CFuncPointMngr::GetLight(float *sphere, CFuncPoint *out_lights, int max, CFu
     for (i = 0; i < max; i++) {
         for (j = i + 1; j < count; j++) {
             if (!(distance[i] <= distance[j])) {
-                float       swap_distance = distance[i];
+                float swap_distance = distance[i];
                 CFuncPoint *swap_point = candidate[i];
                 distance[i] = distance[j];
                 candidate[i] = candidate[j];
@@ -858,16 +854,17 @@ int CFuncPointMngr::GetLight(float *sphere, CFuncPoint *out_lights, int max, CFu
                 CFuncPoint *out = &out_lights[i];
                 *out = *light;
                 out->type = FUNC_POINT_PLIGHT;
-                sceVu0ScaleVector(out->plight.color, light->fire.color, 1.0f);
+                CFuncPoint::PlightData *plight = &out->plight;
+                sceVu0ScaleVector(plight->color, light->fire.color, 1.0f);
                 float power = 60.0f * light->scale[1];
-                out->plight.power = power;
-                out->plight.range = 8.0f * power;
-                out->plight.light_type = FUNC_PLIGHT_POINT;
-                out->plight.light_chara = 1;
-                out->plight.unk_40 = 1;
-                out->plight.unk_44 = 0;
-                out->plight.flicker_type = FUNC_PLIGHT_FLICKER_RANDOM;
-                out->plight.flicker_depth = 0.2f;
+                plight->power = power;
+                plight->range = 8.0f * power;
+                plight->light_type = FUNC_PLIGHT_POINT;
+                plight->light_chara = 1;
+                plight->unk_40 = 1;
+                plight->unk_44 = 0;
+                plight->flicker_type = FUNC_PLIGHT_FLICKER_RANDOM;
+                plight->flicker_depth = 0.2f;
                 break;
             }
         }
@@ -1259,12 +1256,12 @@ int GetSeSrcVolPan(
                         mgMulMatrix(m_b0, m_b0, mat);
                         sceVu0ApplyMatrix(q90.v, m_b0, p->sound.start);
                         sceVu0ApplyMatrix(v_a0, m_b0, p->sound.end);
-                        sndGetVolPan(vols, pans, q90.v, v_a0, p->sound.unk_24, p->sound.unk_28);
+                        sndGetVolPan(vols, pans, q90.v, v_a0, p->sound.near_dist, p->sound.far_dist);
                     } else {
                         *(u_long128 *) q90.v = *(u_long128 *) p->position;
                         q90.w = 0x3F800000;
                         sceVu0ApplyMatrix(q90.v, mat, q90.v);
-                        sndGetVolPan(vols, pans, q90.v, p->sound.unk_24, p->sound.unk_28);
+                        sndGetVolPan(vols, pans, q90.v, p->sound.near_dist, p->sound.far_dist);
                     }
 
                     if (*vols > 0.01f) {
@@ -1284,10 +1281,11 @@ int GetSeSrcVolPan(
     return n;
 }
 #ifdef NONMATCHING
-
+// 97.9% match, 15 words off
+#pragma divbyzerocheck on
 float GetLightAnimeWeight(CFuncPoint *point, int frame) {
     float depth = point->plight.flicker_depth;
-    int   period = fptosi(point->plight.flicker_period);
+    int period = fptosi(point->plight.flicker_period);
     float weight = 1.0f;
     switch (point->type) {
         case FUNC_POINT_PLIGHT:
@@ -1295,26 +1293,26 @@ float GetLightAnimeWeight(CFuncPoint *point, int frame) {
                 case FUNC_PLIGHT_FLICKER_NONE:
                     return weight;
                 case FUNC_PLIGHT_FLICKER_RANDOM:
-                    return weight * (1.0f - depth + depth * (float) rand() / 2147483648.0f);
+                    return weight * (1.0f - depth + depth * (float)rand() / 2147483648.0f);
                 case FUNC_PLIGHT_FLICKER_SINE:
                     if (period > 0) {
-                        return weight * (1.0f - 0.5f * depth * (1.0f + sinf((float) (frame % period) * 6.2831855f / (float) period)));
+                        return weight * (1.0f - 0.5f * depth * (1.0f + sinf(6.2831855f * (float)(frame % period) / (float)period)));
                     }
                     return weight;
                 case FUNC_PLIGHT_FLICKER_SAW:
                     if (period > 0) {
-                        return weight * (1.0f - depth * (float) (frame % period) / (float) period);
+                        return weight * (1.0f - depth * (float)(frame % period) / (float)period);
                     }
                     return weight;
             }
             break;
         case FUNC_POINT_FIRE:
         case FUNC_POINT_FLARE:
-            return 0.7f + 0.3f * (float) rand() / 2147483648.0f;
+            return 0.7f + 0.3f * (float)rand() / 2147483648.0f;
     }
     return weight;
 }
-
+#pragma divbyzerocheck reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", GetLightAnimeWeight__FP10CFuncPointi);
 #endif

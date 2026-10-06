@@ -35,6 +35,7 @@ if [ -z "${CHRONICLETWO_BUILD_LOCKED:-}" ]; then
 fi
 
 BUILD_DIR=${BUILD_DIR:-build/pal}
+python3 scripts/build/setup_mwccgap.py
 
 # Whether the existing cache was generated for this source directory. A cache
 # that is absent or unreadable is not stale -- there is simply nothing to

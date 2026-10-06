@@ -1,11 +1,9 @@
 #pragma once
 
 #include "common.h"
-
-#include <cstring>
-
 #include "gamepad.hpp"
 #include "sound.hpp"
+#include <cstring>
 
 /**
  * @file
@@ -42,8 +40,8 @@ enum MainLoopMode {
     LOOP_SV_CONV_VIEW  = 9,  /**< Save data conversion screen. */
     LOOP_MODE_NUM      = 10, /**< Number of modes; any other LoopNo ends the game. */
 };
-// clang-format on
 
+// clang-format on
 /**
  * Languages the game can run in, as LanguageCode holds them.
  */
@@ -58,8 +56,8 @@ enum LanguageCodeNo {
     LANG_CHINESE  = 6, /**< Chinese, named by the debug menu only. */
     LANG_KOREAN   = 7, /**< Korean, named by the debug menu only. */
 };
-// clang-format on
 
+// clang-format on
 /**
  * Controller input recording modes, as CaptureMode holds them.
  */
@@ -71,8 +69,8 @@ enum MainCaptureMode {
     CAPTURE_PLAY_SCREEN = 3, /**< The recorded input is replayed and the screen is captured. */
     CAPTURE_MODE_NUM    = 4, /**< Number of modes the debug menu cycles through. */
 };
-// clang-format on
 
+// clang-format on
 /**
  * Screens of the debug start menu, as menu_mode holds them.
  */
@@ -83,8 +81,24 @@ enum DebugMenuMode {
     DEBUG_MENU_EVENT_SELECT   = 2, /**< Chapter, event and extra selection, the only screen without DebugFlag. */
     DEBUG_MENU_SAVE_DATA_EDIT = 3, /**< Save data editor. */
 };
-// clang-format on
 
+// clang-format on
+/**
+ * Rows of the debug start menu's top screen; rows 1 to 8 are the MainLoopMode they start,
+ * and each row's value in SelectArg is the map, language, item set or cfg number it uses.
+ */
+// clang-format off
+enum DebugMenuRow {
+    DEBUG_ROW_EVENT_SELECT = 0,  /**< Opens the event selection. */
+    DEBUG_ROW_LANGUAGE     = 9,  /**< Language to switch to. */
+    DEBUG_ROW_ITEM_SET     = 10, /**< Item set handed to DebugGetItem. */
+    DEBUG_ROW_SAVE_DATA    = 11, /**< Opens the save data editor. */
+    DEBUG_ROW_LOAD_CFG     = 12, /**< Number of the dbg/game%d.cfg file to load. */
+    DEBUG_ROW_CONVERT_SAVE = 13, /**< Starts the save data conversion. */
+    DEBUG_ROW_NUM          = 14, /**< Number of rows. */
+};
+
+// clang-format on
 /**
  * Steps of the pause menu, as PauseMenuMode holds them.
  */
@@ -95,8 +109,8 @@ enum PauseMenuStep {
     PAUSE_MENU_FADE_OUT = 2, /**< Fading the screen to black after quitting was chosen. */
     PAUSE_MENU_END      = 3, /**< Faded out; the mode is to be left. */
 };
-// clang-format on
 
+// clang-format on
 /**
  * Results of PauseMenu.
  */
@@ -106,8 +120,8 @@ enum PauseMenuResult {
     PAUSE_MENU_RESUME = 1, /**< The pause menu closes and play resumes. */
     PAUSE_MENU_QUIT   = 2, /**< The current mode is to be left. */
 };
-// clang-format on
 
+// clang-format on
 /**
  * Value MasterDebugCode takes when the four shoulder buttons are held at boot.
  */
@@ -115,16 +129,17 @@ enum PauseMenuResult {
 enum MasterDebugCodeValue {
     MASTER_DEBUG_CODE = 0x5D44, /**< Unlocks the debug options of the title screen. */
 };
-// clang-format on
 
+// clang-format on
 /**
  *
  * Parameters that the main loop hands to a mode when it enters it.
  *
  */
 struct INIT_LOOP_ARG {
+    INIT_LOOP_ARG() { memset(this, 0, sizeof(*this)); }
     int map_no;       /**< Map or dungeon the mode starts in, or -1 for none. */
-    u8  unk_4[0x40];
+    s8 unk_4[0x40];
     int floor_no;     /**< Dungeon floor to start on, or -1 for the saved one. */
     int event_no;     /**< Event to run on entry, or -1 for none. */
     int unk_4c;
@@ -137,16 +152,12 @@ STATIC_ASSERT(sizeof(INIT_LOOP_ARG) == 0x50);
  *
  */
 struct DEBUG_INFO {
+    DEBUG_INFO() { memset(this, 0, sizeof(*this)); }
     int debug_camera;  /**< Non-zero to move the camera freely. */
     int chara_move;    /**< Debug character movement level, from 0 to 2. */
     int georama_debug; /**< Non-zero to lift the georama placement conditions. */
     int param_off;     /**< Non-zero to hide the parameter display. */
     int invent_debug;  /**< 1 to show the invention debug display. */
-
-    /**
-     * Starts with every debug switch disabled.
-     */
-    DEBUG_INFO() { memset(this, 0, sizeof(DEBUG_INFO)); }
 };
 STATIC_ASSERT(sizeof(DEBUG_INFO) == 0x14);
 
@@ -216,7 +227,7 @@ extern u_long128 *read_buffer;
 /**
  * Sound bank number of the system sound effects, or -1 when they failed to load.
  */
-extern int SystemSND_ID;
+extern u32 SystemSND_ID;
 
 /**
  * Sound controller shared by the game loops and chapter menu.

@@ -80,6 +80,8 @@ class Context:
         # Names splat made up for values it took for addresses; the linker
         # script defines them.
         undefined = self.obj_dir.parent / "splat" / "main.undefined_syms.txt"
+        if not undefined.is_file():
+            undefined = ROOT / layout.BUILD / "splat" / "main.undefined_syms.txt"
         if undefined.is_file():
             for line in undefined.read_text().splitlines():
                 name, _, value = line.split("//")[0].strip().rstrip(";").partition("=")
@@ -110,12 +112,14 @@ def check_unit(ctx, unit, verbose):
 
     # The symbol each allocated section starts with, and so its address.
     starts = {}
+    runs = ctx.layout.sections(unit)
     for symbol in symbols:
         index = symbol.st_shndx
         if (symbol.name and symbol.type != STT_SECTION and symbol.st_value == 0
                 and 0 < index < len(elf.sections)
                 and elf.sections[index].sh_flags & SHF_ALLOC
-                and ctx.address_of(symbol.name) is not None):
+                and ctx.address_of(symbol.name) is not None
+                and any(lo <= ctx.address_of(symbol.name) < hi for name, lo, hi in runs)):
             starts.setdefault(index, symbol.name)
 
     by_name = defaultdict(list)
@@ -125,7 +129,6 @@ def check_unit(ctx, unit, verbose):
         by_name[section.name].append(index)
 
     section_address = {}
-    runs = ctx.layout.sections(unit)
     expected_names = {s for s, _lo, _hi in runs}
     for name, indices in by_name.items():
         if name not in expected_names:

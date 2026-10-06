@@ -59,8 +59,8 @@ enum MENUFORM_DTYPE {
     MENUFORM_DTYPE_INFOCUR   = 0x2C, /**< "infocur": draws the item info cursor and character status. */
     MENUFORM_DTYPE_CLIP      = 0x2D, /**< "clip": sets the scissor area to the form's clip size. */
 };
-// clang-format on
 
+// clang-format on
 /**
  *
  * Way a form moves towards its next position, as the mtype keyword of a menu
@@ -75,8 +75,8 @@ enum MENUFORM_MTYPE {
     MENUFORM_MTYPE_I  = 2,  /**< "i": closes a fraction of the remaining distance each frame. */
     MENUFORM_MTYPE_IR = 3,  /**< "ir": as "i", without the extra pixel of approach. */
 };
-// clang-format on
 
+// clang-format on
 /**
  *
  * Kind of drawing a form part performs.
@@ -95,6 +95,10 @@ enum MENUFORMPARTS_DTYPE {
     MENUFORMPARTS_DTYPE_FORM        = 0x19, /**< Reference to another form, whose position it adds. */
     MENUFORMPARTS_DTYPE_BG          = 0x2D, /**< "bg" frame image. */
     MENUFORMPARTS_DTYPE_BETA        = 0x2E, /**< "beta" frame image. */
+    MENUFORMPARTS_DTYPE_FADE_TOP    = 0x2F, /**< Frame image whose top edge fades out. */
+    MENUFORMPARTS_DTYPE_FADE_BOTTOM = 0x30, /**< Frame image whose bottom edge fades out. */
+    MENUFORMPARTS_DTYPE_FADE_RIGHT  = 0x31, /**< Frame image whose right edge fades out. */
+    MENUFORMPARTS_DTYPE_FADE_LEFT   = 0x32, /**< Frame image whose left edge fades out. */
     MENUFORMPARTS_DTYPE_TRS         = 0x37, /**< "trs": item icon. */
     MENUFORMPARTS_DTYPE_CHECKMARK   = 0x39, /**< Item check mark. */
     MENUFORMPARTS_DTYPE_NETA        = 0x3B, /**< "neta": picture. */
@@ -106,8 +110,8 @@ enum MENUFORMPARTS_DTYPE {
     MENUFORMPARTS_DTYPE_FONT        = 0x4E, /**< "font". */
     MENUFORMPARTS_DTYPE_CLUT_RELOAD = 0x4F, /**< "clut_reload": reloads a character change palette. */
 };
-// clang-format on
 
+// clang-format on
 /**
  *
  * Kind of animation a part effect runs.
@@ -128,8 +132,8 @@ enum MENU_PARTS_EFFECT_TYPE {
     MENU_PARTS_EFFECT_UNK_12      = 12,  /**< Counts up without end. */
     MENU_PARTS_EFFECT_UNK_100     = 100, /**< Item icon effect; never stepped. */
 };
-// clang-format on
 
+// clang-format on
 /**
  *
  * Texture rectangle registered by name in a menu layout script, together
@@ -156,7 +160,7 @@ STATIC_ASSERT(sizeof(MENU_BASETEXINFO) == 0x20);
 struct MENU_PARTS_EFFECT_STRUCT1 {
     u8 active;       /**< Non-zero while the effect runs. */
     u8 repeat;       /**< Non-zero to keep the effect running when a cycle ends. */
-    s16 type;        /**< Kind of effect, a MENU_PARTS_EFFECT_TYPE. */
+    u16 type;        /**< Kind of effect, a MENU_PARTS_EFFECT_TYPE. */
     float param[8];  /**< Counter, limit and per-kind parameters. */
 };
 STATIC_ASSERT(sizeof(MENU_PARTS_EFFECT_STRUCT1) == 0x24);
@@ -340,7 +344,7 @@ public:
     int counter;                   /**< Frames stepped, wrapping after 100000. */
     u8 sub_no;                     /**< Message window or list the form draws. */
     u8 unk_1d[0x3];
-    s8 mtype;                      /**< Way of moving to the next position, a MENUFORM_MTYPE. */
+    u8 mtype;                      /**< Way of moving to the next position, a MENUFORM_MTYPE; MENUFORM_MTYPE_N is stored as 0xFF. */
     u8 unk_21[0x3];
     int next_x;                    /**< Position the form moves to. */
     int next_y;                    /**< Position the form moves to. */
@@ -365,6 +369,16 @@ public:
     CMenuPosDataForm *prev;        /**< Previous form in the draw list. */
     CMenuPosDataForm *next;        /**< Next form in the draw list. */
     u8 unk_78[0x8];
+
+    /**
+     *
+     * Moves the form to a screen position.
+     *
+     */
+    void SetPos(int pos_x, int pos_y) {
+        x = pos_x;
+        y = pos_y;
+    }
 
     /**
      *
@@ -885,9 +899,9 @@ public:
     mgCTexture *icon_effect_tex;      /**< Texture of the item icon effects. */
     mgCTexture *effect_tex;           /**< Texture of the menu effects. */
     mgCTexture *item_icon_tex[4][2];  /**< Item icon textures: original, normal, grey and sepia, for each icon texture. */
-    u8 unk_74[0x258];
-    u8 unk_2cc[0x258];
-    u8 unk_524[0x96];
+    float fish_jump_wait[150];        /**< Frames until each item board fish next jumps. */
+    float fish_jump_height[150];      /**< Height of the current jump of each item board fish. */
+    s8 fish_jump_count[150];          /**< Bounces left in the current jump of each item board fish. */
 
     /**
      *
@@ -1230,7 +1244,7 @@ public:
      * @address 0x230670
      * @size 0x10
      */
-    u8 IsRun();
+    int IsRun();
 
     /**
      *
@@ -1349,7 +1363,7 @@ public:
      * @address 0x2082C0
      * @size 0x10
      */
-    CStarDust() { active = 0; }
+    CStarDust();
 
     /**
      *
@@ -1699,7 +1713,7 @@ void ResetMenuScissor();
  * @address 0x222360
  * @size 0x470
  */
-void SetModeMenuDrawItemBoard(int mode);
+int SetModeMenuDrawItemBoard(int mode);
 
 /**
  *
@@ -1952,7 +1966,7 @@ void DrawMenuMainFrmImg(int &tex_block, mgRect<int> put_rect, mgRect<int> tex_re
  * @address 0x2262B0
  * @size 0x10
  */
-u8 GetMenuMainFrameEndFlag();
+int GetMenuMainFrameEndFlag();
 
 /**
  *
@@ -2003,6 +2017,16 @@ void MenuMainFrameStep();
  * @size 0x4C0
  */
 void MenuMainFrameDraw(int &tex_block, int alpha);
+
+/**
+ *
+ * Draws the picture inside the main menu frame.
+ *
+ * @mangled MenuMainFrameImgDraw__FRi
+ * @address 0x227000
+ * @size 0x1BC
+ */
+void MenuMainFrameImgDraw(int &tex_block);
 
 /**
  *
@@ -2132,7 +2156,7 @@ void Menu3DivideTextureDraw(mgCDrawPrim *prim, mgRect<int> rect, short *tex_tbl,
  * @address 0x22D060
  * @size 0x40
  */
-char *GetMenuMainIconChar(int no);
+void *GetMenuMainIconChar(int no);
 
 /**
  *
@@ -2487,14 +2511,14 @@ extern int *menu_randam_line_draw_postbl;
  * Non-zero to draw the menu cursor reversed.
  *
  */
-extern u8 MenuCursorReverseFlag;
+extern int MenuCursorReverseFlag;
 
 /**
  *
  * Way the item board scrolls: 0 eases, 1 jumps.
  *
  */
-extern u8 MenuItemBrdCalcManner;
+extern s8 MenuItemBrdCalcManner;
 
 /**
  *

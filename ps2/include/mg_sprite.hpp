@@ -59,7 +59,7 @@ enum {
  * Packet that mgC3DSprite::CreateRenderInfoPacket builds: the VU program's matrices, lighting and fog, its draw flags and the GS drawing state.
  *
  */
-struct mg3DSpriteRenderInfo {
+struct mg3DSpriteRenderHead {
     u_int dma_tag[4];              /**< DMA tag over the VU data and the program call. */
     u_int vif_code[4];             /**< VIF NOP, BASE, OFFSET and the UNPACK of the VU data. */
     sceVu0IVECTOR unk_20[3];
@@ -68,7 +68,10 @@ struct mg3DSpriteRenderInfo {
     sceVu0FMATRIX local_world;     /**< Transform from the sprite's local space to world space. */
     u_int unk_e0[11][4];
     sceVu0FVECTOR fog;             /**< Fog offset, near value, far value and scale. */
-    u_int unk_1a0[4];
+};
+
+struct mg3DSpriteRenderTail {
+    u_int unk_00[4];
     sceVu0FMATRIX view_screen;     /**< View-to-screen transform with its axes scaled by the local transform's scale. */
     u_int program_call[4];         /**< VIF MSCAL that starts the VU program. */
     u_int flags_tag[4];            /**< DMA tag and VIF UNPACK of the draw flags. */
@@ -80,6 +83,11 @@ struct mg3DSpriteRenderInfo {
     u_int fogcol[4];               /**< FOGCOL write of the fog colour. */
     u_int ret_tag[4];              /**< DMA tag that returns to the caller. */
 };
+
+struct mg3DSpriteRenderInfo {
+    mg3DSpriteRenderHead head;
+    mg3DSpriteRenderTail tail;
+};
 STATIC_ASSERT(sizeof(mg3DSpriteRenderInfo) == 0x280);
 
 /**
@@ -89,12 +97,12 @@ STATIC_ASSERT(sizeof(mg3DSpriteRenderInfo) == 0x280);
  */
 class mgCSprite : public mgCVisualPrim {
 public:
-    s32 unk_38;
-    s32 unk_3C;
+    int unk_38;
+    int unk_3C;
     mgCTexture *texture;  /**< Texture the rectangle is mapped with, or NULL for an untextured rectangle. */
     float depth;          /**< View-space distance the rectangle is drawn at; below 1.0 it is drawn at depth zero. */
-    s32 unk_48;
-    s32 unk_4C;
+    int unk_48;
+    int unk_4C;
     mgRect<int> screen;   /**< Corners of the rectangle on screen, in sixteenths of a pixel from the screen offset. */
     mgRect<int> uv;       /**< Corners of the rectangle in the texture, in sixteenths of a texel. */
     sceGsRgbaq color;     /**< Colour and alpha the rectangle is drawn with. */
@@ -118,7 +126,7 @@ public:
      * @address 0x13C2D0
      * @size 0x20
      */
-    virtual int Draw(float (*matrix)[4], mgCDrawManager *manager) { return Draw(NULL, matrix, manager); }
+    virtual void Draw(float (*matrix)[4], mgCDrawManager *manager);
 
     /**
      * Builds the render-info packet and the sprite's packet, and writes
@@ -172,14 +180,14 @@ public:
     mgCMemory *memory;        /**< Memory the packet is built in. */
     u_long128 *packet_start;  /**< Uncached address of the start of the packet. */
     u_long128 *packet_cur;    /**< Uncached address the next quadword of the packet is written to. */
-    s32 unk_30;
+    int unk_30;
     u_int *batch_tag;         /**< DMA tag and VIF unpack code that head the open batch of billboards. */
     sceGifTag *batch_giftag;  /**< GIF tag that the VU program draws the open batch's billboards with. */
     u_int *batch_header;      /**< Quadword giving the VU program the open batch's billboard count and mode. */
     int sprite_num;           /**< Billboards in the open batch. */
     int mode;                 /**< Shape the billboards are drawn as, an mgC3DSpriteMode. */
     int prog_started;         /**< Whether a batch has already started the VU program in this packet. */
-    s32 unk_4C;
+    int unk_4C;
 
     /**
      *
@@ -189,7 +197,9 @@ public:
      * @address 0x17E630
      * @size 0x60
      */
-    mgC3DSprite() { Initialize(); }
+    mgC3DSprite() {
+        Initialize();
+    }
 
     /**
      * Builds the packet that loads the VU program's matrices, lighting and
@@ -199,7 +209,8 @@ public:
      * @address 0x13B2E0
      * @size 0x400
      */
-    virtual int CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_INFO *render_info);
+    virtual int CreateRenderInfoPacket(u_int *packet, float (*matrix)[4],
+                                       mgRENDER_INFO *render_info);
 
     /**
      * Draws the built packet through the draw manager, adding nothing to a
@@ -209,7 +220,7 @@ public:
      * @address 0x13C300
      * @size 0x20
      */
-    virtual int Draw(float (*matrix)[4], mgCDrawManager *manager) { return Draw(NULL, matrix, manager); }
+    virtual void Draw(float (*matrix)[4], mgCDrawManager *manager);
 
     /**
      * Builds the render-info packet and, when a caller's chain is given,
@@ -228,10 +239,7 @@ public:
      * @address 0x13C320
      * @size 0x20
      */
-    virtual void Initialize() {
-        packet = NULL;
-        mgCVisual::Initialize();
-    }
+    virtual void Initialize();
 
     /**
      * Starts a new packet in the draw manager's data memory, for billboards

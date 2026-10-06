@@ -1673,3 +1673,6 @@ public:
     void ResetDAPosition();
 };
 STATIC_ASSERT(sizeof(CSceneObjSeq) == 0x5F0);
+
+void InitSceneCmrSeq(_SEN_CMR_SEQ *seq);
+void InitSceneObjSeq(_SEN_OBJ_SEQ *seq);

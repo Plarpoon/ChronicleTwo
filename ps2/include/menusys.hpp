@@ -45,8 +45,8 @@ enum MENU_ASK_MODE {
     MENU_ASK_MODE_GIFT_BOX     = 11, /**< Taking an item out of a gift box. */
     MENU_ASK_MODE_EXTEND       = 12, /**< A question of the derived menu; runs IsAskExtend. */
 };
-// clang-format on
 
+// clang-format on
 /**
  *
  * Bits of the direction keys, as CMenuKeyFunc::CheckSelectKey and CMenuKeyFunc::CheckLRKey return them.
@@ -63,8 +63,8 @@ enum MENU_SELECT_KEY {
     MENU_SELECT_KEY_L2    = 0x40, /**< The L2 button. */
     MENU_SELECT_KEY_R2    = 0x80, /**< The R2 button. */
 };
-// clang-format on
 
+// clang-format on
 /**
  *
  * Bits of the face and shoulder buttons, as MenuCheckPushButton returns them.
@@ -81,8 +81,8 @@ enum MENU_PUSH_BUTTON {
     MENU_PUSH_BUTTON_R3       = 0x40, /**< The right stick button. */
     MENU_PUSH_BUTTON_L3       = 0x80, /**< The left stick button. */
 };
-// clang-format on
 
+// clang-format on
 /**
  *
  * How the cursor of a key layout moves, as MENU_INPUTKEY_ARG::type holds it.
@@ -93,8 +93,8 @@ enum MENU_INPUTKEY_TYPE {
     MENU_INPUTKEY_TYPE_LINE = 0, /**< The cursor moves along one list. */
     MENU_INPUTKEY_TYPE_GLID = 1, /**< The cursor moves over a grid of rows and columns. */
 };
-// clang-format on
 
+// clang-format on
 /**
  *
  * Where an item that is being moved came from, so that it can be put back or swapped.
@@ -131,7 +131,7 @@ struct MENU_ASKMODE_PARA {
     int cmd_msg[8];             /**< Message number of each command. */
     u32 cmd_color[8];           /**< Colour each command is drawn in; 0x80202020 marks one that cannot be chosen. */
     s16 unk_48[8];
-    s16 unk_58[8];
+    s16 cmd_mark[8];           /**< Non-zero for a command the list marks as ready, such as a weapon that can be built up. */
     s16 arg0;                   /**< Value that depends on the question, such as the character an item belongs to. */
     s16 arg1;                   /**< Second value that depends on the question. */
     s16 unk_6C;
@@ -270,7 +270,7 @@ public:
     s32 unk_FC;
     int make_num;                 /**< Number of objects chosen to make. */
     s32 unk_104;
-    u8 make_cursor;               /**< Row the cursor is on in the make question; 0 is the number. */
+    s8 make_cursor;               /**< Row the cursor is on in the make question; 0 is the number. */
     s16 make_num_max;             /**< Number of objects that can be made at most. */
 
     /**
@@ -291,7 +291,7 @@ public:
      * @address 0x1F3D00
      * @size 0x10
      */
-    virtual int IsCreateObject(int select_key, int push_button) { return 1; }
+    virtual int IsCreateObject(int select_key, int push_button);
 
     /**
      *
@@ -301,7 +301,7 @@ public:
      * @address 0x1F3D10
      * @size 0x10
      */
-    virtual int IsMakeObject(int select_key, int push_button) { return 0; }
+    virtual int IsMakeObject(int select_key, int push_button);
 
     /**
      *
@@ -311,7 +311,7 @@ public:
      * @address 0x1F3D20
      * @size 0x10
      */
-    virtual int IsAskExtend(int select_key, int push_button) { return 0; }
+    virtual int IsAskExtend(int select_key, int push_button);
 
     /**
      *
@@ -321,7 +321,7 @@ public:
      * @address 0x1F3D30
      * @size 0x10
      */
-    virtual int ItemCmdAfter(int cmd_ret, ITEMCMD_RET_PARA *ret) { return 0; }
+    virtual int ItemCmdAfter(int cmd_ret, ITEMCMD_RET_PARA *ret);
 
     /**
      *
@@ -331,7 +331,7 @@ public:
      * @address 0x1FF8D0
      * @size 0x10
      */
-    virtual void InitEnd() {}
+    virtual void InitEnd();
 
     /**
      *
@@ -341,7 +341,7 @@ public:
      * @address 0x1F3D40
      * @size 0x10
      */
-    virtual void ExitEnd() {}
+    virtual void ExitEnd();
 
     /**
      *
@@ -561,7 +561,7 @@ public:
      * @address 0x23C6E0
      * @size 0x10
      */
-    void FadeCheckMenu();
+    int FadeCheckMenu();
 
     /**
      *
@@ -581,6 +581,8 @@ STATIC_ASSERT(sizeof(CBaseMenuClass) == 0x110);
  * background music volume.
  *
  */
+#pragma push
+#pragma cpp_extensions on
 class CMenuKeyFunc {
 public:
     u8 unk_0;
@@ -599,8 +601,10 @@ public:
     int pack_size;                     /**< Size of the pack file in bytes. */
     s16 waku_type;                     /**< Frame drawn around the cursor, or negative for none. */
     s32 unk_6C;
-    int cursor;                        /**< Cursor position within the current layout. */
-    int top_line;                      /**< First row shown of the current layout. */
+    union {
+        struct { int cursor; int top_line; };
+        int select_pos[2];
+    };
     int save_cursor;                   /**< Cursor position saved by SelDataInit. */
     int save_top_line;                 /**< First row shown saved by SelDataInit. */
     u8 return_item;                    /**< Set once the held item has been put back. */
@@ -785,6 +789,13 @@ public:
 
     /**
      *
+     * Gives the first row of the list that is shown.
+     *
+     */
+    int GetTopLine() { return top_line; }
+
+    /**
+     *
      * Starts fading the cursor and its frame in.
      *
      * @mangled CursorFadeIn__12CMenuKeyFuncFfi
@@ -941,7 +952,7 @@ public:
      * @address 0x2411A0
      * @size 0xF0
      */
-    s16 menu_inputkey_limmit_check_line(int select_key);
+    int menu_inputkey_limmit_check_line(int select_key);
 
     /**
      *
@@ -951,7 +962,7 @@ public:
      * @address 0x241290
      * @size 0x180
      */
-    s16 menu_inputkey_limmit_check_glid(int select_key);
+    int menu_inputkey_limmit_check_glid(int select_key);
 
     /**
      *
@@ -994,6 +1005,7 @@ public:
     s16 StepMenuBGM();
 };
 STATIC_ASSERT(sizeof(CMenuKeyFunc) == 0x160);
+#pragma pop
 
 /**
  *
@@ -1024,8 +1036,8 @@ public:
     u8 unk_170;
     s16 unk_172;
     s16 unk_174;
-    s16 unk_176;
-    s16 unk_178;
+    s16 sub_menu;                        /**< Screen opened from the item menu that is running, or -1 for the item menu itself. */
+    s16 next_sub_menu;                   /**< Screen to open from the item menu, or -1 for none. */
     CGameDataUsed *view_weapon;          /**< Weapon whose status is shown. */
     CMenuPosDataForm *view_form[6];      /**< Forms of the pages. */
     s16 unk_198;
@@ -1035,15 +1047,14 @@ public:
     CMenuPosDataForm *chara_poly_form[2];/**< Forms behind the two character models. */
     CMenuPosDataForm *fill_form;         /**< Form that fills the main page. */
     MENUFORMPARTS_TYPE *item_board_icon; /**< Icon part of the inventory board. */
-    u8 unk_1B8[0x10];
-    MENUFORMPARTS_TYPE *wep_parts[2][16];/**< Parts of the two weapon slots of each character page. */
-    u8 unk_248[0x58];
+    MENUFORMPARTS_TYPE *wep_parts[2][16];/**< Parts of the two weapon slots of each character page, from index 4. */
+    u8 unk_238[0x68];
     MENUFORMPARTS_TYPE *robo_parts[6];   /**< Parts of the ridepod page. */
     MENUFORMPARTS_TYPE *hp_bar[2];       /**< Life bar of each character page. */
     MENUFORMPARTS_TYPE *item_parts[2][3];/**< Item icons of each character page. */
     MENUFORMPARTS_TYPE *item_num[2][3];  /**< Item counts of each character page. */
     MENUFORMPARTS_TYPE *voice_part;      /**< Voice part of the ridepod page. */
-    int *model_tex_block;                /**< Texture blocks the shown models use. */
+    CActionChara *build_up_chara;        /**< Model of the weapon being built up. */
     s32 unk_2F8;
     s16 unk_2FC;
     s16 debug_item_no;                   /**< Item number the debug controls show. */
@@ -1409,6 +1420,13 @@ public:
 
     /**
      *
+     * Creates the list of the items that can be chosen, placed at the bottom of the screen.
+     *
+     */
+    CItemSelect();
+
+    /**
+     *
      * Lists every item of the inventory that can be chosen.
      *
      * @mangled SetPtrList__11CItemSelectFv
@@ -1479,12 +1497,18 @@ STATIC_ASSERT(sizeof(MENU_ITEM_CURSOR_INFO) == 0xC);
  *
  */
 struct BUILDUP_WEAPON_INFO {
-    s16 mode;       /**< Step of the build-up view; 0 when it is closed. */
-    s8 select;      /**< Non-zero while a build-up is being chosen. */
-    s8 select_no;   /**< Build-up the cursor is on. */
-    s32 unk_4;
-    int select_num; /**< Number of build-ups that can be chosen. */
-    u8 unk_C[0x38];
+    s16 unk_0;
+    s8 mode;
+    s8 select_no;
+    s16 build_up;
+    s16 unk_6;
+    int select_num;
+    int weapon_no[3];
+    int enable[3];
+    CGameDataUsed *weapon;
+    s32 unk_28;
+    CDataWeapon *weapon_data[3];
+    s32 unk_38[3];
 };
 STATIC_ASSERT(sizeof(BUILDUP_WEAPON_INFO) == 0x44);
 
@@ -1628,7 +1652,7 @@ int MenuListKeyCheck(int select_key, int *pos, int *top_line, int min, int max, 
  * @address 0x23D8B0
  * @size 0x300
  */
-int MenuGlidKeyCheck(int select_key, int *pos, int *top_line, int *columns, int *rows, int *disp_lines, int limit);
+int MenuGlidKeyCheck(int select_key, int *pos, int *top_line, int *size, int *disp, int *limit, int max);
 
 /**
  *
@@ -1833,7 +1857,7 @@ extern CRepairManager *MenuRepairMan;
 extern u8 menu_chara_activeItem_limmit_check[6];
 
 /** Non-zero while the character status texture is not drawn. */
-extern u8 MenuStatusMode;
+extern s8 MenuStatusMode;
 
 /** Texture of the character status. */
 extern mgCTexture *MenuStatusTex;
@@ -1842,7 +1866,7 @@ extern mgCTexture *MenuStatusTex;
 extern CItemUseTarget MenuItemUseTarget;
 
 /** Effects of a spectrumise or fusion in progress. */
-extern CMenuEffect *MenuEffect[2];
+extern CMenuEffect *MenuEffect[];
 
 /** Attachment and weapon of a fusion in progress. */
 extern CGameDataUsed *SpectolInfo[2];

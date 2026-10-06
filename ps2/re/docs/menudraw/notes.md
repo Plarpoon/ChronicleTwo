@@ -171,3 +171,15 @@ reads the named `MENU_FORM_ACTION` and writes `action_no` and `action_state`.
 All four functions retain a 100% retail object diff. `GetEnableEnterPart`
 still requires its explicit stride to keep MWCC's register choice (direct
 typed indexing scored 97.83%).
+
+## Additional typed effect arrays
+
+`StepBuildUpInfoEffect` indexes the 0x40-byte `CEffVerticalLine` array
+directly for each line. `CMenuEffect::PresetInfoAll` indexes the 0x40-byte
+`MENU_EFFECT_INFO` array, and `CheckItemBoardFunc_MenuIconDrawPrepare`
+advances its `CGameDataUsed*` by one entry. These three functions retain
+100% retail object diffs. `DrawBuildUpInfoEffect` also matches with direct
+indexing, but that spelling changes the adjacent `StepFishBoiledEffect`
+object diff, so it retains its explicit stride. The separate part lookup in
+the item board helper and the line-position initializer still need their
+byte-stride forms for exact MWCC register allocation.

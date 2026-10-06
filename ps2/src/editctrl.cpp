@@ -157,7 +157,9 @@ static void InitLadder(int mode, CScene *scene, CSceneEventData *event);
 
 // Code (.text)
 /**
+ *
  * Returns the player data of the active save, or NULL when there is no save.
+ *
  */
 static CUserDataManager *GetUserData() {
     CSaveData *save;
@@ -724,7 +726,9 @@ void EditCameraControl(CScene *scene, CPadControl *pad, float (*look_at)[4]) {
 }
 
 /**
+ *
  * Moves the player, chooses walking and landing motions, and starts map events.
+ *
  */
 static void CharaControl(CScene *scene, CPadControl *pad) {
     mgCCamera        *base_camera;
@@ -1160,7 +1164,9 @@ static void EyeCamera(mgCCamera *camera, CCharacter2 *chara, int use_right_stick
 }
 
 /**
+ *
  * Builds the ladder landings and camera position from the event's world transform.
+ *
  */
 static void InitLadder(int mode, CScene *scene, CSceneEventData *event) {
     int           other_foot;
@@ -1235,7 +1241,9 @@ void EndLadder() {
 }
 
 /**
+ *
  * Advances the ladder approach, rung motions and walk-off, playing rung footsteps.
+ *
  */
 static void LadderControl(CScene *scene, CPadControl *pad) {
     CCharacter2  *character;

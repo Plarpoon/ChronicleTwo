@@ -3034,55 +3034,55 @@ int CUserDataManager::SetCharaStatusAttirbuteVol(int chara_no, unsigned int attr
     int result = SetCharaStatusAttirbute(chara_no, attr, 0);
 
     if (chara_no == 0 || chara_no == 1) {
-        u8 *chara = (u8 *) &chara_data[1];
+        CHARA_DATA *chara = &chara_data[1];
 
         if (chara_no == 0) {
-            chara = (u8 *) &chara_data[0];
+            chara = &chara_data[0];
         }
 
         if (attr & 0x10) {
-            *(short *) (chara + 0xC) = value;
+            chara->status_time[0] = value;
         }
 
         if (attr & 0x2) {
-            *(short *) (chara + 0xE) = value;
+            chara->status_time[1] = value;
         }
 
         if (attr & 0x8) {
-            *(short *) (chara + 0x10) = value;
+            chara->status_time[2] = value;
         }
 
         if (attr & 0x20) {
-            *(short *) (chara + 0x12) = value;
+            chara->status_time[3] = value;
         }
     }
 
     if (chara_no == 2) {
-        u8 *robot = (u8 *) &robo_data;
+        ROBO_DATA *robot = &robo_data;
 
         if (attr & 0x2) {
-            *(short *) (robot + 0x1E0) = value;
+            robot->status_time[0] = value;
         }
 
         if (attr & 0x8) {
-            *(short *) (robot + 0x1E2) = value;
+            robot->status_time[1] = value;
         }
 
         if (attr & 0x20) {
-            *(short *) (robot + 0x1E4) = value;
+            robot->status_time[2] = value;
         }
     }
 
     if (chara_no == 3) {
-        u8 *badge = (u8 *) GetMonsterBajjiDataPtrMosId(monster_id);
+        MOS_CHANGE_PARAM *badge = GetMonsterBajjiDataPtrMosId(monster_id);
 
         if (badge != 0) {
             if (attr & 0x10) {
-                *(short *) (badge + 0x3E) = value;
+                badge->status_time_10 = value;
             }
 
             if (attr & 0x1) {
-                *(short *) (badge + 0x3C) = value;
+                badge->status_time_1 = value;
             }
         }
     }

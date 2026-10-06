@@ -549,8 +549,10 @@ int CScriptInterpreter::SearchCommand(int *tag_index) {
 }
 
 /**
+ *
  * Moves a reader past spaces, tabs and line breaks;
  * gives 1 when text remains to be read and 0 at its end.
+ *
  */
 static int SkipSpace(input_str &in) {
     char *buffer = in.buffer;
@@ -574,8 +576,10 @@ static int SkipSpace(input_str &in) {
 }
 
 /**
+ *
  * Tells whether a character is part of a word: gives 0 for
  * a space, a tab or a line break and 1 for anything else.
+ *
  */
 static u8 CheckChar(char c) {
     int space = 0;
@@ -600,8 +604,10 @@ static u8 CheckChar(char c) {
 }
 
 /**
+ *
  * Overwrites the line comments and block comments of a text
  * script with spaces, so that the parser passes over them.
+ *
  */
 static void PreProcess(input_str &in) {
     u8 *text = (u8 *) in.buffer;

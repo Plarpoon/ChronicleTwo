@@ -28,6 +28,7 @@ struct SP_RGBA {
 STATIC_ASSERT(sizeof(SP_RGBA) == 0x10);
 
 /**
+ *
  * Draws a non-negative number as a row of digit sprites cut from a texture,
  * leaving out leading zeros, and optionally aligning the row to its right end
  * so that it fills the space of the full digit count.
@@ -40,6 +41,7 @@ void PrintV(int x, int y, int value, mgCTexture *texture, mgRect<int> rect, int 
             int spacing, SP_RGBA *color);
 
 /**
+ *
  * Draws a five-digit counter, leading zeros included, with the digit sprites
  * of the system frame texture; it shows the robot's absorption points.
  *
@@ -50,6 +52,7 @@ void PrintV(int x, int y, int value, mgCTexture *texture, mgRect<int> rect, int 
 void DrawDrumCounter(int x, int y, int value);
 
 /**
+ *
  * Draws the status board of the main characters, slid in by rate: hit points,
  * both weapons' durability and absorption points, the active item slots with
  * their cursor, the magic sword counter and the status effect icons.
@@ -61,6 +64,7 @@ void DrawDrumCounter(int x, int y, int value);
 void DrawMainUnitStatusBord(float rate);
 
 /**
+ *
  * Draws the status board of the robot, slid in by rate: hit points, weapon
  * durability and the absorption point counter.
  *
@@ -71,6 +75,7 @@ void DrawMainUnitStatusBord(float rate);
 void DrawRoboUnitStatusBord(float rate);
 
 /**
+ *
  * Draws the status board of a monster the player has turned into, once
  * rate has reached 1: its hit points and its weapon durability.
  *
@@ -81,6 +86,7 @@ void DrawRoboUnitStatusBord(float rate);
 void DrawMonsterUnitStatusBord(float alpha);
 
 /**
+ *
  * Clears the low-gauge warnings and draws the status board matching the
  * kind of unit the player now controls.
  *

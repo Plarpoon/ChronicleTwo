@@ -159,6 +159,7 @@ public:
     sceVu0FVECTOR hit_pos; /**< Position of the last hit. */
 
     /**
+     *
      * Sets the primitive up from the damage parameter row of the given name.
      *
      * @mangled SetDamage__8CColPrimFPci
@@ -168,6 +169,7 @@ public:
     int SetDamage(char *name, int owner);
 
     /**
+     *
      * Places a sphere of the given radius at a position.
      *
      * @mangled SetCoord__8CColPrimFPff
@@ -177,6 +179,7 @@ public:
     void SetCoord(float *pos, float radius);
 
     /**
+     *
      * Places a line of the given radius between two positions.
      *
      * @mangled SetCoord__8CColPrimFPfPff
@@ -186,6 +189,7 @@ public:
     void SetCoord(float *start, float *end, float radius);
 
     /**
+     *
      * Makes a sphere of the given radius follow a model frame.
      *
      * @mangled SetCoord__8CColPrimFP8mgCFramef
@@ -195,6 +199,7 @@ public:
     void SetCoord(mgCFrame *start, float radius);
 
     /**
+     *
      * Makes a line of the given radius follow two model frames.
      *
      * @mangled SetCoord__8CColPrimFP8mgCFrameP8mgCFramef
@@ -204,6 +209,7 @@ public:
     void SetCoord(mgCFrame *start, mgCFrame *end, float radius);
 
     /**
+     *
      * Tests whether the primitive touches a character of the scene, and records the hit.
      *
      * @mangled IsHit__8CColPrimFP6CScenei
@@ -213,6 +219,7 @@ public:
     int IsHit(CScene *scene, int chara_id);
 
     /**
+     *
      * Tests whether a player's attack is close enough to knock the primitive back.
      *
      * @mangled IsReversVec__8CColPrimFP8CColPrim
@@ -222,6 +229,7 @@ public:
     int IsReversVec(CColPrim *other);
 
     /**
+     *
      * Gives the direction opposite to the primitive's last move.
      *
      * @mangled GetReversVec__8CColPrimFPf
@@ -231,6 +239,7 @@ public:
     void GetReversVec(float *out_vector);
 
     /**
+     *
      * Reserved debug drawing hook for the collision primitive.
      *
      * @mangled DebugDraw__8CColPrimFv
@@ -240,6 +249,7 @@ public:
     void DebugDraw();
 
     /**
+     *
      * Moves the positions on by one step and deletes the primitive when its time runs out.
      *
      * @mangled Step__8CColPrimFv
@@ -249,6 +259,7 @@ public:
     int Step();
 
     /**
+     *
      * Deletes the primitive if the given owner created it, or always for an owner of -1.
      *
      * @mangled Delete__8CColPrimFi
@@ -258,6 +269,7 @@ public:
     void Delete(int id);
 
     /**
+     *
      * Clears the primitive to an unused state.
      *
      * @mangled Initialize__8CColPrimFv
@@ -281,6 +293,7 @@ public:
     CColPrim prim[COLPRIM_MAX]; /**< Primitives that the manager hands out. */
 
     /**
+     *
      * Gives a primitive that is not in use, or null when every one is.
      *
      * @mangled GetPrim__11CColPrimManFv
@@ -290,6 +303,7 @@ public:
     CColPrim *GetPrim();
 
     /**
+     *
      * Gives the primitive of the given index, or null for an index out of range.
      *
      * @mangled GetID2Prim__11CColPrimManFi
@@ -299,6 +313,7 @@ public:
     CColPrim *GetID2Prim(int id);
 
     /**
+     *
      * Counts the primitives in use.
      *
      * @mangled ActivePrimNum__11CColPrimManFv
@@ -308,6 +323,7 @@ public:
     int ActivePrimNum();
 
     /**
+     *
      * Deletes every primitive that the given owner created, or all of them for an owner of -1.
      *
      * @mangled Delete__11CColPrimManFi
@@ -317,6 +333,7 @@ public:
     void Delete(int owner);
 
     /**
+     *
      * Gives the first primitive that hits the given character, or null.
      *
      * @mangled CheckHit__11CColPrimManFi
@@ -326,6 +343,7 @@ public:
     CColPrim *CheckHit(int chara_id);
 
     /**
+     *
      * Gives the first other primitive that the given player attack knocks back, or null.
      *
      * @mangled IsReversVec__11CColPrimManFP8CColPrim
@@ -335,6 +353,7 @@ public:
     CColPrim *IsReversVec(CColPrim *attack);
 
     /**
+     *
      * Steps every primitive.
      *
      * @mangled Step__11CColPrimManFv
@@ -344,6 +363,7 @@ public:
     void Step();
 
     /**
+     *
      * Clears every primitive and sets the scene whose characters they hit.
      *
      * @mangled Initialize__11CColPrimManFP6CScene

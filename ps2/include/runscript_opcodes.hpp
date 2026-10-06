@@ -28,12 +28,15 @@ struct RS_EXTFUNC_INFO {
 STATIC_ASSERT(sizeof(RS_EXTFUNC_INFO) == 0x8);
 
 /**
+ *
  * Monster whose script is running, and on which the external functions
  * act unless they are given a monster of their own.
+ *
  */
 extern CActiveMonster *nowMonster;
 
 /**
+ *
  * Gives a monster's interpreter its program, an operand stack and call
  * stack taken from an arena, and the monster external-function table.
  *
@@ -44,6 +47,7 @@ extern CActiveMonster *nowMonster;
 int SetMonsterScript(CRunScript *script, char *program, mgCMemory *memory);
 
 /**
+ *
  * Builds the monster external-function table out of the list of
  * external functions, stopping the game on a number listed twice.
  *

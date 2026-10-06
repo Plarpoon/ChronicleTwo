@@ -327,6 +327,7 @@ public:
     ACTION_SOUND      sound[10];    /**< Sounds that the character's motions play. */
 
     /**
+     *
      * Makes a character with an empty interpreter and a cleared map check.
      *
      * @mangled __ct__12CActionCharaFv
@@ -338,6 +339,7 @@ public:
     }
 
     /**
+     *
      * Stops the character speeding up.
      *
      * @mangled ResetAccele__12CActionCharaFv
@@ -347,6 +349,7 @@ public:
     void ResetAccele();
 
     /**
+     *
      * Ends the character's damage, after-images and held item, and runs the reset program.
      *
      * @mangled ResetAction__12CActionCharaFv
@@ -356,6 +359,7 @@ public:
     void ResetAction();
 
     /**
+     *
      * Clears every object, body sphere, damage entry, sound and after-image that the script entered.
      *
      * @mangled ResetScript__12CActionCharaFv
@@ -365,6 +369,7 @@ public:
     void ResetScript();
 
     /**
+     *
      * Says whether the character may open the menu, which it may not while it holds anything.
      *
      * @mangled CheckRunEvent__12CActionCharaFv
@@ -374,6 +379,7 @@ public:
     int CheckRunEvent();
 
     /**
+     *
      * Sets or clears bits of the mask flags.
      *
      * @mangled SetMaskFlag__12CActionCharaFii
@@ -383,6 +389,7 @@ public:
     void SetMaskFlag(int flag, int set);
 
     /**
+     *
      * Enters a frame of the chain as an object, in the first free slot or the slot given.
      *
      * @mangled EntryObject__12CActionCharaFPci
@@ -392,6 +399,7 @@ public:
     ACTION_OBJECT *EntryObject(char *name, int no);
 
     /**
+     *
      * Works out the world position of every entered object.
      *
      * @mangled CalcCollision__12CActionCharaFv
@@ -401,6 +409,7 @@ public:
     void CalcCollision();
 
     /**
+     *
      * Enters a body collision sphere around an entered object.
      *
      * @mangled EntryBodyCol__12CActionCharaFif
@@ -410,6 +419,7 @@ public:
     ACTION_BODY_COL *EntryBodyCol(int index, float value);
 
     /**
+     *
      * Enters damage dealt between two named frames while a motion plays between two points of it.
      *
      * @mangled EntryDamage2__12CActionCharaFPcPcPcfPcffPc
@@ -419,6 +429,7 @@ public:
     ACTION_DAMAGE *EntryDamage2(char *frame_name_a, char *frame_name_b, char *hit_name, float power, char *motion, float start, float end, char *chara);
 
     /**
+     *
      * Enters damage dealt between two frames while a motion plays between two points of it.
      *
      * @mangled EntryDamage2__12CActionCharaFP8mgCFrameP8mgCFramePcfPcffPc
@@ -428,6 +439,7 @@ public:
     ACTION_DAMAGE *EntryDamage2(mgCFrame *frame_a, mgCFrame *frame_b, char *hit_name, float power, char *motion, float start, float end, char *chara);
 
     /**
+     *
      * Deletes the collision primitive of every damage entry.
      *
      * @mangled AllDeleteDamage__12CActionCharaFv
@@ -437,6 +449,7 @@ public:
     void AllDeleteDamage();
 
     /**
+     *
      * Gets the first free sword after-image slot.
      *
      * @mangled GetSwEffectPtr__12CActionCharaFv
@@ -446,6 +459,7 @@ public:
     ACTION_SW_EFFECT *GetSwEffectPtr();
 
     /**
+     *
      * Gives every part in the chain the character's sound settings.
      *
      * @mangled SetSoundInfoCopy__12CActionCharaFv
@@ -455,6 +469,7 @@ public:
     void SetSoundInfoCopy();
 
     /**
+     *
      * Sets the fade flag of every part in the chain.
      *
      * @mangled SetFadeFlag__12CActionCharaFi
@@ -464,6 +479,7 @@ public:
     virtual void SetFadeFlag(int flag);
 
     /**
+     *
      * Sets the far drawing distance of every part in the chain.
      *
      * @mangled SetFarDist__12CActionCharaFf
@@ -473,6 +489,7 @@ public:
     virtual void SetFarDist(float dist);
 
     /**
+     *
      * Sets the near drawing distance of every part in the chain.
      *
      * @mangled SetNearDist__12CActionCharaFf
@@ -482,6 +499,7 @@ public:
     virtual void SetNearDist(float dist);
 
     /**
+     *
      * Gets the camera distance of the head of the chain.
      *
      * @mangled GetCameraDist__12CActionCharaFv
@@ -491,6 +509,7 @@ public:
     virtual float GetCameraDist();
 
     /**
+     *
      * Shows or hides the character, and with all set every part in the chain.
      *
      * @mangled Show__12CActionCharaFii
@@ -500,6 +519,7 @@ public:
     virtual void Show(int show, int chain);
 
     /**
+     *
      * Says whether the named part of the chain is shown, or the character itself for NULL.
      *
      * @mangled GetShow__12CActionCharaFPc
@@ -509,6 +529,7 @@ public:
     virtual int GetShow(char *name);
 
     /**
+     *
      * Kicks the stone nearest the named frame, or with kick unset only says whether there is one.
      *
      * @mangled CheckKeri__12CActionCharaFPci
@@ -518,6 +539,7 @@ public:
     int CheckKeri(char *name, int flag);
 
     /**
+     *
      * Catches the monster or picks up the stone at the named frame.
      *
      * @mangled CheckEnemyCatch__12CActionCharaFPc
@@ -527,6 +549,7 @@ public:
     int CheckEnemyCatch(char *name);
 
     /**
+     *
      * Throws the held item forwards and takes it out of the inventory.
      *
      * @mangled ThrowItemObject__12CActionCharaFv
@@ -536,6 +559,7 @@ public:
     void ThrowItemObject();
 
     /**
+     *
      * Uses the active item: 1 when used, 2 when it is to be thrown, 3 when there is none, 0 otherwise.
      *
      * @mangled UsedItemAction__12CActionCharaFv
@@ -545,6 +569,7 @@ public:
     int UsedItemAction();
 
     /**
+     *
      * Puts the active item into the character's hands to throw it.
      *
      * @mangled EntryThrowItem__12CActionCharaFv
@@ -554,6 +579,7 @@ public:
     void EntryThrowItem();
 
     /**
+     *
      * Puts away an item that the character holds without throwing it.
      *
      * @mangled RemoveThrowItem__12CActionCharaFv
@@ -563,6 +589,7 @@ public:
     void RemoveThrowItem();
 
     /**
+     *
      * Sets the numbered motion on every part in the chain.
      *
      * @mangled SetMotion__12CActionCharaFii
@@ -572,6 +599,7 @@ public:
     virtual void SetMotion(int no, int param);
 
     /**
+     *
      * Sets the named motion on the character, and with all set on every part in the chain.
      *
      * @mangled SetMotion__12CActionCharaFPcii
@@ -581,6 +609,7 @@ public:
     virtual void SetMotion(char *name, int param, int chain);
 
     /**
+     *
      * Resets the motion of every part in the chain.
      *
      * @mangled ResetMotion__12CActionCharaFv
@@ -590,6 +619,7 @@ public:
     virtual void ResetMotion();
 
     /**
+     *
      * Gets the motion wait of the named part of the chain, or of the character itself for NULL.
      *
      * @mangled GetNowFrameWait__12CActionCharaFPc
@@ -599,6 +629,7 @@ public:
     virtual float GetNowFrameWait(char *name);
 
     /**
+     *
      * Gets the motion frame of the named part of the chain, or of the character itself for NULL.
      *
      * @mangled GetNowFrame__12CActionCharaFPc
@@ -608,6 +639,7 @@ public:
     virtual float GetNowFrame(char *name);
 
     /**
+     *
      * Says whether the motion of the named part of the chain, or of the character itself for NULL, has ended.
      *
      * @mangled CheckMotionEnd__12CActionCharaFPc
@@ -617,6 +649,7 @@ public:
     virtual int CheckMotionEnd(char *name);
 
     /**
+     *
      * Gets the motion status of the named part of the chain, or of the character itself for NULL.
      *
      * @mangled GetMotionStatus__12CActionCharaFPc
@@ -626,6 +659,7 @@ public:
     virtual int GetMotionStatus(char *name);
 
     /**
+     *
      * Turns a point between 0 and 1 of a motion of the named part of the chain into a motion frame.
      *
      * @mangled GetWaitToFrame__12CActionCharaFPcfPc
@@ -635,6 +669,7 @@ public:
     float GetWaitToFrame(char *motion, float ratio, char *chara);
 
     /**
+     *
      * Draws every part in the chain through the drawing list, shaking the character after a hit.
      *
      * @mangled Draw__12CActionCharaFv
@@ -644,6 +679,7 @@ public:
     virtual int Draw();
 
     /**
+     *
      * Draws every part in the chain straight away, under the colour flash that is playing.
      *
      * @mangled DrawDirect__12CActionCharaFv
@@ -653,6 +689,7 @@ public:
     virtual int DrawDirect();
 
     /**
+     *
      * Draws the shadow of every part in the chain.
      *
      * @mangled DrawShadowDirect__12CActionCharaFv
@@ -663,6 +700,7 @@ public:
     virtual int DrawShadowDirect();
 
     /**
+     *
      * Draws the character's effects and its effect scripts.
      *
      * @mangled DrawEffect__12CActionCharaFv
@@ -672,6 +710,7 @@ public:
     virtual void DrawEffect();
 
     /**
+     *
      * Starts the sword after-images whose motions have reached them, and steps the character's effects.
      *
      * @mangled StepEffect__12CActionCharaFv
@@ -681,6 +720,7 @@ public:
     virtual void StepEffect();
 
     /**
+     *
      * Finds the named part of the chain.
      *
      * @mangled SearchChara__12CActionCharaFPc
@@ -690,6 +730,7 @@ public:
     CActionChara *SearchChara(char *name);
 
     /**
+     *
      * Finds the named frame in the models of the chain.
      *
      * @mangled SearchObject__12CActionCharaFPc
@@ -699,6 +740,7 @@ public:
     mgCFrame *SearchObject(char *name);
 
     /**
+     *
      * Takes the character off the chain and its frame off the frame it was attached to.
      *
      * @mangled ResetParent__12CActionCharaFv
@@ -708,6 +750,7 @@ public:
     void ResetParent();
 
     /**
+     *
      * Attaches a part to the named frame of the chain and adds it to the end of the chain.
      *
      * @mangled SetRef__12CActionCharaFP12CActionCharaPc
@@ -717,6 +760,7 @@ public:
     int SetRef(CActionChara *other, char *name);
 
     /**
+     *
      * Gets the distance to the lock-on target, or -1 when there is none.
      *
      * @mangled GetTargetDist__12CActionCharaFP6CScene
@@ -726,6 +770,7 @@ public:
     float GetTargetDist(CScene *scene);
 
     /**
+     *
      * Turns a velocity away from the body spheres of the monsters that it would run into.
      *
      * @mangled CollisionCheck__12CActionCharaFPfPfPf
@@ -735,6 +780,7 @@ public:
     void CollisionCheck(float *pos, float *velocity, float *out_velocity);
 
     /**
+     *
      * Locks on to a target, switches it or lets it go when the lock-on button is pressed.
      *
      * @mangled RockOn__12CActionCharaFv
@@ -744,6 +790,7 @@ public:
     void RockOn();
 
     /**
+     *
      * Moves a character on foot with the stick.
      *
      * @mangled HumanMoveIF__12CActionCharaFv
@@ -753,6 +800,7 @@ public:
     int HumanMoveIF();
 
     /**
+     *
      * Moves a character on foot with the stick while it holds something to throw.
      *
      * @mangled HumanShrowMoveIF__12CActionCharaFv
@@ -762,6 +810,7 @@ public:
     int HumanShrowMoveIF();
 
     /**
+     *
      * Moves a character on foot with the stick while it charges an attack.
      *
      * @mangled HumanTameMoveIF__12CActionCharaFv
@@ -771,6 +820,7 @@ public:
     int HumanTameMoveIF();
 
     /**
+     *
      * Moves a character on foot with the stick while it aims a gun, facing its target when locked on.
      *
      * @mangled HumanGunMoveIF__12CActionCharaFPcPc
@@ -780,6 +830,7 @@ public:
     int HumanGunMoveIF(char *stand_motion, char *move_motion);
 
     /**
+     *
      * Moves the ridepod on legs with the stick.
      *
      * @mangled RoboWalkMoveIF__12CActionCharaFi
@@ -789,6 +840,7 @@ public:
     int RoboWalkMoveIF(int mode);
 
     /**
+     *
      * Moves the ridepod on treads with the stick.
      *
      * @mangled RoboTankMoveIF__12CActionCharaFi
@@ -798,6 +850,7 @@ public:
     int RoboTankMoveIF(int mode);
 
     /**
+     *
      * Moves the ridepod on wheels with the stick.
      *
      * @mangled RoboBikeMoveIF__12CActionCharaFi
@@ -807,6 +860,7 @@ public:
     int RoboBikeMoveIF(int mode);
 
     /**
+     *
      * Moves the ridepod through the air with the stick.
      *
      * @mangled RoboAirMoveIF__12CActionCharaFii
@@ -816,6 +870,7 @@ public:
     int RoboAirMoveIF(int unk, int mode);
 
     /**
+     *
      * Moves a monster that the player controls with the stick.
      *
      * @mangled MonsterMoveIF__12CActionCharaFv
@@ -825,6 +880,7 @@ public:
     int MonsterMoveIF();
 
     /**
+     *
      * Takes the damage of a collision primitive that has hit the character, and asks for the reaction to it.
      *
      * @mangled CheckDamage__12CActionCharaFv
@@ -834,6 +890,7 @@ public:
     int CheckDamage();
 
     /**
+     *
      * Copies an action script file into memory and gives it to the interpreter.
      *
      * @mangled LoadActionFile__12CActionCharaFPciP9mgCMemory
@@ -843,6 +900,7 @@ public:
     int LoadActionFile(char *script, int size, mgCMemory *memory);
 
     /**
+     *
      * Clears what the script entered and runs the initialising program.
      *
      * @mangled InitScript__12CActionCharaFv
@@ -852,6 +910,7 @@ public:
     void InitScript();
 
     /**
+     *
      * Runs the holding program when the script has one.
      *
      * @mangled SetHold__12CActionCharaFv
@@ -861,6 +920,7 @@ public:
     void SetHold();
 
     /**
+     *
      * Runs one step of the action script, then moves the character against the map and makes its damage.
      *
      * @mangled RunScript__12CActionCharaFP6CSceneP14RUN_SCRIPT_ENV
@@ -870,6 +930,7 @@ public:
     void RunScript(CScene *scene, RUN_SCRIPT_ENV *env);
 
     /**
+     *
      * Gets what has just happened to what the character holds, when it holds the kind given or for -1 any kind.
      *
      * @mangled CheckReleaseTimming__12CActionCharaFi
@@ -879,6 +940,7 @@ public:
     int CheckReleaseTimming(int id);
 
     /**
+     *
      * Works out the facing, adds the added movement and knock-back to the velocity and counts down the timers.
      *
      * @mangled StepParam__12CActionCharaFv
@@ -888,6 +950,7 @@ public:
     void StepParam();
 
     /**
+     *
      * Steps the character and every part in its chain, and carries what it holds.
      *
      * @mangled Step__12CActionCharaFv
@@ -897,6 +960,7 @@ public:
     virtual void Step();
 
     /**
+     *
      * Steps the shadow of every part in the chain.
      *
      * @mangled ShadowStep__12CActionCharaFv
@@ -906,6 +970,7 @@ public:
     virtual void ShadowStep();
 
     /**
+     *
      * Puts the character back to its initial state.
      *
      * @mangled Initialize__12CActionCharaFP9mgCMemory
@@ -915,6 +980,7 @@ public:
     virtual void Initialize(mgCMemory *memory);
 
     /**
+     *
      * Copies this character into another, and with memory given copies its model too.
      *
      * @mangled Copy__12CActionCharaFR12CActionCharaP9mgCMemory

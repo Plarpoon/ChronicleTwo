@@ -19,6 +19,7 @@ enum EzMidiCommandFlag {
 };
 
 /**
+ *
  * Connects the EE client to the EZMIDI RPC server, waiting until the
  * server is bound.
  *
@@ -29,6 +30,7 @@ enum EzMidiCommandFlag {
 int ezMidiInit();
 
 /**
+ *
  * Sends one command to the EZMIDI RPC server and returns the first word
  * of its response.
  *
@@ -39,6 +41,7 @@ int ezMidiInit();
 int ezMidi(int command, int argument);
 
 /**
+ *
  * Transfers a block of EE memory into IOP memory and waits for the
  * transfer to complete.
  *

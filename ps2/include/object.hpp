@@ -22,6 +22,7 @@ public:
     mgCFrame *frame; /**< Frame that draws the object; NULL while the object has none. */
 
     /**
+     *
      * Makes an object that no frame draws yet.
      *
      * @mangled __ct__12CObjectFrameFv
@@ -31,6 +32,7 @@ public:
     CObjectFrame() { Initialize(); }
 
     /**
+     *
      * Gets the frame that draws the object.
      *
      * @mangled GetFrame__12CObjectFrameFv
@@ -42,6 +44,7 @@ public:
     }
 
     /**
+     *
      * Draws the frame through the drawing list when the object is to be
      * drawn this frame.
      *
@@ -52,6 +55,7 @@ public:
     virtual int Draw();
 
     /**
+     *
      * Draws the frame straight away when the object is to be drawn this
      * frame.
      *
@@ -62,6 +66,7 @@ public:
     virtual int DrawDirect();
 
     /**
+     *
      * Detaches the frame and puts the object back to its initial state.
      *
      * @mangled Initialize__12CObjectFrameFv
@@ -71,6 +76,7 @@ public:
     virtual void Initialize();
 
     /**
+     *
      * Moves the frame onto the object and decides whether to draw it,
      * fading the frame by the distance alpha when the object fades.
      *
@@ -81,6 +87,7 @@ public:
     virtual int PreDraw();
 
     /**
+     *
      * Gets the distance from the camera to the world position of the frame.
      *
      * @mangled GetCameraDist__12CObjectFrameFv
@@ -90,6 +97,7 @@ public:
     virtual float GetCameraDist();
 
     /**
+     *
      * Works out whether the object is within its drawing distance.
      *
      * @mangled DrawStep__12CObjectFrameFv
@@ -99,6 +107,7 @@ public:
     virtual void DrawStep();
 
     /**
+     *
      * Gives the frame the position, rotation and scale of the object.
      *
      * @mangled UpDatePosition__12CObjectFrameFv
@@ -108,6 +117,7 @@ public:
     virtual void UpDatePosition();
 
     /**
+     *
      * Copies this object into another, sharing the same frame.
      *
      * @mangled Copy__12CObjectFrameFR12CObjectFrameP9mgCMemory

@@ -18,63 +18,87 @@
  */
 
 /**
+ *
  * Number of one-bit story flags the save data holds.
+ *
  */
 #define SAVE_BIT_FLAG_MAX 0x800
 
 /**
+ *
  * Number of sixteen-bit story counters the save data holds.
+ *
  */
 #define SAVE_SHORT_FLAG_MAX 0x80
 
 /**
+ *
  * Number of maps that keep a set of map flags in the save data.
+ *
  */
 #define SAVE_MAP_FLAG_MAX 0x100
 
 /**
+ *
  * Number of Georama parts whose held count the save data keeps.
+ *
  */
 #define SAVE_BUILD_PARTS_MAX 0x100
 
 /**
+ *
  * Largest number of copies of one Georama part the player can hold.
+ *
  */
 #define SAVE_BUILD_PARTS_NUM_MAX 9999
 
 /**
+ *
  * Number of Georama towns whose layout the save data keeps.
+ *
  */
 #define SAVE_EDIT_DATA_MAX 5
 
 /**
+ *
  * Number of days, counted from the start of a tournament cycle, during
  * which a fishing tournament runs.
+ *
  */
 #define SAVE_TOUR_DAYS 3
 
 /**
+ *
  * Number of days after which the fishing tournament cycle repeats.
+ *
  */
 #define SAVE_TOUR_CYCLE 10
 
 /**
+ *
  * Largest value of the tournament's progress count.
+ *
  */
 #define SAVE_TOUR_COUNT_MAX 100
 
 /**
+ *
  * Number of entries in the Spheda score table.
+ *
  */
 #define SPHIDA_PLAYER_MAX 64
 
 /**
+ *
  * Number of holes in a round of Spheda.
+ *
  */
 #define SPHIDA_HOLE_MAX 9
 
 /**
+ *
  * Number of fish places in the Finny Frenzy roster.
+ *
  */
 #define GYORACE_DATA_MAX 64
 

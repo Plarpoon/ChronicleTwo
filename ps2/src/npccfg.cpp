@@ -28,7 +28,9 @@ extern const char  at_847__3[];
 extern SPI_TAG_PARAM npc_spitag[3];
 
 /**
+ *
  * Records the number of party characters declared by the NPC script.
+ *
  */
 int _NPC_NUM(SPI_STACK *stack, int argument_count) {
     NpcBaseDataTotalNum = spiGetStackInt(stack);
@@ -36,7 +38,9 @@ int _NPC_NUM(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Reads one party-character record from the NPC script's stack.
+ *
  */
 int _NPC_INFO(SPI_STACK *stack, int argument_count) {
     NPC_BASE_DATA *data = &NpcBaseData[npc_spi_count_num++];

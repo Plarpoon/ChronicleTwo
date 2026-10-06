@@ -73,6 +73,7 @@ struct SAVE_CONVERT_WORK {
 STATIC_ASSERT(sizeof(SAVE_CONVERT_WORK) == 0x659C0);
 
 /**
+ *
  * Prepares the conversion screen when the main loop enters it: sets up the drawing buffers,
  * the font textures, the memory card library and the save file table.
  *
@@ -83,6 +84,7 @@ STATIC_ASSERT(sizeof(SAVE_CONVERT_WORK) == 0x659C0);
 void SVConvViewInit(INIT_LOOP_ARG arg);
 
 /**
+ *
  * Releases the conversion screen when the main loop leaves it, closing the memory card
  * library and the font and stopping every sound effect.
  *
@@ -93,6 +95,7 @@ void SVConvViewInit(INIT_LOOP_ARG arg);
 void SVConvViewExit();
 
 /**
+ *
  * Runs one frame of the conversion screen, handling input and drawing its text, and returns 1
  * when the player leaves the screen.
  *
@@ -103,6 +106,7 @@ void SVConvViewExit();
 int SVConvViewLoop();
 
 /**
+ *
  * Advances the save data conversion by one phase on the selected memory card, and returns 1
  * once the conversion has finished or failed.
  *

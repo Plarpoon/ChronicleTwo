@@ -106,6 +106,7 @@ struct SND_LOOP_SE_SEQ {
     float pan; /**< Pan from -1 (left) to 1 (right). */
 
     /**
+     *
      * Creates the entry as free.
      *
      * @mangled __ct__15SND_LOOP_SE_SEQFv
@@ -129,11 +130,14 @@ public:
     SND_LOOP_SE_SEQ *loop_se;     /**< Looping sound effect entries, or NULL before Create. */
 
     /**
+     *
      * Creates the manager with no entries.
+     *
      */
     CLoopSeMngr() { Initialize(); }
 
     /**
+     *
      * Allocates a number of looping sound effect entries from the stack
      * region of a memory manager, returning non-zero on success.
      *
@@ -144,6 +148,7 @@ public:
     int Create(int sequence_count, mgCMemory *memory);
 
     /**
+     *
      * Forgets the entries without freeing them.
      *
      * @mangled Initialize__11CLoopSeMngrFv
@@ -153,6 +158,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Marks every entry as free without stopping its sound.
      *
      * @mangled Clear__11CLoopSeMngrFv
@@ -162,6 +168,7 @@ public:
     void Clear();
 
     /**
+     *
      * Finds the entry playing a sound with a voice, setting found to 1, or
      * else a free entry with found 0; returns NULL when neither exists.
      *
@@ -172,6 +179,7 @@ public:
     SND_LOOP_SE_SEQ *GetLoopSe(int *found, unsigned int se_id, int voice);
 
     /**
+     *
      * Requests a looping sound effect at its default volume and the middle
      * pan for this frame, returning non-zero when an entry was available.
      *
@@ -182,6 +190,7 @@ public:
     int SeLoopPlayStop(unsigned int handle, int sound, int flags, int loop);
 
     /**
+     *
      * Requests a looping sound effect with a volume scale and pan for this
      * frame, starting it when it is not already playing and keeping it
      * playing for keep_time frames, returning non-zero when an entry was
@@ -194,6 +203,7 @@ public:
     int SeLoopPlayStop(unsigned int snd_id, int se_no, int keep_time, float vol, float pan, int voice);
 
     /**
+     *
      * Starts newly requested sounds, updates the volume and pan of the
      * others, and stops those not requested within their keep time.
      *
@@ -204,6 +214,7 @@ public:
     void Step();
 
     /**
+     *
      * Stops every playing looping sound effect and frees its entry.
      *
      * @mangled AllSeStop__11CLoopSeMngrFv
@@ -231,6 +242,7 @@ struct sndSeInfo {
     s8  unk_9[3];
 
     /**
+     *
      * Creates the entry with no sound.
      *
      * @mangled __ct__9sndSeInfoFv
@@ -259,7 +271,9 @@ public:
     sndCSeSeqData *seseq;     /**< Sound-effect sequences, indexed by sound-effect sequence number. */
 
     /**
+     *
      * Creates the bank empty.
+     *
      */
     sndBankInfo() {
         seseq_num = 0;
@@ -272,7 +286,9 @@ public:
     }
 
     /**
+     *
      * Finds a sound effect table entry by number, or NULL when it is out of range.
+     *
      */
     sndSeInfo *GetSe(int se_no) {
         if (se_no < 0 || se_no >= se_num) {
@@ -283,11 +299,14 @@ public:
     }
 
     /**
+     *
      * Finds a sound-effect sequence by number, or NULL when it is out of range.
+     *
      */
     inline sndCSeSeqData *GetSeSeqData(int seseq_no);
 
     /**
+     *
      * Finds how a sound effect named in the sound effect table is played:
      * "KeyOn" or a name without an extension is a key-on sound effect, a
      * sequence or sound-effect sequence name is that type with its number
@@ -317,7 +336,9 @@ struct sndPortSeSeq {
     s8  unk_7;
 
     /**
+     *
      * Creates the entry as free.
+     *
      */
     sndPortSeSeq() { seseq_no = -1; }
 };
@@ -344,6 +365,7 @@ public:
     sndPortSeSeq seseq[16]; /**< Sound-effect sequences playing on the port. */
 
     /**
+     *
      * Creates the port with no driver ports and no banks.
      *
      * @mangled __ct__11sndPortInfoFv
@@ -377,7 +399,9 @@ public:
     }
 
     /**
+     *
      * Finds a loaded bank by number, or NULL when it is out of range.
+     *
      */
     sndBankInfo *GetBank(int bank_no) {
         if (bank_no < 0 || bank_no >= bank_num) {
@@ -388,7 +412,9 @@ public:
     }
 
     /**
+     *
      * Finds a free sequence entry, or NULL when all sixteen are playing.
+     *
      */
     sndPortSeSeq *GetFreeSeSeq() {
         for (int i = 0; i < 16; i++) {
@@ -401,8 +427,10 @@ public:
     }
 
     /**
+     *
      * Finds the playing sequence entry started for a sound effect of a bank
      * with a voice, or NULL when there is none.
+     *
      */
     sndPortSeSeq *SearchSeSeq(int bank_no, int se_no, int voice) {
         for (int i = 0; i < 16; i++) {
@@ -417,6 +445,7 @@ public:
     }
 
     /**
+     *
      * Builds a bank's sound effect table from its text file, allocating it
      * from the stack region of a memory manager, and applies any reverb
      * line to the port's core.
@@ -428,6 +457,7 @@ public:
     void LoadSeInfoTxt(int bank_no, char *text, int size, mgCMemory *memory);
 
     /**
+     *
      * Reads the default volumes of a bank's sound effects from its volume
      * text file, and applies any reverb line to the port's core.
      *
@@ -441,6 +471,7 @@ public:
 STATIC_ASSERT(sizeof(sndPortInfo) == 0x29C);
 
 /**
+ *
  * Returns the reverb depth last set on a core, or 0 for an invalid core.
  *
  * @mangled sndGetReverbDepth__Fi
@@ -450,6 +481,7 @@ STATIC_ASSERT(sizeof(sndPortInfo) == 0x29C);
 int sndGetReverbDepth(int core);
 
 /**
+ *
  * Combines the port and bank of a sound ID with a sound effect number.
  *
  * @mangled sndCreateID__FUii
@@ -459,6 +491,7 @@ int sndGetReverbDepth(int core);
 unsigned int sndCreateID(unsigned int snd_id, int se_no);
 
 /**
+ *
  * Returns the sound effect number held in a sound ID.
  *
  * @mangled sndGetSeNo__FUi
@@ -468,6 +501,7 @@ unsigned int sndCreateID(unsigned int snd_id, int se_no);
 int sndGetSeNo(unsigned int se_id);
 
 /**
+ *
  * Starts the sound driver and its semaphore, sets both master volumes to
  * full and resets every port.
  *
@@ -478,6 +512,7 @@ int sndGetSeNo(unsigned int se_id);
 void sndInitMngr();
 
 /**
+ *
  * Waits on the semaphore guarding the sound driver.
  *
  * @mangled sndWaitSema__Fv
@@ -487,6 +522,7 @@ void sndInitMngr();
 void sndWaitSema();
 
 /**
+ *
  * Releases the semaphore guarding the sound driver.
  *
  * @mangled sndSignalSema__Fv
@@ -496,6 +532,7 @@ void sndWaitSema();
 void sndSignalSema();
 
 /**
+ *
  * Stops everything a port plays and forgets its driver ports, banks and
  * sound-effect sequences.
  *
@@ -506,6 +543,7 @@ void sndSignalSema();
 void sndInitPort(int port_no);
 
 /**
+ *
  * Frees every sound-effect sequence entry of a port without stopping it.
  *
  * @mangled sndInitSeSeq__Fi
@@ -515,6 +553,7 @@ void sndInitPort(int port_no);
 void sndInitSeSeq(int port_no);
 
 /**
+ *
  * Sets the reverb type and depth of a core.
  *
  * @mangled sndSetReverb__Fiii
@@ -524,6 +563,7 @@ void sndInitSeSeq(int port_no);
 void sndSetReverb(int core, int type, int depth);
 
 /**
+ *
  * Stops a voice.
  *
  * @mangled sndStopVoice__Fi
@@ -533,6 +573,7 @@ void sndSetReverb(int core, int type, int depth);
 void sndStopVoice(int voice);
 
 /**
+ *
  * Sets the master volume of a core, from 0 to 1, cancelling any fade.
  *
  * @mangled sndSetMasterVol__Fif
@@ -542,6 +583,7 @@ void sndStopVoice(int voice);
 void sndSetMasterVol(int core, float vol);
 
 /**
+ *
  * Returns the master volume of a core, or the target of its fade.
  *
  * @mangled sndGetMasterVol__Fi
@@ -551,6 +593,7 @@ void sndSetMasterVol(int core, float vol);
 float sndGetMasterVol(int core);
 
 /**
+ *
  * Fades the master volume of a core to a target over a number of frames,
  * starting from a given volume, or from the current one when start is
  * below 0.
@@ -562,6 +605,7 @@ float sndGetMasterVol(int core);
 void sndMasterVolFadeInOut(int core, int frames, float target, float start);
 
 /**
+ *
  * Sets the volume of a port, from 0 to 1.
  *
  * @mangled sndSetPortVol__Fif
@@ -571,6 +615,7 @@ void sndMasterVolFadeInOut(int core, int frames, float target, float start);
 void sndSetPortVol(int port_no, float vol);
 
 /**
+ *
  * Returns the volume last set on a port.
  *
  * @mangled sndGetPortVol__Fi
@@ -580,6 +625,7 @@ void sndSetPortVol(int port_no, float vol);
 float sndGetPortVol(int port_no);
 
 /**
+ *
  * Returns non-zero once the sound driver has finished transferring wave
  * data.
  *
@@ -590,6 +636,7 @@ float sndGetPortVol(int port_no);
 int sndTransBdState();
 
 /**
+ *
  * Waits, one frame at a time, until the sound driver has finished
  * transferring wave data.
  *
@@ -600,6 +647,7 @@ int sndTransBdState();
 void sndWaitTransBd();
 
 /**
+ *
  * Advances every port's sound-effect sequences by a number of frames,
  * steps the master volume fades and flushes the sound driver.
  *
@@ -610,6 +658,7 @@ void sndWaitTransBd();
 void sndStep(float frames);
 
 /**
+ *
  * Steps the sound driver once per frame, under the semaphore.
  *
  * @mangled sndFlush__Fv
@@ -619,6 +668,7 @@ void sndStep(float frames);
 void sndFlush();
 
 /**
+ *
  * Stops the sound effects and sound-effect sequences of a port, or of
  * every non-music port when port_no is below 0.
  *
@@ -629,6 +679,7 @@ void sndFlush();
 void sndSeAllStop(int port_no);
 
 /**
+ *
  * Returns the default volume of a sound effect, or 0 when it does not exist.
  *
  * @mangled sndGetSeDefVol__FUii
@@ -638,6 +689,7 @@ void sndSeAllStop(int port_no);
 int sndGetSeDefVol(unsigned int se_id, int index);
 
 /**
+ *
  * Loads a sound pack into a port as a new bank: its wave data, driver
  * sequences, sound-effect sequences, sound effect table and volume table,
  * returning the bank's sound ID, or -1 on failure.
@@ -649,6 +701,7 @@ int sndGetSeDefVol(unsigned int se_id, int index);
 unsigned int sndLoadSound(int port_no, unsigned int *pack, mgCMemory *memory);
 
 /**
+ *
  * Releases a port's sound driver ports and resets the port.
  *
  * @mangled sndDeletePort__Fi
@@ -658,6 +711,7 @@ unsigned int sndLoadSound(int port_no, unsigned int *pack, mgCMemory *memory);
 void sndDeletePort(int port_no);
 
 /**
+ *
  * Plays a sound effect at its default volume and the middle pan.
  *
  * @mangled sndSePlay__FUiii
@@ -667,6 +721,7 @@ void sndDeletePort(int port_no);
 void sndSePlay(unsigned int snd_id, int se_no, int voice);
 
 /**
+ *
  * Plays a sound effect at a volume and the middle pan.
  *
  * @mangled sndSePlayV__FUiiii
@@ -676,6 +731,7 @@ void sndSePlay(unsigned int snd_id, int se_no, int voice);
 void sndSePlayV(unsigned int snd_id, int se_no, int vol, int voice);
 
 /**
+ *
  * Plays a sound effect at a volume and pan.
  *
  * @mangled sndSePlayVP__FUiiiii
@@ -685,6 +741,7 @@ void sndSePlayV(unsigned int snd_id, int se_no, int vol, int voice);
 void sndSePlayVP(unsigned int snd_id, int se_no, int vol, int pan, int voice);
 
 /**
+ *
  * Plays a sound effect at a scale of its default volume and a pan from -1
  * to 1.
  *
@@ -695,6 +752,7 @@ void sndSePlayVP(unsigned int snd_id, int se_no, int vol, int pan, int voice);
 void sndSePlayVPf(unsigned int snd_id, int se_no, float vol, float pan, int voice);
 
 /**
+ *
  * Plays a sound effect at a scale of its default volume and the middle pan.
  *
  * @mangled sndSePlayVf__FUiifi
@@ -704,6 +762,7 @@ void sndSePlayVPf(unsigned int snd_id, int se_no, float vol, float pan, int voic
 void sndSePlayVf(unsigned int snd_id, int se_no, float vol, int voice);
 
 /**
+ *
  * Pauses the driver sequence a sound effect plays, if it is playing.
  *
  * @mangled sndSePause__FUii
@@ -713,6 +772,7 @@ void sndSePlayVf(unsigned int snd_id, int se_no, float vol, int voice);
 void sndSePause(unsigned int snd_id, int se_no);
 
 /**
+ *
  * Returns the sndSQ_STATE of the port's driver sequence when a sound effect
  * is a sequence, or -1.
  *
@@ -723,6 +783,7 @@ void sndSePause(unsigned int snd_id, int se_no);
 int sndGetSeStatus(unsigned int snd_id, int se_no);
 
 /**
+ *
  * Pauses a port's driver sequence, if it is playing.
  *
  * @mangled sndPortSqPause__Fi
@@ -732,6 +793,7 @@ int sndGetSeStatus(unsigned int snd_id, int se_no);
 void sndPortSqPause(int port_no);
 
 /**
+ *
  * Resumes a port's driver sequence paused by sndPortSqPause.
  *
  * @mangled sndPortSqReplay__Fi
@@ -741,6 +803,7 @@ void sndPortSqPause(int port_no);
 void sndPortSqReplay(int port_no);
 
 /**
+ *
  * Returns non-zero when a sound effect exists in its bank's table.
  *
  * @mangled sndSeCheck__FUii
@@ -750,6 +813,7 @@ void sndPortSqReplay(int port_no);
 int sndSeCheck(unsigned int snd_id, int se_no);
 
 /**
+ *
  * Plays a sound effect by its type: a key-on sound, the port's driver
  * sequence, or a sound-effect sequence. A volume below 0 uses the sound
  * effect's default volume.
@@ -761,6 +825,7 @@ int sndSeCheck(unsigned int snd_id, int se_no);
 void sndSePlaySeID(unsigned int snd_id, int se_no, int velocity, int vol, int pan, int pitch, int voice);
 
 /**
+ *
  * Stops a sound effect by its type.
  *
  * @mangled sndSeStop__FUiii
@@ -770,6 +835,7 @@ void sndSePlaySeID(unsigned int snd_id, int se_no, int velocity, int vol, int pa
 void sndSeStop(unsigned int snd_id, int se_no, int voice);
 
 /**
+ *
  * Sets the volume of a playing sound effect by its type; a volume below 0
  * uses its default volume.
  *
@@ -780,6 +846,7 @@ void sndSeStop(unsigned int snd_id, int se_no, int voice);
 void sndSetSeVol(unsigned int snd_id, int se_no, int vol, int voice);
 
 /**
+ *
  * Sets the pan of a playing key-on sound effect.
  *
  * @mangled sndSetSePan__FUiiii
@@ -789,6 +856,7 @@ void sndSetSeVol(unsigned int snd_id, int se_no, int vol, int voice);
 void sndSetSePan(unsigned int snd_id, int se_no, int pan, int voice);
 
 /**
+ *
  * Sets the volume of a playing sound effect to a scale of its default
  * volume.
  *
@@ -799,6 +867,7 @@ void sndSetSePan(unsigned int snd_id, int se_no, int pan, int voice);
 void sndSetSeVolf(unsigned int snd_id, int se_no, float vol, int voice);
 
 /**
+ *
  * Sets the pan of a playing key-on sound effect from -1 to 1.
  *
  * @mangled sndSetSePanf__FUiifi
@@ -808,6 +877,7 @@ void sndSetSeVolf(unsigned int snd_id, int se_no, float vol, int voice);
 void sndSetSePanf(unsigned int snd_id, int se_no, float pan, int voice);
 
 /**
+ *
  * Sets the pitch of a playing key-on sound effect.
  *
  * @mangled sndSetSePitch__FUiiii
@@ -817,6 +887,7 @@ void sndSetSePanf(unsigned int snd_id, int se_no, float pan, int voice);
 void sndSetSePitch(unsigned int snd_id, int se_no, int pitch, int voice);
 
 /**
+ *
  * Sets the listener position and facing direction used for positional
  * sound.
  *
@@ -827,6 +898,7 @@ void sndSetSePitch(unsigned int snd_id, int se_no, int pitch, int voice);
 void sndSetMicPos(float *pos, float *dir);
 
 /**
+ *
  * Works out the volume scale and pan of a sound at a position, from its
  * distance to the listener between a full-volume and a silent distance, and
  * its direction to the listener's side.
@@ -838,6 +910,7 @@ void sndSetMicPos(float *pos, float *dir);
 void sndGetVolPan(float *vol, float *pan, float *pos, float near_dist, float far_dist);
 
 /**
+ *
  * Works out the volume scale and pan of a sound along a line, from the point
  * of the line nearest the listener.
  *
@@ -848,6 +921,7 @@ void sndGetVolPan(float *vol, float *pan, float *pos, float near_dist, float far
 void sndGetVolPan(float *vol, float *pan, float *start, float *end, float near_dist, float far_dist);
 
 /**
+ *
  * Clamps a volume to 0 to 127.
  *
  * @mangled sndVolLimit__Fi
@@ -857,6 +931,7 @@ void sndGetVolPan(float *vol, float *pan, float *start, float *end, float near_d
 int sndVolLimit(int vol);
 
 /**
+ *
  * Plays a program and key on the port and bank of a sound ID.
  *
  * @mangled sndSePlayPrKr__FUiiiiiiii
@@ -866,6 +941,7 @@ int sndVolLimit(int vol);
 void sndSePlayPrKr(unsigned int snd_id, int prog, int key, int velocity, int vol, int pan, int pitch, int voice);
 
 /**
+ *
  * Stops a program and key on the port and bank of a sound ID.
  *
  * @mangled sndSeStopPrKr__FUiiii
@@ -875,6 +951,7 @@ void sndSePlayPrKr(unsigned int snd_id, int prog, int key, int velocity, int vol
 void sndSeStopPrKr(unsigned int snd_id, int prog, int key, int voice);
 
 /**
+ *
  * Sets the volume of a program and key on the port and bank of a sound ID.
  *
  * @mangled sndSetSeVolPrKr__FUiiiii
@@ -884,6 +961,7 @@ void sndSeStopPrKr(unsigned int snd_id, int prog, int key, int voice);
 void sndSetSeVolPrKr(unsigned int snd_id, int prog, int key, int vol, int voice);
 
 /**
+ *
  * Sets the pan of a program and key on the port and bank of a sound ID.
  *
  * @mangled sndSetSePanPrKr__FUiiiii
@@ -893,6 +971,7 @@ void sndSetSeVolPrKr(unsigned int snd_id, int prog, int key, int vol, int voice)
 void sndSetSePanPrKr(unsigned int snd_id, int prog, int key, int pan, int voice);
 
 /**
+ *
  * Sets the pitch of a program and key on the port and bank of a sound ID.
  *
  * @mangled sndSetSePitchPrKr__FUiiiii
@@ -902,6 +981,7 @@ void sndSetSePanPrKr(unsigned int snd_id, int prog, int key, int pan, int voice)
 void sndSetSePitchPrKr(unsigned int snd_id, int prog, int key, int pitch, int voice);
 
 /**
+ *
  * Plays a program and key on a sound driver port and bank; a velocity or
  * volume below 0 is full.
  *
@@ -912,6 +992,7 @@ void sndSetSePitchPrKr(unsigned int snd_id, int prog, int key, int pitch, int vo
 void sndSePlayPBPrKr(int port, int bank, int prog, int key, int velocity, int vol, int pan, int pitch, int voice);
 
 /**
+ *
  * Stops a program and key on a sound driver port and bank.
  *
  * @mangled sndSeStopPBPrKr__Fiiiii
@@ -921,6 +1002,7 @@ void sndSePlayPBPrKr(int port, int bank, int prog, int key, int velocity, int vo
 void sndSeStopPBPrKr(int a, int bank, int c, int d, int voice);
 
 /**
+ *
  * Sets the volume of a program and key on a sound driver port and bank; a
  * volume below 0 is full.
  *
@@ -931,6 +1013,7 @@ void sndSeStopPBPrKr(int a, int bank, int c, int d, int voice);
 void sndSetSeVolPBPrKr(int port, int bank, int prog, int key, int vol, int voice);
 
 /**
+ *
  * Sets the pan of a program and key on a sound driver port and bank.
  *
  * @mangled sndSetSePanPBPrKr__Fiiiiii
@@ -940,6 +1023,7 @@ void sndSetSeVolPBPrKr(int port, int bank, int prog, int key, int vol, int voice
 void sndSetSePanPBPrKr(int a, int bank, int c, int d, int e, int f);
 
 /**
+ *
  * Sets the pitch of a program and key on a sound driver port and bank.
  *
  * @mangled sndSetSePitchPBPrKr__Fiiiiii
@@ -949,6 +1033,7 @@ void sndSetSePanPBPrKr(int a, int bank, int c, int d, int e, int f);
 void sndSetSePitchPBPrKr(int a, int bank, int c, int d, int e, int f);
 
 /**
+ *
  * Starts a sequence on a sound driver port at a volume.
  *
  * @mangled sndSqPlay__Fiii
@@ -958,6 +1043,7 @@ void sndSetSePitchPBPrKr(int a, int bank, int c, int d, int e, int f);
 void sndSqPlay(int a, int b, int c);
 
 /**
+ *
  * Silences and stops the sequence of a sound driver port, stopping the
  * first voice as well on a music port.
  *
@@ -968,6 +1054,7 @@ void sndSqPlay(int a, int b, int c);
 void sndSqStop(int port, int sq_no);
 
 /**
+ *
  * Sets the volume of the sequence of a sound driver port.
  *
  * @mangled sndSetSqVol__Fiii
@@ -977,6 +1064,7 @@ void sndSqStop(int port, int sq_no);
 void sndSetSqVol(int port, int sq_no, int vol);
 
 /**
+ *
  * Resumes the sequence of a sound driver port.
  *
  * @mangled sndSqRePlay__Fii
@@ -986,6 +1074,7 @@ void sndSetSqVol(int port, int sq_no, int vol);
 void sndSqRePlay(int port, int sq_no);
 
 /**
+ *
  * Stops every sound-effect sequence playing on a port's sound driver port.
  *
  * @mangled sndStopSeSeq__Fi
@@ -995,6 +1084,7 @@ void sndSqRePlay(int port, int sq_no);
 void sndStopSeSeq(int port_no);
 
 /**
+ *
  * Opens a file as the audio stream.
  *
  * @mangled sndStreamOpenFast__FPc
@@ -1004,6 +1094,7 @@ void sndStopSeSeq(int port_no);
 void sndStreamOpenFast(char *name);
 
 /**
+ *
  * Returns the state of opening the audio stream.
  *
  * @mangled sndStreamOpenState__Fv
@@ -1013,6 +1104,7 @@ void sndStreamOpenFast(char *name);
 int sndStreamOpenState();
 
 /**
+ *
  * Prepares the opened audio stream for playback.
  *
  * @mangled sndStreamStandBy__Fv
@@ -1022,6 +1114,7 @@ int sndStreamOpenState();
 void sndStreamStandBy();
 
 /**
+ *
  * Sets the left and right volumes of the audio stream, from 0 to 1.
  *
  * @mangled sndStreamSetVol__Fff
@@ -1031,6 +1124,7 @@ void sndStreamStandBy();
 void sndStreamSetVol(float left, float right);
 
 /**
+ *
  * Starts playing the audio stream.
  *
  * @mangled sndStreamPlay__Fv
@@ -1040,6 +1134,7 @@ void sndStreamSetVol(float left, float right);
 void sndStreamPlay();
 
 /**
+ *
  * Pauses the audio stream.
  *
  * @mangled sndStreamPause__Fv
@@ -1049,6 +1144,7 @@ void sndStreamPlay();
 void sndStreamPause();
 
 /**
+ *
  * Resumes the paused audio stream.
  *
  * @mangled sndStreamRePlay__Fv
@@ -1058,6 +1154,7 @@ void sndStreamPause();
 void sndStreamRePlay();
 
 /**
+ *
  * Returns the playback state of the audio stream.
  *
  * @mangled sndStreamGetState__Fv
@@ -1067,6 +1164,7 @@ void sndStreamRePlay();
 int sndStreamGetState();
 
 /**
+ *
  * Closes the audio stream.
  *
  * @mangled sndStreamClose__Fv

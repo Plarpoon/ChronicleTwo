@@ -51,6 +51,7 @@ enum HDDMenuItem {
 // clang-format on
 
 /**
+ *
  * Runs one frame of the debug menu that picks a future-era map and toggles
  * the analysis flags of its edit data, starting that map when one is chosen.
  *
@@ -61,6 +62,7 @@ enum HDDMenuItem {
 int FutureMapSelect();
 
 /**
+ *
  * Prepares the hard-disk debug menu, reading the drive's connection,
  * install and free-space state and keeping the memory the installer works in.
  *
@@ -71,6 +73,7 @@ int FutureMapSelect();
 void InitHDDMenu(u_long128 *work);
 
 /**
+ *
  * Runs one frame of the hard-disk debug menu, which installs, uninstalls
  * or mounts the game's hard-disk copy and shows the install progress.
  *
@@ -81,6 +84,7 @@ void InitHDDMenu(u_long128 *work);
 int HDDMenuLoop();
 
 /**
+ *
  * Handles a hard-disk read error; for an unrecoverable one it stops all sound
  * and shows a repair message forever, otherwise it gives 0.
  *

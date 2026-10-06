@@ -140,7 +140,8 @@ write position directly, while `viBufReset` indexes the quadword blocks.
 `VoBuf::data` stores whole decoded frames, so `voBufGetData` and `decBs0`
 index `VoData` records directly. `pcmCallback` treats its user pointer as a
 `ReadBuf` and uses that buffer's byte array; `strFileOpen` uses a `char*` for
-the colon within its path. These functions remain exact in objdiff.
+the colon within its path. `videoDecMain` casts its thread argument to the
+decoder type. These functions remain exact in objdiff.
 
 `viBufAddDMA` still needs its byte-address expression: typed block or byte
 indexing changes its object by one or two instructions. `audioDecBeginPut`

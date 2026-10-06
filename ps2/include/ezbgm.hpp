@@ -26,6 +26,7 @@ enum EzBgmCommand {
 // clang-format on
 
 /**
+ *
  * Connects the EE client to the EZBGM RPC server, waiting until the
  * server is bound.
  *
@@ -36,6 +37,7 @@ enum EzBgmCommand {
 int ezBgmInit();
 
 /**
+ *
  * Sends one command to the EZBGM RPC server and returns the first word
  * of its response, or zero when the server is still busy.
  *

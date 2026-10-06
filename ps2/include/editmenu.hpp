@@ -28,32 +28,44 @@ class mgCTexture;
 struct MENUFORMPARTS_TYPE;
 
 /**
+ *
  * Number of entries in each parts list of the Georama menu.
+ *
  */
 #define GEORAMA_PARTS_LIST_MAX 0x180
 
 /**
+ *
  * Number of pages of the Georama menu, GeoramaViewMode.
+ *
  */
 #define GEORAMA_VIEW_MODE_NUM 7
 
 /**
+ *
  * Number of lines of a Georama menu list shown at once.
+ *
  */
 #define GEORAMA_LIST_LINE_NUM 8
 
 /**
+ *
  * Number of paint colours the Georama menu offers.
+ *
  */
 #define GEORAMA_PENKI_NUM 8
 
 /**
+ *
  * Number of villagers the removal menu can list.
+ *
  */
 #define REMOVAL_NPC_LIST_MAX 0xB4
 
 /**
+ *
  * Number of villager name lines the removal menu's list form holds.
+ *
  */
 #define REMOVAL_NAME_LINE_MAX 10
 
@@ -191,8 +203,10 @@ public:
     u8                      unk_1B8F8[8];
 
     /**
+     *
      * Creates the menu on the stock page with every list empty and no part
      * shown.
+     *
      */
     CMenuGeorama() {
         view_mode = GEORAMA_VIEW_STOCK;
@@ -242,6 +256,7 @@ public:
     }
 
     /**
+     *
      * Finishes opening the menu: enters its textures, makes its messages,
      * opens the page that the previous menu asks for and shows its part.
      *
@@ -252,6 +267,7 @@ public:
     virtual void InitEnd();
 
     /**
+     *
      * Closes the menu, keeping each page's cursor in the system data.
      *
      * @mangled ExitEnd__12CMenuGeoramaFv
@@ -261,6 +277,7 @@ public:
     virtual void ExitEnd();
 
     /**
+     *
      * Gives the number of lines of a page's list.
      *
      * @mangled GetPartsIDListNum__12CMenuGeoramaFi
@@ -270,6 +287,7 @@ public:
     int GetPartsIDListNum(int mode);
 
     /**
+     *
      * Gives the number of placed parts made from a part definition.
      *
      * @mangled GetNowMakePartsNum__12CMenuGeoramaFi
@@ -279,6 +297,7 @@ public:
     int GetNowMakePartsNum(int id);
 
     /**
+     *
      * Sorts the stock, build or house list in the list's next order.
      *
      * @mangled ArrangePartsList__12CMenuGeoramaFii
@@ -288,6 +307,7 @@ public:
     int ArrangePartsList(int list, int advance_sort);
 
     /**
+     *
      * Fills the placed, stock, build and house lists from the town and the
      * save data.
      *
@@ -298,6 +318,7 @@ public:
     void UpdateGeoramaPartsList();
 
     /**
+     *
      * Gives the part number on the cursor's line of the stock or build page,
      * or -1 on another page.
      *
@@ -308,6 +329,7 @@ public:
     int GetNowModeLoadPartsID();
 
     /**
+     *
      * Gives the definition of the part on a line of a page's list, or NULL.
      *
      * @mangled GetNowSelectEditPartsInfo__12CMenuGeoramaFii
@@ -317,6 +339,7 @@ public:
     CEditPartsInfo *GetNowSelectEditPartsInfo(int mode, int line);
 
     /**
+     *
      * Shows the model of a part, put back where it was and scaled to fit the
      * menu, in place of the part shown before.
      *
@@ -327,6 +350,7 @@ public:
     void LoadGeoramaPart(int no, int kind);
 
     /**
+     *
      * Hands the paint colour picked and its item to the town editor.
      *
      * @mangled UpdateGeoramaPartColor__12CMenuGeoramaFi
@@ -336,6 +360,7 @@ public:
     void UpdateGeoramaPartColor(int update);
 
     /**
+     *
      * Finds the forms of the menu by name.
      *
      * @mangled AttachFormInfo__12CMenuGeoramaFv
@@ -345,6 +370,7 @@ public:
     void AttachFormInfo();
 
     /**
+     *
      * Sets the cursor of a page's list.
      *
      * @mangled SetGeoListInfo__12CMenuGeoramaFiii
@@ -354,6 +380,7 @@ public:
     void SetGeoListInfo(int list, int select, int top);
 
     /**
+     *
      * Leaves a page for the choice of pages, running one of two scripts.
      *
      * @mangled ReturnSelectMode__12CMenuGeoramaFi
@@ -363,6 +390,7 @@ public:
     int ReturnSelectMode(int script);
 
     /**
+     *
      * Gives the last line the cursor can reach on a page's list.
      *
      * @mangled GetNowViewModeMax__12CMenuGeoramaFi
@@ -372,6 +400,7 @@ public:
     int GetNowViewModeMax(int mode);
 
     /**
+     *
      * Turns the part shown while the L or R button is held.
      *
      * @mangled LRCheck__12CMenuGeoramaFv
@@ -381,6 +410,7 @@ public:
     int LRCheck();
 
     /**
+     *
      * Steps the materials board: asks whether to build the part, builds it
      * from the party's items and puts it in stock.
      *
@@ -391,6 +421,7 @@ public:
     virtual int IsMakeObject(int buttons_held, int buttons_pressed);
 
     /**
+     *
      * Moves the menu cursor towards the line or tab it is on.
      *
      * @mangled CalcCursorPosition__12CMenuGeoramaFv
@@ -400,6 +431,7 @@ public:
     void CalcCursorPosition();
 
     /**
+     *
      * Moves the forms, scroll bars, analysis bar and part shown towards
      * where the open page puts them.
      *
@@ -410,6 +442,7 @@ public:
     void CalcTex();
 
     /**
+     *
      * Counts the materials that building the part needs and the party lacks,
      * and lays out the materials board.
      *
@@ -461,7 +494,9 @@ public:
     s32                 top;                               /**< First line shown. */
 
     /**
+     *
      * Creates the menu with no house, no villager list and no model.
+     *
      */
     CRemovalMenu() {
         data_stack.stSetBuffer(NULL, 0);
@@ -501,6 +536,7 @@ public:
     }
 
     /**
+     *
      * Lists the villagers who have joined the town and live in no house.
      *
      * @mangled MakeNPCList__12CRemovalMenuFv
@@ -510,6 +546,7 @@ public:
     void MakeNPCList();
 
     /**
+     *
      * Steps the menu one frame: loads it, moves villagers in and out, shows
      * the villager on the cursor and closes. Gives 1 once it has closed.
      *
@@ -523,6 +560,7 @@ public:
 STATIC_ASSERT(sizeof(CRemovalMenu) == 0x1500);
 
 /**
+ *
  * Gets one of the Georama menu's paint colours as red, green and blue.
  *
  * @mangled GetPenkiColor__FiPf
@@ -532,6 +570,7 @@ STATIC_ASSERT(sizeof(CRemovalMenu) == 0x1500);
 void GetPenkiColor(int no, float *out_rgb);
 
 /**
+ *
  * Gives the page whose list a list form shows, or -1 for none.
  *
  * @mangled ConvGeoramaDataNo__Fi
@@ -541,6 +580,7 @@ void GetPenkiColor(int no, float *out_rgb);
 int ConvGeoramaDataNo(int georama_no);
 
 /**
+ *
  * Keeps a list's first shown line and cursor within the list and the lines
  * shown.
  *
@@ -551,6 +591,7 @@ int ConvGeoramaDataNo(int georama_no);
 void CheckMenuLine(int *select, int *top, int count, int visible);
 
 /**
+ *
  * Opens the Georama menu: reads its data, makes the menu and its messages
  * and fills its lists.
  *
@@ -561,6 +602,7 @@ void CheckMenuLine(int *select, int *top, int count, int visible);
 int MenuGeoramaInit(mgCMemory *stack, int arg);
 
 /**
+ *
  * Steps the Georama menu one frame. Gives 1 once it has closed.
  *
  * @mangled MenuGeoramaKey__Fv
@@ -570,6 +612,7 @@ int MenuGeoramaInit(mgCMemory *stack, int arg);
 int MenuGeoramaKey();
 
 /**
+ *
  * Draws the Georama menu.
  *
  * @mangled MenuGeoramaDraw__Fv
@@ -579,6 +622,7 @@ int MenuGeoramaKey();
 void MenuGeoramaDraw();
 
 /**
+ *
  * Draws the Georama menu's title frame and the cursor on the page tabs.
  *
  * @mangled MenuGeoramaTitleDraw__FRiPfi
@@ -588,6 +632,7 @@ void MenuGeoramaDraw();
 void MenuGeoramaTitleDraw(int &tex_block, float *pos, int alpha);
 
 /**
+ *
  * Draws one page's list of the Georama menu.
  *
  * @mangled MenuGeoramaListDraw__FRiPfii
@@ -597,6 +642,7 @@ void MenuGeoramaTitleDraw(int &tex_block, float *pos, int alpha);
 void MenuGeoramaListDraw(int &tex_block, float *pos, int data_no, int alpha);
 
 /**
+ *
  * Draws the Georama menu's analysis of the town against its requests.
  *
  * @mangled MenuGeoramaAnalyzeDraw__FRiPfi
@@ -606,6 +652,7 @@ void MenuGeoramaListDraw(int &tex_block, float *pos, int data_no, int alpha);
 void MenuGeoramaAnalyzeDraw(int &tex_block, float *pos, int alpha);
 
 /**
+ *
  * Clears the announcement of the parts a Geostone gives, keeping memory to
  * make it from.
  *
@@ -616,6 +663,7 @@ void MenuGeoramaAnalyzeDraw(int &tex_block, float *pos, int alpha);
 void InitDownLoadAnaunce(mgCMemory *stack);
 
 /**
+ *
  * Shows or hides the announcement of the parts a Geostone gives.
  *
  * @mangled DrawDownLoadAnaunceSwitch__Fi
@@ -625,6 +673,7 @@ void InitDownLoadAnaunce(mgCMemory *stack);
 void DrawDownLoadAnaunceSwitch(int value);
 
 /**
+ *
  * Steps the announcement of the parts a Geostone gives one frame, moving to
  * its next message on a push. Gives 1 once it has ended.
  *
@@ -635,6 +684,7 @@ void DrawDownLoadAnaunceSwitch(int value);
 int StepDownLoadAnaunce(int confirm);
 
 /**
+ *
  * Draws the announcement of the parts a Geostone gives.
  *
  * @mangled DrawDownLoadAnaunce__Fv
@@ -644,6 +694,7 @@ int StepDownLoadAnaunce(int confirm);
 void DrawDownLoadAnaunce();
 
 /**
+ *
  * Makes the announcement of the parts and requests a town's Geostones give
  * and the town's analysis list, giving two line counts and the list's height.
  *
@@ -654,6 +705,7 @@ void DrawDownLoadAnaunce();
 int MakeDownLoadAnaunce(int town_no, mgCMemory *stack, int *out_num, int *out_sub_num, int *out_height);
 
 /**
+ *
  * Starts the Geostone download effect for as long as the download takes.
  *
  * @mangled InitMenuDl3__FP10mgCTexture
@@ -663,6 +715,7 @@ int MakeDownLoadAnaunce(int town_no, mgCMemory *stack, int *out_num, int *out_su
 void InitMenuDl3(mgCTexture *texture);
 
 /**
+ *
  * Steps the Geostone download effect one frame. Gives non-zero once it has
  * ended.
  *
@@ -673,6 +726,7 @@ void InitMenuDl3(mgCTexture *texture);
 int StepMenuDl3();
 
 /**
+ *
  * Draws the information of the placed house the Georama or removal menu
  * shows.
  *
@@ -683,6 +737,7 @@ int StepMenuDl3();
 void MenuPlacedHouseDraw(int &tex_block);
 
 /**
+ *
  * Draws the model of the part the Georama menu shows.
  *
  * @mangled MenuMapPartsDraw__FRi
@@ -692,6 +747,7 @@ void MenuPlacedHouseDraw(int &tex_block);
 void MenuMapPartsDraw(int &draw_wait);
 
 /**
+ *
  * Gives non-zero when a town's Georama menu shows the pictures of its
  * check points rather than its house list.
  *
@@ -702,6 +758,7 @@ void MenuMapPartsDraw(int &draw_wait);
 int CheckGekkaViewMode(int view_mode);
 
 /**
+ *
  * Gives the item number of one of the paint colours, or -1.
  *
  * @mangled GetPenkiItemNo__Fi
@@ -711,6 +768,7 @@ int CheckGekkaViewMode(int view_mode);
 int GetPenkiItemNo(int slot);
 
 /**
+ *
  * Writes the name of a part and of the materials it needs into a message,
  * counting the materials on a materials board.
  *
@@ -721,6 +779,7 @@ int GetPenkiItemNo(int slot);
 void MakeMsgPartsItemInfo(CDC2Mes *mes, CEditPartsInfo *info, MENUFORM_MAKEBRD_INFO *brd);
 
 /**
+ *
  * Opens the menu that moves villagers into and out of the placed house.
  *
  * @mangled MenuRemovalInit__FP9mgCMemoryPi
@@ -730,6 +789,7 @@ void MakeMsgPartsItemInfo(CDC2Mes *mes, CEditPartsInfo *info, MENUFORM_MAKEBRD_I
 void MenuRemovalInit(mgCMemory *stack, int *arg);
 
 /**
+ *
  * Steps the removal menu one frame. Gives 1 once it has closed.
  *
  * @mangled MenuRemovalKey__Fv
@@ -739,6 +799,7 @@ void MenuRemovalInit(mgCMemory *stack, int *arg);
 int MenuRemovalKey();
 
 /**
+ *
  * Draws the removal menu's forms.
  *
  * @mangled MenuRemovalDraw__Fv

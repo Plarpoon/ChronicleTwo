@@ -31,23 +31,23 @@ struct ACTION_INFO {
 STATIC_ASSERT(sizeof(ACTION_INFO) == 0x10);
 
 /**
+ *
  * Scene in which the running action script's character acts, set each time
  * a character runs its action script.
+ *
  */
 extern CScene *nowScene__2;
 
 /**
- * Scene used by character action scripts; nowScene is the separate scene used by runscript_opcodes.
- */
-extern CScene *nowScene__2;
-
-/**
+ *
  * Character, camera and items that the action script's external functions
  * work with, set each time a character runs its action script.
+ *
  */
 extern ACTION_INFO action_info;
 
 /**
+ *
  * Gives an action character's interpreter its program, an operand stack and
  * call stack taken from an arena, and the action external-function table.
  *
@@ -58,6 +58,7 @@ extern ACTION_INFO action_info;
 int SetActionScript(CRunScript *script, char *program, mgCMemory *memory);
 
 /**
+ *
  * Builds the action external-function table out of the list of external
  * functions, stopping the game on a number listed twice.
  *

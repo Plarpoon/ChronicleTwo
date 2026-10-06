@@ -82,17 +82,25 @@ extern int   command_int[];
 extern char *command_str[];
 
 /**
+ *
  * Closes the dungeon debug menu and applies its edited settings.
+ *
  */
 static void dngDebugExit();
 /**
+ *
  * Loads a chosen monster kind beside the player, refreshing monster memory on the first load.
+ *
  */
 /**
+ *
  * Draws the first dungeon system-parameter panel.
+ *
  */
 /**
+ *
  * Draws the second dungeon system-parameter panel.
+ *
  */
 
 // Code (.text)

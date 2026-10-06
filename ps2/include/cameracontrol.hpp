@@ -75,6 +75,7 @@ public:
     CameraCtrlParam &operator=(const CameraCtrlParam &source);
 
     /**
+     *
      * Gives every height limit, and the height of the eye, one value,
      * so that the eye stays at that height.
      *
@@ -85,6 +86,7 @@ public:
     void SetFixHeight(float height);
 
     /**
+     *
      * Gives the least and the greatest distance one value, so that the
      * eye stays at that distance.
      *
@@ -128,6 +130,7 @@ public:
     int             check_ref_on;   /**< Non-zero when walls and the ground are checked against check_ref. */
 
     /**
+     *
      * Makes the camera circle a point at the default distance, height and
      * speed, with the default limits, and without the player's control.
      *
@@ -138,6 +141,7 @@ public:
     CCameraControl();
 
     /**
+     *
      * Returns the limits in use.
      *
      * @mangled GetActiveParam__14CCameraControlFv
@@ -147,6 +151,7 @@ public:
     CameraCtrlParam *GetActiveParam();
 
     /**
+     *
      * Sets the CameraRotCancel bits that stop ways the camera moves.
      *
      * @mangled SetRotCameraCancel__14CCameraControlFi
@@ -156,6 +161,7 @@ public:
     void SetRotCameraCancel(int mask);
 
     /**
+     *
      * Adds CameraRotCancel bits that stop ways the camera moves.
      *
      * @mangled BitSetRotCameraCancel__14CCameraControlFi
@@ -165,6 +171,7 @@ public:
     void BitSetRotCameraCancel(int mask);
 
     /**
+     *
      * Removes CameraRotCancel bits, letting the camera move those ways
      * again.
      *
@@ -175,6 +182,7 @@ public:
     void BitResetRotCameraCancel(int mask);
 
     /**
+     *
      * Clears the cancel bits, stops any swing back, and removes the offset
      * from the view direction.
      *
@@ -185,6 +193,7 @@ public:
     void InitStatus();
 
     /**
+     *
      * Gives the player control of the camera, holding the eye and the
      * look-at point where they are and taking the height of the eye within
      * its limits.
@@ -196,6 +205,7 @@ public:
     void ControlOn();
 
     /**
+     *
      * Takes control of the camera away from the player, so that it circles
      * as its base camera.
      *
@@ -206,6 +216,7 @@ public:
     void ControlOff();
 
     /**
+     *
      * Stops the camera from moving, as its base camera does while it
      * circles, or as a plain camera does under control.
      *
@@ -216,6 +227,7 @@ public:
     virtual void Stay();
 
     /**
+     *
      * Moves the camera one or more steps; under control, finishes any swing
      * back at once for a negative step count and measures the distance,
      * height and angles that the base camera keeps.
@@ -227,6 +239,7 @@ public:
     virtual void Step(int frames);
 
     /**
+     *
      * Reads the turn, rise and swing-back requests from a controller and
      * moves the camera by them.
      *
@@ -237,6 +250,7 @@ public:
     void MoveCamera(CPadControl *pad, float *target, CCPoly *polys, int poly_count);
 
     /**
+     *
      * Turns, raises and pulls in or out the eye by the requests, within
      * the limits in use, swings it behind the player when asked, and keeps
      * it clear of the ground and walls.
@@ -248,6 +262,7 @@ public:
     void MoveCamera(Control *control, float *target, CCPoly *polys, int poly_count);
 
     /**
+     *
      * Turns the position that the eye moves to about the look-at point by
      * an angle.
      *
@@ -258,6 +273,7 @@ public:
     void Rotate(float angle);
 
     /**
+     *
      * Puts the position that the eye moves to at an angle about the
      * look-at point, keeping its distance and height.
      *
@@ -268,6 +284,7 @@ public:
     void SetRotate(float angle);
 
     /**
+     *
      * Sets the height of the eye above the look-at point.
      *
      * @mangled SetHeight__14CCameraControlFf
@@ -277,6 +294,7 @@ public:
     void SetHeight(float height);
 
     /**
+     *
      * Makes the eye swing round to an angle about the look-at point.
      *
      * @mangled RotBack__14CCameraControlFf
@@ -286,6 +304,7 @@ public:
     void RotBack(float angle);
 
     /**
+     *
      * Stops the eye swinging round.
      *
      * @mangled CancelRotBack__14CCameraControlFv
@@ -295,6 +314,7 @@ public:
     void CancelRotBack();
 
     /**
+     *
      * Sets the point that walls and the ground are checked against.
      *
      * @mangled SetCheckRef__14CCameraControlFPf
@@ -304,6 +324,7 @@ public:
     void SetCheckRef(float *ref);
 
     /**
+     *
      * Sets the point that walls and the ground are checked against.
      *
      * @mangled SetCheckRef__14CCameraControlFfff
@@ -313,6 +334,7 @@ public:
     void SetCheckRef(float x, float y, float z);
 
     /**
+     *
      * Pulls the eye in front of any wall between it and the point that it
      * looks at.
      *
@@ -323,6 +345,7 @@ public:
     void CheckCollision(CCPoly *polys, int poly_count);
 
     /**
+     *
      * Swings the eye round, a little at a time either way, until no wall
      * stands between it and the point that it looks at. Returns non-zero
      * when the eye has a clear view.
@@ -334,6 +357,7 @@ public:
     int AutoMove(CCPoly *polys, int poly_count);
 
     /**
+     *
      * Keeps the eye above the floor below it and beneath the ceiling above
      * it.
      *
@@ -344,6 +368,7 @@ public:
     void CheckGround(CCPoly *polys, int poly_count);
 
     /**
+     *
      * Makes the matrix that moves the world into the space of the eye,
      * looking along the view direction plus its offset.
      *
@@ -354,6 +379,7 @@ public:
     virtual void GetCameraMatrix(float (*matrix)[4]);
 
     /**
+     *
      * Copies the limits in use, the cancel bits and the follow offset to
      * another camera.
      *
@@ -364,6 +390,7 @@ public:
     void CopyParam(CCameraControl &dest);
 
     /**
+     *
      * Returns the kind of this camera.
      *
      * @mangled Iam__14CCameraControlFv

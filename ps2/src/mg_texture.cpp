@@ -12,13 +12,17 @@
 #include "mglib.hpp"
 
 /**
+ *
  * Gives the quadwords a buffer of the given bytes takes, rounded up.
+ *
  */
 #define QWORDS(bytes) ((bytes) % 16 == 0 ? (bytes) / 16 : (bytes) / 16 + 1)
 
 /**
+ *
  * Words of the DMA tags, VIF codes and GIF tags the upload chains are
  * built from.
+ *
  */
 enum {
     DMA_ID_CNT = 0x10000000,   /**< DMA tag transferring the quadwords that follow it. */
@@ -32,8 +36,10 @@ enum {
 static int Conv32To8(int width, int height, u_char *image);
 
 /**
+ *
  * DMA chain flushing the GS texture cache, copied in front of and behind
  * every texture upload.
+ *
  */
 extern u_char texflush_dma[0x30];
 
@@ -58,8 +64,10 @@ static inline u_int align16_blocks(u_int n) {
 
 // Code (.text)
 /**
+ *
  * Gives the VRAM block address of the Z buffer and stores the GS blocks
  * it spans, which 8-bit textures can borrow while it holds nothing.
+ *
  */
 static int GetZBufVram(int *size) {
     mgCTexture frame;
@@ -74,8 +82,10 @@ static int GetZBufVram(int *size) {
 #pragma schedule off
 
 /**
+ *
  * Tells whether a texture can be placed in the Z buffer's VRAM, which
  * holds unswizzled 8-bit textures only, and stores the blocks it needs.
+ *
  */
 static int CheckCopyToZBufVram(mgCTexture *texture, int *size) {
     *size = 0;
@@ -979,8 +989,10 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_texture", EnterIMGFile__17mgCTextureMan
 #pragma schedule off
 
 /**
+ *
  * Identifies the archive format of an IMG texture archive from its
  * signature, or gives MG_IMG_VERSION_NONE when the data is not one.
+ *
  */
 static int GetIMGVersion(char *img) {
     if (img == NULL) {
@@ -1251,8 +1263,10 @@ int mgLoadImage(u_int *packet, int base, int format, int width, u_long128 *image
 #pragma global_optimizer off
 
 /**
+ *
  * Writes the DMA chain flushing the GS texture cache, when given a
  * buffer; gives the quadwords it takes either way.
+ *
  */
 static int SetTexFlush_TagCnt(u_int *buffer) {
     if (buffer == NULL) {
@@ -1576,8 +1590,10 @@ mgCTextureAnime *mgCTextureManager::GetTexAnime(int index) {
 #pragma optimization_level 1
 
 /**
+ *
  * Reorders one block of 8-bit pixels stored in 32-bit page order back
  * into linear order.
+ *
  */
 // Each block is four columns of 64 bytes; odd columns use the second half of the table.
 static int BlockConv32to8(u_char *src, u_char *dst) {
@@ -1612,8 +1628,10 @@ static int BlockConv32to8(u_char *src, u_char *dst) {
 #pragma optimization_level 2
 
 /**
+ *
  * Reorders one page of 8-bit pixels stored in 32-bit page order back
  * into linear order, block by block.
+ *
  */
 static int PageConv32to8(int width, int height, u_char *src, u_char *dst) {
     int     block_column[32];
@@ -1678,8 +1696,10 @@ static int PageConv32to8(int width, int height, u_char *src, u_char *dst) {
 #ifdef NONMATCHING
 
 /**
+ *
  * Converts 8-bit pixels stored in 32-bit page order back into linear
  * order in place; gives 0 when the image is too large to convert.
+ *
  */
 static int Conv32To8(int width, int height, u_char *image) {
     static u_char conv_work[0x10000];

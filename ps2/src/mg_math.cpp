@@ -464,7 +464,9 @@ int mgCheckPointPoly3_XZ(float *point, float *v0, float *v1, float *v2) {
 }
 
 /**
+ *
  * Returns where a 2D point lies relative to a 2D triangle, as an mgPointPoly3Result.
+ *
  */
 int Check_Point_Poly3(float x, float y, float x0, float y0, float x1, float y1, float x2, float y2) {
     float edge_20;
@@ -588,7 +590,9 @@ void mgZeroMatrix(float (*matrix)[4]) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgZeroMatrix__FPA4_f);
 #endif
 /**
+ *
  * Multiplies a matrix in place by two further matrices.
+ *
  */
 #ifdef NONMATCHING
 static void MulMatrix3(float (*matrix)[4], float (*second)[4], float (*third)[4]) {

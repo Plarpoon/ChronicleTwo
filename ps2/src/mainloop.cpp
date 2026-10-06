@@ -174,7 +174,9 @@ void SetTextureTable(int table_size, int table_count, mgCMemory *memory) {
 }
 
 /**
+ *
  * Registers the logical controller bindings for the selected language.
+ *
  */
 static void InitPadTable(int language) {
     int confirm[2] = {PAD_CIRCLE, PAD_CROSS};
@@ -637,7 +639,9 @@ void MenuInit(INIT_LOOP_ARG arg) {
 }
 #ifdef NONMATCHING
 /**
+ *
  * Runs the debug mode selection menu and its configuration screens.
+ *
  */
 static int MenuLoop() {
     mgCTextureManager *textures = &mgTexManager;
@@ -823,7 +827,9 @@ void InitEventSelect() {
 }
 #ifdef NONMATCHING
 /**
+ *
  * Runs the debug chapter, event, map and extra-mode selection screen.
+ *
  */
 static int EventSelect() {
     static int   menu_sel[11];
@@ -1471,7 +1477,9 @@ int gcHP(SPI_STACK *stack, int arg_count) {
 }
 
 /**
+ *
  * Unlocks Geostones and town conditions and grants Georama materials.
+ *
  */
 static int gcALL_GEO_PARTS(SPI_STACK *stack, int argc) {
     CSaveDataDungeon *dungeon;

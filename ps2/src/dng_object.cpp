@@ -71,7 +71,9 @@ extern s8    init_1411;
 
 #ifdef NONMATCHING
 /**
+ *
  * Japanese names of monster badge families.
+ *
  */
 static char *mons_attr_tbl[12] = {
     "",
@@ -89,7 +91,9 @@ static char *mons_attr_tbl[12] = {
 };
 
 /**
+ *
  * English names of monster badge families.
+ *
  */
 static char *mons_attr_tbl2[12] = {
     "",
@@ -107,7 +111,9 @@ static char *mons_attr_tbl2[12] = {
 };
 
 /**
+ *
  * French names of monster badge families.
+ *
  */
 static char *mons_attr_tbl3[12] = {
     "",
@@ -125,7 +131,9 @@ static char *mons_attr_tbl3[12] = {
 };
 
 /**
+ *
  * German names of monster badge families.
+ *
  */
 static char *mons_attr_tbl4[12] = {
     "",
@@ -143,7 +151,9 @@ static char *mons_attr_tbl4[12] = {
 };
 
 /**
+ *
  * Italian names of monster badge families.
+ *
  */
 static char *mons_attr_tbl5[12] = {
     "",
@@ -161,7 +171,9 @@ static char *mons_attr_tbl5[12] = {
 };
 
 /**
+ *
  * Spanish names of monster badge families.
+ *
  */
 static char *mons_attr_tbl6[12] = {
     "",
@@ -179,7 +191,9 @@ static char *mons_attr_tbl6[12] = {
 };
 
 /**
+ *
  * Messages displayed when a monster badge is already owned.
+ *
  */
 static char *dung_progtxt_badge_already[8] = {
     "\203\202\203\223\203X\203^\201[\202\326\202\361\202\260\203o\203b\203W\201i%s\201j\202\360\n\214\251\202\302\202\257\202\275\201A\202\265\202\251\202\265\202\267\202\305\202\311\223\374\216\350\202\265\202\304\202\242\202\351",
@@ -193,7 +207,9 @@ static char *dung_progtxt_badge_already[8] = {
 };
 
 /**
+ *
  * Messages displayed when a monster badge is acquired.
+ *
  */
 static char *dung_progtxt_badge_get[8] = {
     "\203\202\203\223\203X\203^\201[\202\326\202\361\202\260\203o\203b\203W\201i%s\201j\202\360\n\216\350\202\311\223\374\202\352\202\275",
@@ -207,7 +223,9 @@ static char *dung_progtxt_badge_get[8] = {
 };
 
 /**
+ *
  * Messages displayed when the gate key is acquired.
+ *
  */
 static char *dung_progtxt_gkey_get[8] = {
     "\203Q\201[\203g\203L\201[\201u%s\201v\202\360\216\350\202\311\223\374\202\352\202\275",
@@ -221,7 +239,9 @@ static char *dung_progtxt_gkey_get[8] = {
 };
 
 /**
+ *
  * Messages displayed when a stolen item is recovered.
+ *
  */
 static char *dung_progtxt_steal[8] = {
     "\223G\202\251\202\347\201u%s\201v\202\360\223\220\202\335\216\346\202\301\202\275",
@@ -235,7 +255,9 @@ static char *dung_progtxt_steal[8] = {
 };
 
 /**
+ *
  * Singular and plural messages displayed when an item cannot fit.
+ *
  */
 static char *dung_progtxt_getitem_overnum[8][2] = {
     {"\201w%s\201x\202\252\223\374\202\301\202\304\202\242\202\351\201B\n\202\265\202\251\202\265\202\261\202\352\210\310\217\343\201A\202\261\202\314\203A\203C\203e\203\200\202\360\216\235\202\302\202\261\202\306\202\252\202\305\202\253\202\310\202\242\201B", "\201w%s\201x\202\252%d\214\302\201A\223\374\202\301\202\304\202\242\202\351\201B\n\202\265\202\251\202\265\202\261\202\352\210\310\217\343\201A\202\261\202\314\203A\203C\203e\203\200\202\360\216\235\202\302\202\261\202\306\202\252\202\305\202\253\202\310\202\242\201B"},
@@ -249,7 +271,9 @@ static char *dung_progtxt_getitem_overnum[8][2] = {
 };
 
 /**
+ *
  * Singular and plural messages displayed when an item is acquired.
+ *
  */
 static char *dung_progtxt_getitem[8][2] = {
     {"\201w%s\201x\202\360%d\214\302\201A\216\350\202\311\223\374\202\352\202\275\201B", "\201w%s\201x\202\360%d\214\302\201A\216\350\202\311\223\374\202\352\202\275\201B"},
@@ -263,7 +287,9 @@ static char *dung_progtxt_getitem[8][2] = {
 };
 
 /**
+ *
  * Monster badge family names selected by the current language.
+ *
  */
 static char **mons_attr_list[8] = {
     mons_attr_tbl,

@@ -196,6 +196,7 @@ public:
     float      speed;      /**< Distance StepS moves along the spline in one step. */
 
     /**
+     *
      * Clears every segment and puts the spline at its start.
      *
      * @mangled __ct__9C3DSplineFv
@@ -205,6 +206,7 @@ public:
     C3DSpline();
 
     /**
+     *
      * Clears every segment and puts the spline at its start.
      *
      * @mangled Initialize__9C3DSplineFv
@@ -214,6 +216,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Builds the segments through a list of points, each segment lasting
      * the matching number of frames, and sets the distance of a StepS step.
      *
@@ -224,6 +227,7 @@ public:
     void SetUpSpline(float (*points)[4], int *frames, int count, float speed);
 
     /**
+     *
      * Moves the current point along the spline by the step distance;
      * returns non-zero once the end is reached.
      *
@@ -234,6 +238,7 @@ public:
     int StepS();
 
     /**
+     *
      * Moves the current point along the spline by one frame; returns
      * non-zero once the end is reached.
      *
@@ -244,6 +249,7 @@ public:
     int Step();
 
     /**
+     *
      * Copies the current point, with a w of 1, into a vector.
      *
      * @mangled GetNowXYZ__9C3DSplineFPf
@@ -271,6 +277,7 @@ public:
     int           run;        /**< Non-zero while the camera runs along the path. */
 
     /**
+     *
      * Clears the path.
      *
      * @mangled __ct__10CCameraPasFv
@@ -280,6 +287,7 @@ public:
     CCameraPas();
 
     /**
+     *
      * Adds an eye point and a look-at point to the end of the path;
      * returns non-zero when the path is full.
      *
@@ -290,6 +298,7 @@ public:
     int AddCameraPas(float *eye_point, float *look_point);
 
     /**
+     *
      * Inserts an eye point and a look-at point before a point of the path;
      * returns non-zero when the index is out of range.
      *
@@ -300,6 +309,7 @@ public:
     int InsCameraPas(int index, float *eye_point, float *look_point);
 
     /**
+     *
      * Replaces a point of the path; returns non-zero when the index is out
      * of range.
      *
@@ -310,6 +320,7 @@ public:
     int SetCameraPas(int index, float *eye_point, float *look_point);
 
     /**
+     *
      * Copies out a point of the path; returns non-zero when the index is
      * out of range.
      *
@@ -320,6 +331,7 @@ public:
     int GetCameraPas(int index, float *eye_point, float *look_point);
 
     /**
+     *
      * Removes a point of the path; returns non-zero when the index is out
      * of range.
      *
@@ -330,6 +342,7 @@ public:
     int DelCameraPas(int index);
 
     /**
+     *
      * Sets the number of frames the whole path lasts; always returns 0.
      *
      * @mangled SetFrame__10CCameraPasFi
@@ -339,6 +352,7 @@ public:
     int SetFrame(int frame);
 
     /**
+     *
      * Returns the number of frames the whole path lasts.
      *
      * @mangled GetFrame__10CCameraPasFv
@@ -348,6 +362,7 @@ public:
     int GetFrame();
 
     /**
+     *
      * Removes every point and stops the camera.
      *
      * @mangled Initialize__10CCameraPasFv
@@ -357,6 +372,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Builds both splines and measures them so that the camera covers the
      * path in its frame count; returns non-zero when the path is empty.
      *
@@ -367,6 +383,7 @@ public:
     int Setup();
 
     /**
+     *
      * Starts the camera along the path.
      *
      * @mangled Run__10CCameraPasFv
@@ -376,6 +393,7 @@ public:
     void Run();
 
     /**
+     *
      * Moves the camera one step along the path and copies out the eye and
      * look-at points.
      *
@@ -386,6 +404,7 @@ public:
     void Step(float *eye_out, float *look_out);
 
     /**
+     *
      * Returns non-zero once the camera has reached the end of the path.
      *
      * @mangled CheckEnd__10CCameraPasFv
@@ -412,6 +431,7 @@ public:
     int           end;     /**< Non-zero once the spline has reached its end, for the last step. */
 
     /**
+     *
      * Clears the path.
      *
      * @mangled __ct__9CCharaPasFv
@@ -421,6 +441,7 @@ public:
     CCharaPas();
 
     /**
+     *
      * Removes every point and stops the object.
      *
      * @mangled Initialize__9CCharaPasFv
@@ -430,6 +451,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Adds a point to the end of the path; returns non-zero when the path
      * is full.
      *
@@ -440,6 +462,7 @@ public:
     int AddCharaPas(float *point);
 
     /**
+     *
      * Builds the spline and measures it so that the object covers the path
      * in its frame count; returns non-zero when the path is empty.
      *
@@ -450,6 +473,7 @@ public:
     int Setup();
 
     /**
+     *
      * Starts the object along the path when the path has points.
      *
      * @mangled Run__9CCharaPasFv
@@ -459,6 +483,7 @@ public:
     void Run();
 
     /**
+     *
      * Moves the object one step along the path, writing its position and
      * the heading of its direction of travel.
      *
@@ -469,6 +494,7 @@ public:
     void Step(float *pos, float *angle);
 
     /**
+     *
      * Returns non-zero once the object has reached the end of the path.
      *
      * @mangled CheckEnd__9CCharaPasFv
@@ -478,6 +504,7 @@ public:
     int CheckEnd();
 
     /**
+     *
      * Inserts a point before a point of the path; returns non-zero when the
      * index is out of range.
      *
@@ -488,6 +515,7 @@ public:
     int InsCharaPas(int index, float *point);
 
     /**
+     *
      * Replaces a point of the path; returns non-zero when the index is out
      * of range.
      *
@@ -498,6 +526,7 @@ public:
     int SetCharaPas(int index, float *point);
 
     /**
+     *
      * Copies out a point of the path; returns non-zero when the index is
      * out of range.
      *
@@ -508,6 +537,7 @@ public:
     int GetCharaPas(int index, float *point);
 
     /**
+     *
      * Removes a point of the path; returns non-zero when the index is out
      * of range.
      *
@@ -518,6 +548,7 @@ public:
     int DelCharaPas(int index);
 
     /**
+     *
      * Sets the number of frames the whole path lasts.
      *
      * @mangled SetFrame__9CCharaPasFi
@@ -527,6 +558,7 @@ public:
     void SetFrame(int frame);
 
     /**
+     *
      * Returns the number of frames the whole path lasts.
      *
      * @mangled GetFrame__9CCharaPasFv
@@ -681,6 +713,7 @@ public:
     CCameraPas    pas;       /**< Path the camera runs along. */
 
     /**
+     *
      * Sets up the path and an empty sequencer with no command pool.
      *
      * @mangled __ct__12CSceneCmrSeqFv
@@ -690,6 +723,7 @@ public:
     CSceneCmrSeq();
 
     /**
+     *
      * Forgets the command pool and clears the camera state.
      *
      * @mangled ZeroInitialize__12CSceneCmrSeqFv
@@ -699,6 +733,7 @@ public:
     void ZeroInitialize();
 
     /**
+     *
      * Takes a pool of command entries and clears every track.
      *
      * @mangled Initialize__12CSceneCmrSeqFP12_SEN_CMR_SEQi
@@ -708,6 +743,7 @@ public:
     void Initialize(_SEN_CMR_SEQ *nodes, int count);
 
     /**
+     *
      * Stops every track, clears the camera state and frees every command
      * entry of the pool.
      *
@@ -718,6 +754,7 @@ public:
     void Clear();
 
     /**
+     *
      * Returns non-zero once the position, angle, fade and shake tracks have
      * all finished.
      *
@@ -728,6 +765,7 @@ public:
     int CheckEnd();
 
     /**
+     *
      * Runs one frame of every track on the active camera and applies the
      * follow of an event object.
      *
@@ -738,6 +776,7 @@ public:
     void Play();
 
     /**
+     *
      * Returns a free entry of the command pool, or NULL when none is left.
      *
      * @mangled SearchSeq__12CSceneCmrSeqFv
@@ -747,6 +786,7 @@ public:
     _SEN_CMR_SEQ *SearchSeq();
 
     /**
+     *
      * Appends a free entry to the position track and returns it, or NULL.
      *
      * @mangled SearchNextPrSeq__12CSceneCmrSeqFv
@@ -756,6 +796,7 @@ public:
     _SEN_CMR_SEQ *SearchNextPrSeq();
 
     /**
+     *
      * Appends a free entry to the angle track and returns it, or NULL.
      *
      * @mangled SearchNextAhdSeq__12CSceneCmrSeqFv
@@ -765,6 +806,7 @@ public:
     _SEN_CMR_SEQ *SearchNextAhdSeq();
 
     /**
+     *
      * Appends a free entry to the fade track and returns it, or NULL.
      *
      * @mangled SearchNextFadeSeq__12CSceneCmrSeqFv
@@ -774,6 +816,7 @@ public:
     _SEN_CMR_SEQ *SearchNextFadeSeq();
 
     /**
+     *
      * Appends a free entry to the shake track and returns it, or NULL.
      *
      * @mangled SearchNextQuakeSeq__12CSceneCmrSeqFv
@@ -783,6 +826,7 @@ public:
     _SEN_CMR_SEQ *SearchNextQuakeSeq();
 
     /**
+     *
      * Appends a free entry to the character track and returns it, or NULL.
      *
      * @mangled SearchNextCharaSeq__12CSceneCmrSeqFv
@@ -792,6 +836,7 @@ public:
     _SEN_CMR_SEQ *SearchNextCharaSeq();
 
     /**
+     *
      * Returns the command after a finished one on a track (a
      * SceneCmrSeqTrack), freeing the finished entry unless the track has a
      * return point.
@@ -803,6 +848,7 @@ public:
     _SEN_CMR_SEQ *GetNextSeq(_SEN_CMR_SEQ *seq, int lane);
 
     /**
+     *
      * Queues a wait of a number of 60 Hz frames on the position track.
      *
      * @mangled PRDelay__12CSceneCmrSeqFi
@@ -812,6 +858,7 @@ public:
     void PRDelay(int frame);
 
     /**
+     *
      * Queues putting the eye at a position.
      *
      * @mangled SetPos__12CSceneCmrSeqFPf
@@ -821,6 +868,7 @@ public:
     void SetPos(float *pos);
 
     /**
+     *
      * Queues putting the look-at point at a position.
      *
      * @mangled SetRef__12CSceneCmrSeqFPf
@@ -830,6 +878,7 @@ public:
     void SetRef(float *ref);
 
     /**
+     *
      * Queues an even move of the eye and the look-at point over a number of
      * 60 Hz frames.
      *
@@ -840,6 +889,7 @@ public:
     void Move(float *pos, float *ref, int frame);
 
     /**
+     *
      * Queues an eased move of the eye and the look-at point over a number
      * of 60 Hz frames.
      *
@@ -850,6 +900,7 @@ public:
     void Move2(float *pos, float *ref, int frame, int param34, float param38);
 
     /**
+     *
      * Queues an even move of the look-at point over a number of 60 Hz
      * frames.
      *
@@ -860,6 +911,7 @@ public:
     void MoveRef(float *ref, int frame);
 
     /**
+     *
      * Queues an even move of the eye over a number of 60 Hz frames.
      *
      * @mangled MovePos__12CSceneCmrSeqFPfi
@@ -869,6 +921,7 @@ public:
     void MovePos(float *pos, int frame);
 
     /**
+     *
      * Queues clearing the camera path.
      *
      * @mangled InitPas__12CSceneCmrSeqFv
@@ -878,6 +931,7 @@ public:
     void InitPas();
 
     /**
+     *
      * Queues setting the camera path's length in 60 Hz frames.
      *
      * @mangled SetPasFrm__12CSceneCmrSeqFi
@@ -887,6 +941,7 @@ public:
     void SetPasFrm(int frame);
 
     /**
+     *
      * Queues adding an eye point and a look-at point to the camera path.
      *
      * @mangled AddPas__12CSceneCmrSeqFPfPf
@@ -896,6 +951,7 @@ public:
     void AddPas(float *eye_point, float *look_point);
 
     /**
+     *
      * Queues running the camera along its path.
      *
      * @mangled StartPas__12CSceneCmrSeqFv
@@ -905,6 +961,7 @@ public:
     void StartPas();
 
     /**
+     *
      * Queues letting the last eye and look-at movement die away by a rate
      * every frame over a number of 60 Hz frames.
      *
@@ -915,6 +972,7 @@ public:
     void PRSlowing(float rate, int frame);
 
     /**
+     *
      * Queues marking the position track's return point.
      *
      * @mangled PRKeep__12CSceneCmrSeqFv
@@ -924,6 +982,7 @@ public:
     void PRKeep();
 
     /**
+     *
      * Queues going back to the position track's return point.
      *
      * @mangled PRReturn__12CSceneCmrSeqFv
@@ -933,6 +992,7 @@ public:
     void PRReturn();
 
     /**
+     *
      * Queues a wait of a number of 60 Hz frames on the angle track.
      *
      * @mangled AHDDelay__12CSceneCmrSeqFi
@@ -942,6 +1002,7 @@ public:
     void AHDDelay(int frame);
 
     /**
+     *
      * Queues setting the angle of the eye about the look-at point.
      *
      * @mangled SetAngle__12CSceneCmrSeqFf
@@ -951,6 +1012,7 @@ public:
     void SetAngle(float angle);
 
     /**
+     *
      * Queues setting the height of the eye above the look-at point.
      *
      * @mangled SetHeight__12CSceneCmrSeqFf
@@ -960,6 +1022,7 @@ public:
     void SetHeight(float height);
 
     /**
+     *
      * Queues setting the distance of the eye from the look-at point.
      *
      * @mangled SetDist__12CSceneCmrSeqFf
@@ -969,6 +1032,7 @@ public:
     void SetDist(float dist);
 
     /**
+     *
      * Queues setting the angle, height and distance together.
      *
      * @mangled SetAHD__12CSceneCmrSeqFfff
@@ -978,6 +1042,7 @@ public:
     void SetAHD(float angle, float height, float dist);
 
     /**
+     *
      * Queues an even change of the angle, height and distance over a number
      * of 60 Hz frames.
      *
@@ -988,6 +1053,7 @@ public:
     void MoveAHD(float angle, float height, float dist, int frame);
 
     /**
+     *
      * Queues an eased change of the angle, height and distance over a
      * number of 60 Hz frames.
      *
@@ -998,6 +1064,7 @@ public:
     void MoveAHD2(float angle, float height, float dist, int frame, int param34, float param38);
 
     /**
+     *
      * Queues following an event object, or a named frame of it, from an
      * angle, height and distance, with an offset on the look-at point.
      *
@@ -1008,6 +1075,7 @@ public:
     void SetSyncObj(int kind, float *offset, float angle, float height, float dist, int option, char *frame_name);
 
     /**
+     *
      * Queues stopping the follow of an event object.
      *
      * @mangled ReleaseSyncObj__12CSceneCmrSeqFv
@@ -1017,6 +1085,7 @@ public:
     void ReleaseSyncObj();
 
     /**
+     *
      * Queues letting the last angle, height and distance change die away by
      * a rate every frame over a number of 60 Hz frames.
      *
@@ -1027,6 +1096,7 @@ public:
     void AHDSlowing(float rate, int frame);
 
     /**
+     *
      * Queues marking the angle track's return point.
      *
      * @mangled AHDKeep__12CSceneCmrSeqFv
@@ -1036,6 +1106,7 @@ public:
     void AHDKeep();
 
     /**
+     *
      * Queues going back to the angle track's return point.
      *
      * @mangled AHDReturn__12CSceneCmrSeqFv
@@ -1045,6 +1116,7 @@ public:
     void AHDReturn();
 
     /**
+     *
      * Queues a wait of a number of 60 Hz frames on the fade track.
      *
      * @mangled FadeDelay__12CSceneCmrSeqFi
@@ -1054,6 +1126,7 @@ public:
     void FadeDelay(int frame);
 
     /**
+     *
      * Queues a fade track marker that does nothing.
      *
      * @mangled FadeInit__12CSceneCmrSeqFv
@@ -1063,6 +1136,7 @@ public:
     void FadeInit();
 
     /**
+     *
      * Queues fading the screen in from a colour over a number of 60 Hz
      * frames.
      *
@@ -1073,6 +1147,7 @@ public:
     void FadeIn(int frame, float r, float g, float b);
 
     /**
+     *
      * Queues fading the screen out to a colour over a number of 60 Hz
      * frames.
      *
@@ -1083,6 +1158,7 @@ public:
     void FadeOut(int frame, float r, float g, float b);
 
     /**
+     *
      * Queues a wait of a number of 60 Hz frames on the shake track.
      *
      * @mangled QuakeDelay__12CSceneCmrSeqFi
@@ -1092,6 +1168,7 @@ public:
     void QuakeDelay(int frame);
 
     /**
+     *
      * Queues a shake of a size that dies away over a number of 60 Hz
      * frames, or that lasts while the count is negative.
      *
@@ -1102,6 +1179,7 @@ public:
     void Quake(float *amp, int frame);
 
     /**
+     *
      * Queues a shake like Quake that moves the camera vertically only.
      *
      * @mangled Quake2__12CSceneCmrSeqFPfi
@@ -1111,6 +1189,7 @@ public:
     void Quake2(float *amp, int frame);
 
     /**
+     *
      * Queues a wait of a number of 60 Hz frames on the character track.
      *
      * @mangled CharaDelay__12CSceneCmrSeqFi
@@ -1120,6 +1199,7 @@ public:
     void CharaDelay(int frame);
 
     /**
+     *
      * Queues keeping a character a distance in front of the eye for a
      * number of 60 Hz frames, or for ever when the count is negative.
      *
@@ -1186,6 +1266,7 @@ public:
     CCharaPas     pas;        /**< Path the object walks along. */
 
     /**
+     *
      * Sets up the path and an empty sequencer with no command pool.
      *
      * @mangled __ct__12CSceneObjSeqFv
@@ -1195,6 +1276,7 @@ public:
     CSceneObjSeq();
 
     /**
+     *
      * Forgets the command pool and clears the object state.
      *
      * @mangled ZeroInitialize__12CSceneObjSeqFv
@@ -1204,6 +1286,7 @@ public:
     void ZeroInitialize();
 
     /**
+     *
      * Takes a pool of command entries, clears every track and frees every
      * entry of the pool.
      *
@@ -1214,6 +1297,7 @@ public:
     void Initialize(_SEN_OBJ_SEQ *nodes, int count);
 
     /**
+     *
      * Stops every track, forgets the driven object and clears the object
      * state.
      *
@@ -1224,6 +1308,7 @@ public:
     void Clear();
 
     /**
+     *
      * Sets the handle of the event object the sequence drives.
      *
      * @mangled SetEohNo__12CSceneObjSeqFi
@@ -1233,6 +1318,7 @@ public:
     void SetEohNo(int eoh_no);
 
     /**
+     *
      * Returns a free entry of the command pool, or NULL when none is left.
      *
      * @mangled SearchSeq__12CSceneObjSeqFv
@@ -1242,6 +1328,7 @@ public:
     _SEN_OBJ_SEQ *SearchSeq();
 
     /**
+     *
      * Frees a finished command entry and returns the command after it.
      *
      * @mangled GetNextSeq__12CSceneObjSeqFP12_SEN_OBJ_SEQ
@@ -1251,6 +1338,7 @@ public:
     _SEN_OBJ_SEQ *GetNextSeq(_SEN_OBJ_SEQ *seq);
 
     /**
+     *
      * Appends a free entry to the position track and returns it, or NULL.
      *
      * @mangled SearchNextPosSeq__12CSceneObjSeqFv
@@ -1260,6 +1348,7 @@ public:
     _SEN_OBJ_SEQ *SearchNextPosSeq();
 
     /**
+     *
      * Appends a free entry to the rotation track and returns it, or NULL.
      *
      * @mangled SearchNextRotSeq__12CSceneObjSeqFv
@@ -1269,6 +1358,7 @@ public:
     _SEN_OBJ_SEQ *SearchNextRotSeq();
 
     /**
+     *
      * Appends a free entry to the motion track and returns it, or NULL.
      *
      * @mangled SearchNextMotSeq__12CSceneObjSeqFv
@@ -1278,6 +1368,7 @@ public:
     _SEN_OBJ_SEQ *SearchNextMotSeq();
 
     /**
+     *
      * Appends a free entry to the texture animation track and returns it,
      * or NULL.
      *
@@ -1288,6 +1379,7 @@ public:
     _SEN_OBJ_SEQ *SearchNextAnmSeq();
 
     /**
+     *
      * Appends a free entry to the colour track and returns it, or NULL.
      *
      * @mangled SearchNextColSeq__12CSceneObjSeqFv
@@ -1297,6 +1389,7 @@ public:
     _SEN_OBJ_SEQ *SearchNextColSeq();
 
     /**
+     *
      * Appends a free entry to the scale track and returns it, or NULL.
      *
      * @mangled SearchNextScaleSeq__12CSceneObjSeqFv
@@ -1306,6 +1399,7 @@ public:
     _SEN_OBJ_SEQ *SearchNextScaleSeq();
 
     /**
+     *
      * Appends a free entry to the sound effect track and returns it, or
      * NULL.
      *
@@ -1316,6 +1410,7 @@ public:
     _SEN_OBJ_SEQ *SearchNextSeSeq();
 
     /**
+     *
      * Returns non-zero once every track has finished.
      *
      * @mangled CheckEnd__12CSceneObjSeqFv
@@ -1325,6 +1420,7 @@ public:
     int CheckEnd();
 
     /**
+     *
      * Runs one frame of every track on the driven object and writes its
      * position and rotation back to it.
      *
@@ -1335,6 +1431,7 @@ public:
     void Play();
 
     /**
+     *
      * Queues a wait of a number of 60 Hz frames on the position track.
      *
      * @mangled PosDelay__12CSceneObjSeqFi
@@ -1344,6 +1441,7 @@ public:
     void PosDelay(int frame);
 
     /**
+     *
      * Queues putting the object at a position.
      *
      * @mangled SetPos__12CSceneObjSeqFPf
@@ -1353,6 +1451,7 @@ public:
     void SetPos(float *pos);
 
     /**
+     *
      * Queues an even move over a number of 60 Hz frames, kept on the
      * ground when the ground flag is 1.
      *
@@ -1363,6 +1462,7 @@ public:
     void Move(float *dest, int frame, int mode);
 
     /**
+     *
      * Queues an eased move over a number of 60 Hz frames.
      *
      * @mangled Move2__12CSceneObjSeqFPfiif
@@ -1372,6 +1472,7 @@ public:
     void Move2(float *dest, int frame, int mode, float param28);
 
     /**
+     *
      * Queues clearing the object path.
      *
      * @mangled InitPas__12CSceneObjSeqFv
@@ -1381,6 +1482,7 @@ public:
     void InitPas();
 
     /**
+     *
      * Queues setting the object path's length in 60 Hz frames.
      *
      * @mangled SetPasFrm__12CSceneObjSeqFi
@@ -1390,6 +1492,7 @@ public:
     void SetPasFrm(int frame);
 
     /**
+     *
      * Queues adding a point to the object path.
      *
      * @mangled AddPas__12CSceneObjSeqFPf
@@ -1399,6 +1502,7 @@ public:
     void AddPas(float *point);
 
     /**
+     *
      * Queues walking the object along its path, kept on the ground when the
      * ground flag is 1.
      *
@@ -1409,6 +1513,7 @@ public:
     void StartPas(int ground);
 
     /**
+     *
      * Queues a jump to a position, peaking at a height, over a number of
      * 60 Hz frames.
      *
@@ -1419,6 +1524,7 @@ public:
     void Jump(float *dest, float height, int frame);
 
     /**
+     *
      * Queues keeping the object at an offset from a named frame of another
      * event object for a number of 60 Hz frames.
      *
@@ -1429,6 +1535,7 @@ public:
     void SetEohFramePos(int eoh_no, char *frame_name, int frame, float *offset);
 
     /**
+     *
      * Queues adding an offset to the position every frame for a number of
      * 60 Hz frames.
      *
@@ -1439,6 +1546,7 @@ public:
     void AddPos(float *offset, int frame);
 
     /**
+     *
      * Queues keeping the object a distance in front of the camera for a
      * number of 60 Hz frames, or for ever when the count is negative.
      *
@@ -1449,6 +1557,7 @@ public:
     void AttachCamera(float value, int frame);
 
     /**
+     *
      * Queues a wait of a number of 60 Hz frames on the rotation track.
      *
      * @mangled RotDelay__12CSceneObjSeqFi
@@ -1458,6 +1567,7 @@ public:
     void RotDelay(int frame);
 
     /**
+     *
      * Queues setting the rotation.
      *
      * @mangled SetRot__12CSceneObjSeqFPf
@@ -1467,6 +1577,7 @@ public:
     void SetRot(float *rot);
 
     /**
+     *
      * Queues an even turn to a rotation over a number of 60 Hz frames, or a
      * turn by the rotation every frame while the count is negative.
      *
@@ -1477,6 +1588,7 @@ public:
     void Rotation(float *target, int frame);
 
     /**
+     *
      * Queues an eased turn to a rotation over a number of 60 Hz frames.
      *
      * @mangled Rotation2__12CSceneObjSeqFPfiif
@@ -1486,6 +1598,7 @@ public:
     void Rotation2(float *target, int frame, int mode, float param28);
 
     /**
+     *
      * Queues turning the object to face a position over a number of 60 Hz
      * frames.
      *
@@ -1496,6 +1609,7 @@ public:
     void Reference(float *ref, int frame);
 
     /**
+     *
      * Queues a wait of a number of 60 Hz frames on the motion track.
      *
      * @mangled MotionDelay__12CSceneObjSeqFi
@@ -1505,6 +1619,7 @@ public:
     void MotionDelay(int frame);
 
     /**
+     *
      * Queues starting a named motion at once.
      *
      * @mangled SetMotion__12CSceneObjSeqFPcif
@@ -1514,6 +1629,7 @@ public:
     void SetMotion(char *name, int frames, float speed);
 
     /**
+     *
      * Queues starting a named motion once the current one ends.
      *
      * @mangled NextMotion__12CSceneObjSeqFPcif
@@ -1523,6 +1639,7 @@ public:
     void NextMotion(char *name, int frames, float speed);
 
     /**
+     *
      * Queues waiting for the current motion to end.
      *
      * @mangled MotionWait__12CSceneObjSeqFv
@@ -1532,6 +1649,7 @@ public:
     void MotionWait();
 
     /**
+     *
      * Queues arming the motion trigger.
      *
      * @mangled SetMotionTrg__12CSceneObjSeqFv
@@ -1541,6 +1659,7 @@ public:
     void SetMotionTrg();
 
     /**
+     *
      * Queues waiting for the motion trigger.
      *
      * @mangled MotionTrgWait__12CSceneObjSeqFv
@@ -1550,6 +1669,7 @@ public:
     void MotionTrgWait();
 
     /**
+     *
      * Queues setting the motion playback step.
      *
      * @mangled SetStep__12CSceneObjSeqFf
@@ -1559,6 +1679,7 @@ public:
     void SetStep(float step);
 
     /**
+     *
      * Queues setting the motion blend step.
      *
      * @mangled SetChengeStep__12CSceneObjSeqFf
@@ -1568,6 +1689,7 @@ public:
     void SetChengeStep(float step);
 
     /**
+     *
      * Queues resetting the motion.
      *
      * @mangled ResetMotion__12CSceneObjSeqFv
@@ -1577,6 +1699,7 @@ public:
     void ResetMotion();
 
     /**
+     *
      * Queues setting the current motion time.
      *
      * @mangled SetMotionNowTime__12CSceneObjSeqFf
@@ -1586,6 +1709,7 @@ public:
     void SetMotionNowTime(float time);
 
     /**
+     *
      * Queues setting the motion wait time.
      *
      * @mangled SetMotionWaitTime__12CSceneObjSeqFf
@@ -1595,6 +1719,7 @@ public:
     void SetMotionWaitTime(float time);
 
     /**
+     *
      * Queues returning the object to its normal behaviour.
      *
      * @mangled NormalDrive__12CSceneObjSeqFv
@@ -1604,6 +1729,7 @@ public:
     void NormalDrive();
 
     /**
+     *
      * Queues a wait of a number of 60 Hz frames on the texture animation
      * track.
      *
@@ -1614,6 +1740,7 @@ public:
     void TexAnimeDelay(int frame);
 
     /**
+     *
      * Queues turning a named texture animation on or off; a NULL name with
      * the switch off turns every texture animation off.
      *
@@ -1624,6 +1751,7 @@ public:
     void TexAnime(char *name, int frames);
 
     /**
+     *
      * Queues a wait of a number of 60 Hz frames on the colour track.
      *
      * @mangled ColorDelay__12CSceneObjSeqFi
@@ -1633,6 +1761,7 @@ public:
     void ColorDelay(int frame);
 
     /**
+     *
      * Queues changing the object colour over a number of 60 Hz frames.
      *
      * @mangled SetColor__12CSceneObjSeqFPfi
@@ -1642,6 +1771,7 @@ public:
     void SetColor(float *color, int frame);
 
     /**
+     *
      * Queues a wait of a number of 60 Hz frames on the scale track.
      *
      * @mangled ScaleDelay__12CSceneObjSeqFi
@@ -1651,6 +1781,7 @@ public:
     void ScaleDelay(int frame);
 
     /**
+     *
      * Queues changing the object scale over a number of 60 Hz frames.
      *
      * @mangled SetScale__12CSceneObjSeqFPfi
@@ -1660,6 +1791,7 @@ public:
     void SetScale(float *scale, int frame);
 
     /**
+     *
      * Queues a wait of a number of 60 Hz frames on the sound effect track.
      *
      * @mangled SeDelay__12CSceneObjSeqFi
@@ -1669,6 +1801,7 @@ public:
     void SeDelay(int frame);
 
     /**
+     *
      * Queues playing a sound effect of a sound bank.
      *
      * @mangled SePlay__12CSceneObjSeqFii
@@ -1678,6 +1811,7 @@ public:
     void SePlay(int sound_id, int sound_no);
 
     /**
+     *
      * Queues writing the position and rotation back to the object and
      * resetting its dynamic animation, on the motion and sound tracks.
      *

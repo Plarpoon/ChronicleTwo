@@ -138,16 +138,21 @@ struct EVENT_VIEW_INFO {
 STATIC_ASSERT(sizeof(EVENT_VIEW_INFO) == 0x1C);
 
 /**
+ *
  * Entries of the debug event viewer's list, allocated by LoadEventViewData.
+ *
  */
 extern EVENT_VIEW_INFO *EventInfo;
 
 /**
+ *
  * Non-zero to start the event viewer's list at its first boss battle event.
+ *
  */
 extern int BossBattleSelFlag;
 
 /**
+ *
  * Loads the map configuration script of a language and builds the map
  * table from it.
  *
@@ -158,6 +163,7 @@ extern int BossBattleSelFlag;
 void LoadMapName(int language, u_long128 *buffer);
 
 /**
+ *
  * Builds the directory of a map's files from its name, one level per
  * leading part of the name, followed by the name itself; returns path.
  *
@@ -168,6 +174,7 @@ void LoadMapName(int language, u_long128 *buffer);
 void GetMapPath(char *path, char *name);
 
 /**
+ *
  * Returns the kind of a map, or -1 for a map number outside the table.
  *
  * @mangled GetMapType__Fi
@@ -177,6 +184,7 @@ void GetMapPath(char *path, char *name);
 int GetMapType(int map_no);
 
 /**
+ *
  * Returns the area a map belongs to, or -1 for a map number outside the table.
  *
  * @mangled GetMapAreaNo__Fi
@@ -186,6 +194,7 @@ int GetMapType(int map_no);
 int GetMapAreaNo(int map_no);
 
 /**
+ *
  * Returns the map selection category of a map, or 0 for a map number
  * outside the table. @see MapSelType
  *
@@ -196,6 +205,7 @@ int GetMapAreaNo(int map_no);
 int GetMapSelType(int map_no);
 
 /**
+ *
  * Returns the sound data a map loads, or -1 for none or for a map number
  * outside the table.
  *
@@ -206,6 +216,7 @@ int GetMapSelType(int map_no);
 int GetMapSndDataID(int map_no);
 
 /**
+ *
  * Returns the file name of a map and stores its title in title when that
  * is not null; a map number outside the table gives the name chosen on
  * the map selection screen.
@@ -217,6 +228,7 @@ int GetMapSndDataID(int map_no);
 char *GetMapName(int map_no, char **title);
 
 /**
+ *
  * Returns the number of the map with a file name, or -1 when there is none.
  *
  * @mangled SearchMapNo__FPc
@@ -226,6 +238,7 @@ char *GetMapName(int map_no, char **title);
 int SearchMapNo(char *name);
 
 /**
+ *
  * Returns the title of a map, or null for a map number outside the table.
  *
  * @mangled GetMapTitle__Fi
@@ -235,6 +248,7 @@ int SearchMapNo(char *name);
 char *GetMapTitle(int map_no);
 
 /**
+ *
  * Returns the additional path of a map, or null for a map number outside
  * the table.
  *
@@ -245,6 +259,7 @@ char *GetMapTitle(int map_no);
 char *GetAddMapPath(int map_no);
 
 /**
+ *
  * Reads the map list file and sorts its maps into the categories of the
  * debug map selection.
  *
@@ -255,6 +270,7 @@ char *GetAddMapPath(int map_no);
 void InitMapSelect(mgCMemory *stack);
 
 /**
+ *
  * Runs one frame of the debug map selection. @see MapSelectResult
  *
  * @mangled MapSelectLoop__Fv
@@ -264,6 +280,7 @@ void InitMapSelect(mgCMemory *stack);
 int MapSelectLoop();
 
 /**
+ *
  * Prepares the debug save data editor; there is nothing to prepare.
  *
  * @mangled InitSaveDataEdit__FP9mgCMemory
@@ -273,6 +290,7 @@ int MapSelectLoop();
 void InitSaveDataEdit(mgCMemory *stack);
 
 /**
+ *
  * Runs one frame of the debug save data editor, returning non-zero when
  * it is left.
  *
@@ -283,6 +301,7 @@ void InitSaveDataEdit(mgCMemory *stack);
 int SaveDataEditLoop();
 
 /**
+ *
  * Runs one frame of the debug event viewer, entering the mode of the
  * chosen event. @see EventViewResult
  *
@@ -293,6 +312,7 @@ int SaveDataEditLoop();
 int EventViewLoop();
 
 /**
+ *
  * Reads the event view file and builds the event viewer's list from it.
  *
  * @mangled LoadEventViewData__FP1P9mgCMemory
@@ -302,6 +322,7 @@ int EventViewLoop();
 void LoadEventViewData(u_long128 *buffer, mgCMemory *stack);
 
 /**
+ *
  * Shows or hides the Atlamillia frames of a character's model: type 0
  * switches "atoramiria" and "himo", type 1 "atoramiria" and type 2 "atora".
  *

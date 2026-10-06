@@ -21,22 +21,30 @@ class mgCMemory;
 class mgCTexture;
 
 /**
+ *
  * Number of star effects that can play at once.
+ *
  */
 #define EDIT_STAR_EFFECT_MAX 3
 
 /**
+ *
  * Number of paint effects allocated by EditSetEffectBuffer.
+ *
  */
 #define EDIT_PAINT_EFFECT_MAX 1
 
 /**
+ *
  * Number of paint drops thrown by one paint effect.
+ *
  */
 #define EDIT_PAINT_DROP_NUM 24
 
 /**
+ *
  * Number of placed parts that can be animated at once.
+ *
  */
 #define EDIT_PLACE_ANIME_MAX 3
 

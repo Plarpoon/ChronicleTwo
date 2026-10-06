@@ -382,7 +382,7 @@ int defMain(void *) {
 }
 
 void videoDecMain(void *arg) {
-    VideoDec *dec = (VideoDec *) arg;
+    VideoDec *dec = static_cast<VideoDec *>(arg);
 
     viBufReset(&dec->vibuf);
     voBufReset(&voBuf);

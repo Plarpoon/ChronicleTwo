@@ -72,6 +72,7 @@ struct EventEditInfo {
 STATIC_ASSERT(sizeof(EventEditInfo) == 0x40);
 
 /**
+ *
  * Prepares the event editor to start closed and shown, remembering the
  * texture bank for its font and the work buffer it releases on closing.
  *
@@ -82,6 +83,7 @@ STATIC_ASSERT(sizeof(EventEditInfo) == 0x40);
 void InitEventEdit(int font_id, mgCMemory *memory);
 
 /**
+ *
  * Opens the event editor when debugging is on and the left stick is
  * pressed, giving 1 when it opened and 0 otherwise.
  *
@@ -92,6 +94,7 @@ void InitEventEdit(int font_id, mgCMemory *memory);
 int ChkEventEditStart();
 
 /**
+ *
  * Runs one frame of the event editor, acting on the pad for the current page,
  * and gives 1 while the editor is open and 0 once it is closed.
  *
@@ -102,6 +105,7 @@ int ChkEventEditStart();
 int EventEdit(mgCMemory *memory);
 
 /**
+ *
  * Draws the event marker and, while the event editor is open, its panel
  * for the current page and boxes marking the edited points.
  *

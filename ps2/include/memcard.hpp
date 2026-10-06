@@ -549,8 +549,8 @@ public:
     /**
      *
      * Reads the given save file and, when its version and checksums match, copies it into the save data.
-     * @see MC_STEP_RESULT.
      *
+     * @see MC_STEP_RESULT.
      * @mangled LoadFromMc__18CMemoryCardManagerFi
      * @address 0x2F82D0
      * @size 0x470

@@ -237,6 +237,7 @@ public:
     mgCTexture *next;                        /**< Following texture of the same texture block. */
 
     /**
+     *
      * Creates a free texture with no pixels, no palette and default
      * register values.
      *
@@ -249,6 +250,7 @@ public:
 #endif
 
     /**
+     *
      * Returns the texture to the free state: no block, no name, no pixels
      * and clamped sampling.
      *
@@ -259,6 +261,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Sets the magnification and minification filters of the texture's
      * TEX1, choosing mip-map filters when the texture has mip levels.
      *
@@ -286,6 +289,7 @@ public:
     mgCTextureAnime *anime;   /**< Texture animation of the block, or NULL. */
 
     /**
+     *
      * Creates an empty block.
      *
      * @mangled __ct__15mgCTextureBlockFv
@@ -295,6 +299,7 @@ public:
     mgCTextureBlock();
 
     /**
+     *
      * Empties the block, dropping its textures and its texture animation.
      *
      * @mangled Initialize__15mgCTextureBlockFv
@@ -304,6 +309,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Appends a texture to the end of the block's list.
      *
      * @mangled Add__15mgCTextureBlockFP10mgCTexture
@@ -313,6 +319,7 @@ public:
     void Add(mgCTexture *texture);
 
     /**
+     *
      * Unlinks a texture from the block's list.
      *
      * @mangled Delete__15mgCTextureBlockFP10mgCTexture
@@ -366,6 +373,7 @@ public:
     mgCMemory        unk_1ec;
 
     /**
+     *
      * Creates a manager with no pools and no texture blocks.
      *
      * @mangled __ct__17mgCTextureManagerFv
@@ -375,6 +383,7 @@ public:
     mgCTextureManager();
 
     /**
+     *
      * Takes the texture block array and the texture and hash link pools
      * from a memory manager.
      *
@@ -385,6 +394,7 @@ public:
     void SetTableBuffer(int texture_count, int block_total, mgCMemory *memory);
 
     /**
+     *
      * Empties every texture block, the pools and the hash table, and sets
      * the VRAM range textures are placed in.
      *
@@ -395,6 +405,7 @@ public:
     void Initialize(int start, int end);
 
     /**
+     *
      * Gives the hash table chain a texture name belongs to.
      *
      * @mangled hash__17mgCTextureManagerFPc
@@ -404,6 +415,7 @@ public:
     int hash(char *name);
 
     /**
+     *
      * Links a texture into the hash table under its name.
      *
      * @mangled AddHash__17mgCTextureManagerFP10mgCTexture
@@ -413,6 +425,7 @@ public:
     void AddHash(mgCTexture *texture);
 
     /**
+     *
      * Unlinks a texture from the hash table and frees its link.
      *
      * @mangled DelHash__17mgCTextureManagerFP10mgCTexture
@@ -422,6 +435,7 @@ public:
     void DelHash(mgCTexture *texture);
 
     /**
+     *
      * Finds the texture of a name in one texture block, or in any block
      * when the block is negative.
      *
@@ -432,6 +446,7 @@ public:
     mgCTexture *SearchHash(char *name, int mode);
 
     /**
+     *
      * Finds the texture of a name, with the name suffix appended, in one
      * texture block or in any block when the block is negative.
      *
@@ -442,6 +457,7 @@ public:
     mgCTexture *SearchTextureName(char *name, int block);
 
     /**
+     *
      * Takes a free texture from the pool for a new name, warning when the
      * name is already registered; gives NULL when the pool is used up.
      *
@@ -452,6 +468,7 @@ public:
     mgCTexture *SearchTexture(char *name);
 
     /**
+     *
      * Finds the texture of a name in one texture block, or in any block
      * when the block is negative.
      *
@@ -462,6 +479,7 @@ public:
     mgCTexture *GetTexture(char *name, int block);
 
     /**
+     *
      * Gives a texture block by number, the fixed block for
      * MG_TEXTURE_BLOCK_FIX, or NULL for a number out of range.
      *
@@ -472,6 +490,7 @@ public:
     mgCTextureBlock *GetTextureBlock(int block);
 
     /**
+     *
      * Gives the VRAM, in GS blocks, left between a texture block's textures
      * and the fixed textures; negative when the block does not fit.
      *
@@ -482,6 +501,7 @@ public:
     int GetRemainVRAM(int block);
 
     /**
+     *
      * Registers a texture from pixels and a palette in main memory into a
      * texture block, building its register values; gives the texture, or
      * NULL when it cannot be entered.
@@ -494,6 +514,7 @@ public:
                              int bpp, u_long128 *clut, u_long tex1, int swizzled);
 
     /**
+     *
      * Registers the first picture of a TIM2 image into a texture block,
      * converting swizzled 8-bit pixels to linear order where it can.
      *
@@ -504,6 +525,7 @@ public:
     mgCTexture *EnterTexture(int id, char *name, TM2_head *head, int reload, int no_image);
 
     /**
+     *
      * Registers every picture of an IMG archive from a texture block on,
      * spilling into following blocks when one runs out of VRAM, and loads
      * the archive's texture animation scripts; gives the blocks spilled into.
@@ -515,6 +537,7 @@ public:
     int EnterIMGFile(u_char *img, int block, mgCMemory *stack, mgCEnterIMGInfo *info);
 
     /**
+     *
      * Unregisters a texture and returns it to the pool.
      *
      * @mangled DeleteTexture__17mgCTextureManagerFP10mgCTexture
@@ -524,6 +547,7 @@ public:
     void DeleteTexture(mgCTexture *texture);
 
     /**
+     *
      * Unregisters the texture of a name in one texture block, or in any
      * block when the block is negative.
      *
@@ -534,6 +558,7 @@ public:
     void DeleteTexture(char *name, int block);
 
     /**
+     *
      * Unregisters every texture of a texture block and empties it.
      *
      * @mangled DeleteBlock__17mgCTextureManagerFi
@@ -543,6 +568,7 @@ public:
     void DeleteBlock(int block);
 
     /**
+     *
      * Places a texture block's textures in VRAM after entering them,
      * without uploading anything.
      *
@@ -553,6 +579,7 @@ public:
     void EndEnterTexture(int block);
 
     /**
+     *
      * Uploads a texture block's textures into VRAM through a VIF1 packet,
      * then steps the block's texture animation when the block was not
      * already loaded.
@@ -564,6 +591,7 @@ public:
     void ReloadTexture(int index, sceVif1Packet *packet);
 
     /**
+     *
      * Places a texture block's textures in VRAM and, given a buffer, writes
      * the DMA chain uploading them and their palettes; gives the quadwords
      * written.
@@ -575,6 +603,7 @@ public:
     int ReloadTexture(int block, u_int *packet);
 
     /**
+     *
      * Writes the DMA chain uploading a texture's palette into VRAM; gives
      * the words written.
      *
@@ -585,6 +614,7 @@ public:
     int ReloadCLUT(mgCTexture *texture, u_int *buffer);
 
     /**
+     *
      * Uploads a texture's palette into VRAM through a VIF1 packet.
      *
      * @mangled ReloadCLUT__17mgCTextureManagerFP10mgCTextureP13sceVif1Packet
@@ -594,6 +624,7 @@ public:
     void ReloadCLUT(mgCTexture *texture, sceVif1Packet *packet);
 
     /**
+     *
      * Starts the named texture animation group of a texture block.
      *
      * @mangled TexAnimeOn__17mgCTextureManagerFiPc
@@ -603,6 +634,7 @@ public:
     void TexAnimeOn(int block, char *group_name);
 
     /**
+     *
      * Stops the named texture animation group of a texture block.
      *
      * @mangled TexAnimeOff__17mgCTextureManagerFiPc
@@ -612,6 +644,7 @@ public:
     void TexAnimeOff(int block, char *group_name);
 
     /**
+     *
      * Stops every texture animation group of a texture block.
      *
      * @mangled TexAnimeAllOff__17mgCTextureManagerFi
@@ -621,6 +654,7 @@ public:
     void TexAnimeAllOff(int block);
 
     /**
+     *
      * Gives the group names of a texture block's texture animation and
      * their count, or NULL when the block has none.
      *
@@ -631,6 +665,7 @@ public:
     char **GetGroupNameList(int block, int *num);
 
     /**
+     *
      * Deletes one group of a texture block's texture animation.
      *
      * @mangled DeleteTexAnimeGroup__17mgCTextureManagerFii
@@ -640,6 +675,7 @@ public:
     void DeleteTexAnimeGroup(int block, int group);
 
     /**
+     *
      * Detaches a texture block's texture animation.
      *
      * @mangled DeleteTexAnime__17mgCTextureManagerFi
@@ -649,6 +685,7 @@ public:
     void DeleteTexAnime(int block);
 
     /**
+     *
      * Gives a texture block's texture animation, or NULL.
      *
      * @mangled GetTexAnime__17mgCTextureManagerFi
@@ -658,6 +695,7 @@ public:
     mgCTextureAnime *GetTexAnime(int index);
 
     /**
+     *
      * Runs a texture animation script, entering its animations into the
      * given texture animation or into the current texture block's own.
      *
@@ -671,6 +709,7 @@ public:
 STATIC_ASSERT(sizeof(mgCTextureManager) == 0x21C);
 
 /**
+ *
  * Gives the number of picture entries of an IMG archive, or 0 when the
  * data is not one.
  *
@@ -681,6 +720,7 @@ STATIC_ASSERT(sizeof(mgCTextureManager) == 0x21C);
 int mgGetIMGHeaderNum(char *img);
 
 /**
+ *
  * Gives one picture entry of an IMG archive in IM3 entry form, or a cleared
  * entry when the data is not an archive.
  *
@@ -691,6 +731,7 @@ int mgGetIMGHeaderNum(char *img);
 mgIMG_HEADER mgGetIMGHeader(char *img, int index);
 
 /**
+ *
  * Writes the DMA chain uploading an image from main memory into a VRAM
  * rectangle; gives the words written.
  *

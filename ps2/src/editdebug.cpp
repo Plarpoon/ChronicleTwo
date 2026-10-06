@@ -46,15 +46,21 @@ extern char    *SelText[EDIT_DEBUG_PAGE_COUNT][8];
 extern char    *SelHelp[EDIT_DEBUG_PAGE_COUNT][8];
 
 /**
+ *
  * Writes the marker for the selected debug-menu row and returns its length.
+ *
  */
 static int PrintCursor(char *text, int row);
 /**
+ *
  * Loads one fish-race contestant from the GYOFISH script tag.
+ *
  */
 int tagGyoFish(SPI_STACK *stack, int argument_count);
 /**
+ *
  * Reloads the host fish-race configuration into the bonus racer table.
+ *
  */
 static void LoadGyorace();
 

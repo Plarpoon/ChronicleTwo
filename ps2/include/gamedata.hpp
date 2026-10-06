@@ -115,6 +115,7 @@ public:
     s16 value[3];     /**< Amounts of the item's effects. */
 
     /**
+     *
      * Clears the effect data of the item.
      *
      * @mangled __ct__9CDataItemFv
@@ -138,6 +139,7 @@ public:
     u32 special;      /**< Special ability bits the attachment gives. */
 
     /**
+     *
      * Clears the attachment data.
      *
      * @mangled __ct__11CDataAttachFv
@@ -175,6 +177,7 @@ public:
     u8  unk_4a[2];
 
     /**
+     *
      * Clears the weapon data and sets the default durability and level-up experience.
      *
      * @mangled __ct__11CDataWeaponFv
@@ -207,6 +210,7 @@ public:
     u8  unk_23;
 
     /**
+     *
      * Gives the number of the joint and sound files of the part.
      *
      * @mangled GetOffsetNo__13CDataRoboPartFv
@@ -236,6 +240,7 @@ public:
     s16   unk_12;
 
     /**
+     *
      * Clears the fish data.
      *
      * @mangled __ct__14CDataBreedFishFv
@@ -282,6 +287,7 @@ public:
     CItemUseTarget() { type = ITEM_USE_TARGET_NONE; }
 
     /**
+     *
      * Sets the kind of the target and, for a known kind, the target itself.
      *
      * @mangled SetPtr__14CItemUseTargetFiPv
@@ -318,6 +324,7 @@ public:
     u16             fish_num;    /**< Number of entries in the fish table. */
 
     /**
+     *
      * Points every table at its storage, empties them and clears the item names.
      *
      * @mangled Initialize__9CGameDataFv
@@ -327,6 +334,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Reads every item data script into the tables and finds the highest item number.
      *
      * @mangled LoadData__9CGameDataFv
@@ -336,6 +344,7 @@ public:
     int LoadData();
 
     /**
+     *
      * Reads the item name script of one language.
      *
      * @mangled LoadItemSystemMes__9CGameDataFi
@@ -345,6 +354,7 @@ public:
     int LoadItemSystemMes(int language);
 
     /**
+     *
      * Clears the names of every item when asked to.
      *
      * @mangled InitItemMes__9CGameDataFii
@@ -354,6 +364,7 @@ public:
     void InitItemMes(int clear_name, int unused);
 
     /**
+     *
      * Gives the common data of an item number, or null for a number without any.
      *
      * @mangled GetCommonData__9CGameDataFi
@@ -363,6 +374,7 @@ public:
     CDataCommon *GetCommonData(int item_no);
 
     /**
+     *
      * Gives the weapon data of an item number, or null when it is not a weapon.
      *
      * @mangled GetWeaponData__9CGameDataFi
@@ -372,6 +384,7 @@ public:
     CDataWeapon *GetWeaponData(int item_no);
 
     /**
+     *
      * Gives the usable item data of an item number, or null when it has none.
      *
      * @mangled GetItemData__9CGameDataFi
@@ -381,6 +394,7 @@ public:
     CDataItem *GetItemData(int item_no);
 
     /**
+     *
      * Gives the attachment data of an item number, or null when it is not an attachment.
      *
      * @mangled GetAttachData__9CGameDataFi
@@ -390,6 +404,7 @@ public:
     CDataAttach *GetAttachData(int item_no);
 
     /**
+     *
      * Gives the ridepod part data of an item number, or null when it has none.
      *
      * @mangled GetRoboData__9CGameDataFi
@@ -399,6 +414,7 @@ public:
     CDataRoboPart *GetRoboData(int item_no);
 
     /**
+     *
      * Gives the fish data of an item number, or null when it is not a fish.
      *
      * @mangled GetFishData__9CGameDataFi
@@ -408,6 +424,7 @@ public:
     CDataBreedFish *GetFishData(int item_no);
 
     /**
+     *
      * Gives the guard data of an item number, or null when it has none.
      *
      * @mangled GetGuardData__9CGameDataFi
@@ -417,6 +434,7 @@ public:
     s16 *GetGuardData(int item_no);
 
     /**
+     *
      * Gives the item type of an item number, or 0 for a number without common data.
      *
      * @mangled GetDataType__9CGameDataFi
@@ -426,6 +444,7 @@ public:
     int GetDataType(int item_no);
 
     /**
+     *
      * Gives the first item number, in common data order, whose item type is the one given, or 0.
      *
      * @mangled GetDataTypeStartListNo__9CGameDataFi
@@ -459,6 +478,7 @@ extern CDataBreedFish *SpiFish;
 extern CGameData GameItemDataManage;
 
 /**
+ *
  * Gives the game's master item tables.
  *
  * @mangled GetGameDataPt__Fv
@@ -468,6 +488,7 @@ extern CGameData GameItemDataManage;
 CGameData *GetGameDataPt();
 
 /**
+ *
  * Gives the common data of an item number, or null for a number without any.
  *
  * @mangled GetCommonItemData__Fi
@@ -477,6 +498,7 @@ CGameData *GetGameDataPt();
 CDataCommon *GetCommonItemData(int item_no);
 
 /**
+ *
  * Gives the usable item data of an item number, or null when it has none.
  *
  * @mangled GetItemInfoData__Fi
@@ -486,6 +508,7 @@ CDataCommon *GetCommonItemData(int item_no);
 CDataItem *GetItemInfoData(int item_no);
 
 /**
+ *
  * Gives the weapon data of an item number, or null when it is not a weapon.
  *
  * @mangled GetWeaponInfoData__Fi
@@ -495,6 +518,7 @@ CDataItem *GetItemInfoData(int item_no);
 CDataWeapon *GetWeaponInfoData(int item_no);
 
 /**
+ *
  * Gives the ridepod part data of an item number, or null when it has none.
  *
  * @mangled GetRoboPartInfoData__Fi
@@ -504,6 +528,7 @@ CDataWeapon *GetWeaponInfoData(int item_no);
 CDataRoboPart *GetRoboPartInfoData(int item_no);
 
 /**
+ *
  * Gives the fish data of an item number, or null when it is not a fish.
  *
  * @mangled GetBreedFishInfoData__Fi
@@ -513,6 +538,7 @@ CDataRoboPart *GetRoboPartInfoData(int item_no);
 CDataBreedFish *GetBreedFishInfoData(int item_no);
 
 /**
+ *
  * Builds the model file name of an item, with the alternate suffix where the story calls for it
  * and the model extension when asked; gives null for an item without common data.
  *
@@ -523,6 +549,7 @@ CDataBreedFish *GetBreedFishInfoData(int item_no);
 char *GetItemFileName(int item_no, int variant);
 
 /**
+ *
  * Builds the path of an item's model file in the directory of its family, or for weapons and
  * item types 0xD and 0xE the path of their alternate model when asked.
  *
@@ -533,6 +560,7 @@ char *GetItemFileName(int item_no, int variant);
 char *GetItemFilePath(int item_no, int variant);
 
 /**
+ *
  * Gives the item type of an item number, or 0 for a number without common data.
  *
  * @mangled GetItemDataType__Fi
@@ -542,6 +570,7 @@ char *GetItemFilePath(int item_no, int variant);
 int GetItemDataType(int item_no);
 
 /**
+ *
  * Gives the ITEM_ATTRIBUTE bits of an item number, or 0 for a number without common data.
  *
  * @mangled GetItemDataAttribute__Fi
@@ -551,6 +580,7 @@ int GetItemDataType(int item_no);
 u32 GetItemDataAttribute(int item_no);
 
 /**
+ *
  * Gives the family, a USED_ITEM_TYPE, of an item type.
  *
  * @mangled ConvertUsedItemType__Fi
@@ -560,6 +590,7 @@ u32 GetItemDataAttribute(int item_no);
 int ConvertUsedItemType(int item_no);
 
 /**
+ *
  * Gives the number of one of an item's messages, or -1 for an item without common data.
  *
  * @mangled GetItemMessageNo__Fii
@@ -569,6 +600,7 @@ int ConvertUsedItemType(int item_no);
 int GetItemMessageNo(int item_no, int message);
 
 /**
+ *
  * Gives the display name of an item, or null for an item without common data.
  *
  * @mangled GetItemMessage__Fi
@@ -578,6 +610,7 @@ int GetItemMessageNo(int item_no, int message);
 char *GetItemMessage(int item_no);
 
 /**
+ *
  * Gives the menu icon number of an item, or -1 for an item without common data.
  *
  * @mangled GetItemIconNo__Fi
@@ -587,6 +620,7 @@ char *GetItemMessage(int item_no);
 int GetItemIconNo(int item_no);
 
 /**
+ *
  * Sets the attachment parameter that spectrumising an item raises, scaled by the item count.
  *
  * @mangled SetItemSpectolPoint__FiP11ATTACH_USEDi
@@ -596,6 +630,7 @@ int GetItemIconNo(int item_no);
 void SetItemSpectolPoint(int item_no, ATTACH_USED *used, int multiplier);
 
 /**
+ *
  * Fills a list, ended by -1, with the message numbers of the menu commands an item offers,
  * and gives their count.
  *
@@ -606,6 +641,7 @@ void SetItemSpectolPoint(int item_no, ATTACH_USED *used, int multiplier);
 int GetMenuCommandMsg(int item_no, int *message_list);
 
 /**
+ *
  * Gives whether a character can equip an item.
  *
  * @mangled CheckItemEquip__Fii
@@ -615,6 +651,7 @@ int GetMenuCommandMsg(int item_no, int *message_list);
 int CheckItemEquip(int chara, int item_no);
 
 /**
+ *
  * Gives the item number whose display name is the one given, or -1.
  *
  * @mangled SearchItemByName__FPc
@@ -624,6 +661,7 @@ int CheckItemEquip(int chara, int item_no);
 int SearchItemByName(char *name);
 
 /**
+ *
  * Gives the item number of one of the ridepod cores, or 0 for an index out of range.
  *
  * @mangled GetRidePodCore__Fi
@@ -633,6 +671,7 @@ int SearchItemByName(char *name);
 int GetRidePodCore(int index);
 
 /**
+ *
  * Copies the effect data of a usable item; gives 0 when it has none.
  *
  * @mangled GetUsedItemAfterEffect__FiP14USEITEM_EFFECT

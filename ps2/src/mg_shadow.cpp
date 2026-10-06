@@ -14,8 +14,10 @@
 #pragma schedule off
 
 /**
+ *
  * Writes the packet that loads the shadow projection matrix into VU1 memory, followed by the GS
  * packets the shadow microprogram sends, and returns its length in quadwords.
+ *
  */
 static int SetShadowData(u_int *packet, float (*matrix)[4]) {
     // DMA CNT of eight quadwords, then VIF UNPACK of the matrix and the two GIF packets.

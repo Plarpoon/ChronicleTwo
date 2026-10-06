@@ -77,11 +77,14 @@ public:
     mgCFrame     *frame;    /**< Frame of the broken model that draws the piece, or NULL. */
 
     /**
+     *
      * Makes an inactive piece with no frame.
+     *
      */
     CFragment() { Init(); }
 
     /**
+     *
      * Places the piece's frame relative to the broken model's origin and
      * fades it to an alpha factor.
      *
@@ -92,6 +95,7 @@ public:
     void Draw(float *camera_pos, float alpha);
 
     /**
+     *
      * Moves the piece one step against the collision triangles around it,
      * bouncing it off any it hits and splashing where it passes through water.
      *
@@ -102,6 +106,7 @@ public:
     void Step(CCPoly *polys, int poly_count);
 
     /**
+     *
      * Starts the piece moving from a position at a velocity, under gravity.
      *
      * @mangled Set__9CFragmentFPfPf
@@ -111,6 +116,7 @@ public:
     void Set(float *position, float *velocity);
 
     /**
+     *
      * Makes the piece inactive with no frame and no index.
      *
      * @mangled Init__9CFragmentFv
@@ -140,11 +146,14 @@ public:
     float (*offset)[4];                        /**< Starting offset of each piece from the smash, one per piece. */
 
     /**
+     *
      * Makes a broken object with no model and no pieces in use.
+     *
      */
     CBPot() { Init(); }
 
     /**
+     *
      * Smashes the object at a position: shows the broken model there and
      * throws each piece out from its offset, pushed along a velocity.
      *
@@ -155,6 +164,7 @@ public:
     void Clash(float *hit_position, float *unused, float *normal);
 
     /**
+     *
      * Moves and draws the pieces while the break lasts, and hides the broken
      * model when it ends.
      *
@@ -165,6 +175,7 @@ public:
     void Step();
 
     /**
+     *
      * Sets up the broken model for a kind of object from a map part, finding
      * the frame of each piece. Returns the number of pieces found.
      *
@@ -175,6 +186,7 @@ public:
     int SetObject2(int kind, CMapParts *parts);
 
     /**
+     *
      * Clears the broken object: no model, no pieces in use, every piece
      * inactive.
      *
@@ -205,11 +217,14 @@ public:
     int           fly_time;      /**< Steps the pot has been flying. */
 
     /**
+     *
      * Makes a pot that is neither held nor flying.
+     *
      */
     CPot() { Init(0); }
 
     /**
+     *
      * Makes the pot follow its map part while it is carried.
      *
      * @mangled HoldStep__4CPotFv
@@ -219,6 +234,7 @@ public:
     void HoldStep();
 
     /**
+     *
      * Moves the thrown pot one step against the collision around it,
      * smashing it when it hits something. Returns a POT_STEP_RESULT.
      *
@@ -229,6 +245,7 @@ public:
     int FlyStep();
 
     /**
+     *
      * Puts the pot away out of sight below where it is and lets it go,
      * keeping where it was.
      *
@@ -239,6 +256,7 @@ public:
     void Clear();
 
     /**
+     *
      * Smashes the pot where it is, with the sound of its kind, throwing its
      * pieces along a velocity, and puts it away.
      *
@@ -249,6 +267,7 @@ public:
     void Bakuhatsu(float *position_, float *normal);
 
     /**
+     *
      * Steps the pot as it is held or flying. Returns a POT_STEP_RESULT.
      *
      * @mangled Step__4CPotFv
@@ -258,6 +277,7 @@ public:
     int Step();
 
     /**
+     *
      * Throws the held pot forward along the direction the player faces.
      *
      * @mangled Throw__4CPotFv
@@ -267,6 +287,7 @@ public:
     void Throw();
 
     /**
+     *
      * Starts carrying a map part as the pot.
      *
      * @mangled Hold__4CPotFP9CMapParts
@@ -276,6 +297,7 @@ public:
     void Hold(CMapParts *parts);
 
     /**
+     *
      * Makes the pot neither held nor flying; a keep of 1 leaves its velocity
      * and break position as they are.
      *
@@ -289,6 +311,7 @@ public:
 STATIC_ASSERT(sizeof(CPot) == 0x80);
 
 /**
+ *
  * Reflects a direction off a surface: gives the direction mirrored about the
  * surface's normal, with w of 1.
  *
@@ -299,18 +322,24 @@ STATIC_ASSERT(sizeof(CPot) == 0x80);
 void CalcReflectionVector(float *incoming, float *surface, float *reflected);
 
 /**
+ *
  * Starting offsets of the twelve pieces of a broken box from the smash.
+ *
  */
 extern float box_offset[12][4];
 
 /**
+ *
  * Starting offsets of the ten pieces of the first kind of broken rock from
  * the smash.
+ *
  */
 extern float iwa0_offset[10][4];
 
 /**
+ *
  * Starting offsets of the nine pieces of the second kind of broken rock from
  * the smash.
+ *
  */
 extern float iwa1_offset[9][4];

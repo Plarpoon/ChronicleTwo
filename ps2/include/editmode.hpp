@@ -87,6 +87,7 @@ extern sceVu0FVECTOR WallPutPos;
 extern CEditParts::WallInfo WallInfo;
 
 /**
+ *
  * Takes the player's control away from Georama mode, once for each
  * call to EditModeControlUnLock.
  *
@@ -97,6 +98,7 @@ extern CEditParts::WallInfo WallInfo;
 void EditModeControlLock();
 
 /**
+ *
  * Gives back the player's control of Georama mode taken by one call to
  * EditModeControlLock.
  *
@@ -107,6 +109,7 @@ void EditModeControlLock();
 void EditModeControlUnLock();
 
 /**
+ *
  * Starts the count of frames that the cursor's parts are animated for
  * before the menu opens.
  *
@@ -117,6 +120,7 @@ void EditModeControlUnLock();
 void EditPreMenuAnime(int max_count);
 
 /**
+ *
  * Loads the Georama mode system texture into a texture block, and the
  * cursor, paint, shovel and removal models.
  *
@@ -147,6 +151,7 @@ int GetSelPartsInfoID();
 void ClearUndoFlag();
 
 /**
+ *
  * Clears the chosen part, the wall being put against, the help line and
  * every step in progress of Georama mode.
  *
@@ -157,6 +162,7 @@ void ClearUndoFlag();
 void ClearEditFlag();
 
 /**
+ *
  * Puts Georama mode in its first state: no tool, the default camera
  * distance, the magnet on and the player's control given.
  *
@@ -167,6 +173,7 @@ void ClearEditFlag();
 void InitEditFlag();
 
 /**
+ *
  * Enters Georama mode from walking, placing the cursor where the player
  * stands and turning the edit camera to follow it.
  *
@@ -177,6 +184,7 @@ void InitEditFlag();
 int StartEditMode(CScene *scene);
 
 /**
+ *
  * Leaves Georama mode for walking, closing its message and ending the
  * placing animations and effects.
  *
@@ -187,6 +195,7 @@ int StartEditMode(CScene *scene);
 void EndEditMode(CScene *scene, float *pos);
 
 /**
+ *
  * Starts the tool chosen from the menu, with the part and number to place
  * or the paint colour and paint item to paint with.
  *
@@ -197,6 +206,7 @@ void EndEditMode(CScene *scene, float *pos);
 int StartEditModeFromMenu(CScene *scene, int mode, int *arg);
 
 /**
+ *
  * Starts putting the part against a wall, from the middle of the wall.
  *
  * @mangled StartEditPutWall__FPQ210CEditParts8WallInfo
@@ -206,6 +216,7 @@ int StartEditModeFromMenu(CScene *scene, int mode, int *arg);
 void StartEditPutWall(CEditParts::WallInfo *wall);
 
 /**
+ *
  * Places a part of the chosen definition, or a river, records it for
  * undoing and takes it from the parts held; returns zero when no part is
  * chosen.
@@ -217,6 +228,7 @@ void StartEditPutWall(CEditParts::WallInfo *wall);
 int PlaceEditParts(CEditMap *map, float *pos, float *rot, EP_PLACE_INFO *place);
 
 /**
+ *
  * Starts laying a river at a position, which is placed partway through
  * the shovel's animation.
  *
@@ -227,6 +239,7 @@ int PlaceEditParts(CEditMap *map, float *pos, float *rot, EP_PLACE_INFO *place);
 void PlaceRiverStart(CEditMap *map, float *pos);
 
 /**
+ *
  * Advances the laying of a river by one frame, placing it and showing its
  * effect partway through.
  *
@@ -247,6 +260,7 @@ int PlaceRiverStep(CEditMap *map);
 int NowPlaceRiver();
 
 /**
+ *
  * Starts digging out the placed part at a position, which is removed
  * partway through the removal animation.
  *
@@ -257,6 +271,7 @@ int NowPlaceRiver();
 void RemoveMtnStart(CEditMap *map, float *pos, float *cursor_pos);
 
 /**
+ *
  * Advances the digging out of a part by one frame, removing it partway
  * through.
  *
@@ -267,6 +282,7 @@ void RemoveMtnStart(CEditMap *map, float *pos, float *cursor_pos);
 int RemoveMtnStep(CScene *scene);
 
 /**
+ *
  * Removes a placed part and those resting on it, giving back their parts
  * and paint and sending the villagers of removed houses away; returns
  * zero when nothing was removed.
@@ -278,6 +294,7 @@ int RemoveMtnStep(CScene *scene);
 int RemoveEditParts(CScene *scene, int parts_index, float *pos);
 
 /**
+ *
  * Uses the chosen part on a placed part that it completes: removes the
  * placed part with its effects and takes one chosen part from the parts
  * held; returns zero when nothing was removed.
@@ -289,6 +306,7 @@ int RemoveEditParts(CScene *scene, int parts_index, float *pos);
 int DeleteKanketuParts(CScene *scene, CEditMap *map, float *pos, int parts_no);
 
 /**
+ *
  * Paints one colour of a placed part, or a whole fence when the colour
  * number is 99, with its effect and sound.
  *
@@ -299,6 +317,7 @@ int DeleteKanketuParts(CScene *scene, CEditMap *map, float *pos, int parts_no);
 int PaintEditParts(CEditMap *map, int parts_no, int color_no, float *color);
 
 /**
+ *
  * Runs one frame of Georama mode: moves the cursor and camera and uses
  * the current tool on the part under the cursor.
  *
@@ -339,6 +358,7 @@ void DrawEditCursor(CScene *scene);
 void DrawEditHelpMes();
 
 /**
+ *
  * Draws the icons for switching between walking and editing when the
  * switch is allowed, and the town's balance gauge while editing.
  *
@@ -349,6 +369,7 @@ void DrawEditHelpMes();
 void DrawEditSystem(int block, CScene *scene, float *pos, int edit);
 
 /**
+ *
  * Reports whether the player may enter Georama mode at a position: on
  * ground, with no steep wall close by.
  *
@@ -359,6 +380,7 @@ void DrawEditSystem(int block, CScene *scene, float *pos, int edit);
 int CheckWalkToEdit(CScene *scene, float *pos);
 
 /**
+ *
  * Reports whether the player may leave Georama mode at the cursor, which
  * needs walkable ground clear of rivers, and gives the position the player
  * would stand at.

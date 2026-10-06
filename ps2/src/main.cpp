@@ -54,8 +54,10 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/main", VSyncCallBack__Fi__2);
 #endif
 
 /**
+ *
  * Sets up a default double buffer, clears both buffers to the given colour
  * and shows each in turn so the screen starts out blank.
+ *
  */
 static void ClearScreen(int r, int g, int b) {
     sceGsDBuff db;
@@ -81,8 +83,10 @@ static void ClearScreen(int r, int g, int b) {
 }
 
 /**
+ *
  * Resets the graphics hardware, reboots the IOP with the game's IOP image,
  * loads every IOP module the game uses and opens the CD file system.
+ *
  */
 static void init() {
     sceDmaReset(1);

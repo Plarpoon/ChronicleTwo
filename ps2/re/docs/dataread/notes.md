@@ -139,3 +139,11 @@ the first '.' of each entry name.
 The unit-level `divbyzerocheck` pragma was redundant with the global MWCC flag; removing it left the full compiled object identical in objdiff.
 
 `SearchFileCache` compares the declared `FILE_CACHE::name` field and advances typed cache entries with `&entry[1]`. Device and path splitting cursors are `char*`, matching the textual path data and removing byte-pointer casts. The edited functions retain exact object code.
+
+The two `GetPackFile` overloads can use `PACK_ENTRY` for the name, data
+offset, size, and next-entry offset without changing either object function.
+The record header is 0x4C bytes. Records have a variable stride: `next` and
+`offset` count bytes from the start of the current record, so following the
+chain and obtaining file data still requires byte-addressed addition. Both
+functions also return the data address directly as `u_int*`, removing the
+integer round trip; both remain 100% matches.

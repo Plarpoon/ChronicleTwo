@@ -59,6 +59,7 @@ public:
     }
 
     /**
+     *
      * Enters every texture archive of a pack into a texture block, and builds
      * one effect manager and one 3D sprite for each effect file of the pack,
      * all in the given memory.
@@ -70,6 +71,7 @@ public:
     void LoadEFPFile(char *name, u_int *pack, int block, mgCMemory *stack);
 
     /**
+     *
      * Gives the index of the effect whose effect file has a name, or -1
      * when no effect has it.
      *
@@ -80,6 +82,7 @@ public:
     int SaerchEffectIndex(char *name);
 
     /**
+     *
      * Gives the 3D sprite an effect is drawn with, or NULL for an index
      * outside the list.
      *
@@ -90,6 +93,7 @@ public:
     mgC3DSprite *GetEffectVisual(int index);
 
     /**
+     *
      * Runs the control scripts of every effect and moves each one's
      * particles on by one frame.
      *
@@ -100,6 +104,7 @@ public:
     void Step();
 
     /**
+     *
      * Builds the draw packet of every effect's particles into the effect's
      * 3D sprite.
      *
@@ -140,6 +145,7 @@ public:
     CFadeInOut() { Initialize(); }
 
     /**
+     *
      * Clears the cover, stops any fade and forgets the cross-fade texture
      * and the motion blur.
      *
@@ -150,6 +156,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Stops any fade and clears the cover at once.
      *
      * @mangled ResetFade__10CFadeInOutFv
@@ -159,6 +166,7 @@ public:
     void ResetFade();
 
     /**
+     *
      * Takes a cover of a colour away over a number of frames, starting from
      * full when no fade is running or the frame count is negative; a
      * negative count holds the cover where it is.
@@ -170,6 +178,7 @@ public:
     void FadeIn(int frames, float r, float g, float b);
 
     /**
+     *
      * Takes the cover away over a number of frames, in the colour the screen
      * was faded out to or in black when it was not faded out.
      *
@@ -180,6 +189,7 @@ public:
     void FadeIn(int frames);
 
     /**
+     *
      * Brings a cover of a colour up over a number of frames, starting from
      * clear when no fade is running or the frame count is negative; a
      * negative count holds the cover where it is.
@@ -191,6 +201,7 @@ public:
     void FadeOut(int frames, float r, float g, float b);
 
     /**
+     *
      * Dissolves the captured screen away over a number of frames, with its
      * alpha scaled by a rate.
      *
@@ -201,6 +212,7 @@ public:
     void CrossFade(int duration, float alpha_rate);
 
     /**
+     *
      * Takes the captured screen away in a CrossFadeType over a number of
      * frames, starting with it covering the whole screen.
      *
@@ -211,6 +223,7 @@ public:
     void CrossFadeIn(int mode, int frames, float value);
 
     /**
+     *
      * Brings the captured screen up in a CrossFadeType over a number of
      * frames, starting with none of it shown.
      *
@@ -221,6 +234,7 @@ public:
     void CrossFadeOut(int mode, int frames, float value);
 
     /**
+     *
      * Gives whether the running fade has reached its end.
      *
      * @mangled FadeCheck__10CFadeInOutFv
@@ -230,6 +244,7 @@ public:
     int FadeCheck();
 
     /**
+     *
      * Gives whether a fade is running or the screen is held faded out.
      *
      * @mangled NowFade__10CFadeInOutFv
@@ -239,6 +254,7 @@ public:
     int NowFade();
 
     /**
+     *
      * Moves the running fade on by one frame, and gives whether it has
      * reached its end; 1 when no fade is running.
      *
@@ -249,6 +265,7 @@ public:
     int FadeStep();
 
     /**
+     *
      * Sets the texture the screen is captured into for a cross-fade, with
      * the buffer that holds its pixels; a NULL texture leaves it as it is.
      *
@@ -259,6 +276,7 @@ public:
     void SetCrossTexture(mgCTexture *texture, u_long128 *image);
 
     /**
+     *
      * Reads the screen last drawn into the cross-fade texture's buffer, when
      * the texture and its buffer are set.
      *
@@ -269,6 +287,7 @@ public:
     void CaptureScreen();
 
     /**
+     *
      * Draws the cover or the captured screen over the whole screen, and then
      * the previous frame over it for motion blur.
      *

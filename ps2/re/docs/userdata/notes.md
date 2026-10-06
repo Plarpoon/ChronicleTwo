@@ -105,6 +105,9 @@ max == now. The callers' fptosi of +4 is the current value, and of +0 the full v
   bit 1 drains HP every 100 steps (`StatusParamStep`); 0x10 multiplies weapon attack by 1.5 in
   `RefreshParamater` (`at_4695` holds 1.0, 1.0). `ConvertItemAttrToCharaAttr` maps item bits 0x10000..
   0x10000000 to these bits. 0x7F = all (PlayerPartyCure, Step).
+- `SetCharaStatusAttirbuteVol` writes the four character timers through `CHARA_DATA::status_time`,
+  three ridepod timers through `ROBO_DATA::status_time`, and two badge timers through
+  `MOS_CHANGE_PARAM::status_time_1` / `status_time_10`. All typed field stores retain the retail code.
 
 ## ROBO_DATA (0x220), CUserDataManager 0x4660
 memset 0x220 in `Initialize`. +2 `name` (`SetRoboName` strcpy 0x4662; default from `robo_nametable_3330`),

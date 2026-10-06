@@ -70,13 +70,16 @@ public:
     AnimeFrame    anime[16];         /**< Frames of the sky and back sky models that turn by themselves. */
 
     /**
+     *
      * Makes a sky with no models.
+     *
      */
     CMapSky() {
         Initialize();
     }
 
     /**
+     *
      * Clears every model and turning frame and frees every texture block entry.
      *
      * @mangled Initialize__7CMapSkyFv
@@ -86,6 +89,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Draws the background model at the camera, with its colours set from the map lighting.
      *
      * @mangled DrawSkyBack__7CMapSkyFPfPfPf
@@ -95,6 +99,7 @@ public:
     void DrawSkyBack(float *camera_pos, float *color1, float *color0);
 
     /**
+     *
      * Turns the sky models and draws the back sky, sun or moon, and sky of each time band in use.
      *
      * @mangled DrawSky__7CMapSkyFPfPfPfiPfPf
@@ -105,6 +110,7 @@ public:
                  float *sun_lighting_ratio);
 
     /**
+     *
      * Loads a sky pack's textures into consecutive texture blocks and its models into memory.
      *
      * @mangled LoadPack__7CMapSkyFPUiiP9mgCMemory

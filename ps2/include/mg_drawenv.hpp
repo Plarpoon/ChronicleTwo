@@ -48,6 +48,7 @@ struct mgVu0FBOX {
     sceVu0FVECTOR min; /**< Corner with the smallest coordinate on every axis. */
 
     /**
+     *
      * Copies both corners of another box into this one.
      *
      * @mangled __as__9mgVu0FBOXFR9mgVu0FBOX
@@ -152,6 +153,7 @@ public:
     u_long     alpha_addr; /**< ALPHA register of the context the packet writes to. */
 
     /**
+     *
      * Creates a packet for the first drawing context with the default
      * settings.
      *
@@ -174,6 +176,7 @@ public:
     mgCDrawEnv &operator=(mgCDrawEnv &source);
 
     /**
+     *
      * Builds the packet for a drawing context (zero for the first, any other
      * value for the second) with depth testing on and ordinary blending.
      *
@@ -184,6 +187,7 @@ public:
     void Initialize(int context);
 
     /**
+     *
      * Sets the alpha blending equation to one of the mgAlphaMacroID modes;
      * any other value leaves it as it is.
      *
@@ -194,6 +198,7 @@ public:
     void SetAlpha(int macro);
 
     /**
+     *
      * Returns the mgAlphaMacroID mode that the alpha blending equation
      * holds, or MG_ALPHA_MACRO_NONE.
      *
@@ -204,6 +209,7 @@ public:
     int GetAlphaMacroID();
 
     /**
+     *
      * Turns depth writes on or off according to an mgZBufMode value; any
      * other value leaves them as they are.
      *
@@ -273,6 +279,7 @@ public:
     int           motion;       /**< Non-zero while the object being drawn is a motion model. */
 
     /**
+     *
      * Puts both draw environments back to their defaults and the fog, point
      * light, clipping and motion flags to their initial states.
      *
@@ -283,6 +290,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Builds the projection, clipping boxes and screen transforms for a
      * screen of the given size, then rebuilds the view transforms; a
      * projection of zero or less, or a near or far distance below zero,
@@ -296,6 +304,7 @@ public:
                        int zdepth, float aspect_y);
 
     /**
+     *
      * Sets the camera's view matrix and position and rebuilds every
      * transform that depends on them.
      *
@@ -306,6 +315,7 @@ public:
     void SetViewMatrix(float (*view)[4], float *camera_pos);
 
     /**
+     *
      * Sets the light and the plane for drop shadows and builds the matrix
      * that flattens geometry onto that plane.
      *
@@ -316,6 +326,7 @@ public:
     void SetDropShadowMatrix(float *light_dir, float *plane_pos, float *plane_normal);
 
     /**
+     *
      * Switches to another lighting setup, optionally copying the current one
      * into it, and returns the index of the setup in use before.
      *
@@ -326,6 +337,7 @@ public:
     int ActiveLighting(int index, int copy);
 
     /**
+     *
      * Returns the lighting setup in use.
      *
      * @mangled GetpLightInfo__13mgRENDER_INFOFv
@@ -335,6 +347,7 @@ public:
     mgLIGHT_INFO *GetpLightInfo();
 
     /**
+     *
      * Clears every light of the lighting setup in use.
      *
      * @mangled InitActiveLighting__13mgRENDER_INFOFv
@@ -344,6 +357,7 @@ public:
     void InitActiveLighting();
 
     /**
+     *
      * Clears every light of every lighting setup.
      *
      * @mangled InitLighting__13mgRENDER_INFOFv
@@ -353,6 +367,7 @@ public:
     void InitLighting();
 
     /**
+     *
      * Sets every directional light of the setup in use from a direction
      * matrix and a colour matrix.
      *
@@ -363,6 +378,7 @@ public:
     void SetLight(float (*light_dir)[4], float (*light_color)[4]);
 
     /**
+     *
      * Gives the direction matrix and the colour matrix of the directional
      * lights of the setup in use.
      *
@@ -373,6 +389,7 @@ public:
     void GetLight(float (*light_dir)[4], float (*light_color)[4]);
 
     /**
+     *
      * Sets the direction and colour of one directional light of the setup
      * in use.
      *
@@ -383,6 +400,7 @@ public:
     void SetLight(int index, float *dir, float *color);
 
     /**
+     *
      * Sets the ambient colour of the setup in use.
      *
      * @mangled SetAmbient__13mgRENDER_INFOFPf
@@ -392,6 +410,7 @@ public:
     void SetAmbient(float *color);
 
     /**
+     *
      * Gives the ambient colour of the setup in use.
      *
      * @mangled GetAmbient__13mgRENDER_INFOFPf
@@ -401,6 +420,7 @@ public:
     void GetAmbient(float *color);
 
     /**
+     *
      * Sets one point light of the setup in use from its position, colour,
      * power and range.
      *
@@ -411,6 +431,7 @@ public:
     void SetPlight(int index, float *pos, float *color, float power, float range);
 
     /**
+     *
      * Sets one point light of the setup in use, or switches it off when no
      * light is given.
      *
@@ -421,6 +442,7 @@ public:
     void SetPlight(int index, mgPOINT_LIGHT *light);
 
     /**
+     *
      * Gives one point light of the setup in use.
      *
      * @mangled GetPlight__13mgRENDER_INFOFiP13mgPOINT_LIGHT
@@ -430,6 +452,7 @@ public:
     void GetPlight(int index, mgPOINT_LIGHT *out);
 
     /**
+     *
      * Turns fog on or off.
      *
      * @mangled FogEnable__13mgRENDER_INFOFi
@@ -439,6 +462,7 @@ public:
     void FogEnable(int enable);
 
     /**
+     *
      * Returns whether fog is on.
      *
      * @mangled GetFogEnable__13mgRENDER_INFOFv
@@ -448,6 +472,7 @@ public:
     int GetFogEnable();
 
     /**
+     *
      * Turns point lighting on or off.
      *
      * @mangled PlightEnable__13mgRENDER_INFOFi
@@ -457,6 +482,7 @@ public:
     void PlightEnable(int enable);
 
     /**
+     *
      * Returns whether point lighting is on.
      *
      * @mangled GetPlightEnable__13mgRENDER_INFOFv
@@ -466,6 +492,7 @@ public:
     int GetPlightEnable();
 
     /**
+     *
      * Sets the fog's distances, colour and values at those distances, and
      * works out the coefficients that give the fog value from depth.
      *

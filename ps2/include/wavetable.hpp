@@ -10,7 +10,9 @@
 class mgCTexture;
 
 /**
+ *
  * Size of the ripple grid along each side.
+ *
  */
 enum {
     WAVE_TABLE_DIM = 24 /**< Number of grid points along each side of a ripple height field. */
@@ -28,6 +30,7 @@ public:
     int   current;                                   /**< Index (0 or 1) of the height field that holds the current heights. */
 
     /**
+     *
      * Creates a table whose two height fields are flat and whose current
      * height field is the first one.
      *
@@ -38,6 +41,7 @@ public:
     CWaveTable();
 
     /**
+     *
      * Destroys the table.
      *
      * @mangled __dt__10CWaveTableFv
@@ -47,6 +51,7 @@ public:
     virtual ~CWaveTable();
 
     /**
+     *
      * Draws the slope shading of the current height field into a 24 or 32
      * bit texture as grey strips, then darkens the whole texture.
      *
@@ -57,6 +62,7 @@ public:
     void CreateTexture(mgCTexture *texture);
 
     /**
+     *
      * Advances the ripples by one step, disturbing random grid points of the
      * current height field every fifth call before the step.
      *
@@ -67,6 +73,7 @@ public:
     void GetEffect();
 
     /**
+     *
      * Computes the next heights of the inner grid points from the current
      * and previous height fields with a damped wave equation, writing them
      * over the previous height field.

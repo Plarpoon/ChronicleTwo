@@ -35,6 +35,7 @@ public:
     CCameraDrawInfo draw_info[4];  /**< Map part groups switched on while the camera is in use. */
 
     /**
+     *
      * Constructs a camera area with no positions, shapes or part groups.
      *
      * @mangled __ct__11CCameraInfoFv
@@ -44,6 +45,7 @@ public:
     CCameraInfo();
 
     /**
+     *
      * Clears every position, collision shape and part group of the area.
      *
      * @mangled Initialize__11CCameraInfoFv
@@ -53,6 +55,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Gives one part group entry of the area, or null for an index out of range.
      *
      * @mangled GetDrawInfo__11CCameraInfoFi
@@ -106,6 +109,7 @@ public:
     CMapInfo() { Initialize(); }
 
     /**
+     *
      * Clears every setting and gives the defaults that a script may change.
      *
      * @mangled Initialize__8CMapInfoFv
@@ -115,6 +119,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Gives the name of one texture pack, or null for an index out of range.
      *
      * @mangled GetImgName__8CMapInfoFi
@@ -124,6 +129,7 @@ public:
     char *GetImgName(int index);
 
     /**
+     *
      * Gives the name of one model pack, or null for an index out of range.
      *
      * @mangled GetPCPName__8CMapInfoFi
@@ -133,6 +139,7 @@ public:
     char *GetPCPName(int index);
 
     /**
+     *
      * Gives the copy of the configuration script and its size.
      *
      * @mangled GetMapFile__8CMapInfoFPi
@@ -142,6 +149,7 @@ public:
     char *GetMapFile(int *size);
 
     /**
+     *
      * Gives the copy of the additional configuration script and its size.
      *
      * @mangled GetAddMapFile__8CMapInfoFPi
@@ -151,6 +159,7 @@ public:
     char *GetAddMapFile(int *size);
 
     /**
+     *
      * Gives one lighting set, or null for an index out of range.
      *
      * @mangled GetLightingInfo__8CMapInfoFi
@@ -160,6 +169,7 @@ public:
     CMapLightingInfo *GetLightingInfo(int index);
 
     /**
+     *
      * Gives the lighting set used when lighting does not follow the time of day.
      *
      * @mangled GetActiveLightNo__8CMapInfoFv
@@ -169,6 +179,7 @@ public:
     int GetActiveLightNo() { return active_light_no; }
 
     /**
+     *
      * Keeps a copy of a configuration script, makes room for the lighting sets,
      * and runs the script to fill in the settings.
      *
@@ -179,6 +190,7 @@ public:
     void LoadMapInfo(char *script, int script_size, mgCMemory *stack);
 
     /**
+     *
      * Keeps a copy of an additional configuration script and runs it to add
      * texture and model packs.
      *
@@ -189,6 +201,7 @@ public:
     void AddMapInfo(char *script, int script_size, mgCMemory *stack);
 
     /**
+     *
      * Writes the lighting sets out as configuration script text, and gives the
      * number of characters written.
      *

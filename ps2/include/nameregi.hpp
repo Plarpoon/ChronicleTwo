@@ -403,6 +403,7 @@ void NameRegistDraw();
 int ConvertNameRegiBaseBoardTable(int index);
 
 /**
+ *
  * What the name entry screen is to name.
  *
  * @mangled Nameregi_Target

@@ -211,8 +211,10 @@ int CColFrame::InsidePoint(float *point) {
 }
 
 /**
+ *
  * Loads a matrix into the vector unit's registers vf10-vf13 for the
  * transforms trance_normal makes.
+ *
  */
 #pragma force_active on
 #ifdef NONMATCHING
@@ -235,8 +237,10 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/collision", pre_trance_normal__FPA4_f);
 #endif
 
 /**
+ *
  * Transforms a triangle's corners in place by the matrix pre_trance_normal
  * loaded, and writes the unnormalised normal of the transformed triangle.
+ *
  */
 #ifdef NONMATCHING
 /**

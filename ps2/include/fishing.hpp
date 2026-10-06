@@ -131,6 +131,7 @@ public:
     FISH_PLACE fish[8];       /**< Fish that can appear at the place. */
 
     /**
+     *
      * Merges the place's fish into a list of fish, or replaces the list with them when the place
      * is exclusive; gives the number of entries newly filled.
      *
@@ -141,6 +142,7 @@ public:
     int SetFishPlace(FISH_PLACE *place, int place_num, int replace);
 
     /**
+     *
      * Gives whether a position lies within the place's area.
      *
      * @mangled CheckFishPlace__14FISH_PLACE_MAPFPf

@@ -111,6 +111,7 @@ public:
     float         depth_bias; /**< Above 1.0, pulls the frame's depth forward so it draws over coplanar geometry; set by the 'Zp' name flag. */
 
     /**
+     *
      * Makes a set of attributes with every field at its default.
      *
      * @mangled __ct__12mgCFrameAttrFv
@@ -120,6 +121,7 @@ public:
     mgCFrameAttr();
 
     /**
+     *
      * Puts every field back to its default: drawn, full alpha, grey colour,
      * depth written, no billboard.
      *
@@ -140,6 +142,7 @@ STATIC_ASSERT(sizeof(mgCFrameAttr) == 0x90);
 class mgCObject {
 public:
     /**
+     *
      * Marks the object's transform as changed.
      *
      * @mangled ChangeParam__9mgCObjectFv
@@ -149,6 +152,7 @@ public:
     virtual void ChangeParam();
 
     /**
+     *
      * Marks the object's transform as changed so its matrix is rebuilt from
      * its parts.
      *
@@ -159,6 +163,7 @@ public:
     virtual void UseParam();
 
     /**
+     *
      * Puts the object at a position, marking it changed if the position differs.
      *
      * @mangled SetPosition__9mgCObjectFPf
@@ -168,6 +173,7 @@ public:
     virtual void SetPosition(float *position);
 
     /**
+     *
      * Puts the object at a position, marking it changed if the position differs.
      *
      * @mangled SetPosition__9mgCObjectFfff
@@ -177,6 +183,7 @@ public:
     virtual void SetPosition(float x, float y, float z);
 
     /**
+     *
      * Gets the object's position.
      *
      * @mangled GetPosition__9mgCObjectFPf
@@ -186,6 +193,7 @@ public:
     virtual void GetPosition(float *out_position);
 
     /**
+     *
      * Turns the object to an angle about each axis, marking it changed if
      * the angles differ.
      *
@@ -196,6 +204,7 @@ public:
     virtual void SetRotation(float *rotation);
 
     /**
+     *
      * Turns the object to an angle about each axis, marking it changed if
      * the angles differ.
      *
@@ -206,6 +215,7 @@ public:
     virtual void SetRotation(float x, float y, float z);
 
     /**
+     *
      * Gets the object's angle about each axis.
      *
      * @mangled GetRotation__9mgCObjectFPf
@@ -215,6 +225,7 @@ public:
     virtual void GetRotation(float *out_rotation);
 
     /**
+     *
      * Sets the object's scale along each axis, marking it changed if the
      * scale differs.
      *
@@ -225,6 +236,7 @@ public:
     virtual void SetScale(float *scale);
 
     /**
+     *
      * Sets the object's scale along each axis, marking it changed if the
      * scale differs.
      *
@@ -235,6 +247,7 @@ public:
     virtual void SetScale(float x, float y, float z);
 
     /**
+     *
      * Gets the object's scale along each axis.
      *
      * @mangled GetScale__9mgCObjectFPf
@@ -244,6 +257,7 @@ public:
     virtual void GetScale(float *out_scale);
 
     /**
+     *
      * Draws the object. The base object draws nothing.
      *
      * @mangled Draw__9mgCObjectFv
@@ -253,6 +267,7 @@ public:
     virtual int Draw();
 
     /**
+     *
      * Draws the object immediately. The base object draws nothing.
      *
      * @mangled DrawDirect__9mgCObjectFv
@@ -262,6 +277,7 @@ public:
     virtual int DrawDirect();
 
     /**
+     *
      * Puts the object at the origin, unrotated, at a scale of one, with its
      * transform marked as changed.
      *
@@ -272,6 +288,7 @@ public:
     virtual void Initialize();
 
     /**
+     *
      * Makes an object at the origin, unrotated, at a scale of one.
      *
      * @mangled __ct__9mgCObjectFv
@@ -297,6 +314,7 @@ STATIC_ASSERT(sizeof(mgCObject) == 0x50);
 class mgCFrameBase : public mgCObject {
 public:
     /**
+     *
      * Initialises the frame as an object.
      *
      * @mangled Initialize__12mgCFrameBaseFv
@@ -306,7 +324,9 @@ public:
     virtual void Initialize() { mgCObject::Initialize(); }
 
     /**
+     *
      * Makes a frame base at the origin, unrotated, at a scale of one.
+     *
      */
     mgCFrameBase() { Initialize(); }
 };
@@ -359,6 +379,7 @@ public:
     int           rot_type;     /**< Rotation bits, from mgFrameRotType. */
 
     /**
+     *
      * Turns the frame to an angle about each axis and makes the rotation apply.
      *
      * @mangled SetRotation__8mgCFrameFPf
@@ -368,6 +389,7 @@ public:
     virtual void SetRotation(float *rotation);
 
     /**
+     *
      * Turns the frame to an angle about each axis and makes the rotation apply.
      *
      * @mangled SetRotation__8mgCFrameFfff
@@ -377,6 +399,7 @@ public:
     virtual void SetRotation(float x, float y, float z);
 
     /**
+     *
      * Draws the frame and its subtree into the render info's packet.
      *
      * @mangled Draw__8mgCFrameFv
@@ -386,6 +409,7 @@ public:
     virtual int Draw();
 
     /**
+     *
      * Unlinks the frame from every neighbour and clears its transform,
      * matrices, bound, attributes and visual.
      *
@@ -396,6 +420,7 @@ public:
     virtual void Initialize();
 
     /**
+     *
      * Gets the world-space box around the frame's bound and those of its
      * subtree. Returns whether any bound was found.
      *
@@ -406,6 +431,7 @@ public:
     virtual int GetWorldBBox(mgVu0FBOX *box);
 
     /**
+     *
      * Draws the frame's visual, unless it lies off screen, and then its
      * children. Returns the number of quadwords written to the packet.
      *
@@ -416,6 +442,7 @@ public:
     virtual int Draw(unsigned int *packet);
 
     /**
+     *
      * Sets the visual drawn at the frame.
      *
      * @mangled SetVisual__8mgCFrameFP9mgCVisual
@@ -425,6 +452,7 @@ public:
     virtual void SetVisual(mgCVisual *visual);
 
     /**
+     *
      * Makes an unlinked frame at the origin with no bound, attributes or visual.
      *
      * @mangled __ct__8mgCFrameFv
@@ -434,6 +462,7 @@ public:
     mgCFrame();
 
     /**
+     *
      * Sets the frame's name.
      *
      * @mangled SetName__8mgCFrameFPc
@@ -443,6 +472,7 @@ public:
     void SetName(char *name);
 
     /**
+     *
      * Sets the rotation of the local transform from a quaternion, keeping
      * its translation.
      *
@@ -453,6 +483,7 @@ public:
     void SetTransMatrix(float *quaternion);
 
     /**
+     *
      * Sets the frame's bounding box and the eight corners made from it.
      *
      * @mangled SetBBox__8mgCFrameFPfPf
@@ -462,6 +493,7 @@ public:
     void SetBBox(float *max, float *min);
 
     /**
+     *
      * Gets the frame's bounding box, or zero vectors when it has no bound.
      *
      * @mangled GetBBox__8mgCFrameFPfPf
@@ -471,6 +503,7 @@ public:
     void GetBBox(float *out_max, float *out_min);
 
     /**
+     *
      * Sets the frame's bounding sphere.
      *
      * @mangled SetBSphere__8mgCFrameFPff
@@ -480,6 +513,7 @@ public:
     void SetBSphere(float *center, float radius);
 
     /**
+     *
      * Gets a frame of the model by its index in the frame list, or null.
      *
      * @mangled GetFrame__8mgCFrameFi
@@ -489,6 +523,7 @@ public:
     mgCFrame *GetFrame(int index);
 
     /**
+     *
      * Has the visual measure its current box and makes that the frame's
      * bounding box. Returns whether the visual gave a box.
      *
@@ -499,6 +534,7 @@ public:
     int RemakeBBox(float *out_max, float *out_min);
 
     /**
+     *
      * Counts the frame and every frame of its subtree.
      *
      * @mangled GetFrameNum__8mgCFrameFv
@@ -508,6 +544,7 @@ public:
     int GetFrameNum();
 
     /**
+     *
      * Makes a frame the parent of this one, if it has none.
      *
      * @mangled SetParent__8mgCFrameFP8mgCFrame
@@ -517,6 +554,7 @@ public:
     void SetParent(mgCFrame *parent);
 
     /**
+     *
      * Adds a frame at the end of this frame's chain of siblings.
      *
      * @mangled SetBrother__8mgCFrameFP8mgCFrame
@@ -526,6 +564,7 @@ public:
     void SetBrother(mgCFrame *brother);
 
     /**
+     *
      * Adds a frame as the last child of this one.
      *
      * @mangled SetChild__8mgCFrameFP8mgCFrame
@@ -535,6 +574,7 @@ public:
     void SetChild(mgCFrame *child);
 
     /**
+     *
      * Unlinks the frame from its parent and siblings.
      *
      * @mangled DeleteParent__8mgCFrameFv
@@ -544,6 +584,7 @@ public:
     void DeleteParent();
 
     /**
+     *
      * Makes the frame follow another frame's transform without becoming its
      * child, if it has no parent.
      *
@@ -554,6 +595,7 @@ public:
     void SetReference(mgCFrame *reference);
 
     /**
+     *
      * Stops the frame following another frame's transform.
      *
      * @mangled DeleteReference__8mgCFrameFv
@@ -563,6 +605,7 @@ public:
     void DeleteReference();
 
     /**
+     *
      * Marks every direct child's transform as changed.
      *
      * @mangled ClearChildFlag__8mgCFrameFv
@@ -572,6 +615,7 @@ public:
     void ClearChildFlag();
 
     /**
+     *
      * Gets the frame's local matrix: the local transform as set, or one
      * built from scale, rotation and position.
      *
@@ -582,6 +626,7 @@ public:
     void GetLocalMatrix(float (*matrix)[4]);
 
     /**
+     *
      * Gets a local-to-world matrix that keeps the frame's position and scale
      * but turns it to face the eye, and caches it as the world matrix.
      *
@@ -592,6 +637,7 @@ public:
     void GetBBoardMatrix(int mode, float (*matrix)[4], mgRENDER_INFO *info);
 
     /**
+     *
      * Gets the frame's local-to-world matrix, rebuilding the cached one when
      * the frame or any ancestor changed.
      *
@@ -602,6 +648,7 @@ public:
     void GetLWMatrix(float (*matrix)[4]);
 
     /**
+     *
      * Gets the frame's local-to-world matrix from its parent's cached one,
      * for walks of the hierarchy that visit parents first.
      *
@@ -612,6 +659,7 @@ public:
     void GetLWMatrixTopBottom(float (*matrix)[4]);
 
     /**
+     *
      * Gets the inverse of the frame's local-to-world matrix.
      *
      * @mangled GetInverseMatrix__8mgCFrameFPA4_f
@@ -621,6 +669,7 @@ public:
     void GetInverseMatrix(float (*matrix)[4]);
 
     /**
+     *
      * Sets the frame's local transform.
      *
      * @mangled SetTransMatrix__8mgCFrameFPA4_f
@@ -630,6 +679,7 @@ public:
     void SetTransMatrix(float (*matrix)[4]);
 
     /**
+     *
      * Finds the frame of a name in this frame's subtree, comparing names up
      * to their "--" flags, or null.
      *
@@ -640,6 +690,7 @@ public:
     mgCFrame *SearchFrame(char *name);
 
     /**
+     *
      * Finds the index in the frame list of the frame of a name, or -1.
      *
      * @mangled SearchFrameID__8mgCFrameFPc
@@ -649,6 +700,7 @@ public:
     int SearchFrameID(char *name);
 
     /**
+     *
      * Moves a point from the frame's space into the world.
      *
      * @mangled GetWorldPosition__8mgCFrameFPfPf
@@ -658,6 +710,7 @@ public:
     void GetWorldPosition(float *out_position, float *local_position);
 
     /**
+     *
      * Gets the world position of the frame's origin.
      *
      * @mangled GetWorldPosition0__8mgCFrameFPf
@@ -667,6 +720,7 @@ public:
     void GetWorldPosition0(float *out_position);
 
     /**
+     *
      * Turns a direction from the frame's space into the world.
      *
      * @mangled GetWorldDir__8mgCFrameFPfPf
@@ -676,6 +730,7 @@ public:
     void GetWorldDir(float *out_dir, float *local_dir);
 
     /**
+     *
      * Sets how the frame's rotation enters its local matrix.
      *
      * @mangled SetRotType__8mgCFrameFi
@@ -685,6 +740,7 @@ public:
     void SetRotType(int type);
 
     /**
+     *
      * Copies attributes into the frame's own, all of them or those a mask of
      * mgFrameAttrParam bits names, optionally through its subtree.
      *
@@ -695,6 +751,7 @@ public:
     void SetAttrParam(mgCFrameAttr &attr, int recurse, int mask);
 
     /**
+     *
      * Sets the frame's alpha factor, optionally through its subtree.
      *
      * @mangled SetAttrParamObjAlpha__8mgCFrameFfi
@@ -704,6 +761,7 @@ public:
     void SetAttrParamObjAlpha(float alpha, int recurse);
 
     /**
+     *
      * Sets the frame's draw flags, optionally through its subtree.
      *
      * @mangled SetAttrParamDraw__8mgCFrameFii
@@ -713,6 +771,7 @@ public:
     void SetAttrParamDraw(int value, int recurse);
 
     /**
+     *
      * Gets the screen rectangle that the frame and its subtree cover.
      * Returns whether any part is on screen.
      *
@@ -723,6 +782,7 @@ public:
     int GetDrawRect(mgVu0FBOX *rect, mgCDrawManager *manager);
 
     /**
+     *
      * Copies another frame's contents, leaving this frame unlinked and
      * marking its transform changed.
      *
@@ -733,6 +793,7 @@ public:
     mgCFrame &operator=(mgCFrame &other);
 
     /**
+     *
      * Gets a material of the frame's visual, or null when it has none.
      *
      * @mangled GetMaterial__8mgCFrameFi
@@ -743,6 +804,7 @@ public:
     mgMaterial *GetMaterial(int index);
 
     /**
+     *
      * Sets the frame's bounding box and sphere.
      *
      * @mangled SetBound__8mgCFrameFPQ28mgCFrame9BoundInfo
@@ -756,6 +818,7 @@ STATIC_ASSERT(sizeof(mgCFrame::BoundInfo) == 0xB0);
 STATIC_ASSERT(sizeof(mgCFrame) == 0x110);
 
 /**
+ *
  * Compares two frame names up to their "--" flags. Returns whether they match.
  *
  * @mangled mgFrameNameComp__FPcPc
@@ -765,6 +828,7 @@ STATIC_ASSERT(sizeof(mgCFrame) == 0x110);
 int mgFrameNameComp(char *left, char *right);
 
 /**
+ *
  * Tests whether a box in world space reaches the screen.
  *
  * @mangled mgInsideScreen__FP9mgVu0FBOX
@@ -774,6 +838,7 @@ int mgFrameNameComp(char *left, char *right);
 int mgInsideScreen(mgVu0FBOX *box);
 
 /**
+ *
  * Tests whether a box, moved by a matrix, reaches the screen.
  *
  * @mangled mgInsideScreen__FP9mgVu0FBOXPA4_f
@@ -783,6 +848,7 @@ int mgInsideScreen(mgVu0FBOX *box);
 int mgInsideScreen(mgVu0FBOX *box, float (*matrix)[4]);
 
 /**
+ *
  * Tests whether a box, moved by a matrix, reaches the screen, and gets the
  * screen-space box it covers.
  *
@@ -793,6 +859,7 @@ int mgInsideScreen(mgVu0FBOX *box, float (*matrix)[4]);
 int mgInsideScreen(mgVu0FBOX *box, float (*matrix)[4], float *out_max, float *out_min);
 
 /**
+ *
  * Tests whether eight corners, moved by a matrix, reach the screen.
  *
  * @mangled mgInsideScreen__FPA4_fPA4_f
@@ -802,6 +869,7 @@ int mgInsideScreen(mgVu0FBOX *box, float (*matrix)[4], float *out_max, float *ou
 int mgInsideScreen(float (*corners)[4], float (*matrix)[4]);
 
 /**
+ *
  * Tests whether eight corners, moved by a matrix, reach the screen, and gets
  * the screen-space box they cover.
  *

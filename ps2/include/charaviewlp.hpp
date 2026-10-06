@@ -15,6 +15,7 @@
 struct INIT_LOOP_ARG;
 
 /**
+ *
  * Entry hook for the character viewer, with no setup work.
  *
  * @mangled InitCharaViewerMain__F13INIT_LOOP_ARG
@@ -24,6 +25,7 @@ struct INIT_LOOP_ARG;
 void InitCharaViewerMain(INIT_LOOP_ARG arg);
 
 /**
+ *
  * Exit hook for the character viewer, with no cleanup work.
  *
  * @mangled FinishCharaVieweMain__Fv
@@ -33,6 +35,7 @@ void InitCharaViewerMain(INIT_LOOP_ARG arg);
 void FinishCharaVieweMain();
 
 /**
+ *
  * Runs one frame of the character viewer, and returns 1 so that the main loop leaves it at once.
  *
  * @mangled LoopCharaViewerMain__Fv

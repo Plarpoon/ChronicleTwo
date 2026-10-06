@@ -314,7 +314,9 @@ static u32 GetBankNo(u32 sound_id) {
 }
 
 /**
+ *
  * Finds the loaded bank identified by a sound ID.
+ *
  */
 static sndBankInfo *GetBankInfo(unsigned int snd_id) {
     sndPortInfo *info;
@@ -337,7 +339,9 @@ static sndBankInfo *GetBankInfo(unsigned int snd_id) {
 }
 
 /**
+ *
  * Finds a sound effect in the bank identified by a sound ID.
+ *
  */
 static sndSeInfo *GetSeInfo(unsigned int snd_id, int se_no) {
     sndBankInfo *bank;
@@ -658,7 +662,9 @@ static int CSndStep() {
 }
 
 /**
+ *
  * Delays briefly before stepping the sound driver.
+ *
  */
 static void CSndStepWait() {
     int delay;
@@ -768,7 +774,9 @@ int sndGetSeDefVol(u32 se_id, int index) {
 }
 
 /**
+ *
  * Identifies the driver's voice-capable music ports.
+ *
  */
 static int IsBgmPort(int port) {
     if (port == 0 || port == 11) {
@@ -1695,7 +1703,9 @@ void sndSqRePlay(int port, int sq_no) {
 }
 
 /**
+ *
  * Reads a line of tab or space separated columns into text buffers.
+ *
  */
 static char *GetLine(char **col, char *text, char *end) {
     char crlf[] = {'\r', '\n'};
@@ -1994,7 +2004,9 @@ void sndStopSeSeq(int port_no) {
 }
 
 /**
+ *
  * Starts a sound-effect sequence on a free player.
+ *
  */
 static int PlaySeSeq(unsigned int snd_id, sndCSeSeqData *data, int vol) {
     sndCSeSeq   *player;
@@ -2051,7 +2063,9 @@ static void StopSeSeq(int seq_id) {
 }
 
 /**
+ *
  * Sets the volume of a sound-effect sequence player.
+ *
  */
 static void SetVolSeSeq(int index, int vol) {
     sndCSeSeq *player;

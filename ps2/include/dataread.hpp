@@ -119,7 +119,10 @@ struct PACK_ENTRY {
     int  next;     /**< Byte offset of the next entry from this entry. */
 };
 
+STATIC_ASSERT(sizeof(PACK_ENTRY) == 0x4C);
+
 /**
+ *
  * Converts a byte count into the number of 2048-byte
  * disc sectors needed to hold it.
  *
@@ -130,6 +133,7 @@ struct PACK_ENTRY {
 int size_to_sector(int size);
 
 /**
+ *
  * Gives the device that paths without a device prefix
  * are read from.
  *
@@ -140,6 +144,7 @@ int size_to_sector(int size);
 int GetMainFileDev();
 
 /**
+ *
  * Mounts the hard-disk installation and makes it the default device,
  * resetting the top and current directories to its root.
  *
@@ -150,6 +155,7 @@ int GetMainFileDev();
 int ChangeHddFile();
 
 /**
+ *
  * Unmounts the hard-disk installation and makes the disc the default device
  * again; reports whether the hard disk had been in use.
  *
@@ -160,6 +166,7 @@ int ChangeHddFile();
 int ChangeDefaultFile();
 
 /**
+ *
  * Sets the function that is told the error code
  * whenever a hard-disk file operation fails.
  *
@@ -170,6 +177,7 @@ int ChangeDefaultFile();
 void SetIoErrCallBack(int (*callback)(int));
 
 /**
+ *
  * Sets the directory that relative paths are read from,
  * or resets it to the top directory when given null.
  *
@@ -180,6 +188,7 @@ void SetIoErrCallBack(int (*callback)(int));
 void SetCurrentDir(char *dir);
 
 /**
+ *
  * Copies the directory that relative paths
  * are currently read from.
  *
@@ -190,6 +199,7 @@ void SetCurrentDir(char *dir);
 void GetCurrentDir(char *out_dir);
 
 /**
+ *
  * Sets the current directory to a directory below the top
  * directory, or to the top directory itself when given null.
  *
@@ -200,6 +210,7 @@ void GetCurrentDir(char *out_dir);
 void ChangeDir(char *dir);
 
 /**
+ *
  * Empties the background read queue.
  *
  * @mangled InitReadBG__Fv
@@ -209,6 +220,7 @@ void ChangeDir(char *dir);
 void InitReadBG();
 
 /**
+ *
  * Queues a file for reading in the background, from the
  * file cache, the disc or another device; reports success.
  *
@@ -219,6 +231,7 @@ void InitReadBG();
 int LoadFileBG(char *name, u_long128 *buffer, int *out_size);
 
 /**
+ *
  * Finds the background read queued under a full path,
  * or null when there is none.
  *
@@ -229,6 +242,7 @@ int LoadFileBG(char *name, u_long128 *buffer, int *out_size);
 BG_READ_INFO *GetReadBGFile(char *name);
 
 /**
+ *
  * Gives a background read queue slot by index,
  * or null when it is out of range or free.
  *
@@ -239,6 +253,7 @@ BG_READ_INFO *GetReadBGFile(char *name);
 BG_READ_INFO *GetReadBGFile(int index);
 
 /**
+ *
  * Starts a fresh round of background reads
  * by emptying the queue.
  *
@@ -249,6 +264,7 @@ BG_READ_INFO *GetReadBGFile(int index);
 void StartReadBG();
 
 /**
+ *
  * Advances the first unfinished background read,
  * at most once per vertical sync.
  *
@@ -259,6 +275,7 @@ void StartReadBG();
 void ReadBG();
 
 /**
+ *
  * Advances the background reads and reports
  * whether any is still unfinished.
  *
@@ -269,6 +286,7 @@ void ReadBG();
 int ReadBGSync();
 
 /**
+ *
  * Cancels the background reads still running, closing any open
  * file, and empties the queue.
  *
@@ -279,6 +297,7 @@ int ReadBGSync();
 void BreakReadBG();
 
 /**
+ *
  * Finds DATA.DAT on the disc and loads the
  * DATA.HD4 index of the files inside it.
  *
@@ -289,6 +308,7 @@ void BreakReadBG();
 void InitCDFile();
 
 /**
+ *
  * Reads a whole file, and stops the game with
  * a message when it cannot be read.
  *
@@ -299,6 +319,7 @@ void InitCDFile();
 int LoadFile(char *path, void *buffer, int *out_size);
 
 /**
+ *
  * Reads a file from the file cache or its device as the mode asks
  * (LOAD_FILE_MODE); reports success, or gives the open descriptor.
  *
@@ -309,6 +330,7 @@ int LoadFile(char *path, void *buffer, int *out_size);
 int LoadFile2(char *path, void *buffer, int *out_size, int mode);
 
 /**
+ *
  * Clears the file cache and gives it memory starting at an address,
  * growing in the direction the type (FILE_CACHE_TYPE) selects.
  *
@@ -319,6 +341,7 @@ int LoadFile2(char *path, void *buffer, int *out_size, int mode);
 void InitFileCache(u_long128 *address, int type);
 
 /**
+ *
  * Clears the file cache
  * and disables it.
  *
@@ -329,6 +352,7 @@ void InitFileCache(u_long128 *address, int type);
 void DeleteFileCache();
 
 /**
+ *
  * Queues a file to be read into the file cache in the background, or
  * counts one more use of it when it is already cached; reports success.
  *
@@ -339,6 +363,7 @@ void DeleteFileCache();
 int LoadFileCacheBG(char *path);
 
 /**
+ *
  * Gives where a file is held in the file cache and its size,
  * or null when it is not cached.
  *
@@ -349,6 +374,7 @@ int LoadFileCacheBG(char *path);
 u_long128 *SearchFileCache(char *path, int *out_size);
 
 /**
+ *
  * Writes a buffer to a file on the network
  * socket or another device.
  *
@@ -359,6 +385,7 @@ u_long128 *SearchFileCache(char *path, int *out_size);
 int WriteFile(char *path, void *buffer, int size);
 
 /**
+ *
  * Finds a file by name inside a pack that has already been read,
  * ignoring any directory in the name.
  *
@@ -369,6 +396,7 @@ int WriteFile(char *path, void *buffer, int size);
 u_int *GetPackFile(u_int *pack, char *name, int *out_size);
 
 /**
+ *
  * Finds a file by its position inside a pack that
  * has already been read, giving its name and size.
  *
@@ -379,6 +407,7 @@ u_int *GetPackFile(u_int *pack, char *name, int *out_size);
 u_int *GetPackFile(u_int *pack, int index, char **out_name, int *out_size);
 
 /**
+ *
  * Collects up to a maximum number of files with an extension from a pack,
  * giving their data, sizes and names; returns how many were found.
  *
@@ -389,6 +418,7 @@ u_int *GetPackFile(u_int *pack, int index, char **out_name, int *out_size);
 int GetPackFileExt(u_int *pack, char *extension, u_int **files, int max_files, int *sizes, char **names);
 
 /**
+ *
  * Counts the files held
  * in a pack.
  *
@@ -399,6 +429,7 @@ int GetPackFileExt(u_int *pack, char *extension, u_int **files, int max_files, i
 int GetPackFileNum(u_int *pack);
 
 /**
+ *
  * Splits a path into its directory, with the trailing slash,
  * and its file name.
  *
@@ -409,6 +440,7 @@ int GetPackFileNum(u_int *pack);
 void DivPathName(char *path, char *out_dir, char *out_name);
 
 /**
+ *
  * Splits a path into its directory, its file name
  * without extension, and its extension.
  *

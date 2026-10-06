@@ -44,6 +44,7 @@ public:
     }
 
     /**
+     *
      * Resets the outline: no frame or texture, zero width, the default edge
      * colour, drawing enabled and no following outline.
      *
@@ -54,6 +55,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Sets the frame of the character model the outline is drawn around.
      *
      * @mangled SetFrame__12COutLineDrawFP8mgCFrame
@@ -63,6 +65,7 @@ public:
     void SetFrame(mgCFrame *frame);
 
     /**
+     *
      * Records the character's world position and draws the frame with its
      * outline; returns what drawing the frame returned.
      *
@@ -73,6 +76,7 @@ public:
     int Draw(float *pos, float scale, float alpha);
 
     /**
+     *
      * Draws the frame into the off-screen texture and composites it onto the
      * screen with an edge whose width shrinks with scale and whose opacity
      * follows alpha; returns what drawing the frame returned, or 0.

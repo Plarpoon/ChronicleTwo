@@ -61,6 +61,7 @@ public:
     mgMEMORY_BLOCK *stack_block; /**< Heap block holding the stack region while stack mode is active. */
 
     /**
+     *
      * Creates a manager with no buffers attached.
      *
      * @mangled __ct__9mgCMemoryFv
@@ -91,6 +92,7 @@ public:
     }
 
     /**
+     *
      * Detaches the heap and stack buffers and clears the name, leaving
      * nothing to allocate from.
      *
@@ -101,6 +103,7 @@ public:
     void Init();
 
     /**
+     *
      * Makes a buffer the heap, as one free gap ending in a terminating header;
      * a NULL buffer or one under sixteen quadwords resets the manager instead.
      *
@@ -111,6 +114,7 @@ public:
     void SetHeapMem(u_long128 *buffer, int size);
 
     /**
+     *
      * Discards everything in the heap and the stack region, keeping the
      * current heap buffer as an empty heap.
      *
@@ -121,6 +125,7 @@ public:
     void ClearHeapMem();
 
     /**
+     *
      * Unlinks the heap block whose contents start at the given address,
      * halting with a message when no block matches.
      *
@@ -131,6 +136,7 @@ public:
     void Free(u_long128 *data);
 
     /**
+     *
      * Claims a free gap in the heap as a new block and makes its space the
      * stack region; gives the region's start, or NULL when no gap qualifies.
      *
@@ -141,6 +147,7 @@ public:
     u_long128 *StartStackMode(int mode, int size);
 
     /**
+     *
      * Grows the stack-mode block to cover what the stack region used and
      * detaches the stack region.
      *
@@ -151,6 +158,7 @@ public:
     void EndStackMode();
 
     /**
+     *
      * Allocates quadwords from the stack region starting on a 64-byte
      * boundary.
      *
@@ -161,6 +169,7 @@ public:
     u_long128 *stAlloc64(int size);
 
     /**
+     *
      * Gives the address the next stack allocation of the given size would
      * return, without claiming it, or NULL when it would not fit.
      *
@@ -171,6 +180,7 @@ public:
     u_long128 *stAllocTest(int size);
 
     /**
+     *
      * Allocates quadwords from the stack region, or gives NULL when the
      * manager is locked, the size is not positive or the region is full.
      *
@@ -181,6 +191,7 @@ public:
     u_long128 *stAlloc(int size);
 
     /**
+     *
      * Allocates quadwords from the stack region, or gives NULL when the
      * manager is locked, the size is not positive or the region is full.
      *
@@ -191,6 +202,7 @@ public:
     u_long128 *Alloc(int size);
 
     /**
+     *
      * Advances the stack region's next allocation to a 64-byte boundary,
      * clamped to the region's end.
      *
@@ -201,6 +213,7 @@ public:
     void stAlign64();
 
     /**
+     *
      * Advances the stack region's next allocation to a 64-byte boundary,
      * clamped to the region's end.
      *
@@ -211,6 +224,7 @@ public:
     void Align64();
 
     /**
+     *
      * Makes a buffer the stack region, empty and holding the given
      * number of quadwords.
      *
@@ -224,6 +238,7 @@ public:
 STATIC_ASSERT(sizeof(mgCMemory) == 0x30);
 
 /**
+ *
  * Gives an address back unchanged, printing a stack overflow message
  * naming the caller's context when it is NULL.
  *
@@ -234,6 +249,7 @@ STATIC_ASSERT(sizeof(mgCMemory) == 0x30);
 void *MG_ADDRESS_CHECK(void *address, char *where);
 
 /**
+ *
  * Constructs an object in memory taken from an mgCMemory.
  *
  * @mangled __nw__FUiP1
@@ -243,6 +259,7 @@ void *MG_ADDRESS_CHECK(void *address, char *where);
 void *operator new(size_t size, u_long128 *buffer);
 
 /**
+ *
  * Constructs an array in memory taken from an mgCMemory.
  *
  * @mangled __nwa__FUiP1
@@ -252,6 +269,7 @@ void *operator new(size_t size, u_long128 *buffer);
 void *operator new[](size_t size, u_long128 *buffer);
 
 /**
+ *
  * Copies a string into stack memory of a manager, giving the copy, or
  * NULL when either argument is NULL or the memory is full.
  *

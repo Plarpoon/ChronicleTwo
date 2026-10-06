@@ -130,6 +130,7 @@ public:
     u8            unk_38[0x8];
 
     /**
+     *
      * Starts one bubble again at a random point around the origin.
      *
      * @mangled Generate__7CBubbleFi
@@ -139,6 +140,7 @@ public:
     void Generate(int index);
 
     /**
+     *
      * Moves the origin and starts the next bubble from it; says whether a bubble was left to start.
      *
      * @mangled Generate__7CBubbleFPf
@@ -148,6 +150,7 @@ public:
     int Generate(float *pos);
 
     /**
+     *
      * Sets the texture and the corner of the image that the bubbles draw with.
      *
      * @mangled SetTexture__7CBubbleFP10mgCTextureii
@@ -157,6 +160,7 @@ public:
     void SetTexture(mgCTexture *image, int u, int v);
 
     /**
+     *
      * Moves every bubble one step, rising, popping or starting it again.
      *
      * @mangled Step__7CBubbleFv
@@ -166,6 +170,7 @@ public:
     void Step();
 
     /**
+     *
      * Draws every bubble that has not ended as a sprite.
      *
      * @mangled Draw__7CBubbleFv
@@ -175,6 +180,7 @@ public:
     void Draw();
 
     /**
+     *
      * Allocates the bubbles from memory and scatters them between the origin and the surface.
      *
      * @mangled Initialize__7CBubbleFP9mgCMemoryPfif
@@ -184,6 +190,7 @@ public:
     void Initialize(mgCMemory *memory, float *start_pos, int count, float top);
 
     /**
+     *
      * Stops the emitter and forgets the bubbles it has made.
      *
      * @mangled RunOff__7CBubbleFv
@@ -214,6 +221,7 @@ public:
     u8         unk_38[0x8];
 
     /**
+     *
      * Clears the whole action.
      *
      * @mangled Initialize__20CAquaFishActionParamFv
@@ -294,6 +302,7 @@ public:
     CGameDataUsed *data;        /**< Fish's data in the save; NULL for none. */
 
     /**
+     *
      * Makes a fish with no data.
      *
      * @mangled __ct__9CAquaFishFv
@@ -303,6 +312,7 @@ public:
     CAquaFish();
 
     /**
+     *
      * Clears the character and the fish's movement, action and data.
      *
      * @mangled Initialize__9CAquaFishFv
@@ -312,6 +322,7 @@ public:
     virtual void Initialize();
 
     /**
+     *
      * Gives the fish its data and works out the fatigue at which it stops fighting.
      *
      * @mangled SetLiveParam__9CAquaFishFP13CGameDataUsed
@@ -321,6 +332,7 @@ public:
     void SetLiveParam(CGameDataUsed *item);
 
     /**
+     *
      * Scales the fish to the size in its data and sizes its body to match.
      *
      * @mangled SetAdjustScale__9CAquaFishFv
@@ -330,6 +342,7 @@ public:
     void SetAdjustScale();
 
     /**
+     *
      * Adds to the fish's fatigue, keeping it between 0 and 10000000; gives the new fatigue.
      *
      * @mangled AddFatigue__9CAquaFishFi
@@ -339,6 +352,7 @@ public:
     int AddFatigue(int amount);
 
     /**
+     *
      * Gives the screen position of the fish as seen by the aquarium camera.
      *
      * @mangled GetPosition2D__9CAquaFishFPi
@@ -348,6 +362,7 @@ public:
     void GetPosition2D(int *out);
 
     /**
+     *
      * Gives the direction that the fish faces.
      *
      * @mangled GetDirVect__9CAquaFishFPf
@@ -357,6 +372,7 @@ public:
     void GetDirVect(float *out);
 
     /**
+     *
      * Sets the fish moving straight at target_pos at a speed.
      *
      * @mangled NormalGetNextVelo__9CAquaFishFf
@@ -366,6 +382,7 @@ public:
     void NormalGetNextVelo(float speed);
 
     /**
+     *
      * Turns the fish's target yaw towards target_pos.
      *
      * @mangled NormalGetNextRotY__9CAquaFishFv
@@ -375,6 +392,7 @@ public:
     void NormalGetNextRotY();
 
     /**
+     *
      * Turns the fish's target pitch and yaw towards target_pos.
      *
      * @mangled NormalGetNextRot__9CAquaFishFv
@@ -384,6 +402,7 @@ public:
     void NormalGetNextRot();
 
     /**
+     *
      * Scales a speed by the fish's parameters for its think mode, capped for the mode.
      *
      * @mangled CalcMoveSpeed__9CAquaFishFf
@@ -393,6 +412,7 @@ public:
     float CalcMoveSpeed(float speed);
 
     /**
+     *
      * Lays a new random route through the tank and heads for its first point.
      *
      * @mangled NextRootNormal__9CAquaFishFv
@@ -402,6 +422,7 @@ public:
     void NextRootNormal();
 
     /**
+     *
      * Moves the fish one step of circling the tank.
      *
      * @mangled MoveActionRound__9CAquaFishFv
@@ -411,6 +432,7 @@ public:
     void MoveActionRound();
 
     /**
+     *
      * Moves the fish one step of charging at its target.
      *
      * @mangled MoveActionBattle__9CAquaFishFv
@@ -420,6 +442,7 @@ public:
     void MoveActionBattle();
 
     /**
+     *
      * Starts a think mode, setting up the fish's motion, target and timers for it.
      *
      * @mangled NextThink__9CAquaFishFiP16NEXT_THINK_PARAM
@@ -429,6 +452,7 @@ public:
     void NextThink(int think, NEXT_THINK_PARAM *param);
 
     /**
+     *
      * Updates the fish's data for a step, applying food it ate; gives bits of what happened.
      *
      * @mangled ParamStep__9CAquaFishFv
@@ -438,6 +462,7 @@ public:
     int ParamStep();
 
     /**
+     *
      * Draws the fish, brighter now and then when it is low on life.
      *
      * @mangled FishDraw__9CAquaFishFv
@@ -462,6 +487,7 @@ public:
     s32         timer;   /**< Steps left to show the icon. */
 
     /**
+     *
      * Clears the icon and its fish.
      *
      * @mangled Initialize__12CAquaFishEffFv
@@ -471,6 +497,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Shows an icon for the time that the icon's type gives.
      *
      * @mangled StartFishEffect__12CAquaFishEffFi
@@ -480,6 +507,7 @@ public:
     void StartFishEffect(int effect_kind);
 
     /**
+     *
      * Counts down the icon's time, hiding it when the time runs out.
      *
      * @mangled Step__12CAquaFishEffFv
@@ -489,6 +517,7 @@ public:
     void Step();
 
     /**
+     *
      * Draws the icon bobbing above the fish, fading out at the end of its time.
      *
      * @mangled Draw__12CAquaFishEffFv
@@ -517,6 +546,7 @@ public:
     u8            state;      /**< Stage of the food, a FISH_FOOD_STATE value. */
 
     /**
+     *
      * Makes food held above the tank.
      *
      * @mangled __ct__9CFishFoodFv
@@ -526,6 +556,7 @@ public:
     CFishFood();
 
     /**
+     *
      * Moves the food, still held, to a position.
      *
      * @mangled SetDropPosition__9CFishFoodFPf
@@ -535,6 +566,7 @@ public:
     void SetDropPosition(float *pos);
 
     /**
+     *
      * Lets the food fall, with a random spin and sway.
      *
      * @mangled Drop__9CFishFoodFv
@@ -544,6 +576,7 @@ public:
     void Drop();
 
     /**
+     *
      * Moves the food one step of falling or sinking, keeping it off the ornaments and in the tank.
      *
      * @mangled Step__9CFishFoodFv
@@ -591,6 +624,7 @@ public:
     s32        unk_60;
 
     /**
+     *
      * Makes the messages with no windows.
      *
      * @mangled __ct__8CAquaMesFv
@@ -600,6 +634,7 @@ public:
     CAquaMes();
 
     /**
+     *
      * Clears the messages and, given memory, makes and lays out every window and loads the message file.
      *
      * @mangled Initialize__8CAquaMesFP9mgCMemory
@@ -609,6 +644,7 @@ public:
     void Initialize(mgCMemory *memory);
 
     /**
+     *
      * Shows the title and menu of one of the three aquariums.
      *
      * @mangled SettingAquaMes__8CAquaMesFi
@@ -618,6 +654,7 @@ public:
     void SettingAquaMes(int kind);
 
     /**
+     *
      * Shows a title, centred in the title box.
      *
      * @mangled SetTitleId__8CAquaMesFi
@@ -627,6 +664,7 @@ public:
     void SetTitleId(int id);
 
     /**
+     *
      * Moves the menu cursor, wrapping round; says whether it moved.
      *
      * @mangled AddMenuCursor__8CAquaMesFii
@@ -636,6 +674,7 @@ public:
     int AddMenuCursor(int step, int count);
 
     /**
+     *
      * Shows a question; the food question lists the foods Max has with their counts.
      *
      * @mangled SetQuestionId__8CAquaMesFiii
@@ -645,6 +684,7 @@ public:
     void SetQuestionId(int id, int top, int num);
 
     /**
+     *
      * Moves the question cursor by the pad; gives 0 when it did not move.
      *
      * @mangled AddQuestionCursor__8CAquaMesFv
@@ -654,6 +694,7 @@ public:
     int AddQuestionCursor();
 
     /**
+     *
      * Shows a button help message at the bottom of the screen.
      *
      * @mangled SetCtrlHelpId__8CAquaMesFi
@@ -663,6 +704,7 @@ public:
     void SetCtrlHelpId(int id);
 
     /**
+     *
      * Shows an information message.
      *
      * @mangled SetInfoMsgID__8CAquaMesFi
@@ -672,6 +714,7 @@ public:
     void SetInfoMsgID(int id);
 
     /**
+     *
      * Shows a message, naming the fish, about the fish eating, next to it.
      *
      * @mangled EatMessage__8CAquaMesFiP9CAquaFish
@@ -681,6 +724,7 @@ public:
     void EatMessage(int id, CAquaFish *fish);
 
     /**
+     *
      * Shows a message, naming the fish, about the fish changing sex, next to it.
      *
      * @mangled ChangeManMessage__8CAquaMesFP9CAquaFish
@@ -690,6 +734,7 @@ public:
     void ChangeManMessage(CAquaFish *fish);
 
     /**
+     *
      * Shows a message, naming the fish, about the fish dying, next to it.
      *
      * @mangled DeadMessage__8CAquaMesFP9CAquaFish
@@ -699,6 +744,7 @@ public:
     void DeadMessage(CAquaFish *fish);
 
     /**
+     *
      * Steps every window and moves the hand cursor towards its target.
      *
      * @mangled Step__8CAquaMesFv
@@ -708,6 +754,7 @@ public:
     void Step();
 
     /**
+     *
      * Draws every window that is shown, but the title, and the hand cursor.
      *
      * @mangled Draw__8CAquaMesFv
@@ -717,6 +764,7 @@ public:
     void Draw();
 
     /**
+     *
      * Draws the title window when it is shown.
      *
      * @mangled DrawTitleMes__8CAquaMesFv
@@ -782,6 +830,7 @@ public:
     mgCMemory         food_stack;     /**< Memory of the food's model. */
 
     /**
+     *
      * Makes the aquarium with its memories empty and no texture blocks.
      *
      * @mangled __ct__9CAquariumFv
@@ -791,6 +840,7 @@ public:
     CAquarium();
 
     /**
+     *
      * Forgets every model, fish, texture block and the sound port of the aquarium.
      *
      * @mangled Clear__9CAquariumFv
@@ -800,6 +850,7 @@ public:
     void Clear();
 
     /**
+     *
      * Sets up the menu's memories, effects, bubbles and tank tables, loads its sound, images and messages, and sets up the aquarium.
      *
      * @mangled Initialize__9CAquariumFP9mgCMemoryPi
@@ -809,6 +860,7 @@ public:
     void Initialize(mgCMemory *memory, int *blocks);
 
     /**
+     *
      * Loads the model of a fish into a tank slot and puts it at a random place; says whether it loaded.
      *
      * @mangled LoadFish__9CAquariumFiP13CGameDataUsed
@@ -818,6 +870,7 @@ public:
     int LoadFish(int no, CGameDataUsed *data);
 
     /**
+     *
      * Loads the models of the aquarium chosen in the save and the fish in it, and starts them thinking.
      *
      * @mangled SettingAqua__9CAquariumFv
@@ -827,6 +880,7 @@ public:
     void SettingAqua();
 
     /**
+     *
      * Breeds the fish in two tank slots.
      *
      * @mangled CombineFish__9CAquariumFii
@@ -836,6 +890,7 @@ public:
     void CombineFish(int no1, int no2);
 
     /**
+     *
      * Picks a random other fish of the tank; gives its slot, or -1 when none was picked.
      *
      * @mangled GetBattleTarget__9CAquariumFi
@@ -845,6 +900,7 @@ public:
     int GetBattleTarget(int slot);
 
     /**
+     *
      * Runs one step of the think mode of the fish in a slot and starts the mode that follows.
      *
      * @mangled Thinking__9CAquariumFi
@@ -854,6 +910,7 @@ public:
     void Thinking(int no);
 
     /**
+     *
      * Keeps the fish in a slot off the other fish, the ornaments and the walls, feeds it, and turns it; gives bits of what happened.
      *
      * @mangled ColCheck__9CAquariumFi
@@ -863,6 +920,7 @@ public:
     int ColCheck(int no);
 
     /**
+     *
      * Puts the cursor on the first fish of the tank; gives 1 when there is none.
      *
      * @mangled InitSelFish__9CAquariumFv
@@ -872,6 +930,7 @@ public:
     int InitSelFish();
 
     /**
+     *
      * Moves the cursor to the next or previous fish by the pad, or to the next when forced.
      *
      * @mangled SelectFish__9CAquariumFi
@@ -881,6 +940,7 @@ public:
     void SelectFish(int force);
 
     /**
+     *
      * Moves the hand cursor next to the fish under the cursor.
      *
      * @mangled SelFishSetCursor__9CAquariumFv
@@ -890,6 +950,7 @@ public:
     void SelFishSetCursor();
 
     /**
+     *
      * Runs one step of the menu, its fish, food, bubbles and pairing; gives nonzero when the menu ends.
      *
      * @mangled Step__9CAquariumFv
@@ -899,6 +960,7 @@ public:
     int Step();
 
     /**
+     *
      * Draws the tank, its fish, food, bubbles, water and windows.
      *
      * @mangled Draw__9CAquariumFv
@@ -922,6 +984,7 @@ public:
     CGameDataUsed *fish[4];     /**< Fish of each class. */
 
     /**
+     *
      * Loads the race fish script into a buffer and runs it to build the fish; gives 0 without memory.
      *
      * @mangled LoadData__16CGyoraceFishDataFP9mgCMemoryP1
@@ -931,6 +994,7 @@ public:
     int LoadData(mgCMemory *memory, u_long128 *buffer);
 
     /**
+     *
      * Gives a fish of a class, or NULL when there is no such fish.
      *
      * @mangled GetRaceFish__16CGyoraceFishDataFii
@@ -953,6 +1017,7 @@ struct FISH_PRIZE_INFO {
 STATIC_ASSERT(sizeof(FISH_PRIZE_INFO) == 0x8);
 
 /**
+ *
  * Lists the item numbers of the foods that can be fed to the fish; gives
  * how many, one fewer when Max has none of the special food.
  *
@@ -963,6 +1028,7 @@ STATIC_ASSERT(sizeof(FISH_PRIZE_INFO) == 0x8);
 int GetUseableEsaNo(int *out);
 
 /**
+ *
  * Scales a fish's size against the size in its breeding data, capped at a
  * maximum.
  *
@@ -973,6 +1039,7 @@ int GetUseableEsaNo(int *out);
 float SetFishAdjustScale(int length, int item_no, float scale, float max);
 
 /**
+ *
  * Draws a dotted line down from the food to a height, showing where it will
  * fall.
  *
@@ -983,6 +1050,7 @@ float SetFishAdjustScale(int length, int item_no, float scale, float max);
 void DrawEsaDropRoot(CFishFood *food, float bottom);
 
 /**
+ *
  * Places a window next to a screen position, keeping it on the screen.
  *
  * @mangled AquaMesDispAdjustPos__FP6ClsMesPi
@@ -992,6 +1060,7 @@ void DrawEsaDropRoot(CFishFood *food, float bottom);
 void AquaMesDispAdjustPos(ClsMes *window, int *pos);
 
 /**
+ *
  * Makes the path of the image file of a fish's colouring; says whether the
  * fish has one.
  *
@@ -1002,6 +1071,7 @@ void AquaMesDispAdjustPos(ClsMes *window, int *pos);
 int GetFishImgPath(char *out, int item_no, BREEDFISH_USED *fish);
 
 /**
+ *
  * Gives one of the two colour numbers of a fish's images.
  *
  * @mangled GetFishImageColor__Fii
@@ -1011,6 +1081,7 @@ int GetFishImgPath(char *out, int item_no, BREEDFISH_USED *fish);
 int GetFishImageColor(int item_no, int sex);
 
 /**
+ *
  * Replaces the images of a fish's model with those of its colouring.
  *
  * @mangled FishIMGReplace__FP1P11CCharacter2iP14BREEDFISH_USED
@@ -1020,6 +1091,7 @@ int GetFishImageColor(int item_no, int sex);
 int FishIMGReplace(u_long128 *data, CCharacter2 *chara, int item_no, BREEDFISH_USED *fish);
 
 /**
+ *
  * Draws the data panel of a fish.
  *
  * @mangled DrawFishParam__FiiP10mgCTextureP13CGameDataUsed
@@ -1029,6 +1101,7 @@ int FishIMGReplace(u_long128 *data, CCharacter2 *chara, int item_no, BREEDFISH_U
 void DrawFishParam(int x, int y, mgCTexture *tex, CGameDataUsed *data);
 
 /**
+ *
  * Adds up the five parameters of a fish; gives 0 for no fish.
  *
  * @mangled CalcFishParam__FP14BREEDFISH_USED
@@ -1038,6 +1111,7 @@ void DrawFishParam(int x, int y, mgCTexture *tex, CGameDataUsed *data);
 int CalcFishParam(BREEDFISH_USED *fish);
 
 /**
+ *
  * Opens the aquarium menu: its camera, lighting and aquarium.
  *
  * @mangled MenuAquaInit__FP9mgCMemoryPii
@@ -1047,6 +1121,7 @@ int CalcFishParam(BREEDFISH_USED *fish);
 void MenuAquaInit(mgCMemory *memory, int *tex_block, int arg);
 
 /**
+ *
  * Runs one step of the aquarium menu; gives nonzero when the menu ends.
  *
  * @mangled MenuAquaKey__Fv
@@ -1056,6 +1131,7 @@ void MenuAquaInit(mgCMemory *memory, int *tex_block, int arg);
 int MenuAquaKey();
 
 /**
+ *
  * Draws the aquarium menu.
  *
  * @mangled MenuAquaDraw__Fv
@@ -1065,6 +1141,7 @@ int MenuAquaKey();
 void MenuAquaDraw();
 
 /**
+ *
  * Opens the menu that picks the aquarium fish to race.
  *
  * @mangled MenuGyoraceFishSelInit__FP9mgCMemoryPii
@@ -1074,6 +1151,7 @@ void MenuAquaDraw();
 void MenuGyoraceFishSelInit(mgCMemory *memory, int *tex_block, int arg);
 
 /**
+ *
  * Runs one step of the menu that picks the fish to race; gives nonzero when
  * the menu ends.
  *
@@ -1084,6 +1162,7 @@ void MenuGyoraceFishSelInit(mgCMemory *memory, int *tex_block, int arg);
 int MenuGyoraceFishSelKey();
 
 /**
+ *
  * Draws the menu that picks the fish to race.
  *
  * @mangled MenuGyoraceFishSelDraw__Fv
@@ -1093,6 +1172,7 @@ int MenuGyoraceFishSelKey();
 void MenuGyoraceFishSelDraw();
 
 /**
+ *
  * Gives the fish picked to race; NULL for none.
  *
  * @mangled GetGyoRaceFish__Fv
@@ -1102,6 +1182,7 @@ void MenuGyoraceFishSelDraw();
 CGameDataUsed *GetGyoRaceFish();
 
 /**
+ *
  * Sets the aquarium that the racing fish comes from.
  *
  * @mangled SetGyoRaceAquariumNo__Fi
@@ -1111,6 +1192,7 @@ CGameDataUsed *GetGyoRaceFish();
 void SetGyoRaceAquariumNo(int value);
 
 /**
+ *
  * Gives the aquarium that the racing fish comes from.
  *
  * @mangled GetGyoRaceAquariumNo__Fv
@@ -1120,6 +1202,7 @@ void SetGyoRaceAquariumNo(int value);
 int GetGyoRaceAquariumNo();
 
 /**
+ *
  * Sets the class of the fish race.
  *
  * @mangled SetGyoRaceClass__Fi
@@ -1129,6 +1212,7 @@ int GetGyoRaceAquariumNo();
 void SetGyoRaceClass(int value);
 
 /**
+ *
  * Gives the class of the fish race.
  *
  * @mangled GetGyoRaceClass__Fv
@@ -1138,6 +1222,7 @@ void SetGyoRaceClass(int value);
 int GetGyoRaceClass();
 
 /**
+ *
  * Sets how far the fish race has got, at least 0.
  *
  * @mangled SetGyoRaceNo__Fi
@@ -1147,6 +1232,7 @@ int GetGyoRaceClass();
 void SetGyoRaceNo(int value);
 
 /**
+ *
  * Gives how far the fish race has got.
  *
  * @mangled GetGyoRaceNo__Fv
@@ -1156,6 +1242,7 @@ void SetGyoRaceNo(int value);
 int GetGyoRaceNo();
 
 /**
+ *
  * Sets the racing fish's place, marking the fish and counting the class won
  * in the save when it won.
  *
@@ -1166,6 +1253,7 @@ int GetGyoRaceNo();
 void SetGyoRaceRanking(int rank);
 
 /**
+ *
  * Gives the racing fish's place.
  *
  * @mangled GetGyoRaceRanking__Fv
@@ -1175,6 +1263,7 @@ void SetGyoRaceRanking(int rank);
 int GetGyoRaceRanking();
 
 /**
+ *
  * Forgets the prizes of the fish race and fishing tournament.
  *
  * @mangled InitFishPrize__Fv
@@ -1184,6 +1273,7 @@ int GetGyoRaceRanking();
 void InitFishPrize();
 
 /**
+ *
  * Loads the prizes of the fish race (0) or fishing tournament (1) into a
  * buffer of its own.
  *
@@ -1194,6 +1284,7 @@ void InitFishPrize();
 int LoadFishPrize(int type);
 
 /**
+ *
  * Loads and runs the prize script of the fish race (0) or fishing
  * tournament (1), building the prizes in memory.
  *
@@ -1204,6 +1295,7 @@ int LoadFishPrize(int type);
 int LoadFishPrize(int type, mgCMemory *pool);
 
 /**
+ *
  * Picks the prizes on offer from the counts of races and tournaments won
  * in the save.
  *
@@ -1214,6 +1306,7 @@ int LoadFishPrize(int type, mgCMemory *pool);
 int RefreshFishPrize();
 
 /**
+ *
  * Gives a prize of a class and place; says whether the arguments were valid.
  *
  * @mangled GetFishPrize__FiiP15FISH_PRIZE_INFO
@@ -1223,6 +1316,7 @@ int RefreshFishPrize();
 int GetFishPrize(int race_no, int rank, FISH_PRIZE_INFO *info);
 
 /**
+ *
  * Counts one more fishing tournament in the save.
  *
  * @mangled TuriTourCount__Fv
@@ -1232,6 +1326,7 @@ int GetFishPrize(int race_no, int rank, FISH_PRIZE_INFO *info);
 void TuriTourCount();
 
 /**
+ *
  * Gives the slot of the race list that holds a racer; -1 when it is not
  * listed.
  *
@@ -1242,6 +1337,7 @@ void TuriTourCount();
 int CheckSameRacerFish(int fish_no);
 
 /**
+ *
  * Gives the fish of the saved racers listed in a slot; NULL for none.
  *
  * @mangled GetOmakeGyoracer2__Fi
@@ -1251,6 +1347,7 @@ int CheckSameRacerFish(int fish_no);
 CGameDataUsed *GetOmakeGyoracer2(int slot);
 
 /**
+ *
  * Gives the tactics of the racer listed in a slot.
  *
  * @mangled GetOmakeGyoracerTactics__Fi
@@ -1260,6 +1357,7 @@ CGameDataUsed *GetOmakeGyoracer2(int slot);
 int GetOmakeGyoracerTactics(int slot);
 
 /**
+ *
  * Sets the tactics of the racer listed in a slot.
  *
  * @mangled SetOmakeGyoracerTactics__Fii
@@ -1269,6 +1367,7 @@ int GetOmakeGyoracerTactics(int slot);
 void SetOmakeGyoracerTactics(int slot, int tactics);
 
 /**
+ *
  * Empties the list of racers and their tactics.
  *
  * @mangled GyoraceSubGameInitData__Fv
@@ -1278,6 +1377,7 @@ void SetOmakeGyoracerTactics(int slot, int tactics);
 void GyoraceSubGameInitData();
 
 /**
+ *
  * Opens the menu of the saved fish race.
  *
  * @mangled GyoraceMenuInit__FP9mgCMemoryPii
@@ -1287,6 +1387,7 @@ void GyoraceSubGameInitData();
 void GyoraceMenuInit(mgCMemory *memory, int *tex_block, int arg);
 
 /**
+ *
  * Runs one step of the menu of the saved fish race; gives nonzero when the
  * menu ends.
  *
@@ -1297,6 +1398,7 @@ void GyoraceMenuInit(mgCMemory *memory, int *tex_block, int arg);
 int GyoraceMenuKey();
 
 /**
+ *
  * Draws the menu of the saved fish race.
  *
  * @mangled GyoraceMenuDraw__Fv
@@ -1306,6 +1408,7 @@ int GyoraceMenuKey();
 void GyoraceMenuDraw();
 
 /**
+ *
  * Draws a title panel of a sub-game menu, small (0) or big (1), with its
  * shadow.
  *
@@ -1316,6 +1419,7 @@ void GyoraceMenuDraw();
 void DrawSubGameTitle(mgCTexture *tex, int large, int x, int y, int w);
 
 /**
+ *
  * Draws a list panel of a sub-game menu with its shadow.
  *
  * @mangled DrawSubGameListFix__FP10mgCTextureiiii
@@ -1325,6 +1429,7 @@ void DrawSubGameTitle(mgCTexture *tex, int large, int x, int y, int w);
 void DrawSubGameListFix(mgCTexture *tex, int x, int y, int w, int h);
 
 /**
+ *
  * Draws a scrolling list panel of a sub-game menu with its shadow and
  * scroll bar.
  *
@@ -1335,6 +1440,7 @@ void DrawSubGameListFix(mgCTexture *tex, int x, int y, int w, int h);
 void DrawSubGameScrlList(mgCTexture *tex, int *box, int *thumb);
 
 /**
+ *
  * Draws an underline of a sub-game menu.
  *
  * @mangled DrawSubGameUnderLine__FP10mgCTextureiii
@@ -1344,6 +1450,7 @@ void DrawSubGameScrlList(mgCTexture *tex, int *box, int *thumb);
 void DrawSubGameUnderLine(mgCTexture *tex, int x, int y, int w);
 
 /**
+ *
  * Text, in each language, of a racer slot with no fish.
  *
  * @mangled Mitouroku
@@ -1353,6 +1460,7 @@ void DrawSubGameUnderLine(mgCTexture *tex, int x, int y, int w);
 extern char *Mitouroku[7];
 
 /**
+ *
  * Nonzero when a fish of the aquarium died this step.
  *
  * @mangled AquaDeadCheck
@@ -1362,6 +1470,7 @@ extern char *Mitouroku[7];
 extern int AquaDeadCheck;
 
 /**
+ *
  * Fish picked to race; NULL for none.
  *
  * @mangled GyoraceFish
@@ -1371,6 +1480,7 @@ extern int AquaDeadCheck;
 extern CGameDataUsed *GyoraceFish;
 
 /**
+ *
  * Saved fish race racers of the save.
  *
  * @mangled GyoraceData
@@ -1380,6 +1490,7 @@ extern CGameDataUsed *GyoraceFish;
 extern CGyoRaceData *GyoraceData;
 
 /**
+ *
  * Message windows shared by the menus.
  *
  * @mangled MenuDCMsg

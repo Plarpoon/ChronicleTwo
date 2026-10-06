@@ -23,6 +23,7 @@ struct mgVu0FBOX;
 class CEditCollision : public CCollisionMDT {
 public:
     /**
+     *
      * Copies the triangles of one area kind into other geometry, taking
      * the new array from a heap, and refreshes this geometry's bounds;
      * the other geometry is left empty when none match or no heap is given.
@@ -34,6 +35,7 @@ public:
     void Copy(CEditCollision &dest, int plane_no, mgCMemory *memory);
 
     /**
+     *
      * Returns the total area of the triangles projected onto the XZ
      * plane.
      *
@@ -44,6 +46,7 @@ public:
     float AreaXZ();
 
     /**
+     *
      * Measures how much a triangle covers this geometry on the XZ
      * plane, optionally writing the area and the bounds of the covered
      * region, and returns nonzero when they overlap.
@@ -55,6 +58,7 @@ public:
     int OverlapPoly3XZ(float (*triangle)[4], float *area, mgVu0FBOX *box);
 
     /**
+     *
      * Returns the area by which another part's geometry, placed by a
      * matrix, covers this geometry on the XZ plane, optionally writing
      * the bounds of the covered region.
@@ -66,6 +70,7 @@ public:
     float OverlapXZ(CEditCollision &other, float (*matrix)[4], mgVu0FBOX *box);
 
     /**
+     *
      * Measures how much a triangle covers the triangles of this
      * geometry, placed by a matrix, that lie at or below ground level,
      * optionally writing the area, and returns nonzero when they overlap.
@@ -77,6 +82,7 @@ public:
     int OverlapPoly3XZ(float (*triangle)[4], float (*matrix)[4], float *area);
 
     /**
+     *
      * Moves every triangle by a matrix, snapping heights to whole units
      * and recomputing the normals and the bounds.
      *
@@ -87,6 +93,7 @@ public:
     void ApplyMatrix(float (*matrix)[4]);
 
     /**
+     *
      * Removes the vertical triangles, keeping only the floors, and
      * recomputes the bounds.
      *
@@ -97,6 +104,7 @@ public:
     void DeleteVerticalPoly();
 
     /**
+     *
      * Keeps only the vertical triangles, numbers the walls so that
      * triangles on the same plane share a number, and returns how many
      * walls there are.
@@ -111,6 +119,7 @@ public:
 STATIC_ASSERT(sizeof(CEditCollision) == 0x50);
 
 /**
+ *
  * Reports whether two boxes, each given by its largest and smallest
  * corners, overlap on the XZ plane.
  *
@@ -121,6 +130,7 @@ STATIC_ASSERT(sizeof(CEditCollision) == 0x50);
 int ClipBoxXZ(float *max_a, float *min_a, float *max_b, float *min_b);
 
 /**
+ *
  * Returns the area of the region of the XZ plane covered by both of two
  * triangles, and when a box is given writes the bounds of that region
  * lifted onto the second triangle's plane.

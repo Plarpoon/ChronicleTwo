@@ -1902,7 +1902,9 @@ void CNameRegiMenu::DrawBaseBoard() {
 #ifdef NONMATCHING
 void CNameRegiMenu::DrawActiveFont() {
     /**
+     *
      * Locates an additional mark drawn beside an active Kanji character.
+     *
      */
     struct KanjiMark {
         int x; /**< Horizontal position. */

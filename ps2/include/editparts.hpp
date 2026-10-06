@@ -20,12 +20,16 @@
 class mgCMemory;
 
 /**
+ *
  * Number of materials an edit part can need to be built.
+ *
  */
 #define EDIT_PARTS_MATERIAL_MAX 4
 
 /**
+ *
  * Number of villagers one house can hold.
+ *
  */
 #define EDIT_HOUSE_NPC_MAX 3
 
@@ -127,6 +131,7 @@ public:
     s32               unk_27c;
 
     /**
+     *
      * Makes a definition that describes no part.
      *
      * @mangled __ct__14CEditPartsInfoFv
@@ -136,6 +141,7 @@ public:
     CEditPartsInfo() { Initialize(); }
 
     /**
+     *
      * Clears the definition to one that describes no part.
      *
      * @mangled Initialize__14CEditPartsInfoFv
@@ -145,6 +151,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Gets the kind of part, an EditPartsType, with the river and
      * attribute 0x40 overriding parts_type.
      *
@@ -155,6 +162,7 @@ public:
     int GetPartsType();
 
     /**
+     *
      * Sets up the part's extent with a W of one on both corners.
      *
      * @mangled CreateBox__14CEditPartsInfoFv
@@ -164,6 +172,7 @@ public:
     void CreateBox();
 
     /**
+     *
      * Gets the height of the part's extent.
      *
      * @mangled GetPartsHeight__14CEditPartsInfoFv
@@ -173,6 +182,7 @@ public:
     float GetPartsHeight();
 
     /**
+     *
      * Gets the largest of the width, height and depth of the part's
      * extent.
      *
@@ -183,6 +193,7 @@ public:
     float GetPartsMaxWidth();
 
     /**
+     *
      * Gets one of the materials needed to build the part, or NULL for a
      * number out of range.
      *
@@ -193,6 +204,7 @@ public:
     EditPartsMaterial *GetMaterial(int index);
 
     /**
+     *
      * Gets the colour the model gives one colour number before it is
      * painted; gives back 0 without a model.
      *
@@ -216,13 +228,16 @@ public:
     s32 npc_no[EDIT_HOUSE_NPC_MAX]; /**< Villagers who live in the house; 0 or below for none. */
 
     /**
+     *
      * Clears the house.
+     *
      */
     CEditHouse() {
         memset(this, 0, sizeof(*this));
     }
 
     /**
+     *
      * Gives back non-zero while any villager lives in the house.
      *
      * @mangled LiveChara__10CEditHouseFv
@@ -265,6 +280,7 @@ public:
     s32             unk_32c;
 
     /**
+     *
      * Makes a part that is not placed.
      *
      * @mangled __ct__10CEditPartsFv
@@ -274,6 +290,7 @@ public:
     CEditParts() { Initialize(); }
 
     /**
+     *
      * Sets the position of the part, given in world space, as a height
      * above the ground it stands on.
      *
@@ -284,6 +301,7 @@ public:
     virtual void SetPosition(float *position);
 
     /**
+     *
      * Sets the position of the part, given in world space, as a height
      * above the ground it stands on.
      *
@@ -294,6 +312,7 @@ public:
     virtual void SetPosition(float x, float y, float z);
 
     /**
+     *
      * Gets the position of the part in world space, adding the height of
      * the ground it stands on.
      *
@@ -304,6 +323,7 @@ public:
     virtual void GetPosition(float *pos);
 
     /**
+     *
      * Clears the part to one that is not placed and has no definition.
      *
      * @mangled Initialize__10CEditPartsFv
@@ -313,6 +333,7 @@ public:
     virtual void Initialize();
 
     /**
+     *
      * Copies a changed position, rotation and scale into the frame, lifted
      * by the height of the ground the part stands on.
      *
@@ -323,6 +344,7 @@ public:
     virtual void UpDatePosition();
 
     /**
+     *
      * Copies the part into another map part.
      *
      * @mangled Copy__10CEditPartsFR9CMapPartsP9mgCMemory
@@ -332,6 +354,7 @@ public:
     virtual void Copy(CMapParts &source, mgCMemory *memory);
 
     /**
+     *
      * Gets the position of the part relative to the ground it stands on.
      *
      * @mangled GetLocalPos__10CEditPartsFPf
@@ -341,6 +364,7 @@ public:
     void GetLocalPos(float *pos);
 
     /**
+     *
      * Gets the number that identifies the part's definition, or -1
      * without one.
      *
@@ -351,6 +375,7 @@ public:
     int GetInfoID();
 
     /**
+     *
      * Gets the first villager living in the part's house, or -1 without a
      * house.
      *
@@ -361,6 +386,7 @@ public:
     int GetLiveNPC();
 
     /**
+     *
      * Gives back non-zero when the part has walls that other parts can be
      * put against.
      *
@@ -371,6 +397,7 @@ public:
     int IsWallParts();
 
     /**
+     *
      * Gives back non-zero when the part is a fence.
      *
      * @mangled IsFence__10CEditPartsFv
@@ -380,6 +407,7 @@ public:
     int IsFence();
 
     /**
+     *
      * Gives back non-zero when the part can burn.
      *
      * @mangled IsBurn__10CEditPartsFv
@@ -389,6 +417,7 @@ public:
     int IsBurn();
 
     /**
+     *
      * Gets the world positions of the two ends of a fence; gives back 0
      * when the part has no ends to give.
      *
@@ -399,6 +428,7 @@ public:
     int GetFenceSide(float *end_a, float *end_b);
 
     /**
+     *
      * Gets the plane, centre and extent of one wall of the part; gives
      * back 0 when the part has no such wall.
      *
@@ -409,6 +439,7 @@ public:
     int GetWallPlane(int wall_no, WallInfo *out_info);
 
     /**
+     *
      * Gets the number of walls the part has, or 0 without a definition.
      *
      * @mangled GetWallGroupNum__10CEditPartsFv
@@ -418,6 +449,7 @@ public:
     int GetWallGroupNum();
 
     /**
+     *
      * Gets the kind of part, an EditPartsType, or -1 without a
      * definition.
      *
@@ -428,6 +460,7 @@ public:
     int GetPartsType();
 
     /**
+     *
      * Gives back non-zero when the space this part takes up meets the
      * space another part takes up.
      *
@@ -438,6 +471,7 @@ public:
     int CheckTerritory(CEditParts *other);
 
     /**
+     *
      * Finds the largest number of materials any piece of the part
      * recolours.
      *
@@ -452,6 +486,7 @@ STATIC_ASSERT(sizeof(CEditParts::WallInfo) == 0x40);
 STATIC_ASSERT(sizeof(CEditParts) == 0x330);
 
 /**
+ *
  * Gives back non-zero when two colours are near enough to count as the
  * same.
  *

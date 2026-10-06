@@ -146,7 +146,9 @@ void DrawDrumCounter(int x, int y, int value) {
 }
 
 /**
+ *
  * Draws the rotating highlight around the active item slot with its fade alpha.
+ *
  */
 void DrawActiveItemCursor(int x, int y, float alpha) {
     CPreSprite sprite;

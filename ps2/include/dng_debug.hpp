@@ -55,11 +55,14 @@ struct DNG_DEBUG_INFO {
 STATIC_ASSERT(sizeof(DNG_DEBUG_INFO) == 0x20);
 
 /**
+ *
  * State and settings of the dungeon debug menu.
+ *
  */
 extern DNG_DEBUG_INFO dbinfo;
 
 /**
+ *
  * Returns the state and settings of the dungeon debug menu.
  *
  * @mangled dngGetDebugInfo__Fv
@@ -69,6 +72,7 @@ extern DNG_DEBUG_INFO dbinfo;
 DNG_DEBUG_INFO *dngGetDebugInfo();
 
 /**
+ *
  * Closes the debug menu, puts its settings to their defaults and sets up
  * the font that it draws with.
  *
@@ -79,6 +83,7 @@ DNG_DEBUG_INFO *dngGetDebugInfo();
 void dngDebugInit();
 
 /**
+ *
  * Opens the debug menu: loads the menu's values from the settings they
  * control, turns on pad auto-repeat and holds the battle area scene in the
  * debug mode.
@@ -90,6 +95,7 @@ void dngDebugInit();
 void dngDebugStart();
 
 /**
+ *
  * Draws the debug menu, with the name of the monster that the enemy
  * loader line selects, while the menu is open.
  *
@@ -100,11 +106,11 @@ void dngDebugStart();
 void dngDebugDraw();
 
 /**
+ *
  * Moves the cursor, changes the values and runs the commands of the debug
  * menu from the pad, closing the menu when a command needs it.
  *
  * @return 0 when the menu is closed, otherwise 1.
- *
  * @mangled dngDebugKey__Fv
  * @address 0x1BC350
  * @size 0x3A0
@@ -112,6 +118,7 @@ void dngDebugDraw();
 int dngDebugKey();
 
 /**
+ *
  * Draws the system parameter window that the debug menu's information
  * line selects, if any.
  *

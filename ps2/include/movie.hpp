@@ -247,6 +247,7 @@ public:
     u_char     unk_23910[0x30];
 
     /**
+     *
      * Allocates the work buffers from six memory managers, opens the movie
      * file, sets up the decoders and pre-reads the start of the stream.
      *
@@ -258,6 +259,7 @@ public:
               bool init_sound);
 
     /**
+     *
      * Allocates every work buffer from one memory manager, loads the movie
      * and initialises the IOP sound library.
      *
@@ -268,6 +270,7 @@ public:
     void Load(char *name, mgCMemory *memory, int width, int height, bool with_audio, bool loop);
 
     /**
+     *
      * Allocates every work buffer from one memory manager and loads the
      * movie.
      *
@@ -279,6 +282,7 @@ public:
               bool init_sound);
 
     /**
+     *
      * Starts the movie's threads and interrupt handlers, drawing frames into
      * the named texture.
      *
@@ -289,6 +293,7 @@ public:
     void Play(char *path);
 
     /**
+     *
      * Yields the CPU to the movie's threads several times while playing.
      *
      * @mangled SwitchThread__6CMovieFv
@@ -298,6 +303,7 @@ public:
     void SwitchThread();
 
     /**
+     *
      * Stops the movie's threads and handlers and releases the decoders and
      * the file.
      *
@@ -308,6 +314,7 @@ public:
     void Term();
 
     /**
+     *
      * Returns non-zero once the whole stream has been read and decoded.
      *
      * @mangled EndCheck__6CMovieFv
@@ -317,6 +324,7 @@ public:
     int EndCheck();
 
     /**
+     *
      * Returns whether enough frames and audio are buffered for display to
      * have begun.
      *
@@ -327,6 +335,7 @@ public:
     int IsStarted();
 
     /**
+     *
      * Returns the size in bytes of the decoded frame buffers.
      *
      * @mangled GetVoBufDataSize__6CMovieFv
@@ -336,6 +345,7 @@ public:
     int GetVoBufDataSize();
 
     /**
+     *
      * Returns the size in bytes of the video bit-stream blocks.
      *
      * @mangled GetViBufDataSize__6CMovieFv
@@ -345,6 +355,7 @@ public:
     int GetViBufDataSize();
 
     /**
+     *
      * Returns the size in bytes of the video bit-stream DMA chain.
      *
      * @mangled GetViBufTagSize__6CMovieFv
@@ -354,6 +365,7 @@ public:
     int GetViBufTagSize();
 
     /**
+     *
      * Returns the size in bytes of the MPEG decoder's work area for a
      * picture size.
      *
@@ -364,6 +376,7 @@ public:
     int GetMpegWorkSize(int width, int height);
 
     /**
+     *
      * Returns the size in bytes of the PSS read buffer.
      *
      * @mangled GetReadBufSize__6CMovieFv
@@ -373,6 +386,7 @@ public:
     int GetReadBufSize();
 
     /**
+     *
      * Returns the size in bytes of one frame upload chain for a picture
      * size.
      *
@@ -383,6 +397,7 @@ public:
     int GetTagProgSize(int width, int height);
 
     /**
+     *
      * Creates the MPEG decoder, registers its callbacks and creates its
      * bit-stream ring.
      *
@@ -394,6 +409,7 @@ public:
                        u_long128 *tag, int sectors, TimeStamp *ts, int ts_count);
 
     /**
+     *
      * Registers the demultiplexer callback for one elementary stream.
      *
      * @mangled videoDecSetStream__6CMovieFP8VideoDeciiPFP7sceMpegP13sceMpegCbDataPv_iPv
@@ -404,6 +420,7 @@ public:
                           int (*callback)(sceMpeg *, sceMpegCbData *, void *), void *user);
 
     /**
+     *
      * Stops the bit-stream DMA and destroys the MPEG decoder.
      *
      * @mangled videoDecDelete__6CMovieFP8VideoDec
@@ -413,6 +430,7 @@ public:
     int videoDecDelete(VideoDec *dec);
 
     /**
+     *
      * Appends an end code to the bit stream and pads it to a whole block so
      * the decoder can finish.
      *

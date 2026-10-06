@@ -4915,7 +4915,7 @@ void CheckItemBoardFunc_MenuIconDrawPrepare(CUserDataManager *manager, MENUFORMP
             }
 
             i++;
-            item = (CGameDataUsed *) ((u8 *) item + 0x6C);
+            item++;
             offset += 0x48;
         } while (i < count);
     }
@@ -6186,17 +6186,15 @@ void SetBuildUpInfoChara(CCharacter2 *chara, float range) {
 
 void StepBuildUpInfoEffect() {
     int               i;
-    int               offset;
     CEffVerticalLine *line;
 
     if (MenuVerticalLine != NULL) {
-        for (i = 0, offset = 0; i < MenuVerticalLineNum; offset += sizeof(CEffVerticalLine), i++) {
-            ((CEffVerticalLine *) ((u8 *) MenuVerticalLine + offset))->Step();
-            line = (CEffVerticalLine *) ((u8 *) MenuVerticalLine + offset);
+        for (i = 0; i < MenuVerticalLineNum; i++) {
+            MenuVerticalLine[i].Step();
+            line = &MenuVerticalLine[i];
 
             if (3.1415927f <= line->angle || 19.0f <= line->pos[1]) {
-                ((CEffVerticalLine *) ((u8 *) MenuVerticalLine + offset))
-                    ->Generate(MenuVerticalLineCharaPos, MenuVerticalRange, 20.0f);
+                MenuVerticalLine[i].Generate(MenuVerticalLineCharaPos, MenuVerticalRange, 20.0f);
             }
         }
     }
@@ -6435,13 +6433,9 @@ void CMenuEffect::EffectStart() {
 
 void CMenuEffect::PresetInfoAll(int kind) {
     int i;
-    int offset;
-
-    offset = 0;
 
     for (i = 0; i < info_num; i++) {
-        PresetInfo((MENU_EFFECT_INFO *) ((u8 *) info + offset), i, kind);
-        offset += 0x40;
+        PresetInfo(&info[i], i, kind);
     }
 }
 

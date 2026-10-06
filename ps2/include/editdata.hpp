@@ -17,53 +17,73 @@
 class CEditParts;
 
 /**
+ *
  * Number of Georama maps that keep a saved layout and an analysis script.
+ *
  */
 #define EDIT_ANALYZE_MAP_MAX 5
 
 /**
+ *
  * Number of conditions an analysis script can name for one map.
+ *
  */
 #define EDIT_ANALYZE_CONDITION_MAX 64
 
 /**
+ *
  * Number of requests (analysis entries) an analysis script can give one map.
+ *
  */
 #define EDIT_ANALYZE_DATA_MAX 16
 
 /**
+ *
  * Number of condition numbers one request can depend on, including the
  * terminating -1.
+ *
  */
 #define EDIT_ANALYZE_CON_NO_MAX 8
 
 /**
+ *
  * Deepest a request may recurse through the requests its conditions depend on.
+ *
  */
 #define EDIT_ANALYZE_DEPTH_MAX 64
 
 /**
+ *
  * Number of placed parts a saved layout holds.
+ *
  */
 #define EDIT_DATA_PARTS_MAX 300
 
 /**
+ *
  * Number of houses a saved layout holds.
+ *
  */
 #define EDIT_DATA_HOUSE_MAX 32
 
 /**
+ *
  * Number of placement log entries a saved layout holds.
+ *
  */
 #define EDIT_DATA_PLACE_LOG_MAX 0x800
 
 /**
+ *
  * Number of bytes a saved layout keeps its river grids in.
+ *
  */
 #define EDIT_DATA_GRID_SIZE 0x400
 
 /**
+ *
  * Number of colours of a placed part that a saved layout keeps.
+ *
  */
 #define EDIT_DATA_COLOR_MAX 4
 
@@ -280,6 +300,7 @@ public:
     int GetPartsNumID(int id);
 
     /**
+     *
      * Works out whether a request is met, first working out every condition
      * it needs that is itself decided by another request; gives back
      * non-zero when it is met.
@@ -291,6 +312,7 @@ public:
     s8 Analyze(int entry, int area, int *pending, int depth);
 
     /**
+     *
      * Sets every condition of a map: those whose con_src entry is below
      * zero from con_value, and the rest from the request that con_src
      * names.
@@ -332,6 +354,7 @@ public:
     int GetAnalyzePercent(int area);
 
     /**
+     *
      * Gives back non-zero when every condition of a request is met, filling
      * in the request's condition numbers and whether each is met.
      *
@@ -382,6 +405,7 @@ public:
     void dbgSetAllContintionFlag(int map_no, int flag);
 
     /**
+     *
      * Gives back whether a condition is met, for debugging, copying the
      * condition's name to name when name is not NULL.
      *

@@ -31,12 +31,16 @@ class mgCTexture;
 struct MENUFORMPARTS_TYPE;
 
 /**
+ *
  * Number of option lines the option menu has room for.
+ *
  */
 #define OPTION_ITEM_MAX 20
 
 /**
+ *
  * Number of choice buttons on one option line.
+ *
  */
 #define OPTION_BUTTON_NUM 3
 
@@ -189,6 +193,7 @@ public:
     }
 
     /**
+     *
      * Steps the menu one frame: picks an entry, plays its movie or turns its
      * picture pages, and closes. Gives 1 once it has closed.
      *
@@ -199,6 +204,7 @@ public:
     int KeyStep();
 
     /**
+     *
      * Places the entry list, its messages and its scroll bar on the screen.
      *
      * @mangled CalcTex__11CManualMenuFv
@@ -208,6 +214,7 @@ public:
     void CalcTex();
 
     /**
+     *
      * Moves the menu cursor to the entry it is on.
      *
      * @mangled CalcCursorPosition__11CManualMenuFv
@@ -261,6 +268,7 @@ public:
     }
 
     /**
+     *
      * Steps the menu one frame: moves the cursor, changes the options and
      * closes. Gives 1 once it has closed.
      *
@@ -271,6 +279,7 @@ public:
     int KeyStep();
 
     /**
+     *
      * Places the option list, its messages and its scroll bar on the screen.
      *
      * @mangled CalcTex__11CMenuOptionFv
@@ -280,6 +289,7 @@ public:
     void CalcTex();
 
     /**
+     *
      * Dims every button of one option's row.
      *
      * @mangled DefaultButton__11CMenuOptionFPP18MENUFORMPARTS_TYPE
@@ -289,6 +299,7 @@ public:
     void DefaultButton(MENUFORMPARTS_TYPE **row);
 
     /**
+     *
      * Lights one button, marking it as the option's choice.
      *
      * @mangled EnableButton__11CMenuOptionFP18MENUFORMPARTS_TYPE
@@ -298,6 +309,7 @@ public:
     void EnableButton(MENUFORMPARTS_TYPE *button);
 
     /**
+     *
      * Lights the button of each option's current choice.
      *
      * @mangled UpdateOptionForm__11CMenuOptionFv
@@ -382,6 +394,7 @@ public:
     }
 
     /**
+     *
      * Shows the progress message of a save or load at the middle of the
      * screen.
      *
@@ -392,6 +405,7 @@ public:
     void SetDlInfoMsg(int load, int show);
 
     /**
+     *
      * Starts saving to the chosen file: asks the memory card manager to make
      * a new file (kind 1) or overwrite the file (kind 0), and shows the
      * progress bar.
@@ -403,6 +417,7 @@ public:
     void EnvSetSave(int kind);
 
     /**
+     *
      * Steps the menu one frame: steps the memory card manager, moves through
      * the slot choice, file list, format and error pages, and closes. Gives 1
      * once it has closed.
@@ -417,6 +432,7 @@ public:
 STATIC_ASSERT(sizeof(CSaveMenuClass) == 0x1A4);
 
 /**
+ *
  * Makes the message that tells how to go back from the save menu.
  *
  * @mangled InitMenuReturnMsg__FP9mgCMemory
@@ -426,6 +442,7 @@ STATIC_ASSERT(sizeof(CSaveMenuClass) == 0x1A4);
 void InitMenuReturnMsg(mgCMemory *stack);
 
 /**
+ *
  * Turns the message that tells how to go back on or off; it is shown only
  * outside Japanese and only once it has been made.
  *
@@ -436,6 +453,7 @@ void InitMenuReturnMsg(mgCMemory *stack);
 void SetMenuReturnMsgCtrl(int show);
 
 /**
+ *
  * Draws the message that tells how to go back, while it is turned on.
  *
  * @mangled DrawMenuReturnMsg__Fv
@@ -445,6 +463,7 @@ void SetMenuReturnMsgCtrl(int show);
 void DrawMenuReturnMsg();
 
 /**
+ *
  * Gives 1 for the two manual entries that the bonus mode opens in a dungeon
  * even before their event has been seen.
  *
@@ -455,6 +474,7 @@ void DrawMenuReturnMsg();
 int CheckOmakeVtuto(int entry);
 
 /**
+ *
  * Opens the manual menu: makes the menu, reads its textures and form data
  * and fills the entry list.
  *
@@ -465,6 +485,7 @@ int CheckOmakeVtuto(int entry);
 void MenuManualInit(mgCMemory *memory, int *tex_block, int open_type);
 
 /**
+ *
  * Steps the manual menu one frame. Gives 1 once it has closed.
  *
  * @mangled MenuManualKey__Fv
@@ -474,6 +495,7 @@ void MenuManualInit(mgCMemory *memory, int *tex_block, int open_type);
 int MenuManualKey();
 
 /**
+ *
  * Draws the manual menu, its movie or its picture page, and puts the
  * game's data back once a movie has finished.
  *
@@ -484,6 +506,7 @@ int MenuManualKey();
 void MenuManualDraw();
 
 /**
+ *
  * Opens the option menu: makes the menu, reads its textures and form data,
  * and copies the game's options for editing.
  *
@@ -494,6 +517,7 @@ void MenuManualDraw();
 void MenuOptionInit(mgCMemory *memory, int *tex_block, int open_type);
 
 /**
+ *
  * Steps the option menu one frame. Gives 1 once it has closed.
  *
  * @mangled MenuOptionKey__Fv
@@ -503,6 +527,7 @@ void MenuOptionInit(mgCMemory *memory, int *tex_block, int open_type);
 int MenuOptionKey();
 
 /**
+ *
  * Draws the option menu.
  *
  * @mangled MenuOptionDraw__Fv
@@ -512,6 +537,7 @@ int MenuOptionKey();
 void MenuOptionDraw();
 
 /**
+ *
  * Sizes and places the three parts of a list's scroll bar for the list's
  * length, the number of lines shown and the first line shown.
  *
@@ -522,6 +548,7 @@ void MenuOptionDraw();
 void LocalFunc_AdjustScrlBar(MENUFORMPARTS_TYPE **parts, int *pos, int *size, int top, float line_num, float show_num, int jump);
 
 /**
+ *
  * Draws the save menu's file list: a panel for each file and the file's
  * place, chapter and play time.
  *
@@ -532,6 +559,7 @@ void LocalFunc_AdjustScrlBar(MENUFORMPARTS_TYPE **parts, int *pos, int *size, in
 void SaveFileListDraw(int &tex_block, float *pos, int alpha);
 
 /**
+ *
  * Gives the map number of one of the dungeons, or 0 for a number out of
  * range.
  *
@@ -542,6 +570,7 @@ void SaveFileListDraw(int &tex_block, float *pos, int alpha);
 int GetDngMapNo(int dungeon);
 
 /**
+ *
  * Keeps the saved map information so that ResetMapInfo can put it back, and
  * when a dungeon is given, records the game as being in that dungeon.
  *
@@ -552,6 +581,7 @@ int GetDngMapNo(int dungeon);
 void SaveMapInfo(int dungeon);
 
 /**
+ *
  * Puts back the map information that SaveMapInfo kept.
  *
  * @mangled ResetMapInfo__Fv
@@ -561,6 +591,7 @@ void SaveMapInfo(int dungeon);
 void ResetMapInfo();
 
 /**
+ *
  * Opens the save menu: makes the menu and the memory card manager, reads
  * the menu's textures and form data and stops the music.
  *
@@ -571,6 +602,7 @@ void ResetMapInfo();
 void MenuSaveInit(mgCMemory *memory, int *tex_block, int mode);
 
 /**
+ *
  * Steps the save menu one frame. Gives 1 once it has closed.
  *
  * @mangled MenuSaveKey__Fv
@@ -580,6 +612,7 @@ void MenuSaveInit(mgCMemory *memory, int *tex_block, int mode);
 int MenuSaveKey();
 
 /**
+ *
  * Draws the save menu.
  *
  * @mangled MenuSaveDraw__Fv
@@ -589,6 +622,7 @@ int MenuSaveKey();
 void MenuSaveDraw();
 
 /**
+ *
  * Opens the mini-game save menu, which saves or loads the mini-game data:
  * makes the memory card manager and the mini-game data and reads the
  * menu's textures.
@@ -600,6 +634,7 @@ void MenuSaveDraw();
 void SubGameSaveInit(mgCMemory *memory, int *tex_block, int mode);
 
 /**
+ *
  * Steps the mini-game save menu one frame. Gives 1 once it has closed.
  *
  * @mangled SubGameSaveKey__Fv
@@ -609,6 +644,7 @@ void SubGameSaveInit(mgCMemory *memory, int *tex_block, int mode);
 int SubGameSaveKey();
 
 /**
+ *
  * Draws the mini-game save menu.
  *
  * @mangled SubGameSaveDraw__Fv
@@ -618,6 +654,7 @@ int SubGameSaveKey();
 void SubGameSaveDraw();
 
 /**
+ *
  * Map information of the save data, kept by SaveMapInfo for ResetMapInfo.
  *
  * @mangled MenuMapInfoSave

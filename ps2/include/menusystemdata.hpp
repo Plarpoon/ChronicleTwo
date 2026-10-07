@@ -54,7 +54,7 @@ public:
     u8                      unk_c[0x14];
     MENU_SYSTEM_LIST_CURSOR invent_item; /**< Cursor of the invention menu's carried item list. */
     u8                      unk_24[0xA];
-    s16                     invent_unk_2e; /**< Value kept for the invention menu between visits. */
+    s16                     invent_memo_sort_mode; /**< Value kept for the invention menu between visits. */
     MENU_SYSTEM_LIST_CURSOR invent_card;   /**< Cursor of the invention menu's card list. */
     MENU_SYSTEM_LIST_CURSOR invent_photo;  /**< Cursor of the invention menu's carried photo board. */
     MENU_SYSTEM_LIST_CURSOR invent_album;  /**< Cursor of the invention menu's album board. */

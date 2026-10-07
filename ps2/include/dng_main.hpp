@@ -95,13 +95,9 @@ struct MoveCheckInfo {
      * @address 0x1CF550
      * @size 0x10
      */
-#ifdef DNG_MAIN_SOURCE
-    void Initialize();
-#else
     void Initialize() {
         memset(this, 0, sizeof(MoveCheckInfo));
     }
-#endif
 
     /**
      *

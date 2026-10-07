@@ -179,49 +179,49 @@ enum {
     kFishAxisSide = 5,
 };
 
-int                InitUkiWait(CScene *scene);
-int                InitFalse(CScene *scene);
-int                InitBattle(CScene *scene);
-int                InitSuccess(CScene *scene);
-void               DrawHamon(float *pos, float scale);
-void               SetNextMode(int mode);
-float              GetFishDist(CScene *scene);
-void               EsaInit();
-int                GetMotionCount(CCharacter2 *chara, char *name, int min_count, int max_count, int min_speed);
-void               DeleteEsa();
-int                EndSelectCastingPoint(CScene *scene);
+int              InitUkiWait(CScene *scene);
+int              InitFalse(CScene *scene);
+int              InitBattle(CScene *scene);
+int              InitSuccess(CScene *scene);
+void             DrawHamon(float *pos, float scale);
+void             SetNextMode(int mode);
+float            GetFishDist(CScene *scene);
+void             EsaInit();
+int              GetMotionCount(CCharacter2 *chara, char *name, int min_count, int max_count, int min_speed);
+void             DeleteEsa();
+int              EndSelectCastingPoint(CScene *scene);
 static FISH_PARAM *GetFishParam(int index);
-int                GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, int bait_no);
-int                GetUkiPokeTime(FISH_DATA *fish);
-int                GetUkiPullTime(FISH_DATA *fish);
-int                FishLoadBG(FISH_DATA *fish, u_long128 *buffer);
-float              GetRandamNumber(float center, float high, float floor);
-void               DrawSplash(float *pos, float scale);
-void               LineTensionStep(FISH_DATA *fish, int reel);
-void               ExitFishing(CScene *scene);
-int                LoadExMotionBG(SubGameInfo *info, u_long128 *buffer);
-void               ReplayPrevBGM(CScene *scene);
-int                LoadExMotionStep(SubGameInfo *info, mgCMemory *memory);
-int                InitDataLoading();
-int                switch_thread();
-int                CreateLoadThread(mgCMemory *memory);
-int                StepLoadThread();
-void               DeleteLoadThread();
-void               DrawNumber(mgCDrawPrim *prim, int digit, int x, int y);
-int                InitCasting(CScene *scene);
-extern float       CastDist;
-extern Vec4        CastPointCur;
-extern Vec4        at_1631__3;
-extern char        at_1576__2[];
-extern Vec4        at_1490__2;
-extern Vec4        at_1491__2;
-extern char        at_1508__3[];
-extern char        at_1509__3[];
-extern mgCMemory   EsaStack;
-extern mgCMemory   SndStack;
-extern mgCMemory   FishingBuff__2;
-extern Vec4        at_1536;
-extern char        at_1577[];
+int              GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, int bait_no);
+int              GetUkiPokeTime(FISH_DATA *fish);
+int              GetUkiPullTime(FISH_DATA *fish);
+int              FishLoadBG(FISH_DATA *fish, u_long128 *buffer);
+float            GetRandamNumber(float center, float high, float floor);
+void             DrawSplash(float *pos, float scale);
+void             LineTensionStep(FISH_DATA *fish, int reel);
+void             ExitFishing(CScene *scene);
+int              LoadExMotionBG(SubGameInfo *info, u_long128 *buffer);
+void             ReplayPrevBGM(CScene *scene);
+int              LoadExMotionStep(SubGameInfo *info, mgCMemory *memory);
+int              InitDataLoading();
+int              switch_thread();
+int              CreateLoadThread(mgCMemory *memory);
+int              StepLoadThread();
+void             DeleteLoadThread();
+void             DrawNumber(mgCDrawPrim *prim, int digit, int x, int y);
+int              InitCasting(CScene *scene);
+extern float     CastDist;
+extern Vec4      CastPointCur;
+extern Vec4      at_1631__3;
+extern char      at_1576__2[];
+extern Vec4      at_1490__2;
+extern Vec4      at_1491__2;
+extern char      at_1508__3[];
+extern char      at_1509__3[];
+extern mgCMemory EsaStack;
+extern mgCMemory SndStack;
+extern mgCMemory FishingBuff__2;
+extern Vec4      at_1536;
+extern char      at_1577[];
 
 enum {
     kPadButtonDebugJump = 1,
@@ -351,9 +351,7 @@ extern "C" void *__vt__7CObject[];
 extern "C" void *__vt__12CObjectFrame[];
 extern "C" void *__vt__11CCharacter2[];
 
-#pragma define_section dead ".dead" \
-                            ".dead"
-
+#pragma define_section dead ".dead" ".dead"
 __declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
     return a / b;
 }
@@ -533,9 +531,8 @@ int sgInitFishing(SubGameInfo *info) {
     info->record_check = info->dungeon;
     return 1;
 }
-
 int sgRestartFishing(SubGameInfo *info) {
-    CScene    *scene = info->scene;
+    CScene *scene = info->scene;
     u_long128 *buffer = ReadBuffer;
 
     mgTexManager.DeleteBlock(EsaTexb);
@@ -543,87 +540,70 @@ int sgRestartFishing(SubGameInfo *info) {
     LocalEsaNo = -1;
     EsaStack.lock = 0;
     EsaChara = NULL;
-
     for (int i = 0; i < 18; i++) {
         if (info->esa_no == EsaInfo[i]) {
             LocalEsaNo = i;
             break;
         }
     }
-
     if (info->rod_no == 0x12F) {
         SetFishingMode(kFishingModeLure);
         EsaChara = NULL;
         char lure_path[0x40] = "sg/fish/";
-        int  lure_no = LocalEsaNo - 14;
-
+        int lure_no = LocalEsaNo - 14;
         if (lure_no >= 4) {
             lure_no = -1;
         }
-
         LureFrame = NULL;
-
         if (lure_no >= 0) {
             strcat(lure_path, lure_file[lure_no]);
-
             if (LoadFile2(lure_path, buffer, NULL, 0) != 0) {
-                Lure->LoadPackNoLine((u_int *) buffer, at_932__4, &EsaStack, &EsaStack, &EsaStack, EsaTexb, NULL);
+                Lure->LoadPackNoLine((u_int *)buffer, at_932__4, &EsaStack, &EsaStack, &EsaStack, EsaTexb, NULL);
             }
-
             LureFrame = Lure->CObjectFrame::frame;
         }
-
         InitLureObj(lure_no, LureFrame);
-
         if (lure_no < 0) {
             LureFrame = NULL;
             Lure->Initialize();
         }
-
         LureNo = lure_no;
     } else {
         SetFishingMode(kFishingModeFloat);
         char *esa_path = GetItemFilePath(info->esa_no, 0);
-
         if (esa_path != NULL) {
             if (*esa_path != 0 && LocalEsaNo >= 0) {
                 CCharacter2 *esa_chara;
-
-                if ((esa_chara = (CCharacter2 *) operator new(sizeof(CCharacter2), EsaStack.Alloc(0x68))) != NULL) {
-                    *(void ***) esa_chara = __vt__9mgCObject;
+                if ((esa_chara = (CCharacter2 *)operator new(sizeof(CCharacter2), EsaStack.Alloc(0x68))) != NULL) {
+                    *(void ***)esa_chara = __vt__9mgCObject;
                     esa_chara->Initialize();
-                    *(void ***) esa_chara = __vt__7CObject;
+                    *(void ***)esa_chara = __vt__7CObject;
                     esa_chara->Initialize();
-                    *(void ***) esa_chara = __vt__12CObjectFrame;
+                    *(void ***)esa_chara = __vt__12CObjectFrame;
                     esa_chara->Initialize();
-                    *(void ***) esa_chara = __vt__11CCharacter2;
+                    *(void ***)esa_chara = __vt__11CCharacter2;
                     esa_chara->shadow_link.num = 0;
                     esa_chara->shadow_link.dst_frame = 0;
                     esa_chara->shadow_link.src_frame = 0;
                     esa_chara->Initialize();
                 }
-
                 EsaChara = esa_chara;
                 EsaChara->Initialize();
-
                 if (LoadFile2(esa_path, buffer, NULL, 0) != 0) {
-                    EsaChara->LoadPackNoLine((u_int *) buffer, at_932__4, &EsaStack, &EsaStack, &EsaStack, EsaTexb, NULL);
+                    EsaChara->LoadPackNoLine((u_int *)buffer, at_932__4, &EsaStack, &EsaStack, &EsaStack, EsaTexb, NULL);
                 } else {
                     EsaChara = NULL;
                 }
             }
         }
     }
-
     sndSeAllStop(5);
     sndSeAllStop(8);
-
     if (sndSeCheck(FanSnd, 0) == 0) {
         mgCMemory sound_memory;
-        int       sound_size = MotionBuff.stGetRest();
+        int sound_size = MotionBuff.stGetRest();
         sound_memory.stSetBuffer(MotionBuff.stGetTop(), sound_size);
-        u_int *sound_buffer = (u_int *) sound_memory.stAlloc64(0x4000);
-
+        u_int *sound_buffer = (u_int *)sound_memory.stAlloc64(0x4000);
         if (sound_buffer != NULL && LoadFile2(at_1058__3, sound_buffer, NULL, 0) != 0) {
             sndInitPort(8);
             SndStack.stack_used = 0;
@@ -631,18 +611,15 @@ int sgRestartFishing(SubGameInfo *info) {
             FanSnd = sndLoadSound(8, sound_buffer, &SndStack);
         }
     }
-
     MardanEventMap = 0;
     MardanEventPlace = 0;
     CSaveData *save_data = GetSaveData();
-
     if (scene->now_map_no == 0x41) {
         if (save_data->GetBitFlag(0xEB) != 0 && save_data->GetBitFlag(0xF0) == 0) {
             MardanEventPlace = 0;
             MardanEventMap = 1;
         }
     }
-
     int rod_status[5];
     save_data->user_data.GetRodStatus(rod_status);
     RodData.status[0] = rod_status[0];
@@ -650,17 +627,16 @@ int sgRestartFishing(SubGameInfo *info) {
     RodData.status[2] = rod_status[2];
     RodData.status[3] = rod_status[3];
     RodData.status[4] = rod_status[4];
-    float rate = 0.2f * ((float) RodData.status[3] / 100.0f);
+    float rate = 0.2f * ((float)RodData.status[3] / 100.0f);
     rate += 0.8f;
-    RodData.status[0] = (int) (0.5f + (float) RodData.status[0] * rate);
-    RodData.status[1] = (int) (0.5f + (float) RodData.status[1] * rate);
-    RodData.status[2] = (int) (0.5f + (float) RodData.status[2] * rate);
-    RodData.status4_rate = (float) RodData.status[4] / 100.0f;
+    RodData.status[0] = (int)(0.5f + (float)RodData.status[0] * rate);
+    RodData.status[1] = (int)(0.5f + (float)RodData.status[1] * rate);
+    RodData.status[2] = (int)(0.5f + (float)RodData.status[2] * rate);
+    RodData.status4_rate = (float)RodData.status[4] / 100.0f;
     CastDist = 160.0f;
     SetWaterLevel(-100000.0f);
     return 1;
 }
-
 /**
  *
  * Resets fishing loading state and captures the active BGM status.
@@ -782,155 +758,134 @@ void DeleteLoadThread() {
         ThreadRunning = 0;
     }
 }
-
 void StepDataLoading(void *arg) {
-    char               path[0x80];
-    char               bgm_path[0x80];
-    int                file_size;
-    int                pack_size;
+    char path[0x80];
+    char bgm_path[0x80];
+    int file_size;
+    int pack_size;
     mgCTextureManager *tex_manager = &mgTexManager;
-    u_long128         *buffer = ReadBuffer;
-    SubGameInfo       *info = GetNowSubGameInfo();
-    CScene            *scene = info->scene;
-    mgCMemory         *memory = info->load_buff;
+    u_long128 *buffer = ReadBuffer;
+    SubGameInfo *info = GetNowSubGameInfo();
+    CScene *scene = info->scene;
+    mgCMemory *memory = info->load_buff;
 
     if (memory == NULL) {
         memory = scene->GetStack(5);
     }
-
     if (LoadFile2(at_1304__8, buffer, &file_size, 0) != 0) {
-        LoadFishPlaceData((char *) buffer, file_size, memory);
+        LoadFishPlaceData((char *)buffer, file_size, memory);
     }
-
     StartReadBG();
-
     if (LanguageCode >= 2) {
         sprintf(path, at_1305__5, LanguageCode);
     } else {
         strcpy(path, at_1306__6);
     }
-
     if (LoadFileBG(path, buffer, &pack_size) == 0) {
         step_end_flag = 1;
         return;
     }
-
     while (ReadBGSync() != 0) {
         switch_thread();
     }
-
     CCharacter2 *chara;
-
-    if ((chara = (CCharacter2 *) operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-        *(void ***) chara = __vt__9mgCObject;
+    if ((chara = (CCharacter2 *)operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
+        *(void ***)chara = __vt__9mgCObject;
         chara->Initialize();
-        *(void ***) chara = __vt__7CObject;
+        *(void ***)chara = __vt__7CObject;
         chara->Initialize();
-        *(void ***) chara = __vt__12CObjectFrame;
+        *(void ***)chara = __vt__12CObjectFrame;
         chara->Initialize();
-        *(void ***) chara = __vt__11CCharacter2;
+        *(void ***)chara = __vt__11CCharacter2;
         chara->shadow_link.num = 0;
         chara->shadow_link.dst_frame = 0;
         chara->shadow_link.src_frame = 0;
         chara->Initialize();
     }
-
     UkiRod = chara;
-
-    if ((chara = (CCharacter2 *) operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-        *(void ***) chara = __vt__9mgCObject;
+    if ((chara = (CCharacter2 *)operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
+        *(void ***)chara = __vt__9mgCObject;
         chara->Initialize();
-        *(void ***) chara = __vt__7CObject;
+        *(void ***)chara = __vt__7CObject;
         chara->Initialize();
-        *(void ***) chara = __vt__12CObjectFrame;
+        *(void ***)chara = __vt__12CObjectFrame;
         chara->Initialize();
-        *(void ***) chara = __vt__11CCharacter2;
+        *(void ***)chara = __vt__11CCharacter2;
         chara->shadow_link.num = 0;
         chara->shadow_link.dst_frame = 0;
         chara->shadow_link.src_frame = 0;
         chara->Initialize();
     }
-
     LureRod = chara;
-
-    if ((chara = (CCharacter2 *) operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-        *(void ***) chara = __vt__9mgCObject;
+    if ((chara = (CCharacter2 *)operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
+        *(void ***)chara = __vt__9mgCObject;
         chara->Initialize();
-        *(void ***) chara = __vt__7CObject;
+        *(void ***)chara = __vt__7CObject;
         chara->Initialize();
-        *(void ***) chara = __vt__12CObjectFrame;
+        *(void ***)chara = __vt__12CObjectFrame;
         chara->Initialize();
-        *(void ***) chara = __vt__11CCharacter2;
+        *(void ***)chara = __vt__11CCharacter2;
         chara->shadow_link.num = 0;
         chara->shadow_link.dst_frame = 0;
         chara->shadow_link.src_frame = 0;
         chara->Initialize();
     }
-
     Uki = chara;
-
-    if ((chara = (CCharacter2 *) operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-        *(void ***) chara = __vt__9mgCObject;
+    if ((chara = (CCharacter2 *)operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
+        *(void ***)chara = __vt__9mgCObject;
         chara->Initialize();
-        *(void ***) chara = __vt__7CObject;
+        *(void ***)chara = __vt__7CObject;
         chara->Initialize();
-        *(void ***) chara = __vt__12CObjectFrame;
+        *(void ***)chara = __vt__12CObjectFrame;
         chara->Initialize();
-        *(void ***) chara = __vt__11CCharacter2;
+        *(void ***)chara = __vt__11CCharacter2;
         chara->shadow_link.num = 0;
         chara->shadow_link.dst_frame = 0;
         chara->shadow_link.src_frame = 0;
         chara->Initialize();
     }
-
     Lure = chara;
-
-    if ((chara = (CCharacter2 *) operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-        *(void ***) chara = __vt__9mgCObject;
+    if ((chara = (CCharacter2 *)operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
+        *(void ***)chara = __vt__9mgCObject;
         chara->Initialize();
-        *(void ***) chara = __vt__7CObject;
+        *(void ***)chara = __vt__7CObject;
         chara->Initialize();
-        *(void ***) chara = __vt__12CObjectFrame;
+        *(void ***)chara = __vt__12CObjectFrame;
         chara->Initialize();
-        *(void ***) chara = __vt__11CCharacter2;
+        *(void ***)chara = __vt__11CCharacter2;
         chara->shadow_link.num = 0;
         chara->shadow_link.dst_frame = 0;
         chara->shadow_link.src_frame = 0;
         chara->Initialize();
     }
-
     Hari = chara;
-
-    if ((chara = (CCharacter2 *) operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-        *(void ***) chara = __vt__9mgCObject;
+    if ((chara = (CCharacter2 *)operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
+        *(void ***)chara = __vt__9mgCObject;
         chara->Initialize();
-        *(void ***) chara = __vt__7CObject;
+        *(void ***)chara = __vt__7CObject;
         chara->Initialize();
-        *(void ***) chara = __vt__12CObjectFrame;
+        *(void ***)chara = __vt__12CObjectFrame;
         chara->Initialize();
-        *(void ***) chara = __vt__11CCharacter2;
+        *(void ***)chara = __vt__11CCharacter2;
         chara->shadow_link.num = 0;
         chara->shadow_link.dst_frame = 0;
         chara->shadow_link.src_frame = 0;
         chara->Initialize();
     }
-
     CursorChara[0] = chara;
-
-    if ((chara = (CCharacter2 *) operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-        *(void ***) chara = __vt__9mgCObject;
+    if ((chara = (CCharacter2 *)operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
+        *(void ***)chara = __vt__9mgCObject;
         chara->Initialize();
-        *(void ***) chara = __vt__7CObject;
+        *(void ***)chara = __vt__7CObject;
         chara->Initialize();
-        *(void ***) chara = __vt__12CObjectFrame;
+        *(void ***)chara = __vt__12CObjectFrame;
         chara->Initialize();
-        *(void ***) chara = __vt__11CCharacter2;
+        *(void ***)chara = __vt__11CCharacter2;
         chara->shadow_link.num = 0;
         chara->shadow_link.dst_frame = 0;
         chara->shadow_link.src_frame = 0;
         chara->Initialize();
     }
-
     CursorChara[1] = chara;
     EsaChara = NULL;
     FishChara = NULL;
@@ -942,128 +897,96 @@ void StepDataLoading(void *arg) {
     CursorChara[0]->Initialize();
     CursorChara[1]->Initialize();
     BG_READ_INFO *read_info = GetReadBGFile(0);
-
     if (read_info == NULL) {
         step_end_flag = 1;
         return;
     }
-
-    u_int *pack = (u_int *) read_info->buffer;
-    int    bgm_no = scene->GetDefBgmNo(0x205);
-
+    u_int *pack = (u_int *)read_info->buffer;
+    int bgm_no = scene->GetDefBgmNo(0x205);
     if (scene->CheckLoadBGM(bgm_no) != 0) {
         scene->GetBgmFile(bgm_path, bgm_no);
         u_int *bgm_pack = GetPackFile(pack, bgm_path, NULL);
-
         if (bgm_pack != NULL) {
             BgmReadFlag = 1;
             scene->LoadBGMPack(bgm_no, bgm_pack);
         }
     }
-
     switch_thread();
     scene->PlayBGM(0, -1, 1.0f);
-
     if (info->rod_no == 0x12F) {
         u_int *rod_pack;
-
         if ((rod_pack = GetPackFile(pack, at_1307__6, NULL)) != NULL) {
             UkiRod->LoadPackNoLine(rod_pack, at_932__4, memory, memory, memory, FishingTexb, NULL);
         }
     } else {
         u_int *rod_pack;
-
         if ((rod_pack = GetPackFile(pack, at_1308__6, NULL)) != NULL) {
             UkiRod->LoadPackNoLine(rod_pack, at_932__4, memory, memory, memory, FishingTexb, NULL);
         }
     }
-
     if (UkiRod->CObjectFrame::frame == NULL) {
         step_end_flag = 1;
         return;
     }
-
     u_int *cursor_pack = GetPackFile(pack, at_1309__5, NULL);
-
     if (cursor_pack != NULL) {
         CursorChara[0]->LoadPackNoLine(cursor_pack, at_932__4, memory, memory, memory, FishingTexb, NULL);
     }
-
     u_int *system_pack;
-
     if ((system_pack = GetPackFile(pack, at_1310__5, &pack_size)) != NULL) {
         int qwords;
-
-        if ((u_int) pack_size & 0xF) {
-            qwords = ((u_int) pack_size >> 4) + 1;
+        if ((u_int)pack_size & 0xF) {
+            qwords = ((u_int)pack_size >> 4) + 1;
         } else {
-            qwords = (u_int) pack_size >> 4;
+            qwords = (u_int)pack_size >> 4;
         }
-
-        u_char *copy = (u_char *) memory->Alloc(qwords);
-
+        u_char *copy = (u_char *)memory->Alloc(qwords);
         if (copy != NULL) {
             memcpy(copy, system_pack, pack_size);
             tex_manager->EnterIMGFile(copy, SystemTexb, NULL, NULL);
         }
     }
-
     u_int *fish_pack;
-
     if ((fish_pack = GetPackFile(pack, at_1311__4, &pack_size)) != NULL) {
         int qwords;
-
-        if ((u_int) pack_size & 0xF) {
-            qwords = ((u_int) pack_size >> 4) + 1;
+        if ((u_int)pack_size & 0xF) {
+            qwords = ((u_int)pack_size >> 4) + 1;
         } else {
-            qwords = (u_int) pack_size >> 4;
+            qwords = (u_int)pack_size >> 4;
         }
-
-        u_char *copy = (u_char *) memory->Alloc(qwords);
-
+        u_char *copy = (u_char *)memory->Alloc(qwords);
         if (copy != NULL) {
             memcpy(copy, fish_pack, pack_size);
             tex_manager->EnterIMGFile(copy, SystemTexb, NULL, NULL);
         }
     }
-
     u_int *uki_pack = GetPackFile(pack, at_1312__2, NULL);
-
     if (uki_pack != NULL) {
         Uki->LoadPackNoLine(uki_pack, at_932__4, memory, memory, memory, FishingTexb, NULL);
     }
-
     u_int *hari_pack;
-
     if ((hari_pack = GetPackFile(pack, at_1313__2, NULL)) != NULL) {
         Hari->LoadPackNoLine(hari_pack, at_932__4, memory, memory, memory, FishingTexb, NULL);
     }
-
     mgCFrame *uki_frame = Uki->CObjectFrame::frame;
     UkiFrame = uki_frame;
     mgCFrame *hari_frame = Hari->CObjectFrame::frame;
     HariFrame = hari_frame;
-
     if (uki_frame == NULL || hari_frame == NULL) {
         step_end_flag = 1;
         return;
     }
-
     CCharacter2 *main_chara;
     MainChara = main_chara = scene->GetCharacter(scene->player_chara);
-
     if (main_chara == NULL || main_chara->CObjectFrame::frame == NULL) {
         step_end_flag = 1;
         return;
     }
-
     RodHand = main_chara->CObjectFrame::frame->SearchFrame(at_1314__2);
-
     if (RodHand == NULL) {
         step_end_flag = 1;
         return;
     }
-
     UkiRod->CObjectFrame::frame->SetReference(RodHand);
     InitRodPoint(RodHand, UkiRod->CObjectFrame::frame);
     InitUkiObj(0, UkiFrame, HariFrame);
@@ -1071,30 +994,25 @@ void StepDataLoading(void *arg) {
     FishSnd = -1;
     FanSnd = -1;
     SndStack.stSetBuffer(memory->Alloc(100), 100);
-
     if (LoadFile2(at_1315__4, buffer, NULL, 0) != 0) {
         sndInitPort(5);
-        FishSnd = sndLoadSound(5, (u_int *) buffer, memory);
+        FishSnd = sndLoadSound(5, (u_int *)buffer, memory);
     }
-
     if (LoadFile2(at_1058__3, buffer, NULL, 0) != 0) {
         sndInitPort(8);
         SndStack.stack_used = 0;
         SndStack.lock = 0;
-        FanSnd = sndLoadSound(8, (u_int *) buffer, &SndStack);
+        FanSnd = sndLoadSound(8, (u_int *)buffer, &SndStack);
     }
-
     if (info->dungeon != 0) {
         if (LoadFile2(at_917__6, buffer, NULL, 0) != 0) {
-            MainChara->LoadPack((u_int *) buffer, at_932__4, memory, memory, memory, 0, NULL);
+            MainChara->LoadPack((u_int *)buffer, at_932__4, memory, memory, memory, 0, NULL);
         }
     }
-
     sgRestartFishing(info);
     printf(at_1316__2, (memory->stack_size - memory->stack_used) * 16 / 1024);
     step_end_flag = 1;
 }
-
 int sgBreakFishing() {
     DeleteLoadThread();
     sgExitFishing(GetNowSubGameInfo());
@@ -1125,25 +1043,21 @@ int sgExitFishing(SubGameInfo *info) {
     BgmReadFlag = 0;
     return 1;
 }
-
 int sgLoopFishing(SubGameInfo *info) {
-    CScene      *scene = info->scene;
+    CScene *scene = info->scene;
     CCharacter2 *chara = scene->GetCharacter(scene->player_chara);
 
     if (fgLoopMode == 0) {
         fgLoopCnt++;
         CharaControl(scene, NULL);
-
         switch (fgLoopStep) {
             case 0:
                 if (fgLoopCnt < 3) {
                     return 0;
                 }
-
                 while (0 < scene->bg_load_step) {
                     return 0;
                 }
-
                 fgLoopStep++;
             case 1:
                 InitDataLoading();
@@ -1157,7 +1071,6 @@ int sgLoopFishing(SubGameInfo *info) {
                 if (StepLoadThread() != 0) {
                     return 0;
                 }
-
                 fgLoopStep++;
             case 4:
                 scene->fade.CaptureScreen();
@@ -1170,7 +1083,6 @@ int sgLoopFishing(SubGameInfo *info) {
                     chara->UpdatePosition();
                     chara->Step();
                 }
-
                 DeleteLoadThread();
                 fgLoopStep = 0;
                 fgLoopMode = 1;
@@ -1182,10 +1094,8 @@ int sgLoopFishing(SubGameInfo *info) {
                 return RetCode;
         }
     }
-
     CPadControl *pad = &PadCtrl;
     sgSetMenuOpenEnableFlag(0);
-
     switch (CharaMode) {
         case 0:
             CharaControl(scene, pad);
@@ -1207,44 +1117,32 @@ int sgLoopFishing(SubGameInfo *info) {
             break;
         case 7:
             SuccessLoop(scene, pad);
-
             if (FishChara != NULL) {
                 FishChara->Step();
             }
-
             break;
     }
-
     oldPadRx = pad->Analog(5);
     oldPadRy = pad->Analog(4);
-
     if (NextCharaMode >= 0) {
         CharaMode = NextCharaMode;
     }
-
     if (CharaMode == 0) {
         sgSetMenuOpenEnableFlag(1);
     }
-
     DrawHit--;
-
     if (DrawHit < 0) {
         DrawHit = 0;
     }
-
     DrawCongra--;
-
     if (DrawCongra < 0) {
         DrawCongra = 0;
     }
-
     if (RetCode != 0) {
         sgExitFishing(info);
     }
-
     return RetCode;
 }
-
 int sgLoopFishing2(SubGameInfo *info) {
     CScene *scene;
 
@@ -1284,7 +1182,6 @@ int sgLoopFishing2(SubGameInfo *info) {
 
     return 0;
 }
-
 int sgDrawFishing(SubGameInfo *info) {
     sceVu0FMATRIX uki_matrix;
     sceVu0FMATRIX lure_matrix;
@@ -1292,91 +1189,75 @@ int sgDrawFishing(SubGameInfo *info) {
     if (fgLoopMode == 0) {
         return 0;
     }
-
     mgCTextureManager *textures = &mgTexManager;
-    textures->ReloadTexture(FishingTexb, (sceVif1Packet *) NULL);
+    textures->ReloadTexture(FishingTexb, (sceVif1Packet *)NULL);
     UkiRod->DrawDirect();
     float hook_offset[4] = {0.0f, -3.5f, 1.0f, 0.0f};
-
     if (LureFrame != NULL && SetLurePose(LureFrame) != 0) {
         if (GetShowHari() != 0) {
-            textures->ReloadTexture(EsaTexb, (sceVif1Packet *) NULL);
+            textures->ReloadTexture(EsaTexb, (sceVif1Packet *)NULL);
             mgDrawDirect(LureFrame);
         }
-
         LureFrame->GetLWMatrix(uki_matrix);
         sceVu0FVECTOR lure_swap_row;
-        *(u_long128 *) lure_swap_row = *(u_long128 *) uki_matrix[0];
-        *(u_long128 *) uki_matrix[0] = *(u_long128 *) uki_matrix[2];
-        *(u_long128 *) uki_matrix[2] = *(u_long128 *) lure_swap_row;
+        *(u_long128 *)lure_swap_row = *(u_long128 *)uki_matrix[0];
+        *(u_long128 *)uki_matrix[0] = *(u_long128 *)uki_matrix[2];
+        *(u_long128 *)uki_matrix[2] = *(u_long128 *)lure_swap_row;
         sceVu0ScaleVector(uki_matrix[2], uki_matrix[2], -1.0f);
-        *(u_long128 *) lure_matrix[0] = *(u_long128 *) uki_matrix[0];
-        *(u_long128 *) lure_matrix[1] = *(u_long128 *) uki_matrix[1];
-        *(u_long128 *) lure_matrix[2] = *(u_long128 *) uki_matrix[2];
-        *(u_long128 *) lure_matrix[3] = *(u_long128 *) uki_matrix[3];
+        *(u_long128 *)lure_matrix[0] = *(u_long128 *)uki_matrix[0];
+        *(u_long128 *)lure_matrix[1] = *(u_long128 *)uki_matrix[1];
+        *(u_long128 *)lure_matrix[2] = *(u_long128 *)uki_matrix[2];
+        *(u_long128 *)lure_matrix[3] = *(u_long128 *)uki_matrix[3];
         LureFrame->GetWorldPosition(lure_matrix[3], hook_offset);
     }
-
-    textures->ReloadTexture(FishingTexb, (sceVif1Packet *) NULL);
-
+    textures->ReloadTexture(FishingTexb, (sceVif1Packet *)NULL);
     if (SetUkiPose(UkiFrame, HariFrame) != 0) {
         mgDrawDirect(UkiFrame);
-
         if (GetShowHari() != 0) {
             mgDrawDirect(HariFrame);
         }
-
         HariFrame->GetLWMatrix(uki_matrix);
         sceVu0FVECTOR hari_swap_row;
-        *(u_long128 *) hari_swap_row = *(u_long128 *) uki_matrix[1];
-        *(u_long128 *) uki_matrix[1] = *(u_long128 *) uki_matrix[2];
-        *(u_long128 *) uki_matrix[2] = *(u_long128 *) hari_swap_row;
+        *(u_long128 *)hari_swap_row = *(u_long128 *)uki_matrix[1];
+        *(u_long128 *)uki_matrix[1] = *(u_long128 *)uki_matrix[2];
+        *(u_long128 *)uki_matrix[2] = *(u_long128 *)hari_swap_row;
         sceVu0ScaleVector(uki_matrix[0], uki_matrix[0], -1.0f);
-        *(u_long128 *) lure_matrix[0] = *(u_long128 *) uki_matrix[0];
-        *(u_long128 *) lure_matrix[1] = *(u_long128 *) uki_matrix[1];
-        *(u_long128 *) lure_matrix[2] = *(u_long128 *) uki_matrix[2];
-        *(u_long128 *) lure_matrix[3] = *(u_long128 *) uki_matrix[3];
+        *(u_long128 *)lure_matrix[0] = *(u_long128 *)uki_matrix[0];
+        *(u_long128 *)lure_matrix[1] = *(u_long128 *)uki_matrix[1];
+        *(u_long128 *)lure_matrix[2] = *(u_long128 *)uki_matrix[2];
+        *(u_long128 *)lure_matrix[3] = *(u_long128 *)uki_matrix[3];
         HariFrame->GetWorldPosition(lure_matrix[3], hook_offset);
     }
-
     if (CharaMode == 1) {
         char *cursor_motion[2] = {at_1442__3, at_1443__3};
         CursorChara[0]->SetMotion(cursor_motion[CastOKFlag], 0);
-        CursorChara[0]->SetPosition((float *) &CastPointCur);
+        CursorChara[0]->SetPosition((float *)&CastPointCur);
         CursorChara[0]->Step();
         CursorChara[0]->DrawDirect();
     }
-
     if (EsaChara != NULL && FishChara == NULL) {
-        textures->ReloadTexture(EsaTexb, (sceVif1Packet *) NULL);
+        textures->ReloadTexture(EsaTexb, (sceVif1Packet *)NULL);
         EsaChara->SetPosition(lure_matrix[3]);
         mgZeroVectorW(lure_matrix[3]);
-
         if (EsaChara->CObjectFrame::frame != NULL) {
             EsaChara->CObjectFrame::frame->SetTransMatrix(lure_matrix);
         }
-
         if (GetShowHari() != 0) {
             EsaChara->DrawDirect();
         }
     }
-
     if (FishChara != NULL) {
-        textures->ReloadTexture(FishTexb, (sceVif1Packet *) NULL);
+        textures->ReloadTexture(FishTexb, (sceVif1Packet *)NULL);
         FishChara->SetPosition(uki_matrix[3]);
         mgZeroVectorW(uki_matrix[3]);
-
         if (FishChara->CObjectFrame::frame != NULL) {
             FishChara->CObjectFrame::frame->SetTransMatrix(uki_matrix);
         }
-
         FishChara->DrawDirect();
     }
-
     DrawFishingLine();
     return 0;
 }
-
 /**
  *
  * Draws one digit of a fishing interface number.
@@ -1429,13 +1310,13 @@ int sgSystemDrawFishing(SubGameInfo *info) {
     prim.AlphaBlendEnable(1);
     prim.DepthTestEnable(0);
     prim.Coord(0);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.Bilinear(1);
     prim.TextureMapEnable(0);
 
     if (CharaMode == 5) {
         top = mgScreenHeight - 0x47;
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x15, 0x29, 0x47, 0x60);
         prim.Vertex(0x156, top + 0x25, 0);
         prim.Vertex(0x1C4, top + 0x2A, 0);
@@ -1452,14 +1333,14 @@ int sgSystemDrawFishing(SubGameInfo *info) {
         }
 
         line_length = GetNowLineLength();
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x15, 0x29, 0xFF, 0x80);
         prim.Vertex(342.0f + 110.0f * reach, (float) (top + 0x25), 0.0f);
         prim.Vertex(0x1C4, top + 0x2A, 0);
         prim.End();
         prim.Bilinear(0);
         prim.TextureMapEnable(1);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x80, 0x80, 0x80, 0x80);
         prim.Texture(system_texture);
         prim.TextureCrd(0, 0x34);
@@ -1467,7 +1348,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
         prim.TextureCrd(0xA8, 0x6A);
         prim.Vertex(0x1EE, top + 0x36, 0);
         prim.End();
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x80, 0x80, 0x80, 0x80);
         prim.Texture(system_texture);
         gauge_top = mgScreenHeight - 0x36;
@@ -1483,7 +1364,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
         prim.Bilinear(1);
         prim.TextureMapEnable(0);
         top = mgScreenHeight - 0xD7;
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x15, 0x29, 0x47, 0x60);
         prim.Vertex(0x1D5, top + 0x14, 0);
         prim.Vertex(0x1E1, top + 0x96, 0);
@@ -1494,7 +1375,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
         *(u_long128 *) tension_color = *(u_long128 *) &at_1491__2;
         sceVu0InterVectorXYZ(tension_color, tension_color, tension_end, tension);
         prim.Shading(1);
-        prim.Begin(4);
+        prim.Begin(MG_PRIM_TRIANGLE_STRIP);
         prim.Color(fptosi(tension_end[0]), fptosi(tension_end[1]), fptosi(tension_end[2]), 0x80);
         bottom_y = (float) (top + 0x96);
         prim.Vertex(469.0f, bottom_y, 0.0f);
@@ -1508,7 +1389,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
                    0x80);
         prim.Vertex(481.0f, fill, 0.0f);
         prim.End();
-        prim.Begin(4);
+        prim.Begin(MG_PRIM_TRIANGLE_STRIP);
         prim.Color(0xFF, 0xFF, 0xFF, 0x20);
         prim.Vertex(0x1D5, top + 0x14, 0);
         prim.Color(0xFF, 0xFF, 0xFF, 0);
@@ -1520,7 +1401,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
         prim.End();
         prim.Bilinear(0);
         prim.TextureMapEnable(1);
-        prim.Begin(4);
+        prim.Begin(MG_PRIM_TRIANGLE_STRIP);
         prim.Texture(system_texture);
         prim.Color(0x80, 0x80, 0x80, 0x80);
         prim.TextureCrd(0, 0x34);
@@ -1537,7 +1418,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
     prim.TextureMapEnable(1);
 
     if (DrawCongra > 0) {
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x80, 0x80, 0x80, 0x80);
         prim.Texture(banner_texture);
         prim.TextureCrd(0, 0);
@@ -1548,7 +1429,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
     }
 
     if (DrawHit > 0) {
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x80, 0x80, 0x80, 0x80);
         prim.Texture(banner_texture);
         prim.TextureCrd(0, 0x50);
@@ -3213,21 +3094,20 @@ int CheckFishing(float *pos, CCPoly *polys, int count) {
 
     return 0;
 }
-
 int CheckCasting(CScene *scene, float *position, float *direction) {
     mgVu0FBOX box;
-    CCPoly    poly_buffer[0x400];
-    float     end[4];
-    float     move_dir[4];
-    float     step_point[4];
-    float     from[4];
-    float     to[4];
-    float     point_a[4];
-    float     point_b[4];
-    float     point_dir[4];
-    float     probe[4];
-    float     hit_point[32][4];
-    int       hit_index[32];
+    CCPoly poly_buffer[0x400];
+    float end[4];
+    float move_dir[4];
+    float step_point[4];
+    float from[4];
+    float to[4];
+    float point_a[4];
+    float point_b[4];
+    float point_dir[4];
+    float probe[4];
+    float hit_point[32][4];
+    int hit_index[32];
 
     mgVectorMaxMin(box.max, box.min, position, direction);
     box.max[0] += 40.0f;
@@ -3239,50 +3119,41 @@ int CheckCasting(CScene *scene, float *position, float *direction) {
     box.min[1] -= 2000.0f;
     box.min[2] -= 40.0f;
     CCPoly *polys = poly_buffer;
-    int     poly_count = scene->GetColPoly(polys, box, 0x400);
+    int poly_count = scene->GetColPoly(polys, box, 0x400);
     direction[1] = 40.0f + position[1];
     sceVu0SubVector(move_dir, direction, position);
     move_dir[1] = 0.0f;
-    *(u_long128 *) end = *(u_long128 *) direction;
-    *(u_long128 *) from = *(u_long128 *) position;
-    *(u_long128 *) to = *(u_long128 *) direction;
+    *(u_long128 *)end = *(u_long128 *)direction;
+    *(u_long128 *)from = *(u_long128 *)position;
+    *(u_long128 *)to = *(u_long128 *)direction;
     from[1] = direction[1];
     from[3] = 1.0f;
-    *(u_long128 *) point_b = *(u_long128 *) direction;
-
+    *(u_long128 *)point_b = *(u_long128 *)direction;
     if (CheckFishing(direction, polys, poly_count) == 0) {
         return 0;
     }
-
     to[1] = 1.0f + (direction[1] + from[3]);
     mgNormalizeVector(step_point, move_dir, 80.0f);
     mgAddVector(step_point, position);
     step_point[1] = end[1];
-    *(u_long128 *) point_a = *(u_long128 *) step_point;
-
+    *(u_long128 *)point_a = *(u_long128 *)step_point;
     if (CheckFishing(step_point, polys, poly_count) == 0) {
         return 0;
     }
-
     sceVu0SubVector(point_dir, point_b, point_a);
     point_dir[1] = 0.0f;
     mgNormalizeVector(point_dir, point_dir, 10.0f);
     int steps = fptosi(mgDistVectorXZ(point_a, point_b) / 10.0f);
     mgAddVector(point_a, point_dir);
-
     for (int i = 1; i < steps; i++) {
-        *(u_long128 *) probe = *(u_long128 *) point_a;
-
+        *(u_long128 *)probe = *(u_long128 *)point_a;
         if (CheckFishing(probe, polys, poly_count) == 0) {
             return 0;
         }
-
         mgAddVector(point_a, point_dir);
     }
-
     return CheckHits(polys, poly_count, from, to, 32, hit_index, hit_point, 0, 9) <= 0;
 }
-
 /**
  *
  * Selects a random size value with a lower bound.
@@ -3298,38 +3169,30 @@ float GetRandamNumber(float center, float high, float floor) {
 
     return value;
 }
-
 int GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, int bait_no) {
     FISH_PLACE place[16];
-    int        i;
-    int        picked;
-
+    int i;
+    int picked;
     if (bait_no < 0) {
         fish->fish_no = -1;
         return 100;
     }
-
-    int   time_band = GetTimeBand(scene->time);
-    int   place_num = GetAppearFish(scene->GetMainMapNo(), position, place, 16);
-    int   candidate_num = 0;
+    int time_band = GetTimeBand(scene->time);
+    int place_num = GetAppearFish(scene->GetMainMapNo(), position, place, 16);
+    int candidate_num = 0;
     float rate_sum = 0.0f;
-
     for (i = 0; i < place_num; i++) {
         FISH_PARAM *param = GetFishParam(place[i].fish_no);
         FISH_PLACE *entry = &place[i];
-
         if (param == NULL) {
             continue;
         }
-
         int bait_affinity;
-
         if (bait_no < 0 || bait_no >= 18) {
             bait_affinity = 0;
         } else {
             bait_affinity = param->bait_affinity[bait_no];
         }
-
         if (entry->fish_no > 0) {
             switch (bait_affinity) {
                 case FISH_AFFINITY_NONE:
@@ -3344,15 +3207,12 @@ int GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, 
                     entry->rate *= 1.5f;
                     break;
             }
-
             int time_affinity;
-
             if (time_band < 0 || time_band >= 4) {
                 time_affinity = 0;
             } else {
                 time_affinity = param->time_band_affinity[time_band];
             }
-
             switch (time_affinity) {
                 case FISH_AFFINITY_NONE:
                     entry->rate = 0.0f;
@@ -3367,55 +3227,44 @@ int GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, 
                     break;
             }
         }
-
         if (entry->fish_no == 0) {
             entry->rate *= 1.0f - 0.5f * RodData.status4_rate;
         }
-
         rate_sum += entry->rate;
-
         if (!(entry->rate <= 0.0f)) {
             candidate_num++;
         }
     }
-
     float roll = mgRnd();
     float cumulative;
     cumulative = 0.0f;
-
     for (i = 0; i < place_num; i++) {
         FISH_PLACE *entry = &place[i];
         entry->rate /= rate_sum;
-
         if (entry->rate <= 0.0f) {
             continue;
         }
-
         cumulative += entry->rate;
-
         if (!(cumulative <= roll)) {
             break;
         }
     }
-
     picked = i;
-    int   fish_no = place[picked].fish_no;
+    int fish_no = place[picked].fish_no;
     float pull_strength = 0.5f;
     float size = 100.0f;
     float length_scale = 1.0f;
-    int   wait_base = 240;
+    int wait_base = 240;
     FavoredEsa = 0;
-    int   fishing_point = 0;
+    int fishing_point = 0;
     float vigour_recovery = 0.01f;
-    int   wait_extra = 240;
+    int wait_extra = 240;
     float width_scale = 1.0f;
     float weight;
-    int   wait_time;
-
+    int wait_time;
     if (MardanEventMap != 0 && bait_no == 4 && position[0] < 1000.0f && position[2] < -300.0f) {
         MardanEventPlace = 1;
     }
-
     if (MardanEventPlace != 0) {
         fish->vigour_recovery = 0.005f;
         pull_strength = 0.5f;
@@ -3427,89 +3276,68 @@ int GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, 
         if (candidate_num <= 0) {
             return 100;
         }
-
         if (fish_no == 0) {
             fish->fish_no = -1;
             return 100;
         }
-
         float wait_bias = 0.0f;
-
         if (fish_no > 0) {
             FISH_PARAM *param = GetFishParam(fish_no);
-            int         favored;
-
+            int favored;
             if (bait_no < 0 || bait_no >= 18) {
                 favored = 0;
             } else {
                 favored = param->bait_affinity[bait_no];
             }
-
             FavoredEsa = favored;
             wait_bias = place[picked].wait_bias;
-
             if (!(wait_bias <= 2.0f)) {
                 wait_bias = 2.0f;
             }
-
             if (wait_bias < -2.0f) {
                 wait_bias = -2.0f;
             }
-
             float min_size = param->min_size * CastDistSizeRate;
             float max_size = param->max_size * CastDistSizeRate;
             size = GetRandamNumber(min_size, max_size, min_size / 2.0f);
-
             if (GetCaptureMode() != 0) {
                 size = float(60.0);
             }
-
             length_scale = size / param->base_size;
             length_scale *= float(1.05);
-
             if (!(length_scale <= float(4.0))) {
                 length_scale = float(4.0);
             }
-
             float width_rate = GetRandamNumber(1.0f, 1.3f, float(0.6));
-
             if (!(width_rate <= 1.3f)) {
                 width_rate = 1.3f;
             }
-
             width_scale = length_scale * width_rate;
             weight = width_rate * (size * param->weight_rate);
             vigour_recovery = 0.01f;
             pull_strength = param->pull_rate * (size / 80.0f * width_rate);
-            fishing_point = (int) (width_rate * (param->fishing_point_rate * size));
-
+            fishing_point = (int)(width_rate * (param->fishing_point_rate * size));
             if (GetFishingMode() == 2) {
                 fishing_point *= 2;
             }
         }
-
         if (rod_no == 0x12F) {
             wait_base /= 2;
             wait_extra /= 2;
         }
-
         if (!(wait_bias < 0.0f)) {
-            wait_time = (int) (wait_base / (1.0f + wait_bias));
-            wait_extra = (int) (wait_extra / (1.0f + wait_bias));
+            wait_time = (int)(wait_base / (1.0f + wait_bias));
+            wait_extra = (int)(wait_extra / (1.0f + wait_bias));
         } else {
-            wait_time = (int) (wait_base * (1.0f - wait_bias));
-            wait_extra = (int) (wait_extra / (1.0f - wait_bias));
+            wait_time = (int)(wait_base * (1.0f - wait_bias));
+            wait_extra = (int)(wait_extra / (1.0f - wait_bias));
         }
-
-        wait_time += (int) (wait_extra * mgRnd());
+        wait_time += (int)(wait_extra * mgRnd());
     }
-
     int rod_power = RodData.status[2] - 10;
-
     if (rod_power < 0) {
         rod_power = 0;
     }
-
     fish->fish_no = fish_no;
     pull_strength /= 1.0f + 2.0f * (rod_power / 90.0f);
     fish->size = size;
@@ -3522,7 +3350,6 @@ int GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, 
     fish->fishing_point = fishing_point;
     return wait_time;
 }
-
 /**
  *
  * Returns a float poke delay based on bait affinity.
@@ -3575,51 +3402,40 @@ int FishLoadBG(FISH_DATA *fish, u_long128 *buffer) {
     sprintf(path, at_2461, param->file_name);
     return LoadFileBG(path, buffer, 0) != 0;
 }
-
 void LineTensionStep(FISH_DATA *fish, int reel) {
     float tension_rate;
-    int   left_vibration;
-    int   right_vibration;
+    int left_vibration;
+    int right_vibration;
     float pull;
 
     pull = fish->pull_strength * (1.0f + 0.5f * fish->vigour);
     int action_count = ActionCount;
     tension_rate = -0.004f;
-
     if (action_count > 5) {
-        tension_rate = -0.004f + 0.01f * (float) (action_count - 5) / 15.0f;
+        tension_rate = -0.004f + 0.01f * (float)(action_count - 5) / 15.0f;
     }
-
     if (action_count > 20) {
         tension_rate = 0.2f;
     }
-
     left_vibration = 0;
-
     if (!(tension_rate <= 0.0f)) {
         tension_rate *= pull;
     }
-
     right_vibration = 0x96;
-
     if (reel > 0) {
         LineTension *= 0.9f;
     }
-
     if (reel < 0) {
         pull *= 2.0f;
-        fish->vigour -= 0.05f * (3.0f * ((float) RodData.status[1] / 100.0f));
+        fish->vigour -= 0.05f * (3.0f * ((float)RodData.status[1] / 100.0f));
     }
-
     switch (RodStatus) {
         case 0:
             fish->vigour += fish->vigour_recovery;
-
             if (tension_rate < 0.0f) {
                 right_vibration = 0;
                 left_vibration = 0;
             }
-
             break;
         case 1:
             tension_rate += 0.03f * pull;
@@ -3631,60 +3447,45 @@ void LineTensionStep(FISH_DATA *fish, int reel) {
             tension_rate -= 0.008f;
             break;
     }
-
     if (WindReel != 0) {
         tension_rate += 0.03f * pull;
     }
-
     if (!(fish->vigour <= 1.0f)) {
         fish->vigour = 1.0f;
     }
-
     if (fish->vigour < -1.0f) {
         fish->vigour = -1.0f;
     }
-
     MinLineTension += 0.0001f;
-
     if (!(MinLineTension <= 1.0f)) {
         MinLineTension = 1.0f;
     }
-
     LineTension += tension_rate;
     addLineTension = tension_rate;
-
     if (LineTension < MinLineTension) {
         LineTension = MinLineTension;
     }
-
     if (!(LineTension <= 1.0f)) {
         LineTension = 1.0f;
     }
-
     if (!(tension_rate <= 0.001f)) {
         left_vibration = 1;
     }
-
     GamePad__2.SetVibration(1, right_vibration, 4);
     GamePad__2.SetVibration(0, left_vibration, 4);
-
     if (init_2496 == 0) {
         snd_cnt_2495 = 0;
         init_2496 = 1;
     }
-
     if (!(LineTension <= 0.7f) && snd_cnt_2495 == 0) {
         sndSePlay(FishSnd, 0x10, 0);
         snd_cnt_2495 = 0x14;
     }
-
     snd_cnt_2495--;
-
     if (snd_cnt_2495 < 0) {
         snd_cnt_2495 = 0;
     }
 }
-
 int GetAppearFish(int map_no, float *pos, FISH_PLACE *places, int max_places) {
     FISH_PLACE_MAP *map;
     int             i;

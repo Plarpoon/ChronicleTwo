@@ -167,8 +167,8 @@ void CEditMap::DrawRiverMask() {
     draw.DepthTestEnable(0);
     draw.AlphaTestEnable(0);
     draw.AlphaBlendEnable(1);
-    draw.AlphaBlend(2);
-    draw.Begin(6);
+    draw.AlphaBlend(MG_ALPHA_BLEND_ADD);
+    draw.Begin(MG_PRIM_SPRITE);
     draw.Color(0, 0, 0, 0x80);
     draw.Vertex(0, 0, 0);
     draw.Vertex(mgScreenWidth, mgScreenHeight, 0);

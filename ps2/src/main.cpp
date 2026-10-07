@@ -17,7 +17,6 @@
 /** Vertical blanks counted since start-up, kept non-negative. */
 // Small uninitialised data (.sbss)
 static volatile int        vcount__2;
-extern int                 MainThreadPriority;
 static int                 VSyncCallBack(int event);
 extern const unsigned char at_846__DATA[];
 extern const unsigned char at_847__DATA[];
@@ -41,7 +40,17 @@ extern const unsigned char at_857__DATA[];
  * @address 0x15D470
  * @size 0x2C
  */
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/main", VSyncCallBack__Fi__2);
+extern "C" int VSyncCallBack__Fi__2(int) {
+    ++vcount__2;
+    if (vcount__2 < 0) {
+        vcount__2 = 0;
+    }
+    asm {
+        sync
+        ei
+    }
+    return 0;
+}
 
 /**
  *

@@ -14,6 +14,8 @@
 #include "scriptinterpreter.hpp"
 
 extern SPI_TAG_PARAM     tag_movie[];
+extern "C" void         *__ct__18CScriptInterpreterFv(void *);
+extern "C" void         *__ct__11mgCDrawPrimFv(void *);
 extern CMovie           *MovieView;
 extern int               MovieMode;
 extern short             MovieSelect;
@@ -47,39 +49,14 @@ extern char              at_1037__5[];
 extern MOVIE_LIST_ENTRY *MovieList;
 extern int               MovieListNum;
 extern mgCMemory        *spi_MovieStack;
-#include <cstdio>
-#include <cstring>
 
-#include "dataread.hpp"
-#include "font.hpp"
-#include "gaiji.hpp"
 #include "gamepad.hpp"
 #include "mg_memory.hpp"
-#include "mg_texture.hpp"
-#include "mglib.hpp"
-#include "movie.hpp"
-#include "prespr.hpp"
-#include "scenesnd.hpp"
-#include "scriptinterpreter.hpp"
 #include "snd_mngr.hpp"
+#include "mainloop.hpp"
 
-extern CGamePad          GamePad__2;
-extern CScene           *MovieScene;
-extern CMovie           *MovieView;
-extern mgCTexture       *RushWork__2;
-extern MOVIE_LIST_ENTRY *MovieList;
-extern int               MovieListNum;
-extern short             MovieLine;
-extern short             MovieSelect;
-extern short             MovieSpecialMode;
-extern short             MovieSpecialModeInfo[3];
-extern int               MovieMode;
-extern SPI_TAG_PARAM     tag_movie[];
 extern mgCMemory         buf0_791, buf1_794, dbuf0_797, dbuf1_800;
-extern mgCMemory        *spi_MovieStack;
 extern int               performance_meter_flag;
-extern mgCMemory         DataBuffer__2;
-extern mgCMemory         Stack_ReadBuff__2;
 
 static inline int movieFreeBlocks(mgCMemory *memory) {
     return memory->stack_size - memory->stack_used;
@@ -115,7 +92,6 @@ int _MOVIE(SPI_STACK *stack, int argument_count) {
     return 1;
 }
 
-#ifdef NONMATCHING
 void MovieViewInit(INIT_LOOP_ARG arg) {
     mgCMemory         *main_stack;
     mgCTextureManager *textures;
@@ -181,7 +157,7 @@ void MovieViewInit(INIT_LOOP_ARG arg) {
     script_ptr = script;
 
     if (LoadFile2(at_843__4, script_ptr, &script_size, 0) != 0) {
-        new ((u_long128 *) interpreter) CScriptInterpreter;
+        __ct__18CScriptInterpreterFv(interpreter);
         ((CScriptInterpreter *) interpreter)->SetTag(tag_movie);
         ((CScriptInterpreter *) interpreter)->SetScript(script_ptr, script_size);
         ((CScriptInterpreter *) interpreter)->Run();
@@ -204,9 +180,6 @@ void MovieViewInit(INIT_LOOP_ARG arg) {
     performance_meter_flag = mgGetPerformanceMeterFlag();
     mgPerformanceMeter(0);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movieviewlp", MovieViewInit__F13INIT_LOOP_ARG);
-#endif
 
 void MovieViewExit() {
     sndSeAllStop(-1);
@@ -214,7 +187,6 @@ void MovieViewExit() {
     mgPerformanceMeter(performance_meter_flag);
 }
 
-#ifdef NONMATCHING
 int MovieViewLoop() {
     mgCTextureManager *textures = &mgTexManager;
 
@@ -361,12 +333,12 @@ int MovieViewLoop() {
         mgPerformanceMeter(0);
         textures->ReloadTexture(0xA, (sceVif1Packet *) 0);
         MovieView->SwitchThread();
-        new ((u_long128 *) &prim) mgCDrawPrim;
+        __ct__11mgCDrawPrimFv(&prim);
         ((CPreSprite *) prim)->Initialize(NULL, NULL);
         ((CPreSprite *) prim)->Preset2D();
         ((CPreSprite *) prim)->AlphaBlendEnable(0);
         ((CPreSprite *) prim)->TextureMapEnable(1);
-        ((CPreSprite *) prim)->Begin(6);
+        ((CPreSprite *) prim)->Begin(MG_PRIM_SPRITE);
         ((CPreSprite *) prim)->Color(0, 0, 0, 0x80);
         ((CPreSprite *) prim)->SetIRect(0, 0, 0x200, 0x1A0, 0, 0);
         ((CPreSprite *) prim)->Texture(RushWork__2);
@@ -420,9 +392,6 @@ int MovieViewLoop() {
 
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movieviewlp", MovieViewLoop__Fv);
-#endif
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/movieviewlp", tag_movie__DATA);

@@ -18,7 +18,6 @@
 #include "savedata.hpp"
 #include "snd_mngr.hpp"
 
-extern CGamePad   GamePad__2;
 extern int        select_795, sel_map_798;
 extern char       init_796, init_799;
 extern int        col_962;

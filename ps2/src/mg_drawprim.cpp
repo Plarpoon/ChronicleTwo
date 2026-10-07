@@ -240,9 +240,25 @@ void mgCDrawPrim::End2() {
     }
 }
 
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", Data0__11mgCDrawPrimFPf);
+void mgCDrawPrim::Data0(float *data) {
+    u_long *packet = command_write;
+    command_write += 2;
+    asm {
+        lqc2 vf1, 0(data)
+        vftoi0.xyzw vf1, vf1
+        sqc2 vf1, 0(packet)
+    }
+}
 
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", Data4__11mgCDrawPrimFPf);
+void mgCDrawPrim::Data4(float *data) {
+    u_long *packet = command_write;
+    command_write += 2;
+    asm {
+        lqc2 vf1, 0(data)
+        vftoi4.xyzw vf1, vf1
+        sqc2 vf1, 0(packet)
+    }
+}
 
 void mgCDrawPrim::Data(int *data) {
     u_long128 quad = *(u_long128 *) data;
@@ -273,7 +289,17 @@ void mgCDrawPrim::Vertex(float x, float y, float z) {
 }
 
 #pragma global_optimizer off
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", Vertex__11mgCDrawPrimFPf);
+void mgCDrawPrim::Vertex(float *pos) {
+    int converted[4];
+    int *out = converted;
+    asm {
+        lqc2 vf10, 0(pos)
+        vftoi4.xy vf10, vf10
+        vftoi0.z vf10, vf10
+        sqc2 vf10, 0(out)
+    }
+    Vertex4(converted[0], converted[1], converted[2]);
+}
 #pragma global_optimizer reset
 
 void mgCDrawPrim::Vertex4(int x, int y, int z) {
@@ -299,7 +325,16 @@ void mgCDrawPrim::Color(int r, int g, int b, int a) {
 }
 
 #pragma global_optimizer off
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", Color__11mgCDrawPrimFPf);
+void mgCDrawPrim::Color(float *color) {
+    int converted[4];
+    int *out = converted;
+    asm {
+        lqc2 vf10, 0(color)
+        vftoi0.xyzw vf10, vf10
+        sqc2 vf10, 0(out)
+    }
+    Color(converted[0], converted[1], converted[2], converted[3]);
+}
 #pragma global_optimizer reset
 
 void mgCDrawPrim::TextureCrd4(int u, int v) {
@@ -326,21 +361,21 @@ void mgCDrawPrim::Direct(unsigned long reg, unsigned long data) {
  *
  */
 struct mgCTextureFields {
-    short  word0;
-    short  word1;
-    short  word2;
-    short  word3;
+    short  block;
+    short  width;
+    short  height;
+    short  bpp;
     char   name[32]; /**< Texture name copied with its register state. */
-    int    field28;
-    int    field2_c;
-    int    field30;
-    u_long field38;
-    u_long field40;
-    u_long field48;
-    float  floats[4];
-    int    field60;
-    int    field64;
-    int    field68;
+    int    vram_size;
+    int    image_blocks;
+    int    clut_size;
+    u_long tex0_bits;
+    u_long tex1_bits;
+    u_long clamp_bits;
+    float  image[4];
+    int    clut;
+    int    swizzled;
+    int    next;
 };
 
 /**
@@ -364,11 +399,11 @@ void mgCDrawPrim::Texture(mgCTexture *source) {
         ((mgCTexture *) &self->texture)->Bilinear(self->bilinear);
         u_long *packet = self->command_write;
         packet[0] = 0;
-        packet[1] = 0x3F;
-        packet[2] = self->texture.field40;
-        packet[3] = 0x14;
-        packet[4] = self->texture.field38;
-        packet[5] = 6;
+        packet[1] = SCE_GS_TEXFLUSH;
+        packet[2] = self->texture.tex1_bits;
+        packet[3] = SCE_GS_TEX1_1;
+        packet[4] = self->texture.tex0_bits;
+        packet[5] = SCE_GS_TEX0_1;
         self->command_write = packet + 6;
     }
 }

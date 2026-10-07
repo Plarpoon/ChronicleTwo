@@ -240,7 +240,7 @@ STATIC_ASSERT(sizeof(CHRINFO_EFFECT_IMAGE) == 0x28);
  */
 struct CHARA_ENTRY_OBJECT {
     mgCFrame *frame; /**< Frame of the model; NULL for a free slot. */
-    float     unk_04;
+    float     size;
     s32       group;  /**< Group that the frame belongs to; -1 for a free slot. */
     s32       enable; /**< Nonzero while the slot is in use. */
 };
@@ -271,6 +271,8 @@ public:
     s32  num;       /**< Number of entries in src_frame and dst_frame. */
     s32 *src_frame; /**< Index of each frame of the first model. */
     s32 *dst_frame; /**< Index of the frame of the second model that matches each entry of src_frame. */
+
+    CCharaFrameMatching() {}
 
     /**
      *
@@ -402,7 +404,7 @@ public:
     s32                   seq_advance;                          /**< Nonzero to let a waiting step move on. */
     tagMOTION_TYPE        motion[CHARA_MOTION_SET_MAX];         /**< Motion data of each motion set of the model. */
     tagMOTION_TYPE        shadow_motion[CHARA_MOTION_SET_MAX];  /**< Motion data of each motion set of the shadow. */
-    s32                   main_frame_info;                      /**< Frame information used by the character's main model. */
+    s32                   main_frame_info;
     tagFRAME_INF         *shadow_frame_info;                    /**< Skinning data that every motion set of the shadow shares. */
     float                 blend;                                /**< Weight of the motion that plays against the previous one while blending. */
     float                 blend_speed;                          /**< Weight that blend gains each step. */

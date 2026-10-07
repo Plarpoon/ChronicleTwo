@@ -41,9 +41,10 @@ void CameraCtrlParam::SetFixDist(float distance) {
     max_dist = distance;
     min_dist = distance;
 }
+extern "C" CameraCtrlParam &__as__15CameraCtrlParamFRC15CameraCtrlParam(CameraCtrlParam *destination, const CameraCtrlParam *source);
 
 CCameraControl::CCameraControl() : mgCCameraFollow(40.0f, float(30.0), 0.0f, float(8.0)) {
-    mgCCameraFollow(40.0f, float(30.0), 0.0f, float(8.0));
+    mgCCameraFollow(40.0f, 30.0f, 0.0f, 8.0f);
     active_param = 0;
     control_on = 0;
     CameraCtrlParam *p = GetActiveParam();
@@ -61,7 +62,7 @@ CCameraControl::CCameraControl() : mgCCameraFollow(40.0f, float(30.0), 0.0f, flo
     p->no_check = 0;
     rot_reverse = 0;
     InitStatus();
-    default_param = *GetActiveParam();
+    __as__15CameraCtrlParamFRC15CameraCtrlParam(&default_param, GetActiveParam());
 }
 
 CameraCtrlParam *CCameraControl::GetActiveParam() {

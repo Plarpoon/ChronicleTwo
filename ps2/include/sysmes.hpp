@@ -12,40 +12,11 @@
 
 class ClsMes;
 
-/**
- *
- * First system message window.
- *
- */
 extern ClsMes SystemMessage;
-
-/**
- *
- * Second system message window.
- *
- */
 extern ClsMes SystemMessage2;
-
-/**
- *
- * Third system message window.
- *
- */
 extern ClsMes SystemMessage3;
-
-/**
- *
- * Language-specific general system message data.
- *
- */
-extern short SystemMesBuffer[];
-
-/**
- *
- * Language-specific system prompt message data.
- *
- */
-extern short SysMesBuffer[];
+extern short  SystemMesBuffer[];
+extern short  SysMesBuffer[];
 
 /**
  *

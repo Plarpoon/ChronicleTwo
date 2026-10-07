@@ -1,8 +1,6 @@
 #include "common.h"
 #include "mw_runtime.h"
 
-#define DNG_MAIN_SOURCE
-
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -17,7 +15,6 @@
 #include "dng_event.hpp"
 #include "dng_hud.hpp"
 #include "dng_main.hpp"
-#undef DNG_MAIN_SOURCE
 #include "dng_status.hpp"
 #include "effscript.hpp"
 #include "event.hpp"
@@ -72,57 +69,31 @@ extern "C" float      viewAngleH__2;
 extern "C" float      viewAngleV__2;
 extern char           at_3589[];
 extern CWeaponElement wep_effect[8];
-#include "actionchara.hpp"
-#include "automap.hpp"
-#include "cameracontrol.hpp"
 #include "charasetup.hpp"
 #include "collision.hpp"
 #include "colprim.hpp"
 #include "dataread.hpp"
 #include "dbg_font.hpp"
-#include "dng_debug.hpp"
-#include "dng_effect.hpp"
-#include "dng_event.hpp"
-#include "dng_hud.hpp"
 #include "dng_object.hpp"
-#include "dng_status.hpp"
 #include "editexception.hpp"
-#include "effscript.hpp"
-#include "event.hpp"
-#include "event_func.hpp"
 #include "eventedit.hpp"
 #include "funcpoint.hpp"
 #include "gamedata.hpp"
 #include "gamepad.hpp"
 #include "helpmes.hpp"
-#include "mainloop.hpp"
-#include "maintex.hpp"
 #include "map.hpp"
-#include "mapload.hpp"
 #include "mapselect.hpp"
 #include "menumain.hpp"
-#include "mg_camera.hpp"
-#include "mg_drawprim.hpp"
-#include "mg_math.hpp"
-#include "mg_texture.hpp"
-#include "mglib.hpp"
-#include "monster.hpp"
 #include "nd_meswin.hpp"
 #include "nowload.hpp"
 #include "padcontrol.hpp"
-#include "photo.hpp"
 #include "pot.hpp"
 #include "prespr.hpp"
-#include "savedata.hpp"
-#include "savedatadungeon.hpp"
-#include "sceneevent.hpp"
-#include "scenesnd.hpp"
 #include "screeneffect.hpp"
 #include "snd_mngr.hpp"
 #include "sphida.hpp"
 #include "subgame.hpp"
 #include "sysmes.hpp"
-#include "userdata.hpp"
 #include "wavetable.hpp"
 
 // Small uninitialised data (.sbss)
@@ -157,8 +128,6 @@ CPullItemManager     PullItemMan;
 mgCFrame            *TornadoModel;
 static int           wep_effect_cnt;
 
-void            EntryEventScript(int no);
-void            ResetEyeView(CActionChara *chara);
 int             DngMainKey();
 int             RunMainEvent();
 void            CheckWeaponEnable();
@@ -174,7 +143,6 @@ int             EventScriptSetup(SYSTEM_SCRIPT_INFO *script);
 int             ChangeSetUnit(int dir);
 void            InitEyeCamera(CActionChara *chara);
 int             IsRunDeadEvent(CActionChara *chara);
-extern CGamePad GamePad__2;
 extern int      debug_cursor;
 extern int      debug_mons_no;
 extern int      debug_mons_cur;
@@ -238,9 +206,6 @@ CTornado              tornado[6];
 CChillAfterHit        chillAfterHit[6];
 CFireAfterHit         fireAfterHit[6];
 
-#ifndef NONMATCHING
-INCLUDE_BSS(debug_event_stack_1106, 0x30);
-#endif
 INCLUDE_BSS(stack_1823, 0x30);
 INCLUDE_BSS(at_1994, 0x10);
 INCLUDE_BSS(at_2001, 0x10);
@@ -328,7 +293,6 @@ static inline unsigned int DngAlign16Size(unsigned int size) {
     return size >> 4;
 }
 
-#ifdef NONMATCHING
 void InitDungeonMain(INIT_LOOP_ARG arg) {
     SetCurrentDir(NULL);
     memoryInit();
@@ -391,9 +355,9 @@ void InitDungeonMain(INIT_LOOP_ARG arg) {
     area->quake_count = 0;
     area->script.running = 0;
     area->subject_counter = 0;
-    area->unk_98 = 0;
+    area->practice_actions = 0;
     area->floor_status = 0;
-    area->unk_8c = 0;
+    area->weather = 0;
     area->lock_on_mode = 0;
     BattleAreaScene->map_name[0] = '\0';
 
@@ -823,16 +787,6 @@ void InitDungeonMain(INIT_LOOP_ARG arg) {
     NowLoadingBarSteEnd();
     DeleteNowLoading();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", InitDungeonMain__F13INIT_LOOP_ARG);
-#endif
-
-void MoveCheckInfo::Initialize() {
-    memset(this, 0, sizeof(MoveCheckInfo));
-}
-
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", __as__9mgCCameraFRC9mgCCamera);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", __ct__14CActiveMonsterFv);
 
 void CRedMarkModel::Initialize() {
     draw_request = 0;
@@ -1201,7 +1155,7 @@ void DngMainDraw() {
     CMapLightingInfo *info = &light;
 
     if (DngMainMap != NULL) {
-        DngMainMap->time_light_blend = 1;
+        DngMainMap->map_info.time_light_blend = 1;
         DngMainMap->now_time = DngMainScene->time;
         DngMainMap->GetLightInfo(info);
 
@@ -1562,7 +1516,7 @@ void DngMainDraw() {
 
     ActiveMonster->DrawEffectScript();
 
-    if (BattleAreaScene->unk_8c == 2) {
+    if (BattleAreaScene->weather == 2) {
         CPreSprite prim;
 
         prim.Initialize(NULL, NULL);
@@ -1571,9 +1525,9 @@ void DngMainDraw() {
         prim.Coord(0);
         prim.Shading(1);
         prim.DepthTestEnable(0);
-        prim.DepthTest(-1);
-        prim.AlphaBlend(1);
-        prim.Begin(1);
+        prim.DepthTest(MG_DEPTH_TEST_ALWAYS);
+        prim.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
+        prim.Begin(MG_PRIM_LINE);
         int x = 16;
 
         for (int r = 0; r < 132; r++) {
@@ -2170,7 +2124,6 @@ int RunMainEvent() {
  * Processes gameplay and debug input during the dungeon field mode.
  *
  */
-#ifdef NONMATCHING
 int DngMainKey() {
     DngMainScene->GetCamera(DngMainScene->active_camera);
 
@@ -2815,9 +2768,6 @@ int DngMainKey() {
 
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", DngMainKey__Fv);
-#endif
 
 /**
  *
@@ -2884,7 +2834,7 @@ void IsEventRun() {
             pallet->elapsed = 0;
             pallet->repeats = 0;
             sndSePlay(GetSystemSndID(), 10, 0);
-            BattleAreaScene->unk_98 |= 0x80;
+            BattleAreaScene->practice_actions |= 0x80;
         }
     }
 
@@ -3356,7 +3306,7 @@ void DebugMainDraw() {
         prim.Initialize(NULL, NULL);
         prim.Preset2D();
         prim.TextureMapEnable(0);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x10, 0x10, 0x40, 0x74);
         prim.Vertex(0x10, 0x28, 0);
         prim.Vertex(0x100, 0x120, 0);
@@ -3396,7 +3346,7 @@ void DebugMainDraw() {
             prim.Initialize(NULL, NULL);
             prim.Preset2D();
             prim.TextureMapEnable(0);
-            prim.Begin(6);
+            prim.Begin(MG_PRIM_SPRITE);
             prim.Color(8, 8, 0x20, 0x74);
             prim.Vertex(0x5C, 0x3C, 0);
             prim.Vertex(0x168, 0x158, 0);
@@ -3446,10 +3396,6 @@ void DBGCMD_RunScript(int no) {
 }
 
 // Initialised data (.data)
-#ifndef NONMATCHING
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1081__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_2994__DATA);
-#endif
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", cam_table_3000__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", cam_table_dist_3001__DATA);
 
@@ -3472,76 +3418,15 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1077__2__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1078__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1079__2__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1080__2__DATA);
-#ifndef NONMATCHING
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1580__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1581__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1582__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1583__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1584__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1585__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1586__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1587__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1588__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1589__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1590__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1591__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1592__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1593__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1594__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1595__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1596__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1597__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1598__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1599__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1605__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1606__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1607__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1608__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1609__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1610__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1611__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1612__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1613__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1614__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1615__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1616__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1617__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1618__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1619__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1620__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1621__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1622__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1623__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1624__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1625__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1626__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1627__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1628__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1629__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1630__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1631__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1632__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1633__2__DATA);
-#endif
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1940__DATA);
-#ifndef NONMATCHING
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3336__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3337__DATA);
-#endif
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3589__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3602__DATA);
 
 // Virtual tables (.vtables)
-#ifndef NONMATCHING
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", __vt__12CTreasureBox__DATA);
-#endif
 
 // Small initialised data (.sdata)
 
 // Small uninitialised data (.sbss)
-#ifndef NONMATCHING
-INCLUDE_BSS(init_1107, 0x4);
-#endif
 INCLUDE_BSS(init_1824, 0x4);
 INCLUDE_BSS(water_cnt_2619, 0x4);
 INCLUDE_BSS(init_2620, 0x4);

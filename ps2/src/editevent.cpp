@@ -44,9 +44,7 @@ extern "C" char at_1211__2[];
 extern char     at_888__3[];
 extern char     at_1175__2[];
 
-extern mgCTextureManager mgTexManager;
 #include <cmath>
-#include <cstdio>
 
 static int CheckPlaceBurnParts(GeoFuncParam *param, RS_STACKDATA *args, int argc);
 

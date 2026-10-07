@@ -87,7 +87,7 @@ void InitTakePhoto();
  * @address 0x313960
  * @size 0xA0
  */
-void LoadTakePhoto(int arg0, mgCMemory *memory, u_long128 *buffer);
+void LoadTakePhoto(int tex_block, mgCMemory *memory, u_long128 *buffer);
 
 /**
  *

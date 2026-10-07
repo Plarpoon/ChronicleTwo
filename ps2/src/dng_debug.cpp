@@ -54,28 +54,11 @@ extern char  at_973__2[];
 extern char  at_974__2[];
 extern char  at_975[];
 extern CFont dbFont;
-#include <cstdio>
-#include <cstdlib>
 
-#include "actionchara.hpp"
 #include "colprim.hpp"
-#include "dng_debug.hpp"
-#include "dng_event.hpp"
-#include "dng_main.hpp"
-#include "effscript.hpp"
-#include "font.hpp"
 #include "gamepad.hpp"
-#include "mainloop.hpp"
-#include "mg_drawprim.hpp"
-#include "mg_memory.hpp"
-#include "mg_texture.hpp"
-#include "mglib.hpp"
-#include "monster.hpp"
-#include "prespr.hpp"
 #include "savedata.hpp"
-#include "savedatadungeon.hpp"
 #include "scenesnd.hpp"
-#include "snd_mngr.hpp"
 #include "userdata.hpp"
 
 extern int   command_int[];
@@ -103,9 +86,7 @@ static void dngDebugExit();
  *
  */
 
-#pragma define_section dead ".dead" \
-                            ".dead"
-
+#pragma define_section dead ".dead" ".dead"
 __declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
     return a / b;
 }
@@ -123,7 +104,6 @@ void dngDebugInit() {
     dbFont.Init();
     dbFont.SetClearance(20, 20);
 }
-
 void dngDebugStart() {
     dbinfo.active = 1;
     dbinfo.command = -1;
@@ -134,13 +114,12 @@ void dngDebugStart() {
     command_int[DNG_DEBUG_CMD_SOUND_FLAG * 2] = dbinfo.sound_flag;
     command_int[DNG_DEBUG_CMD_MONSTER_TALK * 2] = dbinfo.monster_talk;
     command_int[DNG_DEBUG_CMD_EFFECT_ID * 2] = dbinfo.effect_id;
-    command_int[DNG_DEBUG_CMD_EFFECT_VOL * 2] = (int) dbinfo.effect_vol;
+    command_int[DNG_DEBUG_CMD_EFFECT_VOL * 2] = (int)dbinfo.effect_vol;
     GamePad__2.SetAutoRepeat(0xF000, 15, 4);
     GamePad__2.SetAutoRepeat(PAD_UP | PAD_DOWN, 8, 1);
     dbinfo.saved_pause_flag = BattleAreaScene->pause_flag;
     BattleAreaScene->pause_flag = 15;
 }
-
 void dngDebugDraw() {
     if (dbinfo.active != 0) {
         (mgTexManager).ReloadTexture(0x6C, (sceVif1Packet *) NULL);
@@ -152,7 +131,7 @@ void dngDebugDraw() {
         sprite.Initialize(0, 0);
         sprite.Preset2D();
         sprite.TextureMapEnable(0);
-        sprite.Begin(6);
+        sprite.Begin(MG_PRIM_SPRITE);
         sprite.Color(0x10, 0x10, 0x10, 0x48);
         sprite.Vertex(0xE, 0x46, 0);
         sprite.Vertex(0x104, 0x14C, 0);
@@ -397,7 +376,7 @@ void DrawSystemParamInfo() {
     sprite.Initialize(0, 0);
     sprite.Preset2D();
     sprite.TextureMapEnable(0);
-    sprite.Begin(6);
+    sprite.Begin(MG_PRIM_SPRITE);
     sprite.Color(0x10, 0x10, 0x10, 0x48);
     sprite.Vertex(0xE, 0x116, 0);
     sprite.Vertex(0x104, 0x19C, 0);
@@ -435,7 +414,7 @@ void DrawSystemParamInfo2() {
     sprite.Initialize(0, 0);
     sprite.Preset2D();
     sprite.TextureMapEnable(0);
-    sprite.Begin(6);
+    sprite.Begin(MG_PRIM_SPRITE);
     sprite.Color(0x10, 0x10, 0x10, 0x48);
     sprite.Vertex(0xE, 0xB2, 0);
     sprite.Vertex(0x144, 0x198, 0);

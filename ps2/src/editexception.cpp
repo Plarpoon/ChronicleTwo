@@ -53,7 +53,6 @@ extern int               thunder_count;
 extern CGeyserEffect    *GeyserEffect;
 extern int               FirePowderFlag;
 extern FirePowder       *fire_powder;
-extern mgCTextureManager mgTexManager;
 extern int               GeyserEffectTexb;
 extern mgCFrame         *GeyserFrame;
 extern int               GeyserRndSeed;
@@ -91,26 +90,14 @@ static inline u32 align16_blocks(u32 bytes) {
 }
 
 #include <cmath>
-#include <cstdlib>
-#include <cstring>
 
-#include "dataread.hpp"
 #include "editmap.hpp"
 #include "editparts.hpp"
-#include "event_func.hpp"
-#include "mainloop.hpp"
 #include "map.hpp"
-#include "mapload.hpp"
-#include "mapparts.hpp"
-#include "mdslist.hpp"
 #include "mg_camera.hpp"
 #include "mg_drawenv.hpp"
 #include "mg_frame.hpp"
-#include "mg_math.hpp"
-#include "mg_memory.hpp"
 #include "mg_tanime.hpp"
-#include "mg_texture.hpp"
-#include "mglib.hpp"
 #include "savedata.hpp"
 #include "scenesnd.hpp"
 #include "snd_mngr.hpp"
@@ -124,14 +111,11 @@ extern s32            fade_cnt;
 extern s32            sound_flag;
 extern s32            sound_cnt;
 extern s32            FirePowderFlag;
-extern FirePowder    *fire_powder;
 extern s32            FirePowderTexb;
 extern mgC3DSprite   *SpriteVis;
 extern mgCFrame      *FirePowFrame;
 extern s32            GeyserEffectFlag;
-extern CGeyserEffect *GeyserEffect;
 extern s32            GeyserEffectTexb;
-extern mgCFrame      *GeyserFrame;
 extern s32            GeyserRndSeed;
 
 // Code (.text)

@@ -13,46 +13,44 @@
 
 extern char at_356[];
 
-#ifdef NONMATCHING
-#include <cstdio>
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
 
-#include "mg_drawprim.hpp"
-#include "mg_frame.hpp"
-#include "mg_memory.hpp"
-#include "mg_texture.hpp"
-#include "mglib.hpp"
+#ifdef NONMATCHING
+
 #endif
-
-#ifdef NONMATCHING
 
 int CreatSmoothPassSW(float (*out)[4], float (*ring)[4], int point_num, int division, int start, int ring_size) {
     sceVu0FMATRIX coefficients;
     sceVu0FMATRIX points;
     sceVu0FMATRIX basis;
-    float         powers[4];
-    float         result[4];
-    int           control[4];
+    float powers[4];
+    float result[4];
+    int control[4];
     if (point_num < 3) {
         return 0;
     }
     float quarter = 0.25f;
-    float half = 0.5f;
+    float half;
+    half = 0.5f;
     basis[3][0] = 0.0f;
+    basis[1][0] = 1.0f;
     basis[2][1] = 0.0f;
     basis[0][0] = -quarter / half;
-    basis[1][0] = 1.0f;
-    basis[3][1] = 1.0f;
-    basis[0][2] = (-half - quarter) / half;
     basis[0][1] = 1.5f;
-    basis[3][2] = 0.0f;
-    basis[2][3] = 0.0f;
     basis[2][0] = basis[0][0];
     basis[1][1] = -(quarter + 1.0f) / half;
+    basis[3][1] = 1.0f;
+    basis[3][2] = 0.0f;
+    basis[0][2] = (-half - quarter) / half;
+    basis[2][2] = half;
     basis[1][2] = 2.0f;
     basis[0][3] = half;
-    basis[2][2] = basis[0][3];
+    basis[1][3] = -basis[0][3];
+    basis[2][3] = 0.0f;
     basis[3][3] = 0.0f;
-    basis[1][3] = -half;
     int written = 0;
     for (int segment = 0; segment < point_num - 1; segment++) {
         if (segment > 0 && segment < point_num - 2) {
@@ -107,60 +105,41 @@ int CreatSmoothPassSW(float (*out)[4], float (*ring)[4], int point_num, int divi
         float t = 0.0f;
         float step;
         while (t < 1.0f - (step = 1.0f / (division - 1.0f))) {
+            powers[0] = t * (t * t);
             powers[3] = 1.0f;
             powers[1] = t * t;
-            powers[0] = t * (t * t);
             powers[2] = t;
             sceVu0ApplyMatrix(result, coefficients, powers);
-            float *entry = out[written];
-            entry[0] = result[0];
-            entry[1] = result[1];
-            entry[2] = result[2];
-            entry[3] = 1.0f;
+            for (int j = 0; j < 3; j++) {
+                out[written][j] = result[j];
+            }
+            out[written][3] = 1.0f;
             t += step;
             written++;
         }
     }
     return written;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", CreatSmoothPassSW__FPA4_fPA4_fiiii);
-#endif
-
-#ifdef NONMATCHING
 
 void CSWordAfterEffect::Draw() {
-    if (!active) {
-        return;
-    }
-    if (point_num <= 0) {
-        return;
-    }
-    int   projected[4];
+    if (!active) return;
+    if (point_num <= 0) return;
+    int projected[4];
     float alpha_step;
     float opacity = alpha;
-    int   count = (int) ((float) length * opacity);
-    if (smooth_num < count) {
-        count = smooth_num;
-    }
-    if (count <= 0) {
-        return;
-    }
-    alpha_step = opacity / (float) count;
-    mgCDrawPrim        prim;
+    int count = (int)((float)length * opacity);
+    if (smooth_num < count) count = smooth_num;
+    if (count <= 0) return;
+    alpha_step = opacity / (float)count;
+    mgCDrawPrim prim;
     mgCTextureManager *textures = &mgTexManager;
-    switch ((int) texture) {
-        case 0:
-            break;
-        default:
-            textures->ReloadTexture(tex_block, (sceVif1Packet *) NULL);
-    }
+    if (texture != NULL) textures->ReloadTexture(tex_block, (sceVif1Packet *)NULL);
     prim.Initialize(NULL, NULL);
     prim.AlphaBlendEnable(1);
-    prim.AlphaBlend(2);
+    prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
     prim.AlphaTestEnable(1);
     prim.AlphaTest(1, 0);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.Bilinear(1);
     if (texture != NULL) {
         prim.TextureMapEnable(1);
@@ -170,21 +149,19 @@ void CSWordAfterEffect::Draw() {
     prim.Coord(1);
     prim.Shading(1);
     prim.DepthTestEnable(1);
-    prim.DepthTest(1);
-    prim.Begin(4);
-    if (texture != NULL) {
-        prim.Texture(texture);
-    }
-    float u = (float) tex_u;
-    float u_step = (float) tex_w / (float) count;
+    prim.DepthTest(MG_DEPTH_TEST_GEQUAL);
+    prim.Begin(MG_PRIM_TRIANGLE_STRIP);
+    if (texture != NULL) prim.Texture(texture);
+    float u = (float)tex_u;
+    float u_step = (float)tex_w / (float)count;
     if (texture == NULL) {
         for (int point = 0; point < count; ++point) {
             if (mgTransWorldPrim(projected, smooth0[point])) {
-                prim.Color(color0[0], color0[1], color0[2], (int) ((float) color0[3] * opacity));
+                prim.Color(color0[0], color0[1], color0[2], (int)((float)color0[3] * opacity));
                 prim.Vertex4(projected);
             }
             if (mgTransWorldPrim(projected, smooth1[point])) {
-                prim.Color(color1[0], color1[1], color1[2], (int) ((float) color1[3] * opacity));
+                prim.Color(color1[0], color1[1], color1[2], (int)((float)color1[3] * opacity));
                 prim.Vertex4(projected);
             }
             opacity -= alpha_step;
@@ -192,14 +169,14 @@ void CSWordAfterEffect::Draw() {
     } else {
         int texel_u;
         for (int point = 0; point < count; ++point) {
-            texel_u = (int) u;
+            texel_u = (int)u;
             if (mgTransWorldPrim(projected, smooth0[point])) {
-                prim.Color(color0[0], color0[1], color0[2], (int) ((float) color0[3] * opacity));
+                prim.Color(color0[0], color0[1], color0[2], (int)((float)color0[3] * opacity));
                 prim.TextureCrd(texel_u, tex_v);
                 prim.Vertex4(projected);
             }
             if (mgTransWorldPrim(projected, smooth1[point])) {
-                prim.Color(color0[0], color0[1], color0[2], (int) ((float) color0[3] * opacity));
+                prim.Color(color0[0], color0[1], color0[2], (int)((float)color0[3] * opacity));
                 prim.TextureCrd(texel_u, tex_v + tex_h);
                 prim.Vertex4(projected);
             }
@@ -209,9 +186,6 @@ void CSWordAfterEffect::Draw() {
     }
     prim.End();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/swordeffect", Draw__17CSWordAfterEffectFv);
-#endif
 void CSWordAfterEffect::CreatPointList() {
     if (active != 0 && point_num > 0) {
         smooth_num =

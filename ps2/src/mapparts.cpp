@@ -41,15 +41,8 @@ extern char at_244[];
 #include <libvu0.h>
 
 #include <cmath>
-#include <cstring>
 
-#include "collision.hpp"
 #include "intersection.hpp"
-#include "mdslist.hpp"
-#include "mg_math.hpp"
-#include "mg_memory.hpp"
-#include "mglib.hpp"
-#include "occlusion.hpp"
 
 /**
  *

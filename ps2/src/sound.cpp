@@ -32,6 +32,11 @@ extern MSIN_BUFFER   msinBf[MIDI_MSIN_PORT_COUNT];
 extern MIDI_BANK     gBank;
 #endif
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 void CSound::StopVoice(int core) {
     sceSdRemote(1, rSdSetSwitch, core | SD_S_KOFF, 0xFFFFFF);
@@ -96,8 +101,6 @@ void set_spu(int mode0, int mode1, int depth0, int depth1) {
     }
 }
 
-#ifdef NONMATCHING
-// 97.7% match, 6 words off
 int TransHdBd(int hd, int hd_size, int bd, int bd_size) {
     void *header;
 
@@ -143,15 +146,12 @@ int TransHdBd(int hd, int hd_size, int bd, int bd_size) {
         FlushCache(0);
         sceSdRemote(1, rSdVoiceTrans, 1, SD_TRANS_MODE_WRITE, gBank.bd_address, gBank.spu_address, 0x6DD00);
         sceSdRemote(1, rSdVoiceTransStatus, 1, SD_TRANS_STATUS_WAIT);
-        ezTransToIOP2(iop_bd_addr, (void *) (bd + 0x6DD00), bd_size - 0x6DD00);
+        ezTransToIOP2((void *) iop_bd_addr, (void *) (bd + 0x6DD00), bd_size - 0x6DD00);
         FlushCache(0);
         sceSdRemote(1, rSdVoiceTrans, 1, SD_TRANS_MODE_WRITE, gBank.bd_address, gBank.spu_address + 0x6DD00, bd_size - 0x6DD00);
     }
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", TransHdBd__Fiiii);
-#endif
 
 #ifdef NONMATCHING
 // 92.5% match, 161 words off
@@ -392,9 +392,6 @@ void CSound::DEL_PORT(int port) {
     }
 }
 
-#ifdef NONMATCHING
-// 99.1% match, 2 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void CSound::SQ_Play(int port, int seq_no, int volume) {
     void *sequence;
 
@@ -415,9 +412,6 @@ void CSound::SQ_Play(int port, int seq_no, int volume) {
     ezMidi(port + 0x30, 0);
     ezMidi(port, 0);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", SQ_Play__6CSoundFiii);
-#endif
 
 void CSound::SQ_RePlay(int port) {
     if (midi_state.port[port].sequence_count > 0) {
@@ -539,9 +533,6 @@ void CSound::SE_Stop(int port, int bank, int program, int key, int id) {
     }
 }
 
-#ifdef NONMATCHING
-// 99.3% match, 13 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void CSound::Step() {
     int port;
 
@@ -576,9 +567,6 @@ void CSound::Step() {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", Step__6CSoundFv);
-#endif
 
 void CSound::Stop(int port) {
     ezMidi(port + 0x20, 0);

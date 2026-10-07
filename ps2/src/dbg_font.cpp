@@ -75,7 +75,7 @@ unsigned long SjisToSerno(unsigned long sjis) {
  * Maps a single-byte character to its debug font serial number.
  *
  */
-int ascii2serno(u8 ch) {
+unsigned long ascii2serno(u8 ch) {
     int code;
 
     code = ch & 0xFF;
@@ -322,9 +322,7 @@ void dbgCJISFont::__putc(unsigned long serno) {
         x += 2;
     }
 }
-#ifdef NONMATCHING
 extern "C" int vsprintf(char *, const char *, char *);
-// 94.3% match, 32 words off
 void dbgCJISFont::PrintDirect(int start_x, int start_y, char *format, ...) {
     char text[0x408];
     char escape[8];
@@ -336,7 +334,7 @@ void dbgCJISFont::PrintDirect(int start_x, int start_y, char *format, ...) {
     y = start_y;
     prev_serno = 0;
     char *args = (char *)__builtin_next_arg(format) - (__builtin_args_info(2) >= 8 ? 0 : (8 - __builtin_args_info(2)) * 8);
-    vsprintf(text, format, args);
+    vsprintf((char *)text, format, args);
     while ((ch = *cursor) != 0) {
         long code = ch;
         if (!(code & 0x80)) {
@@ -400,9 +398,6 @@ void dbgCJISFont::PrintDirect(int start_x, int start_y, char *format, ...) {
     }
     loaded_texture_id = -1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dbg_font", PrintDirect__11dbgCJISFontFiiPce);
-#endif
 
 // Constants (.rodata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dbg_font", at_288__3__DATA);

@@ -8,6 +8,11 @@
 #include "mglib.hpp"
 #include "outline.hpp"
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static float PrimeDoubleToFloat(double a) {
+    return a;
+}
+
 // Code (.text)
 void COutLineDraw::Initialize() {
     mgZeroVector(unk_10.max);
@@ -42,20 +47,32 @@ int COutLineDraw::Draw(float *pos, float scale, float alpha) {
 }
 
 #ifdef NONMATCHING
-// 93.5% match, 138 words off
+// 99.0% match, 6 words off
 int COutLineDraw::Draw(float scale, float alpha) {
-    if (frame == NULL || texture == NULL || enable == 0) {
+    if (frame == NULL) {
         return 0;
     }
+    if (texture == NULL) {
+        return 0;
+    }
+    if (enable == 0) {
+        return 0;
+    }
+    int result = 0;
+    int left;
+    int right;
+    int top;
+    int bottom;
     if (!(scale <= 1.0f)) {
         scale = 1.0f;
     }
+    scale = scale * scale;
     if (width <= 0.0f) {
         frame->SetAttrParamObjAlpha(alpha, 1);
         return mgDrawDirect(frame);
     }
 
-    float scaled_width = width * (scale * scale);
+    float scaled_width = width * scale;
     float opacity = 1.0f;
     if ((int)scaled_width <= 0) {
         opacity = scaled_width;
@@ -68,9 +85,7 @@ int COutLineDraw::Draw(float scale, float alpha) {
     if (mgGetDrawRect(frame, &draw_box) == 0) {
         return 0;
     }
-    float max_xy[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-    max_xy[0] = mgScreenWidth;
-    max_xy[1] = mgScreenHeight;
+    float max_xy[4] = {(float)mgScreenWidth, (float)mgScreenHeight, 0.0f, 0.0f};
     float min_xy[4] = {0.0f, 0.0f, 0.0f, 0.0f};
     mgVectorMaxMin(max_xy, min_xy, draw_box.max, draw_box.min, draw_box.max, draw_box.min);
     float screen_width = mgScreenWidth;
@@ -92,21 +107,21 @@ int COutLineDraw::Draw(float scale, float alpha) {
     mgFotI4(max_corner, max_xy);
     mgFotI4(min_corner, min_xy);
 
-    int clear_left = min_corner[0] - 0x80;
-    int clear_right = max_corner[0] + 0x80;
-    int clear_top = min_corner[1] - 0x80;
-    int clear_bottom = max_corner[1] + 0x80;
-    if (clear_left < 0) {
-        clear_left = 0;
+    left = min_corner[0] - 0x80;
+    right = max_corner[0] + 0x80;
+    top = min_corner[1] - 0x80;
+    bottom = max_corner[1] + 0x80;
+    if (left < 0) {
+        left = 0;
     }
-    if (clear_top < 0) {
-        clear_top = 0;
+    if (top < 0) {
+        top = 0;
     }
-    if (mgScreenWidth * 16 < clear_right) {
-        clear_right = mgScreenWidth * 16;
+    if (mgScreenWidth * 16 < right) {
+        right = mgScreenWidth * 16;
     }
-    if (mgScreenHeight * 16 < clear_bottom) {
-        clear_bottom = mgScreenHeight * 16;
+    if (mgScreenHeight * 16 < bottom) {
+        bottom = mgScreenHeight * 16;
     }
     mgSetPkFrameBuffer(texture->tex0.TBP0 / 32, -1, -1, -1);
     mgCDrawPrim clear;
@@ -116,15 +131,15 @@ int COutLineDraw::Draw(float scale, float alpha) {
     clear.AlphaTestEnable(0);
     clear.Begin(MG_PRIM_SPRITE);
     clear.Color(0, 0, 0, 0);
-    clear.Vertex4(clear_left - 16, clear_top - 16, 0);
-    clear.Vertex4(clear_right + 16, clear_bottom + 16, 0);
+    clear.Vertex4(left - 16, top - 16, 0);
+    clear.Vertex4(right + 16, bottom + 16, 0);
     clear.End();
 
-    int left = min_corner[0];
-    int top = min_corner[1];
-    int bottom = max_corner[1];
-    int right = max_corner[0];
-    int result = mgDrawDirect(frame);
+    result += mgDrawDirect(frame);
+    left = min_corner[0];
+    top = min_corner[1];
+    right = max_corner[0];
+    bottom = max_corner[1];
     if (left < 0) {
         left = 0;
     }
@@ -156,8 +171,7 @@ int COutLineDraw::Draw(float scale, float alpha) {
     composite.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
     mgSetPkTextureRepeat(0);
     if (hide_edge == 0 && !(alpha < 1.0f) && edge_offset > 0 && !(opacity < 0.1f)) {
-        mgRect<int> edge_rect(left, top, right, bottom);
-        DrawDivSprite4(&composite, edge_rect, &frame_buffer, edge_color, edge_offset, 0);
+        DrawDivSprite4(&composite, mgRect<int>(left, top, right, bottom), &frame_buffer, edge_color, edge_offset, 0);
     }
     int depth = 0;
     if (depth_from_pos != 0) {
@@ -172,8 +186,7 @@ int COutLineDraw::Draw(float scale, float alpha) {
     body_color[3] = (int)(128.0f * alpha);
     composite.AlphaBlendEnable(1);
     composite.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
-    mgRect<int> body_rect(left, top, right, bottom);
-    DrawDivSprite(&composite, body_rect, &frame_buffer, body_color, 0, 0, depth, 0);
+    DrawDivSprite(&composite, mgRect<int>(left, top, right, bottom), &frame_buffer, body_color, 0, 0, depth, 0);
     composite.Begin(MG_PRIM_SPRITE);
     composite.Direct(0x3F, 0);
     composite.End();
@@ -246,20 +259,16 @@ static void DrawDivSprite(mgCDrawPrim *prim, mgRect<int> rect, mgCTexture *textu
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/outline", DrawDivSprite__FP11mgCDrawPrim9mgRect_i_P10mgCTexturePiiiii);
 #endif
 
-#ifdef NONMATCHING
-// 76.8% match, 68 words off
 static void DrawDivSprite4(mgCDrawPrim *prim, mgRect<int> rect, mgCTexture *texture,
                            int *color, int offset, int z) {
     mgRect<int> area = rect;
-    int vertex_start[4] = {0, 0, 0, 0};
-    int vertex_end[4] = {0, 0, 0, 0};
-    int texcrd_start[4] = {0, 0, 0, 0};
-    int texcrd_end[4] = {0, 0, 0, 0};
     int offset_x = mgScreenOffx * 16;
     int offset_y = mgScreenOffy * 16;
     int right = area.right + offset_x;
     int top = area.top + offset_y;
     int bottom = area.bottom + offset_y;
+    int x;
+    int y;
 
     prim->Begin2();
     prim->BeginPrim2(MG_PRIM_SPRITE);
@@ -267,14 +276,16 @@ static void DrawDivSprite4(mgCDrawPrim *prim, mgRect<int> rect, mgCTexture *text
     prim->Color(color[0], color[1], color[2], color[3]);
     prim->EndPrim2();
     prim->BeginPrim2(MG_PRIM_SPRITE, 0x43, 0, 2);
-    vertex_start[2] = z;
-    vertex_end[2] = z;
-    for (int x = area.left + offset_x; x < right;) {
+    int vertex_start[4] = {0, 0, z, 0};
+    int vertex_end[4] = {0, 0, z, 0};
+    int texcrd_start[4] = {0, 0, 0, 0};
+    int texcrd_end[4] = {0, 0, 0, 0};
+    for (x = area.left + offset_x; x < right;) {
         int x_end = (x + 0x200) / 0x200 * 0x200;
         if (right < x_end) {
             x_end = right;
         }
-        for (int y = top; y < bottom;) {
+        for (y = top; y < bottom;) {
             int y_end = (y + 0x200) / 0x200 * 0x200;
             if (bottom < y_end) {
                 y_end = bottom;
@@ -323,9 +334,6 @@ static void DrawDivSprite4(mgCDrawPrim *prim, mgRect<int> rect, mgCTexture *text
     prim->EndPrim2();
     prim->End2();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/outline", DrawDivSprite4__FP11mgCDrawPrim9mgRect_i_P10mgCTexturePiii);
-#endif
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/outline", at_338__DATA);

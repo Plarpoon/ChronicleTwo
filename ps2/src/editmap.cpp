@@ -1281,9 +1281,7 @@ int CEditMap::GetePlaceParts(float *pos) {
     count = GetNearParts(box, near, 0x200);
     return GetePlaceParts(pos, near, count);
 }
-#ifdef NONMATCHING
-// 99.5% match, 61 words off
-int CEditMap::GetePlaceParts(float *pos, CEditParts **parts, int num) {
+int CEditMap::GetePlaceParts(sceVu0FVECTOR pos, CEditParts **parts, int num) {
     sceVu0FVECTOR point;
     float matrix[4][4];
     float inverse[4][4];
@@ -1351,7 +1349,7 @@ int CEditMap::GetePlaceParts(float *pos, CEditParts **parts, int num) {
         sceVu0SubVector(offset, point, parts_pos);
         mgAngleLimit(-parts_rot[1]);
         CCPoly *poly = square;
-        for (j = 0; j < 2; j++, poly++) {
+        for (int j = 0; j < 2; j++, poly++) {
             mgApplyMatrixN(triangle, point_matrix, poly->vertex, 3);
             mgApplyMatrixN(triangle, inverse, triangle, 3);
             if (info->col_area3.OverlapPoly3XZ(triangle, &overlap_area, &overlap_box)) {
@@ -1373,9 +1371,6 @@ int CEditMap::GetePlaceParts(float *pos, CEditParts **parts, int num) {
     }
     return result;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", GetePlaceParts__8CEditMapFPfPP10CEditPartsi);
-#endif
 int CEditMap::CheckEditParts(CEditPartsInfo *info, float *pos, float radius, EP_PLACE_INFO *place) {
     CEditParts *near_parts[512];
     int         count;

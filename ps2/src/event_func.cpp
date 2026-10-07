@@ -301,6 +301,11 @@ extern char            at_6834[];
 extern char            at_5726[];
 extern char            at_5736[];
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 CEoh::CEoh() {
     type = EOH_TYPE_NONE;
@@ -2060,55 +2065,72 @@ void CEventScriptArg::BuildArgData(u32 *program) {
     nowScriptArg = NULL;
 }
 #ifdef NONMATCHING
-// 95.8% match, 58 words off
+static inline ARG_LIST *ScriptArgAddList(CEventScriptArg *script) {
+    if (script->memory == NULL) {
+        return NULL;
+    }
+    ARG_LIST *created = new (script->memory->Alloc(3)) ARG_LIST;
+    if (created == NULL) {
+        return NULL;
+    }
+    created->id = script->next_id;
+    created->args = NULL;
+    created->next = NULL;
+    if (script->list_num <= 0) {
+        script->list = created;
+    } else {
+        ARG_LIST *last = script->list;
+        while (last->next != NULL) {
+            last = last->next;
+        }
+        last->next = created;
+    }
+    script->next_id++;
+    script->list_num++;
+    return created;
+}
+static inline void ScriptArgNewData(CEventScriptArg *script, int num, ARG_DATA **out) {
+    if (script->memory == NULL) {
+        *out = NULL;
+    } else {
+        u_int size = num * sizeof(ARG_DATA);
+        *out = new (script->memory->Alloc(((size & 0xF) ? (size >> 4) + 1 : size >> 4) + 2)) ARG_DATA[num];
+    }
+}
+static inline char *ScriptArgNewString(CEventScriptArg *script, char *source) {
+    char *copy;
+    if (script->memory == NULL) {
+        copy = NULL;
+    } else {
+        u_int length = strlen(source) + 1;
+        copy = new (script->memory->Alloc(((length & 0xF) ? (length >> 4) + 1 : length >> 4) + 2)) char[strlen(source) + 1];
+        strcpy(copy, source);
+    }
+    return copy;
+}
+static inline ARG_DATA *ArgAt(ARG_DATA *args, int i) {
+    return &args[i];
+}
+// 99.7% match, 8 words off
 int _DATA(RS_STACKDATA *stack, int argc) {
-    CEventScriptArg *script = nowScriptArg;
     char *source;
+        CEventScriptArg *script = nowScriptArg;
     if (script == NULL) {
         return 0;
     }
-    ARG_LIST *node;
-    if (script->memory == NULL) {
-        node = NULL;
-    } else {
-        ARG_LIST *created = new (script->memory->Alloc(3)) ARG_LIST;
-        if (created == NULL) {
-            node = NULL;
-        } else {
-            created->id = script->next_id;
-            created->args = NULL;
-            created->next = NULL;
-            if (script->list_num <= 0) {
-                script->list = created;
-            } else {
-                ARG_LIST *last = script->list;
-                while (last->next != NULL) {
-                    last = last->next;
-                }
-                last->next = created;
-            }
-            node = created;
-            script->next_id++;
-            script->list_num++;
-        }
-    }
+    ARG_LIST *node = ScriptArgAddList(script);
     if (node == NULL) {
         return 0;
     }
-    ARG_DATA *args;
-    if (nowScriptArg->memory == NULL) {
-        args = NULL;
-    } else {
-        u_int size = argc * sizeof(ARG_DATA);
-        args = new (nowScriptArg->memory->Alloc(((size & 0xF) ? (size >> 4) + 1 : size >> 4) + 2)) ARG_DATA[argc];
-    }
+    ARG_DATA *args __attribute__((aligned(16)));
+    ScriptArgNewData(nowScriptArg, argc, &args);
     if (args == NULL) {
         return 0;
     }
     node->args = args;
     node->arg_num = argc;
     for (int i = 0; i < argc; i++) {
-        ARG_DATA *arg = &args[i];
+        ARG_DATA *arg = ArgAt(args, i);
         arg->type = stack->type;
         switch (stack->type) {
             case RS_INT:
@@ -2117,18 +2139,10 @@ int _DATA(RS_STACKDATA *stack, int argc) {
             case RS_FLOAT:
                 arg->f = GetStackFloat(stack++);
                 break;
-            case RS_STR: {
+            case RS_STR:
                 source = GetStackString(stack++);
-                CEventScriptArg *owner = nowScriptArg;
-                char *copy = NULL;
-                if (owner->memory != NULL) {
-                    u_int length = strlen(source) + 1;
-                    copy = new (owner->memory->Alloc(((length & 0xF) ? (length >> 4) + 1 : length >> 4) + 2)) char[strlen(source) + 1];
-                    strcpy(copy, source);
-                }
-                arg->s = copy;
+                arg->s = ScriptArgNewString(nowScriptArg, source);
                 break;
-            }
             default:
                 arg->s = NULL;
                 break;
@@ -2555,9 +2569,6 @@ void CScreenEffect::SetSepiaTexture(mgCTexture *texture, u_long128 *image) {
         sepia_texture->image[0] = image;
     }
 }
-#ifdef NONMATCHING
-// 97.3% match, 50 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void CScreenEffect::CaptureSepiaScreen(void) {
     if (sepia_texture == NULL) {
         return;
@@ -2582,9 +2593,6 @@ void CScreenEffect::CaptureSepiaScreen(void) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", CaptureSepiaScreen__13CScreenEffectFv);
-#endif
 void CScreenEffect::SetSepiaFlag(int enabled) {
     if (sepia_texture != NULL) {
         sepia = enabled;
@@ -2604,8 +2612,6 @@ void CScreenEffect::SetMonoFlashTexture(mgCTexture **textures, u_long128 **vram_
     mono_flash_texture[1] = textures[1];
     mono_flash_texture[1]->image[0] = vram_images[1];
 }
-#ifdef NONMATCHING
-// 91.8% match, 25 words off
 void CScreenEffect::CaptureMonoFlashScreen(void) {
     if (mono_flash_texture[0] == NULL || mono_flash_texture[1] == NULL) {
         return;
@@ -2620,17 +2626,14 @@ void CScreenEffect::CaptureMonoFlashScreen(void) {
         u_char *red = &positive[i];
         u_char *green = &positive[i + 1];
         u_char *blue = &positive[i + 2];
-        *red = *green = *blue = (u_int)(0.229f * (float)(u_int)*red + 0.587f * (float)(u_int)*green + 0.114f * (float)(u_int)*blue);
+        *red = *green = *blue = (u_int)(0.229f * (float)*red + 0.587f * (float)*green + 0.114f * (float)*blue);
         red = &negative[i];
         green = &negative[i + 1];
         blue = &negative[i + 2];
-        char gray = (u_int)(0.229f * (float)(u_int)*red + 0.587f * (float)(u_int)*green + 0.114f * (float)(u_int)*blue);
+        char gray = (u_int)(0.229f * (float)*red + 0.587f * (float)*green + 0.114f * (float)*blue);
         *red = *green = *blue = 255 - gray;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", CaptureMonoFlashScreen__13CScreenEffectFv);
-#endif
 void CScreenEffect::SetMonoFlashFlag(int enabled, int interval) {
     if (mono_flash_texture[0] != NULL || mono_flash_texture[1] != NULL) {
         mono_flash = enabled;
@@ -4061,17 +4064,17 @@ int _GET_DUN_WORLD_COORD(RS_STACKDATA *stack, int argc) {
 
     return 0;
 }
-#ifdef NONMATCHING
-// 83.6% match, 23 words off
 int _LOAD_IMG(RS_STACKDATA *stack, int argc) {
     int size;
     int stackNo = GetStackInt(stack++);
     char *fileName = GetStackString(stack++);
     int imageNo = GetStackInt(stack++);
-    if (EventScene->event_texb_num <= 0 || EventScene->event_texb_num < imageNo) {
+    int num = EventScene->event_texb_num;
+    int base = EventScene->event_texb;
+    if (num <= 0 || num < imageNo) {
         return 0;
     }
-    int block = EventScene->event_texb + imageNo;
+    int block = base + imageNo;
     u_char *file = (u_char *)GetLoadBGBuff(fileName, &size);
     if (file == NULL) {
         return 0;
@@ -4086,20 +4089,14 @@ int _LOAD_IMG(RS_STACKDATA *stack, int argc) {
     memcpy(image, file, size);
     mgTexManager.EnterIMGFile(image, block, memory, NULL);
     if (argc == 3) {
-        if (esMother.Set(imageNo, block)) {
-            return 1;
+        if (esMother.Set(imageNo, block) == 0) {
+            return 0;
         }
-        return 0;
-    }
-    if (argc == 4) {
+    } else if (argc == 4) {
         SetStack(stack, block);
-        return 1;
     }
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _LOAD_IMG__FP12RS_STACKDATAi);
-#endif
 int _DEL_IMG(RS_STACKDATA *stack, int argc) {
     mgTexManager.DeleteBlock(EventScene->event_texb + GetStackInt(stack));
     return 1;
@@ -4448,10 +4445,8 @@ int GetConfigCaptionOff() {
 
     return caption_off;
 }
-#ifdef NONMATCHING
-// 98.9% match, 68 words off
 int LoadMovie(char *name, mgCMemory *memory, bool skip) {
-    CMovie movie;
+    CMovie movie __attribute__((aligned(32)));
     int captionWidth;
     int captionHeight;
     int captionBlock;
@@ -4494,51 +4489,50 @@ int LoadMovie(char *name, mgCMemory *memory, bool skip) {
     }
     movie.SwitchThread();
     CFont font;
-    frame = 0;
     if (EdEventInfo.caption_enable != 0) {
         if (captionOff == 0) {
             font.Init();
             font.Preset(7);
             font.SetFuchi(8);
         }
-        frame = 0;
     }
+    frame = 0;
     while (true) {
         if (frame != 0) {
             mgBeginFrame(NULL);
         }
         GamePad__2.UpDate();
         if (movie.EndCheck() != 0 || (DebugFlag != 0 && GamePad__2.Down(PAD_START) != 0)) {
-        movie.Term();
-        textures->ReloadTexture(movieBlock, (sceVif1Packet *)NULL);
-        mgBeginFrame(NULL);
-        mgCDrawPrim endDraw;
-        endDraw.Initialize(NULL, NULL);
-        endDraw.AlphaTestEnable(0);
-        endDraw.TextureMapEnable(1);
-        endDraw.Begin(6);
-        endDraw.Color(0, 0, 0, 0x80);
-        endDraw.Vertex(0, 0, 0);
-        endDraw.Vertex(mgScreenWidth, mgScreenHeight, 0);
-        endDraw.Texture(movieTexture);
-        endDraw.Color(0x80, 0x80, 0x80, 0x80);
-        endDraw.TextureCrd(1, 1);
-        endDraw.Vertex(0, 0, 0);
-        endDraw.TextureCrd(0x1FE, 0x19E);
-        endDraw.Vertex(mgScreenWidth, mgScreenHeight, 0);
-        endDraw.End();
-        EventScene->fade.FadeOut(1, 0.0f, 0.0f, 0.0f);
-        mgEndFrame(NULL);
-        mgBeginFrame(NULL);
-        memory->stack_used = 0;
-        memory->lock = 0;
-        textures->DeleteBlock(movieBlock);
-        if (EdEventInfo.caption_enable != 0 && captionOff == 0) {
-            textures->DeleteBlock(captionBlock);
-            textures->EnterIMGFile(GetGaijiImgPtr(), fontBlock, NULL, NULL);
-            ReLoadFontTexture(fontBlock);
-            textures->EnterIMGFile(GetFontTex2ImgPtr(), fontBlock, NULL, NULL);
-        }
+            movie.Term();
+            textures->ReloadTexture(movieBlock, (sceVif1Packet *)NULL);
+            mgBeginFrame(NULL);
+            mgCDrawPrim endDraw;
+            endDraw.Initialize(NULL, NULL);
+            endDraw.AlphaTestEnable(0);
+            endDraw.TextureMapEnable(1);
+            endDraw.Begin(6);
+            endDraw.Color(0, 0, 0, 0x80);
+            endDraw.Vertex(0, 0, 0);
+            endDraw.Vertex(mgScreenWidth, mgScreenHeight, 0);
+            endDraw.Texture(movieTexture);
+            endDraw.Color(0x80, 0x80, 0x80, 0x80);
+            endDraw.TextureCrd(1, 1);
+            endDraw.Vertex(0, 0, 0);
+            endDraw.TextureCrd(0x1FE, 0x19E);
+            endDraw.Vertex(mgScreenWidth, mgScreenHeight, 0);
+            endDraw.End();
+            EventScene->fade.FadeOut(1, 0.0f, 0.0f, 0.0f);
+            mgEndFrame(NULL);
+            mgBeginFrame(NULL);
+            memory->stack_used = 0;
+            memory->lock = 0;
+            textures->DeleteBlock(movieBlock);
+            if (EdEventInfo.caption_enable != 0 && captionOff == 0) {
+                textures->DeleteBlock(captionBlock);
+                textures->EnterIMGFile(GetGaijiImgPtr(), fontBlock, NULL, NULL);
+                ReLoadFontTexture(fontBlock);
+                textures->EnterIMGFile(GetFontTex2ImgPtr(), fontBlock, NULL, NULL);
+            }
             return 1;
         }
         textures->ReloadTexture(movieBlock, (sceVif1Packet *)NULL);
@@ -4564,17 +4558,18 @@ int LoadMovie(char *name, mgCMemory *memory, bool skip) {
             char *text = NULL;
             if (captionOff == 0) {
                 char caption[0xE1];
+                int i;
                 int x;
                 int y;
-                for (int i = 0; i < 18; i++) {
-                    if (frame >= EdEventInfo.caption_start[i] &&
-                        EdEventInfo.caption_start[i] + EdEventInfo.caption_frames[i] >= frame) {
+                for (i = 0; i < 18; i++) {
+                    if (EdEventInfo.caption_start[i] <= frame &&
+                        frame <= EdEventInfo.caption_start[i] + EdEventInfo.caption_frames[i]) {
                         char *line = EdEventInfo.caption_text[i];
                         font.CalcDrawWH(line, &captionWidth, &captionHeight);
-                        x = fptosi(CalcAutoPosSet(0.0f, 512.0f, (float)captionWidth, 0.5f));
+                        x = (int)CalcAutoPosSet(0.0f, 512.0f, (float)captionWidth, 0.5f);
                         y = fptosi(CalcAutoPosSet(0.0f, 480.0f, (float)captionHeight, 0.95f));
                         memset(caption, 0, 0xE1);
-                        My_strncpy(caption, line, (frame - EdEventInfo.caption_start[i]) / 2 * 2);
+                        My_strncpy(caption, EdEventInfo.caption_text[i], (frame - EdEventInfo.caption_start[i]) / 2 * 2);
                         text = caption;
                     }
                 }
@@ -4588,9 +4583,6 @@ int LoadMovie(char *name, mgCMemory *memory, bool skip) {
         frame++;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", LoadMovie__FPcP9mgCMemoryb);
-#endif
 int _LOAD_MOVIE(RS_STACKDATA *stack, int argc) {
     int        stack_no = GetStackInt(stack++);
     char      *name = GetStackString(stack++);
@@ -4623,9 +4615,9 @@ int _SET_CROSSFADE(RS_STACKDATA *stack, int argc) {
         }
 
         if (direction == 0) {
-            EventScene->fade.CrossFadeIn(color, frames, 1.0f);
+            EventScene->fade.CrossFadeIn(color, frames, float(1));
         } else {
-            EventScene->fade.CrossFadeOut(color, frames, 1.0f);
+            EventScene->fade.CrossFadeOut(color, frames, float(1));
         }
     } else {
         frames = GetStackInt(stack) * 50 / 60;
@@ -9166,18 +9158,22 @@ int _GET_MES_OKURI(RS_STACKDATA *stack, int argc) {
     SetStack(stack, mes->push_button);
     return 1;
 }
-#ifdef NONMATCHING
-// ~28.5% match, 188 words off
 int _GET_FISHINGTOURNAMENT_ETC(RS_STACKDATA *stack, int argc) {
-    char                text[0x200];
-    char                itemName[0x20];
-    char                nameColumn[0x20];
-    char                sizeColumn[0x28];
-    FISH_PRIZE_INFO     prize;
+    int shown;
+    int i;
+    int weight;
+    char *name;
+    int padding;
     CFishingTournament *tournament;
-    unsigned int        shown;
-    int                 i;
-    int                 j;
+    FISH_PRIZE_INFO prize;
+    float size;
+    ClsMes *mes;
+    FISH_TOURNAMENT_ENTRY *entry;
+    int j;
+    char text[0x200];
+    char itemName[0x20];
+    char nameColumn[0x20];
+    char sizeColumn[0x28];
     switch (GetStackInt(stack++)) {
         case 0:
             tournament = GetFishTournament();
@@ -9186,15 +9182,15 @@ int _GET_FISHINGTOURNAMENT_ETC(RS_STACKDATA *stack, int argc) {
                 return 0;
             }
             for (i = 0; i < 10; i++) {
-                FISH_TOURNAMENT_ENTRY *entry = tournament->GetRecord(i);
+                entry = tournament->GetRecord(i);
                 if (entry != NULL) {
-                    char *name = GetItemMessage(entry->item_no);
+                    name = GetItemMessage(entry->item_no);
                     if (name != NULL) {
                         strcpy(itemName, name);
-                        float size = entry->size / 10.0f;
-                        int   weight = entry->weight;
+                        size = entry->size / 10.0f;
+                        weight = entry->weight;
                         sprintf(nameColumn, at_5410, itemName);
-                        int padding = 0x16 - strlen(itemName);
+                        padding = 0x16 - strlen(itemName);
                         for (j = 0; j < padding / 2; j++) {
                             strcat(nameColumn, at_5411);
                         }
@@ -9242,22 +9238,20 @@ int _GET_FISHINGTOURNAMENT_ETC(RS_STACKDATA *stack, int argc) {
                     }
                 }
             }
-            {
-                ClsMes *mes = GetMes(GetStackInt(stack));
-                if (mes == NULL) {
-                    return 0;
-                }
-                if (shown > 0) {
-                    mes->MakeMesWin(text, 0, 1);
-                }
+            mes = GetMes(GetStackInt(stack));
+            if (mes == NULL) {
+                return 0;
+            }
+            if (0 < shown) {
+                mes->MakeMesWin(text, 0, 1);
             }
             break;
         case 1:
-            if (GetFishPrize(0, GetStackInt(stack) - 1, &prize) == 0) {
+            if (GetFishPrize(0, GetStackInt(stack++) - 1, &prize) == 0) {
                 return 0;
             }
-            SetStack(stack + 1, prize.unk_0);
-            SetStack(stack + 2, prize.unk_4);
+            SetStack(stack++, prize.unk_0);
+            SetStack(stack, prize.unk_4);
             break;
         case 2:
             tournament = GetFishTournament();
@@ -9285,9 +9279,6 @@ int _GET_FISHINGTOURNAMENT_ETC(RS_STACKDATA *stack, int argc) {
     }
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_FISHINGTOURNAMENT_ETC__FP12RS_STACKDATAi);
-#endif
 int _SET_CHARA_FAR_DIST(RS_STACKDATA *stack, int argc) {
     CCharacter2 *chara = GetChara(GetStackInt(stack++));
 
@@ -15407,14 +15398,16 @@ int _CANCEL_NOW_LOADING(RS_STACKDATA *stack, int argc) {
     CancelNowLoading();
     return 1;
 }
-#ifdef NONMATCHING
+static inline int Ident(int v) {
+    return v;
+}
 extern "C" void *__vt__9mgCVisual[];
 extern "C" void *__vt__11mgC3DSprite[];
-// 99.4% match, 9 words off
 int _ESM_INITIALIZE(RS_STACKDATA *stack, int argc) {
+    int stackNo;
     int texbOffset = 0;
-    int stackNo = GetStackInt(stack++);
     mgCMemory *memory;
+    stackNo = GetStackInt(stack++);
     if (argc >= 2) {
         texbOffset = GetStackInt(stack);
     }
@@ -15433,13 +15426,10 @@ int _ESM_INITIALIZE(RS_STACKDATA *stack, int argc) {
     if (EventEffectScript == NULL) {
         return 0;
     }
-    EventEffectScript->Initialize(memory, EventScene->event_texb + texbOffset, EventScene->event_texb_num - texbOffset);
+    EventEffectScript->Initialize(memory, Ident(EventScene->event_texb) + Ident(texbOffset), EventScene->event_texb_num - texbOffset);
     EventEffectScript->load_buffer = read_buffer;
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ESM_INITIALIZE__FP12RS_STACKDATAi);
-#endif
 int _ESM_INIT_FIX(RS_STACKDATA *stack, int argc) {
     int        stack_no;
     int        heap_size;
@@ -16830,8 +16820,6 @@ int _CLEAR_RND_STONE(RS_STACKDATA *stack, int argc) {
     AutoMapGen.ClearRandomStone();
     return 1;
 }
-#ifdef NONMATCHING
-// 96.8% match, 2 words off
 int _GET_FLOOR_STATUS(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
@@ -16840,12 +16828,9 @@ int _GET_FLOOR_STATUS(RS_STACKDATA *stack, int argc) {
     if (info == NULL) {
         return 0;
     }
-    SetStack(stack, (int)(u_long) info->floor_status);
+    SetStack(stack, (int)((u_int)info->floor_status * 16 / 16));
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _GET_FLOOR_STATUS__FP12RS_STACKDATAi);
-#endif
 int _SET_FLOOR_STATUS(RS_STACKDATA *stack, int argc) {
     DNG_BATTLE_AREA *info = (&EventScene->battle_area);
     RS_STACKDATA    *args = stack;

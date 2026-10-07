@@ -64,6 +64,12 @@ int                     GetSelectLanguageNo();
 extern char             at_1479__2[];
 void                    TitleHDDInstallDraw();
 extern "C" void        *__ct__9CMenuFontFv(void *);
+extern "C" void        *__ct__10CRunScriptFv(void *);
+extern void             *__vt__9mgCObject[];
+extern void             *__vt__7CObject[];
+extern void             *__vt__12CObjectFrame[];
+extern void             *__vt__11CCharacter2[];
+extern void             *__vt__12CActionChara[];
 extern CScene          *TitleScene;
 extern s16              TitlePhase;
 extern s16              TitleMCActivePort;
@@ -205,6 +211,11 @@ static inline u_int Align16Blocks(u_int size) {
     }
 
     return size >> 4;
+}
+
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
 }
 
 // Code (.text)
@@ -368,7 +379,7 @@ void TitleInit(INIT_LOOP_ARG arg) {
     TitleBootInit();
 }
 #ifdef NONMATCHING
-// 99.3% match, 13 words off
+// 99.7% match, 6 words off
 #pragma inline_depth(8)
 void TitleBootInit() {
     RushMovie = new ((u_long128 *)DataBuffer.Alloc(0x2396)) CMovie;
@@ -383,7 +394,7 @@ void TitleBootInit() {
     mgCTextureManager *textures = &mgTexManager;
     DataBuffer.Align64();
     u_long128 *map_top = DataBuffer.stGetTop();
-    TitleMapBuffer.stSetBuffer(map_top, 0x40000);
+    TitleMapBuffer.stSetBuffer(DataBuffer.stGetTop(), 0x40000);
     DataBuffer.Alloc(0x60000);
     TitleWorkBuffer.stSetBuffer(DataBuffer.stGetTop(), 0x2800);
     DataBuffer.Alloc(0x2800);
@@ -442,7 +453,7 @@ void TitleBootInit() {
         for (int i = 0; i < 3; i++) {
             u_int *icon_file = GetPackFile((u_int *)save_pack, MC_ICON_Data[i].name, &MC_ICON_Data[i].size);
             MC_ICON_Data[i].data = DataBuffer.Alloc(Align16Blocks(MC_ICON_Data[i].size));
-            memcpy(MC_ICON_Data[i].data, icon_file, MC_ICON_Data[i].size);
+            memcpy((void *)MC_ICON_Data[i].data, icon_file, MC_ICON_Data[i].size);
         }
     }
     TitleMCCheck->SetIconData(MC_ICON_Data, 0);
@@ -471,7 +482,23 @@ void TitleBootInit() {
     file_size = LoadFileMenu(at_1237__2, (u_long128 *)MenuArg.pack, MENU_FILE_LOAD_DIRECT);
     DataBuffer.Alloc(Align16Blocks(file_size));
     DataBuffer.Align64();
-    CActionChara *chara = new ((u_long128 *)DataBuffer.Alloc(0x105)) CActionChara;
+    CActionChara *chara;
+    if ((chara = (CActionChara *)operator new(sizeof(CActionChara), DataBuffer.Alloc(0x105))) != NULL) {
+        *(void **)chara = __vt__9mgCObject;
+        ((mgCObject *)chara)->Initialize();
+        *(void **)chara = __vt__7CObject;
+        ((mgCObject *)chara)->Initialize();
+        *(void **)chara = __vt__12CObjectFrame;
+        ((mgCObject *)chara)->Initialize();
+        *(void **)chara = __vt__11CCharacter2;
+        chara->shadow_link.num = 0;
+        chara->shadow_link.dst_frame = 0;
+        chara->shadow_link.src_frame = 0;
+        ((mgCObject *)chara)->Initialize();
+        *(void **)chara = __vt__12CActionChara;
+        __ct__10CRunScriptFv(&chara->script);
+        memset(&chara->move_check, 0, sizeof(chara->move_check));
+    }
     chara->Initialize(NULL);
     TitleScene->AssignChara(0, chara, at_1238);
     DataBuffer.Align64();
@@ -1174,7 +1201,8 @@ void TitleModeInit() {
     }
 }
 #ifdef NONMATCHING
-// 99.8% match, 17 words off
+int CalcMenuAdd(float *cursor, float step, float limit = 0.0f);
+// 99.9% match, 13 words off
 int TitleModeKey() {
     int start_pushed;
     int start;
@@ -1292,10 +1320,10 @@ int TitleModeKey() {
         }
         break;
     case TITLE_PHASE_PUSH_START:
-        CalcMenuAdd(&TitleInfo->menu_alpha, float(-12.0), float(0.0));
-        CalcMenuAdd(&TitleInfo->cursor_alpha, float(-12.0), 0.0f);
+        CalcMenuAdd(&TitleInfo->menu_alpha, float(-12.0));
+        CalcMenuAdd(&TitleInfo->cursor_alpha, float(-12.0));
         CalcMenuAdd(&TitleInfo->title_alpha, 8.0f, 128.0f);
-        CalcMenuAdd(&TitleInfo->omake_alpha, float(-8.0), 0.0f);
+        CalcMenuAdd(&TitleInfo->omake_alpha, -8.0f);
         if (start_pushed != 0) {
             sndSePlay(TitleEventSound, 0, 0);
             TitlePhase = TITLE_PHASE_MENU;
@@ -1411,7 +1439,7 @@ int TitleModeKey() {
         break;
     case TITLE_PHASE_OMAKE_MENU: {
         TitlePushStart_AlphaPlus = 0;
-        CalcMenuAdd(&TitleInfo->menu_alpha, float(-8.0), float(0.0));
+        CalcMenuAdd(&TitleInfo->menu_alpha, float(-8.0));
         CalcMenuAdd(&TitleInfo->cursor_alpha, float(3.0), float(128.0));
         int old_select = TitleInfo->omake_select;
         if (GamePad__2.Down(PAD_UP) != 0) {
@@ -1458,9 +1486,6 @@ int TitleModeKey() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleModeKey__Fv);
 #endif
-#ifdef NONMATCHING
-// 97.0% match, 37 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void TitleModeDraw() {
     int i;
     int x;
@@ -1565,11 +1590,6 @@ void TitleModeDraw() {
         TitleInfo->cursor_count = 0;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleModeDraw__Fv);
-#endif
-#ifdef NONMATCHING
-// 99.1% match, 6 words off
 void TitleMapDraw() {
     float pos[4];
     float ref[4];
@@ -1642,7 +1662,7 @@ void TitleMapDraw() {
             int i;
             int block;
             int block_count;
-            block_count = TitleScene->mds_list_set.GetTextureBlockNo(group, texture_blocks, 128);
+            block_count = TitleScene->GetTextureBlockNo(group, texture_blocks, 128);
             for (i = 0; block_count > i; i++) {
                 int index = block_count - i - 1;
                 block = texture_blocks[index];
@@ -1659,7 +1679,7 @@ void TitleMapDraw() {
         int i;
         int block;
         int block_count;
-        block_count = TitleScene->mds_list_set.GetTextureBlockNo(texture_group, later_blocks, 128);
+        block_count = TitleScene->GetTextureBlockNo(texture_group, later_blocks, 128);
         for (i = 0; block_count > i; i++) {
             block = later_blocks[i];
             mgEndDrawReloadTexture(block, NULL);
@@ -1725,9 +1745,6 @@ void TitleMapDraw() {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleMapDraw__Fv);
-#endif
 /**
  *
  * Updates the pulsing alpha used by the title start prompt.
@@ -2552,9 +2569,6 @@ int TitleHDDInstallKey() {
 
     return 0;
 }
-#ifdef NONMATCHING
-// 99.9% match, 3 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void DrawMenuDl(int x, int y, int width, int alpha, float rate) {
     mgCDrawPrim prim;
     mgRect<int> frame_tex;
@@ -2598,9 +2612,6 @@ void DrawMenuDl(int x, int y, int width, int alpha, float rate) {
     }
     prim.End();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", DrawMenuDl__Fiiiif);
-#endif
 /**
  *
  * Draws the hard drive installation image, progress, and messages.

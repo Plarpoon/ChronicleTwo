@@ -954,16 +954,17 @@ u_long128 *SetData5(int count, int type, int **index, u_long128 *packet, u_long1
     *index = cursor;
     return colour_out;
 }
-#ifdef NONMATCHING
 /**
  *
  * Writes the indexed vertex streams for one vertex batch.
  *
  */
-// 95.6% match, 12 words off
+#pragma global_optimizer off
 u_long128 *SetData6(int count, int type, int **index, u_long128 *packet, u_long128 *vertex, u_long128 *normal, u_long128 *uv, u_long128 *colour) {
     int       *cursor;
     u_long128 *vertex_out;
+    u_long128 unused;
+    u_long128 element;
     ((int *)packet)[0] = count;
     ((int *)packet)[1] = 0;
     ((int *)packet)[2] = 0;
@@ -971,22 +972,19 @@ u_long128 *SetData6(int count, int type, int **index, u_long128 *packet, u_long1
     vertex_out = packet + 1;
     cursor = *index;
     if (count > 0) {
-        u_long128 unused;
-        u_long128 *unused_out = &unused;
         do {
             count--;
-            u_long128 element = vertex[cursor[0]];
-            *vertex_out++ = element;
-            *unused_out = element;
+            element = vertex[cursor[0]];
+            *vertex_out = element;
+            *(u_long128 *)&unused = element;
             cursor += 1;
+            vertex_out++;
         } while (count > 0);
     }
     *index = cursor;
     return vertex_out;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", SetData6__FiiPPiP1P1P1P1P1);
-#endif
+#pragma global_optimizer reset
 /**
  *
  * Writes the indexed vertex, colour streams for one vertex batch.
@@ -1136,25 +1134,25 @@ int mgCVisualMDT::CreateFacePacket(u_int *packet, mgCFace *face) {
     return (packet - start) / 4;
 }
 #ifdef NONMATCHING
-// 93.6% match, 155 words off
+// 99.0% match, 76 words off
 int mgCVisualMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_INFO *info) {
     mgVISUAL_SETUP_PACKET *setup;
     mgLIGHT_INFO          *lighting;
     mgCDrawEnv            *environment;
     u_int                 *start;
+    int                    i;
+    int                    flags;
+    int                    fog_colour;
+    int                    size;
     u_int                 *write;
-    sceVu0FMATRIX          projection;
     sceVu0FMATRIX          world_screen;
+    sceVu0FMATRIX          projection;
+    sceVu0FVECTOR          boosted_ambient;
+    sceVu0FVECTOR          eye;
     sceVu0FMATRIX          inverse;
     sceVu0FMATRIX          model_clip;
     sceVu0FMATRIX          point_position;
     sceVu0FMATRIX          point_colour;
-    sceVu0FVECTOR          boosted_ambient;
-    sceVu0FVECTOR          eye;
-    int                    flags;
-    int                    fog_colour;
-    int                    size;
-    int                    i;
 
     if (info->attr == NULL) {
         packet[0] = MG_DMA_RET;
@@ -1163,8 +1161,7 @@ int mgCVisualMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
         packet[3] = 0;
         return 1;
     }
-    start = GetScrPad();
-    setup = (mgVISUAL_SETUP_PACKET *)start;
+    setup = (mgVISUAL_SETUP_PACKET *)(start = GetScrPad());
     lighting = info->GetpLightInfo();
     *(u_long128 *)setup->model_world[0] = *(u_long128 *)matrix[0];
     *(u_long128 *)setup->model_world[1] = *(u_long128 *)matrix[1];
@@ -1201,7 +1198,7 @@ int mgCVisualMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
     }
     setup->object_color[3] *= info->attr->obj_alpha;
     write = (u_int *)(setup + 1);
-    setup->vif[3] = (((u_int)(write - (start + 4)) / 4 - 1) << MG_VIF_NUM_SHIFT) | MG_VIF_UNPACK_V4_32 | 0x0003;
+    setup->vif[3] = (((u_int)(write - setup->vif) / 4 - 1) << MG_VIF_NUM_SHIFT) | MG_VIF_UNPACK_V4_32 | 0x0003;
     if (info->attr->program_mode != 0) {
         write[0] = 0;
         write[1] = 0;
@@ -1233,7 +1230,7 @@ int mgCVisualMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
         }
         write += 36;
     }
-    setup->dma[0] |= (write - (start + 4)) / 4;
+    setup->dma[0] |= (write - setup->vif) / 4;
     if (info->plight_hit != 0 && info->lighting_enabled != 0) {
         for (i = 0; i < 4; i++) {
             sceVu0SubVector(point_position[i], lighting->point_light[i].pos, matrix[3]);
@@ -1300,13 +1297,15 @@ int mgCVisualMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
     write[17] = 0;
     write[18] = MG_GS_PRMODECONT;
     write[19] = 0;
-    prmode = ((info->attr->fog != 0 && info->fog_enable != 0) << 5) | 0x58;
+    prmode = (((info->attr->fog != 0 && info->fog_enable != 0) != 0) << 5) | 0x58;
     write[20] = prmode;
     write[21] = 0;
     write[22] = SCE_GS_PRMODE;
     write[23] = 0;
-    fog_colour = info->fog.r | (info->fog.g << 8) | (info->fog.b << 16);
-    if (info->attr->fog >= 2) {
+    fog_colour = info->fog.r;
+    fog_colour |= info->fog.g << 8;
+    fog_colour |= info->fog.b << 16;
+    if (info->attr->fog > 1) {
         if (info->attr->fog == 2) {
             fog_colour = 0;
         }
@@ -1319,8 +1318,9 @@ int mgCVisualMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
     write[26] = 0x3D;
     write[27] = 0;
     write += 28;
-    environment = draw_env;
-    if (environment == NULL) {
+    if (draw_env != NULL) {
+        environment = draw_env;
+    } else {
         environment = &info->draw_env[0];
     }
     write += SetDrawEnvGifTag((u_long128 *)write, info, environment) * 4;

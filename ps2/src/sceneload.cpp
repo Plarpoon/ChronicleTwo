@@ -343,20 +343,19 @@ int CScene::LoadMapFromMemory(int map_no, SCN_LOADMAP_INFO2 *info) {
 
     return map_no;
 }
-#ifdef NONMATCHING
-// 90.7% match, 65 words off
 int CScene::LoadMapFromMemory(int map_no, int step, SCN_LOADMAP_INFO2 *info) {
+    CMap                        *map;
     mgCMemory                   *stack = info->stack;
     int                          tex_block = info->tex_block;
     SCN_LOADMAP_INFO2::MapFiles *add_files;
-    CMap                        *map;
     u_int                        start_count;
     if (step == SCN_LOADMAP_STEP_CREATE) {
         CEditMap *edit_map;
         if (info->data_ready == 0) {
             return -1;
         }
-        if (stack == NULL || info->load_buf == NULL) {
+        u8 *buf = info->load_buf;
+        if (stack == NULL || buf == NULL) {
             return -1;
         }
         edit_map = new ((u_long128 *) stack->Alloc(0x111)) CEditMap;
@@ -367,8 +366,9 @@ int CScene::LoadMapFromMemory(int map_no, int step, SCN_LOADMAP_INFO2 *info) {
         return GetSceneMap(AssignMap(map_no, edit_map, info->name)) != NULL ? 1 : -1;
     }
     if (step == SCN_LOADMAP_STEP_MAP_INFO) {
-        SCN_LOADMAP_INFO2::MapFiles *files = &info->files[0];
+        SCN_LOADMAP_INFO2::MapFiles *files;
         map = GetMap(map_no);
+        files = &info->files[0];
         add_files = NULL;
         if (info->files[1].enable != 0) {
             add_files = &info->files[1];
@@ -380,9 +380,12 @@ int CScene::LoadMapFromMemory(int map_no, int step, SCN_LOADMAP_INFO2 *info) {
         return SCN_LOADMAP_STEP_DATA;
     }
     if (step == SCN_LOADMAP_STEP_DATA) {
+        CMap *map;
+        SCN_LOADMAP_INFO2::MapFiles *files;
         int                          add_block_num;
-        SCN_LOADMAP_INFO2::MapFiles *files = &info->files[0];
+        *(volatile u_int *) timer0_count;
         map = GetMap(map_no);
+        files = &info->files[0];
         add_files = NULL;
         if (info->files[1].enable != 0) {
             add_files = &info->files[1];
@@ -391,28 +394,32 @@ int CScene::LoadMapFromMemory(int map_no, int step, SCN_LOADMAP_INFO2 *info) {
         add_block_num = 0;
         if (add_files != NULL) {
             map->LoadData(add_files->mpk_data, add_files->ipk_data, &block, stack);
-            add_block_num = block;
+            add_block_num += block;
             tex_block += block;
         }
         block = tex_block;
         map->LoadData(files->mpk_data, files->ipk_data, &block, stack);
-        info->tex_block_num = add_block_num + block;
+        add_block_num += block;
+        info->tex_block_num = add_block_num;
         return SCN_LOADMAP_STEP_EFFECT;
     }
     if (step == SCN_LOADMAP_STEP_EFFECT) {
-        SCN_LOADMAP_INFO2::MapFiles *files = &info->files[0];
-        unsigned int                *efp_data = files->efp_data;
+        SCN_LOADMAP_INFO2::MapFiles *files;
+        unsigned int                *efp_data;
         mgCTextureManager           *tex_manager;
         map = GetMap(map_no);
+        files = &info->files[0];
+        efp_data = files->efp_data;
         if (efp_data != NULL) {
             map->CreateEffect(efp_data, info->efp_tex_block, stack);
         }
-        tex_manager = &mgTexManager;
-        strcpy(tex_manager->name_suffix, at_1116);
+        strcpy((tex_manager = &mgTexManager)->name_suffix, at_1116);
         if (map->sky_info != 0 && files->sky_data != NULL && info->sky_tex_block > 0) {
             CMapSky *sky;
             DeleteSky(0);
-            sky = new ((u_long128 *) stack->Alloc(0x13)) CMapSky;
+            if ((sky = (CMapSky *)operator new(sizeof(CMapSky), stack->Alloc(0x13))) != NULL) {
+                sky->Initialize();
+            }
             if (sky != NULL) {
                 sky->LoadPack(files->sky_data, info->sky_tex_block, stack);
                 AssignSky(0, sky, NULL);
@@ -422,13 +429,13 @@ int CScene::LoadMapFromMemory(int map_no, int step, SCN_LOADMAP_INFO2 *info) {
         return SCN_LOADMAP_STEP_CREATE_MAP;
     }
     if (step == SCN_LOADMAP_STEP_CREATE_MAP) {
-        start_count = *(u_int *) timer0_count;
+        start_count = *(volatile u_int *) timer0_count;
         map = GetMap(map_no);
         if (info->place_parts_max > 0) {
             map->SetPlacePartsBuff(stack, info->place_parts_max);
         }
         map->CreateMap(&mds_list_set, stack);
-        printf(at_1117__2, *(u_int *) timer0_count - start_count);
+        printf(at_1117__2, *(volatile u_int *) timer0_count - start_count);
         return SCN_LOADMAP_STEP_FUNC_POINT;
     }
     if (step == SCN_LOADMAP_STEP_FUNC_POINT) {
@@ -436,15 +443,18 @@ int CScene::LoadMapFromMemory(int map_no, int step, SCN_LOADMAP_INFO2 *info) {
         return SCN_LOADMAP_STEP_CFG;
     }
     if (step == SCN_LOADMAP_STEP_CFG) {
+        CMap *map;
         CSceneMap                   *slot;
-        SCN_LOADMAP_INFO2::MapFiles *files = &info->files[0];
+        SCN_LOADMAP_INFO2::MapFiles *files;
         map = GetMap(map_no);
         slot = GetSceneMap(map_no);
+        files = &info->files[0];
         if (files->cfg_size > 0) {
             map->LoadCfgFile(files->cfg_data, files->cfg_size, stack);
         }
+        int num = info->tex_block_num;
         slot->tex_block = info->tex_block;
-        slot->tex_block_num = info->tex_block_num;
+        slot->tex_block_num = num;
         slot->stack = stack;
         slot->status |= SCENE_DATA_LOADED;
         map->PlacePartsEnd();
@@ -453,9 +463,6 @@ int CScene::LoadMapFromMemory(int map_no, int step, SCN_LOADMAP_INFO2 *info) {
     }
     return -1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneload", LoadMapFromMemory__6CSceneFiiP17SCN_LOADMAP_INFO2);
-#endif
 template <>
 void mgCObjectStack<CList<EMAP_MESSAGE> >::Initialize() {
     unk_8 = 0;

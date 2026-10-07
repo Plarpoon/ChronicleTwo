@@ -102,17 +102,12 @@ void CreateSystemMes() {
     CreateSystemMes(2, 0);
 }
 
-#ifdef NONMATCHING
-// 100.0% match, 0 words off, only with every NONMATCHING draft in the unit compiled
 void CreateSystemMes(int index, int unused) {
     GetSystemMessage(index)->Init();
     GetSystemMessage(index)->Preset(5);
     GetSystemMessage(index)->SetBuff(GetSysMesBuffer());
     GetSystemMessage(index)->SetBuff_system(GetSystemMesBuffer());
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sysmes", CreateSystemMes__Fii);
-#endif
 
 // Constants (.rodata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_482__DATA);

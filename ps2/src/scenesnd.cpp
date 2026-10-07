@@ -35,6 +35,11 @@ struct LineBreakPair {
 
 extern LineBreakPair at_1615__2;
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 void CScene::BGM_INFO::Init() {
     snd_id = -1;
@@ -154,9 +159,6 @@ void CScene::InitLooSeMngr() {
 CScene::BGM_INFO *CScene::GetActiveBgmInfo() {
     return &bgm[bgm_no];
 }
-#ifdef NONMATCHING
-// 91.6% match, 22 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void CScene::PlayBGM(int bgm_no, int vol, float volf) {
     if (skip_play_bgm != 0) {
         skip_play_bgm = 0;
@@ -179,9 +181,6 @@ void CScene::PlayBGM(int bgm_no, int vol, float volf) {
         info->fade_speed = 0.0f;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", PlayBGM__6CSceneFiif);
-#endif
 void CScene::PauseBGM() {
     BGM_INFO *info = GetActiveBgmInfo();
 

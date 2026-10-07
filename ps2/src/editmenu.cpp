@@ -349,9 +349,9 @@ extern mgCMemory             *MenuPartsDrawStack;
 extern short                  GeoramaParts_DrawWaitCnt;
 extern CDC2Mes               *GeoramaMes[5];
 extern signed char            msgtbl_2587[5];
-extern signed char            GeoramaMesForceMakeFlag;
+extern u8                     GeoramaMesForceMakeFlag;
 extern u8                     GeoramaMesPosForceSetFlag;
-extern signed char            GeoramaMesForceMakeFlag_PaintVer;
+extern u8                     GeoramaMesForceMakeFlag_PaintVer;
 extern u8                     MenuGeoramaCursorForceSetFlag;
 extern signed char            MenuGeoStoneDonwLoadFlag;
 mgCMemory                     MenuGeoramaStack;
@@ -484,6 +484,11 @@ int                           CheckGekkaViewMode(int view_mode);
 int                           GetPenkiItemNo(int slot);
 int                           MenuGeoramaBasePush(CMenuGeorama *menu, int buttons_held, int buttons_pressed);
 int                           MenuGeoramaPlacePush(CMenuGeorama *menu, int buttons_held, int buttons_pressed);
+
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
 
 // Code (.text)
 void GetPenkiColor(int no, float *out_rgb) {
@@ -1173,9 +1178,6 @@ void MenuGeoramaListDraw(int &tex_block, float *pos, int page, int alpha) {
         }
     }
 }
-#ifdef NONMATCHING
-// 99.9% match, 15 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: drafts primer=u64div)
 void MenuGeoramaAnalyzeDraw(int &tex_block, float *pos, int alpha) {
     if (Tex_Georama != NULL && pos[0] >= -300.0f) {
         MenuReloadTexture(tex_block, Tex_Georama->block);
@@ -1302,9 +1304,6 @@ void MenuGeoramaAnalyzeDraw(int &tex_block, float *pos, int alpha) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmenu", MenuGeoramaAnalyzeDraw__FRiPfi);
-#endif
 void InitDownLoadAnaunce(mgCMemory *stack) {
     short *msg_buf = GetMenuMainMessageBuffer();
 
@@ -1549,9 +1548,13 @@ void DrawDownLoadAnaunce() {
     }
 }
 #ifdef NONMATCHING
-// 94.0% match, 223 words off
+// 94.5% match, 182 words off
 #pragma divbyzerocheck on
 int MakeDownLoadAnaunce(int town_no, mgCMemory *stack, int *out_num, int *out_sub_num, int *out_height) {
+    int geo_floor;
+    char *dst_char;
+    char *word;
+    int valid;
     short floors[0x180][2];
     char *names[0x180];
     signed char extras[0x180];
@@ -1559,11 +1562,10 @@ int MakeDownLoadAnaunce(int town_no, mgCMemory *stack, int *out_num, int *out_su
     char file_name[0x40];
     char text[0x80];
     char conv_text[0x80];
-    int valid = 1;
+    valid = 1;
     int map_no = town_no;
     int size;
     int no;
-
     if (town_no < 0 || town_no > 4) {
         map_no = 0;
         valid = 0;
@@ -1601,7 +1603,9 @@ int MakeDownLoadAnaunce(int town_no, mgCMemory *stack, int *out_num, int *out_su
         return 0;
     }
     if (valid == 0) {
-        info = new (stack->Alloc(4)) CEditInfoMngr;
+        if ((info = (CEditInfoMngr *)operator new(sizeof(CEditInfoMngr), stack->Alloc(4))) != NULL) {
+            info->Initialize();
+        }
         if (info != NULL) {
             char *script = (char *)MenuCalcBufAlignment(load_buffer);
             sprintf(file_name, at_2146, LanguageCode);
@@ -1663,7 +1667,7 @@ int MakeDownLoadAnaunce(int town_no, mgCMemory *stack, int *out_num, int *out_su
             *tex_h = 0x1E;
             CFont *font = GeoramaReqMsgFont[font_no];
             font->SetFuchi(5);
-            int geo_floor = src->geo_floor;
+            geo_floor = src->geo_floor;
             int known = 0;
             if (geo_floor <= 0) {
                 MenuAnalyzeData->data_open[no] = 1;
@@ -1702,7 +1706,7 @@ int MakeDownLoadAnaunce(int town_no, mgCMemory *stack, int *out_num, int *out_su
             GeoramaReqMsgFont[font_no] = new (stack->Alloc(0xE)) CMenuFont;
             CFont *font = GeoramaReqMsgFont[font_no];
             font->SetFuchi(5);
-            int geo_floor = MenuEditAnalyzeSrc->geo_floor[condition];
+            geo_floor = MenuEditAnalyzeSrc->geo_floor[condition];
             int known = 0;
             if (geo_floor <= 0) {
                 MenuAnalyzeData->condition_open[condition] = 1;
@@ -1739,14 +1743,14 @@ int MakeDownLoadAnaunce(int town_no, mgCMemory *stack, int *out_num, int *out_su
             if (LanguageCode > 0) {
                 int limit = 10;
                 int count = 0;
-                char *dst_char = wrapped;
+                dst_char = wrapped;
                 while (*src_char != '\0') {
                     count++;
                     *dst_char = *src_char;
                     src_char++;
                     dst_char++;
                     if (count >= 21 && *src_char == ' ') {
-                        char *word = src_char + 1;
+                        word = src_char + 1;
                         int word_len = 0;
                         while (word != NULL && *word != ' ' && *word != '\0') {
                             word_len++;
@@ -2153,7 +2157,7 @@ void MenuMapPartsDraw(int &draw_wait) {
     }
 }
 #ifdef NONMATCHING
-// 94.9% match, 79 words off
+// 99.9% match, 13 words off
 void MenuGeoramaMessageMake(int mode) {
     int first_line;
     int force_pos = GeoramaMesPosForceSetFlag;
@@ -2185,7 +2189,7 @@ void MenuGeoramaMessageMake(int mode) {
         int line_pos[13][2];
         char *names[13] = { NULL };
         float x = list_pos[0];
-        float y = list_pos[1] + 24.0f * (int)first_line;
+        float y = list_pos[1] + 24.0f * first_line;
         int i = 0;
         int line = first_line;
         while (line < 0) {
@@ -2198,8 +2202,8 @@ void MenuGeoramaMessageMake(int mode) {
             ++line;
         }
         for (; i < 10; i++) {
-            int no = first_line + i;
             item_mes[i] = 0;
+            int no = first_line + i;
             names[i] = NULL;
             line_pos[i][0] = (int)x;
             line_pos[i][1] = y;
@@ -2211,9 +2215,12 @@ void MenuGeoramaMessageMake(int mode) {
                 }
                 break;
             default:
-                line_color[i][0] = 107.0f;
-                line_color[i][1] = 106.0f;
-                line_color[i][2] = 104.0f;
+                {
+                    float *color = line_color[i];
+                    color[0] = 107.0f;
+                    color[1] = 106.0f;
+                    color[2] = 104.0f;
+                }
                 info[i] = CMenuGeoPt->GetNowSelectEditPartsInfo(data_no, no);
                 if (info[i] != NULL) {
                     names[i] = info[i]->edit_name;
@@ -3120,9 +3127,6 @@ int CMenuGeorama::IsMakeObject(int buttons_held, int buttons_pressed) {
 
     return 0;
 }
-#ifdef NONMATCHING
-// ~28.6% match, 140 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: drafts primer=u64div)
 void CMenuGeorama::CalcCursorPosition() {
     char name[32];
 
@@ -3171,9 +3175,6 @@ void CMenuGeorama::CalcCursorPosition() {
         MenuCommonInfo->MenuPosStep(pos, NULL);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmenu", CalcCursorPosition__12CMenuGeoramaFv);
-#endif
 void CMenuGeorama::CalcTex() {
     char name[32];
     int  i;
@@ -4124,9 +4125,6 @@ int MenuGeoramaCheckPointPush(CMenuGeorama *menu, int keys, int pushed) {
 
     return 0;
 }
-#ifdef NONMATCHING
-// 99.7% match, 6 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: drafts primer=u64div)
 int MenuGeoramaAnalyzeSelect(CMenuGeorama *menu, int keys, int pushed) {
     int old_top = menu->top;
     int max = menu->GetNowViewModeMax(GEORAMA_VIEW_ANALYZE);
@@ -4168,9 +4166,6 @@ int MenuGeoramaAnalyzeSelect(CMenuGeorama *menu, int keys, int pushed) {
     }
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmenu", MenuGeoramaAnalyzeSelect__FP12CMenuGeoramaii);
-#endif
 /**
  *
  * Handles paint-colour selection on the Georama paint page.
@@ -4296,9 +4291,6 @@ void CRemovalMenu::MakeNPCList() {
         } while (j < kRemovalNpcMax);
     }
 }
-#ifdef NONMATCHING
-// 99.9% match, 2 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: drafts primer=u64div)
 int CRemovalMenu::KeyStep() {
     int closed = 0;
     int select_key;
@@ -4751,11 +4743,6 @@ int CRemovalMenu::KeyStep() {
     }
     return closed;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmenu", KeyStep__12CRemovalMenuFv);
-#endif
-#ifdef NONMATCHING
-// 100.0% match, 0 words off, only with every NONMATCHING draft in the unit compiled
 void MenuRemovalInit(mgCMemory *stack, int *arg) {
     int size;
 
@@ -4819,11 +4806,6 @@ void MenuRemovalInit(mgCMemory *stack, int *arg) {
     }
     MenuArg.result[0] = 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmenu", MenuRemovalInit__FP9mgCMemoryPi);
-#endif
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmenu", Initialize__19CCharaFrameMatchingFv);
-
 int MenuRemovalKey() {
     return RemovalMenuPtr->KeyStep();
 }

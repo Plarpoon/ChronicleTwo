@@ -453,6 +453,23 @@ def discard_external_vtables(elf, unit, placeholder_sections):
                 record.name = '.rel' + DEAD
 
 
+def discard_dead_code_records(elf):
+    dead = {index for index, section in enumerate(elf.sections)
+            if section.name == DEAD and section.sh_flags & SHF_EXECINSTR}
+    if not dead:
+        return
+    symbols = elf.symtab.symbols
+    for record in elf.relocations:
+        section = elf.sections[record.sh_info]
+        if section.name != ".mwcats":
+            continue
+        if any(symbols[r.symbol_index].st_shndx in dead for r in record.relocations):
+            section.sh_name = elf.add_sh_symbol(DEAD)
+            section.name = DEAD
+            record.sh_name = elf.add_sh_symbol(".rel" + DEAD)
+            record.name = ".rel" + DEAD
+
+
 def discard_external_functions(elf, unit):
     ranges = layout.Layout(ROOT / layout.YAML).sections(unit)
     addresses = retail_addresses()
@@ -854,6 +871,7 @@ def main():
     discard_shadow_vtables(elf, placeholder_sections)
     fold_duplicates(elf)
     discard_unused_literals(elf)
+    discard_dead_code_records(elf)
     addresses = retail_addresses()
     renamed = retail_sections(elf, addresses, unit, shadowed)
 

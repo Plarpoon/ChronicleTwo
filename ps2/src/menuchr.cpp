@@ -808,6 +808,11 @@ extern u16                menu_robo_memorytbl[MENU_CHARA_LOAD_MAX];
 extern char               at_1078__2[];
 int                       ReadBGSync();
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 void InitMenuBGReadInfo2(MENU_BGREAD_INFO2 *info) {
     info->reading = 0;
@@ -1038,9 +1043,6 @@ void CMenuChrCngMenu::AttachForm() {
         cmd_part[j] = form->GetPartInfo(name);
     }
 }
-#ifdef NONMATCHING
-// 99.9% match, 4 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: primer=u64div drafts)
 void CMenuChrCngMenu::EnterDataMenu(u8 *pack) {
     char name[0x20];
     int size;
@@ -1154,9 +1156,6 @@ void CMenuChrCngMenu::EnterDataMenu(u8 *pack) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", EnterDataMenu__15CMenuChrCngMenuFPUc);
-#endif
 void CMenuChrCngMenu::LoadNPCFaceData(mgCMemory *memory, int mode) {
     char         path[0x40];
     unsigned int size;
@@ -6593,7 +6592,8 @@ int CMenuCostumeSel::KeyStep() {
     return 0;
 }
 #ifdef NONMATCHING
-// 97.3% match, 31 words off
+// 100.0% match, 0 words off
+// Matches 100% in isolation; compiling it makes MenuCostumeInit's __vt__15CMenuCostumeSel reference resolve differently from retail
 void CMenuCostumeSel::Draw() {
     sceVu0FMATRIX view;
     sceVu0FVECTOR eye;
@@ -6635,8 +6635,15 @@ void CMenuCostumeSel::Draw() {
         float shadowY;
         lineY = y + 0x1E;
         prim->Color(0, 0, 0, 0x30);
-        PrimQuad(prim, 50.0f, (float)(y + 4), labelRect);
-        PrimQuad(prim, 74.0f, (float)(lineY + 4), lineRect);
+        {
+            float label_x = 50.0f;
+            PrimQuad(prim, label_x, (float)(y + 4), labelRect);
+        }
+        {
+            float line_y = (float)(lineY + 4);
+            float line_x = 74.0f;
+            PrimQuad(prim, line_x, line_y, lineRect);
+        }
         wave = 6.0f * sinf(line_wave[i]);
         wave = (wave < 0.0f) ? -wave : wave;
         rightX = wave + (float)(lineRect.right + 0x49);
@@ -6661,7 +6668,7 @@ void CMenuCostumeSel::Draw() {
     int exitY = charaY + 0x28;
     if (mode == 0 && (step == 0 || step == 3)) {
         prim->Color(0, 0, 0, 0x30);
-        PrimQuad(prim, 116.0f, (float)(charaY + 4), charaRect);
+        PrimQuad(prim, float(116.0), (float)(charaY + 4), charaRect);
         if (select == 3) {
             prim->Color(0xA4, 0xA4, 0xA4, 0x80);
         } else {
@@ -6730,6 +6737,7 @@ void CMenuCostumeSel::Draw() {
     }
     if (show_help && !loading && !wait_load) {
         float help_x = 36.0f;
+        float help_h = 32.0f;
         DrawMenuFillBox(help_x, (float)mgScreenHeight - 40.0f - 8.0f, putw_5262[LanguageCode], 32.0f, 0x40, 0, 0, 0);
         CMenuFont help;
         help.DrawDirect(infomsg_5256[LanguageCode], 0x28, mgScreenHeight - 0x28);
@@ -6740,12 +6748,9 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", Draw__15CMenuCostumeSelFv);
 #endif
 extern void  *__vt__15CMenuCostumeSel[];
 extern u_long CostumeOptionEnv;
-#ifdef NONMATCHING
 extern "C" void *__ct__14CBaseMenuClassFv(void *self);
 extern "C" void *__ct__15mgCCameraFollowFffff(void *camera, float distance, float height, float angle,
                                                float speed);
-// 99.9% match, 4 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: primer=u64div drafts)
 void MenuCostumeInit(mgCMemory *stack, int *tex_block, int mode) {
     int i;
     CMenuCostumeSel *menu;
@@ -6755,7 +6760,10 @@ void MenuCostumeInit(mgCMemory *stack, int *tex_block, int mode) {
     if ((menu = (CMenuCostumeSel *)operator new(sizeof(CMenuCostumeSel),
                                                 (u_long128 *)MenuChangeMemory.Alloc(0x2F))) != NULL) {
         __ct__14CBaseMenuClassFv(menu);
-        float distance = 40.0f, height = 30.0f, angle = 0.0f, width = 8.0f;
+        float width = 8.0f;
+        float height = 30.0f;
+        float angle = 0.0f;
+        float distance = 40.0f;
         void **vtable = (void **)((u8 *)menu + 0x10C);
         *vtable = __vt__15CMenuCostumeSel;
         __ct__15mgCCameraFollowFffff(&menu->camera, distance, height, angle, width);
@@ -6820,9 +6828,6 @@ void MenuCostumeInit(mgCMemory *stack, int *tex_block, int mode) {
     MenuArg.result[2] = 0;
     MenuCamInit(1.0f);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", MenuCostumeInit__FP9mgCMemoryPii);
-#endif
 int MenuCostumeKey() {
     return MenuCosPtr->KeyStep();
 }

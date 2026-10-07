@@ -1722,7 +1722,7 @@ s32 CNameRegiMenu::KeyStep() {
 }
 
 #ifdef NONMATCHING
-// 92.8% match, 31 words off
+// 93.2% match, 23 words off
 void CNameRegiMenu::GetSelectedActiveFont(char *dst) {
     int font_mode = GetActiveFontMode();
     char *first_table = NameRegistFont_Table[font_mode].first;
@@ -1731,12 +1731,16 @@ void CNameRegiMenu::GetSelectedActiveFont(char *dst) {
     char *table = first_table;
     s16 cell = select.pos;
     if (font_mode == NAMEREGI_FONT_MODE_HIRA || font_mode == NAMEREGI_FONT_MODE_KATA) {
-        int rest = cell % 15;
-        int column = cell / 15;
-        int part = rest / 5;
+        int rest;
+        int column;
+        int part;
+        rest = cell % 15;
         char *kana_tables[3] = { first_table, second_table, third_table };
+        column = cell / 15;
+        part = rest / 5;
         table = kana_tables[part];
-        char *glyph = table + (column + 2 * (rest - part * 5 + column * 5));
+        rest -= part * 5;
+        char *glyph = table + (column + 2 * (rest + column * 5));
         dst[0] = glyph[0];
         dst[1] = glyph[1];
     }

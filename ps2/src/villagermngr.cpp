@@ -185,13 +185,11 @@ int CVillagerMngr::CheckStay(int chara_id) {
 
     return villager->stay;
 }
-#ifdef NONMATCHING
 union VillagerVector {
     float v[4];
     u_long128 qw;
 };
 
-// ~9.5% match, 258 words off
 void CVillagerMngr::Step() {
     float camera_direction[4];
     VillagerVector target;
@@ -283,7 +281,10 @@ void CVillagerMngr::Step() {
                                     if (villager->motion_end != 0) done = 1;
                                     break;
                                 }
-                                if (done) {
+                                switch (done) {
+                                case 0:
+                                    break;
+                                default:
                                     villager->route = node->next;
                                     villager->route_time = 0;
                                 }
@@ -322,9 +323,6 @@ void CVillagerMngr::Step() {
         next_villager:;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/villagermngr", Step__13CVillagerMngrFv);
-#endif
 int CVillagerMngr::GetAppearVlgr(int progress, int time, int map_no, int *villager_ids,
                                  CVillagerPlaceInfo **places) {
     int                           table_count;

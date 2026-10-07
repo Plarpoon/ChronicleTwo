@@ -179,6 +179,11 @@ char *GetTopAddress(char *text, int size, int id);
 #include "common.h"
 #include "mw_runtime.h"
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static float PrimeDoubleToFloat(double a) {
+    return a;
+}
+
 // Code (.text)
 void MySetPrim(mgCDrawPrim *prim, int mode, int bilinear) {
     prim->Initialize(NULL, NULL);
@@ -278,35 +283,36 @@ void FillRect(int x, int y, int w, int h, int r, int g, int b, int a) {
     drawer.prim.Vertex(x + w, y + h, 0);
     drawer.prim.End();
 }
-#ifdef NONMATCHING
-// 83.7% match, 133 words off
+static inline void SetPrimOffset(mgCDrawPrim *prim, int x, int y) {
+    prim->offset_x = x * 16;
+    prim->offset_y = y * 16;
+}
 void ClsMes::DrawFukidashi_sub(mgCDrawPrim *prim, int dx, int dy, int layer) {
-    int   outline[16][2];
+    int left_y;
+    int point;
+    float hit_x;
+    int left_x;
+    int outline[16][2];
     float width;
     float height;
-    float hit_x;
     float hit_y;
-    int   origin_x;
-    int   origin_y;
-    int   shade;
-    int   opacity;
-    int   vertex_x;
-    int   vertex_y;
-    int   tip_x;
-    int   tip_y;
-    int   left_x;
-    int   left_y;
-    int   right_x;
-    int   right_y;
-    int   point;
+    int origin_x;
+    int origin_y;
+    u_char shade;
+    u_char opacity;
+    int vertex_x;
+    int vertex_y;
+    int tip_x;
+    int tip_y;
+    int right_x;
+    int right_y;
 
     if (fukidashi_centre_x < 0 || fukidashi_centre_y < 0) {
         return;
     }
     width = fukidashi_w * fade;
     height = fukidashi_h * fade;
-    prim->offset_x = (int) draw_off_x * 16;
-    prim->offset_y = (int) draw_off_y * 16;
+    SetPrimOffset(prim, (int) draw_off_x, (int) draw_off_y);
     prim->Begin(MG_PRIM_TRIANGLE_FAN);
     if (layer == MES_FUKIDASHI_OUTLINE) {
         shade = 0x40;
@@ -317,12 +323,16 @@ void ClsMes::DrawFukidashi_sub(mgCDrawPrim *prim, int dx, int dy, int layer) {
         opacity = 0x80;
         prim->Shading(1);
     }
-    prim->Color(shade, shade, shade, opacity);
+    prim->Color(shade, (u_int)shade, (u_char)shade, opacity);
     origin_x = (int) LinerInterpolation(fukidashi_centre_x, fukidashi_x, fade);
     origin_y = (int) LinerInterpolation(fukidashi_centre_y, fukidashi_y, fade) + 1;
     for (point = 0; point < 16; point++) {
-        vertex_x = (int) (width * (1.0f - p[point][0])) + origin_x + dx;
-        vertex_y = (int) (height * (1.0f - p[point][1])) + origin_y + dy;
+        vertex_x = (int) (width * (1.0f - p[point][0]));
+        vertex_y = (int) (height * (1.0f - p[point][1]));
+        vertex_x += origin_x;
+        vertex_y += origin_y;
+        vertex_x += dx;
+        vertex_y += dy;
         if (layer != MES_FUKIDASHI_OUTLINE) {
             if (point == 0) {
                 prim->Color(0xFA, 0xFA, 0xFA, 0x80);
@@ -336,30 +346,35 @@ void ClsMes::DrawFukidashi_sub(mgCDrawPrim *prim, int dx, int dy, int layer) {
     }
     prim->End();
     if (tail_on != 0) {
-        tip_x = (int) LinerInterpolation(fukidashi_centre_x, tail_tip_x, fade) + dx;
-        tip_y = (int) LinerInterpolation(fukidashi_centre_y, tail_tip_y, fade) + dy;
-        left_x = (int) LinerInterpolation(fukidashi_centre_x, tail_left_x, fade) + dx;
-        left_y = (int) LinerInterpolation(fukidashi_centre_y, tail_left_y, fade) + dy;
-        right_x = (int) LinerInterpolation(fukidashi_centre_x, tail_right_x, fade) + dx;
-        right_y = (int) LinerInterpolation(fukidashi_centre_y, tail_right_y, fade) + dy;
-        for (point = 1; point < 15; point++) {
+        tip_x = (int) LinerInterpolation(fukidashi_centre_x, tail_tip_x, fade);
+        tip_y = (int) LinerInterpolation(fukidashi_centre_y, tail_tip_y, fade);
+        tip_x += dx;
+        tip_y += dy;
+        left_x = (int) LinerInterpolation(fukidashi_centre_x, tail_left_x, fade);
+        left_y = (int) LinerInterpolation(fukidashi_centre_y, tail_left_y, fade);
+        left_x += dx;
+        left_y += dy;
+        right_x = (int) LinerInterpolation(fukidashi_centre_x, tail_right_x, fade);
+        right_y = (int) LinerInterpolation(fukidashi_centre_y, tail_right_y, fade);
+        right_x += dx;
+        right_y += dy;
+        for (int k = 1; k <= 14; k++) {
             if (CalcIntersectionPoint2PAnd2P(tip_x, tip_y, left_x, left_y,
-                                             outline[point][0], outline[point][1], outline[point + 1][0], outline[point + 1][1], &hit_x, &hit_y)) {
+                                             outline[k][0], outline[k][1], outline[k + 1][0], outline[k + 1][1], &hit_x, &hit_y)) {
                 left_x = (int) hit_x;
                 left_y = (int) hit_y;
                 break;
             }
         }
-        for (point = 1; point < 15; point++) {
+        for (int k = 1; k <= 14; k++) {
             if (CalcIntersectionPoint2PAnd2P(tip_x, tip_y, right_x, right_y,
-                                             outline[point][0], outline[point][1], outline[point + 1][0], outline[point + 1][1], &hit_x, &hit_y)) {
+                                             outline[k][0], outline[k][1], outline[k + 1][0], outline[k + 1][1], &hit_x, &hit_y)) {
                 right_x = (int) hit_x;
                 right_y = (int) hit_y;
                 break;
             }
         }
-        prim->offset_x = (int) draw_off_x * 16;
-        prim->offset_y = (int) draw_off_y * 16;
+        SetPrimOffset(prim, (int) draw_off_x, (int) draw_off_y);
         prim->Begin(MG_PRIM_TRIANGLE);
         if (layer == MES_FUKIDASHI_OUTLINE) {
             prim->Color(0x40, 0x40, 0x40, 0x80);
@@ -372,9 +387,6 @@ void ClsMes::DrawFukidashi_sub(mgCDrawPrim *prim, int dx, int dy, int layer) {
         prim->End();
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", DrawFukidashi_sub__6ClsMesFP11mgCDrawPrimiii);
-#endif
 void ClsMes::DrawFukidashi(int a, int b, int c) {
     message_draw_prim drawer;
     drawer.prim.Initialize(NULL, NULL);
@@ -1237,8 +1249,6 @@ void ClsMes::StepNpcName() {
         }
     }
 }
-#ifdef NONMATCHING
-// 98.0% match, 7 words off
 void ClsMes::StepNormal() {
     float centre[2];
     float left[2];
@@ -1301,9 +1311,6 @@ void ClsMes::StepNormal() {
     }
     MyTextureMake();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", StepNormal__6ClsMesFv);
-#endif
 void ClsMes::Step() {
     if (close_time > 0) {
         close_time -= 1;
@@ -2181,9 +2188,6 @@ int ClsMes::MakeMesWinTbl_item(int ref_code, int *x, int *y) {
         }
     }
 }
-#ifdef NONMATCHING
-// 100.0% match, 0 words off, only with every NONMATCHING draft in the unit compiled
-// Matches 100% with compiler state: every NONMATCHING draft in the unit compiled (state.py: drafts)
 int ClsMes::GetMesWidth_system(int mes_no) {
     int inserted_width;
     unsigned short *text;
@@ -2250,9 +2254,6 @@ int ClsMes::GetMesWidth_system(int mes_no) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", GetMesWidth_system__6ClsMesFi);
-#endif
 short *ClsMes::GetTextLineDataTop(int line_id) {
     short *table = buff;
     int    i = 0;
@@ -2378,9 +2379,6 @@ int ClsMes::SetMesWinTbl(int code, short x, short y) {
 
     return 1;
 }
-#ifdef NONMATCHING
-// 100.0% match, 0 words off, only with every NONMATCHING draft in the unit compiled
-// Matches 100% with compiler state: every NONMATCHING draft in the unit compiled (state.py: drafts)
 int ClsMes::CalcSpaceW(int width, int char_width, unsigned short *text) {
     unsigned short *p;
     int code;
@@ -2441,9 +2439,6 @@ int ClsMes::CalcSpaceW(int width, int char_width, unsigned short *text) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", CalcSpaceW__6ClsMesFiiPUs);
-#endif
 int ClsMes::MakeMesWinTbl(int mes_no) {
     unsigned short *text;
     short          *registered_name;
@@ -2653,9 +2648,6 @@ void ClsMes::AddPage(int end, int page) {
         }
     }
 }
-#ifdef NONMATCHING
-// 100.0% match, 0 words off, only with every NONMATCHING draft in the unit compiled
-// Matches 100% with compiler state: every NONMATCHING draft in the unit compiled (state.py: drafts)
 void ClsMes::NeedMesWinWH(int mes_no) {
     unsigned short *text;
     int             y;
@@ -2858,9 +2850,6 @@ void ClsMes::NeedMesWinWH(int mes_no) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", NeedMesWinWH__6ClsMesFi);
-#endif
 void ClsMes::NeedMesWinWH(char *text) {
     char  message[mes_buffer_size];
     char  value_text[0x80];
@@ -3806,9 +3795,6 @@ void ClsMes::DrawFont() {
     prim.End();
 }
 
-#ifdef NONMATCHING
-// 100.0% match, 0 words off, only with every NONMATCHING draft in the unit compiled
-// Matches 100% with compiler state: every NONMATCHING draft in the unit compiled (state.py: drafts)
 void ClsMes::SetGoalCursorXY() {
     int dx;
     int dy;
@@ -3849,9 +3835,6 @@ void ClsMes::SetGoalCursorXY() {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", SetGoalCursorXY__6ClsMesFv);
-#endif
 void ClsMes::StepSelectCursor(int steps) {
     int i;
 
@@ -4007,28 +3990,23 @@ void ClsMes::DrawRightDelta(mgCDrawPrim *prim) {
         }
     }
 }
-#ifdef NONMATCHING
-extern RECT at_4185;
-// 92.1% match, 17 words off
+static inline int Ident(int v) {
+    return v;
+}
 void ClsMes::DrawDigit(mgCDrawPrim *prim, int digit, int x, int y, int alpha, RGBAQ_TYPE *color) {
-    RECT at = at_4185;
+    RECT at = {176, 140, 16, 20};
     mgRect<int> xy;
     int h;
     mgRect<int> uv;
     int w;
 
     at.x += digit % 5 * at.width;
-    at.y += digit / 5 * at.height;
+    at.y = Ident(digit / 5 * at.height + at.y);
     color->a = alpha * 128 / 128;
-    h = at.height;
-    w = at.width;
-    uv.Set(at.x, at.y, w, h);
+    uv.Set(at.x, at.y, w = at.width, h = at.height);
     xy.Set(x, (int)(y + 2.0), w, h);
     set2DSpriteEasy(prim, xy, uv, color);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", DrawDigit__6ClsMesFP11mgCDrawPrimiiiiP10RGBAQ_TYPE);
-#endif
 extern RECT data_4206[];
 
 void ClsMes::DrawPushButton(mgCDrawPrim *prim, int right, int bottom) {
@@ -4185,7 +4163,7 @@ void CalcWindowInRectFromOutRect(int type, RECT outer, RECT *inner) {
     inner->height = outer.height - (waku_data[type][1] + waku_data[type][3]);
 }
 #ifdef NONMATCHING
-// ~10.0% match, 657 words off
+// ~10.1% match, 656 words off
 void ClsMes::DrawMesWin() {
     RGBAQ_TYPE color;
     RGBAQ_TYPE shadow_color;
@@ -4321,6 +4299,8 @@ void ClsMes::DrawMesWin() {
             outer.x = (int)(outer.x + draw_off_x);
             outer.y = (int)(outer.y + draw_off_y);
             DrawDQFukidashi(&frame_prim, outer, outer.x + point_x, outer.y + point_y, &color, tail_on, window_mode);
+            break;
+        case MES_WIN_CENTRE:
             break;
     }
     if (window_mode == MES_WIN_FUKIDASHI && open != 0 && fade < 1.0f) {

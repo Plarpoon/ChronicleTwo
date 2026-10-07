@@ -190,7 +190,7 @@ void             EsaInit();
 int              GetMotionCount(CCharacter2 *chara, char *name, int min_count, int max_count, int min_speed);
 void             DeleteEsa();
 int              EndSelectCastingPoint(CScene *scene);
-FISH_PARAM      *GetFishParam(int index);
+static FISH_PARAM *GetFishParam(int index);
 int              GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, int bait_no);
 int              GetUkiPokeTime(FISH_DATA *fish);
 int              GetUkiPullTime(FISH_DATA *fish);
@@ -351,13 +351,18 @@ extern "C" void *__vt__7CObject[];
 extern "C" void *__vt__12CObjectFrame[];
 extern "C" void *__vt__11CCharacter2[];
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 /**
  *
  * Returns the fish parameter record for a valid fish index.
  *
  */
-FISH_PARAM *GetFishParam(int index) {
+static FISH_PARAM *GetFishParam(int index) {
     if (index < 0 || index > kLastFishParam) {
         return NULL;
     }
@@ -526,9 +531,6 @@ int sgInitFishing(SubGameInfo *info) {
     info->record_check = info->dungeon;
     return 1;
 }
-#ifdef NONMATCHING
-// 99.9% match, 10 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 int sgRestartFishing(SubGameInfo *info) {
     CScene *scene = info->scene;
     u_long128 *buffer = ReadBuffer;
@@ -635,9 +637,6 @@ int sgRestartFishing(SubGameInfo *info) {
     SetWaterLevel(-100000.0f);
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", sgRestartFishing__FP11SubGameInfo);
-#endif
 /**
  *
  * Resets fishing loading state and captures the active BGM status.
@@ -3170,13 +3169,10 @@ float GetRandamNumber(float center, float high, float floor) {
 
     return value;
 }
-#ifdef NONMATCHING
-// 97.1% match, 114 words off
 int GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, int bait_no) {
     FISH_PLACE place[16];
     int i;
     int picked;
-
     if (bait_no < 0) {
         fish->fish_no = -1;
         return 100;
@@ -3185,7 +3181,7 @@ int GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, 
     int place_num = GetAppearFish(scene->GetMainMapNo(), position, place, 16);
     int candidate_num = 0;
     float rate_sum = 0.0f;
-    for (int i = 0; i < place_num; i++) {
+    for (i = 0; i < place_num; i++) {
         FISH_PARAM *param = GetFishParam(place[i].fish_no);
         FISH_PLACE *entry = &place[i];
         if (param == NULL) {
@@ -3240,17 +3236,20 @@ int GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, 
         }
     }
     float roll = mgRnd();
-    float cumulative = 0.0f;
-    for (picked = 0; picked < place_num; picked++) {
-        FISH_PLACE *entry = &place[picked];
+    float cumulative;
+    cumulative = 0.0f;
+    for (i = 0; i < place_num; i++) {
+        FISH_PLACE *entry = &place[i];
         entry->rate /= rate_sum;
-        if (!(entry->rate <= 0.0f)) {
-            cumulative += entry->rate;
-            if (!(cumulative <= roll)) {
-                break;
-            }
+        if (entry->rate <= 0.0f) {
+            continue;
+        }
+        cumulative += entry->rate;
+        if (!(cumulative <= roll)) {
+            break;
         }
     }
+    picked = i;
     int fish_no = place[picked].fish_no;
     float pull_strength = 0.5f;
     float size = 100.0f;
@@ -3299,16 +3298,17 @@ int GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, 
                 wait_bias = -2.0f;
             }
             float min_size = param->min_size * CastDistSizeRate;
-            size = GetRandamNumber(min_size, param->max_size * CastDistSizeRate, min_size / 2.0f);
+            float max_size = param->max_size * CastDistSizeRate;
+            size = GetRandamNumber(min_size, max_size, min_size / 2.0f);
             if (GetCaptureMode() != 0) {
-                size = 60.0f;
+                size = float(60.0);
             }
             length_scale = size / param->base_size;
-            length_scale *= 1.05f;
-            if (!(length_scale <= 4.0f)) {
-                length_scale = 4.0f;
+            length_scale *= float(1.05);
+            if (!(length_scale <= float(4.0))) {
+                length_scale = float(4.0);
             }
-            float width_rate = GetRandamNumber(1.0f, 1.3f, 0.6f);
+            float width_rate = GetRandamNumber(1.0f, 1.3f, float(0.6));
             if (!(width_rate <= 1.3f)) {
                 width_rate = 1.3f;
             }
@@ -3350,9 +3350,6 @@ int GetUkiWaitTime(FISH_DATA *fish, CScene *scene, float *position, int rod_no, 
     fish->fishing_point = fishing_point;
     return wait_time;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", GetUkiWaitTime__FP9FISH_DATAP6CScenePfii);
-#endif
 /**
  *
  * Returns a float poke delay based on bait affinity.

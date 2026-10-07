@@ -605,6 +605,11 @@ enum {
     kSceneAttrFlags = 0x18000
 };
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 CInventUserData *GetInventUserDataPtr() {
     CSaveData *save = GetSaveData();
@@ -2074,8 +2079,6 @@ static inline CActionChara *NewInventActionChara(mgCMemory *stack) {
     return chara;
 }
 
-#ifdef NONMATCHING
-// 98.8% match, 19 words off
 void CMenuInvent::LoadCharaCheck() {
     CActionChara *chara = MenuActionChara[0];
     mgCMemory *load_stack = &MenuCharaLoadStack;
@@ -2120,8 +2123,8 @@ void CMenuInvent::LoadCharaCheck() {
         chara->SetMotion(at_2246, 0, 1);
         if (chara_read_info != NULL) {
             BG_READ_INFO *read_info = chara_read_info;
-            mgCTextureManager *tex_manager = &mgTexManager;
             u_int *model_file = GetPackFile((u_int *)read_info->buffer, at_2247, &size);
+            mgCTextureManager *const tex_manager = &mgTexManager;
             chara_stack.stack_used = 0;
             chara_stack.lock = 0;
             strcpy(tex_manager->name_suffix, at_2248);
@@ -2138,9 +2141,15 @@ void CMenuInvent::LoadCharaCheck() {
             chara->SetMotion(at_2252, 0, 1);
         }
         if (album_enable == 0 && photo_only == 1) {
-            chara->SetPosition(15.0f, -29.0f, 14.0f);
+            float z = 14.0f;
+            float y = -29.0f;
+            float x = float(15);
+            chara->SetPosition(x, y, z);
         } else {
-            chara->SetPosition(20.0f, -29.0f, 14.0f);
+            float z = float(14);
+            float x = 20.0f;
+            float y = float(-29);
+            chara->SetPosition(x, y, z);
         }
         chara->SetRotation(0.0f, -0.56f, 0.0f);
         chara->Step();
@@ -2156,9 +2165,6 @@ void CMenuInvent::LoadCharaCheck() {
         break;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", LoadCharaCheck__11CMenuInventFv);
-#endif
 USER_PICTURE_INFO *CMenuInvent::GetNowSelectedPictInfo() {
     USER_PICTURE_INFO *info = 0;
 
@@ -2638,9 +2644,6 @@ void CMenuInvent::GradationSet(int mode) {
             return;
     }
 }
-#ifdef NONMATCHING
-// 97.8% match, 31 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void CMenuInvent::GradationStep() {
     if (invent_okeff_form == NULL) {
         return;
@@ -2699,9 +2702,6 @@ void CMenuInvent::GradationStep() {
         break;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", GradationStep__11CMenuInventFv);
-#endif
 void CMenuInvent::InitEnd() {
     BG_READ_INFO *read_info;
 
@@ -2848,8 +2848,6 @@ extern signed char D_003532DF[];
 extern float       eff_light_2927[4];
 
 #pragma inline_depth(5)
-#ifdef NONMATCHING
-// 24.9% match, 595 words off
 int CMenuInvent::IsCreateObject(int mode, int keys) {
     CActionChara *action_chara = MenuActionChara[0];
     CDC2Mes *message_window = MenuDCMsg[4];
@@ -3050,7 +3048,8 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                     break;
                 case 1:
                     scale[0] = this->create_scale + this->create_wobble_amp * sinf(0.10471976f * this->create_wobble_phase);
-                    CalcMenuAdd(&this->create_wobble_amp, -0.02f, 0.0f);
+                    float step = -0.02f;
+                    CalcMenuAdd(&this->create_wobble_amp, float(-0.02), 0.0f);
                     CalcMenuAdd(&this->create_spin_angle, 0.15707964f, 15.707964f);
                     CalcMenuAdd(&this->create_wobble_phase, 1.0f, 600.0f);
                     if (menu_debug_flag != 0) {
@@ -3256,10 +3255,8 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                 attr->color[1] = eff_light_2927[1];
                 attr->color[2] = eff_light_2927[2];
                 attr->color[3] = eff_light_2927[3];
-                float x = 18.0f;
                 float y = -20.0f;
-                float z = 20.0f;
-                this->create_effect->SetPosition(18.0f, y, z);
+                this->create_effect->SetPosition(18.0f, y, 20.0f);
                 this->create_effect->SetRotation(0.0f, 0.15707964f, 0.0f);
                 frame->SetAttrParam(*attr, 1, kSceneAttrFlags);
             }
@@ -3361,9 +3358,6 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
     }
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", IsCreateObject__11CMenuInventFii);
-#endif
 
 #pragma inline_depth reset
 void CMenuInvent::CalcMakeBrd(int message_index) {
@@ -3419,9 +3413,6 @@ int CMenuInvent::EnableSelectMaxCardList() {
     return count;
 }
 
-#ifdef NONMATCHING
-// ~26.3% match, 210 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void CMenuInvent::CalcCursorPosition() {
     if (mode == 2) {
         MenuCommonInfo->SetWakuType(-1);
@@ -3506,9 +3497,6 @@ void CMenuInvent::CalcCursorPosition() {
         unk_eb6 = 0;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", CalcCursorPosition__11CMenuInventFv);
-#endif
 int CMenuInvent::IsMakeObject(int keys, int button) {
     switch (step) {
         case 0: {
@@ -3675,7 +3663,7 @@ extern char at_3631[];
 extern char at_3632[];
 
 #ifdef NONMATCHING
-// 83.9% match, 443 words off
+// 83.9% match, 442 words off
 #pragma opt_common_subs off
 void CMenuInvent::CalcTex() {
     if (bg_form != NULL) {
@@ -5319,9 +5307,6 @@ void MenuInventCreateCardDraw(int &tex_block, float *pos) {
         MenuReloadTexture(tex_block, -1);
     }
 }
-#ifdef NONMATCHING
-// 99.4% match, 2 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void PictureDraw(mgCTexture *tex, USER_PICTURE_INFO *photo, float x, float y, float scale, int alpha, int red,
                  int blue, int green) {
     float w;
@@ -5387,9 +5372,6 @@ void PictureDraw(mgCTexture *tex, USER_PICTURE_INFO *photo, float x, float y, fl
     PrimQuad(prim, put_rect, tex_rect);
     prim->End();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", PictureDraw__FP10mgCTextureP17USER_PICTURE_INFOfffiiii);
-#endif
 void PictureMemoOne(float x, float y, int alpha) {
     mgCDrawPrim *prim;
 
@@ -5443,8 +5425,6 @@ void PictureDraw(int &tex_block, mgRect<float> rect, int picture_no, float scale
         PictureDraw(texture, photo, rect.left, rect.top, scale, alpha, rgba[0], rgba[1], rgba[2]);
     }
 }
-#ifdef NONMATCHING
-// 99.8% match, 10 words off
 void MenuInventPictureBoardDraw(float *pos, int &tex_block, int alpha) {
     if (CMenuInventPt == NULL || CMenuInventPt->neta_board_form == NULL) {
         return;
@@ -5459,10 +5439,10 @@ void MenuInventPictureBoardDraw(float *pos, int &tex_block, int alpha) {
     int i;
     mgCDrawPrim *prim = GetMenuPrim();
     for (i = 0; i < 30; i++) {
-        USER_PICTURE_INFO *photo = &photos[i];
-        if (*(s8 *)&photo->used == 0 || CMenuInventPt->SelectedNetaPhotoAlready(i) != 0) {
+        if (*(s8 *)&photos[i].used == 0 || CMenuInventPt->SelectedNetaPhotoAlready(i) != 0) {
             continue;
         }
+        USER_PICTURE_INFO *photo = &photos[i];
         float x = pos[0] + CMenuInventPt->photo_pos[i][0];
         float y = CMenuInventPt->photo_scroll + CMenuInventPt->photo_pos[i][1];
         if (y < 20.0f) {
@@ -5520,9 +5500,6 @@ void MenuInventPictureBoardDraw(float *pos, int &tex_block, int alpha) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", MenuInventPictureBoardDraw__FPfRii);
-#endif
 void MenuInventAlbumPictureDraw(float *origin, int &loaded_tex) {
     mgRect<int>        unused_rect;
     mgRect<int>        clip_rect;
@@ -5683,7 +5660,6 @@ extern char at_5016[];
 extern u8   itemmenu_chr_rotflag;
 extern int *menu_randam_line_draw_postbl;
 
-#ifdef NONMATCHING
 inline CMenuInvent::CMenuInvent() {
     int i;
     card_cursor = card_top = 0;
@@ -5764,11 +5740,15 @@ inline CMenuInvent::CMenuInvent() {
     Init_MENUFORM_MAKEBRD_INFO(&make_board);
 }
 
-// 99.4% match, 79 words off
+static inline u8 *StackBytes(mgCMemory *m) { return m->stack_bytes; }
+static inline int StackSize(mgCMemory *m) { return m->stack_size; }
+static inline int StackUsed(mgCMemory *m) { return m->stack_used; }
+
 int MenuInventInit(mgCMemory *memory, int *tex_block, int arg) {
-    u8 *pack = memory->stack_bytes;
-    MenuInventStack.stSetBuffer((u_long128 *)pack, memory->stack_size);
-    MenuInventStack.stAlloc64(memory->stack_used);
+    int size = StackSize(memory);
+    u8 *pack = StackBytes(memory);
+    MenuInventStack.stSetBuffer((u_long128 *)pack, size);
+    MenuInventStack.stAlloc64(StackUsed(memory));
     mgCMemory *stack = &MenuInventStack;
     debug_invent_successflag = 0;
     InventAlbumPtr = NULL;
@@ -5905,9 +5885,6 @@ int MenuInventInit(mgCMemory *memory, int *tex_block, int arg) {
     SetModeMenuDrawItemBoard(0);
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", MenuInventInit__FP9mgCMemoryPii);
-#endif
 void CMenuInvent::NextDifferentMode(int next, int arg) {
     switch (next) {
         case 0:

@@ -84,7 +84,7 @@ static void QuatSlerp(float *q0, float *q1, float t, float *out) {
 }
 
 #ifdef NONMATCHING
-// 99.1% match, 34 words off
+// 99.3% match, 32 words off
 Mot_List *MotionProc(mgCFrame *root, float time, Mot_List *list, mgCCamera *camera) {
     unsigned int  frame_no = (unsigned int) time;
     int high;
@@ -119,7 +119,7 @@ Mot_List *MotionProc(mgCFrame *root, float time, Mot_List *list, mgCCamera *came
     key = low - 1;
     next = key + 1;
 
-    if (next > count + -1) {
+    if (next > count + (key - next)) {
         next = key;
     }
 

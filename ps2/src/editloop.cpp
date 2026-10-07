@@ -851,7 +851,10 @@ int SubMapLoadStep() {
     return 1;
 }
 #ifdef NONMATCHING
-// ~40.9% match, 1323 words off
+static inline bool IsCrossFading(CScene *scene) {
+    return scene->fade.NowFade() && scene->fade.cross;
+}
+// ~41% match, 238 aligned words off
 int EditLoop() {
     static int          time_step;
     static int          show_time_step;
@@ -899,7 +902,6 @@ int EditLoop() {
     int                 main_map_no;
     int                 change_event;
     int                 pause_result;
-
     finish = 0;
     mgSetAllScissorFlag(0);
     LoopCounter++;
@@ -908,7 +910,6 @@ int EditLoop() {
     }
     {
         static char init;
-
         if (init == 0) {
             time_step = 1;
             init = 1;
@@ -916,19 +917,17 @@ int EditLoop() {
     }
     {
         static char init;
-
         if (init == 0) {
             show_time_step = 0;
             init = 1;
         }
     }
-
     if (PauseFlag == 0 && IsLightingEditMode() == 0) {
-        map = MainScene__2->GetMap(MainScene__2->active_map);
-        if (map != NULL) {
+        CMap *time_map = MainScene__2->GetMap(MainScene__2->active_map);
+        if (time_map != NULL) {
             light_check = 1;
-            map->now_time = MainScene__2->time;
-            light_band = map->GetNowTimeLightBand();
+            time_map->now_time = MainScene__2->time;
+            light_band = time_map->GetNowTimeLightBand();
             if (GamePad__2.On2(PAD_RIGHT) != 0) {
                 MainScene__2->AddTime(0.1f);
             }
@@ -955,14 +954,13 @@ int EditLoop() {
                 }
                 MainScene__2->TimeStep(time_rate);
             }
-            map->now_time = MainScene__2->time;
-            if (light_check != 0 && light_band != map->GetNowTimeLightBand() && map->time_cfade != 0) {
+            time_map->now_time = MainScene__2->time;
+            if (light_check != 0 && light_band != time_map->GetNowTimeLightBand() && time_map->time_cfade != 0) {
                 MainScene__2->fade.CaptureScreen();
                 MainScene__2->fade.CrossFade(10, 0.8f);
             }
         }
     }
-
     wait_for_map = 0;
     if (PadCtrl.Btn(PAD_BTN_CONFIRM) != 0 || PadCtrl.Btn(PAD_BTN_MENU) != 0) {
         wait_for_map = 1;
@@ -1108,19 +1106,10 @@ int EditLoop() {
     }
     PAUSE_INFO          menu_pause;
     PAUSE_INFO          pause;
-    sceVu0FVECTOR       camera_reference;
-    sceVu0FVECTOR       talk_position;
-    sceVu0FVECTOR       camera_position;
-    sceVu0FVECTOR       talk_height;
-    sceVu0FVECTOR       villager_position;
-    int                 stay[32];
-    sceVu0FVECTOR       edit_position;
-    sceVu0FVECTOR       return_position;
     if (SubMapLoadStep() != 0) {
         while (wait_for_map != 0 && SubMapLoadStep() != 0) {
         }
     }
-
     if (LoopMode == EDIT_LOOP_WALK_MENU || LoopMode == EDIT_LOOP_EDIT_MENU) {
         menu_pause.scene = MainScene__2;
         menu_pause.event_skip = 0;
@@ -1152,7 +1141,6 @@ int EditLoop() {
                         break;
                     case 11: {
                         SubGameInfo fishing;
-
                         fishing.scene = MainScene__2;
                         fishing.rod_no = MenuInfo->result[0];
                         fishing.esa_no = MenuInfo->result[1];
@@ -1211,7 +1199,6 @@ int EditLoop() {
         }
         return TimeLimitCheck() != 0;
     }
-
     if (DebugFlag != 0 && EdDebugInfo.jump_map_no >= 0) {
         BurnEditParts();
         EditMapJump(EdDebugInfo.jump_map_no);
@@ -1259,6 +1246,8 @@ int EditLoop() {
                     CSceneEventData event_data;
                     reset_event = 0;
                     switch (event_result) {
+                        case EDIT_EVENT_RESULT_CONTINUE:
+                            break;
                         case EDIT_EVENT_RESULT_END:
                             reset_event = 1;
                             EditDataSave();
@@ -1292,8 +1281,10 @@ int EditLoop() {
                             EditControl(MainScene__2, NULL);
                         }
                         GamePad__2.AutoRepeatOff();
-                        MainScene__2->EyeViewDrawOnOff(IsWalkMode() == 0);
+                        MainScene__2->EyeViewDrawOnOff(!IsWalkMode());
                         if (LockChara == 0 && MainScene__2->event_run == 0 && PadCtrl.Btn(PAD_BTN_CONFIRM) != 0 && IsWalkMode() != 0) {
+                            sceVu0FVECTOR talk_position;
+                            sceVu0FVECTOR talk_height;
                             chara = MainScene__2->GetCharacter(MainScene__2->player_chara);
                             chara->GetPosition(talk_position);
                             chara->GetPosition(talk_height);
@@ -1309,10 +1300,10 @@ int EditLoop() {
                 break;
             case EDIT_CONTROL_EVENT:
                 pause.event_skip = 1;
-                pause_enabled = 1;
                 if (CheckEventSkip() == 0) {
                     pause.event_skip = 0;
                 }
+                pause_enabled = 1;
                 switch (EventLoop()) {
                     case 17:
                         change_mode = 1;
@@ -1392,6 +1383,8 @@ int EditLoop() {
             WalkChara->sound_info.foot_se_bank = MainScene__2->se_base_id;
         }
         EditStep();
+        int stay[32];
+        sceVu0FVECTOR villager_position;
         if (WalkChara != NULL) {
             WalkChara->GetPosition(villager_position);
             villager_position[3] = 30.0f;
@@ -1405,11 +1398,11 @@ int EditLoop() {
         if (open_menu == 0 && LockChara == 0 && sgMenuOpenEnable() != 0 && change_mode == 0) {
             menu_requested = PadCtrl.Btn(PAD_BTN_MENU) != 0 || sgGetItemOver() != 0;
             menu_button = PadCtrl.Btn(PAD_BTN_MENU);
-            quick_change = EditOnGround() != 0 && PadCtrl.Btn(PAD_BTN_QUICK_CHANGE) != 0 && SubGameRunning() == 0;
-            if (MainScene__2->fade.NowFade() != 0 && MainScene__2->fade.cross != 0) {
+            quick_change = EditOnGround() != 0 && PadCtrl.Btn(PAD_BTN_QUICK_CHANGE) != 0 && !SubGameRunning();
+            if (IsCrossFading(MainScene__2)) {
                 quick_change = 0;
             }
-            next_chara = GetUserData()->active_chr_no == USER_CHARA_MAX;
+            next_chara = !GetUserData()->active_chr_no;
             if ((GetUserData()->CheckQuickChange(next_chara, NULL) & 0x1) == 0) {
                 quick_change = 0;
             }
@@ -1462,7 +1455,6 @@ int EditLoop() {
             EditDrawFlag |= 0x1;
         }
     }
-
     mgFlushRenderInfo();
     EditEvent.Draw(MainScene__2);
     EditDraw();
@@ -1506,6 +1498,8 @@ int EditLoop() {
                 change_mode = 0;
             }
             if (edit_enabled != 0 && chara != NULL && ControlMode == EDIT_CONTROL_PLAYER && change_mode != 0) {
+                sceVu0FVECTOR edit_position;
+                sceVu0FVECTOR return_position;
                 chara->GetPosition(edit_position);
                 if (LoopMode == EDIT_LOOP_WALK) {
                     if (CheckWalkToEdit(MainScene__2, edit_position) != 0 || debug_move != 0) {
@@ -1520,6 +1514,8 @@ int EditLoop() {
                         MainScene__2->map_event_no = 0;
                     }
                 } else if (LoopMode == EDIT_LOOP_EDIT && (CheckEditToWalk(MainScene__2, return_position) != 0 || debug_move != 0)) {
+                    sceVu0FVECTOR camera_position;
+                    sceVu0FVECTOR camera_reference;
                     LoopMode = EDIT_LOOP_WALK;
                     open_menu = 0;
                     EndEditMode(MainScene__2, return_position);
@@ -1570,8 +1566,8 @@ int EditLoop() {
         }
         if (open_menu != 0) {
             EditDrawFlag &= ~0x1;
-            if (MainScene__2->bg_load_step <= 0) {
-                if (MainScene__2->fade.NowFade() != 0 && MainScene__2->fade.cross != 0) {
+            if (!(0 < MainScene__2->bg_load_step)) {
+                if (IsCrossFading(MainScene__2)) {
                     MainScene__2->fade.FadeIn(0);
                 }
                 MenuInfo->scene = MainScene__2;
@@ -1586,7 +1582,6 @@ int EditLoop() {
         }
         {
             static char init;
-
             if (init == 0) {
                 rain_flag = 0;
                 init = 1;
@@ -1598,7 +1593,7 @@ int EditLoop() {
             } else {
                 EventRain.Stop();
             }
-            rain_flag = rain_flag == 0;
+            rain_flag = !rain_flag;
         }
         MainScene__2->fade.FadeStep();
     }
@@ -1619,10 +1614,8 @@ int EditLoop() {
         static int encount_flag;
         static int show_encount_cnt;
         static int next_encount;
-
         {
             static char init;
-
             if (init == 0) {
                 start_bt_cnt = 0;
                 init = 1;
@@ -1630,7 +1623,6 @@ int EditLoop() {
         }
         {
             static char init;
-
             if (init == 0) {
                 encount_flag = 1;
                 init = 1;
@@ -1638,7 +1630,6 @@ int EditLoop() {
         }
         {
             static char init;
-
             if (init == 0) {
                 show_encount_cnt = 0;
                 init = 1;
@@ -1646,16 +1637,13 @@ int EditLoop() {
         }
         {
             static char init;
-
             if (init == 0) {
                 next_encount = -1;
                 init = 1;
             }
         }
-
         if (show_time_step > 0 || show_encount_cnt > 0) {
             mgCDrawPrim prim;
-
             prim.Initialize(NULL, NULL);
             prim.DepthTestEnable(0);
             prim.AlphaBlendEnable(0);
@@ -1868,19 +1856,21 @@ int EditStep() {
     return 1;
 }
 #ifdef NONMATCHING
-// 99.3% match, 38 words off
+template <typename T> static inline T Ident(T v) { return v; }
+// 99.7% match, 7 words off
 int EditDraw() {
     static int                 flag;
     static char                init;
+    int                       screen_no;
     CMap                      *maps[8];
     USER_PICTURE_INFO         *picture;
     int                       map_index;
-    CInventUserData           *invent;
     CCharacter2               *chara;
     mgCTexture                *overlay;
     mgCTexture                *water;
     int                       ghost_visible;
     int                       texture_group;
+    int                       block_count;
     int                       block;
     CPartsGroup               *ghost_group;
     CList<PartsGroupData>     *group_entry;
@@ -1898,18 +1888,15 @@ int EditDraw() {
     CMap                      *map;
     mgCTexture                *screen;
     CEditMap                  *edit_map;
-    int                       block_count;
     int                       block_index;
     int                       idea_no;
     int                       exit_flag;
     int                       dof_off;
     sceVu0FMATRIX             view_matrix;
-
     if (EditDrawCancelFlag != 0) {
         EditDrawCancelFlag = 0;
         return 0;
     }
-
     tex_manager = &mgTexManager;
     map_draw = EdEventInfo.map_draw;
     map_count = MainScene__2->GetActiveMap(maps, 8);
@@ -1926,7 +1913,6 @@ int EditDraw() {
         sndSetMicPos(camera_pos, camera_dir);
         MainScene__2->FixCameraPartsOnOff(camera_pos);
     }
-
     MainScene__2->DrawSky(-1);
     map = MainScene__2->GetMap(MainScene__2->active_map);
     edit_map = NULL;
@@ -1936,7 +1922,6 @@ int EditDraw() {
     if (map_draw != 0 && edit_map != NULL) {
         edit_map->DrawRiverMask();
     }
-
     ghost_visible = GhostPhotoTiming();
     if (CheckTime(MainScene__2->time, float(0), float(4)) == 0) {
         ghost_visible = 0;
@@ -1964,7 +1949,6 @@ int EditDraw() {
             }
         }
     }
-
     WorkBuffer.stack_used = 0;
     WorkBuffer.lock = 0;
     int texture_order[65];
@@ -1973,7 +1957,6 @@ int EditDraw() {
     }
     texture_order[64] = -1;
     mgBeginDraw(&WorkBuffer, texture_order, NULL);
-
     if (map_draw != 0) {
         if (edit_map != NULL) {
             edit_map->DrawRiver();
@@ -2039,7 +2022,6 @@ int EditDraw() {
             DepthOfField(1, blur_range, screen, 1.0f);
         }
     }
-
     EdEventFirstDraw();
     if (TreasureBox != NULL) {
         map = MainScene__2->GetMap(MainScene__2->active_map);
@@ -2066,7 +2048,7 @@ int EditDraw() {
     if (map_draw != 0) {
         int later_texture_blocks[128];
         for (int texture_group = 6; texture_group < 16; texture_group++) {
-            block_count = MainScene__2->mds_list_set.GetTextureBlockNo(texture_group, later_texture_blocks, 128);
+            block_count = Ident(MainScene__2->mds_list_set.GetTextureBlockNo(texture_group, later_texture_blocks, 128));
             for (int block_index = 0; block_index < block_count; block_index++) {
                 int block = later_texture_blocks[block_index];
                 mgEndDrawReloadTexture(block, NULL);
@@ -2102,11 +2084,11 @@ int EditDraw() {
     }
     EditDrawEffectChara(MainScene__2);
     if (map_draw != 0) {
-        screen = tex_manager->GetTexture("water_work", 0x9E);
-        overlay = tex_manager->GetTexture("ref", 0x9E);
-        camera = MainScene__2->GetCamera(MainScene__2->active_camera);
+        mgCTexture *water_screen = tex_manager->GetTexture("water_work", 0x9E);
+        mgCTexture *water_ref = tex_manager->GetTexture("ref", 0x9E);
+        mgCCamera *water_camera = MainScene__2->GetCamera(MainScene__2->active_camera);
         for (map_index = 0; map_index < map_count; map_index++) {
-            maps[map_index]->DrawWater(camera, screen, overlay);
+            maps[map_index]->DrawWater(water_camera, water_screen, water_ref);
         }
     }
     if (IsEditMode() != 0 && edit_map != NULL) {
@@ -2130,13 +2112,12 @@ int EditDraw() {
     if (DebugFlag != 0 && DebugInfo.invent_debug == 1) {
         MainScene__2->DrawScreenFunc(&TestFrame);
     }
-
     if (NowTakePhoto() == 0) {
         InitNpcCameraReaction();
     } else {
         tex_manager->ReloadTexture(0xA2, (sceVif1Packet *)NULL);
         tex_manager->GetTexture("fix_work", -1);
-        invent = NULL;
+        CInventUserData *invent = NULL;
         if (GetUserData() != NULL) {
             invent = &GetUserData()->invent_data;
         }
@@ -2151,7 +2132,7 @@ int EditDraw() {
         screen_chara.dist = 0.0f;
         screen_chara.in_center = 0;
         chara_no = MainScene__2->InScreenChara(&screen_chara, screen_range);
-        int screen_no = screen_chara.chara_no;
+        screen_no = screen_chara.chara_no;
         chara = MainScene__2->GetCharacter(chara_no);
         if (chara_no >= 0 && chara != NULL && chara->GetKeyListPtr("\x83\x4A\x83\x81\x83\x89", NULL) != NULL) {
             MainScene__2->ExModeVillager(chara_no);
@@ -2192,7 +2173,6 @@ int EditDraw() {
             DrawTakePhotoSystem(0x9A, invent);
         }
     }
-
     show_system = !DebugInfo.param_off;
     if ((GetSaveData()->GetBitCtrl() & 0x2) != 0) {
         show_system = 0;

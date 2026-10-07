@@ -39,6 +39,11 @@ extern char noname_1381[8];
 extern char noname_1692[8];
 extern char noname_1709[8];
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 float f_rand(float min_value, float max_value) {
     return min_value + (((max_value - min_value) * (float) rand()) / 2147483648.0f);
@@ -247,9 +252,6 @@ int CParticle::Step() {
     pos[2] += speed[2];
     return 1;
 }
-#ifdef NONMATCHING
-// 99.9% match, 2 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void CParticle::Draw(void) {
     if (active != 0) {
         mgCDrawPrim prim;
@@ -290,9 +292,6 @@ void CParticle::Draw(void) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", Draw__9CParticleFv);
-#endif
 void CParticle::Init() {
     active = 0;
     InitVector(pos);

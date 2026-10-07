@@ -81,27 +81,24 @@ struct SpriteGifTagBuf {
 extern SpriteGifTagBuf sprite_giftag;
 
 // Code (.text)
-#ifdef NONMATCHING
-// 88.9% match, 160 words off
 int mgC3DSprite::CreateRenderInfoPacket(u_int *dest, float (*matrix)[4],
                                         mgRENDER_INFO *render_info) {
     sceVu0FMATRIX local_screen;
     sceVu0IVECTOR zero = {0, 0, 0, 0};
     u_int *packet;
-    mg3DSpriteRenderHead *head;
-    mg3DSpriteRenderTail *tail;
-    mgCFrameAttr *attr;
     float scale_x;
+    mg3DSpriteRenderHead *head;
+    u_int flags;
     float scale_y;
     float scale_z;
-    u_int flags;
+    mgCFrameAttr *attr;
     u_int fog_color;
     int size;
+    mg3DSpriteRenderTail *tail;
+    float (*view_screen)[4];
 
     mgMulMatrix(local_screen, render_info->world_screen, matrix);
-    packet = (u_int *)GetScrPad();
-    head = (mg3DSpriteRenderHead *)packet;
-    tail = (mg3DSpriteRenderTail *)(head + 1);
+    head = (mg3DSpriteRenderHead *)(packet = (u_int *)GetScrPad());
     render_info->GetpLightInfo();
 
     head->dma_tag[0] = MG_DMA_CNT;
@@ -115,13 +112,14 @@ int mgC3DSprite::CreateRenderInfoPacket(u_int *dest, float (*matrix)[4],
     *(u_long128 *)head->unk_20[1] = *(u_long128 *)zero;
     *(u_long128 *)head->unk_20[2] = *(u_long128 *)zero;
     head->unk_50[0] = render_info->render_params[3];
-    head->unk_50[1] = render_info->render_params[0];
-    head->unk_50[2] = render_info->render_params[1];
-    head->unk_50[3] = render_info->render_params[2];
+    ((float *)head->unk_50)[1] = ((float *)render_info->render_params)[0];
+    ((float *)head->unk_50)[2] = ((float *)render_info->render_params)[1];
+    ((float *)head->unk_50)[3] = ((float *)render_info->render_params)[2];
     sceVu0CopyMatrix(head->local_screen, local_screen);
     sceVu0CopyMatrix(head->local_world, matrix);
     render_info->scissor = 0;
 
+    tail = (mg3DSpriteRenderTail *)(head + 1);
     head->fog[0] = render_info->fog.offset;
     head->fog[1] = render_info->fog.near_value;
     head->fog[2] = render_info->fog.far_value;
@@ -134,11 +132,12 @@ int mgC3DSprite::CreateRenderInfoPacket(u_int *dest, float (*matrix)[4],
     *(u_long128 *)tail->view_screen[1] = *(u_long128 *)render_info->view_screen[1];
     *(u_long128 *)tail->view_screen[2] = *(u_long128 *)render_info->view_screen[2];
     *(u_long128 *)tail->view_screen[3] = *(u_long128 *)render_info->view_screen[3];
-    sceVu0ScaleVectorXYZ(tail->view_screen[0], tail->view_screen[0], scale_x);
-    sceVu0ScaleVectorXYZ(tail->view_screen[1], tail->view_screen[1], scale_y);
-    sceVu0ScaleVectorXYZ(tail->view_screen[2], tail->view_screen[2], scale_z);
+    view_screen = tail->view_screen;
+    sceVu0ScaleVectorXYZ(view_screen[0], view_screen[0], scale_x);
+    sceVu0ScaleVectorXYZ(view_screen[1], view_screen[1], scale_y);
+    sceVu0ScaleVectorXYZ(view_screen[2], view_screen[2], scale_z);
 
-    head->vif_code[3] = MG_VIF_UNPACK_V4_32 | (((u_int *)tail->program_call - head->vif_code) / 4 -
+    head->vif_code[3] = MG_VIF_UNPACK_V4_32 | ((u_int)((u_int *)tail->program_call - head->vif_code) / 4 -
                                                1) << MG_VIF_NUM_SHIFT;
     tail->program_call[0] = 0;
     tail->program_call[1] = 0;
@@ -189,14 +188,16 @@ int mgC3DSprite::CreateRenderInfoPacket(u_int *dest, float (*matrix)[4],
     tail->prmodecont[3] = 0;
 
     this->prmode =
-        SCE_GS_SET_PRIM(0, 1, 1, render_info->attr->fog && render_info->fog_enable, 1, 0, 1, 0, 0);
+        SCE_GS_SET_PRIM(0, 1, 1, (render_info->attr->fog && render_info->fog_enable) != 0, 1, 0, 1, 0, 0);
     tail->prmode[0] = prmode;
     tail->prmode[1] = 0;
     tail->prmode[2] = SCE_GS_PRMODE;
     tail->prmode[3] = 0;
 
-    fog_color = render_info->fog.r | render_info->fog.g << 8 | render_info->fog.b << 16;
-    if (render_info->attr->fog >= 2) {
+    fog_color = render_info->fog.r;
+    fog_color |= render_info->fog.g << 8;
+    fog_color |= render_info->fog.b << 16;
+    if (render_info->attr->fog > 1) {
         fog_color = 0;
     }
     tail->fogcol[0] = fog_color;
@@ -212,9 +213,6 @@ int mgC3DSprite::CreateRenderInfoPacket(u_int *dest, float (*matrix)[4],
     SendDMA(dest, size);
     return size;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_sprite", CreateRenderInfoPacket__11mgC3DSpriteFPUiPA4_fP13mgRENDER_INFO);
-#endif
 
 int mgC3DSprite::Draw(u_int *tag, float (*matrix)[4], mgCDrawManager *manager) {
     if (manager == NULL) {

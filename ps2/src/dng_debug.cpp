@@ -103,6 +103,11 @@ static void dngDebugExit();
  *
  */
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 DNG_DEBUG_INFO *dngGetDebugInfo() { return &dbinfo; }
 
@@ -116,9 +121,6 @@ void dngDebugInit() {
     dbFont.Init();
     dbFont.SetClearance(20, 20);
 }
-#ifdef NONMATCHING
-// 99.2% match, 9 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void dngDebugStart() {
     dbinfo.active = 1;
     dbinfo.command = -1;
@@ -135,9 +137,6 @@ void dngDebugStart() {
     dbinfo.saved_pause_flag = BattleAreaScene->pause_flag;
     BattleAreaScene->pause_flag = 15;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_debug", dngDebugStart__Fv);
-#endif
 void dngDebugDraw() {
     if (dbinfo.active != 0) {
         (mgTexManager).ReloadTexture(0x6C, (sceVif1Packet *) NULL);

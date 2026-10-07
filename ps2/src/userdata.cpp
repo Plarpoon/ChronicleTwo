@@ -2119,7 +2119,7 @@ int CFishAquarium::CheckHaigouTankSex(CGameDataUsed *fish) {
     return 1;
 }
 #ifdef NONMATCHING
-// 98.1% match, 24 words off
+// 99.5% match, 19 words off
 void CFishAquarium::RefreshParam() {
     int i;
     bool crowded;
@@ -2148,8 +2148,9 @@ void CFishAquarium::RefreshParam() {
     for (i = 0; i < 6; i++) {
         fish_tank[i].TimeCheck(elapsed);
     }
+    int fish_num = GetAquariumFishNum(1);
     crowded = false;
-    if (GetAquariumFishNum(1) > 1) {
+    if (fish_num > 1) {
         crowded = true;
     }
     for (i = 0; i < 4; i++) {
@@ -4281,27 +4282,28 @@ int CUserDataManager::GetOverItem(int item_no, int count) {
 
     return 0;
 }
-#ifdef NONMATCHING
-// 99.6% match, 10 words off
 int CUserDataManager::CheckItemLimmitOver() {
+    CHARA_DATA *charas;
+    int i;
+    int owned_no;
+    int gift;
+    CDataCommon *common;
+    int bag_size;
     u16 item_count[0x200];
     u16 item_count2[0x200];
-    int i;
     CGameDataUsed *inventory;
-    int bag_size;
 
     memset(item_count, 0, sizeof(item_count));
     memset(item_count2, 0, sizeof(item_count2));
     inventory = GetUsedDataPtr(0);
     bag_size = GetNowBagMax(1);
     for (i = 0; i < bag_size; i++) {
-        int owned_no;
         owned_no = inventory[i].item_no;
         if (0 < owned_no) {
             item_count[owned_no] += inventory[i].GetNum();
             if (0 < inventory[i].GetGiftBoxItemNum()) {
                 for (int k = 0; k < 3; k++) {
-                    int gift = inventory[i].GetGiftBoxItemNo(k);
+                    gift = inventory[i].GetGiftBoxItemNo(k);
                     if (gift > 0) {
                         item_count[gift]++;
                     }
@@ -4309,7 +4311,7 @@ int CUserDataManager::CheckItemLimmitOver() {
             }
         }
     }
-    CHARA_DATA *charas = GetCharaDataPtr(0);
+    charas = GetCharaDataPtr(0);
     for (int chara = 0; chara < 2; chara++) {
         charas += chara;
         for (int slot = 0; slot < 3; slot++) {
@@ -4319,7 +4321,7 @@ int CUserDataManager::CheckItemLimmitOver() {
                 item_count[active_no] += active->GetNum();
                 if (0 < active->GetGiftBoxItemNum()) {
                     for (int k = 0; k < 3; k++) {
-                        int gift = active->GetGiftBoxItemNo(k);
+                        gift = active->GetGiftBoxItemNo(k);
                         if (gift > 0) {
                             item_count[gift]++;
                         }
@@ -4329,16 +4331,13 @@ int CUserDataManager::CheckItemLimmitOver() {
         }
     }
     for (i = 1; i < 0x200; i++) {
-        CDataCommon *common = GetCommonItemData(i);
+        common = GetCommonItemData(i);
         if (common != NULL && common->max_num < item_count[i]) {
             return i;
         }
     }
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", CheckItemLimmitOver__16CUserDataManagerFv);
-#endif
 
 /**
  *
@@ -4750,8 +4749,6 @@ int CBattleCharaInfo::GetPalletNo(int slot) {
 
     return -1;
 }
-#ifdef NONMATCHING
-// 99.1% match, 2 words off
 void CBattleCharaInfo::RefreshParamater() {
     if (chara_data != NULL) {
     } else if (chara_data == NULL) {
@@ -4779,7 +4776,8 @@ void CBattleCharaInfo::RefreshParamater() {
             WEAPON_USED *weapon0 = &equipment[i].data.weapon;
             WEAPON_USED *weapon = weapon0;
             CGameDataUsed *item = &equipment[i];
-            item->GetStatusParam(status, scene->time);
+            float now;
+            item->GetStatusParam(status, now = scene->time);
             param->status[0] = fptosi((float)status[0] * weapon_rate[i]);
             param->status[1] = status[1];
             param->status[2] = status[2];
@@ -4840,9 +4838,6 @@ void CBattleCharaInfo::RefreshParamater() {
         BattleParamater_TimeBand = GetTimeBand(time);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", RefreshParamater__16CBattleCharaInfoFv);
-#endif
 COMMON_GAGE *CBattleCharaInfo::GetNowAccessWHp(int slot) {
     COMMON_GAGE *gage = 0;
     short        current_mode = chara_type;

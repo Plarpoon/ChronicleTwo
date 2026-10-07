@@ -372,6 +372,11 @@ int       CheckFishCondition();
 extern s8 menu_camera_reference_id;
 extern s8 menu_camera_reference_no;
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 /**
  *
@@ -506,8 +511,9 @@ int CBaseMenuClass::MenuItemMoveItemCommand(CGameDataUsed *item, int arg_pos, in
 
 extern s8 init_1049;
 extern s8 cmd_counter_1048;
+template <typename T> static inline T Ident(T v) { return v; }
 #ifdef NONMATCHING
-// 99.2% match, 15 words off
+// 100.0% match, 0 words off
 int CBaseMenuClass::MenuItemCommandSelect(int select_key, int push_button) {
     CGameDataUsed *used_data = MenuUserParam.used_data;
     u_long target;
@@ -655,7 +661,7 @@ int CBaseMenuClass::MenuItemCommandSelect(int select_key, int push_button) {
                 } else {
                     MenuItemCmdRet.cmd = 1;
                     MenuItemCmdRet.item = &chara->active_item[active_slot];
-                    if (ask_para.item->item_no == MenuItemCmdRet.item->item_no) {
+                    if (Ident(ask_para.item->item_no) == MenuItemCmdRet.item->item_no) {
                         MenuItemCmdRet.num = MenuItemCmdRet.item->GetActiveSetNum() - MenuItemCmdRet.item->GetNum();
                         if (ask_para.item->GetNum() > MenuItemCmdRet.num) {
                             MenuItemCmdRet.item_no = 10;
@@ -710,9 +716,10 @@ int CBaseMenuClass::MenuItemCommandSelect(int select_key, int push_button) {
             } else if (cmd == 42) {
                 ask_para.item->Boiled();
             } else if (cmd == 15 || cmd == 16) {
+                CHARA_DATA *target_chara;
                 if (ask_para.cmd_color[cursor] == 0x80202020) {
                     MenuItemCmdRet.cmd = 5;
-                    CHARA_DATA *target_chara = NULL;
+                    target_chara = NULL;
                     if (cmd == 15) {
                         target_chara = MenuUserParam.chara[0];
                     }
@@ -725,8 +732,9 @@ int CBaseMenuClass::MenuItemCommandSelect(int select_key, int push_button) {
                         MenuItemCmdRet.result = 10;
                     }
                 } else {
+                    target_chara = MenuUserParam.chara[cmd - 15];
                     MenuItemCmdRet.item_no = ask_para.item->item_no;
-                    MenuItemCmdRet.result = MenuItemUse.UseItem(ask_para.item, 0, MenuUserParam.chara[cmd - 15]);
+                    MenuItemCmdRet.result = MenuItemUse.UseItem(ask_para.item, 0, target_chara);
                     if (0 < MenuItemCmdRet.result &&
                         (MenuItemCmdRet.item_no == 0x124 || MenuItemCmdRet.item_no == 0x110)) {
                         MenuItemCmdRet.result = 1;
@@ -744,8 +752,7 @@ int CBaseMenuClass::MenuItemCommandSelect(int select_key, int push_button) {
                 if (ask_para.cmd_color[cursor] == 0x80202020) {
                     MenuItemCmdRet.cmd = 5;
                 } else {
-                    CGameDataUsed *equips = MenuUserParam.chara[CMenuItemInfoPt->sub_view]->equip;
-                    MenuItemCmdRet.result = MenuItemUse.UseItem(ask_para.item, 1, &equips[cmd - 19]);
+                    MenuItemCmdRet.result = MenuItemUse.UseItem(ask_para.item, 1, &Ident(MenuUserParam.chara[CMenuItemInfoPt->sub_view])->equip[cmd - 19]);
                 }
             } else if (cmd == 21 || cmd == 22) {
                 if (ask_para.cmd_color[cursor] == 0x80202020) {
@@ -4125,7 +4132,7 @@ short CMenuKeyFunc::StepMenuBGM() {
     return bgm_fading;
 }
 #ifdef NONMATCHING
-// 99.1% match, 28 words off
+// 99.6% match, 13 words off
 void CheckEnableHaveItemNum(void) {
     CGameData *item_data = &GameItemDataManage;
     int i;
@@ -4153,12 +4160,11 @@ void CheckEnableHaveItemNum(void) {
         }
     }
     CHARA_DATA *chara = user_data->GetCharaDataPtr(0);
-    for (int c = 0; c < 2; c++) {
-        chara = chara + c;
+    for (i = 0; i < 2; i++) {
+        chara = chara + i;
         for (int k = 0; k < 3; k++) {
             CGameDataUsed *active = &chara->active_item[k];
-            int item_no = active->item_no;
-            if (item_no > 0) {
+            int item_no = active->item_no;            if (item_no > 0) {
                 have_num[item_no] += (&chara->active_item[k])->GetNum();
                 if (0 < active->GetGiftBoxItemNum()) {
                     for (int j = 0; j < 3; j++) {
@@ -4186,17 +4192,16 @@ void CheckEnableHaveItemNum(void) {
     }
     chara = user_data->GetCharaDataPtr(0);
     {
-        int c = 0;
-        if (c < 2) {
+        i = 0;
+        if (i < 2) {
             do {
-                for (int k = 0; k < 3; k++) {
-                    menu_chara_activeItem_limmit_check[c * 3 + k] = 0;
-                    if (chara->active_item[k].item_no > 0 && full[chara->active_item[k].item_no] != 0) {
-                        menu_chara_activeItem_limmit_check[c * 3 + k] = 1;
+                for (j = 0; j < 3; j++) {
+                    menu_chara_activeItem_limmit_check[i * 3 + j] = 0;
+                    if (chara->active_item[j].item_no > 0 && full[chara->active_item[j].item_no] != 0) {
+                        menu_chara_activeItem_limmit_check[i * 3 + j] = 1;
                     }
                 }
-                c++, chara++;
-            } while (c < 2);
+                i++, chara++;            } while (i < 2);
         }
     }
 }
@@ -4526,8 +4531,6 @@ void CMenuItemInfo::SetEquipListNo(int list_no) {
         equip_list[0] = equip_list[1] = equip_list[2] = equip_list[3] = 0;
     }
 }
-#ifdef NONMATCHING
-// 99.8% match, 2 words off
 int CMenuItemInfo::CheckEquipListNo(int check) {
     int            chara = GetActiveCharaNo();
     int            changed = 0;
@@ -4564,20 +4567,17 @@ int CMenuItemInfo::CheckEquipListNo(int check) {
                 equip_flag[i] = 1;
             }
         }
-        if (equip_flag[4] || MenuUserParam.chara[0]->equip[4].item_no != equip_list[4]) {
+        if (equip_flag[4] || Ident(MenuUserParam.chara[0]->equip[4].item_no) != equip_list[4]) {
             changed = 1;
             equip_flag[4] = 1;
         }
-        if (equip_flag[5] || MenuUserParam.chara[0]->equip[2].item_no != equip_list[5]) {
+        if (equip_flag[5] || Ident(MenuUserParam.chara[0]->equip[2].item_no) != equip_list[5]) {
             changed = 1;
             equip_flag[5] = 1;
         }
     }
     return changed;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", CheckEquipListNo__13CMenuItemInfoFi);
-#endif
 int CMenuItemInfo::CheckSoundLoad() {
     sound_loaded = 0;
     int chara_no = GetActiveCharaNo();
@@ -6718,8 +6718,6 @@ void CMenuItemInfo::CalcCursorPosition(void) {
     }
 }
 extern s16 trans_spectol_posold;
-#ifdef NONMATCHING
-// 97.9% match, 12 words off
 void CBaseMenuClass::EffectDrawCheck(CMenuPosDataForm *form) {
     MENUFORMPARTS_TYPE *part = &form->parts[trans_spectol_pos];
     int                 effect_type = MenuEffect[0]->type;
@@ -6734,7 +6732,8 @@ void CBaseMenuClass::EffectDrawCheck(CMenuPosDataForm *form) {
                     break;
                 case 18:
                     part->draw_flag = 0;
-                    form->parts[trans_spectol_posold].rgba[3] = 0x80;
+                    part = &form->parts[trans_spectol_posold];
+                    part->rgba[3] = 0x80;
                     break;
                 case 20:
                     part->draw_flag = 0;
@@ -6773,9 +6772,6 @@ void CBaseMenuClass::EffectDrawCheck(CMenuPosDataForm *form) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", EffectDrawCheck__14CBaseMenuClassFP16CMenuPosDataForm);
-#endif
 extern s8   menuitem_initviewtbl[4];
 extern char at_6011[];
 extern char at_6012[];
@@ -6949,7 +6945,8 @@ extern u64           at_6234;
 extern u64           at_6256;
 extern u64           at_6265;
 #ifdef NONMATCHING
-// ~1.6% match, 1425 words off
+// ~1.6% match, 1437 words off
+#pragma inline_depth(5)
 void MenuItemDebugKey(void) {
     float rotation[4];
     float health_input[2];
@@ -7061,12 +7058,10 @@ void MenuItemDebugKey(void) {
                 MenuDebugModelDrawFlag = 1;
 
                 camera = new ((u_long128 *)MenuDebugStack.Alloc(sizeof(mgCCameraFollow) / 16 + 2))
-                    mgCCameraFollow(40.0f, 30.0f, 0.0f, 8.0f);
+                    mgCCameraFollow(40.0f, float(30.0), 0.0f, float(8.0));
                 MenuDebugCamera = camera;
 
-                model = new ((u_long128 *)MenuDebugStack.Alloc(sizeof(CActionChara) / 16 + 2)) CActionChara;
-                MenuDebugItemModel = model;
-
+                MenuDebugItemModel = model = new ((u_long128 *)MenuDebugStack.Alloc(sizeof(CActionChara) / 16 + 2)) CActionChara;
                 model->Initialize(NULL);
                 MenuDebugStack.Align64();
 
@@ -7357,16 +7352,18 @@ void MenuItemDebugKey(void) {
                     *field = info->status_max[status_index];
                 }
             } else {
-                s16 *field = &item->data.weapon.attribute[status_index - 2];
+                int attr = status_index - 2;
+                s16 *field = &item->data.weapon.attribute[attr];
 
                 *field += (s16)(s32)weapon_status_input[0];
                 if (*field < 0) {
                     *field = 0;
                 }
-                if (info->attribute_max[status_index - 2] < *field) {
-                    *field = info->attribute_max[status_index - 2];
+                if (info->attribute_max[attr] < *field) {
+                    *field = info->attribute_max[attr];
                 }
             }
+
         }
         if (item->used_type == USED_ITEM_TYPE_ROBO_PART) {
             s16 *field;
@@ -7387,7 +7384,8 @@ void MenuItemDebugKey(void) {
                     item->data.robopart.status[status_index + 1] = 255;
                 }
             } else {
-                field = &item->data.robopart.status[status_index];
+                field = &(item->data.robopart.status + 2)[status_index - 2];
+
                 *field += (s16)(s32)ridepod_status_input[0];
                 if (*field < 0) {
                     *field = 0;
@@ -7524,6 +7522,7 @@ void MenuItemDebugKey(void) {
         break;
     }
 }
+#pragma inline_depth reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuItemDebugKey__Fv);
 #endif
@@ -7629,11 +7628,11 @@ void MenuItemDebugDraw(void) {
                     prim.End();
                     SetSpriteEnv(&prim, 0);
                 }
-                DrawOneItem(&prim, mgRect<float>(col * 32 + 24, row * 32 + 60, 32.0f, 32.0f), item_no, 0, NULL, color, 0);
+                DrawOneItem(&prim, mgRect<float>(col * 32 + 24, row * 32 + 60, float(32.0), 32.0f), item_no, 0, NULL, color, 0);
             }
         }
         tex_manager->ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *)NULL);
-        DrawMenuFillBox(20.0f, 40.0f, 340.0f, 20.0f, 0x60, 0, 0, 0);
+        DrawMenuFillBox(20.0f, 40.0f, 340.0f, float(20.0), 0x60, 0, 0, 0);
         char title[0x80];
         CMenuItemInfo *info = CMenuItemInfoPt;
         sprintf(title, at_6760, CMenuItemInfoPt->debug_item_no, GetItemMessage(info->debug_item_no),
@@ -7730,7 +7729,7 @@ void MenuItemDebugDraw(void) {
         break;
     }
     case 4: {
-        DrawMenuFillBox(236.0f, 60.0f, 230.0f, 300.0f, 0x80, 0, 0, 0);
+        DrawMenuFillBox(236.0f, 60.0f, float(230.0), 300.0f, 0x80, 0, 0, 0);
         DebugPrint(font, at_6789, 236, 60);
         DebugPrint(font, at_6790, 236, 80);
         DebugPrint(font, at_6791, 236, 100);
@@ -7753,10 +7752,9 @@ void MenuItemDebugDraw(void) {
         DebugPrint(font, at_6799, 236, 240);
         DebugPrint(font, at_6800, 236, 260);
         for (int i = 0; i < 3; i++) {
-            char *name = build_name[i];
-            sprintf(text, at_6801, i + 1, name);
-            if (name != NULL) {
-                sprintf(text, at_6802, i + 1, name);
+            sprintf(text, at_6801, i + 1, build_name[i]);
+            if (build_name[i] != NULL) {
+                sprintf(text, at_6802, i + 1, build_name[i]);
             }
             DebugPrint(font, text, 236, i * 20 + 280);
         }
@@ -7766,7 +7764,7 @@ void MenuItemDebugDraw(void) {
         if (weapon == NULL) {
             break;
         }
-        DrawMenuFillBox(236.0f, 60.0f, 230.0f, 260.0f, 0x80, 0, 0, 0);
+        DrawMenuFillBox(float(236.0), 60.0f, 230.0f, 260.0f, 0x80, 0, 0, 0);
         DebugPrint(font, at_6803, 236, 60);
         DebugPrint(font, at_6804, 236, 100);
         DebugPrint(font, at_6805, 236, 120);
@@ -7787,14 +7785,14 @@ void MenuItemDebugDraw(void) {
         break;
     }
     case 6:
-        DrawMenuFillBox(236.0f, 60.0f, 230.0f, 260.0f, 0x80, 0, 0, 0);
+        DrawMenuFillBox(float(236.0), float(60.0), 230.0f, 260.0f, 0x80, 0, 0, 0);
         DebugPrint(font, at_6792, 236, 80);
         DebugPrint(font, at_6808, 236, 100);
         DebugPrint(font, at_6809, 236, 120);
         DebugPrint(font, at_6810, 236, 140);
         break;
     case 7: {
-        DrawMenuFillBox(236.0f, 60.0f, 230.0f, 260.0f, 0x80, 0, 0, 0);
+        DrawMenuFillBox(float(236.0), 60.0f, float(230.0), float(260.0), 0x80, 0, 0, 0);
         int cursor = MenuCommonInfo->cursor;
         if (cursor == 0) {
             DebugPrint(font, at_6811, 236, 60);
@@ -8883,25 +8881,34 @@ extern char  at_7440[];
 extern char  at_7441[];
 extern char  at_7442[];
 extern char  at_7443[];
-#ifdef NONMATCHING
 /**
  *
  * Updates a character's equipped weapon indicators and warning colors.
  *
  */
-// 92.4% match, 53 words off
 void MenuItemCharaActWepInfoDraw(CMenuPosDataForm *form, CGameDataUsed *equip, int chara_no, int flag) {
+    CGameDataUsed      *weapon;
+    MENUFORMPARTS_TYPE *icon;
+    int blink;
+    MENUFORMPARTS_TYPE *bar;
+    int is_rod;
+    MENUFORMPARTS_TYPE *part;
+    bool show;
+    int base;
+    int item_no;
+    int green;
     CItemUseTarget target;
-    int            blink = (int) (64.0f * sinf(WeaponWarningCounter));
-    for (int i = 0; i < 2; i++) {
+    blink = (int) (64.0f * sinf(WeaponWarningCounter));
+    base = 4;
+    for (int i = 0; i < 2; i++, base += 6) {
         int                 red = 0x80;
-        CGameDataUsed      *weapon = &equip[i];
-        MENUFORMPARTS_TYPE *batu = CMenuItemInfoPt->wep_parts[chara_no][i * 6 + 9];
-        int                 green = 0x80;
+        weapon = &equip[i];
+        MENUFORMPARTS_TYPE *batu = CMenuItemInfoPt->wep_parts[chara_no][base + 5];
+        green = 0x80;
         if (batu != NULL) {
             batu->draw_flag = 0;
         }
-        int   item_no = weapon->item_no;
+        item_no = weapon->item_no;
         int   whp[2];
         float rate = weapon->GetWHp(whp);
         if (rate < 0.2f && item_no > 0) {
@@ -8912,35 +8919,38 @@ void MenuItemCharaActWepInfoDraw(CMenuPosDataForm *form, CGameDataUsed *equip, i
                 if (batu != NULL) {
                     batu->draw_flag = 1;
                 }
+            } else {
+                green = red;
             }
         }
         for (int k = 0; k < 6; k++) {
-            MENUFORMPARTS_TYPE *part = CMenuItemInfoPt->wep_parts[chara_no][i * 6 + 4 + k];
+            part = CMenuItemInfoPt->wep_parts[chara_no][base + k];
             part->rgba[0] = red;
             part->rgba[1] = green;
             part->rgba[2] = green;
         }
-        MENUFORMPARTS_TYPE *icon = CMenuItemInfoPt->wep_parts[chara_no][i * 6 + 8];
+        icon = CMenuItemInfoPt->wep_parts[chara_no][base + 4];
         local_item_infoview_set(icon, weapon);
         target.SetPtr(ITEM_USE_TARGET_ITEM, weapon);
         icon->item_flag = 0;
         icon->item_flag = CheckItemUseVariable(&MenuCommonInfo->have_item, &target);
+        WEAPON_USED *data = &weapon->data.weapon;
         form->SetNumber(whptbl_7376[i][0], whp[0]);
         form->SetNumber(whptbl_7376[i][1], whp[1]);
         char name[0x20];
         sprintf(name, at_7438, i);
-        MENUFORMPARTS_TYPE *bar = form->GetPartInfo(name);
+        bar = form->GetPartInfo(name);
         if (bar != NULL) {
             bar->w = (int) (95.0f * rate);
         }
         sprintf(name, at_7439, i);
         bar = form->GetPartInfo(name);
         if (bar != NULL) {
-            bar->w = (int) (95.0f * GetCommonGageRate(&weapon->data.weapon.abs));
+            bar->w = (int) (95.0f * GetCommonGageRate(&data->abs));
         }
     }
     if (chara_no == 0) {
-        int            is_rod = equip->IsFishingRod();
+        is_rod = equip->IsFishingRod();
         CGameDataUsed *esa = MenuUserDataManPtr->GetActiveEsa();
         int            esa_num = 0;
         if (is_rod) {
@@ -8950,8 +8960,8 @@ void MenuItemCharaActWepInfoDraw(CMenuPosDataForm *form, CGameDataUsed *equip, i
             }
             esa_num = esa->GetNum();
         }
-        bool show = is_rod != 0;
-        form->SetPartDrawFlag(at_7440, show);
+        show = is_rod != 0;
+        form->SetPartDrawFlag(at_7440, is_rod != 0);
         form->SetPartDrawFlag(at_4985, show);
         form->SetPartDrawFlag(at_7441, show);
         form->SetPartDrawFlag(at_7442, show);
@@ -8961,9 +8971,6 @@ void MenuItemCharaActWepInfoDraw(CMenuPosDataForm *form, CGameDataUsed *equip, i
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuItemCharaActWepInfoDraw__FP16CMenuPosDataFormP13CGameDataUsedii);
-#endif
 extern char at_7478[];
 
 /**
@@ -9034,8 +9041,16 @@ extern char  at_7541[];
 extern float counter_7509;
 extern s8    init_7510;
 #ifdef NONMATCHING
-// 98.7% match, 55 words off
+// 99.7% match, 19 words off
 void MenuPosFormValueSetCharaRobo(ROBO_DATA *robo, int flag) {
+    float sway;
+    MENUFORMPARTS_TYPE *hp_part;
+    float rate;
+    MENUFORMPARTS_TYPE *batu;
+    int red;
+    CGameDataUsed *parts;
+    MENUFORMPARTS_TYPE *whp_bar;
+    int capacity;
     if (robo == NULL) {
         return;
     }
@@ -9043,12 +9058,12 @@ void MenuPosFormValueSetCharaRobo(ROBO_DATA *robo, int flag) {
     if (form == NULL) {
         return;
     }
-    int red = 0x80;
-    int green = red;
+    int green = 0x80;
+    red = green;
     int blink = (int)(64.0f * sinf(WeaponWarningCounter));
-    CGameDataUsed *parts = robo->parts;
+    parts = robo->parts;
     COMMON_GAGE *hp = &robo->hp;
-    MENUFORMPARTS_TYPE *hp_part = form->GetPartInfo(at_3822);
+    hp_part = form->GetPartInfo(at_3822);
     if (hp_part != NULL) {
         hp_part->w = (int)(140.0f * GetCommonGageRate(hp));
     }
@@ -9059,7 +9074,7 @@ void MenuPosFormValueSetCharaRobo(ROBO_DATA *robo, int flag) {
     }
     form->SetNumber(at_3823, GetDispVolumeForFloat(hp->now));
     form->SetNumber(at_3824, (int)hp->max);
-    int capacity = 0;
+    capacity = 0;
     form->SetNumber(at_7535, CheckNowRoboUseCapacity(&capacity));
     form->SetNumber(at_7536, capacity);
     int part_defence = MenuUserParam.robo->parts[1].data.robopart.defence;
@@ -9069,10 +9084,9 @@ void MenuPosFormValueSetCharaRobo(ROBO_DATA *robo, int flag) {
     form->SetNumber(at_7478, part_defence);
     local_item_infoview_set(form->GetPartInfo(at_5265), parts);
     int whp[2];
-    float rate = parts->GetWHp(whp);
+    rate = parts->GetWHp(whp);
     if (rate < 0.2f) {
-        red = 0x80 - blink;
-        green = red;
+        red = green = 0x80 - blink;
         if (rate == 0.0f) {
             red = blink + 0x80;
         }
@@ -9085,11 +9099,11 @@ void MenuPosFormValueSetCharaRobo(ROBO_DATA *robo, int flag) {
     }
     form->SetNumber(at_5262, whp[0]);
     form->SetNumber(at_5264, whp[1]);
-    MENUFORMPARTS_TYPE *whp_bar = form->GetPartInfo(at_7539);
+    whp_bar = form->GetPartInfo(at_7539);
     if (whp_bar != NULL) {
         whp_bar->w = (int)(108.0f * rate);
     }
-    MENUFORMPARTS_TYPE *batu = form->GetPartInfo(at_5266);
+    batu = form->GetPartInfo(at_5266);
     if (batu != NULL) {
         batu->draw_flag = 0;
         if (rate == 0.0f) {
@@ -9110,7 +9124,7 @@ void MenuPosFormValueSetCharaRobo(ROBO_DATA *robo, int flag) {
         CMenuItemInfoPt->voice_part->x = 150.0f;
         CMenuItemInfoPt->voice_part->y = -252.0f;
         if (robo->voice_flag != 0) {
-            float sway = 8.0f * sinf(0.06981317f * counter_7509);
+            sway = 8.0f * sinf(0.06981317f * counter_7509);
             CMenuItemInfoPt->voice_part->x += sway;
             CMenuItemInfoPt->voice_part->y -= sway;
         }
@@ -9172,9 +9186,6 @@ int CheckBuildUp(CGameDataUsed *weapon, int *result0, int *result1, int *result2
 
     return 0;
 }
-#ifdef NONMATCHING
-// 98.2% match, 4 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: drafts primer=u64div)
 int BuildUpWeaponTrans(CGameDataUsed *item, int item_no) {
     CDataWeapon *data = GameItemDataManage.GetWeaponData(item_no);
     if (item == NULL) {
@@ -9206,9 +9217,6 @@ int BuildUpWeaponTrans(CGameDataUsed *item, int item_no) {
     GetSaveData()->SetBitFlag(0x31, 1);
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", BuildUpWeaponTrans__FP13CGameDataUsedi);
-#endif
 /**
  *
  * Draws the three texture sections of a weapon name board.
@@ -9231,8 +9239,6 @@ extern s8    backboard_x_repeat_drawnum_7628[5];
 extern s8    backboard_y_repeat_drawnum_7629[3];
 extern s16   mos_repeat_table_x_7694[5];
 extern char *strtbl_7727[7];
-#ifdef NONMATCHING
-// 99.6% match, 16 words off
 #pragma divbyzerocheck on
 void MenuWeaponBuildUpDraw(int &tex_block) {
     if (BuildUpWeaponInfo.mode == 0) {
@@ -9300,7 +9306,7 @@ void MenuWeaponBuildUpDraw(int &tex_block) {
     int step = (height - 40) / num;
     float center = 0.5f * (num - 1.0f);
     int i;
-    for (i = 0; i < num; i++) {
+    for (i = 0; i < BuildUpWeaponInfo.select_num; i++) {
         list_y[i] = center_y - step * (center - i);
     }
     int name_y;
@@ -9453,9 +9459,6 @@ void MenuWeaponBuildUpDraw(int &tex_block) {
     }
 }
 #pragma divbyzerocheck reset
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuWeaponBuildUpDraw__FRi);
-#endif
 extern s8 count_7867;
 extern s8 init_7868;
 
@@ -10248,9 +10251,6 @@ void MenuCharaStatusDraw(int &tex_block) {
         }
     }
 }
-#ifdef NONMATCHING
-// 99.2% match, 6 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: drafts primer=u64div)
 void MenuItemInfoCursorDraw(int &tex_block) {
     if (MenuItemCursorInfo.enable == 0) {
         return;
@@ -10349,9 +10349,6 @@ void MenuItemInfoCursorDraw(int &tex_block) {
     }
     prim->End();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuItemInfoCursorDraw__FRi);
-#endif
 void CMenuItemInfo::KeyStepLocal(int select_key, int push_button, int flag) {
     int select = -1;
 
@@ -11102,8 +11099,6 @@ struct ItemSelectColor {
 
 extern ItemSelectColor at_9055;
 extern char            at_9179[];
-#ifdef NONMATCHING
-// 99.9% match, 15 words off
 void CItemSelect::Draw(void) {
     if (texture == NULL) {
         return;
@@ -11163,8 +11158,8 @@ void CItemSelect::Draw(void) {
                 break;
             }
             DrawOneItem(prim, icon_rect, item_list[index]->item_no, 0, NULL, color.rgba, 0);
+            int item_no;
             int num;
-            s16 item_no;
             num = item_list[index]->GetNum();
             item_no = item_list[index]->item_no;
             if (item_no == 0x137) {
@@ -11245,9 +11240,6 @@ void CItemSelect::Draw(void) {
         MenuDCMsg[0]->DrawMsg();
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", Draw__11CItemSelectFv);
-#endif
 extern char at_9215[];
 extern char at_9216[];
 extern u8   __vt__11CItemSelect[];
@@ -11270,11 +11262,10 @@ void MenuItemSelectInit(mgCMemory *stack, int *tex_block, int mode) {
         select->cursor_x = 0.0f;
         select->scroll = 0.0f;
         select->texture = NULL;
-        select->list_rect.Set(120.0f, mgScreenHeight - 0x10A, 0.0f, 200.0f);
+        select->list_rect.Set(120.0f, (float)(mgScreenHeight - 0x10A), 0.0f, 200.0f);
         float item_left = select->list_rect.left + 20.0f;
-        float item_width = 44.0f;
         float item_top = select->list_rect.top + 370.0f;
-        select->item_rect.Set(item_left, item_top, item_width, 55.0f);
+        select->item_rect.Set(item_left, item_top, 44.0f, 55.0f);
         select->top_line = 0;
         select->cursor = 0;
         select->line_num = 1.0f;

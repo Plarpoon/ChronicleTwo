@@ -48,11 +48,11 @@ extern int           menu_debug_flag;
 extern CDC2Mes      *SphidaMenuMes;
 extern CDC2Mes      *SphidaMenuQus;
 extern CDC2Mes      *SphidaScore;
-extern char          SphidaMenuQusDrawFlag;
-extern char          SphidaInfoMsgDrawFlag;
+extern u8            SphidaMenuQusDrawFlag;
+extern u8            SphidaInfoMsgDrawFlag;
 extern mgCTexture   *SphidaTex2;
 extern mgCTexture   *SphidaCursor;
-extern char          SphidaCursorDrawFlag;
+extern u8            SphidaCursorDrawFlag;
 extern float         SphidaCursorY;
 extern int           SphidaCursorCount;
 extern short         SphidaMenuPhase;
@@ -76,6 +76,11 @@ extern WMAP_AREA_DATA *spi_wmaparea_tbl;
 extern mgCMemory      *spi_wmapstack;
 extern short           MapEnableNum;
 extern SPI_TAG_PARAM   menu_wmap_analyze_tag[];
+
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
 
 // Code (.text)
 int _WMAP_POSNUM(SPI_STACK *stack, int) {
@@ -650,9 +655,10 @@ int CWorldMapMenu::KeyStep() {
     }
     return result;
 }
-#ifdef NONMATCHING
 extern char at_1498__3[];
-// 99.1% match, 46 words off
+static inline void WorldMapCursorDraw(mgCTexture *texture, float *position, float rotation, int alpha) {
+    MenuCursorDraw(texture, position, rotation, 0, alpha, 1.0f);
+}
 void CWorldMapMenu::Draw() {
     mgCDrawPrim *prim = GetMenuPrim();
     int loaded_tex = -1;
@@ -702,7 +708,7 @@ void CWorldMapMenu::Draw() {
             float pulse_color[2][4] = { { 230.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 230.0f, 0.0f } };
             pulse_color[0][3] = 196.0f + 48.0f * sinf(pulse_angle[0]);
             pulse_color[1][3] = 196.0f + 48.0f * sinf(pulse_angle[1]);
-            float pulse_speed[2] = { 0.07853982f, 0.06283185f };
+            float pulse_speed[2] = { 0.07853982f, 0.06283185307f };
             int shift = 0;
             prim->Begin(6);
             prim->Texture(pulse_tex);
@@ -777,14 +783,14 @@ void CWorldMapMenu::Draw() {
     CDC2Mes *ask_mes = MenuDCMsg[2];
     CDC2Mes *list_mes = MenuDCMsg[3];
     if (name_view != 0) {
-        char *name;
+        char *name[3];
         for (int i = 0; i < spi_wmaparea_tblnum; i++) {
             if (area_no == i) {
-                name = spi_wmaparea_tbl[i].name;
+                name[0] = spi_wmaparea_tbl[i].name;
                 break;
             }
         }
-        name_mes->SetMsgItemNo(&name, 1);
+        name_mes->SetMsgItemNo(name, 1);
         name_mes->MakeMsg(0x32);
         name_mes->StepMsg();
         if (now_area != NULL) {
@@ -807,18 +813,19 @@ void CWorldMapMenu::Draw() {
         int frame_y = name_mes->line_pos[0][1] - 0xC;
         int frame_step[4] = { 0x1E, 0, 0x1E, 0 };
         frame_step[1] = name_mes->line_w[0] - 0x1E;
+        int shadow_u = 0;
         mgRect<int> frame(frame_x, frame_y, 0x1E, 0x2E);
         SetSpriteEnv(prim, 0);
         prim->Begin(6);
         prim->Texture(mark_tex);
         for (int i = 0; i < 3; i++) {
             prim->Color(0, 0, 0, 0x2E);
-            int shadow_u = i * 0x1E;
             PrimQuad(prim, mgRect < int > (frame.left + 4, frame.top + 4, frame.right, frame.bottom), mgRect < int > (shadow_u, 0x60, 0x1E, 0x32));
             prim->Color(0x80, 0x80, 0x80, 0x80);
-            PrimQuad(prim, frame, mgRect < int > (i * 0x1E, 0x60, 0x1E, 0x32));
+            PrimQuad(prim, frame, mgRect < int > (shadow_u, 0x60, 0x1E, 0x32));
             frame.left += frame_step[i];
             frame.right = frame_step[i + 1];
+            shadow_u += 0x1E;
         }
         prim->End();
         MenuReloadTexture(loaded_tex, list_mes->texture_block);
@@ -833,10 +840,7 @@ void CWorldMapMenu::Draw() {
             area_y = now_area->name_y;
         }
         list_mes->StepMsg();
-        int put_pos[2] = { 0, 0 };
-        put_pos[0] = (int)(60.0f + area_x);
-        put_pos[1] = (int)area_y;
-        int max_w = 0;
+        int put_pos[2] = { (int)(60.0f + area_x), (int)area_y };        int max_w = 0;
         int total_h = 0;
         for (int i = 0; select_area->pos[i] != NULL; i++) {
             int w = list_mes->GetStrWidth(i);
@@ -883,21 +887,19 @@ void CWorldMapMenu::Draw() {
         CalcMenu1(target_y, &cursor_pos[1], 4.0f, 0.0f, cursor_reset);
         cursor_reset = 0;
         MenuReloadTexture(loaded_tex, cursor_tex->block);
-        MenuCursorDraw(cursor_tex, cursor_pos, 0.0f, 0, 0x80, 1.0f);
+        WorldMapCursorDraw(cursor_tex, cursor_pos, 0.0f, 0x80);
     }
     if (menu_debug_flag != 0) {
         int debug_tex = -1;
+        float box_h = 40.0f;
         MenuReloadTexture(debug_tex, MenuArg.mes_tex_block);
-        DrawMenuFillBox(300.0f, 10.0f, 220.0f, 40.0f, 0x40, 0, 0, 0);
+        DrawMenuFillBox(300.0f, 10.0f, 220.0f, box_h, 0x40, 0, 0, 0);
         CMenuFont font;
         font.SetStr(at_1498__3);
         font.SetPos(0x136, 0xC);
         font.DrawDirect(font.str, font.pos_x, font.pos_y);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumap", Draw__13CWorldMapMenuFv);
-#endif
 inline CWorldMapMenu::CWorldMapMenu() {
     int i;
 
@@ -1404,15 +1406,15 @@ int SphidaMenuKey() {
     MenuDCMsg[2]->StepMsg();
     return 0;
 }
-#ifdef NONMATCHING
 extern float SphidaScoreListY;
 extern float SphidaScoreListBarY;
 extern char at_1937__2[];
 extern char at_1938__2[];
-// 99.1% match, 23 words off
 void SphidaMenuDraw() {
     int list_rect[4];
     mgRect<int> clip;
+    float divisor = 4.0f;
+    float snap = 3.5f;
     if (SphidaMenuPhase == 100) {
         NameRegistDraw();
         return;
@@ -1420,7 +1422,7 @@ void SphidaMenuDraw() {
     if (SubSphidaData == NULL) {
         return;
     }
-    CalcMenu1((float)(SphidaSelect[1] * -0x18), &SphidaScoreListY, 4.0f, 3.5f, SfidaMoveInitFlag);
+    CalcMenu1((float)(SphidaSelect[1] * -0x18), &SphidaScoreListY, divisor, snap, SfidaMoveInitFlag);
     mgCTextureManager *textures = &mgTexManager;
     mgCDrawPrim *prim = GetMenuPrim();
     if (SphidaTex2 != NULL) {
@@ -1442,7 +1444,8 @@ void SphidaMenuDraw() {
             DrawSubGameTitle(SphidaTex, 0, 0x5A, mgScreenHeight - 0x13E, 0x66);
             PrimQuad(prim, SphidaTex, label_x, mgScreenHeight - 0x133, mgRect<int>(0x6C, 0x9E, 0x30, 0x18), 0x80, 0x80, 0x80, 0x80);
         } else {
-            float label_x = 98.0f;
+            float label_x;
+            label_x = 98.0f;
             DrawSubGameTitle(SphidaTex, 0, 0x46, mgScreenHeight - 0x13E, 0x86);
             PrimQuad(prim, SphidaTex, label_x, mgScreenHeight - 0x133, mgRect<int>(0, 0x5C, 0x50, 0x18), 0x80, 0x80, 0x80, 0x80);
         }
@@ -1486,7 +1489,9 @@ void SphidaMenuDraw() {
     }
     if (SphidaCursorDrawFlag && SphidaCursor != NULL) {
         textures->ReloadTexture(SphidaCursor->block, (sceVif1Packet *)NULL);
-        CalcMenu1((float)(list_rect[1] + 0xD + (SphidaSelect[0] - SphidaSelect[1]) * 0x18), &SphidaCursorY, 4.0f, 3.2f, 0);
+        float cursor_div = 4.0f;
+        float cursor_snap = 3.2f;
+        CalcMenu1((float)(list_rect[1] + 0xD + (SphidaSelect[0] - SphidaSelect[1]) * 0x18), &SphidaCursorY, cursor_div, cursor_snap, 0);
         SphidaCursorCount++;
         if (SphidaCursorCount > 60000000) {
             SphidaCursorCount = 0;
@@ -1535,9 +1540,6 @@ void SphidaMenuDraw() {
     }
     SfidaMoveInitFlag = 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumap", SphidaMenuDraw__Fv);
-#endif
 void SphidaScoreViewInit(mgCMemory *memory, int *tex_block, int) {
     int        available = memory->stGetRest();
     u_long128 *top = memory->stGetTop();

@@ -79,11 +79,13 @@ extern char                    at_1348[];
 extern char                    at_2529[];
 static MapJumpMapInfo          MainMapInfo;
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
-#ifdef NONMATCHING
 extern "C" void *__ct__11mgCDrawPrimFv(void *);
-// 99.9% match, 2 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void CStartupEpisodeTitle::DrawEpisode(int mes_tex_block, int frame_tex_block) {
     union { CPreSprite prim; };
 
@@ -122,9 +124,6 @@ void CStartupEpisodeTitle::DrawEpisode(int mes_tex_block, int frame_tex_block) {
     prim.SetScirror(0, 0, mgScreenWidth - 1, mgScreenHeight - 1);
     prim.End();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", DrawEpisode__20CStartupEpisodeTitleFii);
-#endif
 void CStartupEpisodeTitle::Switch(int on) {
     char   *title;
     ClsMes *current;
@@ -1227,10 +1226,13 @@ int SearchMapEventParts(int kind, CMapParts **parts, float *rotation, int unused
     return result;
 }
 #ifdef NONMATCHING
-// 99.6% match, 51 words off
+static inline CMap *ActiveDngMap() {
+    return DngMainScene->GetMap(DngMainScene->active_map);
+}
+// 98.1% match, 14 words off
 int SearchMapFlatPosition(float *out_pos, CAutoMapGen *map_gen) {
-    CMapParts *place_parts;
     int attempt;
+    CMapParts *place_parts;
     float center[4];
     float from[4];
     float to[4];
@@ -1239,14 +1241,14 @@ int SearchMapFlatPosition(float *out_pos, CAutoMapGen *map_gen) {
     int hit_polys[32];
     float hit_points[32][4];
     float found[4];
+    int axis;
     int place_num;
     int poly_num;
     int hit_num;
-    int axis;
     int tries_left;
     CMap *map;
 
-    if ((map = DngMainScene->GetMap(DngMainScene->active_map)) == NULL) {
+    if ((map = ActiveDngMap()) == NULL) {
         return 0;
     }
     place_parts = map->GetPlacPartsTable(&place_num);
@@ -1263,11 +1265,7 @@ int SearchMapFlatPosition(float *out_pos, CAutoMapGen *map_gen) {
         place_num++;
     }
     tries_left = 999;
-    from[3] = 1.0f;
-    to[3] = 1.0f;
-    center[3] = 1.0f;
-    box.min[3] = 1.0f;
-    box.max[3] = 1.0f;
+    box.min[3] = box.max[3] = center[3] = from[3] = to[3] = 1.0f;
     while (1) {
         CMapParts *parts = &place_parts[iRand(place_num)];
         int attr = 0;
@@ -1331,8 +1329,6 @@ int SearchMapFlatPosition(float *out_pos, CAutoMapGen *map_gen) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", SearchMapFlatPosition__FPfP11CAutoMapGen);
 #endif
-#ifdef NONMATCHING
-// 99.6% match, 10 words off
 int GetDungeonEventPoint(float *out_pos, float *out_rot, int kind) {
     float euler[4];
     if (kind == DUNGEON_EVENT_POINT_PLAYER) {
@@ -1391,7 +1387,9 @@ int GetDungeonEventPoint(float *out_pos, float *out_rot, int kind) {
         if (boxes == NULL) {
             return 0;
         }
-        CTreasureBox *box = &boxes->box[boxes->near_box];
+        int near_box = boxes->near_box;
+        int box_no = near_box;
+        CTreasureBox *box = &boxes->box[box_no];
         if (box == NULL) {
             return 0;
         }
@@ -1401,9 +1399,6 @@ int GetDungeonEventPoint(float *out_pos, float *out_rot, int kind) {
     }
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", GetDungeonEventPoint__FPfPfi);
-#endif
 /**
  *
  * Begins a treasure box group list for the current floor.
@@ -1680,9 +1675,6 @@ void AutoSetTreasureBox(int id, float *position, float power) {
 }
 
 extern char at_2159[];
-#ifdef NONMATCHING
-// 99.9% match, 3 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void AutoSetTreasureBox(void) {
     DNG_BATTLE_AREA *area = &DngMainScene->battle_area;
     CTreasureBoxManager *manager = DngMainScene->battle_area.treasure_box;
@@ -1888,9 +1880,6 @@ void AutoSetTreasureBox(void) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", AutoSetTreasureBox__Fv);
-#endif
 int _FLS(SPI_STACK *stack, int argc) {
     FLS_FLOOR_ID = spiGetStackInt(stack++);
     spiGetStackInt(stack);

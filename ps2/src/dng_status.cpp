@@ -46,6 +46,11 @@ extern s8    init_1006;
 #include "subgame.hpp"
 #include "userdata.hpp"
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 void PrintV(int x, int y, int value, mgCTexture *texture, mgRect<int> rect, int digit_count,
             int right_align, int spacing, SP_RGBA *color) {
@@ -211,13 +216,10 @@ void DrawActiveItemCursor(int x, int y, float alpha) {
     sprite.Vertex(corner);
     sprite.End();
 }
-#ifdef NONMATCHING
 extern "C" void __ct__11mgCDrawPrimFv(mgCDrawPrim *);
 extern "C" void PrintV__FiiiP10mgCTexture9mgRect_i_iiiP7SP_RGBA(
     int x, int y, int value, mgCTexture *texture, mgRect<int> *rect,
     int digit_count, int right_align, int spacing, SP_RGBA *color);
-// 99.0% match, 34 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void DrawMainUnitStatusBord(float rate) {
     struct charge_position_data {
         int value[7][2];
@@ -233,8 +235,8 @@ void DrawMainUnitStatusBord(float rate) {
     };
 
     SP_RGBA           color;
-    CPreSprite sprite;
-    CPreSprite spare;
+    union { CPreSprite sprite; };
+    union { CPreSprite spare; };
     charge_position_data charge_position;
     charge_glyph_data charge_glyph;
     status_mask_data status_mask;
@@ -611,9 +613,6 @@ void DrawMainUnitStatusBord(float rate) {
     WarningGage2.rate[2] = whp_rate[1];
     WarningGage2.layout = WARNING_GAGE_LAYOUT_MAIN;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_status", DrawMainUnitStatusBord__Ff);
-#endif
 
 void DrawRoboUnitStatusBord(float rate) {
     int               color[4];

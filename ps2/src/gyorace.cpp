@@ -128,10 +128,14 @@ GYORACE_FISH_INF      fish_inf[6];
 static int            old_cam_no = -1;
 #endif
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 #ifdef NONMATCHING
-// 99.6% match, 17 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
+// 99.6% match, 6 words off
 int sgInitGyoRace(SubGameInfo *info) {
     extern short *GetSystemMesBuffer();
     extern mgCTexture *TEX_SystemEffect1;
@@ -416,7 +420,7 @@ int sgInitGyoRace(SubGameInfo *info) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyorace", sgInitGyoRace__FP11SubGameInfo);
 #endif
 #ifdef NONMATCHING
-// ~1.5% match, 1641 words off
+// ~1.5% match, 1639 rows off, 361 aligned words off
 int sgLoopGyoRace(SubGameInfo *info) {
     extern const unsigned char at_1380__2__DATA[];
     extern const unsigned char at_1696__2__DATA[];
@@ -552,10 +556,11 @@ int sgLoopGyoRace(SubGameInfo *info) {
                     }
                 }
                 GetSaveData();
-                if (fish == hero_no) {
+                int hero = hero_no;
+                if (fish == hero) {
                     if ((unsigned char) progress.state != 3) {
                         state->time = 20.0f * race_cnt;
-                        state->lap_time[fish_inf[hero_no].lap] = state->time - 20.0f * state->lap_start;
+                        state->lap_time[fish_inf[hero].lap] = state->time - 20.0f * state->lap_start;
                     } else if ((unsigned char) progress.state == 3) {
                         state->time = 20.0f * RaceInfo.goal_time[fish];
                         float time = state->lap_time[0];
@@ -626,11 +631,9 @@ int sgLoopGyoRace(SubGameInfo *info) {
                     character->SetMotion((char *) at_1380__2__DATA, 0);
                 }
                 image->kind = 0;
-
                 union {
                     mgRect<int> rect;
                 };
-
                 rect.Set(425, 85, 42, 42);
                 RaceVector coords;
                 coords.q = *(u_long128 *) &rect;
@@ -762,11 +765,9 @@ int sgLoopGyoRace(SubGameInfo *info) {
             mgSetAmbient(old_ambient);
             scene->SetActive(1, 0);
             scene->active_camera = scene->before_camera;
-
             union {
                 CSceneEventData data;
             };
-
             memset(&data, 0, sizeof(data));
             if (OmakeFlag != 0) {
                 scene->RunEvent(352, &data);
@@ -1001,7 +1002,7 @@ int sgEffectDrawGyoRace(SubGameInfo *info) {
     return 0;
 }
 #ifdef NONMATCHING
-// 98.6% match, 42 words off
+// 99.8% match, 8 words off
 #pragma global_optimizer on
 int sgSysDrawGyoRace(SubGameInfo *info) {
     extern ClsMes *GetSystemMessage();
@@ -1102,7 +1103,6 @@ int sgSysDrawGyoRace(SubGameInfo *info) {
     int var_19;
     int *lap;
     int *lane;
-
     mgCTextureManager *textures = &mgTexManager;
     scene = info->scene;
     textures->ReloadTexture( GetSystemMessage()->texture_block, (sceVif1Packet *)0);
@@ -1126,10 +1126,9 @@ int sgSysDrawGyoRace(SubGameInfo *info) {
         if (!(spA0.pos <= limit)) {
             spA0.pos = limit;
         }
-        float width = 326.0f;
-        bar_done = width * (spA0.pos / 16.0f);
+        bar_done = 326.0f * (spA0.pos / 16.0f);
         lane = (int *)((u_char *)&RaceInfo + var_17 + 0x48);
-        DrawMenuFillBox(41.0f + bar_done, 35.0f + (10.0f * (float) *lane), width - bar_done, 2.0f, 0x4A, 0x70, 0xD9, 0x8B);
+        DrawMenuFillBox(41.0f + bar_done, 35.0f + (10.0f * (float) *lane), 326.0f - bar_done, 2.0f, 0x4A, 0x70, 0xD9, 0x8B);
         float filled = 326.0f * (spA0.pos / 16.0f);
         DrawMenuFillBox(41.0f, (float) ((*lane * 0xA) + 0x23), filled, 2.0f, 0x54, 0xE5, 0x8B, 0x29);
         spC0.Set((int)(31.0f + (float) (int)(326.0f * (spA0.pos / 16.0f))), (*lane * 0xA) + 0x1C, 0x12, 0xC);

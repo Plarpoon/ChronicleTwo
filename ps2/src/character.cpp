@@ -169,6 +169,11 @@ int                  _LOD_MODEL_END(SPI_STACK *stack, int argc);
 #include "swordeffect.hpp"
 #include "visualmotion.hpp"
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 void CCharacter2::SetPosition(float *pos) {
     mgCObject::SetPosition(pos);
@@ -1003,9 +1008,6 @@ void CCharacter2::ResetFloor() {
     }
 }
 
-#ifdef NONMATCHING
-// 99.5% match, 23 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void CCharacter2::NormalDrive() {
     float  frame_step;
     float  motion_speed = 1.2f;
@@ -1084,9 +1086,6 @@ void CCharacter2::NormalDrive() {
         motion_status = CHARA_MOTION_STATUS_START;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/character", NormalDrive__11CCharacter2Fv);
-#endif
 void CCharacter2::ShadowStep() {
     int       i;
     mgCFrame *source;

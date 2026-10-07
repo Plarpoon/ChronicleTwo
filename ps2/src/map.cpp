@@ -1465,23 +1465,20 @@ int CMap::GetTrBoxColPoly(CCPoly *polys, float *param, int max) {
     return total;
 }
 
-#ifdef NONMATCHING
-// 99.8% match, 6 words off
 int CMap::GetFixCameraPos(sceVu0FVECTOR pos, sceVu0FVECTOR out_camera_pos) {
     CCameraInfo *selected;
     int camera_no;
     int rect_no;
     CCameraInfo *camera;
 
-    float         segment_length2;
-    float         weight;
     float         nearest_distance2;
-    float         nearest_distance;
     float         distance;
+    float         weight;
     int           segment_no;
     int           projection_num;
+    float         segment_length2;
     int           nearest_projection;
-    int           sum_no;
+    float         nearest_distance;
     sceVu0FVECTOR projection[8];
     sceVu0FVECTOR direction;
     sceVu0FVECTOR offset;
@@ -1528,23 +1525,23 @@ int CMap::GetFixCameraPos(sceVu0FVECTOR pos, sceVu0FVECTOR out_camera_pos) {
         }
 
         mgZeroVector(projection_sum);
-        for (sum_no = 0; sum_no < projection_num; sum_no++) {
-            mgAddVector(projection_sum, projection[sum_no]);
+        for (segment_no = 0; segment_no < projection_num; segment_no++) {
+            mgAddVector(projection_sum, projection[segment_no]);
         }
-        sum_no = 0;
+        segment_no = 0;
         if (projection_num > 0) {
             *(u_long128 *)out_camera_pos = *(u_long128 *)projection[nearest_projection];
             nearest_distance = mgDistVector(out_camera_pos, pos);
         } else {
             nearest_distance = mgDistVector(selected->pos[0], pos);
             *(u_long128 *)out_camera_pos = *(u_long128 *)selected->pos[0];
-            sum_no = 1;
+            segment_no = 1;
         }
-        for (; sum_no < selected->pos_num; sum_no++) {
-            distance = mgDistVector(pos, selected->pos[sum_no]);
+        for (; segment_no < selected->pos_num; segment_no++) {
+            distance = mgDistVector(pos, selected->pos[segment_no]);
             if (distance < nearest_distance) {
                 nearest_distance = distance;
-                *(u_long128 *)out_camera_pos = *(u_long128 *)selected->pos[sum_no];
+                *(u_long128 *)out_camera_pos = *(u_long128 *)selected->pos[segment_no];
             }
         }
         return MAP_FIX_CAMERA_PATH;
@@ -1552,9 +1549,6 @@ int CMap::GetFixCameraPos(sceVu0FVECTOR pos, sceVu0FVECTOR out_camera_pos) {
     *(u_long128 *)out_camera_pos = *(u_long128 *)selected->pos[0];
     return MAP_FIX_CAMERA_POINT;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", GetFixCameraPos__4CMapFPfPf);
-#endif
 
 void CMap::FixCameraPartsOnOff(float *camera_pos) {
     {

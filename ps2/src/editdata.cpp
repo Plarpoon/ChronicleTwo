@@ -259,39 +259,34 @@ void CEditMap::SaveData(CEditData *data) {
         }
     }
 }
-#ifdef NONMATCHING
-// 99.2% match, 23 words off
 void CEditMap::LoadData(CEditData *data) {
-    short *gridPos;
     u8 *in;
-    int remap[kEditPartsCount];
-    EditDataParts *saved;
-    float placePos[4];
-    CEditParts *lower;
-    float placeRot[4];
-    CMapParts *model;
-    int j;
     int m;
-    int i;
-    EditPlaceLog *log;
-    int x;
-    int k;
+    EditDataParts *saved;
     int no;
-    float color[4];
-    CEditParts *placed;
-    CEditGrid *river;
-    CEditParts *part;
-    int unused;
-    int c;
-    CEditPartsInfo *info;
-    int logCount;
-    int unnamed;
+    int remap[kEditPartsCount];
+    short *gridPos;
+    float placePos[4];
     int changed;
-    int z;
+    float placeRot[4];
+    int i;
+    int j;
+    CEditParts *lower;
+    int k;
+    CEditParts *part;
+    int x;
+    int logCount;
+    float color[4];
+    CEditPartsInfo *info;
+    EditPlaceLog *log;
+    CEditParts *placed;
+    int unused;
+    CEditGrid *river;
+    int unnamed;
     logCount = 0;
     saved = data->parts;
     log = data->place_log;
-    for (m = 0; m < place_log_max; m++) {
+    for (m = 0; m < place_log_max; ++m) {
         place_log[m].parts_no = -1;
     }
     for (int slot = 0; slot < kEditPlaceSlotCount; slot++) {
@@ -300,7 +295,7 @@ void CEditMap::LoadData(CEditData *data) {
             place_log[logCount++] = log[slot];
         }
     }
-    for (m = 0; m < kEditPartsCount; m++) {
+    for (m = 0; m < kEditPartsCount; ++m) {
         remap[m] = -1;
     }
     for (int index = 0; index < data->parts_max; index++, saved++) {
@@ -325,9 +320,9 @@ void CEditMap::LoadData(CEditData *data) {
                                 placed->state = EDIT_PARTS_STATE_RIVER;
                                 placed->SetPosition(0.0f, -10000.0f, 0.0f);
                             } else {
-                                model = PlaceEditParts(no, NULL, placePos, placeRot, NULL);
-                                if (model != NULL) {
-                                    CEditParts *part = (CEditParts *)model;
+                                placed = PlaceEditParts(no, NULL, placePos, placeRot, NULL);
+                                if (placed != NULL) {
+                                    CEditParts *part = placed;
                                     if (saved->state == EDIT_PARTS_STATE_PLACED) {
                                         part->state = EDIT_PARTS_STATE_NONE;
                                     } else {
@@ -347,10 +342,10 @@ void CEditMap::LoadData(CEditData *data) {
                                             color[1] = (float)saved->color[i][1] / 128.0f;
                                             color[2] = (float)saved->color[i][2] / 128.0f;
                                             color[3] = 128.0f;
-                                            model->SetColor(i, color);
+                                            placed->SetColor(i, color);
                                         }
                                     }
-                                    model->UpdateColor();
+                                    placed->UpdateColor();
                                 }
                             }
                         }
@@ -376,7 +371,7 @@ void CEditMap::LoadData(CEditData *data) {
             part = &edit_parts[k];
             unnamed = part->name[0] == 0;
             if (!unnamed && part->state == EDIT_PARTS_STATE_PLACED) {
-                for (x = 0; x < logCount; x++) {
+                for (x = 0; x < logCount; ++x) {
                     if (k == place_log[x].base_no) {
                         lower = GetePlaceParts(place_log[x].parts_no);
                         if (lower != NULL && lower->state == EDIT_PARTS_STATE_NONE) {
@@ -388,9 +383,9 @@ void CEditMap::LoadData(CEditData *data) {
                 }
             }
         }
-        in = data->grid;
     } while (changed != 0);
-    for (j = 0; j < grid_max; j++) {
+    in = data->grid;
+    for (j = 0; j < grid_max; ++j) {
         river = grid[j];
         if (river != NULL) {
             if (river->num_x != *in++) {
@@ -402,8 +397,8 @@ void CEditMap::LoadData(CEditData *data) {
             gridPos = (short *)in;
             printf(at_917__3, gridPos[0], gridPos[1], gridPos[2]);
             in += sizeof(EditDataGrid) - 2;
-            for (int x = 0; x < river->num_x; x++) {
-                for (int z = 0; z < river->num_z; z++) {
+            for (int x = 0; x < river->num_x; ++x) {
+                for (int z = 0; z < river->num_z; ++z) {
                     if (*in & 1) {
                         river->SetRiver(x, z);
                     }
@@ -416,9 +411,6 @@ void CEditMap::LoadData(CEditData *data) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editdata", LoadData__8CEditMapFP9CEditData);
-#endif
 /**
  *
  * Returns the culture point value of a placed edit part.

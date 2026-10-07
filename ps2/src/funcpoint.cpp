@@ -731,18 +731,16 @@ CFuncPoint *CFuncPointMngr::Search(char *name) {
 
     return NULL;
 }
-#ifdef NONMATCHING
-// 93.3% match, 102 words off
 int CFuncPointMngr::GetLight(float *sphere, CFuncPoint *out_lights, int max, CFuncPointCheck *check, int mode) {
     float distance[64];
-    CFuncPoint *candidate[64];
-    CFuncPoint *first;
-    CFuncPoint *next;
-    CFuncPoint *point;
     int count;
     int skip_unlit;
+    CFuncPoint *point;
+    CFuncPoint *next;
     int i;
+    CFuncPoint *candidate[64];
     int j;
+    CFuncPoint *first;
 
     if (max <= 0) {
         return 0;
@@ -845,35 +843,31 @@ int CFuncPointMngr::GetLight(float *sphere, CFuncPoint *out_lights, int max, CFu
     }
     for (i = 0; i < max; i++) {
         CFuncPoint *light = candidate[i];
+        CFuncPoint *out = &out_lights[i];
+        float *color = light->fire.color;
         switch (light->type) {
             case FUNC_POINT_PLIGHT:
-                out_lights[i] = *light;
+                *out = *light;
                 break;
             case FUNC_POINT_FIRE:
             case FUNC_POINT_FLARE: {
-                CFuncPoint *out = &out_lights[i];
                 *out = *light;
                 out->type = FUNC_POINT_PLIGHT;
-                CFuncPoint::PlightData *plight = &out->plight;
-                sceVu0ScaleVector(plight->color, light->fire.color, 1.0f);
-                float power = 60.0f * light->scale[1];
-                plight->power = power;
-                plight->range = 8.0f * power;
-                plight->light_type = FUNC_PLIGHT_POINT;
-                plight->light_chara = 1;
-                plight->unk_40 = 1;
-                plight->unk_44 = 0;
-                plight->flicker_type = FUNC_PLIGHT_FLICKER_RANDOM;
-                plight->flicker_depth = 0.2f;
+                sceVu0ScaleVector(out->plight.color, color, 1.0f);
+                out->plight.power = 60.0f * light->scale[1];
+                out->plight.range = 8.0f * out->plight.power;
+                out->plight.light_type = FUNC_PLIGHT_POINT;
+                out->plight.light_chara = 1;
+                out->plight.unk_40 = 1;
+                out->plight.unk_44 = 0;
+                out->plight.flicker_type = FUNC_PLIGHT_FLICKER_RANDOM;
+                out->plight.flicker_depth = 0.2f;
                 break;
             }
         }
     }
     return max;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", GetLight__14CFuncPointMngrFPfP10CFuncPointiP15CFuncPointChecki);
-#endif
 void CFuncPointMngr::Step(int i, CFuncPointCheck *c) { this->UpdateFlag(i, c); }
 
 int CFuncPointMngr::UpdateFlag(int type, CFuncPointCheck *check) {
@@ -1280,13 +1274,12 @@ int GetSeSrcVolPan(
 
     return n;
 }
-#ifdef NONMATCHING
-// 97.9% match, 15 words off
 #pragma divbyzerocheck on
 float GetLightAnimeWeight(CFuncPoint *point, int frame) {
     float depth = point->plight.flicker_depth;
     int period = fptosi(point->plight.flicker_period);
     float weight = 1.0f;
+    int phase;
     switch (point->type) {
         case FUNC_POINT_PLIGHT:
             switch (point->plight.flicker_type) {
@@ -1296,12 +1289,14 @@ float GetLightAnimeWeight(CFuncPoint *point, int frame) {
                     return weight * (1.0f - depth + depth * (float)rand() / 2147483648.0f);
                 case FUNC_PLIGHT_FLICKER_SINE:
                     if (period > 0) {
-                        return weight * (1.0f - 0.5f * depth * (1.0f + sinf(6.2831855f * (float)(frame % period) / (float)period)));
+                        phase = frame % period;
+                        return weight * (1.0f - 0.5f * depth * (1.0f + sinf(6.2831855f * (float)phase / (float)period)));
                     }
                     return weight;
                 case FUNC_PLIGHT_FLICKER_SAW:
                     if (period > 0) {
-                        return weight * (1.0f - depth * (float)(frame % period) / (float)period);
+                        phase = frame % period;
+                        return weight * (1.0f - depth * (float)phase / (float)period);
                     }
                     return weight;
             }
@@ -1313,9 +1308,6 @@ float GetLightAnimeWeight(CFuncPoint *point, int frame) {
     return weight;
 }
 #pragma divbyzerocheck reset
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/funcpoint", GetLightAnimeWeight__FP10CFuncPointi);
-#endif
 
 // Constants (.rodata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/funcpoint", at_475__2__DATA);

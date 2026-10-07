@@ -13,7 +13,6 @@
 #include "mglib.hpp"
 #include "water.hpp"
 
-#ifdef NONMATCHING
 /**
  *
  * Transform, clipping and surface parameters unpacked into the water microprogram.
@@ -47,6 +46,7 @@ struct WaterRenderPacket {
 
 STATIC_ASSERT(sizeof(WaterRenderPacket) == 0x260);
 
+#ifdef NONMATCHING
 /**
  *
  * Header of one grid strip, followed by its positions and slope vectors.
@@ -409,8 +409,6 @@ CWater::CWater() {
     surface_param0 = 0;
     surface_param1 = 0;
 }
-#ifdef NONMATCHING
-// 93.1% match, 143 words off
 int CWater::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_INFO *info) {
     sceVu0FMATRIX      world_screen;
     sceVu0IVECTOR      clear = { 0, 0, 0, 0 };
@@ -425,12 +423,12 @@ int CWater::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_I
     int                size;
 
     mgMulMatrix(world_screen, info->world_screen, matrix);
-    start = (u_int *)GetScrPad();
-    render = (WaterRenderPacket *)start;
-    cursor = (u_int *)render->screen_size;
+    render = (WaterRenderPacket *)(start = (u_int *)GetScrPad());
     info->GetpLightInfo();
     render->dma[0] = MG_DMA_CNT;
-    render->dma[1] = render->dma[2] = render->dma[3] = 0;
+    render->dma[1] = 0;
+    render->dma[2] = 0;
+    render->dma[3] = 0;
     render->vif[0] = 0;
     render->vif[1] = MG_VIF_BASE | 0x3C;
     render->vif[2] = MG_VIF_OFFSET | 0xB4;
@@ -445,10 +443,13 @@ int CWater::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_I
     sceVu0CopyMatrix(render->world_screen, world_screen);
     sceVu0CopyMatrix(render->world, matrix);
     info->scissor = 0;
+    cursor = (u_int *)render->screen_size;
     *(u_long128 *)render->guard_max = *(u_long128 *)info->guard_max;
     *(u_long128 *)render->guard_min = *(u_long128 *)info->guard_min;
-    render->guard_min[0] = render->guard_min[1] = 1.0f;
-    render->guard_max[0] = render->guard_max[1] = 4095.0f;
+    render->guard_min[0] = 1.0f;
+    render->guard_max[0] = 4095.0f;
+    render->guard_min[1] = 1.0f;
+    render->guard_max[1] = 4095.0f;
     *(u_long128 *)render->fog = *(u_long128 *)info->fog.coef;
     render->screen_size[0] = mgScreenWidth;
     render->screen_size[1] = mgScreenHeight - 1;
@@ -463,7 +464,9 @@ int CWater::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_I
     color[1] = surface_param1;
     *(u_long128 *)render->surface_params = *(u_long128 *)color;
     render->vif[3] = MG_VIF_UNPACK_V4_32 | (((u_int)(cursor + 16 - render->vif) / 4 - 1) << MG_VIF_NUM_SHIFT);
-    cursor[16] = cursor[17] = cursor[18] = 0;
+    cursor[16] = 0;
+    cursor[17] = 0;
+    cursor[18] = 0;
     cursor[19] = MG_VIF_MSCAL;
     render->dma[0] |= (cursor + 20 - render->vif) / 4;
     flags = 0;
@@ -486,26 +489,34 @@ int CWater::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_I
         flags |= 0x20;
     }
     cursor[20] = MG_DMA_CNT | 10;
-    cursor[21] = cursor[22] = 0;
+    cursor[21] = 0;
+    cursor[22] = 0;
     cursor[23] = MG_VIF_UNPACK_V4_32 | (1 << MG_VIF_NUM_SHIFT) | 0x26;
     cursor[24] = flags;
-    cursor[25] = cursor[26] = cursor[27] = 0;
-    cursor[28] = cursor[29] = cursor[30] = 0;
+    cursor[25] = 0;
+    cursor[26] = 0;
+    cursor[27] = 0;
+    cursor[28] = 0;
+    cursor[29] = 0;
+    cursor[30] = 0;
     cursor[31] = MG_VIF_DIRECT | 8;
     cursor[32] = MG_GIFTAG_EOP | 3;
     cursor[33] = 1 << MG_GIFTAG_NREG_SHIFT;
     cursor[34] = 0xE;
     cursor[35] = 0;
-    cursor[36] = cursor[37] = 0;
+    cursor[36] = 0;
+    cursor[37] = 0;
     cursor[38] = MG_GS_PRMODECONT;
     cursor[39] = 0;
-    prmode = ((info->attr->fog != 0 && info->fog_enable != 0) << 5) | 0x158;
+    prmode = (((info->attr->fog && info->fog_enable) != 0) << 5) | 0x158;
     cursor[40] = prmode;
     cursor[41] = 0;
     cursor[42] = SCE_GS_PRMODE;
     cursor[43] = 0;
-    fog_color = info->fog.r | (info->fog.g << 8) | (info->fog.b << 16);
-    if (info->attr->fog >= 2) {
+    fog_color = info->fog.r;
+    fog_color |= info->fog.g << 8;
+    fog_color |= info->fog.b << 16;
+    if (info->attr->fog > 1) {
         if (info->attr->fog == 2) {
             fog_color = 0;
         }
@@ -517,22 +528,21 @@ int CWater::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_I
     cursor[45] = 0;
     cursor[46] = SCE_GS_FOGCOL;
     cursor[47] = 0;
-    end = cursor + 48;
-    env = draw_env;
-    if (env == NULL) {
+    cursor += 48;
+    if (draw_env != NULL) {
+        env = draw_env;
+    } else {
         env = &info->draw_env[0];
     }
-    end += SetDrawEnvGifTag((u_long128 *)end, info, env) * 4;
-    end[0] = MG_DMA_RET;
-    end[1] = end[2] = end[3] = 0;
-    end += 4;
-    size = (end - start) / 4;
+    cursor += SetDrawEnvGifTag((u_long128 *)cursor, info, env) * 4;
+    cursor[0] = MG_DMA_RET;
+    cursor[1] = 0;
+    cursor[2] = 0;
+    cursor[3] = 0;
+    size = (cursor + 4 - start) / 4;
     SendDMA(packet, size);
     return size;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", CreateRenderInfoPacket__6CWaterFPUiPA4_fP13mgRENDER_INFO);
-#endif
 int CWater::Draw(u_int *tag, float (*matrix)[4], mgCDrawManager *draw_manager) {
     if (draw_manager == NULL) {
         draw_manager = &mgDrawManager;
@@ -563,7 +573,7 @@ int CWater::Draw(u_int *tag, float (*matrix)[4], mgCDrawManager *draw_manager) {
     return 0;
 }
 #ifdef NONMATCHING
-// 57.9% match, 455 words off
+// 59.6% match, 447 words off
 u_int CWater::CreatePacket(mgCDrawManager *draw_manager) {
     static u_int       prog_vif[4] __attribute__((aligned(16))) = {0, 0, 0, MG_VIF_MSCAL | 0x2};
     static u_int       progf_vif[4] __attribute__((aligned(16))) = {0, 0, 0, MG_VIF_MSCNT};

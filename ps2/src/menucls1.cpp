@@ -42,6 +42,11 @@ extern char         at_1513__3[];
 extern char         at_1514__3[];
 extern char         at_1623__3[];
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 char *GetHatena() {
     if (init_895 == 0) {
@@ -1046,9 +1051,6 @@ int CheckRoboShieldKit(CUserDataManager *manager, CGameDataUsed *item, int apply
 
 extern u32 st_bittable_1654[7];
 
-#ifdef NONMATCHING
-// 99.9% match, 2 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 int MenuUseItemCheckFunc(CGameDataUsed *item, CItemUseTarget *target, int apply) {
     if (item == NULL || target == NULL) {
         return 0;
@@ -1342,9 +1344,6 @@ int MenuUseItemCheckFunc(CGameDataUsed *item, CItemUseTarget *target, int apply)
     }
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucls1", MenuUseItemCheckFunc__FP13CGameDataUsedP14CItemUseTargeti);
-#endif
 int CMenuItemUse::CheckItemUseEnable(CGameDataUsed *item, int kind, void *ptr) {
     int target_data[2];
 

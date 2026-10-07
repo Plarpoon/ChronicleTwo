@@ -160,13 +160,15 @@ extern char at_1019__4[];
 extern char at_1020__3[];
 extern char at_1021__3[];
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
-#ifdef NONMATCHING
-// 99.5% match, 8 words off
 void CDngFreeMap::Initialize() {
     float left = 120.0f;
     float top = 138.0f;
-    float bottom = 286.0f;
     float right = 420.0f;
     active = 1;
     unk_9 = 0;
@@ -174,7 +176,7 @@ void CDngFreeMap::Initialize() {
     floor_manager = NULL;
     save_dungeon = NULL;
     mode = DNGMAP_MODE_MENU;
-    view_rect.Set(left, top, right, bottom);
+    view_rect.Set(left, top, right, 286.0f);
     mark_num = 0;
     next_room_no = -1;
     user_room_no = -1;
@@ -195,9 +197,6 @@ void CDngFreeMap::Initialize() {
     fade_time = -1;
     fade_step = 0.0f;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Initialize__11CDngFreeMapFv);
-#endif
 void CDngFreeMap::InitTexture() {
     map_tex = NULL;
     last_tex = NULL;
@@ -221,9 +220,6 @@ void CDngFreeMap::CalcGlidPutPos(GLID_INFO *glid, float &x, float &y, int ignore
         }
     }
 }
-#ifdef NONMATCHING
-// 99.8% match, 2 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void CDngFreeMap::CheckIsViewMove(int x, int y, float &moveX, float &moveY) {
     int clampedX = x;
     int clampedY = y;
@@ -242,9 +238,6 @@ void CDngFreeMap::CheckIsViewMove(int x, int y, float &moveX, float &moveY) {
     moveX = (float)(clampedX - x);
     moveY = (float)(clampedY - y);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", CheckIsViewMove__11CDngFreeMapFiiRfRf);
-#endif
 void CDngFreeMap::SetNextRoomPos(GLID_INFO *room) {
     float room_x;
     float room_y;
@@ -598,7 +591,7 @@ unsigned int CDngFreeMap::DrawGlidCheck(GLID_INFO *glid) {
     return mask;
 }
 #ifdef NONMATCHING
-// 92.9% match, 157 words off
+// 93.9% match, 90 words off
 void CDngFreeMap::DrawRoomOne(mgRect<float> rect, DNGMAP_ROOM_INFO *room, unsigned int glid_check, int alpha, float bright) {
     if (room == NULL || !(rect.left <= (float)(mgScreenWidth + 20)) || !(rect.top <= (float)(mgScreenHeight + 30))) {
         return;
@@ -797,7 +790,7 @@ int CheckGeoramaMateria(TRESURE_BOX_FLOOR_INFO *tresure, int floor, int *materia
     return materia_num;
 }
 #ifdef NONMATCHING
-// 97.9% match, 80 words off
+// 98.0% match, 77 words off
 static void DrawDngRoomInfo(DNGMAP_ROOM_INFO *room) {
     if (room != NULL && Floor_InfoTex != NULL) {
         if (dngfloor_infoview != 0) {

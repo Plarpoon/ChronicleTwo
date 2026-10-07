@@ -33,8 +33,8 @@ CWaveTable::CWaveTable() {
 CWaveTable::~CWaveTable() {
 }
 
-#ifdef NONMATCHING
-// 91.7% match, 43 words off
+static inline float WaveSample(float height) { return height; }
+
 void CWaveTable::CreateTexture(mgCTexture *output_texture) {
     if (output_texture == NULL) {
         return;
@@ -52,16 +52,16 @@ void CWaveTable::CreateTexture(mgCTexture *output_texture) {
     prim.AlphaBlendEnable(1);
 
     float position[4];
-    position[3] = 0.0f;
-    position[2] = 0.0f;
     float cell_width = (float)output_texture->width / 23.0f;
     float cell_height = (float)output_texture->height / 23.0f;
+    position[3] = 0.0f;
+    position[2] = 0.0f;
     float origin_x = (float)mgScreenOffx;
     float origin_y = (float)mgScreenOffy;
     prim.Begin2();
 
     float row_offset = 0.0f;
-    for (int row = 0; row < WAVE_TABLE_DIM - 1; row++) {
+    for (int row = 0; row < WAVE_TABLE_DIM - 1; row++, row_offset += 1.0f) {
         prim.BeginPrim2(4, 0x4141U, 0U, 4);
         float column_offset = 0.0f;
         for (int column = 0; column < WAVE_TABLE_DIM; column++) {
@@ -71,9 +71,10 @@ void CWaveTable::CreateTexture(mgCTexture *output_texture) {
             if (column >= WAVE_TABLE_DIM - 1) {
                 sample_column = 0;
             }
-            int next_column = (sample_column + 1) % WAVE_TABLE_DIM;
             float *line = height[0][row] + current * (WAVE_TABLE_DIM * WAVE_TABLE_DIM);
-            float intensity = 40.0f + 540.0f * (line[sample_column] - line[next_column]);
+            int next_column = (sample_column + 1) % WAVE_TABLE_DIM;
+            float intensity = line[sample_column] - WaveSample(line[next_column]);
+            intensity = 40.0f + 540.0f * intensity;
             if (!(intensity <= 200.0f)) {
                 intensity = 200.0f;
             }
@@ -88,7 +89,8 @@ void CWaveTable::CreateTexture(mgCTexture *output_texture) {
             prim.Data4(position);
 
             float *next_line = height[0][(row + 1) % WAVE_TABLE_DIM] + current * (WAVE_TABLE_DIM * WAVE_TABLE_DIM);
-            intensity = 40.0f + 540.0f * (next_line[sample_column] - next_line[next_column]);
+            intensity = next_line[sample_column] - next_line[next_column];
+            intensity = 40.0f + 540.0f * intensity;
             if (intensity < 0.0f) {
                 intensity = 0.0f;
             }
@@ -105,7 +107,6 @@ void CWaveTable::CreateTexture(mgCTexture *output_texture) {
             column_offset += 1.0f;
         }
         prim.EndPrim2();
-        row_offset += 1.0f;
     }
 
     prim.End2();
@@ -118,9 +119,6 @@ void CWaveTable::CreateTexture(mgCTexture *output_texture) {
     prim.End();
     mgSetPkFrameBuffer(-1, -1, -1, -1);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/wavetable", CreateTexture__10CWaveTableFP10mgCTexture);
-#endif
 
 void CWaveTable::GetEffect() {
     static int cnt = 0;

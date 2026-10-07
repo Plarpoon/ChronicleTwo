@@ -304,6 +304,15 @@ static char **mons_attr_list[8] = {
     mons_attr_tbl6,
 };
 #endif
+#ifndef NONMATCHING
+extern char **mons_attr_list[8];
+extern char  *dung_progtxt_badge_already[8];
+extern char  *dung_progtxt_badge_get[8];
+extern char  *dung_progtxt_gkey_get[8];
+extern char  *dung_progtxt_steal[8];
+extern char  *dung_progtxt_getitem_overnum[8][2];
+extern char  *dung_progtxt_getitem[8][2];
+#endif
 
 // Code (.text)
 void CRocketLauncher::SetPos(float *pos, float *muzzle_vec, float *direction_vec) {
@@ -1277,8 +1286,9 @@ void CPullItem::Draw(mgCTexture *texture) {
         sprite.End();
     }
 }
-#ifdef NONMATCHING
-// 99.6% match, 12 words off
+static inline CMonsterBox *MonsterBox() {
+    return &DngUserData->monster_box;
+}
 void CPullItem::Step() {
     CCharacter2  *player;
     sceVu0FVECTOR collect_pos;
@@ -1428,8 +1438,11 @@ void CPullItem::Step() {
             }
         }
         if (type == PULL_ITEM_BADGE) {
-            char *&badge_name = mons_attr_list[LanguageCode][item_no];
-            if (DngUserData->monster_box.IsChange(item_no) != 0) {
+            CMonsterBox *box = MonsterBox();
+            char **badge_ptr = mons_attr_list[LanguageCode];
+            badge_ptr += item_no;
+            char *&badge_name = *badge_ptr;
+            if (box->IsChange(item_no) != 0) {
                 sprintf(badge_message, dung_progtxt_badge_already[LanguageCode], badge_name);
                 MsgTaskMan.Print(badge_message, 90, 8, 0);
                 state = PULL_ITEM_STATE_FREE;
@@ -1553,9 +1566,6 @@ void CPullItem::Step() {
         afterWire[wire_index].SetPos(pos);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Step__9CPullItemFv);
-#endif
 void CPullItem::IsGet(float *player_pos) {
     if (state == PULL_ITEM_STATE_FREE || can_get == 0 || get_delay > 0) {
         return;

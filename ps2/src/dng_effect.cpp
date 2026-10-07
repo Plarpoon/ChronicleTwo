@@ -44,6 +44,11 @@ extern int  chill_tex_rect_910[6][3];
 extern char at_1051[];
 extern char at_1214__2[];
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 /**
  *
@@ -207,7 +212,6 @@ void CChillAfterHit::Step() {
         }
     }
 }
-#ifdef NONMATCHING
 extern "C" mgCDrawPrim *__ct__11mgCDrawPrimFv(mgCDrawPrim *);
 static inline void LocalPrimCorner(int *out, float *corner, float *center, float half_w, float half_h, float angle, float scale) {
     float shift_x;
@@ -229,8 +233,6 @@ static inline void LocalPrimCorner(int *out, float *corner, float *center, float
     out[2] = (int)corner[2];
     out[3] = 0;
 }
-// 99.7% match, 17 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: drafts primer=u64div)
 int LocalTransWorldPrimPos(int (*corners)[4], float *pos, float width, float height, float angle) {
     float screen[4];
     float corner[4][4];
@@ -265,9 +267,6 @@ int LocalTransWorldPrimPos(int (*corners)[4], float *pos, float width, float hei
     }
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", LocalTransWorldPrimPos__FPA4_iPffff);
-#endif
 void CChillAfterHit::Draw() {
     float vec[4];
     int   sprite0[4];
@@ -517,15 +516,19 @@ void CFireAfterHit::Step() {
 }
 #ifdef NONMATCHING
 extern int gb_tbl_1052[3];
-// 98.6% match, 54 words off
+// 99.5% match, 23 words off
 void CFireAfterHit::Draw(void) {
+    int middle;
     int i;
+    int newest;
+    int tail_alpha;
+    int oldest;
+    FIRE_AFTER_HIT_FLAME *fire;
     float vec[4];
     int puff0[4];
     int puff1[4];
     int main0[4];
     int main1[4];
-    FIRE_AFTER_HIT_FLAME *fire;
     int k;
 
     if (active == 0) {
@@ -564,14 +567,14 @@ void CFireAfterHit::Draw(void) {
     prim.AlphaBlend(2);
     prim.Begin(6);
     prim.Texture(TEX_ExFx_FIRE);
-    for (int i = 0; i < flame_num; i++, fire++) {
+    for (i = 0; i < flame_num; i++, fire++) {
         if (fire->alpha > 0 && !(0 < fire->delay)) {
             if (mgTransWorldPrim3DSprite(main0, main1, fire->pos, fire->size, fire->size, 0) != 0) {
                 if (fire->age >= 3) {
                     FIRE_AFTER_HIT_TRAIL *row = trail[i];
-                    int oldest = fire->trail_head - 3;
-                    int middle = fire->trail_head - 2;
-                    int newest = fire->trail_head - 1;
+                    oldest = fire->trail_head - 3;
+                    middle = fire->trail_head - 2;
+                    newest = fire->trail_head - 1;
                     if (oldest < 0) {
                         oldest += FIRE_AFTER_HIT_TRAIL_MAX;
                     }
@@ -601,7 +604,7 @@ void CFireAfterHit::Draw(void) {
                 sceVu0SubVector(vec, fire->pos, vec);
                 vec[3] = 1.0f;
                 mgTransWorldPrim3DSprite(puff0, puff1, vec, 1.75f * fire->size, 1.75f * fire->size, 0);
-                int tail_alpha = fire->alpha * 2;
+                tail_alpha = fire->alpha * 2;
                 if (tail_alpha > 0xFF) {
                     tail_alpha = 0xFF;
                 }
@@ -1746,8 +1749,6 @@ void CHitEffectImage::Draw() {
         }
     }
 }
-#ifdef NONMATCHING
-// 97.5% match, 4 words off
 void CHitEffectImage::DrawBord(void) {
     CPreSprite prim;
     int corner0[4];
@@ -1763,7 +1764,7 @@ void CHitEffectImage::DrawBord(void) {
     prim.Coord(1);
     prim.AlphaBlend(2);
     prim.Begin(3);
-    prim.Texture(TEX_SystemEffect2);
+    prim.Texture(TEX_SystemEffect1);
     prim.AlphaTestEnable(1);
     BattleEffectPrim *spark = this->spark;
     int i;
@@ -1799,11 +1800,12 @@ void CHitEffectImage::DrawBord(void) {
             spark++;
         }
     }
-    prim.End();
+    switch (i) {
+    case 0:
+    default:
+        prim.End();
+    }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", DrawBord__15CHitEffectImageFv);
-#endif
 void CHitEffectImage::DrawSpark(float size) {
     CPreSprite prim;
     int        tail_screen[4];
@@ -1892,8 +1894,6 @@ void CFlushEffect::Draw() {
         prim.End();
     }
 }
-#ifdef NONMATCHING
-// 96.5% match, 3 words off
 void CFlushEffect::Step() {
     switch (active) {
     case 0:
@@ -1903,7 +1903,7 @@ void CFlushEffect::Step() {
             follow->GetWorldPosition0(pos);
         }
         size += grow;
-        alpha = alpha - fptosi(fade_speed);
+        alpha -= (short)fade_speed;
         if (alpha <= 0) {
             alpha = 0;
             active = 0;
@@ -1912,9 +1912,6 @@ void CFlushEffect::Step() {
         break;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Step__12CFlushEffectFv);
-#endif
 void CPowerLine::CreatPrim() {
     float             range = radius;
     BattleEffectPrim *streak = prim + next;
@@ -2125,8 +2122,6 @@ void CDeadEffect::Step() {
         }
     }
 }
-#ifdef NONMATCHING
-// ~41.7% match, 169 words off
 void CDeadEffect::Draw(void) {
     union { CPreSprite prim_draw; };
     float world[4];
@@ -2147,14 +2142,18 @@ void CDeadEffect::Draw(void) {
     prim_draw.Coord(1);
     prim_draw.AlphaBlend(2);
     prim_draw.Begin(3);
-    prim_draw.Texture(TEX_SystemEffect2);
+    prim_draw.Texture(TEX_SystemEffect1);
     prim_draw.AlphaTestEnable(1);
     int u;
     int v;
     int span;
     BattleEffectPrim *fleck = prim;
     for (int i = 0; i < prim_max; i++) {
-        if (fleck->life > 0) {
+        if (fleck->life <= 0) {
+            fleck++;
+            continue;
+        }
+        {
             if (fleck->kind == 0) {
                 u = 0x80;
                 v = 0x40;
@@ -2163,10 +2162,10 @@ void CDeadEffect::Draw(void) {
             if (fleck->kind == 1) {
                 u = 0xA0;
                 v = 0x40;
+                span = 0x1F;
                 if (fleck->life % 3 == 1) {
                     v = 0x60;
                 }
-                span = 0x1F;
             }
             sceVu0AddVector(world, fleck->pos, pos);
             world[3] = 1.0f;
@@ -2183,25 +2182,25 @@ void CDeadEffect::Draw(void) {
                 corner_t_l[3] = corner1[3];
                 switch (i % 7) {
                 case 0:
-                    prim_draw.Color(0x80, 0, 0, fptosi(fleck->rate * fade));
+                    prim_draw.Color(0x80, 0, 0, (int)(fleck->rate * fade));
                     break;
                 case 1:
-                    prim_draw.Color(0, 0x80, 0, fptosi(fleck->rate * fade));
+                    prim_draw.Color(0, 0x80, 0, (int)(fleck->rate * fade));
                     break;
                 case 2:
-                    prim_draw.Color(0, 0, 0x80, fptosi(fleck->rate * fade));
-                    break;
-                case 3:
-                    prim_draw.Color(0x80, 0x80, 0, fptosi(fleck->rate * fade));
-                    break;
-                case 4:
-                    prim_draw.Color(0x80, 0, 0x80, fptosi(fleck->rate * fade));
+                    prim_draw.Color(0, 0, 0x80, (int)(fleck->rate * fade));
                     break;
                 case 5:
-                    prim_draw.Color(0, 0x80, 0x80, fptosi(fleck->rate * fade));
+                    prim_draw.Color(0, 0x80, 0x80, (int)(fleck->rate * fade));
+                    break;
+                case 3:
+                    prim_draw.Color(0x80, 0x80, 0, (int)(fleck->rate * fade));
+                    break;
+                case 4:
+                    prim_draw.Color(0x80, 0, 0x80, (int)(fleck->rate * fade));
                     break;
                 case 6:
-                    prim_draw.Color(0x80, 0x80, 0x80, fptosi(fleck->rate * fade));
+                    prim_draw.Color(0x80, 0x80, 0x80, (int)(fleck->rate * fade));
                     break;
                 }
                 prim_draw.TextureCrd(u, v);
@@ -2222,9 +2221,6 @@ void CDeadEffect::Draw(void) {
     }
     prim_draw.End();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Draw__11CDeadEffectFv);
-#endif
 void CMapEffect_Sprite::Set(float *spawn_pos) {
     sceVu0CopyVector(pos, spawn_pos);
     sceVu0CopyVector(target, spawn_pos);
@@ -2281,9 +2277,6 @@ void CMapEffect_Sprite::Step(mgCCamera *camera) {
         life -= 1;
     }
 }
-#ifdef NONMATCHING
-// 99.7% match, 2 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: drafts primer=u64div)
 void CMapEffect_Sprite::Draw(mgCCamera *camera, CPreSprite *sprite) {
     float world[4];
     int corner0[4];
@@ -2359,9 +2352,6 @@ void CMapEffect_Sprite::Draw(mgCCamera *camera, CPreSprite *sprite) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Draw__17CMapEffect_SpriteFP9mgCCameraP10CPreSprite);
-#endif
 void CMapEffectsManeger::Init_LightBoll(mgCMemory *memory, int count) {
     sprite_num = count;
     u32 blocks;
@@ -2827,9 +2817,6 @@ void CWeaponElement::Draw() {
         }
     }
 }
-#ifdef NONMATCHING
-// 99.9% match, 3 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: drafts primer=u64div)
 void CWeaponElement::Init_Cold(float *center) {
     int j;
     int i;
@@ -2860,9 +2847,6 @@ void CWeaponElement::Init_Cold(float *center) {
         frame[j] = fptosi((5.0f * (float)rand()) / 2.1474836e9f) * 0x30;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Init_Cold__14CWeaponElementFPf);
-#endif
 void CWeaponElement::Step_Cold() {
     int dead;
     int i;
@@ -2991,9 +2975,6 @@ void CWeaponElement::Draw_Cold() {
 
     prim.End();
 }
-#ifdef NONMATCHING
-// 100.0% match, 0 words off, only with every NONMATCHING draft in the unit compiled
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: drafts primer=u64div)
 void CWeaponElement::Init_Wind(float *center) {
     int i;
     int j;
@@ -3026,9 +3007,6 @@ void CWeaponElement::Init_Wind(float *center) {
         frame[j] = fptosi((5.0f * (float)rand()) / 2.1474836e9f) * 0x30;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Init_Wind__14CWeaponElementFPf);
-#endif
 void CWeaponElement::Step_Wind() {
     int dead;
     int i;
@@ -3170,9 +3148,6 @@ void CWeaponElement::Draw_Wind() {
 
     prim.End();
 }
-#ifdef NONMATCHING
-// 100.0% match, 0 words off, only with every NONMATCHING draft in the unit compiled
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: drafts primer=u64div)
 void CWeaponElement::Init_Fire(float *center) {
     int i;
     int j;
@@ -3204,9 +3179,6 @@ void CWeaponElement::Init_Fire(float *center) {
         frame[j] = fptosi((5.0f * (float)rand()) / 2.1474836e9f) * 0x30;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", Init_Fire__14CWeaponElementFPf);
-#endif
 void CWeaponElement::Step_Fire() {
     int dead;
     int i;
@@ -3507,8 +3479,6 @@ void CWeaponElement::Draw_Thunder(void) {
     }
     prim.End();
 }
-#ifdef NONMATCHING
-// 90.9% match, 37 words off
 int CreatSmoothPass(sceVu0FVECTOR *out, sceVu0FVECTOR *ring, int point_num, int division, int start, int ring_size) {
     sceVu0FMATRIX coefficients;
     sceVu0FMATRIX points;
@@ -3520,23 +3490,24 @@ int CreatSmoothPass(sceVu0FVECTOR *out, sceVu0FVECTOR *ring, int point_num, int 
         return 0;
     }
     float quarter = 0.25f;
-    float half = 0.5f;
-    basis[1][0] = 1.0f;
+    float half;
+    half = 0.5f;
     basis[3][0] = 0.0f;
+    basis[1][0] = 1.0f;
     basis[2][1] = 0.0f;
     basis[0][0] = -quarter / half;
     basis[0][1] = 1.5f;
-    basis[3][2] = 0.0f;
-    basis[0][2] = (-half - quarter) / half;
-    basis[2][3] = 0.0f;
-    basis[3][3] = 0.0f;
     basis[2][0] = basis[0][0];
-    basis[2][2] = half;
-    basis[1][3] = -half;
-    basis[0][3] = half;
     basis[1][1] = -(quarter + 1.0f) / half;
     basis[3][1] = 1.0f;
+    basis[3][2] = 0.0f;
+    basis[0][2] = (-half - quarter) / half;
+    basis[2][2] = half;
     basis[1][2] = 2.0f;
+    basis[0][3] = half;
+    basis[1][3] = -basis[0][3];
+    basis[2][3] = 0.0f;
+    basis[3][3] = 0.0f;
     int written = 0;
     for (int segment = 0; segment < point_num - 1; segment++) {
         if (segment > 0 && segment < point_num - 2) {
@@ -3591,25 +3562,21 @@ int CreatSmoothPass(sceVu0FVECTOR *out, sceVu0FVECTOR *ring, int point_num, int 
         float t = 0.0f;
         float step;
         while (t < 1.0f - (step = 1.0f / (division - 1.0f))) {
+            powers[0] = t * (t * t);
             powers[3] = 1.0f;
             powers[1] = t * t;
-            powers[0] = t * (t * t);
             powers[2] = t;
             sceVu0ApplyMatrix(result, coefficients, powers);
-            float *entry = out[written];
-            entry[0] = result[0];
-            entry[1] = result[1];
-            entry[2] = result[2];
-            entry[3] = 1.0f;
+            for (int j = 0; j < 3; j++) {
+                out[written][j] = result[j];
+            }
+            out[written][3] = 1.0f;
             t += step;
             written++;
         }
     }
     return written;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_effect", CreatSmoothPass__FPA4_fPA4_fiiii);
-#endif
 float unitRotation(mgCFrame *frame, float target, float speed) {
     float rot[4];
     float diff;

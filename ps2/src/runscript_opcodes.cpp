@@ -1144,15 +1144,15 @@ int _SET_ESCAPE_RATE(RS_STACKDATA *stack, int argc) {
     }
 
     float scale = GetStackFloat(stack);
-    monster->tbl->escape_rate[0] = fptosi((float) monster->base_tbl->escape_rate[0] * scale);
-    monster->tbl->escape_rate[1] = fptosi((float) monster->base_tbl->escape_rate[1] * scale);
+    monster->tbl->escape_rate0 = fptosi((float) monster->base_tbl->escape_rate0 * scale);
+    monster->tbl->escape_rate1 = fptosi((float) monster->base_tbl->escape_rate1 * scale);
 
-    if ((u8) monster->tbl->escape_rate[0] > 100) {
-        monster->tbl->escape_rate[0] = 100;
+    if ((u8) monster->tbl->escape_rate0 > 100) {
+        monster->tbl->escape_rate0 = 100;
     }
 
-    if ((u8) monster->tbl->escape_rate[1] > 100) {
-        monster->tbl->escape_rate[1] = 100;
+    if ((u8) monster->tbl->escape_rate1 > 100) {
+        monster->tbl->escape_rate1 = 100;
     }
 
     return 1;
@@ -3353,8 +3353,6 @@ int _SET_DEAD_START(RS_STACKDATA *args, int argc) {
     sndSePlay(nowScene->se_battle_id, 1, 0);
     return 1;
 }
-#ifdef NONMATCHING
-// 99.9% match, 4 words off
 int _SET_DEAD_OFF(RS_STACKDATA *args, int argc) {
     sceVu0FVECTOR position;
     sceVu0FVECTOR velocity;
@@ -3373,8 +3371,8 @@ int _SET_DEAD_OFF(RS_STACKDATA *args, int argc) {
         return 0;
     }
     nowMonster->dead_alpha = 128;
-    radius = 3.0f * nowMonster->body_width;
-    height = 2.0f * nowMonster->body_height;
+    radius = 3.0f * nowMonster->GetBodyWidth();
+    height = 2.0f * nowMonster->GetBodyHeight();
     if (height >= 60.0f) {
         height = 60.0f;
     }
@@ -3455,9 +3453,6 @@ int _SET_DEAD_OFF(RS_STACKDATA *args, int argc) {
     sndSePlay(nowScene->se_battle_id, 20, 0);
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_DEAD_OFF__FP12RS_STACKDATAi);
-#endif
 /**
  *
  * Clears the monster catch state when its throw ends.

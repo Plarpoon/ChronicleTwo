@@ -218,6 +218,11 @@ extern short               MenuMapInfoSave_DngNo;
 
 static const int kDungeonNoOffset = 0x1C5B4;
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 void InitMenuReturnMsg(mgCMemory *stack) {
     CDC2Mes *window;
@@ -1639,9 +1644,6 @@ int MenuOptionKey() {
 void MenuOptionDraw() {
     MenuPosData->FormDraw();
 }
-#ifdef NONMATCHING
-// 99.6% match, 6 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void LocalFunc_AdjustScrlBar(MENUFORMPARTS_TYPE **parts, int *pos, int *size, int top,
                              float line_num, float show_num, int jump) {
     if (parts[0] != NULL && parts[1] != NULL && parts[2] != NULL) {
@@ -1659,9 +1661,6 @@ void LocalFunc_AdjustScrlBar(MENUFORMPARTS_TYPE **parts, int *pos, int *size, in
         parts[2]->y = parts[1]->y + parts[1]->h;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuop", LocalFunc_AdjustScrlBar__FPP18MENUFORMPARTS_TYPEPiPiiffi);
-#endif
 void CSaveMenuClass::SetDlInfoMsg(int load, int show) {
     int message_no = 0xC08;
 
@@ -2492,9 +2491,6 @@ int CSaveMenuClass::KeyStep(void) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuop", KeyStep__14CSaveMenuClassFv);
 #endif
-#ifdef NONMATCHING
-// 99.9% match, 2 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void SaveFileListDraw(int &tex_block, float *pos, int alpha) {
     ScreenPos linePos[13];
     SAVEDATA_INFO *info[13];
@@ -2630,9 +2626,6 @@ void SaveFileListDraw(int &tex_block, float *pos, int alpha) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuop", SaveFileListDraw__FRiPfi);
-#endif
 void SetMCIconData(u_int *pack, int slot) {
     SaveIconSet icons = at_2609__2;
 
@@ -3030,7 +3023,7 @@ static inline MC_CARD_INFO *GetSubGameCard(CMemoryCardManager *manager) {
     }
 }
 #ifdef NONMATCHING
-// 99.5% match, 29 words off
+// 99.7% match, 17 words off
 int SubGameSaveKey(void) {
     MC_CARD_INFO *card;
     u32 stepResult;
@@ -3287,8 +3280,8 @@ int SubGameSaveKey(void) {
         case SUB_SAVE_LOAD_DONE:
             if (pushed != 0) {
                 MenuSePlay(SYSTEM_SE_DECIDE);
-                SubGameSaveLoadStatus = 1;
                 MenuArg.end_code = 0x13;
+                SubGameSaveLoadStatus = 1;
             }
             break;
         case SUB_SAVE_LOAD_MISSING:
@@ -3346,8 +3339,8 @@ int SubGameSaveKey(void) {
             case SUB_SAVE_CARD_READY:
                 MemoryCardPtr->SetFuncNo(MC_FUNC_CHECK_OMAKE);
                 break;
-            case SUB_SAVE_QUIT_ASK_LOAD:
             case SUB_SAVE_QUIT_ASK:
+            case SUB_SAVE_QUIT_ASK_LOAD:
                 window->MsgPreset(0xB, LanguageCode);
                 window->SetAbsPos(5);
                 window->SetMsgCursor(1);
@@ -3369,8 +3362,8 @@ int SubGameSaveKey(void) {
             case SUB_SAVE_WRITE_DONE:
                 SubGameCFGAnalyze(at_3201__3);
                 break;
-            case SUB_SAVE_WRITE_FAILED_FULL:
             case SUB_SAVE_WRITE_FAILED:
+            case SUB_SAVE_WRITE_FAILED_FULL:
                 window->MsgPreset(0xA, LanguageCode);
                 window->SetAbsPos(5);
                 window->MakeMsg(0xBC1);
@@ -3442,6 +3435,8 @@ int SubGameSaveKey(void) {
                     window->SetMsgVolumeNo(values, 0x10);
                 }
                 window->SetAbsPos(5);
+                break;
+            case 1001:
                 break;
         }
         SubGameSaveOrLoadPhase = next;

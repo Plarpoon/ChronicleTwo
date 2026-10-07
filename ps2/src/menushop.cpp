@@ -54,6 +54,11 @@ extern SPI_TAG_PARAM    menu_shop_tag[];
 extern CShopMenu       *CShopMenuPt;
 extern CMenuQuestView  *MenuQuestView;
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 int GetDonyShopLineUp(int *item_list, int *status) {
     CInventUserData *invent_data = GetInventUserDataPtr();
@@ -1764,9 +1769,6 @@ extern float              QuestListTopY;
 extern float              QuestCommentWinX;
 extern s16                QuestReactionCommentGyouNum;
 extern int                menu_debug_questselect;
-#ifdef NONMATCHING
-// 99.8% match, 12 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: drafts primer=u64div)
 int CMenuQuestView::KeyStep() {
     MenuCommonInfo->CheckSelectKey();
     int lr_key = MenuCommonInfo->CheckLRKey();
@@ -1940,9 +1942,6 @@ int CMenuQuestView::KeyStep() {
     QuestCursorPos[1] += ((float)((select - top) * 0x22 + 0x52) + 3.0f - QuestCursorPos[1]) / QuestMoveRate;
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", KeyStep__14CMenuQuestViewFv);
-#endif
 
 void MenuNPCQuestViewInit(mgCMemory *stack, int *tex_block, int view_mode) {
     Menu_Memo_ViewMode = 0;
@@ -1984,8 +1983,6 @@ extern s8    randam_checktbl[];
 extern short tbl_2469[7][12];
 extern short at_2470[12];
 extern char  at_2629__2[];
-#ifdef NONMATCHING
-// 100.0% match, 0 words off, only with every NONMATCHING draft in the unit compiled
 void MenuNPCQuestViewDraw() {
     int mark_u;
     if (Tex_QuestMemo == NULL) {
@@ -2262,9 +2259,6 @@ void MenuNPCQuestViewDraw() {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", MenuNPCQuestViewDraw__Fv);
-#endif
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", dony_shoplist__DATA);

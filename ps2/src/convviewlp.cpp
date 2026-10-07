@@ -260,11 +260,9 @@ static void InitSaveFileInfoTablePtr() {
         SaveFileInfoTableSizeConvert[i] = 0;
     }
 }
-#ifdef NONMATCHING
-// 99.8% match, 55 words off
 int SaveDataConvertLoop() {
     MC_DIR_ENTRY dir_entries[64];
-    MC_DIR_ENTRY inside_entries[16];
+    struct { MC_DIR_ENTRY e[16]; char pad[1056]; } inside;
     char         path[128];
     int          card_type, free_size, formatted;
     int          command, result, existing_count;
@@ -324,9 +322,9 @@ int SaveDataConvertLoop() {
                     strcpy(existing_names[file], dir_entries[i].name);
                     int number = atoi(&dir_entries[i].name[16]);
                     if ((u8) dir_entries[i].name[16] != 0) {
-                        existing_numbers[i] = number;
+                        existing_numbers[listed] = number;
                     } else {
-                        existing_numbers[i] = 32;
+                        existing_numbers[listed] = 32;
                     }
                     printf(at_1161__3, listed, number);
                     listed++;
@@ -381,7 +379,7 @@ int SaveDataConvertLoop() {
                 sceMcSync(0, NULL, NULL);
                 if (type == SAVEDATA_CONVERT_TYPE_GAME) {
                     strcpy(path, SaveFileInfoTablePtr[file].name);
-                    sceMcGetDir(SlotSelect, 1, path, 0, 16, inside_entries);
+                    sceMcGetDir(SlotSelect, 1, path, 0, 16, inside.e);
                     sceMcSync(0, &command, &result);
                     if (0 < result) {
                         sprintf(new_name, dkcl_name.text, number);
@@ -398,7 +396,7 @@ int SaveDataConvertLoop() {
                 }
                 if (type == SAVEDATA_CONVERT_TYPE_ALBUM || type == SAVEDATA_CONVERT_TYPE_OMAKE) {
                     strcpy(path, SaveFileInfoTablePtr[file].name);
-                    sceMcGetDir(SlotSelect, 1, path, 0, 16, inside_entries);
+                    sceMcGetDir(SlotSelect, 1, path, 0, 16, inside.e);
                     sceMcSync(0, &command, &result);
                     sceMcRename(SlotSelect, 1, path, target);
                     sceMcSync(0, NULL, NULL);
@@ -418,9 +416,6 @@ int SaveDataConvertLoop() {
     }
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/convviewlp", SaveDataConvertLoop__Fv);
-#endif
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/convviewlp", at_1072__4__DATA);

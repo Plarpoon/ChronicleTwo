@@ -81,12 +81,10 @@ void CDynamicAnime::ResetPosition() {
         *(u_long128 *) &old_vertex[i] = *(u_long128 *) &now_vertex[i];
     }
 }
-#ifdef NONMATCHING
 static inline float WindRand(int *seed) {
     *seed = *seed * 0x10DCD + 1;
     return (float)*seed / -2147483648.0f;
 }
-// 99.9% match, 6 words off
 void CDynamicAnime::Step() {
     sceVu0FMATRIX   matrix;
     sceVu0FVECTOR   pull;
@@ -102,7 +100,6 @@ void CDynamicAnime::Step() {
     CDACollision   *volume;
     int             i;
     int             j;
-    int             iteration;
 
     if (vertex_num <= 0) {
         return;
@@ -121,7 +118,7 @@ void CDynamicAnime::Step() {
         velocity[i][3] = 0.0f;
         mgAddVector(now_vertex[i], velocity[i]);
     }
-    for (iteration = 0; iteration < 6; iteration++) {
+    for (j = 0; j < 6; j++) {
         for (i = 0; i < bind_vertex_num; i++) {
             bound = &bind_vertex[i];
             BindPosition(now_vertex[bound->vertex_id[0]], now_vertex[bound->vertex_id[1]], bound->length, bound->rate);
@@ -194,9 +191,6 @@ void CDynamicAnime::Step() {
         FramePose(frame[i], &frame_pose[i]);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Step__13CDynamicAnimeFv);
-#endif
 int CDACollision::CheckHit(float *position) { return 0; }
 
 void CDynamicAnime::SetWind(float power, float *direction) {

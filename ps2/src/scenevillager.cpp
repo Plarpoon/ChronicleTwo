@@ -274,8 +274,12 @@ int CScene::DrawChara(int index, int pass) {
     mgActiveLighting(prev_lighting, 0);
     return 1;
 }
-#ifdef NONMATCHING
-// 95.3% match, 8 words off
+static inline float ShadowAbs(float value) {
+    if (value < 0.0f) {
+        return -value;
+    }
+    return value;
+}
 int CScene::DrawCharaShadow(int index) {
     float light_dir[4][4];
     float light_color[4][4];
@@ -285,16 +289,9 @@ int CScene::DrawCharaShadow(int index) {
         return 0;
     }
     mgGetLight(light_dir, light_color);
-    float direction[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-    direction[0] = light_dir[0][0];
-    direction[1] = light_dir[1][0];
-    direction[2] = light_dir[2][0];
-    float height = direction[1];
-    if (height < 0.0f) {
-        height = -height;
-    }
-    direction[1] = height;
-    if (height < 0.8f) {
+    float direction[4] = {light_dir[0][0], light_dir[1][0], light_dir[2][0], 0.0f};
+    direction[1] = ShadowAbs(direction[1]);
+    if (direction[1] < 0.8f) {
         direction[1] = 0.8f;
     }
     float position[4] = {0.0f, -10.0f, 0.0f, 0.0f};
@@ -308,9 +305,6 @@ int CScene::DrawCharaShadow(int index) {
     chara->DrawShadowDirect();
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenevillager", DrawCharaShadow__6CSceneFi);
-#endif
 void CScene::DrawExclamationMark(mgCFrame *frame) {
     float position[4];
     int   index;

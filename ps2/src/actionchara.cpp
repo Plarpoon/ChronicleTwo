@@ -2283,9 +2283,6 @@ int CActionChara::RoboBikeMoveIF(int mode) {
     RockOn();
     return 1;
 }
-#ifdef NONMATCHING
-// 99.6% match, 3 words off
-// Matches 100% with compiler state: every NONMATCHING draft in the unit compiled (state.py: drafts)
 int CActionChara::RoboAirMoveIF(int unk, int mode) {
     sceVu0FVECTOR position;
     sceVu0FVECTOR move_velocity;
@@ -2403,7 +2400,7 @@ int CActionChara::RoboAirMoveIF(int unk, int mode) {
         if (arm != NULL) {
             arm->SetRotation(0.0f, unitRotation(arm->CObjectFrame::frame, 0.0f, 16.0f), 0.0f);
         }
-        if (move_x != 0.0f || move_z != 0.0f) {
+        if (move_x != float(0.0) || move_z != 0.0f) {
             sceVu0FVECTOR movement;
             float angle = atan2f(move_x, move_z);
             SetRotation(0.0f, unitRotation(CObjectFrame::frame, angle, turn_speed), 0.0f);
@@ -2428,9 +2425,6 @@ int CActionChara::RoboAirMoveIF(int unk, int mode) {
     RockOn();
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RoboAirMoveIF__12CActionCharaFii);
-#endif
 int CActionChara::MonsterMoveIF() {
     sceVu0FVECTOR position;
     sceVu0FVECTOR rotation;

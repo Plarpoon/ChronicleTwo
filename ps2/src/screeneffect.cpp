@@ -11,7 +11,7 @@
 
 // Code (.text)
 #ifdef NONMATCHING
-// 66.8% match, 330 words off
+// 67.6% match, 328 words off
 void DepthOfField(int levels, float *depths, mgCTexture *work_texture, float strength) {
     if (work_texture == NULL) {
         return;

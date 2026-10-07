@@ -41,9 +41,9 @@ void CameraCtrlParam::SetFixDist(float distance) {
     max_dist = distance;
     min_dist = distance;
 }
-#ifdef NONMATCHING
-// 61.3% match, 38 words off
-CCameraControl::CCameraControl() : mgCCameraFollow(40.0f, 30.0f, 0.0f, 8.0f) {
+extern "C" CameraCtrlParam &__as__15CameraCtrlParamFRC15CameraCtrlParam(CameraCtrlParam *destination, const CameraCtrlParam *source);
+
+CCameraControl::CCameraControl() : mgCCameraFollow(40.0f, float(30.0), 0.0f, float(8.0)) {
     mgCCameraFollow(40.0f, 30.0f, 0.0f, 8.0f);
     active_param = 0;
     control_on = 0;
@@ -62,11 +62,9 @@ CCameraControl::CCameraControl() : mgCCameraFollow(40.0f, 30.0f, 0.0f, 8.0f) {
     p->no_check = 0;
     rot_reverse = 0;
     InitStatus();
-    default_param = *GetActiveParam();
+    __as__15CameraCtrlParamFRC15CameraCtrlParam(&default_param, GetActiveParam());
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/cameracontrol", __ct__14CCameraControlFv);
-#endif
+
 CameraCtrlParam *CCameraControl::GetActiveParam() {
     return &param[active_param];
 }

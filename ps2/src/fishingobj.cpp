@@ -152,6 +152,11 @@ static void SetObjectBind(FISH_BIND &bind, FISH_POINT &first, FISH_POINT &second
 }
 #endif
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 void SetFishingMode(int value) {
     NowMode = value;
@@ -340,10 +345,6 @@ void InitRodPoint(mgCFrame *reference, mgCFrame *rod) {
     ShowHari = 1;
 }
 
-static void GetTriPose(sceVu0FMATRIX pose, sceVu0FVECTOR points[3], int axes[3]);
-#ifdef NONMATCHING
-// 96.1% match, 12 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 static void GetTriPose(sceVu0FMATRIX pose, sceVu0FVECTOR points[3], int axes[3]) {
     float first[4];
     float second[4];
@@ -373,9 +374,6 @@ static void GetTriPose(sceVu0FMATRIX pose, sceVu0FVECTOR points[3], int axes[3])
     if (axes[1] < 0) sceVu0ScaleVector(matrix[second_axis], matrix[second_axis], -1.0f);
     if (axes[2] < 0) sceVu0ScaleVector(matrix[normal_axis], matrix[normal_axis], -1.0f);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", GetTriPose__FPA4_fPA4_fPi);
-#endif
 void GetHariPos(float *pos, float *old_pos) {
     *(u_long128 *) pos = *(u_long128 *) LinePoint[kLinePointNum - 1].pos;
     *(u_long128 *) old_pos = *(u_long128 *) LinePoint[kLinePointNum - 1].old_pos;
@@ -785,8 +783,10 @@ static void BindFishObj() {
     }
 }
 #ifdef NONMATCHING
-// 95.7% match, 240 words off
+// 95.8% match, 164 words off
 void RodStep(CScene *scene, u_long128 *poly_buffer) {
+    sceVu0FVECTOR forward;
+    float remaining;
     CCPoly *polys = (CCPoly *)poly_buffer;
     CFishObj *hari = GetActiveHariObj();
     CFishObj *uki = GetActiveUkiObj();
@@ -799,7 +799,6 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
     *(u_long128 *)((RodPoint + 12)) = *(u_long128 *)(frame_pos);
     *(u_long128 *)((RodPoint + 16)) = *(u_long128 *)(frame_pos);
     mgZeroVector((RodPoint + 20));
-
     if (CastingLureFlag != 0) {
         FlyingPoint.velo[1] -= 0.6f;
         float cast_distance = mgDistVectorXZ(ReleasePoint, CastingPoint);
@@ -824,7 +823,7 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
                 mgAddVector(LinePoint[i].velo, pull);
             }
         }
-        float remaining = mgDistVectorXZ(CastingPoint, FlyingPoint.pos);
+        remaining = mgDistVectorXZ(CastingPoint, FlyingPoint.pos);
         if (remaining < mgDistVectorXZ(flight_step)) {
             flight_step[0] = 0.0f;
             flight_step[2] = 0.0f;
@@ -839,7 +838,6 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
         mgZeroVector(LinePoint[63].velo);
         --CastingLureTime;
     }
-
     for (int i = 2; i < 5; i++) {
         *(u_long128 *)(((FISH_POINT *)RodPoint)[i].old_pos) = *(u_long128 *)(((FISH_POINT *)RodPoint)[i].pos);
         if (BattleFlag == 0) {
@@ -860,7 +858,6 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
     if (uki != 0) {
         uki->MovePoint();
     }
-
     for (int pass = 0; pass < 2; pass++) {
         if (BattleFlag != 0) {
             BindPosition((RodPoint + kRodTipIndex), FishPoint.pos, BattleLineDist, 0.2f);
@@ -936,7 +933,6 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
         ((FISH_POINT *)RodPoint)[i].velo[1] += -0.6f;
         ((FISH_POINT *)RodPoint)[i].pos[3] = 1.0f;
     }
-
     sceVu0FVECTOR curve[5];
     *(u_long128 *)curve[0] = *(u_long128 *)(RodPoint + 0);
     *(u_long128 *)curve[1] = *(u_long128 *)(RodPoint + 12);
@@ -948,7 +944,6 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
         sceVu0FMATRIX joint_matrix;
         sceVu0FMATRIX parent_world;
         sceVu0FMATRIX parent_inverse;
-        sceVu0FVECTOR forward;
         sceVu0FVECTOR before;
         sceVu0FVECTOR after;
         sceVu0CopyMatrix(joint_matrix, (*joint)->trans_matrix);
@@ -972,7 +967,6 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
         sceVu0Normalize(joint_matrix[2], joint_matrix[2]);
         (*joint)->SetTransMatrix(joint_matrix);
     }
-
     for (int axis = 0; axis < 3; axis++) line_box.max[axis] += 20.0f;
     line_box.max[3] = 1.0f;
     for (int axis = 0; axis < 3; axis++) line_box.min[axis] -= 20.0f;

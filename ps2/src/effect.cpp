@@ -24,6 +24,11 @@ extern int             g_eff_entry_flag;
 extern SPI_TAG_PARAM   effm_tag[];
 extern char            at_848__2[];
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 /**
  *
@@ -188,7 +193,6 @@ void CEffect::SetEffect(EFFECT_PARAM *param) {
     tex_count = 0;
     memcpy(&this->param, param, sizeof(EFFECT_PARAM));
 }
-#ifdef NONMATCHING
 static inline void GravityAbs(float *step) {
     if (*step < 0.0f) {
         *step = -*step;
@@ -207,7 +211,6 @@ static inline void GravityPull(float *pos, float *target, float *step) {
         }
     }
 }
-// ~39.1% match, 299 words off
 void CEffect::Step(int steps) {
     int                channel;
     sceVu0FVECTOR      gravity_step;
@@ -305,14 +308,16 @@ void CEffect::Step(int steps) {
             life = param.life;
             if (life > 0.0f) {
                 float per_frame = timing * (amount / life);
-                *value += per_frame * (float)frame;
+                per_frame *= (float)frame;
+                *value += per_frame;
             }
             break;
         case EFFECT_CHANGE_SUB:
             life = param.life;
             if (life > 0.0f) {
-                float per_frame = timing * (amount / life);
-                *value -= per_frame * (float)frame;
+                rate = timing * (amount / life);
+                rate *= (float)frame;
+                *value -= rate;
             }
             break;
         case EFFECT_CHANGE_ADD_HEAD:
@@ -321,9 +326,11 @@ void CEffect::Step(int steps) {
                 duration = life * timing;
                 rate = amount / duration;
                 if ((float)frame < duration) {
-                    *value += rate * (float)frame;
+                    rate *= (float)frame;
+                    *value += rate;
                 } else {
-                    *value += rate * duration;
+                    rate *= duration;
+                    *value += rate;
                 }
             }
             break;
@@ -333,28 +340,34 @@ void CEffect::Step(int steps) {
                 duration = life * timing;
                 rate = amount / duration;
                 if ((float)frame > duration) {
-                    *value -= rate * ((float)frame - duration);
+                    rate *= ((float)frame - duration);
+                    *value -= rate;
                 }
             }
             break;
         case EFFECT_CHANGE_ADD_HEAD_TAIL:
-            life = param.life;
-            duration = life * timing;
+            int total = param.life;
+            life = total;
             if (life > 0.0f) {
+                duration = life * timing;
                 rate = amount / duration;
                 if ((float)frame < duration) {
-                    *value += rate * (float)frame;
+                    rate *= (float)frame;
+                    *value += rate;
                 } else if ((float)frame > life - duration) {
-                    *value += rate * (float)(param.life - frame);
+                    rate *= (float)(total - frame);
+                    *value += rate;
                 } else {
-                    *value += rate * duration;
+                    rate *= duration;
+                    *value += rate;
                 }
             }
             break;
         case EFFECT_CHANGE_SINE:
             life = param.life;
             if (life > 0.0f) {
-                *value += (float)(amount * sin((frame * (360.0f / (life * timing))) * 0.017453293005625408));
+                duration = life * timing;
+                *value += (float)(amount * sin((frame * (360.0f / duration)) * 0.017453293005625408));
             }
             break;
         }
@@ -383,9 +396,6 @@ void CEffect::Step(int steps) {
         tex_rect[3] = param.tex_rect[tex_index][3];
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/effect", Step__7CEffectFi);
-#endif
 void CEffect::Draw() {
     mgCDrawPrim prim;
     int         corner_a[4];

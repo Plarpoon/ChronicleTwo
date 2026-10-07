@@ -330,8 +330,11 @@ void EndLightingEdit() {
 int IsLightingEditMode() { return LEditFlag; }
 #ifdef NONMATCHING
 int mgTransWorldScreen(int *out, float *position);
-// ~27.7% match, 983 words off
+// ~27.9% match, 980 words off
 void LightingEdit(CScene *scene) {
+    float angle;
+    int row;
+    float *selected;
     if (!LEditFlag) {
         if (GamePad__2.Down2(PAD_R3)) {
             LEditFlag = 1;
@@ -351,10 +354,9 @@ void LightingEdit(CScene *scene) {
     prim.Vertex(10, 10, 0);
     prim.Vertex(150, 300, 0);
     prim.End();
-
     int light_no = map->active_light_no;
     CMapLightingInfo *light = ((CMapInfo *)map)->GetLightingInfo(light_no);
-    float *selected = NULL;
+    selected = NULL;
     int selected_index = 0;
     const char *channel[3] = {"R", "G", "B"};
     const char *axis[3] = {"X", "Y", "Z"};
@@ -362,12 +364,11 @@ void LightingEdit(CScene *scene) {
     const char *tail[2] = {"  ", "<<"};
     char text[4096];
     const char *pages[4] = {"<- BG & AMB ", "<-Dir Light ", "<-    Fog   ", "<-   File   "};
-    int row = LightSel[LightType];
+    row = LightSel[LightType];
     char *end = text;
     end += sprintf(end, "%sLightSet [%d]\n", cursor[row == 0], light_no);
     if (LightType != 1) end += sprintf(end, "%s%s\n", cursor[row == 1], pages[LightType]);
     else end += sprintf(end, "%s%s%d->\n", cursor[row == 1], pages[LightType], DirLightNo);
-
     if (LightType == LIGHTING_EDIT_PAGE_BG_AMBIENT) {
         int edit = row - 2;
         float *colors[3] = {light->bg_color, light->bg_color2, light->ambient};
@@ -646,7 +647,7 @@ void LightingEdit(CScene *scene) {
     }
     mgCCamera *camera = scene->GetCamera(scene->active_camera);
     if (camera != NULL) {
-        float angle = 0.05f * -GamePad__2.GetRXf2();
+        angle = 0.05f * -GamePad__2.GetRXf2();
         float magnitude = angle;
         if (angle < 0.0f) magnitude = -angle;
         if (!(magnitude <= 0.001f)) ((CCameraControl *)camera)->Rotate(angle);

@@ -76,6 +76,11 @@ struct ROOM_LINK_POINT {
     int y; /**< Vertical grid position. */
 };
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 void CMiniMapSymbol::SetMapInfo(CMap *new_map, CAutoMapParts *new_auto_map_parts, int width, int height,
                                 float cell_width, float cell_depth) {
@@ -164,9 +169,6 @@ void CMiniMapSymbol::DrawSymbolClose() {
         blink_cnt = 0;
     }
 }
-#ifdef NONMATCHING
-// 99.9% match, 4 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void CMiniMapSymbol::DrawSymbol(float *pos, int symbol) {
     float delta[4];
 
@@ -197,12 +199,6 @@ void CMiniMapSymbol::DrawSymbol(float *pos, int symbol) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/automap", DrawSymbol__14CMiniMapSymbolFPfi);
-#endif
-#ifdef NONMATCHING
-// 99.9% match, 2 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void CMiniMapSymbol::DrawSymbol_Chara(CCharacter2 *chara) {
     float pos[4];
     float rot[4];
@@ -245,11 +241,6 @@ void CMiniMapSymbol::DrawSymbol_Chara(CCharacter2 *chara) {
     sprite.SetScirror(0, 0, mgScreenWidth - 1, mgScreenHeight - 1);
     sprite.End();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/automap", DrawSymbol_Chara__14CMiniMapSymbolFP11CCharacter2);
-#endif
-#ifdef NONMATCHING
-// 96.6% match, 12 words off
 void CMiniMapSymbol::Draw(float *pos) {
     if (map == NULL) {
         return;
@@ -287,10 +278,12 @@ void CMiniMapSymbol::Draw(float *pos) {
             int tile_v = (tile / 16) * 16;
             parts->GetPosition(part_pos);
             sceVu0SubVector(delta, part_pos, center);
-            CAutoMapParts *cells = grid;
+            float rate_z = delta[2] / cell_d;
+            float rate_x = delta[0] / cell_w;
+            float screen_x = (float)x + 16.0f * rate_x;
+            float screen_y = y + rate_z * 16.0f;
             float sizeD = cell_d;
-            float screen_x = (float)x + 16.0f * (delta[0] / cell_w);
-            float screen_y = (float)y + 16.0f * (delta[2] / sizeD);
+            CAutoMapParts *cells = grid;
             if (cells != NULL) {
                 s16 width = grid_w;
                 CAutoMapParts *cell = &cells[width * (int)(part_pos[2] / sizeD) + (int)(part_pos[0] / sizeD)];
@@ -314,9 +307,6 @@ void CMiniMapSymbol::Draw(float *pos) {
     sprite.SetScirror(0, 0, mgScreenWidth - 1, mgScreenHeight - 1);
     sprite.End();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/automap", Draw__14CMiniMapSymbolFPf);
-#endif
 int CHealingPoint::CheckHealingTime() {
     if (enable == 0) {
         return 0;
@@ -621,9 +611,6 @@ void CAutoMapGen::SetRoadLinkMark(int x, int y, int direction) {
     (grid + ny * grid_w)[nx].link |= (u8) direction;
     (grid + ny * grid_w)[nx].road_link |= (u8) direction;
 }
-#ifdef NONMATCHING
-// 99.9% match, 9 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void CAutoMapGen::RoomLink(int from, int to) {
     ROOM_LINK_POINT starts[64];
     int dx;
@@ -843,12 +830,6 @@ void CAutoMapGen::RoomLink(int from, int to) {
         }
     } while (joined == 0);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/automap", RoomLink__11CAutoMapGenFii);
-#endif
-#ifdef NONMATCHING
-// 99.5% match, 25 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void CAutoMapGen::CreatDummyRoot(int room_no) {
     int tries = 0;
     int x;
@@ -984,9 +965,6 @@ void CAutoMapGen::CreatDummyRoot(int room_no) {
         }
     } while (joined == 0);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/automap", CreatDummyRoot__11CAutoMapGenFi);
-#endif
 void CAutoMapGen::CreatTermParts() {
     CAutoMapParts *grid;
     int            open_dirs;

@@ -542,25 +542,26 @@ int mgCTextureManager::GetRemainVRAM(int block) {
 
 #pragma global_optimizer reset
 #pragma schedule reset
-#ifdef NONMATCHING
-// 44.2% match, 453 words off
+#pragma schedule off
+#pragma optimization_level 2
 mgCTexture *mgCTextureManager::EnterTexture(int block, char *name, u_long128 **image, int width,
                                             int height, int bpp, u_long128 *clut, u_long tex1,
                                             int swizzled) {
-    char             full_name[0x20];
-    u_long128       *no_image[MG_TEXTURE_LEVEL_MAX];
-    mgCTextureBlock *texture_block;
-    mgCTexture      *texture;
     sceGsTex1       *lod;
+    char             full_name[0x20];
+    int              rest;
+    int              vram;
+    mgCTexture      *texture;
+    int              power;
     int              psm;
+    mgCTextureBlock *texture_block;
     int              tw;
     int              th;
-    int              tbw;
-    int              power;
     int              i;
+    int              tbw;
     int              level_blocks;
     int              last_level;
-    int              vram;
+    u_long128       *no_image[MG_TEXTURE_LEVEL_MAX];
 
     strcpy(full_name, name);
     strcat(full_name, name_suffix);
@@ -578,8 +579,8 @@ mgCTexture *mgCTextureManager::EnterTexture(int block, char *name, u_long128 **i
     if (image == NULL) {
         image = no_image;
 
-        for (i = 0; i < MG_TEXTURE_LEVEL_MAX; i++) {
-            image[i] = NULL;
+        for (int k = 0; k < MG_TEXTURE_LEVEL_MAX; k++) {
+            image[ k ] = NULL;
         }
     }
 
@@ -592,20 +593,20 @@ mgCTexture *mgCTextureManager::EnterTexture(int block, char *name, u_long128 **i
     texture->Initialize();
 
     switch (bpp) {
-        case 32:
-            psm = SCE_GS_PSMCT32;
-            break;
-        case 24:
-            psm = SCE_GS_PSMCT24;
-            break;
-        case 16:
-            psm = SCE_GS_PSMCT16;
+        case 4:
+            psm = SCE_GS_PSMT4;
             break;
         case 8:
             psm = SCE_GS_PSMT8;
             break;
-        case 4:
-            psm = SCE_GS_PSMT4;
+        case 16:
+            psm = SCE_GS_PSMCT16;
+            break;
+        case 24:
+            psm = SCE_GS_PSMCT24;
+            break;
+        case 32:
+            psm = SCE_GS_PSMCT32;
             break;
         default:
             return NULL;
@@ -614,8 +615,8 @@ mgCTexture *mgCTextureManager::EnterTexture(int block, char *name, u_long128 **i
     tw = 0;
     th = 0;
 
-    for (power = width; power >= 2; power /= 2) {
-        tw++;
+    for (power = width; power >= 2; tw++) {
+        power /= 2;
     }
 
     for (power = 1, i = 0; i < tw; i++) {
@@ -626,8 +627,8 @@ mgCTexture *mgCTextureManager::EnterTexture(int block, char *name, u_long128 **i
         tw++;
     }
 
-    for (power = height; power >= 2; power /= 2) {
-        th++;
+    for (power = height; power >= 2; th++) {
+        power /= 2;
     }
 
     for (power = 1, i = 0; i < th; i++) {
@@ -648,13 +649,20 @@ mgCTexture *mgCTextureManager::EnterTexture(int block, char *name, u_long128 **i
         tbw = 1;
     }
 
-    // 24-bit pixels occupy 32 bits each in VRAM.
-    level_blocks = (bpp == 24 ? 32 : bpp) * width * height / 256 / 8;
+    level_blocks = bpp;
+    if (bpp == 24) {
+        level_blocks = 32;
+    }
+    level_blocks = level_blocks * (width * height) / 256 / 8;
     texture->image_blocks = 0;
     last_level = -1;
 
-    if (psm == SCE_GS_PSMT4 || psm == SCE_GS_PSMT8 || psm == SCE_GS_PSMCT16 ||
-        psm == SCE_GS_PSMCT32 || psm == SCE_GS_PSMCT24) {
+    switch (psm) {
+    case SCE_GS_PSMCT24:
+    case SCE_GS_PSMCT32:
+    case SCE_GS_PSMCT16:
+    case SCE_GS_PSMT8:
+    case SCE_GS_PSMT4:
         for (i = 0; i < MG_TEXTURE_LEVEL_MAX; i++) {
             if (image[i] == NULL) {
                 last_level = i - 1;
@@ -688,12 +696,14 @@ mgCTexture *mgCTextureManager::EnterTexture(int block, char *name, u_long128 **i
             texture->clut = NULL;
             texture->tex0.value = SCE_GS_SET_TEX0(0, tbw, psm, tw, th, 1, 0, 0, 0, 0, 0, 0);
         }
+        break;
     }
 
     texture->vram_size = texture->image_blocks;
 
-    if (texture->vram_size % MG_TEXTURE_PAGE_BLOCKS != 0) {
-        texture->vram_size += MG_TEXTURE_PAGE_BLOCKS - texture->vram_size % MG_TEXTURE_PAGE_BLOCKS;
+    rest = texture->vram_size % MG_TEXTURE_PAGE_BLOCKS;
+    if (rest != 0) {
+        texture->vram_size += MG_TEXTURE_PAGE_BLOCKS - rest;
     }
 
     strcpy(texture->name, full_name);
@@ -702,21 +712,22 @@ mgCTexture *mgCTextureManager::EnterTexture(int block, char *name, u_long128 **i
     texture->bpp = bpp;
     texture->block = block;
     texture->swizzled = swizzled;
-    *(u_long *) &texture->tex1 = SCE_GS_SET_TEX1(1, 0, 1, 1, 1, 0, 0);
+    texture->tex1_bits = SCE_GS_SET_TEX1(1, 0, 1, 1, 1, 0, 0);
 
     if (bpp > 0) {
         if (last_level > 0) {
-            *(u_long *) &texture->tex1 = SCE_GS_SET_TEX1(0, 2, 1, 5, 1, 0, -120);
+            texture->tex1_bits = SCE_GS_SET_TEX1(0, 2, 1, 5, 1, 0, -120);
 
             if (tex1 != 0) {
                 lod = (sceGsTex1 *) &tex1;
-                *(u_long *) &texture->tex1 = SCE_GS_SET_TEX1(0, last_level, 1, 5, 1, lod->L, lod->K);
+                texture->tex1_bits = SCE_GS_SET_TEX1(0, last_level, 1, 5, 1, lod->L, lod->K);
             }
         } else {
-            *(u_long *) &texture->tex1 = SCE_GS_SET_TEX1(0, 0, 1, 1, 1, 0, 0);
+            u_long plain = SCE_GS_SET_TEX1(0, 0, 1, 1, 1, 0, 0);
+            texture->tex1_bits = plain;
 
             if (tex1 != 0) {
-                *(u_long *) &texture->tex1 = SCE_GS_SET_TEX1(0, 0, 1, 1, 1, 0, 0);
+                texture->tex1_bits = plain;
             }
         }
     }
@@ -733,8 +744,9 @@ mgCTexture *mgCTextureManager::EnterTexture(int block, char *name, u_long128 **i
             texture->tex0.CBP = vram;
         }
 
-        texture->tex0.TBP0 = vram - texture->vram_size;
-        vram_fix = vram - texture->vram_size;
+        vram -= texture->vram_size;
+        texture->tex0.TBP0 = vram;
+        vram_fix = vram;
     }
 
     if (mgGetPerformanceMeterFlag()) {
@@ -743,9 +755,8 @@ mgCTexture *mgCTextureManager::EnterTexture(int block, char *name, u_long128 **i
 
     return texture;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_texture", EnterTexture__17mgCTextureManagerFiPcPP1iiiP1Uli);
-#endif
+#pragma optimization_level reset
+#pragma schedule reset
 #pragma schedule off
 #pragma optimization_level 2
 
@@ -826,12 +837,13 @@ mgCTexture *mgCTextureManager::EnterTexture(int id, char *name, TM2_head *head, 
 
 #pragma optimization_level reset
 #pragma schedule reset
-#ifdef NONMATCHING
-// 63.1% match, 249 words off
+static inline int FirstBlock(int block) { return block; }
+
+#pragma schedule off
+#pragma optimization_level 2
 int mgCTextureManager::EnterIMGFile(u_char *img, int block, mgCMemory *stack,
                                     mgCEnterIMGInfo *info) {
-    mgIMG_FILE_HEADER *file = (mgIMG_FILE_HEADER *)img;
-    mgIMG_HEADER swap;
+    u_int b;
     mgIMG_HEADER *entries;
     mgIMG_HEADER *entry;
     mgIMG1_HEADER *entry1;
@@ -840,13 +852,16 @@ int mgCTextureManager::EnterIMGFile(u_char *img, int block, mgCMemory *stack,
     int is_im3;
     int spill;
     int current_block;
+    mgIMG_HEADER swap;
     int last_block_used;
-    int texture_block;
     int swizzled;
     int offset;
+    u_char *data;
+    TM2_head *tm2;
+    int texture_block;
     int i;
     u_int a;
-    u_int b;
+    mgIMG_FILE_HEADER *file = (mgIMG_FILE_HEADER *)img;
 
     if (img == NULL) {
         return 0;
@@ -867,20 +882,20 @@ int mgCTextureManager::EnterIMGFile(u_char *img, int block, mgCMemory *stack,
     }
 
     if (info != NULL) {
-        for (i = 0; i < MG_TEXTURE_IMG_GROUP_MAX; i++) {
-            info->block[i] = -1;
-            info->block_num[i] = 0;
+        for (a = 0; (int)a < MG_TEXTURE_IMG_GROUP_MAX; a++) {
+            info->block[ a ] = -1;
+            info->block_num[ a ] = 0;
         }
     }
 
-    current_block = block;
+    current_block = FirstBlock(block);
     spill = 0;
     last_block_used = current_block;
 
     if (is_im3 == 0) {
         entry1 = (mgIMG1_HEADER *)(file + 1);
 
-        for (a = 0; a < file->num; a++, entry1++) {
+        for (a = 0; a < file->num; entry1++, a++) {
             texture = EnterTexture(current_block, entry1->name, (TM2_head *)(img + entry1->offset),
                                    is_im2, 0);
 
@@ -913,7 +928,7 @@ int mgCTextureManager::EnterIMGFile(u_char *img, int block, mgCMemory *stack,
                     entries[b].block = 0;
                 }
 
-                if (entries[b].block < entries[a].block && entries[b].name[0] != '#') {
+                if (entries[a].block > entries[b].block && entries[b].name[0] != '#') {
                     memcpy(&swap, &entries[a], sizeof(mgIMG_HEADER));
                     memcpy(&entries[a], &entries[b], sizeof(mgIMG_HEADER));
                     memcpy(&entries[b], &swap, sizeof(mgIMG_HEADER));
@@ -923,23 +938,26 @@ int mgCTextureManager::EnterIMGFile(u_char *img, int block, mgCMemory *stack,
 
         entry = entries;
 
-        for (a = 0; a < file->num3; a++, entry++) {
-            offset = entry->offset;
+        for (a = 0; a < file->num3; entry++, a++) {
+            tm2 = (TM2_head *)(img + entry->offset);
+            data = img + entry->offset;
+
 
             if (entry->name[0] == '#') {
                 if (block >= 0 && stack != NULL) {
-                    LoadCFGFile((char *)img + offset, entry->size, stack, NULL);
+                    int cfg_size = entry->size;
+                    LoadCFGFile((char *)data, cfg_size, stack, NULL);
                 }
             } else {
-                swizzled = entry->swizzled;
-                texture_block = spill + block + entry->block;
+                is_im2 = entry->swizzled;
+                texture_block = spill + (block + entry->block);
 
                 if (info != NULL && info->block[entry->block] < 0) {
                     info->block[entry->block] = texture_block;
                     info->block_num[entry->block] = 1;
                 }
 
-                texture = EnterTexture(texture_block, entry->name, (TM2_head *)(img + offset), swizzled,
+                texture = EnterTexture(texture_block, entry->name, tm2, is_im2,
                                        entry->no_image);
 
                 if (texture != NULL) {
@@ -960,7 +978,8 @@ int mgCTextureManager::EnterIMGFile(u_char *img, int block, mgCMemory *stack,
                         blocks[texture->block].Add(texture);
                     } else {
                         if (texture_num > 0) {
-                            texture_stack[--texture_num] = texture;
+                            texture_num--;
+                            texture_stack[texture_num] = texture;
                         }
 
                         texture = NULL;
@@ -978,9 +997,8 @@ int mgCTextureManager::EnterIMGFile(u_char *img, int block, mgCMemory *stack,
 
     return last_block_used - current_block;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_texture", EnterIMGFile__17mgCTextureManagerFPUciP9mgCMemoryP15mgCEnterIMGInfo);
-#endif
+#pragma optimization_level reset
+#pragma schedule reset
 #pragma schedule off
 
 /**

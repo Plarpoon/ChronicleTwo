@@ -55,6 +55,7 @@ MASKS = {R_MIPS_32: 0xFFFFFFFF, R_MIPS_26: 0x03FFFFFF, R_MIPS_HI16: 0xFFFF,
          R_MIPS_LO16: 0xFFFF, R_MIPS_GPREL16: 0xFFFF}
 
 FUNCTION_ALIGNMENT = 16
+UNIT_END_ALIGNMENT = 0x40
 NAMED_ADDRESS = re.compile(r"(?:D_|\.L)([0-9A-F]{8})")
 
 
@@ -154,7 +155,8 @@ def check_unit(ctx, unit, verbose):
             if section_name in disassemble.CODE_SECTIONS:
                 if section.sh_addralign != FUNCTION_ALIGNMENT or start % FUNCTION_ALIGNMENT:
                     errors.append(f"{name}: alignment {section.sh_addralign} at 0x{start:08X}")
-                reach = start + -(-size // FUNCTION_ALIGNMENT) * FUNCTION_ALIGNMENT
+                align = UNIT_END_ALIGNMENT if end == expected[-1][2] else FUNCTION_ALIGNMENT
+                reach = start + -(-size // align) * align
                 if not (start + size <= end <= reach):
                     errors.append(f"{name}: size 0x{size:X} does not reach 0x{end:08X}")
             else:

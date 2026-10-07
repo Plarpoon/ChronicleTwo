@@ -92,6 +92,11 @@ extern mgCFrame                *EditCursor[3];
 extern "C" u8                   now_balance_h[16];
 extern "C" u8                   at_2213__3[10];
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 /**
  *
@@ -571,7 +576,7 @@ void EndEditMode(CScene *scene, float *cursor_pos) {
     EditInitPlaceAnime();
 }
 #ifdef NONMATCHING
-// 87.1% match, 64 words off
+// 97.2% match, 8 words off
 int StartEditModeFromMenu(CScene *scene, int mode, int *params) {
     scene->GetMap(scene->active_map);
     EditModeNo = mode;
@@ -581,15 +586,8 @@ int StartEditModeFromMenu(CScene *scene, int mode, int *params) {
     if (EditModeNo == EDIT_MODE_PLACE || EditModeNo == EDIT_MODE_REMOVE || EditModeNo == EDIT_MODE_PAINT ||
         EditModeNo == EDIT_MODE_REPAINT) {
         ClearEditFlag();
-        int color[4] = {0, 0, 0, 0};
-        color[0] = params[0];
-        color[1] = params[1];
-        color[2] = params[2];
-        color[3] = params[3];
-        int shade[3] = {0, 0, 0};
-        shade[0] = color[0];
-        shade[1] = color[1];
-        shade[2] = color[2];
+        int color[4] = {params[0], params[1], params[2], params[3]};
+        int shade[3] = {params[0], params[1], params[2]};
         if (EditModeNo == EDIT_MODE_REPAINT) {
             color[0] = -1;
             color[1] = -1;
@@ -1080,7 +1078,7 @@ static inline CMap *ActiveSceneMap(CScene *scene) {
 static inline mgCCameraFollow *ActiveSceneCamera(CScene *scene) {
     return (mgCCameraFollow *)scene->GetCamera(scene->active_camera);
 }
-// 99.1% match, 53 words off
+// 99.0% match, 64 rows off, 72 aligned words off
 void EditMode(CScene *scene) {
     CCPoly *next_poly;
     int i;
@@ -1266,30 +1264,31 @@ void EditMode(CScene *scene) {
             CMap *maps[8];
             map_count = scene->GetActiveMap(maps, 8);
             eCurPos[1] = 0.0f;
-            mgVu0FBOX box;
+            sceVu0FVECTOR box_max;
+            sceVu0FVECTOR box_min;
             float new_pos[4];
             float ground[4];
             float start_pos[4];
             float move[4];
             CCPoly polys[0x800];
             MoveCheckInfo move_info;
-            *(u_long128 *)box.max = *(u_long128 *)eCurPos;
-            *(u_long128 *)box.min = *(u_long128 *)eCurPos;
+            *(u_long128 *)box_max = *(u_long128 *)eCurPos;
+            *(u_long128 *)box_min = *(u_long128 *)eCurPos;
             *(u_long128 *)new_pos = *(u_long128 *)eCurPos;
             *(u_long128 *)start_pos = *(u_long128 *)old_pos;
             new_pos[1] = 20.0f;
             start_pos[1] = 20.0f;
             sceVu0SubVector(move, new_pos, start_pos);
             int poly_count = 0;
-            box.max[0] += 100.0f;
-            box.max[1] = 100.0f;
-            box.max[2] += 100.0f;
-            box.min[0] -= 100.0f;
-            box.min[1] = -100.0f;
-            box.min[2] -= 100.0f;
+            box_max[0] += 100.0f;
+            box_max[1] = 100.0f;
+            box_max[2] += 100.0f;
+            box_min[0] -= 100.0f;
+            box_min[1] = -100.0f;
+            box_min[2] -= 100.0f;
             int poly_rest = 0x800;
             if (maps[0] != NULL) {
-                poly_count = GetGeoCheckCol(maps[0], box, polys, poly_rest);
+                poly_count = GetGeoCheckCol(maps[0], *(mgVu0FBOX *)box_max, polys, poly_rest);
             }
             memset(&move_info, 0, sizeof(move_info));
             move_info.radius = 50.0f;
@@ -1345,14 +1344,14 @@ void EditMode(CScene *scene) {
             sceVu0Normalize(camera_dir, camera_dir);
             sceVu0ScaleVector(camera_dir, camera_dir, 20.0f);
             mgAddVector(camera_pos, camera_dir);
-            mgVectorMaxMin(box.max, box.min, camera_pos, camera_ref);
-            box.max[0] += 10.0f;
-            box.max[1] = 100.0f;
-            box.max[2] += 10.0f;
-            box.min[0] -= 10.0f;
-            box.min[1] = -100.0f;
-            box.min[2] -= 10.0f;
-            if (CheckHit(polys, GetGeoCheckCamCol(map, box, polys, 0x800), camera_ref, camera_pos, camera_hit, 1, 0) >= 0) {
+            mgVectorMaxMin(box_max, box_min, camera_pos, camera_ref);
+            box_max[0] += 10.0f;
+            box_max[1] = 100.0f;
+            box_max[2] += 10.0f;
+            box_min[0] -= 10.0f;
+            box_min[1] = -100.0f;
+            box_min[2] -= 10.0f;
+            if (CheckHit(polys, GetGeoCheckCamCol(map, *(mgVu0FBOX *)box_max, polys, 0x800), camera_ref, camera_pos, camera_hit, 1, 0) >= 0) {
                 float dist = mgDistVectorXZ(camera_ref, camera_hit);
                 camera->SetDistance(dist);
                 if (dist < 500.0f) {
@@ -1376,18 +1375,18 @@ void EditMode(CScene *scene) {
             ePartsCurRot[1] = map->GetEditAngle(eCurRot);
             int ground_count = 0;
             next_poly = polys;
-            *(u_long128 *)box.max = *(u_long128 *)eCurPos;
-            *(u_long128 *)box.min = *(u_long128 *)eCurPos;
+            *(u_long128 *)box_max = *(u_long128 *)eCurPos;
+            *(u_long128 *)box_min = *(u_long128 *)eCurPos;
             *(u_long128 *)new_pos = *(u_long128 *)eCurPos;
             new_pos[1] = 1000.0f;
-            box.max[0] += 10.0f;
-            box.max[1] = 10000.0f;
-            box.max[2] += 10.0f;
-            box.min[0] -= 10.0f;
-            box.min[1] = -10000.0f;
-            box.min[2] -= 10.0f;
+            box_max[0] += 10.0f;
+            box_max[1] = 10000.0f;
+            box_max[2] += 10.0f;
+            box_min[0] -= 10.0f;
+            box_min[1] = -10000.0f;
+            box_min[2] -= 10.0f;
             for (i = 0; i < map_count; i++) {
-                int added = maps[i]->GetColPoly(next_poly, box, poly_rest);
+                int added = maps[i]->GetColPoly(next_poly, *(mgVu0FBOX *)box_max, poly_rest);
                 ground_count += added;
                 next_poly += added;
                 poly_rest -= added;
@@ -2203,9 +2202,7 @@ static void GetBalanceHeight(CScene *scene, float *balance) {
         i++;
     } while (i < 4);
 }
-#ifdef NONMATCHING
 extern mgCTexture *eSysTexture;
-// 99.3% match, 2 words off
 void DrawEditSystem(int block, CScene *scene, float *pos, int edit) {
     mgCTextureManager *manager = &mgTexManager;
     if (eSysTexture != NULL) {
@@ -2271,8 +2268,8 @@ void DrawEditSystem(int block, CScene *scene, float *pos, int edit) {
                         float *now = (float *)now_balance_h + i;
                         float height = *now + (target[i] - *now) / 12.0f;
                         *now = height;
-                        int height16 = fptosi(16.0f * height);
-                        int height1 = fptosi(height);
+                        int height16 = (int)(16.0f * height);
+                        int height1 = (int)height;
                         prim.TextureCrd(0x52, 0);
                         prim.Vertex4(x * 16, height16 + (mgScreenHeight - 0x2C) * 16, 0);
                         prim.TextureCrd(0x80, 0x7C);
@@ -2289,9 +2286,6 @@ void DrawEditSystem(int block, CScene *scene, float *pos, int edit) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmode", DrawEditSystem__FiP6CScenePfi);
-#endif
 /**
  *
  * Finds the map part used for the walk-to-edit transition check.

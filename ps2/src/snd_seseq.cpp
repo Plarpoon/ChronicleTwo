@@ -468,8 +468,6 @@ int sndTrack::NoteOff(int key, int velocity) {
     note->active = 0;
     return 1;
 }
-#ifdef NONMATCHING
-// 83.2% match, 9 words off
 int sndTrack::CtrlChg(int ctrl, int value) {
     int result = 1;
     switch (ctrl) {
@@ -482,12 +480,12 @@ int sndTrack::CtrlChg(int ctrl, int value) {
     case SND_MIDI_CTRL_EXPRESSION:
         expression = value;
         break;
+    default:
+        result = 1;
+        break;
     }
     return result;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_seseq", CtrlChg__8sndTrackFii);
-#endif
 
 int sndTrack::ProgChg(int program) {
     prog = program;

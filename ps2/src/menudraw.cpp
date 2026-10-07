@@ -610,6 +610,11 @@ void PrimQuad_i_(mgCDrawPrim *prim, mgRect<int> rect, mgRect<int> tex_rect);
 
 #include "common.h"
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 void AttachMessageForm() {
     char name[32];
@@ -1336,12 +1341,13 @@ static void SetMenuDrawNumberKeta(char value) {
     MenuDrawNumberKeta = value;
 }
 #ifdef NONMATCHING
+template <typename T> static inline T Ident(T v) { return v; }
 /**
  *
  * Draws a number with the selected alignment and optional digit padding.
  *
  */
-// 99.9% match, 3 words off
+// 99.9% match, 2 words off
 int DrawMenuNumber(mgCDrawPrim *prim, int number, int align, mgRect<int> rect, mgRect<int> texture_rect, int step_x,
                    int step_y) {
     int digits = GetNumberKeta(number);
@@ -1379,7 +1385,7 @@ int DrawMenuNumber(mgCDrawPrim *prim, int number, int align, mgRect<int> rect, m
         int         put_y = y;
         x -= step_x;
         y -= step_y;
-        src.Set(texture_rect.left, texture_rect.top, digit_w, texture_rect.bottom);
+        src.Set(texture_rect.left, Ident(texture_rect.top), digit_w, texture_rect.bottom);
         dst.Set(x, put_y, rect.right, rect.bottom);
         PrimQuad(prim, dst, src);
         padding--;
@@ -1402,9 +1408,6 @@ void PrimDrawNumber2(mgCDrawPrim *prim, int number, int digit_count, int x, int 
     mgRect<int> rect(x, y, texture_rect.right, texture_rect.bottom);
     DrawMenuNumber(prim, number, 0, rect, texture_rect, texture_rect.right + spacing, mode);
 }
-#ifdef NONMATCHING
-// 97.0% match, 6 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void PrimFillRect4(mgCDrawPrim *prim, mgRect<float> rect, float *rgba0, float *rgba1, float *rgba2, float *rgba3) {
     float right;
     float bottom;
@@ -1423,9 +1426,6 @@ void PrimFillRect4(mgCDrawPrim *prim, mgRect<float> rect, float *rgba0, float *r
     prim->Color((int)rgba3[0], (int)rgba3[1], (int)rgba3[2], (int)rgba3[3]);
     prim->Vertex(right, bottom, 0.0f);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", PrimFillRect4__FP11mgCDrawPrim9mgRect_f_PfPfPfPf);
-#endif
 void MenuReloadTexture(int &loaded_tex, int tex_no) {
     mgCTextureManager *manager = &mgTexManager;
 
@@ -1583,9 +1583,6 @@ int StepMenuDl2(int progress) {
 
     return 0;
 }
-#ifdef NONMATCHING
-// 99.9% match, 3 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void DrawMenuDl(int &tex_block, int x, int y, int w, int alpha) {
     mgCDrawPrim *prim;
     int left;
@@ -1639,9 +1636,6 @@ void DrawMenuDl(int &tex_block, int x, int y, int w, int alpha) {
         prim->End();
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", DrawMenuDl__FRiiiii);
-#endif
 void DrawMenuDl(int alpha) {
     char text[0x80];
     int  loaded_tex_no;
@@ -1678,9 +1672,6 @@ void DrawMenuDl(int alpha) {
         }
     }
 }
-#ifdef NONMATCHING
-// 99.8% match, 11 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void CalcCommonBrdDrawInfo(float *pos, MENUFORM_MAKEBRD_INFO *info, ClsMes *mes) {
     float board_w;
     int i;
@@ -1731,9 +1722,6 @@ void CalcCommonBrdDrawInfo(float *pos, MENUFORM_MAKEBRD_INFO *info, ClsMes *mes)
     }
     memcpy(&CommonBoardDrawInfo, info, sizeof(MENUFORM_MAKEBRD_INFO));
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", CalcCommonBrdDrawInfo__FPfP21MENUFORM_MAKEBRD_INFOP6ClsMes);
-#endif
 #ifdef NONMATCHING
 // 97.5% match, 110 words off
 void CommonBoardDraw(float *pos, int &tex_block) {
@@ -1921,9 +1909,6 @@ void MenuCursorDraw(mgCTexture *tex, float *pos, float rot, int reverse, int alp
 void MenuCursorDraw(mgCTexture *texture, float *position, float value, int flag) {
     MenuCursorDraw(texture, position, value, 0, flag, 1.0f);
 }
-#ifdef NONMATCHING
-// 98.0% match, 5 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void DrawMenuTilePattern(mgCDrawPrim *prim, mgCTexture *tex, float x, float y, mgRect<int> tex_rect, int unused,
                          u8 *rgba) {
     mgRect<int> dest(0, 0, 0, 0);
@@ -1954,9 +1939,6 @@ void DrawMenuTilePattern(mgCDrawPrim *prim, mgCTexture *tex, float x, float y, m
     }
     prim->End();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", DrawMenuTilePattern__FP11mgCDrawPrimP10mgCTextureff9mgRect_i_iPUc);
-#endif
 void DrawMenuMainFrmImg(int &loaded_tex_no, mgRect<int> dest, mgRect<int> source, int red, int green,
                         int blue, int alpha, int unused) {
     mgCTexture *texture = *(mgCTexture **) ((u8 *) MenuPosData + 0x3C);
@@ -2015,9 +1997,6 @@ void MenuMainFrameModeSet(int mode, int restart) {
         MenuMainFrame_MoveRate_Cnt = 0.2617994f;
     }
 }
-#ifdef NONMATCHING
-// ~8.5% match, 439 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function (state.py: primer=u64div)
 void MenuMainFrameStep(void) {
     mgRect<int> screen;
     MenuMainFrame_PutRect.Set(0, 0, 0x2C0, 0x1E0);
@@ -2178,9 +2157,6 @@ void MenuMainFrameStep(void) {
     MenuMainFrame_LeftTop_Pos[0] = MenuMainFrame_PutRect.left;
     MenuMainFrame_LeftTop_Pos[1] = MenuMainFrame_PutRect.top;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", MenuMainFrameStep__Fv);
-#endif
 void MenuMainFrameDraw(int &loaded_tex, int unused) {
     mgRect<int>        screen_rect;
     float              alpha, radius_x, radius_y, turn, scale, x0, y0, x1, y1, x3, y3, x2, y2, x4, size, y4, angle;
@@ -2728,7 +2704,7 @@ MENUFORMPARTS_TYPE *CMenuPosDataForm::GetEnableEnterPart() {
     return NULL;
 }
 #ifdef NONMATCHING
-// 99.3% match, 17 words off
+// 99.8% match, 11 words off
 int CMenuPosDataForm::GetNowPosRGBA(MENUFORMPARTS_TYPE *part, MENU_BASETEXINFO *tex_info, float *pos, u8 *rgba) {
     MENU_PARTS_EFFECT_STRUCT1 *effect;
     int i;
@@ -2796,7 +2772,8 @@ int CMenuPosDataForm::GetNowPosRGBA(MENUFORMPARTS_TYPE *part, MENU_BASETEXINFO *
                 rot[k][2] = -sin_angle;
                 rot[k][3] = cos_angle;
             }
-            for (k = 0, n = 0; k < 4; k++, n += 2) {
+            for (k = 0; k < 4; k++) {
+                n = k * 2;
                 dx = pos[n] - center_x;
                 dy = pos[n + 1] - center_y;
                 pos[n] = center_x + (dx * rot[k][0] + dy * rot[k][1]);

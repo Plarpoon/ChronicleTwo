@@ -23,10 +23,10 @@
 
 extern u8           isStarted;
 extern int          writerest;
-extern u8           isFrameEnd;
+extern volatile u8  isFrameEnd;
 extern u32          frd;
-extern u8           isCountVblank;
-extern int          Cb;
+extern volatile u8  isCountVblank;
+extern volatile int Cb;
 extern sceDmaChan  *DmaCH2;
 extern int          MpegW;
 extern int          MpegH;
@@ -93,12 +93,10 @@ static inline void *DmaAddr(void *addr) {
 static inline void *UncAddr(void *addr) {
     return (void *) (((u32) addr & 0xFFFFFFF) | 0x20000000);
 }
-#ifdef NONMATCHING
-// 98.6% match, 10 words off
 void CMovie::Load(char *name, mgCMemory **memory, int width, int height, bool with_audio, bool loop,
                   bool init_sound) {
     int i;
-    u8 *area;
+    u8 *area __attribute__((aligned(64)));
     int read_size;
 
     isWithAudio = with_audio;
@@ -158,9 +156,6 @@ void CMovie::Load(char *name, mgCMemory **memory, int width, int height, bool wi
     readBufEndPut(readBuf, read_size);
     readrest -= read_size;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", Load__6CMovieFPcPP9mgCMemoryiibbb);
-#endif
 void CMovie::Load(char *name, mgCMemory *memory, int width, int height, bool with_audio, bool loop) {
     MoviePools pools = at_344;
     pools.pool[0] = memory;
@@ -483,9 +478,8 @@ int mpegTS(sceMpeg *mpeg, sceMpegCbDataTimeStamp *data, void *user) {
     data->dts = ts.dts;
     return 1;
 }
-#ifdef NONMATCHING
-// 99.3% match, 10 words off
 int videoCallback(sceMpeg *mpeg, sceMpegCbDataStr *str, void *user) {
+    ReadBuf *buf = (ReadBuf *)user;
     u8 *area1;
     u8 *area2;
     int size1;
@@ -500,7 +494,7 @@ int videoCallback(sceMpeg *mpeg, sceMpegCbDataStr *str, void *user) {
     u8 *uncached1;
     u8 *uncached2;
 
-    end = (u8 *)user + ((ReadBuf *)user)->size;
+    end = (u8 *)buf + buf->size;
     src = str->data;
     total = str->len;
     first = end - src;
@@ -511,7 +505,7 @@ int videoCallback(sceMpeg *mpeg, sceMpegCbDataStr *str, void *user) {
     videoDecBeginPut(&videoDec, &area1, &size1, &area2, &size2);
     uncached1 = (u8 *)UncAddr(area1);
     uncached2 = (u8 *)UncAddr(area2);
-    copied = cpy2area(uncached1, size1, uncached2, size2, src, first, (u8 *)user, second);
+    copied = cpy2area(uncached1, size1, uncached2, size2, src, first, (u8 *)buf, second);
     if (copied > 0 && videoDecPutTs(&videoDec, str->pts, str->dts, area1, copied) == 0) {
         printf(at_584__2);
     }
@@ -522,9 +516,6 @@ int videoCallback(sceMpeg *mpeg, sceMpegCbDataStr *str, void *user) {
     }
     return result;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", videoCallback__FP7sceMpegP16sceMpegCbDataStrPv);
-#endif
 int pcmCallback(sceMpeg *mpeg, sceMpegCbDataStr *str, void *user) {
     u8 *area1;
     u8 *area2;
@@ -838,10 +829,11 @@ int viBufStopDMA(ViBuf *buf) {
 
 #pragma optimization_level reset
 #ifdef NONMATCHING
+#pragma optimization_level 4
 enum {
     MOVIE_ADDR_MASK = 0xFFFFFFF,
 };
-// 96.3% match, 43 words off
+// 99.8% match, 9 words off
 int viBufRestartDMA(ViBuf *buf) {
     int fifo_bits;
     volatile int *ipu_ctrl;
@@ -918,6 +910,7 @@ int viBufRestartDMA(ViBuf *buf) {
     SignalSema(buf->sema);
     return 1;
 }
+#pragma optimization_level reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", viBufRestartDMA__FP5ViBuf);
 #endif
@@ -1011,8 +1004,8 @@ int viBufPutTs(ViBuf *buf, TimeStamp *ts) {
     return had_room;
 }
 
-#ifdef NONMATCHING
-// 99.8% match, 4 words off
+static inline int TsWritePos(int pos) { return pos; }
+
 int viBufGetTs(ViBuf *buf, TimeStamp *ts) {
     int index;
     int base;
@@ -1038,7 +1031,7 @@ int viBufGetTs(ViBuf *buf, TimeStamp *ts) {
     ts->dts = -1;
     read_pos = (size + (dma_addr + (fifo_bits >> 3)) - (u32)buf->data) % size;
     count = buf->count_ts;
-    base = buf->wt_ts - count;
+    base = TsWritePos(buf->wt_ts) - count;
     for (i = 0; i < count && found == 0; i++) {
         index = (i + (buf->n_ts + base)) % buf->n_ts;
         entry = &buf->ts[index];
@@ -1056,9 +1049,6 @@ int viBufGetTs(ViBuf *buf, TimeStamp *ts) {
     SignalSema(buf->sema);
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movie", viBufGetTs__FP5ViBufP9TimeStamp);
-#endif
 
 int strFileOpen(StrFile *file, char *path) {
     char       full_path[0x100];

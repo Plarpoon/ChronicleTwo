@@ -230,6 +230,11 @@ extern char              at_2450[];
 extern char             *filetbl_2141[];
 int                      ReadBGSync();
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 void MenuScreenBlackBeltSet(int enable) {
 }
@@ -1542,9 +1547,6 @@ void MenuBaseTextureReEnter() {
     (MenuPosData)->AttachCommonTexInfo();
     MenuPosData->ResetTextureInfoAll();
 }
-#ifdef NONMATCHING
-// 97.6% match, 7 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: drafts primer=u64div)
 void CMenuInter::InitEnd() {
     int base_block = MenuCommonInfo->tex_block[1];
     mgCTextureManager *manager = &mgTexManager;
@@ -1582,9 +1584,6 @@ void CMenuInter::InitEnd() {
     MenuEtcInfo.tex_block = MenuArg.mes_tex_block;
     MenuEtcInfo.tex = manager->GetTexture(at_1028__4, -1);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", InitEnd__10CMenuInterFv);
-#endif
 void CMenuInter::PushOk() {
     int mode = mode_list[select_no];
     MenuCommonInfo->SetWakuType(-1);
@@ -1723,9 +1722,6 @@ int CMenuInter::ReadBGTexture(int bg_no, int restart) {
 
     return bg_read_step == 2;
 }
-#ifdef NONMATCHING
-// 98.9% match, 6 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: drafts primer=u64div)
 int MenuInternSelectKey(void) {
     int result = 0;
     int select_key = MenuCommonInfo->CheckSelectKey();
@@ -1877,9 +1873,6 @@ int MenuInternSelectKey(void) {
     MenuPosData->FormStep();
     return result;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menumain", MenuInternSelectKey__Fv);
-#endif
 #ifdef NONMATCHING
 // 100.0% match, 0 words off, only with every NONMATCHING draft in the unit compiled
 // Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: drafts primer=u64div)

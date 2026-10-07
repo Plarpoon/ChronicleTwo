@@ -1717,8 +1717,6 @@ int _SET_SPECIAL_SHOT(RS_STACKDATA *stack, int argc) {
     info->ClearMagicSwordPow();
     return 1;
 }
-#ifdef NONMATCHING
-// 99.9% match, 14 words off
 int _SHOT(RS_STACKDATA *stack, int argc) {
     float position[4];
     float target_pos[4];
@@ -1728,8 +1726,8 @@ int _SHOT(RS_STACKDATA *stack, int argc) {
     float missile_target[4];
     float laser_target[4];
     float beam_target[4];
+    int whp[2];
     float beam_offset[4];
-    int whp;
 
     CBattleCharaInfo *info = GetBattleCharaInfo();
     int left = GetStackInt(stack);
@@ -1740,8 +1738,9 @@ int _SHOT(RS_STACKDATA *stack, int argc) {
     int attack_type = info->equip[0].GetAttackType();
     static int sw = 1;
     static int canon_slot = 0;
+    mgCFrame *muzzle;
+    mgCFrame *barrel;
     if (attack_type != 40) {
-        mgCFrame *muzzle;
         if (attack_type == 90) {
             if (left != 0) {
                 muzzle = action_info.chara->SearchObject(at_1725__2);
@@ -1761,8 +1760,8 @@ int _SHOT(RS_STACKDATA *stack, int argc) {
         muzzle->GetWorldPosition0(position);
     } else {
         canon = at_1645__2;
-        mgCFrame *muzzle = action_info.chara->SearchObject(canon.name[canon_slot][0]);
-        mgCFrame *barrel = action_info.chara->SearchObject(canon.name[canon_slot][1]);
+        muzzle = action_info.chara->SearchObject(canon.name[canon_slot][0]);
+        barrel = action_info.chara->SearchObject(canon.name[canon_slot][1]);
         canon_slot++;
         if (canon_slot >= 4) {
             canon_slot = 0;
@@ -1774,8 +1773,8 @@ int _SHOT(RS_STACKDATA *stack, int argc) {
         barrel->GetWorldPosition0(target_pos);
     }
     sceVu0CopyVector(direction, action_info.chara->front_vec);
-    info->GetNowWhp(1, &whp);
-    if (whp > 0) {
+    info->GetNowWhp(1, whp);
+    if (whp[0] > 0) {
         if (attack_type == 10) {
             sceVu0ScaleVector(rocket_target, direction, 500.0f);
             sceVu0AddVector(rocket_target, position, rocket_target);
@@ -1803,7 +1802,7 @@ int _SHOT(RS_STACKDATA *stack, int argc) {
             ShotMachineGun(position, direction, at_1728__2, 500.0f);
             static int cnt = 0;
             cnt++;
-            if (cnt >= 3) {
+            if (cnt > 2) {
                 cnt = 0;
                 CLoopSeMngr *sounds = action_info.chara->sound_info.loop_se;
                 if (sounds != NULL) {
@@ -1889,18 +1888,15 @@ int _SHOT(RS_STACKDATA *stack, int argc) {
                 action_info.chara->effect_man->SetScriptVect1(position, 0, -1);
                 action_info.chara->effect_man->SetValue(0, 1, 0, -1);
                 action_info.chara->effect_man->SetValue(1, 128.0f, 0, -1);
-                action_info.chara->effect_man->SetValue(2, 64.0f, 0, -1);
-                action_info.chara->effect_man->SetValue(3, 0.0f, 0, -1);
-                action_info.chara->effect_man->SetValue(4, 160.0f, 0, -1);
+                action_info.chara->effect_man->SetValue(2, float(64.0), 0, -1);
+                action_info.chara->effect_man->SetValue(3, float(0.0), 0, -1);
+                action_info.chara->effect_man->SetValue(4, float(160.0), 0, -1);
                 action_info.chara->shot_wait = 4;
             }
         }
     }
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/actscript", _SHOT__FP12RS_STACKDATAi);
-#endif
 /**
  *
  * Writes the world position of a named action object to script outputs.

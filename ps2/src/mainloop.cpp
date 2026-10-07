@@ -831,14 +831,12 @@ void InitEventSelect() {
     menu_mode = 2;
     hdd_sel = 0;
 }
-#ifdef NONMATCHING
 
 /**
  *
  * Runs the debug chapter, event, map and extra-mode selection screen.
  *
  */
-// 48.6% match, 192 words off
 static int EventSelect() {
     static int   menu_sel[11];
     static char *menu[12] = {
@@ -1006,8 +1004,7 @@ static int EventSelect() {
             case 1:
             case 2:
                 {
-                    int chapter = menu_sel[select];
-                    switch (chapter) {
+                    switch (menu_sel[select]) {
                         case 0:
                             arg.floor_no = 1;
                             loop_no = LOOP_DUNGEON;
@@ -1038,13 +1035,13 @@ static int EventSelect() {
                             arg.event_no = 502;
                             break;
                     }
-                    if (chapter >= 2) {
+                    if (menu_sel[select] >= 2) {
                         monica = 1;
                     }
                     if (select == 1) {
-                        sprintf(config_name, "cap%d.cfg", chapter + 1);
+                        sprintf(config_name, "cap%d.cfg", menu_sel[select] + 1);
                     } else {
-                        sprintf(config_name, "db_cap%d.cfg", chapter + 1);
+                        sprintf(config_name, "db_cap%d.cfg", menu_sel[select] + 1);
                     }
                     break;
                 }
@@ -1106,9 +1103,6 @@ static int EventSelect() {
     }
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mainloop", EventSelect__Fv);
-#endif
 mgCTexture *GetFontTexture(int page) {
     if ((page < 0) || (page > 0)) {
         return 0;

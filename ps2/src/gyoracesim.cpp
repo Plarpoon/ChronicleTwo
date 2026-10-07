@@ -65,6 +65,11 @@ void         LaneBattleStep(RACE_FISH_PARAM *fish, int count);
 grFISH_DATA *GetFishData(int fish_no);
 static float nrnd();
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 int grGyoRaceSimulate(grRACE_INFO *race) {
     RACE_FISH_PARAM fish[6];
@@ -155,7 +160,7 @@ int grGetFishProgress(grRACE_INFO *race, int fish, float time, grRACE_PROGRESS *
  * Compares two fish's projected positions after one velocity step.
  *
  */
-float FishDist(RACE_FISH_PARAM *fish, RACE_FISH_PARAM *other) {
+static float FishDist(RACE_FISH_PARAM *fish, RACE_FISH_PARAM *other) {
     return (fish->pos + fish->velocity) - (other->pos + other->velocity);
 }
 
@@ -246,7 +251,8 @@ int StepFish(int index, RACE_FISH_PARAM *fish) {
     return 0;
 }
 #ifdef NONMATCHING
-// 97.5% match, 105 words off
+#pragma divbyzerocheck on
+// 99.9% match, 6 words off
 void LaneBattleStep(RACE_FISH_PARAM *fish, int count) {
     int order[6];
     int lane_fish[6][6];
@@ -308,9 +314,9 @@ void LaneBattleStep(RACE_FISH_PARAM *fish, int count) {
             }
         }
         fish_ahead = 0;
-        lane = current->lane;
-        for (k = 0; k < lane_count[lane]; ++k) {
-            float distance = FishDist(&fish[lane_fish[lane][k]], current);
+        adjacent_lane = current->lane;
+        for (j = 0; j < lane_count[adjacent_lane]; ++j) {
+            float distance = FishDist(&fish[lane_fish[adjacent_lane][j]], current);
             if (!(distance <= 0.0f) && distance < 0.1f) fish_ahead = 1;
         }
         if ((u_char)current->state == GR_RACE_STATE_BATTLE) {
@@ -336,7 +342,9 @@ void LaneBattleStep(RACE_FISH_PARAM *fish, int count) {
                     winner = opponent;
                     loser = current;
                 }
-                winner->boost = 0.5f + 0.0f / (float)(loser->battle_hits + winner->battle_hits);
+                side = winner->battle_hits;
+                j = side + loser->battle_hits;
+                winner->boost = 0.5f + 0.0f / (float)j;
                 loser->boost = 0.5f * -winner->boost;
                 current->battle_time = 0.0f;
                 current->state = GR_RACE_STATE_SWIM;
@@ -348,7 +356,6 @@ void LaneBattleStep(RACE_FISH_PARAM *fish, int count) {
         } else {
             float increment = 0.1f * GetRandomNumber(1.0f, 0.5f);
             float crowd_effect = 0.0f;
-
             if (!crowded[0] && !crowded[1]) crowd_effect -= increment;
             if (crowded[0]) crowd_effect += increment;
             if (crowded[1]) crowd_effect += increment;
@@ -407,6 +414,7 @@ void LaneBattleStep(RACE_FISH_PARAM *fish, int count) {
         }
     }
 }
+#pragma divbyzerocheck reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyoracesim", LaneBattleStep__FP15RACE_FISH_PARAMi);
 #endif
@@ -458,7 +466,7 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyoracesim", CollisionFish__FP15RACE_FISH_
 #endif
 #ifdef NONMATCHING
 // 100.0% match, 0 words off, only with every NONMATCHING draft in the unit compiled
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: drafts primer=u64div)
+// Matches 100% with compiler state: CollisionFish compiled as C before it, so its register use is known at the call
 int StepGyoRace(RACE_FISH_PARAM *fish, grRACE_INFO *info) {
     int i;
     int step;
@@ -583,7 +591,7 @@ float GetCourseR(float pos, float unused) {
 }
 #ifdef NONMATCHING
 // 45.8% match, 168 words off
-// Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: drafts primer=u64div)
+// Matches 100% with compiler state: LaneBattleStep, CollisionFish and StepGyoRace compiled as C; CharacterBonus then needs 0.01f in its second GetRandomNumber call
 void FishModifyParam(grFISH_PARAM *source, float *output, float average) {
     int i;
     output[0] = (float)source->stamina;

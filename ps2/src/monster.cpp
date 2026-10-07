@@ -321,8 +321,6 @@ void CMonsterLocateInfo::SetPutFlag(int slot, int put) {
     }
 }
 
-#ifdef NONMATCHING
-// 92.3% match, 36 words off
 void CMonsterMan::Initialize(CScene *scene) {
     mgCTextureManager *textures;
     int i;
@@ -354,18 +352,16 @@ void CMonsterMan::Initialize(CScene *scene) {
     }
     boss_life_gage.Initialize(0);
     boss_max_life = 0;
-    CMonsterLocateInfo *loc = &locate;
-    loc->num = 0;
-    loc->put_num = 0;
-    loc->put_flag = 0;
+    locate.num = 0;
+    locate.put_num = 0;
+    locate.put_flag = 0;
     for (m = 0; m < MONSTER_LOCATE_MAX; m++) {
-        loc->param[m] = -1;
-        loc->monster_id[m] = -1;
+        s16 *param = locate.param;
+        s16 *id = locate.monster_id;
+        param[m] = -1;
+        id[m] = -1;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/monster", Initialize__11CMonsterManFP6CScene);
-#endif
 
 void CMonsterMan::DrawEffectScript() {
     int i;
@@ -668,9 +664,7 @@ int CMonsterMan::LoadReferMonsterFile(int id, BASE_MONSTER_TBL *tbl, mgCMemory *
     entry->id = id;
     return 1;
 }
-#ifdef NONMATCHING
-// 99.6% match, 10 words off
-CActiveMonster *CMonsterMan::SetActiveMonster(int refer_no, float pos[], float rot[], int param) {
+CActiveMonster *CMonsterMan::SetActiveMonster(int refer_no, float pos[], sceVu0FVECTOR rot, int param) {
     int slot;
     CActiveMonster *monster;
     int npc;
@@ -783,9 +777,6 @@ CActiveMonster *CMonsterMan::SetActiveMonster(int refer_no, float pos[], float r
     monster->req_prog = MONSTER_PROG_MAIN;
     return active[slot];
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/monster", SetActiveMonster__11CMonsterManFiPfPfi);
-#endif
 void CMonsterMan::DrawMiniMapSymbol(CMiniMapSymbol *symbol) {
     CBattleCharaInfo *battle_info;
     int               show_all;
@@ -1393,22 +1384,32 @@ extern char at_2485[];
 extern char at_2486[];
 extern char at_2487[];
 extern char at_2488[];
-// 90.1% match, 472 words off
+// 91.4% match, 337 words off
 #pragma divbyzerocheck on
 void CMonsterMan::CheckDamage() {
-    CScene *now_scene = scene;
+    BASE_MONSTER_TBL *tbl;
+    CActionChara *player;
+    CActiveMonster *monster;
+    float element_damage;
+    CScene *now_scene;
+    int guard;
+    int final_damage;
+    int reaction;
+    int drain_rate;
+    int steal_rate;
+    now_scene = scene;
     DNG_BATTLE_AREA *area = &now_scene->battle_area;
     u_int se_id = now_scene->se_battle_id;
-    CActionChara *player = (CActionChara *)now_scene->GetCharacter(0);
+    player = (CActionChara *)now_scene->GetCharacter(0);
     CBattleCharaInfo *chara_info = GetBattleCharaInfo();
     int gift_pack_num = GetUserItemHaveNum(0x134);
 
     for (int i = 0; i < MONSTER_ACTIVE_MAX; i++) {
-        CActiveMonster *monster = active[i];
+        monster = active[i];
         if (monster == NULL || monster->state != ACTIVE_MONSTER_LIVE) {
             continue;
         }
-        BASE_MONSTER_TBL *tbl = monster->tbl;
+        tbl = monster->tbl;
         if (monster->damage_time > 0) {
             continue;
         }
@@ -1458,7 +1459,7 @@ void CMonsterMan::CheckDamage() {
                 printf(at_2485, prim->status);
             }
             float element_rate[8] = {0.6f, 1.2f, 1.4f, 0.8f, 1.0f, 1.0f, 1.0f, 1.0f};
-            float element_damage = 0.0f;
+            element_damage = 0.0f;
             damage *= 0.01f * (float)tbl->ext_param[vs_attk_index[prim->param->kind]];
             BASE_MONSTER_TBL *resist_tbl = monster->tbl;
             for (int e = 0; e < 8; e++) {
@@ -1553,9 +1554,9 @@ void CMonsterMan::CheckDamage() {
             if ((int)damage > 0 && (prim->status & 0x400) && iRand(10) == 0) {
                 damage *= 1.8f;
             }
-            int final_damage = (int)damage;
+            final_damage = (int)damage;
             if (final_damage > 0 && (prim->status & 0x80) && prim->attacker == chara_info->chr_no) {
-                int drain_rate = 25 / prim->param->hit_count;
+                drain_rate = 25 / prim->param->hit_count;
                 if (drain_rate <= 1) {
                     drain_rate = 1;
                 }
@@ -1564,7 +1565,7 @@ void CMonsterMan::CheckDamage() {
                 }
             }
             if (final_damage > 0 && (prim->status & 0x10)) {
-                int steal_rate = 12 / prim->param->hit_count;
+                steal_rate = 12 / prim->param->hit_count;
                 if (steal_rate <= 1) {
                     steal_rate = 1;
                 }
@@ -1593,7 +1594,7 @@ void CMonsterMan::CheckDamage() {
                     }
                 }
             }
-            int guard = 0;
+            guard = 0;
             if (iRand(100) < tbl->guard_rate) {
                 guard = 1;
             }
@@ -1732,7 +1733,7 @@ void CMonsterMan::CheckDamage() {
                 }
             }
             HitScoreSet(prim->hit_pos, 0, dealt);
-            int reaction = 2;
+            reaction = 2;
             if (prim->param->hit_flags & 2) {
                 reaction = 4;
             }
@@ -2076,10 +2077,10 @@ void CMonsterMan::ThinkHost() {
             if (monster->mask_flag & 2) {
                 chance = 100;
             }
-            if (target->murderous == 0 && chance < tbl->escape_rate[0]) {
+            if (target->murderous == 0 && chance < tbl->escape_rate0) {
                 monster->req_prog = MONSTER_PROG_ESCAPE_0;
             }
-            if (target->murderous == 1 && chance < tbl->escape_rate[1]) {
+            if (target->murderous == 1 && chance < tbl->escape_rate1) {
                 monster->req_prog = MONSTER_PROG_ESCAPE_1;
             }
             target->murderous_time = 0;

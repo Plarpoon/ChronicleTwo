@@ -62,7 +62,7 @@ void mgCTexAnimeData::Initialize() {
 #ifdef NONMATCHING
 #pragma global_optimizer off
 
-// 99.7% match, 7 words off
+// 99.7% match, 5 words off
 void mgCTextureAnime::TexAnime(int texb, sceVif1Packet *packet) {
     int                      i;
     int                      group;
@@ -476,7 +476,7 @@ void mgCTextureAnime::TexAnime(int texb, sceVif1Packet *packet) {
             int                    *counter = base + 0x61;
             int                     count = base[0x61];
             CList<mgCTexAnimeData> *next;
-            if (count >= wait) {
+            if (wait <= *counter) {
                 *counter = 0;
                 next = node->next;
                 *current = next;

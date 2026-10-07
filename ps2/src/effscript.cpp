@@ -20,11 +20,10 @@
 #include "scene.hpp"
 #include "scenesnd.hpp"
 
-extern "C" void __ct__10CRunScriptFv(void *script);
-extern void    *__vt__9mgCObject[];
-extern void    *__vt__7CObject[];
-extern void    *__vt__12CObjectFrame[];
-extern void    *__vt__11CCharacter2[];
+extern void *__vt__9mgCObject[];
+extern void *__vt__7CObject[];
+extern void *__vt__12CObjectFrame[];
+extern void *__vt__11CCharacter2[];
 
 /**
  *
@@ -46,10 +45,10 @@ union EffectVector {
 #include "event_func.hpp"
 #include "mainloop.hpp"
 #include "snd_mngr.hpp"
-#include "dng_main.hpp"
 
 extern "C" _EFF_SCRIPT *now_script;
 extern "C" int (*ext_func__4[256])(RS_STACKDATA *, int);
+extern CColPrimMan     ColPrimMan;
 EFF_SPT_BASE_DEF      *GetEffSptBaseDefPtr(int index);
 int                    SetEffectScript(CRunScript *script, char *program, mgCMemory *memory);
 void                   SetEffectScriptFunc();
@@ -545,6 +544,7 @@ int CEffectScriptMan::GetNeedFilePath(char *name, char *path, char *pack) {
     return GetNeedFilePath(SearchBaseNo(name), path, pack);
 }
 
+#ifdef NONMATCHING
 _EFF_SCRIPT *CEffectScriptMan::CreateEffSpt(int base_no, int group, int register_in_group) {
     EFF_SPT_BASE *base;
     int           slot;
@@ -609,7 +609,7 @@ _EFF_SCRIPT *CEffectScriptMan::CreateEffSpt(int base_no, int group, int register
     if ((script = (_EFF_SCRIPT *) operator new(
              sizeof(_EFF_SCRIPT), work_memory->Alloc(0x17))) !=
         NULL) {
-        __ct__10CRunScriptFv(&script->run);
+        new (reinterpret_cast<u_long128 *>(&script->run)) CRunScript;
     }
 
     script->work = token;
@@ -733,6 +733,9 @@ _EFF_SCRIPT *CEffectScriptMan::CreateEffSpt(int base_no, int group, int register
     now = script;
     return script;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", CreateEffSpt__16CEffectScriptManFiii);
+#endif
 
 int CEffectScriptMan::CreateEffSpt(char *name, int user_id, int use_slot) {
     _EFF_SCRIPT *effect = CreateEffSpt(SearchBaseNo(name), user_id, use_slot);
@@ -4626,18 +4629,25 @@ int _SCN_GET_ENTRY_OBJ_POS(RS_STACKDATA *stack, int argc) {
     SetStack(stack, pos[2]);
     return 1;
 }
+
+/**
+ *
+ * Tests a segment against scene collision polygons and returns hit details to the script.
+ *
+ */
 int _INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR start;
     sceVu0FVECTOR end;
     sceVu0FVECTOR hit;
     sceVu0FVECTOR reflection;
-    mgVu0FBOX box;
-    CCPoly poly[0x80];
+    mgVu0FBOX     box;
+    CCPoly        poly[0x80];
     sceVu0FVECTOR normal;
 
     if (argc != 8 && argc != 9 && argc != 10 && argc != 11 && argc != 12 && argc != 13 && argc != 14 && argc != 15 && argc != 16) {
         return 0;
     }
+
     int ignore_mask = GetStackInt(stack++);
     GetStackVector(start, stack);
     GetStackVector(end, stack + 3);
@@ -4652,39 +4662,48 @@ int _INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
     box.max[3] = 1.0f;
     box.min[3] = 1.0f;
     int poly_num = now_scene->GetColPoly(poly, box, 0x80);
+
     if (poly_num >= 0x80) {
         printf(at_3303__2, poly_num);
         return 0;
     }
+
     CCPoly *hit_poly = poly;
-    int hit_no = CheckHit(hit_poly, poly_num, start, end, hit, 1, ignore_mask);
-    int foot_sound;
-    int area_kind;
+    int     hit_no = CheckHit(hit_poly, poly_num, start, end, hit, 1, ignore_mask);
+    int     foot_sound;
+    int     area_kind;
+
     if (hit_no >= 0) {
-        hit_poly += hit_no;
+        hit_poly = &hit_poly[hit_no];
         sceVu0Normalize(normal, hit_poly->normal);
         mgReflectionPlane(normal, hit, start, reflection);
         sceVu0Normalize(reflection, reflection);
         foot_sound = hit_poly->foot_sound;
         area_kind = hit_poly->area_kind;
+
         if (foot_sound == 0) {
             CMap *map = now_scene->GetMap(now_scene->active_map);
+
             if (map != NULL) {
                 foot_sound = map->map_info.def_foot;
             }
         }
     }
+
     switch (argc) {
         case 8:
         case 9:
         case 10:
             SetStack(stack++, hit_no);
+
             if (argc >= 9) {
                 SetStack(stack++, area_kind);
             }
+
             if (argc == 10) {
                 SetStack(stack, foot_sound);
             }
+
             break;
         case 11:
         case 12:
@@ -4693,12 +4712,15 @@ int _INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
             SetStack(stack++, hit[1]);
             SetStack(stack++, hit[2]);
             SetStack(stack++, hit_no);
+
             if (argc >= 12) {
                 SetStack(stack++, area_kind);
             }
+
             if (argc == 13) {
                 SetStack(stack, foot_sound);
             }
+
             break;
         case 14:
         case 15:
@@ -4710,18 +4732,23 @@ int _INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
             SetStack(stack++, reflection[1]);
             SetStack(stack++, reflection[2]);
             SetStack(stack++, hit_no);
+
             if (argc >= 15) {
                 SetStack(stack++, area_kind);
             }
+
             if (argc == 16) {
                 SetStack(stack, foot_sound);
             }
+
             break;
         default:
             return 0;
     }
+
     return 1;
 }
+
 /**
  *
  * Plays a sound from the current effect owner character.

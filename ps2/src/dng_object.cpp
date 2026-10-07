@@ -45,7 +45,6 @@
 #include "sound.hpp"
 #include "water.hpp"
 
-extern "C" void *__ct__11mgCDrawPrimFv(void *);
 
 /**
  *
@@ -484,23 +483,19 @@ void CRocketLauncher::Step() {
 }
 
 void CRocketLauncher::Draw() {
-    union {
-        CPreSprite sprite;
-    };
-    float smooth[128][4];
-    int   corner_a[4];
-    int   corner_b[4];
-    float look_matrix[4][4];
-    int   points;
-    int   index;
-    float fade;
-    float size;
-
     if (state == 0) {
         return;
     }
 
-    __ct__11mgCDrawPrimFv(&sprite);
+    CPreSprite sprite;
+    float      smooth[128][4];
+    int        corner_a[4];
+    int        corner_b[4];
+    float      look_matrix[4][4];
+    int        points;
+    int        index;
+    float      fade;
+    float      size;
 
     if (draw_flags & 2) {
         points = CreatSmoothPass(smooth, trail, 0x10, 6, trail_index, 0x10);
@@ -515,11 +510,11 @@ void CRocketLauncher::Draw() {
         sprite.AlphaTestEnable(1);
         sprite.AlphaTest(1, 0);
         sprite.DepthTestEnable(1);
-        sprite.ZMask(MG_Z_MASK_MASKED);
+        sprite.ZMask(-1);
         sprite.Bilinear(1);
         sprite.TextureMapEnable(1);
         sprite.Coord(1);
-        sprite.Begin(MG_PRIM_SPRITE);
+        sprite.Begin(6);
         sprite.Texture(trail_texture);
         sprite.AlphaTestEnable(1);
         sprite.SetAlphaBlend(1);
@@ -646,6 +641,7 @@ void CMachineGun::Set(float *position, float *direction) {
     }
 }
 
+#ifdef NONMATCHING
 void CMachineGun::Step() {
     int i;
 
@@ -727,6 +723,9 @@ void CMachineGun::Step() {
         }
     }
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_object", Step__11CMachineGunFv);
+#endif
 
 void CLaserGun::SetPos(float *start, float *target, float *direction_vec) {
     int i;

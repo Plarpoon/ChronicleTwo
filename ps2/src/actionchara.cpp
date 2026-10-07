@@ -53,7 +53,6 @@ extern char    at_1394[];
 extern char    at_1427[];
 extern char    at_1428[];
 void           GuardEffectSet(CScene *scene, float *point);
-extern "C" void SethitEffect__15CHitEffectImageFPfPfffffii(CHitEffectImage *, float *, float *, float, float, float, float, int, int);
 
 /**
  *
@@ -2572,6 +2571,7 @@ void HitEffectSet(CScene *scene, float *point) {
     CCameraControl  *camera;
     CHitEffectImage *hit;
     CFlushEffect    *flush;
+    float            speed = 50.0f;
 
     camera = (CCameraControl *) scene->GetCamera(scene->active_camera);
 
@@ -2600,7 +2600,7 @@ void HitEffectSet(CScene *scene, float *point) {
     }
 
     if (hit != NULL) {
-        SethitEffect__15CHitEffectImageFPfPfffffii(hit, pos, dir.f, 30.0f, 50.0f, 0.4f, 0.1f, 30, 32);
+        hit->SethitEffect(pos, dir.f, 30.0f, speed * 1.0f, 0.4f, 0.1f, 30, 32);
         hit->kind = 0;
     }
 

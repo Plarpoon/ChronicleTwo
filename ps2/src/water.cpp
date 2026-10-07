@@ -836,20 +836,14 @@ void CWaterFrame::CreatePacket() {
     GetWater()->CreatePacket(&mgDrawManager);
 }
 
-extern "C" void *__vt__11CWaterFrame[];
-extern "C" void __ct__8mgCFrameFv(mgCFrame *frame);
-extern "C" CWater *__ct__6CWaterFv(CWater *water);
 
+#ifdef NONMATCHING
 CWaterFrame *CreateWaterFrame(int rows, int columns, float *min, float *max, mgCMemory *memory) {
     CWaterFrame  *frame;
     CWater       *water;
     mgCFrameAttr *attr;
 
-    if ((frame = (CWaterFrame *) operator new(sizeof(CWaterFrame), memory->Alloc(sizeof(CWaterFrame) / 16 + 2))) != NULL) {
-        __ct__8mgCFrameFv(frame);
-        *(void ***) frame = __vt__11CWaterFrame;
-        frame->Initialize();
-    }
+    frame = new (memory->Alloc(sizeof(CWaterFrame) / 16 + 2)) CWaterFrame;
 
     if (frame == NULL) {
         return NULL;
@@ -865,9 +859,7 @@ CWaterFrame *CreateWaterFrame(int rows, int columns, float *min, float *max, mgC
         attr->alpha_blend = MG_ALPHA_MACRO_BLEND;
     }
 
-    if ((water = (CWater *) operator new(sizeof(CWater), memory->Alloc(sizeof(CWater) / 16 + 2))) != NULL) {
-        water = __ct__6CWaterFv(water);
-    }
+    water = new (memory->Alloc(sizeof(CWater) / 16 + 2)) CWater;
 
     if (water == NULL) {
         return NULL;
@@ -880,6 +872,9 @@ CWaterFrame *CreateWaterFrame(int rows, int columns, float *min, float *max, mgC
     frame->SetBBox(max, min);
     return frame;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", CreateWaterFrame__FiiPfPfP9mgCMemory);
+#endif
 
 void CWaterFrame::Initialize() {
     unk_110 = 0;

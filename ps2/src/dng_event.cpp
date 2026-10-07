@@ -85,45 +85,44 @@ __declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
 }
 
 // Code (.text)
-extern "C" void *__ct__11mgCDrawPrimFv(void *);
+#ifdef NONMATCHING
 void CStartupEpisodeTitle::DrawEpisode(int mes_tex_block, int frame_tex_block) {
-    union { CPreSprite prim; };
-
     if (mes == NULL || state == 0) {
         return;
     }
-    mgTexManager.ReloadTexture(mes_tex_block, (sceVif1Packet *)NULL);
+    mgTexManager.ReloadTexture(mes_tex_block, (sceVif1Packet *) NULL);
     mes->DrawMesWin();
-    mgTexManager.ReloadTexture(frame_tex_block, (sceVif1Packet *)NULL);
-    __ct__11mgCDrawPrimFv(&prim);
-    prim.Initialize(NULL, NULL);
-    prim.Preset2D();
-    prim.Coord(0);
-    prim.TextureMapEnable(1);
-    prim.Begin(MG_PRIM_SPRITE);
-    prim.Texture(TEX_SystenFrame2);
-    int bar_y = mgScreenHeight - 0x38;
-    prim.Color(0x80, 0x80, 0x80, (int)(128.0f * alpha));
-    prim.SetIRect(0x16, bar_y, 0xA, 8, 0x62, 0x38);
-    int bar_w = (int)((float)width * alpha);
-    prim.SetIStretch(0x20, bar_y, bar_w, 8, 0x6C, 0x38, 0xA, 8);
-    prim.SetIRect(bar_w + 0x20, bar_y, 0xA, 8, 0x76, 0x38);
-    int title_y = mgScreenHeight - 0x34;
-    if (LanguageCode == LANG_GERMAN) {
-        int title_x = width / 2 - 8;
-        int shown = (int)(154.0f * reveal);
-        prim.SetScirror(title_x + 0x9A - shown, title_y, shown, 0xE);
-        prim.SetIRect(title_x, title_y, 0x48, 0xE, 0, 0x24);
+    mgTexManager.ReloadTexture(frame_tex_block, (sceVif1Packet *) NULL);
+    CPreSprite sprite;
+    sprite.Initialize(NULL, NULL);
+    sprite.Preset2D();
+    sprite.Coord(0);
+    sprite.TextureMapEnable(1);
+    sprite.Begin(6);
+    sprite.Texture(TEX_SystenFrame2);
+    int y = mgScreenHeight - 0x38;
+    sprite.Color(0x80, 0x80, 0x80, fptosi(128.0f * alpha));
+    sprite.SetIRect(0x16, y, 10, 8, 0x62, 0x38);
+    int fill_width = fptosi((float) width * alpha);
+    sprite.SetIStretch(0x20, y, fill_width, 8, 0x6C, 0x38, 10, 8);
+    sprite.SetIRect(fill_width + 0x20, y, 10, 8, 0x76, 0x38);
+    y = mgScreenHeight - 0x34;
+    int half = width / 2;
+    int revealed = fptosi(154.0f * reveal);
+    if (LanguageCode == 3) {
+        sprite.SetScirror(half + 0x92 - revealed, y, revealed, 0xE);
+        sprite.SetIRect(half - 8, y, 0x48, 0xE, 0, 0x24);
     } else {
-        int title_x = width / 2 - 0x31;
-        int shown = (int)(154.0f * reveal);
-        prim.SetScirror(title_x + 0x9A - shown, title_y, shown, 0xE);
-        prim.SetIRect(title_x, title_y, 0x48, 0xE, 0, 0x24);
-        prim.SetIRect(title_x + 0x48, title_y, 0x52, 0xE, 0, 0x32);
+        sprite.SetScirror(half + 0x69 - revealed, y, revealed, 0xE);
+        sprite.SetIRect(half - 0x31, y, 0x48, 0xE, 0, 0x24);
+        sprite.SetIRect(half + 0x17, y, 0x52, 0xE, 0, 0x32);
     }
-    prim.SetScirror(0, 0, mgScreenWidth - 1, mgScreenHeight - 1);
-    prim.End();
+    sprite.SetScirror(0, 0, mgScreenWidth - 1, mgScreenHeight - 1);
+    sprite.End();
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_event", DrawEpisode__20CStartupEpisodeTitleFii);
+#endif
 void CStartupEpisodeTitle::Switch(int on) {
     char   *title;
     ClsMes *current;

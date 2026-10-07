@@ -201,14 +201,12 @@ int sgInitGyoRace(SubGameInfo *info) {
     int chosen[6];
     int chosen_num = 0;
     int fish = 0;
-    int state_offset = 0;
-    int item_offset = 0;
     do {
-        ((GYORACE_FISH_INF *)((unsigned char *)fish_inf + state_offset))->fish_no = -1;
-        int &number_slot = ((GYORACE_FISH_INF *)((unsigned char *)fish_inf + state_offset))->fish_no;
+        fish_inf[fish].fish_no = -1;
+        int &number_slot = fish_inf[fish].fish_no;
         if (OmakeFlag != 0) {
             CGameDataUsed *race_fish = GetOmakeGyoracer2(fish);
-            CGameDataUsed **item = (CGameDataUsed **)((unsigned char *)game_data + item_offset);
+            CGameDataUsed **item = &game_data[fish];
             *item = race_fish;
             if (*item == NULL) {
                 chosen[chosen_num] = race_rank[1] * 18 + (int)(17.0f * mgRnd());
@@ -224,7 +222,7 @@ int sgInitGyoRace(SubGameInfo *info) {
                 chosen_num++;
             }
         } else if (fish == 0) {
-            *(CGameDataUsed **)((unsigned char *)game_data + item_offset) = GetGyoRaceFish();
+            game_data[fish] = GetGyoRaceFish();
         } else {
             chosen[chosen_num] = race_rank[1] * 18 + (int)(17.0f * mgRnd());
             do {
@@ -238,12 +236,10 @@ int sgInitGyoRace(SubGameInfo *info) {
             int number = chosen[chosen_num];
             CGameDataUsed *race_fish = fish_data.GetRaceFish(race_rank[0], number);
             chosen_num++;
-            *(CGameDataUsed **)((unsigned char *)game_data + item_offset) = race_fish;
+            game_data[fish] = race_fish;
             number_slot = number;
         }
         fish++;
-        state_offset += sizeof(GYORACE_FISH_INF);
-        item_offset += sizeof(CGameDataUsed *);
     } while (fish < 6);
     if (race_rank[1] > 0) {
         if (OmakeFlag == 0) {
@@ -274,54 +270,48 @@ int sgInitGyoRace(SubGameInfo *info) {
     RaceInfo.step_max = 1000;
     RaceInfo.after_goal_step = 20;
     int racer = 0;
-    int progress_offset = 0;
-    int param_offset = 0;
-    int info_offset = 0;
     do {
-        ((grRACE_INFO *)((unsigned char *)&RaceInfo + progress_offset))->progress[0] = new(memory->Alloc(0x5DE)) grRACE_PROGRESS[1000];
+        RaceInfo.progress[racer] = new(memory->Alloc(0x5DE)) grRACE_PROGRESS[1000];
         if (OmakeFlag == 0 && racer == 0) {
-            ((grRACE_INFO *)((unsigned char *)&RaceInfo + param_offset))->fish[0].tactics = GetGyoRaceAquariumNo();
+            RaceInfo.fish[racer].tactics = GetGyoRaceAquariumNo();
         } else if (OmakeFlag != 0) {
-            ((grRACE_INFO *)((unsigned char *)&RaceInfo + param_offset))->fish[0].tactics = GetOmakeGyoracerTactics(racer);
+            RaceInfo.fish[racer].tactics = GetOmakeGyoracerTactics(racer);
         } else {
-            ((grRACE_INFO *)((unsigned char *)&RaceInfo + param_offset))->fish[0].tactics = (int)(6.0f * mgRnd());
-            if (((grRACE_INFO *)((unsigned char *)&RaceInfo + param_offset))->fish[0].tactics > 5) ((grRACE_INFO *)((unsigned char *)&RaceInfo + param_offset))->fish[0].tactics = 5;
+            RaceInfo.fish[racer].tactics = (int)(6.0f * mgRnd());
+            if (RaceInfo.fish[racer].tactics > 5) RaceInfo.fish[racer].tactics = 5;
         }
         int fatigue;
-        CGameDataUsed **item = (CGameDataUsed **)((unsigned char *)game_data + progress_offset);
-        grRACE_INFO *entry = (grRACE_INFO *)((unsigned char *)&RaceInfo + param_offset);
-        char *name = entry->fish[0].name;
+        CGameDataUsed **item = &game_data[racer];
+        grRACE_INFO *entry = &RaceInfo;
+        char *name = entry->fish[racer].name;
         strcpy(name, (*item)->data.fish.name);
         CGameDataUsed *fish_item = *item;
-        entry->fish[0].bonus_type = fish_item->data.fish.kind;
-        entry->fish[0].power = fish_item->data.fish.param[4];
+        entry->fish[racer].bonus_type = fish_item->data.fish.kind;
+        entry->fish[racer].power = fish_item->data.fish.param[4];
         BREEDFISH_USED *data = &fish_item->data.fish;
         if (OmakeFlag == 0 && racer == 0) {
-            if (race_rank[1] == 0) (*(unsigned short *)&data->fatigue)++;
+            if (race_rank[1] == 0) data->fatigue++;
             fish_item = *item;
             BREEDFISH_USED *stamina_pointer = &fish_item->data.fish;
             BREEDFISH_USED *const &stamina_data = stamina_pointer;
             fatigue = (unsigned short)fish_item->data.fish.fatigue;
-            entry->fish[0].stamina = (int)((float)stamina_data->param[3] - (0.1f * (float)(fatigue - 1) * (float)fish_item->data.fish.param[3]));
+            entry->fish[racer].stamina = (int)((float)stamina_data->param[3] - (0.1f * (float)(fatigue - 1) * (float)fish_item->data.fish.param[3]));
             printf(at_1377__4__DATA, fatigue);
         } else {
-            entry->fish[0].stamina = data->param[3];
+            entry->fish[racer].stamina = data->param[3];
         }
         fish_item = *item;
-        entry->fish[0].speed[0] = fish_item->data.fish.param[0];
-        entry->fish[0].speed[1] = fish_item->data.fish.param[1];
-        entry->fish[0].speed[2] = fish_item->data.fish.param[2];
-        entry->fish[0].affinity = fish_item->data.fish.color;
-        entry->fish[0].fish_no = fish_item->item_no;
-        entry->fish[0].lane = lane;
-        ((GYORACE_FISH_INF *)((unsigned char *)fish_inf + info_offset))->lane = lane;
+        entry->fish[racer].speed[0] = fish_item->data.fish.param[0];
+        entry->fish[racer].speed[1] = fish_item->data.fish.param[1];
+        entry->fish[racer].speed[2] = fish_item->data.fish.param[2];
+        entry->fish[racer].affinity = fish_item->data.fish.color;
+        entry->fish[racer].fish_no = fish_item->item_no;
+        entry->fish[racer].lane = lane;
+        fish_inf[racer].lane = lane;
         lane++;
         if (lane >= 6) lane = 0;
-        printf(at_1378__3__DATA, name, entry->fish[0].tactics);
+        printf(at_1378__3__DATA, name, entry->fish[racer].tactics);
         racer++;
-        progress_offset += sizeof(grRACE_PROGRESS *);
-        param_offset += sizeof(grFISH_PARAM);
-        info_offset += sizeof(GYORACE_FISH_INF);
     } while (racer < 6);
     time_max = grGyoRaceSimulate(&RaceInfo);
     for (int racer_no = 0; racer_no < 6; racer_no++) {
@@ -331,19 +321,16 @@ int sgInitGyoRace(SubGameInfo *info) {
     CharaTexb = info->texb;
     CGameDataUsed **item;
     int fish_index = 0;
-    int old_prog_offset = 0;
-    int game_offset = 0;
-    info_offset = 0;
     do {
-        grRACE_PROGRESS *progress = (grRACE_PROGRESS *)((unsigned char *)old_prog + old_prog_offset);
+        grRACE_PROGRESS *progress = &old_prog[fish_index];
         grGetFishProgress(&RaceInfo, fish_index, 0.0f, progress);
         textures = &mgTexManager;
         textures->DeleteBlock(CharaTexb);
-        item = (CGameDataUsed **)((unsigned char *)game_data + game_offset);
+        item = &game_data[fish_index];
         int kind = (*item)->item_no - 0x140;
         if (kind < 0) kind = 17;
         if (LoadFile2(fish_name[kind], buffer, NULL, 0) == 0) return 0;
-        GYORACE_FISH_INF *state = (GYORACE_FISH_INF *)((unsigned char *)fish_inf + info_offset);
+        GYORACE_FISH_INF *state = &fish_inf[fish_index];
         state->chara_no = fish_index + 0x40;
         state->lap = 0;
         state->unk_14 = 0;
@@ -372,9 +359,6 @@ int sgInitGyoRace(SubGameInfo *info) {
         character->SetStep(0.3f);
         FishIMGReplace(buffer, character, (*item)->item_no, &(*item)->data.fish);
         fish_index++;
-        old_prog_offset += sizeof(grRACE_PROGRESS);
-        game_offset += sizeof(CGameDataUsed *);
-        info_offset += sizeof(GYORACE_FISH_INF);
         CharaTexb++;
     } while (fish_index < 6);
     if (texture_buffer != NULL) {
@@ -728,7 +712,7 @@ int sgLoopGyoRace(SubGameInfo *info) {
             mgCTextureManager *textures = &mgTexManager;
             for (int fish = 0; fish < 6; fish++) {
                 CCharacter2      *character = scene->GetCharacter(fish_inf[fish].chara_no);
-                textures->DeleteBlock(*(int *) ((unsigned char *) character + 0x2E4));
+                textures->DeleteBlock(character->texture_block);
                 strcpy(fish_game_data[RaceInfo.rank[fish] - 1].name, (char *) at_1701__DATA);
                 char *name = game_data[fish]->data.fish.name;
                 strncpy(fish_game_data[RaceInfo.rank[fish] - 1].name, name, strlen(name));
@@ -812,15 +796,13 @@ void AutoCam(SubGameInfo *info) {
     float nearest = 9999.0f;
     cam_no = 0;
     int camera = 0;
-    int offset = 0;
     do {
-        float distance = mgDistVector(hero_pos, (float *)((u_char *)cam_pos + offset));
+        float distance = mgDistVector(hero_pos, cam_pos[camera]);
         if (distance < nearest) {
             nearest = distance;
             cam_no = camera;
         }
         camera++;
-        offset += 0x10;
     } while (camera < 5);
     if (old_cam_no != cam_no) {
         if (cam_pos[cam_no][1] < 0.0f) {
@@ -831,7 +813,7 @@ void AutoCam(SubGameInfo *info) {
         camera0.SetPos(cam_pos[cam_no]);
         camera0.SetNextPos(cam_pos[cam_no]);
         mgDistVector(hero_pos, cam_pos[cam_no]);
-        *(int *)((u_char *)scene + 0x2E54) = camera_id;
+        scene->active_camera = camera_id;
         camera0.SetRef(hero_pos);
         camera0.SetNextRef(hero_pos);
         camera0.SetSpeed(0.0f, 0.0f);
@@ -851,24 +833,20 @@ int sgMapDrawGyoRace(SubGameInfo *info) {
 int sgCharaDrawGyoRace(SubGameInfo *info) {
     CScene *scene;
     int     i;
-    int     offset;
     scene = info->scene;
     i = 0;
-    offset = 0;
 
     do {
-        scene->DrawChara(*(int *) ((u_char *) fish_inf + offset + 4), 1);
+        scene->DrawChara(fish_inf[i].chara_no, 1);
         i++;
-        offset += 0x2C;
     } while (i < 6);
 
     mgTexManager.ReloadTexture(EffectTexb, (sceVif1Packet *) NULL);
     int j = 0;
-    offset = 0;
     CHitEffectImage *effect;
 
     do {
-        effect = (CHitEffectImage *) ((u_char *) battle_effect + offset);
+        effect = &battle_effect[j];
 
         if (effect != 0) {
             effect->Step();
@@ -876,7 +854,6 @@ int sgCharaDrawGyoRace(SubGameInfo *info) {
         }
 
         j++;
-        offset += 0x60;
     } while (j < 0x60);
 
     return 0;
@@ -1108,7 +1085,7 @@ int sgSysDrawGyoRace(SubGameInfo *info) {
             spA0.pos = limit;
         }
         bar_done = 326.0f * (spA0.pos / 16.0f);
-        lane = (int *)((u_char *)&RaceInfo + var_17 + 0x48);
+        lane = &RaceInfo.fish[var_16].lane;
         DrawMenuFillBox(41.0f + bar_done, 35.0f + (10.0f * (float) *lane), 326.0f - bar_done, 2.0f, 0x4A, 0x70, 0xD9, 0x8B);
         float filled = 326.0f * (spA0.pos / 16.0f);
         DrawMenuFillBox(41.0f, (float) ((*lane * 0xA) + 0x23), filled, 2.0f, 0x54, 0xE5, 0x8B, 0x29);
@@ -1129,7 +1106,6 @@ int sgSysDrawGyoRace(SubGameInfo *info) {
             }
         }
         var_16 += 1;
-        var_17 += 0x40;
     } while (var_16 < 6);
     mode = race_mode;
     row_index = 0;
@@ -1181,20 +1157,19 @@ int sgSysDrawGyoRace(SubGameInfo *info) {
         float second_base = 60.0f;
         var_17 = (int)(lap_seconds_frames / second_base);
         float second_frames = 60.0f; float centi = 100.0f; var_18 = (int)(centi * (lap_seconds_frames - second_frames * (float)var_17) / second_frames);
-        var_19 = var_19 * 0x14;
-        *(int *)((u_char *)&lap_inf_1798[0][0] + var_19) = var_16;
+        lap_inf_1798[var_19][0] = var_16;
         lap_second_tens = (int)(0.1f * (float) var_17);
-        *(int *)((u_char *)&lap_inf_1798[0][1] + var_19) = lap_second_tens;
-        *(int *)((u_char *)&lap_inf_1798[0][2] + var_19) = var_17 - (lap_second_tens * 0xA);
-        lap_centi_tens = (*(int *)((u_char *)&lap_inf_1798[0][3] + var_19) = (int)(0.1f * (float) var_18));
+        lap_inf_1798[var_19][1] = lap_second_tens;
+        lap_inf_1798[var_19][2] = var_17 - (lap_second_tens * 0xA);
+        lap_centi_tens = (lap_inf_1798[var_19][3] = (int)(0.1f * (float) var_18));
         int centi_units = var_18 - lap_centi_tens * 10;
         var_16 = 0;
         var_17 = 0;
         var_18 = 0;
-        *(int *)((u_char *)&lap_inf_1798[0][4] + var_19) = centi_units;
+        lap_inf_1798[var_19][4] = centi_units;
         var_19 = 0;
         do {
-            if (*(int *)&fish_inf[hero_no].lap < var_16) {
+            if (fish_inf[hero_no].lap < var_16) {
                 sp250.Set(var_18 + 0x1A2, var_17 + 0x41, 0xC, 0xC);
                 sp260.Set(0x138, 0x62, 0xC, 0xC);
                 PrimQuad(wind_tex, sp250, sp260, 0x80, 0x80, 0x80, 0x80);
@@ -1212,7 +1187,7 @@ int sgSysDrawGyoRace(SubGameInfo *info) {
                 PrimQuad(wind_tex, sp2D0, sp2E0, 0x80, 0x80, 0x80, 0x80);
             } else {
                 sp2F0.Set(var_18 + 0x1A2, var_17 + 0x41, 0xC, 0xC);
-                lap = (int *)((u_char *)lap_inf_1798 + var_19);
+                lap = lap_inf_1798[var_19];
                 sp300.Set((lap[0] * 0xC) + 0xC0, 0x62, 0xC, 0xC);
                 PrimQuad(wind_tex, sp2F0, sp300, 0x80, 0x80, 0x80, 0x80);
                 sp310.Set(var_18 + 0x1B0, var_17 + 0x41, 0xC, 0xC);
@@ -1231,7 +1206,7 @@ int sgSysDrawGyoRace(SubGameInfo *info) {
             var_16 += 1;
             var_17 += 0x10;
             var_18 += 2;
-            var_19 += 0x14;
+            var_19++;
         } while (var_16 < 2);
         total_frames = fish_inf[hero_no].time;
         total_minutes = (int)(total_frames / 3600.0f);

@@ -86,30 +86,7 @@ static u_long128 *(*set_data_func[8])(int, int, int **, u_long128 *, u_long128 *
 u_int *GetScrPad() {
     return (u_int *) (buff_id ? 0x70002000 : 0x70000000);
 }
-void SendDMA(void *packet, int size) {
-    packet = (void *)((u_int)packet & 0x0FFFFFFF);
-    if (start_dma) {
-        asm {
-        loop:
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            bc0f loop
-            nop
-        }
-        start_dma = 0;
-    }
-    *(volatile u_int *)0x1000E010 = 0x100;
-    DmaCH8->sadr = (u_int)GetScrPad() & 0x0FFFFFFF;
-    DmaCH8->madr = (u_int)packet;
-    DmaCH8->qwc = size;
-    DmaCH8->chcr.STR = 1;
-    start_dma = 1;
-    buff_id = !buff_id;
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", SendDMA__FPvi);
 #pragma global_optimizer off
 
 int mgSetPkTEX0(u_int *packet, unsigned long tex0, unsigned long tex1) {

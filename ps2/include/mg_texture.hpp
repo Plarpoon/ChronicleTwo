@@ -229,15 +229,15 @@ public:
     int         image_blocks;                /**< GS blocks the pixels of every mip level occupy. */
     int         clut_size;                   /**< GS blocks the palette occupies, or 0 for a true-colour texture. */
     union {
-        u_long    tex0_bits;
+        u_long    tex0_bits; /**< Packed GS TEX0 register value. */
         sceGsTex0 tex0; /**< GS TEX0 value the texture is drawn with. */
     };
     union {
-        u_long    tex1_bits;
+        u_long    tex1_bits; /**< Packed GS TEX1 register value. */
         sceGsTex1 tex1; /**< GS TEX1 value the texture is sampled with. */
     };
     union {
-        u_long     clamp_bits;
+        u_long     clamp_bits; /**< Packed GS CLAMP register value. */
         sceGsClamp clamp; /**< GS CLAMP value the texture is sampled with. */
     };
     u_long128  *image[MG_TEXTURE_LEVEL_MAX]; /**< Pixels of each mip level in main memory, or NULL past the last level. */

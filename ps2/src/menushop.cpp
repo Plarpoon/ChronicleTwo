@@ -1466,11 +1466,8 @@ extern char at_2116__2[];
 extern char at_2117__2[];
 extern char at_2118__2[];
 
-extern "C" void *__ct__14CBaseMenuClassFv(void *);
-extern "C" void *__ct__13CGameDataUsedFv(void *);
-extern "C" void *__vt__9CShopMenu[];
-extern "C" void *__vt__14CMenuQuestView[];
 
+#ifdef NONMATCHING
 void MenuShopInit(mgCMemory *stack, int *tex_block, int arg) {
     int               cfg_size;
     CMenuPosDataForm *form;
@@ -1479,46 +1476,7 @@ void MenuShopInit(mgCMemory *stack, int *tex_block, int arg) {
     int               free_size = stack->stGetRest();
     u_long128        *top = stack->stGetTop();
     MenuLocalStack.stSetBuffer(top, free_size);
-    CShopMenu *menu;
-    if ((menu = (CShopMenu *) operator new(sizeof(CShopMenu), MenuLocalStack.Alloc(0x23))) != NULL) {
-        __ct__14CBaseMenuClassFv(menu);
-        *(void ***) ((u_char *) menu + 0x10C) = __vt__9CShopMenu;
-        __ct__13CGameDataUsedFv(&menu->shop_item);
-        menu->list_pos = 0;
-        menu->list_top = 0;
-        menu->bag_pos = 0;
-        menu->bag_top = 0;
-        menu->key_arg_no = 0;
-        menu->num_cursor = 0;
-        menu->total = 0;
-        menu->cursor_reset = 1;
-        menu->error = -1;
-        menu->num = 0;
-        menu->num_max = 0;
-        menu->arrow_flash[0] = 0;
-        menu->arrow_flash[1] = 0;
-        menu->list_x = 0.0f;
-        menu->list_y = 0.0f;
-        menu->shop_name_ofs_x = 0;
-        menu->shop_name_ofs_y = 0;
-        menu->price_mes_width = 0;
-        menu->unk_1e6 = 0;
-        menu->no_price_mes_width = 0;
-        menu->unk_1ea = 0;
-        menu->scrl_bar_top = NULL;
-        menu->scrl_bar_body = NULL;
-        menu->scrl_bar_bottom = NULL;
-        menu->pack = NULL;
-        menu->pack_size = 0;
-        menu->se_handle = 0;
-        menu->trade_brd = NULL;
-        menu->item_list = NULL;
-        menu->shop_name_brd = NULL;
-        menu->money_brd = NULL;
-        menu->exp_brd = NULL;
-        menu->medal_brd = NULL;
-        menu->item_brd = NULL;
-    }
+    CShopMenu *menu = new (MenuLocalStack.Alloc(0x23)) CShopMenu;
 
     CShopMenuPt = menu;
     CShopMenuPt->SetTexBlock(tex_block);
@@ -1610,6 +1568,9 @@ void MenuShopInit(mgCMemory *stack, int *tex_block, int arg) {
     CheckEnableHaveItemNum();
     CShopMenuPt->InitEnd();
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", MenuShopInit__FP9mgCMemoryPii);
+#endif
 
 int MenuShopKey() {
     return CShopMenuPt->KeyStep();
@@ -1941,6 +1902,7 @@ int CMenuQuestView::KeyStep() {
     return 0;
 }
 
+#ifdef NONMATCHING
 void MenuNPCQuestViewInit(mgCMemory *stack, int *tex_block, int view_mode) {
     Menu_Memo_ViewMode = 0;
 
@@ -1952,11 +1914,7 @@ void MenuNPCQuestViewInit(mgCMemory *stack, int *tex_block, int view_mode) {
     int        free_size = stack->stGetRest();
     u_long128 *top = stack->stGetTop();
     MenuLocalStack.stSetBuffer(top, free_size);
-    CMenuQuestView *view;
-    if ((view = (CMenuQuestView *) operator new(sizeof(CMenuQuestView), MenuLocalStack.Alloc(0x1B))) != NULL) {
-        __ct__14CBaseMenuClassFv(view);
-        *(void ***) ((u_char *) view + 0x10C) = __vt__14CMenuQuestView;
-    }
+    CMenuQuestView *view = new (MenuLocalStack.Alloc(0x1B)) CMenuQuestView;
 
     MenuQuestView = view;
     CQuestManager *quest;
@@ -1971,6 +1929,9 @@ void MenuNPCQuestViewInit(mgCMemory *stack, int *tex_block, int view_mode) {
     MenuQuestView->SetTexBlock(tex_block);
     MenuQuestView->InitEnd();
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", MenuNPCQuestViewInit__FP9mgCMemoryPii);
+#endif
 
 int MenuNPCQuestViewKey() {
     return MenuQuestView->KeyStep();
@@ -1980,6 +1941,7 @@ extern s8    randam_checktbl[];
 extern short tbl_2469[7][12];
 extern short at_2470[12];
 extern char  at_2629__2[];
+#ifdef NONMATCHING
 void MenuNPCQuestViewDraw() {
     int mark_u;
     if (Tex_QuestMemo == NULL) {
@@ -2256,6 +2218,9 @@ void MenuNPCQuestViewDraw() {
         }
     }
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/menushop", MenuNPCQuestViewDraw__Fv);
+#endif
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", dony_shoplist__DATA);

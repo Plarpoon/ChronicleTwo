@@ -40,17 +40,7 @@ extern const unsigned char at_857__DATA[];
  * @address 0x15D470
  * @size 0x2C
  */
-extern "C" int VSyncCallBack__Fi__2(int) {
-    ++vcount__2;
-    if (vcount__2 < 0) {
-        vcount__2 = 0;
-    }
-    asm {
-        sync
-        ei
-    }
-    return 0;
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/main", VSyncCallBack__Fi__2);
 
 /**
  *

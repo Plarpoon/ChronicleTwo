@@ -822,38 +822,33 @@ int sgLoopGyoRace(SubGameInfo *info) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyorace", sgLoopGyoRace__FP11SubGameInfo);
 #endif
 void AutoCam(SubGameInfo *info) {
-    CScene      *scene = info->scene;
+    CScene *scene = info->scene;
     CCharacter2 *hero = scene->GetCharacter(fish_inf[hero_no].chara_no);
-    float        hero_pos[4];
+    float hero_pos[4];
     hero->GetPosition(hero_pos);
     float nearest = 9999.0f;
     cam_no = 0;
     int camera = 0;
     int offset = 0;
-
     do {
-        float distance = mgDistVector(hero_pos, (float *) ((u_char *) cam_pos + offset));
-
+        float distance = mgDistVector(hero_pos, (float *)((u_char *)cam_pos + offset));
         if (distance < nearest) {
             nearest = distance;
             cam_no = camera;
         }
-
         camera++;
         offset += 0x10;
     } while (camera < 5);
-
     if (old_cam_no != cam_no) {
         if (cam_pos[cam_no][1] < 0.0f) {
             sndSetSeVol(gyore_snd_id, 2, sndGetSeDefVol(gyore_snd_id, 2), 0);
         } else {
             sndSetSeVol(gyore_snd_id, 2, 0, 0);
         }
-
         camera0.SetPos(cam_pos[cam_no]);
         camera0.SetNextPos(cam_pos[cam_no]);
         mgDistVector(hero_pos, cam_pos[cam_no]);
-        scene->active_camera = camera_id;
+        *(int *)((u_char *)scene + 0x2E54) = camera_id;
         camera0.SetRef(hero_pos);
         camera0.SetNextRef(hero_pos);
         camera0.SetSpeed(0.0f, 0.0f);
@@ -863,7 +858,6 @@ void AutoCam(SubGameInfo *info) {
         mgDistVector(hero_pos, cam_pos[cam_no]);
         camera0.SetNextRef(hero_pos);
     }
-
     old_cam_no = cam_no;
 }
 

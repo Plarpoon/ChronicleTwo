@@ -173,38 +173,30 @@ int conv_new_text(char *dst, char *src) {
 #pragma global_optimizer off
 
 static int htoi(char *text) {
-    char *end = text;
-    s32   length = 0;
-    s32   value = 0;
-
+    s8 *end = (s8 *)text;
+    s32 length = 0;
+    s32 value = 0;
     while (*end++ != 0) {
         length++;
     }
-
     s32 i;
     s32 place = 1;
-
     for (i = 0; i < length; i++) {
         s32 back = length - i;
-        s32 ch = reinterpret_cast<u8 *>(&text[back])[-1];
+        s32 ch = ((u8 *)(back + (s32)text))[-1];
         s32 digit = 0;
-
         if (ch >= '0' && ch <= '9') {
             digit = ch - '0';
         }
-
         if (ch >= 'a' && ch <= 'f') {
             digit = ch - 'a' + 10;
         }
-
         if (ch >= 'A' && ch <= 'F') {
             digit = ch - 'A' + 10;
         }
-
         value += digit * place;
         place <<= 4;
     }
-
     return value;
 }
 

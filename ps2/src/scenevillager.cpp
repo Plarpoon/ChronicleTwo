@@ -1449,34 +1449,29 @@ int CScene::GetGameObjectEvent(float *position, CSceneEventData *event) {
 
 void CScene::DrawGameObject(int now_map_no) {
     GAMEOBJ_INFO *entry;
-    CCharacter2  *first;
-    CCharacter2  *second;
-    int           i;
-    float         first_point[4];
-    float         second_point[4];
-
+    CCharacter2 *first;
+    CCharacter2 *second;
+    int i;
+    int offset;
+    float first_point[4];
+    float second_point[4];
     if (active_map != 0) {
         return;
     }
-
-    entry = (GAMEOBJ_INFO *) GameObjInfo;
-
+    entry = (GAMEOBJ_INFO *)GameObjInfo;
     for (;;) {
         if (entry->map_no < 0) {
             break;
         }
-
         if (entry->map_no == now_map_no) {
             first = NULL;
             second = NULL;
-
             switch (entry->type) {
                 case 3:
                     if (IsActive(1, SCENE_GAMEOBJ_SLOT_SAVEPOINT) != 0 && IsActive(1, SCENE_GAMEOBJ_SLOT_BOOK) != 0) {
                         first = GetCharacter(SCENE_GAMEOBJ_SLOT_SAVEPOINT);
                         second = GetCharacter(SCENE_GAMEOBJ_SLOT_BOOK);
                     }
-
                     break;
                 case 1:
                 case 2:
@@ -1484,36 +1479,31 @@ void CScene::DrawGameObject(int now_map_no) {
                         first = GetCharacter(SCENE_GAMEOBJ_SLOT_TG);
                         second = GetCharacter(SCENE_GAMEOBJ_SLOT_TG_BASE);
                     }
-
                     break;
             }
+            for (i = 0, offset = 0; i < entry->place_num; offset += 0x10, i++) {
 
-            for (i = 0; i < entry->place_num; i++) {
-                GAMEOBJ_PLACE *place = &entry->place[i];
-                u_long128      point_copy = *(u_long128 *) place;
-                *(u_long128 *) first_point = point_copy;
+                u8 *base = (u8 *)entry + offset;
+                u_long128 point_copy = *(u_long128 *)(base + 0x10);
+                *(u_long128 *)first_point = point_copy;
                 first_point[3] = 1.0f;
-                *(u_long128 *) second_point = *(u_long128 *) place;
+                *(u_long128 *)second_point = *(u_long128 *)(base + 0x10);
                 second_point[3] = 1.0f;
-
                 if (entry->type == 1 || entry->type == 2) {
                     first_point[1] += 60.0f;
                 }
-
                 if (second != NULL) {
                     second->SetPosition(second_point);
-                    second->SetRotation(0.0f, place->rot_y, 0.0f);
+                    second->SetRotation(0.0f, *(float *)(base + 0x1C), 0.0f);
                     second->DrawDirect();
                 }
-
                 if (first != NULL) {
                     first->SetPosition(first_point);
-                    first->SetRotation(0.0f, place->rot_y, 0.0f);
+                    first->SetRotation(0.0f, *(float *)(base + 0x1C), 0.0f);
                     first->DrawDirect();
                 }
             }
         }
-
         entry++;
     }
 }

@@ -3223,38 +3223,34 @@ char *GetMonsterName(int monster_no) {
     return NULL;
 }
 
-int get_gajji_id_from_monster_progress_table(int progress_no, int *column_out) {
+int get_gajji_id_from_monster_progress_table(int progressNo, int *columnOut) {
     int row;
     int column;
-
-    for (row = 0; row < 19; row++) {
-        for (column = 1; column < 5; column++) {
-            if (progress_no == monster_progress_tbl[row * 5 + column]) {
-                if (column_out) {
-                    *column_out = column - 1;
+    int columnOffset;
+    int rowOffset;
+    for (row = 0, rowOffset = 0; row < 19; row++, rowOffset += 10) {
+        for (column = 1, columnOffset = 2; column < 5; column++, columnOffset += 2) {
+            if (progressNo == *(short *)(columnOffset + ((int)monster_progress_tbl + rowOffset))) {
+                if (columnOut) {
+                    *columnOut = column - 1;
                 }
-
                 return monster_progress_tbl[row * 5];
             }
         }
     }
-
     return -1;
 }
 
 int GetMonsterProgressTableNo(int column, int value) {
-    int  row = 0;
-    s16 *entry = &monster_progress_tbl[column + 1];
-
+    int row = 0;
+    int rowOffset = 0;
     do {
-        if (value == *entry) {
+        if (value == *(short *)(rowOffset + (int)&monster_progress_tbl[column] + 2)) {
             return row;
         }
-
         row++;
-        entry += 5;
+        rowOffset += 10;
     } while (row < 19);
-
     return -1;
 }
 

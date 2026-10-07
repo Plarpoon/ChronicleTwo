@@ -10927,22 +10927,20 @@ CGameDataUsed *CItemSelect::GetExistThisPosData(int pos) {
 }
 
 void CItemSelect::CheckUse(CGameDataUsed *item) {
-    int  i;
+    int i;
     int *use_nos;
-    int  use_no;
+    int offset;
+    int use_no;
 
     if (item != NULL) {
         use_nos = &MenuArg.param[1];
-
         if (MenuArg.param[0] != 0 && MenuArg.param[0] == 1) {
 
-            for (i = 0; i < 10; i++) {
-                use_no = use_nos[i];
-
+            for (i = 0, offset = 0; i < 10; i++, offset += 4) {
+                use_no = *(int *)((u8 *)use_nos + offset);
                 if (use_no <= 0) {
                     break;
                 }
-
                 if (use_no == item->item_no) {
                     item->DeleteNum(1);
                     break;

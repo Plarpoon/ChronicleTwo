@@ -892,10 +892,8 @@ void CInventUserData::Initialize() {
 }
 
 void CInventUserData::ResetAddress() {
-    char (*work)[0x2000] = photo_work;
-
     for (int index = 0; index < 30; index++) {
-        photo[index].image = work[index];
+        photo[index].image = (char *)photo_work + index * (int)sizeof(photo_work[0]);
     }
 }
 
@@ -1562,29 +1560,24 @@ char *GetPhotoNameCheck(USER_PICTURE_INFO *info) {
     return result;
 }
 
-int CheckPhotoFlag() {
-    int                added = 0;
-    CInventUserData   *user = GetInventUserDataPtr();
+int CheckPhotoFlag(void) {
+    int added = 0;
+    CInventUserData *user = GetInventUserDataPtr();
     USER_PICTURE_INFO *photos = user->GetPhotoInfo(0);
-    int                i = 0;
-    int                offset = 0;
-
+    int i = 0;
+    int offset = 0;
     do {
-        USER_PICTURE_INFO *info = &photos[i];
-
-        if (info->used != 0) {
+        USER_PICTURE_INFO *info = (USER_PICTURE_INFO *)((u8 *)photos + offset);
+        if (*(signed char *)&*(signed char *)&info->used != 0) {
             short *neta_id = &info->neta_id;
-
             if (0 < *neta_id && user->CheckNetaFlag(*neta_id) < 0) {
                 user->SetNetaFlag(*neta_id);
                 added = 1;
             }
         }
-
         i++;
         offset += sizeof(USER_PICTURE_INFO);
     } while (i < 30);
-
     return added;
 }
 
@@ -2555,70 +2548,61 @@ void CMenuInvent::CreateModeSwapForm(int side) {
 
 void CMenuInvent::GradationSet(int mode) {
     int i = 0;
-
     switch (mode) {
         case 0: {
-            int               j;
+            int j;
             CMenuPosDataForm *form = invent_okeff_form;
-
             if (form != 0) {
                 j = 0;
                 form->rgba[0] = 0x80;
                 form->rgba[1] = 0x80;
                 form->rgba[2] = 0x80;
                 form->rgba[3] = 0;
-
                 do {
                     form->SetRGBACalcParam(j, 0, 0x80);
                     j++;
                 } while (j < 4);
 
                 int offset = 0;
-
                 do {
                     MENUFORMPARTS_TYPE *part =
-                        invent_okeff_form->GetPartInfo(invent_grade_fff[offset / sizeof(invent_grade_fff[0])]);
+                        invent_okeff_form->GetPartInfo(*(char **)((u8 *)invent_grade_fff + offset));
                     i++;
 
-                    part->y = 224.0f;
-                    offset += sizeof(invent_grade_fff[0]);
+                    *(int *)&part->y = 0x43600000;
+                    offset += 4;
                     part->h = 0.0f;
                 } while (i < 2);
             }
-
             gradation_mode = 0;
             return;
         }
         case 1: {
-            int               j;
+            int j;
             CMenuPosDataForm *form = invent_okeff_form;
-
             if (form != 0) {
                 j = 0;
                 form->rgba[0] = 0x80;
                 form->rgba[1] = 0x80;
                 form->rgba[2] = 0x80;
                 form->rgba[3] = 0x80;
-
                 do {
                     form->SetRGBACalcParam(j, 0, 0x80);
                     j++;
                 } while (j < 4);
-
                 GradeRows rows = at_2562;
-
                 do {
                     MENUFORMPARTS_TYPE *part = invent_okeff_form->GetPartInfo(invent_grade_fff[i]);
-                    *(int *) &part->y = 0x43600000;
+                    *(int *)&part->y = 0x43600000;
                     part->h = 0.0f;
-                    int                        row = rows.v[i];
-                    u8                        *first = invent_color_tbl[2][row];
+                    int row = rows.v[i];
+                    u8 *first = invent_color_tbl[2][row];
                     MENU_PARTS_EFFECT_STRUCT1 *first_effect = part->effect;
                     first_effect->param[0] = first[0];
                     first_effect->param[1] = first[1];
                     first_effect->param[2] = first[2];
                     first_effect->param[3] = first[3];
-                    u8                        *second = invent_color_tbl[2][row ^ 1];
+                    u8 *second = invent_color_tbl[2][row ^ 1];
                     MENU_PARTS_EFFECT_STRUCT1 *second_effect = &part->effect[1];
                     second_effect->param[0] = second[0];
                     second_effect->param[1] = second[1];
@@ -2627,26 +2611,22 @@ void CMenuInvent::GradationSet(int mode) {
                     i++;
                 } while (i < 2);
             }
-
             gradation_mode = 1;
             unk_eb0 = 0;
             return;
         }
         case 2: {
             CMenuPosDataForm *form = invent_okeff_form;
-
             if (form != 0) {
                 form->rgba[0] = 0x80;
                 form->rgba[1] = 0x80;
                 form->rgba[2] = 0x80;
                 form->rgba[3] = 0x80;
-
                 do {
                     form->SetRGBACalcParam(i, 0, 0x80);
                     i++;
                 } while (i < 4);
             }
-
             gradation_mode = 2;
             return;
         }

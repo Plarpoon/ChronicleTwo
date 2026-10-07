@@ -3844,36 +3844,30 @@ int _CHANGE_DIR(RS_STACKDATA *stack, int argc) {
 }
 
 int _DELETE_CHARA(RS_STACKDATA *stack, int argc) {
-    int chara_no;
-    int delete_texture = 1;
-    chara_no = GetStackInt(stack++);
-
+    int charaNo;
+    int deleteTexture = 1;
+    charaNo = GetStackInt(stack++);
     if (argc >= 2) {
-        delete_texture = GetStackInt(stack);
+        deleteTexture = GetStackInt(stack);
     }
+    int texBlock = EventScene->GetCharaTexb(charaNo);
 
-    int tex_block = EventScene->GetCharaTexb(chara_no);
-
-    if (tex_block >= 0) {
+    if (texBlock >= 0) {
         mgCTextureManager *manager = &mgTexManager;
-
-        if (delete_texture == 1) {
-            manager->DeleteBlock(tex_block);
+        if (deleteTexture == 1) {
+            manager->DeleteBlock(texBlock);
         }
     }
-
-    EventScene->DeleteChara(chara_no);
+    EventScene->DeleteChara(charaNo);
     int i;
-
-    for (i = 0; i < 32; i++) {
-        CEoh *handle = &EventObjHandleMother.eoh[i];
-
+    int offset;
+    for (i = 0, offset = 0; i < 32; i++, offset += 0x10) {
+        CEoh *handle = (CEoh *)((u8 *)&EventObjHandleMother + offset);
         if (handle->type == 0) {
-            int *chara_slot = &handle->scene_no;
-
-            if (chara_no == handle->scene_no) {
+            int *charaSlot = &handle->scene_no;
+            if (charaNo == handle->scene_no) {
                 handle->type = -1;
-                *chara_slot = -1;
+                *charaSlot = -1;
                 handle->world_coord = 1;
                 handle->object = NULL;
                 handle->object = NULL;
@@ -3883,7 +3877,6 @@ int _DELETE_CHARA(RS_STACKDATA *stack, int argc) {
             }
         }
     }
-
     return 1;
 }
 
@@ -10684,51 +10677,48 @@ int _OBJS_JUMP(RS_STACKDATA *stack, int argc) {
 
 int _OBJS_SET_EOH_FRAME_POS(RS_STACKDATA *stack, int argc) {
     CSceneObjSeq *seq;
-    float         offset[4];
-    int           slot;
-    int           eoh_no;
-    int           frames;
-    char         *frame_name;
+    float offset[4];
+    int slot;
+    int eohNo;
+    int frames;
+    const int vector_bytes = 0x18;
+    char *frameName;
 
     frames = 0;
     mgZeroVector(offset);
-
     switch (argc) {
         case 3:
             slot = GetStackInt(stack++);
-            eoh_no = GetStackInt(stack++);
-            frame_name = GetStackString(stack);
+            eohNo = GetStackInt(stack++);
+            frameName = GetStackString(stack);
             break;
         case 4:
             slot = GetStackInt(stack++);
-            eoh_no = GetStackInt(stack++);
-            frame_name = GetStackString(stack++);
+            eohNo = GetStackInt(stack++);
+            frameName = GetStackString(stack++);
             frames = GetStackInt(stack);
             break;
         case 6:
             slot = GetStackInt(stack++);
-            eoh_no = GetStackInt(stack++);
-            frame_name = GetStackString(stack++);
+            eohNo = GetStackInt(stack++);
+            frameName = GetStackString(stack++);
             GetStackVector(offset, stack);
             break;
         case 7:
             slot = GetStackInt(stack++);
-            eoh_no = GetStackInt(stack++);
-            frame_name = GetStackString(stack++);
+            eohNo = GetStackInt(stack++);
+            frameName = GetStackString(stack++);
             GetStackVector(offset, stack);
 
-            stack += 3;
+            stack = (RS_STACKDATA *)((u8 *)stack + vector_bytes);
             frames = GetStackInt(stack);
             break;
     }
-
     seq = GetObjSeq(slot);
-
     if (seq == NULL) {
         return 0;
     }
-
-    seq->SetEohFramePos(eoh_no, frame_name, frames, offset);
+    seq->SetEohFramePos(eohNo, frameName, frames, offset);
     return 1;
 }
 int _OBJS_ADD_POS(RS_STACKDATA *stack, int argc) {
@@ -16856,10 +16846,9 @@ int _AMG_GET_ATTR_STATUS(RS_STACKDATA *stack, int argc) {
     if (argc != 4) {
         return 0;
     }
-
     GetStackVector(position, stack);
 
-    stack += 3;
+    stack = (RS_STACKDATA *)((u8 *)stack + 0x18);
     SetStack(stack, AutoMapGen.GetAttrStatus(position));
     return 1;
 }

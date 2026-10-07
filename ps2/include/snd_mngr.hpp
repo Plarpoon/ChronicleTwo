@@ -17,6 +17,11 @@
 
 class mgCMemory;
 class sndCSeSeqData;
+enum SYSTEM_SE {
+    SYSTEM_SE_CURSOR = 0,
+    SYSTEM_SE_DECIDE = 1,
+};
+
 
 /**
  *
@@ -69,6 +74,10 @@ enum sndSQ_STATE {
     SND_SQ_STATE_PLAY = 1,       /**< The sequence is playing. */
     SND_SQ_STATE_PAUSE = 2,      /**< The sequence was paused through its sound effect. */
     SND_SQ_STATE_PORT_PAUSE = 3, /**< The sequence was paused through its port. */
+};
+
+enum sndSTREAM_STATE {
+    SND_STREAM_STATE_PLAYING = 0x1000,
 };
 
 /**

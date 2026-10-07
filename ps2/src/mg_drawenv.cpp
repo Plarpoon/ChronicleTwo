@@ -97,17 +97,17 @@ void mgRENDER_INFO::Initialize() {
     draw_env[1].Initialize(1);
     fog_enable = 0;
     plight_enable = 0;
-    unk_fac = 1;
+    lighting_enabled = 1;
     motion = 0;
     all_scissor = 0;
     light_changed = 1;
 }
 
-#ifdef NONMATCHING
 void mgRENDER_INFO::SetRenderInfo(float projection, int width, int height, float near_dist,
                                   float far_dist, int zdepth, float aspect_y) {
     float z_range = 1.67e7f;
-    if (zdepth == 16) {
+    switch (zdepth) {
+    case 16:
         z_range = 65000.0f;
     }
     if (near_dist < 0.0f) {
@@ -116,7 +116,9 @@ void mgRENDER_INFO::SetRenderInfo(float projection, int width, int height, float
     if (far_dist < 0.0f) {
         far_dist = clip_max[2];
     }
-    float depth_offset = (near_dist * far_dist * (z_range - 0.0f)) / (far_dist - near_dist);
+    float z_min = 0.0f;
+    float depth_offset = (near_dist * far_dist * (z_range - z_min)) / (far_dist - near_dist);
+    float depth_z = -(z_range * near_dist - z_min * far_dist) / (far_dist - near_dist);
 
     if (projection > 0.0f) {
         this->projection = projection;
@@ -158,8 +160,9 @@ void mgRENDER_INFO::SetRenderInfo(float projection, int width, int height, float
     screen_box_max[2] = 0.0f;
     screen_box_max[3] = clip_max[2];
 
-    gs_box_min[0] = -2047.0f;
-    gs_box_min[1] = -2047.0f;
+    float gs_half = 2047.0f;
+    gs_box_min[0] = -gs_half;
+    gs_box_min[1] = -gs_half;
     gs_box_min[2] = 0.0f;
     gs_box_min[3] = clip_min[2];
     gs_box_max[0] = 2047.0f;
@@ -178,16 +181,16 @@ void mgRENDER_INFO::SetRenderInfo(float projection, int width, int height, float
     float near_z = clip_min[2];
     float eye = this->projection;
     float clip_half_w = (near_z * guard_half_w) / eye;
-    float clip_half_full = (near_z * 2047.0f) / eye;
-    proj[0][0] = near_z / clip_half_w;
-    float far_z = clip_max[2];
     float clip_half_h = (near_z * guard_half_h) / eye;
+    float clip_half_full = (near_z * gs_half) / eye;
+    float far_z = clip_max[2];
+    proj[0][0] = near_z / clip_half_w;
     proj[1][1] = near_z / clip_half_h;
     float depth_scale = (far_z + near_z) / (far_z - near_z);
     float depth_bias = (far_z * near_z * -2.0f) / (far_z - near_z);
     proj[2][2] = depth_scale;
-    proj[2][3] = 1.0f;
     proj[3][2] = depth_bias;
+    proj[2][3] = 1.0f;
     proj[3][3] = 0.0f;
     mgMulMatrix(view_clip, proj, aspect);
 
@@ -195,33 +198,33 @@ void mgRENDER_INFO::SetRenderInfo(float projection, int width, int height, float
     proj[0][0] = near_z / clip_half_full;
     proj[1][1] = proj[0][0];
     proj[2][2] = depth_scale;
-    proj[2][3] = 1.0f;
     proj[3][2] = depth_bias;
+    proj[2][3] = 1.0f;
     proj[3][3] = 0.0f;
     mgMulMatrix(view_clip_full, proj, aspect);
 
     sceVu0UnitMatrix(clip_screen);
-    float eye_scale = eye * 1.0f;
-    clip_screen[0][0] = (clip_half_w * eye_scale) / near_z;
-    clip_screen[1][1] = (clip_half_h * eye_scale) / near_z;
-    clip_screen[2][2] = (-z_range + 0.0f) / 2.0f;
-    clip_screen[3][2] = (z_range + 0.0f) / 2.0f;
+    float one = 1.0f;
+    float two = 2.0f;
+    eye = eye * one;
+    clip_screen[0][0] = (clip_half_w * eye) / near_z;
+    clip_screen[1][1] = (clip_half_h * eye) / near_z;
+    clip_screen[2][2] = (-z_range + z_min) / two;
+    clip_screen[3][2] = (z_range + z_min) / 2.0f;
     clip_screen[3][0] = 2048.0f;
     clip_screen[3][1] = 2048.0f;
     clip_screen[3][3] = 1.0f;
     sceVu0CopyMatrix(clip_screen_full, clip_screen);
-    float full_scale = (clip_half_full * eye_scale) / near_z;
+    float full_scale = (clip_half_full * eye) / near_z;
     clip_screen_full[0][0] = full_scale;
     clip_screen_full[1][1] = full_scale;
 
     // Direct projection to GS screen coordinates: the screen centre is added in proportion to depth.
     sceVu0FMATRIX persp;
     sceVu0UnitMatrix(persp);
-    persp[0][0] = this->projection;
-    persp[1][1] = persp[0][0];
-    persp[2][0] = 2048.0f;
-    persp[2][1] = 2048.0f;
-    persp[2][2] = -(z_range * near_dist - far_dist * 0.0f) / (far_dist - near_dist);
+    persp[0][0] = persp[1][1] = this->projection;
+    persp[2][0] = persp[2][1] = 2048.0f;
+    persp[2][2] = depth_z;
     persp[2][3] = 1.0f;
     persp[3][2] = depth_offset;
     persp[3][3] = 0.0f;
@@ -229,9 +232,6 @@ void mgRENDER_INFO::SetRenderInfo(float projection, int width, int height, float
 
     SetViewMatrix(view, camera_pos);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawenv", SetRenderInfo__13mgRENDER_INFOFfiiffif);
-#endif
 
 void mgRENDER_INFO::SetViewMatrix(float (*view)[4], float *camera_pos) {
     sceVu0CopyVector(this->camera_pos, camera_pos);

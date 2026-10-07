@@ -137,15 +137,15 @@ public:
  */
 class CWater : public mgCVisual {
 public:
-    float        *height_a; /**< First of the two wave-height buffers. */
-    float        *height_b; /**< Second of the two wave-height buffers. */
-    mgCTexture   *texture;  /**< Texture the surface is drawn with, or NULL for none. */
-    u_int         packet;   /**< Address of the packet that draws the grid, built by CreatePacket. */
-    int           color[4]; /**< Red, green, blue and alpha channels of the surface. */
-    float         speed;    /**< Speed the ripples travel across the grid at. */
-    float         damping;  /**< Rate the ripples lose height at. */
-    float         unk_48;
-    float         unk_4c;
+    float        *height_a;       /**< First of the two wave-height buffers. */
+    float        *height_b;       /**< Second of the two wave-height buffers. */
+    mgCTexture   *texture;        /**< Texture the surface is drawn with, or NULL for none. */
+    u_int         packet;         /**< Address of the packet that draws the grid, built by CreatePacket. */
+    int           color[4];       /**< Red, green, blue and alpha channels of the surface. */
+    float         speed;          /**< Speed the ripples travel across the grid at. */
+    float         damping;        /**< Rate the ripples lose height at. */
+    float         surface_param0; /**< First surface parameter sent to the water rendering packet. */
+    float         surface_param1; /**< Second surface parameter sent to the water rendering packet. */
     int           unk_50;
     int           rows;    /**< Grid points along the x axis. */
     int           columns; /**< Grid points along the z axis. */

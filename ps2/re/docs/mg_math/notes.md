@@ -150,3 +150,7 @@ assembly version in ordinary PS2 builds.
 - `mgInversMatrix` computes the inverse of the 3x3 linear portion using cofactors, then the
   translated fourth row. Like retail, it has no singular-matrix guard. Division and accumulation
   differ from VU0 at instruction and rounding level.
+
+The VU0 vector and matrix routines in this unit retain their guarded C++ drafts
+and retail `INCLUDE_ASM` entries. Handwritten assembly bodies promoted into the
+C++ source do not count as matched decompilations.

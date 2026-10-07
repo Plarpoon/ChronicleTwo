@@ -1046,8 +1046,8 @@ void CActionChara::StepEffect() {
 
                         if (start_frame != NULL && end_frame != NULL) {
                             sword_effect[slot->sword_no]->StartEffect(
-                                start_frame, end_frame, slot->unk_1c, slot->fade_time,
-                                slot->unk_1d);
+                                start_frame, end_frame, slot->length, slot->fade_time,
+                                slot->hold_time);
                             slot->wait = 5;
                         }
                     }
@@ -1386,18 +1386,15 @@ int Check_LockOn(CScene *scene, float range, int index) {
 
     return farther = farther ^ 1;
 }
-#ifdef NONMATCHING
 void CActionChara::CollisionCheck(float *pos, float *velocity, float *out_velocity) {
-    sceVu0FVECTOR       next_position;
-    sceVu0FVECTOR       flat_position;
-    sceVu0FVECTOR       body_position;
-    sceVu0FVECTOR       push_direction;
-    CActiveMonster     *monster;
+    sceVu0FVECTOR      next_position;
+    sceVu0FVECTOR      flat_position;
+    sceVu0FVECTOR      body_position;
+    sceVu0FVECTOR      push_direction;
     CHARA_ENTRY_OBJECT *body;
-    float               distance;
-    float               separation;
-    int                 index;
-    int                 body_no;
+    float              distance;
+    float              separation;
+    int                index;
 
     sceVu0CopyVector(out_velocity, velocity);
     next_position[0] = pos[0] + out_velocity[0];
@@ -1408,7 +1405,7 @@ void CActionChara::CollisionCheck(float *pos, float *velocity, float *out_veloci
     flat_position[1] = 0.0f;
 
     for (index = 24; index < 48; index++) {
-        monster = static_cast<CActiveMonster *>(nowScene__2->GetCharacter(index));
+        CActiveMonster *monster = (CActiveMonster *)nowScene__2->GetCharacter(index);
         if (monster == NULL || monster->chara_kind != ACTION_KIND_SCRIPT ||
             monster->state == ACTIVE_MONSTER_NONE ||
             (monster->state == ACTIVE_MONSTER_DEAD && monster->alpha < 0.6f) ||
@@ -1416,37 +1413,41 @@ void CActionChara::CollisionCheck(float *pos, float *velocity, float *out_veloci
             (monster->attrib & MONSTER_ATTRIB_NO_BODY_HIT) != 0) {
             continue;
         }
-        body_no = 0;
-        body = monster->GetEntryObjectPos(4, body_no, body_position);
-        while (body != NULL) {
-            if (body->enable != 0 &&
-                next_position[1] + body->unk_04 >= body_position[1] - body_height &&
-                next_position[1] - body->unk_04 <= body_position[1] + body_height) {
-                body_position[1] = 0.0f;
-                separation = 2.0f * body->unk_04 + 2.0f * body_width;
-                distance = mgDistVector(body_position, flat_position);
-                if (distance < separation) {
-                    separation -= distance;
-                    push_direction[0] = flat_position[0] - body_position[0];
-                    push_direction[1] = flat_position[1] - body_position[1];
-                    push_direction[2] = flat_position[2] - body_position[2];
-                    push_direction[3] = 1.0f;
-                    sceVu0Normalize(push_direction, push_direction);
-                    out_velocity[0] = (out_velocity[0] + push_direction[0] * separation) / 2.0f;
-                    out_velocity[1] = (out_velocity[1] + push_direction[1] * separation) / 2.0f;
-                    out_velocity[2] = (out_velocity[2] + push_direction[2] * separation) / 2.0f;
-                    out_velocity[3] = 1.0f;
-                    sceVu0ScaleVector(out_velocity, out_velocity, 1.5f);
-                }
+        int body_no = 0;
+        for (body = monster->GetEntryObjectPos(4, body_no, body_position); body != NULL;
+             body = monster->GetEntryObjectPos(4, body_no, body_position)) {
+            if (body->enable == 0) {
+                body_no++;
+                continue;
+            }
+            if (next_position[1] + body->unk_04 < body_position[1] - body_height) {
+                body_no++;
+                continue;
+            }
+            if (!(next_position[1] - body->unk_04 <= body_position[1] + body_height)) {
+                body_no++;
+                continue;
+            }
+            body_position[1] = 0.0f;
+            separation = 2.0f * body->unk_04 + 2.0f * body_width;
+            distance = mgDistVector(body_position, flat_position);
+            if (distance < separation) {
+                separation -= distance;
+                push_direction[0] = flat_position[0] - body_position[0];
+                push_direction[1] = flat_position[1] - body_position[1];
+                push_direction[2] = flat_position[2] - body_position[2];
+                push_direction[3] = 1.0f;
+                sceVu0Normalize(push_direction, push_direction);
+                out_velocity[0] = (out_velocity[0] + push_direction[0] * separation) / 2.0f;
+                out_velocity[1] = (out_velocity[1] + push_direction[1] * separation) / 2.0f;
+                out_velocity[2] = (out_velocity[2] + push_direction[2] * separation) / 2.0f;
+                out_velocity[3] = 1.0f;
+                sceVu0ScaleVector(out_velocity, out_velocity, 1.5f);
             }
             body_no++;
-            body = monster->GetEntryObjectPos(4, body_no, body_position);
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", CollisionCheck__12CActionCharaFPfPfPf);
-#endif
 void CActionChara::RockOn() {
     float            own_pos[4];
     float            target_pos[4];
@@ -1514,32 +1515,26 @@ void CActionChara::RockOn() {
         }
     }
 }
-#ifdef NONMATCHING
 int CActionChara::HumanMoveIF() {
-    sceVu0FVECTOR   position;
-    sceVu0FVECTOR   rotation;
-    sceVu0FVECTOR   move_velocity;
-    sceVu0FVECTOR   stick_vector = {0.0f, 0.0f, 0.0f, 1.0f};
-    sceVu0FVECTOR   target_position;
-    CActiveMonster *target;
-    float           camera_angle;
-    float           stick_x;
-    float           stick_y;
-    float           move_x;
-    float           move_z;
-    float           move_speed;
-    float           acceleration_step;
-    float           acceleration;
-    float           stick_direction;
-    float           angle_change;
-    float           turn_penalty;
-    float           relative_angle;
-    float           facing;
-    float           motion_speed;
-    float           abs_x;
-    float           abs_z;
-    s8              boss;
-
+    sceVu0FVECTOR position;
+    sceVu0FVECTOR rotation;
+    sceVu0FVECTOR move_velocity;
+    CActionChara *target;
+    float         camera_angle;
+    float         stick_x;
+    float         stick_y;
+    float         move_x;
+    float         move_z;
+    float         move_speed;
+    float         acceleration_step;
+    float         acceleration;
+    float         stick_direction;
+    float         angle_change;
+    float         turn_penalty;
+    float         relative_angle;
+    float         facing;
+    float         motion_speed;
+    int           boss;
     GetPosition(position);
     GetRotation(rotation);
     sceVu0CopyVector(move_velocity, velocity);
@@ -1553,17 +1548,18 @@ int CActionChara::HumanMoveIF() {
         move_x *= 0.5f;
         move_z *= 0.5f;
     }
-    stick_vector[0] = move_x;
-    stick_vector[2] = move_z;
+    sceVu0FVECTOR stick_vector = {move_x, 0.0f, move_z, 1.0f};
+    sceVu0FVECTOR target_position;
     move_speed = 3.0f;
     if (lock_on != 0) {
         move_speed = 1.8f;
     }
+    acceleration = move_accel;
     acceleration_step = move_speed / 8.0f;
     if (acceleration_step > 0.5f) {
         acceleration_step = 0.5f;
     }
-    acceleration = move_accel + acceleration_step;
+    acceleration += acceleration_step;
     if (acceleration > 1.0f) {
         acceleration = 1.0f;
     }
@@ -1576,9 +1572,7 @@ int CActionChara::HumanMoveIF() {
     if (angle_change < -3.1415927f) {
         angle_change += 6.2831855f;
     }
-    if (angle_change < 0.0f) {
-        angle_change = -angle_change;
-    }
+    angle_change = mgAbs(angle_change);
     old_angle = stick_direction;
     turn_penalty = 1.5f * (angle_change / 3.1415927f);
     if (turn_penalty > 1.0f) {
@@ -1589,8 +1583,8 @@ int CActionChara::HumanMoveIF() {
         acceleration = 0.0f;
     }
     move_accel = acceleration;
-    move_velocity[0] = acceleration * ((float) mgFrameRate * (move_x * move_speed));
-    move_velocity[2] = acceleration * ((float) mgFrameRate * (move_z * move_speed));
+    move_velocity[0] = acceleration * ((float)mgFrameRate * (move_x * move_speed));
+    move_velocity[2] = acceleration * ((float)mgFrameRate * (move_z * move_speed));
     relative_angle = atan2f(move_x, move_z) - rotation[1];
     if (relative_angle > 3.1415927f) {
         relative_angle -= 6.2831855f;
@@ -1605,9 +1599,7 @@ int CActionChara::HumanMoveIF() {
     if (angle_change < -3.1415927f) {
         angle_change += 6.2831855f;
     }
-    if (angle_change < 0.0f) {
-        angle_change = -angle_change;
-    }
+    angle_change = mgAbs(angle_change);
     if (angle_change / 3.1415927f < 0.3f) {
         stick_time++;
     } else {
@@ -1621,9 +1613,9 @@ int CActionChara::HumanMoveIF() {
     target = NULL;
     boss = 0;
     if (lock_on != 0) {
-        target = static_cast<CActionChara *>(nowScene__2->GetCharacter(target_no));
+        target = (CActionChara *)nowScene__2->GetCharacter(target_no);
         if (target != NULL) {
-            boss = target->tbl->boss;
+            boss = ((CActiveMonster *)target)->tbl->boss;
         }
     }
     if (move_x != 0.0f || move_z != 0.0f) {
@@ -1632,7 +1624,7 @@ int CActionChara::HumanMoveIF() {
         stand_flag = 1;
     }
     if (lock_on != 0 && boss == 0) {
-        if (unk_75e != 0) {
+        if (battle_stance != 0) {
             SetMotion("\x83o\x83g\x83\x8B\x97\xA7\x82\xBF", 0, 1);
         } else {
             SetMotion("\x97\xA7\x82\xBF", 0, 1);
@@ -1649,17 +1641,10 @@ int CActionChara::HumanMoveIF() {
                 if (relative_angle > 3.1415927f) {
                     relative_angle -= 6.2831855f;
                 }
-                abs_x = move_x;
-                if (abs_x < 0.0f) {
-                    abs_x = -abs_x;
-                }
-                abs_z = move_z;
-                if (abs_z < 0.0f) {
-                    abs_z = -abs_z;
-                }
-                motion_speed = abs_x;
-                if (abs_x <= abs_z) {
-                    motion_speed = abs_z;
+                if (mgAbs(move_x) > mgAbs(move_z)) {
+                    motion_speed = mgAbs(move_x);
+                } else {
+                    motion_speed = mgAbs(move_z);
                 }
                 if (relative_angle > -1.0f && relative_angle < 1.0f) {
                     SetMotion("\x83o\x83g\x83\x8B\x95\xE0\x82\xAB\x81i\x91O\x81j", 0, 1);
@@ -1668,9 +1653,7 @@ int CActionChara::HumanMoveIF() {
                     SetMotion("\x83o\x83g\x83\x8B\x95\xE0\x82\xAB\x81i\x8C\xE3\x81j", 0, 1);
                 }
                 if (relative_angle > 1.0f && relative_angle < 2.4f) {
-                    SetMotion("\x83o\x83g\x83\x8B\x95\xE0\x82\xAB\x81i\x89"
-                              "E\x81j",
-                              0, 1);
+                    SetMotion("\x83o\x83g\x83\x8B\x95\xE0\x82\xAB\x81i\x89" "E\x81j", 0, 1);
                 }
                 if (relative_angle < -1.0f && relative_angle > -2.4f) {
                     SetMotion("\x83o\x83g\x83\x8B\x95\xE0\x82\xAB\x81i\x8D\xB6\x81j", 0, 1);
@@ -1694,7 +1677,7 @@ int CActionChara::HumanMoveIF() {
             SetStep(motion_speed);
         }
     } else {
-        if (unk_75e != 0 || boss != 0) {
+        if (battle_stance != 0 || boss != 0) {
             SetMotion("\x83o\x83g\x83\x8B\x97\xA7\x82\xBF", 0, 1);
         } else {
             SetMotion("\x97\xA7\x82\xBF", 0, 1);
@@ -1706,7 +1689,7 @@ int CActionChara::HumanMoveIF() {
     }
     menu_flag = 1;
     if (GamePad__2.Down(PAD_RIGHT) != 0) {
-        sndSePlay(SystemSND_ID, 0, 0);
+        sndSePlay(SystemSND_ID, SYSTEM_SE_CURSOR, 0);
         if (DngStatus.active_item == 2) {
             DngStatus.active_item = 0;
         } else {
@@ -1714,7 +1697,7 @@ int CActionChara::HumanMoveIF() {
         }
     }
     if (GamePad__2.Down(PAD_LEFT) != 0) {
-        sndSePlay(SystemSND_ID, 0, 0);
+        sndSePlay(SystemSND_ID, SYSTEM_SE_CURSOR, 0);
         if (DngStatus.active_item == 0) {
             DngStatus.active_item = 2;
         } else {
@@ -1736,23 +1719,18 @@ int CActionChara::HumanMoveIF() {
     RockOn();
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", HumanMoveIF__12CActionCharaFv);
-#endif
-#ifdef NONMATCHING
 int CActionChara::HumanShrowMoveIF() {
-    sceVu0FVECTOR   position;
-    sceVu0FVECTOR   move_velocity;
-    sceVu0FVECTOR   target_position;
-    CActiveMonster *target;
-    float           camera_angle;
-    float           stick_x;
-    float           stick_y;
-    float           move_x;
-    float           move_z;
-    float           motion_speed;
-    float           abs_x;
-    float           abs_z;
+    float         camera_angle;
+    sceVu0FVECTOR position;
+    float         stick_x;
+    float         stick_y;
+    sceVu0FVECTOR move_velocity;
+    CActionChara *target;
+    float         move_z;
+    sceVu0FVECTOR target_position;
+    float         rotation;
+    float         speed;
+    float         move_x;
 
     GetPosition(position);
     sceVu0CopyVector(move_velocity, velocity);
@@ -1767,8 +1745,8 @@ int CActionChara::HumanShrowMoveIF() {
     }
     move_x *= 0.8f;
     move_z *= 0.8f;
-    move_velocity[0] = 2.0f * move_x * (float) mgFrameRate;
-    move_velocity[2] = 2.0f * move_z * (float) mgFrameRate;
+    move_velocity[0] = 2.0f * move_x * (float)mgFrameRate;
+    move_velocity[2] = 2.0f * move_z * (float)mgFrameRate;
     if (move_x != 0.0f || move_z != 0.0f) {
         stand_flag = 0;
     } else {
@@ -1776,38 +1754,30 @@ int CActionChara::HumanShrowMoveIF() {
     }
     SetMotion("\x8E\x9D\x82\xBF\x8F\xE3\x82\xB0\x92\xE2\x8E~", 0, 1);
     if (move_x != 0.0f || move_z != 0.0f) {
-        SetRotation(0.0f, unitRotation(CObjectFrame::frame, atan2f(move_x, move_z), 5.0f), 0.0f);
-        abs_x = move_x;
-        if (abs_x < 0.0f) {
-            abs_x = -abs_x;
+        rotation = unitRotation(CObjectFrame::frame, atan2f(move_x, move_z), 5.0f);
+        SetRotation(0.0f, rotation, 0.0f);
+        if (mgAbs(move_x) > mgAbs(move_z)) {
+            speed = mgAbs(move_x);
+        } else {
+            speed = mgAbs(move_z);
         }
-        abs_z = move_z;
-        if (abs_z < 0.0f) {
-            abs_z = -abs_z;
-        }
-        motion_speed = abs_x;
-        if (abs_x <= abs_z) {
-            motion_speed = abs_z;
-        }
-        if (motion_speed > 0.5f) {
-            motion_speed = 0.5f;
+        if (speed > 0.5f) {
+            speed = 0.5f;
         }
         SetMotion("\x8E\x9D\x82\xBF\x8F\xE3\x82\xB0\x95\xE0\x82\xAB", 0, 1);
-        SetStep(0.5f * motion_speed);
+        SetStep(0.5f * speed);
     } else if (lock_on != 0) {
-        target = static_cast<CActionChara *>(nowScene__2->GetCharacter(target_no));
+        target = (CActionChara *)nowScene__2->GetCharacter(target_no);
         if (target->chara_kind == ACTION_KIND_SCRIPT) {
             target->GetEntryObjectPos(0, 0, target_position);
-            SetRotation(0.0f, unitRotation(CObjectFrame::frame, atan2f(target_position[0] - position[0], target_position[2] - position[2]), 5.0f), 0.0f);
+            rotation = unitRotation(CObjectFrame::frame, atan2f(target_position[0] - position[0], target_position[2] - position[2]), 5.0f);
+            SetRotation(0.0f, rotation, 0.0f);
         }
     }
     sceVu0CopyVector(velocity, move_velocity);
     RockOn();
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", HumanShrowMoveIF__12CActionCharaFv);
-#endif
 int CActionChara::HumanTameMoveIF() {
     float position[4];
     float movement[4];
@@ -1846,29 +1816,28 @@ int CActionChara::HumanTameMoveIF() {
     return 1;
 }
 
-#ifdef NONMATCHING
 int CActionChara::HumanGunMoveIF(char *stand_motion, char *move_motion) {
-    sceVu0FVECTOR   position;
-    sceVu0FVECTOR   move_velocity;
-    sceVu0FVECTOR   target_position;
-    CActiveMonster *target;
-    float           camera_angle;
-    float           stick_x;
-    float           stick_y;
-    float           move_x;
-    float           move_z;
+    sceVu0FVECTOR position;
+    sceVu0FVECTOR move_velocity;
+    sceVu0FVECTOR target_position;
+    CActionChara *target;
+    float         camera_angle;
+    float         stick_x;
+    float         stick_y;
 
     GetPosition(position);
+    float move_x, move_z;
     sceVu0CopyVector(move_velocity, velocity);
     camera_angle = action_info.camera->GetAngle();
-    stick_x = GamePad__2.GetLXf();
-    stick_y = GamePad__2.GetLYf();
+    CGamePad *pad = &GamePad__2;
+    stick_x = pad->GetLXf();
+    stick_y = pad->GetLYf();
     move_x = stick_x * cosf(camera_angle) + stick_y * sinf(camera_angle);
     move_z = -stick_x * sinf(camera_angle) + stick_y * cosf(camera_angle);
     move_x *= 0.2f;
     move_z *= 0.2f;
-    move_velocity[0] = 2.0f * move_x * (float) mgFrameRate;
-    move_velocity[2] = 2.0f * move_z * (float) mgFrameRate;
+    move_velocity[0] = 2.0f * move_x * (float)mgFrameRate;
+    move_velocity[2] = 2.0f * move_z * (float)mgFrameRate;
     SetMotion(stand_motion, 0, 1);
     if (move_x != 0.0f || move_z != 0.0f) {
         stand_flag = 0;
@@ -1876,51 +1845,49 @@ int CActionChara::HumanGunMoveIF(char *stand_motion, char *move_motion) {
         stand_flag = 1;
     }
     if (lock_on != 0) {
-        target = static_cast<CActionChara *>(nowScene__2->GetCharacter(target_no));
+        target = (CActionChara *)nowScene__2->GetCharacter(target_no);
         if (target != NULL && target->chara_kind == ACTION_KIND_SCRIPT) {
             target->GetEntryObjectPos(0, 0, target_position);
-            SetRotation(0.0f, unitRotation(CObjectFrame::frame, atan2f(target_position[0] - position[0], target_position[2] - position[2]), 5.0f), 0.0f);
+            float target_angle = atan2f(target_position[0] - position[0], target_position[2] - position[2]);
+            SetRotation(0.0f, unitRotation(CObjectFrame::frame, target_angle, 5.0f), 0.0f);
             if (move_x != 0.0f || move_z != 0.0f) {
                 SetMotion(move_motion, 0, 1);
             }
         }
     } else if (move_x != 0.0f || move_z != 0.0f) {
-        SetRotation(0.0f, unitRotation(CObjectFrame::frame, atan2f(move_x, move_z), 5.0f), 0.0f);
+        float move_angle = atan2f(move_x, move_z);
+        SetRotation(0.0f, unitRotation(CObjectFrame::frame, move_angle, 5.0f), 0.0f);
         SetMotion(move_motion, 0, 1);
     }
     sceVu0CopyVector(velocity, move_velocity);
     RockOn();
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", HumanGunMoveIF__12CActionCharaFPcPc);
-#endif
-#ifdef NONMATCHING
 int CActionChara::RoboWalkMoveIF(int mode) {
-    sceVu0FVECTOR   position;
-    sceVu0FVECTOR   move_velocity;
-    sceVu0FVECTOR   movement;
-    sceVu0FVECTOR   target_position;
-    sceVu0FVECTOR   rotation;
-    CActiveMonster *target;
-    CActionChara   *arm;
-    float           camera_angle;
-    float           stick_x;
-    float           stick_y;
-    float           move_x;
-    float           move_z;
-    float           motion_speed;
-    float           target_angle;
+    sceVu0FVECTOR position;
+    sceVu0FVECTOR move_velocity;
+    sceVu0FVECTOR movement;
+    sceVu0FVECTOR target_position;
+    sceVu0FVECTOR rotation;
+    CActionChara *target;
+    CActionChara *arm;
+    float         camera_angle;
+    float         stick_x;
+    float         stick_y;
+    float         move_z;
+    float         motion_speed;
+    float         target_angle;
 
     GetPosition(position);
     sceVu0CopyVector(move_velocity, velocity);
     camera_angle = action_info.camera->GetAngle();
     stick_x = GamePad__2.GetLXf();
     stick_y = GamePad__2.GetLYf();
-    move_x = stick_x * cosf(camera_angle) + stick_y * sinf(camera_angle);
+    float stick_world_x = stick_x * cosf(camera_angle) + stick_y * sinf(camera_angle);
+    float move_x = stick_world_x;
     move_z = -stick_x * sinf(camera_angle) + stick_y * cosf(camera_angle);
-    move_x *= 2.0f * (float) mgFrameRate;
-    move_z *= 2.0f * (float) mgFrameRate;
+    move_x = move_x * (2.0f * (float)mgFrameRate);
+    move_z = move_z * (2.0f * (float)mgFrameRate);
     move_velocity[0] = move_x;
     move_velocity[2] = move_z;
     stand_flag = 0;
@@ -1942,8 +1909,8 @@ int CActionChara::RoboWalkMoveIF(int mode) {
         } else {
             SetMotion("\x97\xA7\x82\xBF-\x91\xAB", 0, mode);
         }
-        target = static_cast<CActionChara *>(nowScene__2->GetCharacter(target_no));
-        if (target != NULL && target->chara_kind == ACTION_KIND_SCRIPT) {
+        target = (CActionChara *)nowScene__2->GetCharacter(target_no);
+        if (target && target->chara_kind == ACTION_KIND_SCRIPT) {
             target->GetPosition(target_position);
             target_angle = atan2f(target_position[0] - position[0], target_position[2] - position[2]);
             GetRotation(rotation);
@@ -1965,6 +1932,7 @@ int CActionChara::RoboWalkMoveIF(int mode) {
             arm->SetRotation(0.0f, unitRotation(arm->CObjectFrame::frame, 0.0f, 16.0f), 0.0f);
         }
         if (move_x != 0.0f || move_z != 0.0f) {
+            sceVu0FVECTOR movement;
             SetRotation(0.0f, unitRotation(CObjectFrame::frame, atan2f(move_x, move_z), 10.0f), 0.0f);
             movement[0] = move_x;
             movement[1] = 0.0f;
@@ -1987,38 +1955,31 @@ int CActionChara::RoboWalkMoveIF(int mode) {
     RockOn();
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RoboWalkMoveIF__12CActionCharaFi);
-#endif
-#ifdef NONMATCHING
 int CActionChara::RoboTankMoveIF(int mode) {
-    sceVu0FVECTOR   position;
-    sceVu0FVECTOR   move_velocity;
-    sceVu0FVECTOR   movement;
-    sceVu0FVECTOR   target_position;
-    sceVu0FVECTOR   rotation;
-    CActiveMonster *target;
-    CActionChara   *arm;
-    float           camera_angle;
-    float           stick_x;
-    float           stick_y;
-    float           move_x;
-    float           move_z;
-    float           motion_speed;
-    float           target_angle;
-    sceVu0FVECTOR   wheel_rotation;
-    mgCFrame       *wheel;
-    float           wheel_step;
+    sceVu0FVECTOR position;
+    sceVu0FVECTOR move_velocity;
+    sceVu0FVECTOR movement;
+    sceVu0FVECTOR target_position;
+    sceVu0FVECTOR rotation;
+    CActionChara *target;
+    CActionChara *arm;
+    float         camera_angle;
+    float         stick_x;
+    float         motion_speed;
+    float         target_angle;
+    mgCFrame     *wheel;
+    float         wheel_step;
 
     GetPosition(position);
     sceVu0CopyVector(move_velocity, velocity);
     camera_angle = action_info.camera->GetAngle();
     stick_x = GamePad__2.GetLXf();
-    stick_y = GamePad__2.GetLYf();
-    move_x = stick_x * cosf(camera_angle) + stick_y * sinf(camera_angle);
-    move_z = -stick_x * sinf(camera_angle) + stick_y * cosf(camera_angle);
-    move_x *= 2.0f * (float) mgFrameRate;
-    move_z *= 2.0f * (float) mgFrameRate;
+    float stick_y = GamePad__2.GetLYf();
+    float stick_world_x = stick_x * cosf(camera_angle) + stick_y * sinf(camera_angle);
+    float move_x = stick_world_x;
+    float move_z = -stick_x * sinf(camera_angle) + stick_y * cosf(camera_angle);
+    move_x *= 2.0f * (float)mgFrameRate;
+    move_z = move_z * (2.0f * (float)mgFrameRate);
     if (move_type == ACTION_MOVE_ROBO_TANK) {
         sound_info.loop_se->SeLoopPlayStop(sound_info.se_bank, 14, 3, 12);
         if (move_x != 0.0f || move_z != 0.0f) {
@@ -2032,7 +1993,7 @@ int CActionChara::RoboTankMoveIF(int mode) {
     move_velocity[0] = move_x;
     move_velocity[2] = move_z;
     stand_flag = 0;
-    if (lock_on != 0) {
+    if (lock_on) {
         if (move_x != 0.0f || move_z != 0.0f) {
             SetRotation(0.0f, unitRotation(CObjectFrame::frame, atan2f(move_x, move_z), 5.0f), 0.0f);
             movement[0] = move_x;
@@ -2050,7 +2011,8 @@ int CActionChara::RoboTankMoveIF(int mode) {
         } else {
             SetMotion("\x97\xA7\x82\xBF-\x83L\x83\x83\x83^\x83s\x83\x89", 0, mode);
         }
-        target = static_cast<CActionChara *>(nowScene__2->GetCharacter(target_no));
+        CCharacter2 *target_chara = nowScene__2->GetCharacter(target_no);
+        target = (CActionChara *)target_chara;
         if (target != NULL && target->chara_kind == ACTION_KIND_SCRIPT) {
             target->GetPosition(target_position);
             target_angle = atan2f(target_position[0] - position[0], target_position[2] - position[2]);
@@ -2073,6 +2035,7 @@ int CActionChara::RoboTankMoveIF(int mode) {
             arm->SetRotation(0.0f, unitRotation(arm->CObjectFrame::frame, 0.0f, 16.0f), 0.0f);
         }
         if (move_x != 0.0f || move_z != 0.0f) {
+            sceVu0FVECTOR movement;
             SetRotation(0.0f, unitRotation(CObjectFrame::frame, atan2f(move_x, move_z), 10.0f), 0.0f);
             movement[0] = move_x;
             movement[1] = 0.0f;
@@ -2091,7 +2054,9 @@ int CActionChara::RoboTankMoveIF(int mode) {
         }
     }
     if (move_type == ACTION_MOVE_ROBO_TANK2) {
-        wheel_step = 0.034906585f * -mgDistVector(move_velocity);
+        sceVu0FVECTOR wheel_rotation;
+        float speed = mgDistVector(move_velocity);
+        wheel_step = 0.034906585f * -speed;
         wheel = SearchObject("rf_tire");
         if (wheel != NULL) {
             wheel->SetRotType(2);
@@ -2130,38 +2095,23 @@ int CActionChara::RoboTankMoveIF(int mode) {
     RockOn();
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RoboTankMoveIF__12CActionCharaFi);
-#endif
-#ifdef NONMATCHING
 int CActionChara::RoboBikeMoveIF(int mode) {
-    sceVu0FVECTOR   position;
-    sceVu0FVECTOR   leg_rotation;
-    sceVu0FVECTOR   rotation;
-    sceVu0FVECTOR   movement;
-    sceVu0FVECTOR   target_position;
-    sceVu0FVECTOR   direction = {0.0f, 0.0f, 1.0f, 1.0f};
-    sceVu0FMATRIX   matrix;
-    CActionChara   *leg;
-    CActionChara   *arm;
-    CActiveMonster *target;
-    CMap           *map;
-    float           stick_x;
-    float           stick_y;
-    float           steering;
-    float           target_angle;
-    int             poly_count;
-    CCPoly          polys[128];
-    mgVu0FBOX       box;
-    sceVu0FVECTOR   wheel_rotation;
-    sceVu0FVECTOR   front_wheel_position;
-    sceVu0FVECTOR   back_wheel_position;
-    sceVu0FVECTOR   front_hit;
-    sceVu0FVECTOR   back_hit;
-    sceVu0FVECTOR   slope_rotation = {0.0f, 0.0f, 0.0f, 1.0f};
-    sceVu0FVECTOR   old_velocity;
-    mgCFrame       *wheel;
-    float           slope_angle;
+    sceVu0FVECTOR position;
+    sceVu0FVECTOR leg_rotation;
+    sceVu0FVECTOR movement;
+    sceVu0FVECTOR rotation;
+    int           poly_count;
+    CActionChara *arm;
+    CActionChara *target;
+    CMap         *map;
+    float         stick_x;
+    float         stick_y;
+    float         target_angle;
+    CActionChara *leg;
+    float         slope_angle;
+    mgCFrame     *front_wheel;
+    mgCFrame     *back_wheel;
+    mgCFrame     *tilt;
 
     leg = SearchChara("leg");
     if (leg == NULL) {
@@ -2204,16 +2154,17 @@ int CActionChara::RoboBikeMoveIF(int mode) {
         sound_info.foot_effect_wait = 2;
         sound_info.loop_se->SeLoopPlayStop(sound_info.se_bank, 16, 3, 12);
     }
-    if (GamePad__2.On(0x4) != 0) {
-        steering = leg_rotation[1] + 0.8f * (0.034906585f * -stick_x * accele.speed);
+    if (GamePad__2.On(PAD_L1) != 0) {
+        leg_rotation[1] += 0.8f * (0.034906585f * -stick_x * accele.speed);
     } else {
-        steering = leg_rotation[1] + 0.2f * (0.034906585f * -stick_x * accele.speed);
+        leg_rotation[1] += 0.2f * (0.034906585f * -stick_x * accele.speed);
     }
-    leg_rotation[1] = steering;
     leg_rotation[1] = mgAngleLimit(leg_rotation[1]);
     leg->SetRotation(leg_rotation);
     if (leg != NULL) {
         leg->GetRotation(rotation);
+        sceVu0FVECTOR direction = { 0.0f, 0.0f, 1.0f, 1.0f };
+        sceVu0FMATRIX matrix;
         sceVu0UnitMatrix(matrix);
         sceVu0RotMatrixY(matrix, matrix, rotation[1]);
         sceVu0ApplyMatrix(movement, matrix, direction);
@@ -2224,9 +2175,7 @@ int CActionChara::RoboBikeMoveIF(int mode) {
     if (accele.speed != 0.0f) {
         SetMotion("\x95\xE0\x82\xAB-\x83L\x83\x83\x83^\x83s\x83\x89", 0, mode);
         if (stick_x > 0.5f) {
-            SetMotion("\x89"
-                      "E\x90\xF9\x89\xF1",
-                      0, mode);
+            SetMotion("\x89" "E\x90\xF9\x89\xF1", 0, mode);
         }
         if (stick_x < -0.5f) {
             SetMotion("\x8D\xB6\x90\xF9\x89\xF1", 0, mode);
@@ -2235,12 +2184,14 @@ int CActionChara::RoboBikeMoveIF(int mode) {
         SetMotion("\x97\xA7\x82\xBF-\x83L\x83\x83\x83^\x83s\x83\x89", 0, mode);
     }
     if (lock_on != 0) {
-        target = static_cast<CActionChara *>(nowScene__2->GetCharacter(target_no));
+        target = (CActionChara *)nowScene__2->GetCharacter(target_no);
         if (target != NULL && target->chara_kind == ACTION_KIND_SCRIPT) {
+            sceVu0FVECTOR target_position;
+            sceVu0FVECTOR target_rotation;
             target->GetPosition(target_position);
             target_angle = atan2f(target_position[0] - position[0], target_position[2] - position[2]);
-            GetRotation(rotation);
-            target_angle -= rotation[1];
+            GetRotation(target_rotation);
+            target_angle -= target_rotation[1];
             if (target_angle < -3.1415927f) {
                 target_angle += 6.2831855f;
             }
@@ -2249,16 +2200,25 @@ int CActionChara::RoboBikeMoveIF(int mode) {
             }
             arm = SearchChara("arm");
             if (arm != NULL) {
-                arm->SetRotation(0.0f, unitRotation(arm->CObjectFrame::frame, target_angle, 3.0f), 0.0f);
+                target_angle = unitRotation(arm->CObjectFrame::frame, target_angle, 3.0f);
+                arm->SetRotation(0.0f, target_angle, 0.0f);
             }
         }
     } else {
         arm = SearchChara("arm");
         if (arm != NULL) {
-            arm->SetRotation(0.0f, unitRotation(arm->CObjectFrame::frame, 0.0f, 8.0f), 0.0f);
+            float arm_angle = unitRotation(arm->CObjectFrame::frame, 0.0f, 8.0f);
+            arm->SetRotation(0.0f, arm_angle, 0.0f);
         }
     }
     map = nowScene__2->GetMap(nowScene__2->active_map);
+    CCPoly        polys[128];
+    mgVu0FBOX     box;
+    sceVu0FVECTOR wheel_rotation;
+    sceVu0FVECTOR front_hit;
+    sceVu0FVECTOR back_hit;
+    sceVu0FVECTOR front_wheel_position;
+    sceVu0FVECTOR back_wheel_position;
 
     box.max[0] = 50.0f + position[0];
     box.min[0] = position[0] - 50.0f;
@@ -2269,14 +2229,14 @@ int CActionChara::RoboBikeMoveIF(int mode) {
     box.max[3] = 1.0f;
     box.min[3] = 1.0f;
     poly_count = map->GetColPoly(polys, box, 128);
-    wheel = SearchObject("f_tire");
-    if (wheel != NULL) {
-        wheel->SetRotType(2);
-        wheel->GetRotation(wheel_rotation);
+    front_wheel = SearchObject("f_tire");
+    if (front_wheel != NULL) {
+        front_wheel->SetRotType(2);
+        front_wheel->GetRotation(wheel_rotation);
         wheel_rotation[2] += 0.034906585f * -accele.speed;
         wheel_rotation[2] = mgAngleLimit(wheel_rotation[2]);
-        wheel->SetRotation(wheel_rotation);
-        wheel->GetWorldPosition0(front_wheel_position);
+        front_wheel->SetRotation(wheel_rotation);
+        front_wheel->GetWorldPosition0(front_wheel_position);
         front_wheel_position[1] = 50.0f + position[1];
         if (CheckHitVertical(polys, poly_count, front_wheel_position, -100.0f, front_hit, 1) < 0) {
             sceVu0CopyVector(front_hit, front_wheel_position);
@@ -2286,14 +2246,14 @@ int CActionChara::RoboBikeMoveIF(int mode) {
             front_hit[1] = position[1] - 20.0f;
         }
     }
-    wheel = SearchObject("b_tire");
-    if (wheel != NULL) {
-        wheel->SetRotType(2);
-        wheel->GetRotation(wheel_rotation);
+    back_wheel = SearchObject("b_tire");
+    if (back_wheel != NULL) {
+        back_wheel->SetRotType(2);
+        back_wheel->GetRotation(wheel_rotation);
         wheel_rotation[2] += 0.034906585f * -accele.speed;
         wheel_rotation[2] = mgAngleLimit(wheel_rotation[2]);
-        wheel->SetRotation(wheel_rotation);
-        wheel->GetWorldPosition0(back_wheel_position);
+        back_wheel->SetRotation(wheel_rotation);
+        back_wheel->GetWorldPosition0(back_wheel_position);
         back_wheel_position[1] = 50.0f + position[1];
         if (CheckHitVertical(polys, poly_count, back_wheel_position, -100.0f, back_hit, 1) < 0) {
             sceVu0CopyVector(back_hit, back_wheel_position);
@@ -2308,12 +2268,13 @@ int CActionChara::RoboBikeMoveIF(int mode) {
     back_hit[3] = 1.0f;
     back_hit[1] = 0.0f;
     slope_angle = atan2f(front_hit[1], mgDistVector(back_hit));
-    wheel = SearchObject("katamuki");
-    if (wheel != NULL) {
-        slope_rotation[0] = slope_angle;
-        wheel->SetRotType(2);
-        wheel->SetRotation(slope_rotation);
+    tilt = SearchObject("katamuki");
+    if (tilt != NULL) {
+        sceVu0FVECTOR slope_rotation = { slope_angle, 0.0f, 0.0f, 1.0f };
+        tilt->SetRotType(2);
+        tilt->SetRotation(slope_rotation);
     }
+    sceVu0FVECTOR old_velocity;
     sceVu0CopyVector(old_velocity, velocity);
     movement[1] = old_velocity[1];
     sceVu0CopyVector(velocity, movement);
@@ -2321,26 +2282,22 @@ int CActionChara::RoboBikeMoveIF(int mode) {
     RockOn();
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RoboBikeMoveIF__12CActionCharaFi);
-#endif
-#ifdef NONMATCHING
 int CActionChara::RoboAirMoveIF(int unk, int mode) {
-    sceVu0FVECTOR   position;
-    sceVu0FVECTOR   move_velocity;
-    CActiveMonster *target;
-    CActionChara   *arm;
-    float           camera_angle;
-    float           stick_x;
-    float           stick_y;
-    float           move_x;
-    float           move_z;
-    float           motion_speed;
-    float           target_angle;
-    sceVu0FVECTOR   propeller_rotation;
-    mgCFrame       *propeller;
-    float           turn_speed;
-    float           speed_limit;
+    sceVu0FVECTOR position;
+    sceVu0FVECTOR move_velocity;
+    CActionChara *target;
+    CActionChara *arm;
+    float         camera_angle;
+    float         stick_x;
+    float         stick_y;
+    float         move_x;
+    float         move_z;
+    float         motion_speed;
+    float         target_angle;
+    sceVu0FVECTOR propeller_rotation;
+    mgCFrame     *propeller;
+    float         turn_speed;
+    float         speed_limit;
 
     GetPosition(position);
     sceVu0CopyVector(move_velocity, velocity);
@@ -2419,7 +2376,7 @@ int CActionChara::RoboAirMoveIF(int unk, int mode) {
         } else {
             SetMotion("\x97\xA7\x82\xBF-\x83L\x83\x83\x83^\x83s\x83\x89", 0, mode);
         }
-        target = static_cast<CActionChara *>(nowScene__2->GetCharacter(target_no));
+        target = (CActionChara *)nowScene__2->GetCharacter(target_no);
         if (target != NULL && target->chara_kind == ACTION_KIND_SCRIPT) {
             target->GetPosition(target_position);
             target_angle = atan2f(target_position[0] - position[0], target_position[2] - position[2]);
@@ -2433,7 +2390,8 @@ int CActionChara::RoboAirMoveIF(int unk, int mode) {
             }
             arm = SearchChara("arm");
             if (arm != NULL) {
-                arm->SetRotation(0.0f, unitRotation(arm->CObjectFrame::frame, target_angle, 3.0f), 0.0f);
+                target_angle = unitRotation(arm->CObjectFrame::frame, target_angle, 3.0f);
+                arm->SetRotation(0.0f, target_angle, 0.0f);
             }
         }
     } else {
@@ -2441,9 +2399,10 @@ int CActionChara::RoboAirMoveIF(int unk, int mode) {
         if (arm != NULL) {
             arm->SetRotation(0.0f, unitRotation(arm->CObjectFrame::frame, 0.0f, 16.0f), 0.0f);
         }
-        if (move_x != 0.0f || move_z != 0.0f) {
+        if (move_x != float(0.0) || move_z != 0.0f) {
             sceVu0FVECTOR movement;
-            SetRotation(0.0f, unitRotation(CObjectFrame::frame, atan2f(move_x, move_z), turn_speed), 0.0f);
+            float angle = atan2f(move_x, move_z);
+            SetRotation(0.0f, unitRotation(CObjectFrame::frame, angle, turn_speed), 0.0f);
             movement[0] = move_x;
             movement[1] = 0.0f;
             movement[2] = move_z;
@@ -2465,32 +2424,26 @@ int CActionChara::RoboAirMoveIF(int unk, int mode) {
     RockOn();
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RoboAirMoveIF__12CActionCharaFii);
-#endif
-#ifdef NONMATCHING
 int CActionChara::MonsterMoveIF() {
-    sceVu0FVECTOR   position;
-    sceVu0FVECTOR   rotation;
-    sceVu0FVECTOR   move_velocity;
-    sceVu0FVECTOR   stick_vector = {0.0f, 0.0f, 0.0f, 1.0f};
-    sceVu0FVECTOR   target_position;
-    CActiveMonster *target;
-    float           camera_angle;
-    float           stick_x;
-    float           stick_y;
-    float           move_x;
-    float           move_z;
-    float           move_speed;
-    float           acceleration_step;
-    float           acceleration;
-    float           stick_direction;
-    float           angle_change;
-    float           turn_penalty;
-    float           relative_angle;
-    float           motion_speed;
-    float           abs_x;
-    float           abs_z;
+    sceVu0FVECTOR position;
+    sceVu0FVECTOR rotation;
+    sceVu0FVECTOR move_velocity;
+    CActionChara *target;
+    float         camera_angle;
+    float         stick_x;
+    float         stick_y;
+    float         move_x;
+    float         move_z;
+    float         move_speed;
+    float         acceleration_step;
+    float         acceleration;
+    float         stick_direction;
+    float         angle_change;
+    float         turn_penalty;
+    float         relative_angle;
+    float         motion_speed;
+    float         abs_x;
+    float         abs_z;
 
     GetPosition(position);
     GetRotation(rotation);
@@ -2506,17 +2459,19 @@ int CActionChara::MonsterMoveIF() {
         move_x *= 0.5f;
         move_z *= 0.5f;
     }
+    sceVu0FVECTOR stick_vector = { 0.0f, 0.0f, 0.0f, 1.0f };
     stick_vector[0] = move_x;
     stick_vector[2] = move_z;
     move_speed = accele.move_speed;
     if (lock_on != 0) {
         move_speed *= 0.6f;
     }
+    acceleration = move_accel;
     acceleration_step = move_speed / 8.0f;
     if (acceleration_step > 0.5f) {
         acceleration_step = 0.5f;
     }
-    acceleration = move_accel + acceleration_step;
+    acceleration += acceleration_step;
     if (acceleration > 1.0f) {
         acceleration = 1.0f;
     }
@@ -2529,9 +2484,7 @@ int CActionChara::MonsterMoveIF() {
     if (angle_change < -3.1415927f) {
         angle_change += 6.2831855f;
     }
-    if (angle_change < 0.0f) {
-        angle_change = -angle_change;
-    }
+    angle_change = angle_change < 0.0f ? -angle_change : angle_change;
     old_angle = stick_direction;
     turn_penalty = 1.5f * (angle_change / 3.1415927f);
     if (turn_penalty > 1.0f) {
@@ -2542,8 +2495,8 @@ int CActionChara::MonsterMoveIF() {
         acceleration = 0.0f;
     }
     move_accel = acceleration;
-    move_velocity[0] = acceleration * ((float) mgFrameRate * (move_x * move_speed));
-    move_velocity[2] = acceleration * ((float) mgFrameRate * (move_z * move_speed));
+    move_velocity[0] = acceleration * ((float)mgFrameRate * (move_x * move_speed));
+    move_velocity[2] = acceleration * ((float)mgFrameRate * (move_z * move_speed));
     relative_angle = atan2f(move_x, move_z) - rotation[1];
     if (relative_angle > 3.1415927f) {
         relative_angle -= 6.2831855f;
@@ -2558,9 +2511,7 @@ int CActionChara::MonsterMoveIF() {
     if (angle_change < -3.1415927f) {
         angle_change += 6.2831855f;
     }
-    if (angle_change < 0.0f) {
-        angle_change = -angle_change;
-    }
+    angle_change = angle_change < 0.0f ? -angle_change : angle_change;
     if (angle_change / 3.1415927f < 0.3f) {
         stick_time++;
     } else {
@@ -2588,8 +2539,9 @@ int CActionChara::MonsterMoveIF() {
         }
     } else if (lock_on != 0) {
         SetMotion("\x97\xA7\x82\xBF", 0, 1);
-        target = static_cast<CActionChara *>(nowScene__2->GetCharacter(target_no));
+        target = (CActionChara *)nowScene__2->GetCharacter(target_no);
         if (target != NULL && target->chara_kind == ACTION_KIND_SCRIPT) {
+            sceVu0FVECTOR target_position;
             target->GetEntryObjectPos(0, 0, target_position);
             SetRotation(0.0f, unitRotation(CObjectFrame::frame, atan2f(target_position[0] - position[0], target_position[2] - position[2]), 5.0f), 0.0f);
         }
@@ -2606,9 +2558,6 @@ int CActionChara::MonsterMoveIF() {
     RockOn();
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", MonsterMoveIF__12CActionCharaFv);
-#endif
 
 /**
  *
@@ -2777,33 +2726,29 @@ int CheckEquipSetItem(int item_no) {
             return 0;
     }
 }
-#ifdef NONMATCHING
 int CActionChara::CheckDamage() {
-    sceVu0FVECTOR     position;
-    DNG_BATTLE_AREA  *battle_area;
+    sceVu0FVECTOR    position;
     CBattleCharaInfo *battle;
-    CColPrim         *hit;
-    float             damage;
-    u32               battle_sound;
-    u32               chara_sound;
-    u32               attributes;
-    int               max_hp;
-    int               now_hp;
-    int               damage_points;
-    int               guarded;
-    int               immobilized;
-    int               reaction;
-    int               handled;
-    int               element;
-    int               index;
-    s16               strongest;
+    CColPrim        *hit;
+    float            damage;
+    u32              attributes;
+    int              max_hp;
+    int              now_hp;
+    int              damage_points;
+    int              guarded;
+    int              immobilized;
+    int              reaction;
+    int              handled;
+    int              element;
+    int              strongest;
+    int              index;
 
     if (nowScene__2 == NULL) {
         return 0;
     }
-    battle_area = &nowScene__2->battle_area;
-    battle_sound = nowScene__2->se_battle_id;
-    chara_sound = sound_info.se_bank;
+    DNG_BATTLE_AREA *battle_area = &nowScene__2->battle_area;
+    u32 battle_sound = nowScene__2->se_battle_id;
+    u32 chara_sound = sound_info.se_bank;
     battle = GetBattleCharaInfo();
     GetPosition(position);
     if (damage_time > 0) {
@@ -2827,12 +2772,12 @@ int CActionChara::CheckDamage() {
         if (damage <= 0.0f) {
             damage = 0.0f;
         }
-        if (hit->param->hit_count >= 2) {
+        if (hit->param->hit_count > 1) {
             damage /= hit->param->hit_count;
         }
         damage += 1.0f + fRand(2.0f);
         if ((hit->status & 0x1000) != 0) {
-            damage = (int) (max_hp * (0.01f * hit->damage));
+            damage = (int)(max_hp * (0.01f * hit->damage));
             if (now_hp - damage < 0.0f) {
                 damage = now_hp - 1.0f;
             }
@@ -2843,14 +2788,14 @@ int CActionChara::CheckDamage() {
                 damage = 1.0f;
             }
         }
-        if ((int) damage <= 0) {
+        if ((int)damage <= 0) {
             damage = 0.0f;
         }
         guarded = guard_flag;
         if (guarded != 0) {
             damage *= 0.01f * hit->param->critical_rate;
         }
-        if (((s16) hit->param->hit_flags & 0x8) != 0) {
+        if (((s16)hit->param->hit_flags & 0x8) != 0) {
             guard_flag = 0;
             guarded = 0;
         }
@@ -2858,8 +2803,7 @@ int CActionChara::CheckDamage() {
             damage = GetDispVolumeForFloat(damage);
         }
         battle->AddHp_Point(-damage, 0.0f);
-        damage_points = (int) damage;
-        if (damage_points > 0) {
+        if ((damage_points = (int)damage) > 0) {
             if ((hit->status & 0x4) != 0 && iRand(100) < 30 &&
                 (attributes & CHARA_STATUS_POISON) == 0 && CheckAmuletAvoid(0x101) == 0) {
                 battle->SetAttr(CHARA_STATUS_POISON, 0);
@@ -2893,10 +2837,10 @@ int CActionChara::CheckDamage() {
             }
         }
         reaction = 2;
-        if (((s16) hit->param->hit_flags & 0x2) != 0) {
+        if (((s16)hit->param->hit_flags & 0x2) != 0) {
             reaction = 4;
         }
-        if (((s16) hit->param->hit_flags & 0x4) != 0) {
+        if (((s16)hit->param->hit_flags & 0x4) != 0) {
             reaction = 1;
         }
         if (guarded != 0) {
@@ -2930,7 +2874,7 @@ int CActionChara::CheckDamage() {
             GuardEffectSet(nowScene__2, hit->hit_pos);
             if (battle->chr_no == USER_CHARA_MONICA) {
                 element = -1;
-                if (battle->equip->data.weapon.status[1] >= 31) {
+                if (battle->equip->data.weapon.status[1] > 30) {
                     strongest = 0;
                     for (index = 0; index < 4; index++) {
                         if (strongest < hit->param->element[index]) {
@@ -2973,29 +2917,29 @@ int CActionChara::CheckDamage() {
             DamageScore2.SetValue(0, damage_points, body_height);
         }
         switch (reaction) {
-            case 0:
-            case 1:
-            case 5:
-                break;
-            case 3:
-                handled = 1;
-                damage_req = ACTION_DAMAGE_REQ_HOLD;
-                break;
-            case 2:
-                stagger += hit->param->stagger;
-                stagger_time = 60;
-                if (stagger >= 2 || (menu_flag != 0 && stand_flag != 0)) {
-                    damage_req = ACTION_DAMAGE_REQ_SMALL;
-                }
-                handled = 1;
-                break;
-            case 4:
-                handled = 1;
-                damage_req = ACTION_DAMAGE_REQ_LARGE;
-                break;
-            case 6:
-                handled = 1;
-                break;
+        case 0:
+        case 1:
+        case 5:
+            break;
+        case 3:
+            handled = 1;
+            damage_req = ACTION_DAMAGE_REQ_HOLD;
+            break;
+        case 2:
+            stagger += hit->param->stagger;
+            stagger_time = 60;
+            if (stagger >= 2 || (menu_flag != 0 && stand_flag != 0)) {
+                damage_req = ACTION_DAMAGE_REQ_SMALL;
+            }
+            handled = 1;
+            break;
+        case 4:
+            handled = 1;
+            damage_req = ACTION_DAMAGE_REQ_LARGE;
+            break;
+        case 6:
+            handled = 1;
+            break;
         }
     }
     if (handled != 0) {
@@ -3003,9 +2947,6 @@ int CActionChara::CheckDamage() {
     }
     return handled;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", CheckDamage__12CActionCharaFv);
-#endif
 int CActionChara::LoadActionFile(char *script, int size, mgCMemory *memory) {
     SetActionExtendTable();
     chara_kind = 2;
@@ -3034,44 +2975,54 @@ void CActionChara::SetHold() {
         prog_no = -1;
     }
 }
-#ifdef NONMATCHING
+static inline float MoveCheckRadius(float width) {
+    return 4.0f + 2.0f * width;
+}
 void CActionChara::RunScript(CScene *scene, RUN_SCRIPT_ENV *env) {
-    sceVu0FVECTOR        adjusted_velocity = {0.0f, 0.0f, 0.0f, 0.0f};
-    sceVu0FVECTOR        old_velocity;
-    sceVu0FVECTOR        position;
-    sceVu0FVECTOR        rotation;
-    sceVu0FVECTOR        new_position;
-    CCPoly               polys[128];
-    mgVu0FBOX            box;
-    CBattleCharaInfo    *battle;
+    int               pallet_u;
+    int               history;
+    CBattleCharaInfo *battle;
+    CSphida          *sphida;
+    int               count;
+    float             frame;
+    int               effect;
+    int               pallet_no;
+    int               target;
+    int               pallet_v;
+    int               index;
+    int               foot;
+    ACTION_DAMAGE    *entry;
+    DNG_BATTLE_AREA  *area;
+    CColPrim         *reversed;
     CTreasureBoxManager *treasure;
-    CSphida             *sphida;
-    CMap                *map;
-    ACTION_DAMAGE       *entry;
-    CColPrim            *reversed;
-    float                frame;
-    float                target_distance;
-    int                  count;
-    int                  foot;
-    int                  index;
-    int                  pallet_no;
-    int                  target;
+    CMap             *map;
+    float             target_distance;
 
-    action_info.chara = this;
     nowScene__2 = scene;
-    action_info.camera = static_cast<mgCCameraFollow *>(scene->GetCamera(scene->GetCameraID("MainCam")));
+    area = &scene->battle_area;
+    action_info.chara = this;
+    action_info.camera = (mgCCameraFollow *)scene->GetCamera(scene->GetCameraID("MainCam"));
     action_info.env = env;
+    sceVu0FVECTOR adjusted_velocity = { 0.0f, 0.0f, 0.0f, 0.0f };
+    sceVu0FVECTOR old_velocity;
+    sceVu0FVECTOR position;
+    sceVu0FVECTOR rotation;
+    sceVu0FVECTOR new_position;
+    CCPoly polys[128];
+    mgVu0FBOX box;
     menu_flag = 0;
     dir_gun = 0;
-    action_info.chara->pad_history |= PadCtrl.Btn(0x32);
-    if (PadCtrl.Btn(0x38) != 0) {
+    history = action_info.chara->pad_history;
+    history |= PadCtrl.Btn(PAD_BTN_ACTION_CONFIRM);
+    action_info.chara->pad_history = history;
+    if (PadCtrl.Btn(PAD_BTN_ACTION_HELD) != 0) {
         action_info.chara->acumu_pad++;
     } else {
         action_info.chara->acumu_pad = 0;
     }
-    if (unk_bec != 0) {
+    if (melee_hit != 0) {
         prog_no = 700;
-        unk_bec = 0;
+        melee_hit = 0;
     }
     if (damage_req == ACTION_DAMAGE_REQ_DEAD) {
         AllDeleteDamage();
@@ -3119,7 +3070,7 @@ void CActionChara::RunScript(CScene *scene, RUN_SCRIPT_ENV *env) {
     box.max[3] = 1.0f;
     box.min[3] = 1.0f;
     count = map->GetColPoly(polys, box, 128);
-    treasure = scene->battle_area.treasure_box;
+    treasure = area->treasure_box;
     if (treasure != NULL) {
         count += treasure->PickupCollision(position, &polys[count], box, 128 - count);
     }
@@ -3127,7 +3078,7 @@ void CActionChara::RunScript(CScene *scene, RUN_SCRIPT_ENV *env) {
     if (sphida != NULL) {
         count += sphida->PickupCollision(position, &polys[count], box, 128 - count);
     }
-    move_check.radius = 4.0f + 2.0f * body_width;
+    move_check.radius = MoveCheckRadius(body_width);
     MoveCheck(position, adjusted_velocity, new_position, &move_check, polys, count, 1);
     adjusted_velocity[0] = new_position[0] - position[0];
     adjusted_velocity[2] = new_position[2] - position[2];
@@ -3178,7 +3129,7 @@ void CActionChara::RunScript(CScene *scene, RUN_SCRIPT_ENV *env) {
                         entry->prim->SetDamage(entry->damage, 0);
                         entry->prim->SetCoord(entry->frame0, entry->frame1, entry->radius);
                         SetDamageParam(entry->prim, 0);
-                        entry->prim->damage = (int) (entry->prim->damage * entry->power_rate);
+                        entry->prim->damage = (int)(entry->prim->damage * entry->power_rate);
                     }
                 }
             } else if (frame < entry->start_frame || frame > entry->end_frame) {
@@ -3195,34 +3146,34 @@ void CActionChara::RunScript(CScene *scene, RUN_SCRIPT_ENV *env) {
     }
     pallet_no = battle->GetPalletNo(0);
     if (pallet_no >= 0) {
-        for (index = 0; index < 3; index++) {
-            if (sword_effect[index] != NULL) {
-                sword_effect[index]->SetTexture((pallet_no % 2) * 64, (pallet_no / 2) * 32, 64, 32);
+        pallet_u = pallet_no % 2;
+        pallet_v = pallet_no / 2;
+        for (effect = 0; effect < 3; effect++) {
+            if (sword_effect[effect] != NULL) {
+                sword_effect[effect]->SetTexture(pallet_u * 64, pallet_v * 32, 64, 32);
             }
         }
     }
-    if (scene->battle_area.lock_on_mode == 2) {
+    if (area->lock_on_mode == 2) {
         target_no = RockOn_TargetSel(scene, target_no);
     }
-    if (scene->battle_area.lock_on_mode == 0) {
+    if (area->lock_on_mode == 0) {
         if (lock_on == 0) {
             target_no = DistCheck_Action2(scene, 0.5f, 400.0f, &target_distance, 0, NULL);
         } else {
             lock_on = Check_LockOn(scene, 300.0f, target_no);
             if (lock_on == 0) {
                 target = DistCheck_Action2(scene, 0.5f, 400.0f, &target_distance, 0, NULL);
-                target_no = target;
                 if (target != -1) {
+                    target_no = target;
                     lock_on = 1;
-                    return;
+                } else {
+                    target_no = target;
                 }
             }
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", RunScript__12CActionCharaFP6CSceneP14RUN_SCRIPT_ENV);
-#endif
 int CActionChara::CheckReleaseTimming(int id) {
     if (id == -1) {
         return release_timing;
@@ -3324,17 +3275,17 @@ void CActionChara::StepParam() {
         blow_vec[1] -= 0.6f;
     }
 
-    if (unk_75e != 0) {
-        unk_760 += 0.016666668f;
+    if (battle_stance != 0) {
+        battle_stance_rate += 0.016666668f;
 
-        if (!(unk_760 < 1.0f)) {
-            unk_760 = 1.0f;
+        if (!(battle_stance_rate < 1.0f)) {
+            battle_stance_rate = 1.0f;
         }
     } else {
-        unk_760 = unk_760 - 0.016666668f;
+        battle_stance_rate = battle_stance_rate - 0.016666668f;
 
-        if (unk_760 <= 0.0f) {
-            unk_760 = 0.0f;
+        if (battle_stance_rate <= 0.0f) {
+            battle_stance_rate = 0.0f;
         }
     }
 
@@ -3496,9 +3447,9 @@ void CActionChara::Initialize(mgCMemory *memory) {
     accele.accele[3] = 0.0f;
     acumu_pad = 0;
     now_status = 0;
-    unk_bec = 0;
-    unk_75e = 0;
-    unk_760 = 0.0f;
+    melee_hit = 0;
+    battle_stance = 0;
+    battle_stance_rate = 0.0f;
     muteki_time = 0;
     guard_flag = 0;
     menu_flag = 0;

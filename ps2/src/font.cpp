@@ -473,7 +473,6 @@ int GetFontGaijiHankaku(u16 code) {
 
     return 0;
 }
-#ifdef NONMATCHING
 /**
  *
  * Reads a two-byte reserved-font code from the sorted lookup table.
@@ -481,19 +480,20 @@ int GetFontGaijiHankaku(u16 code) {
  */
 static inline u16 GetYoyakuCode(u8 *table, int no) {
     u8 *pair = &table[no * 2];
-    return pair[1] + (pair[0] << 8);
+    int hi = *pair++;
+    return *pair + (hi << 8);
 }
 
 int GetFontNo(char *text) {
     if (text[0] == '\n') {
         return FONT_NO_NEWLINE;
     }
-    int gaiji = (u16) GetFontGaijiFontNo(text);
+    int gaiji = (u16)GetFontGaijiFontNo(text);
     if (gaiji != 0) {
-        return (u16) gaiji;
+        return (u16)gaiji;
     }
     u8 *table = GetYoyakuTblTop();
-    u16 code = (u8) text[1] + ((u8) text[0] << 8);
+    u16 code = (u8)text[1] + ((u8)text[0] << 8);
     int low = 0;
     int high = GetYoyakuTblNum() - 1;
     u16 first = table[1] + (table[0] << 8);
@@ -519,9 +519,6 @@ int GetFontNo(char *text) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/font", GetFontNo__FPc);
-#endif
 int GetHalfFontNo(char c) {
     char buf[8];
     u16  no = GetAlphabeticalFontNo_uc((unsigned char) c);
@@ -905,8 +902,8 @@ void CFont::DrawDirect(char *text, int x, int y) {
 
     MySetPrim(&local.prim, 1, 0);
 
-    int height = fptosi(unk_b4);
-    local.sizes.size_x = fptosi(unk_b0) * 16;
+    int height = fptosi(offset_y);
+    local.sizes.size_x = fptosi(offset_x) * 16;
     local.sizes.size_y = height * 16;
     (&local.prim)->Begin(6);
     int   len = strlen(text);
@@ -1019,8 +1016,8 @@ void CFont::Init() {
     draw_w = 16;
     draw_h = 20;
     mini = 0;
-    unk_b0 = 0.0f;
-    unk_b4 = 0.0f;
+    offset_x = 0.0f;
+    offset_y = 0.0f;
 }
 
 // Initialised data (.data)

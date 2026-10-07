@@ -4626,22 +4626,14 @@ int _SCN_GET_ENTRY_OBJ_POS(RS_STACKDATA *stack, int argc) {
     SetStack(stack, pos[2]);
     return 1;
 }
-#ifdef NONMATCHING
-/**
- *
- * Finds a scene collision point and optionally returns its reflection and surface data.
- *
- */
 int _INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR start;
     sceVu0FVECTOR end;
     sceVu0FVECTOR hit;
     sceVu0FVECTOR reflection;
-    mgVu0FBOX     box;
-    CCPoly        poly[0x80];
+    mgVu0FBOX box;
+    CCPoly poly[0x80];
     sceVu0FVECTOR normal;
-    int           foot_sound;
-    int           area_kind;
 
     if (argc != 8 && argc != 9 && argc != 10 && argc != 11 && argc != 12 && argc != 13 && argc != 14 && argc != 15 && argc != 16) {
         return 0;
@@ -4651,22 +4643,25 @@ int _INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
     GetStackVector(end, stack + 3);
     stack += 6;
     float range = 10.0f + mgDistVector(start, end);
-    box.max[3] = 1.0f;
-    box.min[3] = 1.0f;
     box.max[0] = range + start[0];
     box.min[0] = start[0] - range;
     box.max[1] = range + start[1];
     box.min[1] = start[1] - range;
     box.max[2] = range + start[2];
     box.min[2] = start[2] - range;
+    box.max[3] = 1.0f;
+    box.min[3] = 1.0f;
     int poly_num = now_scene->GetColPoly(poly, box, 0x80);
     if (poly_num >= 0x80) {
         printf(at_3303__2, poly_num);
         return 0;
     }
-    int hit_no = CheckHit(poly, poly_num, start, end, hit, 1, ignore_mask);
+    CCPoly *hit_poly = poly;
+    int hit_no = CheckHit(hit_poly, poly_num, start, end, hit, 1, ignore_mask);
+    int foot_sound;
+    int area_kind;
     if (hit_no >= 0) {
-        CCPoly *hit_poly = &poly[hit_no];
+        hit_poly += hit_no;
         sceVu0Normalize(normal, hit_poly->normal);
         mgReflectionPlane(normal, hit, start, reflection);
         sceVu0Normalize(reflection, reflection);
@@ -4727,9 +4722,6 @@ int _INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
     }
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", _INTERSECTION_POINT__FP12RS_STACKDATAi);
-#endif
 /**
  *
  * Plays a sound from the current effect owner character.

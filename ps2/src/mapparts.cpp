@@ -56,6 +56,12 @@ extern char at_244[];
  * List node that tracks animation of a map part.
  *
  */
+class ObjAnimeNodeLinks {
+    u_char unk_00[0x40];
+
+public:
+    virtual void Initialize();
+};
 
 /**
  *
@@ -1031,13 +1037,22 @@ int CMapParts::AssignFuncAnime(mgCMemory *memory) {
 
     if ((point = func_point_mngr.Get()) != NULL) {
         do {
-            node = new (memory->Alloc(7)) CList<CObjAnime>;
+            if ((node = (CList<CObjAnime> *) operator new(sizeof(CList<CObjAnime>), memory->Alloc(7))) != NULL) {
+                node->vtable = &__vt__17CList_9CObjAnime_;
+                node->data.frame = NULL;
+                node->data.piece = NULL;
+                node->data.parts = NULL;
+                node->data.func_point = NULL;
+                node->data.back = 0;
+                node->data.stop = 0;
+                ((ObjAnimeNodeLinks *) node)->Initialize();
+            }
 
             if (node == NULL) {
                 return 0;
             }
 
-            node->Initialize();
+            ((ObjAnimeNodeLinks *) node)->Initialize();
 
             last = anime_list;
 
@@ -1093,14 +1108,14 @@ int CMapTreasureBox::AssignFuncPoint(CFuncPoint *point, CMapParts *owner) {
 
     active = 1;
     flag_no = point->unk_c;
-    item_no = point->event.unk_2c;
-    item_num = point->event.unk_30;
+    item_no = point->event.arg1;
+    item_num = point->event.arg2;
 
     if (item_num == 0) {
         item_num = 1;
     }
 
-    floor_id = point->event.unk_34;
+    floor_id = point->event.arg3;
     func_point = point;
     parts = owner;
 

@@ -51,36 +51,48 @@ static int SetShadowData(u_int *packet, float (*matrix)[4]) {
 
 #pragma schedule reset
 
-#ifdef NONMATCHING
+struct ShadowGifRegs {
+    u_long REGS0 : 4;
+    u_long REGS1 : 4;
+};
+
+#pragma schedule off
+#pragma optimization_level 2
 int mgCShadowMDT::CreateFacePacket(u_int *packet, mgCFace *face) {
-    // VIF MSCAL that starts the shadow microprogram on each batch.
     static u_int prog_vif[4] __attribute__((aligned(16))) = {0, 0, 0, 0x14000002};
 
     if (face == NULL) {
         return 0;
     }
 
-    // A packet in uncached memory is built in the scratchpad and copied out by DMA.
     int scratchpad = 0;
-    if (((u_int) packet & 0xF0000000) == 0x20000000) {
+    if (((u_int)packet & 0xF0000000) == 0x20000000) {
         scratchpad = 1;
     }
 
     u_int *start = packet;
-    int    remain = face->vertex_num;
-    int   *index = face->index;
+    u_int prim = (u_short)face->type & MG_FACE_PRIM_MASK;
+    int remain = face->vertex_num;
+    int *index = face->index;
 
-    sceGifTag tag;
-    *(u_long128 *) &tag = 0;
-    tag.EOP = 1;
-    tag.PRE = 1;
-    if ((face->type & MG_FACE_PRIM_MASK) != MG_PRIM_TRIANGLE) {
+    union {
+        sceGifTag tag;
+        struct {
+            u_long lo;
+            ShadowGifRegs hi;
+        } parts;
+    } gif;
+    *(u_long128 *)&gif.tag = 0;
+    gif.tag.EOP = 1;
+    gif.tag.PRE = 1;
+    ShadowGifRegs *regs = &gif.parts.hi;
+    if (prim != MG_PRIM_TRIANGLE) {
         return 0;
     }
-    tag.PRIM = SCE_GS_SET_PRIM(MG_PRIM_TRIANGLE_FAN, 1, 1, 0, 1, 0, 0, 0, 0);
-    tag.NREG = 2;
-    tag.REGS0 = SCE_GS_RGBAQ;
-    tag.REGS1 = SCE_GS_XYZF2;
+    gif.tag.PRIM = SCE_GS_SET_PRIM(MG_PRIM_TRIANGLE_FAN, 1, 1, 0, 1, 0, 0, 0, 0);
+    gif.tag.NREG = 2;
+    regs->REGS0 = SCE_GS_RGBAQ;
+    regs->REGS1 = SCE_GS_XYZF2;
 
     u_int *write = scratchpad ? GetScrPad() : packet;
     u_int *block = write;
@@ -93,27 +105,27 @@ int mgCShadowMDT::CreateFacePacket(u_int *packet, mgCFace *face) {
         write[0] = 0;
         write[1] = 0;
         write[2] = 0;
-        write[3] = 0;
         u_int *unpack = &write[3];
+        write[3] = 0;
         u_int *data = &write[4];
-        tag.NLOOP = num;
-        ((u_long128 *) write)[1] = *(u_long128 *) &tag;
+        gif.tag.NLOOP = num;
+        ((u_long128 *)write)[1] = *(u_long128 *)&gif.tag;
         write[8] = num;
         write[9] = num;
         write[10] = face->type;
 
         sceVu0FVECTOR *vertex = this->vertex;
-        u_long128     *out = &((u_long128 *) write)[3];
+        u_long128 *out = &((u_long128 *)write)[3];
         for (; num > 0; num--) {
-            out[0] = *(u_long128 *) vertex[index[0]];
-            out[1] = *(u_long128 *) vertex[index[1]];
-            out[2] = *(u_long128 *) vertex[index[2]];
+            out[0] = *(u_long128 *)vertex[index[0]];
+            out[1] = *(u_long128 *)vertex[index[1]];
+            out[2] = *(u_long128 *)vertex[index[2]];
             index += 3;
             out += 3;
         }
-        *unpack = (((u_int) ((u_int *) out - data) / 4) << 16) | 0x6C008000;
-        *out = *(u_long128 *) prog_vif;
-        write = (u_int *) (out + 1);
+        *unpack = (((u_int)((u_int *)out - data) / 4) << 16) | 0x6C008000;
+        *out = *(u_long128 *)prog_vif;
+        write = (u_int *)(out + 1);
 
         int size = write - block;
         if (size > 0x514) {
@@ -132,14 +144,12 @@ int mgCShadowMDT::CreateFacePacket(u_int *packet, mgCFace *face) {
     }
     packet += size;
 
-    // VIF FLUSHA.
     u_int flush[4] = {0x13000000, 0, 0, 0};
-    *(u_long128 *) packet = *(u_long128 *) flush;
+    *(u_long128 *)packet = *(u_long128 *)flush;
     return (packet + 4 - start) / 4;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_shadow", CreateFacePacket__12mgCShadowMDTFPUiP7mgCFace);
-#endif
+#pragma optimization_level reset
+#pragma schedule reset
 
 #pragma schedule off
 #pragma global_optimizer off
@@ -285,75 +295,74 @@ int mgCShadowMDT::DataAssignMDT(MDT_HEADER *header, mgCMemory *memory,
 #pragma global_optimizer reset
 #pragma schedule reset
 
-#ifdef NONMATCHING
+#pragma schedule off
+#pragma global_optimizer off
 int mgCShadowMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_INFO *info) {
-    u_int         zero[4] = {0, 0, 0, 0};
     sceVu0FMATRIX world_screen;
+    u_int zero[4] = {0, 0, 0, 0};
     mgMulMatrix(world_screen, info->world_screen, matrix);
 
-    u_int *start = GetScrPad();
-    u_int *write = start;
+    u_int *write = GetScrPad();
+    u_int *start = write;
+    u_int *head = write;
     info->GetpLightInfo();
 
-    // DMA CNT, its quadword count filled in below; VIF NOP, BASE, OFFSET and UNPACK.
-    write[0] = 0x10000000;
-    write[1] = 0;
-    write[2] = 0;
-    write[3] = 0;
-    write[4] = 0;
-    write[5] = vu1_base | 0x03000000;
-    write[6] = vu1_offset | 0x02000000;
+    head[0] = 0x10000000;
+    head[1] = 0;
+    head[2] = 0;
+    head[3] = 0;
+    head[4] = 0;
+    head[5] = vu1_base | 0x03000000;
+    head[6] = vu1_offset | 0x02000000;
 
-    u_long128 *vu = (u_long128 *) write;
-    vu[2] = *(u_long128 *) zero;
-    vu[3] = *(u_long128 *) zero;
-    vu[4] = *(u_long128 *) zero;
-    write[20] = info->unk_fb0[3];
-    write[21] = info->unk_fb0[0];
-    write[22] = info->unk_fb0[1];
-    write[23] = info->unk_fb0[2];
-    sceVu0CopyMatrix((sceVu0FVECTOR *) &vu[6], world_screen);
-    sceVu0CopyMatrix((sceVu0FVECTOR *) &vu[10], matrix);
-    vu[14] = *(u_long128 *) zero;
-    vu[15] = *(u_long128 *) zero;
-    vu[16] = *(u_long128 *) zero;
-    ((float *) write)[56] = info->shadow_light_dir[0];
-    ((float *) write)[60] = info->shadow_light_dir[1];
-    ((float *) write)[64] = info->shadow_light_dir[2];
-    vu[23] = *(u_long128 *) info->full_max;
-    vu[24] = *(u_long128 *) info->full_min;
+    u_long128 *vu = (u_long128 *)head;
+    vu[2] = *(u_long128 *)zero;
+    vu[3] = *(u_long128 *)zero;
+    vu[4] = *(u_long128 *)zero;
+    head[20] = info->render_params[3];
+    ((float *)head)[21] = ((float *)info->render_params)[0];
+    ((float *)head)[22] = ((float *)info->render_params)[1];
+    ((float *)head)[23] = ((float *)info->render_params)[2];
+    sceVu0CopyMatrix((sceVu0FVECTOR *)&vu[6], world_screen);
+    sceVu0CopyMatrix((sceVu0FVECTOR *)&vu[10], matrix);
+    vu[14] = *(u_long128 *)zero;
+    vu[15] = *(u_long128 *)zero;
+    vu[16] = *(u_long128 *)zero;
+    ((float *)head)[56] = info->shadow_light_dir[0];
+    ((float *)head)[60] = info->shadow_light_dir[1];
+    ((float *)head)[64] = info->shadow_light_dir[2];
+    vu[23] = *(u_long128 *)info->full_max;
+    vu[24] = *(u_long128 *)info->full_min;
 
+    write = head + 104;
     sceVu0FMATRIX view_clip;
     mgMulMatrix(view_clip, info->view_clip_full, info->view);
     mgMulMatrix(view_clip, view_clip, matrix);
-    vu[27] = *(u_long128 *) view_clip[0];
-    vu[28] = *(u_long128 *) view_clip[1];
-    vu[29] = *(u_long128 *) view_clip[2];
-    vu[30] = *(u_long128 *) view_clip[3];
-    vu[31] = *(u_long128 *) info->clip_screen_full[0];
-    vu[32] = *(u_long128 *) info->clip_screen_full[1];
-    vu[33] = *(u_long128 *) info->clip_screen_full[2];
-    vu[34] = *(u_long128 *) info->clip_screen_full[3];
-    write[7] = ((((u_int) ((u_int *) &vu[35] - &write[4]) / 4) - 1) << 16) | 0x6C000000;
+    ((u_long128 *)write)[1] = *(u_long128 *)view_clip[0];
+    ((u_long128 *)write)[2] = *(u_long128 *)view_clip[1];
+    ((u_long128 *)write)[3] = *(u_long128 *)view_clip[2];
+    ((u_long128 *)write)[4] = *(u_long128 *)view_clip[3];
+    ((u_long128 *)write)[5] = *(u_long128 *)info->clip_screen_full[0];
+    ((u_long128 *)write)[6] = *(u_long128 *)info->clip_screen_full[1];
+    ((u_long128 *)write)[7] = *(u_long128 *)info->clip_screen_full[2];
+    ((u_long128 *)write)[8] = *(u_long128 *)info->clip_screen_full[3];
+    head[7] = ((((u_int)(&write[36] - &head[4]) / 4) - 1) << 16) | 0x6C000000;
 
-    // VIF MSCAL of the shadow microprogram.
-    write[140] = 0;
-    write[141] = 0;
-    write[142] = 0;
-    write[143] = 0x14000000;
-    write[0] |= ((u_int *) &vu[36] - &write[4]) / 4;
+    write[36] = 0;
+    write[37] = 0;
+    write[38] = 0;
+    write[39] = 0x14000000;
+    head[0] |= (&write[40] - &head[4]) / 4;
 
-    // DMA CNT and VIF DIRECT of the GS packet: PRMODECONT, PRMODE, RGBAQ, then the draw environment.
-    write = (u_int *) &vu[36];
-    write[0] = 0x10000008;
-    write[1] = 0;
-    write[2] = 0;
-    write[3] = 0x50000008;
-    write[4] = 0x8003;
-    write[5] = 0x10000000;
-    write[6] = SCE_GIF_PACKED_AD;
-    write[7] = 0;
-    u_long *ad = (u_long *) &write[8];
+    write[40] = 0x10000008;
+    write[41] = 0;
+    write[42] = 0;
+    write[43] = 0x50000008;
+    write[44] = 0x8003;
+    write[45] = 0x10000000;
+    write[46] = SCE_GIF_PACKED_AD;
+    write[47] = 0;
+    u_long *ad = (u_long *)&write[48];
     ad[0] = 0;
     ad[1] = SCE_GS_PRMODECONT;
     ad[2] = 0x40;
@@ -361,7 +370,8 @@ int mgCShadowMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
     ad[4] = SCE_GS_SET_RGBAQ(1, 1, 1, 0x80, 0);
     ad[5] = SCE_GS_RGBAQ;
 
-    mgCDrawEnv *env = (mgCDrawEnv *) &ad[6];
+    write = (u_int *)&ad[6];
+    mgCDrawEnv *env = (mgCDrawEnv *)write;
     if (draw_env != NULL) {
         *env = *draw_env;
     } else {
@@ -373,7 +383,7 @@ int mgCShadowMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
     env->test.bits.ate = 0;
     env->test.bits.afail = 0;
     env->test.bits.date = 0;
-    write = (u_int *) (env + 1);
+    write = (u_int *)(env + 1);
 
     sceVu0FMATRIX shadow;
     mgMulMatrix(shadow, info->shadow, matrix);
@@ -381,7 +391,6 @@ int mgCShadowMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
     mgMulMatrix(shadow, info->view_clip_full, shadow);
     write += SetShadowData(write, shadow) * 4;
 
-    // DMA RET.
     write[0] = 0x60000000;
     write[1] = 0;
     write[2] = 0;
@@ -391,9 +400,8 @@ int mgCShadowMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
     SendDMA(packet, size);
     return size;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_shadow", CreateRenderInfoPacket__12mgCShadowMDTFPUiPA4_fP13mgRENDER_INFO);
-#endif
+#pragma global_optimizer reset
+#pragma schedule reset
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_shadow", prog_vif_208__DATA);

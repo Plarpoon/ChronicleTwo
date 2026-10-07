@@ -30,6 +30,11 @@ extern char at_2863[];
         }                                \
     }
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 /**
  *
@@ -1041,16 +1046,9 @@ int scsMoveAHD(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     owner->ahd_cnt++;
     return 1;
 }
-#ifdef NONMATCHING
-/**
- *
- * Changes camera orbit values with the requested easing mode.
- *
- */
 int scsMoveAHD2(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     float angle_delta;
-    int   ended;
-    int   moved;
+    int ended;
     if (node->mode == SCENE_SEQ_EASE_IN_OUT) {
         ended = owner->ease_frame;
     } else {
@@ -1071,10 +1069,10 @@ int scsMoveAHD2(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
         } else if (angle_delta <= -3.1415927f) {
             angle_delta += 6.2831855f;
         }
-        owner->angle_spd = angle_delta / (float) node->frame;
-        owner->height_spd = (node->vec0[1] - owner->height) / (float) node->frame;
-        owner->dist_spd = (node->vec0[2] - owner->dist) / (float) node->frame;
-        owner->ease_frame = (int) (node->frame * node->ease_rate);
+        owner->angle_spd = angle_delta / (float)node->frame;
+        owner->height_spd = (node->vec0[1] - owner->height) / (float)node->frame;
+        owner->dist_spd = (node->vec0[2] - owner->dist) / (float)node->frame;
+        owner->ease_frame = (int)(node->frame * node->ease_rate);
         owner->pos_ease_acc[0] = owner->angle_spd;
         owner->pos_ease_acc[1] = owner->height_spd;
         owner->pos_ease_acc[2] = owner->dist_spd;
@@ -1089,7 +1087,7 @@ int scsMoveAHD2(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
             owner->pos_ease_spd[3] = 1.0f;
         }
     } else if (owner->sync != 0) {
-        moved = 0;
+        int moved = 0;
         if (owner->ahd_cnt < owner->ease_frame &&
             (node->mode == SCENE_SEQ_EASE_IN_OUT || node->mode == SCENE_SEQ_EASE_IN)) {
             sceVu0AddVector(owner->pos_ease_spd, owner->pos_ease_spd, owner->pos_ease_acc);
@@ -1128,7 +1126,7 @@ int scsMoveAHD2(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
             owner->sync_dist += owner->dist_spd;
         }
     } else {
-        moved = 0;
+        int moved = 0;
         if (owner->ahd_cnt < owner->ease_frame &&
             (node->mode == SCENE_SEQ_EASE_IN_OUT || node->mode == SCENE_SEQ_EASE_IN)) {
             sceVu0AddVector(owner->pos_ease_spd, owner->pos_ease_spd, owner->pos_ease_acc);
@@ -1173,9 +1171,6 @@ int scsMoveAHD2(_SEN_CMR_SEQ *node, CSceneCmrSeq *owner) {
     owner->ahd_cnt++;
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneseq", scsMoveAHD2__FP12_SEN_CMR_SEQP12CSceneCmrSeq);
-#endif
 /**
  *
  * Attaches the camera orbit to a frame of a synchronized object.

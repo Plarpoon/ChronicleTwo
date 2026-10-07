@@ -344,26 +344,17 @@ void CFadeInOut::CaptureScreen() {
     mgGetFrameBackBuffer(&back_buffer);
     mgStoreImage(&back_buffer, cross_texture->image[0]);
 }
-#ifdef NONMATCHING
-
-/**
- *
- * Draws a grid of screen-aligned sprite primitives.
- *
- */
 void DivSpriteScreen(mgCDrawPrim &prim) {
-    int x;
-    int y;
+    int           x;
+    int           y;
 
     prim.BeginPrim2(MG_PRIM_SPRITE, 0x43, 0, 2);
-    sceVu0IVECTOR offset = {0, 0, 0, 0};
-    offset[0] = mgScreenOffx * 16;
-    offset[1] = mgScreenOffy * 16;
-    sceVu0IVECTOR vertex = {0, 0, 0, 0};
-    sceVu0IVECTOR uv = {0, 0, 0, 0};
+    sceVu0IVECTOR offset = { mgScreenOffx * 16, mgScreenOffy * 16, 0, 0 };
+    sceVu0IVECTOR vertex = { 0, 0, 0, 0 };
+    sceVu0IVECTOR uv = { 0, 0, 0, 0 };
     for (x = 0; x < mgScreenWidth; x += 64) {
         for (y = 0; y < mgScreenHeight; y += 32) {
-            *(u_long128 *) vertex = *(u_long128 *) offset;
+            *(u_long128 *)vertex = *(u_long128 *)offset;
             uv[0] = x * 16;
             uv[1] = y * 16;
             prim.Data(uv);
@@ -380,28 +371,16 @@ void DivSpriteScreen(mgCDrawPrim &prim) {
     }
     prim.EndPrim2();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", DivSpriteScreen__FR11mgCDrawPrim);
-#endif
-#ifdef NONMATCHING
-
-/**
- *
- * Draws a vertical screen strip with an optional staggered edge.
- *
- */
 void DivSpriteScreen(mgCDrawPrim &prim, int left, int right, int jagged_left) {
-    int row_height;
-    int row;
+    int           row_height;
+    int           row;
 
     prim.BeginPrim2(MG_PRIM_TRIANGLE_STRIP, 0x43, 0, 2);
-    sceVu0IVECTOR offset = {0, 0, 0, 0};
-    offset[0] = mgScreenOffx * 16;
-    offset[1] = mgScreenOffy * 16;
+    sceVu0IVECTOR offset = { mgScreenOffx * 16, mgScreenOffy * 16, 0, 0 };
     row_height = mgScreenHeight / 16;
-    sceVu0IVECTOR vertex = {0, 0, 0, 0};
-    sceVu0IVECTOR uv = {0, 0, 0, 0};
-    int           edge_offset[2] = {-10, 10};
+    sceVu0IVECTOR vertex = { 0, 0, 0, 0 };
+    sceVu0IVECTOR uv = { 0, 0, 0, 0 };
+    int           edge_offset[2] = { -10, 10 };
     for (row = 0; row < 17; row++) {
         if (jagged_left) {
             uv[0] = (left + edge_offset[row % 2]) * 16;
@@ -432,9 +411,6 @@ void DivSpriteScreen(mgCDrawPrim &prim, int left, int right, int jagged_left) {
     }
     prim.EndPrim2();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/effectlist", DivSpriteScreen__FR11mgCDrawPrimiii);
-#endif
 void CFadeInOut::Draw() {
     if (alpha > 0.0f) {
         mgCDrawPrim prim;

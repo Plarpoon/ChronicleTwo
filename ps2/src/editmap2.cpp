@@ -41,22 +41,14 @@ extern int             LanguageCode;
 extern u_long128       at_796__4;
 
 // Code (.text)
-#ifdef NONMATCHING
 /**
  *
- * Calculates the horizontal plane normal from three positions.
+ * Calculates a normal for a triangle projected onto the horizontal plane.
  *
  */
-static void PlaneNormalXZ(float *normal, float *p0, float *p1, float *p2) {
-    sceVu0FVECTOR edge1 = {p1[0] - p0[0], 0.0f, p1[2] - p0[2], 0.0f};
-    sceVu0FVECTOR edge2 = {p2[0] - p0[0], 0.0f, p2[2] - p0[2], 0.0f};
-    sceVu0OuterProduct(normal, edge1, edge2);
-}
-#else
+void PlaneNormalXZ(float *normal, float *p0, float *p1, float *p2);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", PlaneNormalXZ__FPfPfPfPf);
-#endif
-#ifdef NONMATCHING
-float CEditMap::GetEditPartsAlt(CEditPartsInfo *info, float *pos, float rot_y, CEditParts **parts, int num) {
+float CEditMap::GetEditPartsAlt(CEditPartsInfo *info, sceVu0FVECTOR pos, float rot_y, CEditParts **parts, int num) {
     sceVu0FMATRIX parts_matrix;
     sceVu0FMATRIX invers_matrix;
     sceVu0FMATRIX matrix;
@@ -64,22 +56,29 @@ float CEditMap::GetEditPartsAlt(CEditPartsInfo *info, float *pos, float rot_y, C
     sceVu0FVECTOR offset;
     sceVu0FVECTOR parts_rot;
     sceVu0FVECTOR triangle[3];
-    mgVu0FBOX     box;
+    mgVu0FBOX box;
     sceVu0FVECTOR normal;
-    float         area;
+    CEditPartsInfo *parts_info;
+    int i;
+    float area;
+    CCPoly *poly;
+    int j;
+    CEditParts *edit_parts;
+    float alt;
+    int poly_count;
 
     if (info == NULL) {
         return pos[1];
     }
     GetMatrix(matrix, pos, ConvEditAngle(rot_y));
-    float alt = pos[1];
-    for (int i = 0; i < num; i++) {
-        CEditParts *edit_parts = parts[i];
-        int         empty = edit_parts->name[0] == 0;
+    alt = pos[1];
+    for (i = 0; i < num; i++) {
+        edit_parts = parts[i];
+        int empty = edit_parts->name[0] == 0;
         if (empty) {
             continue;
         }
-        CEditPartsInfo *parts_info = edit_parts->info;
+        parts_info = edit_parts->info;
         if (parts_info == NULL) {
             continue;
         }
@@ -89,9 +88,9 @@ float CEditMap::GetEditPartsAlt(CEditPartsInfo *info, float *pos, float rot_y, C
         GetInversMatrix(invers_matrix, parts_matrix);
         sceVu0SubVector(offset, pos, parts_pos);
         mgAngleLimit(rot_y - parts_rot[1]);
-        int     poly_count = info->col_area1.poly_count;
-        CCPoly *poly = info->col_area1.poly;
-        for (int j = 0; j < poly_count; j++, poly++) {
+        poly_count = info->col_area1.poly_count;
+        poly = info->col_area1.poly;
+        for (j = 0; j < poly_count; j++, poly++) {
             mgApplyMatrixN(triangle, matrix, poly->vertex, 3);
             mgApplyMatrixN(triangle, invers_matrix, triangle, 3);
             PlaneNormalXZ(normal, triangle[0], triangle[1], triangle[2]);
@@ -111,9 +110,6 @@ float CEditMap::GetEditPartsAlt(CEditPartsInfo *info, float *pos, float rot_y, C
     }
     return GetEditAlt(alt);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", GetEditPartsAlt__8CEditMapFP14CEditPartsInfoPffPP10CEditPartsi);
-#endif
 int CEditMap::CheckEditParts(CEditPartsInfo *info, float *pos, float rot_y, EP_PLACE_INFO *place, CEditParts **parts, int num) {
     sceVu0FMATRIX parts_matrix;
     sceVu0FMATRIX invers_matrix;

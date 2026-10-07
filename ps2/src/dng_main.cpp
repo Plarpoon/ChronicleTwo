@@ -329,7 +329,7 @@ void InitDungeonMain(INIT_LOOP_ARG arg) {
     nowload.tex_block = 0x51;
     nowload.unk_4 = 1;
     nowload.step_count = 10;
-    arg.unk_4c = 0;
+    arg.mc_load = 0;
     nowload.memory.stSetBuffer(BuffReadData + 0x2E630, 10000);
     CreateNowLoading(&nowload);
     DngSaveData = GetSaveData();
@@ -375,10 +375,10 @@ void InitDungeonMain(INIT_LOOP_ARG arg) {
     DNG_BATTLE_AREA *area = BattleAreaScene;
 
     DngMainMap = NULL;
-    area->unk_5c = 1;
+    area->battle_clear = 1;
     area->battle_bgm_state = 0;
     area->battle_bgm_vol = 0.0f;
-    area->unk_54 = 0;
+    area->camera_mode = 0;
     area->pause_flag = 0;
     area->timer = 0;
     area->minimap_reveal = 0;
@@ -1078,8 +1078,8 @@ int LoopDungeonMain() {
                 if (MenuArg.end_code == 11) {
                     SubGameInfo info;
 
-                    DngMainScene->unk_3e68 = 40;
-                    DngMainScene->unk_3e6c = 31;
+                    DngMainScene->tex_block_base = 40;
+                    DngMainScene->tex_block_count = 31;
                     info.scene = DngMainScene;
                     info.rod_no = MenuArg.result[0];
                     info.esa_no = MenuArg.result[1];
@@ -2437,7 +2437,7 @@ int DngMainKey() {
             }
         }
 
-        MainCamera.rot_reverse = !DngSaveData->GetConfig()->unk_37;
+        MainCamera.rot_reverse = !DngSaveData->GetConfig()->rot_normal;
         static int camera_default_dist = 1;
         float      dist_table[3] = {100.0f, 160.0f, 500.0f};
 
@@ -2554,7 +2554,7 @@ int DngMainKey() {
             }
         }
 
-        if (BattleAreaScene->unk_54 == 0) {
+        if (BattleAreaScene->camera_mode == 0) {
             if (DebugInfo.debug_camera == 0) {
                 sceVu0FVECTOR rot;
 
@@ -2631,7 +2631,7 @@ int DngMainKey() {
             }
         }
 
-        if (BattleAreaScene->unk_54 == 1) {
+        if (BattleAreaScene->camera_mode == 1) {
             MainCamera.FollowOff();
             CCharacter2  *boss = DngMainScene->GetCharacter(24);
             sceVu0FVECTOR chara_pos;
@@ -2670,7 +2670,7 @@ int DngMainKey() {
             MainCamera.SetRef(boss_pos);
         }
 
-        if (BattleAreaScene->unk_54 == 2) {
+        if (BattleAreaScene->camera_mode == 2) {
             MainCamera.FollowOff();
             sceVu0FVECTOR pos;
 
@@ -2705,7 +2705,7 @@ int DngMainKey() {
             MainCamera.SetNextRef(268.8f, ref_y, -322.4f);
         }
 
-        if (BattleAreaScene->unk_54 == 4) {
+        if (BattleAreaScene->camera_mode == 4) {
             sceVu0FVECTOR rot;
 
             camera->ControlOn();
@@ -2855,7 +2855,7 @@ void IsEventRun() {
             info->SetAttr(0x6F, 1);
             FxScriptMan->CreateEffSpt("\x92\xca\x8f\xed\x89\xf1\x95\x9c", 0, 0);
             FxScriptMan->SetScriptTargetId(0, -1, -1);
-            CPalletAnime *pallet = &MainChara__2->unk_67c;
+            CPalletAnime *pallet = &MainChara__2->script_pallet;
             pallet->red = 0x60;
             pallet->green = 0xB4;
             pallet->blue = 0xFF;
@@ -2882,9 +2882,9 @@ void IsEventRun() {
     int num = ActiveMonster->GetMonsterNum(-1.0f);
     num += TreasureBoxMan->MimicCount();
 
-    if (num == 0 && BattleAreaScene->unk_5c == 0) {
+    if (num == 0 && BattleAreaScene->battle_clear == 0) {
         *event_no = 1500;
-        BattleAreaScene->unk_5c = 1;
+        BattleAreaScene->battle_clear = 1;
         ColPrimMan.Initialize(DngMainScene);
         BTsubo.Clear();
         BTsuboCol = NULL;

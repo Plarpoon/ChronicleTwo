@@ -563,7 +563,7 @@ int CDngFloorManager::IsClearPractice(int difficulty) {
         return 0;
     }
 
-    active = scene->unk_5c;
+    active = scene->battle_clear;
     result = 0;
 
     if (diff_conditiontable_1102[difficulty][practice_type] == 0) {

@@ -118,10 +118,10 @@ void CMonsterMan::RunScript(int index) {
  */
 static int GetStackInt(RS_STACKDATA *stack) {
     if (stack->type == 1) {
-        return (int) stack->f;
+        return (int) stack->val.f;
     }
 
-    return stack->i;
+    return stack->val.i;
 }
 
 /**
@@ -131,10 +131,10 @@ static int GetStackInt(RS_STACKDATA *stack) {
  */
 static float GetStackFloat(RS_STACKDATA *stack) {
     if (stack->type == 0) {
-        return (float) stack->i;
+        return (float) stack->val.i;
     }
 
-    return *(float *) &stack->i;
+    return *(float *) &stack->val.i;
 }
 
 /**
@@ -143,7 +143,7 @@ static float GetStackFloat(RS_STACKDATA *stack) {
  *
  */
 static char *GetStackString(RS_STACKDATA *stack) {
-    return (char *) stack->i;
+    return (char *) stack->val.i;
 }
 
 /**
@@ -153,7 +153,7 @@ static char *GetStackString(RS_STACKDATA *stack) {
  */
 static void SetStack(RS_STACKDATA *stack, int value) {
     if (stack->type == 3) {
-        ((RS_STACKDATA *) stack->i)->i = value;
+        ((RS_STACKDATA *) stack->val.i)->val.i = value;
     }
 }
 
@@ -164,7 +164,7 @@ static void SetStack(RS_STACKDATA *stack, int value) {
  */
 static void SetStack(RS_STACKDATA *stack, float value) {
     if (stack->type == 3) {
-        *(float *) &((RS_STACKDATA *) stack->i)->i = value;
+        *(float *) &((RS_STACKDATA *) stack->val.i)->val.i = value;
     }
 }
 
@@ -654,9 +654,9 @@ int _GET_POSREF_ANGLE(RS_STACKDATA *stack, int argc) {
  */
 int _NORMAL_VECTOR(RS_STACKDATA *stack, int argc) {
     float vec[4];
-    vec[0] = stack[0].p->f;
-    vec[1] = stack[1].p->f;
-    vec[2] = stack[2].p->f;
+    vec[0] = stack[0].val.p->val.f;
+    vec[1] = stack[1].val.p->val.f;
+    vec[2] = stack[2].val.p->val.f;
     vec[3] = 1.0f;
     sceVu0Normalize(vec, vec);
     SetStack(stack++, vec[0]);
@@ -693,9 +693,9 @@ int _ADD_VECTOR(RS_STACKDATA *stack, int argc) {
     float x = GetStackFloat(source++);
     float y = GetStackFloat(source++);
     float z = GetStackFloat(source);
-    SetStack(stack, stack[0].p->f + x);
-    SetStack(stack + 1, stack[1].p->f + y);
-    SetStack(stack + 2, stack[2].p->f + z);
+    SetStack(stack, stack[0].val.p->val.f + x);
+    SetStack(stack + 1, stack[1].val.p->val.f + y);
+    SetStack(stack + 2, stack[2].val.p->val.f + z);
     return 1;
 }
 
@@ -710,9 +710,9 @@ int _SUB_VECTOR(RS_STACKDATA *stack, int argc) {
     float x = GetStackFloat(source++);
     float y = GetStackFloat(source++);
     float z = GetStackFloat(source);
-    SetStack(stack, stack[0].p->f - x);
-    SetStack(stack + 1, stack[1].p->f - y);
-    SetStack(stack + 2, stack[2].p->f - z);
+    SetStack(stack, stack[0].val.p->val.f - x);
+    SetStack(stack + 1, stack[1].val.p->val.f - y);
+    SetStack(stack + 2, stack[2].val.p->val.f - z);
     return 1;
 }
 
@@ -723,9 +723,9 @@ int _SUB_VECTOR(RS_STACKDATA *stack, int argc) {
  */
 int _SCALE_VECTOR(RS_STACKDATA *stack, int argc) {
     float scale = GetStackFloat(stack + 3);
-    SetStack(stack, stack[0].p->f * scale);
-    SetStack(stack + 1, stack[1].p->f * scale);
-    SetStack(stack + 2, stack[2].p->f * scale);
+    SetStack(stack, stack[0].val.p->val.f * scale);
+    SetStack(stack + 1, stack[1].val.p->val.f * scale);
+    SetStack(stack + 2, stack[2].val.p->val.f * scale);
     return 1;
 }
 
@@ -741,9 +741,9 @@ int _DIV_VECTOR(RS_STACKDATA *stack, int argc) {
         return 0;
     }
 
-    SetStack(stack, stack[0].p->f / divisor);
-    SetStack(stack + 1, stack[1].p->f / divisor);
-    SetStack(stack + 2, stack[2].p->f / divisor);
+    SetStack(stack, stack[0].val.p->val.f / divisor);
+    SetStack(stack + 1, stack[1].val.p->val.f / divisor);
+    SetStack(stack + 2, stack[2].val.p->val.f / divisor);
     return 1;
 }
 
@@ -766,7 +766,7 @@ int _ANGLE_CMP(RS_STACKDATA *stack, int argc) {
  *
  */
 int _ANGLE_LIMIT(RS_STACKDATA *stack, int unused) {
-    SetStack(stack, mgAngleLimit(stack->p->f));
+    SetStack(stack, mgAngleLimit(stack->val.p->val.f));
     return 1;
 }
 
@@ -844,7 +844,7 @@ int _GET_MONSTER_LIFE(RS_STACKDATA *stack, int argc) {
         return 0;
     }
 
-    RS_STACKDATA *slot = (RS_STACKDATA *) stack->i;
+    RS_STACKDATA *slot = (RS_STACKDATA *) stack->val.i;
 
     if (slot->type == 0) {
         SetStack(stack, nowMonster->life);
@@ -1700,7 +1700,7 @@ int _V_POP(RS_STACKDATA *stack, int argc) {
         return 0;
     }
 
-    RS_STACKDATA *slot = (RS_STACKDATA *) stack->i;
+    RS_STACKDATA *slot = (RS_STACKDATA *) stack->val.i;
 
     if (slot->type == 0) {
         if (index < MONSTER_VAR_MAX) {
@@ -1792,7 +1792,7 @@ int _V_POP2(RS_STACKDATA *stack, int argc) {
         return 0;
     }
 
-    RS_STACKDATA *slot = (RS_STACKDATA *) stack->i;
+    RS_STACKDATA *slot = (RS_STACKDATA *) stack->val.i;
 
     if (slot->type == 0) {
         if (index < MONSTER_VAR2_MAX) {
@@ -3353,7 +3353,6 @@ int _SET_DEAD_START(RS_STACKDATA *args, int argc) {
     sndSePlay(nowScene->se_battle_id, 1, 0);
     return 1;
 }
-
 int _SET_DEAD_OFF(RS_STACKDATA *args, int argc) {
     sceVu0FVECTOR position;
     sceVu0FVECTOR velocity;
@@ -3371,98 +3370,76 @@ int _SET_DEAD_OFF(RS_STACKDATA *args, int argc) {
     if (argc != 0) {
         return 0;
     }
-
     nowMonster->dead_alpha = 128;
     radius = 3.0f * nowMonster->GetBodyWidth();
     height = 2.0f * nowMonster->GetBodyHeight();
-
     if (height >= 60.0f) {
         height = 60.0f;
     }
-
     size = height / 32.0f;
     nowMonster->GetEntryObjectPos(0, position);
-
     if ((nowMonster->attrib & MONSTER_ATTRIB_UNK_2) == 0) {
         if (BattleFX.dead == NULL) {
             effect = NULL;
         } else {
             effect = &BattleFX.dead[BattleFX.dead_next];
             BattleFX.dead_next++;
-
             if (BattleFX.dead_next >= BattleFX.dead_num) {
                 BattleFX.dead_next = 0;
             }
         }
-
         if (effect != NULL) {
             effect->SetDeadEffect(position, radius, height, size, 35);
         }
-
         if (BattleFX.dead == NULL) {
             effect = NULL;
         } else {
             effect = &BattleFX.dead[BattleFX.dead_next];
             BattleFX.dead_next++;
-
             if (BattleFX.dead_next >= BattleFX.dead_num) {
                 BattleFX.dead_next = 0;
             }
         }
-
         if (effect != NULL) {
             effect->SetDeadEffect(position, 0.5f * radius, 0.5f * height, size, 35);
         }
     }
-
     last_chara = nowMonster->last_hit_chara;
     last_source = nowMonster->last_hit_source;
     experience = nowMonster->reward_exp;
     pickup_count = 0;
-
     if (nowMonster->last_hit_attr & 0x800) {
         float bonus = 1.2f;
-        experience = (int) ((float) experience * bonus);
+        experience = (int)((float)experience * bonus);
     }
-
     if (experience < 6 && experience > 0) {
         pickup_count = 6;
     }
-
     if (experience >= 6) {
         pickup_count = 8;
     }
-
     if (experience >= 50) {
         pickup_count = 10;
     }
-
     if (experience >= 200) {
         pickup_count = 12;
     }
-
     if (experience >= 500) {
         pickup_count = 16;
     }
-
-    growth = (float) experience / (float) pickup_count;
-
+    growth = (float)experience / (float)pickup_count;
     for (i = 0; i < pickup_count; i++) {
         CPullItem *item = PullItemMan.GetList(2);
-
         if (item != NULL) {
             velocity[0] = 0.3f + fRand(0.6f);
             velocity[1] = 2.0f + fRand(3.0f);
             velocity[2] = 0.3f + fRand(0.6f);
-
             if (iRand(100) < 50) {
                 velocity[0] *= -1.0f;
             }
-
             if (iRand(100) < 50) {
                 velocity[2] *= -1.0f;
             }
-
             velocity[3] = 1.0f;
             item->SetItem(position, velocity, PULL_ITEM_WEAPON_EXP);
             item->exp = growth;
@@ -3470,15 +3447,12 @@ int _SET_DEAD_OFF(RS_STACKDATA *args, int argc) {
             item->item_no = last_source;
         }
     }
-
     if (pickup_count > 0) {
         sndSePlay(nowScene->se_battle_id, 2, 0);
     }
-
     sndSePlay(nowScene->se_battle_id, 20, 0);
     return 1;
 }
-
 /**
  *
  * Clears the monster catch state when its throw ends.
@@ -3852,10 +3826,9 @@ void _ESM_DELETE(RS_STACKDATA *stack, int argc) {
     int effect_id = nowMonster->chara_type;
     ActiveMonster->effect_man->DeleteEffSpt(effect_id, GetStackInt(stack));
 }
-
 int _ESM_SET_VECT1(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR vector;
-    int           slot = GetStackInt(stack++);
+    int slot = GetStackInt(stack++);
     vector[0] = GetStackFloat(stack++);
     vector[1] = GetStackFloat(stack++);
     vector[2] = GetStackFloat(stack);
@@ -3864,14 +3837,11 @@ int _ESM_SET_VECT1(RS_STACKDATA *stack, int argc) {
     int group = monster_type;
     return ActiveMonster->effect_man->SetScriptVect1(vector, group, slot);
 }
-
 int _ESM_GET_VECT1(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR vector;
-
     if (argc != 4) {
         return 0;
     }
-
     int slot = GetStackInt(stack++);
     int monster_type = nowMonster->chara_type;
     int group = monster_type;
@@ -3881,14 +3851,11 @@ int _ESM_GET_VECT1(RS_STACKDATA *stack, int argc) {
     SetStack(stack, vector[2]);
     return result;
 }
-
 int _ESM_SET_VECT2(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR vector;
-
     if (argc != 4) {
         return 0;
     }
-
     int slot = GetStackInt(stack++);
     vector[0] = GetStackFloat(stack++);
     vector[1] = GetStackFloat(stack++);
@@ -3898,14 +3865,11 @@ int _ESM_SET_VECT2(RS_STACKDATA *stack, int argc) {
     int group = monster_type;
     return ActiveMonster->effect_man->SetScriptVect2(vector, group, slot);
 }
-
 int _ESM_GET_VECT2(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR vector;
-
     if (argc != 4) {
         return 0;
     }
-
     int slot = GetStackInt(stack++);
     int monster_type = nowMonster->chara_type;
     int group = monster_type;
@@ -3915,7 +3879,6 @@ int _ESM_GET_VECT2(RS_STACKDATA *stack, int argc) {
     SetStack(stack, vector[2]);
     return result;
 }
-
 int _ESM_SET_TARGET_ID(RS_STACKDATA *stack, int argc) {
     int slot = GetStackInt(stack++);
     int id = GetStackInt(stack);
@@ -3923,7 +3886,6 @@ int _ESM_SET_TARGET_ID(RS_STACKDATA *stack, int argc) {
     int group = monster_type;
     return ActiveMonster->effect_man->SetScriptTargetId(id, group, slot);
 }
-
 void _ESM_GET_TARGET_ID(RS_STACKDATA *stack, int argc) {
     int id;
     int slot = GetStackInt(stack++);
@@ -3932,7 +3894,6 @@ void _ESM_GET_TARGET_ID(RS_STACKDATA *stack, int argc) {
     ActiveMonster->effect_man->GetScriptTargetId(id, group, slot);
     SetStack(stack, id);
 }
-
 int _ESM_SET_USER_ID(RS_STACKDATA *stack, int argc) {
     int slot = GetStackInt(stack++);
     int id = GetStackInt(stack);
@@ -3940,7 +3901,6 @@ int _ESM_SET_USER_ID(RS_STACKDATA *stack, int argc) {
     int group = monster_type;
     return ActiveMonster->effect_man->SetScriptUserId(id, group, slot);
 }
-
 int _ESM_GET_USER_ID(RS_STACKDATA *stack, int argc) {
     int id;
     int slot = GetStackInt(stack++);
@@ -3950,7 +3910,6 @@ int _ESM_GET_USER_ID(RS_STACKDATA *stack, int argc) {
     SetStack(stack, id);
     return result;
 }
-
 /**
  *
  * Sets an integer or float parameter on a monster effect slot.

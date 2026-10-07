@@ -93,21 +93,19 @@ static int PrintCursor(char *text, int row) {
 
     return sprintf(text, "  ");
 }
-
 int EditDebugLoop(CScene *scene, EditDebugInfo *info) {
-    char          text[4096];
-    int           edit_data_no;
-    char         *end;
-    CCharacter2  *character;
+    char text[4096];
+    int edit_data_no;
+    char *end;
+    CCharacter2 *character;
     CMapFlagData *map_flags;
-    int           row;
-    int          *value;
-    int           closed;
+    int row;
+    int *value;
+    int closed;
 
     if (!EditDebugFlag || !DebugFlag) {
         return 0;
     }
-
     edit_data_no = info->edit_data_no;
     end = text;
     character = scene->GetCharacter(scene->player_chara);
@@ -129,10 +127,9 @@ int EditDebugLoop(CScene *scene, EditDebugInfo *info) {
         character->GetPosition(position);
         character->GetRotation(rotation);
         end += sprintf(end, "%7.1f %7.1f %7.1f R%4.2f\n", position[0], position[1], position[2], rotation[1]);
-
         if (GamePad__2.Down(PAD_START)) {
             char coordinates[512];
-            int  length = sprintf(coordinates, "%.1f,%.1f,%.1f,%.2f;", position[0], position[1], position[2], rotation[1]);
+            int length = sprintf(coordinates, "%.1f,%.1f,%.1f,%.2f;", position[0], position[1], position[2], rotation[1]);
             WriteFile("host0:pos.txt", coordinates, length);
         }
     } else {
@@ -142,23 +139,20 @@ int EditDebugLoop(CScene *scene, EditDebugInfo *info) {
     for (row = 0; row < SelMax[SelTAG]; row++) {
         end += PrintCursor(end, row);
         end += sprintf(end, "%s ", SelText[SelTAG][row]);
-
         if (SelTAG == EDIT_DEBUG_PAGE_EDIT_DATA &&
             (row == EDIT_DEBUG_EDIT_DATA_CONDITION || row == EDIT_DEBUG_EDIT_DATA_MAP_FLAG)) {
             if (row == EDIT_DEBUG_EDIT_DATA_CONDITION) {
                 if (info->edit_data) {
                     const char *state[2] = {"X", "O"};
-                    char        condition_text[128];
-                    int         flag = info->edit_data->dbgGetContintionFlag(edit_data_no, condition, condition_text);
+                    char condition_text[128];
+                    int flag = info->edit_data->dbgGetContintionFlag(edit_data_no, condition, condition_text);
                     end += sprintf(end, "%d[%s]%s\n", condition, state[flag], condition_text);
                 } else {
                     end += sprintf(end, "nothing\n");
                 }
             }
-
             if (row == EDIT_DEBUG_EDIT_DATA_MAP_FLAG) {
                 const char *state[2] = {"X", "O"};
-
                 if (!map_flags) {
                     end += sprintf(end, "nothing\n");
                 } else {
@@ -172,29 +166,23 @@ int EditDebugLoop(CScene *scene, EditDebugInfo *info) {
             end += sprintf(end, "\n");
         }
     }
-
     end += sprintf(end, "\n");
-
     if (SelHelp[SelTAG][Select]) {
         sprintf(end, "%s\n", SelHelp[SelTAG][Select]);
     }
 
     value = SelData[SelTAG][Select];
-
     if (value) {
         if (GamePad__2.Down(PAD_LEFT)) {
             --*value;
         }
-
         if (GamePad__2.Down(PAD_RIGHT)) {
             ++*value;
         }
-
         if (GamePad__2.On(PAD_L2) && GamePad__2.On(PAD_R2)) {
             if (GamePad__2.Down(PAD_L1)) {
                 *value -= 10000;
             }
-
             if (GamePad__2.Down(PAD_R1)) {
                 *value += 10000;
             }
@@ -202,165 +190,133 @@ int EditDebugLoop(CScene *scene, EditDebugInfo *info) {
             if (GamePad__2.Down(PAD_L1)) {
                 *value -= 10;
             }
-
             if (GamePad__2.Down(PAD_R1)) {
                 *value += 10;
             }
         }
-
         if (GamePad__2.Down(PAD_L2)) {
             *value -= 100;
         }
-
         if (GamePad__2.Down(PAD_R2)) {
             *value += 100;
         }
-
         if (*value < 0) {
             *value = 0;
         }
-
         if (*value >= 99999) {
             *value = 99999;
         }
     }
-
     if (GamePad__2.Down(PAD_SELECT)) {
         ++SelTAG;
-
         if (SelTAG >= EDIT_DEBUG_PAGE_COUNT) {
             SelTAG = EDIT_DEBUG_PAGE_GENERAL;
         }
     }
-
     if (GamePad__2.Down(PAD_DOWN)) {
         ++Select;
     }
-
     if (GamePad__2.Down(PAD_UP)) {
         --Select;
     }
-
     if (Select < 0) {
         Select = SelMax[SelTAG] - 1;
     }
-
     if (Select >= SelMax[SelTAG]) {
         Select = 0;
     }
-
     DebugInfo.debug_camera = DebugInfo.debug_camera != 0;
     DebugInfo.georama_debug = DebugInfo.georama_debug != 0;
     DebugInfo.param_off = DebugInfo.param_off != 0;
-
     if (DebugInfo.chara_move < 0) {
         DebugInfo.chara_move = 0;
     }
-
     if (DebugInfo.chara_move > 2) {
         DebugInfo.chara_move = 2;
     }
-
     if (DebugInfo.invent_debug < 0) {
         DebugInfo.invent_debug = 0;
     }
-
     if (DebugInfo.invent_debug > 1) {
         DebugInfo.invent_debug = 1;
     }
-
     GetDebugFont()->DrawDirect(text, 10, 10);
 
     closed = 0;
-
     if (GamePad__2.Down(PAD_CIRCLE)) {
         if (SelTAG == EDIT_DEBUG_PAGE_GENERAL && Select == EDIT_DEBUG_GENERAL_SUB_GAME) {
             sgInitSubGame(sg_type, info);
             EditDebugEnd();
             closed = 1;
         }
-
         if (SelTAG == EDIT_DEBUG_PAGE_EDIT_DATA) {
             int map_no = scene->now_map_no;
             GetSaveData();
             CEditData *edit_data = info->edit_data;
-            CEditMap  *map = (CEditMap *) scene->GetMap(scene->active_map);
-
+            CEditMap *map = (CEditMap *)scene->GetMap(scene->active_map);
             if (edit_data && map) {
                 char path[64];
-
                 switch (Select) {
-                    case EDIT_DEBUG_EDIT_DATA_ALL_CLEAR:
-                        map->ClearAllParts();
-                        break;
-                    case EDIT_DEBUG_EDIT_DATA_SAVE_FILE:
-                        EditDataSave();
-                        sprintf(path, "host0:geo_data/geo%d-%d.edt", map_no, save_no);
-                        WriteFile(path, edit_data, 0x5510);
-                        break;
-                    case EDIT_DEBUG_EDIT_DATA_LOAD_FILE:
-                        sprintf(path, "host0:geo_data/geo%d-%d.edt", map_no, load_no);
-
-                        if (LoadFile2(path, edit_data, NULL, 0)) {
-                            EditDataLoad();
-                        }
-
-                        break;
-                    case EDIT_DEBUG_EDIT_DATA_CONDITION:
-                        info->edit_data->dbgSetContintionFlag(
-                            edit_data_no, condition, !info->edit_data->dbgGetContintionFlag(edit_data_no, condition, NULL));
-                        break;
-                    case EDIT_DEBUG_EDIT_DATA_MAP_FLAG:
-                        if (map_flags) {
-                            map_flags->SetFlag(map_flag_no, !map_flags->GetFlag(map_flag_no));
-                        }
-
-                        break;
+                case EDIT_DEBUG_EDIT_DATA_ALL_CLEAR:
+                    map->ClearAllParts();
+                    break;
+                case EDIT_DEBUG_EDIT_DATA_SAVE_FILE:
+                    EditDataSave();
+                    sprintf(path, "host0:geo_data/geo%d-%d.edt", map_no, save_no);
+                    WriteFile(path, edit_data, 0x5510);
+                    break;
+                case EDIT_DEBUG_EDIT_DATA_LOAD_FILE:
+                    sprintf(path, "host0:geo_data/geo%d-%d.edt", map_no, load_no);
+                    if (LoadFile2(path, edit_data, NULL, 0)) {
+                        EditDataLoad();
+                    }
+                    break;
+                case EDIT_DEBUG_EDIT_DATA_CONDITION:
+                    info->edit_data->dbgSetContintionFlag(
+                        edit_data_no, condition, !info->edit_data->dbgGetContintionFlag(edit_data_no, condition, NULL));
+                    break;
+                case EDIT_DEBUG_EDIT_DATA_MAP_FLAG:
+                    if (map_flags) {
+                        map_flags->SetFlag(map_flag_no, !map_flags->GetFlag(map_flag_no));
+                    }
+                    break;
                 }
             }
         }
-
         if (SelTAG == EDIT_DEBUG_PAGE_MAP) {
             switch (Select) {
-                case EDIT_DEBUG_MAP_MAP_JUMP:
-                    closed = 1;
-                    info->jump_map_no = map_jump;
-                    break;
-                case EDIT_DEBUG_MAP_LOAD_GYORACE:
-                    LoadGyorace();
-                    break;
+            case EDIT_DEBUG_MAP_MAP_JUMP:
+                closed = 1;
+                info->jump_map_no = map_jump;
+                break;
+            case EDIT_DEBUG_MAP_LOAD_GYORACE:
+                LoadGyorace();
+                break;
             }
         }
     }
-
     if (GamePad__2.Down(PAD_TRIANGLE) && SelTAG == EDIT_DEBUG_PAGE_EDIT_DATA &&
         Select == EDIT_DEBUG_EDIT_DATA_CONDITION) {
         int flag = info->edit_data->dbgGetContintionFlag(edit_data_no, 0, NULL);
-
         for (int i = 0; i < 64; i++) {
             info->edit_data->dbgSetContintionFlag(edit_data_no, i, !flag);
         }
     }
-
     if (SelTAG == EDIT_DEBUG_PAGE_GENERAL && Select == EDIT_DEBUG_GENERAL_RUN_EVENT) {
         if (GamePad__2.Down(PAD_CIRCLE)) {
             scene->RunEvent(EventNo, NULL);
             closed = 1;
         }
-
         if (GamePad__2.Down(PAD_TRIANGLE)) {
             ReloadMapScript();
         }
     }
-
     if (closed || GamePad__2.Down(PAD_CROSS | PAD_R3)) {
         EditDebugEnd();
         return 1;
     }
-
     return 0;
 }
-
 void EditDebugEnd() {
     EditDebugInit();
 }
@@ -373,12 +329,28 @@ void EndLightingEdit() {
 
 int IsLightingEditMode() { return LEditFlag; }
 #ifdef NONMATCHING
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+static inline float LightAbs(float value) {
+    if (value < 0.0f) {
+        return -value;
+    }
+    return value;
+}
 int mgTransWorldScreen(int *out, float *position);
-
 void LightingEdit(CScene *scene) {
-    float  angle;
-    int    row;
+    int row;
     float *selected;
+    int selected_index;
+    int edit;
+    char *end;
+    CMapLightingInfo *light;
+    CMap *map;
+    int light_no;
+    float angle;
+    int previous;
     if (!LEditFlag) {
         if (GamePad__2.Down2(PAD_R3)) {
             LEditFlag = 1;
@@ -387,7 +359,7 @@ void LightingEdit(CScene *scene) {
         }
         return;
     }
-    CMap       *map = scene->GetMap(scene->active_map);
+    map = scene->GetMap(scene->active_map);
     mgCDrawPrim prim;
     prim.Initialize(NULL, NULL);
     prim.AlphaBlendEnable(1);
@@ -398,38 +370,33 @@ void LightingEdit(CScene *scene) {
     prim.Vertex(10, 10, 0);
     prim.Vertex(150, 300, 0);
     prim.End();
-    int               light_no = map->active_light_no;
-    CMapLightingInfo *light = ((CMapInfo *) map)->GetLightingInfo(light_no);
+    light_no = map->map_info.active_light_no;
+    light = ((CMapInfo *)map)->GetLightingInfo(light_no);
     selected = NULL;
-    int         selected_index = 0;
+    selected_index = 0;
     const char *channel[3] = {"R", "G", "B"};
     const char *axis[3] = {"X", "Y", "Z"};
     const char *cursor[2] = {"  ", ">>"};
     const char *tail[2] = {"  ", "<<"};
-    char        text[4096];
+    char text[4096];
     const char *pages[4] = {"<- BG & AMB ", "<-Dir Light ", "<-    Fog   ", "<-   File   "};
+    end = text;
     row = LightSel[LightType];
-    char *end = text;
     end += sprintf(end, "%sLightSet [%d]\n", cursor[row == 0], light_no);
-    if (LightType != 1) {
-        end += sprintf(end, "%s%s\n", cursor[row == 1], pages[LightType]);
-    } else {
-        end += sprintf(end, "%s%s%d->\n", cursor[row == 1], pages[LightType], DirLightNo);
-    }
+    if (LightType != 1) end += sprintf(end, "%s%s\n", cursor[row == 1], pages[LightType]);
+    else end += sprintf(end, "%s%s%d->\n", cursor[row == 1], pages[LightType], DirLightNo);
     if (LightType == LIGHTING_EDIT_PAGE_BG_AMBIENT) {
-        int         edit = row - 2;
-        float      *colors[3] = {light->bg_color, light->bg_color2, light->ambient};
-        const char *groups[3] = {"BG_COL  ", "BG_COL2 ", "AMBIENT "};
-        if (row > 10) {
-            row = 10;
-        }
+        edit = row - 2;
+        float *colors[3] __attribute__((aligned(16))) = {light->bg_color, light->bg_color2, light->ambient};
+        if (row > 10) row = 10;
         selected = colors[edit / 3];
         selected_index = edit % 3;
+        const char *groups[3] = {"BG_COL  ", "BG_COL2 ", "AMBIENT "};
         for (int group = 0; group < 3; group++) {
             for (int component = 0; component < 3; component++) {
                 int hit = edit == group * 3 + component;
                 end += sprintf(end, "%s%s%s = %d%s\n", cursor[hit], groups[group], channel[component],
-                               (int) colors[group][component], tail[hit]);
+                               (int)colors[group][component], tail[hit]);
             }
         }
         end += sprintf(end, "   BG   BG2   AMB\n");
@@ -439,21 +406,15 @@ void LightingEdit(CScene *scene) {
         if (edit >= 3 && edit < 6) {
             sceVu0FVECTOR angles;
             mgZeroVector(angles);
-            if (GamePad__2.Down2(PAD_RIGHT)) {
-                angles[edit - 3] = 0.01f;
-            }
-            if (GamePad__2.Down2(PAD_LEFT)) {
-                angles[edit - 3] = -0.01f;
-            }
+            if (GamePad__2.Down2(PAD_RIGHT)) angles[edit - 3] = 0.04f;
+            if (GamePad__2.Down2(PAD_LEFT)) angles[edit - 3] = -0.04f;
             if (!(mgDistVector(angles) <= 0.0f)) {
                 sceVu0FVECTOR vector;
                 vector[0] = light->light_dir[0][DirLightNo];
                 vector[1] = light->light_dir[1][DirLightNo];
                 vector[2] = light->light_dir[2][DirLightNo];
                 vector[3] = 0.0f;
-                if (mgDistVector(vector) == 0.0f) {
-                    vector[2] = 1.0f;
-                }
+                if (mgDistVector(vector) == 0.0f) vector[2] = 1.0f;
                 sceVu0FMATRIX transform;
                 mgUnitMatrix(transform);
                 sceVu0RotMatrix(transform, transform, angles);
@@ -473,89 +434,66 @@ void LightingEdit(CScene *scene) {
         for (int component = 0; component < 3; component++) {
             int hit = edit == component;
             end += sprintf(end, "%sCOL %s = %d%s\n", cursor[hit], channel[component],
-                           (int) light->light_color[DirLightNo][component], tail[hit]);
+                           (int)light->light_color[DirLightNo][component], tail[hit]);
         }
         end += sprintf(end, "%sROTATE X <->%s\n", cursor[edit == 3], tail[edit == 3]);
         end += sprintf(end, "%sROTATE Y <->%s\n", cursor[edit == 4], tail[edit == 4]);
         end += sprintf(end, "%sROTATE Z <->%s\n", cursor[edit == 5], tail[edit == 5]);
-        for (int a = 0; a < 3; a++) {
+        for (int a = 0; a < 3; a++)
             end += sprintf(end, " DIR %s = %f\n", axis[a], light->light_dir[a][DirLightNo]);
-        }
     }
     if (LightType == LIGHTING_EDIT_PAGE_FOG) {
         unsigned int edit = row - 2;
         mgFOG_PARAM *fog = &light->fog;
-        int          direction = 0;
-        if (GamePad__2.Down2(PAD_RIGHT)) {
-            direction = 1;
-        }
-        if (GamePad__2.Down2(PAD_LEFT)) {
-            direction = -1;
-        }
+        int direction = 0;
+        if (GamePad__2.Down2(PAD_RIGHT)) direction = 1;
+        if (GamePad__2.Down2(PAD_LEFT)) direction = -1;
         if (direction != 0) {
-            if (edit < 7U) {
-                switch (row) {
-                    case 2:
-                        fog->near_dist += 10.0f * direction;
-                        break;
-                    case 3:
-                        fog->far_dist += 10.0f * direction;
-                        break;
-                    case 4:
-                    case 5:
-                    case 6: {
-                        u_char *component = &fog->r + edit;
-                        int     value = *component + direction;
-                        if (value < 0) {
-                            value = 0;
-                        }
-                        if (value >= 256) {
-                            value = 255;
-                        }
-                        *component = value;
-                        break;
-                    }
-                    case 7:
-                        fog->far_value = (int) fog->far_value + direction;
-                        break;
-                    case 8:
-                        fog->near_value = (int) fog->near_value + direction;
-                        break;
-                }
+            switch (edit) {
+            case 0:
+                fog->near_dist += 10.0f * direction;
+                break;
+            case 1:
+                fog->far_dist += 10.0f * direction;
+                break;
+            case 2:
+            case 3:
+            case 4: {
+                u_char *component = (u_char *)(edit + (u_int)fog + 6);
+                int value = *component + direction;
+                if (value < 0) value = 0;
+                if (value > 255) value = 255;
+                *component = value;
+                break;
             }
-            if (fog->far_value < 0.0f) {
-                fog->far_value = 0.0f;
+            case 5:
+                fog->far_value = (int)fog->far_value + direction;
+                break;
+            case 6:
+                fog->near_value = (int)fog->near_value + direction;
+                break;
             }
-            if (fog->near_value < 0.0f) {
-                fog->near_value = 0.0f;
-            }
-            if (!(fog->far_value <= 255.0f)) {
-                fog->far_value = 255.0f;
-            }
-            if (!(fog->near_value <= 255.0f)) {
-                fog->near_value = 255.0f;
-            }
-            if (fog->near_dist < 10.0f) {
-                fog->near_dist = 10.0f;
-            }
-            if (fog->far_dist < fog->near_dist) {
-                fog->far_dist = fog->near_dist;
-            }
+            if (fog->far_value < 0.0f) fog->far_value = 0.0f;
+            if (fog->near_value < 0.0f) fog->near_value = 0.0f;
+            if (!(fog->far_value <= 255.0f)) fog->far_value = 255.0f;
+            if (!(fog->near_value <= 255.0f)) fog->near_value = 255.0f;
+            if (fog->near_dist < 10.0f) fog->near_dist = 10.0f;
+            if (fog->far_dist < fog->near_dist) fog->far_dist = fog->near_dist;
         }
         end += sprintf(end, "%sNEAR = %f%s\n", cursor[edit == 0], fog->near_dist, tail[edit == 0]);
         end += sprintf(end, "%sFAR  = %f%s\n", cursor[edit == 1], fog->far_dist, tail[edit == 1]);
         end += sprintf(end, "%sR    = %d%s\n", cursor[edit == 2], fog->r, tail[edit == 2]);
         end += sprintf(end, "%sG    = %d%s\n", cursor[edit == 3], fog->g, tail[edit == 3]);
         end += sprintf(end, "%sB    = %d%s\n", cursor[edit == 4], fog->b, tail[edit == 4]);
-        end += sprintf(end, "%sMIN  = %d%s\n", cursor[edit == 5], (int) fog->far_value, tail[edit == 5]);
-        end += sprintf(end, "%sMAX  = %d%s\n", cursor[edit == 6], (int) fog->near_value, tail[edit == 6]);
+        end += sprintf(end, "%sMIN  = %d%s\n", cursor[edit == 5], (int)fog->far_value, tail[edit == 5]);
+        end += sprintf(end, "%sMAX  = %d%s\n", cursor[edit == 6], (int)fog->near_value, tail[edit == 6]);
     }
     if (LightType == LIGHTING_EDIT_PAGE_FILE) {
         int edit = row - 2;
         sprintf(end, "%sSAVE <->%s\n", cursor[edit == 0], tail[edit == 0]);
         if (edit == 0 && (GamePad__2.Down2(PAD_LEFT) || GamePad__2.Down2(PAD_RIGHT))) {
             char script[0x5000];
-            int  size = ((CMapInfo *) map)->OutputLightData(script);
+            int size = ((CMapInfo *)map)->OutputLightData(script);
             if (size > 0) {
                 char host[16] = "host:";
                 char path[128];
@@ -565,96 +503,51 @@ void LightingEdit(CScene *scene) {
         }
     }
     if (selected != NULL) {
+        int value;
         float *target = selected + selected_index;
-        int    value = (int) *target;
-        if (GamePad__2.Down2(PAD_RIGHT)) {
-            value += 1;
-        }
-        if (GamePad__2.Down2(PAD_LEFT)) {
-            value -= 1;
-        }
-        if (value < 0) {
-            value = 0;
-        }
-        if (value >= 256) {
-            value = 255;
-        }
+        value = (int)*target;
+        if (GamePad__2.Down2(PAD_RIGHT)) value += 1;
+        if (GamePad__2.Down2(PAD_LEFT)) value -= 1;
+        if (value < 0) value = 0;
+        if (value > 255) value = 255;
         *target = value;
     }
-    if (GamePad__2.Down2(PAD_UP)) {
-        row -= 1;
-    }
-    if (GamePad__2.Down2(PAD_DOWN)) {
-        row += 1;
-    }
-    if (row < 0) {
-        row = LightListNum[LightType] - 1;
-    }
-    int previous = LightType;
-    if (row >= LightListNum[previous]) {
-        row = 0;
-    }
-    LightSel[previous] = row;
+    if (GamePad__2.Down2(PAD_UP)) row -= 1;
+    if (GamePad__2.Down2(PAD_DOWN)) row += 1;
+    if (row < 0) row = LightListNum[LightType] - 1;
+    previous = LightType;
+    if (row >= LightListNum[LightType]) row = 0;
+    LightSel[LightType] = row;
     if (row == 1) {
         if (previous == 1) {
-            if (GamePad__2.Down2(PAD_RIGHT)) {
-                DirLightNo += 1;
-            }
-            if (GamePad__2.Down2(PAD_LEFT)) {
-                DirLightNo -= 1;
-            }
+            if (GamePad__2.Down2(PAD_RIGHT)) DirLightNo += 1;
+            if (GamePad__2.Down2(PAD_LEFT)) DirLightNo -= 1;
             if (DirLightNo < 0) {
                 DirLightNo = 0;
                 LightType -= 1;
             }
-            if (DirLightNo >= 4) {
+            if (DirLightNo > 3) {
                 DirLightNo = 3;
                 LightType += 1;
             }
         } else {
-            if (GamePad__2.Down2(PAD_RIGHT)) {
-                LightType += 1;
-            }
-            if (GamePad__2.Down2(PAD_LEFT)) {
-                LightType -= 1;
-            }
+            if (GamePad__2.Down2(PAD_RIGHT)) LightType += 1;
+            if (GamePad__2.Down2(PAD_LEFT)) LightType -= 1;
         }
-        if (LightType < 0) {
-            LightType = 0;
-        }
-        if (LightType >= 4) {
-            LightType = 3;
-        }
-        if (LightType == 0) {
-            DirLightNo = 0;
-        }
-        if (LightType == 2) {
-            DirLightNo = 3;
-        }
-        if (previous != LightType) {
-            LightSel[LightType] = 1;
-        }
+        if (LightType < 0) LightType = 0;
+        if (LightType > 3) LightType = 3;
+        if (LightType == 0) DirLightNo = 0;
+        if (LightType == 2) DirLightNo = 3;
+        if (previous != LightType) LightSel[LightType] = 1;
     }
     if (row == 0) {
-        if (GamePad__2.Down2(PAD_RIGHT)) {
-            light_no += 1;
-        }
-        if (GamePad__2.Down2(PAD_LEFT)) {
-            light_no -= 1;
-        }
-        if (light_no < 0) {
-            light_no = 0;
-        }
-        if (light_no >= map->lighting_info_num) {
-            light_no = map->lighting_info_num - 1;
-        }
+        if (GamePad__2.Down2(PAD_RIGHT)) light_no += 1;
+        if (GamePad__2.Down2(PAD_LEFT)) light_no -= 1;
+        if (light_no < 0) light_no = 0;
+        if (light_no >= map->map_info.lighting_info_num) light_no = map->map_info.lighting_info_num - 1;
         float time = map->GetLightNoTime(light_no);
-        if (!(time < 0.0f)) {
-            scene->SetTime(time);
-        }
-        if (light_no >= 0 && light_no < map->lighting_info_num) {
-            map->active_light_no = light_no;
-        }
+        if (!(time < 0.0f)) scene->SetTime(time);
+        if (light_no >= 0 && light_no < map->map_info.lighting_info_num) map->map_info.active_light_no = light_no;
     }
     GetDebugFont()->DrawDirect(text, 10, 10);
     if (LightType == LIGHTING_EDIT_PAGE_BG_AMBIENT) {
@@ -682,11 +575,18 @@ void LightingEdit(CScene *scene) {
         prim.Vertex(20, 230, 0);
         prim.Vertex(50, 260, 0);
         prim.End();
-        int   anchor[4] = {0x4B0, 0x1040, 0, 0};
+        float direction[4];
+        float reference[4];
+        float tip_light[4];
+        float tip_x[4];
+        float tip_y[4];
+        float tip_z[4];
+        int origin[4];
+        union { int m[4][4]; struct { int v0[4]; int v1[4]; int v2[4]; int v3[4]; } v; } screen;
+        int anchor[4] = {0x4B0, 0x1040, 0, 0};
         float x_axis[4] = {1.0f, 0.0f, 0.0f, 0.0f};
         float y_axis[4] = {0.0f, 1.0f, 0.0f, 0.0f};
         float z_axis[4] = {0.0f, 0.0f, 1.0f, 0.0f};
-        float direction[4];
         direction[0] = light->light_dir[0][DirLightNo];
         direction[1] = light->light_dir[1][DirLightNo];
         direction[2] = light->light_dir[2][DirLightNo];
@@ -696,91 +596,60 @@ void LightingEdit(CScene *scene) {
         sceVu0ScaleVector(y_axis, y_axis, 10.0f);
         sceVu0ScaleVector(z_axis, z_axis, 10.0f);
         mgCCamera *camera = scene->GetCamera(scene->active_camera);
-        float      reference[4];
-        if (camera != NULL) {
-            camera->GetRef(reference);
-        }
+        if (camera != NULL) camera->GetRef(reference);
         reference[3] = 1.0f;
-        float tip_light[4];
-        float tip_x[4];
-        float tip_y[4];
-        float tip_z[4];
         sceVu0AddVector(tip_light, reference, direction);
         sceVu0AddVector(tip_x, reference, x_axis);
         sceVu0AddVector(tip_y, reference, y_axis);
         sceVu0AddVector(tip_z, reference, z_axis);
-        int origin[4];
-        int screen_light[4];
-        int screen_x[4];
-        int screen_y[4];
-        int screen_z[4];
         mgTransWorldScreen(origin, reference);
-        mgTransWorldScreen(screen_light, tip_light);
-        mgTransWorldScreen(screen_x, tip_x);
-        mgTransWorldScreen(screen_y, tip_y);
-        mgTransWorldScreen(screen_z, tip_z);
-        screen_light[0] -= origin[0];
-        screen_x[0] -= origin[0];
-        screen_y[0] -= origin[0];
-        screen_z[0] -= origin[0];
-        screen_light[1] -= origin[1];
-        screen_x[1] -= origin[1];
-        screen_y[1] -= origin[1];
-        screen_z[1] -= origin[1];
-        sceVu0ITOF4Vector(tip_light, screen_light);
-        sceVu0ITOF4Vector(tip_x, screen_x);
-        sceVu0ITOF4Vector(tip_y, screen_y);
-        sceVu0ITOF4Vector(tip_z, screen_z);
+        mgTransWorldScreen(screen.v.v0, tip_light);
+        mgTransWorldScreen(screen.v.v1, tip_x);
+        mgTransWorldScreen(screen.m[2], tip_y);
+        mgTransWorldScreen(screen.m[3], tip_z);
+        for (int i = 0; i < 4; i++) screen.m[i][0] = screen.m[i][0] - origin[0];
+        for (int i = 0; i < 4; i++) screen.m[i][1] -= origin[1];
+        sceVu0ITOF4Vector(tip_light, screen.v.v0);
+        sceVu0ITOF4Vector(tip_x, screen.m[1]);
+        sceVu0ITOF4Vector(tip_y, screen.m[2]);
+        sceVu0ITOF4Vector(tip_z, screen.m[3]);
         float unit = tip_y[1];
-        if (unit < 0.0f) {
-            unit = -unit;
-        }
+        unit = LightAbs(unit);
         float ratio = 30.0f / unit;
         sceVu0ScaleVector(tip_light, tip_light, ratio);
         sceVu0ScaleVector(tip_x, tip_x, ratio);
         sceVu0ScaleVector(tip_y, tip_y, ratio);
         sceVu0ScaleVector(tip_z, tip_z, ratio);
-        sceVu0FTOI4Vector(screen_light, tip_light);
-        sceVu0FTOI4Vector(screen_x, tip_x);
-        sceVu0FTOI4Vector(screen_y, tip_y);
-        sceVu0FTOI4Vector(screen_z, tip_z);
-        screen_light[0] += anchor[0];
-        screen_x[0] += anchor[0];
-        screen_y[0] += anchor[0];
-        screen_z[0] += anchor[0];
-        screen_light[1] += anchor[1];
-        screen_x[1] += anchor[1];
-        screen_y[1] += anchor[1];
-        screen_z[1] += anchor[1];
+        sceVu0FTOI4Vector(screen.m[0], tip_light);
+        sceVu0FTOI4Vector(screen.m[1], tip_x);
+        sceVu0FTOI4Vector(screen.m[2], tip_y);
+        sceVu0FTOI4Vector(screen.m[3], tip_z);
+        for (int i = 0; i < 4; i++) screen.m[i][0] += anchor[0];
+        for (int i = 0; i < 4; i++) screen.m[i][1] += anchor[1];
         prim.AlphaBlendEnable(1);
         prim.AlphaTestEnable(0);
         prim.DepthTestEnable(0);
         prim.Begin(1);
         prim.Color(0, 255, 0, 64);
         prim.Vertex4(anchor);
-        prim.Vertex4(screen_x);
+        prim.Vertex4(screen.m[1]);
         prim.Color(0, 0, 255, 64);
         prim.Vertex4(anchor);
-        prim.Vertex4(screen_y);
+        prim.Vertex4(screen.v.v2);
         prim.Color(255, 0, 0, 64);
         prim.Vertex4(anchor);
-        prim.Vertex4(screen_z);
+        prim.Vertex4(screen.v.v3);
         prim.Color(255, 255, 255, 64);
         prim.Vertex4(anchor);
         prim.Color(255, 255, 255, 128);
-        prim.Vertex4(screen_light);
+        prim.Vertex4(screen.v.v0);
         prim.End();
     }
     mgCCamera *camera = scene->GetCamera(scene->active_camera);
     if (camera != NULL) {
         angle = 0.05f * -GamePad__2.GetRXf2();
-        float magnitude = angle;
-        if (angle < 0.0f) {
-            magnitude = -angle;
-        }
-        if (!(magnitude <= 0.001f)) {
-            ((CCameraControl *) camera)->Rotate(angle);
-        }
+        float magnitude = (angle < 0.0f) ? -angle : angle;
+        if (!(magnitude <= 0.001f)) ((CCameraControl *)camera)->Rotate(angle);
     }
     if (GamePad__2.Down2(PAD_R3)) {
         LEditFlag = 0;

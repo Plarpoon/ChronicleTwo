@@ -63,11 +63,13 @@ void                    DrawMenuDl(int x, int y, int width, int alpha, float rat
 int                     GetSelectLanguageNo();
 extern char             at_1479__2[];
 void                    TitleHDDInstallDraw();
-extern void            *__vt__9mgCObject[];
-extern void            *__vt__7CObject[];
-extern void            *__vt__12CObjectFrame[];
-extern void            *__vt__11CCharacter2[];
-extern void            *__vt__12CActionChara[];
+extern "C" void        *__ct__9CMenuFontFv(void *);
+extern "C" void        *__ct__10CRunScriptFv(void *);
+extern void             *__vt__9mgCObject[];
+extern void             *__vt__7CObject[];
+extern void             *__vt__12CObjectFrame[];
+extern void             *__vt__11CCharacter2[];
+extern void             *__vt__12CActionChara[];
 extern CScene          *TitleScene;
 extern s16              TitlePhase;
 extern s16              TitleMCActivePort;
@@ -211,9 +213,7 @@ static inline u_int Align16Blocks(u_int size) {
     return size >> 4;
 }
 
-#pragma define_section dead ".dead" \
-                            ".dead"
-
+#pragma define_section dead ".dead" ".dead"
 __declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
     return a / b;
 }
@@ -378,24 +378,23 @@ void TitleInit(INIT_LOOP_ARG arg) {
 
     TitleBootInit();
 }
-#ifdef NONMATCHING
-
 #pragma inline_depth(8)
-
 void TitleBootInit() {
-    RushMovie = new ((u_long128 *) DataBuffer.Alloc(0x2396)) CMovie;
+    float angle;
+    angle = 0.0f;
+    RushMovie = new ((u_long128 *)DataBuffer.Alloc(0x2396)) CMovie;
     TitleMCFuncFlag = 1;
     TitleMCCheckNow = 0;
     TitleMainMCCheckPhase = 0;
-    TitleMCCheck = new ((u_long128 *) DataBuffer.Alloc(0x112)) CMemoryCardManager;
+    TitleMCCheck = new ((u_long128 *)DataBuffer.Alloc(0x112)) CMemoryCardManager;
     TitleMCCheck->Initialize(&DataBuffer);
-    TitleCamera = new ((u_long128 *) DataBuffer.Alloc(0xE)) mgCCameraFollow(40.0f, 30.0f, 0.0f, 8.0f);
-    TitleCamera2 = new ((u_long128 *) DataBuffer.Alloc(9)) mgCCamera(8.0f);
-    WaveTable__3 = new ((u_long128 *) DataBuffer.Alloc(0x123)) CWaveTable;
+    TitleCamera = new ((u_long128 *)DataBuffer.Alloc(0xE)) mgCCameraFollow(40.0f, 30.0f, angle, 8.0f);
+    TitleCamera2 = new ((u_long128 *)DataBuffer.Alloc(9)) mgCCamera(8.0f);
+    WaveTable__3 = new ((u_long128 *)DataBuffer.Alloc(0x123)) CWaveTable;
     mgCTextureManager *textures = &mgTexManager;
     DataBuffer.Align64();
-    u_long128 *map_top;
-    TitleMapBuffer.stSetBuffer(map_top = DataBuffer.stGetTop(), 0x40000);
+    u_long128 *map_top = DataBuffer.stGetTop();
+    TitleMapBuffer.stSetBuffer(DataBuffer.stGetTop(), 0x40000);
     DataBuffer.Alloc(0x60000);
     TitleWorkBuffer.stSetBuffer(DataBuffer.stGetTop(), 0x2800);
     DataBuffer.Alloc(0x2800);
@@ -407,10 +406,12 @@ void TitleBootInit() {
     TitleScene->before_camera = 0;
     TitleScene->SetStack(1, &TitleMapBuffer);
     TitleScene->work_stack = &TitleWorkBuffer;
-    u8 *map_buffer = (u8 *) DataBuffer.stGetTop();
-    int map_no = SearchMapNo(at_1221__4);
+    int map_no;
+    u8 *map_buffer;
+    map_buffer = (u8 *)DataBuffer.stGetTop();
+    map_no = SearchMapNo(at_1221__4);
     TitleScene->active_map = 0;
-    MapJumpMapInfo    main_map;
+    MapJumpMapInfo main_map;
     SCN_LOADMAP_INFO2 load_info;
     main_map.stack_no = 1;
     main_map.map_no = 0;
@@ -419,22 +420,23 @@ void TitleBootInit() {
     main_map.load_buf = map_buffer;
     SetMainMapInfo(&main_map);
     GetLoadMapInfo(&load_info, map_no);
+    load_info.load_sky = 1;
     load_info.sky_tex_block = 0x6B;
     load_info.place_parts_max = 0x190;
-    load_info.load_sky = 1;
     TitleScene->DeleteMap(0, 1);
     TitleScene->LoadMap(0, &load_info, 0);
     TitleScene->SetNowMapNo(map_no);
     TitleScene->SetActive(2, 0);
     TitleMap = TitleScene->GetMap(TitleScene->active_map);
-    u32 file_size;
-    if (LoadFile2(at_1222__4, DataBuffer.stAllocTest(1), (int *) &file_size, 0) != 0) {
-        textures->EnterIMGFile((u_char *) DataBuffer.Alloc(Align16Blocks(file_size)), 0x6A, NULL, NULL);
+    int file_size;
+    int bg_size;
+    if (LoadFile2(at_1222__4, DataBuffer.stAllocTest(1), &bg_size, 0) != 0) {
+        textures->EnterIMGFile((u_char *)DataBuffer.Alloc(Align16Blocks(bg_size)), 0x6A, NULL, NULL);
     }
     textures->EnterTexture(0x6A, at_1223__4, NULL, mgScreenWidth, mgScreenHeight, 0x20, 0, 0, 0);
     char lang_file[0x40];
     sprintf(lang_file, at_1224__4, LanguageCode);
-    LoadFile2(lang_file, map_buffer, (int *) &file_size, 0);
+    LoadFile2(lang_file, map_buffer, &file_size, 0);
     DataBuffer.Alloc(Align16Blocks(file_size));
     textures->EnterIMGFile(map_buffer, 0x40, NULL, NULL);
     Tex_TitleBG = textures->GetTexture(at_1225__4, -1);
@@ -446,14 +448,12 @@ void TitleBootInit() {
     Tex_TrialMsg = textures->GetTexture(at_1231__2, -1);
     Tex_TitleBG2 = textures->GetTexture(at_1232__2, -1);
     DataBuffer.Align64();
-    u_long128 *save_pack = &DataBuffer.stGetTop()[0x4100];
+    u_long128 *save_pack = (u_long128 *)((u8 *)DataBuffer.stGetTop() + 0x41000);
     if (LoadFileMenu(at_1233, save_pack, MENU_FILE_LOAD_DIRECT) != 0) {
         for (int i = 0; i < 3; i++) {
-            MC_ICON_DATA *icon = &MC_ICON_Data[i];
-            u_int        *icon_file = GetPackFile((u_int *) save_pack, icon->name, &icon->size);
-            int          *size = &icon->size;
-            icon->data = DataBuffer.Alloc(Align16Blocks(icon->size));
-            memcpy(icon->data, icon_file, *size);
+            u_int *icon_file = GetPackFile((u_int *)save_pack, MC_ICON_Data[i].name, &MC_ICON_Data[i].size);
+            MC_ICON_Data[i].data = DataBuffer.Alloc(Align16Blocks(MC_ICON_Data[i].size));
+            memcpy((void *)MC_ICON_Data[i].data, icon_file, MC_ICON_Data[i].size);
         }
     }
     TitleMCCheck->SetIconData(MC_ICON_Data, 0);
@@ -461,8 +461,8 @@ void TitleBootInit() {
     RushWork = textures->EnterTexture(0x43, at_1234, NULL, mgScreenWidth, mgScreenHeight, mgScreenDepth, 0, 0, 0);
     DataBuffer.Align64();
     u_long128 *push_start_img = DataBuffer.stGetTop();
-    if (LoadFile2(at_1235, push_start_img, (int *) &file_size, 0) != 0) {
-        textures->EnterIMGFile((u_char *) push_start_img, 0x43, NULL, NULL);
+    if (LoadFile2(at_1235, push_start_img, &file_size, 0) != 0) {
+        textures->EnterIMGFile((u_char *)push_start_img, 0x43, NULL, NULL);
     }
     RushStart = textures->GetTexture(at_1236, 0x43);
     DataBuffer.Alloc(Align16Blocks(file_size));
@@ -475,14 +475,30 @@ void TitleBootInit() {
     textures->EnterIMGFile(GetFontTex2ImgPtr(), 0x46, NULL, NULL);
     DataBuffer.Align64();
     MenuArg.mes_tex_block = 0x46;
+    MenuArg.scene = TitleScene;
     MenuArg.tex_block_top = 0x54;
     MenuArg.tex_block_num = 0x10;
-    MenuArg.scene = TitleScene;
-    MenuArg.pack = (u_int *) DataBuffer.stGetTop();
-    file_size = LoadFileMenu(at_1237__2, (u_long128 *) MenuArg.pack, MENU_FILE_LOAD_DIRECT);
+    MenuArg.pack = (u_int *)DataBuffer.stGetTop();
+    file_size = LoadFileMenu(at_1237__2, (u_long128 *)MenuArg.pack, MENU_FILE_LOAD_DIRECT);
     DataBuffer.Alloc(Align16Blocks(file_size));
     DataBuffer.Align64();
-    CActionChara *chara = new ((u_long128 *) DataBuffer.Alloc(0x105)) CActionChara;
+    CActionChara *chara;
+    if ((chara = (CActionChara *)operator new(sizeof(CActionChara), DataBuffer.Alloc(0x105))) != NULL) {
+        *(void **)chara = __vt__9mgCObject;
+        ((mgCObject *)chara)->Initialize();
+        *(void **)chara = __vt__7CObject;
+        ((mgCObject *)chara)->Initialize();
+        *(void **)chara = __vt__12CObjectFrame;
+        ((mgCObject *)chara)->Initialize();
+        *(void **)chara = __vt__11CCharacter2;
+        chara->shadow_link.num = 0;
+        chara->shadow_link.dst_frame = 0;
+        chara->shadow_link.src_frame = 0;
+        ((mgCObject *)chara)->Initialize();
+        *(void **)chara = __vt__12CActionChara;
+        __ct__10CRunScriptFv(&chara->script);
+        memset(&chara->move_check, 0, sizeof(chara->move_check));
+    }
     chara->Initialize(NULL);
     TitleScene->AssignChara(0, chara, at_1238);
     DataBuffer.Align64();
@@ -490,11 +506,12 @@ void TitleBootInit() {
     TitleScene->LoadSound(0x1F4, sound_buffer);
     TitleScene->StopEnvBGM();
     sndWaitTransBd();
-    LoadFile2(at_1239__2, sound_buffer, (int *) &file_size, 0);
+    LoadFile2(at_1239__2, sound_buffer, &file_size, 0);
     sndInitPort(4);
-    TitleEventSound = sndLoadSound(4, (u_int *) sound_buffer, &snd_memory);
+    TitleEventSound = sndLoadSound(4, (u_int *)sound_buffer, &snd_memory);
     DataBuffer.Align64();
-    Stack_ReadBuff.stSetBuffer(DataBuffer.stGetTop(), DataBuffer.stGetRest());
+    int rest = DataBuffer.stGetRest();
+    Stack_ReadBuff.stSetBuffer(DataBuffer.stGetTop(), rest);
     read_buffer = Stack_ReadBuff.stGetTop();
     TitleScene->read_buff = read_buffer;
     TitleScene->fade.Initialize();
@@ -523,11 +540,7 @@ void TitleBootInit() {
         }
     }
 }
-
 #pragma inline_depth reset
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleBootInit__Fv);
-#endif
 void TitleExit() {
     if (CheckOmakeFlag() != 0) {
         OmakeFlag = 1;
@@ -1184,9 +1197,9 @@ void TitleModeInit() {
         TitleCamera2->Resume();
     }
 }
-#ifdef NONMATCHING
-int CalcMenuAdd(float *cursor, float step, float limit = 0.0f);
 
+static inline u8 Ident(u8 v) { return v; }
+int CalcMenuAdd(float *cursor, float step, float limit = 0.0f);
 int TitleModeKey() {
     int start_pushed;
     int start;
@@ -1206,35 +1219,35 @@ int TitleModeKey() {
     if (TitlePhase <= TITLE_PHASE_MENU || TitlePhase == TITLE_PHASE_PUSH_START || TitlePhase == TITLE_PHASE_OMAKE_MENU ||
         TitlePhase == TITLE_PHASE_MC_MESSAGE) {
         CMemoryCardManager *card_manager = TitleMCCheck;
-        u8                  inport1;
-        MC_CARD_INFO       *card0;
-        u8                  inport0;
-        MC_CARD_INFO       *card1;
-        inport1 = TitleMCCheckInport[1];
+        MC_CARD_INFO *card0;
+        u8 inport0;
+        MC_CARD_INFO *card1;
+        u8 inport1;
         inport0 = TitleMCCheckInport[0];
+        inport1 = Ident(TitleMCCheckInport[1]);
         card0 = &card_manager->card[0];
         card1 = &card_manager->card[1];
         if (TitleMCCheckNow != 0) {
             switch (TitleMainMCCheckPhase) {
-                case 0:
-                    TitleMCCheckInit(0);
-                    TitleMainMCCheckPhase = 1;
-                    break;
-                case 1:
-                    if (TitleMCCheckKey() != 0) {
-                        TitleMCCheckMes = NULL;
-                        TitleMCCheckNow = 0;
-                        TitleMCActivePort = 0;
-                        TitleMCCheck->port = 0;
-                        TitleMCCheck->SetFuncNo(0);
-                        TitleInfo->omake_select = 0;
-                        if (TitlePhase == TITLE_PHASE_OMAKE_MENU) {
-                            TitlePhase = TITLE_PHASE_MENU;
-                            TitleInfo->select = TITLE_MENU_OMAKE;
-                            TitleInfo->omake_alpha = 0.0f;
-                        }
+            case 0:
+                TitleMCCheckInit(0);
+                TitleMainMCCheckPhase = 1;
+                break;
+            case 1:
+                if (TitleMCCheckKey() != 0) {
+                    TitleMCCheckMes = NULL;
+                    TitleMCCheckNow = 0;
+                    TitleMCActivePort = 0;
+                    TitleMCCheck->port = 0;
+                    TitleMCCheck->SetFuncNo(0);
+                    TitleInfo->omake_select = 0;
+                    if (TitlePhase == TITLE_PHASE_OMAKE_MENU) {
+                        TitlePhase = TITLE_PHASE_MENU;
+                        TitleInfo->select = TITLE_MENU_OMAKE;
+                        TitleInfo->omake_alpha = 0.0f;
                     }
-                    break;
+                }
+                break;
             }
             return TITLE_KEY_NONE;
         }
@@ -1276,190 +1289,194 @@ int TitleModeKey() {
     }
     int fade_done = TitleScene->fade.FadeCheck();
     switch (TitlePhase) {
-        case TITLE_PHASE_WAIT:
-            TitlePushStart_AlphaPlus = 0;
-            if (start_pushed != 0) {
-                TitlePhase = TITLE_PHASE_PUSH_START;
-                TitleInfo->title_alpha = 128.0f;
-                TitlePushStart_AlphaPlus = 1;
-                sndSePlay(TitleEventSound, 0, 0);
+    case TITLE_PHASE_WAIT:
+        TitlePushStart_AlphaPlus = 0;
+        if (start_pushed != 0) {
+            TitlePhase = TITLE_PHASE_PUSH_START;
+            TitleInfo->title_alpha = 128.0f;
+            TitlePushStart_AlphaPlus = 1;
+            sndSePlay(TitleEventSound, 0, 0);
+        }
+        TitleInfo->wait_count--;
+        if (TitleInfo->wait_count <= 0) {
+            TitlePhase = TITLE_PHASE_FADE_IN;
+        }
+        break;
+    case TITLE_PHASE_FADE_IN:
+        TitlePushStart_AlphaPlus = 0;
+        if (TitleInfo->title_alpha < 128.0f) {
+            CalcMenuAdd(&TitleInfo->title_alpha, 0.53f, 128.0f);
+        }
+        if (start_pushed != 0) {
+            sndSePlay(TitleEventSound, 0, 0);
+            TitleInfo->title_alpha = 128.0f;
+        }
+        if (128.0f <= TitleInfo->title_alpha) {
+            TitlePhase = TITLE_PHASE_PUSH_START;
+            TitlePushStart_AlphaPlus = 1;
+        }
+        break;
+    case TITLE_PHASE_PUSH_START: {
+        float zero = 0.0f;
+        CalcMenuAdd(&TitleInfo->menu_alpha, -12, zero);
+        CalcMenuAdd(&TitleInfo->cursor_alpha, -12, zero);
+        CalcMenuAdd(&TitleInfo->title_alpha, 8, 128);
+        CalcMenuAdd(&TitleInfo->omake_alpha, float(-8.0), zero);
+        if (start_pushed != 0) {
+            sndSePlay(TitleEventSound, 0, 0);
+            TitlePhase = TITLE_PHASE_MENU;
+            TitleInfo->idle_count = 0;
+        }
+        break;
+    }
+    case TITLE_PHASE_MENU: {
+        TitlePushStart_AlphaPlus = 0;
+        int old_select = TitleInfo->select;
+        CalcMenuAdd(&TitleInfo->title_alpha, float(-8.0), 0);
+        CalcMenuAdd(&TitleInfo->menu_alpha, float(12), 128);
+        CalcMenuAdd(&TitleInfo->cursor_alpha, 12.0f, float(128.0));
+        if (GamePad__2.Down(PAD_UP) != 0) {
+            TitleInfo->select--;
+        }
+        if (GamePad__2.Down(PAD_DOWN) != 0) {
+            TitleInfo->select++;
+        }
+        if (TitleInfo->select < 0) {
+            TitleInfo->select = 0;
+        }
+        if (TitleHDDCheckFlag != 0) {
+            if (TitleInfo->select > 4) {
+                TitleInfo->select = 4;
             }
-            TitleInfo->wait_count--;
-            if (TitleInfo->wait_count <= 0) {
-                TitlePhase = TITLE_PHASE_FADE_IN;
+        } else {
+            if (TitleInfo->select > 3) {
+                TitleInfo->select = 3;
             }
-            break;
-        case TITLE_PHASE_FADE_IN:
-            TitlePushStart_AlphaPlus = 0;
-            if (TitleInfo->title_alpha < 128.0f) {
-                CalcMenuAdd(&TitleInfo->title_alpha, 0.53f, 128.0f);
-            }
-            if (start_pushed != 0) {
-                sndSePlay(TitleEventSound, 0, 0);
-                TitleInfo->title_alpha = 128.0f;
-            }
-            if (128.0f <= TitleInfo->title_alpha) {
-                TitlePhase = TITLE_PHASE_PUSH_START;
-                TitlePushStart_AlphaPlus = 1;
-            }
-            break;
-        case TITLE_PHASE_PUSH_START:
-            CalcMenuAdd(&TitleInfo->menu_alpha, float(-12.0));
-            CalcMenuAdd(&TitleInfo->cursor_alpha, float(-12.0));
-            CalcMenuAdd(&TitleInfo->title_alpha, 8.0f, 128.0f);
-            CalcMenuAdd(&TitleInfo->omake_alpha, -8.0f);
-            if (start_pushed != 0) {
-                sndSePlay(TitleEventSound, 0, 0);
-                TitlePhase = TITLE_PHASE_MENU;
-                TitleInfo->idle_count = 0;
-            }
-            break;
-        case TITLE_PHASE_MENU: {
-            TitlePushStart_AlphaPlus = 0;
-            int old_select = TitleInfo->select;
-            CalcMenuAdd(&TitleInfo->title_alpha, -8.0f, 0.0f);
-            CalcMenuAdd(&TitleInfo->menu_alpha, float(12.0), float(128.0));
-            CalcMenuAdd(&TitleInfo->cursor_alpha, float(12.0), float(128.0));
-            if (GamePad__2.Down(PAD_UP) != 0) {
-                TitleInfo->select--;
-            }
-            if (GamePad__2.Down(PAD_DOWN) != 0) {
-                TitleInfo->select++;
-            }
-            if (TitleInfo->select < 0) {
-                TitleInfo->select = 0;
-            }
-            if (TitleHDDCheckFlag != 0) {
-                if (TitleInfo->select > 4) {
-                    TitleInfo->select = 4;
-                }
-            } else {
-                if (TitleInfo->select > 3) {
-                    TitleInfo->select = 3;
-                }
-            }
-            if (old_select != TitleInfo->select) {
-                MenuSePlay(SYSTEM_SE_CURSOR);
-                TitleInfo->idle_count = 0;
-            }
-            if ((push & 1) || start != 0) {
-                if (TitleInfo->select == TITLE_MENU_NEW_GAME) {
-                    TitlePhase = TITLE_PHASE_NEW_GAME;
-                    TitleScene->fade.FadeOut(0x28, 0.0f, 0.0f, 0.0f);
-                    MenuSePlay(SYSTEM_SE_DECIDE);
-                    TitleInfo->menu_alpha = 128.0f;
-                    TitleInfo->cursor_alpha = 128.0f;
-                } else if (TitleInfo->select == TITLE_MENU_CONTINUE) {
-                    TitlePhase = TITLE_PHASE_CONTINUE;
+        }
+        if (old_select != TitleInfo->select) {
+            MenuSePlay(SYSTEM_SE_CURSOR);
+            TitleInfo->idle_count = 0;
+        }
+        if ((push & 1) || start != 0) {
+            if (TitleInfo->select == TITLE_MENU_NEW_GAME) {
+                TitlePhase = TITLE_PHASE_NEW_GAME;
+                TitleScene->fade.FadeOut(0x28, 0.0f, 0.0f, 0.0f);
+                MenuSePlay(SYSTEM_SE_DECIDE);
+                TitleInfo->menu_alpha = 128.0f;
+                TitleInfo->cursor_alpha = 128.0f;
+            } else if (TitleInfo->select == TITLE_MENU_CONTINUE) {
+                TitlePhase = TITLE_PHASE_CONTINUE;
+                TitleScene->fade.FadeOut(0x1E, 0.0f, 0.0f, 0.0f);
+                MenuSePlay(SYSTEM_SE_DECIDE);
+            } else if (TitleInfo->select == TITLE_MENU_HDD_INSTALL) {
+                if (0 < HDDINFO.connect) {
+                    TitlePhase = TITLE_PHASE_HDD_INSTALL;
                     TitleScene->fade.FadeOut(0x1E, 0.0f, 0.0f, 0.0f);
-                    MenuSePlay(SYSTEM_SE_DECIDE);
-                } else if (TitleInfo->select == TITLE_MENU_HDD_INSTALL) {
-                    if (0 < HDDINFO.connect) {
-                        TitlePhase = TITLE_PHASE_HDD_INSTALL;
-                        TitleScene->fade.FadeOut(0x1E, 0.0f, 0.0f, 0.0f);
-                        MenuSePlay(SYSTEM_SE_DECIDE);
-                    } else {
-                        MenuSePlay(5);
-                    }
-                } else if (TitleInfo->select == TITLE_MENU_OPTION) {
-                    TitlePhase = TITLE_PHASE_OPTION;
-                    TitleScene->fade.FadeOut(0x1E, 0.0f, 0.0f, 0.0f);
-                    MenuSePlay(SYSTEM_SE_DECIDE);
-                } else if (TitleInfo->select == TITLE_MENU_OMAKE && OmakePlayEnableAttr != 0) {
-                    TitlePhase = TITLE_PHASE_OMAKE_MENU;
-                    TitleInfo->omake_alpha = 128.0f;
-                    TitleInfo->omake_select = 0;
-                    TitleInfo->omake_num = 0;
-                    TitleInfo->omake_dungeon = 0;
-                    TitleInfo->omake_gyorace = 0;
-                    if (OmakePlayEnableAttr & OMAKE_ENABLE_DUNGEON) {
-                        TitleInfo->omake_num++;
-                        TitleInfo->omake_dungeon = 1;
-                    }
-                    if (OmakePlayEnableAttr & OMAKE_ENABLE_GYORACE) {
-                        TitleInfo->omake_num++;
-                        TitleInfo->omake_gyorace = 1;
-                    }
                     MenuSePlay(SYSTEM_SE_DECIDE);
                 } else {
                     MenuSePlay(5);
                 }
-            } else if (push & 2) {
-                TitlePhase = TITLE_PHASE_PUSH_START;
-                MenuSePlay(5);
-            }
-            break;
-        }
-        case TITLE_PHASE_NEW_GAME:
-            TitlePushStart_AlphaPlus = 0;
-            if (fade_done != 0) {
-                return TITLE_KEY_NEW_GAME;
-            }
-            break;
-        case TITLE_PHASE_CONTINUE:
-            TitlePushStart_AlphaPlus = 0;
-            if (fade_done != 0) {
-                return TITLE_KEY_CONTINUE;
-            }
-            break;
-        case TITLE_PHASE_OPTION:
-        case TITLE_PHASE_UNUSED_6:
-        case TITLE_PHASE_OMAKE:
-            TitlePushStart_AlphaPlus = 0;
-            if (fade_done != 0) {
-                if (TitlePhase == TITLE_PHASE_OPTION) {
-                    return TITLE_KEY_OPTION;
-                }
-                if (TitlePhase == TITLE_PHASE_OMAKE) {
-                    return TITLE_KEY_OMAKE;
-                }
-            }
-            break;
-        case TITLE_PHASE_HDD_INSTALL:
-            TitlePushStart_AlphaPlus = 0;
-            if (fade_done != 0) {
-                return TITLE_KEY_HDD_INSTALL;
-            }
-            break;
-        case TITLE_PHASE_OMAKE_MENU: {
-            TitlePushStart_AlphaPlus = 0;
-            CalcMenuAdd(&TitleInfo->menu_alpha, float(-8.0));
-            CalcMenuAdd(&TitleInfo->cursor_alpha, float(3.0), float(128.0));
-            int old_select = TitleInfo->omake_select;
-            if (GamePad__2.Down(PAD_UP) != 0) {
-                TitleInfo->omake_select--;
-            }
-            if (GamePad__2.Down(PAD_DOWN) != 0) {
-                TitleInfo->omake_select++;
-            }
-            if (TitleInfo->omake_select < 0) {
-                TitleInfo->omake_select = 0;
-            }
-            if (TitleInfo->omake_num <= TitleInfo->omake_select) {
-                TitleInfo->omake_select = TitleInfo->omake_num - 1;
-            }
-            if (old_select != TitleInfo->omake_select) {
-                MenuSePlay(SYSTEM_SE_CURSOR);
-                TitleInfo->idle_count = 0;
-            }
-            if (push & 1) {
-                MenuSePlay(SYSTEM_SE_DECIDE);
-                TitlePhase = TITLE_PHASE_OMAKE;
+            } else if (TitleInfo->select == TITLE_MENU_OPTION) {
+                TitlePhase = TITLE_PHASE_OPTION;
                 TitleScene->fade.FadeOut(0x1E, 0.0f, 0.0f, 0.0f);
-            } else if (push & 2) {
-                TitlePhase = TITLE_PHASE_MENU;
-                TitleInfo->omake_alpha = 0.0f;
+                MenuSePlay(SYSTEM_SE_DECIDE);
+            } else if (TitleInfo->select == TITLE_MENU_OMAKE && OmakePlayEnableAttr != 0) {
+                TitlePhase = TITLE_PHASE_OMAKE_MENU;
+                TitleInfo->omake_alpha = 128.0f;
+                TitleInfo->omake_select = 0;
+                TitleInfo->omake_num = 0;
+                TitleInfo->omake_dungeon = 0;
+                TitleInfo->omake_gyorace = 0;
+                if (OmakePlayEnableAttr & OMAKE_ENABLE_DUNGEON) {
+                    TitleInfo->omake_num++;
+                    TitleInfo->omake_dungeon = 1;
+                }
+                if (OmakePlayEnableAttr & OMAKE_ENABLE_GYORACE) {
+                    TitleInfo->omake_num++;
+                    TitleInfo->omake_gyorace = 1;
+                }
+                MenuSePlay(SYSTEM_SE_DECIDE);
+            } else {
                 MenuSePlay(5);
             }
-            break;
+        } else if (push & 2) {
+            TitlePhase = TITLE_PHASE_PUSH_START;
+            MenuSePlay(5);
         }
-        case TITLE_PHASE_MC_MESSAGE:
-            if ((push & 2) || (push & 1)) {
-                TitlePhase = TITLE_PHASE_MENU;
-                TitleMCCheckMes = NULL;
-                MenuSePlay(5);
+        break;
+    }
+    case TITLE_PHASE_NEW_GAME:
+        TitlePushStart_AlphaPlus = 0;
+        if (fade_done != 0) {
+            return TITLE_KEY_NEW_GAME;
+        }
+        break;
+    case TITLE_PHASE_CONTINUE:
+        TitlePushStart_AlphaPlus = 0;
+        if (fade_done != 0) {
+            return TITLE_KEY_CONTINUE;
+        }
+        break;
+    case TITLE_PHASE_OPTION:
+    case TITLE_PHASE_UNUSED_6:
+    case TITLE_PHASE_OMAKE:
+        TitlePushStart_AlphaPlus = 0;
+        if (fade_done != 0) {
+            if (TitlePhase == TITLE_PHASE_OPTION) {
+                return TITLE_KEY_OPTION;
             }
-            break;
+            if (TitlePhase == TITLE_PHASE_OMAKE) {
+                return TITLE_KEY_OMAKE;
+            }
+        }
+        break;
+    case TITLE_PHASE_HDD_INSTALL:
+        TitlePushStart_AlphaPlus = 0;
+        if (fade_done != 0) {
+            return TITLE_KEY_HDD_INSTALL;
+        }
+        break;
+    case TITLE_PHASE_OMAKE_MENU: {
+        TitlePushStart_AlphaPlus = 0;
+        CalcMenuAdd(&TitleInfo->menu_alpha, -8.0f);
+        float limit = 128.0f;
+        float rate = 3.0f;
+        CalcMenuAdd(&TitleInfo->cursor_alpha, rate, limit);
+        int old_select = TitleInfo->omake_select;
+        if (GamePad__2.Down(PAD_UP) != 0) {
+            TitleInfo->omake_select--;
+        }
+        if (GamePad__2.Down(PAD_DOWN) != 0) {
+            TitleInfo->omake_select++;
+        }
+        if (TitleInfo->omake_select < 0) {
+            TitleInfo->omake_select = 0;
+        }
+        if (TitleInfo->omake_num <= TitleInfo->omake_select) {
+            TitleInfo->omake_select = TitleInfo->omake_num - 1;
+        }
+        if (old_select != TitleInfo->omake_select) {
+            MenuSePlay(SYSTEM_SE_CURSOR);
+            TitleInfo->idle_count = 0;
+        }
+        if (push & 1) {
+            MenuSePlay(SYSTEM_SE_DECIDE);
+            TitlePhase = TITLE_PHASE_OMAKE;
+            TitleScene->fade.FadeOut(0x1E, 0.0f, 0.0f, 0.0f);
+        } else if (push & 2) {
+            TitlePhase = TITLE_PHASE_MENU;
+            TitleInfo->omake_alpha = 0.0f;
+            MenuSePlay(5);
+        }
+        break;
+    }
+    case TITLE_PHASE_MC_MESSAGE:
+        if ((push & 2) || (push & 1)) {
+            TitlePhase = TITLE_PHASE_MENU;
+            TitleMCCheckMes = NULL;
+            MenuSePlay(5);
+        }
+        break;
     }
     CalcPushAlpha(0, &TitleInfo->push_alpha);
     if (TitleInfo->idle_count == TitleRushWaitCount) {
@@ -1467,9 +1484,6 @@ int TitleModeKey() {
     }
     return TITLE_KEY_NONE;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleModeKey__Fv);
-#endif
 void TitleModeDraw() {
     int i;
     int x;
@@ -1478,16 +1492,16 @@ void TitleModeDraw() {
     int row_y[2];
     int row;
     TitleMapDraw();
-    mgTexManager.ReloadTexture(0x40, (sceVif1Packet *) NULL);
+    mgTexManager.ReloadTexture(0x40, (sceVif1Packet *)NULL);
     mgCDrawPrim prim;
     SetSpriteEnv(&prim, 0);
-    float left = 0.0f;
+    float left;
+    left = 0.0f;
     float top = 24.0f;
     float title_alpha = TitleInfo->title_alpha;
-    PrimQuad(Tex_Chronicle, 0.0f, top, mgRect<int>(0, 0, 0x200, 0x1A0), fptosi(TitleInfo->title_alpha), 0x80, 0x80, 0x80);
+    PrimQuad(Tex_Chronicle, left, top, mgRect<int>(0, 0, 0x200, 0x1A0), fptosi(TitleInfo->title_alpha), 0x80, 0x80, 0x80);
     mgRect<int> start_rect(start_button_tbl_1826[LanguageCode].left, start_button_tbl_1826[LanguageCode].top,
                            start_button_tbl_1826[LanguageCode].right, start_button_tbl_1826[LanguageCode].bottom);
-
     if (LanguageCode == 0) {
         prim.Bilinear(1);
         prim.Begin(6);
@@ -1502,50 +1516,40 @@ void TitleModeDraw() {
         prim.Begin(6);
         prim.Texture(Tex_Logo);
         prim.Color(0x80, 0x80, 0x80, fptosi(TitleInfo->push_alpha));
-        PrimQuad(&prim, 162.0f, (float) (mgScreenHeight - 0x6C), start_rect);
+        PrimQuad(&prim, 162.0f, (float)(mgScreenHeight - 0x6C), start_rect);
         prim.Color(0x80, 0x80, 0x80, fptosi(TitleInfo->title_alpha));
-        PrimQuad(&prim, left, (float) (mgScreenHeight - 0x38), mgRect<int>(0, 0x180, 0x200, 0x30));
+        PrimQuad(&prim, left, (float)(mgScreenHeight - 0x38), mgRect<int>(0, 0x180, 0x200, 0x30));
         prim.End();
     }
-
     mgRect<int> button_rect(0x12E, 0x28, 0xD2, 0x36);
-    float       cursor_goal_y = 0.0f;
+    float cursor_goal_y = 0.0f;
     y = 0x4C;
     row_num = 5;
     x = (mgScreenWidth - button_rect.right) >> 1;
-
     if (TitleHDDCheckFlag == 0) {
         y = 0x64;
         row_num = 4;
     }
-
     prim.Bilinear(1);
     prim.Begin(6);
     prim.Texture(Tex_Logo);
-
     for (i = 0; i < row_num; i++) {
         prim.Color(0, 0, 0, fptosi(TitleInfo->menu_alpha / 3.0f));
-        PrimQuad(&prim, (float) (x + 4), (float) (y + 4), button_rect);
-
+        PrimQuad(&prim, (float)(x + 4), (float)(y + 4), button_rect);
         if ((i == TITLE_MENU_HDD_INSTALL && HDDINFO.connect == 0) || (i == TITLE_MENU_OMAKE && OmakePlayEnableAttr == 0)) {
             prim.Color(0x48, 0x48, 0x48, fptosi(TitleInfo->menu_alpha));
         } else {
             prim.Color(0x80, 0x80, 0x80, fptosi(TitleInfo->menu_alpha));
         }
-
         button_rect.left = btn_tblxy_1830[i][0];
         button_rect.top = btn_tblxy_1830[i][1];
-        PrimQuad(&prim, (float) x, (float) y, button_rect);
-
+        PrimQuad(&prim, (float)x, (float)y, button_rect);
         if (i == TitleInfo->select) {
-            cursor_goal_y = (float) y;
+            cursor_goal_y = (float)y;
         }
-
         y += 0x3A;
     }
-
     prim.End();
-
     if (0.0f < TitleInfo->omake_alpha) {
         prim.TextureMapEnable(1);
         prim.Begin(6);
@@ -1553,53 +1557,42 @@ void TitleModeDraw() {
         row = 0;
         row_y[0] = 0xD0 - TitleInfo->omake_num * 0x1B;
         row_y[1] = row_y[0] + 0x3C;
-        cursor_goal_y = (float) row_y[TitleInfo->omake_select];
-        prim.Color(0x80, 0x80, 0x80, (int) TitleInfo->omake_alpha);
-
+        cursor_goal_y = (float)row_y[TitleInfo->omake_select];
+        prim.Color(0x80, 0x80, 0x80, (int)TitleInfo->omake_alpha);
         if (OmakePlayEnableAttr & 2) {
             mgRect<int> dungeon_rect(0x5C, 0x100, 0xD2, 0x36);
-            PrimQuad(&prim, 151.0f, (float) row_y[row++], dungeon_rect);
+            PrimQuad(&prim, float(151.0), (float)row_y[row++], dungeon_rect);
         }
-
         if (OmakePlayEnableAttr & 1) {
             mgRect<int> gyorace_rect(0x5C, 0xCA, 0xD2, 0x36);
-            PrimQuad(&prim, 151.0f, (float) row_y[row], gyorace_rect);
+            PrimQuad(&prim, float(151.0), (float)row_y[row], gyorace_rect);
         }
-
         prim.End();
     }
-
-    TitleInfo->cursor_x = (float) (x - 0x20);
+    TitleInfo->cursor_x = (float)(x - 0x20);
     CalcMenu1(cursor_goal_y, &TitleInfo->cursor_y, 4.0f, 0.0f, 0);
-
     if (TitleInfo->cursor_y <= 60.0f) {
         TitleInfo->cursor_y = cursor_goal_y;
     }
-
-    float sway_x = mgAngleLimit(0.05235988f * (float) TitleInfo->cursor_count);
-    float sway_y = mgAngleLimit(0.10471976f * (float) TitleInfo->cursor_count);
+    float sway_x = mgAngleLimit(0.05235988f * (float)TitleInfo->cursor_count);
+    float sway_y = mgAngleLimit(0.10471976f * (float)TitleInfo->cursor_count);
     float cursor_x = TitleInfo->cursor_x + 6.0f * cosf(sway_x);
     float cursor_y = 11.0f + TitleInfo->cursor_y + 4.0f * sinf(sway_y);
-
     if (TitleMCCheckNow == 0) {
         PrimQuad(Tex_Logo, cursor_x, cursor_y, mgRect<int>(0, 0x28, 0x28, 0x18), fptosi(TitleInfo->cursor_alpha), 0x80, 0x80, 0x80);
     }
-
     if (TitleMCCheckNow != 0 || TitlePhase == 0x14) {
         TitleMCCheckDraw();
     }
-
     TitleInfo->cursor_count++;
-
     if (TitleInfo->cursor_count > 10000000) {
         TitleInfo->cursor_count = 0;
     }
 }
-
 void TitleMapDraw() {
-    float              pos[4];
-    float              ref[4];
-    float              view[4][4];
+    float pos[4];
+    float ref[4];
+    float view[4][4];
     mgCTextureManager *textures = &mgTexManager;
 
     mgFogEnable(1);
@@ -1609,159 +1602,125 @@ void TitleMapDraw() {
     camera->GetPos(pos);
     camera->GetRef(ref);
     mgSetViewMatrix(view, pos);
-    CMapLightingInfo  info;
+    CMapLightingInfo info;
     CMapLightingInfo *lighting = &info;
-
     if (TitleMap != NULL) {
         TitleMap->GetLightInfo(lighting);
-
         if (lighting != NULL) {
             lighting->ambient[0] *= 1.5f;
             lighting->ambient[1] *= 1.5f;
             lighting->ambient[2] *= 1.5f;
-
             if (255.0f < lighting->ambient[0]) {
                 lighting->ambient[0] = 255.0f;
             }
-
             if (255.0f < lighting->ambient[1]) {
                 lighting->ambient[1] = 255.0f;
             }
-
             if (255.0f < lighting->ambient[2]) {
                 lighting->ambient[2] = 255.0f;
             }
         }
-
         if (lighting != NULL) {
             mgFogEnable(lighting->fog_enable);
-
             if (lighting->fog_enable != 0) {
                 mgSetFogParam(lighting->fog.near_dist, lighting->fog.far_dist, lighting->fog.r, lighting->fog.g, lighting->fog.b, lighting->fog.far_value, lighting->fog.near_value);
             }
-
             mgSetLight(lighting->light_dir, lighting->light_color);
             mgSetAmbient(lighting->ambient);
-
             if (lighting->plight_enable != 0) {
                 mgPlightEnable(1);
-
                 for (int light = 0; light < 4; light++) {
-                    mgSetPlight(light, (mgPOINT_LIGHT *) &lighting->point_light[light]);
+                    mgSetPlight(light, (mgPOINT_LIGHT *)&lighting->point_light[light]);
                 }
             }
-
             mgSetBackGround(lighting->bg_color);
         }
     }
-
     int texture_group;
-
     if (TitleMap != NULL) {
         int texture_order[72];
         TitleWorkBuffer.stack_used = 0;
         TitleWorkBuffer.lock = 0;
-
         for (int block = 0; block < 64; block++) {
             texture_order[block] = block;
         }
-
         texture_order[64] = -1;
         mgBeginDraw(&TitleWorkBuffer, texture_order, NULL);
-        float view_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-        int   texture_blocks[128];
+        float view_pos[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+        int texture_blocks[128];
         TitleMap->PreDraw(view_pos);
         TitleMap->Draw();
         mgCTexture *water = textures->GetTexture(at_2020, -1);
-        int         water_block = -1;
-
+        int water_block = -1;
         if (water != NULL) {
             water_block = water->block;
             WaveTable__3->GetEffect();
         }
-
         mgPreEndDraw(NULL);
-
         for (int group = 0; group < 6; group++) {
             int i;
             int block;
             int block_count;
             block_count = TitleScene->GetTextureBlockNo(group, texture_blocks, 128);
-
             for (i = 0; block_count > i; i++) {
                 int index = block_count - i - 1;
                 block = texture_blocks[index];
-
                 if (0 != mgEndDrawReloadTexture(block, NULL) && texture_blocks[index] == water_block) {
                     WaveTable__3->CreateTexture(water);
                 }
-
                 mgEndDraw(block, NULL);
             }
         }
-
         mgSetPkTextureRepeat(0);
     }
-
     for (texture_group = 6; texture_group < 16; texture_group++) {
         int later_blocks[128];
         int i;
         int block;
         int block_count;
         block_count = TitleScene->GetTextureBlockNo(texture_group, later_blocks, 128);
-
         for (i = 0; block_count > i; i++) {
             block = later_blocks[i];
             mgEndDrawReloadTexture(block, NULL);
             mgEndDraw(block, NULL);
         }
     }
-
     mgSetPkTextureRepeat(0);
-    mgCTexture      *screen = textures->GetTexture(at_1223__4, 0x6A);
-    mgCTexture      *overlay = textures->GetTexture(at_2021, 0x6A);
-    mgCCameraFollow *follow = (mgCCameraFollow *) camera;
-    mgCCamera       *water_camera = TitleScene->GetCamera(TitleScene->active_camera);
-
+    mgCTexture *screen = textures->GetTexture(at_1223__4, 0x6A);
+    mgCTexture *overlay = textures->GetTexture(at_2021, 0x6A);
+    mgCCameraFollow *follow = (mgCCameraFollow *)camera;
+    mgCCamera *water_camera = TitleScene->GetCamera(TitleScene->active_camera);
     if (TitleMap != NULL) {
         TitleMap->DrawWater(water_camera, screen, overlay);
     }
-
     switch (TitleCameraPhase) {
         case 0: {
             follow->AddDistance(-0.25f);
             float distance = follow->GetDistance();
-
             if (distance < 1100.0f) {
                 follow->AddHeight(0.04f);
             }
-
             if (distance < 1000.0f) {
                 follow->AddHeight(0.05f);
             }
-
             if (distance < 900.0f) {
                 follow->AddHeight(0.05f);
             }
-
             if (distance < 800.0f) {
                 TitleCameraPhaseCounter = 0;
                 TitleCameraAddAngle = 0.0f;
                 TitleCameraPhase++;
             }
-
             break;
         }
         case 1:
             TitleCameraPhaseCounter++;
-
-            if ((u_int) TitleCameraPhaseCounter > 250) {
+            if ((u_int)TitleCameraPhaseCounter > 250) {
                 follow->FollowOff();
                 TitleCameraPhaseCounter = 0;
                 TitleCameraAddAngle = 0.0f;
                 TitleCameraPhase++;
             }
-
             break;
         case 2: {
             float follow_pos[4];
@@ -1775,19 +1734,16 @@ void TitleMapDraw() {
             follow->SetAngle(angle);
             follow->SetRef(follow_ref);
             TitleCameraAddAngle += 0.0008726647f;
-
             if (!(TitleCameraAddAngle < 6.2831855f)) {
                 TitleCameraPhaseCounter = 0;
                 TitleCameraPhase = 1;
                 TitleScene->active_camera = 0;
                 follow->FollowOn();
             }
-
             break;
         }
     }
 }
-
 /**
  *
  * Updates the pulsing alpha used by the title start prompt.
@@ -1848,17 +1804,15 @@ void TitleMCCheckInit(int boot_mode) {
         TitleMCCheckMes->MakeMesWin(0x66);
     }
 }
-
 int TitleMCCheckKey() {
     MC_CARD_INFO *cards[2];
-    u8            inserted[2];
+    u8 inserted[2];
     cards[0] = &TitleMCCheck->card[0];
     cards[1] = &TitleMCCheck->card[1];
     int busy = TitleMCCheck->Step();
     inserted[0] = McCheckMCPs2(cards[0]) != 0;
     inserted[1] = McCheckMCPs2(cards[1]) != 0;
     int result = -1;
-
     switch (TitleMCCheckPhase) {
         case TITLE_MC_PHASE_CARD_1:
         case TITLE_MC_PHASE_CARD_2:
@@ -1874,7 +1828,6 @@ int TitleMCCheckKey() {
                     TitleMCCheck->InitPlayDataInfo();
                     TitleMCCheckPort++;
                     TitleMCCheckPhase += 3;
-
                     if (TitleMCCheckPort > 1) {
                         result = TITLE_MC_PHASE_END;
                     } else {
@@ -1883,7 +1836,6 @@ int TitleMCCheckKey() {
                     }
                 }
             }
-
             break;
         case TITLE_MC_PHASE_FILES_1:
         case TITLE_MC_PHASE_FILES_2:
@@ -1892,57 +1844,45 @@ int TitleMCCheckKey() {
                 u_long costume_bit = 0;
                 OmakePlayEnableAttr |= TitleMCCheck->CheckOmake(&costume_bit);
                 CostumeOptionEnv |= costume_bit;
-
                 if (TitleMCCheckBootMode != 0 && MasterDebugModeOn == 0) {
                     MasterDebugModeOn = TitleMCCheck->CheckDebugCode() != 0;
                 }
-
                 TitleMCCheck->SetFuncNo(MC_FUNC_CHECK_OMAKE);
                 TitleMCCheckPhase++;
             }
-
             break;
         case TITLE_MC_PHASE_OMAKE_1:
         case TITLE_MC_PHASE_OMAKE_2:
             if (busy) {
                 CMemoryCardManager *manager = TitleMCCheck;
-                int                *found = &manager->file_exists;
-
+                int *found = &manager->file_exists;
                 if (*found != 0) {
                     if (found[1] & 1) {
                         OmakePlayEnableAttr |= 2;
                     }
-
                     if (found[1] & 2) {
                         OmakePlayEnableAttr |= 1;
                     }
                 }
-
                 TitleMCCheckPort++;
-
                 if (TitleMCCheckPort > 1) {
                     result = TITLE_MC_PHASE_END;
                 } else {
                     TitleMCCheck->port = TitleMCCheckPort;
                     TitleMCCheck->SetFuncNo(MC_FUNC_SEARCH_TYPE);
                 }
-
                 TitleMCCheckPhase++;
             }
-
             break;
         case TITLE_MC_PHASE_END:
             if (TitleMCCheckBootMode == 1) {
                 int push = MenuCheckPushButton();
-
                 if (push & MENU_PUSH_BUTTON_DECIDE) {
                     if (LanguageCode == 0) {
                         MenuSePlay(SYSTEM_SE_DECIDE);
                     }
-
                     return 1;
                 }
-
                 if (push & MENU_PUSH_BUTTON_CANCEL) {
                     result = 0;
                     MenuSePlay(5);
@@ -1950,10 +1890,8 @@ int TitleMCCheckKey() {
             } else {
                 return 1;
             }
-
             break;
     }
-
     switch (result) {
         case 0:
             TitleMCCheckPort = 0;
@@ -1971,44 +1909,34 @@ int TitleMCCheckKey() {
             } else {
                 int need_size = TitleMCCheck->GetSaveDataSize(0) / 1024 + 3;
                 int has_space = 0;
-
                 for (int i = 0; i < 2; i++) {
                     if ((inserted[i] && McCheckMCPs2Boot(cards[i], need_size) != 0) || 0 < TitleMCCheckFileFind[i]) {
                         has_space = 1;
                     }
                 }
-
                 int unformatted = 0;
-
                 if ((cards[0]->present != 0 && cards[0]->type == 2 && cards[0]->formatted == 0) ||
                     (cards[1]->present != 0 && cards[1]->type == 2 && cards[1]->formatted == 0)) {
                     unformatted = 1;
                 }
-
                 if (TitleMCCheckFileFind[0] != 0 || TitleMCCheckFileFind[1] != 0) {
                     TitleSelectInit = 1;
                 }
-
                 if (TitleMCCheckBootMode != 0 && MasterDebugCode == MASTER_DEBUG_CODE && MasterDebugModeOn != 0) {
                     GamePad__2.DebugKeyLock(0);
                 }
-
                 if (has_space || unformatted) {
                     return 1;
                 }
-
                 if (TitleMCCheckBootMode != 0) {
                     TitleMCCheckMes->MakeMesWin(0x65);
                 }
             }
-
             TitleMCCheckPhase = TITLE_MC_PHASE_END;
             break;
     }
-
     return 0;
 }
-
 /**
  *
  * Draws the title memory card check message.
@@ -2204,12 +2132,11 @@ void TitleCopyRightDraw() {
         }
     }
 }
-
 void TitleHDDInstallInit() {
-    char               image_name[32];
-    char               message_path[0x4C];
-    int                file_size;
-    mgCMemory         *stack;
+    char image_name[32];
+    char message_path[0x4C];
+    int file_size;
+    mgCMemory *stack;
     mgCTextureManager *textures = &mgTexManager;
     stack = &Stack_ReadBuff;
 
@@ -2224,52 +2151,44 @@ void TitleHDDInstallInit() {
     textures->DeleteBlock(0x4B);
     textures->DeleteBlock(0x4C);
     stack->Align64();
-    u_char *buffer = (u_char *) stack->stGetTop();
+    u_char *buffer = (u_char *)stack->stGetTop();
     LoadFile2(at_2369__3, buffer, &file_size, 0);
     textures->EnterIMGFile(buffer, 0x4A, NULL, NULL);
     stack->Alloc(Align16Blocks(file_size));
-    buffer = (u_char *) stack->stGetTop();
+    buffer = (u_char *)stack->stGetTop();
     LoadFile2(at_2370__4, buffer, &file_size, 0);
     textures->EnterIMGFile(buffer, 0x4B, NULL, NULL);
     stack->Alloc(Align16Blocks(file_size));
-
     for (int i = 0; i < 10; i++) {
         int number = i + 1;
-
         if (number >= 10) {
             sprintf(image_name, at_2371__3, number);
         } else {
             sprintf(image_name, at_2372__3, number);
         }
-
         HDDImage[i] = textures->GetTexture(image_name, -1);
         HDDImageAlpha[i] = 0;
     }
-
     HDDDlBar = textures->GetTexture(at_2373__3, -1);
     HDDSysImage = Tex_Logo;
-    buffer = (u_char *) stack->stGetTop();
-
+    buffer = (u_char *)stack->stGetTop();
     if (LoadFile2(at_2374__3, buffer, &file_size, 0) != 0) {
         textures->EnterIMGFile(buffer, 0x4C, NULL, NULL);
         stack->Alloc(Align16Blocks(file_size));
     }
-
     HDDBGTex = textures->GetTexture(at_2375__3, -1);
     HDDMes = new (stack->Alloc(0x2A7)) CDC2Mes;
     HDDMes2 = new (stack->Alloc(0x2A7)) CDC2Mes;
     HDDMes->texture_block = 0x46;
     HDDMes2->texture_block = 0x46;
     stack->Align64();
-    HDDMesDataBuff = (s16 *) stack->stGetTop();
+    HDDMesDataBuff = (s16 *)stack->stGetTop();
     sprintf(message_path, at_2376__3, LanguageCode);
-
     if (LoadFile2(message_path, HDDMesDataBuff, &file_size, 0) != 0) {
         HDDMes->SetMessData(GetSystemMesBuffer(), HDDMesDataBuff);
         HDDMes2->SetMessData(GetSystemMesBuffer(), HDDMesDataBuff);
         stack->Alloc(Align16Blocks(file_size + 1));
     }
-
     HDDDlBarDrawFlag = 0;
     HDDINFO.connect = HddConectCheck(&HDDINFO.hdd_state);
     HDDINFO.app_install = CheckAppInstallForTitle();
@@ -2285,7 +2204,6 @@ void TitleHDDInstallInit() {
     TitleScene->LoadBGM(0x32, stack->stGetTop());
     TitleScene->fade.FadeIn(0x28);
 }
-
 /**
  *
  * Advances hard drive installation and handles input to leave the screen.
@@ -2650,7 +2568,6 @@ int TitleHDDInstallKey() {
 
     return 0;
 }
-
 void DrawMenuDl(int x, int y, int width, int alpha, float rate) {
     mgCDrawPrim prim;
     mgRect<int> frame_tex;
@@ -2670,22 +2587,19 @@ void DrawMenuDl(int x, int y, int width, int alpha, float rate) {
     PrimQuad(&prim, frame_put, frame_tex);
     prim.End();
     prim.Begin(6);
-    int   end_width = table_2611[0][2] - 0x14 + table_2611[1][4];
-    float inner = ((float) width - (float) end_width) - 2.0f;
-    int   bar_width = (int) (inner * rate);
-
+    int end_width = table_2611[0][2] - 0x14 + table_2611[1][4];
+    float inner = ((float)width - (float)end_width) - 2.0f;
+    int bar_width = (int)(inner * rate);
     if (rate < 1.0f) {
         prim.Color(0x80, 0x80, 0x80, alpha);
     } else {
         prim.Color(0x40, 0x94, 0x40, alpha);
     }
-
     bar_put.Set(x + 0x17, y + 0x2F, bar_width, 0xA);
     PrimQuad(&prim, bar_put, bar_tex);
     prim.End();
     prim.Bilinear(0);
     prim.Begin(6);
-
     for (int i = 0; i < 3; i++) {
         prim.Color(0, 0, 0, alpha >> 2);
         shadow_put.Set(x + 4, y + 4, width, table_2611[i][3]);
@@ -2695,16 +2609,13 @@ void DrawMenuDl(int x, int y, int width, int alpha, float rate) {
         Menu3DivideTextureDraw(&prim, body_put, table_2611[i], 1);
         y += table_2611[i][3];
     }
-
     prim.End();
 }
-
 /**
  *
  * Draws the hard drive installation image, progress, and messages.
  *
  */
-#ifdef NONMATCHING
 void TitleHDDInstallDraw() {
     union {
         CMenuFont font;
@@ -2769,7 +2680,7 @@ void TitleHDDInstallDraw() {
             DrawMenuDl(0x88, 0x9C, 0xF0, 0x80, (float) HDDINFO.progress / 100.0f);
             textures->ReloadTexture(0x46, (sceVif1Packet *) NULL);
 
-            new ((u_long128 *) &font) CMenuFont;
+            __ct__9CMenuFontFv(&font);
             font.SetStr(infomsg_2664[LanguageCode]);
             font.SetPos(0xA6, 0xAE);
             font.DrawDirect(font.str, font.pos_x, font.pos_y);
@@ -2788,9 +2699,6 @@ void TitleHDDInstallDraw() {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleHDDInstallDraw__Fv);
-#endif
 
 /**
  *

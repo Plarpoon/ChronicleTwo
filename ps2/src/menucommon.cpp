@@ -307,9 +307,7 @@ static inline unsigned int align16_blocks(unsigned int n) {
 
 #include "common.h"
 
-#pragma define_section dead ".dead" \
-                            ".dead"
-
+#pragma define_section dead ".dead" ".dead"
 __declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
     return a / b;
 }
@@ -952,17 +950,13 @@ int GetDispVolumeForFloat(float volume) {
 float GetFloatCommaValue(float value) {
     return value - (float) fptosi(value);
 }
-
 int CalcScrlBarPutPos(int top, float pos, int length, float pos_max) {
     int y = top;
-
     if (pos_max != 0.0f) {
-        y = (int) ((float) top + length * (pos / pos_max));
+        y = (int)((float)top + length * (pos / pos_max));
     }
-
     return y;
 }
-
 void Trans3DPosTo2DPos(mgCCamera *camera, mgCFrame *frame, int *out) {
     float view[4][4];
     float camera_pos[4];

@@ -28,9 +28,9 @@ extern int  LanguageCode;
 extern char HelpMesBuff[0x1000];
 extern int  InitFlag__2;
 
-ClsMes        HelpMes __attribute__((aligned(4)));
-u8            D_01F628BC[4];
-HELP_MES_INFO HelpMesInfo;
+extern HELP_MES_INFO HelpMesInfo;
+extern ClsMes        HelpMes;
+extern "C" void     *__ct__6ClsMesFv(void *);
 
 // Code (.text)
 void LoadHelpMes(u_long128 *scratch) {
@@ -305,9 +305,21 @@ void ShowErrorHelpMes(int mes_no, int time) {
     sndSePlay(GetSystemSndID(), 28, 0);
 }
 
+extern "C" void __sinit_helpmes_cpp() {
+    __ct__6ClsMesFv(&HelpMes);
+    HelpMesInfo.time = 0;
+    HelpMesInfo.mes_no = -1;
+    HelpMesInfo.fukidashi_pos = -1;
+    HelpMesInfo.show = 0;
+    HelpMesInfo.y = 0;
+    HelpMesInfo.x = 0;
+    HelpMesInfo.created = 0;
+}
+
 // Constants (.rodata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/helpmes", at_799__6__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/helpmes", at_800__5__DATA);
+INCLUDE_RODATA("ps2/asm/pal/nonmatchings/helpmes", D_0037B094__DATA);
 
 // Small uninitialised data (.sbss)
 INCLUDE_BSS(InitFlag__2, 0x4);
@@ -316,3 +328,6 @@ INCLUDE_BSS(ShowOffOnce, 0x4);
 
 // Uninitialised data (.bss)
 INCLUDE_BSS(HelpMesBuff, 0x1000);
+INCLUDE_BSS(HelpMes, 0x295C);
+INCLUDE_BSS(D_01F628BC, 0x4);
+INCLUDE_BSS(HelpMesInfo, 0x20);

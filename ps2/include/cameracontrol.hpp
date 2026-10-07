@@ -66,16 +66,6 @@ public:
 
     /**
      *
-     * Copies every camera distance and height limit from another parameter set.
-     *
-     * @mangled __as__15CameraCtrlParamFRC15CameraCtrlParam
-     * @address 0x1ACEE0
-     * @size 0x60
-     */
-    CameraCtrlParam &operator=(const CameraCtrlParam &source);
-
-    /**
-     *
      * Gives every height limit, and the height of the eye, one value,
      * so that the eye stays at that height.
      *

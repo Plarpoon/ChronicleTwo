@@ -39,9 +39,7 @@ extern char noname_1381[8];
 extern char noname_1692[8];
 extern char noname_1709[8];
 
-#pragma define_section dead ".dead" \
-                            ".dead"
-
+#pragma define_section dead ".dead" ".dead"
 __declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
     return a / b;
 }
@@ -61,14 +59,13 @@ void InitVector(float *vector) {
     vector[2] = 0.0f;
     vector[3] = 1.0f;
 }
-
 float RandXYinViewArea(float min_dist, float max_dist, float view_angle, float *x, float *z) {
-    float      position[4];
-    float      reference[4];
-    float      direction[4];
-    float      heading;
-    float      distance;
-    CScene    *scene = GetMainScene();
+    float position[4];
+    float reference[4];
+    float direction[4];
+    float heading;
+    float distance;
+    CScene *scene = GetMainScene();
     mgCCamera *camera = scene->GetCamera(scene->active_camera);
 
     camera->GetPos(position);
@@ -88,7 +85,6 @@ float RandXYinViewArea(float min_dist, float max_dist, float view_angle, float *
     height += position[1];
     return height;
 }
-
 int CRipple::Birth(float *position) {
     if (active != 0) {
         return 0;
@@ -256,12 +252,11 @@ int CParticle::Step() {
     pos[2] += speed[2];
     return 1;
 }
-
-void CParticle::Draw() {
+void CParticle::Draw(void) {
     if (active != 0) {
         mgCDrawPrim prim;
-        float       camera_pos[4];
-        int         vertex[4];
+        float camera_pos[4];
+        int vertex[4];
 
         prim.Initialize(0, 0);
         prim.AlphaBlendEnable(1);
@@ -279,29 +274,24 @@ void CParticle::Draw() {
         prim.AlphaBlend(2);
         prim.AntiAliasing(1);
         prim.Begin(0);
-        CScene    *scene = GetMainScene();
+        CScene *scene = GetMainScene();
         mgCCamera *camera = scene->GetCamera(scene->active_camera);
-
         if (camera != NULL) {
             camera->GetPos(camera_pos);
             float dx = pos[0] - camera_pos[0];
             float dz = pos[2] - camera_pos[2];
             float distance = sqrtf(dx * dx + dz * dz);
             float alpha = 128.0f + -0.42666668f * distance;
-
             if (!(alpha <= 0.0f)) {
-                prim.Color(128, 128, 128, (int) alpha);
-
+                prim.Color(128, 128, 128, (int)alpha);
                 if (mgTransWorldPrim(vertex, pos) != 0) {
                     prim.Vertex4(vertex);
                 }
-
                 prim.End();
             }
         }
     }
 }
-
 void CParticle::Init() {
     active = 0;
     InitVector(pos);
@@ -468,8 +458,8 @@ void CRain::Stop() {
 
 void CRain::Start() {
     int   i;
-    float position[4];
     float view_angle = 0.7853982f;
+    float position[4];
 
     active = 1;
 
@@ -807,14 +797,12 @@ void CScene::InitAllData() {
     skip_load_sub_villager = 0;
 }
 
-void CScene::Initialize() {
+void CScene::Initialize(void) {
     stack_num = 12;
     stack_no = 0;
-
     for (int index = 0; index < stack_num; index++) {
         stack[index] = NULL;
     }
-
     work_stack = NULL;
     read_buff = NULL;
     chara_num = 128;
@@ -822,10 +810,9 @@ void CScene::Initialize() {
         int byte_offset;
         int index = 0;
         byte_offset = 0;
-
         for (; index < chara_num; index++) {
-            CSceneCharacter *character = (CSceneCharacter *) ((char *) this + byte_offset +
-                                                              offsetof(CScene, chara));
+            CSceneCharacter *character = (CSceneCharacter *)((char *)this + byte_offset +
+                offsetof(CScene, chara));
             character->Initialize();
             byte_offset += sizeof(CSceneCharacter);
         }
@@ -835,10 +822,9 @@ void CScene::Initialize() {
         int byte_offset;
         int index = 0;
         byte_offset = 0;
-
         for (; index < camera_num; index++) {
-            CSceneCamera *camera = (CSceneCamera *) ((char *) this + byte_offset +
-                                                     offsetof(CScene, camera));
+            CSceneCamera *camera = (CSceneCamera *)((char *)this + byte_offset +
+                offsetof(CScene, camera));
             camera->Initialize();
             byte_offset += sizeof(CSceneCamera);
         }
@@ -848,10 +834,9 @@ void CScene::Initialize() {
         int byte_offset;
         int index = 0;
         byte_offset = 0;
-
         for (; index < message_num; index++) {
-            CSceneMessage *message = (CSceneMessage *) ((char *) this + byte_offset +
-                                                        offsetof(CScene, message));
+            CSceneMessage *message = (CSceneMessage *)((char *)this + byte_offset +
+                offsetof(CScene, message));
             message->Initialize();
             byte_offset += sizeof(CSceneMessage);
         }
@@ -861,10 +846,9 @@ void CScene::Initialize() {
         int byte_offset;
         int index = 0;
         byte_offset = 0;
-
         for (; index < map_num; index++) {
-            CSceneMap *map = (CSceneMap *) ((char *) this + byte_offset +
-                                            offsetof(CScene, map));
+            CSceneMap *map = (CSceneMap *)((char *)this + byte_offset +
+                offsetof(CScene, map));
             map->Initialize();
             byte_offset += sizeof(CSceneMap);
         }
@@ -874,10 +858,9 @@ void CScene::Initialize() {
         int byte_offset;
         int index = 0;
         byte_offset = 0;
-
         for (; index < sky_num; index++) {
-            CSceneSky *sky = (CSceneSky *) ((char *) this + byte_offset +
-                                            offsetof(CScene, sky));
+            CSceneSky *sky = (CSceneSky *)((char *)this + byte_offset +
+                offsetof(CScene, sky));
             sky->Initialize();
             byte_offset += sizeof(CSceneSky);
         }
@@ -887,10 +870,9 @@ void CScene::Initialize() {
         int byte_offset;
         int index = 0;
         byte_offset = 0;
-
         for (; index < sky_num; index++) {
-            CSceneGameObj *object = (CSceneGameObj *) ((char *) this + byte_offset +
-                                                       offsetof(CScene, gameobj));
+            CSceneGameObj *object = (CSceneGameObj *)((char *)this + byte_offset +
+                offsetof(CScene, gameobj));
             object->Initialize();
             byte_offset += sizeof(CSceneGameObj);
         }
@@ -900,10 +882,9 @@ void CScene::Initialize() {
         int byte_offset;
         int index = 0;
         byte_offset = 0;
-
         for (; index < effect_num; index++) {
-            CSceneEffect *effect = (CSceneEffect *) ((char *) this + byte_offset +
-                                                     offsetof(CScene, effect));
+            CSceneEffect *effect = (CSceneEffect *)((char *)this + byte_offset +
+                offsetof(CScene, effect));
             effect->Initialize();
             byte_offset += sizeof(CSceneEffect);
         }
@@ -962,20 +943,16 @@ void CScene::ClearStack(int index) {
     int i;
 
     int offset = index * 4;
-
     for (i = index; i < stack_num; i++) {
-        mgCMemory **slot = (mgCMemory **) ((u8 *) this + offset + 8);
-        mgCMemory  *stack = *slot;
-
+        mgCMemory **slot = (mgCMemory **)((u8 *)this + offset + 8);
+        mgCMemory *stack = *slot;
         if (stack != NULL) {
             stack->stack_used = 0;
             stack->lock = 0;
-
             if (index < i) {
                 (*slot)->stSetBuffer(NULL, 0);
             }
         }
-
         offset += 4;
     }
 }
@@ -1064,7 +1041,7 @@ int CScene::CheckIMGName(int excluded_map, char *filename) {
             CMapInfo *map_info;
             CMap     *loaded_map = GetMap(map_index);
 
-            if ((map_info = loaded_map) != NULL && loaded_map != NULL) {
+            if ((map_info = (CMapInfo *)loaded_map) != NULL && loaded_map != NULL) {
                 name_index = 0;
 
                 for (;;) {
@@ -1094,7 +1071,7 @@ int CScene::CheckMDSName(int excluded_map, char *filename) {
             CMapInfo *map_info;
             CMap     *loaded_map = GetMap(map_index);
 
-            if ((map_info = loaded_map) != NULL && loaded_map != NULL) {
+            if ((map_info = (CMapInfo *)loaded_map) != NULL && loaded_map != NULL) {
                 name_index = 0;
 
                 for (;;) {

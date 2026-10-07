@@ -1,8 +1,6 @@
 #include "common.h"
 #include "mw_runtime.h"
 
-#define DNG_MAIN_SOURCE
-
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -17,7 +15,6 @@
 #include "dng_event.hpp"
 #include "dng_hud.hpp"
 #include "dng_main.hpp"
-#undef DNG_MAIN_SOURCE
 #include "dng_status.hpp"
 #include "effscript.hpp"
 #include "event.hpp"
@@ -238,9 +235,6 @@ CTornado              tornado[6];
 CChillAfterHit        chillAfterHit[6];
 CFireAfterHit         fireAfterHit[6];
 
-#ifndef NONMATCHING
-INCLUDE_BSS(debug_event_stack_1106, 0x30);
-#endif
 INCLUDE_BSS(stack_1823, 0x30);
 INCLUDE_BSS(at_1994, 0x10);
 INCLUDE_BSS(at_2001, 0x10);
@@ -328,7 +322,6 @@ static inline unsigned int DngAlign16Size(unsigned int size) {
     return size >> 4;
 }
 
-#ifdef NONMATCHING
 void InitDungeonMain(INIT_LOOP_ARG arg) {
     SetCurrentDir(NULL);
     memoryInit();
@@ -823,16 +816,6 @@ void InitDungeonMain(INIT_LOOP_ARG arg) {
     NowLoadingBarSteEnd();
     DeleteNowLoading();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", InitDungeonMain__F13INIT_LOOP_ARG);
-#endif
-
-void MoveCheckInfo::Initialize() {
-    memset(this, 0, sizeof(MoveCheckInfo));
-}
-
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", __as__9mgCCameraFRC9mgCCamera);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", __ct__14CActiveMonsterFv);
 
 void CRedMarkModel::Initialize() {
     draw_request = 0;
@@ -1201,7 +1184,7 @@ void DngMainDraw() {
     CMapLightingInfo *info = &light;
 
     if (DngMainMap != NULL) {
-        DngMainMap->time_light_blend = 1;
+        DngMainMap->map_info.time_light_blend = 1;
         DngMainMap->now_time = DngMainScene->time;
         DngMainMap->GetLightInfo(info);
 
@@ -2170,7 +2153,6 @@ int RunMainEvent() {
  * Processes gameplay and debug input during the dungeon field mode.
  *
  */
-#ifdef NONMATCHING
 int DngMainKey() {
     DngMainScene->GetCamera(DngMainScene->active_camera);
 
@@ -2815,9 +2797,6 @@ int DngMainKey() {
 
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", DngMainKey__Fv);
-#endif
 
 /**
  *
@@ -3446,10 +3425,6 @@ void DBGCMD_RunScript(int no) {
 }
 
 // Initialised data (.data)
-#ifndef NONMATCHING
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1081__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_2994__DATA);
-#endif
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", cam_table_3000__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", cam_table_dist_3001__DATA);
 
@@ -3472,76 +3447,15 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1077__2__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1078__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1079__2__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1080__2__DATA);
-#ifndef NONMATCHING
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1580__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1581__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1582__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1583__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1584__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1585__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1586__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1587__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1588__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1589__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1590__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1591__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1592__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1593__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1594__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1595__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1596__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1597__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1598__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1599__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1605__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1606__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1607__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1608__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1609__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1610__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1611__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1612__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1613__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1614__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1615__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1616__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1617__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1618__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1619__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1620__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1621__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1622__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1623__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1624__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1625__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1626__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1627__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1628__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1629__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1630__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1631__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1632__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1633__2__DATA);
-#endif
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_1940__DATA);
-#ifndef NONMATCHING
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3336__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3337__DATA);
-#endif
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3589__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3602__DATA);
 
 // Virtual tables (.vtables)
-#ifndef NONMATCHING
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", __vt__12CTreasureBox__DATA);
-#endif
 
 // Small initialised data (.sdata)
 
 // Small uninitialised data (.sbss)
-#ifndef NONMATCHING
-INCLUDE_BSS(init_1107, 0x4);
-#endif
 INCLUDE_BSS(init_1824, 0x4);
 INCLUDE_BSS(water_cnt_2619, 0x4);
 INCLUDE_BSS(init_2620, 0x4);

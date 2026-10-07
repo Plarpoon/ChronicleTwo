@@ -11,10 +11,11 @@
 #include "mg_texture.hpp"
 #include "mglib.hpp"
 
-extern void *__vt__9mgCObject[];
-extern void *__vt__7CObject[];
-extern void *__vt__9CMapParts[];
-extern void *__vt__14CFuncPointMngr[];
+extern void     *__vt__9mgCObject[];
+extern void     *__vt__7CObject[];
+extern void     *__vt__9CMapParts[];
+extern void     *__vt__14CFuncPointMngr[];
+extern "C" void *__ct__8mgCFrameFv(void *frame);
 
 static const float paint_color_max = 255.0f;
 const int          color_channels = 3;
@@ -514,7 +515,6 @@ int EditNowPlaceAnime() {
     return 0;
 }
 
-#ifdef NONMATCHING
 int EditSetPlaceAnime(int kind, CMapParts *parts) {
     CPlaceAnime *slot;
     CMapParts   *target;
@@ -556,7 +556,7 @@ int EditSetPlaceAnime(int kind, CMapParts *parts) {
                 *(void **) target = __vt__7CObject;
                 ((mgCObject *) target)->Initialize();
                 *(void **) target = __vt__9CMapParts;
-                new (reinterpret_cast<u_long128 *>(&target->frame)) mgCFrame;
+                __ct__8mgCFrameFv(&target->frame);
                 *(void **) ((u8 *) &target->func_point_mngr + 0x30) = __vt__14CFuncPointMngr;
                 target->func_point_mngr.Initialize();
                 *(int *) &target->func_check.time = 0;
@@ -604,9 +604,6 @@ int EditSetPlaceAnime(int kind, CMapParts *parts) {
     slot->phase = 0;
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/editeff", EditSetPlaceAnime__FiP9CMapParts);
-#endif
 
 void EditPlaceAnime() {
     int i;

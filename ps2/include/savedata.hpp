@@ -101,20 +101,15 @@
  *
  */
 #define GYORACE_DATA_MAX 64
-
-/**
- *
- * Persistent save flags for specific story and menu events.
- *
- */
 enum SAVE_BIT_FLAG {
     SAVE_FLAG_ROBO_BIKE_EVENT_SEEN = 0x35,
-    SAVE_FLAG_ITEM_BOARD_EXPANDED = 254,
-    SAVE_FLAG_TOURNAMENT_STARTED = 0x158,
-    SAVE_FLAG_TOURNAMENT_CYCLE = 0x1A8,
-    SAVE_FLAG_EDIT_BLOCKED = 0x208,
-    SAVE_FLAG_COSTUME_UNLOCK = 0x31F,
+    SAVE_FLAG_ITEM_BOARD_EXPANDED  = 254,
+    SAVE_FLAG_TOURNAMENT_STARTED   = 0x158,
+    SAVE_FLAG_TOURNAMENT_CYCLE     = 0x1A8,
+    SAVE_FLAG_EDIT_BLOCKED         = 0x208,
+    SAVE_FLAG_COSTUME_UNLOCK       = 0x31F,
 };
+
 
 /**
  *
@@ -138,7 +133,7 @@ struct SV_CONFIG_OPTION {
     u8  caption_off;   /**< Non-zero to hide the event captions. */
     u8  unk_35;
     s8  eye_reverse; /**< Zero to invert the vertical axis of the first-person camera. */
-    s8  rot_normal;  /**< Non-zero to use the normal camera rotation direction. */
+    s8  rot_normal;
     u8  unk_38[8];
 };
 
@@ -192,7 +187,7 @@ public:
     CMonsterBook     monster_book;     /**< Monster encyclopedia with kill counts. */
     CMenuSystemData  menu_system_data; /**< State kept for the menus. */
     u8               bit_ctrl;         /**< Control bits set and cleared by the scripts and by map changes. */
-    u8               skip_load_bgm;    /**< Non-zero to skip loading background music on scene entry. */
+    u8               skip_load_bgm;
     u8               unk_643CA[6];
     SAVE_TOUR_INFO   tour; /**< Schedule of the fishing tournament. */
     u8               unk_643EC[0x1544];

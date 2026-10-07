@@ -14,6 +14,8 @@
 #include "scriptinterpreter.hpp"
 
 extern SPI_TAG_PARAM     tag_movie[];
+extern "C" void         *__ct__18CScriptInterpreterFv(void *);
+extern "C" void         *__ct__11mgCDrawPrimFv(void *);
 extern CMovie           *MovieView;
 extern int               MovieMode;
 extern short             MovieSelect;
@@ -115,7 +117,6 @@ int _MOVIE(SPI_STACK *stack, int argument_count) {
     return 1;
 }
 
-#ifdef NONMATCHING
 void MovieViewInit(INIT_LOOP_ARG arg) {
     mgCMemory         *main_stack;
     mgCTextureManager *textures;
@@ -181,7 +182,7 @@ void MovieViewInit(INIT_LOOP_ARG arg) {
     script_ptr = script;
 
     if (LoadFile2(at_843__4, script_ptr, &script_size, 0) != 0) {
-        new ((u_long128 *) interpreter) CScriptInterpreter;
+        __ct__18CScriptInterpreterFv(interpreter);
         ((CScriptInterpreter *) interpreter)->SetTag(tag_movie);
         ((CScriptInterpreter *) interpreter)->SetScript(script_ptr, script_size);
         ((CScriptInterpreter *) interpreter)->Run();
@@ -204,9 +205,6 @@ void MovieViewInit(INIT_LOOP_ARG arg) {
     performance_meter_flag = mgGetPerformanceMeterFlag();
     mgPerformanceMeter(0);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movieviewlp", MovieViewInit__F13INIT_LOOP_ARG);
-#endif
 
 void MovieViewExit() {
     sndSeAllStop(-1);
@@ -214,7 +212,6 @@ void MovieViewExit() {
     mgPerformanceMeter(performance_meter_flag);
 }
 
-#ifdef NONMATCHING
 int MovieViewLoop() {
     mgCTextureManager *textures = &mgTexManager;
 
@@ -361,7 +358,7 @@ int MovieViewLoop() {
         mgPerformanceMeter(0);
         textures->ReloadTexture(0xA, (sceVif1Packet *) 0);
         MovieView->SwitchThread();
-        new ((u_long128 *) &prim) mgCDrawPrim;
+        __ct__11mgCDrawPrimFv(&prim);
         ((CPreSprite *) prim)->Initialize(NULL, NULL);
         ((CPreSprite *) prim)->Preset2D();
         ((CPreSprite *) prim)->AlphaBlendEnable(0);
@@ -420,9 +417,6 @@ int MovieViewLoop() {
 
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/movieviewlp", MovieViewLoop__Fv);
-#endif
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/movieviewlp", tag_movie__DATA);

@@ -1,10 +1,11 @@
 # mdslist: reverse-engineering notes
 
 ## C++ draft status
-All 31 functions have C++ in `ps2/src/mdslist.cpp`. 15 are exact and compiled by
-the matching build. 6 more compile to retail's bytes in isolation but stay under
-`NONMATCHING`. 10 differ from retail and keep the `INCLUDE_ASM` fallback. Each
-function tried has its one promotion attempt recorded in
+The unit has C++ bodies for all 31 functions. `CMapPiece::Copy` and
+`CreateChara` now retain typed placement-construction drafts under
+`NONMATCHING`; the matching build uses their retail `INCLUDE_ASM` bodies.
+Their byte matches have not been re-established after removing explicit
+vtable stores. Earlier promotion attempts are recorded in
 `scripts/re/promotion_attempts.tsv`.
 
 The unit loads PCP pack files (lists of MDS model / collision / character data driven by an
@@ -126,7 +127,14 @@ indexed by material without a bound of 4.
 ## CreateChara (static)
 `new(stack->Alloc(0x68)) CCharacter2` (0x660 bytes, ctor chain inlined), then
 `chara->vt+0x3C` (Initialize) and `vt+0x80(pack, "info.cfg", stack, stack, stack, -1, 0)`; returns
-the character or NULL.
+the character or NULL. The C++ draft uses typed placement construction and is
+guarded by `NONMATCHING`; the matching build uses assembly.
+
+## CMapPiece::Copy
+
+Copies the piece's frame, metadata, material records, and optional character
+into the destination. Its character allocation uses typed placement
+construction in the `NONMATCHING` draft. The matching build uses assembly.
 
 ## Matched slot clearing
 `CMapPiece::SetTimeBand` writes the start and end floats to its named members.

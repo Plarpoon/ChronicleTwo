@@ -1,5 +1,9 @@
 # mg_visual: reverse-engineering notes
 
+`mgCVisualFixMDT::Copy` is currently supplied by retail assembly. The copied
+visual's virtual table is established by class construction in retail, and the
+source no longer substitutes direct virtual-table stores.
+
 ## C++ draft status
 The current unit has one guarded C++ draft, `SendDMA`, whose matching build
 uses `INCLUDE_ASM`. The other functions now have ordinary C++ definitions.

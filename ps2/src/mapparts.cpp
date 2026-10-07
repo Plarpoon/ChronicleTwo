@@ -46,33 +46,6 @@ extern char at_244[];
 
 /**
  *
- * List node that tracks animation of a map part.
- *
- */
-class ObjAnimeNodeLinks {
-    u_char unk_00[0x40];
-
-public:
-    virtual void Initialize();
-};
-
-/**
- *
- * List node holding one map piece.
- *
- */
-struct PartsPieceNode {
-    PartsPieceNode *next; /**< Following piece node. */
-    PartsPieceNode *prev; /**< Previous piece node. */
-    u_char          unk_08[8];
-    void          **piece_vptr; /**< Virtual method table of the piece. */
-    u_char          unk_14[0xAC];
-    void          **vptr; /**< Virtual method table of the list node. */
-    u_char          unk_c4[0xC];
-};
-
-/**
- *
  * Provides list links and initialization for map animation nodes.
  *
  */
@@ -84,12 +57,6 @@ public:
     /** Clears the animation node's links. */
     void Initialize();
 };
-
-extern "C" void *__vt__17CList_9CMapPiece_[];
-extern "C" void *__vt__9mgCObject[];
-extern "C" void *__vt__7CObject[];
-extern "C" void *__vt__12CObjectFrame[];
-extern "C" void *__vt__9CMapPiece[];
 
 // Code (.text)
 void CMapParts::Initialize() {
@@ -940,143 +907,9 @@ void CMapParts::CopyFuncPointCheck(CFuncPointCheck &check) {
     }
 }
 
-#pragma opt_common_subs off
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapparts", Copy__9CMapPartsFR9CMapPartsP9mgCMemory);
 
-void CMapParts::Copy(CMapParts &dest, mgCMemory *memory) {
-    PartsPieceNode   *new_list;
-    CList<CMapPiece> *node;
-    PartsPieceNode   *new_node;
-    PartsPieceNode   *last;
-    PartsPieceNode   *next;
-
-    if (memory != NULL) {
-        dest = *this;
-        new_list = NULL;
-        node = piece_list;
-
-        if (node != NULL) {
-            do {
-                if (node->pGetData()->col_type != 0) {
-                    goto next_piece;
-                }
-
-                if ((new_node = (PartsPieceNode *) operator new(0xD0, memory->Alloc(15))) != NULL) {
-                    new_node->vptr = __vt__17CList_9CMapPiece_;
-                    new_node->piece_vptr = __vt__9mgCObject;
-                    ((CMapPiece *) ((u_char *) new_node + 0x10))->Initialize();
-                    new_node->piece_vptr = __vt__7CObject;
-                    ((CMapPiece *) ((u_char *) new_node + 0x10))->Initialize();
-                    new_node->piece_vptr = __vt__12CObjectFrame;
-                    ((CMapPiece *) ((u_char *) new_node + 0x10))->Initialize();
-                    new_node->piece_vptr = __vt__9CMapPiece;
-                    ((CMapPiece *) ((u_char *) new_node + 0x10))->Initialize();
-                    ((CList<CMapPiece> *) new_node)->Initialize();
-                }
-
-                if (new_node == NULL) {
-                    return;
-                }
-
-                CMapPiece *source_piece = node->pGetData();
-                CMapPiece *dest_piece = (CMapPiece *) ((u_char *) new_node + 0x10);
-                source_piece->Copy(*dest_piece, memory);
-
-                if (new_list != NULL) {
-                    last = new_list;
-
-                    if (last != NULL) {
-                        do {
-                            next = last->next;
-
-                            if (next == NULL) {
-                                break;
-                            }
-
-                            last = next;
-                        } while (next != NULL);
-                    }
-
-                    last->next = new_node;
-
-                    if (new_node != NULL) {
-                        new_node->prev = last;
-                    }
-                } else {
-                    new_list = new_node;
-                }
-
-            next_piece:
-                node = node->next;
-            } while (node != NULL);
-        }
-
-        dest.piece_list = (CList<CMapPiece> *) new_list;
-        func_point_mngr.Copy(dest.func_point_mngr, memory);
-        dest.AssignFuncAnime(memory);
-    } else {
-        dest = *this;
-    }
-}
-
-#pragma opt_common_subs reset
-
-int CMapParts::AssignFuncAnime(mgCMemory *memory) {
-    CFuncPoint       *point;
-    CList<CObjAnime> *node;
-    CList<CObjAnime> *last;
-    CList<CObjAnime> *next;
-
-    func_point_mngr.GetStart(FUNC_POINT_ANIME);
-
-    if ((point = func_point_mngr.Get()) != NULL) {
-        do {
-            if ((node = (CList<CObjAnime> *) operator new(sizeof(CList<CObjAnime>), memory->Alloc(7))) != NULL) {
-                node->vtable = &__vt__17CList_9CObjAnime_;
-                node->data.frame = NULL;
-                node->data.piece = NULL;
-                node->data.parts = NULL;
-                node->data.func_point = NULL;
-                node->data.back = 0;
-                node->data.stop = 0;
-                ((ObjAnimeNodeLinks *) node)->Initialize();
-            }
-
-            if (node == NULL) {
-                return 0;
-            }
-
-            ((ObjAnimeNodeLinks *) node)->Initialize();
-
-            last = anime_list;
-
-            if (last == NULL) {
-                anime_list = node;
-            } else {
-                if (last != NULL) {
-                    do {
-                        next = last->next;
-
-                        if (next == NULL) {
-                            break;
-                        }
-
-                        last = next;
-                    } while (next != NULL);
-                }
-
-                last->next = node;
-
-                if (node != NULL) {
-                    node->prev = last;
-                }
-            }
-
-            node->pGetData()->AssignFuncAnime(point, this);
-        } while ((point = func_point_mngr.Get()) != NULL);
-    }
-
-    return 1;
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mapparts", AssignFuncAnime__9CMapPartsFP9mgCMemory);
 
 void CList_9CObjAnime_::Initialize() {
     prev = NULL;

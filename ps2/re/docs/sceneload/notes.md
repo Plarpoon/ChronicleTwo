@@ -15,6 +15,10 @@ base-class model calls the `CMapInfo` constructor first. Moving the call into
 suggests `CMapInfo` may be the first member at offset zero, but changing that
 model affects map-related units and needs a separate type analysis.
 
+`CScene::LoadChara` and `CScene::CopyChara` allocate `CCharacter2` objects.
+Their C++ drafts use the class constructor; retail assembly remains active
+until the construction and surrounding scene logic match byte for byte.
+
 ## Non-member functions and data
 - `LoadMapData(SCN_LOADMAP_INFO2&, int)` is LOCAL in retail (`local_symbols.tsv`): `static` in
   the `.cpp`, not in the header. Returns `load_buf` end address (int) or 0 on failure; second

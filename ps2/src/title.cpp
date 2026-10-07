@@ -63,11 +63,6 @@ void                    DrawMenuDl(int x, int y, int width, int alpha, float rat
 int                     GetSelectLanguageNo();
 extern char             at_1479__2[];
 void                    TitleHDDInstallDraw();
-extern void            *__vt__9mgCObject[];
-extern void            *__vt__7CObject[];
-extern void            *__vt__12CObjectFrame[];
-extern void            *__vt__11CCharacter2[];
-extern void            *__vt__12CActionChara[];
 extern CScene          *TitleScene;
 extern s16              TitlePhase;
 extern s16              TitleMCActivePort;

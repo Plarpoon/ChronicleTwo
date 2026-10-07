@@ -227,3 +227,7 @@ nonmatching functions.
 - `CBaseMenuClass::MenuItemCommandSelect` is an exact C++ match when compiled alone through mwccgap. Its dispatch selects an item command from a key and button pair, including ask mode handling.
 - `MenuItemSelectDiffer` is an exact C++ match when compiled alone through mwccgap. It tests whether an item selection differs from the currently selected item.
 - Both functions passed the isolated linked-image verification. `MenuWeaponBuildUpDraw` differs by one instruction in the linked image despite the whole-unit draft comparison reporting a match. `CMenuItemInfo::LRCheck` differs in two branch-delay-slot words at offsets 0x264 and 0x268; the compiler places the zero return value in the delay slot and skips the shared return-value assignment.
+
+## Constructor-backed allocations
+
+`NewMenuActionChara` now uses native placement construction of `CActionChara`; both callers (`IsAskExtend` and `MenuModeMalloc`) are guarded C++ drafts with retail assembly active.

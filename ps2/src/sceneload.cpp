@@ -193,10 +193,6 @@ void SCN_LOADMAP_INFO2::Initialize() {
     memset(this, 0, sizeof(*this));
 }
 
-extern void *__vt__9mgCObject[];
-extern void *__vt__7CObject[];
-extern void *__vt__12CObjectFrame[];
-extern void *__vt__11CCharacter2[];
 
 /**
  *
@@ -206,23 +202,12 @@ extern void *__vt__11CCharacter2[];
 static inline CCharacter2 *NewSceneCharacter(mgCMemory *stack) {
     CCharacter2 *chara;
 
-    if ((chara = (CCharacter2 *) operator new(sizeof(CCharacter2), stack->Alloc(0x68))) != NULL) {
-        *(void **) chara = __vt__9mgCObject;
-        ((mgCObject *) chara)->Initialize();
-        *(void **) chara = __vt__7CObject;
-        ((mgCObject *) chara)->Initialize();
-        *(void **) chara = __vt__12CObjectFrame;
-        ((mgCObject *) chara)->Initialize();
-        *(void **) chara = __vt__11CCharacter2;
-        chara->shadow_link.num = 0;
-        chara->shadow_link.dst_frame = 0;
-        chara->shadow_link.src_frame = 0;
-        ((mgCObject *) chara)->Initialize();
-    }
+    chara = new (stack->Alloc(0x68)) CCharacter2;
 
     return chara;
 }
 
+#ifdef NONMATCHING
 int CScene::LoadChara(int index, u_int *pack, char *name, mgCMemory *model_stack, mgCMemory *motion_stack, mgCMemory *image_stack, int image_block, int no_outline) {
     u_int       *files[1];
     int          sizes[1];
@@ -264,6 +249,9 @@ int CScene::LoadChara(int index, u_int *pack, char *name, mgCMemory *model_stack
     chara->sound_info.foot_sound_id = 0;
     return slot;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneload", LoadChara__6CSceneFiPUiPcP9mgCMemoryP9mgCMemoryP9mgCMemoryii);
+#endif
 
 void CScene::DeleteChara(int index) {
     CSceneCharacter *chara;
@@ -275,6 +263,7 @@ void CScene::DeleteChara(int index) {
     }
 }
 
+#ifdef NONMATCHING
 int CScene::CopyChara(int index, int source_index, mgCMemory *memory) {
     float        position[4];
     float        rotation[4];
@@ -322,6 +311,9 @@ int CScene::CopyChara(int index, int source_index, mgCMemory *memory) {
     original->SetScale(scale);
     return slot;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneload", CopyChara__6CSceneFiiP9mgCMemory);
+#endif
 
 int CScene::LoadMapFromMemory(int map_no, SCN_LOADMAP_INFO2 *info) {
     int step = 0;

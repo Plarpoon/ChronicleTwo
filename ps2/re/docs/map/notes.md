@@ -202,3 +202,7 @@ fallback.
   Native placement construction supplies the list vtable, clears its data and
   calls `Initialize`; MWCC moves the allocation result before the null branch
   while retail moves it in the branch delay slot.
+
+## Constructor-backed allocations
+
+`CMap::AddPartsGroup` and `CMap::CreateDrawRect` allocate `CList` nodes whose constructors install the list vtable and initialize the links. Their typed constructor drafts remain behind `NONMATCHING`; retail assembly supplies the active functions until those drafts compare byte for byte. The list vtables reference `CList<PartsGroupData>::Initialize` and `CList<CMapParts *>::Initialize`; these two twelve-byte virtual methods also use retail assembly because MWCC does not accept explicit template instantiation in this unit.

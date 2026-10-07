@@ -11,10 +11,6 @@
 #include "mg_texture.hpp"
 #include "mglib.hpp"
 
-extern void     *__vt__9mgCObject[];
-extern void     *__vt__7CObject[];
-extern void     *__vt__9CMapParts[];
-extern void     *__vt__14CFuncPointMngr[];
 
 static const float paint_color_max = 255.0f;
 const int          color_channels = 3;
@@ -549,18 +545,7 @@ int EditSetPlaceAnime(int kind, CMapParts *parts) {
             CurPartsBuff.stack_used = 0;
             CurPartsBuff.lock = 0;
 
-            if ((target = (CMapParts *) operator new(sizeof(CMapParts), CurPartsBuff.Alloc(0x33))) != NULL) {
-                *(void **) target = __vt__9mgCObject;
-                ((mgCObject *) target)->Initialize();
-                *(void **) target = __vt__7CObject;
-                ((mgCObject *) target)->Initialize();
-                *(void **) target = __vt__9CMapParts;
-                new (reinterpret_cast<u_long128 *>(&target->frame)) mgCFrame;
-                *(void **) ((u8 *) &target->func_point_mngr + 0x30) = __vt__14CFuncPointMngr;
-                target->func_point_mngr.Initialize();
-                *(int *) &target->func_check.time = 0;
-                ((mgCObject *) target)->Initialize();
-            }
+            target = new ((u_long128 *) CurPartsBuff.Alloc(0x33)) CMapParts;
 
             if (target == NULL) {
                 return 0;

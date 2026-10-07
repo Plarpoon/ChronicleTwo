@@ -371,13 +371,6 @@ struct EditEffectSpriteState {
     void  *sprite_vtable;
 };
 
-extern void *__vt__9mgCObject[];
-extern void *__vt__7CObject[];
-extern void *__vt__12CObjectFrame[];
-extern void *__vt__11CCharacter2[];
-extern void *__vt__15CMapTreasureBox[];
-extern void *__vt__9mgCVisual[];
-extern void *__vt__11mgC3DSprite[];
 
 #ifdef NONMATCHING
 void EditInit(INIT_LOOP_ARG arg) {

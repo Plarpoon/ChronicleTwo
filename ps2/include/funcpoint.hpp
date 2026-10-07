@@ -200,8 +200,6 @@ struct CObjAnimeListVTable {
     void (*initialize)(CList<CObjAnime> *);
 };
 
-extern "C" CObjAnimeListVTable __vt__17CList_9CObjAnime_;
-
 /**
  *
  * Doubly linked list node containing one map animation.
@@ -216,18 +214,6 @@ public:
     CObjAnime            data;   /**< Animation owned by this node. */
     CObjAnimeListVTable *vtable; /**< Dispatch table for list operations. */
     u8                   unk_44[0xC];
-
-    /** Constructs an unlinked list node and its animation. */
-    CList() : data(CObjAnime::NoInit()) {
-        vtable = &__vt__17CList_9CObjAnime_;
-        data.frame = NULL;
-        data.piece = NULL;
-        data.parts = NULL;
-        data.func_point = NULL;
-        data.back = 0;
-        data.stop = 0;
-        Initialize();
-    }
 
     /** Gives the animation held by this list node. */
     CObjAnime *pGetData() { return &data; }

@@ -2078,11 +2078,6 @@ static inline int StackBlocks(int bytes) {
  * Constructs an action character in the inventory memory stack.
  *
  */
-extern "C" void *__vt__9mgCObject[];
-extern "C" void *__vt__7CObject[];
-extern "C" void *__vt__12CObjectFrame[];
-extern "C" void *__vt__11CCharacter2[];
-extern "C" void *__vt__12CActionChara[];
 
 static inline CActionChara *NewInventActionChara(mgCMemory *stack) {
     return new (stack->Alloc(StackBlocks(sizeof(CActionChara)))) CActionChara;

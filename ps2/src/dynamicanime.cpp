@@ -21,8 +21,6 @@ extern int            dynVertexCount;
 extern int            dynFixVertexCount;
 extern int            dynBindVertexCount;
 extern int            dynBBoxCount;
-extern "C" void *__vt__12CDACollision[];
-extern "C" void *__vt__10CDAColPipe[];
 extern int            dynColCount;
 extern SPI_TAG_PARAM  dynmc_tag[];
 extern char           at_855__2[];
@@ -1106,6 +1104,7 @@ int dynCOLLISION_START(SPI_STACK *stack, int argc) {
     dynNowDA->NewCollisionTable(spiGetStackInt(stack), dynStack);
     return 1;
 }
+#ifdef NONMATCHING
 static int dynCOLLISION(SPI_STACK *stack, int count) {
     char       *kind;
     CDAColPipe *pipe;
@@ -1115,12 +1114,7 @@ static int dynCOLLISION(SPI_STACK *stack, int count) {
         return 0;
     }
     if (strcmp(kind, "pipe") == 0) {
-        if ((pipe = (CDAColPipe *)operator new(sizeof(CDAColPipe), dynStack->Alloc(16))) != NULL) {
-            ((void ***)pipe)[48] = __vt__12CDACollision;
-            pipe->Initialize();
-            *(void ***)((u_int)pipe + 0xC0) = __vt__10CDAColPipe;
-            pipe->Initialize();
-        }
+        pipe = new ((u_long128 *) dynStack->Alloc(16)) CDAColPipe;
         if (pipe == NULL) {
             return 0;
         }
@@ -1137,6 +1131,9 @@ static int dynCOLLISION(SPI_STACK *stack, int count) {
     }
     return 0;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynCOLLISION__FP9SPI_STACKi);
+#endif
 void CDAColPipe::Initialize() {
     axis = 0;
     mgZeroVector(center);

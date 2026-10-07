@@ -327,14 +327,11 @@ extern char at_1073__3[];
 extern char at_1074__3[];
 extern char at_1075__2[];
 extern char at_1076__2[];
-extern "C" void *__vt__9mgCObject[];
-extern "C" void *__vt__7CObject[];
-extern "C" void *__vt__12CObjectFrame[];
-extern "C" void *__vt__11CCharacter2[];
 extern mgCFrame *PaintCursor;
 extern mgCFrame *RemoveCursor;
 extern mgCFrame *ShovelCursor;
 extern mgCTexture *eSysTexture;
+#ifdef NONMATCHING
 void LoadEditCursor(mgCMemory *memory, int block) {
     mgCTextureManager *textures = &mgTexManager;
     if (LoadFile2(at_1067__3, read_buffer, NULL, 0) != 0) {
@@ -367,19 +364,7 @@ void LoadEditCursor(mgCMemory *memory, int block) {
         PaintCursor = NULL;
         PaintCursor2 = NULL;
         CCharacter2 *paint_chr;
-        if ((paint_chr = (CCharacter2 *)operator new(sizeof(CCharacter2), (u_long128 *)memory->Alloc(0x68))) != NULL) {
-            *(void ***)paint_chr = __vt__9mgCObject;
-            paint_chr->Initialize();
-            *(void ***)paint_chr = __vt__7CObject;
-            paint_chr->Initialize();
-            *(void ***)paint_chr = __vt__12CObjectFrame;
-            paint_chr->Initialize();
-            *(void ***)paint_chr = __vt__11CCharacter2;
-            paint_chr->shadow_link.num = 0;
-            paint_chr->shadow_link.dst_frame = 0;
-            paint_chr->shadow_link.src_frame = 0;
-            paint_chr->Initialize();
-        }
+        paint_chr = new ((u_long128 *)memory->Alloc(0x68)) CCharacter2;
         PaintCurChr = paint_chr;
         u_int *paint_model = GetPackFile(pack, at_1071__3, NULL);
         if (paint_model != NULL) {
@@ -396,19 +381,7 @@ void LoadEditCursor(mgCMemory *memory, int block) {
         ShovelCurChr = NULL;
         RemoveCurChr = NULL;
         CCharacter2 *remove_chr;
-        if ((remove_chr = (CCharacter2 *)operator new(sizeof(CCharacter2), (u_long128 *)memory->Alloc(0x68))) != NULL) {
-            *(void ***)remove_chr = __vt__9mgCObject;
-            remove_chr->Initialize();
-            *(void ***)remove_chr = __vt__7CObject;
-            remove_chr->Initialize();
-            *(void ***)remove_chr = __vt__12CObjectFrame;
-            remove_chr->Initialize();
-            *(void ***)remove_chr = __vt__11CCharacter2;
-            remove_chr->shadow_link.num = 0;
-            remove_chr->shadow_link.dst_frame = 0;
-            remove_chr->shadow_link.src_frame = 0;
-            remove_chr->Initialize();
-        }
+        remove_chr = new ((u_long128 *)memory->Alloc(0x68)) CCharacter2;
         RemoveCurChr = remove_chr;
         u_int *remove_model = GetPackFile(pack, at_1074__3, NULL);
         if (remove_model != NULL) {
@@ -421,19 +394,7 @@ void LoadEditCursor(mgCMemory *memory, int block) {
             }
         }
         CCharacter2 *shovel_chr;
-        if ((shovel_chr = (CCharacter2 *)operator new(sizeof(CCharacter2), (u_long128 *)memory->Alloc(0x68))) != NULL) {
-            *(void ***)shovel_chr = __vt__9mgCObject;
-            shovel_chr->Initialize();
-            *(void ***)shovel_chr = __vt__7CObject;
-            shovel_chr->Initialize();
-            *(void ***)shovel_chr = __vt__12CObjectFrame;
-            shovel_chr->Initialize();
-            *(void ***)shovel_chr = __vt__11CCharacter2;
-            shovel_chr->shadow_link.num = 0;
-            shovel_chr->shadow_link.dst_frame = 0;
-            shovel_chr->shadow_link.src_frame = 0;
-            shovel_chr->Initialize();
-        }
+        shovel_chr = new ((u_long128 *)memory->Alloc(0x68)) CCharacter2;
         ShovelCurChr = shovel_chr;
         u_int *shovel_model = GetPackFile(pack, at_1075__2, NULL);
         if (shovel_model != NULL) {
@@ -464,6 +425,9 @@ void LoadEditCursor(mgCMemory *memory, int block) {
         Font__2.SetClearance(0xF, 0x18);
     }
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmode", LoadEditCursor__FP9mgCMemoryi);
+#endif
 int GetSelPartsInfoID() {
     return PartsInfoID;
 }

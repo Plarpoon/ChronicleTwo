@@ -5,6 +5,7 @@ and menu overlays in retail order. An earlier C++ version passed an isolated
 comparison, but the current matching build selects its `INCLUDE_ASM` gap.
 `CAquarium::SettingAqua` and `GyoraceMenuDraw` also use retail assembly gaps.
 Their C++ bodies remain guarded drafts and are not active decompilations.
+The `SettingAqua` draft constructs its `love_chara` member as a `CCharacter2`.
 
 `CAquaFish::SetAdjustScale`, `DrawFishParam`, `CAquarium::ColCheck`,
 `CAquarium::Step`, and `GyoraceMenuKey` likewise retain `NONMATCHING` drafts

@@ -1,5 +1,10 @@
 # fishing: reverse-engineering notes
 
+`sgRestartFishing`, `StepDataLoading`, and `InitSuccess` allocate `CCharacter2`
+objects for bait, rod, cursor, and caught-fish models. Their C++ drafts use the
+class constructor. The retail assembly remains active until those constructor
+call sites match byte for byte.
+
 Header: `ps2/include/fishing.hpp`. No first-game counterpart: Dark Cloud's `fishing.hpp`/`fish.hpp`
 (CFish, CCharacter Rod, line points) is a different design; nothing was carried over.
 

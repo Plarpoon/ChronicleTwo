@@ -138,3 +138,7 @@ unit at 100%.
 `mgCFrame` member through typed placement new. Earlier constructor forms
 changed MWCC code generation; the current object requires an integrated
 comparison before the function's matching status can be stated.
+
+## Constructor-backed allocations
+
+`EditSetPlaceAnime` uses native placement construction of the temporary `CMapParts` in its guarded draft. The retail assembly remains active because that constructor has not matched the call schedule.

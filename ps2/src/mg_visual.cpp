@@ -16,10 +16,6 @@ extern u_char texflush_dma__2[0x30];
 extern u_int prog_vif_730[4];
 extern u_int progf_vif_731[4];
 extern u_long128 *(*set_data_func__2[8])(int, int, int **, u_long128 *, u_long128 *, u_long128 *, u_long128 *, u_long128 *);
-extern void  *__vt__9mgCVisual[];
-extern void  *__vt__12mgCVisualMDT[];
-extern void  *__vt__15mgCVisualFixMDT[];
-
 /**
  *
  * Exposes the allocation state used while building a visual's packet.
@@ -32,20 +28,6 @@ struct VisualScratchMemory {
     int    stack_used;  /**< Number of occupied quadwords. */
     int    stack_size;  /**< Capacity of the scratch stack. */
     int    stack_block; /**< Address of the heap block holding the stack. */
-};
-
-/**
- *
- * Holds the material table copied into a fixed MDT visual.
- *
- */
-struct FixMDTCopy {
-    u_char      pad_00[0x1C];
-    void      **vptr; /**< Fixed MDT visual's virtual method table. */
-    u_char      pad_20[0x20];
-    int         material_num; /**< Number of materials in the copied table. */
-    mgMaterial *material;     /**< Material table allocated for the visual. */
-    u_char      pad_48[8];
 };
 
 /**
@@ -1316,50 +1298,7 @@ int mgCVisualMDT::CreateExtRenderInfoPacket(u_int         *packet, float (*matri
     return 0;
 }
 
-mgCVisual *mgCVisualFixMDT::Copy(mgCMemory *memory) {
-    FixMDTCopy *copy;
-
-    if ((copy = (FixMDTCopy *) operator new(0x50, memory->Alloc(7))) != NULL) {
-        copy->vptr = __vt__9mgCVisual;
-        ((mgCVisual *) copy)->Initialize();
-        copy->vptr = __vt__12mgCVisualMDT;
-        ((mgCVisual *) copy)->Initialize();
-        copy->vptr = __vt__15mgCVisualFixMDT;
-        ((mgCVisual *) copy)->Initialize();
-    }
-
-    if (copy == NULL) {
-        return NULL;
-    }
-
-    ((mgCVisualMDT *) copy)->operator=(*this);
-    int count = material_num;
-    int i = 0;
-
-    if (count > 0) {
-        u_int bytes = count * 0x30;
-        u_int quads = (bytes & 0xF) ? (bytes >> 4) + 1 : bytes >> 4;
-        copy->material = (mgMaterial *) operator new[](material_num * 0x30,
-                                                       memory->Alloc(quads + 2));
-        i = 0;
-    }
-
-    mgMaterial *dst;
-    mgMaterial *src;
-    int         offset = 0;
-
-    while (i < material_num) {
-        i++;
-        src = (mgMaterial *) ((u_char *) material + offset);
-        dst = (mgMaterial *) ((u_char *) copy->material + offset);
-        offset += 0x30;
-        *(mgMaterialVector *) dst->diffuse = *(mgMaterialVector *) src->diffuse;
-        *(mgMaterialVector *) dst->unk_10 = *(mgMaterialVector *) src->unk_10;
-        dst->texture = src->texture;
-    }
-
-    return (mgCVisualFixMDT *) copy;
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", Copy__15mgCVisualFixMDTFP9mgCMemory);
 
 mgCVisualMDT &mgCVisualMDT::operator=(const mgCVisualMDT &source) {
     unk_00 = source.unk_00;

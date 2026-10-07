@@ -346,10 +346,6 @@ static inline u_long128 *FreeTop(mgCMemory *memory) {
     return memory->stGetTop();
 }
 
-extern "C" void *__vt__9mgCObject[];
-extern "C" void *__vt__7CObject[];
-extern "C" void *__vt__12CObjectFrame[];
-extern "C" void *__vt__11CCharacter2[];
 
 #pragma define_section dead ".dead" ".dead"
 __declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
@@ -531,6 +527,7 @@ int sgInitFishing(SubGameInfo *info) {
     info->record_check = info->dungeon;
     return 1;
 }
+#ifdef NONMATCHING
 int sgRestartFishing(SubGameInfo *info) {
     CScene *scene = info->scene;
     u_long128 *buffer = ReadBuffer;
@@ -574,19 +571,7 @@ int sgRestartFishing(SubGameInfo *info) {
         if (esa_path != NULL) {
             if (*esa_path != 0 && LocalEsaNo >= 0) {
                 CCharacter2 *esa_chara;
-                if ((esa_chara = (CCharacter2 *)operator new(sizeof(CCharacter2), EsaStack.Alloc(0x68))) != NULL) {
-                    *(void ***)esa_chara = __vt__9mgCObject;
-                    esa_chara->Initialize();
-                    *(void ***)esa_chara = __vt__7CObject;
-                    esa_chara->Initialize();
-                    *(void ***)esa_chara = __vt__12CObjectFrame;
-                    esa_chara->Initialize();
-                    *(void ***)esa_chara = __vt__11CCharacter2;
-                    esa_chara->shadow_link.num = 0;
-                    esa_chara->shadow_link.dst_frame = 0;
-                    esa_chara->shadow_link.src_frame = 0;
-                    esa_chara->Initialize();
-                }
+                esa_chara = new (EsaStack.Alloc(0x68)) CCharacter2;
                 EsaChara = esa_chara;
                 EsaChara->Initialize();
                 if (LoadFile2(esa_path, buffer, NULL, 0) != 0) {
@@ -637,6 +622,9 @@ int sgRestartFishing(SubGameInfo *info) {
     SetWaterLevel(-100000.0f);
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", sgRestartFishing__FP11SubGameInfo);
+#endif
 /**
  *
  * Resets fishing loading state and captures the active BGM status.
@@ -758,6 +746,7 @@ void DeleteLoadThread() {
         ThreadRunning = 0;
     }
 }
+#ifdef NONMATCHING
 void StepDataLoading(void *arg) {
     char path[0x80];
     char bgm_path[0x80];
@@ -789,103 +778,19 @@ void StepDataLoading(void *arg) {
         switch_thread();
     }
     CCharacter2 *chara;
-    if ((chara = (CCharacter2 *)operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-        *(void ***)chara = __vt__9mgCObject;
-        chara->Initialize();
-        *(void ***)chara = __vt__7CObject;
-        chara->Initialize();
-        *(void ***)chara = __vt__12CObjectFrame;
-        chara->Initialize();
-        *(void ***)chara = __vt__11CCharacter2;
-        chara->shadow_link.num = 0;
-        chara->shadow_link.dst_frame = 0;
-        chara->shadow_link.src_frame = 0;
-        chara->Initialize();
-    }
+    chara = new (memory->Alloc(0x68)) CCharacter2;
     UkiRod = chara;
-    if ((chara = (CCharacter2 *)operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-        *(void ***)chara = __vt__9mgCObject;
-        chara->Initialize();
-        *(void ***)chara = __vt__7CObject;
-        chara->Initialize();
-        *(void ***)chara = __vt__12CObjectFrame;
-        chara->Initialize();
-        *(void ***)chara = __vt__11CCharacter2;
-        chara->shadow_link.num = 0;
-        chara->shadow_link.dst_frame = 0;
-        chara->shadow_link.src_frame = 0;
-        chara->Initialize();
-    }
+    chara = new (memory->Alloc(0x68)) CCharacter2;
     LureRod = chara;
-    if ((chara = (CCharacter2 *)operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-        *(void ***)chara = __vt__9mgCObject;
-        chara->Initialize();
-        *(void ***)chara = __vt__7CObject;
-        chara->Initialize();
-        *(void ***)chara = __vt__12CObjectFrame;
-        chara->Initialize();
-        *(void ***)chara = __vt__11CCharacter2;
-        chara->shadow_link.num = 0;
-        chara->shadow_link.dst_frame = 0;
-        chara->shadow_link.src_frame = 0;
-        chara->Initialize();
-    }
+    chara = new (memory->Alloc(0x68)) CCharacter2;
     Uki = chara;
-    if ((chara = (CCharacter2 *)operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-        *(void ***)chara = __vt__9mgCObject;
-        chara->Initialize();
-        *(void ***)chara = __vt__7CObject;
-        chara->Initialize();
-        *(void ***)chara = __vt__12CObjectFrame;
-        chara->Initialize();
-        *(void ***)chara = __vt__11CCharacter2;
-        chara->shadow_link.num = 0;
-        chara->shadow_link.dst_frame = 0;
-        chara->shadow_link.src_frame = 0;
-        chara->Initialize();
-    }
+    chara = new (memory->Alloc(0x68)) CCharacter2;
     Lure = chara;
-    if ((chara = (CCharacter2 *)operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-        *(void ***)chara = __vt__9mgCObject;
-        chara->Initialize();
-        *(void ***)chara = __vt__7CObject;
-        chara->Initialize();
-        *(void ***)chara = __vt__12CObjectFrame;
-        chara->Initialize();
-        *(void ***)chara = __vt__11CCharacter2;
-        chara->shadow_link.num = 0;
-        chara->shadow_link.dst_frame = 0;
-        chara->shadow_link.src_frame = 0;
-        chara->Initialize();
-    }
+    chara = new (memory->Alloc(0x68)) CCharacter2;
     Hari = chara;
-    if ((chara = (CCharacter2 *)operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-        *(void ***)chara = __vt__9mgCObject;
-        chara->Initialize();
-        *(void ***)chara = __vt__7CObject;
-        chara->Initialize();
-        *(void ***)chara = __vt__12CObjectFrame;
-        chara->Initialize();
-        *(void ***)chara = __vt__11CCharacter2;
-        chara->shadow_link.num = 0;
-        chara->shadow_link.dst_frame = 0;
-        chara->shadow_link.src_frame = 0;
-        chara->Initialize();
-    }
+    chara = new (memory->Alloc(0x68)) CCharacter2;
     CursorChara[0] = chara;
-    if ((chara = (CCharacter2 *)operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-        *(void ***)chara = __vt__9mgCObject;
-        chara->Initialize();
-        *(void ***)chara = __vt__7CObject;
-        chara->Initialize();
-        *(void ***)chara = __vt__12CObjectFrame;
-        chara->Initialize();
-        *(void ***)chara = __vt__11CCharacter2;
-        chara->shadow_link.num = 0;
-        chara->shadow_link.dst_frame = 0;
-        chara->shadow_link.src_frame = 0;
-        chara->Initialize();
-    }
+    chara = new (memory->Alloc(0x68)) CCharacter2;
     CursorChara[1] = chara;
     EsaChara = NULL;
     FishChara = NULL;
@@ -1013,6 +918,9 @@ void StepDataLoading(void *arg) {
     printf(at_1316__2, (memory->stack_size - memory->stack_used) * 16 / 1024);
     step_end_flag = 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", StepDataLoading__FPv);
+#endif
 int sgBreakFishing() {
     DeleteLoadThread();
     sgExitFishing(GetNowSubGameInfo());
@@ -2758,6 +2666,7 @@ void FalseLoop(CScene *scene, CPadControl *pad) {
  * Prepares caught fish data, rewards, and the success display.
  *
  */
+#ifdef NONMATCHING
 int InitSuccess(CScene *scene) {
     mgCTextureManager *tex_manager;
     CCharacter2       *fish_chara;
@@ -2792,19 +2701,7 @@ int InitSuccess(CScene *scene) {
         FishStack.stack_used = 0;
         FishStack.lock = 0;
 
-        if ((fish_chara = (CCharacter2 *) operator new(sizeof(CCharacter2), FishStack.Alloc(0x68))) != NULL) {
-            *(void ***) fish_chara = __vt__9mgCObject;
-            fish_chara->Initialize();
-            *(void ***) fish_chara = __vt__7CObject;
-            fish_chara->Initialize();
-            *(void ***) fish_chara = __vt__12CObjectFrame;
-            fish_chara->Initialize();
-            *(void ***) fish_chara = __vt__11CCharacter2;
-            fish_chara->shadow_link.num = 0;
-            fish_chara->shadow_link.dst_frame = 0;
-            fish_chara->shadow_link.src_frame = 0;
-            fish_chara->Initialize();
-        }
+        fish_chara = new (FishStack.Alloc(0x68)) CCharacter2;
 
         FishChara = fish_chara;
         fish_chara->Initialize();
@@ -2871,6 +2768,9 @@ int InitSuccess(CScene *scene) {
     sndSePlay(FanSnd, 0, 0);
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", InitSuccess__FP6CScene);
+#endif
 
 /**
  *

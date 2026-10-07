@@ -20,10 +20,6 @@
 #include "scene.hpp"
 #include "scenesnd.hpp"
 
-extern void *__vt__9mgCObject[];
-extern void *__vt__7CObject[];
-extern void *__vt__12CObjectFrame[];
-extern void *__vt__11CCharacter2[];
 
 /**
  *
@@ -317,6 +313,7 @@ extern char at_1102__2[];
 extern char at_1103__5[];
 extern char at_1104__7[];
 
+#ifdef NONMATCHING
 int CEffectScriptMan::BuildBase(int base_no, u_long128 *data, int data_size, u_long128 *script, int script_size, mgCMemory *work, int texb) {
     mgCMemory *memory;
 
@@ -392,19 +389,7 @@ int CEffectScriptMan::BuildBase(int base_no, u_long128 *data, int data_size, u_l
                     CCharacter2 *source = GetBaseChara(base_no);
                     CCharacter2 *model;
 
-                    if ((model = (CCharacter2 *) operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-                        *(void ***) model = __vt__9mgCObject;
-                        model->Initialize();
-                        *(void ***) model = __vt__7CObject;
-                        model->Initialize();
-                        *(void ***) model = __vt__12CObjectFrame;
-                        model->Initialize();
-                        *(void ***) model = __vt__11CCharacter2;
-                        model->shadow_link.num = 0;
-                        model->shadow_link.dst_frame = 0;
-                        model->shadow_link.src_frame = 0;
-                        model->Initialize();
-                    }
+                    model = new (memory->Alloc(0x68)) CCharacter2;
 
                     base[index]->chara = model;
                     base[index]->chara->Initialize();
@@ -484,6 +469,9 @@ int CEffectScriptMan::BuildBase(int base_no, u_long128 *data, int data_size, u_l
     base_num++;
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", BuildBase__16CEffectScriptManFiP1iP1iP9mgCMemoryi);
+#endif
 
 int CEffectScriptMan::BuildBase(char *name, u_long128 *path_file, int path_size, u_long128 *pack_file,
                                 int pack_size, mgCMemory *memory, int level) {
@@ -623,20 +611,7 @@ _EFF_SCRIPT *CEffectScriptMan::CreateEffSpt(int base_no, int group, int register
     if (base->chara != NULL) {
         CCharacter2 *chara;
 
-        if ((chara = (CCharacter2 *) operator new(
-                 sizeof(CCharacter2), work_memory->Alloc(0x68))) != 0) {
-            *(void **) chara = __vt__9mgCObject;
-            chara->Initialize();
-            *(void **) chara = __vt__7CObject;
-            chara->Initialize();
-            *(void **) chara = __vt__12CObjectFrame;
-            chara->Initialize();
-            *(void **) chara = __vt__11CCharacter2;
-            chara->shadow_link.num = 0;
-            chara->shadow_link.dst_frame = 0;
-            chara->shadow_link.src_frame = 0;
-            chara->Initialize();
-        }
+        chara = new (work_memory->Alloc(0x68)) CCharacter2;
 
         script->chara = chara;
         script->chara->Initialize();
@@ -1147,6 +1122,7 @@ void CEffectScriptMan::DeleteSprite(_ES_SPRITE *sprite) {
     memory->Free((u_long128 *) sprite);
 }
 
+#ifdef NONMATCHING
 int CEffectScriptMan::AssignCharacter(_EFF_SCRIPT *script, int count) {
     if (count > EFF_SPT_SUB_CHARA_MAX) {
         return 0;
@@ -1163,20 +1139,7 @@ int CEffectScriptMan::AssignCharacter(_EFF_SCRIPT *script, int count) {
     for (int i = 0; i < count; i++) {
         CCharacter2 *chara;
 
-        if ((chara = (CCharacter2 *) operator new(
-                 sizeof(CCharacter2), work_memory->Alloc(0x68))) != 0) {
-            *(void **) chara = __vt__9mgCObject;
-            chara->Initialize();
-            *(void **) chara = __vt__7CObject;
-            chara->Initialize();
-            *(void **) chara = __vt__12CObjectFrame;
-            chara->Initialize();
-            *(void **) chara = __vt__11CCharacter2;
-            chara->shadow_link.num = 0;
-            chara->shadow_link.dst_frame = 0;
-            chara->shadow_link.src_frame = 0;
-            chara->Initialize();
-        }
+        chara = new (work_memory->Alloc(0x68)) CCharacter2;
 
         script->sub_chara[i] = chara;
         script->chara->Copy(*script->sub_chara[i], work_memory);
@@ -1187,6 +1150,9 @@ int CEffectScriptMan::AssignCharacter(_EFF_SCRIPT *script, int count) {
     work_memory->EndStackMode();
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", AssignCharacter__16CEffectScriptManFP11_EFF_SCRIPTi);
+#endif
 
 int CEffectScriptMan::SetScriptProgNo(int prog_no, int group, int slot) {
     if (group < 0 || group >= EFF_SPT_OWNER_MAX || slot < 0 || slot >= EFF_SPT_OWNER_SLOT_MAX) {
@@ -1576,6 +1542,7 @@ CCharacter2 *CEffectScriptMan::GetCharacter(int group, int slot) {
     return 0;
 }
 
+#ifdef NONMATCHING
 int CEffectScriptMan::SetCharacter(CCharacter2 *source, int group, int slot) {
     int        chara_blocks = (source)->GetCopySize() + 0x68;
     u_long128 *token = work_memory->StartStackMode(3, chara_blocks);
@@ -1598,40 +1565,14 @@ int CEffectScriptMan::SetCharacter(CCharacter2 *source, int group, int slot) {
             return 0;
         }
 
-        if ((chara = (CCharacter2 *) operator new(
-                 sizeof(CCharacter2), work_memory->Alloc(0x68))) != 0) {
-            *(void **) chara = __vt__9mgCObject;
-            chara->Initialize();
-            *(void **) chara = __vt__7CObject;
-            chara->Initialize();
-            *(void **) chara = __vt__12CObjectFrame;
-            chara->Initialize();
-            *(void **) chara = __vt__11CCharacter2;
-            chara->shadow_link.num = 0;
-            chara->shadow_link.dst_frame = 0;
-            chara->shadow_link.src_frame = 0;
-            chara->Initialize();
-        }
+        chara = new (work_memory->Alloc(0x68)) CCharacter2;
 
         (*entry)->chara = chara;
         source->Copy(*(*entry)->chara, work_memory);
         (*entry)->chara_work = token;
     } else {
         if (now != 0) {
-            if ((chara = (CCharacter2 *) operator new(
-                     sizeof(CCharacter2), work_memory->Alloc(0x68))) != 0) {
-                *(void **) chara = __vt__9mgCObject;
-                chara->Initialize();
-                *(void **) chara = __vt__7CObject;
-                chara->Initialize();
-                *(void **) chara = __vt__12CObjectFrame;
-                chara->Initialize();
-                *(void **) chara = __vt__11CCharacter2;
-                chara->shadow_link.num = 0;
-                chara->shadow_link.dst_frame = 0;
-                chara->shadow_link.src_frame = 0;
-                chara->Initialize();
-            }
+            chara = new (work_memory->Alloc(0x68)) CCharacter2;
 
             now->chara = chara;
             source->Copy(*now->chara, work_memory);
@@ -1645,6 +1586,9 @@ int CEffectScriptMan::SetCharacter(CCharacter2 *source, int group, int slot) {
     work_memory->EndStackMode();
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", SetCharacter__16CEffectScriptManFP11CCharacter2ii);
+#endif
 
 int CEffectScriptMan::SetTexb(int texb, int group, int slot) {
     if (slot >= 0) {

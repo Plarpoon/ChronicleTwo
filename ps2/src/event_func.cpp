@@ -144,10 +144,6 @@ extern VpkTable          at_6800__2;
 extern CEventSprite2     EventSprite2[0x30];
 extern CSceneObjSeq      ObjectSeq[32];
 extern CSceneCmrSeq      CameraSeq;
-extern "C" void *__vt__9mgCObject[];
-extern "C" void *__vt__7CObject[];
-extern "C" void *__vt__12CObjectFrame[];
-extern "C" void *__vt__11CCharacter2[];
 extern mgCMemory         BuffEventSnd;
 extern mgCMemory         BuffEventSnd2;
 extern u_long128         event_snd_buff[];
@@ -5471,6 +5467,7 @@ int _HIT_EFFECT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+#ifdef NONMATCHING
 int _COPY_CHARA(RS_STACKDATA *stack, int argc) {
     int stack_no;
     int src_no;
@@ -5507,19 +5504,7 @@ int _COPY_CHARA(RS_STACKDATA *stack, int argc) {
     CCharacter2 *source = GetCharacter(src_no);
     CCharacter2 *copy;
 
-    if ((copy = (CCharacter2 *)operator new(sizeof(CCharacter2), (u_long128 *)memory->Alloc(0x68))) != NULL) {
-        *(void ***)copy = __vt__9mgCObject;
-        copy->Initialize();
-        *(void ***)copy = __vt__7CObject;
-        copy->Initialize();
-        *(void ***)copy = __vt__12CObjectFrame;
-        copy->Initialize();
-        *(void ***)copy = __vt__11CCharacter2;
-        copy->shadow_link.num = 0;
-        copy->shadow_link.dst_frame = 0;
-        copy->shadow_link.src_frame = 0;
-        copy->Initialize();
-    }
+    copy = new (memory->Alloc(0x68)) CCharacter2;
 
     if (source == NULL) {
         return 0;
@@ -5541,6 +5526,9 @@ int _COPY_CHARA(RS_STACKDATA *stack, int argc) {
     EventScene->SetCharaTexb(dst_no, EventScene->GetCharaTexb(src_no));
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _COPY_CHARA__FP12RS_STACKDATAi);
+#endif
 
 int _GET_START_BUTTON(RS_STACKDATA *stack, int argc) {
     SetStack(stack, EdEventInfo.start_button);
@@ -15386,8 +15374,7 @@ int _CANCEL_NOW_LOADING(RS_STACKDATA *stack, int argc) {
 static inline int Ident(int v) {
     return v;
 }
-extern "C" void *__vt__9mgCVisual[];
-extern "C" void *__vt__11mgC3DSprite[];
+#ifdef NONMATCHING
 int _ESM_INITIALIZE(RS_STACKDATA *stack, int argc) {
     int stackNo;
     int texbOffset = 0;
@@ -15400,13 +15387,7 @@ int _ESM_INITIALIZE(RS_STACKDATA *stack, int argc) {
         return 0;
     }
     CEffectScriptMan *manager;
-    if ((manager = (CEffectScriptMan *)operator new(sizeof(CEffectScriptMan), memory->Alloc(0x11B))) != NULL) {
-        ((void ***)&manager->sprite)[7] = __vt__9mgCVisual;
-        manager->sprite.Initialize();
-        *(void ***)((u_int)&manager->sprite + 0x1C) = __vt__11mgC3DSprite;
-        manager->sprite.Initialize();
-        manager->Initialize(NULL, -1, -1);
-    }
+    manager = new (memory->Alloc(0x11B)) CEffectScriptMan;
     EventEffectScript = manager;
     if (EventEffectScript == NULL) {
         return 0;
@@ -15415,6 +15396,9 @@ int _ESM_INITIALIZE(RS_STACKDATA *stack, int argc) {
     EventEffectScript->load_buffer = read_buffer;
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _ESM_INITIALIZE__FP12RS_STACKDATAi);
+#endif
 int _ESM_INIT_FIX(RS_STACKDATA *stack, int argc) {
     int        stack_no;
     int        heap_size;
@@ -16404,6 +16388,7 @@ int _END_SEPIA(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+#ifdef NONMATCHING
 int _COPY_MONS2SCNCHR(RS_STACKDATA *stack, int argc) {
     if (ActiveMonster == NULL) {
         return 0;
@@ -16419,17 +16404,7 @@ int _COPY_MONS2SCNCHR(RS_STACKDATA *stack, int argc) {
     int          dst_no = GetStackInt(stack);
     CCharacter2 *copy;
 
-    if ((copy = (CCharacter2 *)operator new(sizeof(CCharacter2), (u_long128 *)memory->Alloc(0x68))) != NULL) {
-        *(void ***)copy = __vt__9mgCObject;
-        copy->Initialize();
-        *(void ***)copy = __vt__7CObject;
-        copy->Initialize();
-        *(void ***)copy = __vt__12CObjectFrame;
-        copy->Initialize();
-        *(void ***)copy = __vt__11CCharacter2;
-        copy->shadow_link.Initialize();
-        copy->Initialize();
-    }
+    copy = new (memory->Alloc(0x68)) CCharacter2;
 
     if (copy == NULL) {
         return 0;
@@ -16448,6 +16423,10 @@ int _COPY_MONS2SCNCHR(RS_STACKDATA *stack, int argc) {
     EventScene->SetCharaTexb(dst_no, monster_index + 0x28);
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _COPY_MONS2SCNCHR__FP12RS_STACKDATAi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", __ct__7CObjectFRC7CObject);
+#endif
 
 int _UNLOCK_STACK(RS_STACKDATA *stack, int argc) {
     mgCMemory *scene_stack = EventScene->GetStack(GetStackInt(stack));

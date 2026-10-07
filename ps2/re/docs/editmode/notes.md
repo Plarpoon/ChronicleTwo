@@ -1,5 +1,9 @@
 # editmode: reverse-engineering notes
 
+`LoadEditCursor` allocates three `CCharacter2` objects for the paint, removal,
+and shovel cursors. Its C++ draft uses the class constructor; retail assembly
+remains active while the surrounding load and construction code is unmatched.
+
 Georama mode (town editor cursor): placing, removing ("RemoveMtn", shovel) and painting parts,
 putting parts against walls, rivers, undo, help line, walk<->edit checks. No class is owned by
 this unit (`class_units.tsv`). All external callers are in `editloop`. No first-game counterpart

@@ -1,5 +1,9 @@
 # pbuggy: reverse-engineering notes
 
+`sgInitBuggy` is currently supplied by retail assembly. Its effect-script
+manager allocation initializes the embedded sprite through compiler-generated
+class construction; no source-level virtual-table writes are retained.
+
 Buggy sub game (sub game 3 in `subgame`'s dispatchers `sgInitSubGame`, `sgLoopSubGame`,
 `sgDrawSubGameChara`, `sgDrawSubGameEffect`, `sgDrawSubGameCharaShadow`, `sgDrawSubGameSystem`).
 The player drives a buggy with a gun and bombs and defends a train.

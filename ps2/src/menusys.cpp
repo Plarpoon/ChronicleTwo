@@ -255,7 +255,6 @@ extern s8                    TrushMesWindowFlag;
 extern CMenuPosDataForm     *MenuSpectolSatusCheckForm;
 extern CMenuPosDataForm     *MenuSpectolSatusCheckBGFadeForm;
 extern CItemSelect          *ItemSelectPtr;
-extern u8                    __vt__14CBaseMenuClass[];
 extern float                 MenuWeaponBasePos[4];
 extern float                 SpectolFramePosValue;
 extern float                 SpectolFrameFadeAlpha;
@@ -5695,11 +5694,6 @@ int CMenuItemInfo::ItemCmdAfter(int cmd_ret, ITEMCMD_RET_PARA *ret) {
     return 1;
 }
 
-extern u8 __vt__9mgCObject[];
-extern u8 __vt__7CObject[];
-extern u8 __vt__12CObjectFrame[];
-extern u8 __vt__11CCharacter2[];
-extern u8 __vt__12CActionChara[];
 
 /**
  *
@@ -5707,26 +5701,7 @@ extern u8 __vt__12CActionChara[];
  *
  */
 static inline CActionChara *NewMenuActionChara(mgCMemory *stack) {
-    CActionChara *chara;
-
-    if ((chara = (CActionChara *) operator new(sizeof(CActionChara), stack->Alloc(0x105))) != NULL) {
-        *(void **) chara = __vt__9mgCObject;
-        ((mgCObject *) chara)->Initialize();
-        *(void **) chara = __vt__7CObject;
-        ((mgCObject *) chara)->Initialize();
-        *(void **) chara = __vt__12CObjectFrame;
-        ((mgCObject *) chara)->Initialize();
-        *(void **) chara = __vt__11CCharacter2;
-        chara->shadow_link.num = 0;
-        chara->shadow_link.dst_frame = 0;
-        chara->shadow_link.src_frame = 0;
-        ((mgCObject *) chara)->Initialize();
-        *(void **) chara = __vt__12CActionChara;
-        new ((u_long128 *) &chara->script) CRunScript;
-        memset(&chara->move_check, 0, sizeof(chara->move_check));
-    }
-
-    return chara;
+    return new ((u_long128 *) stack->Alloc(0x105)) CActionChara;
 }
 
 extern int  Effect_Counter_4682;
@@ -11545,7 +11520,6 @@ void CItemSelect::Draw() {
 
 extern char at_9215[];
 extern char at_9216[];
-extern u8   __vt__11CItemSelect[];
 #ifdef NONMATCHING
 void MenuItemSelectInit(mgCMemory *stack, int *tex_block, int mode) {
     MenuItemMainMemory.stSetBuffer(stack->stGetTop(), stack->stGetRest());

@@ -275,10 +275,6 @@ extern u16                    aqua_frame_sizetbl_2934[3];
 extern s16                    AquaBattleBubble_Generate_Wait;
 extern int                    AquaBattleBubble_Generate_Counter;
 extern CBubble               *AquaBattleBubble;
-extern "C" void              *__vt__9mgCObject[];
-extern "C" void              *__vt__7CObject[];
-extern "C" void              *__vt__12CObjectFrame[];
-extern "C" void              *__vt__11CCharacter2[];
 extern "C" aqua_quad          at_2975;
 extern "C" aqua_quad          at_2976;
 extern "C" aqua_quad          at_3016;
@@ -3231,19 +3227,7 @@ void CAquarium::SettingAqua() {
         textures->DeleteBlock(love_tex_block);
         CCharacter2 *chara;
 
-        if ((chara = (CCharacter2 *) operator new(sizeof(CCharacter2), (u_long128 *) love_stack.Alloc(sizeof(CCharacter2) / 16 + 2))) != NULL) {
-            *(void ***) chara = __vt__9mgCObject;
-            chara->Initialize();
-            *(void ***) chara = __vt__7CObject;
-            chara->Initialize();
-            *(void ***) chara = __vt__12CObjectFrame;
-            chara->Initialize();
-            *(void ***) chara = __vt__11CCharacter2;
-            chara->shadow_link.num = 0;
-            chara->shadow_link.dst_frame = 0;
-            chara->shadow_link.src_frame = 0;
-            chara->Initialize();
-        }
+        chara = new ((u_long128 *) love_stack.Alloc(sizeof(CCharacter2) / 16 + 2)) CCharacter2;
 
         love_chara = chara;
         love_chara->Initialize();

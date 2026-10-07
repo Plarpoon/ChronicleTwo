@@ -143,8 +143,8 @@ CPartsGroup *CMap::GetPartsGroup(int no) {
     return &parts_group[no];
 }
 
-extern void *__vt__23CList_14PartsGroupData_[];
 
+#ifdef NONMATCHING
 int CMap::AddPartsGroup(char *name, CMapParts *parts, mgCMemory *memory) {
     int                    group_no;
     char                  *new_name;
@@ -168,16 +168,18 @@ int CMap::AddPartsGroup(char *name, CMapParts *parts, mgCMemory *memory) {
         group->name = new_name;
     }
 
-    if ((node = (CList<PartsGroupData> *) operator new(0x10, memory->Alloc(3))) != 0) {
-        *(void ***) ((u8 *) node + 0xC) = __vt__23CList_14PartsGroupData_;
+    if ((node = new ((u_long128 *) memory->Alloc(3)) CList<PartsGroupData>) != 0) {
         node->data.parts = 0;
-        node->Initialize();
     }
 
     node->data.parts = parts;
     group->Add(node);
     return group_no;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", AddPartsGroup__4CMapFPcP9CMapPartsP9mgCMemory);
+#endif
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", Initialize__23CList_14PartsGroupData_Fv);
 
 CPartsGroup *CMap::SearchPartsGroup(char *name) {
     return GetPartsGroup(SearchPartsGroupNo(name));
@@ -399,8 +401,8 @@ CMapParts *CMap::GetParts(char *name) {
     return NULL;
 }
 
-extern void *__vt__18CList_P9CMapParts_[];
 
+#ifdef NONMATCHING
 void CMap::CreateDrawRect(mgCMemory *memory, mgVu0FBOX *rect, mgVu0FBOX *clip, int outside) {
     mgVu0FBOX           parts_box;
     MapDrawOffRect     *slot;
@@ -445,10 +447,7 @@ void CMap::CreateDrawRect(mgCMemory *memory, mgVu0FBOX *rect, mgVu0FBOX *clip, i
                 continue;
             }
 
-            if ((node = (CList<CMapParts *> *) operator new(0x10, memory->Alloc(3))) != 0) {
-                *(void ***) ((u8 *) node + 0xC) = __vt__18CList_P9CMapParts_;
-                node->Initialize();
-            }
+            node = new ((u_long128 *) memory->Alloc(3)) CList<CMapParts *>;
 
             node->data = parts;
             last = slot->parts;
@@ -477,6 +476,10 @@ void CMap::CreateDrawRect(mgCMemory *memory, mgVu0FBOX *rect, mgVu0FBOX *clip, i
         }
     }
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", CreateDrawRect__4CMapFP9mgCMemoryP9mgVu0FBOXP9mgVu0FBOXi);
+#endif
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", Initialize__18CList_P9CMapParts_Fv);
 
 void CMap::CreateOcclusion(float (*corner)[4]) {
     if (occlusion_num < MAP_OCCLUSION_MAX) {

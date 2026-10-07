@@ -1997,16 +1997,13 @@ int emapEDIT_RIVER(SPI_STACK *stack, int argc) {
     return 1;
 }
 
-extern "C" void *__vt__9mgCObject[];
-extern "C" void *__vt__7CObject[];
-extern "C" void *__vt__12CObjectFrame[];
-extern "C" void *__vt__9CMapPiece[];
 
 /**
  *
  * Loads a named river part and its map piece model.
  *
  */
+#ifdef NONMATCHING
 int emapRIVER_PARTS_NAME(SPI_STACK *stack, int argc) {
     int index = spiGetStackInt(stack++);
 
@@ -2019,16 +2016,7 @@ int emapRIVER_PARTS_NAME(SPI_STACK *stack, int argc) {
     emapMap->river_parts[index] = emapMap->GetParts(parts_name);
     CMapPiece *piece;
 
-    if ((piece = (CMapPiece *) operator new(sizeof(CMapPiece), emapStack->Alloc(0xD))) != NULL) {
-        *(void ***) piece = __vt__9mgCObject;
-        piece->Initialize();
-        *(void ***) piece = __vt__7CObject;
-        piece->Initialize();
-        *(void ***) piece = __vt__12CObjectFrame;
-        piece->Initialize();
-        *(void ***) piece = __vt__9CMapPiece;
-        piece->Initialize();
-    }
+    piece = new ((u_long128 *) emapStack->Alloc(0xD)) CMapPiece;
 
     emapMap->river_piece[index] = piece;
     CMdsInfo *mds = emapMap->SearchMDS(mds_name);
@@ -2049,12 +2037,16 @@ int emapRIVER_PARTS_NAME(SPI_STACK *stack, int argc) {
 
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", emapRIVER_PARTS_NAME__FP9SPI_STACKi);
+#endif
 
 /**
  *
  * Loads the map mask piece model.
  *
  */
+#ifdef NONMATCHING
 int emapMASK_PARTS_NAME(SPI_STACK *stack, int argc) {
     int index = spiGetStackInt(stack++);
 
@@ -2065,16 +2057,7 @@ int emapMASK_PARTS_NAME(SPI_STACK *stack, int argc) {
     char      *mds_name = spiGetStackString(stack);
     CMapPiece *piece;
 
-    if ((piece = (CMapPiece *) operator new(sizeof(CMapPiece), emapStack->Alloc(0xD))) != NULL) {
-        *(void ***) piece = __vt__9mgCObject;
-        piece->Initialize();
-        *(void ***) piece = __vt__7CObject;
-        piece->Initialize();
-        *(void ***) piece = __vt__12CObjectFrame;
-        piece->Initialize();
-        *(void ***) piece = __vt__9CMapPiece;
-        piece->Initialize();
-    }
+    piece = new ((u_long128 *) emapStack->Alloc(0xD)) CMapPiece;
 
     emapMap->mask_piece[index] = piece;
     CMdsInfo *mds = emapMap->SearchMDS(mds_name);
@@ -2095,26 +2078,21 @@ int emapMASK_PARTS_NAME(SPI_STACK *stack, int argc) {
 
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", emapMASK_PARTS_NAME__FP9SPI_STACKi);
+#endif
 
 /**
  *
  * Loads the map water piece model.
  *
  */
+#ifdef NONMATCHING
 int emapWATER_PARTS_NAME(SPI_STACK *stack, int argc) {
     CMdsInfo  *mds = emapMap->SearchMDS(spiGetStackString(stack));
     CMapPiece *piece;
 
-    if ((piece = (CMapPiece *) operator new(sizeof(CMapPiece), emapStack->Alloc(0xD))) != NULL) {
-        *(void ***) piece = __vt__9mgCObject;
-        piece->Initialize();
-        *(void ***) piece = __vt__7CObject;
-        piece->Initialize();
-        *(void ***) piece = __vt__12CObjectFrame;
-        piece->Initialize();
-        *(void ***) piece = __vt__9CMapPiece;
-        piece->Initialize();
-    }
+    piece = new ((u_long128 *) emapStack->Alloc(0xD)) CMapPiece;
 
     emapMap->water_piece = piece;
 
@@ -2131,6 +2109,9 @@ int emapWATER_PARTS_NAME(SPI_STACK *stack, int argc) {
 
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap", emapWATER_PARTS_NAME__FP9SPI_STACKi);
+#endif
 
 /**
  *

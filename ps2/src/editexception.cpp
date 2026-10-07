@@ -29,8 +29,6 @@ extern char   at_920__5[];
 extern char   at_921__4[];
 extern char   at_1143__2[];
 extern char   at_1259[];
-extern void  *__vt__9mgCVisual[];
-extern void  *__vt__11mgC3DSprite[];
 extern mgVec4 at_1327;
 extern mgVec4 at_1328__2;
 extern mgVec4 at_1329;
@@ -321,6 +319,7 @@ void S51Thunder(CScene *scene) {
     }
 }
 
+#ifdef NONMATCHING
 void InitFirePowder(int map_no, CScene *scene, int texb, mgCMemory *memory) {
     int          i;
     FirePowder  *particle;
@@ -350,12 +349,7 @@ void InitFirePowder(int map_no, CScene *scene, int texb, mgCMemory *memory) {
     mgTexManager.DeleteBlock(texb);
     mgTexManager.EnterIMGFile(image, FirePowderTexb, NULL, NULL);
 
-    if ((created = (mgC3DSprite *) operator new(sizeof(mgC3DSprite), memory->Alloc(7))) != NULL) {
-        ((void ***) created)[7] = __vt__9mgCVisual;
-        created->Initialize();
-        *(void ***) ((u_int) created + 0x1C) = __vt__11mgC3DSprite;
-        created->Initialize();
-    }
+    created = new ((u_long128 *) memory->Alloc(7)) mgC3DSprite;
 
     SpriteVis = created;
     fire_powder = new ((u_long128 *) memory->Alloc(0x202)) FirePowder[FIRE_POWDER_NUM];
@@ -378,6 +372,9 @@ void InitFirePowder(int map_no, CScene *scene, int texb, mgCMemory *memory) {
         particle->fall_speed = -(0.1f + 0.5f * mgRnd());
     }
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/editexception", InitFirePowder__FiP6CSceneiP9mgCMemory);
+#endif
 
 void StepFirePowder(CScene *scene) {
     if (!FirePowderFlag) {

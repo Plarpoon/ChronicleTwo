@@ -495,7 +495,6 @@ extern char               at_5561[];
 extern char               at_5839[];
 extern char               at_5893[];
 extern int                tbl_5848[];
-extern void              *__vt__12CMosBookMenu[];
 extern CDC2Mes           *MenuDCMsg[9];
 extern MemoryList         at_1083__2;
 extern char               at_1104__4[];
@@ -542,7 +541,6 @@ extern char               at_1284__4[];
 extern char               at_1285__2[];
 extern char              *tbl_1233[4];
 extern u32               *MenuCharaChangeCLUT;
-extern void              *__vt__14CMenuMosSelect[];
 extern int                tbl_3186[MENU_CHARA_LOAD_MAX];
 extern sceVu0FVECTOR      posdef_3194;
 extern sceVu0FVECTOR      refdef_3195;
@@ -751,7 +749,6 @@ union MenuPositionVector {
 extern MenuPositionVector at_1372__2;
 extern char               at_1402__3[];
 extern CMenuChrCngMenu   *ChrChangMenuPt;
-extern void              *__vt__15CMenuChrCngMenu[];
 extern int                MenuCharaChangePosDataCfgBuffer;
 extern int                tbl_2483[];
 extern char               at_2595__2[];
@@ -6567,7 +6564,6 @@ void CMenuCostumeSel::Draw() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", Draw__15CMenuCostumeSelFv);
 #endif
-extern void  *__vt__15CMenuCostumeSel[];
 extern u_long CostumeOptionEnv;
 #ifdef NONMATCHING
 void MenuCostumeInit(mgCMemory *stack, int *tex_block, int mode) {

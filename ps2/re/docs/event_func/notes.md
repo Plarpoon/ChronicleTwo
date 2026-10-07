@@ -6,7 +6,7 @@ C++ draft matches in the all-drafts object, but an isolated promotion still sche
 incoming/outgoing branch differently and grows the function from 0x158 to 0x15C. The matching
 build uses the retail assembly gap while the draft remains under `NONMATCHING`.
 
-The 51 decompiled functions in this unit compile to exact retail instruction matches. `CEoh`'s five
+Several decompiled functions in this unit compile to exact retail instruction matches. `CEoh`'s five
 typed pointer names occupy the same union word; its constructor clears each alias in succession.
 `CRaster::Initialize` clears the effect values in retail store order and sets `frames` to -1.
 `CScreenEffect::Initialize` clears the three effect modes and their textures. `SetSepiaFlag`
@@ -192,7 +192,19 @@ this particle type, switch to it.
 - `CommandStreamOpen2` builds the path but never opens it (retail behaviour).
 # Native event object construction
 
-`_COPY_CHARA` and `_COPY_MONS2SCNCHR` allocate a `CCharacter2` in a scene stack, then copy the source character or monster into the new slot. Native placement construction performs the base object setup, vtable installation, shadow matching reset, and character initialization represented by the retail sequence. `_ESM_INITIALIZE` similarly creates `CEffectScriptMan` in the event stack; its sprite and manager constructors perform the two initialization steps that were formerly written through vtable symbols. The `_ESM_INITIALIZE` C++ body remains behind `NONMATCHING`, so the PAL build uses its assembly body.
+`_COPY_CHARA` and `_COPY_MONS2SCNCHR` allocate a `CCharacter2` in a scene stack,
+then copy the source character or monster into the new slot. Their C++ bodies
+use typed placement construction for the base and character initialization.
+`_ESM_INITIALIZE` similarly constructs `CEffectScriptMan` in the event stack;
+its member constructors initialize the sprite and manager. All three remain
+`NONMATCHING` drafts with retail `INCLUDE_ASM` bodies. The retail
+`_COPY_MONS2SCNCHR` body calls the compiler-generated `CObject` copy constructor,
+which is also supplied as an assembly gap immediately after it. The natural
+C++ draft emits the constructor at retail's 0xC8-byte size but differs at
+placement-new's null branch: retail tests `v0` before moving the allocation
+result to `s3` in the delay slot, whereas MWCC moves it first and then tests
+`s3`. Value initialization, staged allocation, reference binding, volatile
+storage, and alternate assignment forms did not match that branch schedule.
 ## Pending code matches
 
 `_CHK_INTERSECTION_POINT` tests a segment against event collision polygons. An optional
@@ -203,13 +215,8 @@ the first hit's details. Both native C++ functions pass the full linked-image co
 Their polygon selection uses array indexing through the collision polygon cursor; indexing
 from the original local array changes MWCC register allocation and no longer matches.
 
-`LoadMovie` and `_COPY_MONS2SCNCHR` retain C++ drafts under `NONMATCHING`. Their compiled code
-differs from retail, so the default build uses the retail function gaps. The copy command also
-requires the compiler-generated `CObject` copy constructor immediately after it in text.
-Forcing an implicit copy through a separate native C++ use at inline depth zero emits
-`__ct__7CObjectFRC7CObject`, but its 0x78-byte body calls the implicit
-`mgCObject` copy constructor. Retail's 0xD0-byte body copies the base transform
-fields inline before the derived fields. Inline depths of one or more inline
-the `CObject` copy at its use instead and emit no separate constructor.
-Matching the retail helper therefore depends on the base class copy semantics;
-the assembly gap stays active while that shared type remains unchanged.
+`LoadMovie`, `_COPY_CHARA`, `_ESM_INITIALIZE`, and `_COPY_MONS2SCNCHR` retain
+C++ drafts under `NONMATCHING`. The default build uses retail assembly for
+these functions until their C++ object scores reach zero. The copy constructor
+gap is required while `_COPY_MONS2SCNCHR` uses retail assembly, since no active
+C++ use otherwise causes MWCC to emit that constructor.

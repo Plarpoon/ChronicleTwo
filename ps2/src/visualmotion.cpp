@@ -848,60 +848,6 @@ int mgCVisualMotionMDT::CreateBBox(float *box_max, float *box_min, float (*matri
     return 1;
 }
 
-extern void *__vt__9mgCVisual[];
-extern void *__vt__12mgCVisualMDT[];
-extern void *__vt__15mgCVisualFixMDT[];
-extern void *__vt__18mgCVisualMotionMDT[];
-
-/**
- *
- * Fields copied while duplicating a motion visual.
- *
- */
-struct MotionCopyFields {
-    u_char      unk_0[0x1C];
-    void      **vptr; /**< Virtual method table pointer. */
-    u_char      unk_20[0x24];
-    mgMaterial *material; /**< Material table of the copied visual. */
-    u_char      unk_48[0x8];
-    mgCFrame  **frame;          /**< Frames of the visual. */
-    int         frame_id;       /**< Frame number of the visual. */
-    float (*base_matrix)[4][4]; /**< Base matrices of the frames. */
-    u_char          unk_5c[4];
-    mgVu0FBOX       base_box;   /**< Bounds of the visual. */
-    int             bone[32];   /**< Bone indices. */
-    int             weight_num; /**< Number of vertex weights. */
-    mgVertexWeight *weight;     /**< Vertex weights. */
-};
-
-/**
- *
- * Base storage of a motion visual used during copying.
- *
- */
-struct MotionMDTBase {
-    u_char unk_0[0x1C];
-};
-
-/**
- *
- * Virtual interface used to initialize a copied motion visual.
- *
- */
-struct MotionMDTVirtual : MotionMDTBase {
-    virtual void v0();
-    virtual void v1();
-    virtual void v2();
-    virtual void v3();
-    virtual void v4();
-    virtual void v5();
-    virtual void v6();
-    virtual void v7();
-    virtual void v8();
-    virtual void v9();
-    virtual void Initialize();
-};
-
 /**
  *
  * Four colour components copied with a motion visual.
@@ -920,59 +866,7 @@ struct MotionWeightSlots {
     int slot[4][8]; /**< Weight slot indices. */
 };
 
-mgCVisual *mgCVisualMotionMDT::Copy(mgCMemory *memory) {
-    MotionCopyFields *copy;
-
-    if ((copy = (MotionCopyFields *) operator new(0x110, memory->Alloc(0x13))) != NULL) {
-        copy->vptr = __vt__9mgCVisual;
-        ((MotionMDTVirtual *) copy)->Initialize();
-        copy->vptr = __vt__12mgCVisualMDT;
-        ((MotionMDTVirtual *) copy)->Initialize();
-        copy->vptr = __vt__15mgCVisualFixMDT;
-        ((MotionMDTVirtual *) copy)->Initialize();
-        copy->vptr = __vt__18mgCVisualMotionMDT;
-        ((MotionMDTVirtual *) copy)->Initialize();
-    }
-
-    if (copy == NULL) {
-        return NULL;
-    }
-
-    ((mgCVisualMDT *) copy)->operator=(*this);
-    copy->frame = frame;
-    copy->frame_id = frame_id;
-    copy->base_matrix = base_matrix;
-    copy->base_box = base_box;
-    int i;
-    *(MotionWeightSlots *) copy->bone = *(MotionWeightSlots *) bone;
-    copy->weight_num = weight_num;
-    copy->weight = weight;
-    int count = material_num;
-    i = 0;
-
-    if (count > 0) {
-        u_int bytes = count * 0x30;
-        u_int quads = (bytes & 0xF) ? (bytes >> 4) + 1 : bytes >> 4;
-        ((mgCVisualMDT *) copy)->material = new (memory->Alloc(quads + 2)) mgMaterial[material_num];
-        i = 0;
-    }
-
-    mgMaterial *dst;
-    mgMaterial *src;
-    int         material_index = 0;
-
-    while (i < material_num) {
-        src = &material[material_index];
-        dst = &copy->material[material_index];
-        i++;
-        material_index++;
-        *(MotionColor *) dst->diffuse = *(MotionColor *) src->diffuse;
-        *(MotionColor *) dst->unk_10 = *(MotionColor *) src->unk_10;
-        dst->texture = src->texture;
-    }
-
-    return (mgCVisual *) copy;
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/visualmotion", Copy__18mgCVisualMotionMDTFP9mgCMemory);
 
 int mgCVisualMotionMDT::Iam() {
     return 3;

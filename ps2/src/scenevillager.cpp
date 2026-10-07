@@ -274,33 +274,28 @@ int CScene::DrawChara(int index, int pass) {
     mgActiveLighting(prev_lighting, 0);
     return 1;
 }
-#ifdef NONMATCHING
+static inline float ShadowAbs(float value) {
+    if (value < 0.0f) {
+        return -value;
+    }
+    return value;
+}
 int CScene::DrawCharaShadow(int index) {
-    float        light_dir[4][4];
-    float        light_color[4][4];
-    float        direction[4];
-    float        position[4];
-    float        color[4];
+    float light_dir[4][4];
+    float light_color[4][4];
     CCharacter2 *chara = GetCharacter(index);
 
     if (chara == NULL) {
         return 0;
     }
     mgGetLight(light_dir, light_color);
-    *(u_long128 *) direction = *(u_long128 *) at_988__3;
-    direction[0] = light_dir[0][0];
-    direction[1] = light_dir[1][0];
-    direction[2] = light_dir[2][0];
-    float height = direction[1];
-    if (height < 0.0f) {
-        height = -height;
-    }
-    direction[1] = height;
-    if (height < 0.8f) {
+    float direction[4] = {light_dir[0][0], light_dir[1][0], light_dir[2][0], 0.0f};
+    direction[1] = ShadowAbs(direction[1]);
+    if (direction[1] < 0.8f) {
         direction[1] = 0.8f;
     }
-    *(u_long128 *) position = *(u_long128 *) at_991__4;
-    *(u_long128 *) color = *(u_long128 *) at_992__3;
+    float position[4] = {0.0f, -10.0f, 0.0f, 0.0f};
+    float color[4] = {0.0f, 1.0f, 0.0f, 0.0f};
     if (CheckDrawCharaShadow(index) == 0) {
         return 0;
     }
@@ -310,9 +305,6 @@ int CScene::DrawCharaShadow(int index) {
     chara->DrawShadowDirect();
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenevillager", DrawCharaShadow__6CSceneFi);
-#endif
 void CScene::DrawExclamationMark(mgCFrame *frame) {
     float position[4];
     int   index;
@@ -578,6 +570,7 @@ int GetObjectNameList(char *names, CCharacter2 *chara, mgCFrame **frames, int ma
 
     return count;
 }
+
 
 void CScene::CharaObjectOnOff(int index, mgCMemory *memory) {
     mgCFrame        *frames[16];
@@ -1451,34 +1444,29 @@ int CScene::GetGameObjectEvent(float *position, CSceneEventData *event) {
 
 void CScene::DrawGameObject(int now_map_no) {
     GAMEOBJ_INFO *entry;
-    CCharacter2  *first;
-    CCharacter2  *second;
-    int           i;
-    float         first_point[4];
-    float         second_point[4];
-
+    CCharacter2 *first;
+    CCharacter2 *second;
+    int i;
+    int offset;
+    float first_point[4];
+    float second_point[4];
     if (active_map != 0) {
         return;
     }
-
-    entry = (GAMEOBJ_INFO *) GameObjInfo;
-
+    entry = (GAMEOBJ_INFO *)GameObjInfo;
     for (;;) {
         if (entry->map_no < 0) {
             break;
         }
-
         if (entry->map_no == now_map_no) {
             first = NULL;
             second = NULL;
-
             switch (entry->type) {
                 case 3:
                     if (IsActive(1, SCENE_GAMEOBJ_SLOT_SAVEPOINT) != 0 && IsActive(1, SCENE_GAMEOBJ_SLOT_BOOK) != 0) {
                         first = GetCharacter(SCENE_GAMEOBJ_SLOT_SAVEPOINT);
                         second = GetCharacter(SCENE_GAMEOBJ_SLOT_BOOK);
                     }
-
                     break;
                 case 1:
                 case 2:
@@ -1486,36 +1474,31 @@ void CScene::DrawGameObject(int now_map_no) {
                         first = GetCharacter(SCENE_GAMEOBJ_SLOT_TG);
                         second = GetCharacter(SCENE_GAMEOBJ_SLOT_TG_BASE);
                     }
-
                     break;
             }
+            for (i = 0, offset = 0; i < entry->place_num; offset += 0x10, i++) {
 
-            for (i = 0; i < entry->place_num; i++) {
-                GAMEOBJ_PLACE *place = &entry->place[i];
-                u_long128      point_copy = *(u_long128 *) place;
-                *(u_long128 *) first_point = point_copy;
+                u8 *base = (u8 *)entry + offset;
+                u_long128 point_copy = *(u_long128 *)(base + 0x10);
+                *(u_long128 *)first_point = point_copy;
                 first_point[3] = 1.0f;
-                *(u_long128 *) second_point = *(u_long128 *) place;
+                *(u_long128 *)second_point = *(u_long128 *)(base + 0x10);
                 second_point[3] = 1.0f;
-
                 if (entry->type == 1 || entry->type == 2) {
                     first_point[1] += 60.0f;
                 }
-
                 if (second != NULL) {
                     second->SetPosition(second_point);
-                    second->SetRotation(0.0f, place->rot_y, 0.0f);
+                    second->SetRotation(0.0f, *(float *)(base + 0x1C), 0.0f);
                     second->DrawDirect();
                 }
-
                 if (first != NULL) {
                     first->SetPosition(first_point);
-                    first->SetRotation(0.0f, place->rot_y, 0.0f);
+                    first->SetRotation(0.0f, *(float *)(base + 0x1C), 0.0f);
                     first->DrawDirect();
                 }
             }
         }
-
         entry++;
     }
 }

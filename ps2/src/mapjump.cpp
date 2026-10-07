@@ -433,7 +433,7 @@ void SetInteriorDoorPos(CScene *scene) {
     map->func_point.GetStart(FUNC_POINT_EVENT);
 
     while ((point = map->func_point.Get()) != NULL) {
-        if ((point->event.flag & FUNC_EVENT_DOOR) && strcmp(door_name, point->event.unk_38) == 0) {
+        if ((point->event.flag & FUNC_EVENT_DOOR) && strcmp(door_name, point->event.target) == 0) {
             sceVu0FVECTOR position;
             sceVu0FVECTOR rotation;
             *(u_long128 *) position = *(u_long128 *) point->position;

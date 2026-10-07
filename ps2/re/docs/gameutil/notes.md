@@ -112,3 +112,10 @@ At least 0x110 here (larger than the first game's 0xD0): 0x00 float radius (<=0 
 ## Division-check pragma
 
 The unit-level `divbyzerocheck` pragma was redundant with the global MWCC flag; removing it left the full compiled object identical in objdiff.
+
+## Assembly gaps
+
+`testVUnew`, `MotionProc2`, `CheckHit(CollisionInfo*, ...)`, and
+`CheckHits(CollisionInfo*, ...)` retain C++ drafts under `NONMATCHING` and use
+`INCLUDE_ASM` in retail builds. Their promoted versions contained VU0 assembly
+inside C++ functions, so those promotions do not meet the source matching rule.

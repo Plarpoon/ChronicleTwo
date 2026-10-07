@@ -632,6 +632,7 @@ void AnalyzeHeim(CEditData *data, CEditMap *map) {
     data->Analize(3, condition, target);
 }
 #ifdef NONMATCHING
+
 void AnalyzeMoonFlower(CEditData *data, CEditMap *map) {
     int   condition[analyze_slots];
     int   target[analyze_slots];

@@ -152,6 +152,11 @@ static void SetObjectBind(FISH_BIND &bind, FISH_POINT &first, FISH_POINT &second
 }
 #endif
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 void SetFishingMode(int value) {
     NowMode = value;
@@ -340,43 +345,35 @@ void InitRodPoint(mgCFrame *reference, mgCFrame *rod) {
     ShowHari = 1;
 }
 
-static void GetTriPose(sceVu0FMATRIX pose, sceVu0FVECTOR points[3], int axes[3]);
-#ifdef NONMATCHING
-/**
- *
- * Constructs oriented axes from a triangle and signed axis selections.
- *
- */
 static void GetTriPose(sceVu0FMATRIX pose, sceVu0FVECTOR points[3], int axes[3]) {
-    sceVu0FVECTOR vertices[3];
-    memcpy(vertices, points, sizeof(vertices));
-
-    int first = fptosi((float) (axes[0] < 0 ? -axes[0] : axes[0]));
-    int second = fptosi((float) (axes[1] < 0 ? -axes[1] : axes[1]));
-    int third = fptosi((float) (axes[2] < 0 ? -axes[2] : axes[2]));
-
-    sceVu0SubVector(pose[first], vertices[1], vertices[0]);
-    sceVu0Normalize(pose[first], pose[first]);
-    mgPlaneNormal(pose[third], vertices[0], vertices[1], vertices[2]);
-    sceVu0Normalize(pose[third], pose[third]);
-    sceVu0OuterProduct(pose[second], pose[third], pose[first]);
-    sceVu0Normalize(pose[0], pose[0]);
-    sceVu0Normalize(pose[1], pose[1]);
-    sceVu0Normalize(pose[2], pose[2]);
-
-    if (axes[0] < 0) {
-        sceVu0ScaleVector(pose[first], pose[first], -1.0f);
-    }
-    if (axes[1] < 0) {
-        sceVu0ScaleVector(pose[second], pose[second], -1.0f);
-    }
-    if (axes[2] < 0) {
-        sceVu0ScaleVector(pose[third], pose[third], -1.0f);
-    }
+    float first[4];
+    float second[4];
+    float third[4];
+    *(u_long128 *)first = *(u_long128 *)points[0];
+    *(u_long128 *)second = *(u_long128 *)points[1];
+    *(u_long128 *)third = *(u_long128 *)points[2];
+    float (*matrix)[4] = pose;
+    float first_value = (float)axes[0];
+    first_value = first_value < 0.0f ? -first_value : first_value;
+    int first_axis = (int)first_value;
+    float second_value = (float)axes[1];
+    second_value = second_value < 0.0f ? -second_value : second_value;
+    int second_axis = (int)second_value;
+    float normal_value = (float)axes[2];
+    normal_value = normal_value < 0.0f ? -normal_value : normal_value;
+    int normal_axis = (int)normal_value;
+    sceVu0SubVector(matrix[first_axis], second, first);
+    sceVu0Normalize(matrix[first_axis], matrix[first_axis]);
+    mgPlaneNormal(matrix[normal_axis], first, second, third);
+    sceVu0Normalize(matrix[normal_axis], matrix[normal_axis]);
+    sceVu0OuterProduct(matrix[second_axis], matrix[normal_axis], matrix[first_axis]);
+    sceVu0Normalize(matrix[0], matrix[0]);
+    sceVu0Normalize(matrix[1], matrix[1]);
+    sceVu0Normalize(matrix[2], matrix[2]);
+    if (axes[0] < 0) sceVu0ScaleVector(matrix[first_axis], matrix[first_axis], -1.0f);
+    if (axes[1] < 0) sceVu0ScaleVector(matrix[second_axis], matrix[second_axis], -1.0f);
+    if (axes[2] < 0) sceVu0ScaleVector(matrix[normal_axis], matrix[normal_axis], -1.0f);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", GetTriPose__FPA4_fPA4_fPi);
-#endif
 void GetHariPos(float *pos, float *old_pos) {
     *(u_long128 *) pos = *(u_long128 *) LinePoint[kLinePointNum - 1].pos;
     *(u_long128 *) old_pos = *(u_long128 *) LinePoint[kLinePointNum - 1].old_pos;
@@ -786,26 +783,28 @@ static void BindFishObj() {
     }
 }
 #ifdef NONMATCHING
+
 void RodStep(CScene *scene, u_long128 *poly_buffer) {
-    CCPoly       *polys = (CCPoly *) poly_buffer;
-    CFishObj     *hari = GetActiveHariObj();
-    CFishObj     *uki = GetActiveUkiObj();
+    sceVu0FVECTOR forward;
+    float remaining;
+    CCPoly *polys = (CCPoly *)poly_buffer;
+    CFishObj *hari = GetActiveHariObj();
+    CFishObj *uki = GetActiveUkiObj();
     sceVu0FVECTOR frame_pos;
     SaoFrame[0]->GetWorldPosition0(frame_pos);
-    *(u_long128 *) ((RodPoint + 0)) = *(u_long128 *) (frame_pos);
-    *(u_long128 *) ((RodPoint + 4)) = *(u_long128 *) (frame_pos);
+    *(u_long128 *)((RodPoint + 0)) = *(u_long128 *)(frame_pos);
+    *(u_long128 *)((RodPoint + 4)) = *(u_long128 *)(frame_pos);
     mgZeroVector((RodPoint + 8));
     SaoFrame[1]->GetWorldPosition0(frame_pos);
-    *(u_long128 *) ((RodPoint + 12)) = *(u_long128 *) (frame_pos);
-    *(u_long128 *) ((RodPoint + 16)) = *(u_long128 *) (frame_pos);
+    *(u_long128 *)((RodPoint + 12)) = *(u_long128 *)(frame_pos);
+    *(u_long128 *)((RodPoint + 16)) = *(u_long128 *)(frame_pos);
     mgZeroVector((RodPoint + 20));
-
     if (CastingLureFlag != 0) {
         FlyingPoint.velo[1] -= 0.6f;
-        float         cast_distance = mgDistVectorXZ(ReleasePoint, CastingPoint);
-        float         flown_distance = mgDistVectorXZ(ReleasePoint, FlyingPoint.pos);
+        float cast_distance = mgDistVectorXZ(ReleasePoint, CastingPoint);
+        float flown_distance = mgDistVectorXZ(ReleasePoint, FlyingPoint.pos);
         sceVu0FVECTOR flight_step;
-        *(u_long128 *) (flight_step) = *(u_long128 *) (FlyingPoint.velo);
+        *(u_long128 *)(flight_step) = *(u_long128 *)(FlyingPoint.velo);
         if (cast_distance * 0.8f < flown_distance) {
             float scale = (cast_distance - flown_distance) / (cast_distance * 0.2f);
             flight_step[0] *= scale;
@@ -824,7 +823,7 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
                 mgAddVector(LinePoint[i].velo, pull);
             }
         }
-        float remaining = mgDistVectorXZ(CastingPoint, FlyingPoint.pos);
+        remaining = mgDistVectorXZ(CastingPoint, FlyingPoint.pos);
         if (remaining < mgDistVectorXZ(flight_step)) {
             flight_step[0] = 0.0f;
             flight_step[2] = 0.0f;
@@ -834,24 +833,23 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
             FlyingPoint.pos[2] = CastingPoint[2];
         }
         mgAddVector(FlyingPoint.pos, flight_step);
-        *(u_long128 *) (LinePoint[63].pos) = *(u_long128 *) (FlyingPoint.pos);
-        *(u_long128 *) (LinePoint[63].old_pos) = *(u_long128 *) (FlyingPoint.pos);
+        *(u_long128 *)(LinePoint[63].pos) = *(u_long128 *)(FlyingPoint.pos);
+        *(u_long128 *)(LinePoint[63].old_pos) = *(u_long128 *)(FlyingPoint.pos);
         mgZeroVector(LinePoint[63].velo);
         --CastingLureTime;
     }
-
     for (int i = 2; i < 5; i++) {
-        *(u_long128 *) (((FISH_POINT *) RodPoint)[i].old_pos) = *(u_long128 *) (((FISH_POINT *) RodPoint)[i].pos);
+        *(u_long128 *)(((FISH_POINT *)RodPoint)[i].old_pos) = *(u_long128 *)(((FISH_POINT *)RodPoint)[i].pos);
         if (BattleFlag == 0) {
-            mgAddVector(((FISH_POINT *) RodPoint)[i].pos, ((FISH_POINT *) RodPoint)[i].velo);
+            mgAddVector(((FISH_POINT *)RodPoint)[i].pos, ((FISH_POINT *)RodPoint)[i].velo);
         }
     }
     mgVu0FBOX line_box;
-    *(u_long128 *) (line_box.max) = *(u_long128 *) (LinePoint[LineTop].pos);
-    *(u_long128 *) (line_box.min) = *(u_long128 *) (LinePoint[LineTop].pos);
+    *(u_long128 *)(line_box.max) = *(u_long128 *)(LinePoint[LineTop].pos);
+    *(u_long128 *)(line_box.min) = *(u_long128 *)(LinePoint[LineTop].pos);
     for (int i = LineTop; i < 64; i++) {
         FISH_POINT &point = LinePoint[i];
-        *(u_long128 *) (point.old_pos) = *(u_long128 *) (point.pos);
+        *(u_long128 *)(point.old_pos) = *(u_long128 *)(point.pos);
         mgAddVector(point.pos, point.velo);
         point.pos[1] -= 0.36f;
         mgVectorMaxMin(line_box.max, line_box.min, line_box.max, line_box.min, point.pos);
@@ -860,8 +858,6 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
     if (uki != 0) {
         uki->MovePoint();
     }
-
-    // Keep the rod's four moving masses spaced between its fixed joints and tip.
     for (int pass = 0; pass < 2; pass++) {
         if (BattleFlag != 0) {
             BindPosition((RodPoint + kRodTipIndex), FishPoint.pos, BattleLineDist, 0.2f);
@@ -873,40 +869,40 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
             sceVu0FVECTOR half_across;
             sceVu0FVECTOR segment;
             sceVu0FVECTOR bend;
-            sceVu0SubVector(across, ((FISH_POINT *) RodPoint)[i + 1].pos, ((FISH_POINT *) RodPoint)[i - 1].pos);
+            sceVu0SubVector(across, ((FISH_POINT *)RodPoint)[i + 1].pos, ((FISH_POINT *)RodPoint)[i - 1].pos);
             sceVu0ScaleVector(half_across, across, 0.5f);
-            sceVu0SubVector(segment, ((FISH_POINT *) RodPoint)[i].pos, ((FISH_POINT *) RodPoint)[i - 1].pos);
+            sceVu0SubVector(segment, ((FISH_POINT *)RodPoint)[i].pos, ((FISH_POINT *)RodPoint)[i - 1].pos);
             sceVu0SubVector(bend, half_across, segment);
             sceVu0ScaleVector(bend, bend, RodPointDist[i - 1].damping);
             mgAddVector(segment, bend);
             sceVu0Normalize(segment, segment);
             sceVu0ScaleVector(segment, segment, RodPointDist[i - 1].length);
-            sceVu0AddVector(((FISH_POINT *) RodPoint)[i].pos, ((FISH_POINT *) RodPoint)[i - 1].pos, segment);
+            sceVu0AddVector(((FISH_POINT *)RodPoint)[i].pos, ((FISH_POINT *)RodPoint)[i - 1].pos, segment);
         }
         for (int i = 1; i < 4; i++) {
             sceVu0FVECTOR direction;
             sceVu0FVECTOR desired;
             sceVu0FVECTOR actual;
             sceVu0FVECTOR error;
-            sceVu0SubVector(direction, ((FISH_POINT *) RodPoint)[i].pos, ((FISH_POINT *) RodPoint)[i - 1].pos);
+            sceVu0SubVector(direction, ((FISH_POINT *)RodPoint)[i].pos, ((FISH_POINT *)RodPoint)[i - 1].pos);
             sceVu0Normalize(direction, direction);
             sceVu0ScaleVector(desired, direction, RodPointDist[i].length);
-            sceVu0SubVector(actual, ((FISH_POINT *) RodPoint)[i + 1].pos, ((FISH_POINT *) RodPoint)[i].pos);
+            sceVu0SubVector(actual, ((FISH_POINT *)RodPoint)[i + 1].pos, ((FISH_POINT *)RodPoint)[i].pos);
             sceVu0SubVector(error, desired, actual);
             sceVu0ScaleVector(error, error, RodPointDist[i].stiffness);
             mgAddVector(actual, error);
             sceVu0Normalize(actual, actual);
             sceVu0ScaleVector(actual, actual, RodPointDist[i].length);
-            sceVu0AddVector(((FISH_POINT *) RodPoint)[i + 1].pos, ((FISH_POINT *) RodPoint)[i].pos, actual);
+            sceVu0AddVector(((FISH_POINT *)RodPoint)[i + 1].pos, ((FISH_POINT *)RodPoint)[i].pos, actual);
         }
     }
     if (BattleFlag != 0) {
         for (int pass = 0; pass < 4; pass++) {
-            *(u_long128 *) (hari->point[0].pos) = *(u_long128 *) (FishPoint.pos);
-            *(u_long128 *) (hari->point[0].old_pos) = *(u_long128 *) (FishPoint.pos);
+            *(u_long128 *)(hari->point[0].pos) = *(u_long128 *)(FishPoint.pos);
+            *(u_long128 *)(hari->point[0].old_pos) = *(u_long128 *)(FishPoint.pos);
             mgZeroVector(hari->point[0].velo);
-            *(u_long128 *) (LinePoint[63].pos) = *(u_long128 *) (FishPoint.pos);
-            *(u_long128 *) (LinePoint[63].old_pos) = *(u_long128 *) (FishPoint.pos);
+            *(u_long128 *)(LinePoint[63].pos) = *(u_long128 *)(FishPoint.pos);
+            *(u_long128 *)(LinePoint[63].old_pos) = *(u_long128 *)(FishPoint.pos);
             mgZeroVector(LinePoint[63].velo);
             hari->BindStep();
             if (uki != 0) {
@@ -915,52 +911,49 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
                 sceVu0Normalize(float_pos, float_pos);
                 sceVu0ScaleVector(float_pos, float_pos, 15.0f);
                 sceVu0SubVector(float_pos, FishPoint.pos, float_pos);
-                *(u_long128 *) (LinePoint[60].pos) = *(u_long128 *) (float_pos);
-                *(u_long128 *) (LinePoint[60].old_pos) = *(u_long128 *) (float_pos);
+                *(u_long128 *)(LinePoint[60].pos) = *(u_long128 *)(float_pos);
+                *(u_long128 *)(LinePoint[60].old_pos) = *(u_long128 *)(float_pos);
                 mgZeroVector(LinePoint[60].velo);
-                *(u_long128 *) (uki->point[0].pos) = *(u_long128 *) (float_pos);
-                *(u_long128 *) (uki->point[0].old_pos) = *(u_long128 *) (float_pos);
+                *(u_long128 *)(uki->point[0].pos) = *(u_long128 *)(float_pos);
+                *(u_long128 *)(uki->point[0].old_pos) = *(u_long128 *)(float_pos);
                 mgZeroVector(uki->point[0].velo);
                 uki->BindStep();
             }
         }
     } else {
         FISH_POINT *top = &LinePoint[LineTop];
-        *(u_long128 *) top->pos = *(u_long128 *) (RodPoint + kRodTipIndex);
-        *(u_long128 *) top->old_pos = *(u_long128 *) (RodPoint + kRodTipIndex);
+        *(u_long128 *)top->pos = *(u_long128 *)(RodPoint + kRodTipIndex);
+        *(u_long128 *)top->old_pos = *(u_long128 *)(RodPoint + kRodTipIndex);
         mgZeroVector(top->velo);
         BindFishObj();
     }
     for (int i = 1; i < 5; i++) {
-        sceVu0SubVector(((FISH_POINT *) RodPoint)[i].velo, ((FISH_POINT *) RodPoint)[i].pos, ((FISH_POINT *) RodPoint)[i].old_pos);
-        sceVu0ScaleVector(((FISH_POINT *) RodPoint)[i].velo, ((FISH_POINT *) RodPoint)[i].velo, 0.6f);
-        ((FISH_POINT *) RodPoint)[i].velo[1] += -0.6f;
-        ((FISH_POINT *) RodPoint)[i].pos[3] = 1.0f;
+        sceVu0SubVector(((FISH_POINT *)RodPoint)[i].velo, ((FISH_POINT *)RodPoint)[i].pos, ((FISH_POINT *)RodPoint)[i].old_pos);
+        sceVu0ScaleVector(((FISH_POINT *)RodPoint)[i].velo, ((FISH_POINT *)RodPoint)[i].velo, 0.6f);
+        ((FISH_POINT *)RodPoint)[i].velo[1] += -0.6f;
+        ((FISH_POINT *)RodPoint)[i].pos[3] = 1.0f;
     }
-
-    // Move the model's seven flexible rod joints along the solved rod curve.
     sceVu0FVECTOR curve[5];
-    *(u_long128 *) curve[0] = *(u_long128 *) (RodPoint + 0);
-    *(u_long128 *) curve[1] = *(u_long128 *) (RodPoint + 12);
-    *(u_long128 *) curve[2] = *(u_long128 *) (RodPoint + 24);
-    *(u_long128 *) curve[3] = *(u_long128 *) (RodPoint + 36);
-    *(u_long128 *) curve[4] = *(u_long128 *) (RodPoint + 48);
+    *(u_long128 *)curve[0] = *(u_long128 *)(RodPoint + 0);
+    *(u_long128 *)curve[1] = *(u_long128 *)(RodPoint + 12);
+    *(u_long128 *)curve[2] = *(u_long128 *)(RodPoint + 24);
+    *(u_long128 *)curve[3] = *(u_long128 *)(RodPoint + 36);
+    *(u_long128 *)curve[4] = *(u_long128 *)(RodPoint + 48);
     for (int i = 1; i < 8; i++) {
-        mgCFrame    **joint = &SaoFrame[i];
+        mgCFrame **joint = &SaoFrame[i];
         sceVu0FMATRIX joint_matrix;
         sceVu0FMATRIX parent_world;
         sceVu0FMATRIX parent_inverse;
-        sceVu0FVECTOR forward;
         sceVu0FVECTOR before;
         sceVu0FVECTOR after;
         sceVu0CopyMatrix(joint_matrix, (*joint)->trans_matrix);
         (*joint)->parent->GetLWMatrix(parent_world);
         mgInversMatrix(parent_inverse, parent_world);
         sceVu0CopyMatrix(parent_world, (*joint)->parent->trans_matrix);
-        float fraction = SaoDist[i] / SaoDist[7];
+        float fraction = 0.99f * (SaoDist[i] / SaoDist[7]);
         ParaBlend(before, 0.99f * (SaoDist[i - 1] / SaoDist[7]), curve, 5);
         before[3] = 1.0f;
-        ParaBlend(after, 0.99f * fraction, curve, 5);
+        ParaBlend(after, fraction, curve, 5);
         sceVu0SubVector(forward, after, before);
         forward[3] = 0.0f;
         sceVu0ApplyMatrix(joint_matrix[0], parent_inverse, forward);
@@ -974,14 +967,9 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
         sceVu0Normalize(joint_matrix[2], joint_matrix[2]);
         (*joint)->SetTransMatrix(joint_matrix);
     }
-
-    for (int axis = 0; axis < 3; axis++) {
-        line_box.max[axis] += 20.0f;
-    }
+    for (int axis = 0; axis < 3; axis++) line_box.max[axis] += 20.0f;
     line_box.max[3] = 1.0f;
-    for (int axis = 0; axis < 3; axis++) {
-        line_box.min[axis] -= 20.0f;
-    }
+    for (int axis = 0; axis < 3; axis++) line_box.min[axis] -= 20.0f;
     line_box.min[3] = 1.0f;
     int poly_count = scene->GetColPoly(polys, line_box, 1024);
     for (int i = 0; i < poly_count; i++) {
@@ -991,21 +979,17 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
     }
     for (int i = LineTop; i < 64; i++) {
         float damping = 0.95f;
-        int   previous = i - 1;
-        if (previous < LineTop) {
-            previous = LineTop;
-        }
+        int previous = i - 1;
+        if (previous < LineTop) previous = LineTop;
         int following = i + 1;
-        if (following >= 64) {
-            following = 63;
-        }
+        if (following >= 64) following = 63;
         sceVu0FVECTOR from;
         sceVu0FVECTOR to;
         sceVu0FVECTOR hit;
-        float         heights[3];
-        u_long128     position = *(u_long128 *) LinePoint[i].pos;
-        *(u_long128 *) from = position;
-        *(u_long128 *) to = position;
+        float heights[3];
+        u_long128 position = *(u_long128 *)LinePoint[i].pos;
+        *(u_long128 *)from = position;
+        *(u_long128 *)to = position;
         heights[0] = LinePoint[i].pos[1];
         heights[1] = LinePoint[previous].pos[1];
         heights[2] = LinePoint[following].pos[1];
@@ -1024,11 +1008,8 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
         to[1] -= 1.0f;
         if (CheckHit(polys, poly_count, from, to, hit, 1, 9) >= 0 && !(1.0f + hit[1] < LinePoint[i].pos[1])) {
             LinePoint[i].pos[1] += 0.4f * (hit[1] + 1.0f - LinePoint[i].pos[1]);
-            if (i == 63) {
-                damping *= 0.05f;
-            } else {
-                damping *= 0.1f;
-            }
+            if (i == 63) damping *= 0.05f;
+            else damping *= 0.1f;
         }
         sceVu0SubVector(LinePoint[i].velo, LinePoint[i].pos, LinePoint[i].old_pos);
         sceVu0ScaleVector(LinePoint[i].velo, LinePoint[i].velo, damping);
@@ -1037,7 +1018,7 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
         EndCastingLure();
     }
     if (CastingLureFlag != 0) {
-        *(u_long128 *) (LinePoint[63].pos) = *(u_long128 *) (FlyingPoint.pos);
+        *(u_long128 *)(LinePoint[63].pos) = *(u_long128 *)(FlyingPoint.pos);
         if (LineTop < 62) {
             sceVu0ScaleVector(LinePoint[62].velo, FlyingPoint.velo, 0.8f);
         }
@@ -1046,9 +1027,7 @@ void RodStep(CScene *scene, u_long128 *poly_buffer) {
         }
     }
     float tackle_damping = 1.0f;
-    if (ShowHari == 0) {
-        tackle_damping = 0.4f;
-    }
+    if (ShowHari == 0) tackle_damping = 0.4f;
     hari->Correct(polys, poly_count, tackle_damping);
     if (uki != 0) {
         uki->Correct(polys, poly_count, 1.0f);
@@ -1349,17 +1328,22 @@ void InitLureObj(int rod_type, mgCFrame *rod_frame) {
         mgAddVector(LureObj.point[j].pos, sao_pos);
     }
 }
-#ifdef NONMATCHING
 void InitUkiObj(int no, mgCFrame *uki, mgCFrame *hari) {
-    float     rod_tip[4];
+    float rod_tip[4];
+    float *pt2;
+    FISH_POINT *point;
+    float *pt3;
+    float dist;
+    CFishObj *hari_obj;
     CFishObj *uki_obj;
-    int       i;
-    int       j;
-    UkiObj.point_num = 4;
+    int j;
+    float *pt1;
+    int i;
     i = 0;
+    UkiObj.point_num = 4;
     uki_obj = &UkiObj;
     for (; i < uki_obj->point_num; i++) {
-        FISH_POINT *point = &uki_obj->point[i];
+        point = &uki_obj->point[i];
         mgZeroVector(point->pos);
         mgZeroVector(point->old_pos);
         mgZeroVector(point->velo);
@@ -1381,60 +1365,60 @@ void InitUkiObj(int no, mgCFrame *uki, mgCFrame *hari) {
     uki_obj->point[3].pos[2] = -1.5f;
     uki_obj->point[3].pos[3] = 1.0f;
     SaoFrame[7]->GetWorldPosition0(rod_tip);
-    for (i = 0; i < uki_obj->point_num; i++) {
-        mgAddVector(uki_obj->point[i].pos, rod_tip);
+    for (int k = 0; k < uki_obj->point_num; k++) {
+        mgAddVector(uki_obj->point[k].pos, rod_tip);
     }
-    float *pt1 = uki_obj->point[1].pos;
-    float  dist = mgDistVector(uki_obj->point[0].pos, pt1);
-    uki_obj->bind[0].point0 = (FISH_POINT *) uki_obj->point[0].pos;
-    uki_obj->bind[0].point1 = (FISH_POINT *) pt1;
+    pt1 = uki_obj->point[1].pos;
+    dist = mgDistVector(uki_obj->point[0].pos, pt1);
+    uki_obj->bind[0].point0 = (FISH_POINT *)uki_obj->point[0].pos;
+    uki_obj->bind[0].point1 = (FISH_POINT *)pt1;
     uki_obj->bind[0].length = dist;
     uki_obj->bind[0].rate = 0.5f;
-    float *pt2 = uki_obj->point[2].pos;
+    pt2 = uki_obj->point[2].pos;
     dist = mgDistVector(uki_obj->point[0].pos, pt2);
-    uki_obj->bind[1].point0 = (FISH_POINT *) uki_obj->point[0].pos;
-    uki_obj->bind[1].point1 = (FISH_POINT *) pt2;
+    uki_obj->bind[1].point0 = (FISH_POINT *)uki_obj->point[0].pos;
+    uki_obj->bind[1].point1 = (FISH_POINT *)pt2;
     uki_obj->bind[1].length = dist;
     uki_obj->bind[1].rate = 0.5f;
-    float *pt3 = uki_obj->point[3].pos;
+    pt3 = uki_obj->point[3].pos;
     dist = mgDistVector(uki_obj->point[0].pos, pt3);
-    uki_obj->bind[2].point0 = (FISH_POINT *) uki_obj->point[0].pos;
-    uki_obj->bind[2].point1 = (FISH_POINT *) pt3;
+    uki_obj->bind[2].point0 = (FISH_POINT *)uki_obj->point[0].pos;
+    uki_obj->bind[2].point1 = (FISH_POINT *)pt3;
     uki_obj->bind[2].length = dist;
     uki_obj->bind[2].rate = 0.5f;
     dist = mgDistVector(pt1, pt2);
-    uki_obj->bind[3].point0 = (FISH_POINT *) pt1;
-    uki_obj->bind[3].point1 = (FISH_POINT *) pt2;
+    uki_obj->bind[3].point0 = (FISH_POINT *)pt1;
+    uki_obj->bind[3].point1 = (FISH_POINT *)pt2;
     uki_obj->bind[3].length = dist;
     uki_obj->bind[3].rate = 0.5f;
     dist = mgDistVector(pt2, pt3);
-    uki_obj->bind[4].point0 = (FISH_POINT *) pt2;
-    uki_obj->bind[4].point1 = (FISH_POINT *) pt3;
+    uki_obj->bind[4].point0 = (FISH_POINT *)pt2;
+    uki_obj->bind[4].point1 = (FISH_POINT *)pt3;
     uki_obj->bind[4].length = dist;
     uki_obj->bind[4].rate = 0.5f;
     dist = mgDistVector(pt3, pt1);
-    uki_obj->bind[5].point0 = (FISH_POINT *) pt3;
-    uki_obj->bind[5].point1 = (FISH_POINT *) pt1;
+    uki_obj->bind[5].point0 = (FISH_POINT *)pt3;
+    uki_obj->bind[5].point1 = (FISH_POINT *)pt1;
     uki_obj->bind[5].length = dist;
     uki_obj->bind[5].rate = 0.5f;
     uki_obj->bind_num = 6;
     uki_obj->float_num = 3;
-    uki_obj->float_info[0].point0 = (FISH_POINT *) pt1;
-    uki_obj->float_info[0].point1 = (FISH_POINT *) uki_obj->point[0].pos;
+    uki_obj->float_info[0].point0 = (FISH_POINT *)pt1;
+    uki_obj->float_info[0].point1 = (FISH_POINT *)uki_obj->point[0].pos;
     uki_obj->float_info[0].buoyancy = 1.6f;
     uki_obj->float_info[0].unk_8 = 0;
-    uki_obj->float_info[1].point0 = (FISH_POINT *) pt2;
-    uki_obj->float_info[1].point1 = (FISH_POINT *) uki_obj->point[0].pos;
+    uki_obj->float_info[1].point0 = (FISH_POINT *)pt2;
+    uki_obj->float_info[1].point1 = (FISH_POINT *)uki_obj->point[0].pos;
     uki_obj->float_info[1].buoyancy = 1.6f;
     uki_obj->float_info[1].unk_8 = 0;
-    uki_obj->float_info[2].point0 = (FISH_POINT *) pt3;
-    uki_obj->float_info[2].point1 = (FISH_POINT *) uki_obj->point[0].pos;
+    uki_obj->float_info[2].point0 = (FISH_POINT *)pt3;
+    uki_obj->float_info[2].point1 = (FISH_POINT *)uki_obj->point[0].pos;
     uki_obj->float_info[2].buoyancy = 1.6f;
     uki_obj->float_info[2].unk_8 = 0;
-    CFishObj *hari_obj = &HariObj;
+    hari_obj = &HariObj;
     HariObj.point_num = 3;
     for (j = 0; j < hari_obj->point_num; j++) {
-        FISH_POINT *point = &hari_obj->point[j];
+        point = &hari_obj->point[j];
         mgZeroVector(point->pos);
         mgZeroVector(point->old_pos);
         mgZeroVector(point->velo);
@@ -1451,31 +1435,28 @@ void InitUkiObj(int no, mgCFrame *uki, mgCFrame *hari) {
     hari_obj->point[2].pos[1] = -4.0f;
     hari_obj->point[2].pos[2] = 0.0f;
     hari_obj->point[2].pos[3] = 1.0f;
-    for (i = 0; i < hari_obj->point_num; i++) {
-        mgAddVector(hari_obj->point[i].pos, rod_tip);
+    for (int k = 0; k < hari_obj->point_num; k++) {
+        mgAddVector(hari_obj->point[k].pos, rod_tip);
     }
     hari_obj->bind_num = 3;
     pt1 = hari_obj->point[1].pos;
     dist = mgDistVector(hari_obj->point[0].pos, pt1);
-    hari_obj->bind[0].point0 = (FISH_POINT *) hari_obj->point[0].pos;
-    hari_obj->bind[0].point1 = (FISH_POINT *) pt1;
+    hari_obj->bind[0].point0 = (FISH_POINT *)hari_obj->point[0].pos;
+    hari_obj->bind[0].point1 = (FISH_POINT *)pt1;
     hari_obj->bind[0].length = dist;
     hari_obj->bind[0].rate = 0.5f;
     pt2 = hari_obj->point[2].pos;
     dist = mgDistVector(hari_obj->point[0].pos, pt2);
-    hari_obj->bind[1].point0 = (FISH_POINT *) hari_obj->point[0].pos;
-    hari_obj->bind[1].point1 = (FISH_POINT *) pt2;
+    hari_obj->bind[1].point0 = (FISH_POINT *)hari_obj->point[0].pos;
+    hari_obj->bind[1].point1 = (FISH_POINT *)pt2;
     hari_obj->bind[1].length = dist;
     hari_obj->bind[1].rate = 0.5f;
     dist = mgDistVector(pt1, pt2);
-    hari_obj->bind[2].point0 = (FISH_POINT *) pt1;
-    hari_obj->bind[2].point1 = (FISH_POINT *) pt2;
+    hari_obj->bind[2].point0 = (FISH_POINT *)pt1;
+    hari_obj->bind[2].point1 = (FISH_POINT *)pt2;
     hari_obj->bind[2].length = dist;
     hari_obj->bind[2].rate = 0.5f;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishingobj", InitUkiObj__FiP8mgCFrameP8mgCFrame);
-#endif
 void CFishObj::MovePoint() {
     for (int i = 0; i < point_num; i++) {
         *(u_long128 *) point[i].old_pos = *(u_long128 *) point[i].pos;

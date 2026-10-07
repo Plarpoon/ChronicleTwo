@@ -29,6 +29,14 @@ enum USED_ITEM_TYPE {
     USED_ITEM_TYPE_BOILED = 8,    /**< A boiled item with an entry in the item table. */
 };
 
+enum ITEM_DATA_TYPE {
+    ITEM_DATA_ROBO_CORE   = 0xB,
+    ITEM_DATA_ROBO_PART_C = 0xC,
+    ITEM_DATA_ROBO_PART_D = 0xD,
+    ITEM_DATA_ROBO_PART_E = 0xE,
+    ITEM_DATA_ROBO_WEAPON = 0xF,
+};
+
 /**
  *
  * Bits of CDataCommon::attribute.

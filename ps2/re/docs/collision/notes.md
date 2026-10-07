@@ -127,8 +127,8 @@ CreateBBox (+8).
   normal's w lane unspecified; the draft writes zero there. Both drafts
   compile but differ from the VU0 code, so retail retains the original ASM.
 - `CCollisionMDT::PickUpNearPoly` loads the query box (w = 1) into vf10/vf11 with two `lqc2`
-  before the loop, an inline-asm leftover (first game: `vu_hold_box`); nothing in this function
-  reads them. Drafted as an inline `asm` block.
+  before the loop; nothing in this function reads them. The C++ draft does not reproduce
+  these register writes, so the retail build uses `INCLUDE_ASM`.
 - MDT layout: `CreateCollisionMDT` reads `MDT_HEADER` (mg_dataset.hpp) vertex_ofs/faces_ofs/
   material_ofs; `MDT_FACES::prim_num`, records from `faces + 1`; `FACES_ID::face_num` is used as
   an INDEX count here (triangles = face_num / 3; the next record is `&index[face_num]`), so

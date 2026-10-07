@@ -355,6 +355,7 @@ void CRunScript::skip() {
     resume();
 }
 #ifdef NONMATCHING
+
 void CRunScript::exe(vmcode_t *entry) {
     RS_STACKDATA  value;
     RS_STACKDATA  rhs;
@@ -449,7 +450,7 @@ void CRunScript::exe(vmcode_t *entry) {
                         push_str(code + pc->arg2);
                         break;
                     case RS_CONST_FLOAT:
-                        push_float(*(float *) &pc->arg2);
+                        push_float(*(float *)&pc->arg2);
                         break;
                 }
 
@@ -556,9 +557,9 @@ void CRunScript::exe(vmcode_t *entry) {
                 }
 
                 break;
-            case RS_OP_ADD:
-                rhs = pop();
-                lhs = pop();
+            case RS_OP_ADD: {
+                RS_STACKDATA rhs = pop();
+                RS_STACKDATA lhs = pop();
 
                 if (lhs.type == RS_INT && rhs.type == RS_INT) {
                     push_int(lhs.i + rhs.i);
@@ -574,6 +575,7 @@ void CRunScript::exe(vmcode_t *entry) {
                 }
 
                 break;
+            }
             case RS_OP_SUB:
                 rhs = pop();
                 lhs = pop();

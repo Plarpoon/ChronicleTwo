@@ -217,7 +217,7 @@ struct ROBOPART_USED {
 struct BREEDFISH_USED {
     char  name[0x15]; /**< Name of the fish. */
     u8    sex;        /**< Sex of the fish, 0 or 1. */
-    u8    unk_16;
+    u8    kind;       /**< Fish variety used to select its displayed name. */
     u8    unk_17;
     u16   size;   /**< Size of the fish. */
     u16   weight; /**< Weight of the fish. */
@@ -228,9 +228,9 @@ struct BREEDFISH_USED {
     u16   timer;    /**< Time left, counted down by the game clock. */
     u8    unk_32[3];
     s8    unk_35;
-    u16   unk_36;
-    u16   flags; /**< Flags; 0x2 marks an electric fish, which is never rubbish. */
-    u8    unk_3a;
+    u16   life;       /**< Remaining lifetime of the breeding fish. */
+    u16   flags;      /**< Flags; 0x2 marks an electric fish, which is never rubbish. */
+    u8    color;      /**< Colour variant of the breeding fish. */
     s8    grow_count; /**< Food eaten towards the next growth; the fish grows past 10. */
     u8    unk_3c;
     u8    unk_3d;
@@ -1793,7 +1793,7 @@ public:
     int                money;          /**< Money, up to 999999. */
     s16                yarikomi_medal; /**< Medals, up to 999. */
     u8                 unk_44da2[0x1E];
-    s16                unk_44dc0;
+    s16                special_item_bought; /**< Number of special shop items bought. */
     u8                 unk_44dc2[6];
     u64                unk_44dc8;
     s16                photo_subject[0x200]; /**< Subject numbers of the photos taken, in order; 0 ends the list. */
@@ -2810,8 +2810,8 @@ STATIC_ASSERT(sizeof(BATTLE_WEAPON_PARAM) == 0x1C);
  */
 class CBattleCharaInfo {
 public:
-    s16                 chr_no; /**< Character being played, a USER_CHARA. */
-    s16                 unk_2;
+    s16                 chr_no;             /**< Character being played, a USER_CHARA. */
+    s16                 user_mons_id;       /**< Monster form selected for the playable character. */
     s16                 now_npc;            /**< Townsperson in the party, or -1. */
     s16                 chara_type;         /**< Kind of status read, a BATTLE_CHARA_TYPE. */
     void               *chara_data;         /**< CHARA_DATA, ROBO_DATA or MOS_CHANGE_PARAM, by chara_type. */
@@ -2941,7 +2941,7 @@ public:
      * @address 0x1A08B0
      * @size 0x44
      */
-    s16 GetPalletNo(int slot);
+    int GetPalletNo(int slot);
 
     /**
      *

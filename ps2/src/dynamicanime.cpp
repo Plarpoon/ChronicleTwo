@@ -21,6 +21,8 @@ extern int            dynVertexCount;
 extern int            dynFixVertexCount;
 extern int            dynBindVertexCount;
 extern int            dynBBoxCount;
+extern "C" void *__vt__12CDACollision[];
+extern "C" void *__vt__10CDAColPipe[];
 extern int            dynColCount;
 extern SPI_TAG_PARAM  dynmc_tag[];
 extern char           at_855__2[];
@@ -79,7 +81,10 @@ void CDynamicAnime::ResetPosition() {
         *(u_long128 *) &old_vertex[i] = *(u_long128 *) &now_vertex[i];
     }
 }
-#ifdef NONMATCHING
+static inline float WindRand(int *seed) {
+    *seed = *seed * 0x10DCD + 1;
+    return (float)*seed / -2147483648.0f;
+}
 void CDynamicAnime::Step() {
     sceVu0FMATRIX   matrix;
     sceVu0FVECTOR   pull;
@@ -88,14 +93,13 @@ void CDynamicAnime::Step() {
     sceVu0FVECTOR   wind;
     DA_FIX_VERTEX  *fixed;
     DA_BIND_VERTEX *bound;
-    CDACollision   *volume;
     mgCFrame       *fixed_frame;
     float           stiffness;
     float           friction;
     int             hit;
+    CDACollision   *volume;
     int             i;
     int             j;
-    int             iteration;
 
     if (vertex_num <= 0) {
         return;
@@ -114,7 +118,7 @@ void CDynamicAnime::Step() {
         velocity[i][3] = 0.0f;
         mgAddVector(now_vertex[i], velocity[i]);
     }
-    for (iteration = 0; iteration < 6; iteration++) {
+    for (j = 0; j < 6; j++) {
         for (i = 0; i < bind_vertex_num; i++) {
             bound = &bind_vertex[i];
             BindPosition(now_vertex[bound->vertex_id[0]], now_vertex[bound->vertex_id[1]], bound->length, bound->rate);
@@ -133,46 +137,45 @@ void CDynamicAnime::Step() {
     sceVu0CopyVector(max, now_vertex[0]);
     sceVu0CopyVector(min, now_vertex[0]);
     PreCollision();
-    for (i = 0; i < vertex_num; i++) {
-        sceVu0SubVector(velocity[i], now_vertex[i], old_vertex[i]);
-        *(u_long128 *) old_vertex[i] = *(u_long128 *) now_vertex[i];
-        fixed = &fix_vertex[i];
+    for (j = 0; j < vertex_num; j++) {
+        sceVu0SubVector(velocity[j], now_vertex[j], old_vertex[j]);
+        *(u_long128 *)old_vertex[j] = *(u_long128 *)now_vertex[j];
+        fixed = &fix_vertex[j];
         if (fixed->weight < 1.0f && fixed->weight > 0.0f) {
             fixed_frame = GetFrame(fixed->frame_id);
             if (fixed_frame != NULL) {
                 fixed_frame->GetWorldPosition(pull, fixed->position);
-                mgSubVector(pull, now_vertex[i]);
+                mgSubVector(pull, now_vertex[j]);
                 sceVu0ScaleVector(pull, pull, fixed->weight);
-                mgAddVector(now_vertex[i], pull);
+                mgAddVector(now_vertex[j], pull);
                 sceVu0ScaleVector(pull, pull, fixed->velocity_rate);
-                mgSubVector(velocity[i], pull);
+                mgSubVector(velocity[j], pull);
             }
         }
         friction = 1.0f;
         hit = 0;
         if (fixed->weight < 1.0f) {
-            for (j = 0; j < collision_num; j++) {
-                volume = collision[j];
+            for (i = 0; i < collision_num; i++) {
+                volume = collision[i];
                 if (volume != NULL) {
-                    hit |= volume->CheckHit(now_vertex[i]);
+                    hit |= volume->CheckHit(now_vertex[j]);
                     if (friction > volume->friction) {
                         friction = volume->friction;
                     }
                 }
             }
             if (hit != 0) {
-                sceVu0ScaleVector(velocity[i], velocity[i], friction);
+                sceVu0ScaleVector(velocity[j], velocity[j], friction);
             }
         }
         if (floor_enable != 0) {
-            if (now_vertex[i][1] < floor_y) {
-                now_vertex[i][1] = floor_y;
-                sceVu0ScaleVector(velocity[i], velocity[i], 0.3f);
+            if (now_vertex[j][1] < floor_y) {
+                now_vertex[j][1] = floor_y;
+                sceVu0ScaleVector(velocity[j], velocity[j], 0.3f);
             }
         }
         if (wind_power != 0.0f) {
-            wind_seed = wind_seed * 0x10DCD + 1;
-            wind_gust += 0.5f * ((float) wind_seed / -2147483648.0f - 0.5f);
+            wind_gust += 0.5f * (WindRand(&wind_seed) - 0.5f);
             if (wind_gust > 1.0f) {
                 wind_gust = 1.0f;
             }
@@ -180,17 +183,14 @@ void CDynamicAnime::Step() {
                 wind_gust = 0.0f;
             }
             sceVu0ScaleVector(wind, wind_dir, wind_scale * (wind_power * wind_gust));
-            mgAddVector(velocity[i], wind);
+            mgAddVector(velocity[j], wind);
         }
-        mgVectorMaxMin(max, min, max, min, now_vertex[i]);
+        mgVectorMaxMin(max, min, max, min, now_vertex[j]);
     }
     for (i = 0; i < frame_num; i++) {
         FramePose(frame[i], &frame_pose[i]);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", Step__13CDynamicAnimeFv);
-#endif
 int CDACollision::CheckHit(float *position) { return 0; }
 
 void CDynamicAnime::SetWind(float power, float *direction) {
@@ -210,24 +210,17 @@ void CDynamicAnime::SetFloor(float height) {
 void CDynamicAnime::ResetFloor() {
     floor_enable = 0;
 }
-#ifdef NONMATCHING
 void CDynamicAnime::FramePose(mgCFrame *frame, DA_FRAME_POSE *pose) {
-    sceVu0FMATRIX matrix;
-    sceVu0FMATRIX bone_parent_matrix;
-    sceVu0FMATRIX corner_parent_matrix;
-    sceVu0FVECTOR origin;
-    sceVu0FVECTOR end;
-    sceVu0FVECTOR across;
-    sceVu0FVECTOR along;
-    float        *v0;
-    float        *v1;
-    float        *v2;
-    float        *v3;
-    int           cross_axis;
-    int           along_axis;
-    int           across_axis;
-    int           first_axis;
-    int           second_axis;
+    int            across_axis;
+    sceVu0FMATRIX  matrix;
+    float         *v2;
+    int            cross_axis;
+    int            along_axis;
+    int            first_axis;
+    int            second_axis;
+    float         *v3;
+    float         *v0;
+    float         *v1;
 
     if (frame == NULL) {
         return;
@@ -237,68 +230,78 @@ void CDynamicAnime::FramePose(mgCFrame *frame, DA_FRAME_POSE *pose) {
     along_axis = 2;
     first_axis = 2;
     second_axis = 0;
-    switch (pose->type) {
-        case DA_FRAME_POSE_BONE_YX:
-            cross_axis = 2;
-            first_axis = 0;
-            along_axis = 1;
-            second_axis = 1;
+    if (pose->type == DA_FRAME_POSE_BONE) {
+        goto bone;
+    }
+    if (pose->type == DA_FRAME_POSE_BONE_YX) {
+        cross_axis = 2;
+        first_axis = 0;
+        along_axis = 1;
+        second_axis = 1;
+        across_axis = 0;
+    bone:
+        sceVu0FVECTOR origin;
+        sceVu0FVECTOR end;
+        sceVu0FVECTOR across;
+        sceVu0FVECTOR along;
 
-        case DA_FRAME_POSE_BONE:
-            v0 = now_vertex[pose->vertex_id[0]];
-            v1 = now_vertex[pose->vertex_id[1]];
-            v2 = now_vertex[pose->vertex_id[2]];
-            v3 = now_vertex[pose->vertex_id[3]];
-            sceVu0AddVector(origin, v0, v1);
-            sceVu0ScaleVector(origin, origin, 0.5f);
-            sceVu0AddVector(end, v2, v3);
-            sceVu0ScaleVector(end, end, 0.5f);
-            sceVu0SubVector(along, v1, v0);
-            sceVu0Normalize(matrix[along_axis], along);
-            matrix[along_axis][3] = 0.0f;
-            sceVu0SubVector(across, end, origin);
-            sceVu0Normalize(matrix[across_axis], across);
-            matrix[across_axis][3] = 0.0f;
-            sceVu0OuterProduct(matrix[cross_axis], matrix[first_axis], matrix[second_axis]);
-            matrix[cross_axis][3] = 0.0f;
-            sceVu0OuterProduct(matrix[first_axis], matrix[second_axis], matrix[cross_axis]);
-            sceVu0Normalize(matrix[first_axis], matrix[first_axis]);
-            sceVu0CopyVector(matrix[3], origin);
-            matrix[3][3] = 1.0f;
-            if (pose->local != 0 && frame->parent != NULL) {
-                frame->parent->GetLWMatrix(bone_parent_matrix);
-                mgInversMatrix(bone_parent_matrix, bone_parent_matrix);
-                mgMulMatrix(matrix, bone_parent_matrix, matrix);
-            }
-            frame->SetTransMatrix(matrix);
-            return;
-        case DA_FRAME_POSE_B_CDLR:
-            v0 = now_vertex[pose->vertex_id[0]];
-            v1 = now_vertex[pose->vertex_id[1]];
-            v2 = now_vertex[pose->vertex_id[2]];
-            v3 = now_vertex[pose->vertex_id[3]];
-            sceVu0SubVector(matrix[0], v1, v0);
-            matrix[0][3] = 0.0f;
-            sceVu0Normalize(matrix[0], matrix[0]);
-            sceVu0SubVector(along, v2, v3);
-            along[3] = 0.0f;
-            sceVu0Normalize(matrix[2], along);
-            sceVu0OuterProduct(matrix[1], matrix[2], matrix[0]);
-            matrix[1][3] = 0.0f;
-            sceVu0CopyVector(matrix[3], v0);
-            matrix[3][3] = 1.0f;
-            if (pose->local != 0 && frame->parent != NULL) {
-                frame->parent->GetLWMatrix(corner_parent_matrix);
-                mgInversMatrix(corner_parent_matrix, corner_parent_matrix);
-                mgMulMatrix(matrix, corner_parent_matrix, matrix);
-            }
-            frame->SetTransMatrix(matrix);
-            break;
+        v0 = now_vertex[pose->vertex_id[0]];
+        v1 = now_vertex[pose->vertex_id[1]];
+        v2 = now_vertex[pose->vertex_id[2]];
+        v3 = now_vertex[pose->vertex_id[3]];
+        sceVu0AddVector(origin, v0, v1);
+        sceVu0ScaleVector(origin, origin, 0.5f);
+        sceVu0AddVector(end, v2, v3);
+        sceVu0ScaleVector(end, end, 0.5f);
+        sceVu0SubVector(along, v1, v0);
+        sceVu0Normalize(matrix[along_axis], along);
+        matrix[along_axis][3] = 0.0f;
+        sceVu0SubVector(across, end, origin);
+        sceVu0Normalize(matrix[across_axis], across);
+        matrix[across_axis][3] = 0.0f;
+        sceVu0OuterProduct(matrix[cross_axis], matrix[first_axis], matrix[second_axis]);
+        matrix[cross_axis][3] = 0.0f;
+        sceVu0OuterProduct(matrix[first_axis], matrix[second_axis], matrix[cross_axis]);
+        sceVu0Normalize(matrix[first_axis], matrix[first_axis]);
+        sceVu0CopyVector(matrix[3], origin);
+        matrix[3][3] = 1.0f;
+        switch (pose->local) { case 0: break; default: if (frame->parent != NULL) {
+            sceVu0FMATRIX parent_matrix;
+
+            frame->parent->GetLWMatrix(parent_matrix);
+            mgInversMatrix(parent_matrix, parent_matrix);
+            mgMulMatrix(matrix, parent_matrix, matrix);
+        } }
+        frame->SetTransMatrix(matrix);
+        return;
+    }
+    if (pose->type == DA_FRAME_POSE_B_CDLR) {
+        sceVu0FVECTOR along;
+
+        v0 = now_vertex[pose->vertex_id[0]];
+        v2 = now_vertex[pose->vertex_id[2]];
+        v3 = now_vertex[pose->vertex_id[3]];
+        v1 = now_vertex[pose->vertex_id[1]];
+        sceVu0SubVector(matrix[0], v1, v0);
+        matrix[0][3] = 0.0f;
+        sceVu0Normalize(matrix[0], matrix[0]);
+        sceVu0SubVector(along, v2, v3);
+        along[3] = 0.0f;
+        sceVu0Normalize(matrix[2], along);
+        sceVu0OuterProduct(matrix[1], matrix[2], matrix[0]);
+        matrix[1][3] = 0.0f;
+        sceVu0CopyVector(matrix[3], v0);
+        matrix[3][3] = 1.0f;
+        if (pose->local != 0 && frame->parent != NULL) {
+            sceVu0FMATRIX parent_matrix;
+
+            frame->parent->GetLWMatrix(parent_matrix);
+            mgInversMatrix(parent_matrix, parent_matrix);
+            mgMulMatrix(matrix, parent_matrix, matrix);
+        }
+        frame->SetTransMatrix(matrix);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", FramePose__13CDynamicAnimeFP8mgCFrameP13DA_FRAME_POSE);
-#endif
 void CDynamicAnime::PreCollision() {
     int           i;
     CDACollision *col;
@@ -1073,13 +1076,13 @@ int dynBOUNDING_BOX(SPI_STACK *stack, int argc) {
     box->frame_id = spiGetStackInt(stack++);
 
     if (argc >= 4) {
-        spiGetStackVector(box->unk_0, stack);
+        spiGetStackVector(box->min, stack);
         stack += 3;
-        *(u_long128 *) box->unk_10 = *(u_long128 *) box->unk_0;
+        *(u_long128 *) box->max = *(u_long128 *) box->min;
     }
 
     if (argc >= 7) {
-        spiGetStackVector(box->unk_10, stack);
+        spiGetStackVector(box->max, stack);
     }
 
     return 1;
@@ -1103,41 +1106,37 @@ int dynCOLLISION_START(SPI_STACK *stack, int argc) {
     dynNowDA->NewCollisionTable(spiGetStackInt(stack), dynStack);
     return 1;
 }
-#ifdef NONMATCHING
-
-/**
- *
- * Adds a scripted pipe collision shape to the current dynamic animation.
- *
- */
 static int dynCOLLISION(SPI_STACK *stack, int count) {
     char       *kind;
     CDAColPipe *pipe;
 
-    kind = spiGetStackString(stack);
+    kind = spiGetStackString(stack++);
     if (kind == NULL) {
         return 0;
     }
     if (strcmp(kind, "pipe") == 0) {
-        pipe = new (dynStack->Alloc(16)) CDAColPipe;
+        if ((pipe = (CDAColPipe *)operator new(sizeof(CDAColPipe), dynStack->Alloc(16))) != NULL) {
+            ((void ***)pipe)[48] = __vt__12CDACollision;
+            pipe->Initialize();
+            *(void ***)((u_int)pipe + 0xC0) = __vt__10CDAColPipe;
+            pipe->Initialize();
+        }
         if (pipe == NULL) {
             return 0;
         }
-        pipe->frame_id = spiGetStackInt(stack + 1);
-        spiGetStackVector(pipe->center, stack + 2);
-        spiGetStackVector(pipe->radius, stack + 5);
-        pipe->axis = spiGetStackInt(stack + 8);
+        pipe->frame_id = spiGetStackInt(stack++);
+        spiGetStackVector(pipe->center, stack);
+        spiGetStackVector(pipe->radius, stack + 3);
+        stack += 6;
+        pipe->axis = spiGetStackInt(stack++);
         if (count >= 10) {
-            pipe->friction = spiGetStackFloat(stack + 9);
+            pipe->friction = spiGetStackFloat(stack);
         }
         dynNowDA->SetCollision(dynColCount++, pipe);
         return 1;
     }
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dynamicanime", dynCOLLISION__FP9SPI_STACKi);
-#endif
 void CDAColPipe::Initialize() {
     axis = 0;
     mgZeroVector(center);

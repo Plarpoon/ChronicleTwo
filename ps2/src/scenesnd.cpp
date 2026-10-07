@@ -35,6 +35,11 @@ struct LineBreakPair {
 
 extern LineBreakPair at_1615__2;
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 void CScene::BGM_INFO::Init() {
     snd_id = -1;
@@ -71,6 +76,7 @@ void CScene::InitBGM() {
     sndInitPort(info->port);
 }
 #ifdef NONMATCHING
+
 void CScene::InitSeSrc() {
     StopSeSrc();
     sndSeAllStop(4);
@@ -153,32 +159,28 @@ void CScene::InitLooSeMngr() {
 CScene::BGM_INFO *CScene::GetActiveBgmInfo() {
     return &bgm[bgm_no];
 }
-#ifdef NONMATCHING
-void CScene::PlayBGM(int play_no, int volume, float scale) {
+void CScene::PlayBGM(int bgm_no, int vol, float volf) {
     if (skip_play_bgm != 0) {
         skip_play_bgm = 0;
-        return;
+    } else {
+        BGM_INFO *info = GetActiveBgmInfo();
+        if (info->play_no != bgm_no) {
+            StopBGM(info->play_no);
+        }
+        info->vol = vol;
+        info->volf = volf;
+        if (info->vol < 0) {
+            info->vol = sndGetSeDefVol(info->snd_id, bgm_no);
+        }
+        int play_vol = sndVolLimit((int)((float)info->vol * volf));
+        if (play_vol < 0) {
+            play_vol = 1;
+        }
+        sndSePlayV(info->snd_id, bgm_no, play_vol, 0);
+        info->play_no = bgm_no;
+        info->fade_speed = 0.0f;
     }
-    BGM_INFO *info = GetActiveBgmInfo();
-    if (info->play_no != play_no) {
-        StopBGM(info->play_no);
-    }
-    info->vol = volume;
-    info->volf = scale;
-    if (info->vol < 0) {
-        info->vol = sndGetSeDefVol(info->snd_id, play_no);
-    }
-    int limited = sndVolLimit(fptosi((float) info->vol * scale));
-    if (limited < 0) {
-        limited = 1;
-    }
-    sndSePlayV(info->snd_id, play_no, limited, 0);
-    info->play_no = play_no;
-    info->time_vol = 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", PlayBGM__6CSceneFiif);
-#endif
 void CScene::PauseBGM() {
     BGM_INFO *info = GetActiveBgmInfo();
 

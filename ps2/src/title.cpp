@@ -63,6 +63,11 @@ void                    DrawMenuDl(int x, int y, int width, int alpha, float rat
 int                     GetSelectLanguageNo();
 extern char             at_1479__2[];
 void                    TitleHDDInstallDraw();
+extern void             *__vt__9mgCObject[];
+extern void             *__vt__7CObject[];
+extern void             *__vt__12CObjectFrame[];
+extern void             *__vt__11CCharacter2[];
+extern void             *__vt__12CActionChara[];
 extern CScene          *TitleScene;
 extern s16              TitlePhase;
 extern s16              TitleMCActivePort;
@@ -206,6 +211,11 @@ static inline u_int Align16Blocks(u_int size) {
     return size >> 4;
 }
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 /**
  *
@@ -307,10 +317,10 @@ void TitleInit(INIT_LOOP_ARG arg) {
     DNG_BATTLE_AREA *area = &TitleScene->battle_area;
 
     if (area != NULL) {
-        area->unk_5c = 1;
+        area->battle_clear = 1;
         area->battle_bgm_state = 0;
         area->battle_bgm_vol = 0.0f;
-        area->unk_54 = 0;
+        area->camera_mode = 0;
         area->pause_flag = 0;
         area->timer = 0;
         area->minimap_reveal = 0;
@@ -367,13 +377,8 @@ void TitleInit(INIT_LOOP_ARG arg) {
     TitleBootInit();
 }
 #ifdef NONMATCHING
-#pragma inline_depth(8)
 
-/**
- *
- * Loads the assets, scene, and state needed before the title sequence starts.
- *
- */
+#pragma inline_depth(8)
 void TitleBootInit() {
     RushMovie = new ((u_long128 *) DataBuffer.Alloc(0x2396)) CMovie;
     TitleMCFuncFlag = 1;
@@ -515,7 +520,6 @@ void TitleBootInit() {
         }
     }
 }
-
 #pragma inline_depth reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleBootInit__Fv);
@@ -762,22 +766,22 @@ int TitleLoop() {
                 event_no = 1000;
                 dng_map_no = GetDngMapNo(map_no);
             } else {
-                arg.unk_4c = 1;
+                arg.mc_load = 1;
                 event_no = 0x3F2;
             }
         }
 
         if (loop_no == 1) {
-            arg.unk_4c = 1;
+            arg.mc_load = 1;
         }
 
         if (CheckStartChapter8(save) != 0) {
             map_no = SearchMapNo(at_1479__2);
         }
 
-        if ((s8) save->unk_643C9 != 0) {
+        if ((s8) save->skip_load_bgm != 0) {
             TitleScene->skip_load_bgm = 1;
-            save->unk_643C9 = 0;
+            save->skip_load_bgm = 0;
         }
 
         SetSoundMode();
@@ -1177,11 +1181,8 @@ void TitleModeInit() {
     }
 }
 #ifdef NONMATCHING
-/**
- *
- * Processes title menu input and returns the requested next title mode.
- *
- */
+int CalcMenuAdd(float *cursor, float step, float limit = 0.0f);
+
 int TitleModeKey() {
     int start_pushed;
     int start;
@@ -1201,33 +1202,35 @@ int TitleModeKey() {
     if (TitlePhase <= TITLE_PHASE_MENU || TitlePhase == TITLE_PHASE_PUSH_START || TitlePhase == TITLE_PHASE_OMAKE_MENU ||
         TitlePhase == TITLE_PHASE_MC_MESSAGE) {
         CMemoryCardManager *card_manager = TitleMCCheck;
-        u8                  inport1;
-        u8                  inport0;
-        inport0 = TitleMCCheckInport[0];
+        u8 inport1;
+        MC_CARD_INFO *card0;
+        u8 inport0;
+        MC_CARD_INFO *card1;
         inport1 = TitleMCCheckInport[1];
-        MC_CARD_INFO *card0 = &card_manager->card[0];
-        MC_CARD_INFO *card1 = &card_manager->card[1];
+        inport0 = TitleMCCheckInport[0];
+        card0 = &card_manager->card[0];
+        card1 = &card_manager->card[1];
         if (TitleMCCheckNow != 0) {
             switch (TitleMainMCCheckPhase) {
-                case 0:
-                    TitleMCCheckInit(0);
-                    TitleMainMCCheckPhase = 1;
-                    break;
-                case 1:
-                    if (TitleMCCheckKey() != 0) {
-                        TitleMCCheckMes = NULL;
-                        TitleMCCheckNow = 0;
-                        TitleMCActivePort = 0;
-                        TitleMCCheck->port = 0;
-                        TitleMCCheck->SetFuncNo(0);
-                        TitleInfo->omake_select = 0;
-                        if (TitlePhase == TITLE_PHASE_OMAKE_MENU) {
-                            TitlePhase = TITLE_PHASE_MENU;
-                            TitleInfo->select = TITLE_MENU_OMAKE;
-                            TitleInfo->omake_alpha = 0.0f;
-                        }
+            case 0:
+                TitleMCCheckInit(0);
+                TitleMainMCCheckPhase = 1;
+                break;
+            case 1:
+                if (TitleMCCheckKey() != 0) {
+                    TitleMCCheckMes = NULL;
+                    TitleMCCheckNow = 0;
+                    TitleMCActivePort = 0;
+                    TitleMCCheck->port = 0;
+                    TitleMCCheck->SetFuncNo(0);
+                    TitleInfo->omake_select = 0;
+                    if (TitlePhase == TITLE_PHASE_OMAKE_MENU) {
+                        TitlePhase = TITLE_PHASE_MENU;
+                        TitleInfo->select = TITLE_MENU_OMAKE;
+                        TitleInfo->omake_alpha = 0.0f;
                     }
-                    break;
+                }
+                break;
             }
             return TITLE_KEY_NONE;
         }
@@ -1269,190 +1272,190 @@ int TitleModeKey() {
     }
     int fade_done = TitleScene->fade.FadeCheck();
     switch (TitlePhase) {
-        case TITLE_PHASE_WAIT:
-            TitlePushStart_AlphaPlus = 0;
-            if (start_pushed != 0) {
-                TitlePhase = TITLE_PHASE_PUSH_START;
-                TitleInfo->title_alpha = 128.0f;
-                TitlePushStart_AlphaPlus = 1;
-                sndSePlay(TitleEventSound, 0, 0);
+    case TITLE_PHASE_WAIT:
+        TitlePushStart_AlphaPlus = 0;
+        if (start_pushed != 0) {
+            TitlePhase = TITLE_PHASE_PUSH_START;
+            TitleInfo->title_alpha = 128.0f;
+            TitlePushStart_AlphaPlus = 1;
+            sndSePlay(TitleEventSound, 0, 0);
+        }
+        TitleInfo->wait_count--;
+        if (TitleInfo->wait_count <= 0) {
+            TitlePhase = TITLE_PHASE_FADE_IN;
+        }
+        break;
+    case TITLE_PHASE_FADE_IN:
+        TitlePushStart_AlphaPlus = 0;
+        if (TitleInfo->title_alpha < 128.0f) {
+            CalcMenuAdd(&TitleInfo->title_alpha, 0.53f, 128.0f);
+        }
+        if (start_pushed != 0) {
+            sndSePlay(TitleEventSound, 0, 0);
+            TitleInfo->title_alpha = 128.0f;
+        }
+        if (128.0f <= TitleInfo->title_alpha) {
+            TitlePhase = TITLE_PHASE_PUSH_START;
+            TitlePushStart_AlphaPlus = 1;
+        }
+        break;
+    case TITLE_PHASE_PUSH_START:
+        CalcMenuAdd(&TitleInfo->menu_alpha, float(-12.0));
+        CalcMenuAdd(&TitleInfo->cursor_alpha, float(-12.0));
+        CalcMenuAdd(&TitleInfo->title_alpha, 8.0f, 128.0f);
+        CalcMenuAdd(&TitleInfo->omake_alpha, -8.0f);
+        if (start_pushed != 0) {
+            sndSePlay(TitleEventSound, 0, 0);
+            TitlePhase = TITLE_PHASE_MENU;
+            TitleInfo->idle_count = 0;
+        }
+        break;
+    case TITLE_PHASE_MENU: {
+        TitlePushStart_AlphaPlus = 0;
+        int old_select = TitleInfo->select;
+        CalcMenuAdd(&TitleInfo->title_alpha, -8.0f, 0.0f);
+        CalcMenuAdd(&TitleInfo->menu_alpha, float(12.0), float(128.0));
+        CalcMenuAdd(&TitleInfo->cursor_alpha, float(12.0), float(128.0));
+        if (GamePad__2.Down(PAD_UP) != 0) {
+            TitleInfo->select--;
+        }
+        if (GamePad__2.Down(PAD_DOWN) != 0) {
+            TitleInfo->select++;
+        }
+        if (TitleInfo->select < 0) {
+            TitleInfo->select = 0;
+        }
+        if (TitleHDDCheckFlag != 0) {
+            if (TitleInfo->select > 4) {
+                TitleInfo->select = 4;
             }
-            TitleInfo->wait_count--;
-            if (TitleInfo->wait_count <= 0) {
-                TitlePhase = TITLE_PHASE_FADE_IN;
+        } else {
+            if (TitleInfo->select > 3) {
+                TitleInfo->select = 3;
             }
-            break;
-        case TITLE_PHASE_FADE_IN:
-            TitlePushStart_AlphaPlus = 0;
-            if (TitleInfo->title_alpha < 128.0f) {
-                CalcMenuAdd(&TitleInfo->title_alpha, 0.53f, 128.0f);
-            }
-            if (start_pushed != 0) {
-                sndSePlay(TitleEventSound, 0, 0);
-                TitleInfo->title_alpha = 128.0f;
-            }
-            if (128.0f <= TitleInfo->title_alpha) {
-                TitlePhase = TITLE_PHASE_PUSH_START;
-                TitlePushStart_AlphaPlus = 1;
-            }
-            break;
-        case TITLE_PHASE_PUSH_START:
-            CalcMenuAdd(&TitleInfo->menu_alpha, -12.0f, 0.0f);
-            CalcMenuAdd(&TitleInfo->cursor_alpha, -12.0f, 0.0f);
-            CalcMenuAdd(&TitleInfo->title_alpha, 8.0f, 128.0f);
-            CalcMenuAdd(&TitleInfo->omake_alpha, -8.0f, 0.0f);
-            if (start_pushed != 0) {
-                sndSePlay(TitleEventSound, 0, 0);
-                TitlePhase = TITLE_PHASE_MENU;
-                TitleInfo->idle_count = 0;
-            }
-            break;
-        case TITLE_PHASE_MENU: {
-            TitlePushStart_AlphaPlus = 0;
-            int old_select = TitleInfo->select;
-            CalcMenuAdd(&TitleInfo->title_alpha, -8.0f, 0.0f);
-            CalcMenuAdd(&TitleInfo->menu_alpha, 12.0f, 128.0f);
-            CalcMenuAdd(&TitleInfo->cursor_alpha, 12.0f, 128.0f);
-            if (GamePad__2.Down(0x1000) != 0) {
-                TitleInfo->select--;
-            }
-            if (GamePad__2.Down(0x4000) != 0) {
-                TitleInfo->select++;
-            }
-            if (TitleInfo->select < 0) {
-                TitleInfo->select = 0;
-            }
-            if (TitleHDDCheckFlag != 0) {
-                if (TitleInfo->select > 4) {
-                    TitleInfo->select = 4;
-                }
-            } else {
-                if (TitleInfo->select > 3) {
-                    TitleInfo->select = 3;
-                }
-            }
-            if (old_select != TitleInfo->select) {
-                MenuSePlay(0);
-                TitleInfo->idle_count = 0;
-            }
-            if ((push & 1) || start != 0) {
-                if (TitleInfo->select == TITLE_MENU_NEW_GAME) {
-                    TitlePhase = TITLE_PHASE_NEW_GAME;
-                    TitleScene->fade.FadeOut(0x28, 0.0f, 0.0f, 0.0f);
-                    MenuSePlay(1);
-                    TitleInfo->menu_alpha = 128.0f;
-                    TitleInfo->cursor_alpha = 128.0f;
-                } else if (TitleInfo->select == TITLE_MENU_CONTINUE) {
-                    TitlePhase = TITLE_PHASE_CONTINUE;
+        }
+        if (old_select != TitleInfo->select) {
+            MenuSePlay(SYSTEM_SE_CURSOR);
+            TitleInfo->idle_count = 0;
+        }
+        if ((push & 1) || start != 0) {
+            if (TitleInfo->select == TITLE_MENU_NEW_GAME) {
+                TitlePhase = TITLE_PHASE_NEW_GAME;
+                TitleScene->fade.FadeOut(0x28, 0.0f, 0.0f, 0.0f);
+                MenuSePlay(SYSTEM_SE_DECIDE);
+                TitleInfo->menu_alpha = 128.0f;
+                TitleInfo->cursor_alpha = 128.0f;
+            } else if (TitleInfo->select == TITLE_MENU_CONTINUE) {
+                TitlePhase = TITLE_PHASE_CONTINUE;
+                TitleScene->fade.FadeOut(0x1E, 0.0f, 0.0f, 0.0f);
+                MenuSePlay(SYSTEM_SE_DECIDE);
+            } else if (TitleInfo->select == TITLE_MENU_HDD_INSTALL) {
+                if (0 < HDDINFO.connect) {
+                    TitlePhase = TITLE_PHASE_HDD_INSTALL;
                     TitleScene->fade.FadeOut(0x1E, 0.0f, 0.0f, 0.0f);
-                    MenuSePlay(1);
-                } else if (TitleInfo->select == TITLE_MENU_HDD_INSTALL) {
-                    if (0 < HDDINFO.connect) {
-                        TitlePhase = TITLE_PHASE_HDD_INSTALL;
-                        TitleScene->fade.FadeOut(0x1E, 0.0f, 0.0f, 0.0f);
-                        MenuSePlay(1);
-                    } else {
-                        MenuSePlay(5);
-                    }
-                } else if (TitleInfo->select == TITLE_MENU_OPTION) {
-                    TitlePhase = TITLE_PHASE_OPTION;
-                    TitleScene->fade.FadeOut(0x1E, 0.0f, 0.0f, 0.0f);
-                    MenuSePlay(1);
-                } else if (TitleInfo->select == TITLE_MENU_OMAKE && OmakePlayEnableAttr != 0) {
-                    TitlePhase = TITLE_PHASE_OMAKE_MENU;
-                    TitleInfo->omake_alpha = 128.0f;
-                    TitleInfo->omake_select = 0;
-                    TitleInfo->omake_num = 0;
-                    TitleInfo->omake_dungeon = 0;
-                    TitleInfo->omake_gyorace = 0;
-                    if (OmakePlayEnableAttr & OMAKE_ENABLE_DUNGEON) {
-                        TitleInfo->omake_num++;
-                        TitleInfo->omake_dungeon = 1;
-                    }
-                    if (OmakePlayEnableAttr & OMAKE_ENABLE_GYORACE) {
-                        TitleInfo->omake_num++;
-                        TitleInfo->omake_gyorace = 1;
-                    }
-                    MenuSePlay(1);
+                    MenuSePlay(SYSTEM_SE_DECIDE);
                 } else {
                     MenuSePlay(5);
                 }
-            } else if (push & 2) {
-                TitlePhase = TITLE_PHASE_PUSH_START;
-                MenuSePlay(5);
-            }
-            break;
-        }
-        case TITLE_PHASE_NEW_GAME:
-            TitlePushStart_AlphaPlus = 0;
-            if (fade_done != 0) {
-                return TITLE_KEY_NEW_GAME;
-            }
-            break;
-        case TITLE_PHASE_CONTINUE:
-            TitlePushStart_AlphaPlus = 0;
-            if (fade_done != 0) {
-                return TITLE_KEY_CONTINUE;
-            }
-            break;
-        case TITLE_PHASE_OPTION:
-        case TITLE_PHASE_UNUSED_6:
-        case TITLE_PHASE_OMAKE:
-            TitlePushStart_AlphaPlus = 0;
-            if (fade_done != 0) {
-                if (TitlePhase == TITLE_PHASE_OPTION) {
-                    return TITLE_KEY_OPTION;
-                }
-                if (TitlePhase == TITLE_PHASE_OMAKE) {
-                    return TITLE_KEY_OMAKE;
-                }
-            }
-            break;
-        case TITLE_PHASE_HDD_INSTALL:
-            TitlePushStart_AlphaPlus = 0;
-            if (fade_done != 0) {
-                return TITLE_KEY_HDD_INSTALL;
-            }
-            break;
-        case TITLE_PHASE_OMAKE_MENU: {
-            TitlePushStart_AlphaPlus = 0;
-            CalcMenuAdd(&TitleInfo->menu_alpha, -8.0f, 0.0f);
-            CalcMenuAdd(&TitleInfo->cursor_alpha, 3.0f, 128.0f);
-            int old_select = TitleInfo->omake_select;
-            if (GamePad__2.Down(0x1000) != 0) {
-                TitleInfo->omake_select--;
-            }
-            if (GamePad__2.Down(0x4000) != 0) {
-                TitleInfo->omake_select++;
-            }
-            if (TitleInfo->omake_select < 0) {
-                TitleInfo->omake_select = 0;
-            }
-            if (TitleInfo->omake_num <= TitleInfo->omake_select) {
-                TitleInfo->omake_select = TitleInfo->omake_num - 1;
-            }
-            if (old_select != TitleInfo->omake_select) {
-                MenuSePlay(0);
-                TitleInfo->idle_count = 0;
-            }
-            if (push & 1) {
-                MenuSePlay(1);
-                TitlePhase = TITLE_PHASE_OMAKE;
+            } else if (TitleInfo->select == TITLE_MENU_OPTION) {
+                TitlePhase = TITLE_PHASE_OPTION;
                 TitleScene->fade.FadeOut(0x1E, 0.0f, 0.0f, 0.0f);
-            } else if (push & 2) {
-                TitlePhase = TITLE_PHASE_MENU;
-                TitleInfo->omake_alpha = 0.0f;
+                MenuSePlay(SYSTEM_SE_DECIDE);
+            } else if (TitleInfo->select == TITLE_MENU_OMAKE && OmakePlayEnableAttr != 0) {
+                TitlePhase = TITLE_PHASE_OMAKE_MENU;
+                TitleInfo->omake_alpha = 128.0f;
+                TitleInfo->omake_select = 0;
+                TitleInfo->omake_num = 0;
+                TitleInfo->omake_dungeon = 0;
+                TitleInfo->omake_gyorace = 0;
+                if (OmakePlayEnableAttr & OMAKE_ENABLE_DUNGEON) {
+                    TitleInfo->omake_num++;
+                    TitleInfo->omake_dungeon = 1;
+                }
+                if (OmakePlayEnableAttr & OMAKE_ENABLE_GYORACE) {
+                    TitleInfo->omake_num++;
+                    TitleInfo->omake_gyorace = 1;
+                }
+                MenuSePlay(SYSTEM_SE_DECIDE);
+            } else {
                 MenuSePlay(5);
             }
-            break;
+        } else if (push & 2) {
+            TitlePhase = TITLE_PHASE_PUSH_START;
+            MenuSePlay(5);
         }
-        case TITLE_PHASE_MC_MESSAGE:
-            if ((push & 2) || (push & 1)) {
-                TitlePhase = TITLE_PHASE_MENU;
-                TitleMCCheckMes = NULL;
-                MenuSePlay(5);
+        break;
+    }
+    case TITLE_PHASE_NEW_GAME:
+        TitlePushStart_AlphaPlus = 0;
+        if (fade_done != 0) {
+            return TITLE_KEY_NEW_GAME;
+        }
+        break;
+    case TITLE_PHASE_CONTINUE:
+        TitlePushStart_AlphaPlus = 0;
+        if (fade_done != 0) {
+            return TITLE_KEY_CONTINUE;
+        }
+        break;
+    case TITLE_PHASE_OPTION:
+    case TITLE_PHASE_UNUSED_6:
+    case TITLE_PHASE_OMAKE:
+        TitlePushStart_AlphaPlus = 0;
+        if (fade_done != 0) {
+            if (TitlePhase == TITLE_PHASE_OPTION) {
+                return TITLE_KEY_OPTION;
             }
-            break;
+            if (TitlePhase == TITLE_PHASE_OMAKE) {
+                return TITLE_KEY_OMAKE;
+            }
+        }
+        break;
+    case TITLE_PHASE_HDD_INSTALL:
+        TitlePushStart_AlphaPlus = 0;
+        if (fade_done != 0) {
+            return TITLE_KEY_HDD_INSTALL;
+        }
+        break;
+    case TITLE_PHASE_OMAKE_MENU: {
+        TitlePushStart_AlphaPlus = 0;
+        CalcMenuAdd(&TitleInfo->menu_alpha, float(-8.0));
+        CalcMenuAdd(&TitleInfo->cursor_alpha, float(3.0), float(128.0));
+        int old_select = TitleInfo->omake_select;
+        if (GamePad__2.Down(PAD_UP) != 0) {
+            TitleInfo->omake_select--;
+        }
+        if (GamePad__2.Down(PAD_DOWN) != 0) {
+            TitleInfo->omake_select++;
+        }
+        if (TitleInfo->omake_select < 0) {
+            TitleInfo->omake_select = 0;
+        }
+        if (TitleInfo->omake_num <= TitleInfo->omake_select) {
+            TitleInfo->omake_select = TitleInfo->omake_num - 1;
+        }
+        if (old_select != TitleInfo->omake_select) {
+            MenuSePlay(SYSTEM_SE_CURSOR);
+            TitleInfo->idle_count = 0;
+        }
+        if (push & 1) {
+            MenuSePlay(SYSTEM_SE_DECIDE);
+            TitlePhase = TITLE_PHASE_OMAKE;
+            TitleScene->fade.FadeOut(0x1E, 0.0f, 0.0f, 0.0f);
+        } else if (push & 2) {
+            TitlePhase = TITLE_PHASE_MENU;
+            TitleInfo->omake_alpha = 0.0f;
+            MenuSePlay(5);
+        }
+        break;
+    }
+    case TITLE_PHASE_MC_MESSAGE:
+        if ((push & 2) || (push & 1)) {
+            TitlePhase = TITLE_PHASE_MENU;
+            TitleMCCheckMes = NULL;
+            MenuSePlay(5);
+        }
+        break;
     }
     CalcPushAlpha(0, &TitleInfo->push_alpha);
     if (TitleInfo->idle_count == TitleRushWaitCount) {
@@ -1463,23 +1466,21 @@ int TitleModeKey() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleModeKey__Fv);
 #endif
-#ifdef NONMATCHING
-/**
- *
- * Draws the title menu scene, prompts, and cursor.
- *
- */
 void TitleModeDraw() {
     int i;
     int x;
     int y;
     int row_num;
     int row_y[2];
+    int row;
     TitleMapDraw();
-    mgTexManager.ReloadTexture(0x40, (sceVif1Packet *) NULL);
+    mgTexManager.ReloadTexture(0x40, (sceVif1Packet *)NULL);
     mgCDrawPrim prim;
     SetSpriteEnv(&prim, 0);
-    PrimQuad(Tex_Chronicle, 0.0f, 24.0f, mgRect<int>(0, 0, 0x200, 0x1A0), fptosi(TitleInfo->title_alpha), 0x80, 0x80, 0x80);
+    float left = 0.0f;
+    float top = 24.0f;
+    float title_alpha = TitleInfo->title_alpha;
+    PrimQuad(Tex_Chronicle, 0.0f, top, mgRect<int>(0, 0, 0x200, 0x1A0), fptosi(TitleInfo->title_alpha), 0x80, 0x80, 0x80);
     mgRect<int> start_rect(start_button_tbl_1826[LanguageCode].left, start_button_tbl_1826[LanguageCode].top,
                            start_button_tbl_1826[LanguageCode].right, start_button_tbl_1826[LanguageCode].bottom);
     if (LanguageCode == 0) {
@@ -1487,7 +1488,7 @@ void TitleModeDraw() {
         prim.Begin(6);
         prim.Texture(Tex_Logo);
         prim.Color(0x80, 0x80, 0x80, fptosi(TitleInfo->push_alpha));
-        PrimQuad(&prim, 162.0f, 338.0f, start_rect);
+        PrimQuad(&prim, 162.0f, float(338.0), start_rect);
         prim.Color(0x80, 0x80, 0x80, fptosi(TitleInfo->title_alpha));
         PrimQuad(&prim, 84.0f, 384.0f, mgRect<int>(0, 0, 0x166, 0x16));
         prim.End();
@@ -1496,13 +1497,13 @@ void TitleModeDraw() {
         prim.Begin(6);
         prim.Texture(Tex_Logo);
         prim.Color(0x80, 0x80, 0x80, fptosi(TitleInfo->push_alpha));
-        PrimQuad(&prim, 162.0f, (float) (mgScreenHeight - 0x6C), start_rect);
+        PrimQuad(&prim, 162.0f, (float)(mgScreenHeight - 0x6C), start_rect);
         prim.Color(0x80, 0x80, 0x80, fptosi(TitleInfo->title_alpha));
-        PrimQuad(&prim, 0.0f, (float) (mgScreenHeight - 0x38), mgRect<int>(0, 0x180, 0x200, 0x30));
+        PrimQuad(&prim, left, (float)(mgScreenHeight - 0x38), mgRect<int>(0, 0x180, 0x200, 0x30));
         prim.End();
     }
     mgRect<int> button_rect(0x12E, 0x28, 0xD2, 0x36);
-    float       cursor_goal_y = 0.0f;
+    float cursor_goal_y = 0.0f;
     y = 0x4C;
     row_num = 5;
     x = (mgScreenWidth - button_rect.right) >> 1;
@@ -1515,7 +1516,7 @@ void TitleModeDraw() {
     prim.Texture(Tex_Logo);
     for (i = 0; i < row_num; i++) {
         prim.Color(0, 0, 0, fptosi(TitleInfo->menu_alpha / 3.0f));
-        PrimQuad(&prim, (float) (x + 4), (float) (y + 4), button_rect);
+        PrimQuad(&prim, (float)(x + 4), (float)(y + 4), button_rect);
         if ((i == TITLE_MENU_HDD_INSTALL && HDDINFO.connect == 0) || (i == TITLE_MENU_OMAKE && OmakePlayEnableAttr == 0)) {
             prim.Color(0x48, 0x48, 0x48, fptosi(TitleInfo->menu_alpha));
         } else {
@@ -1523,9 +1524,9 @@ void TitleModeDraw() {
         }
         button_rect.left = btn_tblxy_1830[i][0];
         button_rect.top = btn_tblxy_1830[i][1];
-        PrimQuad(&prim, (float) x, (float) y, button_rect);
+        PrimQuad(&prim, (float)x, (float)y, button_rect);
         if (i == TitleInfo->select) {
-            cursor_goal_y = (float) y;
+            cursor_goal_y = (float)y;
         }
         y += 0x3A;
     }
@@ -1534,28 +1535,28 @@ void TitleModeDraw() {
         prim.TextureMapEnable(1);
         prim.Begin(6);
         prim.Texture(Tex_Logo);
-        int row = 0;
+        row = 0;
         row_y[0] = 0xD0 - TitleInfo->omake_num * 0x1B;
         row_y[1] = row_y[0] + 0x3C;
-        cursor_goal_y = (float) row_y[TitleInfo->omake_select];
-        prim.Color(0x80, 0x80, 0x80, fptosi(TitleInfo->omake_alpha));
+        cursor_goal_y = (float)row_y[TitleInfo->omake_select];
+        prim.Color(0x80, 0x80, 0x80, (int)TitleInfo->omake_alpha);
         if (OmakePlayEnableAttr & 2) {
             mgRect<int> dungeon_rect(0x5C, 0x100, 0xD2, 0x36);
-            PrimQuad(&prim, 151.0f, (float) row_y[row++], dungeon_rect);
+            PrimQuad(&prim, 151.0f, (float)row_y[row++], dungeon_rect);
         }
         if (OmakePlayEnableAttr & 1) {
             mgRect<int> gyorace_rect(0x5C, 0xCA, 0xD2, 0x36);
-            PrimQuad(&prim, 151.0f, (float) row_y[row], gyorace_rect);
+            PrimQuad(&prim, 151.0f, (float)row_y[row], gyorace_rect);
         }
         prim.End();
     }
-    TitleInfo->cursor_x = (float) (x - 0x20);
+    TitleInfo->cursor_x = (float)(x - 0x20);
     CalcMenu1(cursor_goal_y, &TitleInfo->cursor_y, 4.0f, 0.0f, 0);
     if (TitleInfo->cursor_y <= 60.0f) {
         TitleInfo->cursor_y = cursor_goal_y;
     }
-    float sway_x = mgAngleLimit(0.05235988f * (float) TitleInfo->cursor_count);
-    float sway_y = mgAngleLimit(0.10471976f * (float) TitleInfo->cursor_count);
+    float sway_x = mgAngleLimit(0.05235988f * (float)TitleInfo->cursor_count);
+    float sway_y = mgAngleLimit(0.10471976f * (float)TitleInfo->cursor_count);
     float cursor_x = TitleInfo->cursor_x + 6.0f * cosf(sway_x);
     float cursor_y = 11.0f + TitleInfo->cursor_y + 4.0f * sinf(sway_y);
     if (TitleMCCheckNow == 0) {
@@ -1569,22 +1570,11 @@ void TitleModeDraw() {
         TitleInfo->cursor_count = 0;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleModeDraw__Fv);
-#endif
-#ifdef NONMATCHING
-/**
- *
- * Draws the title map and advances its camera movement.
- *
- */
 void TitleMapDraw() {
-    float              pos[4];
-    float              ref[4];
-    float              view[4][4];
+    float pos[4];
+    float ref[4];
+    float view[4][4];
     mgCTextureManager *textures = &mgTexManager;
-    int                i;
-    int                block;
 
     mgFogEnable(1);
     mgCCamera *camera = TitleScene->GetCamera(TitleScene->active_camera);
@@ -1593,7 +1583,7 @@ void TitleMapDraw() {
     camera->GetPos(pos);
     camera->GetRef(ref);
     mgSetViewMatrix(view, pos);
-    CMapLightingInfo  info;
+    CMapLightingInfo info;
     CMapLightingInfo *lighting = &info;
     if (TitleMap != NULL) {
         TitleMap->GetLightInfo(lighting);
@@ -1621,14 +1611,13 @@ void TitleMapDraw() {
             if (lighting->plight_enable != 0) {
                 mgPlightEnable(1);
                 for (int light = 0; light < 4; light++) {
-                    mgSetPlight(light, (mgPOINT_LIGHT *) &lighting->point_light[light]);
+                    mgSetPlight(light, (mgPOINT_LIGHT *)&lighting->point_light[light]);
                 }
             }
             mgSetBackGround(lighting->bg_color);
         }
     }
     int texture_group;
-    texture_group = 6;
     if (TitleMap != NULL) {
         int texture_order[72];
         TitleWorkBuffer.stack_used = 0;
@@ -1638,22 +1627,26 @@ void TitleMapDraw() {
         }
         texture_order[64] = -1;
         mgBeginDraw(&TitleWorkBuffer, texture_order, NULL);
-        float view_pos[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-        int   texture_blocks[128];
+        float view_pos[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+        int texture_blocks[128];
         TitleMap->PreDraw(view_pos);
         TitleMap->Draw();
         mgCTexture *water = textures->GetTexture(at_2020, -1);
-        int         water_block = -1;
+        int water_block = -1;
         if (water != NULL) {
             water_block = water->block;
             WaveTable__3->GetEffect();
         }
         mgPreEndDraw(NULL);
-        for (texture_group = 0; texture_group < 6; texture_group++) {
-            int block_count = TitleScene->mds_list_set.GetTextureBlockNo(texture_group, texture_blocks, 128);
-            for (int i = 0; i < block_count; i++) {
-                int block = texture_blocks[block_count - i - 1];
-                if (0 != mgEndDrawReloadTexture(block, NULL) && texture_blocks[block_count - i - 1] == water_block) {
+        for (int group = 0; group < 6; group++) {
+            int i;
+            int block;
+            int block_count;
+            block_count = TitleScene->GetTextureBlockNo(group, texture_blocks, 128);
+            for (i = 0; block_count > i; i++) {
+                int index = block_count - i - 1;
+                block = texture_blocks[index];
+                if (0 != mgEndDrawReloadTexture(block, NULL) && texture_blocks[index] == water_block) {
                     WaveTable__3->CreateTexture(water);
                 }
                 mgEndDraw(block, NULL);
@@ -1661,20 +1654,23 @@ void TitleMapDraw() {
         }
         mgSetPkTextureRepeat(0);
     }
-    for (; texture_group < 16; texture_group++) {
+    for (texture_group = 6; texture_group < 16; texture_group++) {
         int later_blocks[128];
-        int block_count = TitleScene->mds_list_set.GetTextureBlockNo(texture_group, later_blocks, 128);
-        for (i = 0; i < block_count; i++) {
+        int i;
+        int block;
+        int block_count;
+        block_count = TitleScene->GetTextureBlockNo(texture_group, later_blocks, 128);
+        for (i = 0; block_count > i; i++) {
             block = later_blocks[i];
             mgEndDrawReloadTexture(block, NULL);
             mgEndDraw(block, NULL);
         }
     }
     mgSetPkTextureRepeat(0);
-    mgCTexture      *screen = textures->GetTexture(at_1223__4, 0x6A);
-    mgCTexture      *overlay = textures->GetTexture(at_2021, 0x6A);
-    mgCCameraFollow *follow = (mgCCameraFollow *) camera;
-    mgCCamera       *water_camera = TitleScene->GetCamera(TitleScene->active_camera);
+    mgCTexture *screen = textures->GetTexture(at_1223__4, 0x6A);
+    mgCTexture *overlay = textures->GetTexture(at_2021, 0x6A);
+    mgCCameraFollow *follow = (mgCCameraFollow *)camera;
+    mgCCamera *water_camera = TitleScene->GetCamera(TitleScene->active_camera);
     if (TitleMap != NULL) {
         TitleMap->DrawWater(water_camera, screen, overlay);
     }
@@ -1700,7 +1696,7 @@ void TitleMapDraw() {
         }
         case 1:
             TitleCameraPhaseCounter++;
-            if ((u_int) TitleCameraPhaseCounter >= 251) {
+            if ((u_int)TitleCameraPhaseCounter > 250) {
                 follow->FollowOff();
                 TitleCameraPhaseCounter = 0;
                 TitleCameraAddAngle = 0.0f;
@@ -1729,9 +1725,6 @@ void TitleMapDraw() {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleMapDraw__Fv);
-#endif
 /**
  *
  * Updates the pulsing alpha used by the title start prompt.
@@ -1792,15 +1785,9 @@ void TitleMCCheckInit(int boot_mode) {
         TitleMCCheckMes->MakeMesWin(0x66);
     }
 }
-#ifdef NONMATCHING
-/**
- *
- * Advances the title memory card check and reports when it finishes.
- *
- */
 int TitleMCCheckKey() {
     MC_CARD_INFO *cards[2];
-    u8            inserted[2];
+    u8 inserted[2];
     cards[0] = &TitleMCCheck->card[0];
     cards[1] = &TitleMCCheck->card[1];
     int busy = TitleMCCheck->Step();
@@ -1849,11 +1836,12 @@ int TitleMCCheckKey() {
         case TITLE_MC_PHASE_OMAKE_2:
             if (busy) {
                 CMemoryCardManager *manager = TitleMCCheck;
-                if (manager->file_exists != 0) {
-                    if (manager->omake_flag & 1) {
+                int *found = &manager->file_exists;
+                if (*found != 0) {
+                    if (found[1] & 1) {
                         OmakePlayEnableAttr |= 2;
                     }
-                    if (manager->omake_flag & 2) {
+                    if (found[1] & 2) {
                         OmakePlayEnableAttr |= 1;
                     }
                 }
@@ -1872,7 +1860,7 @@ int TitleMCCheckKey() {
                 int push = MenuCheckPushButton();
                 if (push & MENU_PUSH_BUTTON_DECIDE) {
                     if (LanguageCode == 0) {
-                        MenuSePlay(1);
+                        MenuSePlay(SYSTEM_SE_DECIDE);
                     }
                     return 1;
                 }
@@ -1886,8 +1874,6 @@ int TitleMCCheckKey() {
             break;
     }
     switch (result) {
-        default:
-            return 0;
         case 0:
             TitleMCCheckPort = 0;
             TitleMCCheck->port = 0;
@@ -1932,9 +1918,6 @@ int TitleMCCheckKey() {
     }
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleMCCheckKey__Fv);
-#endif
 /**
  *
  * Draws the title memory card check message.
@@ -2130,36 +2113,30 @@ void TitleCopyRightDraw() {
         }
     }
 }
-#ifdef NONMATCHING
-/**
- *
- * Prepares the title hard drive installation screen and its assets.
- *
- */
 void TitleHDDInstallInit() {
-    char               image_name[32];
-    char               message_path[0x4C];
-    int                file_size;
-    mgCMemory         *stack;
+    char image_name[32];
+    char message_path[0x4C];
+    int file_size;
+    mgCMemory *stack;
     mgCTextureManager *textures = &mgTexManager;
     stack = &Stack_ReadBuff;
 
-    stack->stack_used = 0;
     HDDnowDisplayImageNo = 0;
     HDDMesDrawFlag = 0;
     HDDPhase = 0;
     HDDConfirmType = 0;
     HDDModeSelect = 0;
+    stack->stack_used = 0;
     stack->lock = 0;
     textures->DeleteBlock(0x4A);
     textures->DeleteBlock(0x4B);
     textures->DeleteBlock(0x4C);
     stack->Align64();
-    u_char *buffer = (u_char *) stack->stGetTop();
+    u_char *buffer = (u_char *)stack->stGetTop();
     LoadFile2(at_2369__3, buffer, &file_size, 0);
     textures->EnterIMGFile(buffer, 0x4A, NULL, NULL);
     stack->Alloc(Align16Blocks(file_size));
-    buffer = (u_char *) stack->stGetTop();
+    buffer = (u_char *)stack->stGetTop();
     LoadFile2(at_2370__4, buffer, &file_size, 0);
     textures->EnterIMGFile(buffer, 0x4B, NULL, NULL);
     stack->Alloc(Align16Blocks(file_size));
@@ -2175,7 +2152,7 @@ void TitleHDDInstallInit() {
     }
     HDDDlBar = textures->GetTexture(at_2373__3, -1);
     HDDSysImage = Tex_Logo;
-    buffer = (u_char *) stack->stGetTop();
+    buffer = (u_char *)stack->stGetTop();
     if (LoadFile2(at_2374__3, buffer, &file_size, 0) != 0) {
         textures->EnterIMGFile(buffer, 0x4C, NULL, NULL);
         stack->Alloc(Align16Blocks(file_size));
@@ -2186,7 +2163,7 @@ void TitleHDDInstallInit() {
     HDDMes->texture_block = 0x46;
     HDDMes2->texture_block = 0x46;
     stack->Align64();
-    HDDMesDataBuff = (s16 *) stack->stGetTop();
+    HDDMesDataBuff = (s16 *)stack->stGetTop();
     sprintf(message_path, at_2376__3, LanguageCode);
     if (LoadFile2(message_path, HDDMesDataBuff, &file_size, 0) != 0) {
         HDDMes->SetMessData(GetSystemMesBuffer(), HDDMesDataBuff);
@@ -2208,9 +2185,6 @@ void TitleHDDInstallInit() {
     TitleScene->LoadBGM(0x32, stack->stGetTop());
     TitleScene->fade.FadeIn(0x28);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", TitleHDDInstallInit__Fv);
-#endif
 /**
  *
  * Advances hard drive installation and handles input to leave the screen.
@@ -2575,51 +2549,49 @@ int TitleHDDInstallKey() {
 
     return 0;
 }
-#ifdef NONMATCHING
-/**
- *
- * Draws a title menu progress bar at the requested position and fill rate.
- *
- */
-void DrawMenuDl(int x, int y, int width, int alpha, float progress) {
+void DrawMenuDl(int x, int y, int width, int alpha, float rate) {
     mgCDrawPrim prim;
+    mgRect<int> frame_tex;
+    mgRect<int> bar_tex;
+    mgRect<int> frame_put;
+    mgRect<int> bar_put;
+    mgRect<int> shadow_put;
+    mgRect<int> body_put;
+
     SetSpriteEnv(&prim, 0);
     prim.Begin(6);
     prim.Texture(HDDDlBar);
     prim.Color(0x80, 0x80, 0x80, alpha);
-    mgRect<int> bar_uv(0x74, 0, 0xC, 0xC);
-    mgRect<int> progress_uv(0x6D, 1, 6, 0xA);
-    mgRect<int> bar(x + 4, y + 0x2E, width - 0xA, 0xE);
-    PrimQuad(&prim, bar, bar_uv);
+    frame_tex.Set(0x74, 0, 0xC, 0xC);
+    bar_tex.Set(0x6D, 1, 6, 0xA);
+    frame_put.Set(x + 4, y + 0x2E, width - 0xA, 0xE);
+    PrimQuad(&prim, frame_put, frame_tex);
     prim.End();
     prim.Begin(6);
-    int fill_width = fptosi(((float) width - (float) (table_2611[0][2] - 0x14 + table_2611[1][4]) - 2.0f) * progress);
-    if (progress < 1.0f) {
+    int end_width = table_2611[0][2] - 0x14 + table_2611[1][4];
+    float inner = ((float)width - (float)end_width) - 2.0f;
+    int bar_width = (int)(inner * rate);
+    if (rate < 1.0f) {
         prim.Color(0x80, 0x80, 0x80, alpha);
     } else {
         prim.Color(0x40, 0x94, 0x40, alpha);
     }
-    mgRect<int> fill(x + 0x17, y + 0x2F, fill_width, 0xA);
-    PrimQuad(&prim, fill, progress_uv);
+    bar_put.Set(x + 0x17, y + 0x2F, bar_width, 0xA);
+    PrimQuad(&prim, bar_put, bar_tex);
     prim.End();
     prim.Bilinear(0);
     prim.Begin(6);
-    for (int i = 0; i < 3; ++i) {
-        short *row = table_2611[i];
-        int    height = row[3];
+    for (int i = 0; i < 3; i++) {
         prim.Color(0, 0, 0, alpha >> 2);
-        mgRect<int> shadow(x + 4, y + 4, width, height);
-        Menu3DivideTextureDraw(&prim, shadow, row, 1);
+        shadow_put.Set(x + 4, y + 4, width, table_2611[i][3]);
+        Menu3DivideTextureDraw(&prim, shadow_put, table_2611[i], 1);
         prim.Color(0x80, 0x80, 0x80, alpha);
-        mgRect<int> panel(x, y, width, height);
-        Menu3DivideTextureDraw(&prim, panel, row, 1);
-        y += height;
+        body_put.Set(x, y, width, table_2611[i][3]);
+        Menu3DivideTextureDraw(&prim, body_put, table_2611[i], 1);
+        y += table_2611[i][3];
     }
     prim.End();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/title", DrawMenuDl__Fiiiif);
-#endif
 /**
  *
  * Draws the hard drive installation image, progress, and messages.

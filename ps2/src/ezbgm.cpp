@@ -32,7 +32,7 @@ int ezBgmInit() {
         do {
             wait--;
         } while (wait >= 0);
-    } while (gCd2.serverr == 0);
+    } while (gCd2.server == 0);
     return 1;
 }
 #else

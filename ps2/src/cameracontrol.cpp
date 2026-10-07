@@ -41,6 +41,7 @@ void CameraCtrlParam::SetFixDist(float distance) {
     max_dist = distance;
     min_dist = distance;
 }
+
 #ifdef NONMATCHING
 CCameraControl::CCameraControl() : mgCCameraFollow(40.0f, 30.0f, 0.0f, 8.0f) {
     mgCCameraFollow(40.0f, 30.0f, 0.0f, 8.0f);
@@ -66,6 +67,7 @@ CCameraControl::CCameraControl() : mgCCameraFollow(40.0f, 30.0f, 0.0f, 8.0f) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/cameracontrol", __ct__14CCameraControlFv);
 #endif
+
 CameraCtrlParam *CCameraControl::GetActiveParam() {
     return &param[active_param];
 }

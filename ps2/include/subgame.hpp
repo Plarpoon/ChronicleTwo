@@ -22,7 +22,7 @@ enum SUBGAME_TYPE {
     SUBGAME_FISHING = 1, /**< Fishing. */
     SUBGAME_GYORACE = 2, /**< The fish race. */
     SUBGAME_BUGGY = 3,   /**< The buggy game. */
-    SUBGAME_UNK_4 = 4,   /**< Accepted sub game with no handlers, which ends on its first frame. */
+    SUBGAME_UNUSED = 4,   /**< Accepted sub game with no handlers, which ends on its first frame. */
     SUBGAME_MAX = 5,
 };
 
@@ -38,6 +38,12 @@ enum SG_PLAY_VOICE_STEP {
     SG_PLAY_VOICE_STANDBY = 3, /**< Waiting for the stream to stand by. */
     SG_PLAY_VOICE_READY = 4,   /**< Ready, waiting for a play request. */
     SG_PLAY_VOICE_PLAYING = 5, /**< Playing until the stream stops. */
+};
+
+enum SUBGAME_CLEAR {
+    SUBGAME_CHARA_BASE = 0x40,
+    SUBGAME_CHARA_NUM = 0x28,
+    SUBGAME_EFFECT_SLOT = 7,
 };
 
 /**

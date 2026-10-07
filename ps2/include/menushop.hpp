@@ -149,7 +149,7 @@ public:
      *
      */
     int GetItemNo(int no) {
-        if (no < 0 || no >= item_num) {
+        if (no < 0 || item_num <= no) {
             return 0;
         }
 
@@ -162,7 +162,7 @@ public:
      *
      */
     int GetHaveNum(int no) {
-        if (no < 0 || no >= item_num) {
+        if (no < 0 || item_num <= no) {
             return 0;
         }
 

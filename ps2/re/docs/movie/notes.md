@@ -146,3 +146,7 @@ decoder type. These functions remain exact in objdiff.
 `viBufAddDMA` still needs its byte-address expression: typed block or byte
 indexing changes its object by one or two instructions. `audioDecBeginPut`
 likewise changes its object when the header offset uses array indexing.
+
+`vblankHandler` and `handler_endimage` retain guarded C++ drafts and retail
+`INCLUDE_ASM` entries. The promoted versions required inline `sync` and `ei`
+instructions, so they do not count as C++ matches.

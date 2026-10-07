@@ -13,7 +13,6 @@
 #include "mglib.hpp"
 #include "water.hpp"
 
-#ifdef NONMATCHING
 /**
  *
  * Transform, clipping and surface parameters unpacked into the water microprogram.
@@ -23,7 +22,8 @@ struct WaterRenderPacket {
     u_int         dma[4];           /**< DMA count tag. */
     u_int         vif[4];           /**< Double-buffer setup and unpack codes. */
     u_long128     clear[3];         /**< Cleared microprogram parameters. */
-    u_int         render_params[4]; /**< Render info parameters with the last word first. */
+    u_int         render_word;
+    float         render_params[3];
     sceVu0FMATRIX world_screen;     /**< Surface-to-screen transform. */
     sceVu0FMATRIX world;            /**< Surface-to-world transform. */
     u_long128     unk_e0[9];
@@ -46,6 +46,7 @@ struct WaterRenderPacket {
 
 STATIC_ASSERT(sizeof(WaterRenderPacket) == 0x260);
 
+#ifdef NONMATCHING
 /**
  *
  * Header of one grid strip, followed by its positions and slope vectors.
@@ -87,48 +88,57 @@ STATIC_ASSERT(sizeof(WaterFinishPacket) == 0x30);
 #endif
 
 // Code (.text)
-void CFireRaster::Step() {
+void CFireRaster::Step(void) {
     FireRasterParticle *free_slot = 0;
-    int                 i = 0;
+    int i = 0;
     FireRasterParticle *particle_slot;
-    int                 phase = 0;
-    int                 offset = 0;
-
-    for (; i < 20; i++, phase += 2, offset++) {
-        particle_slot = &particle[offset];
-
+    int offset = 0;
+    int phase = 0;
+    for (; i < 20; i++, offset += sizeof(FireRasterParticle), phase += 2) {
+        particle_slot = (FireRasterParticle *)((u8 *)this + offset + 0x70);
         if (particle_slot->life <= 0) {
             free_slot = particle_slot;
         } else if (particle_slot->time >= particle_slot->life) {
             memset(particle_slot, 0, sizeof(FireRasterParticle));
         } else {
             particle_slot->position[1] += 1.2f;
-            particle_slot->position[0] = 10.0f * sinf(3.1415927f * ((float) (particle_slot->time + phase) / 10.0f));
-            particle_slot->position[2] = 10.0f * sinf(3.1415927f * ((float) (particle_slot->time + phase + 10) / 8.0f));
+            particle_slot->position[0] = 10.0f * sinf(3.1415927f * ((float)(particle_slot->time + phase) / 10.0f));
+            particle_slot->position[2] = 10.0f * sinf(3.1415927f * ((float)(particle_slot->time + phase + 10) / 8.0f));
             particle_slot->size -= 0.1f;
             particle_slot->time++;
         }
     }
-
     if (free_slot != 0) {
-        mgZeroVectorW((float *) free_slot);
+        mgZeroVectorW((float *)free_slot);
         free_slot->size = 13.0f;
         free_slot->time = rand() % 20;
         free_slot->life = 30;
     }
 }
-#ifdef NONMATCHING
+struct TextureFields {
+    short block;
+    short width;
+    short height;
+    short bpp;
+    char name[32];
+    int vram_size;
+    int image_blocks;
+    int clut_size;
+    u_long tex0;
+    u_long tex1;
+    u_long clamp;
+    u_long128 *image[4];
+    u_long128 *clut;
+    int swizzled;
+    mgCTexture *next;
+};
 void CFireRaster::SetTexture(mgCTexture *texture) {
     if (texture != NULL) {
-        this->texture = *texture;
+        *(TextureFields *)&this->texture = *(TextureFields *)texture;
         this->texture.tex0.bits.tcc = 0;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", SetTexture__11CFireRasterFP10mgCTexture);
-#endif
-#ifdef NONMATCHING
-void CFireRaster::Draw(float *position, float *scale) {
+void CFireRaster::Draw(sceVu0FVECTOR position, float *scale) {
     mgCDrawPrim         prim;
     FireRasterParticle *wisp;
     int                 top_left[4];
@@ -165,11 +175,10 @@ void CFireRaster::Draw(float *position, float *scale) {
             world_position[0] = wisp->position[0] * scale[0];
             world_position[1] = wisp->position[1] * scale[1];
             world_position[2] = wisp->position[2] * scale[2];
-            // The patch dimensions scale while its centre follows the unscaled wisp offset.
             sceVu0AddVector(world_position, position, wisp->position);
             world_position[3] = 1.0f;
             if (mgTransWorldPrim3DSprite(top_left, bottom_right, world_position,
-                                         wisp->size * scale[0], wisp->size * scale[1], 0) != 0) {
+                                       wisp->size * scale[0], wisp->size * scale[1], 0) != 0) {
                 if (top_left[0] < left) {
                     top_left[0] = left;
                 }
@@ -231,9 +240,6 @@ void CFireRaster::Draw(float *position, float *scale) {
     }
     prim.End();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", Draw__11CFireRasterFPfPf);
-#endif
 void CFireRaster::Initialize() {
     int index = 0;
 
@@ -249,11 +255,7 @@ void CThunderEffect::Init() {
     unk_94 = 0;
     unk_98 = 0;
 }
-#ifdef NONMATCHING
 void CWater::Hamon() {
-    float *next;
-    float *current;
-    float *cell;
     float  coefficient;
     float  center_coefficient;
     float  friction;
@@ -262,13 +264,15 @@ void CWater::Hamon() {
     int    row;
     int    column;
     int    index;
+    float *next;
+    float *current;
 
     if (height == height_a) {
-        current = height_a;
         next = height_b;
+        current = height_a;
     } else {
-        current = height_b;
         next = height_a;
+        current = height_b;
     }
     height = next;
     coefficient = speed * speed;
@@ -277,17 +281,16 @@ void CWater::Hamon() {
     for (row = 1; row < rows - 1; row++) {
         for (column = 1; column < columns - 1; column++) {
             index = row * columns + column;
-            cell = &current[index];
-            old_height = next[index];
-            new_height = coefficient * (*(cell - columns) + (cell[-1] + cell[1] + cell[columns])) +
-                         (center_coefficient * cell[0] - old_height);
-            next[index] = new_height - friction * (new_height - old_height);
+            float *cell = &current[index];
+            float *out = &next[index];
+            old_height = *out;
+            new_height = (cell[-1] + cell[1] + cell[columns]) + *(cell - columns);
+            new_height = new_height * coefficient;
+            new_height += center_coefficient * cell[0] - old_height;
+            *out = new_height - friction * (new_height - old_height);
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", Hamon__6CWaterFv);
-#endif
 void CWater::SetVertex(float *a, float *b) {
     mgVectorMaxMin(max, min, a, b);
 }
@@ -382,8 +385,8 @@ void CWater::SetSize(int x, int z, mgCMemory *memory) {
 void CWater::SetParam(float wave_speed, float wave_damping, float param_48, float param_4c) {
     speed = wave_speed;
     damping = wave_damping;
-    unk_48 = param_48;
-    unk_4c = param_4c;
+    surface_param0 = param_48;
+    surface_param1 = param_4c;
 }
 
 void CWater::SetColor(u_char red, u_char green, u_char blue, u_char alpha) {
@@ -403,44 +406,51 @@ CWater::CWater() {
     color[3] = 128;
     speed = 0.1f;
     damping = 0.015f;
-    unk_48 = 0;
-    unk_4c = 0;
+    surface_param0 = 0;
+    surface_param1 = 0;
 }
-#ifdef NONMATCHING
 int CWater::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_INFO *info) {
-    sceVu0IVECTOR      clear = {0, 0, 0, 0};
     sceVu0FMATRIX      world_screen;
+    sceVu0IVECTOR      clear = { 0, 0, 0, 0 };
     sceVu0FVECTOR      color;
     WaterRenderPacket *render;
     u_int             *end;
+    u_int             *cursor;
+    u_int             *start;
     mgCDrawEnv        *env;
     int                flags;
     int                fog_color;
     int                size;
 
     mgMulMatrix(world_screen, info->world_screen, matrix);
-    render = (WaterRenderPacket *) GetScrPad();
+    render = (WaterRenderPacket *)(start = (u_int *)GetScrPad());
     info->GetpLightInfo();
     render->dma[0] = MG_DMA_CNT;
-    render->dma[1] = render->dma[2] = render->dma[3] = 0;
+    render->dma[1] = 0;
+    render->dma[2] = 0;
+    render->dma[3] = 0;
     render->vif[0] = 0;
     render->vif[1] = MG_VIF_BASE | 0x3C;
     render->vif[2] = MG_VIF_OFFSET | 0xB4;
-    render->clear[0] = *(u_long128 *) clear;
-    render->clear[1] = *(u_long128 *) clear;
-    render->clear[2] = *(u_long128 *) clear;
-    render->render_params[0] = info->unk_fb0[3];
-    render->render_params[1] = info->unk_fb0[0];
-    render->render_params[2] = info->unk_fb0[1];
-    render->render_params[3] = info->unk_fb0[2];
+    render->clear[0] = *(u_long128 *)clear;
+    render->clear[1] = *(u_long128 *)clear;
+    render->clear[2] = *(u_long128 *)clear;
+    float *render_values = (float *)info->render_params;
+    render->render_word = info->render_params[3];
+    render->render_params[0] = render_values[0];
+    render->render_params[1] = render_values[1];
+    render->render_params[2] = render_values[2];
     sceVu0CopyMatrix(render->world_screen, world_screen);
     sceVu0CopyMatrix(render->world, matrix);
     info->scissor = 0;
-    *(u_long128 *) render->guard_max = *(u_long128 *) info->guard_max;
-    *(u_long128 *) render->guard_min = *(u_long128 *) info->guard_min;
-    render->guard_min[0] = render->guard_min[1] = 1.0f;
-    render->guard_max[0] = render->guard_max[1] = 4095.0f;
-    *(u_long128 *) render->fog = *(u_long128 *) info->fog.coef;
+    cursor = (u_int *)render->screen_size;
+    *(u_long128 *)render->guard_max = *(u_long128 *)info->guard_max;
+    *(u_long128 *)render->guard_min = *(u_long128 *)info->guard_min;
+    render->guard_min[0] = 1.0f;
+    render->guard_max[0] = 4095.0f;
+    render->guard_min[1] = 1.0f;
+    render->guard_max[1] = 4095.0f;
+    *(u_long128 *)render->fog = *(u_long128 *)info->fog.coef;
     render->screen_size[0] = mgScreenWidth;
     render->screen_size[1] = mgScreenHeight - 1;
     render->screen_offset[0] = mgScreenOffx;
@@ -449,14 +459,16 @@ int CWater::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_I
     color[1] = this->color[1];
     color[2] = this->color[2];
     color[3] = this->color[3];
-    *(u_long128 *) render->color = *(u_long128 *) color;
-    color[0] = unk_48;
-    color[1] = unk_4c;
-    *(u_long128 *) render->surface_params = *(u_long128 *) color;
-    render->vif[3] = MG_VIF_UNPACK_V4_32 | (28 << MG_VIF_NUM_SHIFT);
-    render->start[0] = render->start[1] = render->start[2] = 0;
-    render->start[3] = MG_VIF_MSCAL;
-    render->dma[0] |= 30;
+    *(u_long128 *)render->color = *(u_long128 *)color;
+    color[0] = surface_param0;
+    color[1] = surface_param1;
+    *(u_long128 *)render->surface_params = *(u_long128 *)color;
+    render->vif[3] = MG_VIF_UNPACK_V4_32 | (((u_int)(cursor + 16 - render->vif) / 4 - 1) << MG_VIF_NUM_SHIFT);
+    cursor[16] = 0;
+    cursor[17] = 0;
+    cursor[18] = 0;
+    cursor[19] = MG_VIF_MSCAL;
+    render->dma[0] |= (cursor + 20 - render->vif) / 4;
     flags = 0;
     if ((info->clip | info->scissor) != 0) {
         flags |= 0x1;
@@ -476,51 +488,61 @@ int CWater::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_I
     if (info->attr->no_light != 0) {
         flags |= 0x20;
     }
-    render->state_dma[0] = MG_DMA_CNT | 10;
-    render->state_dma[1] = render->state_dma[2] = 0;
-    render->state_dma[3] = MG_VIF_UNPACK_V4_32 | (1 << MG_VIF_NUM_SHIFT) | 0x26;
-    render->flags[0] = flags;
-    render->flags[1] = render->flags[2] = render->flags[3] = 0;
-    render->direct[0] = render->direct[1] = render->direct[2] = 0;
-    render->direct[3] = MG_VIF_DIRECT | 8;
-    render->giftag[0] = MG_GIFTAG_EOP | 3;
-    render->giftag[1] = 1 << MG_GIFTAG_NREG_SHIFT;
-    render->giftag[2] = 0xE;
-    render->giftag[3] = 0;
-    render->prmode_cont[0] = render->prmode_cont[1] = 0;
-    render->prmode_cont[2] = MG_GS_PRMODECONT;
-    render->prmode_cont[3] = 0;
-    prmode = ((info->attr->fog != 0 && info->fog_enable != 0) << 5) | 0x158;
-    render->prmode[0] = prmode;
-    render->prmode[1] = 0;
-    render->prmode[2] = SCE_GS_PRMODE;
-    render->prmode[3] = 0;
-    fog_color = info->fog.r | (info->fog.g << 8) | (info->fog.b << 16);
-    if (info->attr->fog == 2) {
-        fog_color = 0;
-    } else if (info->attr->fog == 3) {
-        fog_color = 0xFFFFFF;
+    cursor[20] = MG_DMA_CNT | 10;
+    cursor[21] = 0;
+    cursor[22] = 0;
+    cursor[23] = MG_VIF_UNPACK_V4_32 | (1 << MG_VIF_NUM_SHIFT) | 0x26;
+    cursor[24] = flags;
+    cursor[25] = 0;
+    cursor[26] = 0;
+    cursor[27] = 0;
+    cursor[28] = 0;
+    cursor[29] = 0;
+    cursor[30] = 0;
+    cursor[31] = MG_VIF_DIRECT | 8;
+    cursor[32] = MG_GIFTAG_EOP | 3;
+    cursor[33] = 1 << MG_GIFTAG_NREG_SHIFT;
+    cursor[34] = 0xE;
+    cursor[35] = 0;
+    cursor[36] = 0;
+    cursor[37] = 0;
+    cursor[38] = MG_GS_PRMODECONT;
+    cursor[39] = 0;
+    prmode = (((info->attr->fog && info->fog_enable) != 0) << 5) | 0x158;
+    cursor[40] = prmode;
+    cursor[41] = 0;
+    cursor[42] = SCE_GS_PRMODE;
+    cursor[43] = 0;
+    fog_color = info->fog.r;
+    fog_color |= info->fog.g << 8;
+    fog_color |= info->fog.b << 16;
+    if (info->attr->fog > 1) {
+        if (info->attr->fog == 2) {
+            fog_color = 0;
+        }
+        if (info->attr->fog == 3) {
+            fog_color = 0xFFFFFF;
+        }
     }
-    render->fog_color[0] = fog_color;
-    render->fog_color[1] = 0;
-    render->fog_color[2] = SCE_GS_FOGCOL;
-    render->fog_color[3] = 0;
-    env = draw_env;
-    if (env == NULL) {
+    cursor[44] = fog_color;
+    cursor[45] = 0;
+    cursor[46] = SCE_GS_FOGCOL;
+    cursor[47] = 0;
+    cursor += 48;
+    if (draw_env != NULL) {
+        env = draw_env;
+    } else {
         env = &info->draw_env[0];
     }
-    end = (u_int *) (render + 1);
-    end += SetDrawEnvGifTag((u_long128 *) end, info, env) * 4;
-    end[0] = MG_DMA_RET;
-    end[1] = end[2] = end[3] = 0;
-    end += 4;
-    size = (end - (u_int *) render) / 4;
+    cursor += SetDrawEnvGifTag((u_long128 *)cursor, info, env) * 4;
+    cursor[0] = MG_DMA_RET;
+    cursor[1] = 0;
+    cursor[2] = 0;
+    cursor[3] = 0;
+    size = (cursor + 4 - start) / 4;
     SendDMA(packet, size);
     return size;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/water", CreateRenderInfoPacket__6CWaterFPUiPA4_fP13mgRENDER_INFO);
-#endif
 int CWater::Draw(u_int *tag, float (*matrix)[4], mgCDrawManager *draw_manager) {
     if (draw_manager == NULL) {
         draw_manager = &mgDrawManager;
@@ -551,6 +573,7 @@ int CWater::Draw(u_int *tag, float (*matrix)[4], mgCDrawManager *draw_manager) {
     return 0;
 }
 #ifdef NONMATCHING
+
 u_int CWater::CreatePacket(mgCDrawManager *draw_manager) {
     static u_int       prog_vif[4] __attribute__((aligned(16))) = {0, 0, 0, MG_VIF_MSCAL | 0x2};
     static u_int       progf_vif[4] __attribute__((aligned(16))) = {0, 0, 0, MG_VIF_MSCNT};
@@ -749,6 +772,8 @@ void CWaterFrame::Shake(int x, int z, float amount) {
 void CWaterFrame::CreatePacket() {
     GetWater()->CreatePacket(&mgDrawManager);
 }
+
+extern "C" void *__vt__11CWaterFrame[];
 
 CWaterFrame *CreateWaterFrame(int rows, int columns, float *min, float *max, mgCMemory *memory) {
     CWaterFrame  *frame;

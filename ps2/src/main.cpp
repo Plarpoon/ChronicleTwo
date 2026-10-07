@@ -41,17 +41,7 @@ extern const unsigned char at_857__DATA[];
  * @address 0x15D470
  * @size 0x2C
  */
-#ifdef NONMATCHING
-static int VSyncCallBack(int event) {
-    ++vcount__2;
-    if (vcount__2 < 0) {
-        vcount__2 = 0;
-    }
-    return 0;
-}
-#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/main", VSyncCallBack__Fi__2);
-#endif
 
 /**
  *

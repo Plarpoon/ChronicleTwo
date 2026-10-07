@@ -568,7 +568,7 @@ void CMap::GetLightInfo(CMapLightingInfo *out_info, float *ratio, int num) {
                 work[0] = list[i]->fog.r;
                 work[1] = list[i]->fog.g;
                 work[2] = list[i]->fog.b;
-                work[3] = list[i]->fog.unk_b;
+                work[3] = list[i]->fog.a;
                 sceVu0ScaleVector(work, work, ratio[i]);
                 mgAddVector(fog_color, work);
                 work[0] = list[i]->fog.near_dist;
@@ -618,7 +618,7 @@ void CMap::GetLightInfo(CMapLightingInfo *out_info, float *ratio, int num) {
     out_info->fog.r = fog_color[0];
     out_info->fog.g = fog_color[1];
     out_info->fog.b = fog_color[2];
-    out_info->fog.unk_b = fog_color[3];
+    out_info->fog.a = fog_color[3];
     out_info->fog.near_dist = fog[0];
     out_info->fog.far_dist = fog[1];
     out_info->fog.far_value = fog[2];
@@ -1891,9 +1891,9 @@ int mapFUNC_EVENT_DATA(SPI_STACK *stack, int argc) {
     event = &mapNowFuncPoint->event;
     event->event_no = spiGetStackInt(stack++);
     event->point_no = spiGetStackInt(stack++);
-    event->unk_2c = spiGetStackInt(stack++);
-    event->unk_30 = spiGetStackInt(stack++);
-    event->unk_34 = spiGetStackInt(stack++);
+    event->arg1 = spiGetStackInt(stack++);
+    event->arg2 = spiGetStackInt(stack++);
+    event->arg3 = spiGetStackInt(stack++);
 
     if (kind_name != NULL) {
         if (strcmp(kind_name, at_1278) == 0) {
@@ -1923,10 +1923,10 @@ int mapFUNC_EVENT_DATA(SPI_STACK *stack, int argc) {
 
         if (target_name != NULL) {
             if ((u32) strlen(target_name) >= 0x10) {
-                strncpy(event->unk_38, target_name, 0xF);
-                event->unk_38[0xF] = 0;
+                strncpy(event->target, target_name, 0xF);
+                event->target[0xF] = 0;
             } else {
-                strcpy(event->unk_38, target_name);
+                strcpy(event->target, target_name);
             }
         }
     }
@@ -1967,8 +1967,8 @@ int mapFUNC_SOUND_DATA(SPI_STACK *stack, int argc) {
     }
 
     sound->se_no = spiGetStackInt(stack++);
-    sound->unk_24 = spiGetStackFloat(stack++);
-    sound->unk_28 = spiGetStackFloat(stack++);
+    sound->near_dist = spiGetStackFloat(stack++);
+    sound->far_dist = spiGetStackFloat(stack++);
     sound->unk_2c = (float) spiGetStackInt(stack++);
     sound->shape = spiGetStackInt(stack++);
     spiGetStackVector(sound->start, stack);

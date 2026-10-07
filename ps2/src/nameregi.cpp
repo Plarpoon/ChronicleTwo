@@ -1746,7 +1746,7 @@ void CNameRegiMenu::GetSelectedActiveFont(char *dst) {
     }
     if (font_mode == NAMEREGI_FONT_MODE_ALPHA) {
         table = first_table;
-        auto column = cell % 13;
+        int column = cell % 13;
         int  line = cell / 13;
         if (cell >= 26 && cell < 52) {
             table = second_table;

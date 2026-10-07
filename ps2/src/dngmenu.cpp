@@ -101,14 +101,14 @@ void CDngFreeMap::CheckIsViewMove(int x, int y, float &move_x, float &move_y) {
     if ((float) x < view_rect.left) {
         clipped_x = (int) view_rect.left;
     }
-    if ((float) clipped_x > view_rect.right - 10.0f) {
-        clipped_x = (int) (view_rect.right - 10.0f);
+    if (view_rect.right + -10.0f < (float) clipped_x) {
+        clipped_x = (int) (view_rect.right + -10.0f);
     }
     if ((float) y < view_rect.top) {
         clipped_y = (int) view_rect.top;
     }
-    if ((float) (clipped_y - 10) > view_rect.bottom) {
-        clipped_y = (int) (view_rect.bottom - 10.0f);
+    if (view_rect.bottom < (float) (clipped_y - 10)) {
+        clipped_y = (int) (view_rect.bottom + -10.0f);
     }
     move_x = (float) (clipped_x - x);
     move_y = (float) (clipped_y - y);
@@ -448,12 +448,12 @@ void CDngFreeMap::DrawRoot(mgRect<float> rect, DNGMAP_ROOT_INFO *root, int shado
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DrawRoot__11CDngFreeMapF9mgRect_f_P16DNGMAP_ROOT_INFOiUii);
 #endif
-#ifdef NONMATCHING
 unsigned int CDngFreeMap::DrawGlidCheck(GLID_INFO *glid) {
-    unsigned int marks = 0;
+    unsigned int marks;
     if (glid == NULL) {
         return 0;
     }
+    marks = 0;
     for (int direction = 0; direction < GLID_DIR_NUM; direction++) {
         GLID_INFO *neighbour = glid->link_glid[direction];
         if (neighbour == NULL || glid->type != GLID_TYPE_ROOT || neighbour->type != GLID_TYPE_ROOM) {
@@ -465,7 +465,11 @@ unsigned int CDngFreeMap::DrawGlidCheck(GLID_INFO *glid) {
         if (direction == GLID_DIR_LEFT && neighbour->x + 1 == glid->x) {
             marks |= 8;
         }
-        if ((neighbour->room.flag & (DNGMAP_ROOM_FLAG_SUB | DNGMAP_ROOM_FLAG_BOSS)) && neighbour->room.visited != 0) {
+        if ((neighbour->room.flag & DNGMAP_ROOM_FLAG_SUB) != 0 ||
+            (neighbour->room.flag & DNGMAP_ROOM_FLAG_BOSS) != 0) {
+            if (neighbour->room.visited == 0) {
+                continue;
+            }
             if (neighbour->x == glid->x) {
                 if (neighbour->y == glid->y - 1) {
                     marks |= 0x40;
@@ -486,9 +490,6 @@ unsigned int CDngFreeMap::DrawGlidCheck(GLID_INFO *glid) {
     }
     return marks;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DrawGlidCheck__11CDngFreeMapFP9GLID_INFO);
-#endif
 #ifdef NONMATCHING
 /**
  *
@@ -641,23 +642,22 @@ void CDngFreeMap::DrawRoomOne(mgRect<float> rect, DNGMAP_ROOM_INFO *room, unsign
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DrawRoomOne__11CDngFreeMapF9mgRect_f_P16DNGMAP_ROOM_INFOUiif);
 #endif
-#ifdef NONMATCHING
 void CDngFreeMap::DrawGlid(mgRect<float> rect) {
     mgCDrawPrim prim;
     SetSpriteEnv(&prim, 1);
     prim.AntiAliasing(1);
     prim.Begin(2);
     prim.Color(255, 0, 0, (int) alpha);
-    prim.Vertex(rect.left, rect.top, 0.0f);
-    prim.Vertex(rect.left + rect.right, rect.top, 0.0f);
-    prim.Vertex(rect.left + rect.right - 16.0f, rect.top + 20.0f, 0.0f);
-    prim.Vertex(rect.left - 16.0f, rect.top + 20.0f, 0.0f);
-    prim.Vertex(rect.left, rect.top, 0.0f);
+    float top = rect.top;
+    prim.Vertex(rect.left, top, 0.0f);
+    float right = rect.left + rect.right;
+    prim.Vertex(right, top, 0.0f);
+    float bottom = top + 20.0f;
+    prim.Vertex(right + -16.0f, bottom, 0.0f);
+    prim.Vertex(rect.left + -16.0f, bottom, 0.0f);
+    prim.Vertex(rect.left, top, 0.0f);
     prim.End();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DrawGlid__11CDngFreeMapF9mgRect_f_);
-#endif
 #ifdef NONMATCHING
 /**
  *

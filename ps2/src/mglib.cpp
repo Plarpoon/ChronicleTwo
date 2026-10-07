@@ -615,7 +615,7 @@ void mgEndFrame(mgCDrawManager *manager) {
         sceDevConsDraw(font_cons);
     }
     font_draw_flag = 0;
-    display = mgDBuffID != 0 ? &buffers->disp1 : &buffers->disp0;
+    display = mgDBuffID != 0 ? &buffers->disp[1] : &buffers->disp[0];
     if (mgAntialiasing != 0) {
         display->pmode = 0x7F23;
     } else {

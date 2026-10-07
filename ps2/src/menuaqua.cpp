@@ -4943,7 +4943,6 @@ int CAquarium::Step() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Step__9CAquariumFv);
 #endif
-#ifdef NONMATCHING
 void CAquarium::Draw() {
     mgCTextureManager *textures = &mgTexManager;
     int                i;
@@ -4952,14 +4951,14 @@ void CAquarium::Draw() {
     mgSetAmbient(water_ambient.v);
     for (i = 0; i < 6; i++) {
         if (fish[i] != NULL) {
-            textures->ReloadTexture(fish_tex_block[i], (sceVif1Packet *) NULL);
+            textures->ReloadTexture(fish_tex_block[i], static_cast<sceVif1Packet *>(NULL));
             fish[i]->FishDraw();
         }
     }
     float *light = ambient;
     mgSetAmbient(light);
     if (ground_frame != NULL) {
-        textures->ReloadTexture(ground_tex_block, (sceVif1Packet *) NULL);
+        textures->ReloadTexture(ground_tex_block, static_cast<sceVif1Packet *>(NULL));
         mgDrawDirect(ground_frame);
     }
     if (aqua_frame != NULL) {
@@ -4975,14 +4974,14 @@ void CAquarium::Draw() {
         mgEndDraw(NULL);
     }
     if (glass_frame != NULL) {
-        textures->ReloadTexture(glass_tex_block, (sceVif1Packet *) NULL);
+        textures->ReloadTexture(glass_tex_block, static_cast<sceVif1Packet *>(NULL));
         mgDrawDirect(glass_frame);
     }
     if (food != NULL) {
-        textures->ReloadTexture(food_tex_block, (sceVif1Packet *) NULL);
+        textures->ReloadTexture(food_tex_block, static_cast<sceVif1Packet *>(NULL));
         food->DrawDirect();
     }
-    textures->ReloadTexture(menu_tex_block, (sceVif1Packet *) NULL);
+    textures->ReloadTexture(menu_tex_block, static_cast<sceVif1Packet *>(NULL));
     for (int i = 0; i < 3; i++) {
         if (AquaBubble[i] != NULL) {
             AquaBubble[i]->SetTexture(Tex_Aqualium, 0xF8, 0x64);
@@ -5008,7 +5007,7 @@ void CAquarium::Draw() {
         aqua_vector surface_ambient = at_4352;
 
         mgSetAmbient(surface_ambient.v);
-        textures->ReloadTexture(water_tex_block, (sceVif1Packet *) NULL);
+        textures->ReloadTexture(water_tex_block, static_cast<sceVif1Packet *>(NULL));
         mgDrawDirect(suimen_frame);
         if (mizu_frame != NULL) {
             mgDrawDirect(mizu_frame);
@@ -5032,7 +5031,7 @@ void CAquarium::Draw() {
             water->SetPosition(-34.0f, 47.0f, -21.5f);
         }
         mgUnitMatrix(matrix);
-        textures->ReloadTexture(water_tex_block, (sceVif1Packet *) NULL);
+        textures->ReloadTexture(water_tex_block, static_cast<sceVif1Packet *>(NULL));
         mgCTexture frame_buffer;
         mgGetFrameBuffer(&frame_buffer);
         screen = textures->GetTexture(at_3162__2, -1);
@@ -5191,7 +5190,7 @@ void CAquarium::Draw() {
             prim.End();
         }
     }
-    textures->ReloadTexture(menu_tex_block, (sceVif1Packet *) NULL);
+    textures->ReloadTexture(menu_tex_block, static_cast<sceVif1Packet *>(NULL));
     if (mes.title_draw != 0) {
         mgCDrawPrim title_prim;
 
@@ -5204,15 +5203,15 @@ void CAquarium::Draw() {
         title_prim.End();
     }
     mes.DrawTitleMes();
-    textures->ReloadTexture(menu_tex_block, (sceVif1Packet *) NULL);
+    textures->ReloadTexture(menu_tex_block, static_cast<sceVif1Packet *>(NULL));
     if (fish_info_draw != 0 && 0 <= sel_fish && fish[sel_fish] != NULL) {
         DrawFishParam(mgScreenWidth - 0x152, 2, Tex_Aqualium, fish[sel_fish]->data);
     }
     if (0 < love_phase && love_chara != NULL) {
-        textures->ReloadTexture(love_tex_block, (sceVif1Packet *) NULL);
+        textures->ReloadTexture(love_tex_block, static_cast<sceVif1Packet *>(NULL));
         love_chara->DrawDirect();
     }
-    textures->ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *) NULL);
+    textures->ReloadTexture(MenuArg.mes_tex_block, static_cast<sceVif1Packet *>(NULL));
     mes.Draw();
     if (menu_debug_flag != 0) {
         CMenuFont  font;
@@ -5265,9 +5264,6 @@ void CAquarium::Draw() {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Draw__9CAquariumFv);
-#endif
 void MenuAquaInit(mgCMemory *memory, int *tex_block, int) {
     AquaScene = GetMainScene();
     Auqa_Bgm_Volf = AquaScene->GetTimeBgmVolf();

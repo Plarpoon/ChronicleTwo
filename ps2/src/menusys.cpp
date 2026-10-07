@@ -516,7 +516,6 @@ extern s8 cmd_counter_1048;
 
 template <typename T>
 static inline T Ident(T v) { return v; }
-#ifdef NONMATCHING
 int CBaseMenuClass::MenuItemCommandSelect(int select_key, int push_button) {
     CGameDataUsed    *used_data = MenuUserParam.used_data;
     u_long            target;
@@ -895,9 +894,6 @@ int CBaseMenuClass::MenuItemCommandSelect(int select_key, int push_button) {
     }
     return ret;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuItemCommandSelect__14CBaseMenuClassFii);
-#endif
 extern s8 wakutbl_1411[2];
 extern s8 tartbl_1412[2];
 
@@ -9726,7 +9722,6 @@ void MenuWeaponStatusInfoFormSet(CGameDataUsed *item, CDataWeapon *data) {
 extern s8 argtblno_7927[][6];
 extern s8 sel_7928[][6];
 extern s8 conv_7932[];
-#ifdef NONMATCHING
 int MenuItemSelectDiffer(int select) {
     if (CMenuItemInfoPt->viewing_weapon) {
         return 0;
@@ -9804,9 +9799,6 @@ int MenuItemSelectDiffer(int select) {
     CMenuItemInfoPt->key_arg_no = select;
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuItemSelectDiffer__Fi);
-#endif
 void CMenuItemInfo::CheckLoadItemNo() {
     if (view_mode == 0) {
         SetMenuLoadItemNo(0);

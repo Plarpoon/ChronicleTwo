@@ -99,7 +99,7 @@ void DepthOfField(int levels, float *depths, mgCTexture *work_texture, float str
         float step_u = (float)(dest_right - dest_left) / 16.0f;
         float x = (float)screen_left;
         float u = (float)dest_left;
-        prim.Direct(0x3B, 0x8000000080ULL);
+        prim.Direct(SCE_GS_TEXA, 0x8000000080ULL);
         prim.Color(0x80, 0x80, 0x80, alpha[0]);
         int texel_u;
         prim.TextureCrd4(texel_u = (int)u, dest_top + 16);
@@ -176,7 +176,7 @@ void LensFlare(sceVu0IVECTOR screen, sceVu0FVECTOR color, int bank, char *textur
     prim.TextureMapEnable(1);
     mgSetPkFrameBuffer(second);
     prim.Begin(MG_PRIM_SPRITE);
-    prim.Direct(0x3B, 0x8000000080ULL);
+    prim.Direct(SCE_GS_TEXA, 0x8000000080ULL);
     prim.Texture(first);
     prim.Color(0x80, 0x80, 0x80, 0x80);
     prim.TextureCrd4(0, 0);

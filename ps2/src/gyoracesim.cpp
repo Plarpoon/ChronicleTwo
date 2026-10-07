@@ -46,7 +46,6 @@ void               SetRaceFishParam(RACE_FISH_PARAM *fish, grRACE_INFO *race);
 void               FishModifyParam(grFISH_PARAM *param, float *out, float average);
 void               CharacterBonus(grFISH_PARAM *source, RACE_FISH_PARAM *fish, int count);
 void               RndFishParam(RACE_FISH_PARAM *fish);
-#include <cstring>
 
 #include "crandom.hpp"
 

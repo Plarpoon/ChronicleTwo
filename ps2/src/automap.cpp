@@ -154,7 +154,7 @@ void CMiniMapSymbol::SetMapInfo(CMap *new_map, CAutoMapParts *new_auto_map_parts
 void CMiniMapSymbol::DrawSymbolOpen() {
     prim.Initialize(0, 0);
     prim.Preset2D();
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Color(0x80, 0x80, 0x80, 0x60);
     prim.Texture(TEX_SystenFrame);
     prim.SetScirror(x - w / 2, y - h / 2, w, h);
@@ -218,7 +218,7 @@ void CMiniMapSymbol::DrawSymbol_Chara(CCharacter2 *chara) {
     CPreSprite sprite;
     sprite.Initialize(NULL, NULL);
     sprite.Preset2D();
-    sprite.Begin(4);
+    sprite.Begin(MG_PRIM_TRIANGLE_STRIP);
     sprite.Color(0x80, 0x80, 0x80, 0x60);
     sprite.Texture(TEX_SystenFrame);
     sprite.SetScirror(x - w / 2, y - h / 2, w, h);
@@ -263,7 +263,7 @@ void CMiniMapSymbol::Draw(float *pos) {
     float delta[4];
     sprite.Initialize(NULL, NULL);
     sprite.Preset2D();
-    sprite.Begin(6);
+    sprite.Begin(MG_PRIM_SPRITE);
     sprite.Texture(texture);
     sprite.Color(0x80, 0x80, 0x80, 0x60);
     sprite.SetScirror(x - w / 2, y - h / 2, w, h);

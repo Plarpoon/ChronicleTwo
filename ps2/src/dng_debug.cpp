@@ -54,28 +54,11 @@ extern char  at_973__2[];
 extern char  at_974__2[];
 extern char  at_975[];
 extern CFont dbFont;
-#include <cstdio>
-#include <cstdlib>
 
-#include "actionchara.hpp"
 #include "colprim.hpp"
-#include "dng_debug.hpp"
-#include "dng_event.hpp"
-#include "dng_main.hpp"
-#include "effscript.hpp"
-#include "font.hpp"
 #include "gamepad.hpp"
-#include "mainloop.hpp"
-#include "mg_drawprim.hpp"
-#include "mg_memory.hpp"
-#include "mg_texture.hpp"
-#include "mglib.hpp"
-#include "monster.hpp"
-#include "prespr.hpp"
 #include "savedata.hpp"
-#include "savedatadungeon.hpp"
 #include "scenesnd.hpp"
-#include "snd_mngr.hpp"
 #include "userdata.hpp"
 
 extern int   command_int[];
@@ -148,7 +131,7 @@ void dngDebugDraw() {
         sprite.Initialize(0, 0);
         sprite.Preset2D();
         sprite.TextureMapEnable(0);
-        sprite.Begin(6);
+        sprite.Begin(MG_PRIM_SPRITE);
         sprite.Color(0x10, 0x10, 0x10, 0x48);
         sprite.Vertex(0xE, 0x46, 0);
         sprite.Vertex(0x104, 0x14C, 0);
@@ -393,7 +376,7 @@ void DrawSystemParamInfo() {
     sprite.Initialize(0, 0);
     sprite.Preset2D();
     sprite.TextureMapEnable(0);
-    sprite.Begin(6);
+    sprite.Begin(MG_PRIM_SPRITE);
     sprite.Color(0x10, 0x10, 0x10, 0x48);
     sprite.Vertex(0xE, 0x116, 0);
     sprite.Vertex(0x104, 0x19C, 0);
@@ -431,7 +414,7 @@ void DrawSystemParamInfo2() {
     sprite.Initialize(0, 0);
     sprite.Preset2D();
     sprite.TextureMapEnable(0);
-    sprite.Begin(6);
+    sprite.Begin(MG_PRIM_SPRITE);
     sprite.Color(0x10, 0x10, 0x10, 0x48);
     sprite.Vertex(0xE, 0xB2, 0);
     sprite.Vertex(0x144, 0x198, 0);

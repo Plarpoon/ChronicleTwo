@@ -44,10 +44,9 @@
 #include "sound.hpp"
 #include "swordeffect.hpp"
 #include "userdata.hpp"
+#include "mainloop.hpp"
 
-extern mgCTextureManager mgTexManager;
 extern short             gift_item_tbl[][3];
-extern int               LanguageCode;
 extern char             *dung_progtxt_notlift_mons[];
 
 /**
@@ -83,21 +82,16 @@ extern char              at_2589[];
 extern char              at_2809[];
 extern int               no_score_uv[][4];
 extern int               guard_score_uv[][4];
-extern CDamageScore      DamageScoreMons[8];
 extern int               dmg_sc_cnt_2104;
 extern s8                init_2105;
 extern SPI_TAG_PARAM     mos_data_anlyze_tag[];
 extern "C" CCameraControl *GetCamera__6CSceneFi(CScene *, int);
 extern "C" void SethitEffect__15CHitEffectImageFPfPfffffii(CHitEffectImage *, float *, float *, float, float, float, float, int, int);
-extern CUserDataManager *DngUserData;
-extern CEffectScriptMan *FxScriptMan;
-float                    SearchArea(CScene *scene, float *from, float *to, float range);
 void                     HitEffectSet(CScene *scene, float *point, int flags);
 void                     GuardEffectSet(CScene *scene, float *point, int play_script);
 void                     HitScoreSet(float *pos, int type, int value);
 int                      CheckGiftPack(CActiveMonster *monster, CColPrim *prim);
 int                      _MONSTER_NAME(SPI_STACK *stack, int argument_count);
-void                     LoadMonsterLanguage(int language);
 
 #pragma define_section dead ".dead" ".dead"
 __declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
@@ -1461,7 +1455,7 @@ void CMonsterMan::CheckDamage() {
                     break;
                 }
             }
-            area->unk_98 |= react->flag;
+            area->practice_actions |= react->flag;
             int melee = 0;
             if (prim->param->kind == DAMAGE_KIND_MAX_MELEE || prim->param->kind == DAMAGE_KIND_MONICA_MELEE) {
                 melee = 1;
@@ -1483,7 +1477,7 @@ void CMonsterMan::CheckDamage() {
             for (int e = 0; e < 8; e++) {
                 power = 0.007843138f * (float)prim->element[e];
                 resist = 0.01f * (float)monster->tbl->element_resist[e];
-                if (area->unk_8c != 2) {
+                if (area->weather != 2) {
                     element_damage += resist * (damage * power);
                 } else {
                     element_damage += resist * (damage * power) * element_rate[e];
@@ -2324,7 +2318,7 @@ int CMonsterMan::CheckPhoto(CScene::InScreenCharaInfo *info) {
 
         active[index]->GetRotation(rotation);
         CHARA_ENTRY_OBJECT *entry = active[index]->GetEntryObjectPos(0, 0, position);
-        radius = 5.0f * entry->unk_04;
+        radius = 5.0f * entry->size;
         mgGetDirFromCamera(direction, position);
         distance = mgDistVector(direction);
 

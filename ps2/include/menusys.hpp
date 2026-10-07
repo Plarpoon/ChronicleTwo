@@ -300,7 +300,7 @@ public:
     s16                mode;   /**< Question that is open. @see MENU_ASK_MODE */
     s16                step;   /**< Step within the open question. */
     u8                 opened; /**< Non-zero once the menu has run its opening script. */
-    s16                unk_6;
+    s16                message_type;
     char              *script;      /**< Menu command script of the screen. */
     int                script_size; /**< Size of the menu command script in bytes. */
     s32                unk_10;
@@ -629,7 +629,7 @@ STATIC_ASSERT(sizeof(CBaseMenuClass) == 0x110);
  */
 class CMenuKeyFunc {
 public:
-    u8     unk_0;
+    u8     frame_parity;
     u8     key_enable;    /**< Non-zero while the menu takes key input. */
     u8     key_input;     /**< Non-zero once a direction key has been pressed. */
     u32    select_key;    /**< Direction keys pressed this frame. @see MENU_SELECT_KEY */
@@ -1569,7 +1569,7 @@ STATIC_ASSERT(sizeof(MENU_ITEM_CURSOR_INFO) == 0xC);
  *
  */
 struct BUILDUP_WEAPON_INFO {
-    s16            unk_0;
+    s16            monster_mode;
     s8             mode;      /**< Phase of the build-up view. */
     s8             select_no; /**< Selected build-up choice. */
     s16            build_up;  /**< Number of available build-up choices. */

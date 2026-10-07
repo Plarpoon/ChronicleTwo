@@ -280,12 +280,12 @@ void DrawBox(float (*corners)[4], int r, int g, int b) {
 
     prim.Initialize(0, 0);
     prim.DepthTestEnable(1);
-    prim.DepthTest(1);
+    prim.DepthTest(MG_DEPTH_TEST_GEQUAL);
     prim.AlphaTestEnable(0);
     prim.AlphaBlendEnable(1);
     prim.TextureMapEnable(0);
     prim.Coord(1);
-    prim.Begin(1);
+    prim.Begin(MG_PRIM_LINE);
     prim.Color(r, g, b, 0x80);
     visible = 1;
 
@@ -988,7 +988,7 @@ void DrawEventEdit(void) {
         prim.Initialize(NULL, NULL);
         prim.Preset2D();
         prim.TextureMapEnable(0);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x10, 0x10, 0x10, 0x50);
         prim.Vertex(0xE, 0xE, 0);
         prim.Vertex(0xE2, 0x22, 0);

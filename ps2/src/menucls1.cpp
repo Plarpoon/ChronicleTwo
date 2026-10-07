@@ -1130,7 +1130,7 @@ int MenuUseItemCheckFunc(CGameDataUsed *item, CItemUseTarget *target, int apply)
                     chara->hp.SetFillRate(1.0f);
                     chara->status_attr = 0;
                     sound = 10;
-                    battle->unk_98 |= 0x80;
+                    battle->practice_actions |= 0x80;
                 }
             }
             break;
@@ -1155,7 +1155,7 @@ int MenuUseItemCheckFunc(CGameDataUsed *item, CItemUseTarget *target, int apply)
                         monica->hp.SetFillRate(1.0f);
                     }
                     sound = 10;
-                    battle->unk_98 |= 0x80;
+                    battle->practice_actions |= 0x80;
                 }
             }
         } else if (MenuUsedItemNo == 0x1AA) {
@@ -1165,7 +1165,7 @@ int MenuUseItemCheckFunc(CGameDataUsed *item, CItemUseTarget *target, int apply)
                     used++;
                     chara->hp.AddPoint(item->data.attach.level);
                     sound = 10;
-                    battle->unk_98 |= 0x80;
+                    battle->practice_actions |= 0x80;
                 }
             }
         } else {
@@ -1178,7 +1178,7 @@ int MenuUseItemCheckFunc(CGameDataUsed *item, CItemUseTarget *target, int apply)
                     chara->hp.AddPoint(effect.value[used]);
                     sound = 10;
                     used++;
-                    battle->unk_98 |= 0x80;
+                    battle->practice_actions |= 0x80;
                 }
             }
             int add;
@@ -1230,7 +1230,7 @@ int MenuUseItemCheckFunc(CGameDataUsed *item, CItemUseTarget *target, int apply)
                     count++;
                 }
                 if (apply != 0 && changed != 0) {
-                    battle->unk_98 |= 0x80;
+                    battle->practice_actions |= 0x80;
                     if (sound < 0) {
                         sound = -1;
                         sndSePlay(scene->se_battle_id, 0x56, 0);
@@ -1275,7 +1275,7 @@ int MenuUseItemCheckFunc(CGameDataUsed *item, CItemUseTarget *target, int apply)
                 if (apply != 0) {
                     int amount = 999;
                     if (weapon->item_type == ITEM_DATA_ROBO_PART_D) {
-                        amount = (int)(weapon->data.robopart.gage1.max / 2.0f);
+                        amount = (int)(weapon->data.robopart.whp.max / 2.0f);
                     }
                     weapon->Repair(amount);
                     sound = 9;

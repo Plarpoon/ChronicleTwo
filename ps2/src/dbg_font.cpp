@@ -274,7 +274,7 @@ void dbgCJISFont::__putc(unsigned long serno) {
         prim.AlphaTestEnable(0);
         prim.AlphaBlendEnable(1);
         if (back_enable != 0) {
-            prim.Begin(6);
+            prim.Begin(MG_PRIM_SPRITE);
             prim.Color(back_color[0], back_color[1], back_color[2], back_color[3]);
             prim.Vertex(x - 1, y - 1, 0);
             prim.Vertex(x + (char_width - (15 - (glyph_width - 1))), y + char_height + 1, 0);
@@ -282,7 +282,7 @@ void dbgCJISFont::__putc(unsigned long serno) {
         }
         prim.TextureMapEnable(1);
         if (shadow_enable != 0) {
-            prim.Begin(6);
+            prim.Begin(MG_PRIM_SPRITE);
             prim.Texture(texture);
             prim.Color(0, 0, 0, 128);
             long column = serno & 0x3F;
@@ -294,7 +294,7 @@ void dbgCJISFont::__putc(unsigned long serno) {
             prim.Vertex(x + (char_width - (15 - (glyph_width - 1))), y + char_height + 1, 0);
             prim.End();
         }
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Texture(texture);
         prim.Color(color[0], color[1], color[2], color[3]);
         long column = serno & 0x3F;

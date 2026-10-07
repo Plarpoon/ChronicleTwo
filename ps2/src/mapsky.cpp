@@ -23,9 +23,6 @@ static s32           _SKY_IMG(SPI_STACK *stack, s32 arg_count);
 static s32           _SKY_MDS(SPI_STACK *stack, s32 arg_count);
 static s32           _SUN_MDS(SPI_STACK *stack, s32 arg_count);
 static s32           _SKYB_MDS(SPI_STACK *stack, s32 arg_count);
-extern MAP_SKY_INFO *skyInfo;
-extern int           skyAnmNum;
-extern int           skybAnmNum;
 
 static int  _SKY_BG(SPI_STACK *stack, int argument_count);
 static int  _SKY_ANIME(SPI_STACK *stack, int argument_count);

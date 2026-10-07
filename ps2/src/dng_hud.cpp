@@ -71,7 +71,7 @@ void CLevelupInfo::Draw() {
         CPreSprite sprite;
         sprite.Initialize(NULL, NULL);
         sprite.Preset2D();
-        sprite.Begin(6);
+        sprite.Begin(MG_PRIM_SPRITE);
         sprite.Texture(TEX_SystenFrame);
 
         switch (phase) {
@@ -213,10 +213,10 @@ void CPiyori::Draw() {
         prim.Preset2D();
         prim.Coord(1);
         prim.DepthTestEnable(1);
-        prim.ZMask(-1);
+        prim.ZMask(MG_Z_MASK_MASKED);
         prim.Bilinear(1);
         prim.TextureMapEnable(1);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x80, 0x80, 0x80, alpha);
         prim.Texture(TEX_SystemEffect1);
         i = 0;
@@ -314,10 +314,10 @@ void CGiftMark::Draw() {
             prim.Preset2D();
             prim.Coord(1);
             prim.DepthTestEnable(1);
-            prim.ZMask(-1);
+            prim.ZMask(MG_Z_MASK_MASKED);
             prim.Bilinear(1);
             prim.TextureMapEnable(1);
-            prim.Begin(6);
+            prim.Begin(MG_PRIM_SPRITE);
             prim.Color(0x80, 0x80, 0x80, 0x80);
             prim.Texture(TEX_SystemEffect1);
             i = 0;
@@ -427,7 +427,7 @@ void CEnemyLifeGage::Draw(int hide_gekirin) {
             CPreSprite fill;
             frame.Initialize(NULL, NULL);
             frame.Preset2D();
-            frame.Begin(6);
+            frame.Begin(MG_PRIM_SPRITE);
             frame.Bilinear(0);
             frame.Texture(TEX_SystenFrame);
             int y = mgScreenHeight - 44;
@@ -445,7 +445,7 @@ void CEnemyLifeGage::Draw(int hide_gekirin) {
             frame.Coord(0);
             frame.TextureMapEnable(0);
             frame.Shading(1);
-            frame.Begin(4);
+            frame.Begin(MG_PRIM_TRIANGLE_STRIP);
             float hp_width = 170.0f * ((float) hp / max_hp);
             int   width = (int) (hp_width * scale);
             y = mgScreenHeight - 39;
@@ -470,7 +470,7 @@ void CEnemyLifeGage::Draw(int hide_gekirin) {
             sprite.Coord(0);
             sprite.TextureMapEnable(0);
             sprite.Shading(1);
-            sprite.Begin(3);
+            sprite.Begin(MG_PRIM_TRIANGLE);
             sprite.Color(30, 20, 30, 128);
             position[0] /= 16;
             position[1] /= 16;
@@ -515,7 +515,7 @@ void CEnemyLifeGage::Draw(int hide_gekirin) {
                 sprite.Preset2D();
                 sprite.Coord(0);
                 sprite.TextureMapEnable(1);
-                sprite.Begin(6);
+                sprite.Begin(MG_PRIM_SPRITE);
                 sprite.Color(128, 128, 128, 128);
                 sprite.Texture(TEX_SystenFrame);
                 int x = position[0] - half_width;
@@ -629,7 +629,7 @@ void CDamageScore::Draw() {
         prim.Initialize(NULL, NULL);
         prim.Preset2D();
         prim.Coord(1);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Texture(TEX_SystenFrame);
         prim.AlphaTestEnable(1);
         pos[3] = 1.0f;
@@ -652,7 +652,7 @@ void CDamageScore::Draw() {
         prim.Initialize(NULL, NULL);
         prim.Preset2D();
         prim.Coord(1);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Texture(TEX_SystenFrame);
         prim.AlphaTestEnable(1);
         pos[3] = 1.0f;
@@ -756,7 +756,7 @@ void CDamageScore2::Draw(CScene *scene) {
                 sprite.Initialize(NULL, NULL);
                 sprite.Preset2D();
                 sprite.Coord(1);
-                sprite.Begin(6);
+                sprite.Begin(MG_PRIM_SPRITE);
                 sprite.Texture(TEX_SystenFrame);
                 sprite.AlphaTestEnable(1);
                 frame->GetWorldPosition0(position);
@@ -859,7 +859,7 @@ void CLockOnModel::Draw() {
         return;
     }
 
-    size = entry->unk_04;
+    size = entry->size;
     sceVu0CopyVector(pos, target_pos);
 
     if (!(height <= 85.0f)) {
@@ -898,7 +898,7 @@ void CLockOnModel::Draw() {
     prim.Initialize(NULL, NULL);
     prim.Preset2D();
     prim.Coord(1);
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(TEX_SystenFrame);
     prim.Color(0x80, 0x80, 0x80, 0x80);
 
@@ -966,7 +966,7 @@ void CWarningGage2::Draw() {
         CPreSprite prim;
         prim.Initialize(NULL, NULL);
         prim.Preset2D();
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x80, 0x80, 0x80, 0x80);
 
         if (layout == WARNING_GAGE_LAYOUT_MAIN) {

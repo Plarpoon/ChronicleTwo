@@ -53,10 +53,8 @@ void        GetPhotoNameStr(int photo_no, char *name);
 void        MenuPolygonSetEnv();
 void        MenuPolygonEnvReset();
 int         PauseEnable(int enable);
-void        SetupUnitMan(CScene *scene, CUserDataManager *user_data, int unit, ROBO_INFO_DATA *robo);
 void        EdEventMenuExit();
 void        MenuInventInit(mgCMemory *memory, int *args, int page);
-void        MenuAquaInit(mgCMemory *memory, int *args, int page);
 short       CheckEventDay(int *remaining_hours);
 void        MenuWorldTrans();
 void        MenuDebugModeDraw();
@@ -149,7 +147,6 @@ extern char        at_1936[];
 extern char        at_1937[];
 extern char        at_1938[];
 extern CMenuInter  CMenuInterStatic;
-extern int         OmakeFlag;
 extern CDC2Mes    *MenuInterMes;
 extern signed char MenuInterMesDrawFlag;
 extern char        at_2329[];
@@ -182,7 +179,6 @@ extern float       menu_old_chara_position[4];
 extern float       menu_old_chara_rotation[4];
 extern int         MenuBGMVolume_Save;
 extern mgCMemory   MenuMainStack;
-extern int (*menu_keyfunctbl[])();
 extern MenuKeyPageTable  at_1514__4;
 extern signed char       refresh_cnt_1523;
 extern signed char       init_1524;
@@ -217,8 +213,6 @@ extern short             MenuTopicLength;
 extern int               TopicFontX;
 extern char             *topic_tbl_1777[7][3];
 extern CMenuFont         TopicFont;
-extern CGamePad          GamePad__2;
-extern CDC2Mes          *MenuDCMsg[9];
 extern MonsterTableEntry monster_table[];
 extern mgCMemory         MenuMainStack_Next;
 extern char              at_1956[];
@@ -228,7 +222,6 @@ extern char              at_2344[];
 extern char              at_2345[];
 extern char              at_2450[];
 extern char             *filetbl_2141[];
-int                      ReadBGSync();
 
 #pragma define_section dead ".dead" ".dead"
 __declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
@@ -745,7 +738,7 @@ int MenuMainExit() {
         SetMenuEtcFlag(1);
     }
 
-    (*(CUserDataManager **) ((u8 *) MenuCommonInfo + 0xA0))->SetActiveChrNo(active_chara);
+    MenuCommonInfo->user_data->SetActiveChrNo(active_chara);
 
     if (MenuMainScene != NULL) {
         chara = MenuMainScene->GetCharacter(0);
@@ -901,7 +894,7 @@ int MenuMainKey() {
         MenuItemCommandCounter = 0;
     }
 
-    MenuCommonInfo->unk_0 ^= 1;
+    MenuCommonInfo->frame_parity ^= 1;
     MenuCommonInfo->StepMenuBGM();
     MenuDrawParamStep();
 
@@ -1292,7 +1285,7 @@ void DrawMenuTopic(void) {
         mgCDrawPrim *prim = GetMenuPrim();
         manager->ReloadTexture(TopicTex->block, (sceVif1Packet *)NULL);
         SetSpriteEnv(prim, 0);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(TopicTex);
         prim->Color(0x80, 0x80, 0x80, MenuTopicAlpha);
         int title_width = 0x28;
@@ -1303,7 +1296,7 @@ void DrawMenuTopic(void) {
         prim->End();
         manager->ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *)NULL);
         SetSpriteEnv(prim, 1);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Color(0x2A, 0x22, 0x1E, MenuTopicAlpha * 6 / 10);
         prim->Vertex(box.left - 2, box.top - 2, 0);
         prim->Vertex(box.right + 2, box.bottom + 2, 0);
@@ -1318,7 +1311,7 @@ void DrawMenuTopic(void) {
         TopicFont.DrawDirect(TopicFont.str, TopicFont.pos_x, TopicFont.pos_y);
         ResetMenuScissor();
         menu_maintopic_colortbl_shadow[0][3] = menu_maintopic_colortbl_shadow[2][3] = 64.0f * (float)MenuTopicAlpha / 128.0f;
-        prim->Begin(4);
+        prim->Begin(MG_PRIM_TRIANGLE_STRIP);
         h = 24.0f;
         w = 40.0f;
         x = 20.0f;
@@ -1326,7 +1319,7 @@ void DrawMenuTopic(void) {
         mgRect<float> fill0(x, y, w, h);
         PrimFillRect4(prim, fill0, menu_maintopic_colortbl_shadow[0], menu_maintopic_colortbl_shadow[1], menu_maintopic_colortbl_shadow[2], menu_maintopic_colortbl_shadow[3]);
         prim->End();
-        prim->Begin(4);
+        prim->Begin(MG_PRIM_TRIANGLE_STRIP);
         h = 24.0f;
         w = 40.0f;
         x = 162.0f;
@@ -1334,7 +1327,7 @@ void DrawMenuTopic(void) {
         mgRect<float> fill1(x, y, w, h);
         PrimFillRect4(prim, fill1, menu_maintopic_colortbl_shadow[1], menu_maintopic_colortbl_shadow[0], menu_maintopic_colortbl_shadow[3], menu_maintopic_colortbl_shadow[2]);
         prim->End();
-        prim->Begin(4);
+        prim->Begin(MG_PRIM_TRIANGLE_STRIP);
         h = 24.0f;
         w = 90.0f;
         x = 20.0f;
@@ -1342,7 +1335,7 @@ void DrawMenuTopic(void) {
         mgRect<float> fill2(x, y, w, h);
         PrimFillRect4(prim, fill2, menu_maintopic_colortbl[1], menu_maintopic_colortbl[0], menu_maintopic_colortbl[3], menu_maintopic_colortbl[2]);
         prim->End();
-        prim->Begin(4);
+        prim->Begin(MG_PRIM_TRIANGLE_STRIP);
         h = 24.0f;
         w = 90.0f;
         x = 110.0f;

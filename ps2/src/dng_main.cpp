@@ -69,57 +69,31 @@ extern "C" float      viewAngleH__2;
 extern "C" float      viewAngleV__2;
 extern char           at_3589[];
 extern CWeaponElement wep_effect[8];
-#include "actionchara.hpp"
-#include "automap.hpp"
-#include "cameracontrol.hpp"
 #include "charasetup.hpp"
 #include "collision.hpp"
 #include "colprim.hpp"
 #include "dataread.hpp"
 #include "dbg_font.hpp"
-#include "dng_debug.hpp"
-#include "dng_effect.hpp"
-#include "dng_event.hpp"
-#include "dng_hud.hpp"
 #include "dng_object.hpp"
-#include "dng_status.hpp"
 #include "editexception.hpp"
-#include "effscript.hpp"
-#include "event.hpp"
-#include "event_func.hpp"
 #include "eventedit.hpp"
 #include "funcpoint.hpp"
 #include "gamedata.hpp"
 #include "gamepad.hpp"
 #include "helpmes.hpp"
-#include "mainloop.hpp"
-#include "maintex.hpp"
 #include "map.hpp"
-#include "mapload.hpp"
 #include "mapselect.hpp"
 #include "menumain.hpp"
-#include "mg_camera.hpp"
-#include "mg_drawprim.hpp"
-#include "mg_math.hpp"
-#include "mg_texture.hpp"
-#include "mglib.hpp"
-#include "monster.hpp"
 #include "nd_meswin.hpp"
 #include "nowload.hpp"
 #include "padcontrol.hpp"
-#include "photo.hpp"
 #include "pot.hpp"
 #include "prespr.hpp"
-#include "savedata.hpp"
-#include "savedatadungeon.hpp"
-#include "sceneevent.hpp"
-#include "scenesnd.hpp"
 #include "screeneffect.hpp"
 #include "snd_mngr.hpp"
 #include "sphida.hpp"
 #include "subgame.hpp"
 #include "sysmes.hpp"
-#include "userdata.hpp"
 #include "wavetable.hpp"
 
 // Small uninitialised data (.sbss)
@@ -154,8 +128,6 @@ CPullItemManager     PullItemMan;
 mgCFrame            *TornadoModel;
 static int           wep_effect_cnt;
 
-void            EntryEventScript(int no);
-void            ResetEyeView(CActionChara *chara);
 int             DngMainKey();
 int             RunMainEvent();
 void            CheckWeaponEnable();
@@ -171,7 +143,6 @@ int             EventScriptSetup(SYSTEM_SCRIPT_INFO *script);
 int             ChangeSetUnit(int dir);
 void            InitEyeCamera(CActionChara *chara);
 int             IsRunDeadEvent(CActionChara *chara);
-extern CGamePad GamePad__2;
 extern int      debug_cursor;
 extern int      debug_mons_no;
 extern int      debug_mons_cur;
@@ -384,9 +355,9 @@ void InitDungeonMain(INIT_LOOP_ARG arg) {
     area->quake_count = 0;
     area->script.running = 0;
     area->subject_counter = 0;
-    area->unk_98 = 0;
+    area->practice_actions = 0;
     area->floor_status = 0;
-    area->unk_8c = 0;
+    area->weather = 0;
     area->lock_on_mode = 0;
     BattleAreaScene->map_name[0] = '\0';
 
@@ -1545,7 +1516,7 @@ void DngMainDraw() {
 
     ActiveMonster->DrawEffectScript();
 
-    if (BattleAreaScene->unk_8c == 2) {
+    if (BattleAreaScene->weather == 2) {
         CPreSprite prim;
 
         prim.Initialize(NULL, NULL);
@@ -1554,9 +1525,9 @@ void DngMainDraw() {
         prim.Coord(0);
         prim.Shading(1);
         prim.DepthTestEnable(0);
-        prim.DepthTest(-1);
-        prim.AlphaBlend(1);
-        prim.Begin(1);
+        prim.DepthTest(MG_DEPTH_TEST_ALWAYS);
+        prim.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
+        prim.Begin(MG_PRIM_LINE);
         int x = 16;
 
         for (int r = 0; r < 132; r++) {
@@ -2863,7 +2834,7 @@ void IsEventRun() {
             pallet->elapsed = 0;
             pallet->repeats = 0;
             sndSePlay(GetSystemSndID(), 10, 0);
-            BattleAreaScene->unk_98 |= 0x80;
+            BattleAreaScene->practice_actions |= 0x80;
         }
     }
 
@@ -3335,7 +3306,7 @@ void DebugMainDraw() {
         prim.Initialize(NULL, NULL);
         prim.Preset2D();
         prim.TextureMapEnable(0);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x10, 0x10, 0x40, 0x74);
         prim.Vertex(0x10, 0x28, 0);
         prim.Vertex(0x100, 0x120, 0);
@@ -3375,7 +3346,7 @@ void DebugMainDraw() {
             prim.Initialize(NULL, NULL);
             prim.Preset2D();
             prim.TextureMapEnable(0);
-            prim.Begin(6);
+            prim.Begin(MG_PRIM_SPRITE);
             prim.Color(8, 8, 0x20, 0x74);
             prim.Vertex(0x5C, 0x3C, 0);
             prim.Vertex(0x168, 0x158, 0);

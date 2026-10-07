@@ -1935,7 +1935,7 @@ int _SET_DMG2(RS_STACKDATA *stack, int argc) {
     frame_a = object->frame;
 
     if (power <= 0.0f) {
-        power = object->unk_04;
+        power = object->size;
     }
 
     if (index_b >= 0) {
@@ -4412,7 +4412,7 @@ int _SET_INDEXOBJ_SIZE(RS_STACKDATA *stack, int argument_count) {
     int                 offset = object_index * sizeof(CHARA_ENTRY_OBJECT);
     int                 address = (int) objects;
     address = offset + address;
-    ((CHARA_ENTRY_OBJECT *) address)->unk_04 = size;
+    ((CHARA_ENTRY_OBJECT *) address)->size = size;
     return 1;
 }
 
@@ -4437,7 +4437,7 @@ int _GET_INDEXOBJ_SIZE(RS_STACKDATA *stack, int argument_count) {
     object_index *= sizeof(CHARA_ENTRY_OBJECT);
     object_index += object_base;
     CHARA_ENTRY_OBJECT *object = (CHARA_ENTRY_OBJECT *) object_index;
-    SetStack(stack, object->unk_04);
+    SetStack(stack, object->size);
     return 1;
 }
 

@@ -33,9 +33,7 @@ extern int EditDebugFlag;
 extern int EditDebugTexb;
 extern int Select;
 extern int LEditFlag;
-#include <cstring>
 
-extern CGamePad GamePad__2;
 extern int      EditDebugFlag, EditDebugTexb, Select, SelTAG, sg_type, map_jump;
 extern int      save_no, load_no, condition, map_flag_no, LEditFlag, LightType, DirLightNo, fish_num;
 extern int      EventNo;
@@ -115,7 +113,7 @@ int EditDebugLoop(CScene *scene, EditDebugInfo *info) {
     background.AlphaBlendEnable(1);
     background.AlphaTestEnable(0);
     background.DepthTestEnable(0);
-    background.Begin(6);
+    background.Begin(MG_PRIM_SPRITE);
     background.Color(1, 1, 1, 64);
     background.Vertex(10, 10, 0);
     background.Vertex(250, 200, 0);
@@ -365,7 +363,7 @@ void LightingEdit(CScene *scene) {
     prim.AlphaBlendEnable(1);
     prim.AlphaTestEnable(0);
     prim.DepthTestEnable(0);
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Color(1, 1, 1, 64);
     prim.Vertex(10, 10, 0);
     prim.Vertex(150, 300, 0);
@@ -554,7 +552,7 @@ void LightingEdit(CScene *scene) {
         prim.AlphaBlendEnable(0);
         prim.AlphaTestEnable(0);
         prim.DepthTestEnable(0);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(light->bg_color);
         prim.Vertex(20, 230, 0);
         prim.Vertex(50, 260, 0);
@@ -570,7 +568,7 @@ void LightingEdit(CScene *scene) {
         prim.AlphaBlendEnable(0);
         prim.AlphaTestEnable(0);
         prim.DepthTestEnable(0);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(light->light_color[DirLightNo]);
         prim.Vertex(20, 230, 0);
         prim.Vertex(50, 260, 0);
@@ -629,7 +627,7 @@ void LightingEdit(CScene *scene) {
         prim.AlphaBlendEnable(1);
         prim.AlphaTestEnable(0);
         prim.DepthTestEnable(0);
-        prim.Begin(1);
+        prim.Begin(MG_PRIM_LINE);
         prim.Color(0, 255, 0, 64);
         prim.Vertex4(anchor);
         prim.Vertex4(screen.m[1]);

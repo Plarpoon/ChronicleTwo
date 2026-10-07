@@ -16,6 +16,7 @@
 #include "mg_texture.hpp"
 #include "savedata.hpp"
 #include "snd_mngr.hpp"
+#include "mainloop.hpp"
 
 static const float kFenceChainDistance = 5.0f;
 static const int   kBalanceLimit = 4;
@@ -37,7 +38,6 @@ struct NpcLiveName {
 };
 
 extern "C" NpcLiveName at_983__3;
-extern int             LanguageCode;
 extern u_long128       at_796__4;
 
 // Code (.text)

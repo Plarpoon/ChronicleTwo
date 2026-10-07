@@ -174,7 +174,6 @@ extern char at_2567[];
 
 extern char at_1124[];
 
-char *GetTopAddress(char *text, int size, int id);
 
 #include "common.h"
 #include "mw_runtime.h"
@@ -191,11 +190,11 @@ void MySetPrim(mgCDrawPrim *prim, int mode, int bilinear) {
     switch (mode) {
         case 1:
             prim->AlphaBlendEnable(1);
-            prim->AlphaBlend(1);
+            prim->AlphaBlend(MG_ALPHA_BLEND_NORMAL);
             prim->AlphaTestEnable(1);
             prim->AlphaTest(1, 0);
             prim->DepthTestEnable(0);
-            prim->ZMask(-1);
+            prim->ZMask(MG_Z_MASK_MASKED);
             prim->Shading(0);
             prim->TextureMapEnable(1);
             prim->Bilinear(0);
@@ -230,7 +229,7 @@ void MySetPrim(mgCDrawPrim *prim, int mode, int bilinear) {
         case 7:
             prim->AlphaTestEnable(0);
             prim->DepthTestEnable(0);
-            prim->ZMask(-1);
+            prim->ZMask(MG_Z_MASK_MASKED);
             prim->TextureMapEnable(0);
             prim->AlphaBlendEnable(1);
             prim->AntiAliasing(1);
@@ -254,7 +253,7 @@ void set2DSpriteEasy(mgCDrawPrim *primitive, mgRect<int> destination,
 void _set2DSprite(char *texture_name, mgCDrawPrim *primitive, mgRect<int> destination,
                   mgRect<int> texture, RGBAQ_TYPE *color) {
     if (MesAbsDrawOff == 0) {
-        primitive->Begin(6);
+        primitive->Begin(MG_PRIM_SPRITE);
         MySetTex(texture_name, primitive);
         set2DSpriteEasy(primitive, destination, texture, color);
         primitive->End();
@@ -270,14 +269,14 @@ void FillRect(int x, int y, int w, int h, int r, int g, int b, int a) {
     message_draw_prim drawer;
     drawer.prim.Initialize(NULL, NULL);
     drawer.prim.AlphaBlendEnable(1);
-    drawer.prim.AlphaBlend(1);
+    drawer.prim.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
     drawer.prim.AlphaTestEnable(1);
     drawer.prim.AlphaTest(1, 0);
     drawer.prim.DepthTestEnable(0);
-    drawer.prim.ZMask(-1);
+    drawer.prim.ZMask(MG_Z_MASK_MASKED);
     drawer.prim.Bilinear(0);
     drawer.prim.TextureMapEnable(0);
-    drawer.prim.Begin(6);
+    drawer.prim.Begin(MG_PRIM_SPRITE);
     drawer.prim.Color(r, g, b, a);
     drawer.prim.Vertex(x, y, 0);
     drawer.prim.Vertex(x + w, y + h, 0);
@@ -390,12 +389,12 @@ void ClsMes::DrawFukidashi_sub(mgCDrawPrim *prim, int dx, int dy, int layer) {
 void ClsMes::DrawFukidashi(int a, int b, int c) {
     message_draw_prim drawer;
     drawer.prim.Initialize(NULL, NULL);
-    drawer.prim.ZMask(-1);
+    drawer.prim.ZMask(MG_Z_MASK_MASKED);
     drawer.prim.AlphaTestEnable(0);
     drawer.prim.AlphaBlendEnable(1);
     drawer.prim.DAlphaTest(0, 0);
     drawer.prim.DepthTestEnable(0);
-    drawer.prim.DepthTest(-1);
+    drawer.prim.DepthTest(MG_DEPTH_TEST_ALWAYS);
     drawer.prim.TextureMapEnable(0);
     drawer.prim.Bilinear(1);
     drawer.prim.AntiAliasing(1);
@@ -3480,13 +3479,13 @@ void ClsMes::DrawFukidashiShadow() {
     prim->Initialize(NULL, NULL);
     prim->AlphaTestEnable(0);
     prim->DepthTestEnable(0);
-    prim->ZMask(-1);
+    prim->ZMask(MG_Z_MASK_MASKED);
     prim->TextureMapEnable(0);
     prim->AlphaBlendEnable(1);
     int origin_y = fptosi(draw_off_y);
     prim->offset_x = fptosi(draw_off_x) * 16;
     prim->offset_y = origin_y * 16;
-    prim->Begin(5);
+    prim->Begin(MG_PRIM_TRIANGLE_FAN);
     prim->Color(0, 0, 0, 0x40);
     int center_x = fptosi(LinerInterpolation((float) fukidashi_centre_x, (float) fukidashi_x, fade));
     int center_y = fptosi(LinerInterpolation((float) fukidashi_centre_y, (float) fukidashi_y, fade));
@@ -3736,7 +3735,7 @@ void ClsMes::DrawFont() {
                     bottom = mgScreenHeight - 1;
                 }
 
-                prim.Direct(0x40, (unsigned long) left | ((unsigned long) right << 16) |
+                prim.Direct(SCE_GS_SCISSOR_1, (unsigned long) left | ((unsigned long) right << 16) |
                                       ((unsigned long) top << 32) | ((unsigned long) bottom << 48));
             }
 
@@ -3787,7 +3786,7 @@ void ClsMes::DrawFont() {
         last_y = y;
 
         if (scissor_on != 0 && line_pos_on[line] == 0) {
-            prim.Direct(0x40, ((unsigned long) (mgScreenWidth - 1) << 16) |
+            prim.Direct(SCE_GS_SCISSOR_1, ((unsigned long) (mgScreenWidth - 1) << 16) |
                                   ((unsigned long) (mgScreenHeight - 1) << 48));
         }
     }

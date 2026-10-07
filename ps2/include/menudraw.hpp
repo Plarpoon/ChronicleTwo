@@ -197,7 +197,7 @@ struct MENUFORMPARTS_TYPE {
     float                      y; /**< Position relative to the form. */
     float                      w; /**< Width. */
     float                      h; /**< Height. */
-    float                      unk_2c;
+    float                      picture_scale;
     int                        etc_info[4];   /**< Extra values whose meaning depends on dtype, such as a number to draw. */
     MENU_PARTS_EFFECT_STRUCT1 *effect;        /**< Animations attached to the part. */
     u8                         effect_num;    /**< Number of entries in effect. */
@@ -281,10 +281,10 @@ STATIC_ASSERT(sizeof(MENUFORM_MAKEBRD_LINE) == 0x6);
 struct MENUFORM_MAKEBRD_INFO {
     MENUFORM_MAKEBRD_LINE line[4];      /**< Lines of the board. */
     int                   material_num; /**< Number of materials listed. */
-    int                   unk_1c;
-    int                   unk_20;
-    int                   unk_24;
-    int                   unk_28;
+    int                   make_num;
+    int                   make_cursor;
+    int                   decrease_flash_frames;
+    int                   increase_flash_frames;
 };
 
 STATIC_ASSERT(sizeof(MENUFORM_MAKEBRD_INFO) == 0x2C);

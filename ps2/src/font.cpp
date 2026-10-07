@@ -905,7 +905,7 @@ void CFont::DrawDirect(char *text, int x, int y) {
     int height = fptosi(offset_y);
     local.sizes.size_x = fptosi(offset_x) * 16;
     local.sizes.size_y = height * 16;
-    (&local.prim)->Begin(6);
+    (&local.prim)->Begin(MG_PRIM_SPRITE);
     int   len = strlen(text);
     int   pen_x = 0;
     int   pen_y = 0;

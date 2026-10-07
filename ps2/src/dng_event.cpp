@@ -100,7 +100,7 @@ void CStartupEpisodeTitle::DrawEpisode(int mes_tex_block, int frame_tex_block) {
     prim.Preset2D();
     prim.Coord(0);
     prim.TextureMapEnable(1);
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(TEX_SystenFrame2);
     int bar_y = mgScreenHeight - 0x38;
     prim.Color(0x80, 0x80, 0x80, (int)(128.0f * alpha));
@@ -1092,7 +1092,7 @@ void BattleAreaBGMCtrl() {
                 }
 
                 scene = DngMainScene;
-                DngMainScene->GetActiveBgmInfo()->unk_c = 1.0f - fade;
+                DngMainScene->GetActiveBgmInfo()->master_volf = 1.0f - fade;
                 scene->SetVolfBGM(scene->GetActiveBgmInfo()->volf);
                 state->battle_bgm_vol = fade;
                 return;
@@ -1105,7 +1105,7 @@ void BattleAreaBGMCtrl() {
                     sndSeStop(EdEventInfo.snd_id[4], 0, 0);
                     DngMainScene->RePlayBGM();
                     scene = DngMainScene;
-                    DngMainScene->GetActiveBgmInfo()->unk_c = 0.0f;
+                    DngMainScene->GetActiveBgmInfo()->master_volf = 0.0f;
                     scene->SetVolfBGM(scene->GetActiveBgmInfo()->volf);
                 } else {
                     sndSetSeVolf(EdEventInfo.snd_id[4], 0, fade, 0);
@@ -1114,7 +1114,7 @@ void BattleAreaBGMCtrl() {
                 state->battle_bgm_vol = fade;
                 return;
             case 4:
-                rate = DngMainScene->GetActiveBgmInfo()->unk_c;
+                rate = DngMainScene->GetActiveBgmInfo()->master_volf;
                 rate += 0.033333335f;
 
                 if (!(rate < 1.0f)) {
@@ -1123,7 +1123,7 @@ void BattleAreaBGMCtrl() {
                 }
 
                 scene = DngMainScene;
-                DngMainScene->GetActiveBgmInfo()->unk_c = rate;
+                DngMainScene->GetActiveBgmInfo()->master_volf = rate;
                 scene->SetVolfBGM(scene->GetActiveBgmInfo()->volf);
                 break;
         }
@@ -1944,7 +1944,7 @@ void AutoSetMonster() {
     int             gate_key;
 
     if (ActiveMonster != NULL) {
-        *(int *) ((u8 *) DngMainScene + 0x2FEC) = 0;
+        DngMainScene->battle_area.battle_clear = 0;
         floor_no = DngSaveDataDungeon->stage_id;
         spawn_count = ((CMonsterMan *) ActiveMonster)->locate.num;
         floor_id = DngSaveDataDungeon->floor_id[DngSaveDataDungeon->stage_id];
@@ -2001,7 +2001,7 @@ void AutoSetMonster(int base_index, float *position, float *direction, int optio
     CActiveMonster *monster;
 
     if (ActiveMonster != NULL) {
-        *(int *) ((u8 *) DngMainScene + 0x2FEC) = 0;
+        DngMainScene->battle_area.battle_clear = 0;
         index = (ActiveMonster)->SearchBaseIndex(base_index);
 
         if (index != -1) {
@@ -2063,9 +2063,9 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
     area->quake_count = 0;
     area->script.running = 0;
     area->subject_counter = 0;
-    area->unk_98 = 0;
+    area->practice_actions = 0;
     area->floor_status = 0;
-    area->unk_8c = 0;
+    area->weather = 0;
     area->lock_on_mode = 0;
     area->pause_flag |= 0x400;
     CheckItemDngKey();

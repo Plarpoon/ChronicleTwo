@@ -108,10 +108,10 @@ struct DNG_BATTLE_AREA {
     BattleEffectMan     *battle_effect;    /**< Battle effects of the dungeon. */
     s32                  battle_bgm_state; /**< Step of the battle music change on entering and leaving a fight. */
     float                battle_bgm_vol;   /**< Volume the battle music is played at. */
-    s8                   unk_8c;
+    s8                   weather;
     u8                   unk_8d[0x3];
     u64                  subject_counter; /**< Play time at which the floor's subject counter was last reset. */
-    u32                  unk_98;
+    u32                  practice_actions;
     s8                   map_effect_id; /**< Map effect number set by event scripts, or -1. */
     u8                   unk_9d;
     s16                  lock_on_mode; /**< How the player picks a target: 0 nearest with lock-on, 2 the RockOn target selection; set by _SET_LOCKON_MODE. */
@@ -216,7 +216,7 @@ public:
         s32       port;    /**< Sound port the bank is loaded into (sndPORT). */
         s32       snd_id;  /**< Sound ID of the loaded bank, or -1. */
         s32       load_no; /**< Number of the music loaded, or -1. */
-        float     unk_c;
+        float     master_volf;
         s32       vol;        /**< Volume of the music, 0 to 127. */
         float     volf;       /**< Scale applied to vol. */
         float     fade_volf;  /**< Fade scale applied to vol, 0 to 1. */
@@ -247,7 +247,7 @@ public:
         s32   state;   /**< Playback state of the music (sndSQ_STATE); 1 plays, 2 pauses and below 1 stops it on restore. */
         s32   load_no; /**< Number of the music loaded. */
         s32   play_no; /**< Number of the music played. */
-        float unk_c;
+        float master_volf;
         s32   vol;      /**< Volume of the music, 0 to 127. */
         float volf;     /**< Scale applied to vol. */
         s32   time_vol; /**< Non-zero when the volume follows the lighting of the time of day. */

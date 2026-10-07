@@ -55,7 +55,6 @@ extern CHRINFO_SEQ        *now_seq_ptr;
 extern CHRINFO_SEQ_HEADER *now_seqhd_ptr;
 extern unsigned int       *eff_pack_ptr;
 extern int                 eff_pack_size;
-extern mgCTextureManager   mgTexManager;
 extern int                 alloc_vertex_num;
 extern char                alloc_vertex[25][16];
 extern char                at_1395[14];
@@ -146,28 +145,6 @@ int                  _SKIN_MODEL(SPI_STACK *stack, int argc);
 int                  _LOD_MODEL_START(SPI_STACK *stack, int argc);
 int                  _LOD_MODEL_END(SPI_STACK *stack, int argc);
 #include <libvu0.h>
-
-#include <cmath>
-#include <cstdio>
-#include <cstring>
-
-#include "character.hpp"
-#include "dataread.hpp"
-#include "dynamicanime.hpp"
-#include "effect.hpp"
-#include "gameutil.hpp"
-#include "mg_dataset.hpp"
-#include "mg_frame.hpp"
-#include "mg_math.hpp"
-#include "mg_memory.hpp"
-#include "mg_sprite.hpp"
-#include "mg_texture.hpp"
-#include "mglib.hpp"
-#include "outline.hpp"
-#include "scriptinterpreter.hpp"
-#include "snd_mngr.hpp"
-#include "swordeffect.hpp"
-#include "visualmotion.hpp"
 
 #pragma define_section dead ".dead" ".dead"
 __declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
@@ -1486,7 +1463,7 @@ void CCharacter2::Initialize() {
 
     for (i = 0; i < 0x18; i++) {
         this->entry_object[i].frame = NULL;
-        *(int *) &this->entry_object[i].unk_04 = 0;
+        *(int *) &this->entry_object[i].size = 0;
         this->entry_object[i].group = -1;
         this->entry_object[i].enable = 0;
     }
@@ -2036,7 +2013,7 @@ int _OBJECT_NAME(SPI_STACK *stack, int argc) {
         if (found != 0) {
             nowChr->entry_frame[frame_slot++] = found;
             nowChr->entry_object[object_slot].frame = found;
-            *(int *) &nowChr->entry_object[object_slot].unk_04 = 0;
+            *(int *) &nowChr->entry_object[object_slot].size = 0;
             nowChr->entry_object[object_slot].group = object_slot;
             nowChr->entry_object[object_slot++].enable = 1;
         }
@@ -2113,7 +2090,7 @@ int _OBJECT_NAME2(SPI_STACK *stack, int argc) {
             }
 
             nowChr->entry_object[object_slot].frame = found;
-            nowChr->entry_object[object_slot].unk_04 = value;
+            nowChr->entry_object[object_slot].size = value;
             nowChr->entry_object[object_slot].group = id;
             nowChr->entry_object[object_slot++].enable = 1;
         }
@@ -3556,7 +3533,7 @@ void CCharacter2::Copy(CCharacter2 &dest, mgCMemory *memory) {
                     dest.entry_object[index].frame = NULL;
                 } else {
                     dest.entry_object[index].frame = dest.CObjectFrame::frame->SearchFrame(entry_object[index].frame->name);
-                    dest.entry_object[index].unk_04 = entry_object[index].unk_04;
+                    dest.entry_object[index].size = entry_object[index].size;
                     dest.entry_object[index].group = entry_object[index].group;
                     dest.entry_object[index].enable = entry_object[index].enable;
                 }

@@ -62,12 +62,10 @@ extern int              SelectMode;
 extern int              SelectMapType;
 extern int              select_1009;
 extern signed char      init_1010;
-extern EVENT_VIEW_INFO *EventInfo;
 extern int              EventInfoNum;
 extern int              BossEventTop;
 extern int              sel_event;
 extern int              top_event;
-extern int              BossBattleSelFlag;
 extern char             MapNameBuff[0x8000];
 extern char             SelectMapName[];
 extern char           **SelectMapList[8];
@@ -76,7 +74,6 @@ extern char            *map_sel_type[8];
 extern int              select__1049[8];
 extern int              top__1050[8];
 extern SPI_TAG_PARAM    tag__7[];
-extern CGamePad         GamePad__2;
 extern EventListColors  at_1270__4;
 extern LineBreakPair    at_1377__2;
 extern char             at_1040__4[];
@@ -98,40 +95,11 @@ extern char             at_859__3[];
 extern char             at_860__2[];
 int                     mlMAP_NAME_NUM(SPI_STACK *stack, int argc);
 int                     mlMAP_NAME(SPI_STACK *stack, int argc);
-void                    LoadMapName(int language, u_long128 *buffer);
 static MAP_NAME_INFO   *GetMapNameInfo(int map_no);
-void                    GetMapPath(char *path, char *name);
-int                     GetMapType(int map_no);
-int                     GetMapAreaNo(int map_no);
-int                     GetMapSelType(int map_no);
-int                     GetMapSndDataID(int map_no);
-char                   *GetMapName(int map_no, char **title);
-int                     SearchMapNo(char *name);
-char                   *GetMapTitle(int map_no);
-char                   *GetAddMapPath(int map_no);
 int                     MapTypeSelect();
 int                     MapSelect();
-void                    InitSaveDataEdit(mgCMemory *stack);
-int                     EventViewLoop();
-void                    AtraMiriaOnOff(int mode, CCharacter2 *chara, int enable);
 static char            *GetLine(char **columns, char *position, char *end);
 #ifdef NONMATCHING
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
-#include "character.hpp"
-#include "dataread.hpp"
-#include "editdata.hpp"
-#include "font.hpp"
-#include "gamepad.hpp"
-#include "mainloop.hpp"
-#include "mg_frame.hpp"
-#include "mg_memory.hpp"
-#include "savedata.hpp"
-#include "scenesnd.hpp"
-#include "scriptinterpreter.hpp"
-#include "vlgr_info.hpp"
 
 static int            MapNameNum;
 static MAP_NAME_INFO *map_name;
@@ -157,10 +125,6 @@ int                   BossBattleSelFlag;
 extern SPI_TAG_PARAM  tag__7[3];
 extern char          *map_sel_type[MAP_SEL_TYPE_NUM];
 extern char           SelectMapName[0x100];
-extern int            select__1049[8];
-extern int            top__1050[8];
-extern int            SedSelData[SED_ITEM_NUM];
-extern char          *config_str[1];
 #endif
 
 // Code (.text)

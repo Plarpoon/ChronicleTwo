@@ -102,7 +102,7 @@ struct CDataCommon {
     u8    active_set;    /**< Non-zero when the item can be set as an active item. */
     u8    unk_1d;
     s16   stack_num; /**< Count of the item one stack can hold. */
-    u8    unk_20;
+    u8    icon_texture_no;
     u8    unk_21[3];
     u32   attribute; /**< ITEM_ATTRIBUTE bits. */
     char *name;      /**< Display name of the item, from the item message script. */
@@ -174,7 +174,7 @@ public:
     s16 attribute_max[8]; /**< Limits of the attribute parameters. */
     u32 special;          /**< Special ability bits the weapon starts with. */
     u8  unk_30[8];
-    u8  unk_38;
+    u8  initial_fusion_point;
     u8  fusion_point;       /**< Synthesis points the weapon gains at each level-up. */
     s16 buildup_weapon[3];  /**< Item numbers of the weapons this weapon can build up into. */
     s16 buildup_monster[3]; /**< Monsters that must have been defeated to build up, or negative for none. */
@@ -205,13 +205,13 @@ STATIC_ASSERT(sizeof(CDataWeapon) == 0x4C);
 class CDataRoboPart {
 public:
     s16 use_capacity; /**< Energy capacity the part uses when fitted. */
-    s16 unk_2;
+    s16 energy;
     s16 unk_4;
-    s16 unk_6;
+    s16 durability;
     s16 unk_8;
     s16 unk_a;
     s16 unk_c[8];
-    s16 unk_1c;
+    s16 defence;
     s16 info_type_d; /**< Attack type of a part of item type 0xD. */
     s16 info_type_e; /**< Attack type of a part of item type 0xE. */
     u8  offset_no;   /**< Number of the joint and sound files of the part. */
@@ -239,11 +239,11 @@ class CDataBreedFish {
 public:
     float size; /**< Standard size of the fish. */
     s16   unk_4;
-    s16   unk_6;
-    s16   unk_8;
-    s16   unk_a;
-    s16   unk_c;
-    s16   unk_e;
+    s16   battle;
+    s16   stamina;
+    s16   boost;
+    s16   endurance;
+    s16   tenacity;
     s16   unk_10;
     s16   unk_12;
 

@@ -19,13 +19,7 @@ __declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
 }
 
 #ifdef NONMATCHING
-#include <cstdio>
 
-#include "mg_drawprim.hpp"
-#include "mg_frame.hpp"
-#include "mg_memory.hpp"
-#include "mg_texture.hpp"
-#include "mglib.hpp"
 #endif
 
 int CreatSmoothPassSW(float (*out)[4], float (*ring)[4], int point_num, int division, int start, int ring_size) {
@@ -142,10 +136,10 @@ void CSWordAfterEffect::Draw() {
     if (texture != NULL) textures->ReloadTexture(tex_block, (sceVif1Packet *)NULL);
     prim.Initialize(NULL, NULL);
     prim.AlphaBlendEnable(1);
-    prim.AlphaBlend(2);
+    prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
     prim.AlphaTestEnable(1);
     prim.AlphaTest(1, 0);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.Bilinear(1);
     if (texture != NULL) {
         prim.TextureMapEnable(1);
@@ -155,8 +149,8 @@ void CSWordAfterEffect::Draw() {
     prim.Coord(1);
     prim.Shading(1);
     prim.DepthTestEnable(1);
-    prim.DepthTest(1);
-    prim.Begin(4);
+    prim.DepthTest(MG_DEPTH_TEST_GEQUAL);
+    prim.Begin(MG_PRIM_TRIANGLE_STRIP);
     if (texture != NULL) prim.Texture(texture);
     float u = (float)tex_u;
     float u_step = (float)tex_w / (float)count;

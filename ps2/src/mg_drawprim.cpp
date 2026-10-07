@@ -361,21 +361,21 @@ void mgCDrawPrim::Direct(unsigned long reg, unsigned long data) {
  *
  */
 struct mgCTextureFields {
-    short  word0;
-    short  word1;
-    short  word2;
-    short  word3;
+    short  block;
+    short  width;
+    short  height;
+    short  bpp;
     char   name[32]; /**< Texture name copied with its register state. */
-    int    field28;
-    int    field2_c;
-    int    field30;
-    u_long field38;
-    u_long field40;
-    u_long field48;
-    float  floats[4];
-    int    field60;
-    int    field64;
-    int    field68;
+    int    vram_size;
+    int    image_blocks;
+    int    clut_size;
+    u_long tex0_bits;
+    u_long tex1_bits;
+    u_long clamp_bits;
+    float  image[4];
+    int    clut;
+    int    swizzled;
+    int    next;
 };
 
 /**
@@ -399,11 +399,11 @@ void mgCDrawPrim::Texture(mgCTexture *source) {
         ((mgCTexture *) &self->texture)->Bilinear(self->bilinear);
         u_long *packet = self->command_write;
         packet[0] = 0;
-        packet[1] = 0x3F;
-        packet[2] = self->texture.field40;
-        packet[3] = 0x14;
-        packet[4] = self->texture.field38;
-        packet[5] = 6;
+        packet[1] = SCE_GS_TEXFLUSH;
+        packet[2] = self->texture.tex1_bits;
+        packet[3] = SCE_GS_TEX1_1;
+        packet[4] = self->texture.tex0_bits;
+        packet[5] = SCE_GS_TEX0_1;
         self->command_write = packet + 6;
     }
 }

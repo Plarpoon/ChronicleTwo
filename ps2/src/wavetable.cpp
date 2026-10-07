@@ -9,8 +9,6 @@ extern signed char init_303;
 
 #include <libvu0.h>
 
-#include <cstdlib>
-
 #include "mg_drawprim.hpp"
 #include "mg_texture.hpp"
 #include "mglib.hpp"
@@ -47,7 +45,7 @@ void CWaveTable::CreateTexture(mgCTexture *output_texture) {
     mgCDrawPrim prim;
     prim.Initialize(NULL, NULL);
     prim.DepthTestEnable(0);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.Shading(1);
     prim.AlphaBlendEnable(1);
 
@@ -111,8 +109,8 @@ void CWaveTable::CreateTexture(mgCTexture *output_texture) {
 
     prim.End2();
     prim.Shading(0);
-    prim.AlphaBlend(2);
-    prim.Begin(6);
+    prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Color(0, 0, 0, 128);
     prim.Vertex(-1, -1, 0);
     prim.Vertex(output_texture->width + 1, output_texture->height + 1, 0);

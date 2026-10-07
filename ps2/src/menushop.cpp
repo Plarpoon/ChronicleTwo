@@ -34,7 +34,6 @@
 
 mgCMemory MenuLocalStack;
 
-CInventUserData *GetInventUserDataPtr();
 
 extern short            NowSellMode;
 extern SHOP_PRICE_INFO *Spi_PriceList;
@@ -1421,7 +1420,7 @@ void ShopSellListDraw(int &tex_block, float *pos) {
             break;
         }
         prim->Bilinear(0);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(Tex_Shop);
         prim->Color(0x80, 0x80, 0x80, 0x80);
         PrimQuad(prim, x - 4.0f, y + 40.0f, line_rect);
@@ -1439,7 +1438,7 @@ void ShopSellListDraw(int &tex_block, float *pos) {
         mgRect<float> icon_rect(x, y, 32.0f, 40.0f);
         if (item_no == 0x1A8 || item_no == 0x1AB || item_no == 0x1AC || item_no == 0x1A6) {
             prim->Bilinear(1);
-            prim->Begin(6);
+            prim->Begin(MG_PRIM_SPRITE);
             prim->Color(0x80, 0x80, 0x80, 0x80);
             mgRect<int> robo_icon(0x6A, 0xAE, 0x22, 0x22);
             if (LanguageCode > 0) {
@@ -1977,7 +1976,6 @@ int MenuNPCQuestViewKey() {
     return MenuQuestView->KeyStep();
 }
 
-extern int   menu_debug_flag;
 extern s8    randam_checktbl[];
 extern short tbl_2469[7][12];
 extern short at_2470[12];
@@ -1994,7 +1992,7 @@ void MenuNPCQuestViewDraw() {
     DrawMenuTilePattern(prim, Tex_QuestMemo, QuestTilePatternXY[0], QuestTilePatternXY[0],
                         mgRect<int>(0x180, 0, 0x80, 0x80), 0, NULL);
     SetSpriteEnv(prim, 0);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(Tex_QuestMemo);
     mgRect<int> board_rect(0, 0xBA, 0x184, 0x146);
     mgRect<int> line_rect(0, 0xB4, 0x138, 6);
@@ -2016,7 +2014,7 @@ void MenuNPCQuestViewDraw() {
             if (y >= 0x143) {
                 break;
             }
-            prim->Begin(6);
+            prim->Begin(MG_PRIM_SPRITE);
             prim->Texture(Tex_QuestMemo);
             prim->Color(0x80, 0x80, 0x80, 0x80);
             PrimQuad(prim, 118.0f, (float)(y - 2), line_rect);
@@ -2062,7 +2060,7 @@ void MenuNPCQuestViewDraw() {
             if (y >= 0x143) {
                 break;
             }
-            prim->Begin(6);
+            prim->Begin(MG_PRIM_SPRITE);
             prim->Texture(Tex_QuestMemo);
             prim->Color(0x80, 0x80, 0x80, 0x80);
             PrimQuad(prim, 118.0f, (float)(y - 2), line_rect);
@@ -2113,7 +2111,7 @@ void MenuNPCQuestViewDraw() {
     }
     ResetMenuScissor();
     textures->ReloadTexture(Tex_QuestMemo->block, (sceVif1Packet *)NULL);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(Tex_QuestMemo);
     prim->Color(0x80, 0x80, 0x80, 0x80);
     PrimQuad(prim, 412.0f, 75.0f, mgRect<int>(0x1F4, 0x104, 0xC, 0xFC));
@@ -2151,7 +2149,7 @@ void MenuNPCQuestViewDraw() {
         }
         DrawMenuFillBox((float)(box_x + 6), 125.0f, 384.0f, (float)(box_h - 0xC), 0x56, 0, 0, 0);
         SetSpriteEnv(prim, 0);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(Tex_QuestMemo);
         prim->Color(0x80, 0x80, 0x80, 0x80);
         for (int part = 0; part < 7; part++) {

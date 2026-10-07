@@ -76,9 +76,9 @@ void InitTakePhoto() {
     ShowLevelUpCnt = 0;
 }
 
-void LoadTakePhoto(int arg0, mgCMemory *memory, u_long128 *buffer) {
+void LoadTakePhoto(int tex_block, mgCMemory *memory, u_long128 *buffer) {
     WorkTex = mgTexManager.EnterTexture(0x7FFF, at_852__6, NULL, 0x40, 0x40, 0x10, 0, 0, 0);
-    CameraTexb = arg0;
+    CameraTexb = tex_block;
     Font__3.Init();
     Font__3.Preset(4);
     Font__3.SetFuchi(3);
@@ -212,8 +212,8 @@ int DrawTakePhoto(USER_PICTURE_INFO *picture, float *distance) {
         capture.TextureMapEnable(1);
         capture.AlphaBlendEnable(0);
         capture.DepthTestEnable(0);
-        capture.ZMask(-1);
-        capture.Begin(6);
+        capture.ZMask(MG_Z_MASK_MASKED);
+        capture.Begin(MG_PRIM_SPRITE);
         capture.Texture(&frame);
         capture.Color(128, 128, 128, 128);
         capture.TextureCrd(0, 0);
@@ -227,10 +227,10 @@ int DrawTakePhoto(USER_PICTURE_INFO *picture, float *distance) {
     prim.Initialize(NULL, NULL);
     prim.DepthTestEnable(0);
     prim.AlphaBlendEnable(1);
-    prim.AlphaBlend(1);
+    prim.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
     prim.TextureMapEnable(1);
-    prim.ZMask(-1);
-    prim.Begin(6);
+    prim.ZMask(MG_Z_MASK_MASKED);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Color(255, 255, 255, 128);
     prim.Texture(textures->GetTexture(at_997__5, -1));
     int center_x = mgScreenWidth / 2;
@@ -271,7 +271,7 @@ int DrawTakePhoto(USER_PICTURE_INFO *picture, float *distance) {
     int width = mgScreenWidth;
     int height = mgScreenHeight;
     prim.TextureMapEnable(0);
-    prim.AlphaBlend(1);
+    prim.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
     prim.AntiAliasing(1);
     if (TakePhotoMode == 4) {
         int frame = 8 - ShutterAnmCnt;
@@ -300,13 +300,13 @@ int DrawTakePhoto(USER_PICTURE_INFO *picture, float *distance) {
             mgUnitMatrix(matrix);
             sceVu0RotMatrixZ(matrix, matrix, shutter_angle);
             sceVu0ApplyMatrix(rotated, matrix, edge);
-            prim.Begin(3);
+            prim.Begin(MG_PRIM_TRIANGLE);
             prim.Color(0, 0, 0, 128);
             prim.Vertex(position[0], position[1], 0.0f);
             prim.Vertex(position[0] + edge[0], position[1] + edge[1], 0.0f);
             prim.Vertex(position[0] + rotated[0], position[1] + rotated[1], 0.0f);
             prim.End();
-            prim.Begin(1);
+            prim.Begin(MG_PRIM_LINE);
             prim.Color(64, 64, 64, 64);
             prim.Vertex(position[0], position[1], 0.0f);
             prim.Vertex(position[0] + rotated[0], position[1] + rotated[1], 0.0f);
@@ -314,9 +314,9 @@ int DrawTakePhoto(USER_PICTURE_INFO *picture, float *distance) {
         }
     }
     prim.TextureMapEnable(0);
-    prim.AlphaBlend(1);
+    prim.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
     prim.AntiAliasing(1);
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Color(0, 0, 0, 128);
     prim.Vertex(0, 0, 0);
     prim.Vertex(16, mgScreenHeight, 0);
@@ -355,7 +355,7 @@ int DrawTakePhoto(USER_PICTURE_INFO *picture, float *distance) {
                 angle = 0.0f;
                 corner_y = 0;
         }
-        prim.Begin(5);
+        prim.Begin(MG_PRIM_TRIANGLE_FAN);
         prim.Color(0, 0, 0, 128);
         prim.Vertex(corner_x, corner_y, 0);
         for (step = 0; step < 9; step++) {
@@ -380,7 +380,7 @@ int DrawTakePhoto(USER_PICTURE_INFO *picture, float *distance) {
         int photo_height = texture->height * 24 / 2;
         int frame_height = photo_height / 10;
         prim.TextureMapEnable(0);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(32, 32, 32, alpha * 2 / 3);
         prim.Vertex(18, y - 2, 0);
         prim.Vertex(photo_width + 28, y + frame_height + 8, 0);
@@ -394,9 +394,9 @@ int DrawTakePhoto(USER_PICTURE_INFO *picture, float *distance) {
         prim.TextureMapEnable(1);
         prim.Bilinear(1);
         prim.AlphaTestEnable(0);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(128, 128, 128, alpha);
-        prim.Direct(0x3B, 0x8000000080UL);
+        prim.Direct(SCE_GS_TEXA, 0x8000000080UL);
         prim.Texture(WorkTex);
         prim.TextureCrd(0, 0);
         prim.Vertex(20, y, 0);

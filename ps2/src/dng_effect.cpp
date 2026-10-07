@@ -288,11 +288,11 @@ void CChillAfterHit::Draw() {
         prim.Preset2D();
         prim.Coord(1);
         prim.DepthTestEnable(1);
-        prim.ZMask(-1);
+        prim.ZMask(MG_Z_MASK_MASKED);
         prim.Bilinear(1);
         prim.TextureMapEnable(1);
         p = piece;
-        prim.AlphaBlend(2);
+        prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
         i = 0;
 
         while (i < piece_num) {
@@ -300,7 +300,7 @@ void CChillAfterHit::Draw() {
                 size = p->size;
 
                 if (LocalTransWorldPrimPos(quad, p->pos, size, size, p->angle) != 0) {
-                    prim.Begin(5);
+                    prim.Begin(MG_PRIM_TRIANGLE_FAN);
                     prim.Texture(TEX_ExFx_ICE);
                     alpha = p->alpha;
                     j = 0;
@@ -340,7 +340,7 @@ void CChillAfterHit::Draw() {
                     prim.TextureCrd(rect[0], rect[1] + rect[2]);
                     prim.Vertex4(quad[3]);
                     prim.End();
-                    prim.Begin(6);
+                    prim.Begin(MG_PRIM_SPRITE);
                     sceVu0ScaleVector(vec, p->velocity, 0.05f);
                     sceVu0SubVector(vec, p->pos, vec);
                     vec[3] = 1.0f;
@@ -541,11 +541,11 @@ void CFireAfterHit::Draw(void) {
     prim.Preset2D();
     prim.Coord(1);
     prim.DepthTestEnable(1);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.Bilinear(1);
     prim.TextureMapEnable(1);
-    prim.AlphaBlend(3);
-    prim.Begin(6);
+    prim.AlphaBlend(MG_ALPHA_BLEND_SUB);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(TEX_ExFx_FIRE);
     int puff_num = flame_num * FIRE_AFTER_HIT_TRAIL_MAX;
     for (i = 0; i < puff_num; i++) {
@@ -562,8 +562,8 @@ void CFireAfterHit::Draw(void) {
     }
     prim.End();
     fire = flame;
-    prim.AlphaBlend(2);
-    prim.Begin(6);
+    prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(TEX_ExFx_FIRE);
     for (i = 0; i < flame_num; i++, fire++) {
         if (fire->alpha > 0 && !(0 < fire->delay)) {
@@ -1052,11 +1052,11 @@ void CMiniEffPrimMan::Draw() {
         draw_prim.Preset2D();
         draw_prim.Coord(1);
         draw_prim.DepthTestEnable(1);
-        draw_prim.ZMask(-1);
+        draw_prim.ZMask(MG_Z_MASK_MASKED);
         draw_prim.Bilinear(1);
         draw_prim.TextureMapEnable(1);
-        draw_prim.AlphaBlend(2);
-        draw_prim.Begin(6);
+        draw_prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
+        draw_prim.Begin(MG_PRIM_SPRITE);
         draw_prim.Texture(TEX_SystemEffect1);
 
         for (int i = 0; i < MINI_EFF_PRIM_MAX; i++) {
@@ -1195,11 +1195,11 @@ void CHealingEffectMan::Draw(mgCCamera *camera) {
             prim.Preset2D();
             prim.Coord(1);
             prim.DepthTestEnable(1);
-            prim.ZMask(-1);
+            prim.ZMask(MG_Z_MASK_MASKED);
             prim.Bilinear(1);
             prim.TextureMapEnable(1);
-            prim.AlphaBlend(2);
-            prim.Begin(6);
+            prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
+            prim.Begin(MG_PRIM_SPRITE);
             prim.Texture(TEX_SystemEffect1);
             HEALING_LIGHT *particle = light;
 
@@ -1341,11 +1341,11 @@ void CSwordLuminous::Draw() {
     prim.Preset2D();
     prim.Coord(1);
     prim.DepthTestEnable(1);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.Bilinear(1);
     prim.TextureMapEnable(1);
-    prim.AlphaBlend(2);
-    prim.Begin(6);
+    prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(TEX_SystemEffect1);
     prim.Color(0x80, 0x80, 0xFF, 0x18);
     float size = 12.0f + 4.0f * sinf(pulse);
@@ -1413,9 +1413,9 @@ void CSWordAfterImage::Draw() {
         prim.Coord(1);
         prim.Shading(1);
         prim.DepthTestEnable(1);
-        prim.DepthTest(1);
-        prim.AlphaBlend(2);
-        prim.Begin(4);
+        prim.DepthTest(MG_DEPTH_TEST_GEQUAL);
+        prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
+        prim.Begin(MG_PRIM_TRIANGLE_STRIP);
 
         for (int i = 0; i < smooth_num; i++) {
             sceVu0SubVector(edge, smooth_back[i], smooth_edge[i]);
@@ -1617,9 +1617,9 @@ void CAfterWire::DrawWire(float (*smooth)[4]) {
         prim.Coord(1);
         prim.Shading(1);
         prim.DepthTestEnable(1);
-        prim.DepthTest(1);
-        prim.AlphaBlend(2);
-        prim.Begin(2);
+        prim.DepthTest(MG_DEPTH_TEST_GEQUAL);
+        prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
+        prim.Begin(MG_PRIM_LINE_STRIP);
         float alpha = 0.0f;
 
         for (int i = 0; i < smooth_num; smooth++, i++) {
@@ -1754,11 +1754,11 @@ void CHitEffectImage::DrawBord(void) {
     prim.Initialize(0, 0);
     prim.Preset2D();
     prim.DepthTestEnable(1);
-    prim.DepthTest(1);
+    prim.DepthTest(MG_DEPTH_TEST_GEQUAL);
     prim.Bilinear(1);
     prim.Coord(1);
-    prim.AlphaBlend(2);
-    prim.Begin(3);
+    prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
+    prim.Begin(MG_PRIM_TRIANGLE);
     prim.Texture(TEX_SystemEffect1);
     prim.AlphaTestEnable(1);
     BattleEffectPrim *spark = this->spark;
@@ -1813,9 +1813,9 @@ void CHitEffectImage::DrawSpark(float size) {
     prim.Coord(1);
     prim.Shading(1);
     prim.DepthTestEnable(1);
-    prim.DepthTest(1);
-    prim.AlphaBlend(2);
-    prim.Begin(1);
+    prim.DepthTest(MG_DEPTH_TEST_GEQUAL);
+    prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
+    prim.Begin(MG_PRIM_LINE);
 
     BattleEffectPrim *spark = this->spark;
 
@@ -1854,11 +1854,11 @@ void CFlushEffect::Draw() {
         prim.Initialize(0, 0);
         prim.Preset2D();
         prim.DepthTestEnable(1);
-        prim.DepthTest(1);
+        prim.DepthTest(MG_DEPTH_TEST_GEQUAL);
         prim.Bilinear(1);
         prim.Coord(1);
-        prim.AlphaBlend(2);
-        prim.Begin(3);
+        prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
+        prim.Begin(MG_PRIM_TRIANGLE);
         prim.Texture(TEX_SystemEffect2);
         prim.AlphaTestEnable(1);
 
@@ -1969,11 +1969,11 @@ void CPowerLine::Draw() {
         sprite.Initialize(0, 0);
         sprite.Preset2D();
         sprite.DepthTestEnable(1);
-        sprite.DepthTest(1);
+        sprite.DepthTest(MG_DEPTH_TEST_GEQUAL);
         sprite.Bilinear(1);
         sprite.Coord(1);
-        sprite.AlphaBlend(2);
-        sprite.Begin(3);
+        sprite.AlphaBlend(MG_ALPHA_BLEND_ADD);
+        sprite.Begin(MG_PRIM_TRIANGLE);
         sprite.Texture(TEX_SystemEffect1);
         sprite.AlphaTestEnable(1);
         BattleEffectPrim *streak = this->prim;
@@ -2132,11 +2132,11 @@ void CDeadEffect::Draw(void) {
     prim_draw.Initialize(0, 0);
     prim_draw.Preset2D();
     prim_draw.DepthTestEnable(1);
-    prim_draw.DepthTest(1);
+    prim_draw.DepthTest(MG_DEPTH_TEST_GEQUAL);
     prim_draw.Bilinear(1);
     prim_draw.Coord(1);
-    prim_draw.AlphaBlend(2);
-    prim_draw.Begin(3);
+    prim_draw.AlphaBlend(MG_ALPHA_BLEND_ADD);
+    prim_draw.Begin(MG_PRIM_TRIANGLE);
     prim_draw.Texture(TEX_SystemEffect1);
     prim_draw.AlphaTestEnable(1);
     int u;
@@ -2455,19 +2455,19 @@ void CMapEffectsManeger::Draw(mgCCamera *camera) {
 
     if (manager->type == 1) {
         primitive.DepthTestEnable(1);
-        primitive.DepthTest(1);
+        primitive.DepthTest(MG_DEPTH_TEST_GEQUAL);
     }
 
     if (manager->type == 2) {
         primitive.DepthTestEnable(1);
-        primitive.DepthTest(1);
+        primitive.DepthTest(MG_DEPTH_TEST_GEQUAL);
     }
 
     primitive.Bilinear(1);
     primitive.Coord(1);
-    primitive.AlphaBlend(2);
+    primitive.AlphaBlend(MG_ALPHA_BLEND_ADD);
     primitive.AlphaTestEnable(1);
-    primitive.Begin(3);
+    primitive.Begin(MG_PRIM_TRIANGLE);
     primitive.Texture(TEX_SystemEffect1);
     int index;
     index = 0;
@@ -2941,11 +2941,11 @@ void CWeaponElement::Draw_Cold() {
     prim.Preset2D();
     prim.Coord(1);
     prim.DepthTestEnable(1);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.Bilinear(1);
     prim.TextureMapEnable(1);
-    prim.AlphaBlend(2);
-    prim.Begin(6);
+    prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(tex);
 
     for (i = 0; i < WEAPON_ELEMENT_SPARK_MAX; i++) {
@@ -3111,11 +3111,11 @@ void CWeaponElement::Draw_Wind() {
     prim.Preset2D();
     prim.Coord(1);
     prim.DepthTestEnable(1);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.Bilinear(1);
     prim.TextureMapEnable(1);
-    prim.AlphaBlend(2);
-    prim.Begin(6);
+    prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(tex);
 
     for (i = 0; i < WEAPON_ELEMENT_SPARK_MAX; i++) {
@@ -3273,11 +3273,11 @@ void CWeaponElement::Draw_Fire() {
     prim.Preset2D();
     prim.Coord(1);
     prim.DepthTestEnable(1);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.Bilinear(1);
     prim.TextureMapEnable(1);
-    prim.AlphaBlend(2);
-    prim.Begin(6);
+    prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(tex);
 
     for (i = 0; i < WEAPON_ELEMENT_SPARK_MAX; i++) {
@@ -3401,11 +3401,11 @@ void CWeaponElement::Draw_Thunder(void) {
     prim.Preset2D();
     prim.Coord(1);
     prim.DepthTestEnable(1);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.Bilinear(1);
     prim.TextureMapEnable(1);
-    prim.AlphaBlend(2);
-    prim.Begin(6);
+    prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(tex);
     for (i = 0; i < count; i++) {
         if (alpha[i] > 0.0f) {
@@ -3426,11 +3426,11 @@ void CWeaponElement::Draw_Thunder(void) {
     prim.Preset2D();
     prim.Coord(1);
     prim.DepthTestEnable(1);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.Bilinear(1);
     prim.TextureMapEnable(1);
-    prim.AlphaBlend(2);
-    prim.Begin(4);
+    prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
+    prim.Begin(MG_PRIM_TRIANGLE_STRIP);
     prim.Texture(tex);
     for (j = 0; j < bolt_count; j++) {
         sceVu0CopyVector(head, offset[bolt_head[j]]);

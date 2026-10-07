@@ -46,10 +46,10 @@ union EffectVector {
 #include "event_func.hpp"
 #include "mainloop.hpp"
 #include "snd_mngr.hpp"
+#include "dng_main.hpp"
 
 extern "C" _EFF_SCRIPT *now_script;
 extern "C" int (*ext_func__4[256])(RS_STACKDATA *, int);
-extern CColPrimMan     ColPrimMan;
 EFF_SPT_BASE_DEF      *GetEffSptBaseDefPtr(int index);
 int                    SetEffectScript(CRunScript *script, char *program, mgCMemory *memory);
 void                   SetEffectScriptFunc();

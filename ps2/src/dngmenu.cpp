@@ -333,7 +333,7 @@ void CDngFreeMap::DrawBackPattern(int alpha) {
         SetSpriteEnv(prim, 2);
         prim->Bilinear(1);
         prim->AntiAliasing(1);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Color(0, 0, 0, 0x20);
         prim->Vertex(0, 0, 0);
         prim->Vertex(mgScreenWidth, mgScreenHeight, 0);
@@ -355,7 +355,7 @@ void CDngFreeMap::DrawDngName(int frame) {
     rect.Set(0, 0, 256, 96);
     mgCDrawPrim *prim = GetMenuPrim();
     SetSpriteEnv(prim, 0);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(name_tex);
     prim->Color(10, 10, 10, fptosi(0.25f * (float)frame));
     PrimQuad(prim, 4.0f, 4.0f, rect);
@@ -368,8 +368,8 @@ void CDngFreeMap::DrawLast() {
         return;
     mgCDrawPrim *prim = GetMenuPrim();
     SetSpriteEnv(prim, 4);
-    prim->AlphaBlend(1);
-    prim->Begin(6);
+    prim->AlphaBlend(MG_ALPHA_BLEND_NORMAL);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(last_tex);
     prim->Color(0x80, 0x80, 0x80, 0x80);
     prim->TextureCrd(0, 0);
@@ -405,7 +405,7 @@ void CDngFreeMap::DrawRoot(mgRect<float> rect, DNGMAP_ROOT_INFO *root, int shado
     }
     prim = GetMenuPrim();
     SetSpriteEnv(prim, 2);
-    prim->Begin(1);
+    prim->Begin(MG_PRIM_LINE);
     unsigned int r = fptosi(red);
     unsigned int g = fptosi(green);
     unsigned int b = fptosi(blue);
@@ -525,7 +525,7 @@ void CDngFreeMap::DrawRoot(mgRect<float> rect, DNGMAP_ROOT_INFO *root, int shado
     prim->End();
     prim->Bilinear(0);
     prim->TextureMapEnable(1);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Color(r, g, b, alpha);
     if (shadow != 0) {
         prim->Color(0, 0, 0, fptosi(0.05f * (float)alpha));
@@ -644,7 +644,7 @@ void CDngFreeMap::DrawRoomOne(mgRect<float> rect, DNGMAP_ROOM_INFO *room, unsign
         shade = 0.5f;
     }
     if (draw_mode == DNGMAP_MODE_MENU) {
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(map_tex);
         prim->Color(0, 0, 0, (int)(shadow_alpha));
         PrimQuad(prim, 8.0f + put.left, 8.0f + put.top, uv);
@@ -673,7 +673,7 @@ void CDngFreeMap::DrawRoomOne(mgRect<float> rect, DNGMAP_ROOM_INFO *room, unsign
         blue = green = red = level;
     }
     prim->Bilinear(0);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(map_tex);
     prim->Color(red, green, (int)blue, (int)alpha);
     PrimQuad(prim, put, uv);
@@ -685,7 +685,7 @@ void CDngFreeMap::DrawRoomOne(mgRect<float> rect, DNGMAP_ROOM_INFO *room, unsign
         int y0 = fptosi(mark_y);
         int x1 = fptosi(20.0f + mark_x);
         int y1 = fptosi(30.0f + mark_y);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Color(red, green, blue, alpha);
         prim->TextureCrd(0x1EC, 0x42);
         prim->Vertex(x0, y0, 0);
@@ -710,7 +710,7 @@ void CDngFreeMap::DrawRoomOne(mgRect<float> rect, DNGMAP_ROOM_INFO *room, unsign
                     mgRect<float> letter_put(put.left + (float)put_moji_tbl_1525[i][0], put.top + (float)put_moji_tbl_1525[i][1],
                                              (float)get_moji_tbl_1524[0][k + 2], (float)get_moji_tbl_1524[0][k + 3]);
                     prim->TextureMapEnable(1);
-                    prim->Begin(6);
+                    prim->Begin(MG_PRIM_SPRITE);
                     prim->Texture(name_tex);
                     int letter_level = fptosi(shade);
                     prim->Color(letter_level, letter_level, letter_level, alpha);
@@ -726,7 +726,7 @@ void CDngFreeMap::DrawGlid(mgRect<float> rect) {
     mgCDrawPrim prim;
     SetSpriteEnv(&prim, 1);
     prim.AntiAliasing(1);
-    prim.Begin(2);
+    prim.Begin(MG_PRIM_LINE_STRIP);
     prim.Color(0xFF, 0, 0, fptosi(alpha));
     float top = rect.top;
     prim.Vertex(rect.left, top, 0.0f);
@@ -824,7 +824,7 @@ static void DrawDngRoomInfo(DNGMAP_ROOM_INFO *room) {
         DrawMenuFillBox(6.0f + board_x, 6.0f + board_y, (float)(board_w - 8), (float)(board_h - 8), box_alpha, 0xC, 0xC, 0xC);
         mgCDrawPrim *prim = GetMenuPrim();
         SetSpriteEnv(prim, 0);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(Floor_InfoTex);
         prim->Color(0x80, 0x80, 0x80, alpha);
         int left = fptosi(board_x);
@@ -833,7 +833,7 @@ static void DrawDngRoomInfo(DNGMAP_ROOM_INFO *room) {
         Menu3DivideTextureDraw(prim, mgRect<int>(left, top + 0x46, board_w, board_h - 0x46 - dngboardbrdtbl[1][3]), dngboardbrdtbl[1], 1);
         Menu3DivideTextureDraw(prim, mgRect<int>(left, top + board_h - bottom_tbl[3], board_w, bottom_tbl[3]), bottom_tbl, 1);
         prim->End();
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(Floor_InfoTex);
         prim->Color(0x80, 0x80, 0x80, alpha);
         PrimQuad(prim, (float)(centre_x - (Floor_Info.right >> 1)) - 1.0f, 10.0f + board_y, Floor_Info);
@@ -846,7 +846,7 @@ static void DrawDngRoomInfo(DNGMAP_ROOM_INFO *room) {
         mgRect<int> mark_uv(0x7C, 0, 0x16, 0x16);
         mgRect<int> medal_uv(0x92, 0, 0x16, 0x16);
         prim->Bilinear(1);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(Floor_InfoTex);
         prim->Color(0x80, 0x80, 0x80, alpha);
         if (MenuDngMes[0] != NULL) {
@@ -989,7 +989,7 @@ static void DrawGeoramaMateria(int y, char *title, int materia_num, int *materia
     DrawMenuFillBox((float)(left + 6), (float)(y + 6), 422.0f, 272.0f, 0x59, 0xC, 0xC, 0xC);
     mgCDrawPrim *prim = GetMenuPrim();
     SetSpriteEnv(prim, 0);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(Floor_InfoTex);
     prim->Color(0x80, 0x80, 0x80, 0x80);
     Menu3DivideTextureDraw(prim, mgRect<int>(left, y, 430, 70), dngboardbrdtbl[0], 1);
@@ -1058,7 +1058,7 @@ void CDngFreeMap::DrawTreeMap(int alpha) {
         float shrink_h = 40.0f - 40.0f * DngTreeMapActiveLightRate;
         SetSpriteEnv(prim, 4);
         prim->Bilinear(0);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(map_tex);
         prim->Color(0x80, 0x80, 0x80, fptosi(0.5f * (float)alpha));
         prim->TextureCrd(dng_light_circle.left, dng_light_circle.top);
@@ -1115,7 +1115,7 @@ void CDngFreeMap::DrawPlayer(int alpha) {
     mgCDrawPrim *prim = GetMenuPrim();
     SetSpriteEnv(prim, 0);
     prim->Bilinear(1);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(koma_tex);
     int level = fptosi(tint);
     prim->Color(level, level, level, fptosi(alpha_f));
@@ -1181,7 +1181,7 @@ void CDngFreeMap::Draw() {
                 mgCDrawPrim *prim = GetMenuPrim();
                 SetSpriteEnv(prim, 0);
                 prim->Bilinear(1);
-                prim->Begin(6);
+                prim->Begin(MG_PRIM_SPRITE);
                 prim->Texture(name_tex);
                 prim->Color(0x80, 0x80, 0x80, alpha);
                 for (int i = 0; i < mark_num; i++) {
@@ -2497,7 +2497,7 @@ void CMenuTreeMap::Draw() {
             textures->ReloadTexture(Floor_InfoTex->block, (sceVif1Packet *)NULL);
             int board_alpha = dngfloor_backdraw_alpha * 2;
             SetSpriteEnv(prim, 0);
-            prim->Begin(6);
+            prim->Begin(MG_PRIM_SPRITE);
             prim->Texture(Floor_InfoTex);
             prim->Color(0, 0, 0, board_alpha / 3);
             PrimQuad(prim, 289.0f, 25.0f, mgRect<int>(0, 0xB6, 0xA4, 0x38));
@@ -2559,7 +2559,7 @@ void CMenuTreeMap::Draw() {
         textures->ReloadTexture(Floor_InfoTex->block, (sceVif1Packet *)NULL);
         SetSpriteEnv(prim, 0);
         int money_y = mgScreenHeight - 0x4C;
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(Floor_InfoTex);
         prim->Color(0x80, 0x80, 0x80, 0x80);
         PrimQuad(prim, 302.0f, (float)money_y, mgRect<int>(0, 0x90, 0xB8, 0x24));

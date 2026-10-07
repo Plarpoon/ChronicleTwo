@@ -579,7 +579,7 @@ void EditInit(INIT_LOOP_ARG arg) {
     MainScene__2->SetVillagerTexb(78, 56);
     MainScene__2->SetEventTexb(160, 2);
     CScene *scene = MainScene__2;
-    scene->GetActiveBgmInfo()->unk_c = 1.0f;
+    scene->GetActiveBgmInfo()->master_volf = 1.0f;
     scene->SetVolfBGM(scene->GetActiveBgmInfo()->volf);
     MainScene__2->tex_block_base = 185;
     MainScene__2->tex_block_count = 21;
@@ -1643,7 +1643,7 @@ int EditLoop() {
             prim.Initialize(NULL, NULL);
             prim.DepthTestEnable(0);
             prim.AlphaBlendEnable(0);
-            prim.ZMask(1);
+            prim.ZMask(MG_Z_MASK_WRITE);
             prim.TextureMapEnable(0);
             if ((show_time_step > 0 && time_step != 0) || (show_encount_cnt > 0 && encount_flag != 0)) {
                 prim.Begin(MG_PRIM_TRIANGLE);

@@ -411,16 +411,16 @@ void CEffect::Draw() {
         prim.AlphaBlendEnable(1);
 
         if (param.alpha_blend == 1) {
-            prim.AlphaBlend(2);
+            prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
         } else if (param.alpha_blend == 1) {
-            prim.AlphaBlend(3);
+            prim.AlphaBlend(MG_ALPHA_BLEND_SUB);
         } else {
-            prim.AlphaBlend(4);
+            prim.AlphaBlend(MG_ALPHA_BLEND_NONE);
         }
 
-        prim.DepthTest(1);
+        prim.DepthTest(MG_DEPTH_TEST_GEQUAL);
         prim.DepthTestEnable(1);
-        prim.ZMask(-1);
+        prim.ZMask(MG_Z_MASK_MASKED);
         prim.Coord(1);
 
         width = param.width;
@@ -429,7 +429,7 @@ void CEffect::Draw() {
         height *= scale[1];
 
         if (mgTransWorldPrim3DSprite(corner_a, corner_b, pos, width, height, 0) != 0) {
-            prim.Begin(6);
+            prim.Begin(MG_PRIM_SPRITE);
             prim.Color(0x80, 0x80, 0x80, fptosi(128.0f * alpha));
             prim.Texture(param.texture);
             prim.TextureCrd(tex_rect[0], tex_rect[1]);

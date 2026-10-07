@@ -223,7 +223,7 @@ STATIC_ASSERT(sizeof(MONSTER_STATUS) == 0xC);
  */
 struct MONSTER_REACT {
     s16 kind; /**< DamageKind that the entry is for. */
-    s16 flag; /**< Bits added to the battle area's unk_98 when a hit of this kind lands. */
+    s16 flag; /**< Bits added to the battle area's practice_actions when a hit of this kind lands. */
     s16 blow; /**< Nonzero when a hit of this kind knocks the monster back. */
     s16 pad;
 };

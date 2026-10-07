@@ -36,6 +36,7 @@
 #include "sound.hpp"
 #include "sysmes.hpp"
 #include "userdata.hpp"
+#include "menuaqua.hpp"
 
 enum {
     kBitFlagGekkaView = 0x2BE,
@@ -104,11 +105,7 @@ enum {
 
 extern short     penki_item_no[8];
 extern "C" short tbl_957[];
-void             DrawDownLoadAnaunceSwitch(int value);
 void             MenuGeoramaMessageMake(int mode);
-void             MakeMsgPartsItemInfo(CDC2Mes *mes, CEditPartsInfo *info, MENUFORM_MAKEBRD_INFO *make_brd);
-void             InitDownLoadAnaunce(mgCMemory *stack);
-void             CheckMenuLine(int *selected, int *top, int count, int visible);
 
 /**
  *
@@ -316,7 +313,6 @@ extern CEditHouse            *HouseDrawInfo;
 extern char                  *fname_4292[2];
 extern char                   at_4367[];
 extern char                   at_4368[];
-extern CDC2Mes               *MenuDCMsg[9];
 extern signed char            DownLoadInfoDrawFlag;
 extern u16                    MenuGeoStoneDownLoad_Request;
 extern u16                    MenuGeoStoneDownLoad_PartsNum;
@@ -400,7 +396,6 @@ extern char                   at_1277__2[];
 extern char                   at_1278__2[];
 extern char                   at_1299__3[];
 extern char                   at_1300__3[];
-extern float                  menu_georama_title_pos[2];
 extern char                   at_1860[];
 extern char                   at_2654[];
 extern char                   at_2655[];
@@ -471,17 +466,9 @@ extern short                  DestroyMaxNum_3584;
 extern signed char            init_3585;
 extern char                  *DestroyPartsName_3587;
 int                           georama_menu_local_key(int keys);
-int                           MenuRemovalKey();
-void                          MenuRemovalDraw();
-int                           StepDownLoadAnaunce(int confirm);
-void                          InitMenuDl3(mgCTexture *texture);
-int                           StepMenuDl3();
 void                          MenuPlacedHousePosLinkMes();
 void                          MenuPlacedHouseMessMake(CEditPartsInfo *info, CEditHouse *house, int update);
 int                           MenuGeoramaPushKey(int keys, int pushed);
-void                          MenuMapPartsDraw(int &draw_wait);
-int                           CheckGekkaViewMode(int view_mode);
-int                           GetPenkiItemNo(int slot);
 int                           MenuGeoramaBasePush(CMenuGeorama *menu, int buttons_held, int buttons_pressed);
 int                           MenuGeoramaPlacePush(CMenuGeorama *menu, int buttons_held, int buttons_pressed);
 
@@ -970,7 +957,7 @@ void MenuGeoramaListDraw(int &tex_block, float *pos, int page, int alpha) {
             mgRect<int> foot_tex(0, 0x1D0, 0xF2, 0x59);
             mgCDrawPrim *prim = GetMenuPrim();
             SetSpriteEnv(prim, 0);
-            prim->Begin(6);
+            prim->Begin(MG_PRIM_SPRITE);
             prim->Texture(Tex_Georama);
             prim->Color(0, 0, 0, alpha >> 2);
             int shadow_x = (int)(3.0f + pos[0]);
@@ -1033,7 +1020,7 @@ void MenuGeoramaListDraw(int &tex_block, float *pos, int page, int alpha) {
             check_y = 3.0f + list_y;
             if (page == GEORAMA_VIEW_STOCK) {
                 prim->Bilinear(1);
-                prim->Begin(6);
+                prim->Begin(MG_PRIM_SPRITE);
                 prim->Texture(Tex_Georama);
                 prim->Color(0x80, 0x80, 0x80, alpha);
                 for (int i = 0; i < 99; i++, check_y += 24.0f, line_y += 24.0f) {
@@ -1058,7 +1045,7 @@ void MenuGeoramaListDraw(int &tex_block, float *pos, int page, int alpha) {
                 prim->End();
             }
             if (page == GEORAMA_VIEW_MAKE) {
-                prim->Begin(6);
+                prim->Begin(MG_PRIM_SPRITE);
                 prim->Texture(Tex_Georama);
                 prim->Color(0x80, 0x80, 0x80, alpha);
                 for (i = 0; i < 99; i++, check_y += 24.0f, line_y += 24.0f) {
@@ -1078,7 +1065,7 @@ void MenuGeoramaListDraw(int &tex_block, float *pos, int page, int alpha) {
             if (page == GEORAMA_VIEW_CHECK_POINT) {
                 GEORAMA_PARTS_LIST_ITEM *item = CMenuGeoPt->house_list;
                 prim->Bilinear(1);
-                prim->Begin(6);
+                prim->Begin(MG_PRIM_SPRITE);
                 prim->Texture(Tex_Georama);
                 prim->Color(0x80, 0x80, 0x80, alpha);
                 for (int i = 0; i < 99; i++, item++, check_y += 24.0f, line_y += 24.0f) {
@@ -1111,13 +1098,13 @@ void MenuGeoramaListDraw(int &tex_block, float *pos, int page, int alpha) {
                     }
                     SetSpriteEnv(prim, 0);
                     prim->Bilinear(1);
-                    prim->Begin(6);
+                    prim->Begin(MG_PRIM_SPRITE);
                     prim->Texture(Tex_Georama);
                     prim->Color(0x80, 0x80, 0x80, alpha);
                     PrimQuad(prim, line_x, line_y, line_tex);
                     prim->End();
                     if (i < GEORAMA_PENKI_NUM) {
-                        prim->Begin(6);
+                        prim->Begin(MG_PRIM_SPRITE);
                         prim->Texture(Tex_Georama);
                         prim->Color(0x80, 0x80, 0x80, alpha);
                         PrimQuad(prim, 150.0f + line_x, line_y - 16.0f, times_tex);
@@ -1126,7 +1113,7 @@ void MenuGeoramaListDraw(int &tex_block, float *pos, int page, int alpha) {
                         prim->TextureMapEnable(0);
                         prim->Shading(0);
                         prim->Bilinear(1);
-                        prim->Begin(6);
+                        prim->Begin(MG_PRIM_SPRITE);
                         prim->Color(200, 200, 200, alpha);
                         prim->Vertex(swatch_x, swatch_y, 0.0f);
                         prim->Vertex((int)(22.0f + swatch_x), (int)(19.0f + swatch_y), 0);
@@ -1187,7 +1174,7 @@ void MenuGeoramaAnalyzeDraw(int &tex_block, float *pos, int alpha) {
         mgRect<int> body_tex(0, 0xD0, 0x164, 0x40);
         mgRect<int> foot_tex(0, 0x110, 0x164, 0x22);
         mgRect<int> bar_tex(0x165, 0xEB, 6, 0x1C);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(Tex_Georama);
         prim->Color(0, 0, 0, alpha / 3);
         int shadow_x = (int)(3.0f + pos[0]);
@@ -1230,7 +1217,7 @@ void MenuGeoramaAnalyzeDraw(int &tex_block, float *pos, int alpha) {
         MenuClipRectCheck(clip);
         SetMenuScissor(clip);
         prim->Bilinear(1);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(Tex_Georama);
         prim->Color(0x80, 0x80, 0x80, alpha);
         float list_pos[2] = {CMenuGeoPt->list_pos[GEORAMA_VIEW_ANALYZE][0], CMenuGeoPt->list_pos[GEORAMA_VIEW_ANALYZE][1]};
@@ -1924,7 +1911,7 @@ void MenuPlacedHouseDraw(int &tex_block) {
             MenuReloadTexture(tex_block, Tex_Georama->block);
             mgCDrawPrim *prim = GetMenuPrim();
             SetSpriteEnv(prim, 0);
-            prim->Begin(6);
+            prim->Begin(MG_PRIM_SPRITE);
             prim->Texture(Tex_Georama);
             int alpha = HouseInfoFormGrobal->rgba[3];
             int shadow_x = pos[0] + 4;
@@ -1996,7 +1983,7 @@ void MenuPlacedHouseDraw(int &tex_block) {
             mgRect<int> line_tex(0, 0x229, 0xC0, 6);
             mgRect<int> line_rect(pos[0] + 0x18, line_y + 0x14, 0xCC, 6);
             SetSpriteEnv(prim, 0);
-            prim->Begin(6);
+            prim->Begin(MG_PRIM_SPRITE);
             prim->Texture(Tex_Georama);
             prim->Color(0x80, 0x80, 0x80, alpha);
             PrimQuad(prim, line_rect, line_tex);
@@ -2068,7 +2055,7 @@ void MenuPlacedHouseDraw(int &tex_block) {
             mgRect<int> arrow_down_tex(0x40, 0x84, 0x20, 0x17);
             mgCTexture *arrow = mgTexManager.GetTexture(at_1860, -1);
             SetSpriteEnv(prim, 0);
-            prim->Begin(6);
+            prim->Begin(MG_PRIM_SPRITE);
             prim->Texture(arrow);
             prim->Color(0, 0, 0, arrow_shadow_alpha);
             PrimQuad(prim, mgRect<int>(arrow_x + 4, arrow_up_y + 4, 0x1E, 0x14), arrow_up_tex);
@@ -3035,11 +3022,11 @@ int CMenuGeorama::IsMakeObject(int buttons_held, int buttons_pressed) {
             int selection = SelectMakeObject(buttons_held);
 
             if (selection == -1) {
-                make_brd.unk_24 = 6;
-                make_brd.unk_28 = 0;
+                make_brd.decrease_flash_frames = 6;
+                make_brd.increase_flash_frames = 0;
             } else if (selection == 1) {
-                make_brd.unk_24 = 0;
-                make_brd.unk_28 = 6;
+                make_brd.decrease_flash_frames = 0;
+                make_brd.increase_flash_frames = 6;
             }
 
             switch (buttons_pressed) {
@@ -3316,7 +3303,7 @@ void CMenuGeorama::CalcMakeBrd() {
 
     if (make_brd_form != NULL && mode == kStateMakeObject && step == kMakeChooseAmount) {
         i = 0;
-        make_brd.unk_1c = CBaseMenuClass::make_num;
+        make_brd.make_num = CBaseMenuClass::make_num;
 
         for (; i < make_brd.material_num; i++) {
             material = make_parts->GetMaterial(i);
@@ -3324,7 +3311,7 @@ void CMenuGeorama::CalcMakeBrd() {
             if (material != NULL) {
                 make_brd.line[i].kind = 1;
                 make_brd.line[i].num =
-                    (short) material->num * (short) make_brd.unk_1c;
+                    (short) material->num * (short) make_brd.make_num;
                 owned = GetUserItemHaveNum(material->item_no);
                 make_brd.line[i].button = 0;
 
@@ -3343,9 +3330,9 @@ void CMenuGeorama::CalcMakeBrd() {
             make_brd.line[i].sub_num = 0;
         }
 
-        CalcMenuAdd(&make_brd.unk_24, -1, 0);
-        CalcMenuAdd(&make_brd.unk_28, -1, 0);
-        make_brd.unk_20 = make_cursor;
+        CalcMenuAdd(&make_brd.decrease_flash_frames, -1, 0);
+        CalcMenuAdd(&make_brd.increase_flash_frames, -1, 0);
+        make_brd.make_cursor = make_cursor;
         CalcCommonBrdDrawInfo(&make_brd_form->x, &make_brd, (ClsMes *) MenuDCMsg[2]);
     }
 }

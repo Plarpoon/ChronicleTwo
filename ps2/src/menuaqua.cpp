@@ -328,7 +328,6 @@ extern float              v4orig_4376[4];
 extern short              t_4408[];
 extern "C" char           at_4519[];
 extern float              ambient[4];
-extern int                menu_debug_flag;
 extern s16                menu_debug_select;
 extern int                langTbl_3630[2][2];
 extern s8                 menu_max_tbl_3720[3];
@@ -538,11 +537,7 @@ extern fish_prize_record *save_fish_prize_list;
 
 extern FISH_PRIZE_INFO fish_save_present[4][3];
 
-static int local_aquarium_limmit_check(float *pos, float radius, int check_y, float height);
-
 static int CombineParam(int a, int b);
-
-CGameDataUsed *GetGyoRaceFish();
 
 static int _GYORACE_LISTNUM(SPI_STACK *stack, int arg_count);
 
@@ -557,8 +552,6 @@ static int _PRIZE(SPI_STACK *stack, int arg_count);
 static void GyoraceCFGAnalyze(char *command);
 
 static int SearchOmakeGyoracer(int slot);
-
-CGameDataUsed *GetOmakeGyoracer2(int slot);
 
 static void ForceSetGyoList();
 
@@ -807,7 +800,7 @@ void CBubble::Draw() {
     SetSpriteEnv(&prim, 4);
     prim.Coord(1);
     prim.DepthTestEnable(1);
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(texture);
     index = 0;
 
@@ -1524,10 +1517,10 @@ int CAquaFish::ParamStep() {
             breed->timer += esa->add_timer;
         }
 
-        breed->unk_35--;
+        breed->breed_feeds_remaining--;
 
-        if (breed->unk_35 < 0) {
-            breed->unk_35 = 0;
+        if (breed->breed_feeds_remaining < 0) {
+            breed->breed_feeds_remaining = 0;
         }
 
         if (eat_item == 0x13B) {
@@ -1658,7 +1651,7 @@ void CAquaFishEff::Draw() {
         prim.Coord(1);
         prim.DepthTestEnable(1);
         prim.Bilinear(2);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Texture(texture);
         prim.Color(0x80, 0x80, 0x80, alpha);
         bob = sinf(0.19634955f * (float) (timer % 16));
@@ -1856,7 +1849,7 @@ void DrawEsaDropRoot(CFishFood *food, float bottom) {
         food->GetPosition(pos);
         for (; bottom < pos[1]; pos[1] -= 2.4f) {
             if (mgTransWorldPrim3DSprite(left, right, pos, 0.3f, 1.0f, 0) != 0) {
-                prim.Begin(6);
+                prim.Begin(MG_PRIM_SPRITE);
                 prim.Color(0x80, 0x80, 0xC8, 0x60);
                 prim.Vertex4(left);
                 prim.Vertex4(right);
@@ -2527,7 +2520,7 @@ void DrawFishParam(int x, int y, mgCTexture *tex, CGameDataUsed *data) {
     mgCDrawPrim prim;
     mgCDrawPrim *pen = &prim;
     SetSpriteEnv(pen, 0);
-    pen->Begin(6);
+    pen->Begin(MG_PRIM_SPRITE);
     pen->Texture(tex);
     for (pass = 0; pass < 2; pass++) {
         pen->Color(coltbl_2472[pass][0], coltbl_2472[pass][1], coltbl_2472[pass][2], coltbl_2472[pass][3]);
@@ -2546,7 +2539,7 @@ void DrawFishParam(int x, int y, mgCTexture *tex, CGameDataUsed *data) {
     fy = y;
     mgRect<int> label_rect(0, 0xA6, 0x3A, 0x12);
     mgRect<int> digit_rect(0, 0xEE, 0xC, 0x12);
-    pen->Begin(6);
+    pen->Begin(MG_PRIM_SPRITE);
     pen->Texture(tex);
     pen->Color(0x80, 0x80, 0x80, 0x80);
     label_y = 24.0f + fy;
@@ -2842,7 +2835,7 @@ int CAquarium::LoadFish(int no, CGameDataUsed *data) {
         return 0;
     }
 
-    aqua_no = m_aquarium_para->unk_0;
+    aqua_no = m_aquarium_para->active_tank;
     breed = &data->data.fish;
 
     if (data->data.fish.flags & 2) {
@@ -2903,8 +2896,8 @@ int CAquarium::LoadFish(int no, CGameDataUsed *data) {
     return 0;
 }
 void CAquarium::SettingAqua() {
-    int fish_num = aquarium_fish_maxtbl[m_aquarium_para->unk_0];
-    int aqua_no = m_aquarium_para->unk_0;
+    int fish_num = aquarium_fish_maxtbl[m_aquarium_para->active_tank];
+    int aqua_no = m_aquarium_para->active_tank;
     mgCTextureManager *textures = &mgTexManager;
     int i;
     int size;
@@ -3219,7 +3212,7 @@ void CAquarium::CombineFish(int no1, int no2) {
     if (child_breed->life > 250) {
         child_breed->life = 250;
     }
-    child_breed->unk_35 = 5;
+    child_breed->breed_feeds_remaining = 5;
     child_breed->flags = 0;
     child_breed->flags |= 1;
     child_breed->kind = breed1->kind;
@@ -3530,7 +3523,7 @@ void CAquarium::Thinking(int no) {
             break;
         }
         case AQUA_FISH_THINK_LOVE_SEARCH:
-            if (0 < breed->unk_35) {
+            if (0 < breed->breed_feeds_remaining) {
                 me->pair_no = -1;
                 me->think_mode = AQUA_FISH_THINK_SWIM;
                 me->think_timer = 0;
@@ -3575,7 +3568,7 @@ void CAquarium::Thinking(int no) {
                     me->think_timer = 0;
                 }
                 partner_data = partner->data;
-                if ((partner_data != NULL && 0 < partner_data->data.fish.unk_35) || 0 < breed->unk_35) {
+                if ((partner_data != NULL && 0 < partner_data->data.fish.breed_feeds_remaining) || 0 < breed->breed_feeds_remaining) {
                     me->action.hit_count = 0;
                 }
             }
@@ -3691,7 +3684,7 @@ int CAquarium::ColCheck(int no) {
             }
         }
     }
-    aqua_no = m_aquarium_para->unk_0;
+    aqua_no = m_aquarium_para->active_tank;
     point = ColChkPoint;
     if (aqua_no == 1) {
         point = ColChkPoint2;
@@ -4032,7 +4025,7 @@ int CAquarium::Step() {
                 }
                 break;
             case 1: {
-                int aqua_no = m_aquarium_para->unk_0;
+                int aqua_no = m_aquarium_para->active_tank;
                 int step = 0;
 
                 if (GamePad__2.Down(PAD_UP)) {
@@ -4219,7 +4212,7 @@ int CAquarium::Step() {
                         breed->life = value;
                     }
                     if (menu_debug_select == 10) {
-                        int value = breed->unk_35 + add;
+                        int value = breed->breed_feeds_remaining + add;
 
                         if (value < 0) {
                             value = 0;
@@ -4227,7 +4220,7 @@ int CAquarium::Step() {
                         if (value > 100) {
                             value = 100;
                         }
-                        breed->unk_35 = value;
+                        breed->breed_feeds_remaining = value;
                     }
                     if (menu_debug_select == 11) {
                         int value = breed->hp + add;
@@ -4429,7 +4422,7 @@ int CAquarium::Step() {
                     next = 0xA;
                     sel_sift_fish_select = -1;
                 } else if (key & 1) {
-                    int tank = another_aquarium_Notbl_3642[m_aquarium_para->unk_0][Ident(menu->question_cursor)];
+                    int tank = another_aquarium_Notbl_3642[m_aquarium_para->active_tank][Ident(menu->question_cursor)];
                     int space = m_aquarium_para->SearchAqua1NotUsed(tank);
                     CGameDataUsed *data;
 
@@ -4442,11 +4435,11 @@ int CAquarium::Step() {
                             MenuSePlay(5);
                             break;
                         }
-                        if (0 < data->data.fish.unk_35) {
+                        if (0 < data->data.fish.breed_feeds_remaining) {
                             ClsMes *info = menu->info_mes;
 
                             next = 0xD;
-                            info->values[0] = data->data.fish.unk_35;
+                            info->values[0] = data->data.fish.breed_feeds_remaining;
                             info->value_width[0] = 0;
                             menu->SetInfoMsgID(0x133);
                             MenuSePlay(5);
@@ -4488,7 +4481,7 @@ int CAquarium::Step() {
                     MenuSePlay(0x13);
                     next = 1;
                 } else if (key & 1) {
-                    m_next_aqua_no = another_aquarium_Notbl_3642[m_aquarium_para->unk_0][Ident(menu->question_cursor)];
+                    m_next_aqua_no = another_aquarium_Notbl_3642[m_aquarium_para->active_tank][Ident(menu->question_cursor)];
                     AquaMode = 6;
                     mes.menu_cursor = 0;
                     mes.cursor_snap = 1;
@@ -4594,7 +4587,7 @@ int CAquarium::Step() {
         if (next == 0xB) {
             menu->menu_draw = 0;
             menu->question_draw = 1;
-            menu->SetQuestionId(m_aquarium_para->unk_0 + 0x384, 1, 2);
+            menu->SetQuestionId(m_aquarium_para->active_tank + 0x384, 1, 2);
         }
         if (next == 0xA) {
             menu->menu_draw = 0;
@@ -4614,7 +4607,7 @@ int CAquarium::Step() {
             menu->cursor_draw = 0;
             menu->info_draw = 0;
             menu->question_draw = 1;
-            menu->SetQuestionId(m_aquarium_para->unk_0 + 0x3E8, 1, 2);
+            menu->SetQuestionId(m_aquarium_para->active_tank + 0x3E8, 1, 2);
         }
         if (next == 0xD) {
             menu->guide_draw = 0;
@@ -4821,7 +4814,7 @@ void CAquarium::Draw() {
         mgCDrawPrim prim;
         prim.Initialize(NULL, NULL);
         prim.DepthTestEnable(0);
-        prim.ZMask(-1);
+        prim.ZMask(MG_Z_MASK_MASKED);
         prim.TextureMapEnable(1);
         prim.AlphaBlendEnable(0);
         prim.AlphaTestEnable(0);
@@ -4850,7 +4843,7 @@ void CAquarium::Draw() {
         reflect = textures->GetTexture(at_4519, -1);
         mgSetPkFrameBuffer(screen);
         if (reflect != NULL) {
-            prim.Begin(6);
+            prim.Begin(MG_PRIM_SPRITE);
             prim.Texture(reflect);
             prim.Color(0x80, 0x80, 0x80, 0x80);
             PrimQuad(&prim, mgRect<int>(0, 0, mgScreenWidth, mgScreenHeight), mgRect<int>(0, 0, 0x80, 0x80));
@@ -4908,12 +4901,12 @@ void CAquarium::Draw() {
             sceVu0ScaleVector(offset, offset, 1.5f);
             prim.Initialize(NULL, NULL);
             prim.DepthTestEnable(1);
-            prim.DepthTest(1);
+            prim.DepthTest(MG_DEPTH_TEST_GEQUAL);
             prim.AlphaTestEnable(0);
             prim.AlphaBlendEnable(0);
             prim.TextureMapEnable(1);
             prim.Coord(1);
-            prim.Begin(4);
+            prim.Begin(MG_PRIM_TRIANGLE_STRIP);
             prim.Color(0x80, 0x80, 0x80, 0x80);
             visible = 1;
             for (k = 0; k < 4; k++) {
@@ -4956,7 +4949,7 @@ void CAquarium::Draw() {
 
         DrawMenuFillBox(&title_prim, AQUA_TITLE_X + 10, AQUA_TITLE_Y + 12, AQUA_TITLE_W - 18, AQUA_TITLE_H - 22, 0x10, 0, 0xFF, 0xFF);
         SetSpriteEnv(&title_prim, 0);
-        title_prim.Begin(6);
+        title_prim.Begin(MG_PRIM_SPRITE);
         title_prim.Texture(Tex_Aqualium);
         title_prim.Color(0x80, 0x80, 0x80, 0x80);
         Menu3DivideTextureDraw(&title_prim, mgRect<int>(AQUA_TITLE_X, AQUA_TITLE_Y, AQUA_TITLE_W, AQUA_TITLE_H), t_4408, 1);
@@ -4991,7 +4984,7 @@ void CAquarium::Draw() {
             };
             int values[12] = {
                 breed->param[4], breed->param[3], breed->param[0], breed->param[1], breed->param[2],
-                breed->color, breed->size, breed->weight, breed->timer, breed->life, breed->unk_35,
+                breed->color, breed->size, breed->weight, breed->timer, breed->life, breed->breed_feeds_remaining,
                 breed->hp,
             };
             char line[0x100];
@@ -5133,7 +5126,7 @@ int MenuAquaKey() {
             Aquarium.Step();
 
             if (AquaScene->fade.FadeCheck() != 0) {
-                m_aquarium_para->unk_0 = m_next_aqua_no;
+                m_aquarium_para->active_tank = m_next_aqua_no;
                 Aquarium.SettingAqua();
                 AquaScene->fade.FadeIn(30);
                 AquaMode = 5;
@@ -5192,7 +5185,7 @@ void MenuAquaDraw() {
     if (AquaMode == 8) {
         NameRegistDraw();
     } else {
-        mgSetLight(light_dir, light_color[m_aquarium_para->unk_0]);
+        mgSetLight(light_dir, light_color[m_aquarium_para->active_tank]);
         Camera__2->GetCameraMatrix(view);
         Camera__2->GetPos(position);
         mgSetViewMatrix(view, position);
@@ -6822,7 +6815,7 @@ void DrawSubGameTitle(mgCTexture *texture, int large, int x, int y, int width) {
 
     mgCDrawPrim *prim = GetMenuPrim();
     SetSpriteEnv(prim, 0);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(texture);
     prim->Color(0, 0, 0, 0x40);
     shadow.Set(x + 4, y + 4, width, table[3]);
@@ -6843,7 +6836,7 @@ void DrawSubGameListFix(mgCTexture *texture, int x, int y, int width, int height
     int          mid_height = height - 0x38;
     mgCDrawPrim *prim = GetMenuPrim();
     SetSpriteEnv(prim, 0);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(texture);
     prim->Color(0, 0, 0, 0x40);
     int shadow_x = x + 4;
@@ -6879,7 +6872,7 @@ void DrawSubGameScrlList(mgCTexture *texture, int *box, int *thumb) {
     int          width = box[2];
     mgCDrawPrim *prim = GetMenuPrim();
     SetSpriteEnv(prim, 0);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(texture);
     prim->Color(0, 0, 0, 0x40);
     int shadow_x = x + 4;
@@ -6907,7 +6900,7 @@ void DrawSubGameUnderLine(mgCTexture *texture, int x, int y, int width) {
     mgRect<int>  rect;
     mgCDrawPrim *prim = GetMenuPrim();
     SetSpriteEnv(prim, 0);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(texture);
     prim->Color(0x80, 0x80, 0x80, 0x80);
     rect.Set(x, y, width, pl_s_5699[3]);

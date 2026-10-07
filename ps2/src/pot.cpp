@@ -16,8 +16,8 @@
 #include "scene.hpp"
 #include "scenesnd.hpp"
 #include "sound.hpp"
+#include "dng_main.hpp"
 
-extern CBPot BTsubo2;
 extern char  at_1196[];
 extern char  at_1323__2[];
 extern char  at_1324[];

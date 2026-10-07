@@ -329,9 +329,9 @@ void TitleInit(INIT_LOOP_ARG arg) {
         area->quake_count = 0;
         area->script.running = 0;
         area->subject_counter = 0;
-        area->unk_98 = 0;
+        area->practice_actions = 0;
         area->floor_status = 0;
-        area->unk_8c = 0;
+        area->weather = 0;
         area->lock_on_mode = 0;
     }
 
@@ -1504,7 +1504,7 @@ void TitleModeDraw() {
                            start_button_tbl_1826[LanguageCode].right, start_button_tbl_1826[LanguageCode].bottom);
     if (LanguageCode == 0) {
         prim.Bilinear(1);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Texture(Tex_Logo);
         prim.Color(0x80, 0x80, 0x80, fptosi(TitleInfo->push_alpha));
         PrimQuad(&prim, 162.0f, float(338.0), start_rect);
@@ -1513,7 +1513,7 @@ void TitleModeDraw() {
         prim.End();
     } else {
         prim.Bilinear(0);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Texture(Tex_Logo);
         prim.Color(0x80, 0x80, 0x80, fptosi(TitleInfo->push_alpha));
         PrimQuad(&prim, 162.0f, (float)(mgScreenHeight - 0x6C), start_rect);
@@ -1531,7 +1531,7 @@ void TitleModeDraw() {
         row_num = 4;
     }
     prim.Bilinear(1);
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(Tex_Logo);
     for (i = 0; i < row_num; i++) {
         prim.Color(0, 0, 0, fptosi(TitleInfo->menu_alpha / 3.0f));
@@ -1552,7 +1552,7 @@ void TitleModeDraw() {
     prim.End();
     if (0.0f < TitleInfo->omake_alpha) {
         prim.TextureMapEnable(1);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Texture(Tex_Logo);
         row = 0;
         row_y[0] = 0xD0 - TitleInfo->omake_num * 0x1B;
@@ -2114,7 +2114,7 @@ void TitleCopyRightDraw() {
             prim.Preset2D();
             prim.AlphaBlendEnable(0);
             prim.TextureMapEnable(1);
-            prim.Begin(6);
+            prim.Begin(MG_PRIM_SPRITE);
             prim.Color(0, 0, 0, 0x80);
             prim.SetIRect(0, 0, mgScreenWidth, mgScreenHeight, 0, 0);
             prim.Texture(RushWork);
@@ -2578,7 +2578,7 @@ void DrawMenuDl(int x, int y, int width, int alpha, float rate) {
     mgRect<int> body_put;
 
     SetSpriteEnv(&prim, 0);
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(HDDDlBar);
     prim.Color(0x80, 0x80, 0x80, alpha);
     frame_tex.Set(0x74, 0, 0xC, 0xC);
@@ -2586,7 +2586,7 @@ void DrawMenuDl(int x, int y, int width, int alpha, float rate) {
     frame_put.Set(x + 4, y + 0x2E, width - 0xA, 0xE);
     PrimQuad(&prim, frame_put, frame_tex);
     prim.End();
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     int end_width = table_2611[0][2] - 0x14 + table_2611[1][4];
     float inner = ((float)width - (float)end_width) - 2.0f;
     int bar_width = (int)(inner * rate);
@@ -2599,7 +2599,7 @@ void DrawMenuDl(int x, int y, int width, int alpha, float rate) {
     PrimQuad(&prim, bar_put, bar_tex);
     prim.End();
     prim.Bilinear(0);
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     for (int i = 0; i < 3; i++) {
         prim.Color(0, 0, 0, alpha >> 2);
         shadow_put.Set(x + 4, y + 4, width, table_2611[i][3]);

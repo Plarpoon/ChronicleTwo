@@ -418,8 +418,8 @@ void CFadeInOut::Draw() {
         prim.DepthTestEnable(0);
         prim.AlphaTestEnable(0);
         prim.AlphaBlendEnable(1);
-        prim.AlphaBlend(1);
-        prim.ZMask(-1);
+        prim.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
+        prim.ZMask(MG_Z_MASK_MASKED);
 
         if (cross != 0) {
             if (cross_texture != NULL) {
@@ -432,7 +432,7 @@ void CFadeInOut::Draw() {
                     prim.BeginPrim2(6);
                     prim.Texture(cross_texture);
 
-                    prim.Direct(0x3B, 0x8080 | ((u_long) 0x80 << 32));
+                    prim.Direct(SCE_GS_TEXA, 0x8080 | ((u_long) 0x80 << 32));
                     prim.Color(0x80, 0x80, 0x80, 0x80);
                     prim.EndPrim2();
 
@@ -456,7 +456,7 @@ void CFadeInOut::Draw() {
                     prim.BeginPrim2(6);
                     prim.Texture(cross_texture);
 
-                    prim.Direct(0x3B, 0x8080 | ((u_long) 0x80 << 32));
+                    prim.Direct(SCE_GS_TEXA, 0x8080 | ((u_long) 0x80 << 32));
                     r = fptosi(this->r);
                     g = fptosi(this->g);
                     b = fptosi(this->b);
@@ -493,12 +493,12 @@ void CFadeInOut::Draw() {
         back_tex.tex0.bits.tcc = 0;
         prim2.TextureMapEnable(1);
         prim2.AlphaBlendEnable(1);
-        prim2.AlphaBlend(1);
+        prim2.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
         prim2.DepthTestEnable(0);
-        prim2.ZMask(-1);
-        prim2.Begin(6);
+        prim2.ZMask(MG_Z_MASK_MASKED);
+        prim2.Begin(MG_PRIM_SPRITE);
 
-        prim2.Direct(0x3B, 0x80 | ((u_long) 0x80 << 32));
+        prim2.Direct(SCE_GS_TEXA, 0x80 | ((u_long) 0x80 << 32));
         prim2.Texture(&back_tex);
         prim2.Color(0x80, 0x80, 0x80, blur_alpha);
         prim2.TextureCrd(0, 0);

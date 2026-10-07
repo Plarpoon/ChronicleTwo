@@ -27,7 +27,6 @@ extern volatile u8  isFrameEnd;
 extern u32          frd;
 extern volatile u8  isCountVblank;
 extern volatile int Cb;
-extern sceDmaChan  *DmaCH2;
 extern int          MpegW;
 extern int          MpegH;
 extern VideoDec     videoDec;

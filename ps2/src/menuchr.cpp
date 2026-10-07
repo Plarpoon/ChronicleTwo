@@ -39,6 +39,7 @@
 #include "sound.hpp"
 #include "sysmes.hpp"
 #include "userdata.hpp"
+#include "title.hpp"
 
 extern int MenuCharaChangePosDataCfgBuffer;
 
@@ -240,7 +241,6 @@ enum {
 extern short       tbl_992[];
 extern signed char MenuNPCLoadFlag;
 extern int         mos_effect_read_num;
-void               SetupUnitMan(CScene *scene, CUserDataManager *user_data, int unit, ROBO_INFO_DATA *robo);
 void               GetBajjiPosition(CMenuPosDataForm *form, int slot, int unused, int *pos);
 void               SetSwordBlurEffect(CCharacter2 *chara, mgCMemory *stack, int blur_type);
 
@@ -524,7 +524,6 @@ extern char               at_5839[];
 extern char               at_5893[];
 extern int                tbl_5848[];
 extern void              *__vt__12CMosBookMenu[];
-extern CDC2Mes           *MenuDCMsg[9];
 extern MemoryList         at_1083__2;
 extern char               at_1104__4[];
 extern char               at_1131__3[];
@@ -780,7 +779,6 @@ extern MenuPositionVector at_1372__2;
 extern char               at_1402__3[];
 extern CMenuChrCngMenu   *ChrChangMenuPt;
 extern void              *__vt__15CMenuChrCngMenu[];
-extern int                MenuCharaChangePosDataCfgBuffer;
 extern int                tbl_2483[];
 extern char               at_2595__2[];
 extern char               at_2596__3[];
@@ -806,7 +804,6 @@ static void               MenuItemCharaDataLoadPack(int chara_no, CActionChara *
 extern u16                menu_chr_memorytbl[MENU_CHARA_LOAD_MAX];
 extern u16                menu_robo_memorytbl[MENU_CHARA_LOAD_MAX];
 extern char               at_1078__2[];
-int                       ReadBGSync();
 
 #pragma define_section dead ".dead" ".dead"
 __declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
@@ -2846,7 +2843,7 @@ void MenuCharaChangeStarDraw() {
     float crd[4][2] = {{u0, v0}, {u1, v0}, {u1, v1}, {u0, v1}};
     SetSpriteEnv(prim, 4);
     prim->Bilinear(1);
-    prim->Begin(5);
+    prim->Begin(MG_PRIM_TRIANGLE_FAN);
     prim->Texture(MenuCharaChangeBase_Tex);
     prim->Color(0x80, 0x80, 0x80, (int)ChrChangMenuPt->star_alpha);
     for (int i = 0; i < 4; i++) {
@@ -2889,7 +2886,7 @@ void MenuCharaChangeStarDraw() {
     texManager->ReloadTexture(MenuCharaChangeStar_Tex->block, (sceVif1Packet *)NULL);
     mgRect_s_ starRect;
     starRect.Set(0, 0x20, 8, 8);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(MenuCharaChangeStar_Tex);
     for (j = 0; j < CHR_CNG_STAR_NUM; j++) {
         if (0.0f < ChrChangMenuPt->star[j].alpha) {
@@ -4555,7 +4552,7 @@ int CMenuMosSelect::KeyStep() {
                     MenuSePlay(2);
                     break;
                 case 30: {
-                    BuildUpWeaponInfo.unk_0 = 1;
+                    BuildUpWeaponInfo.monster_mode = 1;
                     step = 10;
                     int monsterNo = (monster_progress_tbl + 1 + select_badge->progress * 5)[select_badge->class_level];
                     level_num = get_monster_tbl_bajjilevel(level_monster, select, monsterNo, select_badge->class_level + 1);
@@ -6510,7 +6507,7 @@ int CMenuCostumeSel::KeyStep() {
 
                     if (answer == 1) {
                         if (select == 4) {
-                            GetUserDataMan()->GetCharaDataPtr(1)->unk_2b = 0;
+                            GetUserDataMan()->GetCharaDataPtr(1)->keep_costume_on_equip_change = 0;
                             change_chara = 1;
                             wait_load = 0;
                             mode = 2;
@@ -6525,7 +6522,7 @@ int CMenuCostumeSel::KeyStep() {
                             chara = 1;
                             MenuLoadInfo.chara_no = 1;
                             chara_data = GetUserDataMan()->GetCharaDataPtr(1);
-                            chara_data->unk_2b = 1;
+                            chara_data->keep_costume_on_equip_change = 1;
                             UpdateCostumeList(1, CostumeAttr);
                             costume_select[0] = CosutmeSelDefaultSet(0x7F, costume_list[1]);
                             costume_select[1] = CosutmeSelDefaultSet(0x10A, costume_list[0]);
@@ -6643,7 +6640,7 @@ void CMenuCostumeSel::Draw() {
     int cursorY = select * 0x42 + 0x6E;
     int y = 0x50;
     SetSpriteEnv(prim, 0);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(tile_tex);
     for (i = 0; i < COSTUME_LIST_NUM; i++) {
         int lineY;
@@ -6763,8 +6760,6 @@ void CMenuCostumeSel::Draw() {
     }
 }
 extern void  *__vt__15CMenuCostumeSel[];
-extern u_long CostumeOptionEnv;
-extern "C" void *__ct__14CBaseMenuClassFv(void *self);
 extern "C" void *__ct__15mgCCameraFollowFffff(void *camera, float distance, float height, float angle,
                                                float speed);
 void MenuCostumeInit(mgCMemory *stack, int *tex_block, int mode) {
@@ -7031,7 +7026,7 @@ void CMosBookMenu::Draw() {
     mgCDrawPrim *prim = GetMenuPrim();
     SetSpriteEnv(prim, 0);
     DrawMenuTilePattern(prim, Tex_MBg, bg_scroll, bg_scroll, mgRect<int>(0, 0, 0x100, 0x100), 0, NULL);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(Tex_MBase);
     prim->Color(0, 0, 0, 0x40);
     Menu3DivideTextureDraw(prim, mgRect<int>(0x1A, 0x4B, 0x1CC, 0x24), tiletbl_5573[0], 1);
@@ -7049,7 +7044,7 @@ void CMosBookMenu::Draw() {
     float x = 52.0f, y = 101.0f;
     DrawMenuFillBox(x, y, (float)boxW, 220.0f, 0x80, 0xD, 0xD, 0xD);
     SetSpriteEnv(prim, 0);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(Tex_MBase);
     prim->Color(0x80, 0x80, 0x80, 0x80);
     Menu3DivideTextureDraw(prim,
@@ -7100,7 +7095,7 @@ void CMosBookMenu::Draw() {
                            under_brdtbl_5576, 1);
     Menu3DivideTextureDraw(prim, mgRect<int>(0x140, 0x27, 0x9C, 0x20), under_brdtbl_5576, 1);
     prim->End();
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Color(0x80, 0x80, 0x80, 0x80);
     prim->Texture(Tex_MBook);
     PrimQuad(prim, 18.0f, 16.0f, mgRect<int>(0, 0, 0xA8, 0x16));
@@ -7155,7 +7150,7 @@ void CMosBookMenu::Draw() {
         frameW = 0xDA;
     }
     SetSpriteEnv(prim, 0);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(Tex_MBase);
     prim->Color(0x80, 0x80, 0x80, 0x80);
     Menu3DivideTextureDraw(prim, mgRect<int>(0x20, 0x55, frameW, 0x36), wakutbl_5600[0], 1);
@@ -7163,7 +7158,7 @@ void CMosBookMenu::Draw() {
     Menu3DivideTextureDraw(prim, mgRect<int>(0x20, 0x11D, frameW, 0x32), wakutbl_5600[2], 1);
     prim->End();
     numberRect.Set(0, 0x14A, 0xC, 0xD);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(Tex_MBase);
     prim->Color(0x80, 0x80, 0x80, 0x80);
     PrimDrawNumber(prim, hp, 0, 0x156, 0x6D, numberRect, -1, 0);

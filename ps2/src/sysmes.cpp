@@ -24,20 +24,7 @@
 #include "sysmes.hpp"
 #include "userdata.hpp"
 
-extern ClsMes SystemMessage;
-extern ClsMes SystemMessage2;
-extern ClsMes SystemMessage3;
-extern short  SystemMesBuffer[];
-extern short  SysMesBuffer[];
-#include "dataread.hpp"
-#include "mainloop.hpp"
 #include "nd_meswin.hpp"
-
-extern short  SystemMesBuffer[];
-extern short  SysMesBuffer[];
-extern ClsMes SystemMessage;
-extern ClsMes SystemMessage2;
-extern ClsMes SystemMessage3;
 
 // Code (.text)
 ClsMes *GetSystemMessage() {

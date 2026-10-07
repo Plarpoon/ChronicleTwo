@@ -353,7 +353,7 @@ public:
     float                 neta_color[4];  /**< Colour of the frame of a photo showing an idea. */
     float                 scoop_color[4]; /**< Colour of the frame of a photo showing a scoop. */
     short                 neta_effect_time;
-    short                 unk_392;
+    short                 memo_sort_mode;
     u_int                *create_sound_buffer;
     mgCMemory             data_stack;     /**< Memory the menu layout data is read into. */
     mgCTexture           *photo_tex[30];  /**< Texture of each carried photo. */
@@ -424,14 +424,14 @@ public:
     u8                    unk_820[0x528];
     mgCMemory             item_model_memory;
     int                   download_base;
-    int                   unk_d7c;
+    int                   album_save_mode;
     float                 neta_effect_pos[30][2]; /**< Screen position of each new idea's star effect. */
     short                 neta_effect_alpha[30];  /**< Alpha of each new idea's star effect. */
     int                   gradation_mode;         /**< Colour fade of the invention flash being run. */
-    int                   unk_eb0;
+    int                   gradation_height;
     u8                    card_scroll_reset;  /**< Requests a reset of invention card scrolling. */
     u8                    photo_scroll_reset; /**< Requests a reset of photo board scrolling. */
-    u8                    unk_eb6;
+    u8                    cursor_snap;
     u8                    unk_eb7;
     CMenuPosDataForm     *bg_form;              /**< Background form. */
     CMenuPosDataForm     *itembrd_form;         /**< Item board form. */

@@ -62,7 +62,6 @@ extern float                    OldCameraPos[4];
 extern sceVu0FVECTOR            OldFixCameraPos;
 extern int                      name_id_982[30];
 extern char                    *name_978[4];
-extern DEBUG_INFO               DebugInfo;
 extern int                      LadderMode;
 extern int                      LadderStep;
 extern mgCCamera               *LadderCamera;
@@ -84,31 +83,14 @@ extern int                      CharaMotionMode;
 extern int                      CharaMotionModeCnt;
 extern int                      FixCameraChgCnt;
 extern int                      ViewMode;
-extern CGamePad                 GamePad__2;
 
 #include <libvu0.h>
 
 #include <cmath>
-#include <cstring>
 
-#include "cameracontrol.hpp"
-#include "character.hpp"
 #include "dng_event.hpp"
-#include "editmap.hpp"
 #include "effscript.hpp"
-#include "gamepad.hpp"
 #include "gameutil.hpp"
-#include "helpmes.hpp"
-#include "inventmn.hpp"
-#include "mainloop.hpp"
-#include "mg_math.hpp"
-#include "mglib.hpp"
-#include "padcontrol.hpp"
-#include "photo.hpp"
-#include "savedata.hpp"
-#include "scenesnd.hpp"
-#include "sphida.hpp"
-#include "userdata.hpp"
 
 #ifdef NONMATCHING
 static int                      LadderMode;           /**< End of the ladder the player entered. */

@@ -43,8 +43,6 @@ extern char          at_1310__4[];
 extern char          at_1676[];
 extern int           D_01F3C7FC[4];
 extern float         SfidaBGXY;
-extern int           DebugFlag;
-extern int           menu_debug_flag;
 extern CDC2Mes      *SphidaMenuMes;
 extern CDC2Mes      *SphidaMenuQus;
 extern CDC2Mes      *SphidaScore;
@@ -60,9 +58,7 @@ extern char          at_1556__2[];
 extern char          at_1557__2[];
 extern int           SphidaSelect[2];
 extern short         SfidaMakeLine;
-extern int           LanguageCode;
 
-extern CDC2Mes        *MenuDCMsg[9];
 extern signed char     WorldMapMenuType;
 extern CWorldMapMenu  *WorldMapPtr;
 extern short           Sfida_NowPlayHorlBlink;
@@ -148,7 +144,7 @@ int _WMAP_AREA(SPI_STACK *stack, int) {
     int             map_no = spiGetStackInt(stack++);
     WMAP_AREA_DATA *area = &spi_wmaparea_tbl[area_no];
     area->area_no = area_no;
-    area->unk_24 = map_no;
+    area->map_no = map_no;
     area->x = spiGetStackInt(stack++);
     area->y = spiGetStackInt(stack++);
     area->name_x = spiGetStackInt(stack++);
@@ -675,7 +671,7 @@ void CWorldMapMenu::Draw() {
         PrimQuad(prim, map_tex, map_dest, map_source, 0x80, 0x80, 0x80, 0x80);
         if (map_type == 2 && anim_tex != NULL && pulse_tex != NULL) {
             SetSpriteEnv(prim, 0);
-            prim->Begin(6);
+            prim->Begin(MG_PRIM_SPRITE);
             prim->Texture(anim_tex);
             prim->Color(0, 0, 0, 0x5E);
             for (int i = 0; i < 0xFF; i = i + 1) {
@@ -696,7 +692,7 @@ void CWorldMapMenu::Draw() {
             }
             prim->End();
             SetSpriteEnv(prim, 0);
-            prim->Begin(6);
+            prim->Begin(MG_PRIM_SPRITE);
             prim->Texture(anim_tex);
             prim->Color(0x80, 0x80, 0x80, 0x80);
             prim->TextureCrd(0, 0);
@@ -710,7 +706,7 @@ void CWorldMapMenu::Draw() {
             pulse_color[1][3] = 196.0f + 48.0f * sinf(pulse_angle[1]);
             float pulse_speed[2] = { 0.07853982f, 0.06283185307f };
             int shift = 0;
-            prim->Begin(6);
+            prim->Begin(MG_PRIM_SPRITE);
             prim->Texture(pulse_tex);
             for (int i = 0; i < 2; i++) {
                 prim->Color(pulse_color[i]);
@@ -727,7 +723,7 @@ void CWorldMapMenu::Draw() {
             float island_y = 89.7f + 6.0f * sinf(float_angle);
             float shadow_y = 14.0f + (156.4f + 1.5f * sinf(float_angle));
             prim->Bilinear(1);
-            prim->Begin(6);
+            prim->Begin(MG_PRIM_SPRITE);
             prim->Texture(anim_tex);
             prim->Color(0, 0, 0, 0x60);
             prim->TextureCrd(0xA, 0xA);
@@ -747,7 +743,7 @@ void CWorldMapMenu::Draw() {
         mgRect<int> title_rect(- 0x1C, - 0xE, 0x100, 0x60);
         mgRect<int> title_source(0, 0, 0x100, 0x60);
         prim->Bilinear(1);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(mark_tex);
         prim->Color(0, 0, 0, 0x2E);
         mgRect<int> title_shadow(0, 0, 0, 0);
@@ -766,7 +762,7 @@ void CWorldMapMenu::Draw() {
         if (blink_cnt > 45) {
             mark_source.top -= mark_source.bottom;
         }
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(mark_tex);
         prim->Color(0x80, 0x80, 0x80, 0x80);
         for (int i = 1; i < spi_wmaparea_tblnum; i++) {
@@ -816,7 +812,7 @@ void CWorldMapMenu::Draw() {
         int shadow_u = 0;
         mgRect<int> frame(frame_x, frame_y, 0x1E, 0x2E);
         SetSpriteEnv(prim, 0);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(mark_tex);
         for (int i = 0; i < 3; i++) {
             prim->Color(0, 0, 0, 0x2E);
@@ -862,7 +858,7 @@ void CWorldMapMenu::Draw() {
         float icon_x = 24.0f + put_pos[0];
         float icon_y = 25.0f + put_pos[1];
         SetSpriteEnv(prim, 0);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(mark_tex);
         for (int i = 0; i < pos_num; i++) {
             mgRect<int> icon_source(pos_icon[i] * 0x14 + 0xB0, 0x60, 0x14, 0x18);
@@ -1466,7 +1462,7 @@ void SphidaMenuDraw() {
         for (int rank = 0; rank < 0x40; rank++, y += 0x18, player++) {
             mgRect<int> digits(0, 0xEC, 0x12, 0x14);
             SetSpriteEnv(prim, 0);
-            prim->Begin(6);
+            prim->Begin(MG_PRIM_SPRITE);
             prim->Texture(SphidaTex);
             prim->Color(0x80, 0x80, 0x80, 0x80);
             PrimDrawNumber(prim, rank + 1, 1, list_rect[0] + 0x32, y - 0x14, digits, -2, 0);
@@ -1633,7 +1629,7 @@ void SphidaScoreViewDraw() {
         hole_digits.Set(0, 0x60, 0x1C, 0x20);
         textures->ReloadTexture(SphidaTex_Sys->block, (sceVif1Packet *)NULL);
         SetSpriteEnv(prim, 0);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(SphidaTex_Sys);
         prim->Color(128, 128, 128, 128);
         if (LanguageCode == 0) {
@@ -1665,7 +1661,7 @@ void SphidaScoreViewDraw() {
             score_digits.Set(0, 0xEC, 0x12, 0x14);
             number_digits.Set(0, 0x74, 0xE, 0x14);
             SetSpriteEnv(prim, 0);
-            prim->Begin(6);
+            prim->Begin(MG_PRIM_SPRITE);
             prim->Texture(SphidaTex);
             prim->Color(128, 128, 128, 128);
             if (Sfida_NowPlayHorlBlink > 0x19 && row == hole_no - 1) {

@@ -66,9 +66,6 @@ extern void (*LoopExit[])();
 extern PAD_TABLE_ENTRY    pad_table[];
 extern ANALOG_TABLE_ENTRY analog_table[];
 
-void LoadFilePictureName();
-int  get_gajji_id_from_monster_progress_table(int monster_no, int *level);
-int  GetMonsterProgressTableNo(int level, int monster_no);
 
 extern CFont     Font;
 extern mgCMemory MainBuffer;
@@ -484,7 +481,7 @@ void MainLoop() {
             frame_border.AlphaTestEnable(0);
             frame_border.AlphaBlendEnable(0);
             frame_border.TextureMapEnable(0);
-            frame_border.ZMask(-1);
+            frame_border.ZMask(MG_Z_MASK_MASKED);
             frame_border.Begin(MG_PRIM_LINE_STRIP);
             frame_border.Color(0, 0, 0, 0x80);
             frame_border.Vertex(0, 0, 0);
@@ -1292,7 +1289,7 @@ int PauseMenu() {
     prim.Initialize(NULL, NULL);
     prim.DepthTestEnable(0);
     prim.AlphaBlendEnable(1);
-    prim.ZMask(1);
+    prim.ZMask(MG_Z_MASK_WRITE);
     prim.TextureMapEnable(0);
     prim.Begin(MG_PRIM_SPRITE);
     prim.Color(0, 0, 0, 0x40);

@@ -528,15 +528,15 @@ int sgSystemDrawBuggy(SubGameInfo *info) {
     prim.AlphaBlendEnable(1);
     prim.DepthTestEnable(0);
     prim.Coord(0);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.TextureMapEnable(0);
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Color(0x1E, 0x2E, 0x1F, 0x60);
     prim.Vertex(0x3E, 0x26, 0);
     prim.Vertex(0xEB, 0x2C, 0);
     prim.End();
     prim.TextureMapEnable(1);
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(gauge_texture);
     int train_width = fptosi(gauge_width * TrainHP);
     prim.Color(0x80, 0x80, 0x80, 0x80);
@@ -580,7 +580,7 @@ int sgSystemDrawBuggy(SubGameInfo *info) {
 
     prim.TextureMapEnable(0);
     prim.Shading(1);
-    prim.Begin(4);
+    prim.Begin(MG_PRIM_TRIANGLE_STRIP);
     prim.Color(color_full);
     prim.Vertex(buggy_bar_x, bar_y + 0x1F, 0);
     prim.Color(color_full);
@@ -592,7 +592,7 @@ int sgSystemDrawBuggy(SubGameInfo *info) {
     prim.Vertex(bar_end, bar_y + 0x25, 0);
     prim.End();
     prim.TextureMapEnable(1);
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(gauge_texture);
     prim.Color(0x80, 0x80, 0x80, 0x80);
     prim.TextureCrd(0, 0x28);

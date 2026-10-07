@@ -157,16 +157,16 @@ void CEventSprite::Draw() {
         if (texture != NULL) {
             prim->Initialize(NULL, NULL);
             prim->AlphaBlendEnable(1);
-            prim->AlphaBlend(1);
+            prim->AlphaBlend(MG_ALPHA_BLEND_NORMAL);
             prim->AlphaTestEnable(1);
             prim->AlphaTest(1, 0);
             prim->DepthTestEnable(0);
-            prim->ZMask(-1);
+            prim->ZMask(MG_Z_MASK_MASKED);
             prim->Shading(0);
             prim->TextureMapEnable(1);
             prim->Bilinear(0);
             prim->AntiAliasing(1);
-            prim->Begin(6);
+            prim->Begin(MG_PRIM_SPRITE);
             prim->Texture(texture);
             prim->Color(color[0], color[1], color[2], color[3]);
             prim->TextureCrd(get[0], get[1]);
@@ -409,7 +409,7 @@ void CEventSprite2::Draw() {
     mgCDrawPrim prim;
     prim.Initialize(NULL, NULL);
     prim.DepthTestEnable(1);
-    prim.DepthTest(-1);
+    prim.DepthTest(MG_DEPTH_TEST_ALWAYS);
 
     if (texture != NULL) {
         prim.TextureMapEnable(1);
@@ -439,7 +439,7 @@ void CEventSprite2::Draw() {
                 float y2 = -width * sinf(rot_z) + height * cosf(rot_z);
                 float x3 = width * cosf(rot_z) - height * sinf(rot_z);
                 float y3 = width * sinf(rot_z) + height * cosf(rot_z);
-                prim.Begin(4);
+                prim.Begin(MG_PRIM_TRIANGLE_STRIP);
 
                 if (texture != NULL) {
                     prim.Texture(texture);
@@ -462,7 +462,7 @@ void CEventSprite2::Draw() {
 
                 prim.End();
             } else {
-                prim.Begin(6);
+                prim.Begin(MG_PRIM_SPRITE);
 
                 if (texture != NULL) {
                     prim.Texture(texture);
@@ -482,8 +482,8 @@ void CEventSprite2::Draw() {
             break;
         case 1:
             prim.DepthTestEnable(1);
-            prim.DepthTest(1);
-            prim.ZMask(-1);
+            prim.DepthTest(MG_DEPTH_TEST_GEQUAL);
+            prim.ZMask(MG_Z_MASK_MASKED);
             prim.Bilinear(0);
             prim.Coord(1);
             pos[3] = 1.0f;
@@ -491,7 +491,7 @@ void CEventSprite2::Draw() {
             int bottom_right[4];
 
             if (mgTransWorldPrim3DSprite(top_left, bottom_right, pos, width, height, 0)) {
-                prim.Begin(6);
+                prim.Begin(MG_PRIM_SPRITE);
 
                 if (texture != NULL) {
                     prim.Texture(texture);

@@ -515,11 +515,11 @@ void CRocketLauncher::Draw() {
         sprite.AlphaTestEnable(1);
         sprite.AlphaTest(1, 0);
         sprite.DepthTestEnable(1);
-        sprite.ZMask(-1);
+        sprite.ZMask(MG_Z_MASK_MASKED);
         sprite.Bilinear(1);
         sprite.TextureMapEnable(1);
         sprite.Coord(1);
-        sprite.Begin(6);
+        sprite.Begin(MG_PRIM_SPRITE);
         sprite.Texture(trail_texture);
         sprite.AlphaTestEnable(1);
         sprite.SetAlphaBlend(1);
@@ -1053,11 +1053,11 @@ void CLaserGun::Draw() {
             sprite.AlphaTestEnable(1);
             sprite.AlphaTest(1, 0);
             sprite.DepthTestEnable(1);
-            sprite.ZMask(-1);
+            sprite.ZMask(MG_Z_MASK_MASKED);
             sprite.Bilinear(1);
             sprite.TextureMapEnable(1);
             sprite.Coord(1);
-            sprite.Begin(6);
+            sprite.Begin(MG_PRIM_SPRITE);
             sprite.Texture(trail_texture);
             sprite.AlphaTestEnable(1);
             sprite.SetAlphaBlend(2);
@@ -1226,20 +1226,20 @@ void CPullItem::Draw(mgCTexture *texture) {
         sprite.Initialize(0, 0);
 
         if (glow != 0) {
-            sprite.AlphaBlend(2);
+            sprite.AlphaBlend(MG_ALPHA_BLEND_ADD);
         } else {
-            sprite.AlphaBlend(1);
+            sprite.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
         }
 
         sprite.AlphaBlendEnable(1);
         sprite.AlphaTestEnable(1);
         sprite.AlphaTest(1, 0);
         sprite.DepthTestEnable(1);
-        sprite.ZMask(-1);
+        sprite.ZMask(MG_Z_MASK_MASKED);
         sprite.Bilinear(1);
         sprite.TextureMapEnable(1);
         sprite.Coord(1);
-        sprite.Begin(6);
+        sprite.Begin(MG_PRIM_SPRITE);
         sprite.Texture(texture);
         sprite.AlphaTestEnable(1);
         sprite.Color(0x80, 0x80, 0x80, fptosi(alpha));

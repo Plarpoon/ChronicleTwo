@@ -568,7 +568,7 @@ void mgEndFrame(mgCDrawManager *manager) {
         prim.DepthTestEnable(0);
         prim.TextureMapEnable(0);
         prim.AlphaBlendEnable(1);
-        prim.ZMask(-1);
+        prim.ZMask(MG_Z_MASK_MASKED);
         prim.Begin(SCE_GS_PRIM_SPRITE);
         prim.Color(128, 128, 128, 128);
         top = mgScreenHeight - 40;
@@ -789,9 +789,9 @@ void mgBeginDrawShadow(mgCTexture *shadow, mgCTexture *unused) {
         prim.Initialize(NULL, NULL);
         prim.DepthTestEnable(0);
         prim.AlphaTestEnable(0);
-        prim.ZMask(-1);
+        prim.ZMask(MG_Z_MASK_MASKED);
         prim.TextureMapEnable(0);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0, 0, 0, 0);
         prim.Vertex(0, 0, 0);
         prim.Vertex(shadow->width, shadow->height, 0);
@@ -814,7 +814,7 @@ void mgEndDrawShadow(mgCTexture *shadow, mgCTexture *unused) {
         prim.AlphaTestEnable(1);
         prim.AlphaTest(SCE_GS_GEQUAL, 1);
         prim.AlphaBlendEnable(1);
-        prim.ZMask(-1);
+        prim.ZMask(MG_Z_MASK_MASKED);
         prim.TextureMapEnable(1);
         prim.Bilinear(1);
         prim.Begin(SCE_GS_PRIM_SPRITE);

@@ -134,18 +134,18 @@ void CRipple::Draw() {
 
     prim.Initialize(0, 0);
     prim.AlphaBlendEnable(1);
-    prim.AlphaBlend(1);
+    prim.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
     prim.AlphaTestEnable(1);
     prim.AlphaTest(1, 0);
     prim.DepthTestEnable(0);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.Bilinear(0);
     prim.TextureMapEnable(1);
     prim.DepthTestEnable(1);
-    prim.DepthTest(1);
+    prim.DepthTest(MG_DEPTH_TEST_GEQUAL);
     prim.Bilinear(1);
     prim.Coord(1);
-    prim.AlphaBlend(2);
+    prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
     prim.AlphaTestEnable(1);
     prim.AntiAliasing(1);
     half = size / 2.0f;
@@ -170,7 +170,7 @@ void CRipple::Draw() {
         mgTransWorldPrim(vertex[1], corner[1]) != 0 &&
         mgTransWorldPrim(vertex[2], corner[2]) != 0 &&
         mgTransWorldPrim(vertex[3], corner[3]) != 0) {
-        prim.Begin(3);
+        prim.Begin(MG_PRIM_TRIANGLE);
 
         if (LanguageCode == 0 || LanguageCode == 1) {
             rect_a = GetRectFontTex(GetFontNo(at_853__3), &tex_no);
@@ -260,20 +260,20 @@ void CParticle::Draw(void) {
 
         prim.Initialize(0, 0);
         prim.AlphaBlendEnable(1);
-        prim.AlphaBlend(1);
+        prim.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
         prim.AlphaTestEnable(1);
         prim.AlphaTest(1, 0);
         prim.DepthTestEnable(0);
-        prim.ZMask(-1);
+        prim.ZMask(MG_Z_MASK_MASKED);
         prim.Bilinear(0);
         prim.TextureMapEnable(0);
         prim.Coord(1);
         prim.Shading(1);
         prim.DepthTestEnable(1);
-        prim.DepthTest(1);
-        prim.AlphaBlend(2);
+        prim.DepthTest(MG_DEPTH_TEST_GEQUAL);
+        prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
         prim.AntiAliasing(1);
-        prim.Begin(0);
+        prim.Begin(MG_PRIM_POINT);
         CScene *scene = GetMainScene();
         mgCCamera *camera = scene->GetCamera(scene->active_camera);
         if (camera != NULL) {
@@ -375,20 +375,20 @@ void CRainDrop::Draw() {
 
     prim.Initialize(0, 0);
     prim.AlphaBlendEnable(1);
-    prim.AlphaBlend(1);
+    prim.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
     prim.AlphaTestEnable(1);
     prim.AlphaTest(1, 0);
     prim.DepthTestEnable(0);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.Bilinear(0);
     prim.TextureMapEnable(0);
     prim.Coord(1);
     prim.Shading(1);
     prim.DepthTestEnable(1);
-    prim.DepthTest(1);
-    prim.AlphaBlend(2);
+    prim.DepthTest(MG_DEPTH_TEST_GEQUAL);
+    prim.AlphaBlend(MG_ALPHA_BLEND_ADD);
     prim.AntiAliasing(1);
-    prim.Begin(1);
+    prim.Begin(MG_PRIM_LINE);
 
     for (i = 7; i > 0; i -= 2) {
         if (mgTransWorldPrim(vertex_a, pos[i]) != 0 &&
@@ -585,16 +585,16 @@ void DrawScreenRain() {
     int         i;
     prim.Initialize(NULL, NULL);
     prim.AlphaBlendEnable(1);
-    prim.AlphaBlend(1);
+    prim.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
     prim.AlphaTestEnable(1);
     prim.AlphaTest(1, 0);
     prim.DepthTestEnable(0);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.Bilinear(0);
     prim.TextureMapEnable(0);
     prim.AntiAliasing(1);
     prim.Shading(1);
-    prim.Begin(1);
+    prim.Begin(MG_PRIM_LINE);
 
     for (i = 0; i < 50; i++) {
         float length = f_rand(mgScreenHeight / 8, mgScreenHeight / 4);

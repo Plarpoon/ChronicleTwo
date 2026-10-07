@@ -88,10 +88,6 @@ extern float            NowFishRot;
 
 #include "dng_main.hpp"
 #include "gameutil.hpp"
-#include "mg_drawprim.hpp"
-#include "mg_frame.hpp"
-#include "mg_math.hpp"
-#include "mglib.hpp"
 #include "scenesnd.hpp"
 
 #ifdef NONMATCHING
@@ -111,7 +107,6 @@ static float            NowFishRot;
 static int              ActionChanceNextCnt;
 static int              ActionChanceCnt;
 static int              ActionChanceDir;
-extern float            RodPoint[60];
 static FISH_ROD_SEGMENT RodPointDist[5];
 static mgCFrame        *SaoFrame[8];
 static float            SaoDist[8];
@@ -1102,9 +1097,9 @@ void DrawFishingLine() {
     prim.Initialize(NULL, NULL);
     prim.DepthTestEnable(1);
     prim.AlphaBlendEnable(1);
-    prim.ZMask(1);
+    prim.ZMask(MG_Z_MASK_WRITE);
     prim.TextureMapEnable(0);
-    prim.Begin(1);
+    prim.Begin(MG_PRIM_LINE);
     prim.Color(0xDC, 0xDC, 0xDC, 0x10);
 
     if (BattleFlag != 0) {
@@ -1172,7 +1167,7 @@ void DrawFishingActionChance() {
     prim.Initialize(NULL, NULL);
     prim.DepthTestEnable(1);
     prim.AlphaBlendEnable(1);
-    prim.ZMask(1);
+    prim.ZMask(MG_Z_MASK_WRITE);
     prim.TextureMapEnable(0);
 
     if (BattleFlag != 0 && ActionChanceCnt > 0) {
@@ -1191,8 +1186,8 @@ void DrawFishingActionChance() {
             prim.DepthTestEnable(0);
             prim.TextureMapEnable(1);
             prim.Coord(1);
-            prim.ZMask(-1);
-            prim.Begin(6);
+            prim.ZMask(MG_Z_MASK_MASKED);
+            prim.Begin(MG_PRIM_SPRITE);
             prim.Color(0x80, 0x80, 0x80, 0x80);
             prim.Texture(textures->GetTexture(at_1503__4, -1));
 

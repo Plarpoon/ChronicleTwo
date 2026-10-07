@@ -131,7 +131,6 @@ extern mgCTexture    *NameRegiTex1;
 extern s16            NameRegistMax;
 extern s16            gettbl0_2012[12];
 extern s64            at_2031__3;
-extern CNameRegiMenu *NameRegiMenuPtr;
 
 // Code (.text)
 void SetEventKeyword(char *target, char *topic, int code) {
@@ -523,7 +522,7 @@ inline CNameRegiMenu::CNameRegiMenu() {
     kanji_line_max = 0;
     select_box_x = 0.0f;
     select_box_y = 0.0f;
-    unk_6 = 0;
+    message_type = 0;
     memset(old_name, 0, sizeof(old_name));
     memset(name, 0, sizeof(name));
     name_pos = 0;
@@ -1016,7 +1015,7 @@ s32 CNameRegiMenu::KeyStep() {
 
             break;
         case NAMEREGI_MODE_MESSAGE: {
-            if (unk_6 == 0) {
+            if (message_type == 0) {
                 s32 answer = message->YesNoCursor2(1);
 
                 if (answer == 1) {
@@ -1066,12 +1065,12 @@ s32 CNameRegiMenu::KeyStep() {
                 }
             }
 
-            if (unk_6 == 1 && pushed != 0) {
+            if (message_type == 1 && pushed != 0) {
                 event = 1;
                 MenuSePlay(1);
             }
 
-            s16 message_mode = unk_6;
+            s16 message_mode = message_type;
 
             if (message_mode == 2) {
                 if (pushed != 0) {
@@ -1101,7 +1100,7 @@ s32 CNameRegiMenu::KeyStep() {
                 }
             }
 
-            if (unk_6 == 0x14) {
+            if (message_type == 0x14) {
                 s32 answer = message->YesNoCursor2(1);
 
                 if (answer == 1) {
@@ -1113,14 +1112,14 @@ s32 CNameRegiMenu::KeyStep() {
                 }
             }
 
-            message_mode = unk_6;
+            message_mode = message_type;
 
             if ((message_mode == 0x1E || message_mode == 0x28) && pushed != 0) {
                 if (message_mode == 0x1E) {
                     mode = NAMEREGI_MODE_INPUT;
                 }
 
-                if (unk_6 == 0x28) {
+                if (message_type == 0x28) {
                     mode = NAMEREGI_MODE_CLOSE;
                     FadeOutMenu(0x28, 0.0f);
                 }
@@ -1390,7 +1389,7 @@ s32 CNameRegiMenu::KeyStep() {
                 NameMessageArguments arguments;
                 mode = NAMEREGI_MODE_MESSAGE;
                 message_open = 1;
-                unk_6 = 0x14;
+                message_type = 0x14;
                 message->MsgPreset(0xB);
                 message->SetAbsPos(5);
                 message->SetMsgCursor(0);
@@ -1455,7 +1454,7 @@ s32 CNameRegiMenu::KeyStep() {
                     item_no = SearchItemByName(ascii);
 
                     if (item_no == 0x12E || item_no == 0x12F) {
-                        unk_6 = 0x1E;
+                        message_type = 0x1E;
                         message->MsgPreset(0xA);
                         message->SetAbsPos(5);
                         message->MakeMsg(0xFD4);
@@ -1491,7 +1490,7 @@ s32 CNameRegiMenu::KeyStep() {
                 strcpy(Nameregi_Target.keyword, final_name);
             }
 
-            unk_6 = 1;
+            message_type = 1;
             message->MsgPreset(0xA);
             message->SetAbsPos(5);
             message->MakeMsg(0x1006);
@@ -1533,7 +1532,7 @@ s32 CNameRegiMenu::KeyStep() {
                     if (password_valid == 0 || (header[0] & 0x1FF) < 0x136) {
                         mode = NAMEREGI_MODE_MESSAGE;
                         message_open = 1;
-                        unk_6 = 0x1E;
+                        message_type = 0x1E;
                         message->MsgPreset(0xA);
                         message->SetAbsPos(5);
                         message->ClsMes::mes_no = -1;
@@ -1550,7 +1549,7 @@ s32 CNameRegiMenu::KeyStep() {
                         message->MsgPreset(0xA);
                         message->SetAbsPos(5);
                         message->ClsMes::mes_no = -1;
-                        unk_6 = 0x28;
+                        message_type = 0x28;
                         message_open = 1;
                         Nameregi_Target.item->TransToData((char *) decoded, 0xE);
                         message->MakeMsg(0x1012);
@@ -1575,7 +1574,7 @@ s32 CNameRegiMenu::KeyStep() {
                 if (strcmp(candidate_name, old_name) == 0) {
                     mode = NAMEREGI_MODE_MESSAGE;
                     message_open = 1;
-                    unk_6 = 0xA;
+                    message_type = 0xA;
                     message->MsgPreset(0xB);
                     message->SetAbsPos(5);
                     message->SetMsgCursor(0);
@@ -1594,7 +1593,7 @@ s32 CNameRegiMenu::KeyStep() {
             {
                 char display_name[0x80];
                 mode = NAMEREGI_MODE_MESSAGE;
-                unk_6 = 0;
+                message_type = 0;
                 message_open = 1;
                 message->MsgPreset(0xB);
                 message->SetAbsPos(5);
@@ -1620,7 +1619,7 @@ s32 CNameRegiMenu::KeyStep() {
             break;
         case 2:
             if (Nameregi_Target.target == NAMEREGI_TARGET_KEYWORD) {
-                unk_6 = 0xA;
+                message_type = 0xA;
                 message_open = 1;
                 MenuArg.end_code = 0;
                 message->MsgPreset(0xB);
@@ -1632,7 +1631,7 @@ s32 CNameRegiMenu::KeyStep() {
             } else {
                 NameMessageArguments arguments;
                 mode = NAMEREGI_MODE_MESSAGE;
-                unk_6 = 0xA;
+                message_type = 0xA;
                 message_open = 1;
                 message->MsgPreset(0xB);
                 message->SetAbsPos(5);
@@ -2101,7 +2100,7 @@ void CNameRegiMenu::DrawSelectedWord() {
     int          box_left = (mgScreenWidth - box_width) >> 1;
     mgCDrawPrim *prim = GetMenuPrim();
     SetSpriteEnv(prim, 0);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(NameRegiTex1);
     prim->Color(0, 0, 0, 0x33);
     shadow.Set(box_left + 3, 0x59, box_width, gettbl0_2012[3]);
@@ -2112,7 +2111,7 @@ void CNameRegiMenu::DrawSelectedWord() {
     prim->End();
     int underscore_x = box_left + 0x20;
     SetSpriteEnv(prim, 2);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Color(0xFA, 0xFA, 0xFA, 0x40);
     int i = 0;
 
@@ -2131,7 +2130,7 @@ void CNameRegiMenu::DrawSelectedWord() {
     }
 
     int cursor_left = box_left + 0x1E + name_pos * 0xC;
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Color(0xDC, 0xDC, 0xDC, cursor_alpha);
     prim->Vertex(cursor_left, 0x65, 0);
     prim->Vertex(cursor_left + 0xC, 0x7C, 0);

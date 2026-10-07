@@ -1310,13 +1310,13 @@ int sgSystemDrawFishing(SubGameInfo *info) {
     prim.AlphaBlendEnable(1);
     prim.DepthTestEnable(0);
     prim.Coord(0);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.Bilinear(1);
     prim.TextureMapEnable(0);
 
     if (CharaMode == 5) {
         top = mgScreenHeight - 0x47;
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x15, 0x29, 0x47, 0x60);
         prim.Vertex(0x156, top + 0x25, 0);
         prim.Vertex(0x1C4, top + 0x2A, 0);
@@ -1333,14 +1333,14 @@ int sgSystemDrawFishing(SubGameInfo *info) {
         }
 
         line_length = GetNowLineLength();
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x15, 0x29, 0xFF, 0x80);
         prim.Vertex(342.0f + 110.0f * reach, (float) (top + 0x25), 0.0f);
         prim.Vertex(0x1C4, top + 0x2A, 0);
         prim.End();
         prim.Bilinear(0);
         prim.TextureMapEnable(1);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x80, 0x80, 0x80, 0x80);
         prim.Texture(system_texture);
         prim.TextureCrd(0, 0x34);
@@ -1348,7 +1348,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
         prim.TextureCrd(0xA8, 0x6A);
         prim.Vertex(0x1EE, top + 0x36, 0);
         prim.End();
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x80, 0x80, 0x80, 0x80);
         prim.Texture(system_texture);
         gauge_top = mgScreenHeight - 0x36;
@@ -1364,7 +1364,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
         prim.Bilinear(1);
         prim.TextureMapEnable(0);
         top = mgScreenHeight - 0xD7;
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x15, 0x29, 0x47, 0x60);
         prim.Vertex(0x1D5, top + 0x14, 0);
         prim.Vertex(0x1E1, top + 0x96, 0);
@@ -1375,7 +1375,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
         *(u_long128 *) tension_color = *(u_long128 *) &at_1491__2;
         sceVu0InterVectorXYZ(tension_color, tension_color, tension_end, tension);
         prim.Shading(1);
-        prim.Begin(4);
+        prim.Begin(MG_PRIM_TRIANGLE_STRIP);
         prim.Color(fptosi(tension_end[0]), fptosi(tension_end[1]), fptosi(tension_end[2]), 0x80);
         bottom_y = (float) (top + 0x96);
         prim.Vertex(469.0f, bottom_y, 0.0f);
@@ -1389,7 +1389,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
                    0x80);
         prim.Vertex(481.0f, fill, 0.0f);
         prim.End();
-        prim.Begin(4);
+        prim.Begin(MG_PRIM_TRIANGLE_STRIP);
         prim.Color(0xFF, 0xFF, 0xFF, 0x20);
         prim.Vertex(0x1D5, top + 0x14, 0);
         prim.Color(0xFF, 0xFF, 0xFF, 0);
@@ -1401,7 +1401,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
         prim.End();
         prim.Bilinear(0);
         prim.TextureMapEnable(1);
-        prim.Begin(4);
+        prim.Begin(MG_PRIM_TRIANGLE_STRIP);
         prim.Texture(system_texture);
         prim.Color(0x80, 0x80, 0x80, 0x80);
         prim.TextureCrd(0, 0x34);
@@ -1418,7 +1418,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
     prim.TextureMapEnable(1);
 
     if (DrawCongra > 0) {
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x80, 0x80, 0x80, 0x80);
         prim.Texture(banner_texture);
         prim.TextureCrd(0, 0);
@@ -1429,7 +1429,7 @@ int sgSystemDrawFishing(SubGameInfo *info) {
     }
 
     if (DrawHit > 0) {
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x80, 0x80, 0x80, 0x80);
         prim.Texture(banner_texture);
         prim.TextureCrd(0, 0x50);

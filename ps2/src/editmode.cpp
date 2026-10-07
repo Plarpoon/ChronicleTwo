@@ -61,7 +61,6 @@ extern int                      PlaceRiverCnt;
 extern int                      RemoveMtnCnt;
 extern int                      SysMesCnt;
 extern int                      SysMesNo;
-extern "C" UNDO_DATA            UndoData;
 extern "C" int                  EditModeNo;
 extern "C" int                  HighSpeedMoveCnt;
 extern "C" int                  MagnetEnable;
@@ -74,7 +73,6 @@ extern "C" int                  eCurRot;
 extern "C" int                  PlacePartsFlag;
 extern "C" int                  RemainPartsNum;
 extern "C" float                WallPutPos[4];
-extern "C" CEditParts::WallInfo WallInfo;
 extern "C" float                PlaceRiverPos[4];
 extern char                     at_1367[];
 extern CCharacter2             *PaintCurChr;
@@ -1937,7 +1935,7 @@ void DrawEditCursor(CScene *scene) {
     prim.AlphaBlendEnable(1);
     prim.AlphaTestEnable(0);
     prim.DepthTestEnable(0);
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Color(1, 1, 1, 0x40);
     prim.Vertex(0x100, 0xA, 0);
     prim.Vertex(0x1FF, 0x3C, 0);
@@ -2205,7 +2203,6 @@ static void GetBalanceHeight(CScene *scene, float *balance) {
         i++;
     } while (i < 4);
 }
-extern mgCTexture *eSysTexture;
 void DrawEditSystem(int block, CScene *scene, float *pos, int edit) {
     mgCTextureManager *manager = &mgTexManager;
     if (eSysTexture != NULL) {
@@ -2222,7 +2219,7 @@ void DrawEditSystem(int block, CScene *scene, float *pos, int edit) {
         }
         if (edit == 0) {
             if (CheckWalkToEdit(scene, pos)) {
-                prim.Begin(6);
+                prim.Begin(MG_PRIM_SPRITE);
                 prim.Texture(eSysTexture);
                 prim.Color(0x80, 0x80, 0x80, 0x80);
                 prim.TextureCrd(0, 0x5A);
@@ -2234,7 +2231,7 @@ void DrawEditSystem(int block, CScene *scene, float *pos, int edit) {
         } else {
             float exit_pos[4];
             if (CheckEditToWalk(scene, exit_pos)) {
-                prim.Begin(6);
+                prim.Begin(MG_PRIM_SPRITE);
                 prim.Texture(eSysTexture);
                 prim.Color(0x80, 0x80, 0x80, 0x80);
                 prim.TextureCrd(0x28, 0x5A);
@@ -2246,7 +2243,7 @@ void DrawEditSystem(int block, CScene *scene, float *pos, int edit) {
             if (scene->GetMainMapNo() == 1) {
                 CEditMap *map = (CEditMap *)scene->GetMap(scene->active_map);
                 if (map != NULL) {
-                    prim.Begin(6);
+                    prim.Begin(MG_PRIM_SPRITE);
                     prim.Texture(eSysTexture);
                     int x = 0x12C;
                     float colors[4][4] = {

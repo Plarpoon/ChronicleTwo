@@ -35,19 +35,10 @@ extern char at_1927[];
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 
-#include "collision.hpp"
 #include "dataread.hpp"
-#include "mapparts.hpp"
-#include "mdslist.hpp"
 #include "mg_camera.hpp"
 #include "mg_drawprim.hpp"
-#include "mg_math.hpp"
-#include "mg_memory.hpp"
-#include "mg_sprite.hpp"
-#include "mg_texture.hpp"
-#include "mglib.hpp"
 #include "water.hpp"
 
 // Code (.text)
@@ -1261,12 +1252,12 @@ void CMap::DrawWater(mgCCamera *camera, mgCTexture *screen, mgCTexture *overlay)
         sceVu0FVECTOR overlay_scale;
         prim.Initialize(NULL, NULL);
         prim.DepthTestEnable(0);
-        prim.ZMask(-1);
+        prim.ZMask(MG_Z_MASK_MASKED);
         prim.TextureMapEnable(1);
         prim.AlphaBlendEnable(0);
         prim.AlphaTestEnable(0);
         mgSetPkFrameBuffer(screen);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Texture(overlay);
         prim.Color(0x80, 0x80, 0x80, 0x80);
         prim.TextureCrd(0, 0);

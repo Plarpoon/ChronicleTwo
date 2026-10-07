@@ -32,6 +32,7 @@
 #include "sound.hpp"
 #include "sysmes.hpp"
 #include "userdata.hpp"
+#include "menuaqua.hpp"
 
 /**
  *
@@ -107,8 +108,6 @@ extern char               at_1654__3[];
 extern char               at_1655__4[];
 extern char               at_1656__4[];
 extern CMenuPosDataForm  *OptionButtonForm;
-extern CSound             CSnd;
-extern CGamePad           GamePad__2;
 extern char               at_1900[];
 extern char               at_1901[];
 extern char               at_1902[];
@@ -201,14 +200,12 @@ extern char               at_3206[];
 extern char               at_3207[];
 void                      InitMnOnePictTex();
 
-extern CDC2Mes            *MenuDCMsg[9];
 extern CMemoryCardManager *MemoryCardPtr;
 extern CSaveMenuClass     *SaveMenuPtr;
 extern CMenuOption        *CMenuOptionPtr;
 extern CManualMenu        *CManualPtr;
 extern CDC2Mes            *MenuReturnMsg;
 extern u8                  MenuReturnMsgDrawFlag;
-extern int                 OmakeFlag;
 extern int                 MnOnePictTex[8];
 extern char               *dngmap_2627[];
 extern char               *SubGameSaveCFGBuffer;
@@ -482,7 +479,7 @@ void MenuManualDraw() {
             prim.Preset2D();
             prim.AlphaBlendEnable(0);
             prim.TextureMapEnable(1);
-            prim.Begin(6);
+            prim.Begin(MG_PRIM_SPRITE);
             prim.Color(0, 0, 0, 0x80);
             prim.SetIRect(0, 0, mgScreenWidth, mgScreenHeight, 0, 0);
             prim.Texture(ManualMovieTex);
@@ -2521,7 +2518,7 @@ void SaveFileListDraw(int &tex_block, float *pos, int alpha) {
         MenuReloadTexture(tex_block, SaveMenuPtr->tex_block[1]);
         prim = GetMenuPrim();
         SetSpriteEnv(prim, 0);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(Tex_SaveFile);
         prim->Color(0x80, 0x80, 0x80, alpha);
         for (i = 0; i < 13; i++) {

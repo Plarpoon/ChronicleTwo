@@ -86,30 +86,15 @@ extern SetupNameTable4 at_1110;
 extern SetupNameTable3 at_1113;
 extern SetupNameTable3 at_1161;
 extern SetupNameTable3 at_1162;
-void                   GetCharacterSnd(CUserDataManager *user_data, int unit, char *path);
-int                    GetCharaMemAllocSize();
-void                   SetupUnitMan(CScene *scene, CUserDataManager *user_data, int unit, ROBO_INFO_DATA *robo);
 int                    SetupMints(CScene *scene, CUserDataManager *user_data);
 int                    SetupMonica(CScene *scene, CUserDataManager *user_data);
 int                    SetupMonster(CScene *scene, CUserDataManager *user_data);
-#include <cstdio>
-#include <cstring>
 
-#include "actionchara.hpp"
-#include "character.hpp"
-#include "dataread.hpp"
-#include "dng_main.hpp"
 #include "gamedata.hpp"
-#include "mainloop.hpp"
 #include "maintex.hpp"
-#include "mapselect.hpp"
 #include "menuchr.hpp"
 #include "mg_memory.hpp"
-#include "savedata.hpp"
-#include "scenesnd.hpp"
-#include "userdata.hpp"
 
-extern int  mem_table[4][7];
 extern char r_robo_pname_1282[4][16];
 extern char fname_1290[64];
 

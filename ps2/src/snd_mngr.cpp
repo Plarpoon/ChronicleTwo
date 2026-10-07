@@ -17,7 +17,6 @@
 #include "snd_seseq.hpp"
 #include "sound.hpp"
 
-extern CSound       CSnd;
 extern int          snd_sema_id;
 extern float        MasterVol[2];
 extern int          MasterVolFade[2];
@@ -47,7 +46,6 @@ inline sndCSeSeqData *sndBankInfo::GetSeSeqData(int seseq_no) {
     return &seseq[seseq_no];
 }
 
-int         mgGetVSyncCount();
 static void StopSeSeq(int seq_id);
 static int  GetCSndPortNo(int port_no, int *port, int *sq_port, int *vol);
 static void FadeMasterVol();

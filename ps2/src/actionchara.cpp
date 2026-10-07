@@ -52,7 +52,6 @@ extern char    at_1358[];
 extern char    at_1394[];
 extern char    at_1427[];
 extern char    at_1428[];
-extern CScene *nowScene__2;
 void           GuardEffectSet(CScene *scene, float *point);
 extern "C" void SethitEffect__15CHitEffectImageFPfPfffffii(CHitEffectImage *, float *, float *, float, float, float, float, int, int);
 
@@ -77,7 +76,6 @@ struct ThrowItemTable {
 };
 
 extern ThrowItemTable at_1398;
-extern CMonsterMan   *ActiveMonster;
 extern ActionVector   at_3289;
 extern ActionVector   at_3291;
 extern char           at_2423[];
@@ -1421,16 +1419,16 @@ void CActionChara::CollisionCheck(float *pos, float *velocity, float *out_veloci
                 body_no++;
                 continue;
             }
-            if (next_position[1] + body->unk_04 < body_position[1] - body_height) {
+            if (next_position[1] + body->size < body_position[1] - body_height) {
                 body_no++;
                 continue;
             }
-            if (!(next_position[1] - body->unk_04 <= body_position[1] + body_height)) {
+            if (!(next_position[1] - body->size <= body_position[1] + body_height)) {
                 body_no++;
                 continue;
             }
             body_position[1] = 0.0f;
-            separation = 2.0f * body->unk_04 + 2.0f * body_width;
+            separation = 2.0f * body->size + 2.0f * body_width;
             distance = mgDistVector(body_position, flat_position);
             if (distance < separation) {
                 separation -= distance;
@@ -2809,7 +2807,7 @@ int CActionChara::CheckDamage() {
                 battle->SetAttr(CHARA_STATUS_POISON, 0);
                 sndSePlay(battle_sound, 0x18, 0);
             }
-            if ((hit->status & 0x10000) != 0 && battle_area->unk_8c != 2 && iRand(100) < 30 &&
+            if ((hit->status & 0x10000) != 0 && battle_area->weather != 2 && iRand(100) < 30 &&
                 (attributes & CHARA_STATUS_UNK_2) == 0 && CheckAmuletAvoid(0x100) == 0) {
                 battle->SetAttrVol(CHARA_STATUS_UNK_2, 3600);
                 sndSePlay(battle_sound, 0x52, 0);

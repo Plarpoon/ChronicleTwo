@@ -212,7 +212,6 @@ FACES_ID *mgCShadowMDT::CreateFace(FACES_ID *source, mgCMemory *face_memory, mgC
 #pragma global_optimizer reset
 #pragma schedule reset
 
-int mgSetPkTexFlush_TagCnt(u_int *packet);
 #pragma schedule off
 #pragma global_optimizer off
 

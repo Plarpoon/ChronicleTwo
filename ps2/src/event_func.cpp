@@ -271,7 +271,6 @@ extern char            at_9744[];
 extern char            at_9745[];
 extern char            at_10100[];
 extern char            at_10101[];
-extern CGamePad        GamePad__2;
 extern char            at_3339[];
 extern char            at_3631__2[];
 extern char            at_3632__2[];
@@ -2432,7 +2431,7 @@ void CRaster::DrawRaster() {
         slot.DepthTestEnable(0);
         slot.AlphaTestEnable(0);
         slot.AlphaBlendEnable(0);
-        slot.ZMask(-1);
+        slot.ZMask(MG_Z_MASK_MASKED);
         slot.TextureMapEnable(1);
         current_phase = phase;
         slot.Begin(prim_sprite);
@@ -2498,7 +2497,7 @@ void CScreenEffect::Draw() {
         sepia_prim.DepthTestEnable(0);
         sepia_prim.AlphaTestEnable(0);
         sepia_prim.AlphaBlendEnable(0);
-        sepia_prim.ZMask(-1);
+        sepia_prim.ZMask(MG_Z_MASK_MASKED);
         sepia_prim.TextureMapEnable(1);
         sepia_prim.Begin(prim_sprite);
         sepia_prim.Texture(sepia_texture);
@@ -2518,7 +2517,7 @@ void CScreenEffect::Draw() {
             flash.DepthTestEnable(0);
             flash.AlphaTestEnable(0);
             flash.AlphaBlendEnable(0);
-            flash.ZMask(-1);
+            flash.ZMask(MG_Z_MASK_MASKED);
             flash.TextureMapEnable(1);
             flash.Begin(prim_sprite);
             flash.Texture(mono_flash_texture[mono_flash_no]);
@@ -2951,7 +2950,7 @@ void EventTimeDraw(void) {
         }
         mgCDrawPrim prim;
         if (EdEventInfo.stopwatch_style == 0) {
-            prim.Begin(6);
+            prim.Begin(MG_PRIM_SPRITE);
             RECT window;
             RGBAQ_TYPE windowColor;
             window.width = 0x9E;
@@ -2963,7 +2962,7 @@ void EventTimeDraw(void) {
             prim.End();
         }
         MySetPrim(&prim, 1, 0);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         for (int i = 0; i < 32; i++) {
             if (glyph[i] >= 0) {
                 int page;
@@ -4501,7 +4500,7 @@ int LoadMovie(char *name, mgCMemory *memory, bool skip) {
             endDraw.Initialize(NULL, NULL);
             endDraw.AlphaTestEnable(0);
             endDraw.TextureMapEnable(1);
-            endDraw.Begin(6);
+            endDraw.Begin(MG_PRIM_SPRITE);
             endDraw.Color(0, 0, 0, 0x80);
             endDraw.Vertex(0, 0, 0);
             endDraw.Vertex(mgScreenWidth, mgScreenHeight, 0);
@@ -4532,7 +4531,7 @@ int LoadMovie(char *name, mgCMemory *memory, bool skip) {
         frameDraw.Initialize(NULL, NULL);
         frameDraw.AlphaTestEnable(0);
         frameDraw.TextureMapEnable(1);
-        frameDraw.Begin(6);
+        frameDraw.Begin(MG_PRIM_SPRITE);
         frameDraw.Color(0, 0, 0, 0x80);
         frameDraw.Vertex(0, 0, 0);
         frameDraw.Vertex(mgScreenWidth, mgScreenHeight, 0);
@@ -6728,9 +6727,9 @@ int _GET_LANGUAGE(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
-static int _CHECK_INVENT_ITEM(RS_STACKDATA *arg0, int arg1) {
-    int item = GetStackInt(arg0++);
-    SetStack(arg0, CheckInventItem(item));
+static int _CHECK_INVENT_ITEM(RS_STACKDATA *stack, int argc) {
+    int item = GetStackInt(stack++);
+    SetStack(stack, CheckInventItem(item));
     return 1;
 }
 
@@ -12036,7 +12035,7 @@ int _GET_BGM_NO(RS_STACKDATA *stack, int argc) {
 }
 
 int _GET_MASTER_VOL(RS_STACKDATA *stack, int argc) {
-    SetStack(stack, EventScene->GetActiveBgmInfo()->unk_c);
+    SetStack(stack, EventScene->GetActiveBgmInfo()->master_volf);
     return 1;
 }
 
@@ -12046,7 +12045,7 @@ int _SET_MASTER_VOL(RS_STACKDATA *stack, int argc) {
 
     volume = GetStackFloat(stack);
     scene = EventScene;
-    scene->GetActiveBgmInfo()->unk_c = volume;
+    scene->GetActiveBgmInfo()->master_volf = volume;
     scene->SetVolfBGM(scene->GetActiveBgmInfo()->volf);
     return 1;
 }
@@ -16602,7 +16601,7 @@ int _DNG_SET_WEATHER(RS_STACKDATA *stack, int argc) {
     }
 
     weather = GetStackInt(stack);
-    info->unk_8c = weather;
+    info->weather = weather;
 
     if (weather == 2) {
         EventScene->AutoChangeEnvOffset(4);

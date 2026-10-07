@@ -30,6 +30,7 @@
 #include "scriptinterpreter.hpp"
 #include "snd_mngr.hpp"
 #include "sound.hpp"
+#include "menudraw.hpp"
 
 /**
  *
@@ -107,7 +108,6 @@ struct GradeRows {
 extern CMenuInvent        *CMenuInventPt;
 extern CInventUserData    *InventUserDataPtr;
 extern CDC2AlbumData      *InventAlbumPtr;
-extern int                 menu_debug_flag;
 extern signed char         InventInNetaEffectNum;
 extern short               MenuItemCmdArgPos;
 extern int                 maxtbl_5171;
@@ -136,7 +136,6 @@ extern CActionChara       *MenuActionChara[7];
 extern short               NetaMemoID[512];
 extern int                 NetaMemoStr[512];
 extern short               NetaMemoStrNum;
-extern CMenuPosDataForm   *GiftBoxViewForm;
 
 enum {
     K_COMMAND_HANDLED = -1
@@ -2293,7 +2292,7 @@ int CMenuInvent::SetNetaCircle(int type, int index) {
             GetNetaBoardCursorPosition(index, pos);
             form->SetPos(pos[0], pos[1]);
             ring->etc_info[0] = index;
-            ring->unk_2c = 0.7f;
+            ring->picture_scale = 0.7f;
         }
         if (neta_select_type[neta_select_num] == 1) {
             GetNetaMemoCursorPosition(index - memo_top, pos);
@@ -2618,7 +2617,7 @@ void CMenuInvent::GradationSet(int mode) {
                 } while (i < 2);
             }
             gradation_mode = 1;
-            unk_eb0 = 0;
+            gradation_height = 0;
             return;
         }
         case 2: {
@@ -2656,8 +2655,8 @@ void CMenuInvent::GradationStep() {
         int grown = 0;
         for (i = 0; i < 2; i++) {
             part = invent_okeff_form->GetPartInfo(invent_grade_fff[i]);
-            if (steps.v[2] >= unk_eb0) {
-                part->h = unk_eb0;
+            if (steps.v[2] >= gradation_height) {
+                part->h = gradation_height;
                 if (i % 2 == 0) {
                     part->y = 224.0f - part->h;
                 }
@@ -2665,7 +2664,7 @@ void CMenuInvent::GradationStep() {
             }
         }
         if (grown) {
-            unk_eb0 += 4;
+            gradation_height += 4;
         }
         break;
     }
@@ -2719,7 +2718,7 @@ void CMenuInvent::InitEnd() {
         PrepareNextMode((int) key_arg_no);
     }
 
-    unk_eb6 = 1;
+    cursor_snap = 1;
     ExeScript(at_2713__2);
     MenuItemBrdCalcManner = 0;
 }
@@ -2738,7 +2737,7 @@ void CMenuInvent::ExitEnd() {
         sys->invent_album.top = this->album_top;
         sys->invent_memo.select = this->memo_cursor;
         sys->invent_memo.top = this->memo_top;
-        sys->invent_unk_2e = this->unk_392;
+        sys->invent_memo_sort_mode = this->memo_sort_mode;
     }
 
     InventUserDataPtr->PhotoCheckEnd();
@@ -2802,7 +2801,6 @@ int CMenuInvent::ItemCmdAfter(int command, ITEMCMD_RET_PARA *para) {
     return 1;
 }
 
-extern CGamePad GamePad__2;
 
 /**
  *
@@ -3362,7 +3360,7 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
 #pragma inline_depth reset
 void CMenuInvent::CalcMakeBrd(int message_index) {
     if (makebrd_form != NULL && makebrd_form->draw_flag) {
-        make_board.unk_1c = make_num;
+        make_board.make_num = make_num;
         make_board.material_num = 4;
         MakeItemNeeds needs;
         InventManagePt->HowMuchZairyouMakeItem(make_item_no, make_num, (int *) &needs);
@@ -3394,9 +3392,9 @@ void CMenuInvent::CalcMakeBrd(int message_index) {
             make_board.line[index].sub_num = 0;
         }
 
-        make_board.unk_20 = make_cursor;
-        CalcMenuAdd(&make_board.unk_24, -1, 0);
-        CalcMenuAdd(&make_board.unk_28, -1, 0);
+        make_board.make_cursor = make_cursor;
+        CalcMenuAdd(&make_board.decrease_flash_frames, -1, 0);
+        CalcMenuAdd(&make_board.increase_flash_frames, -1, 0);
         CalcCommonBrdDrawInfo(&makebrd_form->x, &make_board, MenuDCMsg[message_index]);
     }
 }
@@ -3492,9 +3490,9 @@ void CMenuInvent::CalcCursorPosition() {
         MenuCommonInfo->SetWakuType(-1);
     }
     MenuCommonInfo->MenuPosStep(cursor.pos, &offset.x);
-    if (unk_eb6 != 0) {
+    if (cursor_snap != 0) {
         MenuCommonInfo->MenuSetPos(cursor.pos[0], cursor.pos[1]);
-        unk_eb6 = 0;
+        cursor_snap = 0;
     }
 }
 int CMenuInvent::IsMakeObject(int keys, int button) {
@@ -3503,11 +3501,11 @@ int CMenuInvent::IsMakeObject(int keys, int button) {
             int select = SelectMakeObject(keys);
 
             if (select == -1) {
-                make_board.unk_24 = 6;
-                make_board.unk_28 = 0;
+                make_board.decrease_flash_frames = 6;
+                make_board.increase_flash_frames = 0;
             } else if (select == 1) {
-                make_board.unk_24 = 0;
-                make_board.unk_28 = 6;
+                make_board.decrease_flash_frames = 0;
+                make_board.increase_flash_frames = 6;
             }
 
             switch (button) {
@@ -3636,7 +3634,7 @@ int CMenuInvent::IsMakeObject(int keys, int button) {
                 mode = 0;
                 step = 0;
                 make_cursor = 0;
-                unk_eb6 = 1;
+                cursor_snap = 1;
             }
 
             break;
@@ -3944,12 +3942,12 @@ void CMenuInvent::CalcTex() {
     if (kakudai_pic_form != NULL && kakudai_pic != NULL) {
         if (mode == 12) {
             if (ask_para.ask_mode == INVENT_ASK_ZOOM) {
-                CalcMenuAdd(&kakudai_pic->unk_2c, 0.025f, 1.3f);
-            } else if (CalcMenuAdd(&kakudai_pic->unk_2c, -0.025f, 0.7f)) {
+                CalcMenuAdd(&kakudai_pic->picture_scale, 0.025f, 1.3f);
+            } else if (CalcMenuAdd(&kakudai_pic->picture_scale, -0.025f, 0.7f)) {
                 kakudai_pic_form->draw_flag = 0;
             }
         } else {
-            kakudai_pic->unk_2c = 0.7f;
+            kakudai_pic->picture_scale = 0.7f;
         }
     }
     NowGiftBoxPtr = SearchNowPosItemExist();
@@ -4600,13 +4598,13 @@ void CMenuInvent::IsAccessAlbum() {
             if (McCheckMCPs2(card) == 0) {
                 no_card = 1;
             } else if (card->formatted == 0) {
-                if (unk_d7c == 1) {
+                if (album_save_mode == 1) {
                     step = 500;
                     ExeScript(at_4356);
                 } else {
                     loaded = 2;
                 }
-            } else if (unk_d7c == 0) {
+            } else if (album_save_mode == 0) {
                 step = 3;
                 MCManagerPtr->SetFuncNo(18);
             } else {
@@ -4653,7 +4651,7 @@ void CMenuInvent::IsAccessAlbum() {
     case 6:
         if (button != 0) {
             back_to_photo = 1;
-            unk_eb6 = 1;
+            cursor_snap = 1;
             MenuSePlay(SYSTEM_SE_DECIDE);
         }
         break;
@@ -5015,7 +5013,7 @@ void CMenuInvent::IsAccessAlbum() {
             } else if (card->free_size < MCManagerPtr->GetSaveDataSize(5) + 2) {
                 card_full = 1;
             } else {
-                if (unk_d7c == 1) {
+                if (album_save_mode == 1) {
                     step = 230;
                 }
                 ExeScript(at_4370);
@@ -5026,20 +5024,20 @@ void CMenuInvent::IsAccessAlbum() {
     }
     if (no_card != 0) {
         InitMenuDl(NULL, 0);
-        if (unk_d7c == 0) {
+        if (album_save_mode == 0) {
             step = 110;
         }
-        if (unk_d7c == 1) {
+        if (album_save_mode == 1) {
             step = 300;
         }
         ExeScript(at_4371);
     }
     if (card_full != 0) {
         InitMenuDl(NULL, 0);
-        if (unk_d7c == 0) {
+        if (album_save_mode == 0) {
             step = 100;
         }
-        if (unk_d7c == 1) {
+        if (album_save_mode == 1) {
             step = 300;
         }
         ExeScript(at_4372);
@@ -5048,10 +5046,10 @@ void CMenuInvent::IsAccessAlbum() {
     if (card_error == 1) {
         InitMenuDl(NULL, 0);
         ExeScript(at_4373);
-        if (unk_d7c == 0) {
+        if (album_save_mode == 0) {
             step = 100;
         }
-        if (unk_d7c == 1) {
+        if (album_save_mode == 1) {
             step = 300;
         }
     }
@@ -5078,7 +5076,7 @@ void CMenuInvent::IsAccessAlbum() {
             ExeScript(at_4377);
             MenuSePlay(31);
         }
-        unk_eb6 = 1;
+        cursor_snap = 1;
         step = 6;
         if (loaded < 0) {
             step = 0;
@@ -5221,8 +5219,8 @@ void CMenuInvent::UpdataNetaMemoStr() {
 
     do {
         i = 0;
-        i |= neta_sort(unk_392, 0, standard_count, sort_keys);
-        i |= neta_sort__FiiiPi(unk_392, standard_count, NetaMemoStrNum);
+        i |= neta_sort(memo_sort_mode, 0, standard_count, sort_keys);
+        i |= neta_sort__FiiiPi(memo_sort_mode, standard_count, NetaMemoStrNum);
     } while (i != 0);
 
     for (i = NetaMemoStrNum; i < (0x200); i++) {
@@ -5285,7 +5283,7 @@ void MenuInventCreateCardDraw(int &tex_block, float *pos) {
         MenuColor rgba = at_4494;
         SetSpriteEnv(prim, 0);
         prim->Bilinear(1);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(texture);
         for (i = 0; i < 256; i++) {
             if (put_rect.top + put_rect.bottom >= 20) {
@@ -5347,7 +5345,7 @@ void PictureDraw(mgCTexture *tex, USER_PICTURE_INFO *photo, float x, float y, fl
     SetSpriteEnv(prim, 1);
     prim->Shading(0);
     prim->AntiAliasing(1);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Color(0x20, 0x20, 0x20, alpha * 2 / 3);
     prim->Vertex(3.0f + (x - 2.0f), 3.0f + (y - 2.0f), 0.0f);
     right = x + w;
@@ -5374,10 +5372,10 @@ void PictureDraw(mgCTexture *tex, USER_PICTURE_INFO *photo, float x, float y, fl
     prim->AntiAliasing(1);
     prim->Bilinear(1);
     prim->AlphaTestEnable(0);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(tex);
     prim->Color(red, green, blue, alpha);
-    prim->Direct(0x3B, 0x80 | (0x80UL << 32));
+    prim->Direct(SCE_GS_TEXA, 0x80 | (0x80UL << 32));
     put_rect.Set(x, y, w, h);
     PrimQuad(prim, put_rect, tex_rect);
     prim->End();
@@ -5388,7 +5386,7 @@ void PictureMemoOne(float x, float y, int alpha) {
     prim = GetMenuPrim();
     SetSpriteEnv(prim, 0);
     prim->Bilinear(1);
-    prim->Begin(6);
+    prim->Begin(MG_PRIM_SPRITE);
     prim->Texture(Tex_Hatsumei);
     prim->Color(0x80, 0x80, 0x80, alpha);
     prim->TextureCrd(0x6E, 0x162);
@@ -5464,7 +5462,7 @@ void MenuInventPictureBoardDraw(float *pos, int &tex_block, int alpha) {
         PictureDraw(CMenuInventPt->photo_tex[i], photo, x, y, 0.7f, alpha, 0x80, 0x80, 0x80);
         if (*(s8 *)&photo->is_new != 0) {
             SetSpriteEnv(prim, 0);
-            prim->Begin(6);
+            prim->Begin(MG_PRIM_SPRITE);
             prim->Texture(Tex_Hatsumei);
             prim->Color(0x80, 0x80, 0x80, alpha);
             mgRect<int> new_mark;
@@ -5584,7 +5582,7 @@ void MenuInventNetaMemoDraw(float *origin, int &loaded_tex) {
         row_y = 2.0f + (24.0f + CMenuInventPt->memo_scroll);
         prim = GetMenuPrim();
         SetSpriteEnv(prim, 0);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(Tex_Hatsumei);
         prim->Color(0x80, 0x80, 0x80, 0x80);
         i = 0;
@@ -5606,7 +5604,7 @@ void MenuInventNetaMemoDraw(float *origin, int &loaded_tex) {
         ResetMenuScissor();
         bar_rect.Set(0x90, 0x166, 8, 0x1C);
         SetSpriteEnv(prim, 0);
-        prim->Begin(6);
+        prim->Begin(MG_PRIM_SPRITE);
         prim->Texture(Tex_Hatsumei);
         prim->Color(0x80, 0x80, 0x80, 0x80);
         PrimQuad(prim, 209.0f + origin[0], CMenuInventPt->memo_bar, bar_rect);
@@ -5667,8 +5665,6 @@ extern char at_5013[];
 extern char at_5014[];
 extern char at_5015[];
 extern char at_5016[];
-extern u8   itemmenu_chr_rotflag;
-extern int *menu_randam_line_draw_postbl;
 
 inline CMenuInvent::CMenuInvent() {
     int i;
@@ -5724,7 +5720,7 @@ inline CMenuInvent::CMenuInvent() {
     arrow_count = 0;
     photo_only = 0;
     gradation_mode = 0;
-    unk_eb0 = 0;
+    gradation_height = 0;
     download_base = 0;
     mgZeroVector(neta_color);
     scoop_color[0] = 128.0f;
@@ -5880,7 +5876,7 @@ int MenuInventInit(mgCMemory *memory, int *tex_block, int arg) {
             CMenuInventPt->album_top = sys->invent_album.top;
             CMenuInventPt->memo_cursor = sys->invent_memo.select;
             CMenuInventPt->memo_top = sys->invent_memo.top;
-            CMenuInventPt->unk_392 = sys->invent_unk_2e;
+            CMenuInventPt->memo_sort_mode = sys->invent_memo_sort_mode;
         }
     }
     CMenuInvent *menu = CMenuInventPt;
@@ -6380,7 +6376,7 @@ int MenuInventPushKey(int pad, int pushed) {
 
                             CMenuInventPt->mode = 14;
                             CMenuInventPt->step = 0;
-                            CMenuInventPt->unk_d7c = 0;
+                            CMenuInventPt->album_save_mode = 0;
                             CMenuInventPt->unk_112 = 1;
                             break;
                         case 2:
@@ -6498,7 +6494,7 @@ int MenuInventPushKey(int pad, int pushed) {
                             if (CMenuInventPt->unk_112 == 1) {
                                 CMenuInventPt->mode = 14;
                                 CMenuInventPt->step = 201;
-                                CMenuInventPt->unk_d7c = 1;
+                                CMenuInventPt->album_save_mode = 1;
                                 command = K_COMMAND_HANDLED;
                                 CMenuInventPt->ExeScript(at_5550);
                             }
@@ -6835,7 +6831,7 @@ int MenuInventPushKey(int pad, int pushed) {
             case K_COMMAND_QUIT:
                 CMenuInventPt->mode = 14;
                 CMenuInventPt->step = 201;
-                CMenuInventPt->unk_d7c = 1;
+                CMenuInventPt->album_save_mode = 1;
                 CMenuInventPt->ExeScript(at_5550);
                 MenuSePlay(5);
                 break;

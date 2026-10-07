@@ -58,7 +58,6 @@ extern int              EffectTexb;
 extern u_char           water_cam;
 extern CHitEffectImage *battle_effect;
 extern mgCMemory        BuffTextureData;
-extern mgCMemory        BuffWorkData;
 #ifndef NONMATCHING
 extern unsigned int gyore_snd_id;
 extern int          hero_no;
@@ -77,17 +76,9 @@ extern int          old_fish_rank[6];
 
 #include "character.hpp"
 #include "dng_effect.hpp"
-#include "gyoracesim.hpp"
 #include "menuaqua.hpp"
-#include "mg_drawprim.hpp"
-#include "mg_math.hpp"
-#include "mg_memory.hpp"
-#include "mglib.hpp"
-#include "nd_meswin.hpp"
-#include "scenesnd.hpp"
-#include "snd_mngr.hpp"
-#include "subgame.hpp"
 #include "userdata.hpp"
+#include "dng_main.hpp"
 
 static unsigned int     gyore_snd_id;
 float                   race_cnt;
@@ -985,7 +976,7 @@ int sgEffectDrawGyoRace(SubGameInfo *info) {
     prim.Begin2();
     prim.BeginPrim2(MG_PRIM_SPRITE);
     prim.Texture(&frame);
-    prim.Direct(0x3B, 0x8000008080ULL);
+    prim.Direct(SCE_GS_TEXA, 0x8000008080ULL);
     prim.Color(128, 128, 128, 128);
     prim.EndPrim2();
     DivSpriteScreen(prim);

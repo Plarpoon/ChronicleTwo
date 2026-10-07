@@ -30,15 +30,15 @@ int get_default_monster_progresstbl(int bajji_no);
 struct PackedFish {
     u16 item_no : 9; /**< Inventory item number of the fish. */
     u8  sex : 1;     /**< Sex of the fish. */
-    u8  field_4a : 5;
-    u8  param_3 : 7;
-    u16 unknown_3c : 7;
+    u8  color : 5;
+    u8  battle : 7;
+    u16 stamina : 7;
     u16 length : 15; /**< Fish length. */
     u16 weight : 15; /**< Fish weight. */
-    u8  param_0 : 7;
-    u16 param_1 : 7;
-    u8  color_no : 2; /**< Fish colour number. */
-    u8  param_2 : 7;
+    u8  boost : 7;
+    u16 endurance : 7;
+    u8  kind : 2;
+    u8  tenacity : 7;
     u16 flags : 8; /**< Fish state flags. */
 };
 
@@ -672,15 +672,15 @@ void CGameDataUsed::TransToPassword(char *data, int length) {
                 memset(&buffer, 0, 14);
                 buffer.fish.item_no = item->item_no;
                 buffer.fish.sex = static_cast<s8>(body->sex);
-                buffer.fish.field_4a = body->color;
-                buffer.fish.param_3 = body->param[4];
-                buffer.fish.unknown_3c = body->param[3];
+                buffer.fish.color = body->color;
+                buffer.fish.battle = body->param[4];
+                buffer.fish.stamina = body->param[3];
                 buffer.fish.length = body->size;
                 buffer.fish.weight = body->weight;
-                buffer.fish.param_0 = body->param[0];
-                buffer.fish.param_1 = body->param[1];
-                buffer.fish.color_no = body->kind;
-                buffer.fish.param_2 = body->param[2];
+                buffer.fish.boost = body->param[0];
+                buffer.fish.endurance = body->param[1];
+                buffer.fish.kind = body->kind;
+                buffer.fish.tenacity = body->param[2];
                 buffer.fish.flags = body->flags;
                 src = buffer.bytes;
 
@@ -711,15 +711,15 @@ void CGameDataUsed::TransToData(char *data, int length) {
 
                 item->item_no = buffer.fish.item_no;
                 item->data.fish.sex = buffer.fish.sex;
-                item->data.fish.color = buffer.fish.field_4a;
-                item->data.fish.param[4] = buffer.fish.param_3;
-                item->data.fish.param[3] = buffer.fish.unknown_3c;
+                item->data.fish.color = buffer.fish.color;
+                item->data.fish.param[4] = buffer.fish.battle;
+                item->data.fish.param[3] = buffer.fish.stamina;
                 item->data.fish.size = buffer.fish.length;
                 item->data.fish.weight = buffer.fish.weight;
-                item->data.fish.param[0] = buffer.fish.param_0;
-                item->data.fish.param[1] = buffer.fish.param_1;
-                item->data.fish.param[2] = buffer.fish.param_2;
-                item->data.fish.kind = buffer.fish.color_no;
+                item->data.fish.param[0] = buffer.fish.boost;
+                item->data.fish.param[1] = buffer.fish.endurance;
+                item->data.fish.param[2] = buffer.fish.tenacity;
+                item->data.fish.kind = buffer.fish.kind;
                 item->data.fish.flags = buffer.fish.flags;
             }
         }
@@ -893,11 +893,11 @@ float CGameDataUsed::GetWHp(int *hp) {
             break;
         case 5:
             if (item_type == 0xD) {
-                gauge = &data.weapon.abs;
+                gauge = &data.robopart.whp;
             }
 
             if (item_type == 0xF) {
-                gauge = &data.weapon.whp;
+                gauge = &data.robopart.energy;
             }
 
             break;
@@ -925,12 +925,12 @@ int CGameDataUsed::IsRepair() {
             break;
         case 5:
             if (this->item_type == 0xD &&
-                (float) GetDispVolumeForFloat(this->data.weapon.abs.now) < this->data.weapon.abs.max) {
+                (float) GetDispVolumeForFloat(this->data.robopart.whp.now) < this->data.robopart.whp.max) {
                 return 1;
             }
 
             if (this->item_type == 0xF &&
-                (float) GetDispVolumeForFloat(this->data.weapon.whp.now) < this->data.weapon.whp.max) {
+                (float) GetDispVolumeForFloat(this->data.robopart.energy.now) < this->data.robopart.energy.max) {
                 return 1;
             }
 
@@ -951,11 +951,11 @@ int CGameDataUsed::Repair(int points) {
             break;
         case 5:
             if (this->item_type == 0xD) {
-                gauge = &this->data.weapon.abs;
+                gauge = &this->data.robopart.whp;
             }
 
             if (this->item_type == 0xF) {
-                gauge = &this->data.weapon.whp;
+                gauge = &this->data.robopart.energy;
             }
 
             break;
@@ -1736,7 +1736,7 @@ void CGameDataUsed::CopyGameData(CGameDataUsed *other) {
 
         if (robo != NULL && &(&robo->parts[0])[2] == this) {
             old_max = fptosi(robo->hp.max);
-            robo->hp.max = this->data.weapon.whp.max;
+            robo->hp.max = this->data.robopart.energy.max;
 
             if ((float) old_max <= 0.0f) {
                 robo->hp.now = robo->hp.max;
@@ -1781,7 +1781,7 @@ int CGameDataUsed::CopyDataWeapon(int item_no) {
     this->data.weapon.attribute[5] = record->attribute[5];
     this->data.weapon.attribute[6] = record->attribute[6];
     this->data.weapon.attribute[7] = record->attribute[7];
-    this->data.weapon.fusion_point = record->unk_38;
+    this->data.weapon.fusion_point = record->initial_fusion_point;
     this->data.weapon.special = record->special;
     this->data.weapon.unk_2e = 0;
     this->data.weapon.unk_30 = 0;
@@ -1888,13 +1888,13 @@ int CGameDataUsed::CopyDataFish(int item_no) {
     fish->data.fish.kind = GetRandI(4);
     fish->data.fish.hp = 100;
     fish->data.fish.fatigue = 0;
-    fish->data.fish.param[4] = *(u16 *) &record->unk_6;
-    fish->data.fish.param[0] = *(u16 *) &record->unk_a;
-    fish->data.fish.param[1] = *(u16 *) &record->unk_c;
-    fish->data.fish.param[2] = *(u16 *) &record->unk_e;
-    fish->data.fish.param[3] = *(u16 *) &record->unk_8;
+    fish->data.fish.param[4] = *(u16 *) &record->battle;
+    fish->data.fish.param[0] = *(u16 *) &record->boost;
+    fish->data.fish.param[1] = *(u16 *) &record->endurance;
+    fish->data.fish.param[2] = *(u16 *) &record->tenacity;
+    fish->data.fish.param[3] = *(u16 *) &record->stamina;
     fish->data.fish.life = GetRandI(0x33) + 0xC8;
-    fish->data.fish.unk_35 = 0;
+    fish->data.fish.breed_feeds_remaining = 0;
     fish->data.fish.timer = 0;
     fish->data.fish.flags = 0;
     fish->data.fish.unk_3c = GetRandI(0x100);
@@ -1947,8 +1947,8 @@ int CGameDataUsed::CopyDataRoboPart(int item_no) {
     CDataRoboPart *record;
     char          *message;
     char          *base;
+    float          durability;
     float          energy;
-    float          hp;
 
     record = GameItemDataManage.GetRoboData(item_no);
 
@@ -1959,14 +1959,14 @@ int CGameDataUsed::CopyDataRoboPart(int item_no) {
     this->used_type = 5;
     this->item_no = item_no;
     this->item_type = GetItemDataType(item_no);
-    base = (char *) &this->data.robopart.gage0;
-    energy = record->unk_6;
-    this->data.robopart.gage1.max = energy;
-    this->data.robopart.gage1.now = energy;
-    hp = record->unk_2;
-    this->data.robopart.gage0.max = hp;
-    this->data.robopart.gage0.now = hp;
-    this->data.robopart.defence = record->unk_1c;
+    base = (char *) &this->data.robopart.energy;
+    durability = record->durability;
+    this->data.robopart.whp.max = durability;
+    this->data.robopart.whp.now = durability;
+    energy = record->energy;
+    this->data.robopart.energy.max = energy;
+    this->data.robopart.energy.now = energy;
+    this->data.robopart.defence = record->defence;
     this->data.robopart.unk_26 = record->unk_4;
     this->data.robopart.status[0] = record->unk_8;
     this->data.robopart.status[1] = record->unk_a;
@@ -1989,7 +1989,7 @@ int CGameDataUsed::CopyDataRoboPart(int item_no) {
 
 void CFishAquarium::Initialize() {
     int i;
-    unk_0 = 0;
+    active_tank = 0;
     unk_2 = 0;
 
     for (i = 0; i < 6; i++) {
@@ -2650,7 +2650,7 @@ float CUserDataManager::AddHp_Rate(int chara_no, float rate) {
 
 COMMON_GAGE *CUserDataManager::GetWHpGage(int group, int member) {
     if (group == 2) {
-        return &robo_data.parts[0].data.robopart.gage1;
+        return &robo_data.parts[0].data.robopart.whp;
     }
 
     if (group == 3) {
@@ -3572,7 +3572,7 @@ int CUserDataManager::GetFishInAquarium(int fish_no, float size, float weight) {
     fish.data.fish.param[1] += GetRandI(3);
     fish.data.fish.param[2] += GetRandI(3);
     fish.data.fish.life = GetRandI(0x33) + 200;
-    fish.data.fish.unk_35 = 0;
+    fish.data.fish.breed_feeds_remaining = 0;
     CGameDataUsed *slot = SearchSpaceUsedDataPtr();
 
     if (slot != 0) {
@@ -4548,13 +4548,13 @@ void CheckEquipChange(int chara_no) {
             GetCharaDefaultWeapon(1, weapons);
             GetUserDataMan()->SetChrEquipDirect(1, weapons[0]);
 
-            if (static_cast<s8>(chara->unk_2b) == 0) {
+            if (static_cast<s8>(chara->keep_costume_on_equip_change) == 0) {
                 GetUserDataMan()->SetChrEquipDirect(1, weapons[2]);
                 GetUserDataMan()->SetChrEquipDirect(1, weapons[3]);
                 GetUserDataMan()->SetChrEquipDirect(1, weapons[4]);
             }
 
-            chara->unk_2b = 0;
+            chara->keep_costume_on_equip_change = 0;
         }
     }
 }
@@ -4568,7 +4568,7 @@ void CBattleCharaInfo::Initialize() {
     hp = 0;
     equip = 0;
     hp_change_step = 0;
-    unk_80 = -1.0f;
+    disp_hp_max = -1.0f;
     disp_hp = -1.0f;
 }
 
@@ -4597,9 +4597,9 @@ void CBattleCharaInfo::SetChrNo(int new_chara_no) {
         equip = (CGameDataUsed *) ((CHARA_DATA *) chara_data)->equip;
         hp = &((CHARA_DATA *) chara_data)->hp;
         disp_hp = hp->now;
-        unk_80 = hp->max;
+        disp_hp_max = hp->max;
         prev_hp = hp->now;
-        unk_88 = hp->max;
+        prev_hp_max = hp->max;
     } else if (chr_no == 2) {
         chara_type = 1;
         chara_data = &manager->robo_data;
@@ -4607,9 +4607,9 @@ void CBattleCharaInfo::SetChrNo(int new_chara_no) {
         equip = (CGameDataUsed *) &((ROBO_DATA *) chara_data)->parts[0];
         hp = &((ROBO_DATA *) chara_data)->hp;
         disp_hp = hp->now;
-        unk_80 = hp->max;
+        disp_hp_max = hp->max;
         prev_hp = hp->now;
-        unk_88 = hp->max;
+        prev_hp_max = hp->max;
     } else if (chr_no == 3) {
         chara_type = 2;
         int monster_id = GetMonsterID();
@@ -4626,9 +4626,9 @@ void CBattleCharaInfo::SetChrNo(int new_chara_no) {
         equip = 0;
         hp = &manager->GetCharaDataPtr(1)->hp;
         disp_hp = hp->now;
-        unk_80 = hp->max;
+        disp_hp_max = hp->max;
         prev_hp = hp->now;
-        unk_88 = hp->max;
+        prev_hp_max = hp->max;
     }
 
     poison_count = 0;

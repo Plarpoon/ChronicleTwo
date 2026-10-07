@@ -192,7 +192,7 @@ int COutLineDraw::Draw(float scale, float alpha) {
     composite.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
     DrawDivSprite(&composite, mgRect<int>(left, top, right, bottom), &frame_buffer, body_color, 0, 0, depth, 0);
     composite.Begin(MG_PRIM_SPRITE);
-    composite.Direct(0x3F, 0);
+    composite.Direct(SCE_GS_TEXFLUSH, 0);
     composite.End();
     return result;
 }

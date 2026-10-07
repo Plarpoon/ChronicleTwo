@@ -89,8 +89,10 @@ void CGamePad::Close() {
 }
 
 /**
+ *
  * Reads one controller's buttons and sticks into its state and gives the
  * controller type the data reports, or 0 when nothing was read.
+ *
  */
 static int pad_button_read(PAD_STATUS *status, int port, int slot) {
     static u16  rpad;
@@ -126,8 +128,10 @@ static int pad_button_read(PAD_STATUS *status, int port, int slot) {
 }
 
 /**
+ *
  * Advances one controller's setup and, once it is ready, reads it; gives
  * nonzero when the controller's buttons and sticks were read.
+ *
  */
 static int read_pad(PAD_STATUS *status, int port, int slot) {
     int  valid;
@@ -436,8 +440,10 @@ void CGamePad::Step(int elapsed) {
 }
 
 /**
+ *
  * Converts a raw stick position to a signed deflection from -128 to 128,
  * with a dead zone around the centre.
+ *
  */
 static int AxisCalibration(int axis) {
     int calibrated = axis - 0x80;
@@ -775,8 +781,10 @@ void SwitchGamePadThread() {
 }
 
 /**
+ *
  * Runs the controller thread: steps the controller manager's vibration by
  * the vertical blanks elapsed since its last turn, then yields.
+ *
  */
 static void GamePadStep(void *arg) {
     while (true) {

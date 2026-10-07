@@ -208,11 +208,14 @@ public:
     _EFF_SCRIPT  *tail;                                            /**< Last running effect. */
 
     /**
+     *
      * Creates a manager with no memory, texture pool, bases or effects.
+     *
      */
     CEffectScriptMan() { Initialize(NULL, -1, -1); }
 
     /**
+     *
      * Forgets every base and effect, and takes the memory and the pool of
      * texture blocks that bases are built in.
      *
@@ -223,6 +226,7 @@ public:
     void Initialize(mgCMemory *memory, int texb_start, int texb_num);
 
     /**
+     *
      * Sets the memory that running effects are allocated from, unless it is
      * NULL.
      *
@@ -233,6 +237,7 @@ public:
     void SetWorkBuffer(mgCMemory *work_memory);
 
     /**
+     *
      * Finds the row of the effect definition table that has the given
      * name, or -1.
      *
@@ -243,6 +248,7 @@ public:
     int SearchBaseNo(char *name);
 
     /**
+     *
      * Reads the files of an effect base into the load buffer and builds
      * it, unless it is already loaded.
      *
@@ -253,6 +259,7 @@ public:
     int LoadBaseEffSpt(int base_no, mgCMemory *memory, int level);
 
     /**
+     *
      * Reads the files of the named effect base and builds it, unless it is
      * already loaded.
      *
@@ -263,6 +270,7 @@ public:
     int LoadBaseEffSpt(char *name, mgCMemory *memory, int level);
 
     /**
+     *
      * Stops the effects of a load level and frees its bases, listing the
      * texture blocks they used.
      *
@@ -273,6 +281,7 @@ public:
     void ClearBaseFromLevel(int level, int *cleared, int texb_list_max);
 
     /**
+     *
      * Finds a loaded base with the same model file as a definition row,
      * whose model can be copied instead of loaded again.
      *
@@ -283,6 +292,7 @@ public:
     CCharacter2 *GetBaseChara(int base_no);
 
     /**
+     *
      * Finds a loaded base with the same model file as the named definition
      * row.
      *
@@ -293,6 +303,7 @@ public:
     CCharacter2 *GetBaseChara(char *name);
 
     /**
+     *
      * Gives the next free texture block of the pool, or -1 when the pool is
      * full.
      *
@@ -303,6 +314,7 @@ public:
     int GetNotUsedTexb();
 
     /**
+     *
      * Marks the next texture block of the pool used by the current load
      * level.
      *
@@ -313,6 +325,7 @@ public:
     void AddTexb();
 
     /**
+     *
      * Builds an effect base from its model or texture data and its script
      * data, entering its textures in a texture block.
      *
@@ -323,6 +336,7 @@ public:
     int BuildBase(int base_no, u_long128 *data, int data_size, u_long128 *script, int script_size, mgCMemory *work, int texb);
 
     /**
+     *
      * Builds the named effect base from its model or texture data and its
      * script data.
      *
@@ -334,6 +348,7 @@ public:
     int BuildBase(char *name, u_long128 *path_file, int path_size, u_long128 *pack_file, int pack_size, mgCMemory *memory, int level);
 
     /**
+     *
      * Builds an effect base from the files that a loaded pack holds.
      *
      * @mangled BuildPack__16CEffectScriptManFiPUiP9mgCMemoryi
@@ -343,6 +358,7 @@ public:
     int BuildPack(int base_no, u_int *pack, mgCMemory *memory, int level);
 
     /**
+     *
      * Builds the named effect base from the files that a loaded pack holds.
      *
      * @mangled BuildPack__16CEffectScriptManFPcPUiP9mgCMemoryi
@@ -352,6 +368,7 @@ public:
     int BuildPack(char *name, u_int *pack, mgCMemory *memory, int level);
 
     /**
+     *
      * Makes the paths of the resource file and the script file of an
      * effect base.
      *
@@ -362,6 +379,7 @@ public:
     int GetNeedFilePath(int base_no, char *data_path, char *pack);
 
     /**
+     *
      * Makes the paths of the resource file and the script file of the named
      * effect base.
      *
@@ -373,6 +391,7 @@ public:
     int GetNeedFilePath(char *name, char *data_path, char *pack);
 
     /**
+     *
      * Starts an effect from a loaded base for an owner, optionally giving it
      * a slot of the owner's table.
      *
@@ -383,6 +402,7 @@ public:
     _EFF_SCRIPT *CreateEffSpt(int base_no, int group, int register_in_group);
 
     /**
+     *
      * Starts the named effect for an owner, giving its slot or -1.
      *
      * @mangled CreateEffSpt__16CEffectScriptManFPcii
@@ -392,6 +412,7 @@ public:
     int CreateEffSpt(char *name, int user_id, int use_slot);
 
     /**
+     *
      * Stops every effect of an owner.
      *
      * @mangled ClearEffectFromChrid__16CEffectScriptManFi
@@ -401,6 +422,7 @@ public:
     void ClearEffectFromChrid(int chrid);
 
     /**
+     *
      * Stops every effect of a load level.
      *
      * @mangled ClearEffectFromLevel__16CEffectScriptManFi
@@ -410,6 +432,7 @@ public:
     void ClearEffectFromLevel(int level);
 
     /**
+     *
      * Stops an effect, unlinking it and freeing its memory.
      *
      * @mangled DeleteEffSpt__16CEffectScriptManFP11_EFF_SCRIPT
@@ -419,6 +442,7 @@ public:
     void DeleteEffSpt(_EFF_SCRIPT *script);
 
     /**
+     *
      * Stops the effect in an owner's slot.
      *
      * @mangled DeleteEffSpt__16CEffectScriptManFii
@@ -428,6 +452,7 @@ public:
     int DeleteEffSpt(int group, int slot);
 
     /**
+     *
      * Stops every running effect and empties the slot table.
      *
      * @mangled AllClearEffSpt__16CEffectScriptManFv
@@ -437,6 +462,7 @@ public:
     void AllClearEffSpt();
 
     /**
+     *
      * Runs the scripts of the running effects and moves their characters
      * and sprites, stopping the effects whose scripts end.
      *
@@ -447,6 +473,7 @@ public:
     void Step();
 
     /**
+     *
      * Draws the characters and the billboard sprites of the running
      * effects.
      *
@@ -457,6 +484,7 @@ public:
     void Draw();
 
     /**
+     *
      * Allocates the given number of cleared billboard sprites from the work
      * memory.
      *
@@ -467,6 +495,7 @@ public:
     _ES_SPRITE *AssignSprite(int count);
 
     /**
+     *
      * Frees billboard sprites allocated by AssignSprite.
      *
      * @mangled DeleteSprite__16CEffectScriptManFP10_ES_SPRITE
@@ -476,6 +505,7 @@ public:
     void DeleteSprite(_ES_SPRITE *sprite);
 
     /**
+     *
      * Gives an effect the given number of extra copies of its model.
      *
      * @mangled AssignCharacter__16CEffectScriptManFP11_EFF_SCRIPTi
@@ -485,6 +515,7 @@ public:
     int AssignCharacter(_EFF_SCRIPT *script, int count);
 
     /**
+     *
      * Sets the script program that an owner's effect starts in its next
      * step.
      *
@@ -495,6 +526,7 @@ public:
     int SetScriptProgNo(int prog_no, int group, int slot);
 
     /**
+     *
      * Sets the EffSptState of an owner's effect.
      *
      * @mangled Pause__16CEffectScriptManFiii
@@ -504,6 +536,7 @@ public:
     int Pause(int state, int group, int slot);
 
     /**
+     *
      * Sets the EffSptState of every effect of a load level.
      *
      * @mangled PauseFromLevel__16CEffectScriptManFii
@@ -513,6 +546,7 @@ public:
     void PauseFromLevel(int level, int state);
 
     /**
+     *
      * Sets the first work vector of an effect: the one in an owner's slot,
      * or the last started one when the slot is negative.
      *
@@ -523,6 +557,7 @@ public:
     int SetScriptVect1(float *vect, int group, int slot);
 
     /**
+     *
      * Gives the first work vector of an effect: the one in an owner's slot,
      * or the last started one when the slot is negative.
      *
@@ -533,6 +568,7 @@ public:
     int GetScriptVect1(float *vect, int group, int slot);
 
     /**
+     *
      * Sets the second work vector of an effect: the one in an owner's slot,
      * or the last started one when the slot is negative.
      *
@@ -543,6 +579,7 @@ public:
     int SetScriptVect2(float *vect, int group, int slot);
 
     /**
+     *
      * Gives the second work vector of an effect: the one in an owner's slot,
      * or the last started one when the slot is negative.
      *
@@ -553,6 +590,7 @@ public:
     int GetScriptVect2(float *vect, int group, int slot);
 
     /**
+     *
      * Sets the target character of an effect: the one in an owner's slot,
      * or the last started one when the slot is negative.
      *
@@ -563,6 +601,7 @@ public:
     int SetScriptTargetId(int target_id, int group, int slot);
 
     /**
+     *
      * Gives the target character of an effect: the one in an owner's slot,
      * or the last started one when the slot is negative.
      *
@@ -573,6 +612,7 @@ public:
     int GetScriptTargetId(int &target_id, int group, int slot);
 
     /**
+     *
      * Sets the owner of an effect: the one in an owner's slot, or the last
      * started one when the slot is negative.
      *
@@ -583,6 +623,7 @@ public:
     int SetScriptUserId(int new_user_id, int group, int slot);
 
     /**
+     *
      * Gives the owner of an effect: the one in an owner's slot, or the last
      * started one when the slot is negative.
      *
@@ -593,6 +634,7 @@ public:
     int GetScriptUserId(int &out_user_id, int group, int slot);
 
     /**
+     *
      * Sets the collision primitive of an effect: the one in an owner's
      * slot, or the last started one when the slot is negative.
      *
@@ -603,6 +645,7 @@ public:
     int SetColPrim(CColPrim *colprim, int group, int slot);
 
     /**
+     *
      * Sets an integer script value of an effect: the one in an owner's
      * slot, or the last started one when the slot is negative.
      *
@@ -613,6 +656,7 @@ public:
     int SetValue(int index, int value, int group, int slot);
 
     /**
+     *
      * Sets a float script value of an effect: the one in an owner's slot,
      * or the last started one when the slot is negative.
      *
@@ -623,6 +667,7 @@ public:
     int SetValue(int index, float value, int group, int slot);
 
     /**
+     *
      * Sets the origin of an effect: the one in an owner's slot, or the last
      * started one when the slot is negative.
      *
@@ -633,6 +678,7 @@ public:
     int SetOrigin(float *vect, int group, int slot);
 
     /**
+     *
      * Gives the model copy of an effect: the one in an owner's slot, or the
      * last started one when the slot is negative.
      *
@@ -643,6 +689,7 @@ public:
     CCharacter2 *GetCharacter(int group, int slot);
 
     /**
+     *
      * Gives an effect a copy of the given character as its model: the one
      * in an owner's slot, or the last started one when the slot is negative.
      *
@@ -653,6 +700,7 @@ public:
     int SetCharacter(CCharacter2 *source, int group, int slot);
 
     /**
+     *
      * Sets the texture block of an effect: the one in an owner's slot, or
      * the last started one when the slot is negative.
      *
@@ -666,17 +714,23 @@ public:
 STATIC_ASSERT(sizeof(CEffectScriptMan) == 0x1190);
 
 /**
+ *
  * Names every effect, the resource it is built on and its script; ended by a row of type
  * EFF_SPT_BASE_END.
+ *
  */
 extern EFF_SPT_BASE_DEF eff_spt_base_def[EFF_SPT_BASE_DEF_NUM];
 
 /**
+ *
  * Scene that the effect scripts act on, taken when a manager is initialised.
+ *
  */
 extern "C" CScene *now_scene;
 
 /**
+ *
  * Manager whose effects are being stepped, which the script functions act on.
+ *
  */
 extern "C" CEffectScriptMan *EffScriptMan;

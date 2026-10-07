@@ -50,9 +50,14 @@ int ClipBoxXZ(float *max_a, float *min_a, float *max_b, float *min_b) {
 #ifdef NONMATCHING
 // 92.1% match, 129 words off
 float OverlapPoly3AreaXZ(sceVu0FVECTOR *clipped, sceVu0FVECTOR *clipper, mgVu0FBOX *box) {
+    /**
+     *
+     * A clipping vector viewed as floats or one quadword.
+     *
+     */
     union Vector {
-        float     value[4];
-        u_long128 quadword;
+        float     value[4]; /**< Vector components. */
+        u_long128 quadword; /**< Packed vector components. */
     };
 
     int   count = 3;

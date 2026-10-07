@@ -96,6 +96,7 @@ public:
     sceVu0FMATRIX inverse_matrix; /**< World-to-local matrix of the frame for the current step. */
 
     /**
+     *
      * Pushes a world-space point out of the volume. Returns whether the
      * point was inside. The base volume hits nothing.
      *
@@ -106,6 +107,7 @@ public:
     virtual int CheckHit(float *position);
 
     /**
+     *
      * Puts the volume at the frame's origin with no size and the default
      * friction.
      *
@@ -116,7 +118,9 @@ public:
     virtual void Initialize();
 
     /**
+     *
      * Makes a volume with its fields at their defaults.
+     *
      */
     CDACollision() { Initialize(); }
 };
@@ -133,6 +137,7 @@ public:
     int axis; /**< Axis of the frame the cylinder runs along: 0 for x, 1 for y, 2 for z. */
 
     /**
+     *
      * Pushes a world-space point lying within the cylinder's length out
      * through its side. Returns whether the point was inside.
      *
@@ -143,6 +148,7 @@ public:
     virtual int CheckHit(float *point);
 
     /**
+     *
      * Puts the cylinder along the frame's x axis at its origin with no size
      * and the default friction.
      *
@@ -153,7 +159,9 @@ public:
     virtual void Initialize();
 
     /**
+     *
      * Makes a cylinder with its fields at their defaults.
+     *
      */
     CDAColPipe() { Initialize(); }
 };
@@ -199,6 +207,7 @@ public:
     float            floor_y;           /**< Height the vertices may not fall below while floor_enable is set. */
 
     /**
+     *
      * Makes an empty animation with its fields at their defaults.
      *
      * @mangled __ct__13CDynamicAnimeFv
@@ -208,6 +217,7 @@ public:
     CDynamicAnime();
 
     /**
+     *
      * Puts every vertex back on its loaded position, moved by the root
      * frame's matrix, at rest.
      *
@@ -218,6 +228,7 @@ public:
     void ResetPosition();
 
     /**
+     *
      * Moves the vertices one step under gravity, ties, distance limits,
      * collisions, the floor and the wind, then poses the frames from them.
      *
@@ -228,6 +239,7 @@ public:
     void Step();
 
     /**
+     *
      * Makes the wind blow with a strength in a direction.
      *
      * @mangled SetWind__13CDynamicAnimeFfPf
@@ -237,6 +249,7 @@ public:
     void SetWind(float power, float *dir);
 
     /**
+     *
      * Stops the wind.
      *
      * @mangled ResetWind__13CDynamicAnimeFv
@@ -246,6 +259,7 @@ public:
     void ResetWind();
 
     /**
+     *
      * Keeps the vertices above a height.
      *
      * @mangled SetFloor__13CDynamicAnimeFf
@@ -255,6 +269,7 @@ public:
     void SetFloor(float height);
 
     /**
+     *
      * Lets the vertices fall to any height.
      *
      * @mangled ResetFloor__13CDynamicAnimeFv
@@ -264,6 +279,7 @@ public:
     void ResetFloor();
 
     /**
+     *
      * Sets a frame's transform from the vertices its pose names.
      *
      * @mangled FramePose__13CDynamicAnimeFP8mgCFrameP13DA_FRAME_POSE
@@ -273,6 +289,7 @@ public:
     void FramePose(mgCFrame *frame, DA_FRAME_POSE *pose);
 
     /**
+     *
      * Looks up the frame of each collision volume and takes its matrices for
      * the coming step.
      *
@@ -283,6 +300,7 @@ public:
     void PreCollision();
 
     /**
+     *
      * Empties the animation and puts gravity, wind and floor back to their
      * defaults.
      *
@@ -293,6 +311,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Makes empty frame and frame pose tables of a size.
      *
      * @mangled NewFrameTable__13CDynamicAnimeFiP9mgCMemory
@@ -302,6 +321,7 @@ public:
     void NewFrameTable(int count, mgCMemory *memory);
 
     /**
+     *
      * Makes the per-vertex position and velocity tables for a number of
      * vertices.
      *
@@ -312,6 +332,7 @@ public:
     void NewVertexTable(int count, mgCMemory *memory);
 
     /**
+     *
      * Makes an empty fix vertex table of a size.
      *
      * @mangled NewFixVertexTable__13CDynamicAnimeFiP9mgCMemory
@@ -321,6 +342,7 @@ public:
     void NewFixVertexTable(int count, mgCMemory *memory);
 
     /**
+     *
      * Makes a draw frame table of a size with no frame in it.
      *
      * @mangled NewDrawFrameTable__13CDynamicAnimeFiP9mgCMemory
@@ -330,6 +352,7 @@ public:
     void NewDrawFrameTable(int count, mgCMemory *memory);
 
     /**
+     *
      * Makes an empty bind vertex table of a size.
      *
      * @mangled NewBindVertexTable__13CDynamicAnimeFiP9mgCMemory
@@ -339,6 +362,7 @@ public:
     void NewBindVertexTable(int count, mgCMemory *memory);
 
     /**
+     *
      * Makes an empty bounding box table of a size.
      *
      * @mangled NewBoundingBoxTable__13CDynamicAnimeFiP9mgCMemory
@@ -348,6 +372,7 @@ public:
     void NewBoundingBoxTable(int count, mgCMemory *memory);
 
     /**
+     *
      * Makes a collision table of a size with no volume in it.
      *
      * @mangled NewCollisionTable__13CDynamicAnimeFiP9mgCMemory
@@ -357,6 +382,7 @@ public:
     void NewCollisionTable(int count, mgCMemory *memory);
 
     /**
+     *
      * Puts a frame into the frame table, if the index is in range.
      *
      * @mangled SetFrame__13CDynamicAnimeFiP8mgCFrame
@@ -366,6 +392,7 @@ public:
     void SetFrame(int index, mgCFrame *frame);
 
     /**
+     *
      * Gets a frame from the frame table, or null when the index is out of
      * range.
      *
@@ -376,6 +403,7 @@ public:
     mgCFrame *GetFrame(int index);
 
     /**
+     *
      * Gets the pose of an entry of the frame table, or null when the index
      * is out of range.
      *
@@ -386,6 +414,7 @@ public:
     DA_FRAME_POSE *pGetFramePose(int index);
 
     /**
+     *
      * Tells whether a vertex index is in range.
      *
      * @mangled CheckVertexID__13CDynamicAnimeFi
@@ -395,6 +424,7 @@ public:
     int CheckVertexID(int index);
 
     /**
+     *
      * Sets a vertex's loaded position, if the index is in range.
      *
      * @mangled SetInitVertex__13CDynamicAnimeFiPf
@@ -404,6 +434,7 @@ public:
     void SetInitVertex(int index, float *position);
 
     /**
+     *
      * Gets a vertex's loaded position, if the index is in range.
      *
      * @mangled GetInitVertex__13CDynamicAnimeFiPf
@@ -413,6 +444,7 @@ public:
     void GetInitVertex(int index, float *pos);
 
     /**
+     *
      * Sets a vertex's current position, if the index is in range.
      *
      * @mangled SetNowVertex__13CDynamicAnimeFiPf
@@ -422,6 +454,7 @@ public:
     void SetNowVertex(int index, float *position);
 
     /**
+     *
      * Sets a vertex's previous position, if the index is in range.
      *
      * @mangled SetOldVertex__13CDynamicAnimeFiPf
@@ -431,6 +464,7 @@ public:
     void SetOldVertex(int index, float *position);
 
     /**
+     *
      * Gets an entry of the fix vertex table, or null when the index is out
      * of range.
      *
@@ -441,6 +475,7 @@ public:
     DA_FIX_VERTEX *pGetFixVertex(int index);
 
     /**
+     *
      * Puts the index of a frame into the draw frame table, if the index is
      * in range.
      *
@@ -451,6 +486,7 @@ public:
     void SetDrawFrame(int index, int frame_id);
 
     /**
+     *
      * Gets the frame an entry of the draw frame table names, or null when
      * the index is out of range.
      *
@@ -461,6 +497,7 @@ public:
     mgCFrame *GetDrawFrame(int index);
 
     /**
+     *
      * Gets an entry of the bind vertex table, or null when the index is out
      * of range.
      *
@@ -471,6 +508,7 @@ public:
     DA_BIND_VERTEX *pGetBindVertex(int index);
 
     /**
+     *
      * Gets an entry of the bounding box table, or null when the index is out
      * of range.
      *
@@ -481,6 +519,7 @@ public:
     DA_BOUNDING_BOX *pGetBoundingBox(int index);
 
     /**
+     *
      * Puts a volume into the collision table, if the index is in range.
      *
      * @mangled SetCollision__13CDynamicAnimeFiP12CDACollision
@@ -490,6 +529,7 @@ public:
     void SetCollision(int index, CDACollision *collision);
 
     /**
+     *
      * Draws the frames of the draw frame table, queued or at once. Returns
      * the total the drawing calls give.
      *
@@ -500,6 +540,7 @@ public:
     int DrawSub(int direct);
 
     /**
+     *
      * Copies the animation into another for a copy of the model, finding the
      * same frames in the new model and giving it its own vertex tables.
      *
@@ -510,6 +551,7 @@ public:
     void Copy(CDynamicAnime &dest, mgCFrame *root, mgCMemory *memory);
 
     /**
+     *
      * Builds the animation from a script for a model, with the model held
      * at the origin, unrotated and unscaled while the script runs.
      *

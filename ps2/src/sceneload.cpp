@@ -198,6 +198,11 @@ extern void *__vt__7CObject[];
 extern void *__vt__12CObjectFrame[];
 extern void *__vt__11CCharacter2[];
 
+/**
+ *
+ * Allocates and initializes a scene character in the supplied memory stack.
+ *
+ */
 static inline CCharacter2 *NewSceneCharacter(mgCMemory *stack) {
     CCharacter2 *chara;
 

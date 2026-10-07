@@ -116,3 +116,9 @@ overloads, `GetReversVec`, and all eight `CColPrimMan` methods. `SetDamage`,
 `IsHit`, `IsReversVec`, `Step`, and `Delete` remain under `NONMATCHING` with
 their original `INCLUDE_ASM` fallbacks. The default full build verifies every
 section as byte-identical to SCES_511.90.
+
+`CColPrim::Step` uses `frame[2]`, `pos[2]`, and `old_pos[2]` at offsets 0x38,
+0x40, and 0x60. A direct `this->frame[i]` replacement alone scores 98.96%; a
+full typed-array rewrite scores 99.30%. The local variable named `frame` must
+not be mistaken for the member array: unqualified `frame[i]` can appear to
+match but indexes the local pointer instead. All Step trials were reverted.

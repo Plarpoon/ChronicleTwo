@@ -150,6 +150,7 @@ public:
     ClsMes *mes;    /**< Message window that writes the title. */
 
     /**
+     *
      * Draws the frame and the title.
      *
      * @mangled DrawEpisode__20CStartupEpisodeTitleFii
@@ -159,6 +160,7 @@ public:
     void DrawEpisode(int mes_tex_block, int frame_tex_block);
 
     /**
+     *
      * Starts the title of the current floor, or closes the title.
      *
      * @mangled Switch__20CStartupEpisodeTitleFi
@@ -168,6 +170,7 @@ public:
     void Switch(int on);
 
     /**
+     *
      * Advances the fades of the title and places its message window.
      *
      * @mangled Step__20CStartupEpisodeTitleFv
@@ -177,6 +180,7 @@ public:
     void Step();
 
     /**
+     *
      * Hides the title and detaches its message window.
      *
      * @mangled Initialize__20CStartupEpisodeTitleFv
@@ -218,6 +222,7 @@ public:
     MESSAGE_TASK *top;     /**< Message shown now, at the head of the queue. */
 
     /**
+     *
      * Draws the message window.
      *
      * @mangled Draw__18MessageTaskManagerFv
@@ -227,6 +232,7 @@ public:
     void Draw();
 
     /**
+     *
      * Shows the message at the head of the queue and moves on to the next when its time is up.
      *
      * @mangled Step__18MessageTaskManagerFv
@@ -236,6 +242,7 @@ public:
     void Step();
 
     /**
+     *
      * Queues a message in a free slot, after every message of the same or a lower priority value.
      *
      * @mangled Print__18MessageTaskManagerFPciii
@@ -245,6 +252,7 @@ public:
     void Print(char *message, int time, int slot, int priority);
 
     /**
+     *
      * Closes the message window and empties the queue.
      *
      * @mangled Clear__18MessageTaskManagerFv
@@ -254,6 +262,7 @@ public:
     void Clear();
 
     /**
+     *
      * Empties every slot and detaches the message window.
      *
      * @mangled Initialize__18MessageTaskManagerFv
@@ -276,6 +285,7 @@ public:
     float angle;        /**< Angle, in radians, that makes the marker bob. */
 
     /**
+     *
      * Clears the draw request, the bob and the frame.
      *
      * @mangled Initialize__13CRedMarkModelFv
@@ -285,6 +295,7 @@ public:
     virtual void Initialize();
 
     /**
+     *
      * Draws the marker raised by its bob when a draw was requested.
      *
      * @mangled Draw__13CRedMarkModelFv
@@ -294,6 +305,7 @@ public:
     virtual void Draw();
 
     /**
+     *
      * Advances the bob.
      *
      * @mangled Step__13CRedMarkModelFv
@@ -317,6 +329,7 @@ public:
     s32   anime; /**< Makes the geostone float and hides it beyond 1000 units while nonzero. */
 
     /**
+     *
      * Draws the geostone, raised by its float, when the player is near.
      *
      * @mangled GeoDraw__9CGeoStoneFPf
@@ -326,6 +339,7 @@ public:
     void GeoDraw(float *view_pos);
 
     /**
+     *
      * Puts the geostone's symbol on the mini map.
      *
      * @mangled DrawMiniMapSymbol__9CGeoStoneFP14CMiniMapSymbol
@@ -335,6 +349,7 @@ public:
     void DrawMiniMapSymbol(CMiniMapSymbol *symbol_drawer);
 
     /**
+     *
      * Puts the geostone on the floor or takes it away, moving the automap's geostone part out of
      * sight when it is taken away.
      *
@@ -345,6 +360,7 @@ public:
     void SetFlag(int flag);
 
     /**
+     *
      * Animates the geostone and advances its float.
      *
      * @mangled GeoStep__9CGeoStoneFv
@@ -354,6 +370,7 @@ public:
     void GeoStep();
 
     /**
+     *
      * Tells whether a position is within 30 units of the geostone.
      *
      * @mangled CheckEvent__9CGeoStoneFPf
@@ -363,6 +380,7 @@ public:
     int CheckEvent(float *pos);
 
     /**
+     *
      * Puts the character back to its initial state and takes the geostone off the floor.
      *
      * @mangled Initialize__9CGeoStoneFv
@@ -388,6 +406,7 @@ public:
     CCharacter2   model;     /**< Model drawn at each circle. */
 
     /**
+     *
      * Draws each circle within 1000 units of the player.
      *
      * @mangled Draw__13CRandomCircleFPf
@@ -397,6 +416,7 @@ public:
     void Draw(float *view_pos);
 
     /**
+     *
      * Animates the circles' model.
      *
      * @mangled Step__13CRandomCircleFv
@@ -406,6 +426,7 @@ public:
     void Step();
 
     /**
+     *
      * Puts each circle's symbol on the mini map.
      *
      * @mangled DrawSymbol__13CRandomCircleFP14CMiniMapSymbol
@@ -415,6 +436,7 @@ public:
     void DrawSymbol(CMiniMapSymbol *mini_map);
 
     /**
+     *
      * Tells whether a position is at least a distance away from every circle.
      *
      * @mangled CheckArea__13CRandomCircleFPff
@@ -424,6 +446,7 @@ public:
     int CheckArea(float *pos, float radius);
 
     /**
+     *
      * Gets the position of a circle, or of the circle that the player last stood on when the
      * index is -1; returns 0 when there is no such circle.
      *
@@ -434,6 +457,7 @@ public:
     int GetPosition(float *out_pos, int index);
 
     /**
+     *
      * Finds the circle within 20 units of a position and remembers it, or gives -1.
      *
      * @mangled CheckEvent__13CRandomCircleFPf
@@ -443,6 +467,7 @@ public:
     int CheckEvent(float *pos);
 
     /**
+     *
      * Puts a circle on a free slot and gives its index, or -1 when every slot is in use.
      *
      * @mangled SetCircle__13CRandomCircleFPf
@@ -452,6 +477,7 @@ public:
     int SetCircle(float *pos);
 
     /**
+     *
      * Takes every circle off the floor.
      *
      * @mangled Clear__13CRandomCircleFv
@@ -461,6 +487,7 @@ public:
     void Clear();
 
     /**
+     *
      * Puts the model back to its initial state and takes every circle off the floor.
      *
      * @mangled Initialize__13CRandomCircleFv
@@ -489,6 +516,7 @@ public:
     CCharacter2 *model;     /**< Box model, shared by every box. */
 
     /**
+     *
      * Puts the box back to its initial state, with an empty slot.
      *
      * @mangled Initialize__12CTreasureBoxFv
@@ -507,6 +535,7 @@ public:
 #endif
 
     /**
+     *
      * Draws the box with its lid opened, when the camera is within 1000 units.
      *
      * @mangled Draw__12CTreasureBoxFPf
@@ -516,6 +545,7 @@ public:
     void Draw(float *view_pos);
 
     /**
+     *
      * Draws the box's shadow cast by a light, when the camera is within 1000 units.
      *
      * @mangled DrawShadow__12CTreasureBoxFPfPf
@@ -553,6 +583,7 @@ public:
     }
 
     /**
+     *
      * Gives every box the box model and its lid.
      *
      * @mangled SetLargeModel__19CTreasureBoxManagerFP11CCharacter2i
@@ -562,6 +593,7 @@ public:
     void SetLargeModel(CCharacter2 *model, int value);
 
     /**
+     *
      * Loads the collision model of a box from a pack file.
      *
      * @mangled SetCollisionModel__19CTreasureBoxManagerFPUiP9mgCMemory
@@ -571,6 +603,7 @@ public:
     void SetCollisionModel(unsigned int *pack, mgCMemory *memory);
 
     /**
+     *
      * Puts a box in a slot, or in the first free slot when the index is -1.
      *
      * @mangled PutTreasureBox__19CTreasureBoxManagerFiPffiiiii
@@ -580,6 +613,7 @@ public:
     void PutTreasureBox(int index, float *pos, float rot_y, int flags, int item0, int num0, int item1, int num1);
 
     /**
+     *
      * Tells whether a position is at least a distance away from every box.
      *
      * @mangled CheckArea__19CTreasureBoxManagerFPff
@@ -589,6 +623,7 @@ public:
     int CheckArea(float *pos, float radius);
 
     /**
+     *
      * Puts the symbol of each unopened box on the mini map.
      *
      * @mangled DrawMiniMapSymbol__19CTreasureBoxManagerFP14CMiniMapSymbol
@@ -598,6 +633,7 @@ public:
     void DrawMiniMapSymbol(CMiniMapSymbol *symbol_drawer);
 
     /**
+     *
      * Draws every box.
      *
      * @mangled Draw__19CTreasureBoxManagerFPf
@@ -607,6 +643,7 @@ public:
     void Draw(float *view_pos);
 
     /**
+     *
      * Draws the shadow of every box, cast by the scene's main light.
      *
      * @mangled DrawShadow__19CTreasureBoxManagerFPf
@@ -616,6 +653,7 @@ public:
     void DrawShadow(float *view_pos);
 
     /**
+     *
      * Gathers the collision polygons of the boxes within 40 units of a position, and gives their
      * number.
      *
@@ -626,6 +664,7 @@ public:
     int PickupCollision(float *pos, CCPoly *poly, mgVu0FBOX box, int flag);
 
     /**
+     *
      * Counts the unopened mimics.
      *
      * @mangled MimicCount__19CTreasureBoxManagerFv
@@ -635,6 +674,7 @@ public:
     int MimicCount();
 
     /**
+     *
      * Finds the nearest unopened box within a distance of a position and remembers it, or
      * gives -1.
      *
@@ -648,6 +688,7 @@ public:
 STATIC_ASSERT(sizeof(CTreasureBoxManager) == 0xAA0);
 
 /**
+ *
  * Gives the item that opens a dungeon's gate on a floor.
  *
  * @mangled GetGateKeyIndex__Fii
@@ -657,6 +698,7 @@ STATIC_ASSERT(sizeof(CTreasureBoxManager) == 0xAA0);
 int GetGateKeyIndex(int floor, int level);
 
 /**
+ *
  * Gives the item that opens a dungeon's key door on a floor.
  *
  * @mangled GetKeyDoorIndex__Fii
@@ -666,6 +708,7 @@ int GetGateKeyIndex(int floor, int level);
 int GetKeyDoorIndex(int floor, int level);
 
 /**
+ *
  * Shows the weapon form that suits the time band when the player character holds one of the
  * two changing weapons; gives 1 or 0 for the form shown and -1 when neither is held.
  *
@@ -676,6 +719,7 @@ int GetKeyDoorIndex(int floor, int level);
 int Lamb2WolfManager();
 
 /**
+ *
  * Does nothing.
  *
  * @mangled LoopSoundManager__Fi
@@ -685,6 +729,7 @@ int Lamb2WolfManager();
 void LoopSoundManager(int sound_id);
 
 /**
+ *
  * Updates the battle music of the area and the warning sound of the player's status.
  *
  * @mangled BattleSoundManager__Fv
@@ -694,6 +739,7 @@ void LoopSoundManager(int sound_id);
 void BattleSoundManager();
 
 /**
+ *
  * Runs a debug command from an event script; command 0 restores the player's health.
  *
  * @mangled ScriptDebugCommand__Fi
@@ -703,6 +749,7 @@ void BattleSoundManager();
 void ScriptDebugCommand(int command);
 
 /**
+ *
  * Swaps the first eight light sets of the current map with the eight that follow them.
  *
  * @mangled XChgMapLighting__Fv
@@ -712,6 +759,7 @@ void ScriptDebugCommand(int command);
 void XChgMapLighting();
 
 /**
+ *
  * Gives the angle, in radians, of one of the four map part rotations, or 0 when the rotation
  * is out of range.
  *
@@ -722,6 +770,7 @@ void XChgMapLighting();
 float XChgMapRotation(int index);
 
 /**
+ *
  * Finds the first "way" part of a kind placed on the current map and its angle; gives 1 when
  * one is found.
  *
@@ -732,6 +781,7 @@ float XChgMapRotation(int index);
 int SearchMapEventParts(int kind, CMapParts **out_parts, float *rotation, int max);
 
 /**
+ *
  * Picks a random flat place on the generated floor; gives 0 when none is found.
  *
  * @mangled SearchMapFlatPosition__FPfP11CAutoMapGen
@@ -741,6 +791,7 @@ int SearchMapEventParts(int kind, CMapParts **out_parts, float *rotation, int ma
 int SearchMapFlatPosition(float *out_pos, CAutoMapGen *map_gen);
 
 /**
+ *
  * Finds a place on the floor and the angle that faces it, by a ::DungeonEventPointKind; gives
  * 0 when there is none.
  *
@@ -751,6 +802,7 @@ int SearchMapFlatPosition(float *out_pos, CAutoMapGen *map_gen);
 int GetDungeonEventPoint(float *out_pos, float *out_rot, int kind);
 
 /**
+ *
  * Reads a dungeon's treasure box table from its script.
  *
  * @mangled CreatTresuarBoxInfo__FP22TRESURE_BOX_FLOOR_INFOPci
@@ -760,6 +812,7 @@ int GetDungeonEventPoint(float *out_pos, float *out_rot, int kind);
 void CreatTresuarBoxInfo(TRESURE_BOX_FLOOR_INFO *table, char *script, int length);
 
 /**
+ *
  * Finds the first of sixteen directions around a position in which no map polygon blocks the
  * view, and gives its angle in radians.
  *
@@ -770,6 +823,7 @@ void CreatTresuarBoxInfo(TRESURE_BOX_FLOOR_INFO *table, char *script, int length
 float ScanEyePoint(float *pos);
 
 /**
+ *
  * Puts a treasure box with an item on the floor.
  *
  * @mangled AutoSetTreasureBox__FiPff
@@ -779,6 +833,7 @@ float ScanEyePoint(float *pos);
 void AutoSetTreasureBox(int id, float *pos, float power);
 
 /**
+ *
  * Places the floor's treasure boxes, mimics, random circles, geostone, random stones and key
  * door box at random places on the generated floor.
  *
@@ -789,6 +844,7 @@ void AutoSetTreasureBox(int id, float *pos, float power);
 void AutoSetTreasureBox();
 
 /**
+ *
  * Puts the monsters that LoadMonsterFile listed for the current floor at random places on the
  * generated floor, giving the first one the floor's gate key.
  *
@@ -799,6 +855,7 @@ void AutoSetTreasureBox();
 void AutoSetMonster();
 
 /**
+ *
  * Puts a monster on the floor.
  *
  * @mangled AutoSetMonster__FiPfPfi
@@ -808,6 +865,7 @@ void AutoSetMonster();
 void AutoSetMonster(int base_index, float *pos, float *direction, int option);
 
 /**
+ *
  * Does nothing.
  *
  * @mangled DungeonFloorInit__Fv
@@ -817,6 +875,7 @@ void AutoSetMonster(int base_index, float *pos, float *direction, int option);
 void DungeonFloorInit();
 
 /**
+ *
  * Does nothing.
  *
  * @mangled DungeonFloorFinish__Fv
@@ -826,6 +885,7 @@ void DungeonFloorInit();
 void DungeonFloorFinish();
 
 /**
+ *
  * Loads a dungeon map and everything on it, and builds a random floor from a room
  * configuration when one is named.
  *
@@ -836,6 +896,7 @@ void DungeonFloorFinish();
 void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag);
 
 /**
+ *
  * Opens the mini map's door at a position and updates the navigation from it.
  *
  * @mangled MinimapDoorEnable__FPf
@@ -845,6 +906,7 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag);
 void MinimapDoorEnable(float *pos);
 
 /**
+ *
  * Resets the monster manager and loads the monsters that the dungeon's monster script lists
  * for the current floor.
  *
@@ -855,6 +917,7 @@ void MinimapDoorEnable(float *pos);
 void LoadMonsterFile();
 
 /**
+ *
  * Loads one monster, first resetting the monster manager and its memory when asked.
  *
  * @mangled LoadMonsterFile__Fii

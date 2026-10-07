@@ -34,7 +34,9 @@ struct FireRasterParticle {
     int           unk_1c;
 
     /**
+     *
      * Creates a free slot.
+     *
      */
     FireRasterParticle() { memset(this, 0, sizeof(FireRasterParticle)); }
 };
@@ -52,11 +54,14 @@ public:
     FireRasterParticle particle[20]; /**< Wisps of the effect, spawned one per step into a free slot. */
 
     /**
+     *
      * Creates the effect with every wisp slot free.
+     *
      */
     CFireRaster() { Initialize(); }
 
     /**
+     *
      * Moves every live wisp up and sideways, frees the expired ones and
      * spawns a new wisp in a free slot.
      *
@@ -67,6 +72,7 @@ public:
     void Step();
 
     /**
+     *
      * Takes a copy of the texture the patches are cut from, with its alpha
      * channel ignored.
      *
@@ -77,6 +83,7 @@ public:
     void SetTexture(mgCTexture *texture);
 
     /**
+     *
      * Draws every live wisp above a point as a displaced patch of the
      * frame buffer.
      *
@@ -87,6 +94,7 @@ public:
     void Draw(float *position, float *scale);
 
     /**
+     *
      * Frees every wisp slot.
      *
      * @mangled Initialize__11CFireRasterFv
@@ -112,6 +120,7 @@ public:
     int    unk_98;
 
     /**
+     *
      * Clears the thunder effect's state.
      *
      * @mangled Init__14CThunderEffectFv
@@ -145,6 +154,7 @@ public:
     sceVu0FVECTOR max;     /**< Maximum corner of the surface. */
 
     /**
+     *
      * Advances the ripples one step, writing into whichever of the two height
      * buffers is not being drawn and drawing from it next.
      *
@@ -155,6 +165,7 @@ public:
     void Hamon();
 
     /**
+     *
      * Sets the extent of the surface from two opposite corners.
      *
      * @mangled SetVertex__6CWaterFPfPf
@@ -164,6 +175,7 @@ public:
     void SetVertex(float *a, float *b);
 
     /**
+     *
      * Raises one interior grid point, starting a ripple from it.
      *
      * @mangled Shake__6CWaterFiif
@@ -173,6 +185,7 @@ public:
     void Shake(int x, int z, float amount);
 
     /**
+     *
      * Gives the surface its grid size and takes two cleared height buffers
      * out of an arena.
      *
@@ -183,6 +196,7 @@ public:
     void SetSize(int x, int z, mgCMemory *memory);
 
     /**
+     *
      * Stores the ripple speed and damping and the two values the surface's
      * microprogram is given.
      *
@@ -193,6 +207,7 @@ public:
     void SetParam(float speed, float damping, float param_48, float param_4c);
 
     /**
+     *
      * Sets the red, green, blue and alpha channels of the surface.
      *
      * @mangled SetColor__6CWaterFUcUcUcUc
@@ -202,6 +217,7 @@ public:
     void SetColor(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
 
     /**
+     *
      * Creates a surface with no grid, a half-bright white colour and the
      * default ripple constants.
      *
@@ -212,6 +228,7 @@ public:
     CWater();
 
     /**
+     *
      * Sends the matrices, screen, colour and draw settings the surface's
      * microprogram needs.
      *
@@ -222,6 +239,7 @@ public:
     virtual int CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_INFO *info);
 
     /**
+     *
      * Draws the surface by sending its render information, the
      * microprogram and the grid packet built by CreatePacket.
      *
@@ -232,6 +250,7 @@ public:
     virtual int Draw(u_int *tag, float (*matrix)[4], mgCDrawManager *draw_manager);
 
     /**
+     *
      * Builds the packet that draws the grid from the current wave heights,
      * and returns its address.
      *
@@ -257,11 +276,14 @@ public:
     int unk_11c;
 
     /**
+     *
      * Creates a water frame with its ripples running.
+     *
      */
     CWaterFrame() { Initialize(); }
 
     /**
+     *
      * Raises the grid point under a world position, starting a ripple from
      * it when the position lies over the surface.
      *
@@ -272,6 +294,7 @@ public:
     void Shake(float x, float z, float height_change);
 
     /**
+     *
      * Returns the water surface the frame draws.
      *
      * @mangled GetWater__11CWaterFrameFv
@@ -281,6 +304,7 @@ public:
     virtual CWater *GetWater();
 
     /**
+     *
      * Sets the texture the surface is drawn with.
      *
      * @mangled SetTexture__11CWaterFrameFP10mgCTexture
@@ -290,6 +314,7 @@ public:
     void SetTexture(mgCTexture *texture);
 
     /**
+     *
      * Advances the ripples one step unless they are held still.
      *
      * @mangled Step__11CWaterFrameFv
@@ -299,6 +324,7 @@ public:
     virtual void Step();
 
     /**
+     *
      * Stores the ripple speed and damping and the two microprogram values
      * of the surface.
      *
@@ -309,6 +335,7 @@ public:
     void SetParam(float p0, float p1, float p2, float p3);
 
     /**
+     *
      * Sets the red, green, blue and alpha channels of the surface.
      *
      * @mangled SetColor__11CWaterFrameFUcUcUcUc
@@ -318,6 +345,7 @@ public:
     void SetColor(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
 
     /**
+     *
      * Raises one interior grid point of the surface, starting a ripple from
      * it.
      *
@@ -328,6 +356,7 @@ public:
     void Shake(int x, int z, float amount);
 
     /**
+     *
      * Rebuilds the packet that draws the surface's grid.
      *
      * @mangled CreatePacket__11CWaterFrameFv
@@ -337,6 +366,7 @@ public:
     void CreatePacket();
 
     /**
+     *
      * Clears the frame's own state and resets the frame.
      *
      * @mangled Initialize__11CWaterFrameFv
@@ -349,6 +379,7 @@ public:
 STATIC_ASSERT(sizeof(CWaterFrame) == 0x120);
 
 /**
+ *
  * Creates a water frame whose surface spans two corners with a grid of the
  * given size, taking everything it needs out of an arena.
  *

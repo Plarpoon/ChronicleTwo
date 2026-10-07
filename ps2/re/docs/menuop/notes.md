@@ -134,3 +134,18 @@ The scrollbar helper divides the available height by total and visible lines, re
 
 ## SaveFileListDraw draft
 The save list draws 13 card slots in one primitive batch, with an extra marker for occupied slots. It then positions message lines and formats each occupied file’s play time from frames into hours and minutes. Europe uses ASCII digits and `sprintf`; other regions build digits with `GetMenuBigNum`. The guarded C++ draft compiles and retains the assembly fallback.
+
+## Save map and option indexing
+
+`CSaveData::save_dungeon.stage_id` occupies the saved dungeon word at offset
+0x1C5B4. Direct field access is semantically equivalent, but MWCC forms the
+large address as `lui 2` plus a negative store offset; retail uses `lui 1`,
+`ori 0xC5B4`, then a zero-offset store. `SaveMapInfo` and `ResetMapInfo`
+therefore retain the explicit offset for exact matching. The three option
+map buttons form a typed pointer array, but direct indexing changes
+`CMenuOption::UpdateOptionForm` register allocation (99.78%).
+The typed `loop_row[i]` variant keeps the 0x344-byte function size and changes
+only the saved-register pairing in the three-button loop: retail uses `s3`
+for the row base and `s2` for the byte offset, while MWCC assigns these in
+the opposite order. Reordering declarations and loop increments leaves the
+99.78% score unchanged.

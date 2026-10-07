@@ -91,13 +91,16 @@ public:
     int         reverse;    /**< Nonzero once the cursor has reached full power and runs back. */
 
     /**
+     *
      * Makes a gauge that waits for a swing.
+     *
      */
     CPowGage() {
         Initialize();
     }
 
     /**
+     *
      * Puts the gauge back to waiting for a swing, with no result.
      *
      * @mangled Initialize__8CPowGageFv
@@ -107,6 +110,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Moves the cursor one step for the stage of the swing, and works out the
      * result when the swing ends.
      *
@@ -117,6 +121,7 @@ public:
     void Step();
 
     /**
+     *
      * Draws the gauge, its power bar, its safe zone and its cursor.
      *
      * @mangled Draw__8CPowGageFv
@@ -167,6 +172,7 @@ public:
     u_char        unk_234[0xC];
 
     /**
+     *
      * Makes a sphida game that is not played yet.
      *
      * @mangled __ct__7CSphidaFv
@@ -176,6 +182,7 @@ public:
     CSphida();
 
     /**
+     *
      * Stops the game and clears the flags, the positions, the par and the
      * collision.
      *
@@ -186,6 +193,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Places the pin and the ball at random on the floor, works out the par
      * from the path between them, and starts the game.
      *
@@ -196,6 +204,7 @@ public:
     void SetUp(int arg);
 
     /**
+     *
      * Places the pin and the ball at the fixed positions of the story's
      * sphida hole and starts the game.
      *
@@ -206,6 +215,7 @@ public:
     void s17_SetUp(int arg);
 
     /**
+     *
      * Places the pin and the ball of one of the bonus courses, gives it its
      * par, and starts the game.
      *
@@ -216,6 +226,7 @@ public:
     void Omake_SetUp(int course, int tex_bank);
 
     /**
+     *
      * Steps the gauge and the red marker, and starts the shot or menu event
      * when the player acts near the ball.
      *
@@ -227,6 +238,7 @@ public:
     int Step();
 
     /**
+     *
      * Gets the gauge onto its place on the screen and gives it its texture.
      *
      * @mangled InitStatusSprite__7CSphidaFv
@@ -236,6 +248,7 @@ public:
     void InitStatusSprite();
 
     /**
+     *
      * Draws the status panel: the par, the distance to the pin, the spin mark
      * panel, the carry of the club and the gauge.
      *
@@ -246,6 +259,7 @@ public:
     void DrawStatusSprite();
 
     /**
+     *
      * Draws the par as a number floating over the ball.
      *
      * @mangled DrawParCounter__7CSphidaFv
@@ -255,6 +269,7 @@ public:
     void DrawParCounter();
 
     /**
+     *
      * Draws the status panel, the mini map of the game, the red marker and the
      * par counter.
      *
@@ -265,6 +280,7 @@ public:
     void Draw();
 
     /**
+     *
      * Loads the collision of the pin from a model file.
      *
      * @mangled SetCollisionModel__7CSphidaFP10MDS_HEADERP9mgCMemory
@@ -275,6 +291,7 @@ public:
     int SetCollisionModel(MDS_HEADER *header, mgCMemory *memory);
 
     /**
+     *
      * Gathers the polygons of the pin's collision that lie in a box, when the
      * game is played and a position is near the pin.
      *
@@ -286,6 +303,7 @@ public:
     int PickupCollision(float *pos, CCPoly *poly, mgVu0FBOX box, int capacity);
 
     /**
+     *
      * Marks the pin, the ball and, when asked for, the shot line on the mini
      * map.
      *
@@ -313,6 +331,7 @@ extern GOLF_CLUB_DEF GolfClubDef[7];
 extern CSphida *Sphida;
 
 /**
+ *
  * Gets the properties of a club.
  *
  * @mangled GetSphidaClubDef__Fi
@@ -323,6 +342,7 @@ extern CSphida *Sphida;
 GOLF_CLUB_DEF *GetSphidaClubDef(int club_no);
 
 /**
+ *
  * Adds a sprite centred on a screen position, taken from a rectangle of the
  * texture, to a strip of sprites being drawn.
  *
@@ -333,6 +353,7 @@ GOLF_CLUB_DEF *GetSphidaClubDef(int club_no);
 void DPrimEnterSprite(mgCDrawPrim *prim, int u, int v, int tex_w, int tex_h, float x, float y, float w, float h);
 
 /**
+ *
  * Forgets the sphida game, so that none is played.
  *
  * @mangled InitSphida__Fv
@@ -342,6 +363,7 @@ void DPrimEnterSprite(mgCDrawPrim *prim, int u, int v, int tex_w, int tex_h, flo
 void InitSphida();
 
 /**
+ *
  * Gets the sphida game of the current floor.
  *
  * @mangled GetSphidaPtr__Fv

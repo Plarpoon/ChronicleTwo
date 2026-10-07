@@ -44,6 +44,7 @@ enum EditControlMode {
 };
 
 /**
+ *
  * Reports whether the town loop is in Georama mode, including the wait before its menu opens.
  *
  * @mangled IsEditMode__Fv
@@ -53,6 +54,7 @@ enum EditControlMode {
 int IsEditMode();
 
 /**
+ *
  * Lays out the packet and data buffers for a kind of map: 0 the initial buffers, 1 a normal map, 2 a larger map of type 1.
  *
  * @mangled SetDataPacket__Fi
@@ -62,6 +64,7 @@ int IsEditMode();
 void SetDataPacket(int mode);
 
 /**
+ *
  * Prepares the town loop when the main loop enters it: memory, scene, camera, characters, map and starting event.
  *
  * @mangled EditInit__F13INIT_LOOP_ARG
@@ -71,6 +74,7 @@ void SetDataPacket(int mode);
 void EditInit(INIT_LOOP_ARG arg);
 
 /**
+ *
  * Releases the town loop when the main loop leaves it, stopping its sounds, font, reads and sub-game.
  *
  * @mangled EditExit__Fv
@@ -80,6 +84,7 @@ void EditInit(INIT_LOOP_ARG arg);
 void EditExit();
 
 /**
+ *
  * Runs one frame of the town loop, and returns non-zero when the main loop is to leave it.
  *
  * @mangled EditLoop__Fv
@@ -89,6 +94,7 @@ void EditExit();
 int EditLoop();
 
 /**
+ *
  * Steps the town's events, characters, sounds, effects and message windows for one frame; returns 0 when an event start had to wait.
  *
  * @mangled EditStep__Fv
@@ -98,6 +104,7 @@ int EditLoop();
 int EditStep();
 
 /**
+ *
  * Draws one frame of the town: the scene, the Georama interface and the message windows; returns 0.
  *
  * @mangled EditDraw__Fv
@@ -107,6 +114,7 @@ int EditStep();
 int EditDraw();
 
 /**
+ *
  * Burns the Georama parts of the main map (map 3), returning their parts and residents to the player; returns 1 when the map was processed.
  *
  * @mangled BurnEditParts__Fv
@@ -116,6 +124,7 @@ int EditDraw();
 int BurnEditParts();
 
 /**
+ *
  * Loads a town map with its villagers, sounds and events; returns 1 on success and 0 when the map is unknown.
  *
  * @mangled EditMapJump__Fi
@@ -125,6 +134,7 @@ int BurnEditParts();
 int EditMapJump(int map_no);
 
 /**
+ *
  * Enters an interior map of the town, optionally removing the outdoor villagers; returns 1.
  *
  * @mangled EditGotoInterior__Fii
@@ -134,6 +144,7 @@ int EditMapJump(int map_no);
 int EditGotoInterior(int interior_no, int delete_villager);
 
 /**
+ *
  * Leaves an interior map and returns to the town outside; the argument is unused; returns 1.
  *
  * @mangled EditExitInterior__Fi
@@ -143,6 +154,7 @@ int EditGotoInterior(int interior_no, int delete_villager);
 int EditExitInterior(int arg);
 
 /**
+ *
  * Stores the current town's Georama layout into the save data and re-analyses the town.
  *
  * @mangled EditDataSave__Fv
@@ -152,6 +164,7 @@ int EditExitInterior(int arg);
 void EditDataSave();
 
 /**
+ *
  * Restores the current town's Georama layout from the save data.
  *
  * @mangled EditDataLoad__Fv
@@ -161,6 +174,7 @@ void EditDataSave();
 void EditDataLoad();
 
 /**
+ *
  * Records the town's sixteen Georama analysis flags so later changes can be detected.
  *
  * @mangled KeepEditAnalyze__Fv
@@ -170,6 +184,7 @@ void EditDataLoad();
 void KeepEditAnalyze();
 
 /**
+ *
  * Reports whether any Georama analysis flag differs from the recorded ones, before chapter 8.
  *
  * @mangled EditAnalyzeChanged__Fv

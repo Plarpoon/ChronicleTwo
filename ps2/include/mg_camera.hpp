@@ -40,6 +40,7 @@ public:
     int           suspended;  /**< Non-zero while the camera does not move. */
 
     /**
+     *
      * Holds every camera still while it is not zero.
      *
      * @mangled StopCamera__9mgCCamera
@@ -49,6 +50,7 @@ public:
     static int StopCamera;
 
     /**
+     *
      * Moves the eye and the look-at point one or more steps towards their
      * next positions, and measures the angles of the view direction. A step
      * count below zero puts both onto their next positions at once.
@@ -60,6 +62,7 @@ public:
     virtual void Step(int frames);
 
     /**
+     *
      * Stops the camera from moving until it resumes.
      *
      * @mangled Suspend__9mgCCameraFv
@@ -69,6 +72,7 @@ public:
     virtual void Suspend() { suspended = 1; }
 
     /**
+     *
      * Lets the camera move again after a suspension.
      *
      * @mangled Resume__9mgCCameraFv
@@ -78,6 +82,7 @@ public:
     virtual void Resume() { suspended = 0; }
 
     /**
+     *
      * Puts the positions that the eye and the look-at point move to back onto
      * where they are, so that neither moves.
      *
@@ -88,6 +93,7 @@ public:
     virtual void Stay();
 
     /**
+     *
      * Makes the matrix that moves the world into the space of the eye, with
      * the up direction at right angles to the view direction.
      *
@@ -98,6 +104,7 @@ public:
     virtual void GetCameraMatrix(float (*matrix)[4]);
 
     /**
+     *
      * Returns the kind of this camera.
      *
      * @mangled Iam__9mgCCameraFv
@@ -107,6 +114,7 @@ public:
     virtual int Iam() { return MG_CAMERA_KIND_CAMERA; }
 
     /**
+     *
      * Puts the eye onto a position at once.
      *
      * @mangled SetPos__9mgCCameraFfff
@@ -116,6 +124,7 @@ public:
     void SetPos(float x, float y, float z);
 
     /**
+     *
      * Puts the eye onto a position at once.
      *
      * @mangled SetPos__9mgCCameraFPf
@@ -125,6 +134,7 @@ public:
     void SetPos(float *pos);
 
     /**
+     *
      * Gives the eye the position that it moves to.
      *
      * @mangled SetNextPos__9mgCCameraFfff
@@ -134,6 +144,7 @@ public:
     void SetNextPos(float x, float y, float z);
 
     /**
+     *
      * Gives the eye the position that it moves to.
      *
      * @mangled SetNextPos__9mgCCameraFPf
@@ -143,6 +154,7 @@ public:
     void SetNextPos(float *pos);
 
     /**
+     *
      * Puts the look-at point onto a position at once.
      *
      * @mangled SetRef__9mgCCameraFfff
@@ -152,6 +164,7 @@ public:
     void SetRef(float x, float y, float z);
 
     /**
+     *
      * Puts the look-at point onto a position at once.
      *
      * @mangled SetRef__9mgCCameraFPf
@@ -161,6 +174,7 @@ public:
     void SetRef(float *ref);
 
     /**
+     *
      * Gives the look-at point the position that it moves to.
      *
      * @mangled SetNextRef__9mgCCameraFfff
@@ -170,6 +184,7 @@ public:
     void SetNextRef(float x, float y, float z);
 
     /**
+     *
      * Gives the look-at point the position that it moves to.
      *
      * @mangled SetNextRef__9mgCCameraFPf
@@ -179,6 +194,7 @@ public:
     void SetNextRef(float *ref);
 
     /**
+     *
      * Gives the vector that goes from the eye to the look-at point.
      *
      * @mangled GetDir__9mgCCameraFPf
@@ -188,6 +204,7 @@ public:
     void GetDir(float *dir);
 
     /**
+     *
      * Sets the number of steps that the eye and the look-at point need to
      * reach their positions; a look-at speed below zero takes the eye's.
      *
@@ -198,6 +215,7 @@ public:
     void SetSpeed(float pos_speed, float ref_speed);
 
     /**
+     *
      * Sets the angle that turns the view about the view direction.
      *
      * @mangled SetRoll__9mgCCameraFf
@@ -207,6 +225,7 @@ public:
     void SetRoll(float roll);
 
     /**
+     *
      * Gives the world position of the eye.
      *
      * @mangled GetPos__9mgCCameraFPf
@@ -216,6 +235,7 @@ public:
     void GetPos(float *pos);
 
     /**
+     *
      * Gives the world position of the point that the eye looks at.
      *
      * @mangled GetRef__9mgCCameraFPf
@@ -225,6 +245,7 @@ public:
     void GetRef(float *ref);
 
     /**
+     *
      * Gives the world position that the eye moves to.
      *
      * @mangled GetNextPos__9mgCCameraFPf
@@ -234,6 +255,7 @@ public:
     void GetNextPos(float *pos);
 
     /**
+     *
      * Gives the world position that the look-at point moves to.
      *
      * @mangled GetNextRef__9mgCCameraFPf
@@ -243,6 +265,7 @@ public:
     void GetNextRef(float *ref);
 
     /**
+     *
      * Returns the angle of the view direction about the vertical axis.
      *
      * @mangled GetAngleH__9mgCCameraFv
@@ -252,6 +275,7 @@ public:
     float GetAngleH();
 
     /**
+     *
      * Returns the angle of the view direction above the horizontal plane.
      *
      * @mangled GetAngleV__9mgCCameraFv
@@ -261,6 +285,7 @@ public:
     float GetAngleV();
 
     /**
+     *
      * Puts the camera at rest and gives the eye and the look-at point the
      * number of steps that they need to reach a position.
      *
@@ -290,6 +315,7 @@ public:
     sceVu0FVECTOR follow_next;   /**< Point that the eye circles and looks at: the followed position plus its offset. */
 
     /**
+     *
      * Turns the eye one or more steps towards the angle that it turns to, and
      * moves the eye and the look-at point to where the circle puts them. A
      * step count below zero turns the eye at once.
@@ -301,6 +327,7 @@ public:
     virtual void Step(int frames);
 
     /**
+     *
      * Puts the circled point onto the look-at point's next position, and the
      * angle that the eye turns to onto its angle, so that nothing moves.
      *
@@ -311,6 +338,7 @@ public:
     virtual void Stay();
 
     /**
+     *
      * Returns the kind of this camera.
      *
      * @mangled Iam__15mgCCameraFollowFv
@@ -320,6 +348,7 @@ public:
     virtual int Iam() { return MG_CAMERA_KIND_FOLLOW; }
 
     /**
+     *
      * Sets the world position that the eye circles.
      *
      * @mangled SetFollow__15mgCCameraFollowFfff
@@ -329,6 +358,7 @@ public:
     virtual void SetFollow(float x, float y, float z);
 
     /**
+     *
      * Gives the position that the circle puts the eye at, for the current
      * angle, distance and height.
      *
@@ -339,6 +369,7 @@ public:
     void GetFollowNextPos(float *pos);
 
     /**
+     *
      * Gives the followed position plus its offset: the point that the eye
      * circles.
      *
@@ -349,6 +380,7 @@ public:
     void GetFollowNext(float *pos);
 
     /**
+     *
      * Makes the eye circle the point again.
      *
      * @mangled FollowOn__15mgCCameraFollowFv
@@ -358,6 +390,7 @@ public:
     void FollowOn();
 
     /**
+     *
      * Leaves the eye where it is, and makes it take the angle that the base
      * camera measures.
      *
@@ -368,6 +401,7 @@ public:
     void FollowOff();
 
     /**
+     *
      * Sets the angle that the eye turns to, which it reaches over several
      * steps.
      *
@@ -378,6 +412,7 @@ public:
     void SetAngle(float angle);
 
     /**
+     *
      * Sets the angle of the eye, and the angle that it turns to, so that the
      * eye turns at once.
      *
@@ -388,6 +423,7 @@ public:
     void SetAngleSoon(float angle);
 
     /**
+     *
      * Returns the angle that the eye is at now.
      *
      * @mangled GetAngle__15mgCCameraFollowFv
@@ -397,6 +433,7 @@ public:
     float GetAngle();
 
     /**
+     *
      * Adds to the angle that the eye turns to.
      *
      * @mangled AddAngle__15mgCCameraFollowFf
@@ -406,6 +443,7 @@ public:
     void AddAngle(float delta);
 
     /**
+     *
      * Sets the distance from the eye to the point that it circles.
      *
      * @mangled SetDistance__15mgCCameraFollowFf
@@ -415,6 +453,7 @@ public:
     void SetDistance(float distance);
 
     /**
+     *
      * Returns the distance from the eye to the point that it circles.
      *
      * @mangled GetDistance__15mgCCameraFollowFv
@@ -424,6 +463,7 @@ public:
     float GetDistance();
 
     /**
+     *
      * Adds to the distance from the eye to the point that it circles.
      *
      * @mangled AddDistance__15mgCCameraFollowFf
@@ -433,6 +473,7 @@ public:
     void AddDistance(float delta);
 
     /**
+     *
      * Sets the height of the eye above the point that it circles.
      *
      * @mangled SetHeight__15mgCCameraFollowFf
@@ -442,6 +483,7 @@ public:
     void SetHeight(float height);
 
     /**
+     *
      * Returns the height of the eye above the point that it circles.
      *
      * @mangled GetHeight__15mgCCameraFollowFv
@@ -451,6 +493,7 @@ public:
     float GetHeight();
 
     /**
+     *
      * Adds to the height of the eye above the point that it circles.
      *
      * @mangled AddHeight__15mgCCameraFollowFf
@@ -460,6 +503,7 @@ public:
     void AddHeight(float delta);
 
     /**
+     *
      * Sets the offset added to the followed position.
      *
      * @mangled SetFollowOffset__15mgCCameraFollowFfff
@@ -469,6 +513,7 @@ public:
     void SetFollowOffset(float x, float y, float z);
 
     /**
+     *
      * Gives the world position that the eye follows.
      *
      * @mangled GetFollow__15mgCCameraFollowFPf
@@ -478,6 +523,7 @@ public:
     void GetFollow(float *pos);
 
     /**
+     *
      * Gives the offset added to the followed position.
      *
      * @mangled GetFollowOffset__15mgCCameraFollowFPf
@@ -487,6 +533,7 @@ public:
     void GetFollowOffset(float *offset);
 
     /**
+     *
      * Puts the eye on the circle that the given distance, height and angle
      * describe, about the origin, and makes it circle the point.
      *

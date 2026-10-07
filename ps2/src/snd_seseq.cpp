@@ -10,7 +10,9 @@
 
 // Code (.text)
 /**
+ *
  * Copies a big-endian field into little-endian byte order.
+ *
  */
 static void BigToLittle(void *dst, void *src, int size) {
     u8 *output;
@@ -26,7 +28,9 @@ static void BigToLittle(void *dst, void *src, int size) {
 }
 
 /**
+ *
  * Reads a MIDI variable-length delta and returns the following byte.
+ *
  */
 static char *GetDeltaTime(char *p, int *delta) {
     int value;

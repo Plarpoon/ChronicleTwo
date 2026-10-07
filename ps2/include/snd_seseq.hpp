@@ -86,7 +86,9 @@ struct sndSeSeqVoice {
     s8 se_id;  /**< Sound effect ID the note was started with. */
 
     /**
+     *
      * Creates the voice as silent.
+     *
      */
     sndSeSeqVoice() { active = 0; }
 };
@@ -107,6 +109,7 @@ public:
     sndSeSeqEvent *event;     /**< Event list, ending in an event with status 0, or NULL when none is loaded. */
 
     /**
+     *
      * Creates the sequence with no events.
      *
      * @mangled __ct__13sndCSeSeqDataFv
@@ -116,6 +119,7 @@ public:
     sndCSeSeqData();
 
     /**
+     *
      * Clears the event list and resets the tick rate.
      *
      * @mangled Initialize__13sndCSeSeqDataFv
@@ -125,6 +129,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Converts a format 0 Standard MIDI File into the event list, allocated
      * from the stack region of the given memory manager.
      *
@@ -157,11 +162,14 @@ public:
     sndSeSeqVoice voice[1];  /**< Notes the track is sounding. */
 
     /**
+     *
      * Creates the track with default controller values.
+     *
      */
     sndTrack() { Initialize(); }
 
     /**
+     *
      * Resets the controllers to their defaults and silences every voice.
      *
      * @mangled Initialize__8sndTrackFv
@@ -171,6 +179,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Finds the active voice playing a key with a program, or NULL when
      * none is.
      *
@@ -181,6 +190,7 @@ public:
     sndSeSeqVoice *SaerchVoice(int prog, int key);
 
     /**
+     *
      * Finds a silent voice, or NULL when every voice is active.
      *
      * @mangled GetEmptyVoice__8sndTrackFv
@@ -190,6 +200,7 @@ public:
     sndSeSeqVoice *GetEmptyVoice();
 
     /**
+     *
      * Claims a voice for a key on the current program, returning non-zero
      * when the key is now held and the sound effect should be started.
      *
@@ -200,6 +211,7 @@ public:
     int NoteOn(int note, int velocity);
 
     /**
+     *
      * Releases the voice holding a key on the current program, returning
      * non-zero when one was found and its sound effect should be stopped.
      *
@@ -210,6 +222,7 @@ public:
     int NoteOff(int key, int velocity);
 
     /**
+     *
      * Stores a volume, expression or pan controller value, returning
      * non-zero.
      *
@@ -220,6 +233,7 @@ public:
     int CtrlChg(int ctrl, int value);
 
     /**
+     *
      * Selects the program new notes are started with, returning zero.
      *
      * @mangled ProgChg__8sndTrackFi
@@ -229,6 +243,7 @@ public:
     int ProgChg(int prog);
 
     /**
+     *
      * Stores the pitch bend, returning non-zero.
      *
      * @mangled PitchBend__8sndTrackFii
@@ -263,6 +278,7 @@ public:
     sndTrack       track[8];   /**< Track of each MIDI channel. */
 
     /**
+     *
      * Creates an idle player.
      *
      * @mangled __ct__9sndCSeSeqFv
@@ -272,6 +288,7 @@ public:
     sndCSeSeq() { Initialize(); }
 
     /**
+     *
      * Detaches the sequence and resets the volume and every track, giving
      * the tracks consecutive sound effect IDs.
      *
@@ -282,6 +299,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Gives the tracks consecutive sound effect IDs starting from a base.
      *
      * @mangled SetSeID__9sndCSeSeqFi
@@ -291,6 +309,7 @@ public:
     void SetSeID(int id);
 
     /**
+     *
      * Advances the tick counters by the ticks that pass in a number of
      * frames.
      *
@@ -301,6 +320,7 @@ public:
     void Count(float frames);
 
     /**
+     *
      * Stops every sounding note and detaches the sequence.
      *
      * @mangled Stop__9sndCSeSeqFv
@@ -310,6 +330,7 @@ public:
     void Stop();
 
     /**
+     *
      * Advances the sequence by a number of frames, processing every event
      * that falls due, returning non-zero when the player is free or the
      * sequence has ended.
@@ -321,6 +342,7 @@ public:
     int Step(float frames);
 
     /**
+     *
      * Returns non-zero when a track number is in range.
      *
      * @mangled chk_trk__9sndCSeSeqFi
@@ -330,6 +352,7 @@ public:
     int chk_trk(int trk);
 
     /**
+     *
      * Starts a key on a track's current program, or releases it when the
      * velocity is zero.
      *
@@ -340,6 +363,7 @@ public:
     void NoteOn(int trk, int key, int velocity);
 
     /**
+     *
      * Stops a key on a track's current program.
      *
      * @mangled NoteOff__9sndCSeSeqFiii
@@ -349,6 +373,7 @@ public:
     void NoteOff(int trk, int key, int velocity);
 
     /**
+     *
      * Stops every sounding note on every track.
      *
      * @mangled AllNoteOff__9sndCSeSeqFv
@@ -358,6 +383,7 @@ public:
     void AllNoteOff();
 
     /**
+     *
      * Stops every sounding note on a track.
      *
      * @mangled TrackNoteOff__9sndCSeSeqFi
@@ -367,6 +393,7 @@ public:
     void TrackNoteOff(int trk);
 
     /**
+     *
      * Applies a control change to a track and updates the volume or pan of
      * its sounding notes.
      *
@@ -377,6 +404,7 @@ public:
     void CtrlChg(int trk, int ctrl, int value);
 
     /**
+     *
      * Applies a program change to a track.
      *
      * @mangled ProgChg__9sndCSeSeqFii
@@ -386,6 +414,7 @@ public:
     void ProgChg(int trk, int prog);
 
     /**
+     *
      * Applies a pitch bend to a track and updates the pitch of its sounding
      * notes.
      *
@@ -396,6 +425,7 @@ public:
     void PitchBend(int trk, int msb, int lsb);
 
     /**
+     *
      * Sends a track's volume, scaled by its expression and the player
      * volume, to its sounding notes.
      *
@@ -406,6 +436,7 @@ public:
     void SendVol(int trk);
 
     /**
+     *
      * Sends a track's pan to its sounding notes.
      *
      * @mangled SendPan__9sndCSeSeqFi
@@ -415,6 +446,7 @@ public:
     void SendPan(int trk);
 
     /**
+     *
      * Sends a track's pitch bend to its sounding notes.
      *
      * @mangled SendPitch__9sndCSeSeqFi

@@ -196,7 +196,9 @@ public:
     };
 
     /**
+     *
      * Initializes the party change menu and clears its model work stacks.
+     *
      */
     CMenuChrCngMenu();
 
@@ -373,7 +375,9 @@ public:
     s16               load_phase; /**< Step of loading the shown monster's model. */
 
     /**
+     *
      * Initializes the monster box, its message windows, and the default badge selection.
+     *
      */
     CMenuMosSelect();
 
@@ -603,7 +607,9 @@ public:
     char              drop_item[MOS_BOOK_DROP_ITEM_NUM][0x21]; /**< Names of the items the monster drops. */
 
     /**
+     *
      * Constructs the book with its model camera at the default speed.
+     *
      */
     CMosBookMenu() : camera(8.0f) {
         bg_scroll = 0.0f;

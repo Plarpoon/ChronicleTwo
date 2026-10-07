@@ -27,6 +27,7 @@ struct MDT_HEADER;
 class mgCShadowMDT : public mgCVisualMDT {
 public:
     /**
+     *
      * Writes and sends the packet that sets up the shadow drawing pass:
      * transforms, lighting, draw environment and shadow projection.
      *
@@ -37,6 +38,7 @@ public:
     virtual int CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_INFO *info);
 
     /**
+     *
      * Builds the model's draw packet in the draw manager's buffers, one
      * chain per face group, and returns its DMA address.
      *
@@ -47,6 +49,7 @@ public:
     virtual u_int CreatePacket(mgCDrawManager *manager);
 
     /**
+     *
      * Writes the triangle packet for one face list and returns its length
      * in quadwords.
      *
@@ -57,6 +60,7 @@ public:
     virtual int CreateFacePacket(u_int *packet, mgCFace *face);
 
     /**
+     *
      * Creates a face list from one face record of the model data and links
      * it into the model's face groups, returning the record that follows.
      *
@@ -67,6 +71,7 @@ public:
     virtual FACES_ID *CreateFace(FACES_ID *source, mgCMemory *memory, mgCMemory *index_memory, mgCFace **result);
 
     /**
+     *
      * Copies the model's data from an MDT file and creates its face lists;
      * returns zero when there is no data.
      *

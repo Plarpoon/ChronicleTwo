@@ -55,27 +55,37 @@ enum mgVU_PROG_ID {
 };
 
 /**
+ *
  * Initial DMA chain that prepares VU1 for the graphics microprograms.
+ *
  */
 extern u_long128 My_dma_start0[];
 
 /**
+ *
  * Shared entry microprogram for VU1 drawing.
+ *
  */
 extern u_long128 Vu_progmain[];
 
 /**
+ *
  * Main geometry microprogram's DMA upload packet.
+ *
  */
 extern u_long128 Vu_prog0[];
 
 /**
+ *
  * Shadow microprogram's DMA upload packet.
+ *
  */
 extern u_long128 Vu_prog_sdw[];
 
 /**
+ *
  * Sprite microprogram's DMA upload packet.
+ *
  */
 extern u_long128 Vu_prog_3dsp[];
 
@@ -95,222 +105,309 @@ struct MG_PICKZ {
 STATIC_ASSERT(sizeof(MG_PICKZ) == 0x10);
 
 /**
+ *
  * Non-zero to blend the two display circuits for a softer, anti-aliased picture.
+ *
  */
 extern int mgAntialiasing;
 
 /**
+ *
  * Vertical syncs each frame waits for.
+ *
  */
 extern int mgFrameRate;
 
 /**
+ *
  * Vertical syncs the last frame actually took, measured from the root counter.
+ *
  */
 extern float mgNowFrameRate;
 
 /**
+ *
  * DMA channel 1 (VIF1), through which every packet is sent.
+ *
  */
 extern sceDmaChan *DmaCH1;
 
 /**
+ *
  * DMA channel 2 (GIF).
+ *
  */
 extern sceDmaChan *DmaCH2;
 
 /**
+ *
  * DMA channel 8 (from scratchpad).
+ *
  */
 extern sceDmaChan *DmaCH8;
 
 /**
+ *
  * VIF1 packet being built this frame, one of the two packets the frames alternate between.
+ *
  */
 extern sceVif1Packet *mgVif1Packet;
 
 /**
+ *
  * Non-zero to clear the frame to the background colour when a frame begins.
+ *
  */
 extern int mgClearBackFlag;
 
 /**
+ *
  * Screen size in use, as an mgSCREEN_MODE.
+ *
  */
 extern int mgScreenMode;
 
 /**
+ *
  * Screen width in pixels.
+ *
  */
 extern int mgScreenWidth;
 
 /**
+ *
  * Screen height in pixels.
+ *
  */
 extern int mgScreenHeight;
 
 /**
+ *
  * Left edge of the screen relative to its centre (minus half the width).
+ *
  */
 extern int mgScreenNX;
 
 /**
+ *
  * Top edge of the screen relative to its centre (minus half the height).
+ *
  */
 extern int mgScreenNY;
 
 /**
+ *
  * Right edge of the screen relative to its centre.
+ *
  */
 extern int mgScreenMX;
 
 /**
+ *
  * Bottom edge of the screen relative to its centre.
+ *
  */
 extern int mgScreenMY;
 
 /**
+ *
  * Horizontal GS primitive coordinate, in pixels, of the screen's left edge.
+ *
  */
 extern int mgScreenOffx;
 
 /**
+ *
  * Vertical GS primitive coordinate, in pixels, of the screen's top edge.
+ *
  */
 extern int mgScreenOffy;
 
 /**
+ *
  * Bits per pixel of the frame buffer.
+ *
  */
 extern int mgScreenDepth;
 
 /**
+ *
  * Bits per pixel of the depth buffer.
+ *
  */
 extern int mgScreenZDepth;
 
 /**
+ *
  * GS primitive coordinate of the screen's left edge.
+ *
  */
 extern int mgScreenLeft;
 
 /**
+ *
  * GS primitive coordinate of the screen's right edge.
+ *
  */
 extern int mgScreenRight;
 
 /**
+ *
  * GS primitive coordinate of the screen's top edge.
+ *
  */
 extern int mgScreenTop;
 
 /**
+ *
  * GS primitive coordinate of the screen's bottom edge.
+ *
  */
 extern int mgScreenBottom;
 
 /**
+ *
  * Interlace field being displayed, sampled at every vertical sync.
+ *
  */
 extern int VSyncField;
 
 /**
+ *
  * TEX1 register value for drawing context 1.
+ *
  */
 extern sceGsTex1 mgTEX1_1;
 
 /**
+ *
  * TEX1 register value for drawing context 2.
+ *
  */
 extern sceGsTex1 mgTEX1_2;
 
 /**
+ *
  * TEST register value for drawing context 1.
+ *
  */
 extern sceGsTest mgTEST_1;
 
 /**
+ *
  * TEST register value for drawing context 2.
+ *
  */
 extern sceGsTest mgTEST_2;
 
 /**
+ *
  * ZBUF register value for drawing context 1, naming where the depth buffer lives.
+ *
  */
 extern sceGsZbuf mgZBUF_1;
 
 /**
+ *
  * ZBUF register value for drawing context 2.
+ *
  */
 extern sceGsZbuf mgZBUF_2;
 
 /**
+ *
  * ALPHA register value for drawing context 1.
+ *
  */
 extern sceGsAlpha mgALPHA_1;
 
 /**
+ *
  * ALPHA register value for drawing context 2.
+ *
  */
 extern sceGsAlpha mgALPHA_2;
 
 /**
+ *
  * TEXA register value for drawing context 1.
+ *
  */
 extern sceGsTexa mgTEXA_1;
 
 /**
+ *
  * TEXA register value for drawing context 2.
+ *
  */
 extern sceGsTexa mgTEXA_2;
 
 /**
+ *
  * FRAME register value of the buffer being drawn this frame.
+ *
  */
 extern sceGsFrame mgFRAME_1;
 
 /**
+ *
  * Quadwords written by the mgDrawDirect2 calls since mgDrawDirectStart.
+ *
  */
 extern int ddraw_size;
 
 /**
+ *
  * GIF tag that opens a run of address and data register writes.
+ *
  */
 extern sceGifTag mgGiftagAD;
 
 /**
+ *
  * Render state every model is drawn with: matrices, lights, clip volume, fog
  * and the two drawing environments.
+ *
  */
 extern mgRENDER_INFO mgRenderInfo;
 
 /**
+ *
  * Colour the frame is cleared to, with components from 0 to 255.
+ *
  */
 extern sceVu0FVECTOR mgBackColor;
 
 /**
+ *
  * Texture manager the default draw manager loads textures through.
+ *
  */
 extern mgCTextureManager mgTexManager;
 
 /**
+ *
  * Draw manager used when a drawing call is given none.
+ *
  */
 extern mgCDrawManager mgDrawManager;
 
 /**
+ *
  * Display and drawing environments of the two frame buffers.
+ *
  */
 extern sceGsDBuff mgDBuff;
 
 /**
+ *
  * Depth-buffer sample requests served at the end of every frame.
+ *
  */
 extern MG_PICKZ mgPickZBuff[4];
 
 /**
+ *
  * Turns the on-screen performance meter on or off.
  *
  * @mangled mgPerformanceMeter__Fi
@@ -320,6 +417,7 @@ extern MG_PICKZ mgPickZBuff[4];
 void mgPerformanceMeter(int enable);
 
 /**
+ *
  * Tells whether the on-screen performance meter is on.
  *
  * @mangled mgGetPerformanceMeterFlag__Fv
@@ -329,6 +427,7 @@ void mgPerformanceMeter(int enable);
 int mgGetPerformanceMeterFlag();
 
 /**
+ *
  * Sets the function called from every vertical-sync interrupt.
  *
  * @mangled mgInitVSyncCallBack__FPFi_i
@@ -338,6 +437,7 @@ int mgGetPerformanceMeterFlag();
 void mgInitVSyncCallBack(int (*callback)(int));
 
 /**
+ *
  * Sets the thread priority whose ready queue is rotated while waiting for a
  * vertical sync; zero or less rotates nothing.
  *
@@ -348,6 +448,7 @@ void mgInitVSyncCallBack(int (*callback)(int));
 void mgSetRotateThread(int priority);
 
 /**
+ *
  * Gives the number of vertical syncs since the library was initialised.
  *
  * @mangled mgGetVSyncCount__Fv
@@ -357,6 +458,7 @@ void mgSetRotateThread(int priority);
 int mgGetVSyncCount();
 
 /**
+ *
  * Resets DMA and the GS, clears video memory, sets up the double buffer,
  * register defaults, render info and microprograms, and installs the
  * vertical-sync handler.
@@ -368,6 +470,7 @@ int mgGetVSyncCount();
 void mgInit(int screen_mode, int video_mode);
 
 /**
+ *
  * Sets the two buffers the alternating VIF1 packets are built in, each
  * aligned up to a quadword.
  *
@@ -378,6 +481,7 @@ void mgInit(int screen_mode, int video_mode);
 void mgInitVif1Packet(u_long128 *buffer_a, u_long128 *buffer_b, int size);
 
 /**
+ *
  * Copies two memory managers into the pair the alternating frames take
  * packet memory from, emptying their stack regions.
  *
@@ -388,6 +492,7 @@ void mgInitVif1Packet(u_long128 *buffer_a, u_long128 *buffer_b, int size);
 void mgSetPacketBuffer(mgCMemory *pool_a, mgCMemory *pool_b);
 
 /**
+ *
  * Points the pair of per-frame data managers at the free stack space of two
  * memory managers, optionally skipping their first 0x4000 quadwords.
  *
@@ -398,6 +503,7 @@ void mgSetPacketBuffer(mgCMemory *pool_a, mgCMemory *pool_b);
 void mgSetDataBuffer(mgCMemory *pool_a, mgCMemory *pool_b, int skip_head);
 
 /**
+ *
  * Gives the data memory manager of the frame being built.
  *
  * @mangled mgGetDataBuffer__Fv
@@ -407,6 +513,7 @@ void mgSetDataBuffer(mgCMemory *pool_a, mgCMemory *pool_b, int skip_head);
 mgCMemory *mgGetDataBuffer();
 
 /**
+ *
  * Gives the first video memory word past the frame and depth buffers.
  *
  * @mangled mgGetTopVRAMAddress__Fv
@@ -416,6 +523,7 @@ mgCMemory *mgGetDataBuffer();
 int mgGetTopVRAMAddress();
 
 /**
+ *
  * Gives the number of vertical syncs each frame waits for.
  *
  * @mangled mgGetNowFrameRate__Fv
@@ -425,6 +533,7 @@ int mgGetTopVRAMAddress();
 float mgGetNowFrameRate();
 
 /**
+ *
  * Starts a frame: opens its packet, resets texture repeat, the frame buffer
  * and the render info, and clears the screen.
  *
@@ -435,6 +544,7 @@ float mgGetNowFrameRate();
 void mgBeginFrame(mgCDrawManager *manager);
 
 /**
+ *
  * Switches to the packet and memory of the frame being built and resets the
  * draw manager's sort table.
  *
@@ -445,6 +555,7 @@ void mgBeginFrame(mgCDrawManager *manager);
 void mgBeginPacket(mgCDrawManager *manager);
 
 /**
+ *
  * Starts collecting draw requests in a draw manager, the default one when
  * none is given, optionally limited to a list of texture blocks ended by a
  * negative entry.
@@ -456,6 +567,7 @@ void mgBeginPacket(mgCDrawManager *manager);
 void mgBeginDraw(mgCMemory *memory, int *draw_size, mgCDrawManager *manager);
 
 /**
+ *
  * Writes the collected draw requests of a draw manager into the frame's
  * packet.
  *
@@ -466,6 +578,7 @@ void mgBeginDraw(mgCMemory *memory, int *draw_size, mgCDrawManager *manager);
 void mgEndDraw(mgCDrawManager *manager);
 
 /**
+ *
  * Prepares a draw manager's collected requests before they are written out.
  *
  * @mangled mgPreEndDraw__FP14mgCDrawManager
@@ -475,6 +588,7 @@ void mgEndDraw(mgCDrawManager *manager);
 void mgPreEndDraw(mgCDrawManager *manager);
 
 /**
+ *
  * Has a draw manager reload the textures of one texture block into the
  * frame's packet, returning zero when that block is not drawn.
  *
@@ -485,6 +599,7 @@ void mgPreEndDraw(mgCDrawManager *manager);
 int mgEndDrawReloadTexture(int texture, mgCDrawManager *manager);
 
 /**
+ *
  * Writes the draw requests a draw manager collected for one texture block
  * into the frame's packet.
  *
@@ -496,6 +611,7 @@ int mgEndDrawReloadTexture(int texture, mgCDrawManager *manager);
 void mgEndDraw(int mode, mgCDrawManager *manager);
 
 /**
+ *
  * Saves the displayed frame to the host as a TGA image.
  *
  * @mangled mgStoreFrameImage__Fv
@@ -506,6 +622,7 @@ void mgEndDraw(int mode, mgCDrawManager *manager);
 void mgStoreFrameImage();
 
 /**
+ *
  * Finishes a frame: draws the performance meter, closes and sends the
  * packet, serves depth samples, waits for the frame rate, and swaps the
  * display buffers.
@@ -517,6 +634,7 @@ void mgStoreFrameImage();
 void mgEndFrame(mgCDrawManager *manager);
 
 /**
+ *
  * Sends the frame's VIF1 packet over DMA channel 1 and flips to the other
  * packet.
  *
@@ -528,6 +646,7 @@ void mgEndFrame(mgCDrawManager *manager);
 void mgSendPacket(mgCDrawManager *manager);
 
 /**
+ *
  * Ends the frame's VIF1 packet.
  *
  * @mangled mgEndPacket__FP14mgCDrawManager
@@ -538,6 +657,7 @@ void mgSendPacket(mgCDrawManager *manager);
 void mgEndPacket(mgCDrawManager *manager);
 
 /**
+ *
  * Waits for the GS path to finish, halting with the packet address when it
  * times out.
  *
@@ -548,6 +668,7 @@ void mgEndPacket(mgCDrawManager *manager);
 void mgWaitFrame();
 
 /**
+ *
  * Draws one model through its frame.
  *
  * @mangled mgDraw__FP8mgCFrame
@@ -557,6 +678,7 @@ void mgWaitFrame();
 int mgDraw(mgCFrame *frame);
 
 /**
+ *
  * Builds one model's packet straight into the frame's VIF1 packet.
  *
  * @mangled mgDrawDirect__FP8mgCFrame
@@ -566,6 +688,7 @@ int mgDraw(mgCFrame *frame);
 int mgDrawDirect(mgCFrame *frame);
 
 /**
+ *
  * Builds one visual's packet, placed by a matrix, straight into the frame's
  * VIF1 packet.
  *
@@ -576,6 +699,7 @@ int mgDrawDirect(mgCFrame *frame);
 int mgDrawDirect(mgCVisual *visual, float (*matrix)[4]);
 
 /**
+ *
  * Starts a run of mgDrawDirect2 calls written back to back into the frame's
  * VIF1 packet.
  *
@@ -587,6 +711,7 @@ int mgDrawDirect(mgCVisual *visual, float (*matrix)[4]);
 void mgDrawDirectStart();
 
 /**
+ *
  * Builds one model's packet after those already written since
  * mgDrawDirectStart.
  *
@@ -597,6 +722,7 @@ void mgDrawDirectStart();
 int mgDrawDirect2(mgCFrame *frame);
 
 /**
+ *
  * Ends a run of mgDrawDirect2 calls, claiming what they wrote in the frame's
  * VIF1 packet.
  *
@@ -607,6 +733,7 @@ int mgDrawDirect2(mgCFrame *frame);
 void mgDrawDirectEnd();
 
 /**
+ *
  * Gives the screen rectangle a model covers.
  *
  * @mangled mgGetDrawRect__FP8mgCFrameP9mgVu0FBOX
@@ -616,6 +743,7 @@ void mgDrawDirectEnd();
 int mgGetDrawRect(mgCFrame *frame, mgVu0FBOX *box);
 
 /**
+ *
  * Makes a texture the frame buffer and clears it, so that shadows can be
  * drawn into it.
  *
@@ -626,6 +754,7 @@ int mgGetDrawRect(mgCFrame *frame, mgVu0FBOX *box);
 void mgBeginDrawShadow(mgCTexture *shadow, mgCTexture *unused);
 
 /**
+ *
  * Restores the frame buffer and lays the shadow texture over the frame.
  *
  * @mangled mgEndDrawShadow__FP10mgCTextureP10mgCTexture
@@ -635,6 +764,7 @@ void mgBeginDrawShadow(mgCTexture *shadow, mgCTexture *unused);
 void mgEndDrawShadow(mgCTexture *shadow, mgCTexture *unused);
 
 /**
+ *
  * Rebuilds the projection and clip volume of the render info for the
  * screen.
  *
@@ -645,6 +775,7 @@ void mgEndDrawShadow(mgCTexture *shadow, mgCTexture *unused);
 void mgSetRenderInfo(float fov, float clip_near, float clip_far);
 
 /**
+ *
  * Changes the projection scale, keeping the clip depths and the view.
  *
  * @mangled mgSetProjection__Ff
@@ -654,6 +785,7 @@ void mgSetRenderInfo(float fov, float clip_near, float clip_far);
 void mgSetProjection(float fov);
 
 /**
+ *
  * Gives the projection scale.
  *
  * @mangled mgGetProjection__Fv
@@ -663,6 +795,7 @@ void mgSetProjection(float fov);
 float mgGetProjection();
 
 /**
+ *
  * Sets the colour the frame is cleared to, from four floats in memory.
  *
  * @mangled mgSetBackGround__FPf
@@ -672,6 +805,7 @@ float mgGetProjection();
 void mgSetBackGround(float *color);
 
 /**
+ *
  * Sets the colour the frame is cleared to.
  *
  * @mangled mgSetBackGround__Fffff
@@ -681,6 +815,7 @@ void mgSetBackGround(float *color);
 void mgSetBackGround(float r, float g, float b, float a);
 
 /**
+ *
  * Resets the parallel lights and the ambient colour.
  *
  * @mangled mgInitLighting__Fv
@@ -690,6 +825,7 @@ void mgSetBackGround(float r, float g, float b, float a);
 void mgInitLighting();
 
 /**
+ *
  * Resets which parallel lights are active.
  *
  * @mangled mgInitActiveLighting__Fv
@@ -699,6 +835,7 @@ void mgInitLighting();
 void mgInitActiveLighting();
 
 /**
+ *
  * Selects one of the eight lighting sets, copying the current set into it
  * when copy is non-zero, and gives the set that was selected before.
  *
@@ -709,6 +846,7 @@ void mgInitActiveLighting();
 int mgActiveLighting(int slot, int copy);
 
 /**
+ *
  * Sets the directions and colours of the parallel lights.
  *
  * @mangled mgSetLight__FPA4_fPA4_f
@@ -718,6 +856,7 @@ int mgActiveLighting(int slot, int copy);
 void mgSetLight(float (*direction)[4], float (*color)[4]);
 
 /**
+ *
  * Reads the directions and colours of the parallel lights.
  *
  * @mangled mgGetLight__FPA4_fPA4_f
@@ -727,6 +866,7 @@ void mgSetLight(float (*direction)[4], float (*color)[4]);
 void mgGetLight(float (*direction)[4], float (*color)[4]);
 
 /**
+ *
  * Sets the direction and colour of one parallel light.
  *
  * @mangled mgSetLight__FiPfPf
@@ -736,6 +876,7 @@ void mgGetLight(float (*direction)[4], float (*color)[4]);
 void mgSetLight(int index, float *direction, float *color);
 
 /**
+ *
  * Sets the colour that lights every face of a model.
  *
  * @mangled mgSetAmbient__FPf
@@ -745,6 +886,7 @@ void mgSetLight(int index, float *direction, float *color);
 void mgSetAmbient(float *color);
 
 /**
+ *
  * Reads the colour that lights every face of a model.
  *
  * @mangled mgGetAmbient__FPf
@@ -754,6 +896,7 @@ void mgSetAmbient(float *color);
 void mgGetAmbient(float *ambient);
 
 /**
+ *
  * Sets one of the four point lights from a position, a colour, an
  * intensity and a range.
  *
@@ -764,6 +907,7 @@ void mgGetAmbient(float *ambient);
 void mgSetPlight(int index, float *position, float *color, float attenuation, float range);
 
 /**
+ *
  * Sets one of the four point lights; NULL turns it off.
  *
  * @mangled mgSetPlight__FiP13mgPOINT_LIGHT
@@ -773,6 +917,7 @@ void mgSetPlight(int index, float *position, float *color, float attenuation, fl
 void mgSetPlight(int index, mgPOINT_LIGHT *point_light);
 
 /**
+ *
  * Reads one of the four point lights.
  *
  * @mangled mgGetPlight__FiP13mgPOINT_LIGHT
@@ -782,6 +927,7 @@ void mgSetPlight(int index, mgPOINT_LIGHT *point_light);
 void mgGetPlight(int index, mgPOINT_LIGHT *out);
 
 /**
+ *
  * Turns all four point lights off.
  *
  * @mangled mgResetPlight__Fv
@@ -791,6 +937,7 @@ void mgGetPlight(int index, mgPOINT_LIGHT *out);
 void mgResetPlight();
 
 /**
+ *
  * Sets the matrix that puts the world in front of the eye, and where the
  * eye stands.
  *
@@ -801,6 +948,7 @@ void mgResetPlight();
 void mgSetViewMatrix(float (*matrix)[4], float *eye);
 
 /**
+ *
  * Sets the plane shadows are dropped onto and the light that casts them.
  *
  * @mangled mgSetDropShadowMatrix__FPfPfPf
@@ -810,6 +958,7 @@ void mgSetViewMatrix(float (*matrix)[4], float *eye);
 void mgSetDropShadowMatrix(float *light, float *position, float *normal);
 
 /**
+ *
  * Turns fog on or off.
  *
  * @mangled mgFogEnable__Fi
@@ -819,6 +968,7 @@ void mgSetDropShadowMatrix(float *light, float *position, float *normal);
 void mgFogEnable(int enable);
 
 /**
+ *
  * Tells whether fog is on.
  *
  * @mangled mgGetFogEnable__Fv
@@ -828,6 +978,7 @@ void mgFogEnable(int enable);
 int mgGetFogEnable();
 
 /**
+ *
  * Turns the point lights on or off.
  *
  * @mangled mgPlightEnable__Fi
@@ -837,6 +988,7 @@ int mgGetFogEnable();
 void mgPlightEnable(int enable);
 
 /**
+ *
  * Tells whether the point lights are on.
  *
  * @mangled mgGetPlightEnable__Fv
@@ -846,6 +998,7 @@ void mgPlightEnable(int enable);
 int mgGetPlightEnable();
 
 /**
+ *
  * Sets how far the fog reaches, what colour it is and how strong it is at
  * each end.
  *
@@ -857,6 +1010,7 @@ void mgSetFogParam(float near_dist, float far_dist, unsigned char r, unsigned ch
                    float far_value, float near_value);
 
 /**
+ *
  * Sets the fog from a fog parameter block.
  *
  * @mangled mgSetFogParam__FP11mgFOG_PARAM
@@ -866,6 +1020,7 @@ void mgSetFogParam(float near_dist, float far_dist, unsigned char r, unsigned ch
 void mgSetFogParam(mgFOG_PARAM *fog);
 
 /**
+ *
  * Reads the fog into a fog parameter block.
  *
  * @mangled mgGetFogParam__FP11mgFOG_PARAM
@@ -875,6 +1030,7 @@ void mgSetFogParam(mgFOG_PARAM *fog);
 void mgGetFogParam(mgFOG_PARAM *param);
 
 /**
+ *
  * Sets whether every model is scissored against the screen.
  *
  * @mangled mgSetAllScissorFlag__Fi
@@ -884,6 +1040,7 @@ void mgGetFogParam(mgFOG_PARAM *param);
 void mgSetAllScissorFlag(int flag);
 
 /**
+ *
  * Writes the fog curve and clip volume of the render info into the frame's
  * VIF1 packet for the microprograms.
  *
@@ -894,6 +1051,7 @@ void mgSetAllScissorFlag(int flag);
 void mgFlushRenderInfo();
 
 /**
+ *
  * Sets texture wrapping to repeat, or to clamp when zero.
  *
  * @mangled mgSetPkTextureRepeat__Fi
@@ -903,6 +1061,7 @@ void mgFlushRenderInfo();
 void mgSetPkTextureRepeat(int mode);
 
 /**
+ *
  * Writes a CLAMP_1 register value into the frame's VIF1 packet.
  *
  * @mangled mgSetPkTextureRepeat__F10sceGsClamp
@@ -912,6 +1071,7 @@ void mgSetPkTextureRepeat(int mode);
 void mgSetPkTextureRepeat(sceGsClamp clamp);
 
 /**
+ *
  * Makes a texture the frame buffer drawn into; NULL restores the screen.
  *
  * @mangled mgSetPkFrameBuffer__FP10mgCTexture
@@ -921,6 +1081,7 @@ void mgSetPkTextureRepeat(sceGsClamp clamp);
 void mgSetPkFrameBuffer(mgCTexture *texture);
 
 /**
+ *
  * Makes an area of video memory the frame buffer drawn into, with its
  * viewport and scissor; -1 in every argument restores the screen.
  *
@@ -931,6 +1092,7 @@ void mgSetPkFrameBuffer(mgCTexture *texture);
 void mgSetPkFrameBuffer(int fbp, int width, int height, int psm);
 
 /**
+ *
  * Describes the frame buffer being drawn as a texture.
  *
  * @mangled mgGetFrameBuffer__FP10mgCTexture
@@ -940,6 +1102,7 @@ void mgSetPkFrameBuffer(int fbp, int width, int height, int psm);
 void mgGetFrameBuffer(mgCTexture *texture);
 
 /**
+ *
  * Describes the frame buffer not being drawn as a texture.
  *
  * @mangled mgGetFrameBackBuffer__FP10mgCTexture
@@ -949,6 +1112,7 @@ void mgGetFrameBuffer(mgCTexture *texture);
 void mgGetFrameBackBuffer(mgCTexture *texture);
 
 /**
+ *
  * Gives one of the two drawing environments of the render info.
  *
  * @mangled mgGetpDrawEnv__Fi
@@ -958,6 +1122,7 @@ void mgGetFrameBackBuffer(mgCTexture *texture);
 mgCDrawEnv *mgGetpDrawEnv(int which);
 
 /**
+ *
  * Copies a rectangle of one texture into another at a position.
  *
  * @mangled mgSetPkMoveImage__FP10mgCTexture9mgRect_i_P10mgCTextureiii
@@ -968,6 +1133,7 @@ void mgSetPkMoveImage(mgCTexture *source, mgRect<int> src_rect, mgCTexture *dest
                       int extra2);
 
 /**
+ *
  * Copies a rectangle of video memory to a position with a GS local transfer.
  *
  * @mangled mgSetPkMoveImage__FP9sceGsTex09mgRect_i_P9sceGsTex0iii
@@ -978,6 +1144,7 @@ void mgSetPkMoveImage(sceGsTex0 *src, mgRect<int> src_rect, sceGsTex0 *dst, int 
                       int direction);
 
 /**
+ *
  * Draws a rectangle of one texture into a rectangle of another.
  *
  * @mangled mgSetPkMoveImage__FP10mgCTexture9mgRect_i_P10mgCTexture9mgRect_i_P10mgCDrawEnv
@@ -988,6 +1155,7 @@ void mgSetPkMoveImage(mgCTexture *source, mgRect<int> source_rect, mgCTexture *d
                       mgCDrawEnv *env);
 
 /**
+ *
  * Draws a rectangle of a texture into a rectangle of a frame buffer, with
  * the register state of a drawing environment or the defaults when NULL.
  *
@@ -999,6 +1167,7 @@ void mgSetPkMoveImage(sceGsTex0 *src, mgRect<int> src_rect, sceGsTex0 *dst, int 
                       mgRect<int> dst_rect, mgCDrawEnv *env);
 
 /**
+ *
  * Clears the whole screen to one colour, in strips 32 pixels wide.
  *
  * @mangled mgSetPkClearScreen__FUcUcUcUc
@@ -1008,6 +1177,7 @@ void mgSetPkMoveImage(sceGsTex0 *src, mgRect<int> src_rect, sceGsTex0 *dst, int 
 void mgSetPkClearScreen(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 
 /**
+ *
  * Reads a texture back from video memory, giving width * height * bits per pixel, or 0
  * when either argument is NULL.
  *
@@ -1018,6 +1188,7 @@ void mgSetPkClearScreen(unsigned char r, unsigned char g, unsigned char b, unsig
 int mgStoreImage(mgCTexture *texture, u_long128 *buffer);
 
 /**
+ *
  * Reads a rectangle of the depth buffer back as 24-bit depths, giving the
  * number of quadwords read.
  *
@@ -1028,6 +1199,7 @@ int mgStoreImage(mgCTexture *texture, u_long128 *buffer);
 int mgStoreZBuffImage(mgRect<int> &rect, u_long128 *buffer);
 
 /**
+ *
  * Turns a depth-buffer value into a view distance.
  *
  * @mangled mgConvZBuffToDist__FUi
@@ -1037,6 +1209,7 @@ int mgStoreZBuffImage(mgRect<int> &rect, u_long128 *buffer);
 float mgConvZBuffToDist(unsigned int z);
 
 /**
+ *
  * Gives one of the two textures laid over the depth buffer, or NULL for any
  * other index.
  *
@@ -1047,6 +1220,7 @@ float mgConvZBuffToDist(unsigned int z);
 mgCTexture *mgGetTextureZ(int index);
 
 /**
+ *
  * Turns a world position into GS primitive coordinates, giving 1 while it
  * is on the screen and inside the clip depths.
  *
@@ -1057,6 +1231,7 @@ mgCTexture *mgGetTextureZ(int index);
 int mgTransWorldPrim(int *out, float *position);
 
 /**
+ *
  * Turns a world position into screen coordinates relative to the screen's
  * top left corner, giving 1 while it is visible.
  *
@@ -1067,6 +1242,7 @@ int mgTransWorldPrim(int *out, float *position);
 int mgTransWorldScreen(int *out, float *position);
 
 /**
+ *
  * Turns a view-space position into GS primitive coordinates, giving 1 while
  * it is on the screen and inside the clip depths.
  *
@@ -1077,6 +1253,7 @@ int mgTransWorldScreen(int *out, float *position);
 int mgTransViewPrim(int *out, float *position);
 
 /**
+ *
  * Turns a world position into view space.
  *
  * @mangled mgTransWorldView__FPfPf
@@ -1086,6 +1263,7 @@ int mgTransViewPrim(int *out, float *position);
 void mgTransWorldView(float *a, float *b);
 
 /**
+ *
  * Gives the GS depth value of a view depth.
  *
  * @mangled mgTransZPrim__Ff
@@ -1095,6 +1273,7 @@ void mgTransWorldView(float *a, float *b);
 int mgTransZPrim(float z);
 
 /**
+ *
  * Gives the distance from the camera to a world position.
  *
  * @mangled mgGetDistFromCamera__FPf
@@ -1104,6 +1283,7 @@ int mgTransZPrim(float z);
 float mgGetDistFromCamera(float *position);
 
 /**
+ *
  * Gives the vector from the camera to a world position.
  *
  * @mangled mgGetDirFromCamera__FPfPf
@@ -1113,6 +1293,7 @@ float mgGetDistFromCamera(float *position);
 void mgGetDirFromCamera(float *direction, float *position);
 
 /**
+ *
  * Reads the camera's world position.
  *
  * @mangled mgGetCameraPos__FPf
@@ -1122,6 +1303,7 @@ void mgGetDirFromCamera(float *direction, float *position);
 void mgGetCameraPos(float *out);
 
 /**
+ *
  * Reads the camera's orientation and position as a matrix.
  *
  * @mangled mgGetCameraPose__FPA4_f
@@ -1131,6 +1313,7 @@ void mgGetCameraPos(float *out);
 void mgGetCameraPose(float (*pose)[4]);
 
 /**
+ *
  * Turns a world position into the two GS corners of a camera-facing sprite
  * of a given size, giving non-zero while the sprite is visible.
  *
@@ -1142,6 +1325,7 @@ int mgTransWorldPrim3DSprite(int *top_left, int *bottom_right, float *position, 
                              float height, int unused);
 
 /**
+ *
  * Gives the DMA packet that loads a microprogram, or NULL for an unknown
  * identifier.
  *
@@ -1152,6 +1336,7 @@ int mgTransWorldPrim3DSprite(int *top_left, int *bottom_right, float *position, 
 u_long128 *mgGetVuProgPacket(int id);
 
 /**
+ *
  * Writes a VIF call that loads a microprogram unless it is the one loaded
  * last, giving the number of words written.
  *
@@ -1162,6 +1347,7 @@ u_long128 *mgGetVuProgPacket(int id);
 int mgSendVuProg(unsigned int *tag, int id);
 
 /**
+ *
  * Registers the table of user microprogram packets, reached from
  * MG_VU_PROG_USER on.
  *
@@ -1172,6 +1358,7 @@ int mgSendVuProg(unsigned int *tag, int id);
 void mgSetUserVuProg(u_long128 **table, int count);
 
 /**
+ *
  * Sets one entry of the user microprogram table.
  *
  * @mangled mgSetUserVuProgAdr__FiP1
@@ -1181,6 +1368,7 @@ void mgSetUserVuProg(u_long128 **table, int count);
 void mgSetUserVuProgAdr(int index, u_long128 *adr);
 
 /**
+ *
  * Opens the debug console at the screen's top left, giving its handle.
  *
  * @mangled mgInitFont__Fv
@@ -1190,6 +1378,7 @@ void mgSetUserVuProgAdr(int index, u_long128 *adr);
 int mgInitFont();
 
 /**
+ *
  * Closes the debug console.
  *
  * @mangled mgCloseFont__Fv

@@ -102,7 +102,9 @@ static int amapIMG(SPI_STACK *stack, int argument_count);
 static int amapPCP(SPI_STACK *stack, int argument_count);
 
 /**
+ *
  * Tags of a map's configuration script and the routines that read them.
+ *
  */
 // Initialised data (.data)
 static SPI_TAG_PARAM mapinfo_tag[] = {
@@ -133,7 +135,9 @@ static SPI_TAG_PARAM mapinfo_tag[] = {
 };
 
 /**
+ *
  * Tags of a map's additional configuration script and the routines that read them.
+ *
  */
 static SPI_TAG_PARAM add_mapinfo_tag[] = {
     {at_360, amapIMG},
@@ -142,28 +146,38 @@ static SPI_TAG_PARAM add_mapinfo_tag[] = {
 };
 
 /**
+ *
  * Map settings being filled in by the running configuration script.
+ *
  */
 // Small uninitialised data (.sbss)
 static CMapInfo *MapInfo;
 
 /**
+ *
  * Memory that the copies of the script's names are taken from.
+ *
  */
 static mgCMemory *MapInfoStack;
 
 /**
+ *
  * Index of the next texture pack name the configuration script gives.
+ *
  */
 static int now_img_num;
 
 /**
+ *
  * Index of the next model pack name the configuration script gives.
+ *
  */
 static int now_pcp_num;
 
 /**
+ *
  * Lighting set that the configuration script's lighting tags fill in, or null outside a set.
+ *
  */
 static CMapLightingInfo *LightingInfo;
 
@@ -243,9 +257,11 @@ CMapLightingInfo *CMapInfo::GetLightingInfo(int index) {
 }
 
 /**
+ *
  * Adds a texture pack to the map, keeping a copy of its name.
  * Reads the IMG tag: the pack's name.
  * Gives 1 on success, 0 when the list is full or the name is missing.
+ *
  */
 static int mapIMG(SPI_STACK *stack, int argument_count) {
     char *name;
@@ -279,9 +295,11 @@ static int mapIMG(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Adds a model pack to the map, keeping a copy of its name.
  * Reads the PCP tag: the pack's name.
  * Gives 1 on success, 0 when the list is full or the name is missing.
+ *
  */
 static int mapPCP(SPI_STACK *stack, int argument_count) {
     char *name;
@@ -315,9 +333,11 @@ static int mapPCP(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Chooses the lighting set used when lighting does not follow the time of day.
  * Reads the ACTIVE_LIGHT_SET tag: the set's index.
  * Always gives 1.
+ *
  */
 static int mapACTIVE_LIGHT_SET(SPI_STACK *stack, int argument_count) {
     MapInfo->active_light_no = spiGetStackInt(stack);
@@ -325,9 +345,11 @@ static int mapACTIVE_LIGHT_SET(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Starts the lighting set that the following lighting tags fill in.
  * Reads the LIGHT_SET tag: the set's index.
  * Gives 1 when the index names a set, 0 otherwise.
+ *
  */
 static int mapLIGHT_SET(SPI_STACK *stack, int argument_count) {
     LightingInfo = MapInfo->GetLightingInfo(spiGetStackInt(stack));
@@ -335,9 +357,11 @@ static int mapLIGHT_SET(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Sets the projection of the current lighting set to a horizontal field of view of 52 degrees.
  * Reads the FOV tag; its arguments are not used.
  * Gives 1 inside a lighting set, 0 otherwise.
+ *
  */
 static int mapFOV(SPI_STACK *stack, int argument_count) {
     if (LightingInfo == NULL) {
@@ -350,9 +374,11 @@ static int mapFOV(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Sets the background colour of the current lighting set.
  * Reads the BGCOLOR tag: red, green and blue, 0 to 255.
  * Gives 1 inside a lighting set, 0 otherwise.
+ *
  */
 static int mapBGCOLOR(SPI_STACK *stack, int argument_count) {
     if (LightingInfo == 0) {
@@ -367,9 +393,11 @@ static int mapBGCOLOR(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Sets the second background colour of the current lighting set; black takes the first one.
  * Reads the BGCOLOR2 tag: red, green and blue, 0 to 255.
  * Gives 1 inside a lighting set, 0 otherwise.
+ *
  */
 static int mapBGCOLOR2(SPI_STACK *stack, int argument_count) {
     if (LightingInfo == 0) {
@@ -390,9 +418,11 @@ static int mapBGCOLOR2(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Sets the ambient light colour of the current lighting set.
  * Reads the AMBIENT tag: red, green and blue, 0 to 255.
  * Gives 1 inside a lighting set, 0 otherwise.
+ *
  */
 static int mapAMBIENT(SPI_STACK *stack, int argument_count) {
     if (LightingInfo == 0) {
@@ -407,9 +437,11 @@ static int mapAMBIENT(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Sets the direction and, optionally, the colour of one directional light of the current lighting set.
  * Reads the LIGHT tag: light index (0 to 3), direction x, y, z, then optionally red, green, blue.
  * Gives 1 on success, 0 outside a lighting set, for a bad index or too few arguments.
+ *
  */
 static int mapLIGHT(SPI_STACK *stack, int argument_count) {
     float vec[4];
@@ -445,9 +477,11 @@ static int mapLIGHT(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Sets one point light of the current lighting set and switches point lights on.
  * Reads the PLIGHT tag: light index (0 to 3), power, position x, y, z, colour red, green, blue.
  * Gives 1 on success, 0 outside a lighting set or for a bad index.
+ *
  */
 static int mapPLIGHT(SPI_STACK *stack, int argument_count) {
     int index;
@@ -472,9 +506,11 @@ static int mapPLIGHT(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Switches the fog of the current lighting set on or off.
  * Reads the FOG_ENABLE tag: non-zero for on.
  * Gives 1 inside a lighting set, 0 otherwise.
+ *
  */
 static int mapFOG_ENABLE(SPI_STACK *stack, int argument_count) {
     if (LightingInfo == NULL) {
@@ -486,9 +522,11 @@ static int mapFOG_ENABLE(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Sets the fog of the current lighting set; colour and values left out take white, 0 and 255.
  * Reads the FOG tag: near and far distances, optionally red, green, blue, then optionally two fog values.
  * Gives 1 inside a lighting set, 0 otherwise.
+ *
  */
 static int mapFOG(SPI_STACK *stack, int argument_count) {
     if (LightingInfo == 0) {
@@ -518,9 +556,11 @@ static int mapFOG(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Ends the lighting set that the lighting tags fill in.
  * Reads the LIGHT_SET_END tag, which has no arguments.
  * Always gives 1.
+ *
  */
 static int mapLIGHT_SET_END(SPI_STACK *stack, int argument_count) {
     LightingInfo = NULL;
@@ -528,9 +568,11 @@ static int mapLIGHT_SET_END(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Sets the map's FLOOR value.
  * Reads the FLOOR tag: one number.
  * Always gives 1.
+ *
  */
 static int mapFLOOR(SPI_STACK *stack, int argument_count) {
     MapInfo->floor = spiGetStackFloat(stack);
@@ -538,9 +580,11 @@ static int mapFLOOR(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Sets the map's character position.
  * Reads the CHARA_POS tag: x, y, z.
  * Always gives 1.
+ *
  */
 static int mapCHARA_POS(SPI_STACK *stack, int argument_count) {
     spiGetStackVector(MapInfo->chara_pos, stack);
@@ -548,9 +592,11 @@ static int mapCHARA_POS(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Sets how the map follows the time of day.
  * Reads the TIME_FLAG tag: follow the clock, blend lighting, then optionally the fixed hour and its switch.
  * Always gives 1.
+ *
  */
 static int mapTIME_FLAG(SPI_STACK *stack, int argument_count) {
     MapInfo->time_enable = spiGetStackInt(stack++);
@@ -568,9 +614,11 @@ static int mapTIME_FLAG(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Sets the number of lighting sets that divide the day.
  * Reads the TIME_LIGHT_NUM tag: the number of sets.
  * Always gives 1.
+ *
  */
 static int mapTIME_LIGHT_NUM(SPI_STACK *stack, int argument_count) {
     MapInfo->time_light_num = spiGetStackInt(stack);
@@ -578,9 +626,11 @@ static int mapTIME_LIGHT_NUM(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Sets the map's DEF_FOOT value.
  * Reads the DEF_FOOT tag: one integer.
  * Always gives 1.
+ *
  */
 static int mapDEF_FOOT(SPI_STACK *stack, int argument_count) {
     MapInfo->def_foot = spiGetStackInt(stack);
@@ -588,9 +638,11 @@ static int mapDEF_FOOT(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Sets the map's sky settings.
  * Reads the SKY_INFO tag: an integer, a number, then optionally the sun path's angle in degrees.
  * Always gives 1.
+ *
  */
 static int mapSKY_INFO(SPI_STACK *stack, int argument_count) {
     MapInfo->sky_info = spiGetStackInt(stack++);
@@ -604,9 +656,11 @@ static int mapSKY_INFO(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Switches the map's lens flare on or off.
  * Reads the LENS_FLARE tag: non-zero for on.
  * Always gives 1.
+ *
  */
 static int mapLENS_FLARE(SPI_STACK *stack, int argument_count) {
     MapInfo->lens_flare = spiGetStackInt(stack);
@@ -614,9 +668,11 @@ static int mapLENS_FLARE(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Sets the map's TIME_CFADE value.
  * Reads the TIME_CFADE tag: one integer.
  * Always gives 1.
+ *
  */
 static int mapTIME_CFADE(SPI_STACK *stack, int argument_count) {
     MapInfo->time_cfade = spiGetStackInt(stack);
@@ -624,9 +680,11 @@ static int mapTIME_CFADE(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Sets the value passed on when the map's model packs are loaded.
  * Reads the ALL_SCISSOR tag: one integer.
  * Always gives 1.
+ *
  */
 static int mapALL_SCISSOR(SPI_STACK *stack, int argument_count) {
     MapInfo->all_scissor = spiGetStackInt(stack);
@@ -634,9 +692,11 @@ static int mapALL_SCISSOR(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Sets the map's character lighting adjustment.
  * Reads the CHARA_LIGHT_ADJUST tag: an integer and three numbers.
  * Always gives 1.
+ *
  */
 static int mapCHARA_LIGHT_ADJUST(SPI_STACK *stack, int argument_count) {
     MapInfo->chara_light_adjust = spiGetStackInt(stack++);
@@ -703,9 +763,11 @@ void CMapInfo::LoadMapInfo(char *script, int script_size, mgCMemory *stack) {
 
 // Defined in mapload.hpp.
 /**
+ *
  * Adds a texture pack to the map in its first free entry, keeping a copy of its name.
  * Reads the IMG tag of an additional configuration script: the pack's name.
  * Gives 1 on success, 0 when the list is full or the name is missing.
+ *
  */
 static int amapIMG(SPI_STACK *stack, int argument_count) {
     char  *name = spiGetStackString(stack);
@@ -742,9 +804,11 @@ static int amapIMG(SPI_STACK *stack, int argument_count) {
 }
 
 /**
+ *
  * Adds a model pack to the map in its first free entry, keeping a copy of its name.
  * Reads the PCP tag of an additional configuration script: the pack's name.
  * Gives 1 on success, 0 when the list is full or the name is missing.
+ *
  */
 static int amapPCP(SPI_STACK *stack, int argument_count) {
     char  *name = spiGetStackString(stack);
@@ -807,7 +871,6 @@ void CMapInfo::AddMapInfo(char *script, int script_size, mgCMemory *stack) {
 int CMapInfo::OutputLightData(char *buff) {
     char *cursor = buff;
     int   set;
-    int   offset;
     int   light;
 
     struct {
@@ -820,8 +883,8 @@ int CMapInfo::OutputLightData(char *buff) {
 
     cursor += sprintf(cursor, at_704, active_light_no);
 
-    for (set = 0, offset = 0; set < lighting_info_num; offset += sizeof(CMapLightingInfo), set++) {
-        CMapLightingInfo *info = (CMapLightingInfo *) ((u8 *) lighting_info + offset);
+    for (set = 0; set < lighting_info_num; set++) {
+        CMapLightingInfo *info = &lighting_info[set];
         cursor += sprintf(cursor, at_705, set);
         cursor += sprintf(cursor, at_706);
         cursor += sprintf(cursor, at_707, (int) info->bg_color[0], (int) info->bg_color[1], (int) info->bg_color[2]);
@@ -835,21 +898,15 @@ int CMapInfo::OutputLightData(char *buff) {
         *ambient_z = converted_z;
         cursor += sprintf(cursor, at_709, ambient.x, *ambient_y, *ambient_z);
         light = 0;
-        int color_offset = 0;
-        int direction_offset = 0;
 
         do {
-            CMapLightingInfo *source = (CMapLightingInfo *) ((u8 *) info + color_offset);
-            float            *color_y = &color.y;
-            float            *color_z = &color.z;
-            color.x = source->light_color[0][0];
-            *color_y = source->light_color[0][1];
-            *color_z = source->light_color[0][2];
-            CMapLightingInfo *direction = (CMapLightingInfo *) ((u8 *) info + direction_offset);
-            cursor += sprintf(cursor, at_710, light, direction->light_dir[0][0], direction->light_dir[1][0], direction->light_dir[2][0], (int) color.x, (int) *color_y, (int) *color_z);
+            float *color_y = &color.y;
+            float *color_z = &color.z;
+            color.x = info->light_color[light][0];
+            *color_y = info->light_color[light][1];
+            *color_z = info->light_color[light][2];
+            cursor += sprintf(cursor, at_710, light, info->light_dir[0][light], info->light_dir[1][light], info->light_dir[2][light], (int) color.x, (int) *color_y, (int) *color_z);
             light++;
-            color_offset += 16;
-            direction_offset += 4;
         } while (light < 4);
 
         cursor += sprintf(cursor, at_711, info->fog_enable);

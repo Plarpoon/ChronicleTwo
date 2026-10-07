@@ -90,6 +90,7 @@ public:
     float now; /**< Current amount, between 0 and max. */
 
     /**
+     *
      * Gives whether the gauge is full.
      *
      * @mangled CheckFill__11COMMON_GAGEFv
@@ -99,6 +100,7 @@ public:
     int CheckFill();
 
     /**
+     *
      * Gives how full the gauge is, from 0 to 1, or 0 for a gauge without capacity.
      *
      * @mangled GetRate__11COMMON_GAGEFv
@@ -108,6 +110,7 @@ public:
     float GetRate();
 
     /**
+     *
      * Fills the gauge to a fraction of its capacity.
      *
      * @mangled SetFillRate__11COMMON_GAGEFf
@@ -117,6 +120,7 @@ public:
     void SetFillRate(float rate);
 
     /**
+     *
      * Adds an amount to the gauge, keeping it between empty and full.
      *
      * @mangled AddPoint__11COMMON_GAGEFf
@@ -126,6 +130,7 @@ public:
     void AddPoint(float amount);
 
     /**
+     *
      * Adds a fraction of the capacity to the gauge, keeping it between empty and full.
      *
      * @mangled AddRate__11COMMON_GAGEFf
@@ -281,6 +286,7 @@ public:
     } data;                      /**< Data of the item, by used_type. */
 
     /**
+     *
      * Makes an empty place.
      *
      * @mangled __ct__13CGameDataUsedFv
@@ -290,6 +296,7 @@ public:
     CGameDataUsed();
 
     /**
+     *
      * Empties the place.
      *
      * @mangled Init__13CGameDataUsedFv
@@ -299,6 +306,7 @@ public:
     void Init();
 
     /**
+     *
      * Gives whether several of the item can share one place.
      *
      * @mangled CheckTypeEnableStack__13CGameDataUsedFv
@@ -308,6 +316,7 @@ public:
     int CheckTypeEnableStack();
 
     /**
+     *
      * Gives the path of the item's model file.
      *
      * @mangled GetDataPath__13CGameDataUsedFv
@@ -317,6 +326,7 @@ public:
     char *GetDataPath();
 
     /**
+     *
      * Gives which character can equip the item, a USER_CHARA, or -1.
      *
      * @mangled IsWhoEquip__13CGameDataUsedFv
@@ -326,6 +336,7 @@ public:
     int IsWhoEquip();
 
     /**
+     *
      * Gives the level of a weapon or of a spectrumised attachment, or 0.
      *
      * @mangled GetLevel__13CGameDataUsedFv
@@ -335,6 +346,7 @@ public:
     int GetLevel();
 
     /**
+     *
      * Gives the colour palette of a weapon's model, or 0.
      *
      * @mangled GetPalletColor__13CGameDataUsedFv
@@ -344,6 +356,7 @@ public:
     int GetPalletColor();
 
     /**
+     *
      * Gives the item number a spectrumised attachment came from, or 0.
      *
      * @mangled GetSpectolNo__13CGameDataUsedFv
@@ -353,6 +366,7 @@ public:
     int GetSpectolNo();
 
     /**
+     *
      * Gives how many more of the item the place can hold.
      *
      * @mangled CheckStackRemain__13CGameDataUsedFv
@@ -362,6 +376,7 @@ public:
     int CheckStackRemain();
 
     /**
+     *
      * Gives the count of the item the place holds.
      *
      * @mangled GetNum__13CGameDataUsedFv
@@ -371,6 +386,7 @@ public:
     int GetNum();
 
     /**
+     *
      * Gives whether the item can be set as an active item.
      *
      * @mangled GetActiveSetNum__13CGameDataUsedFv
@@ -380,6 +396,7 @@ public:
     int GetActiveSetNum();
 
     /**
+     *
      * Adds to the count of a stackable item, emptying the place when nothing is left if asked, and
      * gives the new count.
      *
@@ -390,6 +407,7 @@ public:
     int AddNum(int count, int clear_empty);
 
     /**
+     *
      * Gives the energy capacity a ridepod part uses.
      *
      * @mangled GetUseCapacity__13CGameDataUsedFv
@@ -399,6 +417,7 @@ public:
     int GetUseCapacity();
 
     /**
+     *
      * Adds to a fish's health, keeping it between 0 and 100, and gives the new health.
      *
      * @mangled AddFishHp__13CGameDataUsedFi
@@ -408,6 +427,7 @@ public:
     int AddFishHp(int amount);
 
     /**
+     *
      * Turns a fish into a boiled fish.
      *
      * @mangled Boiled__13CGameDataUsedFv
@@ -417,6 +437,7 @@ public:
     int Boiled();
 
     /**
+     *
      * Gives whether the item can be set as an active item.
      *
      * @mangled IsActiveSet__13CGameDataUsedFv
@@ -426,6 +447,7 @@ public:
     int IsActiveSet();
 
     /**
+     *
      * Renames an attachment, fish, ridepod part or weapon.
      *
      * @mangled SetName__13CGameDataUsedFPc
@@ -435,6 +457,7 @@ public:
     void SetName(char *name);
 
     /**
+     *
      * Gives the display name of the item, with its level and markings as the mode asks.
      *
      * @mangled GetName__13CGameDataUsedFi
@@ -444,6 +467,7 @@ public:
     char *GetName(int name_type);
 
     /**
+     *
      * Packs a fish into its password form.
      *
      * @mangled TransToPassword__13CGameDataUsedFPci
@@ -453,6 +477,7 @@ public:
     void TransToPassword(char *data, int length);
 
     /**
+     *
      * Unpacks a fish from its password form.
      *
      * @mangled TransToData__13CGameDataUsedFPci
@@ -462,6 +487,7 @@ public:
     void TransToData(char *data, int length);
 
     /**
+     *
      * Takes some of the item away, emptying a place that cannot stack, and gives how many went.
      *
      * @mangled DeleteNum__13CGameDataUsedFi
@@ -471,6 +497,7 @@ public:
     int DeleteNum(int count);
 
     /**
+     *
      * Gives a weapon's synthesis points, or 0.
      *
      * @mangled RemainFusion__13CGameDataUsedFv
@@ -480,6 +507,7 @@ public:
     int RemainFusion();
 
     /**
+     *
      * Adds to a weapon's synthesis points and gives the new total.
      *
      * @mangled AddFusionPoint__13CGameDataUsedFi
@@ -489,6 +517,7 @@ public:
     int AddFusionPoint(int point);
 
     /**
+     *
      * Gives the effect names and strength of a weapon's element, and the element itself.
      *
      * @mangled GetEffectReadType__13CGameDataUsedFPPcPPcPi
@@ -498,6 +527,7 @@ public:
     int GetEffectReadType(char **effect, char **sound, int *power);
 
     /**
+     *
      * Gives the name and extra figures the item's description message shows.
      *
      * @mangled GetMsgAddInfo__13CGameDataUsedFPPcPPcPi
@@ -507,6 +537,7 @@ public:
     void GetMsgAddInfo(char **message, char **extra_message, int *value);
 
     /**
+     *
      * Gives the durability of a weapon or ridepod part as a fraction, and its current and full
      * values.
      *
@@ -517,6 +548,7 @@ public:
     float GetWHp(int *whp);
 
     /**
+     *
      * Gives whether a weapon or ridepod part has lost durability.
      *
      * @mangled IsRepair__13CGameDataUsedFv
@@ -526,6 +558,7 @@ public:
     int IsRepair();
 
     /**
+     *
      * Restores durability to a weapon or ridepod part.
      *
      * @mangled Repair__13CGameDataUsedFi
@@ -535,6 +568,7 @@ public:
     int Repair(int point);
 
     /**
+     *
      * Gives the item number of the repair item that works on this item, or 0.
      *
      * @mangled GetEnableRepairItemNo__13CGameDataUsedFv
@@ -544,6 +578,7 @@ public:
     int GetEnableRepairItemNo();
 
     /**
+     *
      * Gives whether an item number is the repair item that works on this item.
      *
      * @mangled IsEnableUseRepair__13CGameDataUsedFi
@@ -553,6 +588,7 @@ public:
     int IsEnableUseRepair(int item_no);
 
     /**
+     *
      * Gives the attack type of a ridepod body or arm, or -1.
      *
      * @mangled GetRoboInfoType__13CGameDataUsedFv
@@ -562,6 +598,7 @@ public:
     int GetRoboInfoType();
 
     /**
+     *
      * Builds the joint file name of a ridepod body or arm.
      *
      * @mangled GetRoboJointName__13CGameDataUsedFPc
@@ -571,6 +608,7 @@ public:
     void GetRoboJointName(char *name);
 
     /**
+     *
      * Builds the sound file name of a ridepod body.
      *
      * @mangled GetRoboSoundFileName__13CGameDataUsedFPc
@@ -580,6 +618,7 @@ public:
     void GetRoboSoundFileName(char *name);
 
     /**
+     *
      * Gives whether a ridepod part of item type 0xF has no durability left.
      *
      * @mangled IsBroken__13CGameDataUsedFv
@@ -589,6 +628,7 @@ public:
     int IsBroken();
 
     /**
+     *
      * Gives whether a weapon has absorbed enough to level up.
      *
      * @mangled IsLevelUp__13CGameDataUsedFv
@@ -598,6 +638,7 @@ public:
     int IsLevelUp();
 
     /**
+     *
      * Levels a weapon up, raising its durability, parameters and synthesis points.
      *
      * @mangled LevelUp__13CGameDataUsedFv
@@ -607,6 +648,7 @@ public:
     void LevelUp();
 
     /**
+     *
      * Gives whether the item counts as rubbish.
      *
      * @mangled IsTrush__13CGameDataUsedFv
@@ -616,6 +658,7 @@ public:
     int IsTrush();
 
     /**
+     *
      * Gives whether the item can be spectrumised.
      *
      * @mangled IsSpectolTrans__13CGameDataUsedFv
@@ -625,6 +668,7 @@ public:
     int IsSpectolTrans();
 
     /**
+     *
      * Fills a place with the attachment that spectrumising a count of this item makes.
      *
      * @mangled ToSpectolTrans__13CGameDataUsedFP13CGameDataUsedi
@@ -634,6 +678,7 @@ public:
     void ToSpectolTrans(CGameDataUsed *attach, int num);
 
     /**
+     *
      * Copies the ten status parameters of a weapon, attachment or ridepod part.
      *
      * @mangled GetStatusParam__13CGameDataUsedFPs
@@ -643,6 +688,7 @@ public:
     void GetStatusParam(short *param);
 
     /**
+     *
      * Copies the ten status parameters, adjusting the attack of the weapon whose strength follows
      * the time of day.
      *
@@ -653,6 +699,7 @@ public:
     void GetStatusParam(short *param, float time);
 
     /**
+     *
      * Gives how many weapons a weapon can build up into now, with the candidates and whether each
      * one's parameters are met.
      *
@@ -663,6 +710,7 @@ public:
     int IsBuildUp(int *count, int *item_nos, int *flags);
 
     /**
+     *
      * Gives whether the item is one of the two fishing rods.
      *
      * @mangled IsFishingRod__13CGameDataUsedFv
@@ -672,6 +720,7 @@ public:
     int IsFishingRod();
 
     /**
+     *
      * Gives the element of a weapon, its highest of the first four attributes, or -1.
      *
      * @mangled GetActiveElem__13CGameDataUsedFv
@@ -681,6 +730,7 @@ public:
     int GetActiveElem();
 
     /**
+     *
      * Gives the attack type of a weapon or ridepod part, or -1.
      *
      * @mangled GetAttackType__13CGameDataUsedFv
@@ -690,6 +740,7 @@ public:
     int GetAttackType();
 
     /**
+     *
      * Gives the model number of a weapon, or -1.
      *
      * @mangled GetModelNo__13CGameDataUsedFv
@@ -699,6 +750,7 @@ public:
     int GetModelNo();
 
     /**
+     *
      * Keeps the item's parameters within their limits.
      *
      * @mangled CheckParamLimmit__13CGameDataUsedFv
@@ -708,6 +760,7 @@ public:
     void CheckParamLimmit();
 
     /**
+     *
      * Counts a fish's timer down by the time that has passed.
      *
      * @mangled TimeCheck__13CGameDataUsedFi
@@ -717,6 +770,7 @@ public:
     void TimeCheck(int elapsed);
 
     /**
+     *
      * Gives how many items a gift box holds.
      *
      * @mangled GetGiftBoxItemNum__13CGameDataUsedFv
@@ -726,6 +780,7 @@ public:
     int GetGiftBoxItemNum();
 
     /**
+     *
      * Puts an item number into a gift box, at a given place or the first free one.
      *
      * @mangled SetGiftBoxItem__13CGameDataUsedFii
@@ -735,6 +790,7 @@ public:
     int SetGiftBoxItem(int item_no, int slot);
 
     /**
+     *
      * Gives the item number at one place of a gift box, or 0.
      *
      * @mangled GetGiftBoxItemNo__13CGameDataUsedFi
@@ -744,6 +800,7 @@ public:
     int GetGiftBoxItemNo(int slot);
 
     /**
+     *
      * Gives how many of an item number a gift box holds.
      *
      * @mangled GetGiftBoxSameItemNum__13CGameDataUsedFi
@@ -753,6 +810,7 @@ public:
     int GetGiftBoxSameItemNum(int item_no);
 
     /**
+     *
      * Copies another owned item into this place, keeping the ridepod's energy in step when this
      * place is the ridepod body.
      *
@@ -763,6 +821,7 @@ public:
     void CopyGameData(CGameDataUsed *other);
 
     /**
+     *
      * Fills the place with a new weapon.
      *
      * @mangled CopyDataWeapon__13CGameDataUsedFi
@@ -772,6 +831,7 @@ public:
     int CopyDataWeapon(int item_no);
 
     /**
+     *
      * Fills the place with a new attachment, or adds one to the same attachment.
      *
      * @mangled CopyDataAttach__13CGameDataUsedFi
@@ -781,6 +841,7 @@ public:
     int CopyDataAttach(int item_no);
 
     /**
+     *
      * Fills the place with a new item, or adds one to the same item.
      *
      * @mangled CopyDataItem__13CGameDataUsedFi
@@ -790,6 +851,7 @@ public:
     int CopyDataItem(int item_no);
 
     /**
+     *
      * Fills the place with a new fish of random size, weight and sex.
      *
      * @mangled CopyDataFish__13CGameDataUsedFi
@@ -799,6 +861,7 @@ public:
     int CopyDataFish(int item_no);
 
     /**
+     *
      * Fills the place with an empty gift box.
      *
      * @mangled CopyDataGiftBox__13CGameDataUsedFi
@@ -808,6 +871,7 @@ public:
     int CopyDataGiftBox(int item_no);
 
     /**
+     *
      * Merges another owned item of the same kind into this place, or swaps the two.
      *
      * @mangled CopyDataItem__13CGameDataUsedFP13CGameDataUsed
@@ -817,6 +881,7 @@ public:
     int CopyDataItem(CGameDataUsed *other);
 
     /**
+     *
      * Fills the place with a new ridepod part.
      *
      * @mangled CopyDataRoboPart__13CGameDataUsedFi
@@ -866,6 +931,7 @@ struct ROBO_DATA {
     u8            unk_1ea[0x36];
 
     /**
+     *
      * Adds to the energy gauge and gives how full it is.
      *
      * @mangled AddPoint__9ROBO_DATAFf
@@ -875,6 +941,7 @@ struct ROBO_DATA {
     float AddPoint(float amount);
 
     /**
+     *
      * Gives the defence of the ridepod.
      *
      * @mangled GetDefenceVol__9ROBO_DATAFv
@@ -923,6 +990,7 @@ public:
     u8          unk_40[0x7C];
 
     /**
+     *
      * Gives the attack of a monster, by default the badge's own, scaled by the badge level.
      *
      * @mangled GetAttackVol__16MOS_CHANGE_PARAMFi
@@ -932,6 +1000,7 @@ public:
     int GetAttackVol(int monster_no);
 
     /**
+     *
      * Gives the defence of a monster, by default the badge's own, raised by the badge degree.
      *
      * @mangled GetDefenceVol__16MOS_CHANGE_PARAMFi
@@ -941,6 +1010,7 @@ public:
     int GetDefenceVol(int monster_no);
 
     /**
+     *
      * Gives whether the monster's level allows its next class.
      *
      * @mangled CheckClassChange__16MOS_CHANGE_PARAMFv
@@ -950,6 +1020,7 @@ public:
     int CheckClassChange();
 
     /**
+     *
      * Gives the degree of the badge, a sixth of its level up to 15.
      *
      * @mangled GetDegreeLevel__16MOS_CHANGE_PARAMFv
@@ -959,6 +1030,7 @@ public:
     int GetDegreeLevel();
 
     /**
+     *
      * Levels the monster up when its absorption gauge is full.
      *
      * @mangled LevelUp__16MOS_CHANGE_PARAMFv
@@ -980,6 +1052,7 @@ public:
     MOS_CHANGE_PARAM monster[64]; /**< Badges, by badge number less one. */
 
     /**
+     *
      * Resets every badge to its starting status.
      *
      * @mangled Initialize__11CMonsterBoxFv
@@ -989,6 +1062,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Gives a badge by its number from 1, or null.
      *
      * @mangled GetMonsterBajjiData__11CMonsterBoxFi
@@ -998,6 +1072,7 @@ public:
     MOS_CHANGE_PARAM *GetMonsterBajjiData(int no);
 
     /**
+     *
      * Gives the badge of a monster, or null.
      *
      * @mangled GetMonsterBajjiDataByMonsterID__11CMonsterBoxFi
@@ -1007,6 +1082,7 @@ public:
     MOS_CHANGE_PARAM *GetMonsterBajjiDataByMonsterID(int monster_id);
 
     /**
+     *
      * Lets Monica use a badge.
      *
      * @mangled EnableChange__11CMonsterBoxFi
@@ -1016,6 +1092,7 @@ public:
     void EnableChange(int no);
 
     /**
+     *
      * Gives whether Monica can use a badge.
      *
      * @mangled IsChange__11CMonsterBoxFi
@@ -1025,6 +1102,7 @@ public:
     int IsChange(int no);
 
     /**
+     *
      * Restores the health of every badge's monster.
      *
      * @mangled AllCure__11CMonsterBoxFv
@@ -1055,11 +1133,14 @@ public:
     float         last_hour; /**< Hour of the day of the last fatigue step. */
 
     /**
+     *
      * Empties the aquarium.
+     *
      */
     CFishAquarium() { Initialize(); }
 
     /**
+     *
      * Empties every tank and clears the clocks.
      *
      * @mangled Initialize__13CFishAquariumFv
@@ -1069,6 +1150,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Gives the first place of a tank, or null.
      *
      * @mangled GetAquariumFishTop__13CFishAquariumFi
@@ -1078,6 +1160,7 @@ public:
     CGameDataUsed *GetAquariumFishTop(int tank);
 
     /**
+     *
      * Gives the first empty place of a tank, or -1.
      *
      * @mangled SearchAqua1NotUsed__13CFishAquariumFi
@@ -1087,6 +1170,7 @@ public:
     int SearchAqua1NotUsed(int tank);
 
     /**
+     *
      * Puts a fish into a place of a tank.
      *
      * @mangled FishIntoAquarium__13CFishAquariumFiiP13CGameDataUsed
@@ -1096,6 +1180,7 @@ public:
     void FishIntoAquarium(int tank, int slot, CGameDataUsed *fish);
 
     /**
+     *
      * Gives how many fish a tank holds.
      *
      * @mangled GetAquariumFishNum__13CFishAquariumFi
@@ -1105,6 +1190,7 @@ public:
     int GetAquariumFishNum(int tank);
 
     /**
+     *
      * Gives whether a fish can join the breeding tank, which no fish of its sex is in.
      *
      * @mangled CheckHaigouTankSex__13CFishAquariumFP13CGameDataUsed
@@ -1114,6 +1200,7 @@ public:
     int CheckHaigouTankSex(CGameDataUsed *fish);
 
     /**
+     *
      * Advances the fish by the time that has passed.
      *
      * @mangled RefreshParam__13CFishAquariumFv
@@ -1152,6 +1239,7 @@ public:
     FISH_RECORD record[24]; /**< Records, in the order of the fish record table. */
 
     /**
+     *
      * Clears every record.
      *
      * @mangled __ct__14CFishingRecordFv
@@ -1161,6 +1249,7 @@ public:
     CFishingRecord();
 
     /**
+     *
      * Gives the record of a fish, or null for a fish without one.
      *
      * @mangled GetFishRecord__14CFishingRecordFi
@@ -1170,6 +1259,7 @@ public:
     FISH_RECORD *GetFishRecord(int fish_no);
 
     /**
+     *
      * Counts a catch and keeps it when it beats the record; gives bit 0x1 for a size record and
      * 0x2 for a weight record.
      *
@@ -1209,11 +1299,14 @@ public:
     FISH_TOURNAMENT_ENTRY entry[10]; /**< Fish entered. */
 
     /**
+     *
      * Clears the tournament.
+     *
      */
     CFishingTournament() { Initialize(); }
 
     /**
+     *
      * Clears the rank and every entry.
      *
      * @mangled Initialize__18CFishingTournamentFv
@@ -1223,6 +1316,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Clears every entry.
      *
      * @mangled ResetRecord__18CFishingTournamentFv
@@ -1232,6 +1326,7 @@ public:
     void ResetRecord();
 
     /**
+     *
      * Enters a fish in the first free place.
      *
      * @mangled EntryFish__18CFishingTournamentFiii
@@ -1241,6 +1336,7 @@ public:
     int EntryFish(int entrant, int fish, int weight);
 
     /**
+     *
      * Gives how many places are still free.
      *
      * @mangled EntryRemain__18CFishingTournamentFv
@@ -1250,6 +1346,7 @@ public:
     int EntryRemain();
 
     /**
+     *
      * Gives one entry, or null.
      *
      * @mangled GetRecord__18CFishingTournamentFi
@@ -1259,6 +1356,7 @@ public:
     FISH_TOURNAMENT_ENTRY *GetRecord(int index);
 
     /**
+     *
      * Sets the rank, kept between 0 and 100.
      *
      * @mangled SetRank__18CFishingTournamentFi
@@ -1268,6 +1366,7 @@ public:
     void SetRank(int rank);
 
     /**
+     *
      * Sorts the entries by weight, heaviest first.
      *
      * @mangled SortRecord__18CFishingTournamentFv
@@ -1277,6 +1376,7 @@ public:
     void SortRecord();
 
     /**
+     *
      * Gives the total weight of the three heaviest fish.
      *
      * @mangled CalcTopWeight__18CFishingTournamentFv
@@ -1711,6 +1811,7 @@ public:
     }
 
     /**
+     *
      * Creates the data of a new game.
      *
      * @mangled __ct__16CUserDataManagerFv
@@ -1719,6 +1820,7 @@ public:
     CUserDataManager();
 
     /**
+     *
      * Resets everything to the start of a new game.
      *
      * @mangled Initialize__16CUserDataManagerFv
@@ -1728,6 +1830,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Advances the townsfolk, the inventory fish and the aquarium by the time that has passed.
      *
      * @mangled RefreshParam__16CUserDataManagerFv
@@ -1737,6 +1840,7 @@ public:
     void RefreshParam();
 
     /**
+     *
      * Gives an inventory place, or null.
      *
      * @mangled GetUsedDataPtr__16CUserDataManagerFi
@@ -1746,6 +1850,7 @@ public:
     CGameDataUsed *GetUsedDataPtr(int index);
 
     /**
+     *
      * Gives the status of Max or Monica, or null.
      *
      * @mangled GetCharaDataPtr__16CUserDataManagerFi
@@ -1755,6 +1860,7 @@ public:
     CHARA_DATA *GetCharaDataPtr(int chara);
 
     /**
+     *
      * Gives the health gauge of a character, or null.
      *
      * @mangled GetCharaHpGage__16CUserDataManagerFi
@@ -1764,6 +1870,7 @@ public:
     COMMON_GAGE *GetCharaHpGage(int chara);
 
     /**
+     *
      * Adds to a character's health and gives the new health.
      *
      * @mangled AddHp__16CUserDataManagerFii
@@ -1773,6 +1880,7 @@ public:
     int AddHp(int chara, int amount);
 
     /**
+     *
      * Gives a character's health.
      *
      * @mangled GetHp__16CUserDataManagerFi
@@ -1782,6 +1890,7 @@ public:
     float GetHp(int chara);
 
     /**
+     *
      * Adds a fraction of a character's health, leaving at least 1, and gives how full it is.
      *
      * @mangled AddHp_Rate__16CUserDataManagerFif
@@ -1791,6 +1900,7 @@ public:
     float AddHp_Rate(int chara, float rate);
 
     /**
+     *
      * Gives the durability gauge of a character's weapon, or null.
      *
      * @mangled GetWHpGage__16CUserDataManagerFii
@@ -1800,6 +1910,7 @@ public:
     COMMON_GAGE *GetWHpGage(int group, int member);
 
     /**
+     *
      * Gives the absorption gauge of a character's weapon, or null.
      *
      * @mangled GetAbsGage__16CUserDataManagerFii
@@ -1809,6 +1920,7 @@ public:
     COMMON_GAGE *GetAbsGage(int group, int member);
 
     /**
+     *
      * Adds to a weapon's durability and gives the new durability.
      *
      * @mangled AddWhp__16CUserDataManagerFiii
@@ -1818,6 +1930,7 @@ public:
     int AddWhp(int group, int member, int amount);
 
     /**
+     *
      * Gives a weapon's durability and its full value.
      *
      * @mangled GetWhp__16CUserDataManagerFiiPi
@@ -1827,6 +1940,7 @@ public:
     int GetWhp(int group, int member, int *max);
 
     /**
+     *
      * Adds to a weapon's absorption and gives the new absorption.
      *
      * @mangled AddAbs__16CUserDataManagerFiii
@@ -1836,6 +1950,7 @@ public:
     int AddAbs(int group, int member, int amount);
 
     /**
+     *
      * Gives a weapon's absorption and its full value.
      *
      * @mangled GetAbs__16CUserDataManagerFiiPi
@@ -1845,6 +1960,7 @@ public:
     int GetAbs(int group, int member, int *max);
 
     /**
+     *
      * Adds a character to the party.
      *
      * @mangled JoinPartyMember__16CUserDataManagerFi
@@ -1854,6 +1970,7 @@ public:
     void JoinPartyMember(int chara);
 
     /**
+     *
      * Takes a character out of the party.
      *
      * @mangled LeavePartyMember__16CUserDataManagerFi
@@ -1863,6 +1980,7 @@ public:
     void LeavePartyMember(int chara);
 
     /**
+     *
      * Gives the characters in the party, with the monster when the badge box is owned.
      *
      * @mangled GetNowPartyMember__16CUserDataManagerFv
@@ -1872,6 +1990,7 @@ public:
     int GetNowPartyMember();
 
     /**
+     *
      * Lets the player change to a character.
      *
      * @mangled EnableCharaChange__16CUserDataManagerFi
@@ -1881,6 +2000,7 @@ public:
     void EnableCharaChange(int chara);
 
     /**
+     *
      * Stops the player changing to a character.
      *
      * @mangled DisableCharaChange__16CUserDataManagerFi
@@ -1890,6 +2010,7 @@ public:
     void DisableCharaChange(int chara);
 
     /**
+     *
      * Gives whether the player can change to a character now, and why not.
      *
      * @mangled CheckEnableCharaChange__16CUserDataManagerFiPi
@@ -1899,6 +2020,7 @@ public:
     int CheckEnableCharaChange(int chara, int *out);
 
     /**
+     *
      * Gives the quick-change state of a character: bit 0x1 in the party, 0x2 changeable.
      *
      * @mangled CheckQuickChange__16CUserDataManagerFiPi
@@ -1908,6 +2030,7 @@ public:
     int CheckQuickChange(int chara, int *out);
 
     /**
+     *
      * Unmasks changing to a character.
      *
      * @mangled EnableCharaChangeMask__16CUserDataManagerFi
@@ -1917,6 +2040,7 @@ public:
     void EnableCharaChangeMask(int chara);
 
     /**
+     *
      * Masks off changing to a character.
      *
      * @mangled DisableCharaChangeMask__16CUserDataManagerFi
@@ -1926,6 +2050,7 @@ public:
     void DisableCharaChangeMask(int chara);
 
     /**
+     *
      * Unmasks changing to every character.
      *
      * @mangled InitCharaChangeMask__16CUserDataManagerFv
@@ -1935,6 +2060,7 @@ public:
     void InitCharaChangeMask();
 
     /**
+     *
      * Gives the characters the player can change to now.
      *
      * @mangled GetEnableCharaChangeFlag__16CUserDataManagerFv
@@ -1944,6 +2070,7 @@ public:
     u32 GetEnableCharaChangeFlag();
 
     /**
+     *
      * Gives the status attribute of Max or Monica, or null.
      *
      * @mangled GetCharaStatusAttirbutePtr__16CUserDataManagerFi
@@ -1953,6 +2080,7 @@ public:
     u16 *GetCharaStatusAttirbutePtr(int chara);
 
     /**
+     *
      * Sets or, when clear is 1, clears status attribute bits of a character and gives the result.
      *
      * @mangled SetCharaStatusAttirbute__16CUserDataManagerFiUii
@@ -1962,6 +2090,7 @@ public:
     int SetCharaStatusAttirbute(int chara, unsigned int attr, int mode);
 
     /**
+     *
      * Sets status attribute bits of a character together with how long they last.
      *
      * @mangled SetCharaStatusAttirbuteVol__16CUserDataManagerFiUii
@@ -1971,6 +2100,7 @@ public:
     int SetCharaStatusAttirbuteVol(int chara, unsigned int attr, int value);
 
     /**
+     *
      * Gives the status attribute of a character, or 0.
      *
      * @mangled GetCharaStatusAttirbute__16CUserDataManagerFi
@@ -1980,6 +2110,7 @@ public:
     int GetCharaStatusAttirbute(int chara);
 
     /**
+     *
      * Gives a monster badge by its number from 1, or null.
      *
      * @mangled GetMonsterBajjiDataPtr__16CUserDataManagerFi
@@ -1989,6 +2120,7 @@ public:
     MOS_CHANGE_PARAM *GetMonsterBajjiDataPtr(int no);
 
     /**
+     *
      * Gives the badge of a monster, or null.
      *
      * @mangled GetMonsterBajjiDataPtrMosId__16CUserDataManagerFi
@@ -1998,6 +2130,7 @@ public:
     MOS_CHANGE_PARAM *GetMonsterBajjiDataPtrMosId(int monster_id);
 
     /**
+     *
      * Gives the number of overflow places after the item board.
      *
      * @mangled GetItemBoardOverNum__16CUserDataManagerFv
@@ -2007,6 +2140,7 @@ public:
     int GetItemBoardOverNum();
 
     /**
+     *
      * Gives the number of inventory places: the item board alone, or with its overflow.
      *
      * @mangled GetItemBoardMaxNum__16CUserDataManagerFi
@@ -2016,6 +2150,7 @@ public:
     int GetItemBoardMaxNum(int board);
 
     /**
+     *
      * Sets the character being played.
      *
      * @mangled SetActiveChrNo__16CUserDataManagerFi
@@ -2029,6 +2164,7 @@ public:
     }
 
     /**
+     *
      * Renames the ridepod.
      *
      * @mangled SetRoboName__16CUserDataManagerFPc
@@ -2038,6 +2174,7 @@ public:
     void SetRoboName(char *name);
 
     /**
+     *
      * Gives the name of the ridepod.
      *
      * @mangled GetRoboName__16CUserDataManagerFv
@@ -2047,6 +2184,7 @@ public:
     char *GetRoboName();
 
     /**
+     *
      * Gives the ridepod's default name in the current language.
      *
      * @mangled GetRoboNameDefault__16CUserDataManagerFv
@@ -2056,6 +2194,7 @@ public:
     char *GetRoboNameDefault();
 
     /**
+     *
      * Fits or removes the ridepod's voice unit, turning the voice on when fitted.
      *
      * @mangled SetVoiceUnit__16CUserDataManagerFi
@@ -2065,6 +2204,7 @@ public:
     void SetVoiceUnit(int fitted);
 
     /**
+     *
      * Gives whether the voice unit is fitted.
      *
      * @mangled CheckVoiceUnit__16CUserDataManagerFv
@@ -2074,6 +2214,7 @@ public:
     int CheckVoiceUnit();
 
     /**
+     *
      * Turns the ridepod's voice on or off.
      *
      * @mangled SetRoboVoiceFlag__16CUserDataManagerFi
@@ -2083,6 +2224,7 @@ public:
     void SetRoboVoiceFlag(int flag);
 
     /**
+     *
      * Gives whether the ridepod speaks: the voice unit is fitted and the voice is on.
      *
      * @mangled CheckRoboVoiceFlag__16CUserDataManagerFv
@@ -2092,6 +2234,7 @@ public:
     int CheckRoboVoiceFlag();
 
     /**
+     *
      * Adds to the ridepod's absorption, kept between 0 and 99999, and gives the new value.
      *
      * @mangled AddRoboAbs__16CUserDataManagerFf
@@ -2101,6 +2244,7 @@ public:
     float AddRoboAbs(float amount);
 
     /**
+     *
      * Gives the ridepod's absorption.
      *
      * @mangled GetRoboAbs__16CUserDataManagerFv
@@ -2110,6 +2254,7 @@ public:
     float GetRoboAbs();
 
     /**
+     *
      * Gives the energy capacity of the owned ridepod core, or 0.
      *
      * @mangled CheckCapacity__16CUserDataManagerFv
@@ -2119,6 +2264,7 @@ public:
     int CheckCapacity();
 
     /**
+     *
      * Gives the item number of the owned ridepod core, or -1.
      *
      * @mangled CheckRobotCore__16CUserDataManagerFv
@@ -2128,6 +2274,7 @@ public:
     int CheckRobotCore();
 
     /**
+     *
      * Gives a character's defence.
      *
      * @mangled GetDefenceVol__16CUserDataManagerFi
@@ -2137,6 +2284,7 @@ public:
     int GetDefenceVol(int chara);
 
     /**
+     *
      * Records a townsperson as able to join the party, with a status.
      *
      * @mangled JoinPartyChara__16CUserDataManagerFiii
@@ -2146,6 +2294,7 @@ public:
     void JoinPartyChara(int chara_no, int status, int unused);
 
     /**
+     *
      * Changes the party status of a townsperson; bringing one into the party sends the others out.
      *
      * @mangled SetPartyCharaStatus__16CUserDataManagerFii
@@ -2155,6 +2304,7 @@ public:
     void SetPartyCharaStatus(int chara_no, int status);
 
     /**
+     *
      * Gives the party status of a townsperson.
      *
      * @mangled GetPartyCharaStatus__16CUserDataManagerFi
@@ -2164,6 +2314,7 @@ public:
     int GetPartyCharaStatus(int chara_no);
 
     /**
+     *
      * Gives the number of the townsperson in the party, or -1.
      *
      * @mangled NowPartyCharaID__16CUserDataManagerFv
@@ -2173,6 +2324,7 @@ public:
     int NowPartyCharaID();
 
     /**
+     *
      * Sends a townsperson home, keeping them in the party if they were.
      *
      * @mangled LeaveHouse__16CUserDataManagerFi
@@ -2182,6 +2334,7 @@ public:
     void LeaveHouse(int chara_no);
 
     /**
+     *
      * Gives the state of a townsperson, or null.
      *
      * @mangled GetPartyCharaInfo__16CUserDataManagerFi
@@ -2191,6 +2344,7 @@ public:
     PARTY_CHARA_INFO *GetPartyCharaInfo(int chara_no);
 
     /**
+     *
      * Gives whether a townsperson has the points for an ability, spending them when asked.
      *
      * @mangled UseNpcAbility__16CUserDataManagerFiii
@@ -2200,6 +2354,7 @@ public:
     int UseNpcAbility(int npc_no, int ability, int consume);
 
     /**
+     *
      * Restores every ridepod part, the ridepod body and the ridepod's energy.
      *
      * @mangled AllWeaponRepair__16CUserDataManagerFv
@@ -2209,6 +2364,7 @@ public:
     void AllWeaponRepair();
 
     /**
+     *
      * Restores the townsfolk's ability points by the hours that have passed.
      *
      * @mangled RefreshNPCStatus__16CUserDataManagerFi
@@ -2218,6 +2374,7 @@ public:
     void RefreshNPCStatus(int unused);
 
     /**
+     *
      * Gives the item number of Max's first weapon, the fishing rod when one is equipped.
      *
      * @mangled GetFishingRodNo__16CUserDataManagerFv
@@ -2227,6 +2384,7 @@ public:
     int GetFishingRodNo();
 
     /**
+     *
      * Gives whether Max has a fishing rod equipped.
      *
      * @mangled NowFishingStyle__16CUserDataManagerFv
@@ -2236,6 +2394,7 @@ public:
     int NowFishingStyle();
 
     /**
+     *
      * Gives the bait of the equipped fishing rod.
      *
      * @mangled GetActiveEsa__16CUserDataManagerFv
@@ -2245,6 +2404,7 @@ public:
     CGameDataUsed *GetActiveEsa();
 
     /**
+     *
      * Gives the bait of a fishing rod, or null.
      *
      * @mangled GetActiveEsa__16CUserDataManagerFi
@@ -2254,6 +2414,7 @@ public:
     CGameDataUsed *GetActiveEsa(int rod_no);
 
     /**
+     *
      * Gives the item number of the equipped fishing rod's bait, or 0.
      *
      * @mangled GetFishBait__16CUserDataManagerFv
@@ -2263,6 +2424,7 @@ public:
     int GetFishBait();
 
     /**
+     *
      * Uses up one of the equipped fishing rod's bait.
      *
      * @mangled DeleteBait__16CUserDataManagerFv
@@ -2272,6 +2434,7 @@ public:
     void DeleteBait();
 
     /**
+     *
      * Adds a caught fish to the inventory, the aquarium or an overflow place; gives 0, 1, or 2 when
      * there was no room.
      *
@@ -2282,6 +2445,7 @@ public:
     int GetFishInAquarium(int fish_no, float size, float weight);
 
     /**
+     *
      * Counts a catch in the fishing records.
      *
      * @mangled CheckFishRecordUpdate__16CUserDataManagerFiff
@@ -2291,6 +2455,7 @@ public:
     int CheckFishRecordUpdate(int fish_no, float size, float weight);
 
     /**
+     *
      * Gives the record size and weight of a fish.
      *
      * @mangled GetFishRecord__16CUserDataManagerFiPfPf
@@ -2300,6 +2465,7 @@ public:
     void GetFishRecord(int fish_no, float *size, float *weight);
 
     /**
+     *
      * Gives the first five attributes of the equipped fishing rod.
      *
      * @mangled GetRodStatus__16CUserDataManagerFPi
@@ -2309,6 +2475,7 @@ public:
     void GetRodStatus(int *out);
 
     /**
+     *
      * Adds synthesis points to the equipped fishing rod and gives the new total.
      *
      * @mangled AddFp__16CUserDataManagerFi
@@ -2318,6 +2485,7 @@ public:
     int AddFp(int point);
 
     /**
+     *
      * Equips an owned item on a character, swapping it with what was in its slot.
      *
      * @mangled SetChrEquip__16CUserDataManagerFiP13CGameDataUsed
@@ -2327,6 +2495,7 @@ public:
     int SetChrEquip(int chara, CGameDataUsed *item);
 
     /**
+     *
      * Equips an item number from the inventory on a character.
      *
      * @mangled SetChrEquip__16CUserDataManagerFii
@@ -2336,6 +2505,7 @@ public:
     int SetChrEquip(int chara, int item_no);
 
     /**
+     *
      * Equips a new copy of an item number on a character.
      *
      * @mangled SetChrEquipDirect__16CUserDataManagerFii
@@ -2345,6 +2515,7 @@ public:
     int SetChrEquipDirect(int chara, int item_no);
 
     /**
+     *
      * Gives the active item or equipment of a character that has an item number, or null.
      *
      * @mangled SearchEquip__16CUserDataManagerFii
@@ -2354,6 +2525,7 @@ public:
     CGameDataUsed *SearchEquip(int chara, int item_no);
 
     /**
+     *
      * Gives the model path of a character's equipment slot.
      *
      * @mangled GetCharaEquipDataPath__16CUserDataManagerFii
@@ -2363,6 +2535,7 @@ public:
     char *GetCharaEquipDataPath(int chara, int slot);
 
     /**
+     *
      * Adds synthesis points to a character's weapon and gives the new total.
      *
      * @mangled AddFusionPoint__16CUserDataManagerFiii
@@ -2372,6 +2545,7 @@ public:
     int AddFusionPoint(int group, int member, int point);
 
     /**
+     *
      * Gives the first empty item board place, or -1.
      *
      * @mangled SearchSpaceUsedData__16CUserDataManagerFv
@@ -2381,6 +2555,7 @@ public:
     int SearchSpaceUsedData();
 
     /**
+     *
      * Gives the item board place that can take one more of an item number, or the first empty one.
      *
      * @mangled SearchSpaceUsedData__16CUserDataManagerFi
@@ -2390,6 +2565,7 @@ public:
     int SearchSpaceUsedData(int item_no);
 
     /**
+     *
      * Gives the first empty item board place, or null.
      *
      * @mangled SearchSpaceUsedDataPtr__16CUserDataManagerFv
@@ -2399,6 +2575,7 @@ public:
     CGameDataUsed *SearchSpaceUsedDataPtr();
 
     /**
+     *
      * Gives the item board place that can take one more of an item number, or null.
      *
      * @mangled SearchSpaceUsedDataPtr__16CUserDataManagerFi
@@ -2408,6 +2585,7 @@ public:
     CGameDataUsed *SearchSpaceUsedDataPtr(int item_no);
 
     /**
+     *
      * Gives the active item place of a character that can take an item number, or -1.
      *
      * @mangled SearchActiveItemTableSpace__16CUserDataManagerFii
@@ -2417,6 +2595,7 @@ public:
     int SearchActiveItemTableSpace(int chara, int item_no);
 
     /**
+     *
      * Gives the inventory place holding an item number, on the item board or with its overflow, or
      * null.
      *
@@ -2427,6 +2606,7 @@ public:
     CGameDataUsed *SearchItemOnItemBrd(int item_no, int use_alt_bag);
 
     /**
+     *
      * Gives how many overflow places hold an item.
      *
      * @mangled GetNumStackOverBoard__16CUserDataManagerFv
@@ -2436,6 +2616,7 @@ public:
     int GetNumStackOverBoard();
 
     /**
+     *
      * Gives the inventory or active item place holding an item number, or null.
      *
      * @mangled SearchAllHaveItem__16CUserDataManagerFi
@@ -2445,6 +2626,7 @@ public:
     CGameDataUsed *SearchAllHaveItem(int item_no);
 
     /**
+     *
      * Moves a fish into an empty place of the first aquarium tank.
      *
      * @mangled FishInAquarium__16CUserDataManagerFP13CGameDataUsedi
@@ -2454,6 +2636,7 @@ public:
     int FishInAquarium(CGameDataUsed *fish, int tank);
 
     /**
+     *
      * Gives whether the first aquarium tank holds an electric fish.
      *
      * @mangled CheckElectricFish__16CUserDataManagerFv
@@ -2463,6 +2646,7 @@ public:
     int CheckElectricFish();
 
     /**
+     *
      * Gives how many of an item number the player owns, counting gift boxes and equipment.
      *
      * @mangled GetNumSameItem__16CUserDataManagerFi
@@ -2472,6 +2656,7 @@ public:
     int GetNumSameItem(int item_no);
 
     /**
+     *
      * Adds medals, kept between 0 and 999, and gives the new count.
      *
      * @mangled AddYarikomiMedal__16CUserDataManagerFi
@@ -2481,6 +2666,7 @@ public:
     int AddYarikomiMedal(int amount);
 
     /**
+     *
      * Gives the number of medals.
      *
      * @mangled GetYarikomiMedal__16CUserDataManagerFv
@@ -2490,6 +2676,7 @@ public:
     int GetYarikomiMedal();
 
     /**
+     *
      * Gives the player a count of an item number, the rest going to overflow places.
      *
      * @mangled GetItem__16CUserDataManagerFii
@@ -2499,6 +2686,7 @@ public:
     int GetItem(int item_no, int count);
 
     /**
+     *
      * Gives the player as many of an item number as fit on the item board and gives that count.
      *
      * @mangled GetItemNotOver__16CUserDataManagerFii
@@ -2508,6 +2696,7 @@ public:
     int GetItemNotOver(int item_no, int num);
 
     /**
+     *
      * Puts a count of an item number into the overflow places.
      *
      * @mangled GetOverItem__16CUserDataManagerFii
@@ -2517,6 +2706,7 @@ public:
     int GetOverItem(int item_no, int count);
 
     /**
+     *
      * Gives the first item number owned beyond its limit, or 0.
      *
      * @mangled CheckItemLimmitOver__16CUserDataManagerFv
@@ -2526,6 +2716,7 @@ public:
     int CheckItemLimmitOver();
 
     /**
+     *
      * Takes a count of an item number away, from the end of the inventory and then the active items.
      *
      * @mangled DeleteItem__16CUserDataManagerFii
@@ -2535,6 +2726,7 @@ public:
     int DeleteItem(int item_no, int count);
 
     /**
+     *
      * Fills a place with a new item of an item number, by its family.
      *
      * @mangled CopyGameData__16CUserDataManagerFP13CGameDataUsedi
@@ -2544,6 +2736,7 @@ public:
     int CopyGameData(CGameDataUsed *item, int item_no);
 
     /**
+     *
      * Adds money, kept between 0 and 999999, and gives the new amount.
      *
      * @mangled AddMoney__16CUserDataManagerFi
@@ -2553,6 +2746,7 @@ public:
     int AddMoney(int amount);
 
     /**
+     *
      * Sets the costumes collected.
      *
      * @mangled SetCostumeBit__16CUserDataManagerFUl
@@ -2562,6 +2756,7 @@ public:
     void SetCostumeBit(unsigned long bit);
 
     /**
+     *
      * Gives the costumes collected.
      *
      * @mangled GetCostumeBit__16CUserDataManagerFv
@@ -2571,6 +2766,7 @@ public:
     unsigned long GetCostumeBit();
 
     /**
+     *
      * Marks the costume an item number gives as collected.
      *
      * @mangled GetCostume__16CUserDataManagerFi
@@ -2580,6 +2776,7 @@ public:
     void GetCostume(int costume_no);
 
     /**
+     *
      * Gives how many fish the inventory and the first aquarium tank hold.
      *
      * @mangled CountFish__16CUserDataManagerFv
@@ -2640,11 +2837,14 @@ public:
     float               prev_hp; /**< Health before the last change. */
 
     /**
+     *
      * Clears the battle view.
+     *
      */
     CBattleCharaInfo() { Initialize(); }
 
     /**
+     *
      * Clears the battle view.
      *
      * @mangled Initialize__16CBattleCharaInfoFv
@@ -2654,6 +2854,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Gives an equipment slot of the character, or null.
      *
      * @mangled GetEquipTablePtr__16CBattleCharaInfoFi
@@ -2663,6 +2864,7 @@ public:
     CGameDataUsed *GetEquipTablePtr(int slot);
 
     /**
+     *
      * Switches to playing a character and works its parameters out.
      *
      * @mangled SetChrNo__16CBattleCharaInfoFi
@@ -2672,6 +2874,7 @@ public:
     void SetChrNo(int new_chara_no);
 
     /**
+     *
      * Gives the monster Monica transforms into.
      *
      * @mangled GetMonsterID__16CBattleCharaInfoFv
@@ -2681,6 +2884,7 @@ public:
     int GetMonsterID();
 
     /**
+     *
      * Gives the townsperson in the party.
      *
      * @mangled GetNowNPC__16CBattleCharaInfoFv
@@ -2690,6 +2894,7 @@ public:
     int GetNowNPC();
 
     /**
+     *
      * Has the townsperson in the party heal the character when they can.
      *
      * @mangled UseNPCPoint__16CBattleCharaInfoFi
@@ -2699,6 +2904,7 @@ public:
     int UseNPCPoint(int unused);
 
     /**
+     *
      * Gives an active item of the character, or null.
      *
      * @mangled GetActiveItemInfo__16CBattleCharaInfoFi
@@ -2708,6 +2914,7 @@ public:
     CGameDataUsed *GetActiveItemInfo(int index);
 
     /**
+     *
      * Uses an item on the character, or a repair item on its weapon.
      *
      * @mangled UseActiveItem__16CBattleCharaInfoFP13CGameDataUsed
@@ -2717,6 +2924,7 @@ public:
     int UseActiveItem(CGameDataUsed *item);
 
     /**
+     *
      * Gives the special ability bits of a weapon of Max or Monica, or 0.
      *
      * @mangled GetSpecialStatus__16CBattleCharaInfoFi
@@ -2726,6 +2934,7 @@ public:
     u32 GetSpecialStatus(int slot);
 
     /**
+     *
      * Gives the colour palette of a weapon of Max or Monica, or -1.
      *
      * @mangled GetPalletNo__16CBattleCharaInfoFi
@@ -2735,6 +2944,7 @@ public:
     int GetPalletNo(int slot);
 
     /**
+     *
      * Works the character's battle parameters out from its status and equipment.
      *
      * @mangled RefreshParamater__16CBattleCharaInfoFv
@@ -2744,6 +2954,7 @@ public:
     void RefreshParamater();
 
     /**
+     *
      * Gives the durability gauge of a weapon, or null.
      *
      * @mangled GetNowAccessWHp__16CBattleCharaInfoFi
@@ -2753,6 +2964,7 @@ public:
     COMMON_GAGE *GetNowAccessWHp(int slot);
 
     /**
+     *
      * Gives the absorption gauge of a weapon, or null.
      *
      * @mangled GetNowAccessAbs__16CBattleCharaInfoFi
@@ -2762,6 +2974,7 @@ public:
     COMMON_GAGE *GetNowAccessAbs(int slot);
 
     /**
+     *
      * Adds to a weapon's durability and gives how full it is.
      *
      * @mangled AddWhp__16CBattleCharaInfoFif
@@ -2771,6 +2984,7 @@ public:
     float AddWhp(int slot, float amount);
 
     /**
+     *
      * Gives a weapon's durability and its full value.
      *
      * @mangled GetNowWhp__16CBattleCharaInfoFiPi
@@ -2780,6 +2994,7 @@ public:
     void GetNowWhp(int slot, int *out);
 
     /**
+     *
      * Gives a weapon's durability as shown.
      *
      * @mangled GetWhpNowVol__16CBattleCharaInfoFi
@@ -2789,6 +3004,7 @@ public:
     int GetWhpNowVol(int slot);
 
     /**
+     *
      * Adds a charge of an element to Monica's magic sword.
      *
      * @mangled SetMagicSwordPow__16CBattleCharaInfoFii
@@ -2798,6 +3014,7 @@ public:
     void SetMagicSwordPow(int elem, int pow);
 
     /**
+     *
      * Gives the element of Monica's magic sword, or -1.
      *
      * @mangled GetMagicSwordElem__16CBattleCharaInfoFv
@@ -2807,6 +3024,7 @@ public:
     int GetMagicSwordElem();
 
     /**
+     *
      * Gives the total strength of Monica's magic sword charges.
      *
      * @mangled GetMagicSwordPow__16CBattleCharaInfoFv
@@ -2816,6 +3034,7 @@ public:
     int GetMagicSwordPow();
 
     /**
+     *
      * Gives the number of Monica's magic sword charges.
      *
      * @mangled GetMagicSwordCounterNow__16CBattleCharaInfoFv
@@ -2825,6 +3044,7 @@ public:
     int GetMagicSwordCounterNow();
 
     /**
+     *
      * Gives how many magic sword charges Monica's weapon can hold.
      *
      * @mangled GetMagicSwordCounterMax__16CBattleCharaInfoFv
@@ -2834,6 +3054,7 @@ public:
     int GetMagicSwordCounterMax();
 
     /**
+     *
      * Clears Monica's magic sword charges.
      *
      * @mangled ClearMagicSwordPow__16CBattleCharaInfoFv
@@ -2843,6 +3064,7 @@ public:
     void ClearMagicSwordPow();
 
     /**
+     *
      * Adds to a weapon's or monster's absorption, levelling it up when full.
      *
      * @mangled AddAbs__16CBattleCharaInfoFifPi
@@ -2852,6 +3074,7 @@ public:
     float AddAbs(int slot, float amount, int *leveled_up);
 
     /**
+     *
      * Adds a fraction of a weapon's absorption, levelling it up when full.
      *
      * @mangled AddAbsRate__16CBattleCharaInfoFifPi
@@ -2861,6 +3084,7 @@ public:
     int AddAbsRate(int slot, float rate, int *leveled_up);
 
     /**
+     *
      * Gives a weapon's absorption and its full value.
      *
      * @mangled GetNowAbs__16CBattleCharaInfoFiPi
@@ -2870,6 +3094,7 @@ public:
     void GetNowAbs(int slot, int *out);
 
     /**
+     *
      * Levels a weapon of Max or Monica up when it can.
      *
      * @mangled LevelUpWeapon__16CBattleCharaInfoFP13CGameDataUsed
@@ -2879,6 +3104,7 @@ public:
     int LevelUpWeapon(CGameDataUsed *weapon);
 
     /**
+     *
      * Gives the character's defence.
      *
      * @mangled GetDefenceVol__16CBattleCharaInfoFv
@@ -2888,6 +3114,7 @@ public:
     s16 GetDefenceVol();
 
     /**
+     *
      * Adds to the character's health over a number of frames and gives how full it is.
      *
      * @mangled AddHp_Point__16CBattleCharaInfoFff
@@ -2897,6 +3124,7 @@ public:
     float AddHp_Point(float point, float frames);
 
     /**
+     *
      * Adds a fraction of the character's health, in one of four ways, and gives how full it is.
      *
      * @mangled AddHp_Rate__16CBattleCharaInfoFfif
@@ -2906,6 +3134,7 @@ public:
     float AddHp_Rate(float rate, int kind, float frames);
 
     /**
+     *
      * Fills the character's health to a fraction.
      *
      * @mangled SetHpRate__16CBattleCharaInfoFf
@@ -2915,6 +3144,7 @@ public:
     void SetHpRate(float rate);
 
     /**
+     *
      * Gives the character's full health.
      *
      * @mangled GetMaxHp_i__16CBattleCharaInfoFv
@@ -2924,6 +3154,7 @@ public:
     int GetMaxHp_i();
 
     /**
+     *
      * Gives the character's health as shown.
      *
      * @mangled GetNowHp_i__16CBattleCharaInfoFv
@@ -2933,6 +3164,7 @@ public:
     int GetNowHp_i();
 
     /**
+     *
      * Sets or clears status attribute bits of the character and gives the result.
      *
      * @mangled SetAttr__16CBattleCharaInfoFii
@@ -2942,6 +3174,7 @@ public:
     int SetAttr(int attr, int value);
 
     /**
+     *
      * Sets status attribute bits of the character with how long they last.
      *
      * @mangled SetAttrVol__16CBattleCharaInfoFii
@@ -2951,6 +3184,7 @@ public:
     int SetAttrVol(int attr, int value);
 
     /**
+     *
      * Gives the character's status attribute.
      *
      * @mangled GetAttr__16CBattleCharaInfoFv
@@ -2960,6 +3194,7 @@ public:
     int GetAttr();
 
     /**
+     *
      * Makes the shown health jump to the real health.
      *
      * @mangled ForceSet__16CBattleCharaInfoFv
@@ -2969,6 +3204,7 @@ public:
     void ForceSet();
 
     /**
+     *
      * Steps the character's timed conditions and gives the attribute when poison took health.
      *
      * @mangled StatusParamStep__16CBattleCharaInfoFPi
@@ -2978,6 +3214,7 @@ public:
     int StatusParamStep(int *damage);
 
     /**
+     *
      * Steps the energy drain and the shown health.
      *
      * @mangled Step__16CBattleCharaInfoFv
@@ -2990,6 +3227,7 @@ public:
 STATIC_ASSERT(sizeof(CBattleCharaInfo) == 0x90);
 
 /**
+ *
  * Number of places in each aquarium tank, by tank.
  *
  * @mangled aquarium_fish_maxtbl
@@ -2999,6 +3237,7 @@ STATIC_ASSERT(sizeof(CBattleCharaInfo) == 0x90);
 extern s8 aquarium_fish_maxtbl[3];
 
 /**
+ *
  * Battle view of the character being played.
  *
  * @mangled BattleParamater
@@ -3008,6 +3247,7 @@ extern s8 aquarium_fish_maxtbl[3];
 extern CBattleCharaInfo BattleParamater;
 
 /**
+ *
  * Gives the user data inside the save data, or null.
  *
  * @mangled GetUserDataMan__Fv
@@ -3017,6 +3257,7 @@ extern CBattleCharaInfo BattleParamater;
 CUserDataManager *GetUserDataMan();
 
 /**
+ *
  * Gives the fishing tournament, or null.
  *
  * @mangled GetFishTournament__Fv
@@ -3026,6 +3267,7 @@ CUserDataManager *GetUserDataMan();
 CFishingTournament *GetFishTournament();
 
 /**
+ *
  * Gives the aquarium, or null.
  *
  * @mangled GetAquariumData__Fv
@@ -3035,6 +3277,7 @@ CFishingTournament *GetFishTournament();
 CFishAquarium *GetAquariumData();
 
 /**
+ *
  * Gives how full a gauge is, or 0 for null.
  *
  * @mangled GetCommonGageRate__FP11COMMON_GAGE
@@ -3044,6 +3287,7 @@ CFishAquarium *GetAquariumData();
 float GetCommonGageRate(COMMON_GAGE *gage);
 
 /**
+ *
  * Gives the sum of a fish's racing parameters.
  *
  * @mangled CalcBreedFishParam__FP14BREEDFISH_USED
@@ -3053,6 +3297,7 @@ float GetCommonGageRate(COMMON_GAGE *gage);
 int CalcBreedFishParam(BREEDFISH_USED *fish);
 
 /**
+ *
  * Remembers the weapon to give back to Max after the fishing game.
  *
  * @mangled SetFishingGamePreEquip__FP13CGameDataUsed
@@ -3062,6 +3307,7 @@ int CalcBreedFishParam(BREEDFISH_USED *fish);
 void SetFishingGamePreEquip(CGameDataUsed *data);
 
 /**
+ *
  * Gives Max back the weapon he had before the fishing game.
  *
  * @mangled ReEquipFishingGameWeapon__Fv
@@ -3071,6 +3317,7 @@ void SetFishingGamePreEquip(CGameDataUsed *data);
 void ReEquipFishingGameWeapon();
 
 /**
+ *
  * Gives whether an owned item is the weapon remembered for after the fishing game.
  *
  * @mangled CheckFishingWeapon__FP13CGameDataUsed
@@ -3080,6 +3327,7 @@ void ReEquipFishingGameWeapon();
 int CheckFishingWeapon(CGameDataUsed *weapon);
 
 /**
+ *
  * Swaps two owned items, keeping the weapon remembered for after fishing in step when asked.
  *
  * @mangled GameDataSwap__FP13CGameDataUsedP13CGameDataUsedi
@@ -3089,6 +3337,7 @@ int CheckFishingWeapon(CGameDataUsed *weapon);
 void GameDataSwap(CGameDataUsed *first, CGameDataUsed *second, int mode);
 
 /**
+ *
  * Gives the energy capacity the ridepod's parts use, and the capacity of its core.
  *
  * @mangled CheckNowRoboUseCapacity__FP9ROBO_DATAPi
@@ -3098,6 +3347,7 @@ void GameDataSwap(CGameDataUsed *first, CGameDataUsed *second, int mode);
 int CheckNowRoboUseCapacity(ROBO_DATA *robo, int *capacity);
 
 /**
+ *
  * Builds the model file name of Max or Monica for their equipped weapon.
  *
  * @mangled GetMainCharaModelName__FiPci
@@ -3107,6 +3357,7 @@ int CheckNowRoboUseCapacity(ROBO_DATA *robo, int *capacity);
 int GetMainCharaModelName(int chara, char *name, int alternate);
 
 /**
+ *
  * Gives how many of a shield kit item the ridepod can use.
  *
  * @mangled GetShiledKitLimmit__Fi
@@ -3116,6 +3367,7 @@ int GetMainCharaModelName(int chara, char *name, int alternate);
 int GetShiledKitLimmit(int item_no);
 
 /**
+ *
  * Gives the base data of a monster, or null.
  *
  * @mangled GetMonsterBaseInfo__Fi
@@ -3125,6 +3377,7 @@ int GetShiledKitLimmit(int item_no);
 BASE_MONSTER_TBL *GetMonsterBaseInfo(int monster_no);
 
 /**
+ *
  * Gives the transformation parameters of a monster, or null.
  *
  * @mangled GetMonsterHengeParam__Fi
@@ -3134,6 +3387,7 @@ BASE_MONSTER_TBL *GetMonsterBaseInfo(int monster_no);
 MOS_HENGE_PARAM *GetMonsterHengeParam(int monster_no);
 
 /**
+ *
  * Sets which characters can be changed to in town or in a dungeon.
  *
  * @mangled SetEnvUserDataMan__Fi
@@ -3143,6 +3397,7 @@ MOS_HENGE_PARAM *GetMonsterHengeParam(int monster_no);
 void SetEnvUserDataMan(int env);
 
 /**
+ *
  * Fills a list, ended by -1, with the item numbers of a character's starting equipment.
  *
  * @mangled GetCharaDefaultWeapon__FiPi
@@ -3152,6 +3407,7 @@ void SetEnvUserDataMan(int env);
 void GetCharaDefaultWeapon(int chara, int *weapons);
 
 /**
+ *
  * Equips both characters with their starting equipment for the current language and names the
  * ridepod.
  *
@@ -3162,6 +3418,7 @@ void GetCharaDefaultWeapon(int chara, int *weapons);
 void LanguageEquipChange();
 
 /**
+ *
  * Gives Monica her starting equipment when she joins.
  *
  * @mangled CheckEquipChange__Fi
@@ -3171,6 +3428,7 @@ void LanguageEquipChange();
 void CheckEquipChange(int chara);
 
 /**
+ *
  * Gives the battle view of the character being played.
  *
  * @mangled GetBattleCharaInfo__Fv
@@ -3180,6 +3438,7 @@ void CheckEquipChange(int chara);
 CBattleCharaInfo *GetBattleCharaInfo();
 
 /**
+ *
  * Splits an item's status bits into the conditions it gives and the conditions it cures.
  *
  * @mangled ConvertItemAttrToCharaAttr__FiPiPi
@@ -3189,6 +3448,7 @@ CBattleCharaInfo *GetBattleCharaInfo();
 void ConvertItemAttrToCharaAttr(int attr, int *add, int *cure);
 
 /**
+ *
  * Gives whether a status attribute holds a bad condition.
  *
  * @mangled CheckBadStatus__Fi
@@ -3198,6 +3458,7 @@ void ConvertItemAttrToCharaAttr(int attr, int *add, int *cure);
 int CheckBadStatus(int attr);
 
 /**
+ *
  * Cancels the weapon attributes that a set of status bits is weak against.
  *
  * @mangled CheckWeaponAttribute__FUiUi
@@ -3207,6 +3468,7 @@ int CheckBadStatus(int attr);
 unsigned int CheckWeaponAttribute(unsigned int mask_a, unsigned int mask_b);
 
 /**
+ *
  * Gives whether every monster a weapon needs defeated to build up has been.
  *
  * @mangled CheckBuildUpMonsterCondition__FP11CDataWeapon
@@ -3216,6 +3478,7 @@ unsigned int CheckWeaponAttribute(unsigned int mask_a, unsigned int mask_b);
 int CheckBuildUpMonsterCondition(CDataWeapon *weapon);
 
 /**
+ *
  * Gives how many of a monster have been defeated.
  *
  * @mangled KillMonsterCount__Fii
@@ -3225,6 +3488,7 @@ int CheckBuildUpMonsterCondition(CDataWeapon *weapon);
 int KillMonsterCount(int monster_id, int amount);
 
 /**
+ *
  * Gives the item type a character's equipment slot takes, or 0.
  *
  * @mangled SearchEquipType__Fii
@@ -3234,6 +3498,7 @@ int KillMonsterCount(int monster_id, int amount);
 int SearchEquipType(int category, int slot);
 
 /**
+ *
  * Gives which character can equip an item number, and in which slot.
  *
  * @mangled IsItemtypeWhoisEquip__FiPi
@@ -3243,6 +3508,7 @@ int SearchEquipType(int category, int slot);
 int IsItemtypeWhoisEquip(int item_no, int *slot);
 
 /**
+ *
  * Gives whether a character is in the party.
  *
  * @mangled IsCheckParty__Fi
@@ -3252,6 +3518,7 @@ int IsItemtypeWhoisEquip(int item_no, int *slot);
 int IsCheckParty(int chara);
 
 /**
+ *
  * Gives the name of a fish in the first aquarium tank, or null.
  *
  * @mangled GetAquariumFish0__Fi
@@ -3261,6 +3528,7 @@ int IsCheckParty(int chara);
 char *GetAquariumFish0(int slot);
 
 /**
+ *
  * Gives how many of an item number the player owns.
  *
  * @mangled GetUserItemHaveNum__Fi
@@ -3270,6 +3538,7 @@ char *GetAquariumFish0(int slot);
 int GetUserItemHaveNum(int item_no);
 
 /**
+ *
  * Gives how many overflow places hold an item.
  *
  * @mangled CheckItemOver__Fv
@@ -3279,6 +3548,7 @@ int GetUserItemHaveNum(int item_no);
 int CheckItemOver();
 
 /**
+ *
  * Gives the first item number owned beyond its limit, or 0.
  *
  * @mangled CheckItemLimmitOver__Fv
@@ -3288,6 +3558,7 @@ int CheckItemOver();
 int CheckItemLimmitOver();
 
 /**
+ *
  * Gives how many of a count of an item number the player can take.
  *
  * @mangled CheckGetItemLimmitOver__Fii
@@ -3297,6 +3568,7 @@ int CheckItemLimmitOver();
 int CheckGetItemLimmitOver(int item_no, int count);
 
 /**
+ *
  * Gives how many more of an item number the player can own.
  *
  * @mangled CheckGetItemRemainNum__Fi
@@ -3306,6 +3578,7 @@ int CheckGetItemLimmitOver(int item_no, int count);
 int CheckGetItemRemainNum(int item_no);
 
 /**
+ *
  * Removes the dungeon keys and leaves both characters standing and free of poison.
  *
  * @mangled CheckItemDngKey__Fv
@@ -3315,6 +3588,7 @@ int CheckGetItemRemainNum(int item_no);
 void CheckItemDngKey();
 
 /**
+ *
  * Restores the health and conditions of both characters and every monster.
  *
  * @mangled PlayerPartyCure__Fv
@@ -3324,6 +3598,7 @@ void CheckItemDngKey();
 void PlayerPartyCure();
 
 /**
+ *
  * Advances the user data by the time that has passed.
  *
  * @mangled UserDataRefresh__Fv
@@ -3333,6 +3608,7 @@ void PlayerPartyCure();
 void UserDataRefresh();
 
 /**
+ *
  * Takes the first electric fish out of the first aquarium tank.
  *
  * @mangled DeleteErekiFish__Fv
@@ -3342,6 +3618,7 @@ void UserDataRefresh();
 void DeleteErekiFish();
 
 /**
+ *
  * Gives the number of inventory places: the item board alone, or with its overflow.
  *
  * @mangled GetNowBagMax__Fi
@@ -3351,6 +3628,7 @@ void DeleteErekiFish();
 int GetNowBagMax(int board);
 
 /**
+ *
  * Moves Monica's active items back to the inventory when she leaves.
  *
  * @mangled LeaveMonicaItemCheck__Fv
@@ -3360,6 +3638,7 @@ int GetNowBagMax(int board);
 void LeaveMonicaItemCheck();
 
 /**
+ *
  * Clears the fatigue of every fish in the inventory and the aquarium.
  *
  * @mangled AquaFishFatigueClear__Fv
@@ -3369,6 +3648,7 @@ void LeaveMonicaItemCheck();
 void AquaFishFatigueClear();
 
 /**
+ *
  * Sets up the user data for one of the debug starting states.
  *
  * @mangled DebugGetItem__FP16CUserDataManageri
@@ -3378,6 +3658,7 @@ void AquaFishFatigueClear();
 void DebugGetItem(CUserDataManager *user_data, int mode);
 
 /**
+ *
  * Picks the trap a random circle sets off, or -1 or -2 when none can affect the character.
  *
  * @mangled GetRandomCircleTrapID__Fi
@@ -3387,6 +3668,7 @@ void DebugGetItem(CUserDataManager *user_data, int mode);
 int GetRandomCircleTrapID(int kind);
 
 /**
+ *
  * Applies the effect of a random circle trap; gives whether it took effect.
  *
  * @mangled SetRandamCircleStatus__FiRf

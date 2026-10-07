@@ -104,6 +104,7 @@ public:
     PAD_CTRL_ANALOG analog[PAD_CTRL_ANALOG_MAX]; /**< Logical stick axes, by number. */
 
     /**
+     *
      * Unbinds every logical button and stick axis.
      *
      * @mangled Initialize__11CPadControlFv
@@ -113,6 +114,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Binds a logical button to controller buttons and a trigger, returning 1 if the number is valid.
      *
      * @mangled RegisterBtn__11CPadControlFiii
@@ -122,6 +124,7 @@ public:
     int RegisterBtn(int index, int mask, int flags);
 
     /**
+     *
      * Binds a logical stick axis to a controller stick axis, returning 1 if the number is valid.
      *
      * @mangled RegisterAnalog__11CPadControlFii
@@ -131,6 +134,7 @@ public:
     int RegisterAnalog(int no, int axis);
 
     /**
+     *
      * Gets a logical button's state this frame, or 0 for an invalid number.
      *
      * @mangled Btn__11CPadControlFi
@@ -140,6 +144,7 @@ public:
     int Btn(int no);
 
     /**
+     *
      * Gets a logical stick axis's position this frame, or 0 for an invalid number.
      *
      * @mangled Analog__11CPadControlFi
@@ -149,6 +154,7 @@ public:
     float Analog(int no);
 
     /**
+     *
      * Samples the controller's sticks and every bound logical button and stick axis.
      *
      * @mangled Update__11CPadControlFP8CGamePad

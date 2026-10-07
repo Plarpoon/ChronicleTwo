@@ -82,17 +82,25 @@ extern int   command_int[];
 extern char *command_str[];
 
 /**
+ *
  * Closes the dungeon debug menu and applies its edited settings.
+ *
  */
 static void dngDebugExit();
 /**
+ *
  * Loads a chosen monster kind beside the player, refreshing monster memory on the first load.
+ *
  */
 /**
+ *
  * Draws the first dungeon system-parameter panel.
+ *
  */
 /**
+ *
  * Draws the second dungeon system-parameter panel.
+ *
  */
 
 // Code (.text)
@@ -269,17 +277,14 @@ int dngDebugKey() {
         if (dbinfo.cursor == DNG_DEBUG_CMD_ENEMY_RESET) {
             int                  index;
             CTreasureBoxManager *boxes;
-            int                  offset;
             boxes = DngMainScene->battle_area.treasure_box;
 
             if (boxes != NULL) {
                 index = 0;
-                offset = 0;
 
                 do {
-                    ((CTreasureBox *) ((u8 *) boxes + offset + 0x10))->Initialize();
+                    boxes->box[index].Initialize();
                     index++;
-                    offset += 0x70;
                 } while (index < 24);
             }
 

@@ -99,6 +99,11 @@ struct MoveCheckInfo {
         memset(this, 0, sizeof(MoveCheckInfo));
     }
 
+    /**
+     *
+     * Resets the movement query before another check.
+     *
+     */
     void Clear() {
         Initialize();
     }

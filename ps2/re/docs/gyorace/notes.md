@@ -29,7 +29,7 @@ counterpart (Dark Cloud 1 has no fish race).
 | `race_proc_cnt` | int | frame counter; 0x4B (mode 0), 0xF (mode 1), 0x78 (mode 3, fade out at 0x1E) |
 | `race_mode` | int (`GYORACE_MODE`) | switch 0..5 in sgLoop. Mode 4 is never set in this unit (goal view from camera (270,-40,-10)/(192,0,0), back to 3) |
 | `time_max` | int | `sw $v0` of `grGyoRaceSimulate` (which tail-returns StepGyoRace's value) |
-| `camera_id` | int | `CScene::AssignCamera` result; written to `scene+0x2E54` (old in `+0x2E58`). Symbol 4 bytes; BSS slot 8 (pad) |
+| `camera_id` | int | `CScene::AssignCamera` result; written to `CScene::active_camera` at +0x2E54 (old in `before_camera` at +0x2E58). Symbol 4 bytes; BSS slot 8 (pad) |
 | `race_rank` | int[2] | [0]=GetGyoRaceClass, [1]=GetGyoRaceNo; symbol size 8 |
 | `gyo_mes` | ClsMes* | `new(Alloc(0x298)) ClsMes` (0x2958) ; inlined ClsMes init follows the ctor |
 | `fish_game_data` | `GYORACE_RESULT[6]` | 0xD8 = 6*0x24; written in sgLoop mode 5 at index rank-1; read by event_func `_SET_GYORACE_ETC` (name +0, time +0x18) and sgInit (+0x1C/+0x20 for races already run) |

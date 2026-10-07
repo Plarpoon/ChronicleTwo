@@ -26,8 +26,10 @@ extern int    flag_571;
 extern s8     init_572;
 
 /**
+ *
  * Writes an object name with its "__" attribute marker turned into "--" and each attribute flag
  * after it in the form mgSetFrameAttr reads, and returns the length of the result with its end.
+ *
  */
 // Code (.text)
 #pragma schedule off
@@ -161,7 +163,9 @@ int conv_new_text(char *dst, char *src) {
 #pragma schedule reset
 
 /**
+ *
  * Reads a string of hexadecimal digits and returns its value; any other character counts as zero.
+ *
  */
 #pragma schedule off
 #pragma global_optimizer reset
@@ -438,7 +442,9 @@ void mgSetFrameAttr(mgCFrame *input_frame, int input_recursive) {
 #pragma opt_loop_invariants reset
 
 /**
+ *
  * Finds the entry of a visual type table that applies to an object name, or NULL if none does.
+ *
  */
 #pragma schedule off
 
@@ -476,8 +482,10 @@ mgCreateVisualType *SearchVisualType(mgCreateVisualType *table, char *name) {
 #pragma schedule reset
 
 /**
+ *
  * Sets up one frame from a scene object: its name, transform, parent and attributes, and the
  * visual of the given type built from its model. Returns non-zero if a visual was attached.
+ *
  */
 #pragma schedule off
 #pragma global_optimizer off
@@ -847,8 +855,10 @@ void mgCreateBBoxSphere(float *max, float *min, float *sphere, float (*vertex)[4
 #pragma schedule reset
 
 /**
+ *
  * Copies one frame's contents, name, attributes and bound into another frame, with a copy of its
  * visual when asked; a copied motion model follows the given frame table.
+ *
  */
 #pragma schedule off
 #pragma global_optimizer off
@@ -950,8 +960,10 @@ mgCVisual *mgCVisual::Copy(mgCMemory *memory) {
 #pragma schedule reset
 
 /**
+ *
  * Copies a frame and its subtree into new frames allocated from memory, and returns the copy of
  * the frame, or NULL if memory ran out.
+ *
  */
 #pragma schedule off
 #pragma global_optimizer off
@@ -987,7 +999,7 @@ mgCFrame *CopyFrameSub(mgCFrame *src, mgCMemory *memory, int copy_visual, mgCFra
 mgCFrame *mgCopyFrame(mgCFrame *frame, mgCMemory *memory, int copy_visual) {
     mgCFrame **copy_table;
     u_int      bytes;
-    u8        *copies;
+    mgCFrame  *copies;
     s32        i;
     mgCFrame **table;
     mgCFrame  *parent;
@@ -1024,10 +1036,10 @@ mgCFrame *mgCopyFrame(mgCFrame *frame, mgCMemory *memory, int copy_visual) {
             blocks = ((u_int) count * 0x110) >> 4;
         }
 
-        copies = (u8 *) new (memory->Alloc(blocks + 2)) mgCFrame[count];
+        copies = new (memory->Alloc(blocks + 2)) mgCFrame[count];
 
         for (i = 0; i < count; i++) {
-            mgCFrame *copy = (mgCFrame *) (copies + i * 0x110);
+            mgCFrame *copy = &copies[i];
             copy_table[i] = copy;
             CopyFrame(copy, table[i], memory, copy_visual, copy_table);
         }
@@ -1041,7 +1053,7 @@ mgCFrame *mgCopyFrame(mgCFrame *frame, mgCMemory *memory, int copy_visual) {
                 parent_index = frame->SearchFrameID(parent_name);
 
                 if (parent_index >= 0 && parent_index < count) {
-                    ((mgCFrame *) (copies + i * 0x110))->SetParent(copy_table[parent_index]);
+                    copies[i].SetParent(copy_table[parent_index]);
                 }
             }
         }

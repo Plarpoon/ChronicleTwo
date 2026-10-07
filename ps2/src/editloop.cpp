@@ -244,7 +244,9 @@ int NowEditModeChg() {
 }
 
 /**
+ *
  * Locks character control for thirty frames before starting the transition event.
+ *
  */
 void EditModeChg(int event) {
     EditModeChgEvent = event;

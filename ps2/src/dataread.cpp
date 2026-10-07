@@ -181,8 +181,10 @@ void ChangeDir(char *dir) {
 }
 
 /**
+ *
  * Finds a file's record in the DATA.DAT index
  * by name, or null when it is not there.
+ *
  */
 static DATA_HEADER *SearchFile(char *name) {
     DATA_HEADER *header;
@@ -533,8 +535,10 @@ void InitCDFile() {
 }
 
 /**
+ *
  * Identifies the device a path names with its prefix and copies the path
  * without the prefix; a single-letter drive is left to the default device.
+ *
  */
 static int GetDevType(char *path, char *out_name) {
     char  device[0x40];
@@ -591,8 +595,10 @@ static int GetDevType(char *path, char *out_name) {
 }
 
 /**
+ *
  * Converts the upper-case letters of a string
  * to lower case in place.
+ *
  */
 static void ConvStr(char *text) {
     char ch;
@@ -607,8 +613,10 @@ static void ConvStr(char *text) {
 }
 
 /**
+ *
  * Builds the path a file is opened by on its device, with the device's
  * prefix and the current directory; returns the device.
+ *
  */
 static int GetFullPath(char *path, char *out_path) {
     char                 rest[256];
@@ -821,8 +829,10 @@ int LoadFile2(char *path, void *buffer, int *out_size, int mode) {
 }
 
 /**
+ *
  * Reads a file inside DATA.DAT from the disc, retrying
  * until the read succeeds; reports whether the file exists.
+ *
  */
 static int CDRead(char *path, u_int *buffer, int *out_size) {
     int       *entry;
@@ -854,8 +864,10 @@ static int CDRead(char *path, u_int *buffer, int *out_size) {
 }
 
 /**
+ *
  * Rounds a size up to the next
  * multiple of an alignment.
+ *
  */
 
 static u_int align_size(u_int size, u_int alignment) {
@@ -869,8 +881,10 @@ static u_int align_size(u_int size, u_int alignment) {
 }
 
 /**
+ *
  * Gives a free file cache entry,
  * or null when every entry is in use.
+ *
  */
 static FILE_CACHE *GetNewFileCache() {
     int i;
@@ -910,8 +924,10 @@ void DeleteFileCache() {
 }
 
 /**
+ *
  * Records a file as held in the file cache at an address,
  * with one pending use; reports whether an entry was free.
+ *
  */
 static int EntryFileCache(char *path, u_long128 *address, int size) {
     FILE_CACHE *entry;
@@ -976,8 +992,10 @@ int LoadFileCacheBG(char *path) {
 }
 
 /**
+ *
  * Finds the file cache entry held under a path,
  * or null when the file is not cached.
+ *
  */
 static FILE_CACHE *SearchFileCache(char *path) {
     int         i;
@@ -1040,10 +1058,10 @@ int WriteFile(char *path, void *buffer, int size) {
 }
 
 u_int *GetPackFile(u_int *pack, char *name, int *out_size) {
-    s8 *base;
-    u8 *entry;
-    s8 *scan;
-    s8  c;
+    s8         *base;
+    PACK_ENTRY *entry;
+    s8         *scan;
+    s8          c;
 
     if (pack == NULL) {
         return 0;
@@ -1068,15 +1086,16 @@ u_int *GetPackFile(u_int *pack, char *name, int *out_size) {
         scan++;
     }
 
-    for (entry = (u8 *) pack; *(s8 *) entry != 0; entry += *(int *) (entry + 0x48)) {
-        if (strcasecmp((char *) entry, (char *) base) == 0) {
-            int data = (int) (entry + *(int *) (entry + 0x40));
+    for (entry = (PACK_ENTRY *) pack; entry->name[0] != 0;
+         entry = (PACK_ENTRY *) ((u8 *) entry + entry->next)) {
+        if (strcasecmp(entry->name, (char *) base) == 0) {
+            u_int *data = (u_int *) ((u8 *) entry + entry->offset);
 
             if (out_size != NULL) {
-                *out_size = *(int *) (entry + 0x44);
+                *out_size = entry->size;
             }
 
-            return (u_int *) data;
+            return data;
         }
     }
 
@@ -1084,8 +1103,8 @@ u_int *GetPackFile(u_int *pack, char *name, int *out_size) {
 }
 
 u_int *GetPackFile(u_int *pack, int index, char **out_name, int *out_size) {
-    int i;
-    u8 *entry = (u8 *) pack;
+    int         i;
+    PACK_ENTRY *entry = (PACK_ENTRY *) pack;
 
     if (entry == NULL) {
         return 0;
@@ -1093,16 +1112,16 @@ u_int *GetPackFile(u_int *pack, int index, char **out_name, int *out_size) {
 
     i = 0;
 
-    for (; *(s8 *) entry != 0; i++, entry += *(int *) (entry + 0x48)) {
+    for (; entry->name[0] != 0; i++, entry = (PACK_ENTRY *) ((u8 *) entry + entry->next)) {
         if (index == i) {
-            int data = (int) (entry + *(int *) (entry + 0x40));
+            u_int *data = (u_int *) ((u8 *) entry + entry->offset);
 
             if (out_size != NULL) {
-                *out_size = *(int *) (entry + 0x44);
+                *out_size = entry->size;
             }
 
-            *out_name = (char *) entry;
-            return (u_int *) data;
+            *out_name = entry->name;
+            return data;
         }
     }
 

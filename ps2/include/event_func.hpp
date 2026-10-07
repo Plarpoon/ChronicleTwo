@@ -153,6 +153,7 @@ public:
     };
 
     /**
+     *
      * Makes a handle that refers to nothing.
      *
      * @mangled __ct__4CEohFv
@@ -162,6 +163,7 @@ public:
     CEoh();
 
     /**
+     *
      * Points the handle at a map object; returns 1 when the type is EOH_TYPE_OBJECT and the object exists, 0 otherwise.
      *
      * @mangled Set__4CEohFiP7CObjecti
@@ -171,6 +173,7 @@ public:
     int Set(int new_kind, CObject *object, int new_flag);
 
     /**
+     *
      * Points the handle at a scene character; returns 1 when the type is EOH_TYPE_CHARA and the character exists, 0 otherwise.
      *
      * @mangled Set__4CEohFiiP11CCharacter2
@@ -180,6 +183,7 @@ public:
     int Set(int new_kind, int new_chara_no, CCharacter2 *chara);
 
     /**
+     *
      * Points the handle at an event sprite; returns 1 when the type is EOH_TYPE_SPRITE and the sprite exists, 0 otherwise.
      *
      * @mangled Set__4CEohFiP13CEventSprite2
@@ -189,6 +193,7 @@ public:
     int Set(int new_kind, CEventSprite2 *sprite);
 
     /**
+     *
      * Points the handle at a model frame; returns 1 when the type is EOH_TYPE_FRAME and the frame exists, 0 otherwise.
      *
      * @mangled Set__4CEohFiP8mgCFrame
@@ -198,6 +203,7 @@ public:
     int Set(int new_kind, mgCFrame *frame);
 
     /**
+     *
      * Points the handle at a function point; returns 1 when the type is EOH_TYPE_FUNC_POINT and the point exists, 0 otherwise.
      *
      * @mangled Set__4CEohFiP10CFuncPoint
@@ -220,6 +226,7 @@ public:
     CEoh eoh[EOH_NUM]; /**< Handles, indexed by the number the script uses. */
 
     /**
+     *
      * Makes a table in which every handle refers to nothing.
      *
      * @mangled __ct__10CEohMotherFv
@@ -229,6 +236,7 @@ public:
     CEohMother();
 
     /**
+     *
      * Points a handle at a map object; returns 1 on success, 0 for a bad handle number or object.
      *
      * @mangled Set__10CEohMotherFiiP7CObjecti
@@ -238,6 +246,7 @@ public:
     int Set(int slot, int type, CObject *object, int flag);
 
     /**
+     *
      * Points a handle at a scene character; returns 1 on success, 0 for a bad handle number or character.
      *
      * @mangled Set__10CEohMotherFiiiP11CCharacter2
@@ -247,6 +256,7 @@ public:
     int Set(int slot, int kind, int chara_no, CCharacter2 *chara);
 
     /**
+     *
      * Points a handle at an event sprite; returns 1 on success, 0 for a bad handle number or sprite.
      *
      * @mangled Set__10CEohMotherFiiP13CEventSprite2
@@ -256,6 +266,7 @@ public:
     int Set(int slot, int kind, CEventSprite2 *sprite);
 
     /**
+     *
      * Points a handle at a model frame; returns 1 on success, 0 for a bad handle number or frame.
      *
      * @mangled Set__10CEohMotherFiiP8mgCFrame
@@ -265,6 +276,7 @@ public:
     int Set(int slot, int kind, mgCFrame *frame);
 
     /**
+     *
      * Points a handle at a function point; returns 1 on success, 0 for a bad handle number or point.
      *
      * @mangled Set__10CEohMotherFiiP10CFuncPoint
@@ -274,6 +286,7 @@ public:
     int Set(int slot, int kind, CFuncPoint *func_point);
 
     /**
+     *
      * Moves what a handle refers to, converting from the event's world coordinate where it applies; returns 1 on success.
      *
      * @mangled SetPos__10CEohMotherFifff
@@ -283,6 +296,7 @@ public:
     int SetPos(int slot, float x, float y, float z);
 
     /**
+     *
      * Turns what a handle refers to, adding the rotation of the event's world coordinate; returns 1 on success.
      *
      * @mangled SetRot__10CEohMotherFifff
@@ -292,6 +306,7 @@ public:
     int SetRot(int slot, float x, float y, float z);
 
     /**
+     *
      * Gives the position of what a handle refers to in the event's world coordinate; returns 1 on success.
      *
      * @mangled GetPos__10CEohMotherFiPf
@@ -301,6 +316,7 @@ public:
     int GetPos(int slot, float *pos);
 
     /**
+     *
      * Gives the rotation of what a handle refers to in the event's world coordinate; returns 1 on success.
      *
      * @mangled GetRot__10CEohMotherFiPf
@@ -310,6 +326,7 @@ public:
     int GetRot(int slot, float *rot);
 
     /**
+     *
      * Starts a motion on a character handle, optionally at a given time; returns 1 on success.
      *
      * @mangled SetMotion__10CEohMotherFiPcif
@@ -319,6 +336,7 @@ public:
     int SetMotion(int slot, char *name, int type, float blend);
 
     /**
+     *
      * Returns whether the motion of a character handle has ended, or 0 for a handle that is not a character.
      *
      * @mangled CheckMotionEnd__10CEohMotherFi
@@ -328,6 +346,7 @@ public:
     int CheckMotionEnd(int slot);
 
     /**
+     *
      * Asks the motion sequence of a character handle to move on; returns 1 on success.
      *
      * @mangled SetMotionTrg__10CEohMotherFi
@@ -337,6 +356,7 @@ public:
     int SetMotionTrg(int slot);
 
     /**
+     *
      * Returns the progress of the motion sequence of a character handle, or 0 when it has none.
      *
      * @mangled GetSeqStatus__10CEohMotherFi
@@ -346,6 +366,7 @@ public:
     int GetSeqStatus(int slot);
 
     /**
+     *
      * Sets the speed at which a character handle's motion plays; returns 1 on success.
      *
      * @mangled SetStep__10CEohMotherFif
@@ -355,6 +376,7 @@ public:
     int SetStep(int slot, float step);
 
     /**
+     *
      * Sets the speed at which a character handle blends into its next motion; returns 1 on success.
      *
      * @mangled SetChangeStep__10CEohMotherFif
@@ -364,6 +386,7 @@ public:
     int SetChangeStep(int slot, float step);
 
     /**
+     *
      * Puts the motion of a character handle back to its start; returns 1 on success.
      *
      * @mangled ResetMotion__10CEohMotherFi
@@ -373,6 +396,7 @@ public:
     int ResetMotion(int slot);
 
     /**
+     *
      * Switches a texture animation of a character handle on or off, or all of them off; returns 1 on success.
      *
      * @mangled SetTexAnim__10CEohMotherFiiPc
@@ -382,6 +406,7 @@ public:
     int SetTexAnim(int slot, int on, char *name);
 
     /**
+     *
      * Scales what a handle refers to; returns 1 on success.
      *
      * @mangled SetScale__10CEohMotherFifff
@@ -391,6 +416,7 @@ public:
     int SetScale(int slot, float x, float y, float z);
 
     /**
+     *
      * Gives the scale of what a handle refers to; returns 1 on success.
      *
      * @mangled GetScale__10CEohMotherFiPf
@@ -400,6 +426,7 @@ public:
     int GetScale(int slot, float *scale);
 
     /**
+     *
      * Shows or hides what a handle refers to; returns 1 on success.
      *
      * @mangled SetShow__10CEohMotherFii
@@ -409,6 +436,7 @@ public:
     int SetShow(int slot, int show);
 
     /**
+     *
      * Gives whether what a handle refers to is shown; returns 1 on success.
      *
      * @mangled GetShow__10CEohMotherFiPi
@@ -418,6 +446,7 @@ public:
     int GetShow(int slot, int *show);
 
     /**
+     *
      * Returns the frame of a character handle's model with a given name, or null.
      *
      * @mangled SearchFrame__10CEohMotherFiPc
@@ -427,6 +456,7 @@ public:
     mgCFrame *SearchFrame(int slot, char *name);
 
     /**
+     *
      * Shows or hides a named frame of what a handle refers to; returns 1 on success.
      *
      * @mangled SetFrameShow__10CEohMotherFiPci
@@ -436,6 +466,7 @@ public:
     int SetFrameShow(int slot, char *name, int show);
 
     /**
+     *
      * Turns the shadow of a character handle on or off; returns 1 on success.
      *
      * @mangled SetShadow__10CEohMotherFii
@@ -445,6 +476,7 @@ public:
     int SetShadow(int slot, int enable);
 
     /**
+     *
      * Shows or hides a named frame of a character handle's shadow model; returns 1 on success.
      *
      * @mangled SetShadowFrameShow__10CEohMotherFiPci
@@ -454,6 +486,7 @@ public:
     int SetShadowFrameShow(int slot, char *name, int show);
 
     /**
+     *
      * Sets the translation of a frame handle or of a character handle's model; returns 1 on success.
      *
      * @mangled SetTranslate__10CEohMotherFiPf
@@ -463,6 +496,7 @@ public:
     int SetTranslate(int slot, float *pos);
 
     /**
+     *
      * Sets the colour of an event sprite handle; returns 1 on success.
      *
      * @mangled SetColor__10CEohMotherFiPf
@@ -472,6 +506,7 @@ public:
     int SetColor(int slot, float *color);
 
     /**
+     *
      * Gives the colour of an event sprite handle; returns 1 on success.
      *
      * @mangled GetColor__10CEohMotherFiPf
@@ -481,6 +516,7 @@ public:
     int GetColor(int slot, float *color);
 
     /**
+     *
      * Returns the name of the motion a character handle is playing, or null.
      *
      * @mangled GetNowMotionName__10CEohMotherFi
@@ -490,6 +526,7 @@ public:
     char *GetNowMotionName(int slot);
 
     /**
+     *
      * Returns the state of the motion a character handle is playing, or 0.
      *
      * @mangled GetNowMotionStatus__10CEohMotherFi
@@ -499,6 +536,7 @@ public:
     int GetNowMotionStatus(int slot);
 
     /**
+     *
      * Moves the motion of a character handle to a time; returns 1 on success.
      *
      * @mangled SetMotionNowTime__10CEohMotherFif
@@ -508,6 +546,7 @@ public:
     int SetMotionNowTime(int slot, float time);
 
     /**
+     *
      * Moves the motion of a character handle to a share of its length; returns 1 on success.
      *
      * @mangled SetMotionWaitTime__10CEohMotherFif
@@ -517,6 +556,7 @@ public:
     int SetMotionWaitTime(int slot, float rate);
 
     /**
+     *
      * Sets the footstep sound of a character handle; returns 1 on success.
      *
      * @mangled SetFootSoundID__10CEohMotherFii
@@ -526,6 +566,7 @@ public:
     int SetFootSoundID(int slot, int id);
 
     /**
+     *
      * Gives the world position of a named frame of a character handle, in the event's world coordinate; returns 1 on success.
      *
      * @mangled GetFramePos__10CEohMotherFiPcPf
@@ -535,6 +576,7 @@ public:
     int GetFramePos(int slot, char *name, float *pos);
 
     /**
+     *
      * Sets the sound bank a character handle plays its sound effects from; returns 1 on success.
      *
      * @mangled SetSoundID__10CEohMotherFiUi
@@ -544,6 +586,7 @@ public:
     int SetSoundID(int slot, unsigned int id);
 
     /**
+     *
      * Returns whether a named frame of what a handle refers to is shown, or 0.
      *
      * @mangled GetFrameShow__10CEohMotherFiPc
@@ -553,6 +596,7 @@ public:
     int GetFrameShow(int slot, char *name);
 
     /**
+     *
      * Sets whether a character handle fades out when the camera comes close; returns 1 on success.
      *
      * @mangled SetFadeFlag__10CEohMotherFii
@@ -562,6 +606,7 @@ public:
     int SetFadeFlag(int slot, int flag);
 
     /**
+     *
      * Puts the dynamic-animation parts of a character handle back to rest; returns 1 on success.
      *
      * @mangled ResetDAPosition__10CEohMotherFi
@@ -571,6 +616,7 @@ public:
     int ResetDAPosition(int slot);
 
     /**
+     *
      * Steps the motion of a character handle once; returns 1 on success.
      *
      * @mangled NormalDrive__10CEohMotherFi
@@ -580,6 +626,7 @@ public:
     int NormalDrive(int slot);
 
     /**
+     *
      * Applies the position of a character handle to its model; returns 1 on success.
      *
      * @mangled UpdatePosition__10CEohMotherFi
@@ -589,6 +636,7 @@ public:
     int UpdatePosition(int slot);
 
     /**
+     *
      * Sets the transparency of a named frame of what a handle refers to; returns 1 on success.
      *
      * @mangled SetFrameObjAlpha__10CEohMotherFiPcf
@@ -598,6 +646,7 @@ public:
     int SetFrameObjAlpha(int slot, char *name, float alpha);
 
     /**
+     *
      * Sets the footstep sound effect of a character handle; returns 1 on success.
      *
      * @mangled SetFootSeId__10CEohMotherFii
@@ -656,6 +705,7 @@ public:
     CEventScriptArg();
 
     /**
+     *
      * Runs an argument script program, which builds this object's argument lists.
      *
      * @mangled BuildArgData__15CEventScriptArgFPUi
@@ -690,6 +740,7 @@ public:
     CRaster();
 
     /**
+     *
      * Turns the effect off and clears its settings.
      *
      * @mangled Initialize__7CRasterFv
@@ -699,6 +750,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Sets the amplitude, speed and pitch at once.
      *
      * @mangled SetParam__7CRasterFfff
@@ -708,6 +760,7 @@ public:
     void SetParam(float amplitude, float speed, float pitch);
 
     /**
+     *
      * Turns the effect on, moving to the given amplitude, speed and pitch over a number of frames; -1 keeps a setting.
      *
      * @mangled StartRaster__7CRasterFfffi
@@ -717,6 +770,7 @@ public:
     void StartRaster(float target0, float target1, float target2, int frames);
 
     /**
+     *
      * Turns the effect off, moving to the given amplitude, speed and pitch over a number of frames; -1 keeps a setting.
      *
      * @mangled StopRaster__7CRasterFfffi
@@ -726,6 +780,7 @@ public:
     void StopRaster(float target0, float target1, float target2, int frames);
 
     /**
+     *
      * Moves the settings one frame towards their targets.
      *
      * @mangled StepRaster__7CRasterFv
@@ -735,6 +790,7 @@ public:
     void StepRaster();
 
     /**
+     *
      * Redraws the frame buffer with each line moved by the wave.
      *
      * @mangled DrawRaster__7CRasterFv
@@ -766,6 +822,7 @@ public:
     CScreenEffect();
 
     /**
+     *
      * Turns every effect off and forgets the textures.
      *
      * @mangled Initialize__13CScreenEffectFv
@@ -775,6 +832,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Moves the raster wave one frame towards its targets.
      *
      * @mangled Step__13CScreenEffectFv
@@ -784,6 +842,7 @@ public:
     void Step();
 
     /**
+     *
      * Draws the sepia picture, the monochrome pictures and the raster wave that are on.
      *
      * @mangled Draw__13CScreenEffectFv
@@ -793,6 +852,7 @@ public:
     void Draw();
 
     /**
+     *
      * Turns the raster wave off and sets its amplitude, speed and pitch.
      *
      * @mangled InitRaster__13CScreenEffectFfff
@@ -802,6 +862,7 @@ public:
     void InitRaster(float amplitude, float speed, float pitch);
 
     /**
+     *
      * Turns the raster wave on over a number of frames.
      *
      * @mangled StartRaster__13CScreenEffectFfffi
@@ -811,6 +872,7 @@ public:
     void StartRaster(float target0, float target1, float target2, int frames);
 
     /**
+     *
      * Turns the raster wave off over a number of frames.
      *
      * @mangled StopRaster__13CScreenEffectFfffi
@@ -820,6 +882,7 @@ public:
     void StopRaster(float target0, float target1, float target2, int frames);
 
     /**
+     *
      * Gives the texture, and the image memory behind it, that the sepia picture is captured into.
      *
      * @mangled SetSepiaTexture__13CScreenEffectFP10mgCTextureP1
@@ -829,6 +892,7 @@ public:
     void SetSepiaTexture(mgCTexture *texture, u_long128 *image);
 
     /**
+     *
      * Captures the screen into the sepia texture, tinted sepia.
      *
      * @mangled CaptureSepiaScreen__13CScreenEffectFv
@@ -838,6 +902,7 @@ public:
     void CaptureSepiaScreen();
 
     /**
+     *
      * Turns the sepia picture on or off; it stays off without a texture.
      *
      * @mangled SetSepiaFlag__13CScreenEffectFi
@@ -847,6 +912,7 @@ public:
     void SetSepiaFlag(int enabled);
 
     /**
+     *
      * Gives the two textures, and the image memory behind them, that the monochrome pictures are captured into.
      *
      * @mangled SetMonoFlashTexture__13CScreenEffectFPP10mgCTexturePP1
@@ -856,6 +922,7 @@ public:
     void SetMonoFlashTexture(mgCTexture **texture, u_long128 **vram_images);
 
     /**
+     *
      * Captures the screen into the two monochrome textures.
      *
      * @mangled CaptureMonoFlashScreen__13CScreenEffectFv
@@ -865,6 +932,7 @@ public:
     void CaptureMonoFlashScreen();
 
     /**
+     *
      * Turns the monochrome flash on or off and sets how many frames each picture is shown.
      *
      * @mangled SetMonoFlashFlag__13CScreenEffectFii
@@ -898,126 +966,175 @@ struct HIT_EFFECT_PARTICLE {
 STATIC_ASSERT(sizeof(HIT_EFFECT_PARTICLE) == 0x50);
 
 /**
+ *
  * Number of hit effects an event can show at once.
+ *
  */
 #define EVENT_HIT_EFFECT_NUM 5
 
 /**
+ *
  * Number of sparks each event hit effect can show.
+ *
  */
 #define EVENT_HIT_PARTICLE_NUM 0x40
 
 /**
+ *
  * Marker an event draws over a character's head.
+ *
  */
 extern CMarker EventMarker;
 
 /**
+ *
  * Script slot that receives the item the player picks in the item menu an event opened, or null.
+ *
  */
 extern RS_STACKDATA *p_use_item;
 
 /**
+ *
  * Non-zero while the event's world coordinate is applied to positions.
+ *
  */
 extern int SetWorldCoordFlg;
 
 /**
+ *
  * Event object handle whose texture animation follows the voice stream's mouth movement, or -1.
+ *
  */
 extern int PakuAnimEohNo;
 
 /**
+ *
  * Event object handle whose motion follows the voice stream's mouth movement, or -1.
+ *
  */
 extern int PakuMotionEohNo;
 
 /**
+ *
  * How the mouth motion is played.
+ *
  */
 extern int PakuMotionType;
 
 /**
+ *
  * How the second mouth motion is played.
+ *
  */
 extern int PakuMotionType2;
 
 /**
+ *
  * State the running event and its script share with the game loops.
+ *
  */
 extern ED_EVENT_INFO EdEventInfo;
 
 /**
+ *
  * Object handles of the running event.
+ *
  */
 extern CEohMother EventObjHandleMother;
 
 /**
+ *
  * Text sprites of the running event.
+ *
  */
 extern CEventSpriteMother esMother;
 
 /**
+ *
  * Flags local to the running event, 32 to a word.
+ *
  */
 extern u32 EventLocalFlag[0x40];
 
 /**
+ *
  * Counters local to the running event.
+ *
  */
 extern int EventLocalCnt[0x40];
 
 /**
+ *
  * Rain the running event shows.
+ *
  */
 extern CRain EventRain;
 
 /**
+ *
  * Spark buffers of the event's hit effects.
+ *
  */
 extern HIT_EFFECT_PARTICLE Hit_para[EVENT_HIT_EFFECT_NUM][EVENT_HIT_PARTICLE_NUM];
 
 /**
+ *
  * Hit effects the running event shows.
+ *
  */
 extern CHitEffectImage HitEffect[EVENT_HIT_EFFECT_NUM];
 
 /**
+ *
  * Name of the texture animation that follows the voice stream's mouth movement.
+ *
  */
 extern char PakuAnimName[0x40];
 
 /**
+ *
  * Name of the second texture animation that follows the voice stream's mouth movement.
+ *
  */
 extern char PakuAnimName2[0x40];
 
 /**
+ *
  * Name of the motion that follows the voice stream's mouth movement.
+ *
  */
 extern char PakuMotionName[0x40];
 
 /**
+ *
  * Name of the second motion that follows the voice stream's mouth movement.
+ *
  */
 extern char PakuMotionName2[0x40];
 
 /**
+ *
  * Command entries of the event's camera sequence.
+ *
  */
 extern _SEN_CMR_SEQ cmr_seq_tbl[0x100];
 
 /**
+ *
  * Command entries shared by the event's object sequences.
+ *
  */
 extern _SEN_OBJ_SEQ obj_seq_tbl[0x100];
 
 /**
+ *
  * Full-screen effects of the running event.
+ *
  */
 extern CScreenEffect EventScreenEffect;
 
 /**
+ *
  * Multiplies a vector by the upper 3x3 of a matrix, giving a vector with w = 1.
  *
  * @mangled VectMatMul__FPfPfPA4_f
@@ -1027,6 +1144,7 @@ extern CScreenEffect EventScreenEffect;
 void VectMatMul(float *out, float *vec, float (*matrix)[4]);
 
 /**
+ *
  * Converts a position from the event's world coordinate into the map's.
  *
  * @mangled CalcPosWorldCoord__FPf
@@ -1036,6 +1154,7 @@ void VectMatMul(float *out, float *vec, float (*matrix)[4]);
 void CalcPosWorldCoord(float *pos);
 
 /**
+ *
  * Converts a position from the map's coordinate into the event's world coordinate.
  *
  * @mangled CalcPosWorldCoordGyaku__FPf
@@ -1045,6 +1164,7 @@ void CalcPosWorldCoord(float *pos);
 void CalcPosWorldCoordGyaku(float *pos);
 
 /**
+ *
  * Converts a camera's eye and look-at point from the event's world coordinate into the map's.
  *
  * @mangled SetCamWorldCoord__FP9mgCCamera
@@ -1054,6 +1174,7 @@ void CalcPosWorldCoordGyaku(float *pos);
 void SetCamWorldCoord(mgCCamera *camera);
 
 /**
+ *
  * Converts a camera's eye and look-at point from the map's coordinate into the event's world coordinate.
  *
  * @mangled SetCamWorldCoordGyaku__FP9mgCCamera
@@ -1063,6 +1184,7 @@ void SetCamWorldCoord(mgCCamera *camera);
 void SetCamWorldCoordGyaku(mgCCamera *camera);
 
 /**
+ *
  * Puts the event's world coordinate back onto the map's and stops applying it.
  *
  * @mangled InitWorldCoord__Fv
@@ -1072,6 +1194,7 @@ void SetCamWorldCoordGyaku(mgCCamera *camera);
 void InitWorldCoord();
 
 /**
+ *
  * Returns whether an event local flag is set, or 0 for a bad flag number.
  *
  * @mangled GetLocalFlag__Fi
@@ -1081,6 +1204,7 @@ void InitWorldCoord();
 int GetLocalFlag(int index);
 
 /**
+ *
  * Sets or clears an event local flag; returns the value set, or 0 for a bad flag number.
  *
  * @mangled SetLocalFlag__Fii
@@ -1090,6 +1214,7 @@ int GetLocalFlag(int index);
 int SetLocalFlag(int index, int value);
 
 /**
+ *
  * Returns an event local counter, or -1 for a bad counter number.
  *
  * @mangled GetLocalCnt__Fi
@@ -1099,6 +1224,7 @@ int SetLocalFlag(int index, int value);
 int GetLocalCnt(int index);
 
 /**
+ *
  * Sets an event local counter; returns 1, or 0 for a bad counter number.
  *
  * @mangled SetLocalCnt__Fii
@@ -1108,6 +1234,7 @@ int GetLocalCnt(int index);
 int SetLocalCnt(int index, int value);
 
 /**
+ *
  * Returns the number of the first event local counter that holds a value, or -1.
  *
  * @mangled GetLocalCnt2__Fi
@@ -1117,6 +1244,7 @@ int SetLocalCnt(int index, int value);
 int GetLocalCnt2(int value);
 
 /**
+ *
  * Clears every event local counter.
  *
  * @mangled InitLocalCnt__Fv
@@ -1126,6 +1254,7 @@ int GetLocalCnt2(int value);
 void InitLocalCnt();
 
 /**
+ *
  * Clears the requests, skip, sound, stream and door settings of the event information.
  *
  * @mangled EdEventInfoCommandInitialize__Fv
@@ -1135,6 +1264,7 @@ void InitLocalCnt();
 void EdEventInfoCommandInitialize();
 
 /**
+ *
  * Clears the event object handles, camera and object sequences, sprites, screen effects and argument lists.
  *
  * @mangled EventSeqInit__Fv
@@ -1144,6 +1274,7 @@ void EdEventInfoCommandInitialize();
 void EventSeqInit();
 
 /**
+ *
  * Prepares the event system when an event starts: its sound memory, the event map, the world coordinate and every event object.
  *
  * @mangled EdEventInit__Fv
@@ -1153,6 +1284,7 @@ void EventSeqInit();
 void EdEventInit();
 
 /**
+ *
  * Draws the event's stopwatch and its other timers.
  *
  * @mangled EventTimeDraw__Fv
@@ -1162,6 +1294,7 @@ void EdEventInit();
 void EventTimeDraw();
 
 /**
+ *
  * Draws the event's rain, hit effects, sword and effect scripts, event map, sprites and screen effects.
  *
  * @mangled EdEventDraw__Fv
@@ -1171,6 +1304,7 @@ void EventTimeDraw();
 void EdEventDraw();
 
 /**
+ *
  * Draws the event sprites that are drawn before the scene.
  *
  * @mangled EdEventFirstDraw__Fv
@@ -1180,6 +1314,7 @@ void EdEventDraw();
 void EdEventFirstDraw();
 
 /**
+ *
  * Puts every event object back to rest when an event ends; returns 1, or 0 when the scene has no camera.
  *
  * @mangled EdEventFinish__Fv
@@ -1189,6 +1324,7 @@ void EdEventFirstDraw();
 int EdEventFinish();
 
 /**
+ *
  * Steps the event's sequences, effects and background loading once; returns 1.
  *
  * @mangled EdEventStep__Fv
@@ -1198,6 +1334,7 @@ int EdEventFinish();
 int EdEventStep();
 
 /**
+ *
  * Lets the running drama scene be skipped with the default button and fade colour.
  *
  * @mangled InitDramaScene__Fv
@@ -1207,6 +1344,7 @@ int EdEventStep();
 void InitDramaScene();
 
 /**
+ *
  * Stops the running drama scene from being skipped.
  *
  * @mangled CancelDramaScene__Fv
@@ -1216,6 +1354,7 @@ void InitDramaScene();
 void CancelDramaScene();
 
 /**
+ *
  * Hands the item picked in a menu the event opened back to the waiting script.
  *
  * @mangled EdEventMenuExit__Fv
@@ -1225,6 +1364,7 @@ void CancelDramaScene();
 void EdEventMenuExit();
 
 /**
+ *
  * Does nothing.
  *
  * @mangled EdSetBrokenObject__Fv
@@ -1234,6 +1374,7 @@ void EdEventMenuExit();
 void EdSetBrokenObject();
 
 /**
+ *
  * Forgets the message files loaded into every event message window.
  *
  * @mangled ResetMesFileBuffAll__Fv
@@ -1243,6 +1384,7 @@ void EdSetBrokenObject();
 void ResetMesFileBuffAll();
 
 /**
+ *
  * Clears the event's sound handles and script path, the world coordinate, the requests and the screen effects before an event loop starts.
  *
  * @mangled EdEventLoopInit__Fv
@@ -1252,6 +1394,7 @@ void ResetMesFileBuffAll();
 void EdEventLoopInit();
 
 /**
+ *
  * Prepares the event system when a map is entered: its effects, stopwatch and sprites.
  *
  * @mangled EdEventMapInit__Fv
@@ -1261,6 +1404,7 @@ void EdEventLoopInit();
 void EdEventMapInit();
 
 /**
+ *
  * Stops the voice stream the event was playing.
  *
  * @mangled EdEventTermination__Fv
@@ -1270,6 +1414,7 @@ void EdEventMapInit();
 void EdEventTermination();
 
 /**
+ *
  * Forgets the event's message files and clears its sequences when an event ends.
  *
  * @mangled EdEventEnd__Fv
@@ -1279,6 +1424,7 @@ void EdEventTermination();
 void EdEventEnd();
 
 /**
+ *
  * Returns the data of a file already read in the background from the current directory, or null, and gives its size.
  *
  * @mangled CheckLoadedBGFile__FPcPi
@@ -1288,6 +1434,7 @@ void EdEventEnd();
 unsigned int *CheckLoadedBGFile(char *name, int *size);
 
 /**
+ *
  * Returns the data of a file, taken from the background-read files, the loaded pack file or the disc, or null, and gives its size.
  *
  * @mangled GetLoadBGBuff__FPcPi
@@ -1297,6 +1444,7 @@ unsigned int *CheckLoadedBGFile(char *name, int *size);
 unsigned int *GetLoadBGBuff(char *name, int *size);
 
 /**
+ *
  * Loads a character into a scene character slot from a pack file; returns non-zero on success.
  *
  * @mangled _LOAD_CHARA_sub__FiPPciPUii
@@ -1306,6 +1454,7 @@ unsigned int *GetLoadBGBuff(char *name, int *size);
 int _LOAD_CHARA_sub(int stack_no, char **name, int chara_no, unsigned int *pack, int mode);
 
 /**
+ *
  * Loads a character into a scene character slot from a pack file; returns non-zero on success.
  *
  * @mangled _LOAD_CHARA_sub__FiPPciPUi
@@ -1315,6 +1464,7 @@ int _LOAD_CHARA_sub(int stack_no, char **name, int chara_no, unsigned int *pack,
 int _LOAD_CHARA_sub(int a, char **b, int c, unsigned int *data);
 
 /**
+ *
  * Loads a motion file for a scene character; returns non-zero on success.
  *
  * @mangled _LOAD_MOTION_sub__FiPciPUi
@@ -1324,6 +1474,7 @@ int _LOAD_CHARA_sub(int a, char **b, int c, unsigned int *data);
 int _LOAD_MOTION_sub(int stack_no, char *name, int chara_no, unsigned int *pack);
 
 /**
+ *
  * Returns the configuration setting that turns movie captions off.
  *
  * @mangled GetConfigCaptionOff__Fv
@@ -1333,6 +1484,7 @@ int _LOAD_MOTION_sub(int stack_no, char *name, int chara_no, unsigned int *pack)
 int GetConfigCaptionOff();
 
 /**
+ *
  * Plays a movie file, drawing the event's captions over it; returns non-zero once it has played.
  *
  * @mangled LoadMovie__FPcP9mgCMemoryb
@@ -1342,6 +1494,7 @@ int GetConfigCaptionOff();
 int LoadMovie(char *name, mgCMemory *memory, bool skip);
 
 /**
+ *
  * Loads a message file into a message window; returns non-zero on success.
  *
  * @mangled _LOAD_MES_sub__FPciP6ClsMes
@@ -1351,6 +1504,7 @@ int LoadMovie(char *name, mgCMemory *memory, bool skip);
 int _LOAD_MES_sub(char *name, int no, ClsMes *mes);
 
 /**
+ *
  * Opens a voice stream from a voice pack; returns 1.
  *
  * @mangled CommandStreamOpenFromFPL__FiPcPc
@@ -1360,6 +1514,7 @@ int _LOAD_MES_sub(char *name, int no, ClsMes *mes);
 int CommandStreamOpenFromFPL(int stream, char *name, char *base);
 
 /**
+ *
  * Opens a voice stream from a file; returns 1.
  *
  * @mangled CommandStreamOpen__FiPc
@@ -1369,6 +1524,7 @@ int CommandStreamOpenFromFPL(int stream, char *name, char *base);
 int CommandStreamOpen(int stream, char *name);
 
 /**
+ *
  * Writes the name of the voice pack holding a voice number; returns 1, or 0 when no pack holds it.
  *
  * @mangled VpkFileNameFromVoiceNo__FPci
@@ -1378,6 +1534,7 @@ int CommandStreamOpen(int stream, char *name);
 int VpkFileNameFromVoiceNo(char *name, int voice_no);
 
 /**
+ *
  * Plays the open voice stream at a volume, lowered by the reverb depth; returns 1.
  *
  * @mangled CommandStreamPlay__Fii
@@ -1387,6 +1544,7 @@ int VpkFileNameFromVoiceNo(char *name, int voice_no);
 int CommandStreamPlay(int stream, int volume);
 
 /**
+ *
  * Builds the path of a voice stream file without opening it; returns 1.
  *
  * @mangled CommandStreamOpen2__FiPc
@@ -1396,6 +1554,7 @@ int CommandStreamPlay(int stream, int volume);
 int CommandStreamOpen2(int port, char *name);
 
 /**
+ *
  * Gives an event script interpreter the table of event external functions.
  *
  * @mangled SetEventFunc__FP10CRunScript
@@ -1406,8 +1565,52 @@ void SetEventFunc(CRunScript *script);
 
 class CCameraControl;
 
-int   GetArgInt(ARG_DATA *arg);
+/**
+ *
+ * Reads an event argument as an integer, converting a float argument when needed.
+ *
+ * @mangled GetArgInt__FP8ARG_DATA
+ * @address 0x2632F0
+ * @size 0x54
+ */
+int GetArgInt(ARG_DATA *arg);
+
+/**
+ *
+ * Reads an event argument as a float, converting an integer argument when needed.
+ *
+ * @mangled GetArgFloat__FP8ARG_DATA
+ * @address 0x263350
+ * @size 0x50
+ */
 float GetArgFloat(ARG_DATA *arg);
+
+/**
+ *
+ * Returns the string stored in an event argument.
+ *
+ * @mangled GetArgString__FP8ARG_DATA
+ * @address 0x2633A0
+ * @size 0x34
+ */
 char *GetArgString(ARG_DATA *arg);
-void  GetArgVector(float *vec, ARG_DATA *arg);
-void  FileNameConvLanguage(char *name);
+
+/**
+ *
+ * Reads three event float arguments into a homogeneous vector.
+ *
+ * @mangled GetArgVector__FPfP8ARG_DATA
+ * @address 0x2633E0
+ * @size 0x60
+ */
+void GetArgVector(float *vec, ARG_DATA *arg);
+
+/**
+ *
+ * Adds the selected language marker to a known event filename extension.
+ *
+ * @mangled FileNameConvLanguage__FPc
+ * @address 0x262CC0
+ * @size 0xD4
+ */
+void FileNameConvLanguage(char *name);

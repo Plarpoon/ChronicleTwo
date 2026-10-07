@@ -53,3 +53,9 @@ in draft mode but is emitted by static object construction and has no
 standalone source function to promote. The door motion literal is the SJIS
 bytes for ドア開け; the camera offset is `vv_984[1]`. The script reload path uses
 the town script memory or dungeon script memory according to the active loop.
+## Typed stack-buffer access
+
+The NPC message loader and event script loader take their file destination
+from `mgCMemory::stGetTop()`. Casting that quadword pointer to the API's byte
+pointer type avoids hand-written stack pointer arithmetic. The event unit
+remains exact in objdiff.

@@ -74,3 +74,7 @@ promotion attempts, so their `INCLUDE_ASM` implementations remain selected by de
 particular, `SetupRobo` caused a local read-only datum binding mismatch at `0x0036D870` during
 its attempted promotion. A full default build after these attempts verified every section of
 `SCES_511.90` against retail.
+
+`GetCharaMemAllocPtr` walks `mgCMemory` slots with a 0x30-byte stride.
+Replacing its byte-offset address with `&stacks[index]` changes MWCC's address
+calculation (99.39%), so the original expression remains for exact matching.

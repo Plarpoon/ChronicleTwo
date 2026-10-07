@@ -46,6 +46,7 @@ enum PhotoMessage {
 // clang-format on
 
 /**
+ *
  * Gives a camera-mode message in the current language, or an empty
  * string when the message or language is out of range.
  *
@@ -56,6 +57,7 @@ enum PhotoMessage {
 char *GetMesTxt(int message);
 
 /**
+ *
  * Gives the projection offset the camera zoom adds while camera mode is
  * active, or zero outside it.
  *
@@ -66,6 +68,7 @@ char *GetMesTxt(int message);
 float PhotoAddProjection();
 
 /**
+ *
  * Resets the camera mode to inactive, clearing the zoom, the shown title
  * and every display counter.
  *
@@ -76,6 +79,7 @@ float PhotoAddProjection();
 void InitTakePhoto();
 
 /**
+ *
  * Registers the work texture that captured photos are drawn into, keeps
  * the camera overlay's texture, and sets up the camera-mode font.
  *
@@ -86,6 +90,7 @@ void InitTakePhoto();
 void LoadTakePhoto(int arg0, mgCMemory *memory, u_long128 *buffer);
 
 /**
+ *
  * Enters camera mode, starting in the aiming step.
  *
  * @mangled StartTakePhoto__Fv
@@ -95,6 +100,7 @@ void LoadTakePhoto(int arg0, mgCMemory *memory, u_long128 *buffer);
 void StartTakePhoto();
 
 /**
+ *
  * Leaves camera mode, resetting it to inactive.
  *
  * @mangled EndTakePhoto__Fv
@@ -104,6 +110,7 @@ void StartTakePhoto();
 void EndTakePhoto();
 
 /**
+ *
  * Tells whether camera mode is active.
  *
  * @mangled NowTakePhoto__Fv
@@ -113,6 +120,7 @@ void EndTakePhoto();
 int NowTakePhoto();
 
 /**
+ *
  * Tells whether the camera is in the aiming step, where the photo menu
  * may be opened.
  *
@@ -123,6 +131,7 @@ int NowTakePhoto();
 int IsEnablePhotoMenu();
 
 /**
+ *
  * Hides the most recently taken photo.
  *
  * @mangled HidePhoto__Fv
@@ -132,6 +141,7 @@ int IsEnablePhotoMenu();
 void HidePhoto();
 
 /**
+ *
  * Tells whether the camera is in one of the shutter's capture steps,
  * when the scene drawn is the one the photo records.
  *
@@ -142,6 +152,7 @@ void HidePhoto();
 int GhostPhotoTiming();
 
 /**
+ *
  * Updates camera mode for one frame: zooms with the right stick, fires
  * the shutter when a picture slot is free, and runs the shutter
  * animation down.
@@ -153,6 +164,7 @@ int GhostPhotoTiming();
 void LoopTakePhoto(CPadControl *pad, CInventUserData *user_data);
 
 /**
+ *
  * Draws the camera overlay and the last photo taken, and performs the
  * capture steps of the shutter, storing the image into a picture and the
  * subject's distance into the given float; tells whether a picture was
@@ -165,6 +177,7 @@ void LoopTakePhoto(CPadControl *pad, CInventUserData *user_data);
 int DrawTakePhoto(USER_PICTURE_INFO *picture, float *distance);
 
 /**
+ *
  * Records a newly taken picture: shows its title when it names a
  * subject, counts the shot, and shows the level-up message when the
  * photography level rises.
@@ -176,6 +189,7 @@ int DrawTakePhoto(USER_PICTURE_INFO *picture, float *distance);
 void SetTookPhotoData(USER_PICTURE_INFO *photo);
 
 /**
+ *
  * Draws the camera-mode text: the button prompts or the photo title, the
  * level-up message, and the count of pictures carried against the limit.
  *

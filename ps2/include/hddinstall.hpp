@@ -10,6 +10,7 @@
  */
 
 /**
+ *
  * Reports whether a usable hard disk is connected, storing the drive's
  * state through a pointer that may be NULL; positive when one is usable.
  *
@@ -20,6 +21,7 @@
 int HddConectCheck(int *state);
 
 /**
+ *
  * Reports whether the game is installed on the hard disk; positive when
  * it is, negative on an error.
  *
@@ -30,6 +32,7 @@ int HddConectCheck(int *state);
 int CheckAppInstall();
 
 /**
+ *
  * Reports whether the hard disk has room to install the game; positive
  * when it has, negative on an error.
  *
@@ -40,6 +43,7 @@ int CheckAppInstall();
 int CheckInstallSpace();
 
 /**
+ *
  * Mounts the hard-disk partition that holds the installed game so that
  * files are read from it; positive on success.
  *
@@ -50,6 +54,7 @@ int CheckInstallSpace();
 int MountHDDFileSystem();
 
 /**
+ *
  * Unmounts the hard-disk partition that holds the installed game,
  * returning file reads to the disc.
  *
@@ -60,6 +65,7 @@ int MountHDDFileSystem();
 int UmountHDDFileSystem();
 
 /**
+ *
  * Starts the thread that copies the game onto the hard disk, working in
  * a buffer of a given size in bytes; non-zero when the thread was started.
  *
@@ -70,6 +76,7 @@ int UmountHDDFileSystem();
 int CreateInstallThread(u_long128 *work, int work_size);
 
 /**
+ *
  * Removes the installation thread
  * once the installation has stopped.
  *
@@ -80,6 +87,7 @@ int CreateInstallThread(u_long128 *work, int work_size);
 void DeleteInstallThread();
 
 /**
+ *
  * Advances the installation by one frame; positive while it is still
  * running, otherwise the final result, zero on success.
  *
@@ -90,6 +98,7 @@ void DeleteInstallThread();
 int StepInstallThread();
 
 /**
+ *
  * Pauses a running installation,
  * or resumes a paused one.
  *
@@ -100,6 +109,7 @@ int StepInstallThread();
 int InstallPause();
 
 /**
+ *
  * Asks the installation thread to stop; StepInstallThread reports
  * when it has.
  *
@@ -110,6 +120,7 @@ int InstallPause();
 void InstallCancel();
 
 /**
+ *
  * Gives how far the installation has got,
  * in percent.
  *
@@ -120,6 +131,7 @@ void InstallCancel();
 float GetInstallProgress();
 
 /**
+ *
  * Removes the installed copy of the game from the hard disk, giving the
  * result code that the hard-disk debug menu shows as its error code.
  *

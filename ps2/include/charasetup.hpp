@@ -54,6 +54,7 @@ struct ROBO_INFO_DATA {
 STATIC_ASSERT(sizeof(ROBO_INFO_DATA) == 0x24);
 
 /**
+ *
  * Model and arm names of each ridepod body, indexed by the body's type
  * less one.
  *
@@ -64,6 +65,7 @@ STATIC_ASSERT(sizeof(ROBO_INFO_DATA) == 0x24);
 extern ROBO_INFO_BODY robo_info_body[11];
 
 /**
+ *
  * Record of the ridepod's files and behaviour that GetRoboPartsInfo
  * fills and returns.
  *
@@ -74,6 +76,7 @@ extern ROBO_INFO_BODY robo_info_body[11];
 extern ROBO_INFO_DATA robo_dat;
 
 /**
+ *
  * Writes the path of the sound bank of a main character: Max's chosen by
  * his equipped weapon, Monica's, or the ridepod's from its arm.
  *
@@ -84,6 +87,7 @@ extern ROBO_INFO_DATA robo_dat;
 void GetCharacterSnd(CUserDataManager *user_data, int unit, char *path);
 
 /**
+ *
  * Loads the models, weapons, skins and action script of a main character
  * into the scene's characters and links them; returns 0 if the scene lacks
  * a character.
@@ -95,6 +99,7 @@ void GetCharacterSnd(CUserDataManager *user_data, int unit, char *path);
 int SetupMainUnit(u_long128 *read_buffer, mgCMemory *memory, mgCMemory *stacks, int image_block, CScene *scene, CUserDataManager *user_data, int chara_type, int edit_mode);
 
 /**
+ *
  * Returns the size of memory that the character stacks need for the largest
  * of the main characters, plus a quadword of slack.
  *
@@ -105,6 +110,7 @@ int SetupMainUnit(u_long128 *read_buffer, mgCMemory *memory, mgCMemory *stacks, 
 int GetCharaMemAllocSize();
 
 /**
+ *
  * Empties a memory and carves from it the stacks that a main character's
  * parts load into; returns 0 if the memory runs out.
  *
@@ -115,6 +121,7 @@ int GetCharaMemAllocSize();
 int GetCharaMemAllocPtr(mgCMemory *memory, mgCMemory *stacks, int chara_type, int edit_mode);
 
 /**
+ *
  * Attaches a main character's loaded parts to it, points it at the scene's
  * effects, and passes it to AtraMiriaOnOff when a save data control bit is set.
  *
@@ -125,6 +132,7 @@ int GetCharaMemAllocPtr(mgCMemory *memory, mgCMemory *stacks, int chara_type, in
 void SetupUnitMan(CScene *scene, CUserDataManager *user_data, int unit, ROBO_INFO_DATA *robo_info);
 
 /**
+ *
  * Gathers the files and behaviour of the ridepod from its equipped parts
  * into a shared record and returns it.
  *

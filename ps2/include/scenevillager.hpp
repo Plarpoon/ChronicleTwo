@@ -88,7 +88,9 @@ enum GAMEOBJ_TYPE {
 };
 
 /**
+ *
  * Most places a single game object table entry can put its game object at.
+ *
  */
 #define GAMEOBJ_PLACE_MAX 4
 

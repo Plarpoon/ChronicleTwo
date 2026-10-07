@@ -130,6 +130,7 @@ public:
     }
 
     /**
+     *
      * Draws the sprite through the draw manager, adding nothing to a
      * caller's DMA chain.
      *
@@ -140,6 +141,7 @@ public:
     virtual void Draw(float (*matrix)[4], mgCDrawManager *manager);
 
     /**
+     *
      * Builds the render-info packet and the sprite's packet, and writes
      * DMA calls to both into a caller's chain when one is given.
      *
@@ -150,6 +152,7 @@ public:
     virtual int Draw(u_int *tag, float (*matrix)[4], mgCDrawManager *manager);
 
     /**
+     *
      * Clears the sprite to no texture and no depth, with a neutral colour
      * and the default visual attributes.
      *
@@ -160,6 +163,7 @@ public:
     virtual void Initialize();
 
     /**
+     *
      * Builds the packet of GS register writes that draws the rectangle,
      * returning the packet's address.
      *
@@ -170,6 +174,7 @@ public:
     virtual u_int CreatePacket(mgCDrawManager *manager);
 
     /**
+     *
      * Sets the colour and alpha the rectangle is drawn with, where 0x80 is
      * full intensity.
      *
@@ -213,6 +218,7 @@ public:
     }
 
     /**
+     *
      * Builds the packet that loads the VU program's matrices, lighting and
      * drawing state for the billboards, and sends it.
      *
@@ -224,6 +230,7 @@ public:
                                        mgRENDER_INFO *render_info);
 
     /**
+     *
      * Draws the built packet through the draw manager, adding nothing to a
      * caller's DMA chain.
      *
@@ -234,6 +241,7 @@ public:
     virtual void Draw(float (*matrix)[4], mgCDrawManager *manager);
 
     /**
+     *
      * Builds the render-info packet and, when a caller's chain is given,
      * writes DMA calls to it, the VU program, and the built packet.
      *
@@ -244,6 +252,7 @@ public:
     virtual int Draw(u_int *tag, float (*matrix)[4], mgCDrawManager *manager);
 
     /**
+     *
      * Clears the visual's state and forgets the built packet.
      *
      * @mangled Initialize__11mgC3DSpriteFv
@@ -253,6 +262,7 @@ public:
     virtual void Initialize();
 
     /**
+     *
      * Starts a new packet in the draw manager's data memory, for billboards
      * of the given mgC3DSpriteMode.
      *
@@ -263,6 +273,7 @@ public:
     void BeginCreatePacket(int mode, mgCDrawManager *manager);
 
     /**
+     *
      * Adds the drawing environment's GS registers to the packet, with a
      * black fog colour for additive and subtractive blending.
      *
@@ -273,6 +284,7 @@ public:
     void CPSetDrawEnv(mgCDrawEnv *env);
 
     /**
+     *
      * Adds a texture flush and the texture's TEX0 register to the packet,
      * when a texture is given.
      *
@@ -283,6 +295,7 @@ public:
     void CPSetTexture(mgCTexture *texture);
 
     /**
+     *
      * Opens a batch of billboards, reserving its DMA tag, GIF tag and
      * header quadwords and filling in the GIF tag for the mode.
      *
@@ -293,6 +306,7 @@ public:
     void BeginCPSprite();
 
     /**
+     *
      * Adds one billboard to the open batch, closing it and opening another
      * once the batch holds more than 32.
      *
@@ -303,6 +317,7 @@ public:
     void CPSetSprite(float *first, float *second, float *third, float *fourth, float *fifth);
 
     /**
+     *
      * Closes the open batch, filling in its DMA tag and header and starting
      * or continuing the VU program when it holds any billboards.
      *
@@ -313,6 +328,7 @@ public:
     void EndCPSprite();
 
     /**
+     *
      * Ends the packet with a flush and a DMA return, and takes the space it
      * used from the memory it was built in.
      *

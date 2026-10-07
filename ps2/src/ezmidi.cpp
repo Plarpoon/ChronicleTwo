@@ -13,7 +13,9 @@ extern char at_33[];
 static s32 sbuff__2[16]; /**< Shared argument and response buffer for EZMIDI RPC calls. */
 
 /**
+ *
  * Holds the RPC client and the alignment gap before the DMA descriptor.
+ *
  */
 struct EzMidiClientStorage {
     sceSifClientData client; /**< Connection to the EZMIDI IOP server. */

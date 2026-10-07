@@ -20,27 +20,37 @@ class mgCCamera;
 class mgCMemory;
 
 /**
+ *
  * Number of rain drops that fall close to the camera.
+ *
  */
 #define RAIN_DROP_NUM 100
 
 /**
+ *
  * Number of rain drops that fall far from the camera.
+ *
  */
 #define RAIN_FAR_DROP_NUM 50
 
 /**
+ *
  * Number of splash particles the rain can show at once.
+ *
  */
 #define RAIN_PARTICLE_NUM 100
 
 /**
+ *
  * Number of ripples the rain keeps on the ground.
+ *
  */
 #define RAIN_RIPPLE_NUM 200
 
 /**
+ *
  * Number of earlier positions a rain drop remembers to draw its streak.
+ *
  */
 #define RAIN_DROP_TRAIL_NUM 8
 
@@ -83,6 +93,7 @@ enum RAIN_DROP_TYPE {
 };
 
 /**
+ *
  * Gives back a random number between two values.
  *
  * @mangled f_rand__Fff
@@ -92,6 +103,7 @@ enum RAIN_DROP_TYPE {
 float f_rand(float min, float max);
 
 /**
+ *
  * Gives back a random whole number between two values.
  *
  * @mangled i_rand__Fii
@@ -101,6 +113,7 @@ float f_rand(float min, float max);
 int i_rand(int min, int max);
 
 /**
+ *
  * Sets a vector to the origin, with a W of one.
  *
  * @mangled InitVector__FPf
@@ -110,6 +123,7 @@ int i_rand(int min, int max);
 void InitVector(float *vec);
 
 /**
+ *
  * Picks a random ground position in front of the main scene's camera, at a
  * distance and within an angle either side of the view direction, and gives
  * back a height that grows with the distance as the camera looks down.
@@ -121,6 +135,7 @@ void InitVector(float *vec);
 float RandXYinViewArea(float min_dist, float max_dist, float angle, float *x, float *z);
 
 /**
+ *
  * Draws short streaks of rain at random places straight onto the screen.
  *
  * @mangled DrawScreenRain__Fv
@@ -145,11 +160,14 @@ public:
     s32           unk_2c;
 
     /**
+     *
      * Makes a ripple that is not showing.
+     *
      */
     CRipple() { Init(); }
 
     /**
+     *
      * Starts the ripple at a position with a random size and life, unless
      * it is already showing; gives back zero when it was already showing.
      *
@@ -160,6 +178,7 @@ public:
     int Birth(float *pos);
 
     /**
+     *
      * Ages the ripple by one frame; gives back zero when it is not showing,
      * one while it shows, and -1 on the frame it ends.
      *
@@ -170,6 +189,7 @@ public:
     int Step();
 
     /**
+     *
      * Draws the ripple as a circle lying on the ground, growing and fading
      * with its age.
      *
@@ -180,6 +200,7 @@ public:
     void Draw();
 
     /**
+     *
      * Stops the ripple and clears its position, size and age.
      *
      * @mangled Init__7CRippleFv
@@ -208,11 +229,14 @@ public:
     u8            unk_44[0xC];
 
     /**
+     *
      * Makes a particle that is not moving.
+     *
      */
     CParticle() { Init(); }
 
     /**
+     *
      * Starts the particle at a position with a speed, falling under
      * gravity, unless it is already moving; gives back non-zero when it
      * was started.
@@ -224,6 +248,7 @@ public:
     int Birth(float *pos, float *velocity);
 
     /**
+     *
      * Moves the particle by one frame; gives back zero when it is not
      * moving, one while it moves, and -1 on the frame it ends.
      *
@@ -234,6 +259,7 @@ public:
     int Step();
 
     /**
+     *
      * Draws the particle as a point that fades with its distance from the
      * main scene's camera.
      *
@@ -244,6 +270,7 @@ public:
     void Draw();
 
     /**
+     *
      * Stops the particle and clears its position, speed and acceleration.
      *
      * @mangled Init__9CParticleFv
@@ -271,11 +298,14 @@ public:
     s32           color[4];                 /**< Red, green, blue and alpha the streak is drawn with. */
 
     /**
+     *
      * Makes a drop that is not falling.
+     *
      */
     CRainDrop() { Init(); }
 
     /**
+     *
      * Starts the drop at a random place above the ground in front of the
      * camera, near or far by its type, unless it is already falling.
      *
@@ -286,6 +316,7 @@ public:
     void Birth(int type);
 
     /**
+     *
      * Moves the drop by one frame; gives back zero when it is not falling,
      * one while it falls, -1 while it is below the ground, and -2 once it
      * has fallen far below it.
@@ -297,6 +328,7 @@ public:
     int Step();
 
     /**
+     *
      * Draws the drop as lines through its remembered positions.
      *
      * @mangled Draw__9CRainDropFv
@@ -306,6 +338,7 @@ public:
     void Draw();
 
     /**
+     *
      * Stops the drop and clears its positions, speed and colour.
      *
      * @mangled Init__9CRainDropFv
@@ -334,11 +367,14 @@ public:
     CRipple   ripple[RAIN_RIPPLE_NUM];     /**< Ripples on the ground. */
 
     /**
+     *
      * Makes rain that is not falling.
+     *
      */
     CRain() { Init(); }
 
     /**
+     *
      * Chooses the scene character that rain splashes off; choosing none
      * clears every splash.
      *
@@ -349,6 +385,7 @@ public:
     void SetCharNo(int chara_no);
 
     /**
+     *
      * Throws up a splash particle at a position, from a character when the
      * flag is set and from the ground otherwise, using the first particle
      * that is free.
@@ -360,6 +397,7 @@ public:
     void ParticleBirth(float *pos, int from_chara);
 
     /**
+     *
      * Stops the rain.
      *
      * @mangled Stop__5CRainFv
@@ -369,6 +407,7 @@ public:
     void Stop();
 
     /**
+     *
      * Starts the rain, setting every drop and ripple going.
      *
      * @mangled Start__5CRainFv
@@ -378,6 +417,7 @@ public:
     void Start();
 
     /**
+     *
      * Moves the rain by one frame, starting drops, ripples and splashes
      * again as they end.
      *
@@ -388,6 +428,7 @@ public:
     void Step();
 
     /**
+     *
      * Stops the rain and clears every drop, splash and ripple.
      *
      * @mangled Init__5CRainFv
@@ -397,6 +438,7 @@ public:
     void Init();
 
     /**
+     *
      * Draws the drops, splashes and ripples of the rain, then the streaks
      * over the screen, while it is raining.
      *
@@ -427,6 +469,7 @@ public:
     CSceneData() { Initialize(); }
 
     /**
+     *
      * Empties the slot: no status, no name, and no memory or textures.
      *
      * @mangled Initialize__10CSceneDataFv
@@ -452,6 +495,7 @@ public:
     CSceneCharacter() { Initialize(); }
 
     /**
+     *
      * Puts a character in the slot under a name; gives back zero when
      * either is missing.
      *
@@ -462,6 +506,7 @@ public:
     int AssignData(CCharacter2 *chara, char *name);
 
     /**
+     *
      * Empties the slot.
      *
      * @mangled Initialize__15CSceneCharacterFv
@@ -485,6 +530,7 @@ public:
     CSceneMap() { Initialize(); }
 
     /**
+     *
      * Empties the slot.
      *
      * @mangled Initialize__9CSceneMapFv
@@ -494,6 +540,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Puts a map in the slot under a name; gives back zero when either is
      * missing.
      *
@@ -518,6 +565,7 @@ public:
     CSceneMessage() { Initialize(); }
 
     /**
+     *
      * Empties the slot.
      *
      * @mangled Initialize__13CSceneMessageFv
@@ -527,6 +575,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Puts a set of messages in the slot under a name, which may be
      * missing; gives back zero when the messages are missing.
      *
@@ -551,6 +600,7 @@ public:
     CSceneCamera() { Initialize(); }
 
     /**
+     *
      * Puts a camera in the slot under a name, which may be missing; gives
      * back zero when the camera is missing.
      *
@@ -561,6 +611,7 @@ public:
     int AssignData(mgCCamera *camera, char *name);
 
     /**
+     *
      * Empties the slot.
      *
      * @mangled Initialize__12CSceneCameraFv
@@ -584,6 +635,7 @@ public:
     CSceneSky() { Initialize(); }
 
     /**
+     *
      * Puts a sky in the slot under a name, which may be missing; gives
      * back zero when the sky is missing.
      *
@@ -594,6 +646,7 @@ public:
     int AssignData(CMapSky *sky, char *name);
 
     /**
+     *
      * Empties the slot.
      *
      * @mangled Initialize__9CSceneSkyFv
@@ -615,6 +668,7 @@ public:
     CSceneGameObj() { Initialize(); }
 
     /**
+     *
      * Empties the slot.
      *
      * @mangled Initialize__13CSceneGameObjFv
@@ -638,6 +692,7 @@ public:
     CSceneEffect() { Initialize(); }
 
     /**
+     *
      * Empties the slot.
      *
      * @mangled Initialize__12CSceneEffectFv
@@ -647,6 +702,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Puts an effect script manager in the slot under a name, which may be
      * missing; gives back zero when the manager is missing.
      *

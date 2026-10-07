@@ -168,7 +168,7 @@ STATIC_ASSERT(sizeof(vmcode_t) == 0xC);
  *
  */
 struct funcdata {
-    int   addr;  /**< Offset of the function's first instruction in the code section. */
+    u32   addr;  /**< Nonnegative byte offset of the function's first instruction in the code section. */
     char *name;  /**< Name of the function, for runtime error messages. */
     int   local; /**< Number of frame slots, arguments included. */
     int   arg;   /**< Number of argument slots. */
@@ -247,6 +247,7 @@ public:
     int             skip_end_count;              /**< Number of skip ends reached since the script started. */
 
     /**
+     *
      * Makes an interpreter with no program, stack or external
      * functions.
      *
@@ -257,6 +258,7 @@ public:
     CRunScript();
 
     /**
+     *
      * Detaches the loaded program and clears the finished and skip
      * states.
      *
@@ -267,6 +269,7 @@ public:
     void DeleteProgram();
 
     /**
+     *
      * Stops the game when the operand stack is full.
      *
      * @mangled check_stack__10CRunScriptFv
@@ -276,6 +279,7 @@ public:
     void check_stack();
 
     /**
+     *
      * Pushes one value onto the operand stack.
      *
      * @mangled push__10CRunScriptF12RS_STACKDATA
@@ -285,6 +289,7 @@ public:
     void push(RS_STACKDATA data);
 
     /**
+     *
      * Pushes an integer onto the operand stack.
      *
      * @mangled push_int__10CRunScriptFi
@@ -294,6 +299,7 @@ public:
     void push_int(int value);
 
     /**
+     *
      * Pushes a string onto the operand stack.
      *
      * @mangled push_str__10CRunScriptFPc
@@ -303,6 +309,7 @@ public:
     void push_str(char *value);
 
     /**
+     *
      * Pushes a reference to a stack slot onto the operand stack.
      *
      * @mangled push_ptr__10CRunScriptFP12RS_STACKDATA
@@ -312,6 +319,7 @@ public:
     void push_ptr(RS_STACKDATA *value);
 
     /**
+     *
      * Pushes a float onto the operand stack.
      *
      * @mangled push_float__10CRunScriptFf
@@ -321,6 +329,7 @@ public:
     void push_float(float value);
 
     /**
+     *
      * Pops the top value off the operand stack.
      *
      * @mangled pop__10CRunScriptFv
@@ -330,6 +339,7 @@ public:
     RS_STACKDATA pop();
 
     /**
+     *
      * Enters a script function, and gives back its first instruction.
      *
      * @mangled call_func__10CRunScriptFP8funcdataP8vmcode_t
@@ -339,6 +349,7 @@ public:
     vmcode_t *call_func(funcdata *callee, vmcode_t *return_pc);
 
     /**
+     *
      * Leaves the current script function, and gives back the caller's
      * call instruction.
      *
@@ -349,6 +360,7 @@ public:
     vmcode_t *ret_func();
 
     /**
+     *
      * Calls the external function the first argument names.
      *
      * @mangled ext__10CRunScriptFP12RS_STACKDATAi
@@ -358,6 +370,7 @@ public:
     void ext(RS_STACKDATA *command, int arg_count);
 
     /**
+     *
      * Gives the interpreter a program and the stacks to run it on,
      * reserving global slots for an "SB2" program.
      *
@@ -368,6 +381,7 @@ public:
     void load(RS_PROG_HEADER *prog, RS_STACKDATA *values, int value_count, RS_CALLDATA *call, int call_count);
 
     /**
+     *
      * Registers the table of external functions scripts can call.
      *
      * @mangled ext_func__10CRunScriptFPPFP12RS_STACKDATAi_ii
@@ -377,6 +391,7 @@ public:
     void ext_func(int (**table)(RS_STACKDATA *, int), int count);
 
     /**
+     *
      * Continues a suspended script where it stopped.
      *
      * @mangled resume__10CRunScriptFv
@@ -386,6 +401,7 @@ public:
     void resume();
 
     /**
+     *
      * Starts a numbered program, or the main function for a negative
      * number; gives back 1 if it suspended, 0 if it ended, -1 on failure.
      *
@@ -396,6 +412,7 @@ public:
     int run(int no);
 
     /**
+     *
      * Reports whether the program has a numbered entry.
      *
      * @mangled check_program__10CRunScriptFi
@@ -405,6 +422,7 @@ public:
     int check_program(int no);
 
     /**
+     *
      * Resumes the script, running through its waits up to the next
      * skip end.
      *
@@ -415,6 +433,7 @@ public:
     void skip();
 
     /**
+     *
      * Runs instructions from one until the script ends or waits.
      *
      * @mangled exe__10CRunScriptFP8vmcode_t
@@ -427,6 +446,7 @@ public:
 STATIC_ASSERT(sizeof(CRunScript) == 0x54);
 
 /**
+ *
  * Reads a script argument as an integer, converting a float.
  *
  * @mangled rsGetStackInt__FP12RS_STACKDATA
@@ -436,6 +456,7 @@ STATIC_ASSERT(sizeof(CRunScript) == 0x54);
 int rsGetStackInt(RS_STACKDATA *data);
 
 /**
+ *
  * Stores an integer through a script argument that references a
  * stack slot, doing nothing for any other argument.
  *

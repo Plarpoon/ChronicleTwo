@@ -84,3 +84,9 @@ Everything else is LOCAL in retail (`local_symbols.tsv`) and belongs in the .cpp
 ## Native static initialization
 
 Native `CFont Font__2` emits the retail `CFont::Init` call. The generated 12-byte initializer matches exactly.
+
+`StartEditMode` uses the scene's active camera as `mgCCameraFollow` for the
+follow settings; the player already inherits `mgCObject`. `EndEditMode` uses
+the typed `CEditMap` returned by the active map slot and calls the player's
+base position setter directly. Removing those base/derived C-style casts
+leaves both functions exact in objdiff.

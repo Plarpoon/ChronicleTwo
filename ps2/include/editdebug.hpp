@@ -95,6 +95,7 @@ struct EditDebugInfo : public SubGameInfo {
 STATIC_ASSERT(sizeof(EditDebugInfo) == 0x3C);
 
 /**
+ *
  * Closes the debug menu and returns it to its first entry with no
  * texture bank chosen.
  *
@@ -105,6 +106,7 @@ STATIC_ASSERT(sizeof(EditDebugInfo) == 0x3C);
 void EditDebugInit();
 
 /**
+ *
  * Gives non-zero while the town-building debug menu is open.
  *
  * @mangled EditDebugMode__Fv
@@ -114,6 +116,7 @@ void EditDebugInit();
 int EditDebugMode();
 
 /**
+ *
  * Opens the town-building debug menu, emptying the stack of the work
  * buffer it draws with and remembering the texture bank to use.
  *
@@ -124,6 +127,7 @@ int EditDebugMode();
 void EditDebugStart(int texb, mgCMemory *buffer);
 
 /**
+ *
  * Runs one frame of the town-building debug menu, drawing it and acting on
  * the pad, and gives 1 once the menu has closed.
  *
@@ -134,6 +138,7 @@ void EditDebugStart(int texb, mgCMemory *buffer);
 int EditDebugLoop(CScene *scene, EditDebugInfo *info);
 
 /**
+ *
  * Closes the debug menu and returns it to its first entry with no
  * texture bank chosen.
  *
@@ -144,6 +149,7 @@ int EditDebugLoop(CScene *scene, EditDebugInfo *info);
 void EditDebugEnd();
 
 /**
+ *
  * Leaves the lighting editor closed when the town-building mode
  * starts.
  *
@@ -154,6 +160,7 @@ void EditDebugEnd();
 void InitLightingEdit();
 
 /**
+ *
  * Closes the lighting editor when the town-building mode
  * ends.
  *
@@ -164,6 +171,7 @@ void InitLightingEdit();
 void EndLightingEdit();
 
 /**
+ *
  * Gives non-zero while the lighting editor is
  * open.
  *
@@ -174,6 +182,7 @@ void EndLightingEdit();
 int IsLightingEditMode();
 
 /**
+ *
  * Runs one frame of the lighting editor, opening and closing it on the pad
  * and letting the current map's light and fog settings be changed and saved.
  *

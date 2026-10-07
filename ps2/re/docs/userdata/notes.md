@@ -46,6 +46,8 @@ No class in the unit has virtual functions (no `__vt__` symbol, no vtable stores
 
 ## CGameDataUsed (0x6C)
 Size from `Init` memset 0x6C, every array stride, `memcpy(...,0x6C)` in `CopyGameData`.
+`GetUseCapacity` reads `CDataRoboPart::use_capacity` at offset zero; accessing the named field
+instead of casting the record to `short *` produces byte-identical code for the whole unit.
 - 0x0 s16 `used_type`: `ConvertUsedItemType` result (`CopyDataItem(int)`), 1 item, 2 attach, 3 weapon,
   4 item family 4, 5 ridepod part, 6 fish, 7 gift box, 8 boiled (`Boiled`). 0x2 s16 `item_no`.
   0x4 s8 `item_type` (common data type; `IsWhoEquip` compares as `(char)`). 0x5 u8 `rename_flag`
@@ -105,6 +107,9 @@ max == now. The callers' fptosi of +4 is the current value, and of +0 the full v
   bit 1 drains HP every 100 steps (`StatusParamStep`); 0x10 multiplies weapon attack by 1.5 in
   `RefreshParamater` (`at_4695` holds 1.0, 1.0). `ConvertItemAttrToCharaAttr` maps item bits 0x10000..
   0x10000000 to these bits. 0x7F = all (PlayerPartyCure, Step).
+- `SetCharaStatusAttirbuteVol` writes the four character timers through `CHARA_DATA::status_time`,
+  three ridepod timers through `ROBO_DATA::status_time`, and two badge timers through
+  `MOS_CHANGE_PARAM::status_time_1` / `status_time_10`. All typed field stores retain the retail code.
 
 ## ROBO_DATA (0x220), CUserDataManager 0x4660
 memset 0x220 in `Initialize`. +2 `name` (`SetRoboName` strcpy 0x4662; default from `robo_nametable_3330`),
@@ -269,6 +274,26 @@ The header gives their addresses, sizes, declarations and purpose comments.
 - `CheckGetItemRemainNum` subtracts the held item count from `CDataCommon::max_num`.
 
 All six functions retain 100% PAL object matches with the typed member access.
+
+Signed reads of the weapon palette and attack-type bytes, the fish sex byte,
+the attachment spectrum source and the character equipment flag use value
+conversion to `s8`. This preserves retail's signed-byte behavior without
+aliasing those fields through signed-byte pointers in `GetPalletColor`,
+`GetAttackType`, `TransToPassword`, `GetMsgAddInfo`, and `CheckEquipChange`.
+
+`GetAquariumFish0` addresses the first tank's `fish_tank[slot]` record: the
+raw byte offset +4 enters the first `CGameDataUsed`, and +6 reads its item
+number. Direct typed indexing changes register allocation in this function,
+so the retail-matching source still uses its offset form.
+
+`CBattleCharaInfo::GetNowAccessWHp` reads the selected human weapon's
+`CGameDataUsed::data.weapon.whp` gauge. Direct typed access for this branch
+retains a 100% PAL match. The ridepod branch addresses the second gauge of
+its equipped part, but direct `data.robopart.gage1` access changes codegen.
+
+`CUserDataManager::GetNumSameItem` counts a matching ridepod item once per
+`ROBO_DATA::parts` slot. Direct indexing of the bag, character or ridepod
+arrays changes register allocation, so its offset-based loops remain.
 
 ## Compiler flag cleanup
 

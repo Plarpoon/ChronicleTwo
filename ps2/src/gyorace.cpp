@@ -433,7 +433,7 @@ int sgLoopGyoRace(SubGameInfo *info) {
     CScene                    *scene = info->scene;
     switch ((unsigned int) race_mode) {
         case 0:
-            *(int *) ((u_char *) scene + 0x2E54) = camera_id;
+            scene->active_camera = camera_id;
             camera0.SetPos(225.0f, 38.0f, 168.0f);
             camera0.SetNextPos(225.0f, 38.0f, 168.0f);
             camera0.SetRef(222.0f, 0.0f, 0.0f);
@@ -465,7 +465,7 @@ int sgLoopGyoRace(SubGameInfo *info) {
             }
             break;
         case 1: {
-            *(int *) ((u_char *) scene + 0x2E54) = camera_id;
+            scene->active_camera = camera_id;
             camera0.SetPos(225.0f, 38.0f, 168.0f);
             camera0.SetNextPos(225.0f, 38.0f, 168.0f);
             camera0.SetRef(222.0f, 0.0f, 0.0f);
@@ -671,7 +671,7 @@ int sgLoopGyoRace(SubGameInfo *info) {
             break;
         }
         case 4: {
-            *(int *) ((u_char *) scene + 0x2E54) = camera_id;
+            scene->active_camera = camera_id;
             camera0.SetPos(270.0f, -40.0f, -10.0f);
             camera0.SetNextPos(270.0f, -40.0f, -10.0f);
             camera0.SetRef(192.0f, 0.0f, 0.0f);
@@ -735,7 +735,7 @@ int sgLoopGyoRace(SubGameInfo *info) {
             break;
         }
         case 5: {
-            *(int *) ((u_char *) scene + 0x2E54) = camera_id;
+            scene->active_camera = camera_id;
             race_mode = 2;
             race_proc_cnt = 0;
             SetGyoRaceRanking(RaceInfo.rank[hero_no] - 1);
@@ -853,7 +853,7 @@ void AutoCam(SubGameInfo *info) {
         camera0.SetPos(cam_pos[cam_no]);
         camera0.SetNextPos(cam_pos[cam_no]);
         mgDistVector(hero_pos, cam_pos[cam_no]);
-        *(int *) ((u_char *) scene + 0x2E54) = camera_id;
+        scene->active_camera = camera_id;
         camera0.SetRef(hero_pos);
         camera0.SetNextRef(hero_pos);
         camera0.SetSpeed(0.0f, 0.0f);

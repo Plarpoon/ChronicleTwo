@@ -67,6 +67,7 @@ public:
     mgVu0FBOX bbox; /**< Bounds of the geometry, in the geometry's own space. */
 
     /**
+     *
      * Creates empty geometry with cleared bounds.
      *
      * @mangled __ct__10CCollisionFv
@@ -76,6 +77,7 @@ public:
     CCollision() { CCollision::Initialize(); }
 
     /**
+     *
      * Recomputes the bounds from the geometry; the empty box has none.
      *
      * @mangled CreateBBox__10CCollisionFv
@@ -85,6 +87,7 @@ public:
     virtual void CreateBBox() {}
 
     /**
+     *
      * Reports whether a point lies inside the bounds.
      *
      * @mangled InsidePoint__10CCollisionFPf
@@ -94,6 +97,7 @@ public:
     virtual int InsidePoint(float *point);
 
     /**
+     *
      * Finds the height of the highest surface under or over a point,
      * writing it to the point's Y; the empty box finds none.
      *
@@ -104,6 +108,7 @@ public:
     virtual int GetMaxY(float *position) { return 0; }
 
     /**
+     *
      * Finds where a segment first meets the geometry; the empty box
      * never meets it.
      *
@@ -114,6 +119,7 @@ public:
     virtual int Intersection(float *from, float *to, float *hit);
 
     /**
+     *
      * Copies the triangles whose bounds meet a box into an array, and
      * returns how many were copied; the empty box has none.
      *
@@ -124,6 +130,7 @@ public:
     virtual int PickUpNearPoly(CCPoly *poly, const mgVu0FBOX &box, int max);
 
     /**
+     *
      * Copies the bounds into another piece of geometry.
      *
      * @mangled Copy__10CCollisionFR10CCollisionP9mgCMemory
@@ -133,6 +140,7 @@ public:
     virtual void Copy(CCollision &dest, mgCMemory *memory);
 
     /**
+     *
      * Clears the bounds.
      *
      * @mangled Initialize__10CCollisionFv
@@ -159,7 +167,9 @@ public:
     int     poly_count; /**< Number of triangles in poly. */
 
     /**
+     *
      * Creates geometry with no triangles and cleared bounds.
+     *
      */
     CCollisionMDT() {
         CCollision::Initialize();
@@ -168,6 +178,7 @@ public:
     }
 
     /**
+     *
      * Recomputes the bounds so that they enclose every triangle.
      *
      * @mangled CreateBBox__13CCollisionMDTFv
@@ -177,6 +188,7 @@ public:
     virtual void CreateBBox();
 
     /**
+     *
      * Finds the height of the highest triangle above or below a point
      * inside the bounds, writing it to the point's Y; returns nonzero
      * when one is found.
@@ -188,6 +200,7 @@ public:
     virtual int GetMaxY(float *position);
 
     /**
+     *
      * Copies at most a given number of triangles whose bounds meet a
      * box into an array, and returns how many were copied.
      *
@@ -198,6 +211,7 @@ public:
     virtual int PickUpNearPoly(CCPoly *poly, const mgVu0FBOX &box, int max);
 
     /**
+     *
      * Clears the bounds and drops the triangles.
      *
      * @mangled Initialize__13CCollisionMDTFv
@@ -207,6 +221,7 @@ public:
     virtual void Initialize();
 
     /**
+     *
      * Copies the bounds and triangles into other geometry; the triangles
      * are duplicated in a heap when one is given, and shared otherwise.
      *
@@ -231,6 +246,7 @@ public:
     CCollision *collision; /**< Geometry held by this frame, or null. */
 
     /**
+     *
      * Creates a frame that holds no geometry.
      *
      * @mangled __ct__9CColFrameFv
@@ -240,6 +256,7 @@ public:
     CColFrame();
 
     /**
+     *
      * Gives the frame the geometry it holds.
      *
      * @mangled SetCollision__9CColFrameFP10CCollision
@@ -249,6 +266,7 @@ public:
     void SetCollision(CCollision *col) { collision = col; }
 
     /**
+     *
      * Reports whether a world-space point lies inside the bounds of the
      * frame's geometry.
      *
@@ -259,6 +277,7 @@ public:
     int InsidePoint(float *point);
 
     /**
+     *
      * Copies at most a given number of triangles of this frame and its
      * children whose bounds meet a world-space box into an array, moved
      * into world space, and returns how many were copied.
@@ -270,6 +289,7 @@ public:
     int PickUpNearPoly(CCPoly *poly, const mgVu0FBOX &box, int max);
 
     /**
+     *
      * Resets the frame to query its own geometry and hold none.
      *
      * @mangled Initialize__9CColFrameFv
@@ -279,6 +299,7 @@ public:
     virtual void Initialize();
 
     /**
+     *
      * Computes the world-space bounds of the frame's geometry and its
      * children's, and returns nonzero when there are any.
      *
@@ -289,6 +310,7 @@ public:
     virtual int GetWorldBBox(mgVu0FBOX *box);
 
     /**
+     *
      * Draws nothing, since collision geometry is never seen.
      *
      * @mangled Draw__9CColFrameFP14mgCDrawManager
@@ -298,6 +320,7 @@ public:
     virtual int Draw(mgCDrawManager *manager) { return 0; }
 
     /**
+     *
      * Draws nothing, since collision geometry is never seen.
      *
      * @mangled Draw__9CColFrameFPUiP14mgCDrawManager
@@ -310,6 +333,7 @@ public:
 STATIC_ASSERT(sizeof(CColFrame) == 0x120);
 
 /**
+ *
  * Builds the frame hierarchy of a collision model, giving each frame
  * that has geometry the triangles of its MDT model, and returns the
  * array of frames.
@@ -321,6 +345,7 @@ STATIC_ASSERT(sizeof(CColFrame) == 0x120);
 CColFrame *LoadCollisionFile(MDS_HEADER *header, mgCMemory *memory);
 
 /**
+ *
  * Builds collision geometry from the triangle lists of an MDT model,
  * or returns null when a primitive list is of a kind it does not read
  * or the triangles cannot be allocated.

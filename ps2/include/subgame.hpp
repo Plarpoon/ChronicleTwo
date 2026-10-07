@@ -109,6 +109,7 @@ public:
     }
 
     /**
+     *
      * Chooses a voice file to stream, closing any voice still open, and
      * leaves it waiting for a play request.
      *
@@ -119,6 +120,7 @@ public:
     void Open(int file_no);
 
     /**
+     *
      * Sets the left and right volumes, each clamped to 0 to 1; a negative
      * right volume takes the left one.
      *
@@ -139,6 +141,7 @@ public:
     void Play();
 
     /**
+     *
      * Advances the voice through opening, standing by and playing, and
      * gives 0 once no voice is open or the voice has finished.
      *
@@ -162,6 +165,7 @@ public:
 STATIC_ASSERT(sizeof(sgCPlayVoice) == 0x14);
 
 /**
+ *
  * Ends any sub game and, when the scene has a main character, frees the
  * scene's sub game texture blocks, characters and effect.
  *
@@ -252,6 +256,7 @@ void sgGetItemOverReset();
 void sgGetItemOverFlagOn();
 
 /**
+ *
  * Starts a sub game with a copy of the given parameters, taking the texture
  * blocks from the scene, and gives non-zero if it started.
  *
@@ -262,6 +267,7 @@ void sgGetItemOverFlagOn();
 int sgInitSubGame(int type, SubGameInfo *info);
 
 /**
+ *
  * Runs one frame of the running sub game, ending it when the sub game
  * reports that it has finished.
  *

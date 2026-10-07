@@ -434,8 +434,8 @@ public:
     /**
      *
      * Writes the screen positions of the speaker and the listener into
-     * @p pos, two values each.
      *
+     * @p pos, two values each.
      * @mangled AutoSetSub__6ClsMesFP11CCharacter2P11CCharacter2Pi
      * @address 0x152910
      * @size 0x50
@@ -652,8 +652,8 @@ public:
     /**
      *
      * Lays out one of the numbers in values at the position in @p x and
-     * @p y, moving them past it.
      *
+     * @p y, moving them past it.
      * @mangled MakeMesWinTbl_value__6ClsMesFiPiPi
      * @address 0x154E10
      * @size 0x330
@@ -674,8 +674,8 @@ public:
     /**
      *
      * Lays out one of the inserted strings at the position in @p x and
-     * @p y, moving them past it.
      *
+     * @p y, moving them past it.
      * @mangled MakeMesWinTbl_str__6ClsMesFiPiPi
      * @address 0x155DB0
      * @size 0x20
@@ -685,8 +685,8 @@ public:
     /**
      *
      * Lays out the system message an item code inserts at the position in
-     * @p x and @p y; gives back whether @p code was an item code.
      *
+     * @p x and @p y; gives back whether @p code was an item code.
      * @mangled MakeMesWinTbl_item__6ClsMesFiPiPi
      * @address 0x155DD0
      * @size 0x660
@@ -831,8 +831,8 @@ public:
     /**
      *
      * Resets the reveal, pages and voice for a new message; a non-zero
-     * @p reset_fade also starts the fade from nothing.
      *
+     * @p reset_fade also starts the fade from nothing.
      * @mangled MakeMesWin_init__6ClsMesFi
      * @address 0x1594F0
      * @size 0x120
@@ -853,8 +853,8 @@ public:
     /**
      *
      * Opens the window on a string, with @p open as the fade direction and
-     * @p reset_fade as for MakeMesWin_init.
      *
+     * @p reset_fade as for MakeMesWin_init.
      * @mangled MakeMesWin__6ClsMesFPcii
      * @address 0x159920
      * @size 0x1D0
@@ -1408,8 +1408,8 @@ int CheckPosInOutForArea(float *a, float *b, float *pos);
 /**
  *
  * Moves @p speed from @p from towards @p to into @p out, stopping at
- * @p to; gives back whether it was reached.
  *
+ * @p to; gives back whether it was reached.
  * @mangled CalcMoveNextPos__FPfPffPf
  * @address 0x15CDE0
  * @size 0xE0

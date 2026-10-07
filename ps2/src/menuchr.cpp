@@ -7239,7 +7239,7 @@ void MonsterBookDraw() {
 }
 /**
  *
- * Short rectangle whose setter has a retail standalone symbol.
+ * Short rectangle used for screen positions and bounds.
  *
  */
 class mgRect_s_ {

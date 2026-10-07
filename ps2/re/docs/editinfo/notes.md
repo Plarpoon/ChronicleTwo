@@ -74,6 +74,10 @@ PUT_RECT, PUT_RECT_END, EDIT_PARTS_END (names are the `at_368..at_396` strings).
   PARTS_COMMENT -> +0x48, PARTS_MATERIAL -> `GetMaterial(emapMatID++)` item/num (needs >= 2 args).
 - Every routine returns 1 on success, 0 when there is no current definition.
 
+`emapEDIT_PARTS` receives quadword-aligned storage from `mgCMemory::Alloc` and
+views it as a character buffer for the converted name. An explicit pointer
+reinterpretation retains its exact object code.
+
 ## Other
 - `editmap.hpp` declares `CEditMap::GetEvent` with `@size 0x1A0`; retail's symbol size is 0x198
   (0x1A0 is the padded extent). Not changed here (editmap's header).

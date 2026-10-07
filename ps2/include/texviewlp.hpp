@@ -4,7 +4,7 @@
 
 /**
  * @file
- * Declares the entry, exit and per-frame functions of the debug texture viewer, a main-loop mode that is left empty in the retail build.
+ * Declares the entry, exit and per-frame functions of the debug texture viewer.
  */
 
 /**
@@ -15,7 +15,9 @@
 struct INIT_LOOP_ARG;
 
 /**
- * Prepares the texture viewer when the main loop enters it; does nothing in the retail build.
+ *
+ * Entry hook for the debug texture viewer.
+ *
  *
  * @mangled InitTextuerViewerMain__F13INIT_LOOP_ARG
  * @address 0x1A3490
@@ -24,7 +26,9 @@ struct INIT_LOOP_ARG;
 void InitTextuerViewerMain(INIT_LOOP_ARG arg);
 
 /**
- * Releases the texture viewer when the main loop leaves it; does nothing in the retail build.
+ *
+ * Exit hook for the debug texture viewer.
+ *
  *
  * @mangled FinishTextuerVieweMain__Fv
  * @address 0x1A34A0
@@ -33,7 +37,9 @@ void InitTextuerViewerMain(INIT_LOOP_ARG arg);
 void FinishTextuerVieweMain();
 
 /**
- * Runs one frame of the texture viewer, and returns 1 so that the main loop leaves it at once.
+ *
+ * Returns to the main loop from the debug texture viewer.
+ *
  *
  * @mangled LoopTextuerViewerMain__Fv
  * @address 0x1A34B0

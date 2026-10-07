@@ -55,6 +55,7 @@ public:
     int   position; /**< Offset of the next byte to read. */
 
     /**
+     *
      * Copies characters into a line buffer until a terminator string is met,
      * and passes over the terminator; gives 1 when the terminator was found
      * and 0 when the text ran out first.
@@ -66,6 +67,7 @@ public:
     int GetLine(char *line, int line_size, char *terminator);
 
     /**
+     *
      * Reads the next byte of the text and moves past it, giving 0 once the
      * read has gone past the end of the text.
      *
@@ -80,6 +82,7 @@ public:
     }
 
     /**
+     *
      * Constructs a reader with no text.
      *
      * @mangled __ct__9input_strFv
@@ -93,6 +96,7 @@ public:
     }
 
     /**
+     *
      * Steps back over the byte read last, so that it is read again.
      *
      * @mangled back__9input_strFv
@@ -123,6 +127,7 @@ struct SPI_STACK {
     } value;           /**< Value of the argument. */
 
     /**
+     *
      * Copies another argument over this one.
      *
      * @mangled __as__9SPI_STACKFRC9SPI_STACK
@@ -139,8 +144,10 @@ struct SPI_STACK {
 STATIC_ASSERT(sizeof(SPI_STACK) == 0x8);
 
 /**
+ *
  * Routine that a script tag calls with its arguments and their count;
  * the interpreter ignores what it gives back.
+ *
  */
 typedef int (*SPI_TAG_FUNCTION)(SPI_STACK *stack, int argument_count);
 
@@ -194,6 +201,7 @@ public:
     u8             unk_9e0[0x4F0];
 
     /**
+     *
      * Pushes one argument onto the stack, unless the stack is full.
      *
      * @mangled PushStack__18CScriptInterpreterF9SPI_STACK
@@ -203,6 +211,7 @@ public:
     void PushStack(SPI_STACK argument);
 
     /**
+     *
      * Reads the next tag and its arguments out of the script and, when asked,
      * calls the routine of the tag; gives the index of the tag, or a negative
      * value at the end of the script.
@@ -214,6 +223,7 @@ public:
     int GetNextTAG(int call);
 
     /**
+     *
      * Gives the interpreter the storage for the arguments of a tag, and empties it.
      *
      * @mangled SetStack__18CScriptInterpreterFP9SPI_STACKi
@@ -227,6 +237,7 @@ public:
     }
 
     /**
+     *
      * Gives the interpreter the storage for the text of string arguments, and empties it.
      *
      * @mangled SetStringBuff__18CScriptInterpreterFPci
@@ -240,6 +251,7 @@ public:
     }
 
     /**
+     *
      * Reads every tag of the script and calls the routine of each.
      *
      * @mangled Run__18CScriptInterpreterFv
@@ -249,6 +261,7 @@ public:
     void Run();
 
     /**
+     *
      * Gives the hash chain, from 0 to 100, that a tag name belongs to.
      *
      * @mangled hash__18CScriptInterpreterFPc
@@ -258,6 +271,7 @@ public:
     int hash(char *name);
 
     /**
+     *
      * Gives the interpreter the table of tags it recognises, and builds the hash
      * chains of their names when the table has fewer than 128 entries.
      *
@@ -268,6 +282,7 @@ public:
     void SetTag(SPI_TAG_PARAM *tags);
 
     /**
+     *
      * Points the interpreter at the script it is to read, telling a binary script
      * by its "BIN" header and blanking the comments out of a text script.
      *
@@ -278,6 +293,7 @@ public:
     void SetScript(char *script, int script_size);
 
     /**
+     *
      * Constructs an interpreter with no script, stack or tags.
      *
      * @mangled __ct__18CScriptInterpreterFv
@@ -287,6 +303,7 @@ public:
     CScriptInterpreter();
 
     /**
+     *
      * Reads the arguments of a tag out of a binary script onto the stack, and
      * gives their number.
      *
@@ -297,6 +314,7 @@ public:
     int GetArgBin();
 
     /**
+     *
      * Reads the comma-separated arguments of a tag, up to its semicolon, out of
      * a text script onto the stack, and gives their number.
      *
@@ -307,6 +325,7 @@ public:
     int GetArg();
 
     /**
+     *
      * Reads the name of the next tag and finds its index in the tag table, or -1
      * for a name it does not know; gives 0 at the end of the script.
      *
@@ -320,6 +339,7 @@ public:
 STATIC_ASSERT(sizeof(CScriptInterpreter) == 0xED0);
 
 /**
+ *
  * Gives an argument as an integer, converting a floating-point one, or 0 for
  * any other kind of argument.
  *
@@ -330,6 +350,7 @@ STATIC_ASSERT(sizeof(CScriptInterpreter) == 0xED0);
 int spiGetStackInt(SPI_STACK *stack);
 
 /**
+ *
  * Gives an argument as a floating-point value, converting an integer one, or
  * 0.0 for any other kind of argument.
  *
@@ -340,6 +361,7 @@ int spiGetStackInt(SPI_STACK *stack);
 float spiGetStackFloat(SPI_STACK *stack);
 
 /**
+ *
  * Gives the text of a string argument, or null for any other kind of
  * argument.
  *
@@ -350,6 +372,7 @@ float spiGetStackFloat(SPI_STACK *stack);
 char *spiGetStackString(SPI_STACK *stack);
 
 /**
+ *
  * Reads three consecutive arguments as the floating-point components of a
  * vector.
  *

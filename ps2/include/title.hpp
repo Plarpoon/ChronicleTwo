@@ -313,6 +313,7 @@ struct HDD_INFO {
 STATIC_ASSERT(sizeof(HDD_INFO) == 0x24);
 
 /**
+ *
  * Returns whether an extra was started from the title screen since the
  * title mode was last entered.
  *
@@ -323,6 +324,7 @@ STATIC_ASSERT(sizeof(HDD_INFO) == 0x24);
 int CheckOmakeFlag();
 
 /**
+ *
  * Sets up the save data and the main loop arguments for an extra, and
  * gives the main loop mode the extra runs in.
  *
@@ -333,6 +335,7 @@ int CheckOmakeFlag();
 void InitOmakeEnv(int type, INIT_LOOP_ARG *arg, int *loop_no);
 
 /**
+ *
  * Prepares the title mode when the main loop enters it: render and memory
  * setup, the title state, and the first screen to show.
  *
@@ -343,6 +346,7 @@ void InitOmakeEnv(int type, INIT_LOOP_ARG *arg, int *loop_no);
 void TitleInit(INIT_LOOP_ARG arg);
 
 /**
+ *
  * Releases the title mode when the main loop leaves it, recording whether
  * an extra was started.
  *
@@ -353,6 +357,7 @@ void TitleInit(INIT_LOOP_ARG arg);
 void TitleExit();
 
 /**
+ *
  * Runs and draws one frame of the title mode, and returns non-zero once
  * the main loop is to leave it.
  *
@@ -363,6 +368,7 @@ void TitleExit();
 int TitleLoop();
 
 /**
+ *
  * Loads the language selection screen into the given memory and resets its
  * state.
  *
@@ -373,6 +379,7 @@ int TitleLoop();
 void TitleLangSelInit(mgCMemory *memory);
 
 /**
+ *
  * Runs one frame of the language selection, and returns the chosen
  * language once it has faded out, or 0 before then. @see LanguageCodeNo
  *
@@ -383,6 +390,7 @@ void TitleLangSelInit(mgCMemory *memory);
 int TitleLangSelKey();
 
 /**
+ *
  * Draws the language selection: the language rows, the cursor and the
  * fade.
  *
@@ -393,17 +401,23 @@ int TitleLangSelKey();
 void TitleLangSelDraw();
 
 /**
+ *
  * Title menu row chosen on entering the title screen; set to
  * TITLE_MENU_CONTINUE when a memory card holds a save file.
+ *
  */
 extern int TitleSelectInit;
 
 /**
+ *
  * Non-zero when a memory card checked at boot holds the debug code.
+ *
  */
 extern u8 MasterDebugModeOn;
 
 /**
+ *
  * Costume bits that the memory cards unlock for a new game.
+ *
  */
 extern u_long CostumeOptionEnv;

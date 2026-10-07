@@ -15,7 +15,9 @@
 
 #ifdef NONMATCHING
 /**
+ *
  * Transform, clipping and surface parameters unpacked into the water microprogram.
+ *
  */
 struct WaterRenderPacket {
     u_int         dma[4];           /**< DMA count tag. */
@@ -46,7 +48,9 @@ struct WaterRenderPacket {
 STATIC_ASSERT(sizeof(WaterRenderPacket) == 0x260);
 
 /**
+ *
  * Header of one grid strip, followed by its positions and slope vectors.
+ *
  */
 struct WaterStripPacket {
     u_int     dma[4];    /**< DMA count tag and VIF unpack code. */
@@ -57,7 +61,9 @@ struct WaterStripPacket {
 STATIC_ASSERT(sizeof(WaterStripPacket) == 0x30);
 
 /**
+ *
  * DMA control tag with space for two inline VIF codes.
+ *
  */
 struct WaterDmaTag {
     u_int command; /**< DMA command and quadword count. */
@@ -68,7 +74,9 @@ struct WaterDmaTag {
 STATIC_ASSERT(sizeof(WaterDmaTag) == 0x10);
 
 /**
+ *
  * Flushes the water microprogram and returns from its DMA chain.
+ *
  */
 struct WaterFinishPacket {
     WaterDmaTag dma;      /**< Count tag for the flush code. */

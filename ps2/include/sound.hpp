@@ -146,6 +146,7 @@ STATIC_ASSERT(sizeof(STREAM_PACK_REQUEST) == 0x40);
 class CSound {
 public:
     /**
+     *
      * Silences every voice of one sound processor core.
      *
      * @mangled StopVoice__6CSoundFi
@@ -155,6 +156,7 @@ public:
     void StopVoice(int core);
 
     /**
+     *
      * Routes the sound processor's inputs into reverberation, or keeps them
      * out of it.
      *
@@ -165,6 +167,7 @@ public:
     void SndInReverb(bool enable);
 
     /**
+     *
      * Sets the reverberation mode and depth of one sound processor core.
      *
      * @mangled SetReverb__6CSoundFiii
@@ -174,6 +177,7 @@ public:
     void SetReverb(int core, int mode, int depth);
 
     /**
+     *
      * Starts the sound processor, the EZMIDI and EZBGM servers and the MIDI
      * stream input module, and sets every port to its starting layout.
      *
@@ -184,6 +188,7 @@ public:
     int Init(int mode0, int mode1, int depth0, int depth1);
 
     /**
+     *
      * Stops every port, frees the IOP memory its banks and sequences hold
      * and releases the bank staging area.
      *
@@ -194,6 +199,7 @@ public:
     int Exit();
 
     /**
+     *
      * Stops a port and the ports linked to and dependent on it, and frees
      * the sequences they hold beyond the resident one.
      *
@@ -204,6 +210,7 @@ public:
     void DEL_PORT(int port);
 
     /**
+     *
      * Starts one of a port's loaded sequences playing at a volume.
      *
      * @mangled SQ_Play__6CSoundFiii
@@ -213,6 +220,7 @@ public:
     void SQ_Play(int port, int seq_no, int volume);
 
     /**
+     *
      * Starts a port's sequence again.
      *
      * @mangled SQ_RePlay__6CSoundFi
@@ -222,6 +230,7 @@ public:
     void SQ_RePlay(int port);
 
     /**
+     *
      * Plays one sound effect note on a port with every parameter given.
      *
      * @mangled SE_Play__6CSoundFiiiiiiiii
@@ -231,6 +240,7 @@ public:
     void SE_Play(int port, int bank, int program, int key, int pan, int velocity, int volume, int pitch, int id);
 
     /**
+     *
      * Sets the volume of a sounding effect note.
      *
      * @mangled SE_SetVol__6CSoundFiiiiii
@@ -240,6 +250,7 @@ public:
     void SE_SetVol(int port, int bank, int program, int key, int volume, int id);
 
     /**
+     *
      * Sets the stereo position of a sounding effect note.
      *
      * @mangled SE_SetPan__6CSoundFiiiiii
@@ -249,6 +260,7 @@ public:
     void SE_SetPan(int port, int bank, int program, int key, int pan, int id);
 
     /**
+     *
      * Stops a sounding effect note.
      *
      * @mangled SE_Stop__6CSoundFiiiii
@@ -258,6 +270,7 @@ public:
     void SE_Stop(int port, int bank, int program, int key, int id);
 
     /**
+     *
      * Advances the ports' fades and sends the queued MIDI stream input
      * messages to the IOP, once a frame.
      *
@@ -268,6 +281,7 @@ public:
     void Step();
 
     /**
+     *
      * Stops a port's sequence.
      *
      * @mangled Stop__6CSoundFi
@@ -277,6 +291,7 @@ public:
     void Stop(int port);
 
     /**
+     *
      * Sets a port's sequence volume, out of 256.
      *
      * @mangled SetVol__6CSoundFii
@@ -286,6 +301,7 @@ public:
     void SetVol(int port, int volume);
 
     /**
+     *
      * Chooses between stereo and monaural output.
      *
      * @mangled SetStereoMode__6CSoundFi
@@ -295,6 +311,7 @@ public:
     void SetStereoMode(int mode);
 
     /**
+     *
      * Sets the master volume of one sound processor core.
      *
      * @mangled SetMasterVol__6CSoundFii
@@ -304,6 +321,7 @@ public:
     void SetMasterVol(int core, int volume);
 
     /**
+     *
      * Loads a port's first bank, replacing the banks and sequences it
      * held.
      *
@@ -314,6 +332,7 @@ public:
     void LoadHdBd(int port, int hd, int hd_size, int bd, int bd_size);
 
     /**
+     *
      * Loads a port's first bank into the sound processor, replacing the
      * banks and sequences it and its linked port held, and places its
      * dependent ports after it.
@@ -325,6 +344,7 @@ public:
     void LoadHdBd2(int port, int hd, int hd_size, int bd, int bd_size);
 
     /**
+     *
      * Loads one more bank for a port into the sound processor, after the
      * banks it already holds.
      *
@@ -335,6 +355,7 @@ public:
     int LoadHdBdAdd(int port, int hd, int hd_size, int bd, int bd_size);
 
     /**
+     *
      * Copies one sequence into IOP memory and adds it to a port's
      * sequences.
      *
@@ -345,6 +366,7 @@ public:
     int LoadSeq(int port, int address, int size);
 
     /**
+     *
      * Sets the pitch bend of a sounding effect note.
      *
      * @mangled SE_SetPitch__6CSoundFiiiiii
@@ -354,6 +376,7 @@ public:
     void SE_SetPitch(int port, int bank, int program, int key, int pitch, int id);
 
     /**
+     *
      * Opens a streamed audio file on one stream channel.
      *
      * @mangled StreamOpenFast__6CSoundFiPc
@@ -363,6 +386,7 @@ public:
     void StreamOpenFast(int channel, char *name);
 
     /**
+     *
      * Opens a streamed audio file held in a file pack on one stream
      * channel.
      *
@@ -373,6 +397,7 @@ public:
     void StreamOpenFromFPLFast(int channel, char *name, char *pack_name);
 
     /**
+     *
      * Starts a stream channel playing.
      *
      * @mangled StreamPlay__6CSoundFi
@@ -382,6 +407,7 @@ public:
     void StreamPlay(int channel);
 
     /**
+     *
      * Halts a stream channel where it is, by the same request as
      * StreamPause.
      *
@@ -392,6 +418,7 @@ public:
     void StreamStop(int channel);
 
     /**
+     *
      * Stops and closes a stream channel.
      *
      * @mangled StreamClose__6CSoundFi
@@ -401,6 +428,7 @@ public:
     void StreamClose(int channel);
 
     /**
+     *
      * Ends and closes a stream channel.
      *
      * @mangled StreamEND__6CSoundFi
@@ -410,6 +438,7 @@ public:
     void StreamEND(int channel);
 
     /**
+     *
      * Pauses a stream channel.
      *
      * @mangled StreamPause__6CSoundFi
@@ -419,6 +448,7 @@ public:
     void StreamPause(int channel);
 
     /**
+     *
      * Resumes a paused stream channel.
      *
      * @mangled StreamRePlay__6CSoundFi
@@ -428,6 +458,7 @@ public:
     void StreamRePlay(int channel);
 
     /**
+     *
      * Sets the left and right volumes of a stream channel.
      *
      * @mangled StreamSetVol__6CSoundFiii
@@ -437,6 +468,7 @@ public:
     void StreamSetVol(int channel, int left, int right);
 
     /**
+     *
      * Gives the state of a stream channel, without its low twelve bits.
      *
      * @mangled StreamGetState__6CSoundFi
@@ -446,6 +478,7 @@ public:
     int StreamGetState(int channel);
 
     /**
+     *
      * Gives the output level of a stream channel, the left level in the
      * high half and the right in the low half.
      *
@@ -456,6 +489,7 @@ public:
     int StreamGetLevel(int channel);
 
     /**
+     *
      * Readies an opened stream channel, setting it up for its file's mono
      * or stereo layout, and starts it buffering.
      *
@@ -466,6 +500,7 @@ public:
     void StreamStandBy(int channel);
 
     /**
+     *
      * Gives the state of the transfer of a bank body into the sound
      * processor on one channel; zero while it runs.
      *
@@ -476,6 +511,7 @@ public:
     int TransBdState(int channel);
 
     /**
+     *
      * Gives the state of the last request sent to the EZBGM server;
      * non-zero while it runs.
      *
@@ -489,6 +525,7 @@ public:
 STATIC_ASSERT(sizeof(CSound) == 1);
 
 /**
+ *
  * Starts the sound processor and sets the reverberation mode and depth of
  * both of its cores.
  *
@@ -499,6 +536,7 @@ STATIC_ASSERT(sizeof(CSound) == 1);
 void set_spu(int mode0, int mode1, int depth0, int depth1);
 
 /**
+ *
  * Copies a bank header into newly allocated IOP memory and sends the bank
  * body into the sound processor through the staging area, filling gBank.
  *
@@ -509,6 +547,7 @@ void set_spu(int mode0, int mode1, int depth0, int depth1);
 int TransHdBd(int hd, int hd_size, int bd, int bd_size);
 
 /**
+ *
  * IOP memory bank bodies are staged in before they are sent into the sound
  * processor.
  *

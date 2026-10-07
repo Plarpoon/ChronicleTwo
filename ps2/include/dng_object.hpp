@@ -15,7 +15,9 @@ class mgCTexture;
 class mgCMemory;
 
 /**
+ *
  * Dungeon work memory, cleared every frame and used for drawing and events as well as collision polygons.
+ *
  */
 extern mgCMemory BuffWorkData__2;
 

@@ -371,7 +371,7 @@ int CGameDataUsed::GetPalletColor() {
             data = GameItemDataManage.GetWeaponData(this->item_no);
 
             if (data != NULL) {
-                return *(s8 *) &data->pallet_color;
+                return static_cast<s8>(data->pallet_color);
             }
 
             return 0;
@@ -486,10 +486,10 @@ int CGameDataUsed::AddNum(int count, int clear) {
 }
 
 int CGameDataUsed::GetUseCapacity() {
-    short *robo_data = (short *) GameItemDataManage.GetRoboData(item_no);
+    CDataRoboPart *robo_data = GameItemDataManage.GetRoboData(item_no);
 
     if (robo_data != NULL) {
-        return *robo_data;
+        return robo_data->use_capacity;
     }
 
     return 0;
@@ -671,7 +671,7 @@ void CGameDataUsed::TransToPassword(char *data, int length) {
                 body = &item->data.fish;
                 memset(&buffer, 0, 14);
                 buffer.fish.item_no = item->item_no;
-                buffer.fish.sex = *(s8 *) &body->sex;
+                buffer.fish.sex = static_cast<s8>(body->sex);
                 buffer.fish.field_4a = body->color;
                 buffer.fish.param_3 = body->param[4];
                 buffer.fish.unknown_3c = body->param[3];
@@ -850,14 +850,14 @@ void CGameDataUsed::GetMsgAddInfo(char **message, char **extra_message, int *val
             if (values != NULL) {
                 values[0] = 0;
 
-                if (*(s8 *) &body->spectol_type == 1) {
+                if (static_cast<s8>(body->spectol_type) == 1) {
                     values[0] = body->level;
                 }
 
                 values[1] = body->spectol_value;
             }
 
-            if (*(s8 *) &body->spectol_type != 0) {
+            if (static_cast<s8>(body->spectol_type) != 0) {
                 *message = body->name;
             } else {
                 *message = GetItemMessage(item_no);
@@ -1474,7 +1474,7 @@ int CGameDataUsed::GetAttackType() {
         info = GetWeaponInfoData(this->item_no);
 
         if (info != NULL) {
-            return *(s8 *) &info->attack_type;
+            return static_cast<s8>(info->attack_type);
         }
     }
 
@@ -3055,55 +3055,55 @@ int CUserDataManager::SetCharaStatusAttirbuteVol(int chara_no, unsigned int attr
     int result = SetCharaStatusAttirbute(chara_no, attr, 0);
 
     if (chara_no == 0 || chara_no == 1) {
-        u8 *chara = (u8 *) &chara_data[1];
+        CHARA_DATA *chara = &chara_data[1];
 
         if (chara_no == 0) {
-            chara = (u8 *) &chara_data[0];
+            chara = &chara_data[0];
         }
 
         if (attr & 0x10) {
-            *(short *) (chara + 0xC) = value;
+            chara->status_time[0] = value;
         }
 
         if (attr & 0x2) {
-            *(short *) (chara + 0xE) = value;
+            chara->status_time[1] = value;
         }
 
         if (attr & 0x8) {
-            *(short *) (chara + 0x10) = value;
+            chara->status_time[2] = value;
         }
 
         if (attr & 0x20) {
-            *(short *) (chara + 0x12) = value;
+            chara->status_time[3] = value;
         }
     }
 
     if (chara_no == 2) {
-        u8 *robot = (u8 *) &robo_data;
+        ROBO_DATA *robot = &robo_data;
 
         if (attr & 0x2) {
-            *(short *) (robot + 0x1E0) = value;
+            robot->status_time[0] = value;
         }
 
         if (attr & 0x8) {
-            *(short *) (robot + 0x1E2) = value;
+            robot->status_time[1] = value;
         }
 
         if (attr & 0x20) {
-            *(short *) (robot + 0x1E4) = value;
+            robot->status_time[2] = value;
         }
     }
 
     if (chara_no == 3) {
-        u8 *badge = (u8 *) GetMonsterBajjiDataPtrMosId(monster_id);
+        MOS_CHANGE_PARAM *badge = GetMonsterBajjiDataPtrMosId(monster_id);
 
         if (badge != 0) {
             if (attr & 0x10) {
-                *(short *) (badge + 0x3E) = value;
+                badge->status_time_10 = value;
             }
 
             if (attr & 0x1) {
-                *(short *) (badge + 0x3C) = value;
+                badge->status_time_1 = value;
             }
         }
     }
@@ -4554,7 +4554,7 @@ void CheckEquipChange(int chara_no) {
             GetCharaDefaultWeapon(1, weapons);
             GetUserDataMan()->SetChrEquipDirect(1, weapons[0]);
 
-            if (*(s8 *) &chara->unk_2b == 0) {
+            if (static_cast<s8>(chara->unk_2b) == 0) {
                 GetUserDataMan()->SetChrEquipDirect(1, weapons[2]);
                 GetUserDataMan()->SetChrEquipDirect(1, weapons[3]);
                 GetUserDataMan()->SetChrEquipDirect(1, weapons[4]);
@@ -4848,13 +4848,13 @@ COMMON_GAGE *CBattleCharaInfo::GetNowAccessWHp(int slot) {
     short        current_mode = chara_type;
 
     if (current_mode == 0) {
-        u8 *table = (u8 *) equip;
+        CGameDataUsed *table = equip;
 
         if (table == 0) {
             return gage;
         }
 
-        gage = (COMMON_GAGE *) (table + slot * sizeof(CGameDataUsed) + 0x10);
+        gage = &table[slot].data.weapon.whp;
     } else if (current_mode == 1) {
         gage = (COMMON_GAGE *) ((u8 *) equip + 0x10) + 1;
     } else if (current_mode == 2) {

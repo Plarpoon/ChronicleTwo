@@ -139,7 +139,9 @@ public:
     s32             unk_14c;
 
     /**
+     *
      * Creates an event with nothing running.
+     *
      */
     CEditEvent() {
         Reset();

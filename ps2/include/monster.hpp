@@ -317,6 +317,7 @@ public:
     float             rot_speed; /**< Speed of the turn towards next_rot; 0.0 for none. */
 
     /**
+     *
      * Makes a monster with an empty interpreter and a cleared map check.
      *
      * @mangled __ct__14CActiveMonsterFv
@@ -328,6 +329,7 @@ public:
     }
 
     /**
+     *
      * Says whether the monster is on the floor, and with alive_only set also alive.
      *
      * @mangled IsDraw__14CActiveMonsterFi
@@ -337,6 +339,7 @@ public:
     int IsDraw(int view_state);
 
     /**
+     *
      * Steps the statuses on the monster, taking life for poison and flashing its colour.
      *
      * @mangled CheckStatusAttr__14CActiveMonsterFv
@@ -346,6 +349,7 @@ public:
     void CheckStatusAttr();
 
     /**
+     *
      * Works out whether the monster comes into or goes out of sight, and gives back its MONSTER_VIEW state.
      *
      * @mangled CheckView__14CActiveMonsterFi
@@ -355,6 +359,7 @@ public:
     int CheckView(int rank_limit);
 
     /**
+     *
      * Steps the monster as an action character.
      *
      * @mangled Step__14CActiveMonsterFv
@@ -364,6 +369,7 @@ public:
     virtual void Step();
 
     /**
+     *
      * Copies this monster into another, and with memory given copies its model too.
      *
      * @mangled Copy__14CActiveMonsterFR14CActiveMonsterP9mgCMemory
@@ -373,6 +379,7 @@ public:
     virtual void Copy(CActiveMonster &dest, mgCMemory *memory);
 
     /**
+     *
      * Puts the monster back to its initial state as an empty slot.
      *
      * @mangled Initialize__14CActiveMonsterFv
@@ -411,6 +418,7 @@ public:
     s16 param[MONSTER_LOCATE_MAX];      /**< Value given to the monster of each entry; -1 for none. */
 
     /**
+     *
      * Marks a monster slot as filled or as free, keeping count of the monsters placed.
      *
      * @mangled SetPutFlag__18CMonsterLocateInfoFii
@@ -441,6 +449,7 @@ public:
     s32                boss_max_life;                /**< Sum of the life of every boss placed. */
 
     /**
+     *
      * Takes the scene's monster characters as the slots and clears every slot and loaded kind.
      *
      * @mangled Initialize__11CMonsterManFP6CScene
@@ -450,6 +459,7 @@ public:
     void Initialize(CScene *scene);
 
     /**
+     *
      * Draws the effects of every monster.
      *
      * @mangled DrawEffectScript__11CMonsterManFv
@@ -461,6 +471,7 @@ public:
     int CheckPhoto(CScene::InScreenCharaInfo *info);
 
     /**
+     *
      * Steps the effects of every monster.
      *
      * @mangled StepEffectScript__11CMonsterManFv
@@ -470,6 +481,7 @@ public:
     void StepEffectScript();
 
     /**
+     *
      * Gets the distance to the nearest monster that the battle music answers to.
      *
      * @mangled IsBattleStyleDist__11CMonsterManFv
@@ -479,6 +491,7 @@ public:
     float IsBattleStyleDist();
 
     /**
+     *
      * Finds the nearest monster that can be talked to, or gives back -1.
      *
      * @mangled CheckMonsterTolk__11CMonsterManFPf
@@ -488,6 +501,7 @@ public:
     int CheckMonsterTolk(float *pos);
 
     /**
+     *
      * Has a frame catch the monster near it, or gives back NULL.
      *
      * @mangled CheckThrowTarget__11CMonsterManFP8mgCFrame
@@ -497,6 +511,7 @@ public:
     CActiveMonster *CheckThrowTarget(mgCFrame *frame);
 
     /**
+     *
      * Finds the loaded kind slot of a monster kind, or gives back -1.
      *
      * @mangled SearchBaseIndex__11CMonsterManFi
@@ -506,6 +521,7 @@ public:
     int SearchBaseIndex(int base_index);
 
     /**
+     *
      * Counts the monsters on the floor within a distance of their target, or all of them for a distance below 0.
      *
      * @mangled GetMonsterNum__11CMonsterManFf
@@ -515,6 +531,7 @@ public:
     int GetMonsterNum(float limit);
 
     /**
+     *
      * Finds the monster table entry of a monster kind, or gives back NULL.
      *
      * @mangled GetReferPtr2__11CMonsterManFi
@@ -524,6 +541,7 @@ public:
     BASE_MONSTER_TBL *GetReferPtr2(int id);
 
     /**
+     *
      * Finds a monster slot that holds no monster, or gives back -1.
      *
      * @mangled SearchActiveMonsterBlock__11CMonsterManFv
@@ -533,6 +551,7 @@ public:
     int SearchActiveMonsterBlock();
 
     /**
+     *
      * Finds a free loaded kind slot, or gives back -1.
      *
      * @mangled SearchReferBlock__11CMonsterManFv
@@ -542,6 +561,7 @@ public:
     int SearchReferBlock();
 
     /**
+     *
      * Loads a monster kind and every kind that it brings with it.
      *
      * @mangled EntryRefer__11CMonsterManFiP9mgCMemory
@@ -551,6 +571,7 @@ public:
     int EntryRefer(int id, mgCMemory *memory);
 
     /**
+     *
      * Loads the model, sounds, sword after-images and script of a monster kind into a free slot.
      *
      * @mangled LoadReferMonsterFile__11CMonsterManFiP16BASE_MONSTER_TBLP9mgCMemory
@@ -560,6 +581,7 @@ public:
     int LoadReferMonsterFile(int id, BASE_MONSTER_TBL *tbl, mgCMemory *memory);
 
     /**
+     *
      * Places a monster of a loaded kind on the floor and runs its initialising program.
      *
      * @mangled SetActiveMonster__11CMonsterManFiPfPfi
@@ -569,6 +591,7 @@ public:
     CActiveMonster *SetActiveMonster(int refer_no, float *pos, float *rot, int param);
 
     /**
+     *
      * Draws the monsters on the mini-map.
      *
      * @mangled DrawMiniMapSymbol__11CMonsterManFP14CMiniMapSymbol
@@ -578,6 +601,7 @@ public:
     void DrawMiniMapSymbol(CMiniMapSymbol *symbol);
 
     /**
+     *
      * Draws the life gauges of the monsters in sight and the bosses' gauge.
      *
      * @mangled DrawLifeGage__11CMonsterManFii
@@ -587,6 +611,7 @@ public:
     void DrawLifeGage(int view, int mode);
 
     /**
+     *
      * Draws the stun stars and gift marks of every monster.
      *
      * @mangled DrawPiyori__11CMonsterManFv
@@ -596,6 +621,7 @@ public:
     void DrawPiyori();
 
     /**
+     *
      * Draws the monsters that are wholly in sight.
      *
      * @mangled DrawActMonster__11CMonsterManFv
@@ -605,6 +631,7 @@ public:
     void DrawActMonster();
 
     /**
+     *
      * Draws the monsters that are fading in or out.
      *
      * @mangled DrawInvisibleMonster__11CMonsterManFv
@@ -614,6 +641,7 @@ public:
     void DrawInvisibleMonster();
 
     /**
+     *
      * Draws the shadows of the monsters in sight.
      *
      * @mangled DrawShadowActMonster__11CMonsterManFv
@@ -623,6 +651,7 @@ public:
     void DrawShadowActMonster();
 
     /**
+     *
      * Ranks the monsters on the floor by distance to their target.
      *
      * @mangled PriorityLevelCheck__11CMonsterManFv
@@ -632,6 +661,7 @@ public:
     void PriorityLevelCheck();
 
     /**
+     *
      * Finds the monster of a rank, giving its scene character number too, or gives back NULL.
      *
      * @mangled GetPriorityLevelIndex__11CMonsterManFiPi
@@ -641,6 +671,7 @@ public:
     CActiveMonster *GetPriorityLevelIndex(int level, int *slot);
 
     /**
+     *
      * Stuns every monster within a distance of its target.
      *
      * @mangled SetNearAreaPiyori__11CMonsterManFf
@@ -650,6 +681,7 @@ public:
     void SetNearAreaPiyori(float limit);
 
     /**
+     *
      * Takes the event script that a monster has asked to run, or gives back -1.
      *
      * @mangled IsRunEvent__11CMonsterManFv
@@ -659,6 +691,7 @@ public:
     int IsRunEvent();
 
     /**
+     *
      * Turns a monster's velocity away from the other monsters that it would run into.
      *
      * @mangled CollisionCheck__11CMonsterManFP14CActiveMonsterPfPfPf
@@ -668,6 +701,7 @@ public:
     void CollisionCheck(CActiveMonster *monster, float *pos, float *move, float *push);
 
     /**
+     *
      * Takes the damage of every collision primitive that has hit a monster, and asks for the reaction to it.
      *
      * @mangled CheckDamage__11CMonsterManFv
@@ -677,6 +711,7 @@ public:
     void CheckDamage();
 
     /**
+     *
      * Moves a monster by its velocity and walk against the other monsters and the map.
      *
      * @mangled MoveUnit__11CMonsterManFP14CActiveMonsterP6CCPolyi
@@ -686,6 +721,7 @@ public:
     void MoveUnit(CActiveMonster *monster, CCPoly *poly, int poly_num);
 
     /**
+     *
      * Runs one step of every monster: its sight, script, move, damage and death.
      *
      * @mangled ThinkHost__11CMonsterManFv
@@ -695,6 +731,7 @@ public:
     void ThinkHost();
 
     /**
+     *
      * Runs the requested program of a monster's script, or resumes the one running.
      *
      * @mangled RunScript__11CMonsterManFi
@@ -707,11 +744,14 @@ public:
 STATIC_ASSERT(sizeof(CMonsterMan) == 0x100F0);
 
 /**
+ *
  * Table of every monster kind, ended by an entry with an empty name.
+ *
  */
 extern BASE_MONSTER_TBL base_monster_define[344];
 
 /**
+ *
  * Finds the monster table entry of a monster kind, or gives back NULL.
  *
  * @mangled GetMonsterTable__Fi
@@ -721,6 +761,7 @@ extern BASE_MONSTER_TBL base_monster_define[344];
 BASE_MONSTER_TBL *GetMonsterTable(int id);
 
 /**
+ *
  * Gets the distance along a line from a point to the map, or the distance given when nothing is hit.
  *
  * @mangled SearchArea__FP6CScenePfPff
@@ -730,6 +771,7 @@ BASE_MONSTER_TBL *GetMonsterTable(int id);
 float SearchArea(CScene *scene, float *from, float *to, float range);
 
 /**
+ *
  * Loads the monster names of a language.
  *
  * @mangled LoadMonsterLanguage__Fi

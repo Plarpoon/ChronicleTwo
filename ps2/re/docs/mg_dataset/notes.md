@@ -141,3 +141,9 @@ then `SetBaseBox`; others `DataAssignMDT` (+0x44).
 The local `divbyzerocheck on`/`reset` pair is redundant with the PS2
 compiler flag. Removing it leaves every section and symbol in this unit's
 object diff unchanged.
+
+## Typed frame copies
+
+`mgCopyFrame` keeps its allocated copies as `mgCFrame*` and accesses each
+frame by array index. The constructor array has a 0x110-byte element stride;
+the typed version matches retail at 100% (0x274 bytes).

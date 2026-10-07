@@ -216,82 +216,114 @@ struct ANALOG_TABLE_ENTRY {
 STATIC_ASSERT(sizeof(ANALOG_TABLE_ENTRY) == 0x8);
 
 /**
+ *
  * Prepares a main loop mode when the main loop enters it.
+ *
  */
 typedef void (*LOOP_INIT_FUNC)(INIT_LOOP_ARG arg);
 
 /**
+ *
  * Runs one frame of a main loop mode, returning non-zero to leave it.
+ *
  */
 typedef int (*LOOP_MAIN_FUNC)();
 
 /**
+ *
  * Releases a main loop mode when the main loop leaves it.
+ *
  */
 typedef void (*LOOP_EXIT_FUNC)();
 
 /**
+ *
  * Entry function of each main loop mode. @see MainLoopMode
+ *
  */
 extern LOOP_INIT_FUNC LoopInit[LOOP_MODE_NUM];
 
 /**
+ *
  * Per-frame function of each main loop mode. @see MainLoopMode
+ *
  */
 extern LOOP_MAIN_FUNC LoopMain[LOOP_MODE_NUM];
 
 /**
+ *
  * Exit function of each main loop mode. @see MainLoopMode
+ *
  */
 extern LOOP_EXIT_FUNC LoopExit[LOOP_MODE_NUM];
 
 /**
+ *
  * Priority the main thread runs at.
+ *
  */
 extern int MainThreadPriority;
 
 /**
+ *
  * Scratch buffer that the running mode reads files into.
+ *
  */
 extern u_long128 *read_buffer;
 
 /**
+ *
  * Sound bank number of the system sound effects, or -1 when they failed to load.
+ *
  */
 extern u32 SystemSND_ID;
 
 /**
+ *
  * Sound controller shared by the game loops and chapter menu.
+ *
  */
 extern CSound CSnd;
 
 /**
+ *
  * Non-zero while the debug features are on.
+ *
  */
 extern int DebugFlag;
 
 /**
+ *
  * Event that the debug menu starts maps with, set by the START_EVENT tag of game.cfg.
+ *
  */
 extern int DefStartEventNo;
 
 /**
+ *
  * Language the game runs in. @see LanguageCodeNo
+ *
  */
 extern int LanguageCode;
 
 /**
+ *
  * Non-zero while an extra (omake) mode of the title screen is being played.
+ *
  */
 extern int OmakeFlag;
 
 /**
+ *
  * Debug unlock code entered at boot. @see MasterDebugCodeValue
+ *
  */
 extern int MasterDebugCode;
 
 /**
+ *
  * Controller the whole game reads.
+ *
  */
 extern CGamePad GamePad;
 
@@ -299,16 +331,21 @@ extern CGamePad GamePad;
 extern CGamePad GamePad__2;
 
 /**
+ *
  * Logical button and stick table built over GamePad__2.
+ *
  */
 extern CPadControl PadCtrl;
 
 /**
+ *
  * Debug switches shared by the editor and the dungeon.
+ *
  */
 extern DEBUG_INFO DebugInfo;
 
 /**
+ *
  * Returns the font the debug menus draw with.
  *
  * @mangled GetDebugFont__Fv
@@ -318,6 +355,7 @@ extern DEBUG_INFO DebugInfo;
 CFont *GetDebugFont();
 
 /**
+ *
  * Returns the controller input recording mode. @see MainCaptureMode
  *
  * @mangled GetCaptureMode__Fv
@@ -327,6 +365,7 @@ CFont *GetDebugFont();
 int GetCaptureMode();
 
 /**
+ *
  * Returns the sound bank number of the system sound effects.
  *
  * @mangled GetSystemSndID__Fv
@@ -336,6 +375,7 @@ int GetCaptureMode();
 int GetSystemSndID();
 
 /**
+ *
  * Returns the scene every mode draws and plays sound through.
  *
  * @mangled GetMainScene__Fv
@@ -345,6 +385,7 @@ int GetSystemSndID();
 CScene *GetMainScene();
 
 /**
+ *
  * Returns the save data the game is played with.
  *
  * @mangled GetSaveData__Fv
@@ -354,6 +395,7 @@ CScene *GetMainScene();
 CSaveData *GetSaveData();
 
 /**
+ *
  * Returns the save data of the extra mini-games, or null when none is set up.
  *
  * @mangled GetSubGameSaveData__Fv
@@ -363,6 +405,7 @@ CSaveData *GetSaveData();
 CSubGameData *GetSubGameSaveData();
 
 /**
+ *
  * Resets the save data to the state of a new game.
  *
  * @mangled InitSaveData__Fv
@@ -372,6 +415,7 @@ CSubGameData *GetSubGameSaveData();
 void InitSaveData();
 
 /**
+ *
  * Returns the VRAM address textures are placed from, 0x20 past the top address mglib reports.
  *
  * @mangled GetVramTopAddress__Fv
@@ -381,6 +425,7 @@ void InitSaveData();
 int GetVramTopAddress();
 
 /**
+ *
  * Returns the memory stack the modes allocate their working memory from.
  *
  * @mangled GetMainStack__Fv
@@ -390,6 +435,7 @@ int GetVramTopAddress();
 mgCMemory *GetMainStack();
 
 /**
+ *
  * Selects the mode the main loop switches to when the current one ends,
  * and the parameters it is entered with.
  *
@@ -400,6 +446,7 @@ mgCMemory *GetMainStack();
 void NextLoop(int loop_no, INIT_LOOP_ARG arg);
 
 /**
+ *
  * Returns the mode the main loop is running. @see MainLoopMode
  *
  * @mangled GetNowLoopNo__Fv
@@ -409,6 +456,7 @@ void NextLoop(int loop_no, INIT_LOOP_ARG arg);
 int GetNowLoopNo();
 
 /**
+ *
  * Returns the parameters the running mode was entered with.
  *
  * @mangled GetNowInitArg__Fv
@@ -418,7 +466,8 @@ int GetNowLoopNo();
 INIT_LOOP_ARG *GetNowInitArg();
 
 /**
- * Marks the start of a frame for an external profiler; empty in the retail build.
+ *
+ * Hook for marking the start of a frame in an external profiler.
  *
  * @mangled cat_start__Fv
  * @address 0x191F70
@@ -427,7 +476,8 @@ INIT_LOOP_ARG *GetNowInitArg();
 void cat_start();
 
 /**
- * Marks the end of a frame for an external profiler; empty in the retail build.
+ *
+ * Hook for marking the end of a frame in an external profiler.
  *
  * @mangled cat_end__Fv
  * @address 0x191F80
@@ -436,6 +486,7 @@ void cat_start();
 void cat_end();
 
 /**
+ *
  * Sizes the texture manager's tables from a memory manager and resets it
  * to place textures from the top of free VRAM.
  *
@@ -446,6 +497,7 @@ void cat_end();
 void SetTextureTable(int table_size, int table_count, mgCMemory *memory);
 
 /**
+ *
  * Turns counting of the play time on or off.
  *
  * @mangled PlayTimeCount__Fi
@@ -455,6 +507,7 @@ void SetTextureTable(int table_size, int table_count, mgCMemory *memory);
 void PlayTimeCount(int value);
 
 /**
+ *
  * Returns non-zero while the play time is being counted.
  *
  * @mangled GetPlayTimeCountFlag__Fv
@@ -464,6 +517,7 @@ void PlayTimeCount(int value);
 int GetPlayTimeCountFlag();
 
 /**
+ *
  * Switches the game to another language, reloading every message, name
  * and font that depends on it. @see LanguageCodeNo
  *
@@ -474,6 +528,7 @@ int GetPlayTimeCountFlag();
 void LanguageChange(int language, u_long128 *buffer);
 
 /**
+ *
  * Sets up the hardware, the game data and the system sounds, then runs
  * one mode after another until a mode selects a number past the last mode.
  *
@@ -484,6 +539,7 @@ void LanguageChange(int language, u_long128 *buffer);
 void MainLoop();
 
 /**
+ *
  * Returns the font texture with the given index, or null when the index is out of range.
  *
  * @mangled GetFontTexture__Fi
@@ -493,6 +549,7 @@ void MainLoop();
 mgCTexture *GetFontTexture(int page);
 
 /**
+ *
  * Loads the font texture image of the current language into the font buffer.
  *
  * @mangled LoadFontTexture__Fv
@@ -502,6 +559,7 @@ mgCTexture *GetFontTexture(int page);
 void LoadFontTexture();
 
 /**
+ *
  * Enters the loaded font texture image into a block of the texture manager.
  *
  * @mangled ReLoadFontTexture__Fi
@@ -511,7 +569,8 @@ void LoadFontTexture();
 void ReLoadFontTexture(int texture_no);
 
 /**
- * Ends a kiosk demo when asked to quit; empty in the retail build.
+ *
+ * Hook for ending a kiosk demo when asked to quit.
  *
  * @mangled demQuit__Fv
  * @address 0x1944C0
@@ -520,7 +579,8 @@ void ReLoadFontTexture(int texture_no);
 void demQuit();
 
 /**
- * Ends a kiosk demo when its time runs out; empty in the retail build.
+ *
+ * Hook for ending a kiosk demo when its time runs out.
  *
  * @mangled demoQuitTimeOut__Fv
  * @address 0x1944D0
@@ -529,7 +589,8 @@ void demQuit();
 void demoQuitTimeOut();
 
 /**
- * Reports a kiosk demo attract sequence interrupted by the player; empty in the retail build.
+ *
+ * Hook for reporting an attract sequence interrupted by the player.
  *
  * @mangled demoAttractInterrupted__Fv
  * @address 0x1944E0
@@ -538,7 +599,8 @@ void demoQuitTimeOut();
 void demoAttractInterrupted();
 
 /**
- * Reports a kiosk demo attract sequence played to its end; empty in the retail build.
+ *
+ * Hook for reporting an attract sequence played to its end.
  *
  * @mangled demoAttractComplete__Fv
  * @address 0x1944F0
@@ -547,7 +609,8 @@ void demoAttractInterrupted();
 void demoAttractComplete();
 
 /**
- * Fades out the E3 show demo when its time runs out; empty in the retail build.
+ *
+ * Hook for fading out the E3 show demo when its time runs out.
  *
  * @mangled FadeOutForE3__Fv
  * @address 0x194500
@@ -556,7 +619,8 @@ void demoAttractComplete();
 void FadeOutForE3();
 
 /**
- * Returns non-zero when the time limit of a show demo has run out; always 0 in the retail build.
+ *
+ * Checks whether a show demo's time limit has run out.
  *
  * @mangled TimeLimitCheck__Fv
  * @address 0x194510
@@ -565,6 +629,7 @@ void FadeOutForE3();
 int TimeLimitCheck();
 
 /**
+ *
  * Resets the pause menu's message window and state so that it opens afresh.
  *
  * @mangled InitPauseMenu__Fi
@@ -574,6 +639,7 @@ int TimeLimitCheck();
 void InitPauseMenu(int value);
 
 /**
+ *
  * Runs and draws one frame of the pause menu. @see PauseMenuResult
  *
  * @mangled PauseMenu__Fv
@@ -583,6 +649,7 @@ void InitPauseMenu(int value);
 int PauseMenu();
 
 /**
+ *
  * Runs a debug configuration script, game.cfg from the root directory when
  * no file is named, whose tags set up the save data and the debug settings.
  *

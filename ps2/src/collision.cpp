@@ -52,7 +52,6 @@ static inline u_int Align16Blocks(u_int n) {
 
 void CCollisionMDT::Copy(CCollisionMDT &dest, mgCMemory *memory) {
     int           i;
-    int           offset;
     CollisionTri *src;
     CollisionTri *dst;
     dest.bbox = bbox;
@@ -70,12 +69,10 @@ void CCollisionMDT::Copy(CCollisionMDT &dest, mgCMemory *memory) {
         i = 0;
 
         if (dest.poly != NULL) {
-            offset = 0;
 
             for (; i < dest.poly_count; i++) {
-                src = (CollisionTri *) ((u_char *) poly + offset);
-                dst = (CollisionTri *) ((u_char *) dest.poly + offset);
-                offset += 0x50;
+                src = reinterpret_cast<CollisionTri *>(&poly[i]);
+                dst = reinterpret_cast<CollisionTri *>(&dest.poly[i]);
                 dst->q[0] = src->q[0];
                 dst->q[1] = src->q[1];
                 dst->q[2] = src->q[2];
@@ -264,8 +261,10 @@ int CColFrame::InsidePoint(float *point) {
 }
 
 /**
+ *
  * Loads a matrix into the vector unit's registers vf10-vf13 for the
  * transforms trance_normal makes.
+ *
  */
 #pragma force_active on
 #pragma global_optimizer off
@@ -280,8 +279,10 @@ static asm void pre_trance_normal(float (*matrix)[4]) {
 #pragma global_optimizer reset
 
 /**
+ *
  * Transforms a triangle's corners in place by the matrix pre_trance_normal
  * loaded, and writes the unnormalised normal of the transformed triangle.
+ *
  */
 #pragma global_optimizer off
 static asm void trance_normal(float *v0, float *v1, float *v2, float *normal) {

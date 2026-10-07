@@ -206,6 +206,7 @@ public:
     int                unk_18;
 
     /**
+     *
      * Creates a visual with its draw settings cleared.
      *
      * @mangled __ct__9mgCVisualFv
@@ -213,6 +214,7 @@ public:
     mgCVisual() { Initialize(); }
 
     /**
+     *
      * Returns the kind of this visual.
      *
      * @mangled Iam__9mgCVisualFv
@@ -222,6 +224,7 @@ public:
     virtual int Iam();
 
     /**
+     *
      * Returns the number of materials the visual has.
      *
      * @mangled GetMaterialNum__9mgCVisualFv
@@ -231,6 +234,7 @@ public:
     virtual int GetMaterialNum();
 
     /**
+     *
      * Returns the visual's material table, or NULL if it has none.
      *
      * @mangled GetpMaterial__9mgCVisualFv
@@ -240,6 +244,7 @@ public:
     virtual mgMaterial *GetpMaterial();
 
     /**
+     *
      * Returns one of the visual's materials, or NULL if the index is out of range.
      *
      * @mangled GetMaterial__9mgCVisualFi
@@ -249,6 +254,7 @@ public:
     virtual mgMaterial *GetMaterial(int index);
 
     /**
+     *
      * Returns a copy of the visual allocated from memory; a visual with nothing to copy returns itself.
      *
      * @mangled Copy__9mgCVisualFP9mgCMemory
@@ -258,6 +264,7 @@ public:
     virtual mgCVisual *Copy(mgCMemory *memory);
 
     /**
+     *
      * Writes the visual's bounding box and returns non-zero if it has one.
      *
      * @mangled CreateBBox__9mgCVisualFPfPfPA4_f
@@ -267,6 +274,7 @@ public:
     virtual int CreateBBox(float *max, float *min, float (*matrix)[4]);
 
     /**
+     *
      * Writes the packet that sets up drawing the visual and returns its length in quadwords.
      *
      * @mangled CreateRenderInfoPacket__9mgCVisualFPUiPA4_fP13mgRENDER_INFO
@@ -276,6 +284,7 @@ public:
     virtual int CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_INFO *info);
 
     /**
+     *
      * Builds the visual's draw packet ahead of time and returns its size.
      *
      * @mangled CreatePacket__9mgCVisualFP9mgCMemoryP9mgCMemory
@@ -285,6 +294,7 @@ public:
     virtual int CreatePacket(mgCMemory *memory, mgCMemory *work_memory);
 
     /**
+     *
      * Draws the visual through the draw manager with no packet of the caller's.
      *
      * @mangled Draw__9mgCVisualFPA4_fP14mgCDrawManager
@@ -294,6 +304,7 @@ public:
     virtual void Draw(float (*matrix)[4], mgCDrawManager *draw_manager);
 
     /**
+     *
      * Writes the visual into a packet and returns the number of quadwords written.
      *
      * @mangled Draw__9mgCVisualFPUiPA4_fP14mgCDrawManager
@@ -303,6 +314,7 @@ public:
     virtual int Draw(u_int *packet, float (*matrix)[4], mgCDrawManager *draw_manager);
 
     /**
+     *
      * Clears the visual's draw settings.
      *
      * @mangled Initialize__9mgCVisualFv
@@ -312,6 +324,7 @@ public:
     virtual void Initialize();
 
     /**
+     *
      * Returns the visual's texture manager, or the global one if it has none.
      *
      * @mangled GetTextureManager__9mgCVisualFv
@@ -321,6 +334,7 @@ public:
     mgCTextureManager *GetTextureManager();
 
     /**
+     *
      * Writes a copy of a draw environment adjusted by the render info's settings and returns its length in quadwords.
      *
      * @mangled SetDrawEnvGifTag__9mgCVisualFP1P13mgRENDER_INFOP10mgCDrawEnv
@@ -343,23 +357,23 @@ public:
     MDT_HEADER *header; /**< Header of the model being written. */
 
     union {
-        char *end;
-        int   cursor;
+        char *end;    /**< End of the model data written so far. */
+        int   cursor; /**< End offset viewed as an integer. */
     }; /**< End of the model written so far. */
 
     union {
-        char          *data;
-        int            section_start;
-        u_long128     *data_cursor;
-        MDT_MATERIAL_ *material_cursor;
+        char          *data;            /**< Start of the open data section. */
+        int            section_start;   /**< Open section address viewed as an integer. */
+        u_long128     *data_cursor;     /**< Next quadword in the open section. */
+        MDT_MATERIAL_ *material_cursor; /**< Next material in the open section. */
     }; /**< Write position inside the open data section. */
 
     int data_num; /**< Number of entries written to the open data section. */
 
     union {
-        MDT_FACES *faces;
-        int       *face_block;
-        int        face_block_addr;
+        MDT_FACES *faces;           /**< Face section header. */
+        int       *face_block;      /**< Face section viewed as words. */
+        int        face_block_addr; /**< Face section address viewed as an integer. */
     }; /**< Header of the face section. */
 
     FACES_ID *prim;           /**< Primitive being written. */
@@ -367,9 +381,9 @@ public:
     int       face_index_num; /**< Number of indices that make one face of the primitive. */
 
     union {
-        int *index;
-        int *face_cursor;
-        int  face_end;
+        int *index;       /**< Next face index to write. */
+        int *face_cursor; /**< Next face section word to write. */
+        int  face_end;    /**< End of face data viewed as an integer. */
     }; /**< Write position for the next index of the face section. */
 
     int           data_type; /**< Section open for writing, from mgMDTDataType. */
@@ -377,6 +391,7 @@ public:
     MDT_MATERIAL_ material; /**< Material record written by SetMaterial. */
 
     /**
+     *
      * Starts a model in memory, writing its header.
      *
      * @mangled Begin__13mgCMDTBuilderFP9mgCMemory
@@ -386,6 +401,7 @@ public:
     void Begin(mgCMemory *memory);
 
     /**
+     *
      * Ends the model, keeping the memory it was written into, and returns its header.
      *
      * @mangled End__13mgCMDTBuilderFv
@@ -395,6 +411,7 @@ public:
     MDT_HEADER *End();
 
     /**
+     *
      * Ends the model and attaches it to a frame through a visual, setting the frame's bounds and attributes.
      *
      * @mangled End__13mgCMDTBuilderFP8mgCFrameP12mgCVisualMDTP10mgLoadData
@@ -404,6 +421,7 @@ public:
     void End(mgCFrame *frame, mgCVisualMDT *visual, mgLoadData *load);
 
     /**
+     *
      * Opens a data section of the type given by mgMDTDataType, if none is open.
      *
      * @mangled BeginData__13mgCMDTBuilderFi
@@ -413,6 +431,7 @@ public:
     void BeginData(int type);
 
     /**
+     *
      * Adds one vector to the open vertex, normal, texture-coordinate or colour section.
      *
      * @mangled SetData__13mgCMDTBuilderFPf
@@ -422,6 +441,7 @@ public:
     void SetData(float *vector);
 
     /**
+     *
      * Adds one vector, given by its components, to the open data section.
      *
      * @mangled SetData__13mgCMDTBuilderFffff
@@ -431,6 +451,7 @@ public:
     void SetData(float x, float y, float z, float w);
 
     /**
+     *
      * Adds one material with a colour and a texture name to the open material section.
      *
      * @mangled SetMaterial__13mgCMDTBuilderFPfPc
@@ -440,6 +461,7 @@ public:
     void SetMaterial(float *colour, char *texture);
 
     /**
+     *
      * Closes the open data section, recording its count and offset in the header.
      *
      * @mangled EndData__13mgCMDTBuilderFv
@@ -449,6 +471,7 @@ public:
     void EndData();
 
     /**
+     *
      * Starts the face section.
      *
      * @mangled BeginFaces__13mgCMDTBuilderFv
@@ -458,6 +481,7 @@ public:
     void BeginFaces();
 
     /**
+     *
      * Ends the face section, recording its size in the header.
      *
      * @mangled EndFaces__13mgCMDTBuilderFv
@@ -467,6 +491,7 @@ public:
     void EndFaces();
 
     /**
+     *
      * Starts a primitive of the given type, drawn with the given material.
      *
      * @mangled BeginPrim__13mgCMDTBuilderFii
@@ -476,6 +501,7 @@ public:
     void BeginPrim(int type, int material);
 
     /**
+     *
      * Adds one vertex index to the primitive.
      *
      * @mangled AddFace__13mgCMDTBuilderFi
@@ -485,6 +511,7 @@ public:
     void AddFace(int vertex);
 
     /**
+     *
      * Ends the primitive, recording its face count.
      *
      * @mangled EndPrim__13mgCMDTBuilderFv
@@ -497,6 +524,7 @@ public:
 STATIC_ASSERT(sizeof(mgCMDTBuilder) == 0x90);
 
 /**
+ *
  * Reads the attribute text after "--" in a frame's name into its frame attributes, and does the
  * same for its children when asked.
  *
@@ -507,6 +535,7 @@ STATIC_ASSERT(sizeof(mgCMDTBuilder) == 0x90);
 void mgSetFrameAttr(mgCFrame *frame, int recursive);
 
 /**
+ *
  * Loads a scene into a table of frames, building each object's visual, and returns the first frame.
  *
  * @mangled mgLoadMDSFile__FP10MDS_HEADERP9mgCMemoryP18mgCreateVisualTypeP17mgCTextureManager
@@ -516,6 +545,7 @@ void mgSetFrameAttr(mgCFrame *frame, int recursive);
 mgCFrame *mgLoadMDSFile(MDS_HEADER *mds, mgCMemory *memory, mgCreateVisualType *visual_type, mgCTextureManager *texture_manager);
 
 /**
+ *
  * Loads the scene a load description names into a table of frames and returns the first frame.
  *
  * @mangled mgLoadMDSFile__FP10mgLoadData
@@ -525,6 +555,7 @@ mgCFrame *mgLoadMDSFile(MDS_HEADER *mds, mgCMemory *memory, mgCreateVisualType *
 mgCFrame *mgLoadMDSFile(mgLoadData *load);
 
 /**
+ *
  * Writes the bounding box and bounding sphere of a run of vertices; the sphere's fourth component is its radius.
  *
  * @mangled mgCreateBBoxSphere__FPfPfPfPA4_fi
@@ -534,6 +565,7 @@ mgCFrame *mgLoadMDSFile(mgLoadData *load);
 void mgCreateBBoxSphere(float *max, float *min, float *sphere, float (*vertex)[4], int vertex_num);
 
 /**
+ *
  * Copies a frame and its hierarchy into memory, copying the visuals when asked, and returns the copy.
  *
  * @mangled mgCopyFrame__FP8mgCFrameP9mgCMemoryi

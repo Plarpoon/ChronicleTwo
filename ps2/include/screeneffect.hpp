@@ -10,6 +10,7 @@
 class mgCTexture;
 
 /**
+ *
  * Blurs the parts of the frame lying beyond each given depth by drawing a
  * shrunken copy of the frame buffer back over the screen, depth tested
  * against those depths, once per level.
@@ -21,6 +22,7 @@ class mgCTexture;
 void DepthOfField(int levels, float *depths, mgCTexture *work_texture, float strength);
 
 /**
+ *
  * Draws the glare of a light source over the whole screen, fading as its
  * screen position moves away from the centre, using two work textures
  * from the given texture bank.

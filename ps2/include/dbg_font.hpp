@@ -64,6 +64,7 @@ public:
     int           shadow_enable;                            /**< Non-zero to draw each glyph in black one pixel larger beneath it; toggled by "ESC[#". */
 
     /**
+     *
      * Builds the font with no glyph sheets and default colours.
      *
      * @mangled __ct__11dbgCJISFontFv
@@ -73,6 +74,7 @@ public:
     dbgCJISFont();
 
     /**
+     *
      * Forgets the glyph sheets and puts the cursor, cell size and
      * colours back to their defaults.
      *
@@ -83,6 +85,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Names the texture-manager slot and texture of each of the three
      * glyph sheets.
      *
@@ -93,6 +96,7 @@ public:
     void InitTexture(int full0_id, char *full0_name, int full1_id, char *full1_name, int half_id, char *half_name);
 
     /**
+     *
      * Empties the text buffer.
      *
      * @mangled Clear__11dbgCJISFontFv
@@ -102,6 +106,7 @@ public:
     void Clear();
 
     /**
+     *
      * Draws the glyph with the given serial number at the cursor and
      * moves the cursor past it.
      *
@@ -112,6 +117,7 @@ public:
     void __putc(unsigned long serno);
 
     /**
+     *
      * Formats a Shift-JIS string and draws it at once, starting at the
      * given screen position.
      *
@@ -125,6 +131,7 @@ public:
 STATIC_ASSERT(sizeof(dbgCJISFont) == 0x8B0);
 
 /**
+ *
  * The debug font used by the debug menus and the event editor.
  *
  * @address 0x3F36A0

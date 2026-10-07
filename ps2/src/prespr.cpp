@@ -3,7 +3,9 @@
 #include "prespr.hpp"
 
 /**
+ *
  * One GIF address and data entry in a sprite's direct packet.
+ *
  */
 struct SpriteGsPacket {
     u_long data; /**< GS register value. */

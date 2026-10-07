@@ -111,6 +111,7 @@ public:
     int dest_alpha_test; /**< Destination alpha test, from mgDestAlphaTest. */
 
     /**
+     *
      * Creates the attributes with every setting reset.
      *
      * @mangled __ct__13mgCVisualAttrFv
@@ -120,6 +121,7 @@ public:
     mgCVisualAttr();
 
     /**
+     *
      * Resets every setting: no alpha reference, depth writes on, destination alpha test off,
      * and everything else left to the draw environment.
      *
@@ -153,6 +155,7 @@ public:
     mgFACE_GROUP  *face_group;   /**< First group of primitives, one per material used. */
 
     /**
+     *
      * Creates a model with no data.
      *
      * @mangled __ct__12mgCVisualMDTFv
@@ -164,6 +167,7 @@ public:
     mgCVisualMDT &operator=(const mgCVisualMDT &source);
 
     /**
+     *
      * Returns the kind of this visual.
      *
      * @mangled Iam__12mgCVisualMDTFv
@@ -173,6 +177,7 @@ public:
     virtual int Iam();
 
     /**
+     *
      * Returns the number of materials the model has.
      *
      * @mangled GetMaterialNum__12mgCVisualMDTFv
@@ -182,6 +187,7 @@ public:
     virtual int GetMaterialNum();
 
     /**
+     *
      * Returns the model's material table.
      *
      * @mangled GetpMaterial__12mgCVisualMDTFv
@@ -191,6 +197,7 @@ public:
     virtual mgMaterial *GetpMaterial();
 
     /**
+     *
      * Returns one of the model's materials, or NULL when the model has no materials or the index
      * is out of range.
      *
@@ -201,6 +208,7 @@ public:
     virtual mgMaterial *GetMaterial(int index);
 
     /**
+     *
      * Writes the bounds of the model's vertex positions and returns non-zero when it has any.
      *
      * @mangled CreateBBox__12mgCVisualMDTFPfPfPA4_f
@@ -210,6 +218,7 @@ public:
     virtual int CreateBBox(float *min, float *max, float (*matrix)[4]);
 
     /**
+     *
      * Writes and sends the packet that sets up drawing the model: its transforms, lighting, fog,
      * GS modes and draw environment, and returns its length in quadwords.
      *
@@ -220,6 +229,7 @@ public:
     virtual int CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_INFO *info);
 
     /**
+     *
      * Draws the model through the draw manager with no packet of the caller's.
      *
      * @mangled Draw__12mgCVisualMDTFPA4_fP14mgCDrawManager
@@ -229,6 +239,7 @@ public:
     virtual void Draw(float (*matrix)[4], mgCDrawManager *draw_manager);
 
     /**
+     *
      * Builds the model's packets in the draw manager's buffers, then either registers each material
      * group with the draw manager or, given a packet, writes calls to them into it and returns its
      * length in quadwords.
@@ -240,6 +251,7 @@ public:
     virtual int Draw(u_int *tag, float (*matrix)[4], mgCDrawManager *draw_manager);
 
     /**
+     *
      * Clears the model's data and resets the VU1 buffer layout to the model microprogram's.
      *
      * @mangled Initialize__12mgCVisualMDTFv
@@ -249,6 +261,7 @@ public:
     virtual void Initialize();
 
     /**
+     *
      * Builds the model's packet in the draw manager's buffers, one chain per material group, and
      * returns its DMA address.
      *
@@ -259,6 +272,7 @@ public:
     virtual u_int CreatePacket(mgCDrawManager *draw_manager);
 
     /**
+     *
      * Writes the VU1 packet for one primitive, split into batches that fit the VU1 buffer, and
      * returns its length in quadwords.
      *
@@ -269,6 +283,7 @@ public:
     virtual int CreateFacePacket(u_int *packet, mgCFace *face);
 
     /**
+     *
      * Creates a primitive from one face record of the model data and links it into the group of
      * its material, returning the record that follows.
      *
@@ -280,6 +295,7 @@ public:
                                  mgCFace **face);
 
     /**
+     *
      * Writes the model's own additions to the setup packet and returns their length in quadwords;
      * a plain model has none.
      *
@@ -290,6 +306,7 @@ public:
     virtual int CreateExtRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_INFO *info);
 
     /**
+     *
      * Copies the model's data from an MDT file and creates its primitives; returns zero when there
      * is no data.
      *
@@ -301,6 +318,7 @@ public:
                               mgCTextureManager *textures);
 
     /**
+     *
      * Writes the VIF packet that loads a material's colours into VU1 memory, with its texture
      * registers unless the texture is the one last set, and returns its length in quadwords.
      *
@@ -311,6 +329,7 @@ public:
     int SetMaterialRef(u_long128 *packet, mgMaterial *material, int flags);
 
     /**
+     *
      * Writes the packet that sets the GS PRMODE register for a primitive of the given type and
      * returns its length in quadwords.
      *
@@ -321,6 +340,7 @@ public:
     int SetPModeRef(u_long128 *packet, int flags);
 
     /**
+     *
      * Copies the counts, vertex data and materials of an MDT file into memory of the model's own.
      *
      * @mangled CopyMDTData__12mgCVisualMDTFP10MDT_HEADERP9mgCMemory
@@ -330,6 +350,7 @@ public:
     void CopyMDTData(MDT_HEADER *header, mgCMemory *memory);
 
     /**
+     *
      * Points the model's vertex data into an MDT file in place, copying only its materials into
      * memory.
      *
@@ -340,6 +361,7 @@ public:
     void CopyMDTDataPointer(MDT_HEADER *header, mgCMemory *memory);
 
     /**
+     *
      * Returns the model's per-vertex colours and writes their number.
      *
      * @mangled GetColor__12mgCVisualMDTFPi
@@ -360,6 +382,7 @@ STATIC_ASSERT(sizeof(mgCVisualMDT) == 0x50);
 class mgCVisualFixMDT : public mgCVisualMDT {
 public:
     /**
+     *
      * Creates a model with no data.
      *
      * @mangled __ct__15mgCVisualFixMDTFv
@@ -369,6 +392,7 @@ public:
     }
 
     /**
+     *
      * Returns the kind of this visual.
      *
      * @mangled Iam__15mgCVisualFixMDTFv
@@ -378,6 +402,7 @@ public:
     virtual int Iam();
 
     /**
+     *
      * Returns a copy of the model allocated from memory, sharing its vertex data and primitives
      * but with a material table of its own.
      *
@@ -388,6 +413,7 @@ public:
     virtual mgCVisual *Copy(mgCMemory *memory);
 
     /**
+     *
      * Clears the model's data.
      *
      * @mangled Initialize__15mgCVisualFixMDTFv
@@ -397,6 +423,7 @@ public:
     virtual void Initialize();
 
     /**
+     *
      * Builds the model's packet in the draw manager's buffers from the prebuilt primitive packets,
      * one chain per material group, and returns its address.
      *
@@ -407,6 +434,7 @@ public:
     virtual u_int CreatePacket(mgCDrawManager *draw_manager);
 
     /**
+     *
      * Points the model at an MDT file's data, creates its primitives and builds each primitive's
      * packet in memory; returns non-zero.
      *
@@ -430,6 +458,7 @@ public:
     mgCVisualAttr attr; /**< GS settings applied over the render info's draw environment. */
 
     /**
+     *
      * Creates a visual with its settings reset.
      *
      * @mangled __ct__13mgCVisualPrimFv
@@ -439,6 +468,7 @@ public:
     }
 
     /**
+     *
      * Returns the kind of this visual.
      *
      * @mangled Iam__13mgCVisualPrimFv
@@ -448,6 +478,7 @@ public:
     virtual int Iam();
 
     /**
+     *
      * Writes and sends the packet that sets up drawing the primitives: the GS modes and the draw
      * environment adjusted by the visual's settings, and returns its length in quadwords.
      *
@@ -458,6 +489,7 @@ public:
     virtual int CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_INFO *info);
 
     /**
+     *
      * Clears the visual's draw settings and resets its GS settings.
      *
      * @mangled Initialize__13mgCVisualPrimFv
@@ -468,6 +500,7 @@ public:
 };
 
 /**
+ *
  * Returns the half of the scratchpad that the next packet is written into while the other half
  * is sent.
  *
@@ -478,6 +511,7 @@ public:
 u_int *GetScrPad();
 
 /**
+ *
  * Copies the packet written in the current scratchpad half out to its place in main memory by
  * DMA, after the previous copy finishes, and switches scratchpad halves.
  *
@@ -488,6 +522,7 @@ u_int *GetScrPad();
 void SendDMA(void *packet, int size);
 
 /**
+ *
  * Writes the packet that sets the GS TEX1 and TEX0 registers and returns its length in quadwords.
  *
  * @mangled mgSetPkTEX0__FPUiUlUl
@@ -497,6 +532,7 @@ void SendDMA(void *packet, int size);
 int mgSetPkTEX0(u_int *packet, u_long tex0, u_long tex1);
 
 /**
+ *
  * Writes the packet that sets the GS TEX1, TEX0 and TEXA registers and returns its length in
  * quadwords.
  *
@@ -507,6 +543,7 @@ int mgSetPkTEX0(u_int *packet, u_long tex0, u_long tex1);
 int mgSetPkTEX0(u_int *packet, u_long tex0, u_long tex1, u_long texa);
 
 /**
+ *
  * Writes the packet that flushes the GS texture cache, when given a packet, and returns its length
  * in quadwords.
  *
@@ -517,6 +554,7 @@ int mgSetPkTEX0(u_int *packet, u_long tex0, u_long tex1, u_long texa);
 int mgSetPkTexFlush_TagCnt(u_int *buffer);
 
 /**
+ *
  * Writes the VIF packet that loads two point light matrices into VU1 memory and returns its length
  * in quadwords.
  *
@@ -527,6 +565,7 @@ int mgSetPkTexFlush_TagCnt(u_int *buffer);
 int SetPointLight(u_int *packet, float (*first)[4], float (*second)[4]);
 
 /**
+ *
  * Fills a material from an MDT material record, looking its texture up by name.
  *
  * @mangled CopyMaterial__FP10mgMaterialP13MDT_MATERIAL_P17mgCTextureManager
@@ -536,6 +575,7 @@ int SetPointLight(u_int *packet, float (*first)[4], float (*second)[4]);
 void CopyMaterial(mgMaterial *dst, MDT_MATERIAL_ *src, mgCTextureManager *textures);
 
 /**
+ *
  * Writes a batch of vertices with position, normal and texture coordinate, and returns the end of
  * what it wrote.
  *
@@ -547,6 +587,7 @@ u_long128 *SetData0(int count, int type, int **index, u_long128 *packet, u_long1
                     u_long128 *normal, u_long128 *uv, u_long128 *colour);
 
 /**
+ *
  * Writes a batch of vertices with position, normal, texture coordinate and colour, and returns the
  * end of what it wrote.
  *
@@ -558,6 +599,7 @@ u_long128 *SetData1(int count, int type, int **index, u_long128 *packet, u_long1
                     u_long128 *normal, u_long128 *uv, u_long128 *colour);
 
 /**
+ *
  * Writes a batch of vertices with position and normal, and returns the end of what it wrote.
  *
  * @mangled SetData2__FiiPPiP1P1P1P1P1
@@ -568,6 +610,7 @@ u_long128 *SetData2(int count, int type, int **index, u_long128 *packet, u_long1
                     u_long128 *normal, u_long128 *uv, u_long128 *colour);
 
 /**
+ *
  * Writes a batch of vertices with position, normal and colour, and returns the end of what it
  * wrote.
  *
@@ -579,6 +622,7 @@ u_long128 *SetData3(int count, int type, int **index, u_long128 *packet, u_long1
                     u_long128 *normal, u_long128 *uv, u_long128 *colour);
 
 /**
+ *
  * Writes a batch of vertices with position and texture coordinate, and returns the end of what it
  * wrote.
  *
@@ -590,6 +634,7 @@ u_long128 *SetData4(int count, int type, int **index, u_long128 *packet, u_long1
                     u_long128 *normal, u_long128 *uv, u_long128 *colour);
 
 /**
+ *
  * Writes a batch of vertices with position, texture coordinate and colour, and returns the end of
  * what it wrote.
  *
@@ -601,6 +646,7 @@ u_long128 *SetData5(int count, int type, int **index, u_long128 *packet, u_long1
                     u_long128 *normal, u_long128 *uv, u_long128 *colour);
 
 /**
+ *
  * Writes a batch of vertices with position only, and returns the end of what it wrote.
  *
  * @mangled SetData6__FiiPPiP1P1P1P1P1
@@ -611,6 +657,7 @@ u_long128 *SetData6(int vertex_num, int type, int **index, u_long128 *packet, u_
                     u_long128 *normal, u_long128 *uv, u_long128 *colour);
 
 /**
+ *
  * Writes a batch of vertices with position and colour, and returns the end of what it wrote.
  *
  * @mangled SetData7__FiiPPiP1P1P1P1P1
@@ -621,6 +668,7 @@ u_long128 *SetData7(int count, int type, int **index, u_long128 *packet, u_long1
                     u_long128 *normal, u_long128 *uv, u_long128 *colour);
 
 /**
+ *
  * Writes a copy of a draw environment adjusted by a visual's GS settings.
  *
  * @mangled SetDrawEnv__FP10mgCDrawEnvP13mgCVisualAttrP10mgCDrawEnv
@@ -647,6 +695,7 @@ STATIC_ASSERT(sizeof(mgVisualGifTag) == 0x10);
 extern mgVisualGifTag giftag;
 
 /**
+ *
  * DMA tag that sends the three quadwords of the TEX1 and TEX0 packet.
  *
  * @mangled set_tex0_dma
@@ -656,6 +705,7 @@ extern mgVisualGifTag giftag;
 extern u_long128 set_tex0_dma;
 
 /**
+ *
  * GIF tag of the two A+D register writes of the TEX1 and TEX0 packet.
  *
  * @mangled set_tex0_giftag
@@ -665,6 +715,7 @@ extern u_long128 set_tex0_dma;
 extern u_long128 set_tex0_giftag;
 
 /**
+ *
  * DMA tag that sends the four quadwords of the TEX1, TEX0 and TEXA packet.
  *
  * @mangled set_texa_dma
@@ -674,6 +725,7 @@ extern u_long128 set_tex0_giftag;
 extern u_long128 set_texa_dma;
 
 /**
+ *
  * GIF tag of the three A+D register writes of the TEX1, TEX0 and TEXA packet.
  *
  * @mangled set_texa_giftag
@@ -683,6 +735,7 @@ extern u_long128 set_texa_dma;
 extern u_long128 set_texa_giftag;
 
 /**
+ *
  * VIF code that unpacks a material's four quadwords into VU1 memory.
  *
  * @mangled mat_vif
@@ -692,6 +745,7 @@ extern u_long128 set_texa_giftag;
 extern u_long128 mat_vif;
 
 /**
+ *
  * VIF code that unpacks only a material's diffuse colour into VU1 memory.
  *
  * @mangled mat_vif_dif
@@ -701,6 +755,7 @@ extern u_long128 mat_vif;
 extern u_long128 mat_vif_dif;
 
 /**
+ *
  * VIF code that sends the two-quadword GS packet that sets PRMODE.
  *
  * @mangled mat_vif_d
@@ -710,6 +765,7 @@ extern u_long128 mat_vif_dif;
 extern u_long128 mat_vif_d;
 
 /**
+ *
  * Last quadword of a material's VU1 data, sent after its colours.
  *
  * @mangled mat_pw
@@ -719,6 +775,7 @@ extern u_long128 mat_vif_d;
 extern u_long128 mat_pw;
 
 /**
+ *
  * VIF code that sends the four-quadword GS packet that sets a material's texture registers.
  *
  * @mangled mat_vif_d_tex
@@ -728,6 +785,7 @@ extern u_long128 mat_pw;
 extern u_long128 mat_vif_d_tex;
 
 /**
+ *
  * Non-zero while a scratchpad DMA transfer started by SendDMA may still be running.
  *
  * @mangled start_dma
@@ -737,6 +795,7 @@ extern u_long128 mat_vif_d_tex;
 extern int start_dma;
 
 /**
+ *
  * Half of the scratchpad that the next packet is written into.
  *
  * @mangled buff_id
@@ -746,6 +805,7 @@ extern int start_dma;
 extern int buff_id;
 
 /**
+ *
  * Texture of the material whose registers were last written, or NULL for none.
  *
  * @mangled prev_tex

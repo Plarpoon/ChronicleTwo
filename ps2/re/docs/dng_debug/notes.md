@@ -94,3 +94,7 @@ s16 at +0x44 when +2 > 0. `base_monster_define`'s row type belongs to the monste
 ## Native static initialization
 
 The native global `CFont dbFont` triggers MWCC’s static initializer, which calls `CFont::Init` and matches the 12-byte retail initializer. The postprocessed object names it `__sinit_dng_debug_cpp`; `dbFont` retains its 0xB8-byte BSS allocation.
+
+`dngDebugKey` resets the manager's 24 treasure box slots through its typed
+`box[index]` member. This replaces the 0x10-byte manager header and 0x70-byte
+box stride arithmetic without changing the function's exact object code.

@@ -58,11 +58,14 @@ enum EVENT_SKIP_STATE {
 };
 
 /**
+ *
  * Scene the running event acts on.
+ *
  */
 extern CScene *EventScene;
 
 /**
+ *
  * Loads the town's NPC conversation text for the current chapter and language into a memory stack; returns 1 on success, 0 otherwise.
  *
  * @mangled LoadNpcTalkMes__FP9mgCMemory
@@ -72,6 +75,7 @@ extern CScene *EventScene;
 int LoadNpcTalkMes(mgCMemory *memory);
 
 /**
+ *
  * Forgets the loaded NPC conversation text.
  *
  * @mangled ResetNpcTalkMes__Fv
@@ -81,6 +85,7 @@ int LoadNpcTalkMes(mgCMemory *memory);
 void ResetNpcTalkMes();
 
 /**
+ *
  * Returns the type of the tour event currently under way in the town square, or 0 when there is none.
  *
  * @mangled GetSquareEvent__Fv
@@ -90,6 +95,7 @@ void ResetNpcTalkMes();
 int GetSquareEvent();
 
 /**
+ *
  * Prepares the event state for a scene and records the scene and the current projection.
  *
  * @mangled InitEvent__FP6CScene
@@ -99,6 +105,7 @@ int GetSquareEvent();
 void InitEvent(CScene *scene);
 
 /**
+ *
  * Loads an event script program, allocating its stack and call data from a memory stack; with no program or memory, deletes the current program.
  *
  * @mangled SetEventScript__FPcPcP9mgCMemory
@@ -108,6 +115,7 @@ void InitEvent(CScene *scene);
 void SetEventScript(char *script, char *unused, mgCMemory *memory);
 
 /**
+ *
  * Starts an entry of the loaded event script on a scene and returns the interpreter's start status.
  *
  * @mangled RunEvent__FiP6CScene
@@ -117,6 +125,7 @@ void SetEventScript(char *script, char *unused, mgCMemory *memory);
 int RunEvent(int event_no, CScene *scene);
 
 /**
+ *
  * Plays one frame of the door-opening sequence: the character's motion, the door sound, the fade and the camera; returns 1 when it has finished.
  *
  * @mangled EventDoorLoop__Fii
@@ -126,6 +135,7 @@ int RunEvent(int event_no, CScene *scene);
 int EventDoorLoop(int frame, int use_scene_se);
 
 /**
+ *
  * Runs the scene event requested by the last loaded script, returning its number, or -1 when none was requested.
  *
  * @mangled StartEventSyori__Fv
@@ -135,6 +145,7 @@ int EventDoorLoop(int frame, int use_scene_se);
 int StartEventSyori();
 
 /**
+ *
  * Begins skipping the running drama scene by fading the screen out.
  *
  * @mangled SkipEventStart__Fv
@@ -144,6 +155,7 @@ int StartEventSyori();
 void SkipEventStart();
 
 /**
+ *
  * Skips the running event: finishes its message windows, closes the sound stream and skips the script.
  *
  * @mangled SkipEvent__Fv
@@ -153,6 +165,7 @@ void SkipEventStart();
 void SkipEvent();
 
 /**
+ *
  * Reports whether the running event can be skipped or is being skipped.
  *
  * @mangled CheckEventSkip__Fv
@@ -162,6 +175,7 @@ void SkipEvent();
 bool CheckEventSkip();
 
 /**
+ *
  * Runs one frame of the event script and its skip and door handling, and returns the event's request (an EVENT_REQUEST).
  *
  * @mangled EventLoop__Fv
@@ -171,6 +185,7 @@ bool CheckEventSkip();
 int EventLoop();
 
 /**
+ *
  * Returns a message window of the event scene, or null when there is no event scene.
  *
  * @mangled GetEventMessage__Fi
@@ -180,6 +195,7 @@ int EventLoop();
 ClsMes *GetEventMessage(int index);
 
 /**
+ *
  * Returns the active camera of the event scene, or null when there is no event scene.
  *
  * @mangled GetActiveCamera__Fv
@@ -189,6 +205,7 @@ ClsMes *GetEventMessage(int index);
 mgCCamera *GetActiveCamera();
 
 /**
+ *
  * Returns a character of the event scene, or null when there is no event scene.
  *
  * @mangled GetCharacter__Fi

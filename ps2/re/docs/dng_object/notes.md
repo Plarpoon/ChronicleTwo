@@ -128,3 +128,18 @@ externs; they become `static` definitions in the .cpp:
 ## Native draw locals
 
 `CRocketLauncher::Draw`, `CLaserGun::Draw`, and `CPullItem::Draw` construct a `CPreSprite` only when the object is active. Putting an early state guard before the native local and then declaring the large temporary arrays preserves their retail stack slots. `CLaserGun::Draw` also constructs `mgCFrameAttr` for its model branch; declaring its matrix immediately after the attribute keeps both retail slots. These native constructors reproduce the original code.
+
+`CRocketLauncherMan` and `CLaserGunMan` keep their shot arrays as first
+members, with 0x190-byte and 0x130-byte elements respectively. Replacing the
+draw loops' byte-offset addresses with `&rocket[i]` and `&laser[i]` changes
+MWCC's address calculation (92.58% for both), so those loops retain the exact
+byte-offset form pending a matching typed expression.
+
+`CMachineGun::Step` currently scores 97.03% before typed-array changes. The
+remaining instruction differences are mostly the scheduling of literal float
+arguments at the `SethitEffect` call: retail puts the zero for `power` into
+`fa2` before loading the speed and gravity constants, while MWCC schedules
+those constants earlier from the present C++ expression. Reordering the local
+float declarations does not affect it; inlining all four literals lowers the
+score to 91.43%. Typed `pos[i]` and `velocity[i]` lower it to 93.36% and were
+reverted. Its raw slot alias remains until the whole function can match.

@@ -191,6 +191,7 @@ public:
     int unk_11c;
 
     /**
+     *
      * Creates a builder with no memory or packet, drawing with UV
      * coordinates, bilinear filtering and depth writes.
      *
@@ -203,6 +204,7 @@ public:
 #endif
 
     /**
+     *
      * Attaches the memory and VIF1 packet to build in, defaulting to the
      * frame's data buffer and packet, and resets the drawing state.
      *
@@ -213,6 +215,7 @@ public:
     void Initialize(mgCMemory *memory, sceVif1Packet *vif_packet);
 
     /**
+     *
      * Starts a packet and its first primitive run of the given type;
      * disables the builder when it has nothing to build with.
      *
@@ -223,6 +226,7 @@ public:
     void Begin(int type);
 
     /**
+     *
      * Opens a primitive run: its DMA tag, VIF direct code and a GIF tag
      * followed by the PRIM register.
      *
@@ -233,6 +237,7 @@ public:
     void BeginDma();
 
     /**
+     *
      * Closes the current primitive run, filling in its counts, or drops
      * it when it holds no data.
      *
@@ -243,6 +248,7 @@ public:
     void EndDma();
 
     /**
+     *
      * Closes the current primitive run and opens another with the same
      * state.
      *
@@ -253,6 +259,7 @@ public:
     void Flush();
 
     /**
+     *
      * Closes the current primitive run and the packet.
      *
      * @mangled End__11mgCDrawPrimFv
@@ -262,6 +269,7 @@ public:
     void End();
 
     /**
+     *
      * Starts a packet: calls it from the VIF1 packet unless detached, and
      * writes the texture flush and drawing state at its head.
      *
@@ -272,6 +280,7 @@ public:
     void Begin2();
 
     /**
+     *
      * Opens a primitive run of the given type within the current packet.
      *
      * @mangled BeginPrim2__11mgCDrawPrimFi
@@ -281,6 +290,7 @@ public:
     void BeginPrim2(int type);
 
     /**
+     *
      * Opens a primitive run of the given type with a packed GIF tag that
      * writes the given register list on every loop.
      *
@@ -291,6 +301,7 @@ public:
     void BeginPrim2(int type, unsigned int data_a, unsigned int data_b, int unit_count);
 
     /**
+     *
      * Closes the primitive run opened by either BeginPrim2.
      *
      * @mangled EndPrim2__11mgCDrawPrimFv
@@ -300,6 +311,7 @@ public:
     void EndPrim2();
 
     /**
+     *
      * Ends the packet, with a return tag unless detached, and claims the
      * memory it used.
      *
@@ -310,6 +322,7 @@ public:
     void End2();
 
     /**
+     *
      * Writes four floats converted to integers as one quadword of data.
      *
      * @mangled Data0__11mgCDrawPrimFPf
@@ -319,6 +332,7 @@ public:
     void Data0(float *data);
 
     /**
+     *
      * Writes four floats converted to 12.4 fixed point as one quadword of
      * data.
      *
@@ -329,6 +343,7 @@ public:
     void Data4(float *data);
 
     /**
+     *
      * Writes four integers as one quadword of data.
      *
      * @mangled Data__11mgCDrawPrimFPi
@@ -338,6 +353,7 @@ public:
     void Data(int *data);
 
     /**
+     *
      * Reserves quadwords of the packet that the caller has written
      * directly.
      *
@@ -348,6 +364,7 @@ public:
     u_char *DirectData(int count);
 
     /**
+     *
      * Writes a vertex given in whole pixels.
      *
      * @mangled Vertex__11mgCDrawPrimFiii
@@ -357,6 +374,7 @@ public:
     void Vertex(int x, int y, int z);
 
     /**
+     *
      * Writes a vertex given in pixels as floats.
      *
      * @mangled Vertex__11mgCDrawPrimFfff
@@ -366,6 +384,7 @@ public:
     void Vertex(float x, float y, float z);
 
     /**
+     *
      * Writes a vertex given as a four-float vector in pixels.
      *
      * @mangled Vertex__11mgCDrawPrimFPf
@@ -375,6 +394,7 @@ public:
     void Vertex(float *pos);
 
     /**
+     *
      * Writes a vertex given in sixteenths of a pixel to the XYZ2 register,
      * adding the screen and builder offsets.
      *
@@ -385,6 +405,7 @@ public:
     void Vertex4(int x, int y, int z);
 
     /**
+     *
      * Writes a vertex given as three integers in sixteenths of a pixel.
      *
      * @mangled Vertex4__11mgCDrawPrimFPi
@@ -394,6 +415,7 @@ public:
     void Vertex4(int *pos);
 
     /**
+     *
      * Writes a colour to the RGBAQ register, with the builder's Q value.
      *
      * @mangled Color__11mgCDrawPrimFiiii
@@ -403,6 +425,7 @@ public:
     void Color(int r, int g, int b, int a);
 
     /**
+     *
      * Writes a colour given as four floats to the RGBAQ register.
      *
      * @mangled Color__11mgCDrawPrimFPf
@@ -412,6 +435,7 @@ public:
     void Color(float *color);
 
     /**
+     *
      * Writes texel coordinates given in sixteenths of a texel to the UV
      * register.
      *
@@ -422,6 +446,7 @@ public:
     void TextureCrd4(int u, int v);
 
     /**
+     *
      * Writes texel coordinates given in whole texels to the UV register.
      *
      * @mangled TextureCrd__11mgCDrawPrimFii
@@ -431,6 +456,7 @@ public:
     void TextureCrd(int u, int v);
 
     /**
+     *
      * Writes a value to a GS register by its address.
      *
      * @mangled Direct__11mgCDrawPrimFUlUl
@@ -440,6 +466,7 @@ public:
     void Direct(unsigned long reg, unsigned long data);
 
     /**
+     *
      * Makes a texture the one the primitives are drawn with, writing a
      * texture flush and its TEX1 and TEX0 registers.
      *
@@ -450,6 +477,7 @@ public:
     void Texture(mgCTexture *source);
 
     /**
+     *
      * Turns alpha blending of later primitive runs on or off.
      *
      * @mangled AlphaBlendEnable__11mgCDrawPrimFi
@@ -459,6 +487,7 @@ public:
     void AlphaBlendEnable(int enable);
 
     /**
+     *
      * Selects the blend equation, an mgALPHA_BLEND value, for later
      * packets through mgCDrawEnv::SetAlpha.
      *
@@ -469,6 +498,7 @@ public:
     void AlphaBlend(int mode);
 
     /**
+     *
      * Turns the alpha test of later packets on or off.
      *
      * @mangled AlphaTestEnable__11mgCDrawPrimFi
@@ -478,6 +508,7 @@ public:
     void AlphaTestEnable(int enable);
 
     /**
+     *
      * Sets the alpha test's comparison and reference value for later
      * packets.
      *
@@ -488,6 +519,7 @@ public:
     void AlphaTest(int method, int ref);
 
     /**
+     *
      * Sets the destination alpha test's enable and mode for later
      * packets.
      *
@@ -498,6 +530,7 @@ public:
     void DAlphaTest(int enable, int mode);
 
     /**
+     *
      * Turns the depth test of later packets on, as greater-or-equal, or
      * off, letting every pixel pass.
      *
@@ -508,6 +541,7 @@ public:
     void DepthTestEnable(int enable);
 
     /**
+     *
      * Selects the depth comparison, an mgDEPTH_TEST value, for later
      * packets.
      *
@@ -518,6 +552,7 @@ public:
     void DepthTest(int mode);
 
     /**
+     *
      * Sets whether later packets write the depth buffer, as an mgZ_MASK
      * value.
      *
@@ -528,6 +563,7 @@ public:
     void ZMask(int mask);
 
     /**
+     *
      * Turns texture mapping of later primitive runs on or off.
      *
      * @mangled TextureMapEnable__11mgCDrawPrimFi
@@ -537,6 +573,7 @@ public:
     void TextureMapEnable(int enable);
 
     /**
+     *
      * Sets whether textures given later are filtered bilinearly.
      *
      * @mangled Bilinear__11mgCDrawPrimFi
@@ -546,6 +583,7 @@ public:
     void Bilinear(int enable);
 
     /**
+     *
      * Turns Gouraud shading of later primitive runs on or off.
      *
      * @mangled Shading__11mgCDrawPrimFi
@@ -555,6 +593,7 @@ public:
     void Shading(int enable);
 
     /**
+     *
      * Turns antialiasing of later primitive runs on or off.
      *
      * @mangled AntiAliasing__11mgCDrawPrimFi
@@ -564,6 +603,7 @@ public:
     void AntiAliasing(int enable);
 
     /**
+     *
      * Turns fogging of later primitive runs on or off.
      *
      * @mangled FogEnable__11mgCDrawPrimFi
@@ -573,6 +613,7 @@ public:
     void FogEnable(int enable);
 
     /**
+     *
      * Sets whether vertices are placed relative to the screen offset
      * (zero) or in raw GS coordinates.
      *
@@ -583,6 +624,7 @@ public:
     void Coord(int coord);
 
     /**
+     *
      * Gives the offset, in sixteenths of a pixel, added to every vertex.
      *
      * @mangled GetOffset__11mgCDrawPrimFPiPi
@@ -636,6 +678,7 @@ public:
     int                unk_7c;
 
     /**
+     *
      * Creates a manager with no frame state.
      *
      * @mangled __ct__14mgCDrawManagerFv
@@ -645,6 +688,7 @@ public:
     mgCDrawManager();
 
     /**
+     *
      * Sets the number of sort table buckets and the clip distances that
      * map depths onto them.
      *
@@ -655,6 +699,7 @@ public:
     void SetSortTable(int num);
 
     /**
+     *
      * Starts collecting packets in the given memory, drawing the texture
      * groups listed (ending in a negative number) in that order, or every
      * group when given no list.
@@ -666,6 +711,7 @@ public:
     void BeginDraw(mgCMemory *memory, int *id_list);
 
     /**
+     *
      * Empties the group tables and the sort table.
      *
      * @mangled ClearTable__14mgCDrawManagerFv
@@ -675,6 +721,7 @@ public:
     void ClearTable();
 
     /**
+     *
      * Sorts the registered packets into a list for each texture group.
      *
      * @mangled PreEndDraw__14mgCDrawManagerFv
@@ -684,6 +731,7 @@ public:
     void PreEndDraw();
 
     /**
+     *
      * Writes the reload of a texture group's textures into a VIF1 packet;
      * gives zero when the group is not drawn.
      *
@@ -694,6 +742,7 @@ public:
     int ReloadTexture(int group, sceVif1Packet *vif_packet);
 
     /**
+     *
      * Writes calls to a texture group's packets, each after its VU
      * program, into a VIF1 packet; gives zero when the group is not drawn.
      *
@@ -704,6 +753,7 @@ public:
     int Draw(int group, sceVif1Packet *vif_packet);
 
     /**
+     *
      * Sorts the registered packets and writes every drawn group's texture
      * reload and packet calls into a VIF1 packet.
      *
@@ -714,6 +764,7 @@ public:
     void EndDraw(sceVif1Packet *vif_packet);
 
     /**
+     *
      * Registers a packet, with the setup packet it needs and its VU
      * program, for a texture group; a negative group means the first
      * group drawn.

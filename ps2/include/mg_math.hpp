@@ -43,21 +43,28 @@ enum mgVu0Status {
 };
 
 /**
+ *
  * Number of entries SinTable holds over one full turn.
+ *
  */
 extern float sin_table_num;
 
 /**
+ *
  * Factor that turns an angle in radians into a SinTable index.
+ *
  */
 extern float sin_table_unit_1;
 
 /**
+ *
  * Sine of each of 1024 equal steps around a full turn, filled by mgCreateSinTable.
+ *
  */
 extern float SinTable[1024];
 
 /**
+ *
  * Converts a vector of floats into integers with four fractional bits.
  *
  * @mangled mgFotI4__FPiPf
@@ -67,6 +74,7 @@ extern float SinTable[1024];
 void mgFotI4(int *out, float *in);
 
 /**
+ *
  * Writes the eight corners of the box between a maximum and a minimum corner.
  *
  * @mangled mgCreateBox8__FPA4_fPfPf
@@ -76,6 +84,7 @@ void mgFotI4(int *out, float *in);
 void mgCreateBox8(float (*corners)[4], float *max, float *min);
 
 /**
+ *
  * Sets all four components of a vector to zero.
  *
  * @mangled mgZeroVector__FPf
@@ -85,6 +94,7 @@ void mgCreateBox8(float (*corners)[4], float *max, float *min);
 void mgZeroVector(float *vector);
 
 /**
+ *
  * Sets a vector to the origin, with a w component of one.
  *
  * @mangled mgZeroVectorW__FPf
@@ -94,6 +104,7 @@ void mgZeroVector(float *vector);
 void mgZeroVectorW(float *vector);
 
 /**
+ *
  * Returns whether a point lies inside a box on the x, y and z axes.
  *
  * @mangled mgClipBoxVertex__FPfPfPf
@@ -103,6 +114,7 @@ void mgZeroVectorW(float *vector);
 int mgClipBoxVertex(float *point, float *max, float *min);
 
 /**
+ *
  * Returns whether two boxes overlap on the x, y and z axes.
  *
  * @mangled mgClipBox__FPfPfPfPf
@@ -112,6 +124,7 @@ int mgClipBoxVertex(float *point, float *max, float *min);
 int mgClipBox(float *max0, float *min0, float *max1, float *min1);
 
 /**
+ *
  * Returns whether two boxes overlap on the x, y and w axes.
  *
  * @mangled mgClipBoxW__FPfPfPfPf
@@ -121,6 +134,7 @@ int mgClipBox(float *max0, float *min0, float *max1, float *min1);
 int mgClipBoxW(float *max0, float *min0, float *max1, float *min1);
 
 /**
+ *
  * Returns whether the first box lies entirely inside the second on the x, y and z axes.
  *
  * @mangled mgClipInBox__FPfPfPfPf
@@ -130,6 +144,7 @@ int mgClipBoxW(float *max0, float *min0, float *max1, float *min1);
 int mgClipInBox(float *max0, float *min0, float *max1, float *min1);
 
 /**
+ *
  * Returns whether the first box lies entirely inside the second on the x, y and w axes.
  *
  * @mangled mgClipInBoxW__FPfPfPfPf
@@ -139,6 +154,7 @@ int mgClipInBox(float *max0, float *min0, float *max1, float *min1);
 int mgClipInBoxW(float *max0, float *min0, float *max1, float *min1);
 
 /**
+ *
  * Adds a vector into another.
  *
  * @mangled mgAddVector__FPfPf
@@ -148,6 +164,7 @@ int mgClipInBoxW(float *max0, float *min0, float *max1, float *min1);
 void mgAddVector(float *vector, float *add);
 
 /**
+ *
  * Subtracts a vector from another.
  *
  * @mangled mgSubVector__FPfPf
@@ -157,6 +174,7 @@ void mgAddVector(float *vector, float *add);
 void mgSubVector(float *vector, float *sub);
 
 /**
+ *
  * Writes a vector pointing the same way as another, with the given length.
  *
  * @mangled mgNormalizeVector__FPfPff
@@ -166,6 +184,7 @@ void mgSubVector(float *vector, float *sub);
 void mgNormalizeVector(float *out, float *in, float length);
 
 /**
+ *
  * Writes the per-component minimum of two vectors.
  *
  * @mangled mgVectorMin__FPfPfPf
@@ -175,6 +194,7 @@ void mgNormalizeVector(float *out, float *in, float length);
 void mgVectorMin(float *min, float *a, float *b);
 
 /**
+ *
  * Writes the per-component minimum of four vectors.
  *
  * @mangled mgVectorMin__FPfPfPfPfPf
@@ -184,6 +204,7 @@ void mgVectorMin(float *min, float *a, float *b);
 void mgVectorMin(float *min, float *a, float *b, float *c, float *d);
 
 /**
+ *
  * Writes the per-component maximum and minimum of two vectors.
  *
  * @mangled mgVectorMaxMin__FPfPfPfPf
@@ -193,6 +214,7 @@ void mgVectorMin(float *min, float *a, float *b, float *c, float *d);
 void mgVectorMaxMin(float *max, float *min, float *a, float *b);
 
 /**
+ *
  * Writes the per-component maximum and minimum of three vectors.
  *
  * @mangled mgVectorMaxMin__FPfPfPfPfPf
@@ -202,6 +224,7 @@ void mgVectorMaxMin(float *max, float *min, float *a, float *b);
 void mgVectorMaxMin(float *max, float *min, float *a, float *b, float *c);
 
 /**
+ *
  * Writes the per-component maximum and minimum of four vectors.
  *
  * @mangled mgVectorMaxMin__FPfPfPfPfPfPf
@@ -211,6 +234,7 @@ void mgVectorMaxMin(float *max, float *min, float *a, float *b, float *c);
 void mgVectorMaxMin(float *max, float *min, float *a, float *b, float *c, float *d);
 
 /**
+ *
  * Grows a box so that it also encloses another box.
  *
  * @mangled mgBoxMaxMin__FP9mgVu0FBOXP9mgVu0FBOX
@@ -220,6 +244,7 @@ void mgVectorMaxMin(float *max, float *min, float *a, float *b, float *c, float 
 void mgBoxMaxMin(mgVu0FBOX *box, mgVu0FBOX *other);
 
 /**
+ *
  * Writes the unnormalised normal of the plane through three points.
  *
  * @mangled mgPlaneNormal__FPfPfPfPf
@@ -229,6 +254,7 @@ void mgBoxMaxMin(mgVu0FBOX *box, mgVu0FBOX *other);
 void mgPlaneNormal(float *normal, float *v0, float *v1, float *v2);
 
 /**
+ *
  * Returns the signed distance of a point from a plane, along the plane's normal.
  *
  * @mangled mgDistPlanePoint__FPfPfPf
@@ -238,6 +264,7 @@ void mgPlaneNormal(float *normal, float *v0, float *v1, float *v2);
 float mgDistPlanePoint(float *normal, float *on_plane, float *point);
 
 /**
+ *
  * Returns the distance from a point to a line segment and writes the nearest point on the segment.
  *
  * @mangled mgDistLinePoint__FPfPfPfPf
@@ -247,6 +274,7 @@ float mgDistPlanePoint(float *normal, float *on_plane, float *point);
 float mgDistLinePoint(float *point, float *start, float *end, float *nearest);
 
 /**
+ *
  * Writes the reflection of a point's offset in a plane and returns twice the point's distance from it.
  *
  * @mangled mgReflectionPlane__FPfPfPfPf
@@ -256,6 +284,7 @@ float mgDistLinePoint(float *point, float *start, float *end, float *nearest);
 float mgReflectionPlane(float *normal, float *on_plane, float *point, float *reflection);
 
 /**
+ *
  * Writes where a segment crosses a sphere at the origin and returns how many crossings there are.
  *
  * @mangled mgIntersectionSphereLine0__FfPfPfPA4_f
@@ -265,6 +294,7 @@ float mgReflectionPlane(float *normal, float *on_plane, float *point, float *ref
 int mgIntersectionSphereLine0(float radius, float *from, float *to, float (*hits)[4]);
 
 /**
+ *
  * Writes where a segment crosses a sphere and returns how many crossings there are.
  *
  * @mangled mgIntersectionSphereLine__FPfPfPfPA4_f
@@ -274,6 +304,7 @@ int mgIntersectionSphereLine0(float radius, float *from, float *to, float (*hits
 int mgIntersectionSphereLine(float *sphere, float *from, float *to, float (*hits)[4]);
 
 /**
+ *
  * Writes where a line meets a triangle's plane and returns whether that point is inside the triangle.
  *
  * @mangled mgIntersectionPoint_line_poly3__FPfPfPfPfPfPfPf
@@ -283,6 +314,7 @@ int mgIntersectionSphereLine(float *sphere, float *from, float *to, float (*hits
 int mgIntersectionPoint_line_poly3(float *from, float *to, float *v0, float *v1, float *v2, float *normal, float *hit);
 
 /**
+ *
  * Returns whether a point on a triangle's plane lies inside the triangle.
  *
  * @mangled mgCheckPointPoly3_XYZ__FPfPfPfPfPf
@@ -292,6 +324,7 @@ int mgIntersectionPoint_line_poly3(float *from, float *to, float *v0, float *v1,
 int mgCheckPointPoly3_XYZ(float *point, float *v0, float *v1, float *v2, float *normal);
 
 /**
+ *
  * Returns where a point lies relative to a triangle seen from above, as an mgPointPoly3Result.
  *
  * @mangled mgCheckPointPoly3_XZ__FPfPfPfPf
@@ -301,6 +334,7 @@ int mgCheckPointPoly3_XYZ(float *point, float *v0, float *v1, float *v2, float *
 int mgCheckPointPoly3_XZ(float *point, float *v0, float *v1, float *v2);
 
 /**
+ *
  * Returns the length of a vector.
  *
  * @mangled mgDistVector__FPf
@@ -310,6 +344,7 @@ int mgCheckPointPoly3_XZ(float *point, float *v0, float *v1, float *v2);
 float mgDistVector(float *vector);
 
 /**
+ *
  * Returns the length of a vector on the horizontal plane.
  *
  * @mangled mgDistVectorXZ__FPf
@@ -319,6 +354,7 @@ float mgDistVector(float *vector);
 float mgDistVectorXZ(float *vector);
 
 /**
+ *
  * Returns the squared length of a vector.
  *
  * @mangled mgDistVector2__FPf
@@ -328,6 +364,7 @@ float mgDistVectorXZ(float *vector);
 float mgDistVector2(float *vector);
 
 /**
+ *
  * Returns the distance between two positions.
  *
  * @mangled mgDistVector__FPfPf
@@ -337,6 +374,7 @@ float mgDistVector2(float *vector);
 float mgDistVector(float *a, float *b);
 
 /**
+ *
  * Returns the distance between two positions on the horizontal plane.
  *
  * @mangled mgDistVectorXZ__FPfPf
@@ -346,6 +384,7 @@ float mgDistVector(float *a, float *b);
 float mgDistVectorXZ(float *a, float *b);
 
 /**
+ *
  * Returns the squared distance between two positions.
  *
  * @mangled mgDistVector2__FPfPf
@@ -355,6 +394,7 @@ float mgDistVectorXZ(float *a, float *b);
 float mgDistVector2(float *a, float *b);
 
 /**
+ *
  * Returns the squared distance between two positions on the horizontal plane.
  *
  * @mangled mgDistVectorXZ2__FPfPf
@@ -364,6 +404,7 @@ float mgDistVector2(float *a, float *b);
 float mgDistVectorXZ2(float *a, float *b);
 
 /**
+ *
  * Sets a matrix to the identity.
  *
  * @mangled mgUnitMatrix__FPA4_f
@@ -373,6 +414,7 @@ float mgDistVectorXZ2(float *a, float *b);
 void mgUnitMatrix(float (*matrix)[4]);
 
 /**
+ *
  * Sets every element of a matrix to zero.
  *
  * @mangled mgZeroMatrix__FPA4_f
@@ -382,6 +424,7 @@ void mgUnitMatrix(float (*matrix)[4]);
 void mgZeroMatrix(float (*matrix)[4]);
 
 /**
+ *
  * Writes the product of two matrices.
  *
  * @mangled mgMulMatrix__FPA4_fPA4_fPA4_f
@@ -391,6 +434,7 @@ void mgZeroMatrix(float (*matrix)[4]);
 void mgMulMatrix(float (*product)[4], float (*left_matrix)[4], float (*right_matrix)[4]);
 
 /**
+ *
  * Writes the inverse of a rotation-and-translation matrix.
  *
  * @mangled mgInversMatrix__FPA4_fPA4_f
@@ -400,6 +444,7 @@ void mgMulMatrix(float (*product)[4], float (*left_matrix)[4], float (*right_mat
 void mgInversMatrix(float (*inverse)[4], float (*matrix)[4]);
 
 /**
+ *
  * Sets a matrix to a rotation about the x axis.
  *
  * @mangled mgRotMatrixX__FPA4_ff
@@ -409,6 +454,7 @@ void mgInversMatrix(float (*inverse)[4], float (*matrix)[4]);
 void mgRotMatrixX(float (*matrix)[4], float angle_x);
 
 /**
+ *
  * Sets a matrix to a rotation about the y axis.
  *
  * @mangled mgRotMatrixY__FPA4_ff
@@ -418,6 +464,7 @@ void mgRotMatrixX(float (*matrix)[4], float angle_x);
 void mgRotMatrixY(float (*matrix)[4], float angle_y);
 
 /**
+ *
  * Sets a matrix to a rotation about the z axis.
  *
  * @mangled mgRotMatrixZ__FPA4_ff
@@ -427,6 +474,7 @@ void mgRotMatrixY(float (*matrix)[4], float angle_y);
 void mgRotMatrixZ(float (*matrix)[4], float angle_z);
 
 /**
+ *
  * Sets a matrix to the rotation given by angles about the x, y and z axes.
  *
  * @mangled mgRotMatrixXYZ__FPA4_fPf
@@ -436,6 +484,7 @@ void mgRotMatrixZ(float (*matrix)[4], float angle_z);
 void mgRotMatrixXYZ(float (*matrix)[4], float *rotation);
 
 /**
+ *
  * Sets a matrix to a rotation about the y axis followed by a move to a position.
  *
  * @mangled mgCreateMatrixPY__FPA4_fPff
@@ -445,6 +494,7 @@ void mgRotMatrixXYZ(float (*matrix)[4], float *rotation);
 void mgCreateMatrixPY(float (*matrix)[4], float *position, float angle_y);
 
 /**
+ *
  * Sets a matrix to the rotation that turns the z axis to face a direction.
  *
  * @mangled mgLookAtMatrixZ__FPA4_fPf
@@ -454,6 +504,7 @@ void mgCreateMatrixPY(float (*matrix)[4], float *position, float angle_y);
 void mgLookAtMatrixZ(float (*matrix)[4], float *direction);
 
 /**
+ *
  * Sets a matrix to the projection of points along a light direction onto a plane.
  *
  * @mangled mgShadowMatrix__FPA4_fPfPfPf
@@ -463,6 +514,7 @@ void mgLookAtMatrixZ(float (*matrix)[4], float *direction);
 void mgShadowMatrix(float (*matrix)[4], float *light_direction, float *on_plane, float *plane_normal);
 
 /**
+ *
  * Transforms a run of vectors by a matrix.
  *
  * @mangled mgApplyMatrixN__FPA4_fPA4_fPA4_fi
@@ -472,6 +524,7 @@ void mgShadowMatrix(float (*matrix)[4], float *light_direction, float *on_plane,
 void mgApplyMatrixN(float (*out)[4], float (*matrix)[4], float (*in)[4], int count);
 
 /**
+ *
  * Transforms a run of vectors by a matrix and writes the bounds of the results.
  *
  * @mangled mgApplyMatrixN_MaxMin__FPA4_fPA4_fPA4_fiPfPf
@@ -481,6 +534,7 @@ void mgApplyMatrixN(float (*out)[4], float (*matrix)[4], float (*in)[4], int cou
 void mgApplyMatrixN_MaxMin(float (*out)[4], float (*matrix)[4], float (*in)[4], int count, float *max, float *min);
 
 /**
+ *
  * Writes the per-component maximum and minimum over a run of vectors.
  *
  * @mangled mgVectorMinMaxN__FPfPfPA4_fi
@@ -490,6 +544,7 @@ void mgApplyMatrixN_MaxMin(float (*out)[4], float (*matrix)[4], float (*in)[4], 
 void mgVectorMinMaxN(float *max, float *min, float (*vectors)[4], int count);
 
 /**
+ *
  * Writes the bounds of a box after it is transformed by a matrix.
  *
  * @mangled mgApplyMatrix__FPfPfPA4_fPfPf
@@ -499,6 +554,7 @@ void mgVectorMinMaxN(float *max, float *min, float (*vectors)[4], int count);
 void mgApplyMatrix(float *max, float *min, float (*matrix)[4], float *box_max, float *box_min);
 
 /**
+ *
  * Writes a position moved from one point towards another in the way an mgInterpolateMode gives.
  *
  * @mangled mgVectorInterpolate__FPfPfPffi
@@ -508,6 +564,7 @@ void mgApplyMatrix(float *max, float *min, float (*matrix)[4], float *box_max, f
 void mgVectorInterpolate(float *out, float *from, float *to, float step, int mode);
 
 /**
+ *
  * Returns an angle turned from one angle towards another, by the shorter way, as an mgInterpolateMode gives.
  *
  * @mangled mgAngleInterpolate__Ffffi
@@ -517,6 +574,7 @@ void mgVectorInterpolate(float *out, float *from, float *to, float step, int mod
 float mgAngleInterpolate(float from, float to, float step, int mode);
 
 /**
+ *
  * Returns 1, -1 or 0 as the first angle is ahead of, behind or within a tolerance of the second.
  *
  * @mangled mgAngleCmp__Ffff
@@ -526,6 +584,7 @@ float mgAngleInterpolate(float from, float to, float step, int mode);
 int mgAngleCmp(float a, float b, float tolerance);
 
 /**
+ *
  * Wraps an angle into the half turn either side of zero.
  *
  * @mangled mgAngleLimit__Ff
@@ -535,6 +594,7 @@ int mgAngleCmp(float a, float b, float tolerance);
 float mgAngleLimit(float angle);
 
 /**
+ *
  * Returns a random number between zero and one.
  *
  * @mangled mgRnd__Fv
@@ -544,6 +604,7 @@ float mgAngleLimit(float angle);
 float mgRnd();
 
 /**
+ *
  * Returns a random number spread about zero roughly as a normal distribution.
  *
  * @mangled mgNRnd__Fv
@@ -553,6 +614,7 @@ float mgRnd();
 float mgNRnd();
 
 /**
+ *
  * Fills SinTable with the sine of each step around a full turn.
  *
  * @mangled mgCreateSinTable__Fv
@@ -562,6 +624,7 @@ float mgNRnd();
 void mgCreateSinTable();
 
 /**
+ *
  * Returns the sine of an angle in radians, looked up in SinTable.
  *
  * @mangled mgSinf__Ff
@@ -571,6 +634,7 @@ void mgCreateSinTable();
 float mgSinf(float angle);
 
 /**
+ *
  * Returns the cosine of an angle in radians, looked up in SinTable.
  *
  * @mangled mgCosf__Ff

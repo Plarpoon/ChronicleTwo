@@ -19,11 +19,14 @@ extern short  SystemMesBuffer[];
 extern short  SysMesBuffer[];
 
 /**
+ *
  * Memory stack reserved for the system message windows.
+ *
  */
 extern mgCMemory SystemMesStack;
 
 /**
+ *
  * Returns the first system message window.
  *
  * @mangled GetSystemMessage__Fv
@@ -33,6 +36,7 @@ extern mgCMemory SystemMesStack;
 ClsMes *GetSystemMessage();
 
 /**
+ *
  * Returns the system message window with the given index, the first one for any index other than 1 or 2.
  *
  * @mangled GetSystemMessage__Fi
@@ -42,6 +46,7 @@ ClsMes *GetSystemMessage();
 ClsMes *GetSystemMessage(int index);
 
 /**
+ *
  * Loads the system.mes and sysmes.mes files for the current language into their buffers.
  *
  * @mangled LoadSystemMes__Fv
@@ -51,6 +56,7 @@ ClsMes *GetSystemMessage(int index);
 void LoadSystemMes();
 
 /**
+ *
  * Returns the message data loaded from system.mes.
  *
  * @mangled GetSystemMesBuffer__Fv
@@ -60,6 +66,7 @@ void LoadSystemMes();
 short *GetSystemMesBuffer();
 
 /**
+ *
  * Returns the message data loaded from sysmes.mes.
  *
  * @mangled GetSysMesBuffer__Fv
@@ -69,6 +76,7 @@ short *GetSystemMesBuffer();
 short *GetSysMesBuffer();
 
 /**
+ *
  * Resets all three system message windows.
  *
  * @mangled CreateSystemMes__Fv
@@ -78,6 +86,7 @@ short *GetSysMesBuffer();
 void CreateSystemMes();
 
 /**
+ *
  * Resets one system message window to its default state and attaches the system message buffers to it.
  *
  * @mangled CreateSystemMes__Fii

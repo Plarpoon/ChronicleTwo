@@ -39,6 +39,7 @@ struct NowLoadingInfo {
     int       step_count; /**< Number of progress steps that fill the bar. */
 
     /**
+     *
      * Creates settings with no texture block, an empty memory manager and no
      * progress steps.
      *
@@ -65,6 +66,7 @@ struct PAUSE_INFO {
 STATIC_ASSERT(sizeof(PAUSE_INFO) == 0x8);
 
 /**
+ *
  * Yields the processor to the next thread of the same priority, passing control
  * between the loading-screen thread and the loader.
  *
@@ -75,6 +77,7 @@ STATIC_ASSERT(sizeof(PAUSE_INFO) == 0x8);
 void SwitchNowLoadingThread();
 
 /**
+ *
  * Makes the next loading screen request be ignored instead of shown.
  *
  * @mangled CancelNowLoading__Fv
@@ -84,6 +87,7 @@ void SwitchNowLoadingThread();
 void CancelNowLoading();
 
 /**
+ *
  * Loads the loading image for the current language and starts the thread that
  * draws the loading screen, unless the request was cancelled.
  *
@@ -94,6 +98,7 @@ void CancelNowLoading();
 void CreateNowLoading(NowLoadingInfo *info);
 
 /**
+ *
  * Advances the loading screen's progress bar target by one step.
  *
  * @mangled NowLoadingBarStep__Fv
@@ -103,6 +108,7 @@ void CreateNowLoading(NowLoadingInfo *info);
 void NowLoadingBarStep();
 
 /**
+ *
  * Sends the loading screen's progress bar to full at a fixed speed.
  *
  * @mangled NowLoadingBarSteEnd__Fv
@@ -112,6 +118,7 @@ void NowLoadingBarStep();
 void NowLoadingBarSteEnd();
 
 /**
+ *
  * Waits for the progress bar to fill, then ends the loading-screen thread and
  * releases its texture block.
  *
@@ -122,6 +129,7 @@ void NowLoadingBarSteEnd();
 void DeleteNowLoading();
 
 /**
+ *
  * Loads the language's skip-button image used by the pause screen, returning
  * non-zero when it loaded and fits.
  *
@@ -132,6 +140,7 @@ void DeleteNowLoading();
 int InitPauseData();
 
 /**
+ *
  * Resets the pause state and makes a texture block hold the pause screen's
  * frame capture and skip-button image, returning 1.
  *
@@ -142,6 +151,7 @@ int InitPauseData();
 int InitPause(int tex_block);
 
 /**
+ *
  * Allows or forbids pausing, returning the previous setting.
  *
  * @mangled PauseEnable__Fi
@@ -151,6 +161,7 @@ int InitPause(int tex_block);
 int PauseEnable(int enable);
 
 /**
+ *
  * Reports whether the game is paused.
  *
  * @mangled GetPauseFlag__Fv
@@ -160,6 +171,7 @@ int PauseEnable(int enable);
 int GetPauseFlag();
 
 /**
+ *
  * Pauses the game when pausing is allowed and the last pause ended long enough
  * ago, returning non-zero when it paused.
  *
@@ -170,6 +182,7 @@ int GetPauseFlag();
 int PauseStart(PAUSE_INFO *info);
 
 /**
+ *
  * Drops a pending pause without resuming its sound.
  *
  * @mangled PauseCancel__Fv
@@ -179,6 +192,7 @@ int PauseStart(PAUSE_INFO *info);
 void PauseCancel();
 
 /**
+ *
  * Ends the pause and resumes the music, streams, sequences, play-time count and
  * volume that the pause stopped.
  *
@@ -189,6 +203,7 @@ void PauseCancel();
 void PauseEnd();
 
 /**
+ *
  * Draws one frame of the pause screen and handles its buttons, returning
  * non-zero while the game stays paused.
  *
@@ -199,6 +214,7 @@ void PauseEnd();
 int PauseLoop();
 
 /**
+ *
  * Counts down the frames before the game may be paused again.
  *
  * @mangled PauseCount__Fv
@@ -208,6 +224,7 @@ int PauseLoop();
 void PauseCount();
 
 /**
+ *
  * Fades the boot logo in after the title language is chosen, or fades it out,
  * setting up the graphics buffers from a memory manager.
  *

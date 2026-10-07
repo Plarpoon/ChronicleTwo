@@ -168,7 +168,9 @@ struct PAD_CAPTURE_FRAME {
 STATIC_ASSERT(sizeof(PAD_CAPTURE_FRAME) == 0x6);
 
 /**
+ *
  * Sizes of the one-megabyte input recording in development kit memory.
+ *
  */
 enum {
     PAD_CAPTURE_BUFFER_SIZE = 0x100000,                                          /**< Bytes reserved for the recording. */
@@ -176,13 +178,17 @@ enum {
 };
 
 /**
+ *
  * Start of the input recording in development kit memory.
+ *
  */
 #define PAD_CAPTURE_BUFFER ((PAD_CAPTURE_FRAME *) 0x3000000)
 
 /**
+ *
  * Scheduling priority shared by the main thread and the controller thread,
  * whose ready queue SwitchGamePadThread rotates.
+ *
  */
 enum {
     GAMEPAD_THREAD_PRIORITY = 10, /**< Priority of both threads. */
@@ -215,6 +221,7 @@ public:
     u32        capture_frame;     /**< Number of frames recorded or replayed. */
 
     /**
+     *
      * Initializes the controller library, clears both controllers' state
      * and opens both controller ports.
      *
@@ -225,6 +232,7 @@ public:
     void Init();
 
     /**
+     *
      * Closes both controller ports and shuts down the controller library.
      *
      * @mangled Close__8CGamePadFv
@@ -234,6 +242,7 @@ public:
     void Close();
 
     /**
+     *
      * Waits until each controller is ready or disconnected.
      *
      * @mangled WaitEnable__8CGamePadFv
@@ -243,6 +252,7 @@ public:
     void WaitEnable();
 
     /**
+     *
      * Tests whether the first controller is connected and usable.
      *
      * @mangled Connect__8CGamePadFv
@@ -252,6 +262,7 @@ public:
     int Connect();
 
     /**
+     *
      * Reads both controllers once a frame and derives the menu, repeat
      * and lock adjustments of their buttons.
      *
@@ -262,6 +273,7 @@ public:
     void UpDate();
 
     /**
+     *
      * Counts down the vibration timers and sends the actuator values.
      *
      * @mangled Step__8CGamePadFi
@@ -271,6 +283,7 @@ public:
     void Step(int elapsed);
 
     /**
+     *
      * Gets the calibrated first-controller right stick horizontal position.
      *
      * @mangled GetRX__8CGamePadFv
@@ -280,6 +293,7 @@ public:
     int GetRX();
 
     /**
+     *
      * Gets the calibrated first-controller right stick vertical position.
      *
      * @mangled GetRY__8CGamePadFv
@@ -289,6 +303,7 @@ public:
     int GetRY();
 
     /**
+     *
      * Gets the calibrated first-controller left stick horizontal position.
      *
      * @mangled GetLX__8CGamePadFv
@@ -298,6 +313,7 @@ public:
     int GetLX();
 
     /**
+     *
      * Gets the calibrated first-controller left stick vertical position.
      *
      * @mangled GetLY__8CGamePadFv
@@ -307,6 +323,7 @@ public:
     int GetLY();
 
     /**
+     *
      * Gets the calibrated second-controller right stick horizontal position.
      *
      * @mangled GetRX2__8CGamePadFv
@@ -316,6 +333,7 @@ public:
     int GetRX2();
 
     /**
+     *
      * Cancels automatic repeat of the first controller's selected buttons.
      *
      * @mangled CancelAutoRepeat__8CGamePadFi
@@ -325,6 +343,7 @@ public:
     void CancelAutoRepeat(int mask);
 
     /**
+     *
      * Cancels automatic repeat of the second controller's selected buttons.
      *
      * @mangled CancelAutoRepeat2__8CGamePadFi
@@ -334,6 +353,7 @@ public:
     void CancelAutoRepeat2(int mask);
 
     /**
+     *
      * Sets up automatic repeat of the first controller's selected buttons.
      *
      * @mangled SetAutoRepeat__8CGamePadFiii
@@ -343,6 +363,7 @@ public:
     void SetAutoRepeat(int mask, int initial_delay, int repeat_delay);
 
     /**
+     *
      * Sets up automatic repeat of the second controller's selected buttons
      * that do not repeat yet.
      *
@@ -353,6 +374,7 @@ public:
     void SetAutoRepeat2(int mask, int initial_delay, int repeat_delay);
 
     /**
+     *
      * Sets the lock that makes both controllers read as idle.
      *
      * @mangled KeyLock__8CGamePadFi
@@ -362,6 +384,7 @@ public:
     void KeyLock(int lock);
 
     /**
+     *
      * Sets the lock that makes the second controller read as idle.
      *
      * @mangled KeyLock2__8CGamePadFi
@@ -371,6 +394,7 @@ public:
     void KeyLock2(int lock);
 
     /**
+     *
      * Sets the debug lock, which also locks the second controller.
      *
      * @mangled DebugKeyLock__8CGamePadFi
@@ -380,6 +404,7 @@ public:
     void DebugKeyLock(int lock);
 
     /**
+     *
      * Gets the buttons held on the first controller.
      *
      * @mangled GetPadOn__8CGamePadFv
@@ -389,6 +414,7 @@ public:
     int GetPadOn();
 
     /**
+     *
      * Gets the buttons newly pressed on the first controller.
      *
      * @mangled GetPadDown__8CGamePadFv
@@ -398,6 +424,7 @@ public:
     int GetPadDown();
 
     /**
+     *
      * Gets the buttons newly released on the first controller.
      *
      * @mangled GetPadUp__8CGamePadFv
@@ -407,6 +434,7 @@ public:
     int GetPadUp();
 
     /**
+     *
      * Gets the first-controller right stick horizontal position from -1 to 1.
      *
      * @mangled GetRXf__8CGamePadFv
@@ -416,6 +444,7 @@ public:
     float GetRXf();
 
     /**
+     *
      * Gets the first-controller right stick vertical position from -1 to 1.
      *
      * @mangled GetRYf__8CGamePadFv
@@ -425,6 +454,7 @@ public:
     float GetRYf();
 
     /**
+     *
      * Gets the first-controller left stick horizontal position from -1 to 1.
      *
      * @mangled GetLXf__8CGamePadFv
@@ -434,6 +464,7 @@ public:
     float GetLXf();
 
     /**
+     *
      * Gets the first-controller left stick vertical position from -1 to 1.
      *
      * @mangled GetLYf__8CGamePadFv
@@ -443,6 +474,7 @@ public:
     float GetLYf();
 
     /**
+     *
      * Gets the second-controller right stick horizontal position from -1 to 1.
      *
      * @mangled GetRXf2__8CGamePadFv
@@ -452,6 +484,7 @@ public:
     float GetRXf2();
 
     /**
+     *
      * Tests whether the first controller holds any of the given buttons.
      *
      * @mangled On__8CGamePadFi
@@ -461,6 +494,7 @@ public:
     int On(int mask);
 
     /**
+     *
      * Tests whether the second controller holds any of the given buttons.
      *
      * @mangled On2__8CGamePadFi
@@ -470,6 +504,7 @@ public:
     int On2(int mask);
 
     /**
+     *
      * Tests whether the first controller newly presses any of the given buttons.
      *
      * @mangled Down__8CGamePadFi
@@ -479,6 +514,7 @@ public:
     int Down(int mask);
 
     /**
+     *
      * Tests whether the second controller newly presses any of the given buttons.
      *
      * @mangled Down2__8CGamePadFi
@@ -488,6 +524,7 @@ public:
     int Down2(int mask);
 
     /**
+     *
      * Tests whether the first controller newly releases any of the given buttons.
      *
      * @mangled Up__8CGamePadFi
@@ -497,6 +534,7 @@ public:
     int Up(int mask);
 
     /**
+     *
      * Cancels automatic repeat of every first-controller button.
      *
      * @mangled AutoRepeatOff__8CGamePadFv
@@ -506,6 +544,7 @@ public:
     void AutoRepeatOff();
 
     /**
+     *
      * Makes the first controller's left stick act as the directional pad
      * past a deflection threshold.
      *
@@ -516,6 +555,7 @@ public:
     void MenuModeOn(int threshold);
 
     /**
+     *
      * Stops the first controller's left stick acting as the directional pad.
      *
      * @mangled MenuModeOff__8CGamePadFv
@@ -525,6 +565,7 @@ public:
     void MenuModeOff();
 
     /**
+     *
      * Runs one actuator of the first controller at a strength for a time.
      *
      * @mangled SetVibration__8CGamePadFiii
@@ -534,6 +575,7 @@ public:
     void SetVibration(int motor, int strength, int duration);
 
     /**
+     *
      * Allows or forbids vibration.
      *
      * @mangled VibrationEnable__8CGamePadFi
@@ -543,6 +585,7 @@ public:
     void VibrationEnable(int enable);
 
     /**
+     *
      * Stops both actuators of the first controller at once.
      *
      * @mangled StopVibration__8CGamePadFv
@@ -552,6 +595,7 @@ public:
     void StopVibration();
 
     /**
+     *
      * Starts recording first-controller input from the first frame.
      *
      * @mangled CaptureStart__8CGamePadFv
@@ -561,6 +605,7 @@ public:
     void CaptureStart();
 
     /**
+     *
      * Stops recording or replaying input.
      *
      * @mangled CaptureEnd__8CGamePadFv
@@ -570,6 +615,7 @@ public:
     void CaptureEnd();
 
     /**
+     *
      * Starts replaying the recorded first-controller input.
      *
      * @mangled CapturePlay__8CGamePadFv
@@ -579,6 +625,7 @@ public:
     void CapturePlay();
 
     /**
+     *
      * Records one frame of a controller's input.
      *
      * @mangled Capture__8CGamePadFP10PAD_STATUS
@@ -588,6 +635,7 @@ public:
     void Capture(PAD_STATUS *pad);
 
     /**
+     *
      * Replaces a controller's input with the next recorded frame.
      *
      * @mangled Play__8CGamePadFP10PAD_STATUS
@@ -597,6 +645,7 @@ public:
     void Play(PAD_STATUS *status);
 
     /**
+     *
      * Writes the recorded input to the host as key_cap.bin.
      *
      * @mangled SaveCapture__8CGamePadFv
@@ -606,6 +655,7 @@ public:
     void SaveCapture();
 
     /**
+     *
      * Loads recorded input from key_cap.bin.
      *
      * @mangled LoadCapture__8CGamePadFv
@@ -618,6 +668,7 @@ public:
 STATIC_ASSERT(sizeof(CGamePad) == 0x478);
 
 /**
+ *
  * Yields the processor to the next thread of the same priority, switching
  * between the main thread and the controller thread.
  *
@@ -628,6 +679,7 @@ STATIC_ASSERT(sizeof(CGamePad) == 0x478);
 void SwitchGamePadThread();
 
 /**
+ *
  * Creates and starts the thread that steps a controller manager's
  * vibration every vertical blank.
  *

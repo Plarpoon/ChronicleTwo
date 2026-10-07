@@ -109,6 +109,7 @@ public:
     s32   unk_34;
 
     /**
+     *
      * Starts the banner centred on a screen position.
      *
      * @mangled SetLevelUpInfo__12CLevelupInfoFiiii
@@ -118,6 +119,7 @@ public:
     void SetLevelUpInfo(int x, int y, int source, int value);
 
     /**
+     *
      * Draws the banner for its current phase.
      *
      * @mangled Draw__12CLevelupInfoFv
@@ -127,6 +129,7 @@ public:
     void Draw();
 
     /**
+     *
      * Advances the banner through its phases.
      *
      * @mangled Step__12CLevelupInfoFv
@@ -154,6 +157,7 @@ public:
     s16        se_wait;       /**< Frames left until the sound of the stars plays again. */
 
     /**
+     *
      * Removes the stars.
      *
      * @mangled Initialize__7CPiyoriFv
@@ -163,6 +167,7 @@ public:
     void Initialize();
 
     /**
+     *
      * Removes the stars and clears their remaining time.
      *
      * @mangled Reset__7CPiyoriFv
@@ -172,6 +177,7 @@ public:
     void Reset();
 
     /**
+     *
      * Starts the stars circling an object for a number of frames.
      *
      * @mangled Set__7CPiyoriFP9mgCObjectffs
@@ -181,6 +187,7 @@ public:
     void Set(mgCObject *object, float height, float radius, short life);
 
     /**
+     *
      * Starts the stars circling a character, sized to the character.
      *
      * @mangled Set__7CPiyoriFP9mgCObjects
@@ -190,6 +197,7 @@ public:
     void Set(mgCObject *target, short time);
 
     /**
+     *
      * Draws the stars around their character.
      *
      * @mangled Draw__7CPiyoriFv
@@ -199,6 +207,7 @@ public:
     void Draw();
 
     /**
+     *
      * Turns the stars, plays their sound, and ends them when their time runs out.
      *
      * @mangled Step__7CPiyoriFv
@@ -224,6 +233,7 @@ public:
     s16          time;   /**< Frames that the mark has been shown; it ends after 240. */
 
     /**
+     *
      * Shows the mark above a character.
      *
      * @mangled Set__9CGiftMarkFP11CCharacter2f
@@ -233,6 +243,7 @@ public:
     void Set(CCharacter2 *chara, float character_scale);
 
     /**
+     *
      * Draws the mark above its character.
      *
      * @mangled Draw__9CGiftMarkFv
@@ -242,6 +253,7 @@ public:
     void Draw();
 
     /**
+     *
      * Bobs the mark and ends it when its time runs out.
      *
      * @mangled Step__9CGiftMarkFv
@@ -251,6 +263,7 @@ public:
     void Step();
 
     /**
+     *
      * Hides the mark and clears its character and time.
      *
      * @mangled Initialize__9CGiftMarkFv
@@ -273,6 +286,7 @@ public:
     s8 frame; /**< Frame of the break-away animation. */
 
     /**
+     *
      * Draws the mark into an open sprite list at a screen position.
      *
      * @mangled Draw__13CEnemyGekirinFP10CPreSpriteii
@@ -282,6 +296,7 @@ public:
     void Draw(CPreSprite *sprite, int x, int y);
 
     /**
+     *
      * Advances the break-away animation, and removes the mark when it ends.
      *
      * @mangled Step__13CEnemyGekirinFv
@@ -310,6 +325,7 @@ public:
     CEnemyGekirin gekirin[ENEMY_LIFE_GAGE_GEKIRIN_MAX]; /**< Gekirin marks drawn above the gauge. */
 
     /**
+     *
      * Shows or hides the gauge, starting it from half width when it appears.
      *
      * @mangled SetView__14CEnemyLifeGageFi
@@ -319,6 +335,7 @@ public:
     void SetView(int visible);
 
     /**
+     *
      * Places the gauge, fills it, and starts breaking the gekirin marks beyond a count.
      *
      * @mangled Set__14CEnemyLifeGageFPfiiii
@@ -328,6 +345,7 @@ public:
     void Set(float *pos, int new_max_life, int new_life, int count, int new_pinned);
 
     /**
+     *
      * Draws the gauge, and its gekirin marks when they are not hidden.
      *
      * @mangled Draw__14CEnemyLifeGageFi
@@ -337,6 +355,7 @@ public:
     void Draw(int hide_gekirin);
 
     /**
+     *
      * Grows or shrinks the gauge and animates its gekirin marks.
      *
      * @mangled Step__14CEnemyLifeGageFv
@@ -346,6 +365,7 @@ public:
     void Step();
 
     /**
+     *
      * Shows a number of gekirin marks at rest and removes the rest.
      *
      * @mangled ResetGekirin__14CEnemyLifeGageFi
@@ -355,6 +375,7 @@ public:
     void ResetGekirin(int gekirin_count);
 
     /**
+     *
      * Empties and hides the gauge, showing a number of gekirin marks.
      *
      * @mangled Initialize__14CEnemyLifeGageFi
@@ -398,6 +419,7 @@ public:
     s32           active;   /**< Nonzero while the number is shown. */
 
     /**
+     *
      * Makes a number with white digits.
      *
      * @mangled __ct__12CDamageScoreFv
@@ -407,6 +429,7 @@ public:
     CDamageScore() { memset(color, 0x80, sizeof(color)); }
 
     /**
+     *
      * Pops up a number over a world position.
      *
      * @mangled SetValue__12CDamageScoreFPfi
@@ -416,6 +439,7 @@ public:
     void SetValue(float *pos, int value);
 
     /**
+     *
      * Sets the colour of the digits.
      *
      * @mangled SetColor__12CDamageScoreFsss
@@ -425,6 +449,7 @@ public:
     void SetColor(short r, short g, short b);
 
     /**
+     *
      * Pops up a sprite from the system texture over a world position.
      *
      * @mangled SetSprite__12CDamageScoreFPfiiii
@@ -434,6 +459,7 @@ public:
     void SetSprite(float *pos, int u, int v, int u1, int v1);
 
     /**
+     *
      * Draws the number or the sprite.
      *
      * @mangled Draw__12CDamageScoreFv
@@ -443,6 +469,7 @@ public:
     void Draw();
 
     /**
+     *
      * Bounces and fades the number, and ends it once it has faded out.
      *
      * @mangled Step__12CDamageScoreFv
@@ -472,6 +499,7 @@ public:
     float progress; /**< Progress through the current phase. */
 
     /**
+     *
      * Pops up a number over a character of the scene.
      *
      * @mangled SetValue__13CDamageScore2Fiif
@@ -481,6 +509,7 @@ public:
     void SetValue(int slot, int value, float height);
 
     /**
+     *
      * Draws the number over its character.
      *
      * @mangled Draw__13CDamageScore2FP6CScene
@@ -490,6 +519,7 @@ public:
     void Draw(CScene *scene);
 
     /**
+     *
      * Moves the number through its phases.
      *
      * @mangled Step__13CDamageScore2Fv
@@ -517,6 +547,7 @@ public:
     sceVu0FVECTOR pos; /**< World position of the marker and of the name. */
 
     /**
+     *
      * Draws the marker over the enemy that the player is locked on to, as a model or as a
      * sprite.
      *
@@ -527,6 +558,7 @@ public:
     virtual void Draw();
 
     /**
+     *
      * Spins the marker.
      *
      * @mangled Step__12CLockOnModelFv
@@ -536,6 +568,7 @@ public:
     virtual void Step();
 
     /**
+     *
      * Attaches the marker to a scene and clears the name.
      *
      * @mangled Initialize__12CLockOnModelFP6CScene
@@ -545,6 +578,7 @@ public:
     virtual void Initialize(CScene *scene);
 
     /**
+     *
      * Shows the name of the locked-on enemy in its message window.
      *
      * @mangled DrawMess__12CLockOnModelFi
@@ -569,6 +603,7 @@ public:
     s32   layout;     /**< Board that the warnings are placed over, a ::WarningGageLayout. */
 
     /**
+     *
      * Advances the flash cycle.
      *
      * @mangled Step__13CWarningGage2Fv
@@ -578,6 +613,7 @@ public:
     void Step();
 
     /**
+     *
      * Draws the warnings of the low gauges.
      *
      * @mangled Draw__13CWarningGage2Fv

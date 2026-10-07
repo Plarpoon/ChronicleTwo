@@ -57,6 +57,9 @@ No class is owned by this unit (`class_units.tsv` has none). No first-game count
 
 ## MAP_NAME_INFO (0x1C)
 Size: `memset(..., 0, 0x1C)` per row and stride 0x1C in SearchMapNo/GetMapNameInfo.
+`SearchMapNo` indexes the `MAP_NAME_INFO` table by its entry number. The
+typed `map_name[search.no]` access preserves its 0x90-byte PAL object without
+the separate byte offset.
 `MAP_NAME` tag args: 0 name, 1 title, 2 add_path (strings copied into CharBuff, null when empty),
 3 -> +0xC type, 4 -> +0x10 sel_type, optional 5 -> +0x14 snd_data_id (default -1),
 optional 6 -> +0x18 area_no (default 0 from memset).

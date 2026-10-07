@@ -50,6 +50,10 @@ Op 28 (`RS_OP_SKIP_END`): `skip_end_count++`; if skip_wait: clear it, pc = next,
 - `RS_STACKDATA` 8 bytes {type, union}. Passed by value in a single 64-bit GPR (`sd $4` in chk_int/is_true), not via a pointer.
   `pop` returns it via hidden pointer in $a0, `this` in $a1.
 - `vmcode_t` 0xC (exe pc step 0xC). `funcdata` {addr 0, name 4, local 8, arg 0xC}. `RS_CALLDATA` 0xC {ret, frame, func}.
+  `funcdata::addr` is a nonnegative byte offset and can be stored as `u32` without
+  changing layout. In `call_func`, assigning it to a signed `int code_offset`
+  before indexing `code[code_offset]` retains the retail address calculation and
+  register schedule without an integer cast; `run` also remains an exact match.
 - `RS_PROGDATA` {no, func} stride 8 (run/check_program).
 - `RS_PROG_HEADER`: 0x00 magic (strncmp with "SB2", 3 chars; game 1 had `int unk_0`), 0x04 main, 0x08 code, 0x0C prog,
   0x10 prog_num, 0x14 unknown (never touched here), 0x18 global_num (SB2 only). Size not established, so no assert.

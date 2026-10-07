@@ -273,6 +273,7 @@ public:
     s32 *dst_frame; /**< Index of the frame of the second model that matches each entry of src_frame. */
 
     /**
+     *
      * Empties the matching.
      *
      * @mangled Initialize__19CCharaFrameMatchingFv
@@ -323,6 +324,7 @@ public:
     s32 (*link)[2];       /**< Pairs of frame indices: the frame of the main model, then the frame of this level that gives it its visual. */
 
     /**
+     *
      * Makes an empty level of detail.
      *
      * @mangled __ct__9CCharaLODFv
@@ -426,6 +428,7 @@ public:
     }
 
     /**
+     *
      * Makes a character with no model and no motion.
      *
      * @mangled __ct__11CCharacter2Fv
@@ -438,6 +441,7 @@ public:
     }
 
     /**
+     *
      * Moves the character to a position, marking its transform changed when it moves.
      *
      * @mangled SetPosition__11CCharacter2FPf
@@ -447,6 +451,7 @@ public:
     virtual void SetPosition(float *position);
 
     /**
+     *
      * Moves the character to a position given as three coordinates.
      *
      * @mangled SetPosition__11CCharacter2Ffff
@@ -456,6 +461,7 @@ public:
     virtual void SetPosition(float x, float y, float z);
 
     /**
+     *
      * Draws the model and the cloth through the drawing list when the character is to be drawn.
      *
      * @mangled Draw__11CCharacter2Fv
@@ -465,6 +471,7 @@ public:
     virtual int Draw();
 
     /**
+     *
      * Draws the level of detail for the camera distance, its outlines and the cloth straight away.
      *
      * @mangled DrawDirect__11CCharacter2Fv
@@ -474,6 +481,7 @@ public:
     virtual int DrawDirect();
 
     /**
+     *
      * Puts the character back to its initial state, with no model, motion, sound or effect.
      *
      * @mangled Initialize__11CCharacter2Fv
@@ -483,6 +491,7 @@ public:
     virtual void Initialize();
 
     /**
+     *
      * Gets the distance from the camera to the line from the character's feet to its head.
      *
      * @mangled GetCameraDist__11CCharacter2Fv
@@ -492,6 +501,7 @@ public:
     virtual float GetCameraDist();
 
     /**
+     *
      * Works out whether the character is within its drawing distance.
      *
      * @mangled DrawStep__11CCharacter2Fv
@@ -501,6 +511,7 @@ public:
     virtual void DrawStep();
 
     /**
+     *
      * Loads the character from its info file in a pack, with its outlines.
      *
      * @mangled LoadPack__11CCharacter2FPUiPcP9mgCMemoryP9mgCMemoryP9mgCMemoryiP11CCharacter2
@@ -510,6 +521,7 @@ public:
     virtual void LoadPack(unsigned int *pack, char *name, mgCMemory *model_stack, mgCMemory *motion_stack, mgCMemory *image_stack, int image_block, CCharacter2 *parent);
 
     /**
+     *
      * Loads the character from its info file in a pack, without its outlines.
      *
      * @mangled LoadPackNoLine__11CCharacter2FPUiPcP9mgCMemoryP9mgCMemoryP9mgCMemoryiP11CCharacter2
@@ -519,6 +531,7 @@ public:
     virtual void LoadPackNoLine(unsigned int *pack, char *name, mgCMemory *model_stack, mgCMemory *motion_stack, mgCMemory *image_stack, int image_block, CCharacter2 *parent);
 
     /**
+     *
      * Runs the character's info file from a pack and, for a character with no motion yet, sets its first motion.
      *
      * @mangled LoadChrFile__11CCharacter2FPUiPcP9mgCMemoryP9mgCMemoryP9mgCMemoryiP11CCharacter2i
@@ -528,6 +541,7 @@ public:
     virtual void LoadChrFile(unsigned int *pack, char *name, mgCMemory *a, mgCMemory *b, mgCMemory *c, int d, CCharacter2 *e, int with_line);
 
     /**
+     *
      * Gets the state of the motion.
      *
      * @mangled GetMotionStatus__11CCharacter2Fv
@@ -539,6 +553,7 @@ public:
     }
 
     /**
+     *
      * Gets the name of the motion that plays, or NULL for none.
      *
      * @mangled GetNowMotionName__11CCharacter2Fv
@@ -554,6 +569,7 @@ public:
     }
 
     /**
+     *
      * Tells whether the motion reaches its last frame within the next two steps, or no motion plays.
      *
      * @mangled CheckMotionEnd__11CCharacter2Fv
@@ -563,6 +579,7 @@ public:
     virtual int CheckMotionEnd();
 
     /**
+     *
      * Gets the part of the motion played, from 0.0 to 1.0.
      *
      * @mangled GetNowFrameWait__11CCharacter2Fv
@@ -574,6 +591,7 @@ public:
     }
 
     /**
+     *
      * Gets the blend weight while blending into the motion, or -1.0 otherwise.
      *
      * @mangled GetChgStepWait__11CCharacter2Fv
@@ -583,6 +601,7 @@ public:
     virtual float GetChgStepWait();
 
     /**
+     *
      * Sets the frame of the motion that plays.
      *
      * @mangled SetNowFrame__11CCharacter2Ff
@@ -594,6 +613,7 @@ public:
     }
 
     /**
+     *
      * Sets the frame of the motion that plays as a part of the motion, from 0.0 to 1.0.
      *
      * @mangled SetNowFrameWeight__11CCharacter2Ff
@@ -603,6 +623,7 @@ public:
     virtual void SetNowFrameWeight(float weight);
 
     /**
+     *
      * Gets the frame of the motion that plays.
      *
      * @mangled GetNowFrame__11CCharacter2Fv
@@ -614,6 +635,7 @@ public:
     }
 
     /**
+     *
      * Gets the frame that lies a part of the way through a motion of the character being loaded.
      *
      * @mangled GetWaitToFrame__11CCharacter2FPcf
@@ -623,6 +645,7 @@ public:
     virtual float GetWaitToFrame(char *name, float wait);
 
     /**
+     *
      * Sets the motion to play from the next step by its number across every motion set.
      *
      * @mangled SetMotion__11CCharacter2Fii
@@ -632,6 +655,7 @@ public:
     virtual void SetMotion(int no, int flags);
 
     /**
+     *
      * Sets the motion or motion sequence to play from the next step by its name.
      *
      * @mangled SetMotion__11CCharacter2FPci
@@ -641,6 +665,7 @@ public:
     virtual void SetMotion(char *name, int flags);
 
     /**
+     *
      * Stops the motion and the motion sequence.
      *
      * @mangled ResetMotion__11CCharacter2Fv
@@ -650,6 +675,7 @@ public:
     virtual void ResetMotion();
 
     /**
+     *
      * Sets the frames that the motion advances each step.
      *
      * @mangled SetStep__11CCharacter2Ff
@@ -659,6 +685,7 @@ public:
     virtual void SetStep(float frame_step);
 
     /**
+     *
      * Gets the frames that the motion advances each step.
      *
      * @mangled GetStep__11CCharacter2Fv
@@ -670,6 +697,7 @@ public:
     }
 
     /**
+     *
      * Gets the frames that the motion that plays advances each step by default.
      *
      * @mangled GetDefaultStep__11CCharacter2Fv
@@ -679,6 +707,7 @@ public:
     virtual float GetDefaultStep();
 
     /**
+     *
      * Sets whether the character fades by its distance from the camera.
      *
      * @mangled SetFadeFlag__11CCharacter2Fi
@@ -690,6 +719,7 @@ public:
     }
 
     /**
+     *
      * Gets whether the character fades by its distance from the camera.
      *
      * @mangled GetFadeFlag__11CCharacter2Fv
@@ -701,6 +731,7 @@ public:
     }
 
     /**
+     *
      * Poses the shadow on the model and draws it straight away.
      *
      * @mangled DrawShadowDirect__11CCharacter2Fv
@@ -710,6 +741,7 @@ public:
     virtual int DrawShadowDirect();
 
     /**
+     *
      * Changes to the motion set to play, blends into it and advances it, posing the model.
      *
      * @mangled NormalDrive__11CCharacter2Fv
@@ -719,6 +751,7 @@ public:
     virtual void NormalDrive();
 
     /**
+     *
      * Plays the motion sounds, drives the motion or motion sequence, and steps the cloth and the effects.
      *
      * @mangled Step__11CCharacter2Fv
@@ -728,6 +761,7 @@ public:
     virtual void Step();
 
     /**
+     *
      * Poses each frame of the shadow on the frame of the model that it follows.
      *
      * @mangled ShadowStep__11CCharacter2Fv
@@ -737,6 +771,7 @@ public:
     virtual void ShadowStep();
 
     /**
+     *
      * Makes the wind blow on the cloth and hair.
      *
      * @mangled SetWind__11CCharacter2FfPf
@@ -746,6 +781,7 @@ public:
     virtual void SetWind(float power, float *dir);
 
     /**
+     *
      * Stops the wind on the cloth and hair.
      *
      * @mangled ResetWind__11CCharacter2Fv
@@ -755,6 +791,7 @@ public:
     virtual void ResetWind();
 
     /**
+     *
      * Keeps the cloth and hair above a height.
      *
      * @mangled SetFloor__11CCharacter2Ff
@@ -764,6 +801,7 @@ public:
     virtual void SetFloor(float y);
 
     /**
+     *
      * Lets the cloth and hair fall to any height.
      *
      * @mangled ResetFloor__11CCharacter2Fv
@@ -773,6 +811,7 @@ public:
     virtual void ResetFloor();
 
     /**
+     *
      * Copies this character into another, copying the model into memory when memory is given.
      *
      * @mangled Copy__11CCharacter2FR11CCharacter2P9mgCMemory
@@ -782,6 +821,7 @@ public:
     virtual void Copy(CCharacter2 &dest, mgCMemory *memory);
 
     /**
+     *
      * Gets the quadwords that a copy of the character takes.
      *
      * @mangled GetCopySize__11CCharacter2Fv
@@ -797,6 +837,7 @@ public:
     }
 
     /**
+     *
      * Draws the sword trails and the effects of the character.
      *
      * @mangled DrawEffect__11CCharacter2Fv
@@ -806,6 +847,7 @@ public:
     virtual void DrawEffect();
 
     /**
+     *
      * Adds an outline around a frame of the model, or of a model that an outline already draws.
      *
      * @mangled AddOutLine__11CCharacter2FPcP12COutLineDraw
@@ -815,6 +857,7 @@ public:
     void AddOutLine(char *frame_name, COutLineDraw *outline);
 
     /**
+     *
      * Makes the outlines draw into the screen texture of another character's outlines.
      *
      * @mangled CopyOutLine__11CCharacter2FP11CCharacter2
@@ -824,6 +867,7 @@ public:
     void CopyOutLine(CCharacter2 *other);
 
     /**
+     *
      * Rebuilds the bounding boxes of the frames whose skin deforms.
      *
      * @mangled SetDeformMesh__11CCharacter2Fv
@@ -833,6 +877,7 @@ public:
     void SetDeformMesh();
 
     /**
+     *
      * Gives the model and the shadow the position, rotation and scale of the character.
      *
      * @mangled UpdatePosition__11CCharacter2Fv
@@ -842,6 +887,7 @@ public:
     void UpdatePosition();
 
     /**
+     *
      * Moves the model into place and puts the cloth and hair back to rest on it.
      *
      * @mangled ResetDAPosition__11CCharacter2Fv
@@ -851,6 +897,7 @@ public:
     void ResetDAPosition();
 
     /**
+     *
      * Sets the motion or motion sequence to play by its name, keeping the sequence for a sequence step.
      *
      * @mangled SetMotionPara__11CCharacter2FPcii
@@ -860,6 +907,7 @@ public:
     void SetMotionPara(char *name, int flags, int keep_seq);
 
     /**
+     *
      * Turns the stepping of the cloth and hair on or off.
      *
      * @mangled SetDAnimeEnable__11CCharacter2Fi
@@ -869,6 +917,7 @@ public:
     void SetDAnimeEnable(int enable);
 
     /**
+     *
      * Copies the motion sounds of the first motion set into memory.
      *
      * @mangled GetSoundInfoCopy__11CCharacter2FP9mgCMemory
@@ -878,6 +927,7 @@ public:
     CHRINFO_SE *GetSoundInfoCopy(mgCMemory *memory);
 
     /**
+     *
      * Gets the footstep set of the ground while a foot touches it, or -1 otherwise.
      *
      * @mangled CheckFootEffect__11CCharacter2Fv
@@ -887,6 +937,7 @@ public:
     int CheckFootEffect();
 
     /**
+     *
      * Plays the motion sounds that the frame of the motion reached.
      *
      * @mangled SePlay__11CCharacter2Fv
@@ -896,6 +947,7 @@ public:
     void SePlay();
 
     /**
+     *
      * Steps the cloth and hair a number of times, or puts them back to rest for a negative count.
      *
      * @mangled StepDA__11CCharacter2Fi
@@ -905,6 +957,7 @@ public:
     void StepDA(int count);
 
     /**
+     *
      * Finds a motion by its number across every motion set.
      *
      * @mangled GetKeyListIndexPtr__11CCharacter2FiPi
@@ -914,6 +967,7 @@ public:
     CHRINFO_KEY_SET *GetKeyListIndexPtr(int no, int *out_list);
 
     /**
+     *
      * Finds a motion by its name.
      *
      * @mangled GetKeyListPtr__11CCharacter2FPcPi
@@ -923,6 +977,7 @@ public:
     CHRINFO_KEY_SET *GetKeyListPtr(char *name, int *out_list);
 
     /**
+     *
      * Finds a motion sequence by its name.
      *
      * @mangled GetSeqHeaderPtr__11CCharacter2FPcPi
@@ -932,6 +987,7 @@ public:
     CHRINFO_SEQ_HEADER *GetSeqHeaderPtr(char *name, int *out_list);
 
     /**
+     *
      * Drops the motion sets, textures and sounds that extension packs added.
      *
      * @mangled DeleteExtMotion__11CCharacter2Fv
@@ -941,6 +997,7 @@ public:
     void DeleteExtMotion();
 
     /**
+     *
      * Deletes the textures and texture animations of the character's own IMG archive.
      *
      * @mangled DeleteImage__11CCharacter2Fv
@@ -950,6 +1007,7 @@ public:
     void DeleteImage();
 
     /**
+     *
      * Gets the world position of an entry frame, or the character's position when it has none.
      *
      * @mangled GetEntryObjectPos__11CCharacter2FiPf
@@ -959,6 +1017,7 @@ public:
     int GetEntryObjectPos(int index, float *out_position);
 
     /**
+     *
      * Gets the matrix of an entry frame, or one made from the character's position and Y rotation when it has none.
      *
      * @mangled GetEntryObjectPos__11CCharacter2FiPA4_f
@@ -968,6 +1027,7 @@ public:
     int GetEntryObjectPos(int index, float (*out_matrix)[4]);
 
     /**
+     *
      * Gets the world position of the frame of a group named as a place to put objects.
      *
      * @mangled GetEntryObjectPos__11CCharacter2FiiPf
@@ -977,6 +1037,7 @@ public:
     CHARA_ENTRY_OBJECT *GetEntryObjectPos(int id, int nth, float *out_position);
 
     /**
+     *
      * Runs a skin info file from a pack, replacing parts of the model.
      *
      * @mangled LoadSkin__11CCharacter2FPUiPcPcP9mgCMemoryi
@@ -986,6 +1047,7 @@ public:
     void LoadSkin(unsigned int *pack, char *name, char *skin_name, mgCMemory *memory, int texture_block);
 
     /**
+     *
      * Clears the effects of the character.
      *
      * @mangled InitEffect__11CCharacter2Fv
@@ -995,6 +1057,7 @@ public:
     void InitEffect();
 
     /**
+     *
      * Stops the effects of the previous motion and gathers those that a motion starts.
      *
      * @mangled ExecEntryEffect__11CCharacter2FP15CHRINFO_KEY_SET
@@ -1004,6 +1067,7 @@ public:
     void ExecEntryEffect(CHRINFO_KEY_SET *key);
 
     /**
+     *
      * Runs each gathered effect once the motion reaches its point.
      *
      * @mangled CtrlEffect__11CCharacter2Fv
@@ -1013,6 +1077,7 @@ public:
     void CtrlEffect();
 
     /**
+     *
      * Steps the sword trails and the effects of the character.
      *
      * @mangled StepEffect__11CCharacter2Fv
@@ -1022,6 +1087,7 @@ public:
     void StepEffect();
 
     /**
+     *
      * Changes the level of detail, giving back the model that it draws.
      *
      * @mangled ChangeLOD__11CCharacter2Fi

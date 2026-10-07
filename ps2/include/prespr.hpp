@@ -21,6 +21,7 @@ public:
     u8 unk_120[0x10];
 
     /**
+     *
      * Sets the drawing state for 2D sprites: normal alpha blending, the
      * alpha test, no depth test or depth writes, and unfiltered texturing.
      *
@@ -31,6 +32,7 @@ public:
     void Preset2D();
 
     /**
+     *
      * Writes a sprite of the given screen rectangle textured with an
      * equally sized texel rectangle starting at the given coordinates.
      *
@@ -41,6 +43,7 @@ public:
     void SetIRect(int x, int y, int w, int h, int u, int v);
 
     /**
+     *
      * Writes a sprite of the given screen rectangle textured with a texel
      * rectangle of its own size, stretched to fit.
      *
@@ -51,6 +54,7 @@ public:
     void SetIStretch(int x, int y, int w, int h, int u, int v, int tw, int th);
 
     /**
+     *
      * Writes the SCISSOR register so that drawing is limited to the given
      * screen rectangle.
      *
@@ -61,6 +65,7 @@ public:
     void SetScirror(int x, int y, int w, int h);
 
     /**
+     *
      * Writes the ALPHA register for a blend equation, an mgALPHA_BLEND
      * value from normal to none; other values write nothing.
      *

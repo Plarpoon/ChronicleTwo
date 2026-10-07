@@ -1359,7 +1359,6 @@ int CCharacter2::GetEntryObjectPos(int index, float (*out)[4]) {
 CHARA_ENTRY_OBJECT *CCharacter2::GetEntryObjectPos(int id, int nth, float *out) {
     int found;
     int i;
-    int offset;
 
     GetPosition(out);
 
@@ -1369,18 +1368,14 @@ CHARA_ENTRY_OBJECT *CCharacter2::GetEntryObjectPos(int id, int nth, float *out) 
 
     found = -1;
     i = 0;
-    offset = 0;
 
-    for (; i < 0x18; i++, offset += 0x10) {
-        u8 *base = (u8 *) this + offset;
-
-        if (*(mgCFrame **) (base + 0x140) != 0 && *(int *) (base + 0x148) == id) {
+    for (; i < 0x18; i++) {
+        if (entry_object[i].frame != 0 && entry_object[i].group == id) {
             found++;
         }
 
         if (found == nth) {
-            int at = i * 0x10;
-            (*(mgCFrame **) (at + (int) this + 0x140))->GetWorldPosition0(out);
+            entry_object[i].frame->GetWorldPosition0(out);
             return &entry_object[i];
         }
     }

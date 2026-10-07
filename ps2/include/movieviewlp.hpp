@@ -44,6 +44,7 @@ enum MOVIE_SPECIAL_MODE {
 };
 
 /**
+ *
  * Prepares the movie viewer when the main loop enters it: sets up its buffers and textures and reads the movie list.
  *
  * @mangled MovieViewInit__F13INIT_LOOP_ARG
@@ -53,6 +54,7 @@ enum MOVIE_SPECIAL_MODE {
 void MovieViewInit(INIT_LOOP_ARG arg);
 
 /**
+ *
  * Releases the movie viewer when the main loop leaves it, stopping its sounds and restoring the performance meter.
  *
  * @mangled MovieViewExit__Fv
@@ -62,6 +64,7 @@ void MovieViewInit(INIT_LOOP_ARG arg);
 void MovieViewExit();
 
 /**
+ *
  * Runs one frame of the movie viewer, and returns 1 when the player leaves it from the list.
  *
  * @mangled MovieViewLoop__Fv

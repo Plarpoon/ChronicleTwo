@@ -82,7 +82,11 @@ STATIC_ASSERT(sizeof(QWORD) == 0x10);
  *
  */
 struct ViBuf {
-    u_long128   *data;        /**< Bit-stream blocks. */
+    union {
+        u_long128 *data;       /**< Bit-stream blocks. */
+        u8        *data_bytes; /**< Byte view of bit-stream blocks. */
+    };
+
     u_long128   *tag;         /**< DMA chain with one tag per block plus a closing tag, accessed uncached. */
     int          n;           /**< Number of blocks. */
     int          dma_start;   /**< First block queued for DMA. */
@@ -243,6 +247,7 @@ public:
     u_char     unk_23910[0x30];
 
     /**
+     *
      * Allocates the work buffers from six memory managers, opens the movie
      * file, sets up the decoders and pre-reads the start of the stream.
      *
@@ -254,6 +259,7 @@ public:
               bool init_sound);
 
     /**
+     *
      * Allocates every work buffer from one memory manager, loads the movie
      * and initialises the IOP sound library.
      *
@@ -264,6 +270,7 @@ public:
     void Load(char *name, mgCMemory *memory, int width, int height, bool with_audio, bool loop);
 
     /**
+     *
      * Allocates every work buffer from one memory manager and loads the
      * movie.
      *
@@ -275,6 +282,7 @@ public:
               bool init_sound);
 
     /**
+     *
      * Starts the movie's threads and interrupt handlers, drawing frames into
      * the named texture.
      *
@@ -285,6 +293,7 @@ public:
     void Play(char *path);
 
     /**
+     *
      * Yields the CPU to the movie's threads several times while playing.
      *
      * @mangled SwitchThread__6CMovieFv
@@ -294,6 +303,7 @@ public:
     void SwitchThread();
 
     /**
+     *
      * Stops the movie's threads and handlers and releases the decoders and
      * the file.
      *
@@ -304,6 +314,7 @@ public:
     void Term();
 
     /**
+     *
      * Returns non-zero once the whole stream has been read and decoded.
      *
      * @mangled EndCheck__6CMovieFv
@@ -313,6 +324,7 @@ public:
     int EndCheck();
 
     /**
+     *
      * Returns whether enough frames and audio are buffered for display to
      * have begun.
      *
@@ -323,6 +335,7 @@ public:
     int IsStarted();
 
     /**
+     *
      * Returns the size in bytes of the decoded frame buffers.
      *
      * @mangled GetVoBufDataSize__6CMovieFv
@@ -332,6 +345,7 @@ public:
     int GetVoBufDataSize();
 
     /**
+     *
      * Returns the size in bytes of the video bit-stream blocks.
      *
      * @mangled GetViBufDataSize__6CMovieFv
@@ -341,6 +355,7 @@ public:
     int GetViBufDataSize();
 
     /**
+     *
      * Returns the size in bytes of the video bit-stream DMA chain.
      *
      * @mangled GetViBufTagSize__6CMovieFv
@@ -350,6 +365,7 @@ public:
     int GetViBufTagSize();
 
     /**
+     *
      * Returns the size in bytes of the MPEG decoder's work area for a
      * picture size.
      *
@@ -360,6 +376,7 @@ public:
     int GetMpegWorkSize(int width, int height);
 
     /**
+     *
      * Returns the size in bytes of the PSS read buffer.
      *
      * @mangled GetReadBufSize__6CMovieFv
@@ -369,6 +386,7 @@ public:
     int GetReadBufSize();
 
     /**
+     *
      * Returns the size in bytes of one frame upload chain for a picture
      * size.
      *
@@ -379,6 +397,7 @@ public:
     int GetTagProgSize(int width, int height);
 
     /**
+     *
      * Creates the MPEG decoder, registers its callbacks and creates its
      * bit-stream ring.
      *
@@ -390,6 +409,7 @@ public:
                        u_long128 *tag, int sectors, TimeStamp *ts, int ts_count);
 
     /**
+     *
      * Registers the demultiplexer callback for one elementary stream.
      *
      * @mangled videoDecSetStream__6CMovieFP8VideoDeciiPFP7sceMpegP13sceMpegCbDataPv_iPv
@@ -400,6 +420,7 @@ public:
                           int (*callback)(sceMpeg *, sceMpegCbData *, void *), void *user);
 
     /**
+     *
      * Stops the bit-stream DMA and destroys the MPEG decoder.
      *
      * @mangled videoDecDelete__6CMovieFP8VideoDec
@@ -409,6 +430,7 @@ public:
     int videoDecDelete(VideoDec *dec);
 
     /**
+     *
      * Appends an end code to the bit stream and pads it to a whole block so
      * the decoder can finish.
      *
@@ -421,73 +443,663 @@ public:
 
 STATIC_ASSERT(sizeof(CMovie) == 0x23940);
 
-int    mpegError(sceMpeg *mpeg, sceMpegCbDataError *error, void *user);
-int    mpegNodata(sceMpeg *mpeg, sceMpegCbData *data, void *user);
-int    mpegStopDMA(sceMpeg *mpeg, sceMpegCbData *data, void *user);
-int    mpegRestartDMA(sceMpeg *mpeg, sceMpegCbData *data, void *user);
-int    mpegTS(sceMpeg *mpeg, sceMpegCbDataTimeStamp *data, void *user);
-int    pcmCallback(sceMpeg *mpeg, sceMpegCbDataStr *str, void *user);
-int    videoCallback(sceMpeg *mpeg, sceMpegCbDataStr *str, void *user);
-int    decBs0(VideoDec *dec);
-void   videoDecMain(void *arg);
-int    defMain(void *arg);
-void   stepMain(void *arg);
-int    vblankHandler(int irq);
-int    handler_endimage(int irq);
-int    videoDecGetState(VideoDec *dec);
-u32    videoDecSetState(VideoDec *dec, u32 state);
-int    switchThread();
-int    viBufCreate(ViBuf *buf, u_long128 *data, u_long128 *tags, int sectors, TimeStamp *ts, int ts_count);
-int    viBufReset(ViBuf *buf);
-int    viBufAddDMA(ViBuf *buf);
-int    viBufStopDMA(ViBuf *buf);
-int    viBufRestartDMA(ViBuf *buf);
-int    viBufModifyPts(ViBuf *buf, TimeStamp *range);
-int    viBufPutTs(ViBuf *buf, TimeStamp *ts);
-int    viBufGetTs(ViBuf *buf, TimeStamp *ts);
-int    viBufDelete(ViBuf *buf);
-void   videoDecBeginPut(VideoDec *dec, u8 **area1, int *size1, u8 **area2, int *size2);
-void   videoDecEndPut(VideoDec *dec, int count);
-int    isAudioOK();
-int    audioDecSendToIOP(AudioDec *dec);
-int    videoDecPutTs(VideoDec *dec, long pts, long dts, u8 *area, int size);
-void   viBufFlush(ViBuf *buf);
-VoTag *voBufGetTag(VoBuf *buf);
-void   voBufReset(VoBuf *buf);
-void   voBufDecCount(VoBuf *buf);
-void   voBufIncCount(VoBuf *buf);
-u8    *voBufGetData(VoBuf *buf);
-void   audioDecBeginPut(AudioDec *dec, u8 **area1, int *size1, u8 **area2, int *size2);
-void   audioDecEndPut(AudioDec *dec, int count);
-void   audioDecResume(AudioDec *dec);
-void   audioDecPause(AudioDec *dec);
-int    cpy2area(u8 *destination1, int capacity1, u8 *destination2, int capacity2, u8 *source1, int size1, u8 *source2, int size2);
-int    sendToIOP(int iop_addr, u8 *src, int size);
-void   changeMasterVolume(u32 volume);
-void   changeInputVolume(u32 volume);
-void   setD4_CHCR(u32 chcr);
-int    audioDecDelete(AudioDec *dec);
-void   audioDecReset(AudioDec *dec);
-int    strFileClose(StrFile *file);
-void   startDisplay(int field);
-void   iopGetArea(int *addr1, int *size1, int *addr2, int *size2, AudioDec *dec, int wanted);
-int    sendToIOP2area(int dest1, int size1, int dest2, int size2, u8 *src1, int len1, u8 *src2,
-                      int len2);
-void   audioDecStart(AudioDec *dec);
-void   strFileSeek(StrFile *file);
-int    strFileRead(StrFile *file, void *buf, int size);
-int    readBufBeginPut(ReadBuf *buf, u8 **out);
-int    readBufEndPut(ReadBuf *buf, int count);
-int    readBufBeginGet(ReadBuf *buf, u8 **out);
-int    readBufEndGet(ReadBuf *buf, int count);
-void   setImageTag(u32 *tag, void *data, int a, int width, int height);
-void   voBufCreate(VoBuf *buf, VoData *data, VoTag *tags, int count);
-void   readBufCreate(ReadBuf *buf);
-int    audioDecCreate(AudioDec *dec, u8 *ring_buf, int ring_size, int iop_size);
-int    strFileOpen(StrFile *file, char *path);
+/**
+ *
+ * Acknowledges an MPEG decoder error callback.
+ *
+ * @mangled mpegError__FP7sceMpegP18sceMpegCbDataErrorPv
+ * @address 0x0029d320
+ * @size 0x8
+ */
+int mpegError(sceMpeg *mpeg, sceMpegCbDataError *error, void *user);
 
+/**
+ *
+ * Supplies more video data when the MPEG decoder runs empty.
+ *
+ * @mangled mpegNodata__FP7sceMpegP13sceMpegCbDataPv
+ * @address 0x0029d330
+ * @size 0x2c
+ */
+int mpegNodata(sceMpeg *mpeg, sceMpegCbData *data, void *user);
+
+/**
+ *
+ * Stops video input DMA for an MPEG decoder callback.
+ *
+ * @mangled mpegStopDMA__FP7sceMpegP13sceMpegCbDataPv
+ * @address 0x0029d360
+ * @size 0x24
+ */
+int mpegStopDMA(sceMpeg *mpeg, sceMpegCbData *data, void *user);
+
+/**
+ *
+ * Restarts video input DMA for an MPEG decoder callback.
+ *
+ * @mangled mpegRestartDMA__FP7sceMpegP13sceMpegCbDataPv
+ * @address 0x0029d390
+ * @size 0x24
+ */
+int mpegRestartDMA(sceMpeg *mpeg, sceMpegCbData *data, void *user);
+
+/**
+ *
+ * Provides a timestamp for decoded MPEG data.
+ *
+ * @mangled mpegTS__FP7sceMpegP22sceMpegCbDataTimeStampPv
+ * @address 0x0029d3c0
+ * @size 0x44
+ */
+int mpegTS(sceMpeg *mpeg, sceMpegCbDataTimeStamp *data, void *user);
+
+/**
+ *
+ * Receives decoded PCM audio data from the MPEG demultiplexer.
+ *
+ * @mangled pcmCallback__FP7sceMpegP16sceMpegCbDataStrPv
+ * @address 0x0029d540
+ * @size 0xd8
+ */
+int pcmCallback(sceMpeg *mpeg, sceMpegCbDataStr *str, void *user);
+
+/**
+ *
+ * Receives compressed video data from the MPEG demultiplexer.
+ *
+ * @mangled videoCallback__FP7sceMpegP16sceMpegCbDataStrPv
+ * @address 0x0029d410
+ * @size 0x128
+ */
+int videoCallback(sceMpeg *mpeg, sceMpegCbDataStr *str, void *user);
+
+/**
+ *
+ * Decodes the video bitstream into output frames.
+ *
+ * @mangled decBs0__FP8VideoDec
+ * @address 0x0029f6c0
+ * @size 0x190
+ */
+int decBs0(VideoDec *dec);
+
+/**
+ *
+ * Runs the video decoder thread until its output is drained.
+ *
+ * @mangled videoDecMain__FPv
+ * @address 0x0029d0e0
+ * @size 0x68
+ */
+void videoDecMain(void *arg);
+
+/**
+ *
+ * Yields continuously in the decoder fallback thread.
+ *
+ * @mangled defMain__FPv
+ * @address 0x0029d0c0
+ * @size 0x18
+ */
+int defMain(void *arg);
+
+/**
+ *
+ * Reads, demultiplexes, and starts playback of movie data.
+ *
+ * @mangled stepMain__FPv
+ * @address 0x0029d150
+ * @size 0x1c4
+ */
+void stepMain(void *arg);
+
+/**
+ *
+ * Updates movie display state at vertical blank.
+ *
+ * @mangled vblankHandler__Fi
+ * @address 0x0029d620
+ * @size 0xd8
+ */
+int vblankHandler(int irq);
+
+/**
+ *
+ * Handles completion of a decoded video image.
+ *
+ * @mangled handler_endimage__Fi
+ * @address 0x0029d700
+ * @size 0x38
+ */
+int handler_endimage(int irq);
+
+/**
+ *
+ * Returns the current video decoder state.
+ *
+ * @mangled videoDecGetState__FP8VideoDec
+ * @address 0x0029f6b0
+ * @size 0x8
+ */
+int videoDecGetState(VideoDec *dec);
+
+/**
+ *
+ * Sets the video decoder state.
+ *
+ * @mangled videoDecSetState__FP8VideoDecUi
+ * @address 0x0029f6a0
+ * @size 0xc
+ */
+u32 videoDecSetState(VideoDec *dec, u32 state);
+
+/**
+ *
+ * Yields the current movie thread.
+ *
+ * @mangled switchThread__Fv
+ * @address 0x0029f690
+ * @size 0x8
+ */
+int switchThread();
+
+/**
+ *
+ * Initializes the video input ring buffer and its DMA tags.
+ *
+ * @mangled viBufCreate__FP5ViBufP1P1iP9TimeStampi
+ * @address 0x0029db20
+ * @size 0x74
+ */
+int viBufCreate(ViBuf *buf, u_long128 *data, u_long128 *tags, int sectors, TimeStamp *ts, int ts_count);
+
+/**
+ *
+ * Resets the video input ring buffer.
+ *
+ * @mangled viBufReset__FP5ViBuf
+ * @address 0x0029dba0
+ * @size 0x13c
+ */
+int viBufReset(ViBuf *buf);
+
+/**
+ *
+ * Queues video input data for DMA.
+ *
+ * @mangled viBufAddDMA__FP5ViBuf
+ * @address 0x0029de40
+ * @size 0x20c
+ */
+int viBufAddDMA(ViBuf *buf);
+
+/**
+ *
+ * Stops DMA from the video input ring buffer.
+ *
+ * @mangled viBufStopDMA__FP5ViBuf
+ * @address 0x0029e050
+ * @size 0xdc
+ */
+int viBufStopDMA(ViBuf *buf);
+
+/**
+ *
+ * Restarts DMA from the video input ring buffer.
+ *
+ * @mangled viBufRestartDMA__FP5ViBuf
+ * @address 0x0029e130
+ * @size 0x320
+ */
+int viBufRestartDMA(ViBuf *buf);
+
+/**
+ *
+ * Adjusts timestamps in the video input ring buffer.
+ *
+ * @mangled viBufModifyPts__FP5ViBufP9TimeStamp
+ * @address 0x0029e4f0
+ * @size 0x150
+ */
+int viBufModifyPts(ViBuf *buf, TimeStamp *range);
+
+/**
+ *
+ * Stores a timestamp in the video input ring buffer.
+ *
+ * @mangled viBufPutTs__FP5ViBufP9TimeStamp
+ * @address 0x0029e640
+ * @size 0x12c
+ */
+int viBufPutTs(ViBuf *buf, TimeStamp *ts);
+
+/**
+ *
+ * Retrieves a timestamp from the video input ring buffer.
+ *
+ * @mangled viBufGetTs__FP5ViBufP9TimeStamp
+ * @address 0x0029e770
+ * @size 0x1c0
+ */
+int viBufGetTs(ViBuf *buf, TimeStamp *ts);
+
+/**
+ *
+ * Releases the video input ring buffer.
+ *
+ * @mangled viBufDelete__FP5ViBuf
+ * @address 0x0029e450
+ * @size 0x4c
+ */
+int viBufDelete(ViBuf *buf);
+
+/**
+ *
+ * Returns writable regions of the video decoder input buffer.
+ *
+ * @mangled videoDecBeginPut__FP8VideoDecPPUcPiPPUcPi
+ * @address 0x0029fad0
+ * @size 0x8
+ */
+void videoDecBeginPut(VideoDec *dec, u8 **area1, int *size1, u8 **area2, int *size2);
+
+/**
+ *
+ * Commits bytes written to the video decoder input buffer.
+ *
+ * @mangled videoDecEndPut__FP8VideoDeci
+ * @address 0x0029fb20
+ * @size 0x8
+ */
+void videoDecEndPut(VideoDec *dec, int count);
+
+/**
+ *
+ * Reports whether movie audio is ready for playback.
+ *
+ * @mangled isAudioOK__Fv
+ * @address 0x0029fdc0
+ * @size 0x2c
+ */
+int isAudioOK();
+
+/**
+ *
+ * Transfers decoded audio data to the IOP.
+ *
+ * @mangled audioDecSendToIOP__FP8AudioDec
+ * @address 0x0029f140
+ * @size 0x1b8
+ */
+int audioDecSendToIOP(AudioDec *dec);
+
+/**
+ *
+ * Records a presentation and decoding timestamp for video data.
+ *
+ * @mangled videoDecPutTs__FP8VideoDecllPUci
+ * @address 0x0029fae0
+ * @size 0x3c
+ */
+int videoDecPutTs(VideoDec *dec, long pts, long dts, u8 *area, int size);
+
+/**
+ *
+ * Flushes the video input ring buffer.
+ *
+ * @mangled viBufFlush__FP5ViBuf
+ * @address 0x0029e4a0
+ * @size 0x50
+ */
+void viBufFlush(ViBuf *buf);
+
+/**
+ *
+ * Returns the next video output DMA tag.
+ *
+ * @mangled voBufGetTag__FP5VoBuf
+ * @address 0x0029d940
+ * @size 0x64
+ */
+VoTag *voBufGetTag(VoBuf *buf);
+
+/**
+ *
+ * Resets the video output buffer.
+ *
+ * @mangled voBufReset__FP5VoBuf
+ * @address 0x0029d830
+ * @size 0xc
+ */
+void voBufReset(VoBuf *buf);
+
+/**
+ *
+ * Decrements the queued video output count.
+ *
+ * @mangled voBufDecCount__FP5VoBuf
+ * @address 0x0029d9b0
+ * @size 0x20
+ */
+void voBufDecCount(VoBuf *buf);
+
+/**
+ *
+ * Increments the queued video output count.
+ *
+ * @mangled voBufIncCount__FP5VoBuf
+ * @address 0x0029d860
+ * @size 0x74
+ */
+void voBufIncCount(VoBuf *buf);
+
+/**
+ *
+ * Returns the next video output data block.
+ *
+ * @mangled voBufGetData__FP5VoBuf
+ * @address 0x0029d8e0
+ * @size 0x44
+ */
+u8 *voBufGetData(VoBuf *buf);
+
+/**
+ *
+ * Returns writable regions of the audio decoder input buffer.
+ *
+ * @mangled audioDecBeginPut__FP8AudioDecPPUcPiPPUcPi
+ * @address 0x0029fc70
+ * @size 0xbc
+ */
+void audioDecBeginPut(AudioDec *dec, u8 **area1, int *size1, u8 **area2, int *size2);
+
+/**
+ *
+ * Commits bytes written to the audio decoder input buffer.
+ *
+ * @mangled audioDecEndPut__FP8AudioDeci
+ * @address 0x0029fd30
+ * @size 0x84
+ */
+void audioDecEndPut(AudioDec *dec, int count);
+
+/**
+ *
+ * Resumes the audio decoder.
+ *
+ * @mangled audioDecResume__FP8AudioDec
+ * @address 0x0029f050
+ * @size 0x68
+ */
+void audioDecResume(AudioDec *dec);
+
+/**
+ *
+ * Pauses the audio decoder.
+ *
+ * @mangled audioDecPause__FP8AudioDec
+ * @address 0x0029efd0
+ * @size 0x80
+ */
+void audioDecPause(AudioDec *dec);
+
+/**
+ *
+ * Copies source bytes across two destination buffer regions.
+ *
+ * @mangled cpy2area__FPUciPUciPUciPUci
+ * @address 0x0029fb30
+ * @size 0x134
+ */
+int cpy2area(u8 *destination1, int capacity1, u8 *destination2, int capacity2, u8 *source1, int size1, u8 *source2, int size2);
+
+/**
+ *
+ * Transfers one audio buffer to IOP memory.
+ *
+ * @mangled sendToIOP__FiPUci
+ * @address 0x0029f500
+ * @size 0x80
+ */
+int sendToIOP(int iop_addr, u8 *src, int size);
+
+/**
+ *
+ * Sets the movie audio master volume.
+ *
+ * @mangled changeMasterVolume__FUi
+ * @address 0x0029f580
+ * @size 0x64
+ */
+void changeMasterVolume(u32 volume);
+
+/**
+ *
+ * Sets the movie audio input volume.
+ *
+ * @mangled changeInputVolume__FUi
+ * @address 0x0029f5f0
+ * @size 0x48
+ */
+void changeInputVolume(u32 volume);
+
+/**
+ *
+ * Sets the DMA channel four control register.
+ *
+ * @mangled setD4_CHCR__FUi
+ * @address 0x0029da80
+ * @size 0x68
+ */
+void setD4_CHCR(u32 chcr);
+
+/**
+ *
+ * Releases the audio decoder.
+ *
+ * @mangled audioDecDelete__FP8AudioDec
+ * @address 0x0029ef90
+ * @size 0x34
+ */
+int audioDecDelete(AudioDec *dec);
+
+/**
+ *
+ * Resets the audio decoder buffers and state.
+ *
+ * @mangled audioDecReset__FP8AudioDec
+ * @address 0x0029f0d0
+ * @size 0x44
+ */
+void audioDecReset(AudioDec *dec);
+
+/**
+ *
+ * Closes the movie stream file.
+ *
+ * @mangled strFileClose__FP7StrFile
+ * @address 0x0029ec60
+ * @size 0x3c
+ */
+int strFileClose(StrFile *file);
+
+/**
+ *
+ * Starts movie video display for the requested field.
+ *
+ * @mangled startDisplay__Fi
+ * @address 0x0029f640
+ * @size 0x4c
+ */
+void startDisplay(int field);
+
+/**
+ *
+ * Finds writable IOP audio buffer regions.
+ *
+ * @mangled iopGetArea__FPiPiPiPiP8AudioDeci
+ * @address 0x0029f300
+ * @size 0xa4
+ */
+void iopGetArea(int *addr1, int *size1, int *addr2, int *size2, AudioDec *dec, int wanted);
+
+/**
+ *
+ * Transfers two audio buffer regions to IOP memory.
+ *
+ * @mangled sendToIOP2area__FiiiiPUciPUci
+ * @address 0x0029f3b0
+ * @size 0x150
+ */
+int sendToIOP2area(int dest1, int size1, int dest2, int size2, u8 *src1, int len1, u8 *src2,
+                   int len2);
+
+/**
+ *
+ * Starts the audio decoder.
+ *
+ * @mangled audioDecStart__FP8AudioDec
+ * @address 0x0029f0c0
+ * @size 0x8
+ */
+void audioDecStart(AudioDec *dec);
+
+/**
+ *
+ * Seeks the movie stream file to its playback position.
+ *
+ * @mangled strFileSeek__FP7StrFile
+ * @address 0x0029ec20
+ * @size 0x40
+ */
+void strFileSeek(StrFile *file);
+
+/**
+ *
+ * Reads bytes from the movie stream file.
+ *
+ * @mangled strFileRead__FP7StrFilePvi
+ * @address 0x0029eca0
+ * @size 0x40
+ */
+int strFileRead(StrFile *file, void *buf, int size);
+
+/**
+ *
+ * Returns a writable region of the stream read buffer.
+ *
+ * @mangled readBufBeginPut__FP7ReadBufPPUc
+ * @address 0x0029ed10
+ * @size 0x3c
+ */
+int readBufBeginPut(ReadBuf *buf, u8 **out);
+
+/**
+ *
+ * Commits bytes written to the stream read buffer.
+ *
+ * @mangled readBufEndPut__FP7ReadBufi
+ * @address 0x0029ed50
+ * @size 0x78
+ */
+int readBufEndPut(ReadBuf *buf, int count);
+
+/**
+ *
+ * Returns readable bytes from the stream read buffer.
+ *
+ * @mangled readBufBeginGet__FP7ReadBufPPUc
+ * @address 0x0029edd0
+ * @size 0x60
+ */
+int readBufBeginGet(ReadBuf *buf, u8 **out);
+
+/**
+ *
+ * Consumes bytes from the stream read buffer.
+ *
+ * @mangled readBufEndGet__FP7ReadBufi
+ * @address 0x0029ee30
+ * @size 0x3c
+ */
+int readBufEndGet(ReadBuf *buf, int count);
+
+/**
+ *
+ * Builds a DMA tag for a decoded video image.
+ *
+ * @mangled setImageTag__FPUiPviii
+ * @address 0x0029f850
+ * @size 0x278
+ */
+void setImageTag(u32 *tag, void *data, int a, int width, int height);
+
+/**
+ *
+ * Initializes the video output buffer and tags.
+ *
+ * @mangled voBufCreate__FP5VoBufP6VoDataP5VoTagi
+ * @address 0x0029d740
+ * @size 0xe8
+ */
+void voBufCreate(VoBuf *buf, VoData *data, VoTag *tags, int count);
+
+/**
+ *
+ * Initializes the stream read buffer.
+ *
+ * @mangled readBufCreate__FP7ReadBuf
+ * @address 0x0029ece0
+ * @size 0x2c
+ */
+void readBufCreate(ReadBuf *buf);
+
+/**
+ *
+ * Initializes the audio decoder and its buffers.
+ *
+ * @mangled audioDecCreate__FP8AudioDecPUcii
+ * @address 0x0029ee70
+ * @size 0x11c
+ */
+int audioDecCreate(AudioDec *dec, u8 *ring_buf, int ring_size, int iop_size);
+
+/**
+ *
+ * Opens a movie stream file.
+ *
+ * @mangled strFileOpen__FP7StrFilePc
+ * @address 0x0029e930
+ * @size 0x2ec
+ */
+int strFileOpen(StrFile *file, char *path);
+
+/**
+ *
+ * Returns writable regions of the video input buffer.
+ *
+ * @mangled viBufBeginPut__FP5ViBufPPUcPiPPUcPi
+ * @address 0x0029dce0
+ * @size 0xfc
+ */
 void viBufBeginPut(ViBuf *buf, u8 **area1, int *size1, u8 **area2, int *size2);
 
+/**
+ *
+ * Commits bytes written to the video input buffer.
+ *
+ * @mangled viBufEndPut__FP5ViBufi
+ * @address 0x0029dde0
+ * @size 0x5c
+ */
 void viBufEndPut(ViBuf *buf, int count);
 
+/**
+ *
+ * Reports whether the audio decoder has a preset stream.
+ *
+ * @mangled audioDecIsPreset__FP8AudioDec
+ * @address 0x0029f120
+ * @size 0x14
+ */
 int audioDecIsPreset(AudioDec *dec);

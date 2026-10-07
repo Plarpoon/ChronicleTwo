@@ -27,6 +27,7 @@ struct mgVertexWeight {
     float weight[4]; /**< Blend weight of each influencing bone; the weights of a vertex sum to one. */
 
     /**
+     *
      * Creates a weight with no bones and every weight zero.
      *
      * @mangled __ct__14mgVertexWeightFv
@@ -72,6 +73,7 @@ public:
     mgVertexWeight *weight;     /**< Bones and blend weights of each vertex position. */
 
     /**
+     *
      * Creates a model with no data.
      *
      * @mangled __ct__18mgCVisualMotionMDTFv
@@ -81,6 +83,7 @@ public:
     }
 
     /**
+     *
      * Returns the kind of this visual.
      *
      * @mangled Iam__18mgCVisualMotionMDTFv
@@ -90,6 +93,7 @@ public:
     virtual int Iam();
 
     /**
+     *
      * Returns a copy of the model allocated from memory, sharing its vertex data, primitives and
      * weights but with a material table of its own.
      *
@@ -100,6 +104,7 @@ public:
     virtual mgCVisual *Copy(mgCMemory *memory);
 
     /**
+     *
      * Writes the bounds of the posed model, the base box moved by each bone, relative to a matrix,
      * and returns non-zero when the model has any bones.
      *
@@ -110,6 +115,7 @@ public:
     virtual int CreateBBox(float *max, float *min, float (*matrix)[4]);
 
     /**
+     *
      * Writes and sends the packet that sets up drawing the model, marked as a motion model, and
      * returns its length in quadwords.
      *
@@ -120,6 +126,7 @@ public:
     virtual int CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_INFO *info);
 
     /**
+     *
      * Clears the model's data and bones, and resets the VU1 buffer layout to the skinning
      * microprogram's.
      *
@@ -130,6 +137,7 @@ public:
     virtual void Initialize();
 
     /**
+     *
      * Writes the VIF packet that loads each bone's current skinning matrix into VU1 memory and
      * returns its length in quadwords, or zero when the model has no skeleton or bones.
      *
@@ -140,6 +148,7 @@ public:
     virtual int CreateExtRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_INFO *info);
 
     /**
+     *
      * Points the model at an MDT file's data, builds its vertex weights and bones, creates its
      * primitives and builds each primitive's skinned packet in memory; returns zero when there is
      * no work memory.
@@ -152,6 +161,7 @@ public:
                                     mgCMemory *work_memory, mgCTextureManager *textures);
 
     /**
+     *
      * Writes the VU1 packet for one primitive with each vertex's weights, split into batches that
      * fit the VU1 buffer, and returns its length in quadwords.
      *
@@ -162,6 +172,7 @@ public:
     virtual int CreateFaceMotionPacket(u_int *packet, mgCFace *face, mgCVMotionData *motion);
 
     /**
+     *
      * Builds the weights of every vertex from the weight records of the given frame, filling the
      * bone slots; on more than 32 bones the model is left without weights.
      *
@@ -172,6 +183,7 @@ public:
     void CreateVertexWeight(u_int *weight_data, int selected_frame, mgCMemory *memory);
 
     /**
+     *
      * Moves the model onto another skeleton, finding each bone's frame there by name.
      *
      * @mangled ChangeWeight__18mgCVisualMotionMDTFPP8mgCFramePA4_A4_fi
@@ -181,6 +193,7 @@ public:
     void ChangeWeight(mgCFrame **new_frames, float (*base_matrix)[4][4], int count);
 
     /**
+     *
      * Sets the bounds of the model in its base pose, and sets the w of both given corners to one.
      *
      * @mangled SetBaseBox__18mgCVisualMotionMDTFPfPf

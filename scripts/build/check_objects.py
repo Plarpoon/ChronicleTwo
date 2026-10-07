@@ -55,6 +55,7 @@ MASKS = {R_MIPS_32: 0xFFFFFFFF, R_MIPS_26: 0x03FFFFFF, R_MIPS_HI16: 0xFFFF,
          R_MIPS_LO16: 0xFFFF, R_MIPS_GPREL16: 0xFFFF}
 
 FUNCTION_ALIGNMENT = 16
+UNIT_END_ALIGNMENT = 0x40
 NAMED_ADDRESS = re.compile(r"(?:D_|\.L)([0-9A-F]{8})")
 
 
@@ -117,6 +118,14 @@ def is_retail_tail_padding(ctx, name, section_name, start, end, size):
     return len(padding) == end - pad_start and not any(padding)
 
 
+def is_zero_padding(ctx, start, end):
+    """Retail bytes in [start, end) are zero and nothing relocates them."""
+    if any(start <= address < end for address in ctx.retail.relocations):
+        return False
+    padding = ctx.retail.bytes(start, end)
+    return len(padding) == end - start and not any(padding)
+
+
 def check_unit(ctx, unit, verbose):
     path = ctx.obj_dir / f"{unit}.cpp.o"
     errors = []
@@ -171,6 +180,9 @@ def check_unit(ctx, unit, verbose):
                 if section.sh_addralign != FUNCTION_ALIGNMENT or start % FUNCTION_ALIGNMENT:
                     errors.append(f"{name}: alignment {section.sh_addralign} at 0x{start:08X}")
                 reach = start + -(-size // FUNCTION_ALIGNMENT) * FUNCTION_ALIGNMENT
+                if (index == indices[-1] and reach < end <= start + -(-size // UNIT_END_ALIGNMENT) * UNIT_END_ALIGNMENT
+                        and is_zero_padding(ctx, reach, end)):
+                    reach = end
                 if not (start + size <= end <= reach):
                     errors.append(f"{name}: size 0x{size:X} does not reach 0x{end:08X}")
             else:

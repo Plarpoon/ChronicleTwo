@@ -1,5 +1,8 @@
 # actionchara: reverse-engineering notes
 
+`CActionChara::CheckDamage`'s C++ draft remains fuzzy. The matching build uses
+retail assembly and preserves the draft under `NONMATCHING`.
+
 ## C++ draft status
 All 73 functions have C++ in `ps2/src/actionchara.cpp`. 27 are exact and
 compiled by the matching build. 3 more compile to retail's bytes in isolation

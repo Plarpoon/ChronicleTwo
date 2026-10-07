@@ -38,6 +38,11 @@ counterpart (Dark Cloud 1 has no fish race).
 | `camera0` | mgCCamera (0x70) | ctor in __sinit; `mgCCamera` methods called on it |
 | `fish_inf` | `GYORACE_FISH_INF[6]` | 0x108 = 6*0x2C |
 
+`AutoCam` selects the nearest of the five `cam_pos` vectors, then writes the
+assigned camera identifier through `CScene::active_camera`. The typed
+`cam_pos[camera]` lookup and named scene field both retain a 100% object match;
+replacing the scene field with a byte-offset write changes its generated code.
+
 Local (static, stay in .cpp): old_cam_no (.sdata, int = -1), gyore_snd_id, rank_count, EffectTex,
 EffectTex2, wind_tex (mgCTexture*), hero_no, water_cam (bool/char, symbol size 1), cam_no, win_alpha
 (float, 128.0 reset, -0.5/frame), effect_cnt (0..0x5F ring), mes_count, jyunkai_flg, hantei_flg,

@@ -25,6 +25,12 @@ three; the constructors are inlined into the *Init functions (`__nw__FUiP1(size,
 inline constructor per class reproducing these stores in order (below).
 
 ## CManualMenu (0x178) -- `__nw(0x178)` in MenuManualInit
+`MenuManualInit` keeps its typed C++ draft under `NONMATCHING`. The draft emits 0x518 bytes
+where retail uses 0x510, moving the next function by 0x10 after alignment. The matching build
+uses the retail assembly gap; other menuop functions still prevent whole-unit matching.
+`MenuSaveInit` also retains its C++ draft under `NONMATCHING`; the retail gap restores the
+unit's byte and relocation layout. With both initializer gaps, the menuop object passes
+`check_objects.py`.
 Ctor order: vptr; `movie_stack.Init()`; select=0, top=0, list_y=400.0f (0x43C80000), cursor_jump=0,
 pict_mode=0, pict_num=0, base 0x14 (s16)=0; `movie_stack.stSetBuffer(NULL)`.
 - 0x110 select, 0x114 top: `MenuKeySelectCheck(.., &select, &top, 0, 0x2E, 10, 0)`; 46 entries, 10 lines.

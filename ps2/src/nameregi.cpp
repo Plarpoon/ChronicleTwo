@@ -1724,18 +1724,18 @@ s32 CNameRegiMenu::KeyStep() {
 #ifdef NONMATCHING
 
 void CNameRegiMenu::GetSelectedActiveFont(char *dst) {
-    int font_mode = GetActiveFontMode();
+    int   font_mode = GetActiveFontMode();
     char *first_table = NameRegistFont_Table[font_mode].first;
     char *second_table = NameRegistFont_Table[font_mode].second;
     char *third_table = NameRegistFont_Table[font_mode].third;
     char *table = first_table;
-    s16 cell = select.pos;
+    s16   cell = select.pos;
     if (font_mode == NAMEREGI_FONT_MODE_HIRA || font_mode == NAMEREGI_FONT_MODE_KATA) {
         int rest;
         int column;
         int part;
         rest = cell % 15;
-        char *kana_tables[3] = { first_table, second_table, third_table };
+        char *kana_tables[3] = {first_table, second_table, third_table};
         column = cell / 15;
         part = rest / 5;
         table = kana_tables[part];
@@ -1747,7 +1747,7 @@ void CNameRegiMenu::GetSelectedActiveFont(char *dst) {
     if (font_mode == NAMEREGI_FONT_MODE_ALPHA) {
         table = first_table;
         auto column = cell % 13;
-        int line = cell / 13;
+        int  line = cell / 13;
         if (cell >= 26 && cell < 52) {
             table = second_table;
             line -= 2;
@@ -1756,7 +1756,7 @@ void CNameRegiMenu::GetSelectedActiveFont(char *dst) {
             table = third_table;
             line -= 4;
         }
-        __typeof__(line * 13 + column) line_start = line * 13 + column;
+        __typeof__(line * 13 + column)  line_start = line * 13 + column;
         __typeof__(line + (line_start)) glyph_index = line + (line_start);
         dst[0] = table[glyph_index];
     }
@@ -1765,12 +1765,12 @@ void CNameRegiMenu::GetSelectedActiveFont(char *dst) {
     }
     if (font_mode == NAMEREGI_FONT_MODE_KIGOU) {
         __typeof__(cell % 15) column = cell % 15;
-        int line = cell / 15;
+        int                   line = cell / 15;
         if (line >= 2) {
             table = second_table;
             line -= 2;
         }
-        __typeof__((unsigned int)line + (column + (line * 16 - line))) glyph_index = (unsigned int)line + (column + (line * 16 - line));
+        __typeof__((unsigned int) line + (column + (line * 16 - line))) glyph_index = (unsigned int) line + (column + (line * 16 - line));
         dst[0] = table[glyph_index];
     }
 }
@@ -1910,15 +1910,25 @@ void CNameRegiMenu::DrawBaseBoard() {
         }
     }
 }
+#ifdef NONMATCHING
 void CNameRegiMenu::DrawActiveFont() {
-    struct KanjiMark { int x; int y; };
-    KanjiMark marks[20];
-    char glyphs[20][3];
-    char line[0x40];
-    int mark_num;
-    int y;
-    int font_mode;
-    CFont *font;
+    /**
+     *
+     * Location of a mark drawn beside an active Kanji character.
+     *
+     */
+    struct KanjiMark {
+        int x; /**< Horizontal position. */
+        int y; /**< Vertical position. */
+    };
+
+    KanjiMark   marks[20];
+    char        glyphs[20][3];
+    char        line[0x40];
+    int         mark_num;
+    int         y;
+    int         font_mode;
+    CFont      *font;
     mgRect<int> mark_rect;
     FontTables *tables;
     y = 0x104;
@@ -1964,7 +1974,7 @@ void CNameRegiMenu::DrawActiveFont() {
             if (cell < 0x672) {
                 do {
                     char *glyph = &line[column];
-                    int kind = GetNameRegistFontKanjiList(cell, glyph);
+                    int   kind = GetNameRegistFontKanjiList(cell, glyph);
                     if (kind == 0) {
                         column += 2;
                     } else if (kind == 1) {
@@ -2035,62 +2045,79 @@ void CNameRegiMenu::DrawActiveFont() {
             break;
     }
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/nameregi", DrawActiveFont__13CNameRegiMenuFv);
+#endif
 
 void CNameRegiMenu::StepMarkCursor() {
     float target_x = 0.0f;
     float target_y = 0.0f;
+
     switch (key_arg_no) {
-    case 0: {
-        int button = command_pos;
-        int language = 0;
-        int slot = button;
-        if (LanguageCode > 0) {
-            language = 1;
-            if (button == 2) {
-                slot = 0;
+        case 0: {
+            int button = command_pos;
+            int language = 0;
+            int slot = button;
+
+            if (LanguageCode > 0) {
+                language = 1;
+
+                if (button == 2) {
+                    slot = 0;
+                }
+
+                if (button == 3) {
+                    slot = 4;
+                }
             }
-            if (button == 3) {
-                slot = 4;
+
+            target_x = (18.0f + (float) nameregist_baseboard_upper_table[language][slot].x) - 32.0f;
+            target_y = 5.0f + (166.0f + (float) nameregist_baseboard_upper_table[language][slot].y);
+
+            if (button == 0xB) {
+                target_y += 5.0f;
             }
+
+            break;
         }
-        target_x = (18.0f + (float)nameregist_baseboard_upper_table[language][slot].x) - 32.0f;
-        target_y = 5.0f + (166.0f + (float)nameregist_baseboard_upper_table[language][slot].y);
-        if (button == 0xB) {
-            target_y += 5.0f;
+        case 1: {
+            MENU_SELECT_PARAM *param = &select;
+            int                font_mode = GetActiveFontMode();
+            int                column = param->pos % NameRegistGyouLimmitTable[font_mode];
+            int                line = param->pos / NameRegistGyouLimmitTable[font_mode];
+
+            if (font_mode == NAMEREGI_FONT_MODE_HIRA || font_mode == NAMEREGI_FONT_MODE_KATA) {
+                target_x = (float) (column * 0x18 + 0x3E + column / 5 * 0x10);
+                target_y = (float) (0x104 + line * 0x18);
+            }
+
+            if (font_mode == NAMEREGI_FONT_MODE_KANJI) {
+                target_x = (float) (0x34 + 0x16 * column);
+                target_y = (float) (line * 0x18 + 0x104);
+            }
+
+            if (font_mode == NAMEREGI_FONT_MODE_ALPHA) {
+                target_x = (float) (column * 0x18 + 0x64);
+                target_y = (float) (line * 0x18 + 0x110);
+            }
+
+            if (NAMEREGI_FONT_MODE_KIGOU == font_mode) {
+                target_x = (float) (column * 0x18 + 0x52);
+                target_y = (float) (line * 0x18 + 0x104);
+            }
+
+            target_x -= 2.0f;
+            select_box_x = target_x;
+            target_x -= 36.0f;
+            select_box_y = target_y;
+            break;
         }
-        break;
     }
-    case 1: {
-        MENU_SELECT_PARAM *param = &select;
-        int font_mode = GetActiveFontMode();
-        int column = param->pos % NameRegistGyouLimmitTable[font_mode];
-        int line = param->pos / NameRegistGyouLimmitTable[font_mode];
-        if (font_mode == NAMEREGI_FONT_MODE_HIRA || font_mode == NAMEREGI_FONT_MODE_KATA) {
-            target_x = (float)(column * 0x18 + 0x3E + column / 5 * 0x10);
-            target_y = (float)(0x104 + line * 0x18);
-        }
-        if (font_mode == NAMEREGI_FONT_MODE_KANJI) {
-            target_x = (float)(0x34 + 0x16 * column);
-            target_y = (float)(line * 0x18 + 0x104);
-        }
-        if (font_mode == NAMEREGI_FONT_MODE_ALPHA) {
-            target_x = (float)(column * 0x18 + 0x64);
-            target_y = (float)(line * 0x18 + 0x110);
-        }
-        if (NAMEREGI_FONT_MODE_KIGOU == font_mode) {
-            target_x = (float)(column * 0x18 + 0x52);
-            target_y = (float)(line * 0x18 + 0x104);
-        }
-        target_x -= 2.0f;
-        select_box_x = target_x;
-        target_x -= 36.0f;
-        select_box_y = target_y;
-        break;
-    }
-    }
+
     CalcMenu1(target_x, &cursor_x, 4.0f, 0.0f, cursor_snap);
     CalcMenu1(target_y, &cursor_y, 4.0f, 0.0f, cursor_snap);
     cursor_snap = 0;
+
     if (mode != NAMEREGI_MODE_MESSAGE) {
         cursor_cnt++;
     }

@@ -83,3 +83,6 @@ No vtable of its own.
 The local `divbyzerocheck on`/`reset` pair is redundant with the PS2
 compiler flag. Removing it leaves every section and symbol in the unit's
 object diff unchanged.
+## Pending code matches
+
+`CSphida::SetUp` retains a C++ draft under `NONMATCHING`; its compiled code differs from retail, so the default build uses the retail function gap.

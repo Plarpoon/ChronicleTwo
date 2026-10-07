@@ -143,6 +143,32 @@ def project_name(name):
     return "at_" + name[1:] if name.startswith("@") else name
 
 
+def rename_dng_main_local_static(elf, unit):
+    """Use retail names for InitDungeonMain's C++ local static and its guard."""
+    if unit != 'dng_main':
+        return
+    symbols = elf.symtab.symbols
+    storage = [symbol for symbol in symbols
+               if re.fullmatch(r'debug_event_stack_\d+', symbol.name)
+               and symbol.st_size == 0x30 and symbol.name != 'debug_event_stack_1106']
+    if not storage and any(symbol.name == 'debug_event_stack_1106' for symbol in symbols):
+        return
+    if len(storage) != 1:
+        raise ValueError(f'dng_main: expected one debug event stack, found {len(storage)}')
+    old_name = storage[0].name
+    ordinal = int(old_name.rsplit('_', 1)[1])
+    guard = [symbol for symbol in symbols if symbol.name == f'init_{ordinal + 1}'
+             and symbol.st_size == 1]
+    if len(guard) != 1:
+        raise ValueError('dng_main: debug event stack initialization guard missing')
+    for symbol, name in ((storage[0], 'debug_event_stack_1106'),
+                         (guard[0], 'init_1107')):
+        if any(other is not symbol and other.name == name for other in symbols):
+            raise ValueError(f'dng_main: duplicate {name}')
+        symbol.name = name
+        symbol.st_name = elf.strtab.add_symbol(name)
+
+
 def sext16(value):
     value &= 0xFFFF
     return value - 0x10000 if value & 0x8000 else value
@@ -577,9 +603,18 @@ def name_literal_data(elf, unit, placeholders):
 
 def pad_data(elf, unit, placeholders):
     retail = layout.Retail()
-    pieces = disassemble.Pieces(references=[])
-    cuts = {name: (start, end) for section, run in pieces.unit(unit)
-            if section in ('.data', '.sdata', '.rodata', '.bss', '.sbss') for name, start, end in run}
+    references = []
+    for symbol in elf.symtab.symbols:
+        if (symbol.type == STT_OBJECT and 0 < symbol.st_shndx < len(elf.sections)
+                and elf.sections[symbol.st_shndx].sh_type == SHT_NOBITS):
+            match = INVENTED.fullmatch(symbol.name)
+            if match:
+                references.append(int(match.group(1), 16))
+    pieces = disassemble.Pieces(references=references)
+    runs = [(section, run) for section, run in pieces.unit(unit)
+            if section in ('.data', '.sdata', '.rodata', '.bss', '.sbss')]
+    cuts = {name: (start, end) for section, run in runs for name, start, end in run}
+    trailing = {(section, run[-1][0]) for section, run in runs if run}
     declared_sizes = {name: size for _address, name, size, _is_function
                       in layout.read_symbols(ROOT / layout.SYMBOLS) if size}
     for symbol in elf.symtab.symbols:
@@ -588,13 +623,13 @@ def pad_data(elf, unit, placeholders):
                 or not 0 < index < len(elf.sections) or symbol.name not in cuts):
             continue
         start, end = cuts[symbol.name]
-        if symbol.name in declared_sizes:
-            end = min(end, start + declared_sizes[symbol.name])
         section = elf.sections[index]
+        if symbol.name in declared_sizes and (section.sh_type != SHT_NOBITS
+                                               or (section.name, symbol.name) in trailing):
+            end = min(end, start + declared_sizes[symbol.name])
         size = section_size(section)
         if (section.sh_type == SHT_NOBITS and size and 0 < end - start - size < 16):
             section.sh_size = end - start
-            symbol.st_size = section.sh_size
             continue
         if (section.name in ('.data', '.sdata', '.rodata') and size
                 and 0 < end - start - size < 16 and not any(retail.bytes(start + size, end))):
@@ -791,6 +826,34 @@ def discard_unused_literals(elf):
                 record.name = '.rel' + DEAD
 
 
+def discard_dead_code_records(elf):
+    """Drop compiler metadata only when every relocation names discarded code."""
+    symbols = elf.symtab.symbols
+    records_by_section = {}
+    for record in elf.relocations:
+        records_by_section.setdefault(record.sh_info, []).append(record)
+
+    for index, section in enumerate(elf.sections):
+        if section.name != '.mwcats':
+            continue
+        records = records_by_section.get(index, ())
+        targets = [symbols[relocation.symbol_index].st_shndx
+                   for record in records for relocation in record.relocations]
+        if not targets:
+            continue
+        dead = [0 < target < len(elf.sections) and elf.sections[target].name == DEAD
+                for target in targets]
+        if any(dead) and not all(dead):
+            raise ValueError(f'.mwcats section {index} references both dead and live code')
+        if not all(dead):
+            continue
+        section.sh_name = elf.add_sh_symbol(DEAD)
+        section.name = DEAD
+        for record in records:
+            record.sh_name = elf.add_sh_symbol('.rel' + DEAD)
+            record.name = '.rel' + DEAD
+
+
 def retail_sections(elf, addresses, unit=None, shadowed=frozenset()):
     """{section index: retail section name} for every section retail names."""
     out = {}
@@ -848,6 +911,7 @@ def main():
             unit = '/'.join(parts[parts.index('obj') + 1:])[:-len('.cpp.o')]
         else:
             unit = name[:-len('.cpp.o')]
+        rename_dng_main_local_static(elf, unit)
         bind_local_data(elf, unit, placeholder_sections)
         name_literal_data(elf, unit, placeholder_sections)
         pad_data(elf, unit, placeholder_sections)
@@ -858,6 +922,7 @@ def main():
     discard_shadow_vtables(elf, placeholder_sections)
     fold_duplicates(elf)
     discard_unused_literals(elf)
+    discard_dead_code_records(elf)
     addresses = retail_addresses()
     renamed = retail_sections(elf, addresses, unit, shadowed)
 

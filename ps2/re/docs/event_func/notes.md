@@ -1,5 +1,11 @@
 # event_func: reverse-engineering notes
 
+`_SET_CROSSFADE` captures the current screen, converts script frames from 60 Hz to 50 Hz
+with a minimum of one frame, then starts an incoming, outgoing, or ordinary crossfade. Its
+C++ draft scores 93.37% against retail: the incoming/outgoing branch schedules the constant
+float and scene pointer differently. The matching build uses the retail assembly gap while
+the draft remains under `NONMATCHING`.
+
 The 51 decompiled functions in this unit compile to exact retail instruction matches. `CEoh`'s five
 typed pointer names occupy the same union word; its constructor clears each alias in succession.
 `CRaster::Initialize` clears the effect values in retail store order and sets `frames` to -1.
@@ -187,3 +193,6 @@ this particle type, switch to it.
 # Native event object construction
 
 `_COPY_CHARA` and `_COPY_MONS2SCNCHR` allocate a `CCharacter2` in a scene stack, then copy the source character or monster into the new slot. Native placement construction performs the base object setup, vtable installation, shadow matching reset, and character initialization represented by the retail sequence. `_ESM_INITIALIZE` similarly creates `CEffectScriptMan` in the event stack; its sprite and manager constructors perform the two initialization steps that were formerly written through vtable symbols. The `_ESM_INITIALIZE` C++ body remains behind `NONMATCHING`, so the PAL build uses its assembly body.
+## Pending code matches
+
+`LoadMovie`, both intersection point commands, and `_COPY_MONS2SCNCHR` retain C++ drafts under `NONMATCHING`. Their compiled code differs from retail, so the default build uses the retail function gaps. The copy command also requires the compiler-generated `CObject` copy constructor immediately after it in text.

@@ -1,5 +1,10 @@
 # menudraw: reverse-engineering notes
 
+`CRepairManager::GeneratePoly` compiles to 0x214 bytes against retail's 0x240,
+moving the next function and the following translation units by 0x20 after
+alignment. Its typed C++ draft is guarded by `NONMATCHING`; the matching build
+uses retail assembly until the constructor sequence matches.
+
 The migrated form helpers write the form's character, movement and named part data through
 their existing members. `CMenuEffect::type` is a signed byte: its initializer stores -1, and
 using an unsigned field changes MWCC's immediate instruction. `CRepairManager::IsRun` checks

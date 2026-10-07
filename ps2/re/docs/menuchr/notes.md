@@ -1,5 +1,12 @@
 # menuchr: reverse-engineering notes
 
+The matching build uses retail gaps for nine unresolved C++ drafts:
+`CMenuChrCngMenu::LoadBGNPCModel`, `MenuCharaChangeInit`, `MenuCharaChangeDraw`,
+`get_gajji_id_from_monster_progress_table`, `GetMonsterProgressTableNo`,
+`CMenuMosSelect::CheckLoadBGMonster`, `MenuNPCLoadCheck`,
+`CMenuCostumeSel::LoadMenuData`, and `CMosBookMenu::KeyStep`. Their typed bodies remain under
+`NONMATCHING`. With those gaps, the complete menuchr object passes `check_objects.py`.
+
 The seven `MenuActionCharaBuffer` stacks and the other eight `mgCMemory` globals use native
 C++ construction in BSS declaration order. MWCC generates the 148-byte retail
 `__sinit_menuchr_cpp` from those declarations. `CMosBookMenu` constructs its camera with speed
@@ -163,7 +170,7 @@ array indexing and member calls use the declared C++ types.
 
 `CMosBookMenu` initializes the camera, list, and description fields in its native constructor, as in the PR7 cleanup branch. `MonsterBookInit` constructs it in `MosBookStack` and then sets its texture block and boot mode.
 
-`CMenuMosSelect` initializes its badge and message window fields in its native constructor. Its member `CActionChara` objects contain `CCharaFrameMatching` objects whose default construction is trivial; the explicitly empty constructor had introduced calls absent from PAL. The constructor is inlined into `MenuMonsterBoxInit` at inline depth 3, matching the PAL constructor sequence and null branch exactly.
+`CMenuMosSelect` initializes its badge and message window fields in its native constructor. Its member `CActionChara` objects contain `CCharaFrameMatching` objects whose default construction is trivial; an explicitly empty `CCharaFrameMatching` constructor introduces two calls to `Initialize__19CCharaFrameMatchingFv` in `MenuMonsterBoxInit` that are absent from PAL. The constructor is inlined into `MenuMonsterBoxInit` at inline depth 3, matching the PAL constructor sequence and null branch exactly.
 
 `SetMenuLoadItemNo` reads Max's or Monica's five `CHARA_DATA::equip` item numbers. For the ridepod, the displayed order is parts 3, 0, 1, an empty slot, and part 2. Typed access to `ROBO_DATA::parts` and `CGameDataUsed::item_no` preserves its exact PAL object code.
 

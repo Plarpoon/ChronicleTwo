@@ -53,7 +53,12 @@ constructor calls and vtable stores without source-level byte offsets. MWCC sche
 allocation pointer into the saved register before its null branch, whereas the retail functions
 put that move in the branch delay slot. The resulting `MenuShopInit` and
 `MenuNPCQuestViewInit` scores are 99.29% and 97.74%; the remaining differences are allocation
-branch scheduling and one nop.
+branch scheduling and one nop. In `MenuNPCQuestViewInit`, retail branches on `v0` immediately
+after `__nw__FUiP1` and copies `v0` to `s1` in the delay slot. MWCC branches on `s1` after the
+copy and emits a nop in the delay slot for the native placement-new expression. Explicit
+value initialization and a named placement buffer produce the same instructions.
+Both initializers retain their C++ drafts under `NONMATCHING` and use retail assembly in
+matching builds.
 
 `CShop::AnalyzeShopList` constructs its `CScriptInterpreter` local after assigning the four
 shop globals. Declaring that local at the start of the function moves its constructor before
@@ -155,15 +160,16 @@ CMenuQuestView*.
 Externals used: `GiftBoxViewForm`, `NowGiftBoxPtr` (other unit), `DAT_01efba44..50` are
 `MenuDCMsg`-area CDC2Mes pointers (menumain), not resolved here.
 
-## Quest memo draw draft
-`MenuNPCQuestViewDraw` now has a guarded C++ draft. It draws the patterned backing and 16
+## Quest memo draw
+`MenuNPCQuestViewDraw` draws the patterned backing and 16
 constructed menu fonts, then lists accepted quests or known scoops with their completion and
 photo marks. The scrollbar is three quads, with its middle section resized from
 `QuestScrlBarH`. When a comment is open, seven signed 16-bit heights copied from `at_2470`
 form the frame; the reaction adds 24 pixels to the sixth height, while scoop mode removes
 eight pixels from the fourth and zeroes the fifth and sixth. The debug overlay reads the
-same quest and scoop records to label their two state bytes. Retail assembly remains the
-default until object-code matching is complete.
+same quest and scoop records to label their two state bytes. In the quest row, storing both
+the x constant and the `y - 2` position before calling `PrimQuad` gives MWCC the retail
+register assignment. The complete function matches retail with the two initializer gaps.
 
 ## Compiler flag
 The local `divbyzerocheck on/reset` pair around `CMenuQuestView` is redundant with the

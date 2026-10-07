@@ -52,6 +52,23 @@ dng_event LoadDungeonMapFile), FinishDungeonMain (empty), LoopDungeonMain (retur
 DngStatus becomes 5). All others are local -> static in the .cpp.
 GetWeaponEffect returns `&wep_effect[cnt]` (CWeaponElement, stride 0x7C0, 8 entries, cycles).
 
+`InitDungeonMain` owns a function-local `mgCMemory` for the debug event stack. At
+0x001CF490, retail checks a one-byte GP-relative initialization guard and calls
+`mgCMemory::Init()` once before `stSetBuffer` and `InitEventEdit`. The stack is
+the 0x30-byte BSS object `debug_event_stack_1106` at 0x01EF7380; the guard is
+`init_1107` at 0x0037D470, followed by three alignment bytes. MWCC generates
+both naturally from the local static declaration, but its generated ordinal
+differs from retail's source ordinal. The object postprocessor maps the pair
+to the retail symbol names without defining a compiler initializer manually.
+The current C++ draft of `InitDungeonMain` is 0x20D8 bytes, short of retail's
+0x2110-byte function, and changes the layout of later text. The default build
+uses the retail assembly while the draft is kept under `NONMATCHING`; its
+retail BSS storage and guard are supplied by the corresponding data placeholders.
+The draft also caused MWCC to emit `MoveCheckInfo::Initialize`, camera assignment,
+the active monster constructor, one data object, a treasure-box vtable, and
+49 read-only constants. The assembly fallback supplies these at their retail
+addresses until the C++ draft can reproduce the complete unit layout.
+
 ## Globals (types from __sinit, InitDungeonMain, CommonStageClassInit)
 Retail names with `__2` in main.symbols are these globals (other units have locals of the same
 name): MainBuffer, MainChara, EventCamera, BuffWorkData. viewAngleH/V, WaveTable are local here.
@@ -92,6 +109,18 @@ name): MainBuffer, MainChara, EventCamera, BuffWorkData. viewAngleH/V, WaveTable
   wep_effect_cnt, debug_cursor/mons_no/mons_cur/mons_num, nowload (NowLoadingInfo),
   WaveTable (CWaveTable, registered for destruction), SwordLuminous (CSwordLuminous),
   wep_effect (CWeaponElement[8]), backup_pos, cam_table, debug_no.
+
+`debug_no` occupies 0x20 bytes at 0x0033D400: eight `int` slots, with only
+the first seven indexed by the debug menu. The final zero belongs to the
+array itself, before `at_3734` at 0x0033D420.
+
+`DngMainKey` compiles to the retail instruction layout except near
+0x001D417C: MWCC loads the two immediate coordinates for `SetNextRef` in
+the reverse order from retail, while passing the same values. Introducing a
+plain local, then separate locals in either declaration order, did not change
+that order. The default build uses the retail assembly while the C++ draft
+remains under `NONMATCHING` pending a code generation solution. Its three data
+pieces (`at_2994`, `at_3336`, `at_3337`) are supplied alongside the fallback.
 
 ## Unresolved / pending
 - NOT yet declared in the header because dng_effect.hpp does not define the classes and MWCC

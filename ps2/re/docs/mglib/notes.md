@@ -6,7 +6,7 @@ the compiler-generated `__sinit_mglib_cpp` call sequence, which matches the 200-
 initializer. The frame texture has the genuine `mgCTexture` type. Defining it in this translation
 unit changes MWCC's code generation for the two buffer-copy functions because it hoists the
 symbol base instead of loading each field through a separate relocation; this matching issue
-remains under investigation.
+remains under investigation; both copy functions use their retail assembly in matching builds.
 
 The retail `mgGetFrameBuffer` and `mgGetFrameBackBuffer` are 0xF8 and 0x138 bytes. With the
 required out-of-line `sceGsTex0::operator=`, the current native `frame_tex` definition makes the
@@ -26,7 +26,10 @@ memberwise shape without the out-of-line TEX0 call and without hoisted register
 bases for TEX1 and CLAMP.
 After 16-byte function alignment, the first oversized copy moves
 `mgGetFrameBackBuffer` by 0x20 bytes; the second moves `mgGetpDrawEnv` by a
-further 0x30 bytes. Their cumulative linked `.text` shift is 0x50 bytes.
+further 0x30 bytes. Their cumulative unit `.text` shift is 0x50 bytes. In the linked image the
+subsequent `mgCMemory` constructor and `CColFrame::Initialize` addresses were both 0x60 above
+retail, which changed the constructor pointer in `__sinit_mglib_cpp` and the collision vtable
+entry. Restoring the two retail gaps makes the complete mglib object pass `check_objects.py`.
 
 MWCC emits the `.ctor` pointer to `__sinit_mglib_cpp` for the native global objects. Keeping
 the dumped `D_0037AFE8__DATA` entry alongside it adds a second pointer to the linked table.

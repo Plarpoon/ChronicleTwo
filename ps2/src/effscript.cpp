@@ -20,11 +20,10 @@
 #include "scene.hpp"
 #include "scenesnd.hpp"
 
-extern "C" void __ct__10CRunScriptFv(void *script);
-extern void    *__vt__9mgCObject[];
-extern void    *__vt__7CObject[];
-extern void    *__vt__12CObjectFrame[];
-extern void    *__vt__11CCharacter2[];
+extern void *__vt__9mgCObject[];
+extern void *__vt__7CObject[];
+extern void *__vt__12CObjectFrame[];
+extern void *__vt__11CCharacter2[];
 
 /**
  *
@@ -545,6 +544,7 @@ int CEffectScriptMan::GetNeedFilePath(char *name, char *path, char *pack) {
     return GetNeedFilePath(SearchBaseNo(name), path, pack);
 }
 
+#ifdef NONMATCHING
 _EFF_SCRIPT *CEffectScriptMan::CreateEffSpt(int base_no, int group, int register_in_group) {
     EFF_SPT_BASE *base;
     int           slot;
@@ -609,7 +609,7 @@ _EFF_SCRIPT *CEffectScriptMan::CreateEffSpt(int base_no, int group, int register
     if ((script = (_EFF_SCRIPT *) operator new(
              sizeof(_EFF_SCRIPT), work_memory->Alloc(0x17))) !=
         NULL) {
-        __ct__10CRunScriptFv(&script->run);
+        new (reinterpret_cast<u_long128 *>(&script->run)) CRunScript;
     }
 
     script->work = token;
@@ -733,6 +733,9 @@ _EFF_SCRIPT *CEffectScriptMan::CreateEffSpt(int base_no, int group, int register
     now = script;
     return script;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", CreateEffSpt__16CEffectScriptManFiii);
+#endif
 
 int CEffectScriptMan::CreateEffSpt(char *name, int user_id, int use_slot) {
     _EFF_SCRIPT *effect = CreateEffSpt(SearchBaseNo(name), user_id, use_slot);
@@ -4626,13 +4629,14 @@ int _SCN_GET_ENTRY_OBJ_POS(RS_STACKDATA *stack, int argc) {
     SetStack(stack, pos[2]);
     return 1;
 }
+#ifdef NONMATCHING
 int _INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR start;
     sceVu0FVECTOR end;
     sceVu0FVECTOR hit;
     sceVu0FVECTOR reflection;
-    mgVu0FBOX box;
-    CCPoly poly[0x80];
+    mgVu0FBOX     box;
+    CCPoly        poly[0x80];
     sceVu0FVECTOR normal;
 
     if (argc != 8 && argc != 9 && argc != 10 && argc != 11 && argc != 12 && argc != 13 && argc != 14 && argc != 15 && argc != 16) {
@@ -4657,9 +4661,9 @@ int _INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
         return 0;
     }
     CCPoly *hit_poly = poly;
-    int hit_no = CheckHit(hit_poly, poly_num, start, end, hit, 1, ignore_mask);
-    int foot_sound;
-    int area_kind;
+    int     hit_no = CheckHit(hit_poly, poly_num, start, end, hit, 1, ignore_mask);
+    int     foot_sound;
+    int     area_kind;
     if (hit_no >= 0) {
         hit_poly += hit_no;
         sceVu0Normalize(normal, hit_poly->normal);
@@ -4722,6 +4726,9 @@ int _INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
     }
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", _INTERSECTION_POINT__FP12RS_STACKDATAi);
+#endif
 /**
  *
  * Plays a sound from the current effect owner character.

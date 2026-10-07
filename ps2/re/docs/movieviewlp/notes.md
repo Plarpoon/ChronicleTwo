@@ -67,8 +67,17 @@ VIF1 packet 10000+10000.
   (`buffer + offset*16`); its declared type comes from scene.hpp.
 
 ## Draft coverage and promotion
-All five game functions have named, typed C++ bodies. `MovieViewExit` and the static initializer passed isolated linked-image verification and are active source. `_MOVIE`, `MovieViewInit`, and `MovieViewLoop` remain under `NONMATCHING` with retail assembly in normal builds.
+All five game functions have named, typed C++ bodies. `_MOVIE` and `MovieViewExit` are active
+source; `MovieViewInit` and `MovieViewLoop` remain under `NONMATCHING` with retail assembly in
+normal builds.
 
-The `_MOVIE` trial did not link: the assembled `tag_movie` table references a global symbol while the C++ static handler was emitted with local linkage. The init trial changed image layout. The loop trial reached the data binder, which rejected newly compiled string data at `0x003759D0`. These are failed promotion attempts, not matched functions.
+`MovieViewInit` and `MovieViewLoop` draft sizes are 0x3C8 and 0x770 versus retail's 0x3B4
+and 0x758. Their combined alignment drift is 0x20. Restoring both retail gaps makes the
+complete movieviewlp object pass `check_objects.py`.
+
+An earlier `_MOVIE` trial did not link because the assembled `tag_movie` table referenced a
+global symbol while the C++ static handler had local linkage. The current unit passes the
+object check with `_MOVIE` active. The init draft changed image layout, and the loop draft
+introduced string data at `0x003759D0`; these two functions retain retail gaps.
 
 `MovieViewInit` allocates packet, draw, texture and read buffers from the main stack, registers the font image banks, parses `mv.cfg`, and creates the movie texture. `MovieViewLoop` takes list input, starts ordinary or promotional movies, draws playback frames and advances a promotional sequence through its three parts. The drafts use typed `CMovie`, `MOVIE_LIST_ENTRY`, `CScene`, `CPreSprite` and `CFont` operations; the retained assembly controls the game build.

@@ -119,3 +119,6 @@ It calculates opacity from horizontal distance to the main scene camera:
 opacity is positive and the world position transforms to a drawable GS
 vertex. Its guarded draft compiles and differs from retail in eight floating
 point register choices.
+## Pending code matches
+
+`CRain::Start` retains a C++ draft under `NONMATCHING`; its compiled code differs from retail, so the default build uses the retail function gap.

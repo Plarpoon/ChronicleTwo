@@ -101,6 +101,22 @@ def word(data, offset):
     return struct.unpack_from("<I", data, offset)[0]
 
 
+def is_retail_tail_padding(ctx, name, section_name, start, end, size):
+    """Recognize zero linker padding after the last datum of a unit run."""
+    symbol = ctx.pieces.symbols.by_name.get(name)
+    if symbol is None or symbol[2] != size:
+        return False
+    pad_start = start + size
+    if not (0 < end - pad_start < 16):
+        return False
+    if any(pad_start <= address < end for address in ctx.retail.relocations):
+        return False
+    if section_name in layout.NOBITS:
+        return True
+    padding = ctx.retail.bytes(pad_start, end)
+    return len(padding) == end - pad_start and not any(padding)
+
+
 def check_unit(ctx, unit, verbose):
     path = ctx.obj_dir / f"{unit}.cpp.o"
     errors = []
@@ -160,12 +176,14 @@ def check_unit(ctx, unit, verbose):
             else:
                 if section.sh_addralign > 1:
                     errors.append(f"{name}: alignment {section.sh_addralign}")
-                if size != end - start:
+                tail_pad = (index == indices[-1] and
+                            is_retail_tail_padding(ctx, name, section_name, start, end, size))
+                if size != end - start and not tail_pad:
                     errors.append(f"{name}: size 0x{size:X}, retail 0x{end - start:X}")
             want_nobits = section_name in layout.NOBITS
             if want_nobits != (section.sh_type == SHT_NOBITS):
                 errors.append(f"{name}: section type {section.sh_type}")
-            cursor = start + size if section_name not in disassemble.CODE_SECTIONS else end
+            cursor = end if section_name in disassemble.CODE_SECTIONS or tail_pad else start + size
         run_end = expected[-1][2] if expected else hi
         if cursor != run_end:
             errors.append(f"{section_name}: run ends 0x{cursor:08X}, retail 0x{run_end:08X}")

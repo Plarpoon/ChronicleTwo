@@ -46,7 +46,9 @@ extern s8    init_1006;
 #include "subgame.hpp"
 #include "userdata.hpp"
 
-#pragma define_section dead ".dead" ".dead"
+#pragma define_section dead ".dead" \
+                            ".dead"
+
 __declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
     return a / b;
 }

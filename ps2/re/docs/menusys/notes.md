@@ -166,6 +166,11 @@ Only non-local symbols get externs (the rest are `static` in the .cpp per `local
   MenuItemDebugDraw, local_item_infoview_set, MenuItemCharaActWepInfoDraw, MenuItemCharaViewCheck,
   MenuPosFormValueSetCharaRobo, MenuPosFormValueSetMonster, BuildUpWeaponNameBoardDraw,
   MenuWeaponStatusInfoFormSet, MenuItemSelectDiffer, MenuItemInfoCursorSet, CheckTrushWeapon.
+- `MenuItemSelectDiffer` has a 0x30-byte jump table at `at_7968` whose entries
+  point to interior addresses in the function. The current C++ draft compiles
+  to 0x268 bytes rather than retail's 0x270, changing those targets. The
+  default build uses retail assembly while the draft remains under
+  `NONMATCHING` for further matching work.
 - Return types come from m2c and Ghidra and were checked at call sites for SearchNowPosItemExist and
   GetExistThisPosData (both `CGameDataUsed *`) and GetGameDataUsedForSWAPINFO. Parameter names of the big
   functions (ModelReadStart, WeaponBuildCheck, KeyStepLocal, CheckSpectolFusion's int) are only partly
@@ -201,3 +206,14 @@ pointer fields; it leaves `unk_6`, `unk_72`, `unk_8C` and `unk_90` untouched.
 The four local `divbyzerocheck on`/`reset` pairs are redundant with the PS2
 compiler flag. Removing them leaves every section and symbol in this unit's
 object diff unchanged.
+
+## Pending menu function matches
+
+`CMenuItemInfo::MenuModeMalloc` and `MenuItemInfoCursorSet` retain guarded C++
+drafts. Their object code differs from the retail functions, including their
+sizes, so the normal build uses the retail assembly until their C++ forms match.
+`CMenuItemInfo::PushKey` also retains a guarded draft: its object section exceeds
+the retail function by 0x20 bytes and shifts later linked text.
+`MenuWeaponBuildUpDraw` retains a guarded draft because MWCC assigns opposite
+integer registers to the bottom bar Y coordinate and its X literal before
+`PrimQuad`; the four resulting instructions differ from retail.

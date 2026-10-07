@@ -135,11 +135,13 @@ draw loops' byte-offset addresses with `&rocket[i]` and `&laser[i]` changes
 MWCC's address calculation (92.58% for both), so those loops retain the exact
 byte-offset form pending a matching typed expression.
 
-`CMachineGun::Step` currently scores 97.03% before typed-array changes. The
+`CMachineGun::Step` has a guarded C++ draft that scores 97.03% before typed-array changes. The
 remaining instruction differences are mostly the scheduling of literal float
 arguments at the `SethitEffect` call: retail puts the zero for `power` into
 `fa2` before loading the speed and gravity constants, while MWCC schedules
 those constants earlier from the present C++ expression. Reordering the local
 float declarations does not affect it; inlining all four literals lowers the
 score to 91.43%. Typed `pos[i]` and `velocity[i]` lower it to 93.36% and were
-reverted. Its raw slot alias remains until the whole function can match.
+reverted. Inlining only the zero power argument leaves the score unchanged.
+The retail build uses `INCLUDE_ASM` until the argument schedule and raw slot
+alias can be replaced with an exact C++ form.

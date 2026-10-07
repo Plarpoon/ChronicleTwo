@@ -1,5 +1,8 @@
 # nd_meswin: reverse-engineering notes
 
+`ClsMes::Preset`'s native code remains fuzzy; its matching build path uses
+retail assembly while retaining the C++ draft under `NONMATCHING`.
+
 `ClsMes::GetMesWidth_system` scans the system message's 16-bit codes and
 returns the widest line. It expands registered names and display controls,
 uses the half-font width for narrow glyphs, and returns -1 for an invalid

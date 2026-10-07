@@ -62,7 +62,6 @@ void mgCTexAnimeData::Initialize() {
 #ifdef NONMATCHING
 #pragma global_optimizer off
 
-
 void mgCTextureAnime::TexAnime(int texb, sceVif1Packet *packet) {
     int                      i;
     int                      group;
@@ -573,6 +572,7 @@ int mgCTextureAnime::SearchGroupName(char *group_name) {
 
 extern "C" u_char __vt__24CList_15mgCTexAnimeData_[];
 
+#ifdef NONMATCHING
 CList<mgCTexAnimeData> *mgCTextureAnime::NewTexAnimeData(mgCMemory *stack) {
     CList<mgCTexAnimeData> *node;
 
@@ -580,6 +580,9 @@ CList<mgCTexAnimeData> *mgCTextureAnime::NewTexAnimeData(mgCMemory *stack) {
 
     return node;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_tanime", NewTexAnimeData__15mgCTextureAnimeFP9mgCMemory);
+#endif
 
 // Defined in the class body in mg_tanime.hpp.
 #pragma global_optimizer off

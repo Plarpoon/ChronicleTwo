@@ -125,3 +125,6 @@ analog_table: ANALOG_TABLE_ENTRY {no, axis} rows {0,1},{1,2},{2,3},{3,4},{4,2},{
 - Save data offsets seen: +0x1A00 s64 play time, +0x1A08 progress (2 = forces time 22.0),
   +0x1A10 float time of day, +0x1A14 copied to CScene+0x2F68, +0x1C578 vibration off,
   +0x1C59C.. option values (MonsterName/Map/EnemyHP/AngerCounter).
+## Pending code matches
+
+`EventSelect` retains a C++ draft under `NONMATCHING`; its compiled code differs from retail, so the default build uses the retail function gap. The initialized menu table remains in its existing data gap.

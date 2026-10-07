@@ -1,5 +1,9 @@
 # mg_tanime: reverse-engineering notes
 
+`mgCTextureAnime::NewTexAnimeData`'s native constructor sequence is still
+fuzzy, so the matching build uses retail assembly and preserves its C++ draft
+under `NONMATCHING`.
+
 Engine texture animation (`mg_tanime.cpp`). First-game counterpart: `textureanime.hpp`
 (`CTexAnimeData` / `CTextureAnime`). The design is the same in spirit, but every layout differs:
 records are now heap-allocated `CList<mgCTexAnimeData>` nodes in per-group linked lists, groups have

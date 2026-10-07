@@ -1,5 +1,15 @@
 # inventmn: reverse-engineering notes
 
+## Linked text length
+
+The native drafts of `CMenuInvent::LoadCharaCheck`, `CMenuInvent::IsCreateObject`,
+and `MenuInventInit` compile to 0x48C, 0x1568, and 0x1018 bytes, respectively;
+retail uses 0x4D8, 0x1588, and 0x1048. Their shorter code shifts the following
+linked text by 0xA0 after function alignment. These drafts remain guarded by
+`NONMATCHING` and the matching build uses their retail assembly. The native
+`UpdataNetaMemoStr` also has differing bytes and relocations, so it uses the
+retail assembly while its C++ draft is refined.
+
 Invention menu ("Invent"): camera photos, ideas ("neta", id < 1000) and scoops (id >= 1000),
 the memory-card album, invention recipes and the menu page class. No first-game counterpart
 (Dark Cloud 1 has no camera/invention system).
@@ -190,7 +200,10 @@ for `__construct_new_array` in PhotoNetaEnter. Size 0xC.
   mismatch is the four-argument native `neta_sort` call sequence noted above.
 - `CInventUserData::ResetAddress` unrolls eight photo pointers per iteration. A
   typed `photo_work` row pointer preserves the loop shape, but MWCC hoists its base
-  calculation and chooses different constants for the unrolled addresses.
+  calculation and chooses different constants for the unrolled addresses. Direct
+  `&photo_work[index][0]` indexing scores 60.0%, while the previous byte-offset
+  expression scored 99.583336% but used raw pointer arithmetic. The typed draft
+  remains under `NONMATCHING`; the matching build uses retail assembly.
 
 ## Unresolved
 - Meaning of most unk_ fields of CMenuInvent; mode values 4 and 8.

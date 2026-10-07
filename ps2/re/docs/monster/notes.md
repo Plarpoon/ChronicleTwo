@@ -1,5 +1,9 @@
 # monster: reverse-engineering notes
 
+The C++ drafts of `HitEffectSet`, `GuardEffectSet`, and `CMonsterMan::ThinkHost` differ from
+retail. They remain under `NONMATCHING`; their retail assembly gaps make the complete
+monster object pass `check_objects.py`.
+
 No first-game counterpart: Dark Cloud has no `CActiveMonster`, `CMonsterMan` or `CMonsterLocateInfo`.
 `CActiveMonster` derives from `CActionChara` (actionchara.hpp, size 0x1030).
 

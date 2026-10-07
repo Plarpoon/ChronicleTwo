@@ -1,5 +1,9 @@
 # water: reverse-engineering notes
 
+`CreateWaterFrame`'s typed native constructor sequence remains fuzzy. Its
+matching build path uses retail assembly and retains the C++ draft under
+`NONMATCHING`.
+
 `CFireRaster::Step` walks its `FireRasterParticle particle[20]` array while advancing a separate phase value for the wisp sway. Typed array indexing reproduces all PAL instructions except the compiler's choice of two saved registers for the slot offset and phase.
 
 ## C++ draft status

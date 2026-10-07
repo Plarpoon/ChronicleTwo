@@ -92,7 +92,9 @@ extern mgCFrame                *EditCursor[3];
 extern "C" u8                   now_balance_h[16];
 extern "C" u8                   at_2213__3[10];
 
-#pragma define_section dead ".dead" ".dead"
+#pragma define_section dead ".dead" \
+                            ".dead"
+
 __declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
     return a / b;
 }
@@ -319,41 +321,48 @@ void EditPreMenuAnime(int max_count) {
     PreMenuMaxCount = max_count;
     PreMenuCount = 0;
 }
-extern char at_1067__3[];
-extern char at_1068__3[];
-extern char at_1069__5[];
-extern char at_1070__3[];
-extern char at_1071__3[];
-extern char at_1072__3[];
-extern char at_1073__3[];
-extern char at_1074__3[];
-extern char at_1075__2[];
-extern char at_1076__2[];
-extern "C" void *__vt__9mgCObject[];
-extern "C" void *__vt__7CObject[];
-extern "C" void *__vt__12CObjectFrame[];
-extern "C" void *__vt__11CCharacter2[];
-extern mgCFrame *PaintCursor;
-extern mgCFrame *RemoveCursor;
-extern mgCFrame *ShovelCursor;
+
+extern char        at_1067__3[];
+extern char        at_1068__3[];
+extern char        at_1069__5[];
+extern char        at_1070__3[];
+extern char        at_1071__3[];
+extern char        at_1072__3[];
+extern char        at_1073__3[];
+extern char        at_1074__3[];
+extern char        at_1075__2[];
+extern char        at_1076__2[];
+extern "C" void   *__vt__9mgCObject[];
+extern "C" void   *__vt__7CObject[];
+extern "C" void   *__vt__12CObjectFrame[];
+extern "C" void   *__vt__11CCharacter2[];
+extern mgCFrame   *PaintCursor;
+extern mgCFrame   *RemoveCursor;
+extern mgCFrame   *ShovelCursor;
 extern mgCTexture *eSysTexture;
+
 void LoadEditCursor(mgCMemory *memory, int block) {
     mgCTextureManager *textures = &mgTexManager;
+
     if (LoadFile2(at_1067__3, read_buffer, NULL, 0) != 0) {
-        u_int *pack = (u_int *)read_buffer;
-        u_int size;
-        u_int *image = GetPackFile(pack, (char *)at_1068__3, (int *)&size);
+        u_int *pack = (u_int *) read_buffer;
+        u_int  size;
+        u_int *image = GetPackFile(pack, (char *) at_1068__3, (int *) &size);
+
         if (image != NULL) {
             u_int blocks;
+
             if (size & 0xF) {
                 blocks = (size >> 4) + 1;
             } else {
                 blocks = size >> 4;
             }
+
             void *copy = memory->Alloc(blocks);
             memcpy(copy, image, size);
-            textures->EnterIMGFile((u_char *)copy, block, NULL, NULL);
+            textures->EnterIMGFile((u_char *) copy, block, NULL, NULL);
         }
+
         eSysTexture = textures->GetTexture(at_1069__5, block);
         mgCFrameAttr attr;
         attr.no_light = 1;
@@ -362,94 +371,115 @@ void LoadEditCursor(mgCMemory *memory, int block) {
         attr.color[2] = 128.0f;
         attr.color[3] = 128.0f;
         u_int *cursor_model = GetPackFile(pack, at_1070__3, NULL);
+
         if (cursor_model != NULL) {
-            EditCursor[0] = mgLoadMDSFile((MDS_HEADER *)cursor_model, memory, NULL, NULL);
+            EditCursor[0] = mgLoadMDSFile((MDS_HEADER *) cursor_model, memory, NULL, NULL);
             EditCursor[0]->SetAttrParam(attr, 1, MG_FRAME_ATTR_NO_LIGHT | MG_FRAME_ATTR_COLOR | MG_FRAME_ATTR_BILLBOARD);
         }
+
         PaintCursor = NULL;
         PaintCursor2 = NULL;
         CCharacter2 *paint_chr;
-        if ((paint_chr = (CCharacter2 *)operator new(sizeof(CCharacter2), (u_long128 *)memory->Alloc(0x68))) != NULL) {
-            *(void ***)paint_chr = __vt__9mgCObject;
+
+        if ((paint_chr = (CCharacter2 *) operator new(sizeof(CCharacter2), (u_long128 *) memory->Alloc(0x68))) != NULL) {
+            *(void ***) paint_chr = __vt__9mgCObject;
             paint_chr->Initialize();
-            *(void ***)paint_chr = __vt__7CObject;
+            *(void ***) paint_chr = __vt__7CObject;
             paint_chr->Initialize();
-            *(void ***)paint_chr = __vt__12CObjectFrame;
+            *(void ***) paint_chr = __vt__12CObjectFrame;
             paint_chr->Initialize();
-            *(void ***)paint_chr = __vt__11CCharacter2;
+            *(void ***) paint_chr = __vt__11CCharacter2;
             paint_chr->shadow_link.num = 0;
             paint_chr->shadow_link.dst_frame = 0;
             paint_chr->shadow_link.src_frame = 0;
             paint_chr->Initialize();
         }
+
         PaintCurChr = paint_chr;
         u_int *paint_model = GetPackFile(pack, at_1071__3, NULL);
+
         if (paint_model != NULL) {
             PaintCurChr->LoadPackNoLine(paint_model, at_1072__3, memory, memory, memory, block, NULL);
             PaintCursor = PaintCurChr->GetFrame();
+
             if (PaintCursor != NULL) {
                 PaintCursor->SetAttrParam(attr, 1, MG_FRAME_ATTR_NO_LIGHT | MG_FRAME_ATTR_COLOR | MG_FRAME_ATTR_BILLBOARD);
                 PaintCursor2 = PaintCursor->SearchFrame(at_1073__3);
             }
+
             PaintCurChr->SetMotion(0, 0);
         }
+
         RemoveCursor = NULL;
         ShovelCursor = NULL;
         ShovelCurChr = NULL;
         RemoveCurChr = NULL;
         CCharacter2 *remove_chr;
-        if ((remove_chr = (CCharacter2 *)operator new(sizeof(CCharacter2), (u_long128 *)memory->Alloc(0x68))) != NULL) {
-            *(void ***)remove_chr = __vt__9mgCObject;
+
+        if ((remove_chr = (CCharacter2 *) operator new(sizeof(CCharacter2), (u_long128 *) memory->Alloc(0x68))) != NULL) {
+            *(void ***) remove_chr = __vt__9mgCObject;
             remove_chr->Initialize();
-            *(void ***)remove_chr = __vt__7CObject;
+            *(void ***) remove_chr = __vt__7CObject;
             remove_chr->Initialize();
-            *(void ***)remove_chr = __vt__12CObjectFrame;
+            *(void ***) remove_chr = __vt__12CObjectFrame;
             remove_chr->Initialize();
-            *(void ***)remove_chr = __vt__11CCharacter2;
+            *(void ***) remove_chr = __vt__11CCharacter2;
             remove_chr->shadow_link.num = 0;
             remove_chr->shadow_link.dst_frame = 0;
             remove_chr->shadow_link.src_frame = 0;
             remove_chr->Initialize();
         }
+
         RemoveCurChr = remove_chr;
         u_int *remove_model = GetPackFile(pack, at_1074__3, NULL);
+
         if (remove_model != NULL) {
             RemoveCurChr->LoadPackNoLine(remove_model, at_1072__3, memory, memory, memory, block, NULL);
+
             if (RemoveCurChr != NULL) {
                 RemoveCursor = RemoveCurChr->GetFrame();
+
                 if (RemoveCursor != NULL) {
                     RemoveCursor->SetAttrParam(attr, 1, MG_FRAME_ATTR_NO_LIGHT | MG_FRAME_ATTR_COLOR | MG_FRAME_ATTR_BILLBOARD);
                 }
             }
         }
+
         CCharacter2 *shovel_chr;
-        if ((shovel_chr = (CCharacter2 *)operator new(sizeof(CCharacter2), (u_long128 *)memory->Alloc(0x68))) != NULL) {
-            *(void ***)shovel_chr = __vt__9mgCObject;
+
+        if ((shovel_chr = (CCharacter2 *) operator new(sizeof(CCharacter2), (u_long128 *) memory->Alloc(0x68))) != NULL) {
+            *(void ***) shovel_chr = __vt__9mgCObject;
             shovel_chr->Initialize();
-            *(void ***)shovel_chr = __vt__7CObject;
+            *(void ***) shovel_chr = __vt__7CObject;
             shovel_chr->Initialize();
-            *(void ***)shovel_chr = __vt__12CObjectFrame;
+            *(void ***) shovel_chr = __vt__12CObjectFrame;
             shovel_chr->Initialize();
-            *(void ***)shovel_chr = __vt__11CCharacter2;
+            *(void ***) shovel_chr = __vt__11CCharacter2;
             shovel_chr->shadow_link.num = 0;
             shovel_chr->shadow_link.dst_frame = 0;
             shovel_chr->shadow_link.src_frame = 0;
             shovel_chr->Initialize();
         }
+
         ShovelCurChr = shovel_chr;
         u_int *shovel_model = GetPackFile(pack, at_1075__2, NULL);
+
         if (shovel_model != NULL) {
             ShovelCurChr->LoadPackNoLine(shovel_model, at_1072__3, memory, memory, memory, block, NULL);
+
             if (ShovelCurChr != NULL) {
                 ShovelCursor = ShovelCurChr->GetFrame();
+
                 if (ShovelCursor != NULL) {
                     ShovelCursor->SetAttrParam(attr, 1, MG_FRAME_ATTR_NO_LIGHT | MG_FRAME_ATTR_COLOR | MG_FRAME_ATTR_BILLBOARD);
                 }
             }
         }
+
         u_int *unit_model = GetPackFile(pack, at_1076__2, NULL);
+
         if (unit_model != NULL) {
-            UnitCursor = mgLoadMDSFile((MDS_HEADER *)unit_model, memory, NULL, NULL);
+            UnitCursor = mgLoadMDSFile((MDS_HEADER *) unit_model, memory, NULL, NULL);
             mgCFrameAttr unit_attr;
             unit_attr.z_write = -1;
             unit_attr.clip_enable = 1;
@@ -460,12 +490,14 @@ void LoadEditCursor(mgCMemory *memory, int block) {
             unit_attr.color[3] = 32.0f;
             UnitCursor->SetAttrParam(unit_attr, 1, 0);
         }
+
         Font__2.Init();
         Font__2.Preset(4);
         Font__2.SetFuchi(3);
         Font__2.SetClearance(0xF, 0x18);
     }
 }
+
 int GetSelPartsInfoID() {
     return PartsInfoID;
 }
@@ -613,10 +645,10 @@ int StartEditModeFromMenu(CScene *scene, int mode, int *params) {
         }
         PlacePartsFlag = 0;
         MagnetPartsFlag = 0;
-        mgCCameraFollow *camera = (mgCCameraFollow *)scene->GetCamera(scene->active_camera);
+        mgCCameraFollow *camera = (mgCCameraFollow *) scene->GetCamera(scene->active_camera);
         if (camera != NULL) {
             camera->SetFollowOffset(0.0f, 0.0f, 0.0f);
-            ((CCameraControl *)camera)->SetFollow(eCurPos[0], eCurPos[1], eCurPos[2]);
+            ((CCameraControl *) camera)->SetFollow(eCurPos[0], eCurPos[1], eCurPos[2]);
             camera->SetHeight(eCameraDist);
             camera->SetDistance(eCameraDist);
         }
@@ -1069,27 +1101,29 @@ static float GetGeoMapLimitHeight(int map_kind) {
 extern "C" float ePartsCurRot[4];
 extern "C" float ePartsCurNowRot[4];
 extern "C" float eDirCurRot[4];
-extern float eDirCurLen;
-extern char at_1835__2[];
-extern char at_1836__2[];
+extern float     eDirCurLen;
+extern char      at_1835__2[];
+extern char      at_1836__2[];
+
 static inline CMap *ActiveSceneMap(CScene *scene) {
     return scene->GetMap(scene->active_map);
 }
+
 static inline mgCCameraFollow *ActiveSceneCamera(CScene *scene) {
-    return (mgCCameraFollow *)scene->GetCamera(scene->active_camera);
+    return (mgCCameraFollow *) scene->GetCamera(scene->active_camera);
 }
 
 void EditMode(CScene *scene) {
-    CCPoly *next_poly;
-    int i;
-    int moving;
-    int river;
-    int any_height;
-    int map_count;
-    int map_no;
-    char *edit_name;
-    int wall_parts;
-    CEditMap *map = (CEditMap *)ActiveSceneMap(scene);
+    CCPoly   *next_poly;
+    int       i;
+    int       moving;
+    int       river;
+    int       any_height;
+    int       map_count;
+    int       map_no;
+    char     *edit_name;
+    int       wall_parts;
+    CEditMap *map = (CEditMap *) ActiveSceneMap(scene);
     if (map != NULL && strcmp(map->Iam(), at_1835__2) == 0 && map != NULL) {
         CPadControl *pad = &PadCtrl;
         if (CursorLockCnt > 0) {
@@ -1105,7 +1139,7 @@ void EditMode(CScene *scene) {
         mgCCameraFollow *camera = ActiveSceneCamera(scene);
         if (camera != NULL) {
             float old_pos[4];
-            *(u_long128 *)old_pos = *(u_long128 *)eCurPos;
+            *(u_long128 *) old_pos = *(u_long128 *) eCurPos;
             float angle = camera->GetAngle();
             float stick_x = 0.0f;
             if (pad != NULL) {
@@ -1195,7 +1229,7 @@ void EditMode(CScene *scene) {
                 UndoPlaceParts(scene);
             }
             float target[4];
-            *(u_long128 *)target = *(u_long128 *)ePartsCurNowPos;
+            *(u_long128 *) target = *(u_long128 *) ePartsCurNowPos;
             moving = 0;
             if ((move_x != 0.0f) | (move_z != 0.0f)) {
                 moving = 1;
@@ -1266,16 +1300,16 @@ void EditMode(CScene *scene) {
             eCurPos[1] = 0.0f;
             sceVu0FVECTOR box_max;
             sceVu0FVECTOR box_min;
-            float new_pos[4];
-            float ground[4];
-            float start_pos[4];
-            float move[4];
-            CCPoly polys[0x800];
+            float         new_pos[4];
+            float         ground[4];
+            float         start_pos[4];
+            float         move[4];
+            CCPoly        polys[0x800];
             MoveCheckInfo move_info;
-            *(u_long128 *)box_max = *(u_long128 *)eCurPos;
-            *(u_long128 *)box_min = *(u_long128 *)eCurPos;
-            *(u_long128 *)new_pos = *(u_long128 *)eCurPos;
-            *(u_long128 *)start_pos = *(u_long128 *)old_pos;
+            *(u_long128 *) box_max = *(u_long128 *) eCurPos;
+            *(u_long128 *) box_min = *(u_long128 *) eCurPos;
+            *(u_long128 *) new_pos = *(u_long128 *) eCurPos;
+            *(u_long128 *) start_pos = *(u_long128 *) old_pos;
             new_pos[1] = 20.0f;
             start_pos[1] = 20.0f;
             sceVu0SubVector(move, new_pos, start_pos);
@@ -1288,7 +1322,7 @@ void EditMode(CScene *scene) {
             box_min[2] -= 100.0f;
             int poly_rest = 0x800;
             if (maps[0] != NULL) {
-                poly_count = GetGeoCheckCol(maps[0], *(mgVu0FBOX *)box_max, polys, poly_rest);
+                poly_count = GetGeoCheckCol(maps[0], *(mgVu0FBOX *) box_max, polys, poly_rest);
             }
             memset(&move_info, 0, sizeof(move_info));
             move_info.radius = 50.0f;
@@ -1351,7 +1385,7 @@ void EditMode(CScene *scene) {
             box_min[0] -= 10.0f;
             box_min[1] = -100.0f;
             box_min[2] -= 10.0f;
-            if (CheckHit(polys, GetGeoCheckCamCol(map, *(mgVu0FBOX *)box_max, polys, 0x800), camera_ref, camera_pos, camera_hit, 1, 0) >= 0) {
+            if (CheckHit(polys, GetGeoCheckCamCol(map, *(mgVu0FBOX *) box_max, polys, 0x800), camera_ref, camera_pos, camera_hit, 1, 0) >= 0) {
                 float dist = mgDistVectorXZ(camera_ref, camera_hit);
                 camera->SetDistance(dist);
                 if (dist < 500.0f) {
@@ -1371,13 +1405,13 @@ void EditMode(CScene *scene) {
                     camera->SetHeight(limit_height - follow[1]);
                 }
             }
-            *(u_long128 *)ePartsCurPos = *(u_long128 *)eCurPos;
+            *(u_long128 *) ePartsCurPos = *(u_long128 *) eCurPos;
             ePartsCurRot[1] = map->GetEditAngle(eCurRot);
             int ground_count = 0;
             next_poly = polys;
-            *(u_long128 *)box_max = *(u_long128 *)eCurPos;
-            *(u_long128 *)box_min = *(u_long128 *)eCurPos;
-            *(u_long128 *)new_pos = *(u_long128 *)eCurPos;
+            *(u_long128 *) box_max = *(u_long128 *) eCurPos;
+            *(u_long128 *) box_min = *(u_long128 *) eCurPos;
+            *(u_long128 *) new_pos = *(u_long128 *) eCurPos;
             new_pos[1] = 1000.0f;
             box_max[0] += 10.0f;
             box_max[1] = 10000.0f;
@@ -1386,7 +1420,7 @@ void EditMode(CScene *scene) {
             box_min[1] = -10000.0f;
             box_min[2] -= 10.0f;
             for (i = 0; i < map_count; i++) {
-                int added = maps[i]->GetColPoly(next_poly, *(mgVu0FBOX *)box_max, poly_rest);
+                int added = maps[i]->GetColPoly(next_poly, *(mgVu0FBOX *) box_max, poly_rest);
                 ground_count += added;
                 next_poly += added;
                 poly_rest -= added;
@@ -1395,7 +1429,7 @@ void EditMode(CScene *scene) {
                 }
             }
             if (CheckHitVertical(polys, ground_count, new_pos, -2000.0f, ground, 1) >= 0) {
-                *(u_long128 *)eCurPos = *(u_long128 *)ground;
+                *(u_long128 *) eCurPos = *(u_long128 *) ground;
                 ePartsCurPos[1] = ground[1];
             }
             EditEndPlaceEffect();
@@ -1426,7 +1460,7 @@ void EditMode(CScene *scene) {
                                 if (MagnetEnable != 0) {
                                     float magnet_pos[4];
                                     float magnet_rot;
-                                    *(u_long128 *)magnet_pos = *(u_long128 *)place_pos;
+                                    *(u_long128 *) magnet_pos = *(u_long128 *) place_pos;
                                     int was_magnet = MagnetPartsFlag;
                                     magnet_rot = rot[1];
                                     int line_parts = (place_info->attr & 0x100) != 0;
@@ -1456,12 +1490,12 @@ void EditMode(CScene *scene) {
                                     SetHelpMes(EDIT_HELP_PLACE, 0, UndoEnable());
                                 }
                                 EP_PLACE_INFO place;
-                                int finish = 0;
-                                int finish_no = -1;
+                                int           finish = 0;
+                                int           finish_no = -1;
                                 if (place_info->id == 0x55) {
                                     float probe[4];
                                     PlacePartsFlag = 0;
-                                    *(u_long128 *)probe = *(u_long128 *)eCurPos;
+                                    *(u_long128 *) probe = *(u_long128 *) eCurPos;
                                     probe[3] = 10.0f;
                                     finish_no = map->GetePlaceParts(probe);
                                     CEditParts *base = map->GetePlaceParts(finish_no);
@@ -1519,7 +1553,7 @@ void EditMode(CScene *scene) {
                     if (EditModeNo == EDIT_MODE_REMOVE) {
                         float probe[4];
                         SetHelpMes(EDIT_HELP_REMOVE, 0, 0);
-                        *(u_long128 *)probe = *(u_long128 *)eCurPos;
+                        *(u_long128 *) probe = *(u_long128 *) eCurPos;
                         probe[3] = 10.0f;
                         int parts_no = map->GetePlaceParts(probe);
                         eCurPos[1] = eCurPos[1] > probe[1] ? eCurPos[1] : probe[1];
@@ -1534,9 +1568,9 @@ void EditMode(CScene *scene) {
                     }
                     while (EditModeNo == EDIT_MODE_PAINT || EditModeNo == EDIT_MODE_REPAINT) {
                         float probe[4];
-                        *(u_long128 *)probe = *(u_long128 *)eCurPos;
+                        *(u_long128 *) probe = *(u_long128 *) eCurPos;
                         probe[3] = 10.0f;
-                        int parts_no = map->GetePlaceParts(probe);
+                        int         parts_no = map->GetePlaceParts(probe);
                         CEditParts *parts = map->GetePlaceParts(parts_no);
                         if (parts != NULL) {
                             CEditPartsInfo *paint_info = parts->info;
@@ -1641,11 +1675,11 @@ void EditMode(CScene *scene) {
                     if (side_mode == EDIT_PUT_SIDE_SELECT) {
                         SetHelpMes(EDIT_HELP_SELECT_WALL, 0, 0);
                         if (pad->Btn(0x66)) {
-                            float probe[4];
+                            float                probe[4];
                             CEditParts::WallInfo wall;
-                            *(u_long128 *)probe = *(u_long128 *)eCurPos;
+                            *(u_long128 *) probe = *(u_long128 *) eCurPos;
                             probe[3] = 1.0f;
-                            int parts_no = map->GetePlaceParts(probe);
+                            int         parts_no = map->GetePlaceParts(probe);
                             CEditParts *parts = map->GetePlaceParts(parts_no);
                             SelectWallGroup = 0;
                             if (parts != NULL && parts->IsWallParts() && parts->GetWallPlane(SelectWallGroup, &wall)) {
@@ -1661,9 +1695,9 @@ void EditMode(CScene *scene) {
                         }
                     }
                     if (PutSideMode == EDIT_PUT_SIDE_MOVE) {
-                        float wall_pos[4];
+                        float         wall_pos[4];
                         EP_PLACE_INFO place;
-                        *(u_long128 *)wall_pos = *(u_long128 *)WallPutPos;
+                        *(u_long128 *) wall_pos = *(u_long128 *) WallPutPos;
                         int placeable = map->CheckWallEditParts(map->GetePartsInfo(edit_name), wall_pos, SelectWallGroup,
                                                                 NowSelectWallParts, &place);
                         ePartsCurPos[0] = wall_pos[0];
@@ -2202,11 +2236,14 @@ static void GetBalanceHeight(CScene *scene, float *balance) {
         i++;
     } while (i < 4);
 }
+
 extern mgCTexture *eSysTexture;
+
 void DrawEditSystem(int block, CScene *scene, float *pos, int edit) {
     mgCTextureManager *manager = &mgTexManager;
+
     if (eSysTexture != NULL) {
-        manager->ReloadTexture(block, (sceVif1Packet *)NULL);
+        manager->ReloadTexture(block, (sceVif1Packet *) NULL);
         mgCDrawPrim prim;
         prim.Initialize(NULL, NULL);
         prim.AlphaBlendEnable(1);
@@ -2214,9 +2251,11 @@ void DrawEditSystem(int block, CScene *scene, float *pos, int edit) {
         prim.DepthTestEnable(0);
         prim.TextureMapEnable(1);
         int icon_y = mgScreenHeight - 0x38;
+
         if (EditHelpMesNo >= 0) {
             icon_y -= 0x14;
         }
+
         if (edit == 0) {
             if (CheckWalkToEdit(scene, pos)) {
                 prim.Begin(6);
@@ -2230,6 +2269,7 @@ void DrawEditSystem(int block, CScene *scene, float *pos, int edit) {
             }
         } else {
             float exit_pos[4];
+
             if (CheckEditToWalk(scene, exit_pos)) {
                 prim.Begin(6);
                 prim.Texture(eSysTexture);
@@ -2240,36 +2280,41 @@ void DrawEditSystem(int block, CScene *scene, float *pos, int edit) {
                 prim.Vertex(0x3C, icon_y + 0x26, 0);
                 prim.End();
             }
+
             if (scene->GetMainMapNo() == 1) {
-                CEditMap *map = (CEditMap *)scene->GetMap(scene->active_map);
+                CEditMap *map = (CEditMap *) scene->GetMap(scene->active_map);
+
                 if (map != NULL) {
                     prim.Begin(6);
                     prim.Texture(eSysTexture);
-                    int x = 0x12C;
+                    int   x = 0x12C;
                     float colors[4][4] = {
-                        {90.0f, 20.0f, 10.0f, 48.0f},
-                        {180.0f, 40.0f, 20.0f, 77.0f},
-                        {30.0f, 60.0f, 90.0f, 48.0f},
-                        {60.0f, 120.0f, 180.0f, 77.0f},
+                        {90.0f,  20.0f,  10.0f,  48.0f},
+                        {180.0f, 40.0f,  20.0f,  77.0f},
+                        {30.0f,  60.0f,  90.0f,  48.0f},
+                        {60.0f,  120.0f, 180.0f, 77.0f},
                     };
-                    int balance = map->BalanceCheck();
+                    int   balance = map->BalanceCheck();
                     float target[4];
                     GetBalanceHeight(scene, target);
                     float cursor[4];
-                    *(u_long128 *)cursor = *(u_long128 *)eCurPos;
+                    *(u_long128 *) cursor = *(u_long128 *) eCurPos;
                     int focused = 0;
+
                     for (int i = 0; i < 4; i++) {
                         float *color = colors[balance * 2];
                         prim.Color(color);
+
                         if (!focused && CheckFocusBalanceParts(map, i, cursor)) {
                             prim.Color(color + 4);
                             focused = 1;
                         }
-                        float *now = (float *)now_balance_h + i;
-                        float height = *now + (target[i] - *now) / 12.0f;
+
+                        float *now = (float *) now_balance_h + i;
+                        float  height = *now + (target[i] - *now) / 12.0f;
                         *now = height;
-                        int height16 = (int)(16.0f * height);
-                        int height1 = (int)height;
+                        int height16 = (int) (16.0f * height);
+                        int height1 = (int) height;
                         prim.TextureCrd(0x52, 0);
                         prim.Vertex4(x * 16, height16 + (mgScreenHeight - 0x2C) * 16, 0);
                         prim.TextureCrd(0x80, 0x7C);
@@ -2280,12 +2325,14 @@ void DrawEditSystem(int block, CScene *scene, float *pos, int edit) {
                         prim.Vertex(x + 0x1D, mgScreenHeight - 0x12 + height1, 0);
                         x += 0x30;
                     }
+
                     prim.End();
                 }
             }
         }
     }
 }
+
 /**
  *
  * Finds the map part used for the walk-to-edit transition check.

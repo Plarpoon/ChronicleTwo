@@ -25,6 +25,10 @@ extern s8     init_277;
 extern int    flag_571;
 extern s8     init_572;
 
+static int htoi(char *text);
+void       CopyFrame(mgCFrame *dst, mgCFrame *src, mgCMemory *memory, int copy_visual, mgCFrame **frame_table);
+mgCFrame  *CopyFrameSub(mgCFrame *src, mgCMemory *memory, int copy_visual, mgCFrame **frame_table);
+
 /**
  *
  * Writes an object name with its "__" attribute marker turned into "--" and each attribute flag
@@ -172,6 +176,7 @@ int conv_new_text(char *dst, char *src) {
 #pragma opt_loop_invariants reset
 #pragma global_optimizer off
 
+#ifdef NONMATCHING
 static int htoi(char *text) {
     char *end = text;
     s32   length = 0;
@@ -207,6 +212,9 @@ static int htoi(char *text) {
 
     return value;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_dataset", htoi__FPc);
+#endif
 
 #pragma schedule reset
 
@@ -215,6 +223,7 @@ static int htoi(char *text) {
 #pragma global_optimizer off
 #pragma opt_loop_invariants off
 
+#ifdef NONMATCHING
 void mgSetFrameAttr(mgCFrame *input_frame, int input_recursive) {
     mgCFrameAttr *attr;
     char         *cursor;
@@ -437,6 +446,10 @@ void mgSetFrameAttr(mgCFrame *input_frame, int input_recursive) {
     }
 }
 
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_dataset", mgSetFrameAttr__FP8mgCFramei);
+#endif
+
 #pragma schedule reset
 #pragma global_optimizer reset
 #pragma opt_loop_invariants reset
@@ -491,6 +504,7 @@ mgCreateVisualType *SearchVisualType(mgCreateVisualType *table, char *name) {
 #pragma global_optimizer off
 #pragma opt_loop_invariants off
 
+#ifdef NONMATCHING
 static int CreateFrameVisual(mgCFrame *input_frame, mgCMemory *input_memory, mgCMemory *input_work_memory, mgCFrame *input_parent,
                              MDTOBJ_HEADER *input_object, MDT_HEADER *input_mdt, int input_type, mgCTextureManager *input_texture_manager,
                              u_int *weight, int index, mgCFrame **frame_table, float (*matrix_table)[4][4]) {
@@ -621,6 +635,9 @@ static int CreateFrameVisual(mgCFrame *input_frame, mgCMemory *input_memory, mgC
     frame->SetVisual(visual);
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_dataset", CreateFrameVisual__FP8mgCFrameP9mgCMemoryP9mgCMemoryP8mgCFrameP13MDTOBJ_HEADERP10MDT_HEADERiP17mgCTextureManagerPUiiPP8mgCFramePA4_A4_f);
+#endif
 
 #pragma opt_loop_invariants reset
 #pragma schedule reset
@@ -669,6 +686,7 @@ mgCFrame *mgLoadMDSFile(MDS_HEADER *mds, mgCMemory *memory, mgCreateVisualType *
 #pragma schedule off
 #pragma global_optimizer off
 
+#ifdef NONMATCHING
 mgCFrame *mgLoadMDSFile(mgLoadData *load) {
     u_int          i;
     MDTOBJ_HEADER *object;
@@ -796,6 +814,9 @@ mgCFrame *mgLoadMDSFile(mgLoadData *load) {
     mgSetFrameAttr(frames, 1);
     return frames;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_dataset", mgLoadMDSFile__FP10mgLoadData);
+#endif
 
 #pragma schedule reset
 #pragma global_optimizer reset
@@ -863,6 +884,7 @@ void mgCreateBBoxSphere(float *max, float *min, float *sphere, float (*vertex)[4
 #pragma schedule off
 #pragma global_optimizer off
 
+#ifdef NONMATCHING
 void CopyFrame(mgCFrame *dst, mgCFrame *src, mgCMemory *memory, int copy_visual, mgCFrame **frame_table) {
     *dst = *src;
 
@@ -940,6 +962,9 @@ void CopyFrame(mgCFrame *dst, mgCFrame *src, mgCMemory *memory, int copy_visual,
         dst->bound = bound;
     }
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_dataset", CopyFrame__FP8mgCFrameP8mgCFrameP9mgCMemoryiPP8mgCFrame);
+#endif
 
 #pragma global_optimizer reset
 #pragma schedule reset
@@ -968,6 +993,7 @@ mgCVisual *mgCVisual::Copy(mgCMemory *memory) {
 #pragma schedule off
 #pragma global_optimizer off
 
+#ifdef NONMATCHING
 mgCFrame *CopyFrameSub(mgCFrame *src, mgCMemory *memory, int copy_visual, mgCFrame **frame_table) {
     mgCFrame *frame;
 
@@ -989,6 +1015,9 @@ mgCFrame *CopyFrameSub(mgCFrame *src, mgCMemory *memory, int copy_visual, mgCFra
 
     return frame;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_dataset", CopyFrameSub__FP8mgCFrameP9mgCMemoryiPP8mgCFrame);
+#endif
 
 #pragma global_optimizer reset
 #pragma schedule reset
@@ -1103,6 +1132,7 @@ MDT_HEADER *mgCMDTBuilder::End() {
 
 #pragma schedule off
 
+#ifdef NONMATCHING
 void mgCMDTBuilder::End(mgCFrame *frame, mgCVisualMDT *visual, mgLoadData *load) {
     mgCTextureManager *textures;
     MDT_HEADER        *block;
@@ -1136,6 +1166,9 @@ void mgCMDTBuilder::End(mgCFrame *frame, mgCVisualMDT *visual, mgLoadData *load)
 
     frame->attr = attr;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_dataset", End__13mgCMDTBuilderFP8mgCFrameP12mgCVisualMDTP10mgLoadData);
+#endif
 
 #pragma schedule reset
 

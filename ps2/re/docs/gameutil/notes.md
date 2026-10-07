@@ -108,6 +108,9 @@ At least 0x110 here (larger than the first game's 0xD0): 0x00 float radius (<=0 
 - ChangeWeight: void (v0 is memcpy leftover). AnimeDataInit(*) returns 1; CreateAnimeDataEX 1.
 - MotionProc (time): `fptoui(time)` then binary search; types 12 process consecutive lists with the
   same frame in one call.
+  In the vertex-key case, each consumed list advances to the next entry; a null next entry
+  returns null immediately. The guarded C++ draft can express this with an ordinary null
+  check and assignment, without labels or jumps.
 
 ## Division-check pragma
 

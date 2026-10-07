@@ -1,5 +1,9 @@
 # title: reverse-engineering notes
 
+`TitleHDDInstallDraw` keeps its typed C++ draft under `NONMATCHING`. The draft emits 0x424
+bytes where retail uses 0x410, moving the next function by 0x20 after alignment. The matching
+build uses the retail assembly gap; the complete title object then passes `check_objects.py`.
+
 The title main-loop mode (`LOOP_TITLE`). No class is owned by this unit (`class_units.tsv`
 has none); the header declares the unit's own structs and enums, the 8 global functions and
 the 3 global data. No first-game counterpart: the first game's `title`/`titleloop` overlay is

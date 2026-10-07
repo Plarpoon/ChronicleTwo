@@ -1,5 +1,15 @@
 # mg_dataset: reverse-engineering notes
 
+The native drafts of `htoi`, `CreateFrameVisual`, `mgLoadMDSFile(mgLoadData*)`,
+`CopyFrame`, `CopyFrameSub`, and `mgCMDTBuilder::End(mgCFrame*, mgCVisualMDT*,
+mgLoadData*)` still differ from retail. Their matching build paths use retail
+assembly while the C++ remains under `NONMATCHING`. For `htoi`, replacing the
+unsigned-byte view with `static_cast<u8>(text[back - 1])` changed the score from
+99.81132% to 96.01887%; the original draft was retained.
+Guarding `htoi` also changes the following `mgSetFrameAttr` code generation:
+the latter grows from its exact retail size 0x658 to 0x668 and changes calls and
+relocations. `mgSetFrameAttr` therefore also uses a retail gap in this build.
+
 Header: `ps2/include/mg_dataset.hpp`. Retail unit `0x1321E0`-`0x134A20`.
 First-game counterpart: `dataset`/`mds`/`mdt` (`LoadMDSFile`, `CopyFrame`, `SetFrameAttr`,
 `MDT_HEADER`, `MDS_OBJECT`); this game's API is different (mgCMemory instead of CDataAlloc2,

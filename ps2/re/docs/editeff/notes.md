@@ -132,3 +132,6 @@ The exact retail call passes `target+0xC0` in `a0` and uses the `CMapParts`
 vtable store as the constructor call's delay slot. Restoring the explicit
 constructor alias leaves `EditSetPlaceAnime` and every other function in the
 unit at 100%.
+## Constructor call cleanup
+
+`EditSetPlaceAnime` retains a guarded C++ draft. Its `mgCFrame` member is constructed with typed C++ placement new in that draft. The normal build uses the retail function gap because placement new changes MWCC code generation.

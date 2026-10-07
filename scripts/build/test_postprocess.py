@@ -1,13 +1,64 @@
 import argparse
 from pathlib import Path
 import sys
+from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools/mwccgap'))
 
 from mwccgap.elf import Elf
-from postprocess_object import discard_unused_literals, name_sections, project_name
+from postprocess_object import (discard_dead_code_records, discard_unused_literals,
+                                name_sections, project_name, rename_dng_main_local_static)
 
+
+def test_dead_code_records():
+    def fixture(target_names):
+        sections = [SimpleNamespace(name=name, sh_name=0)
+                    for name in ('', '.mwcats', '.dead', '.text')]
+        symbols = [SimpleNamespace(st_shndx=2 if name == 'dead' else 3)
+                   for name in target_names]
+        record = SimpleNamespace(
+            sh_info=1, name='.rel.mwcats', sh_name=0,
+            relocations=[SimpleNamespace(symbol_index=i) for i in range(len(symbols))])
+        elf = SimpleNamespace(
+            sections=sections, symtab=SimpleNamespace(symbols=symbols),
+            relocations=[record], add_sh_symbol=lambda name: 1)
+        return elf, record
+
+    elf, record = fixture(('dead', 'dead'))
+    discard_dead_code_records(elf)
+    assert elf.sections[1].name == '.dead'
+    assert record.name == '.rel.dead'
+
+    elf, record = fixture(('live',))
+    discard_dead_code_records(elf)
+    assert elf.sections[1].name == '.mwcats'
+    assert record.name == '.rel.mwcats'
+
+    elf, record = fixture(('dead', 'live'))
+    try:
+        discard_dead_code_records(elf)
+    except ValueError as error:
+        assert 'both dead and live' in str(error)
+    else:
+        raise AssertionError('mixed live/dead metadata was discarded')
+    assert elf.sections[1].name == '.mwcats'
+    assert record.name == '.rel.mwcats'
+
+
+def test_dng_main_local_static():
+    symbols = [SimpleNamespace(name=name, st_size=size, st_name=0)
+               for name, size in (('debug_event_stack_393', 0x30), ('init_394', 1))]
+    elf = SimpleNamespace(symtab=SimpleNamespace(symbols=symbols),
+                          strtab=SimpleNamespace(add_symbol=lambda name: len(name)))
+    rename_dng_main_local_static(elf, 'dng_main')
+    assert [(symbol.name, symbol.st_size) for symbol in symbols] == [
+        ('debug_event_stack_1106', 0x30), ('init_1107', 1)]
+    assert [symbol.st_name for symbol in symbols] == [len(symbol.name) for symbol in symbols]
+
+    retail_symbols = [SimpleNamespace(name='debug_event_stack_1106', st_size=0x30)]
+    retail_elf = SimpleNamespace(symtab=SimpleNamespace(symbols=retail_symbols))
+    rename_dng_main_local_static(retail_elf, 'dng_main')
 
 def literal_object(data):
     elf = Elf(data)
@@ -58,6 +109,8 @@ def main():
     parser.add_argument('--object', type=Path, default=ROOT / 'build/pal/objdiff/base/mapselect.cpp.o')
     args = parser.parse_args()
     data = args.object.read_bytes()
+    test_dead_code_records()
+    test_dng_main_local_static()
     test_unused_literal(data)
     test_referenced_literal(data)
     test_public_literal(data)

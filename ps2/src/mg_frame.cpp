@@ -141,6 +141,8 @@ void test1(float (*corners)[4], float (*screen)[4], float (*matrix)[4], float *o
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", test1__FPA4_fPA4_fPA4_fPfPf);
 #endif
+void test1(float (*corners)[4], float (*screen)[4], float (*matrix)[4], float *out_max,
+           float *out_min);
 // clang-format on
 // clang-format off
 /**
@@ -179,6 +181,7 @@ void test2(float *out_max, float *out_min) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", test2__FPfPf);
 #endif
+void test2(float *out_max, float *out_min);
 // clang-format on
 
 int mgInsideScreen(mgVu0FBOX *box) {
@@ -1145,6 +1148,7 @@ void mgCFrame::SetAttrParamDraw(int value, int recurse) {
     }
 }
 
+#ifdef NONMATCHING
 int mgCFrame::Draw(unsigned int *packet) {
     mgRENDER_INFO *info = &mgRenderInfo;
     int            words = 0;
@@ -1230,6 +1234,9 @@ int mgCFrame::Draw(unsigned int *packet) {
     }
     return words;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", Draw__8mgCFrameFPUi);
+#endif
 
 #pragma global_optimizer off
 #ifdef NONMATCHING

@@ -230,7 +230,9 @@ extern char              at_2450[];
 extern char             *filetbl_2141[];
 int                      ReadBGSync();
 
-#pragma define_section dead ".dead" ".dead"
+#pragma define_section dead ".dead" \
+                            ".dead"
+
 __declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
     return a / b;
 }
@@ -389,11 +391,10 @@ void DisablePadReset(int disable) {
     }
 }
 #ifdef NONMATCHING
-void MakeMenuTopic();
-int MenuInternInit(mgCMemory *, int, int);
+void         MakeMenuTopic();
+int          MenuInternInit(mgCMemory *, int, int);
 extern float light_1062[4][4];
 extern float lightcolor_1063[4][4];
-
 
 int MenuMainInit(MENU_INIT_ARG *arg) {
     MENU_INIT_ARG *init_arg = arg;
@@ -1267,37 +1268,43 @@ void MakeMenuTopic() {
     MenuTopicLength = width;
     TopicFontX = 30;
 }
-void DrawMenuTopic(void) {
+
+void DrawMenuTopic() {
     mgRect<int> box;
-    float x;
-    float y;
-    float w;
-    float h;
+    float       x;
+    float       y;
+    float       w;
+    float       h;
 
     if (MenuTopicType <= 0 || MenuNowMapType == 5 || MenuNowMapType == 6) {
         return;
     }
+
     if (MenuTopicAlphaCalc == 0) {
         CalcMenuAdd(&MenuTopicAlpha, 4, 0x80);
     } else if (MenuTopicAlphaCalc == 1) {
         CalcMenuAdd(&MenuTopicAlpha, -18, 0);
     }
+
     box.Set(20, 36, 200, 60);
+
     if (MenuTopicAlpha > 0) {
         mgCTextureManager *manager = &mgTexManager;
-        mgCDrawPrim *prim = GetMenuPrim();
-        manager->ReloadTexture(TopicTex->block, (sceVif1Packet *)NULL);
+        mgCDrawPrim       *prim = GetMenuPrim();
+        manager->ReloadTexture(TopicTex->block, (sceVif1Packet *) NULL);
         SetSpriteEnv(prim, 0);
         prim->Begin(6);
         prim->Texture(TopicTex);
         prim->Color(0x80, 0x80, 0x80, MenuTopicAlpha);
         int title_width = 0x28;
+
         if (LanguageCode == 3) {
             title_width = 0x32;
         }
+
         PrimQuad(prim, 22.0f, 22.0f, mgRect<int>(0x66, 0, title_width, 0xC));
         prim->End();
-        manager->ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *)NULL);
+        manager->ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *) NULL);
         SetSpriteEnv(prim, 1);
         prim->Begin(6);
         prim->Color(0x2A, 0x22, 0x1E, MenuTopicAlpha * 6 / 10);
@@ -1306,14 +1313,16 @@ void DrawMenuTopic(void) {
         prim->End();
         SetMenuScissor(box);
         TopicFontX--;
+
         if (TopicFontX < 0x1E - MenuTopicLength) {
             TopicFontX = 0xD2;
         }
+
         TopicFont.alpha = MenuTopicAlpha;
         TopicFont.SetPos(TopicFontX, 0x26);
         TopicFont.DrawDirect(TopicFont.str, TopicFont.pos_x, TopicFont.pos_y);
         ResetMenuScissor();
-        menu_maintopic_colortbl_shadow[0][3] = menu_maintopic_colortbl_shadow[2][3] = 64.0f * (float)MenuTopicAlpha / 128.0f;
+        menu_maintopic_colortbl_shadow[0][3] = menu_maintopic_colortbl_shadow[2][3] = 64.0f * (float) MenuTopicAlpha / 128.0f;
         prim->Begin(4);
         h = 24.0f;
         w = 40.0f;
@@ -1348,17 +1357,23 @@ void DrawMenuTopic(void) {
         prim->End();
     }
 }
+
 int MenuInternInit(mgCMemory *stack, int open_type, int capture) {
     MenuArg.end_code = 0;
+
     if (capture != 0) {
         MenuCapture(MenuCommonInfo->tex_block[0], stack, 1);
     }
+
     int early_game = 1;
+
     if (CheckBitFlagMenu(0x36) != 0) {
         early_game = 0;
     }
+
     CMenuInterPt = &CMenuInterStatic;
     CMenuInterPt->Initialize(0);
+
     if (open_type == 10) {
         MenuCommonInfo->now_mode = 0;
     } else {
@@ -1366,22 +1381,25 @@ int MenuInternInit(mgCMemory *stack, int open_type, int capture) {
         CMenuInterPt->mode_list = GetCommonMenuModeID();
         MenuCommonInfo->now_mode = open_type;
     }
+
     MenuMainImageDataEnter(MenuCommonInfo->tex_block[1]);
-    MenuInterMes = new ((u_long128 *)stack->Alloc(0x2A7)) CDC2Mes;
-    int script_size;
-    char *config = (char *)GetMenuMainPosCfgBuffer(&script_size);
-    char *script = (char *)(stack->stack + stack->stack_used) + (stack->stack_size - stack->stack_used) * 16 - 0x32000;
+    MenuInterMes = new ((u_long128 *) stack->Alloc(0x2A7)) CDC2Mes;
+    int   script_size;
+    char *config = (char *) GetMenuMainPosCfgBuffer(&script_size);
+    char *script = (char *) (stack->stack + stack->stack_used) + (stack->stack_size - stack->stack_used) * 16 - 0x32000;
     memcpy(script, config, script_size);
     MenuDataAnalyze(script, script_size, stack);
     AttachMessageForm();
     MenuAreaBrdForm = MenuPosData->GetFormInfo(at_1930);
     MenuTimeBrdForm = MenuPosData->GetFormInfo(at_1931);
+
     if (early_game != 0) {
         if (MenuTimeBrdForm != NULL) {
             MenuTimeBrdForm->draw_flag = 0;
             MenuTimeBrdForm = NULL;
         }
     }
+
     MenuFormMI2 = MenuPosData->GetFormInfo(at_1932);
     TopicTex = mgTexManager.GetTexture(at_1028__4, -1);
     MenuDCMsg[0]->MsgPreset(3);
@@ -1393,105 +1411,136 @@ int MenuInternInit(mgCMemory *stack, int open_type, int capture) {
     MenuInterMesDrawFlag = 0;
     MenuPosData->AttachCommonTexInfo();
     HatumeiMenuOkFlag = 0;
+
     if (0 < MenuUserDataManPtr->GetNumSameItem(0x171)) {
         HatumeiMenuOkFlag = 1;
     }
+
     ManualMenuOkFlag = 0;
+
     if (0 < MenuUserDataManPtr->GetNumSameItem(0x167)) {
         ManualMenuOkFlag = 1;
     }
+
     if (OmakeFlag == 1) {
         if (GetNowLoopNo() == 2) {
             ManualMenuOkFlag = 1;
         }
     }
+
     WorldMapOkFlag = 1;
     DngMoveMenuOkFlag = 1;
+
     if (early_game != 0) {
         WorldMapOkFlag = 0;
         DngMoveMenuOkFlag = 0;
     }
+
     if (open_type != 10) {
         MenuMainSubDataPackAdr = stack->stack + stack->stack_used;
         MenuCommonReadData(stack, fname_1858, 0);
         MenuMainFrameModeSet(0, 1);
         int icon_count = 0;
+
         for (int k = 0; 0 <= CMenuInterPt->mode_list[k]; k++) {
             icon_count++;
         }
+
         MovePoint origin = at_1865;
         MovePoint pos = at_1866;
         MovePoint step = at_1867;
+
         for (int icon = 0; icon < icon_count; icon++) {
-            char *name = (char *)GetMenuMainIconChar(CMenuInterPt->mode_list[icon]);
+            char *name = (char *) GetMenuMainIconChar(CMenuInterPt->mode_list[icon]);
             pos.y = origin.y + step.y * icon;
             MenuPosData->SetFormPos(name, &pos.x);
         }
-        bool shown = true;
-        bool hidden = false;
+
+        bool              shown = true;
+        bool              hidden = false;
         CMenuPosDataForm *form = MenuPosData->GetFormInfo(at_1933);
+
         if (form != NULL) {
             if (HatumeiMenuOkFlag == 0) {
                 shown = false;
                 hidden = true;
             }
+
             form->SetPartDrawFlag(at_1934, shown);
             form->SetPartDrawFlag(at_1935, hidden);
         }
-        bool manual_hidden;
+
+        bool              manual_hidden;
         CMenuPosDataForm *manual_form = MenuPosData->GetFormInfo(at_1936);
+
         if (manual_form != NULL) {
             bool manual_shown = true;
             manual_hidden = false;
+
             if (ManualMenuOkFlag == 0) {
                 manual_shown = false;
                 manual_hidden = true;
             }
+
             manual_form->SetPartDrawFlag(at_1934, manual_shown);
             manual_form->SetPartDrawFlag(at_1935, manual_hidden);
         }
-        bool world_hidden;
+
+        bool              world_hidden;
         CMenuPosDataForm *world_form = MenuPosData->GetFormInfo(at_1937);
+
         if (world_form != NULL) {
             bool world_shown = true;
             world_hidden = false;
+
             if (WorldMapOkFlag == 0) {
                 world_shown = false;
                 world_hidden = true;
             }
+
             world_form->SetPartDrawFlag(at_1934, world_shown);
             world_form->SetPartDrawFlag(at_1935, world_hidden);
+
             if (GetMenuLoopType() == MENU_LOOP_DUNGEON) {
                 world_form->draw_flag = 0;
             }
         }
-        bool floor_hidden;
+
+        bool              floor_hidden;
         CMenuPosDataForm *floor_form = MenuPosData->GetFormInfo(at_1938);
+
         if (floor_form != NULL) {
             bool floor_shown = true;
             floor_hidden = false;
+
             if (DngMoveMenuOkFlag == 0) {
                 floor_shown = false;
                 floor_hidden = true;
             }
+
             floor_form->SetPartDrawFlag(at_1934, floor_shown);
             floor_form->SetPartDrawFlag(at_1935, floor_hidden);
+
             if (GetMenuLoopType() == MENU_LOOP_TOWN) {
                 floor_form->draw_flag = 0;
             }
         }
     }
+
     CMenuInterPt->help_update = 1;
     CMenuInterPt->step = MENU_INTER_STEP_OPEN;
     MenuCommonInfo->cursor = -1;
     MenuCommonInfo->AttachFuncData();
     MenuCommonInfo->key_enable = 0;
+
     if (MenuCommonInfo->cursor_form != NULL) {
         MenuCommonInfo->cursor_form->draw_flag = 0;
     }
+
     MenuCommonInfo->SetWakuType(-1);
     return 1;
 }
+
 void CMenuInter::Initialize(int unused) {
     step = 1;
     select_no = 0;
@@ -1541,100 +1590,117 @@ void MenuBaseTextureReEnter() {
     (MenuPosData)->AttachCommonTexInfo();
     MenuPosData->ResetTextureInfoAll();
 }
+
 void CMenuInter::InitEnd() {
-    int base_block = MenuCommonInfo->tex_block[1];
+    int                base_block = MenuCommonInfo->tex_block[1];
     mgCTextureManager *manager = &mgTexManager;
-    BG_READ_INFO *base_data = GetReadBGFile(0);
+    BG_READ_INFO      *base_data = GetReadBGFile(0);
+
     if (base_data != NULL) {
-        MenuCommonBaseDataEnter(&MenuMainStack, (u_int *)base_data->buffer, base_data->size, base_block);
+        MenuCommonBaseDataEnter(&MenuMainStack, (u_int *) base_data->buffer, base_data->size, base_block);
         help_update = 1;
         MenuMainStack.Align64();
         int remain = MenuMainStack.stGetRest();
         MenuMainStack_Next.stSetBuffer(MenuMainStack.stGetTop(), remain);
     }
+
     MenuCommonInfo->cursor = 0;
     step = 0;
     MenuCommonInfo->key_enable = 1;
     CMenuPosDataForm *cursor_form_ptr = MenuCommonInfo->cursor_form;
+
     if (cursor_form_ptr != NULL) {
         cursor_form_ptr->draw_flag = 1;
     }
+
     MenuCommonInfo->CursorFadeIn(10.0f, 1);
     MenuCommonInfo->SetWakuType(-1);
     CMenuPosDataForm *board = MenuPosData->GetFormInfo(at_2003);
+
     if (board != NULL) {
-        int pos[2] = {(int)(board->x - 30.0f), (int)(4.0f + board->y)};
-        SetFormPoint(MenuCommonInfo->cursor_form, (int)(board->x - 30.0f), (int)(4.0f + board->y));
+        int pos[2] = {(int) (board->x - 30.0f), (int) (4.0f + board->y)};
+        SetFormPoint(MenuCommonInfo->cursor_form, (int) (board->x - 30.0f), (int) (4.0f + board->y));
         MenuCommonInfo->cursor_form->SetNextMovePos(pos, 2);
         CMenuPosDataForm *next_form = MenuPosData->GetFormInfo(at_2004__2);
+
         if (next_form != NULL) {
-            pos[0] = (int)board->x;
-            pos[1] = (int)(4.0f + board->y);
-            SetFormPoint(next_form, (int)board->x, (int)(4.0f + board->y));
+            pos[0] = (int) board->x;
+            pos[1] = (int) (4.0f + board->y);
+            SetFormPoint(next_form, (int) board->x, (int) (4.0f + board->y));
             next_form->SetNextMovePos(pos, 2);
         }
     }
+
     ReturnMenuIntern(0);
     MenuEtcInfo.tex_block = MenuArg.mes_tex_block;
     MenuEtcInfo.tex = manager->GetTexture(at_1028__4, -1);
 }
+
 void CMenuInter::PushOk() {
     int mode = mode_list[select_no];
     MenuCommonInfo->SetWakuType(-1);
     int show_message = 0;
     int message_no = -1;
     int enable = 1;
+
     switch (mode) {
-    case MENU_MODE_MANUAL:
-        if (ManualMenuOkFlag == 0) {
-            enable = 0;
-        }
-        break;
-    case MENU_MODE_INVENT:
-        if (HatumeiMenuOkFlag == 0) {
-            enable = 0;
-        }
-        break;
-    case MENU_MODE_ITEM:
-    case MENU_MODE_CHARA_CHANGE:
-    case MENU_MODE_AQUA:
-    case MENU_MODE_OPTION:
-        break;
-    case MENU_MODE_WORLD_MOVE:
-        if (MenuNowMapType == 5 || MenuNowMapType == 6) {
-            show_message = 1;
-            message_no = 0x28;
-            if (CheckBitFlagMenu(0x258) == 1) {
-                if (CheckBitFlagMenu(0x2E0) == 0) {
-                    message_no = 0x2E;
-                }
+        case MENU_MODE_MANUAL:
+            if (ManualMenuOkFlag == 0) {
+                enable = 0;
             }
+
+            break;
+        case MENU_MODE_INVENT:
+            if (HatumeiMenuOkFlag == 0) {
+                enable = 0;
+            }
+
+            break;
+        case MENU_MODE_ITEM:
+        case MENU_MODE_CHARA_CHANGE:
+        case MENU_MODE_AQUA:
+        case MENU_MODE_OPTION:
+            break;
+        case MENU_MODE_WORLD_MOVE:
+            if (MenuNowMapType == 5 || MenuNowMapType == 6) {
+                show_message = 1;
+                message_no = 0x28;
+
+                if (CheckBitFlagMenu(0x258) == 1) {
+                    if (CheckBitFlagMenu(0x2E0) == 0) {
+                        message_no = 0x2E;
+                    }
+                }
+
+                enable = 0;
+            } else if (WorldMapOkFlag == 0) {
+                enable = 0;
+            } else if (MenuActiveSaveData->GetBitCtrl() & 1) {
+                show_message = enable;
+                message_no = 0x2A;
+                enable = 0;
+            } else {
+                MenuMainScene->fade.FadeOut(0x28, 0.0f, 0.0f, 0.0f);
+            }
+
+            break;
+        case MENU_MODE_DNG_TREE_MAP:
+            if (DngMoveMenuOkFlag == 0) {
+                enable = 0;
+            } else if (MenuActiveSaveData->GetBitCtrl() & 1) {
+                show_message = enable;
+                message_no = 0x2A;
+                enable = 0;
+            } else {
+                MenuMainScene->fade.FadeOut(0x28, 0.0f, 0.0f, 0.0f);
+            }
+
+            break;
+        default:
             enable = 0;
-        } else if (WorldMapOkFlag == 0) {
-            enable = 0;
-        } else if (MenuActiveSaveData->GetBitCtrl() & 1) {
-            show_message = enable;
-            message_no = 0x2A;
-            enable = 0;
-        } else {
-            MenuMainScene->fade.FadeOut(0x28, 0.0f, 0.0f, 0.0f);
-        }
-        break;
-    case MENU_MODE_DNG_TREE_MAP:
-        if (DngMoveMenuOkFlag == 0) {
-            enable = 0;
-        } else if (MenuActiveSaveData->GetBitCtrl() & 1) {
-            show_message = enable;
-            message_no = 0x2A;
-            enable = 0;
-        } else {
-            MenuMainScene->fade.FadeOut(0x28, 0.0f, 0.0f, 0.0f);
-        }
-        break;
-    default:
-        enable = 0;
-        break;
+            break;
     }
+
     if (show_message != 0) {
         step = MENU_INTER_STEP_MESSAGE;
         MenuInterMes->Init();
@@ -1644,10 +1710,12 @@ void CMenuInter::PushOk() {
         MenuInterMes->SetAbsPos(5);
         MenuInterMesDrawFlag = 1;
         CMenuKeyFunc *common = MenuCommonInfo;
+
         if (common->cursor_form != NULL) {
             common->cursor_form->draw_flag = 0;
         }
     }
+
     if (enable != 0) {
         next_mode = mode;
         MenuCommonInfo->key_enable = 0;
@@ -1655,15 +1723,18 @@ void CMenuInter::PushOk() {
         MenuSePlay(0x13);
         bg_read_wait = 0;
         CMenuPosDataForm *form = MenuFormMI2;
+
         if (form != NULL) {
             form->rate_x = 4.0f;
             form->rate_y = 4.0f;
+
             if (next_mode == MENU_MODE_CHARA_CHANGE) {
                 CMenuPosDataForm *current = MenuFormMI2;
                 current->rate_x = 4.0f;
                 current->rate_y = 12.0f;
             }
         }
+
         if (next_mode != MENU_MODE_DNG_TREE_MAP && next_mode != MENU_MODE_WORLD_MOVE) {
             ReturnMenuIntern(1);
             MenuTopicAlphaCalc = 1;
@@ -1674,6 +1745,7 @@ void CMenuInter::PushOk() {
         MenuSePlay(5);
     }
 }
+
 int CMenuInter::ReadBGTexture(int bg_no, int restart) {
     char   name[0x80];
     char **entry;
@@ -1716,164 +1788,204 @@ int CMenuInter::ReadBGTexture(int bg_no, int restart) {
 
     return bg_read_step == 2;
 }
-int MenuInternSelectKey(void) {
-    int result = 0;
-    int select_key = MenuCommonInfo->CheckSelectKey();
-    int push = MenuCommonInfo->CheckPushButton();
-    int old_select = CMenuInterPt->select_no;
+
+int MenuInternSelectKey() {
+    int  result = 0;
+    int  select_key = MenuCommonInfo->CheckSelectKey();
+    int  push = MenuCommonInfo->CheckPushButton();
+    int  old_select = CMenuInterPt->select_no;
     char moved = 0;
+
     if (CMenuInterPt->step == MENU_INTER_STEP_MESSAGE) {
         select_key = 0;
     }
+
     int direction = 0;
+
     if (select_key & 1) {
         direction -= 1;
     }
+
     if (select_key & 2) {
         direction += 1;
     }
+
     if (MenuKeySelectCheck(direction, &CMenuInterPt->select_no, NULL, 0, CMenuInterPt->select_num, CMenuInterPt->select_num, 1) != 0 &&
         CMenuInterPt->step == MENU_INTER_STEP_SELECT) {
         moved = 1;
         MenuSePlay(SYSTEM_SE_CURSOR);
         CMenuInterPt->help_update = moved;
     }
+
     int *mode_list = CMenuInterPt->mode_list;
-    int closing = 0;
+    int  closing = 0;
+
     if (CMenuInterPt->step == MENU_INTER_STEP_CLOSE) {
         closing = 1;
     }
+
     int mode = -1;
+
     if (CMenuInterPt->select_no >= 0) {
         mode = mode_list[CMenuInterPt->select_no];
     }
+
     int next_mode = CMenuInterPt->next_mode;
+
     if (next_mode == MENU_MODE_CHARA_CHANGE || next_mode == MENU_MODE_DNG_TREE_MAP || next_mode == MENU_MODE_WORLD_MOVE) {
         closing = 0;
     }
+
     if ((next_mode != MENU_MODE_DNG_TREE_MAP && next_mode != MENU_MODE_WORLD_MOVE) || GetMenuMainFrameEndFlag() == 0) {
         MenuPosData->StepMainMenuIconMove(mode_list, mode, closing);
     }
-    CMenuPosDataForm *icon_form = MenuPosData->GetFormInfo((char *)GetMenuMainIconChar(mode));
+
+    CMenuPosDataForm *icon_form = MenuPosData->GetFormInfo((char *) GetMenuMainIconChar(mode));
+
     if (old_select != CMenuInterPt->select_no && abs(old_select - CMenuInterPt->select_no) > 1) {
         CMenuInterPt->cursor_jump = 1;
     }
+
     if (icon_form != NULL) {
         MovePoint pos = at_2209__3;
-        pos.x = (int)(icon_form->x - 42.0f);
-        pos.y = (int)icon_form->y;
+        pos.x = (int) (icon_form->x - 42.0f);
+        pos.y = (int) icon_form->y;
         MenuCommonInfo->MenuPosStep(&pos.x, NULL);
+
         if (CMenuInterPt->cursor_jump != 0) {
             SetCursorPos(MenuCommonInfo, &pos.x);
             CMenuInterPt->cursor_jump = 0;
         }
     }
+
     MenuCommonInfo->SetWakuType(-1);
+
     if (CMenuInterPt->help_update != 0) {
         if (CMenuInterPt->select_no >= 0) {
             mode = mode_list[CMenuInterPt->select_no];
             int message = mode + 10;
+
             if ((mode == MENU_MODE_INVENT && HatumeiMenuOkFlag == 0) || (mode == MENU_MODE_MANUAL && ManualMenuOkFlag == 0) ||
                 (mode == MENU_MODE_WORLD_MOVE && WorldMapOkFlag == 0) || (mode == MENU_MODE_DNG_TREE_MAP && DngMoveMenuOkFlag == 0)) {
                 message = 30;
             }
+
             MenuDCMsg[0]->MakeMsg(message);
         }
+
         CMenuInterPt->help_update = 0;
     }
+
     int frame_end = GetMenuMainFrameEndFlag();
+
     switch (CMenuInterPt->step) {
-    case MENU_INTER_STEP_OPEN:
-        if (frame_end != 0 && ReadBGSync() == 0) {
-            CMenuInterPt->InitEnd();
-            SetMenuFrameRate(1);
-        }
-        break;
-    case MENU_INTER_STEP_CLOSE:
-        if (frame_end != 0) {
-            result = 1;
-        }
-        break;
-    case MENU_INTER_STEP_MESSAGE:
-        MenuInterMes->StepMsg();
-        if (push != 0) {
-            MenuSePlay(SYSTEM_SE_DECIDE);
-            MenuInterMesDrawFlag = 0;
-            CMenuInterPt->step = MENU_INTER_STEP_SELECT;
-            if (MenuCommonInfo->cursor_form != NULL) {
-                MenuCommonInfo->cursor_form->draw_flag = 1;
+        case MENU_INTER_STEP_OPEN:
+            if (frame_end != 0 && ReadBGSync() == 0) {
+                CMenuInterPt->InitEnd();
+                SetMenuFrameRate(1);
             }
-        }
-        break;
-    default:
-        if (mode >= 0) {
-            CMenuInterPt->ReadBGTexture(mode, moved);
-            next_mode = CMenuInterPt->next_mode;
-            if (next_mode >= 0 && CMenuInterPt->bg_read_step >= MENU_INTER_BG_READ_DONE) {
-                if ((next_mode != MENU_MODE_DNG_TREE_MAP && next_mode != MENU_MODE_WORLD_MOVE) ||
-                    ((next_mode == MENU_MODE_DNG_TREE_MAP || next_mode == MENU_MODE_WORLD_MOVE) &&
-                     MenuMainScene->fade.FadeCheck() != 0)) {
-                    MenuMainStack_Next.Align64();
-                    if (NextMenuInit(CMenuInterPt->next_mode, &MenuMainStack_Next, &MenuCommonInfo->tex_block[3]) != 0) {
-                        if (CMenuInterPt->next_mode != MENU_MODE_DNG_TREE_MAP && CMenuInterPt->next_mode != MENU_MODE_WORLD_MOVE) {
-                            MenuSePlay(2);
-                        }
-                    }
-                    CMenuInterPt->next_mode = -1;
+
+            break;
+        case MENU_INTER_STEP_CLOSE:
+            if (frame_end != 0) {
+                result = 1;
+            }
+
+            break;
+        case MENU_INTER_STEP_MESSAGE:
+            MenuInterMes->StepMsg();
+
+            if (push != 0) {
+                MenuSePlay(SYSTEM_SE_DECIDE);
+                MenuInterMesDrawFlag = 0;
+                CMenuInterPt->step = MENU_INTER_STEP_SELECT;
+
+                if (MenuCommonInfo->cursor_form != NULL) {
+                    MenuCommonInfo->cursor_form->draw_flag = 1;
                 }
             }
-        }
-        if (menu_debug_flag != 0) {
-            if (GamePad__2.Down(PAD_CIRCLE) != 0) {
-                MenuActiveSaveData->day += 1;
-                MenuSePlay(SYSTEM_SE_DECIDE);
-            }
-            if (GamePad__2.Down(PAD_CROSS) != 0) {
-                MenuActiveSaveData->SetBitFlag(0x36, 1);
-            }
-            if (GamePad__2.Down(PAD_TRIANGLE) != 0) {
-                MenuActiveSaveData->SetBitFlag(0x36, 1);
-                MenuActiveSaveData->SetBitFlag(SAVE_FLAG_TOURNAMENT_STARTED, 1);
-                MenuActiveSaveData->SetBitFlag(SAVE_FLAG_TOURNAMENT_CYCLE, 1);
-                MenuActiveSaveData->ForceBootTour(MenuActiveSaveData->day, 1);
-            }
-            GamePad__2.Down(PAD_SQUARE);
-            return 0;
-        }
-        switch (push) {
-        case 1:
-        case 4:
-        case 8:
-            CMenuInterPt->PushOk();
+
             break;
-        case 2:
-            CMenuInterPt->step = MENU_INTER_STEP_CLOSE;
-            CMenuInterPt->select_no = -1;
-            MenuTopicAlphaCalc = 1;
-            MenuCommonInfo->key_enable = 0;
-            MenuCommonInfo->cursor = -1;
-            MenuCommonInfo->SetWakuType(-1);
-            if (MenuCommonInfo->cursor_form != NULL) {
-                MenuCommonInfo->cursor_form->draw_flag = 0;
+        default:
+            if (mode >= 0) {
+                CMenuInterPt->ReadBGTexture(mode, moved);
+                next_mode = CMenuInterPt->next_mode;
+
+                if (next_mode >= 0 && CMenuInterPt->bg_read_step >= MENU_INTER_BG_READ_DONE) {
+                    if ((next_mode != MENU_MODE_DNG_TREE_MAP && next_mode != MENU_MODE_WORLD_MOVE) ||
+                        ((next_mode == MENU_MODE_DNG_TREE_MAP || next_mode == MENU_MODE_WORLD_MOVE) &&
+                         MenuMainScene->fade.FadeCheck() != 0)) {
+                        MenuMainStack_Next.Align64();
+
+                        if (NextMenuInit(CMenuInterPt->next_mode, &MenuMainStack_Next, &MenuCommonInfo->tex_block[3]) != 0) {
+                            if (CMenuInterPt->next_mode != MENU_MODE_DNG_TREE_MAP && CMenuInterPt->next_mode != MENU_MODE_WORLD_MOVE) {
+                                MenuSePlay(2);
+                            }
+                        }
+
+                        CMenuInterPt->next_mode = -1;
+                    }
+                }
             }
-            ReturnMenuIntern(1);
-            MenuMainFrameModeSet(1, 1);
-            MenuMesForm[0]->SetAction(at_1684);
-            MenuSePlay(5);
+
+            if (menu_debug_flag != 0) {
+                if (GamePad__2.Down(PAD_CIRCLE) != 0) {
+                    MenuActiveSaveData->day += 1;
+                    MenuSePlay(SYSTEM_SE_DECIDE);
+                }
+
+                if (GamePad__2.Down(PAD_CROSS) != 0) {
+                    MenuActiveSaveData->SetBitFlag(0x36, 1);
+                }
+
+                if (GamePad__2.Down(PAD_TRIANGLE) != 0) {
+                    MenuActiveSaveData->SetBitFlag(0x36, 1);
+                    MenuActiveSaveData->SetBitFlag(SAVE_FLAG_TOURNAMENT_STARTED, 1);
+                    MenuActiveSaveData->SetBitFlag(SAVE_FLAG_TOURNAMENT_CYCLE, 1);
+                    MenuActiveSaveData->ForceBootTour(MenuActiveSaveData->day, 1);
+                }
+
+                GamePad__2.Down(PAD_SQUARE);
+                return 0;
+            }
+
+            switch (push) {
+                case 1:
+                case 4:
+                case 8:
+                    CMenuInterPt->PushOk();
+                    break;
+                case 2:
+                    CMenuInterPt->step = MENU_INTER_STEP_CLOSE;
+                    CMenuInterPt->select_no = -1;
+                    MenuTopicAlphaCalc = 1;
+                    MenuCommonInfo->key_enable = 0;
+                    MenuCommonInfo->cursor = -1;
+                    MenuCommonInfo->SetWakuType(-1);
+
+                    if (MenuCommonInfo->cursor_form != NULL) {
+                        MenuCommonInfo->cursor_form->draw_flag = 0;
+                    }
+
+                    ReturnMenuIntern(1);
+                    MenuMainFrameModeSet(1, 1);
+                    MenuMesForm[0]->SetAction(at_1684);
+                    MenuSePlay(5);
+                    break;
+            }
+
             break;
-        }
-        break;
     }
+
     MenuPosData->FormStep();
     return result;
 }
 #ifdef NONMATCHING
 
-
 void MenuInternSelectDraw(void) {
     MenuPosData->FormDraw();
     if (MenuInterMesDrawFlag != 0 && MenuInterMes != NULL) {
-        mgTexManager.ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *)0);
+        mgTexManager.ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *) 0);
         MenuInterMes->DrawMsg();
     }
     DrawMenuTopic();
@@ -1881,10 +1993,10 @@ void MenuInternSelectDraw(void) {
         float box_x = 360.0f;
         float box_h = 80.0f;
         float box_y = 60.0f;
-        float box_w = (float)(mgScreenWidth - 360);
+        float box_w = (float) (mgScreenWidth - 360);
         DrawMenuFillBox(box_x, box_y, box_w, box_h, 0x40, 0, 0, 0);
         CMenuFont font;
-        char text[0x100];
+        char      text[0x100];
         text[0] = 0;
         int bit_ctrl = MenuActiveSaveData->GetBitCtrl();
         if (bit_ctrl & 1) {
@@ -1932,13 +2044,13 @@ void CopyActiveItemAndWeapon(int slot, int weapon_slot) {
 
 int CopyActiveIconTexture(mgCTexture **textures, int chara_no, u_int *unused) {
     CUserDataManager *user = GetUserDataMan();
-    int offset;
+    int               offset;
     if (user == NULL) {
         return 0;
     }
     mgCTextureManager *manager = &mgTexManager;
-    u_long128 *icon_clut[2];
-    mgCTexture *icon_sheet[2];
+    u_long128         *icon_clut[2];
+    mgCTexture        *icon_sheet[2];
     icon_sheet[0] = manager->GetTexture(at_2439, -1);
     icon_sheet[1] = manager->GetTexture(at_2440, -1);
     icon_clut[0] = icon_sheet[0]->clut;
@@ -1965,22 +2077,22 @@ int CopyActiveIconTexture(mgCTexture **textures, int chara_no, u_int *unused) {
         if (textures[sheet] == NULL) {
             continue;
         }
-        u8 transparent;
+        u8  transparent;
         u8 *dest;
         int row;
         u8 *source;
         int slot;
         u8 *pixels;
-        manager->ReloadCLUT(textures[sheet], (sceVif1Packet *)NULL);
+        manager->ReloadCLUT(textures[sheet], (sceVif1Packet *) NULL);
         memcpy(textures[sheet]->clut, icon_clut[sheet], 0x400);
         transparent = 0;
         for (int index = 0; index < 0x100; ++index) {
-            if (((u8 *)textures[sheet]->clut)[index * 4 + 3] == 0) {
+            if (((u8 *) textures[sheet]->clut)[index * 4 + 3] == 0) {
                 transparent = index;
                 break;
             }
         }
-        pixels = (u8 *)textures[sheet]->image[0];
+        pixels = (u8 *) textures[sheet]->image[0];
         for (slot = 0, offset = 0; slot < loopnumtbl_2360[sheet]; offset += 0x20, ++slot) {
             if (slot < 2) {
                 dest = pixels + offset;
@@ -1997,7 +2109,7 @@ int CopyActiveIconTexture(mgCTexture **textures, int chara_no, u_int *unused) {
                 }
             } else {
                 int icon_no = GetItemIconNo(item_no);
-                source = (u8 *)icon_sheet[sheet]->image[0];
+                source = (u8 *) icon_sheet[sheet]->image[0];
                 source += (icon_no % 8) * 0x20 + (icon_no / 8) * 0x2000;
                 for (row = 0; row < 0x20; ++row) {
                     memcpy(dest, source, 0x20);

@@ -8,7 +8,9 @@
 #include "mglib.hpp"
 #include "outline.hpp"
 
-#pragma define_section dead ".dead" ".dead"
+#pragma define_section dead ".dead" \
+                            ".dead"
+
 __declspec(dead) static float PrimeDoubleToFloat(double a) {
     return a;
 }
@@ -74,18 +76,18 @@ int COutLineDraw::Draw(float scale, float alpha) {
 
     float scaled_width = width * scale;
     float opacity = 1.0f;
-    if ((int)scaled_width <= 0) {
+    if ((int) scaled_width <= 0) {
         opacity = scaled_width;
     }
     if (opacity < 0.01f) {
         opacity = 0.01f;
     }
-    int edge_offset = (int)(16.0f * scaled_width);
+    int       edge_offset = (int) (16.0f * scaled_width);
     mgVu0FBOX draw_box;
     if (mgGetDrawRect(frame, &draw_box) == 0) {
         return 0;
     }
-    float max_xy[4] = {(float)mgScreenWidth, (float)mgScreenHeight, 0.0f, 0.0f};
+    float max_xy[4] = {(float) mgScreenWidth, (float) mgScreenHeight, 0.0f, 0.0f};
     float min_xy[4] = {0.0f, 0.0f, 0.0f, 0.0f};
     mgVectorMaxMin(max_xy, min_xy, draw_box.max, draw_box.min, draw_box.max, draw_box.min);
     float screen_width = mgScreenWidth;
@@ -157,10 +159,10 @@ int COutLineDraw::Draw(float scale, float alpha) {
     mgSetPkFrameBuffer(-1, -1, -1, -1);
 
     int edge_color[4] = {0, 0, 0, 0};
-    edge_color[0] = (int)color[0];
-    edge_color[1] = (int)color[1];
-    edge_color[2] = (int)color[2];
-    edge_color[3] = (int)(128.0f * opacity * alpha);
+    edge_color[0] = (int) color[0];
+    edge_color[1] = (int) color[1];
+    edge_color[2] = (int) color[2];
+    edge_color[3] = (int) (128.0f * opacity * alpha);
     mgCDrawPrim composite;
     composite.Initialize(NULL, NULL);
     composite.DepthTestEnable(0);
@@ -183,7 +185,7 @@ int COutLineDraw::Draw(float scale, float alpha) {
         }
     }
     int body_color[4] = {128, 128, 128, 0};
-    body_color[3] = (int)(128.0f * alpha);
+    body_color[3] = (int) (128.0f * alpha);
     composite.AlphaBlendEnable(1);
     composite.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
     DrawDivSprite(&composite, mgRect<int>(left, top, right, bottom), &frame_buffer, body_color, 0, 0, depth, 0);
@@ -200,14 +202,14 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/outline", Draw__12COutLineDrawFff);
 
 static void DrawDivSprite(mgCDrawPrim *prim, mgRect<int> rect, mgCTexture *texture,
                           int *color, int dx, int dy, int z, int unused) {
-    mgRect<int> area = rect;
+    mgRect<int>   area = rect;
     sceVu0IVECTOR vertex_start;
     sceVu0IVECTOR vertex_end;
     sceVu0IVECTOR texcrd_start;
     sceVu0IVECTOR texcrd_end;
-    int offset_x = dx + mgScreenOffx * 16;
-    int offset_y = dy + mgScreenOffy * 16;
-    int block_height = mgScreenHeight * 16;
+    int           offset_x = dx + mgScreenOffx * 16;
+    int           offset_y = dy + mgScreenOffy * 16;
+    int           block_height = mgScreenHeight * 16;
 
     prim->Begin2();
     prim->BeginPrim2(MG_PRIM_SPRITE);
@@ -215,10 +217,10 @@ static void DrawDivSprite(mgCDrawPrim *prim, mgRect<int> rect, mgCTexture *textu
     prim->Color(color[0], color[1], color[2], color[3]);
     prim->EndPrim2();
     prim->BeginPrim2(MG_PRIM_SPRITE, 0x43, 0, 2);
-    *(u_long128 *)vertex_start = 0;
-    *(u_long128 *)vertex_end = 0;
-    *(u_long128 *)texcrd_start = 0;
-    *(u_long128 *)texcrd_end = 0;
+    *(u_long128 *) vertex_start = 0;
+    *(u_long128 *) vertex_end = 0;
+    *(u_long128 *) texcrd_start = 0;
+    *(u_long128 *) texcrd_end = 0;
     vertex_start[2] = z;
     vertex_end[2] = z;
     for (int x = area.left; x < area.right;) {
@@ -243,12 +245,12 @@ static void DrawDivSprite(mgCDrawPrim *prim, mgRect<int> rect, mgCTexture *textu
             texcrd_end[1] = y_end;
             vertex_end[0] += offset_x;
             vertex_end[1] += offset_y;
-            u_long128 *packet = (u_long128 *)prim->DirectData(4);
+            u_long128 *packet = (u_long128 *) prim->DirectData(4);
             y = y_end;
-            packet[0] = *(u_long128 *)texcrd_start;
-            packet[1] = *(u_long128 *)vertex_start;
-            packet[2] = *(u_long128 *)texcrd_end;
-            packet[3] = *(u_long128 *)vertex_end;
+            packet[0] = *(u_long128 *) texcrd_start;
+            packet[1] = *(u_long128 *) vertex_start;
+            packet[2] = *(u_long128 *) texcrd_end;
+            packet[3] = *(u_long128 *) vertex_end;
         }
         x = x_end;
     }
@@ -262,13 +264,13 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/outline", DrawDivSprite__FP11mgCDrawPrim9m
 static void DrawDivSprite4(mgCDrawPrim *prim, mgRect<int> rect, mgCTexture *texture,
                            int *color, int offset, int z) {
     mgRect<int> area = rect;
-    int offset_x = mgScreenOffx * 16;
-    int offset_y = mgScreenOffy * 16;
-    int right = area.right + offset_x;
-    int top = area.top + offset_y;
-    int bottom = area.bottom + offset_y;
-    int x;
-    int y;
+    int         offset_x = mgScreenOffx * 16;
+    int         offset_y = mgScreenOffy * 16;
+    int         right = area.right + offset_x;
+    int         top = area.top + offset_y;
+    int         bottom = area.bottom + offset_y;
+    int         x;
+    int         y;
 
     prim->Begin2();
     prim->BeginPrim2(MG_PRIM_SPRITE);
@@ -280,17 +282,22 @@ static void DrawDivSprite4(mgCDrawPrim *prim, mgRect<int> rect, mgCTexture *text
     int vertex_end[4] = {0, 0, z, 0};
     int texcrd_start[4] = {0, 0, 0, 0};
     int texcrd_end[4] = {0, 0, 0, 0};
+
     for (x = area.left + offset_x; x < right;) {
         int x_end = (x + 0x200) / 0x200 * 0x200;
+
         if (right < x_end) {
             x_end = right;
         }
+
         for (y = top; y < bottom;) {
             int y_end = (y + 0x200) / 0x200 * 0x200;
+
             if (bottom < y_end) {
                 y_end = bottom;
             }
-            u_long128 *packet = (u_long128 *)prim->DirectData(0x10);
+
+            u_long128 *packet = (u_long128 *) prim->DirectData(0x10);
             texcrd_start[0] = x - offset_x;
             texcrd_start[1] = y - offset_y;
             texcrd_end[0] = x_end - offset_x;
@@ -299,38 +306,40 @@ static void DrawDivSprite4(mgCDrawPrim *prim, mgRect<int> rect, mgCTexture *text
             vertex_start[1] = y;
             vertex_end[0] = x_end + offset;
             vertex_end[1] = y_end;
-            packet[0] = *(u_long128 *)texcrd_start;
-            packet[1] = *(u_long128 *)vertex_start;
-            packet[2] = *(u_long128 *)texcrd_end;
-            packet[3] = *(u_long128 *)vertex_end;
+            packet[0] = *(u_long128 *) texcrd_start;
+            packet[1] = *(u_long128 *) vertex_start;
+            packet[2] = *(u_long128 *) texcrd_end;
+            packet[3] = *(u_long128 *) vertex_end;
             vertex_start[0] = x - offset;
             vertex_start[1] = y;
             vertex_end[0] = x_end - offset;
             vertex_end[1] = y_end;
-            packet[4] = *(u_long128 *)texcrd_start;
-            packet[5] = *(u_long128 *)vertex_start;
-            packet[6] = *(u_long128 *)texcrd_end;
-            packet[7] = *(u_long128 *)vertex_end;
+            packet[4] = *(u_long128 *) texcrd_start;
+            packet[5] = *(u_long128 *) vertex_start;
+            packet[6] = *(u_long128 *) texcrd_end;
+            packet[7] = *(u_long128 *) vertex_end;
             vertex_start[0] = x;
             vertex_start[1] = y + offset;
             vertex_end[0] = x_end;
             vertex_end[1] = y_end + offset;
-            packet[8] = *(u_long128 *)texcrd_start;
-            packet[9] = *(u_long128 *)vertex_start;
-            packet[10] = *(u_long128 *)texcrd_end;
-            packet[11] = *(u_long128 *)vertex_end;
+            packet[8] = *(u_long128 *) texcrd_start;
+            packet[9] = *(u_long128 *) vertex_start;
+            packet[10] = *(u_long128 *) texcrd_end;
+            packet[11] = *(u_long128 *) vertex_end;
             vertex_start[0] = x;
             vertex_start[1] = y - offset;
             vertex_end[0] = x_end;
             vertex_end[1] = y_end - offset;
-            packet[12] = *(u_long128 *)texcrd_start;
-            packet[13] = *(u_long128 *)vertex_start;
-            packet[14] = *(u_long128 *)texcrd_end;
-            packet[15] = *(u_long128 *)vertex_end;
+            packet[12] = *(u_long128 *) texcrd_start;
+            packet[13] = *(u_long128 *) vertex_start;
+            packet[14] = *(u_long128 *) texcrd_end;
+            packet[15] = *(u_long128 *) vertex_end;
             y = y_end;
         }
+
         x = x_end;
     }
+
     prim->EndPrim2();
     prim->End2();
 }

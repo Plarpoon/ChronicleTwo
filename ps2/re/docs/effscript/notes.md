@@ -136,3 +136,9 @@ places it in the branch delay slot and leaves the call delay slot empty. The
 new expression also swaps the saved registers used for the script and work
 token through the rest of `CreateEffSpt`. The original explicit call restores
 100% and remains pending a native C++ source form with the same schedule.
+## Pending code matches
+
+`_INTERSECTION_POINT` retains a C++ draft under `NONMATCHING`; its compiled code differs from retail, so the default build uses the retail function gap.
+## Constructor call cleanup
+
+`CEffectScriptMan::CreateEffSpt(int, int, int)` retains a guarded C++ draft. Its `CRunScript` member is constructed with typed C++ placement new in that draft. The normal build uses the retail function gap because placement new changes MWCC code generation.

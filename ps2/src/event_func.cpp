@@ -144,10 +144,10 @@ extern VpkTable          at_6800__2;
 extern CEventSprite2     EventSprite2[0x30];
 extern CSceneObjSeq      ObjectSeq[32];
 extern CSceneCmrSeq      CameraSeq;
-extern "C" void *__vt__9mgCObject[];
-extern "C" void *__vt__7CObject[];
-extern "C" void *__vt__12CObjectFrame[];
-extern "C" void *__vt__11CCharacter2[];
+extern "C" void         *__vt__9mgCObject[];
+extern "C" void         *__vt__7CObject[];
+extern "C" void         *__vt__12CObjectFrame[];
+extern "C" void         *__vt__11CCharacter2[];
 extern mgCMemory         BuffEventSnd;
 extern mgCMemory         BuffEventSnd2;
 extern u_long128         event_snd_buff[];
@@ -301,7 +301,9 @@ extern char            at_6834[];
 extern char            at_5726[];
 extern char            at_5736[];
 
-#pragma define_section dead ".dead" ".dead"
+#pragma define_section dead ".dead" \
+                            ".dead"
+
 __declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
     return a / b;
 }
@@ -2089,6 +2091,7 @@ static inline ARG_LIST *ScriptArgAddList(CEventScriptArg *script) {
     script->list_num++;
     return created;
 }
+
 static inline void ScriptArgNewData(CEventScriptArg *script, int num, ARG_DATA **out) {
     if (script->memory == NULL) {
         *out = NULL;
@@ -2097,6 +2100,7 @@ static inline void ScriptArgNewData(CEventScriptArg *script, int num, ARG_DATA *
         *out = new (script->memory->Alloc(((size & 0xF) ? (size >> 4) + 1 : size >> 4) + 2)) ARG_DATA[num];
     }
 }
+
 static inline char *ScriptArgNewString(CEventScriptArg *script, char *source) {
     char *copy;
     if (script->memory == NULL) {
@@ -2108,13 +2112,14 @@ static inline char *ScriptArgNewString(CEventScriptArg *script, char *source) {
     }
     return copy;
 }
+
 static inline ARG_DATA *ArgAt(ARG_DATA *args, int i) {
     return &args[i];
 }
 
 int _DATA(RS_STACKDATA *stack, int argc) {
-    char *source;
-        CEventScriptArg *script = nowScriptArg;
+    char            *source;
+    CEventScriptArg *script = nowScriptArg;
     if (script == NULL) {
         return 0;
     }
@@ -2569,19 +2574,23 @@ void CScreenEffect::SetSepiaTexture(mgCTexture *texture, u_long128 *image) {
         sepia_texture->image[0] = image;
     }
 }
-void CScreenEffect::CaptureSepiaScreen(void) {
+
+void CScreenEffect::CaptureSepiaScreen() {
     if (sepia_texture == NULL) {
         return;
     }
+
     mgCTexture screen;
     mgGetFrameBackBuffer(&screen);
     mgStoreImage(&screen, sepia_texture->image[0]);
-    u_char *pixels = (u_char *)sepia_texture->image[0];
+    u_char *pixels = (u_char *) sepia_texture->image[0];
+
     for (int i = 0; i < mgScreenHeight * mgScreenWidth * 4; i += 4) {
         u_char *red = &pixels[i];
         u_char *green = &pixels[i + 1];
         u_char *blue = &pixels[i + 2];
-        int gray = (u_int)(0.229f * (float)(u_int)*red + 0.587f * (float)(u_int)*green + 0.114f * (float)(u_int)*blue) & 0xFF;
+        int     gray = (u_int) (0.229f * (float) (u_int) *red + 0.587f * (float) (u_int) *green + 0.114f * (float) (u_int) *blue) & 0xFF;
+
         if (gray > 0x40) {
             *red = (gray - 0x40) * 180 / 191 + 75;
             *green = (gray - 0x40) * 193 / 191 + 62;
@@ -2593,6 +2602,7 @@ void CScreenEffect::CaptureSepiaScreen(void) {
         }
     }
 }
+
 void CScreenEffect::SetSepiaFlag(int enabled) {
     if (sepia_texture != NULL) {
         sepia = enabled;
@@ -2612,28 +2622,32 @@ void CScreenEffect::SetMonoFlashTexture(mgCTexture **textures, u_long128 **vram_
     mono_flash_texture[1] = textures[1];
     mono_flash_texture[1]->image[0] = vram_images[1];
 }
-void CScreenEffect::CaptureMonoFlashScreen(void) {
+
+void CScreenEffect::CaptureMonoFlashScreen() {
     if (mono_flash_texture[0] == NULL || mono_flash_texture[1] == NULL) {
         return;
     }
+
     mgCTexture screen;
     mgGetFrameBackBuffer(&screen);
     mgStoreImage(&screen, mono_flash_texture[0]->image[0]);
     mgStoreImage(&screen, mono_flash_texture[1]->image[0]);
-    u_char *positive = (u_char *)mono_flash_texture[0]->image[0];
-    u_char *negative = (u_char *)mono_flash_texture[1]->image[0];
+    u_char *positive = (u_char *) mono_flash_texture[0]->image[0];
+    u_char *negative = (u_char *) mono_flash_texture[1]->image[0];
+
     for (int i = 0; i < mgScreenHeight * mgScreenWidth * 4; i += 4) {
         u_char *red = &positive[i];
         u_char *green = &positive[i + 1];
         u_char *blue = &positive[i + 2];
-        *red = *green = *blue = (u_int)(0.229f * (float)*red + 0.587f * (float)*green + 0.114f * (float)*blue);
+        *red = *green = *blue = (u_int) (0.229f * (float) *red + 0.587f * (float) *green + 0.114f * (float) *blue);
         red = &negative[i];
         green = &negative[i + 1];
         blue = &negative[i + 2];
-        char gray = (u_int)(0.229f * (float)*red + 0.587f * (float)*green + 0.114f * (float)*blue);
+        char gray = (u_int) (0.229f * (float) *red + 0.587f * (float) *green + 0.114f * (float) *blue);
         *red = *green = *blue = 255 - gray;
     }
 }
+
 void CScreenEffect::SetMonoFlashFlag(int enabled, int interval) {
     if (mono_flash_texture[0] != NULL || mono_flash_texture[1] != NULL) {
         mono_flash = enabled;
@@ -2912,23 +2926,28 @@ void EdEventInit() {
     EventScriptArg.memory = 0;
     EventScreenEffect.Initialize();
 }
-void EventTimeDraw(void) {
-    int digit[10];
-    int glyph[32];
-    CSaveData *saveData = GetSaveData();
-    if (saveData != NULL && EdEventInfo.stopwatch_start != 0) {
+
+void EventTimeDraw() {
+    int        digit[10];
+    int        glyph[32];
+    CSaveData *save_data = GetSaveData();
+
+    if (save_data != NULL && EdEventInfo.stopwatch_start != 0) {
         u64 elapsed;
+
         if (EdEventInfo.stopwatch_style == 1) {
             elapsed = EdEventInfo.stopwatch_limit - 2;
             EdEventInfo.stopwatch_limit = elapsed;
         } else if (EdEventInfo.stopwatch_limit != 0) {
-            elapsed = EdEventInfo.stopwatch_limit - (saveData->play_time - EdEventInfo.stopwatch_start);
+            elapsed = EdEventInfo.stopwatch_limit - (save_data->play_time - EdEventInfo.stopwatch_start);
         } else {
-            elapsed = saveData->play_time - EdEventInfo.stopwatch_start;
+            elapsed = save_data->play_time - EdEventInfo.stopwatch_start;
         }
+
         if (0x57E40 <= elapsed) {
             elapsed = 0x57E40;
         }
+
         int hours = elapsed / 3600;
         int minutes = elapsed % 3600 / 60;
         int hundredths = elapsed % 60 * 100 / 60;
@@ -2942,15 +2961,18 @@ void EventTimeDraw(void) {
         digit[7] = GetHalfFontNo('7');
         digit[8] = GetHalfFontNo('8');
         digit[9] = GetHalfFontNo('9');
+
         for (int i = 0; i < 32; i++) {
             glyph[i] = -1;
         }
+
         glyph[0] = digit[hours / 10];
         glyph[1] = digit[hours % 10];
         glyph[3] = digit[minutes / 10];
         glyph[4] = digit[minutes % 10];
         glyph[6] = digit[hundredths / 10];
         glyph[7] = digit[hundredths % 10];
+
         if (EdEventInfo.stopwatch_style == 1) {
             glyph[2] = GetHalfFontNo(':');
             glyph[5] = GetHalfFontNo(':');
@@ -2958,47 +2980,56 @@ void EventTimeDraw(void) {
             glyph[2] = GetHalfFontNo('m');
             glyph[5] = GetHalfFontNo('s');
         }
+
         mgCDrawPrim prim;
+
         if (EdEventInfo.stopwatch_style == 0) {
             prim.Begin(6);
-            RECT window;
-            RGBAQ_TYPE windowColor;
+            RECT       window;
+            RGBAQ_TYPE window_color;
             window.width = 0x9E;
             window.height = 0x36;
-            windowColor.r = windowColor.g = windowColor.b = windowColor.a = 0x80;
+            window_color.r = window_color.g = window_color.b = window_color.a = 0x80;
             window.x = EdEventInfo.stopwatch_x - 0x10;
             window.y = EdEventInfo.stopwatch_y - 0x12;
-            DrawVersatileWin_4(&prim, window, &windowColor, 0x80);
+            DrawVersatileWin_4(&prim, window, &window_color, 0x80);
             prim.End();
         }
+
         MySetPrim(&prim, 1, 0);
         prim.Begin(6);
+
         for (int i = 0; i < 32; i++) {
             if (glyph[i] >= 0) {
-                int page;
+                int  page;
                 RECT texture = GetRectFontTex(glyph[i], &page);
                 MySetTex(page, &prim);
                 RECT destination;
                 destination.x = EdEventInfo.stopwatch_x + texture.width * i;
                 destination.y = EdEventInfo.stopwatch_y;
+
                 if (EdEventInfo.stopwatch_style == 1) {
                     destination.y += 0x40;
                 }
+
                 destination.width = texture.width;
                 destination.height = texture.height;
                 set2DSprite_Fuchi(&prim, destination, texture, 8, 0x80);
                 RGBAQ_TYPE color;
                 color.a = color.r = color.g = color.b = 0x80;
                 set2DSpriteEasyFont(&prim,
-                    mgRect<int>(destination.x, destination.y, destination.width, destination.height),
-                    mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
+                                    mgRect<int>(destination.x, destination.y, destination.width, destination.height),
+                                    mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
             }
         }
+
         if (EdEventInfo.stopwatch_style == 1) {
             int label[32];
+
             for (int i = 0; i < 32; i++) {
                 label[i] = -1;
             }
+
             if (EdEventInfo.stopwatch_style == 1) {
                 switch (LanguageCode) {
                     case 0:
@@ -3009,118 +3040,125 @@ void EventTimeDraw(void) {
                         label[4] = GetFontNo(at_1908);
                         break;
                     case 2:
-                label[0] = GetHalfFontNo('C');
-                label[1] = GetHalfFontNo('h');
-                label[2] = GetHalfFontNo('u');
-                label[3] = GetHalfFontNo('t');
-                label[4] = GetHalfFontNo('e');
-                label[5] = GetHalfFontNo('s');
-                label[6] = GetHalfFontNo(' ');
-                label[7] = GetHalfFontNo('d');
-                label[8] = GetHalfFontNo('e');
-                label[9] = GetHalfFontNo(' ');
-                label[10] = GetHalfFontNo('l');
-                label[11] = GetHalfFontNo('u');
-                label[12] = GetHalfFontNo('n');
-                label[13] = GetHalfFontNo('e');
+                        label[0] = GetHalfFontNo('C');
+                        label[1] = GetHalfFontNo('h');
+                        label[2] = GetHalfFontNo('u');
+                        label[3] = GetHalfFontNo('t');
+                        label[4] = GetHalfFontNo('e');
+                        label[5] = GetHalfFontNo('s');
+                        label[6] = GetHalfFontNo(' ');
+                        label[7] = GetHalfFontNo('d');
+                        label[8] = GetHalfFontNo('e');
+                        label[9] = GetHalfFontNo(' ');
+                        label[10] = GetHalfFontNo('l');
+                        label[11] = GetHalfFontNo('u');
+                        label[12] = GetHalfFontNo('n');
+                        label[13] = GetHalfFontNo('e');
                         break;
                     case 4:
-                label[0] = GetHalfFontNo('L');
-                label[1] = GetHalfFontNo('e');
-                label[2] = GetHalfFontNo(' ');
-                label[3] = GetHalfFontNo('C');
-                label[4] = GetHalfFontNo('a');
-                label[5] = GetHalfFontNo('s');
-                label[6] = GetHalfFontNo('c');
-                label[7] = GetHalfFontNo('a');
-                label[8] = GetHalfFontNo('t');
-                label[9] = GetHalfFontNo('e');
-                label[10] = GetHalfFontNo(' ');
-                label[11] = GetHalfFontNo('d');
-                label[12] = GetHalfFontNo('e');
-                label[13] = GetHalfFontNo('l');
-                label[14] = GetHalfFontNo('l');
-                label[15] = GetHalfFontNo('a');
-                label[16] = GetHalfFontNo(' ');
-                label[17] = GetHalfFontNo('L');
-                label[18] = GetHalfFontNo('u');
-                label[19] = GetHalfFontNo('n');
-                label[20] = GetHalfFontNo('a');
+                        label[0] = GetHalfFontNo('L');
+                        label[1] = GetHalfFontNo('e');
+                        label[2] = GetHalfFontNo(' ');
+                        label[3] = GetHalfFontNo('C');
+                        label[4] = GetHalfFontNo('a');
+                        label[5] = GetHalfFontNo('s');
+                        label[6] = GetHalfFontNo('c');
+                        label[7] = GetHalfFontNo('a');
+                        label[8] = GetHalfFontNo('t');
+                        label[9] = GetHalfFontNo('e');
+                        label[10] = GetHalfFontNo(' ');
+                        label[11] = GetHalfFontNo('d');
+                        label[12] = GetHalfFontNo('e');
+                        label[13] = GetHalfFontNo('l');
+                        label[14] = GetHalfFontNo('l');
+                        label[15] = GetHalfFontNo('a');
+                        label[16] = GetHalfFontNo(' ');
+                        label[17] = GetHalfFontNo('L');
+                        label[18] = GetHalfFontNo('u');
+                        label[19] = GetHalfFontNo('n');
+                        label[20] = GetHalfFontNo('a');
                         break;
                     case 5:
-                label[0] = GetHalfFontNo('C');
-                label[1] = GetHalfFontNo('a');
-                label[2] = GetHalfFontNo('t');
-                label[3] = GetHalfFontNo('a');
-                label[4] = GetHalfFontNo('r');
-                label[5] = GetHalfFontNo('a');
-                label[6] = GetHalfFontNo('t');
-                label[7] = GetHalfFontNo('a');
-                label[8] = GetHalfFontNo('s');
-                label[9] = GetHalfFontNo(' ');
-                label[10] = GetHalfFontNo('L');
-                label[11] = GetHalfFontNo('u');
-                label[12] = GetHalfFontNo('n');
-                label[13] = GetHalfFontNo('a');
+                        label[0] = GetHalfFontNo('C');
+                        label[1] = GetHalfFontNo('a');
+                        label[2] = GetHalfFontNo('t');
+                        label[3] = GetHalfFontNo('a');
+                        label[4] = GetHalfFontNo('r');
+                        label[5] = GetHalfFontNo('a');
+                        label[6] = GetHalfFontNo('t');
+                        label[7] = GetHalfFontNo('a');
+                        label[8] = GetHalfFontNo('s');
+                        label[9] = GetHalfFontNo(' ');
+                        label[10] = GetHalfFontNo('L');
+                        label[11] = GetHalfFontNo('u');
+                        label[12] = GetHalfFontNo('n');
+                        label[13] = GetHalfFontNo('a');
                         break;
                     case 1:
                     case 3:
                     default:
-                label[0] = GetHalfFontNo('M');
-                label[1] = GetHalfFontNo('o');
-                label[2] = GetHalfFontNo('o');
-                label[3] = GetHalfFontNo('n');
-                label[4] = GetHalfFontNo('F');
-                label[5] = GetHalfFontNo('a');
-                label[6] = GetHalfFontNo('l');
-                label[7] = GetHalfFontNo('l');
-                label[8] = GetHalfFontNo('s');
+                        label[0] = GetHalfFontNo('M');
+                        label[1] = GetHalfFontNo('o');
+                        label[2] = GetHalfFontNo('o');
+                        label[3] = GetHalfFontNo('n');
+                        label[4] = GetHalfFontNo('F');
+                        label[5] = GetHalfFontNo('a');
+                        label[6] = GetHalfFontNo('l');
+                        label[7] = GetHalfFontNo('l');
+                        label[8] = GetHalfFontNo('s');
                         break;
                 }
             }
+
             for (int i = 0; i < 32; i++) {
                 if (label[i] >= 0) {
-                    int page;
+                    int  page;
                     RECT texture = GetRectFontTex(label[i], &page);
                     MySetTex(page, &prim);
                     RECT destination;
+
                     switch (LanguageCode) {
                         case 0:
                             destination.x = EdEventInfo.stopwatch_x + texture.width * i + 0x18;
                             break;
                         case 2:
                         case 5:
-                            destination.x = (int)(EdEventInfo.stopwatch_x + 0.75 * texture.width * i - 28.0);
+                            destination.x = (int) (EdEventInfo.stopwatch_x + 0.75 * texture.width * i - 28.0);
                             break;
                         case 3:
-                            destination.x = (int)(8.0 + (EdEventInfo.stopwatch_x + 0.75 * texture.width * i));
+                            destination.x = (int) (8.0 + (EdEventInfo.stopwatch_x + 0.75 * texture.width * i));
                             break;
                         case 4:
-                            destination.x = (int)(EdEventInfo.stopwatch_x + 0.5 * texture.width * i - 28.0);
+                            destination.x = (int) (EdEventInfo.stopwatch_x + 0.5 * texture.width * i - 28.0);
                             break;
                         case 1:
                         default:
                             destination.x = EdEventInfo.stopwatch_x + texture.width * i - 4;
                             break;
                     }
+
                     destination.y = EdEventInfo.stopwatch_y - 0x18;
+
                     if (EdEventInfo.stopwatch_style == 1) {
                         destination.y += 0x40;
                     }
+
                     destination.width = texture.width;
                     destination.height = texture.height;
                     set2DSprite_Fuchi(&prim, destination, texture, 8, 0x80);
                     RGBAQ_TYPE color;
                     color.a = color.r = color.g = color.b = 0x80;
                     set2DSpriteEasyFont(&prim,
-                        mgRect<int>(destination.x, destination.y, destination.width, destination.height),
-                        mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
+                                        mgRect<int>(destination.x, destination.y, destination.width, destination.height),
+                                        mgRect<int>(texture.x, texture.y, texture.width, texture.height), &color);
                 }
             }
         }
+
         prim.End();
     }
 }
+
 void EdEventDraw() {
     int hit_no;
     int sprite_no;
@@ -3663,65 +3701,76 @@ int _LOAD_CHARA_sub(int stack_no, char **name, int chara_no, u32 *pack, int mode
 int _LOAD_CHARA_sub(int a, char **b, int c, u32 *d) {
     return _LOAD_CHARA_sub(a, b, c, d, 0);
 }
+
 int _LOAD_CHARA(RS_STACKDATA *stack, int argc) {
     char *name[0x20];
-    char directory[0x40];
-    char fileName[0x20];
-    int stackNo;
-    int charaNo;
-    int mode;
+    char  directory[0x40];
+    char  file_name[0x20];
+    int   stack_no;
+    int   chara_no;
+    int   mode;
     char *path;
+
     switch (argc) {
         case 1: {
             ARG_DATA *args = FindArgData(GetStackInt(stack));
+
             if (args == NULL) {
                 return 0;
             }
-            stackNo = GetArgInt(args++);
+
+            stack_no = GetArgInt(args++);
             path = GetArgString(args++);
             name[0] = GetArgString(args++);
-            charaNo = GetArgInt(args);
+            chara_no = GetArgInt(args);
             mode = 0;
             break;
         }
         case 4:
-            stackNo = GetStackInt(stack++);
+            stack_no = GetStackInt(stack++);
             path = GetStackString(stack++);
             name[0] = GetStackString(stack++);
-            charaNo = GetStackInt(stack);
+            chara_no = GetStackInt(stack);
             mode = 0;
             break;
         case 5:
-            stackNo = GetStackInt(stack++);
+            stack_no = GetStackInt(stack++);
             path = GetStackString(stack++);
             name[0] = GetStackString(stack++);
-            charaNo = GetStackInt(stack++);
+            chara_no = GetStackInt(stack++);
             mode = GetStackInt(stack);
             break;
         default:
             return 0;
     }
+
     u32 *pack = GetLoadBGBuff(path, NULL);
+
     if (pack == NULL) {
         return 0;
     }
-    int result = _LOAD_CHARA_sub(stackNo, name, charaNo, pack, mode);
-    CSaveData *saveData = GetSaveData();
-    if (saveData != NULL) {
-        if (saveData->GetBitCtrl() & 8) {
+
+    int        result = _LOAD_CHARA_sub(stack_no, name, chara_no, pack, mode);
+    CSaveData *save_data = GetSaveData();
+
+    if (save_data != NULL) {
+        if (save_data->GetBitCtrl() & 8) {
             if (result > 0) {
-                CCharacter2 *chara = GetCharacter(charaNo);
-                DivPathName(path, directory, fileName);
-                if (strcmp(fileName, at_2333__4) == 0) {
+                CCharacter2 *chara = GetCharacter(chara_no);
+                DivPathName(path, directory, file_name);
+
+                if (strcmp(file_name, at_2333__4) == 0) {
                     AtraMiriaOnOff(0, chara, 0);
-                } else if (strcmp(fileName, at_2334__3) == 0) {
+                } else if (strcmp(file_name, at_2334__3) == 0) {
                     AtraMiriaOnOff(1, chara, 0);
                 }
             }
         }
     }
+
     return result;
 }
+
 int _CHARA_ACTIVE(RS_STACKDATA *stack, int arg_count) {
     int enable;
     int chara_no;
@@ -3851,30 +3900,37 @@ int _CHANGE_DIR(RS_STACKDATA *stack, int argc) {
 }
 
 int _DELETE_CHARA(RS_STACKDATA *stack, int argc) {
-    int charaNo;
-    int deleteTexture = 1;
-    charaNo = GetStackInt(stack++);
-    if (argc >= 2) {
-        deleteTexture = GetStackInt(stack);
-    }
-    int texBlock = EventScene->GetCharaTexb(charaNo);
+    int chara_no;
+    int delete_texture = 1;
+    chara_no = GetStackInt(stack++);
 
-    if (texBlock >= 0) {
+    if (argc >= 2) {
+        delete_texture = GetStackInt(stack);
+    }
+
+    int tex_block = EventScene->GetCharaTexb(chara_no);
+
+    if (tex_block >= 0) {
         mgCTextureManager *manager = &mgTexManager;
-        if (deleteTexture == 1) {
-            manager->DeleteBlock(texBlock);
+
+        if (delete_texture == 1) {
+            manager->DeleteBlock(tex_block);
         }
     }
-    EventScene->DeleteChara(charaNo);
+
+    EventScene->DeleteChara(chara_no);
     int i;
     int offset;
+
     for (i = 0, offset = 0; i < 32; i++, offset += 0x10) {
-        CEoh *handle = (CEoh *)((u8 *)&EventObjHandleMother + offset);
+        CEoh *handle = (CEoh *) ((u8 *) &EventObjHandleMother + offset);
+
         if (handle->type == 0) {
-            int *charaSlot = &handle->scene_no;
-            if (charaNo == handle->scene_no) {
+            int *chara_slot = &handle->scene_no;
+
+            if (chara_no == handle->scene_no) {
                 handle->type = -1;
-                *charaSlot = -1;
+                *chara_slot = -1;
                 handle->world_coord = 1;
                 handle->object = NULL;
                 handle->object = NULL;
@@ -3884,6 +3940,7 @@ int _DELETE_CHARA(RS_STACKDATA *stack, int argc) {
             }
         }
     }
+
     return 1;
 }
 
@@ -4064,39 +4121,49 @@ int _GET_DUN_WORLD_COORD(RS_STACKDATA *stack, int argc) {
 
     return 0;
 }
+
 int _LOAD_IMG(RS_STACKDATA *stack, int argc) {
-    int size;
-    int stackNo = GetStackInt(stack++);
-    char *fileName = GetStackString(stack++);
-    int imageNo = GetStackInt(stack++);
-    int num = EventScene->event_texb_num;
-    int base = EventScene->event_texb;
-    if (num <= 0 || num < imageNo) {
+    int   size;
+    int   stack_no = GetStackInt(stack++);
+    char *file_name = GetStackString(stack++);
+    int   image_no = GetStackInt(stack++);
+    int   num = EventScene->event_texb_num;
+    int   base = EventScene->event_texb;
+
+    if (num <= 0 || num < image_no) {
         return 0;
     }
-    int block = base + imageNo;
-    u_char *file = (u_char *)GetLoadBGBuff(fileName, &size);
+
+    int     block = base + image_no;
+    u_char *file = (u_char *) GetLoadBGBuff(file_name, &size);
+
     if (file == NULL) {
         return 0;
     }
-    mgCMemory *memory = (mgCMemory *)EventScene->GetStack(stackNo);
+
+    mgCMemory *memory = (mgCMemory *) EventScene->GetStack(stack_no);
     memory->Align64();
-    u_char *image = (u_char *)memory->stAllocTest(size / 16 + 1);
+    u_char *image = (u_char *) memory->stAllocTest(size / 16 + 1);
+
     if (image == NULL) {
         return 0;
     }
+
     memory->stAlloc64(size / 16 + 1);
     memcpy(image, file, size);
     mgTexManager.EnterIMGFile(image, block, memory, NULL);
+
     if (argc == 3) {
-        if (esMother.Set(imageNo, block) == 0) {
+        if (esMother.Set(image_no, block) == 0) {
             return 0;
         }
     } else if (argc == 4) {
         SetStack(stack, block);
     }
+
     return 1;
 }
+
 int _DEL_IMG(RS_STACKDATA *stack, int argc) {
     mgTexManager.DeleteBlock(EventScene->event_texb + GetStackInt(stack));
     return 1;
@@ -4445,16 +4512,17 @@ int GetConfigCaptionOff() {
 
     return caption_off;
 }
+#ifdef NONMATCHING
 int LoadMovie(char *name, mgCMemory *memory, bool skip) {
-    CMovie movie __attribute__((aligned(32)));
-    int captionWidth;
-    int captionHeight;
-    int captionBlock;
-    int captionOff;
-    int fontBlock;
+    CMovie      movie __attribute__((aligned(32)));
+    int         captionWidth;
+    int         captionHeight;
+    int         captionBlock;
+    int         captionOff;
+    int         fontBlock;
     mgCTexture *movieTexture;
-    int movieBlock;
-    int frame;
+    int         movieBlock;
+    int         frame;
 
     movie.Load(name, memory, 0x200, 0x1A0, true, false, skip);
     printf(at_2836, (memory->stack_size - memory->stack_used) * 0x10 / 0x400);
@@ -4480,7 +4548,7 @@ int LoadMovie(char *name, mgCMemory *memory, bool skip) {
             EdEventInfo.caption_enable = 0;
         }
     }
-    textures->ReloadTexture(movieBlock, (sceVif1Packet *)NULL);
+    textures->ReloadTexture(movieBlock, (sceVif1Packet *) NULL);
     movieTexture = textures->GetTexture(at_2837, movieBlock);
     movie.Play(at_2837);
     movie.SwitchThread();
@@ -4504,7 +4572,7 @@ int LoadMovie(char *name, mgCMemory *memory, bool skip) {
         GamePad__2.UpDate();
         if (movie.EndCheck() != 0 || (DebugFlag != 0 && GamePad__2.Down(PAD_START) != 0)) {
             movie.Term();
-            textures->ReloadTexture(movieBlock, (sceVif1Packet *)NULL);
+            textures->ReloadTexture(movieBlock, (sceVif1Packet *) NULL);
             mgBeginFrame(NULL);
             mgCDrawPrim endDraw;
             endDraw.Initialize(NULL, NULL);
@@ -4535,7 +4603,7 @@ int LoadMovie(char *name, mgCMemory *memory, bool skip) {
             }
             return 1;
         }
-        textures->ReloadTexture(movieBlock, (sceVif1Packet *)NULL);
+        textures->ReloadTexture(movieBlock, (sceVif1Packet *) NULL);
         movie.SwitchThread();
         mgCDrawPrim frameDraw;
         frameDraw.Initialize(NULL, NULL);
@@ -4558,23 +4626,23 @@ int LoadMovie(char *name, mgCMemory *memory, bool skip) {
             char *text = NULL;
             if (captionOff == 0) {
                 char caption[0xE1];
-                int i;
-                int x;
-                int y;
+                int  i;
+                int  x;
+                int  y;
                 for (i = 0; i < 18; i++) {
                     if (EdEventInfo.caption_start[i] <= frame &&
                         frame <= EdEventInfo.caption_start[i] + EdEventInfo.caption_frames[i]) {
                         char *line = EdEventInfo.caption_text[i];
                         font.CalcDrawWH(line, &captionWidth, &captionHeight);
-                        x = (int)CalcAutoPosSet(0.0f, 512.0f, (float)captionWidth, 0.5f);
-                        y = fptosi(CalcAutoPosSet(0.0f, 480.0f, (float)captionHeight, 0.95f));
+                        x = (int) CalcAutoPosSet(0.0f, 512.0f, (float) captionWidth, 0.5f);
+                        y = fptosi(CalcAutoPosSet(0.0f, 480.0f, (float) captionHeight, 0.95f));
                         memset(caption, 0, 0xE1);
                         My_strncpy(caption, EdEventInfo.caption_text[i], (frame - EdEventInfo.caption_start[i]) / 2 * 2);
                         text = caption;
                     }
                 }
                 if (text != NULL) {
-                    textures->ReloadTexture(captionBlock, (sceVif1Packet *)NULL);
+                    textures->ReloadTexture(captionBlock, (sceVif1Packet *) NULL);
                     font.DrawDirect(caption, x, y);
                 }
             }
@@ -4583,6 +4651,9 @@ int LoadMovie(char *name, mgCMemory *memory, bool skip) {
         frame++;
     }
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", LoadMovie__FPcP9mgCMemoryb);
+#endif
 int _LOAD_MOVIE(RS_STACKDATA *stack, int argc) {
     int        stack_no = GetStackInt(stack++);
     char      *name = GetStackString(stack++);
@@ -4601,6 +4672,7 @@ int _INIT_LOCAL_CNT(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+#ifdef NONMATCHING
 int _SET_CROSSFADE(RS_STACKDATA *stack, int argc) {
     int frames;
     EventScene->fade.CaptureScreen();
@@ -4631,6 +4703,9 @@ int _SET_CROSSFADE(RS_STACKDATA *stack, int argc) {
 
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _SET_CROSSFADE__FP12RS_STACKDATAi);
+#endif
 
 int _GET_ADJUST_POLYGON_SCALE(RS_STACKDATA *stack, int argc) {
     int          chara_no = GetStackInt(stack++);
@@ -4719,92 +4794,113 @@ int _TRG_PAKU_ANIM(RS_STACKDATA *stack, int argc) {
 
     return 1;
 }
+
 int _RESET_CAMERA(RS_STACKDATA *stack, int argc) {
-    int mode;
-    float follow[4];
-    float followOffset[4];
-    float charaPos[4];
-    float cameraPos[4];
-    float pos[4];
-    float rot[4];
-    float target[4];
-    CCameraControl *camera;
-    mgCCameraFollow *referenceCamera;
-    mgCCameraFollow *beforeCamera;
-    CCharacter2 *chara;
-    float dx;
-    float dy;
-    float dz;
-    float distance;
+    int              mode;
+    float            follow[4];
+    float            follow_offset[4];
+    float            chara_pos[4];
+    float            camera_pos[4];
+    float            pos[4];
+    float            rot[4];
+    float            target[4];
+    CCameraControl  *camera;
+    mgCCameraFollow *reference_camera;
+    mgCCameraFollow *before_camera;
+    CCharacter2     *chara;
+    float            dx;
+    float            dy;
+    float            dz;
+    float            distance;
     mode = GetStackInt(stack++);
     float angle;
-float height;
-height = angle = 0.0f;
+    float height;
+    height = angle = 0.0f;
+
     if (argc > 1) {
         angle = GetStackFloat(stack++);
     }
+
     if (argc > 2) {
         height = GetStackFloat(stack);
     }
+
     camera = NULL;
+
     if (mode == 0) {
-        camera = (CCameraControl *)EventScene->GetCamera(EventScene->active_camera);
+        camera = (CCameraControl *) EventScene->GetCamera(EventScene->active_camera);
     }
+
     if (mode == 1) {
-        camera = (CCameraControl *)EventScene->GetCamera(EventScene->before_camera);
+        camera = (CCameraControl *) EventScene->GetCamera(EventScene->before_camera);
     }
+
     if (camera == NULL) {
         return 0;
     }
-    referenceCamera = (mgCCameraFollow *)EventScene->GetCamera(EventScene->before_camera);
-    if (referenceCamera == NULL) {
+
+    reference_camera = (mgCCameraFollow *) EventScene->GetCamera(EventScene->before_camera);
+
+    if (reference_camera == NULL) {
         return 0;
     }
-    referenceCamera->GetFollow(follow);
-    referenceCamera->GetFollowOffset(followOffset);
+
+    reference_camera->GetFollow(follow);
+    reference_camera->GetFollowOffset(follow_offset);
+
     if (mode == 0) {
         chara = EventScene->GetCharacter(0);
+
         if (chara == NULL) {
             return 0;
         }
-        chara->GetPosition(charaPos);
+
+        chara->GetPosition(chara_pos);
         SetCamWorldCoord(camera);
-        camera->GetPos(cameraPos);
-        dx = cameraPos[0] - charaPos[0];
-        dy = cameraPos[1] - charaPos[1];
-        dz = cameraPos[2] - charaPos[2];
+        camera->GetPos(camera_pos);
+        dx = camera_pos[0] - chara_pos[0];
+        dy = camera_pos[1] - chara_pos[1];
+        dz = camera_pos[2] - chara_pos[2];
         distance = sqrtf(dx * dx + dz * dz);
+
         if (argc < 3) {
-            height = dy - followOffset[1];
+            height = dy - follow_offset[1];
         }
+
         if (argc < 2) {
             angle = atan2f(dx, dz);
         }
-        float fx = charaPos[0];
-        float fy = charaPos[1];
-        float fz = charaPos[2];
+
+        float fx = chara_pos[0];
+        float fy = chara_pos[1];
+        float fz = chara_pos[2];
         camera->FollowOn();
         camera->SetFollow(fx, fy, fz);
-        camera->SetFollowOffset(followOffset[0], followOffset[1], followOffset[2]);
+        camera->SetFollowOffset(follow_offset[0], follow_offset[1], follow_offset[2]);
         camera->SetDistance(distance);
         camera->SetHeight(height);
         camera->SetAngleSoon(angle);
-        beforeCamera = (mgCCameraFollow *)EventScene->GetCamera(EventScene->before_camera);
-        referenceCamera = (mgCCameraFollow *)EventScene->GetCamera(EventScene->active_camera);
-        *beforeCamera = *referenceCamera;
+        before_camera = (mgCCameraFollow *) EventScene->GetCamera(EventScene->before_camera);
+        reference_camera = (mgCCameraFollow *) EventScene->GetCamera(EventScene->active_camera);
+        *before_camera = *reference_camera;
         SetWorldCoordFlg = 0;
         return 1;
     }
+
     if (mode == 1) {
         camera->FollowOff();
         distance = camera->GetDistance();
+
         if (argc < 3) {
             height = camera->GetHeight();
         }
+
         chara = EventScene->GetCharacter(0);
+
         if (chara == NULL) {
             return 0;
         }
+
         chara->GetPosition(pos);
         chara->GetRotation(rot);
         CalcPosWorldCoord(pos);
@@ -4817,7 +4913,7 @@ height = angle = 0.0f;
         camera->ControlOff();
         camera->FollowOn();
         camera->SetFollow(target[0], target[1], target[2]);
-        camera->SetFollowOffset(followOffset[0], followOffset[1], followOffset[2]);
+        camera->SetFollowOffset(follow_offset[0], follow_offset[1], follow_offset[2]);
         camera->SetDistance(distance);
         camera->SetHeight(height);
         camera->SetAngleSoon(rot[1] + angle);
@@ -4827,8 +4923,10 @@ height = angle = 0.0f;
         SetWorldCoordFlg = 0;
         return 1;
     }
+
     return 0;
 }
+
 int _GET_ACTIVE_CHR_NO(RS_STACKDATA *stack, int argc) {
     CUserDataManager *user_data = NULL;
     CSaveData        *save = GetSaveData();
@@ -5517,14 +5615,14 @@ int _COPY_CHARA(RS_STACKDATA *stack, int argc) {
     CCharacter2 *source = GetCharacter(src_no);
     CCharacter2 *copy;
 
-    if ((copy = (CCharacter2 *)operator new(sizeof(CCharacter2), (u_long128 *)memory->Alloc(0x68))) != NULL) {
-        *(void ***)copy = __vt__9mgCObject;
+    if ((copy = (CCharacter2 *) operator new(sizeof(CCharacter2), (u_long128 *) memory->Alloc(0x68))) != NULL) {
+        *(void ***) copy = __vt__9mgCObject;
         copy->Initialize();
-        *(void ***)copy = __vt__7CObject;
+        *(void ***) copy = __vt__7CObject;
         copy->Initialize();
-        *(void ***)copy = __vt__12CObjectFrame;
+        *(void ***) copy = __vt__12CObjectFrame;
         copy->Initialize();
-        *(void ***)copy = __vt__11CCharacter2;
+        *(void ***) copy = __vt__11CCharacter2;
         copy->shadow_link.num = 0;
         copy->shadow_link.dst_frame = 0;
         copy->shadow_link.src_frame = 0;
@@ -6095,6 +6193,7 @@ static int _SET_CAMERA_NEXT_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+#ifdef NONMATCHING
 int _CHK_INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
     float                from[4];
     float                to[4];
@@ -6223,7 +6322,11 @@ int _CHK_INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
 
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _CHK_INTERSECTION_POINT__FP12RS_STACKDATAi);
+#endif
 
+#ifdef NONMATCHING
 int _CHK_INTERSECTION_POINT_PIPE(RS_STACKDATA *stack, int argc) {
     float                from[4];
     float                to[4];
@@ -6358,6 +6461,9 @@ int _CHK_INTERSECTION_POINT_PIPE(RS_STACKDATA *stack, int argc) {
 
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _CHK_INTERSECTION_POINT_PIPE__FP12RS_STACKDATAi);
+#endif
 
 int _SET_FCAMERA_FOLLOW(RS_STACKDATA *stack, int arg_count) {
     float            position[4];
@@ -6831,17 +6937,19 @@ int _GOTO_SUBGAME(RS_STACKDATA *stack, int argc) {
     info.texb_num = EventScene->tex_block_count;
     return sgInitSubGame(type, &info) != 0;
 }
+
 int _SET_GYORACE_ETC(RS_STACKDATA *stack, int argc) {
-    int digit[8];
-    char text[0x14];
+    int     digit[8];
+    char    text[0x14];
     ClsMes *mes;
-    float time;
-    int minutes;
-    int seconds;
-    int hundredths;
-    int resultNo;
-    int nameNo;
-    int i;
+    float   time;
+    int     minutes;
+    int     seconds;
+    int     hundredths;
+    int     result_no;
+    int     name_no;
+    int     i;
+
     switch (GetStackInt(stack++)) {
         case 0:
             SetGyoRaceAquariumNo(GetStackInt(stack));
@@ -6856,45 +6964,57 @@ int _SET_GYORACE_ETC(RS_STACKDATA *stack, int argc) {
             SetGyoRaceNo(GetStackInt(stack));
             break;
         case 4: {
-            CSaveData *saveData = GetSaveData();
-            if (saveData == NULL) {
+            CSaveData *save_data = GetSaveData();
+
+            if (save_data == NULL) {
                 return 0;
             }
-            saveData->AddTourCountEtc(1);
+
+            save_data->AddTourCountEtc(1);
             break;
         }
         case 5:
             mes = GetEventMessage(GetStackInt(stack++));
+
             if (mes == NULL) {
                 return 0;
             }
-            nameNo = GetStackInt(stack++);
-            resultNo = GetStackInt(stack);
-            if (&fish_game_data[resultNo] == NULL) {
+
+            name_no = GetStackInt(stack++);
+            result_no = GetStackInt(stack);
+
+            if (&fish_game_data[result_no] == NULL) {
                 return 0;
             }
-            if (&fish_game_data[resultNo] != NULL) {
-                strcpy(mes->name[nameNo - 1], fish_game_data[resultNo].name);
+
+            if (&fish_game_data[result_no] != NULL) {
+                strcpy(mes->name[name_no - 1], fish_game_data[result_no].name);
             }
+
             break;
         case 6:
             mes = GetEventMessage(GetStackInt(stack++));
+
             if (mes == NULL) {
                 return 0;
             }
-            nameNo = GetStackInt(stack++);
-            resultNo = GetStackInt(stack);
-            time = fish_game_data[resultNo].time;
+
+            name_no = GetStackInt(stack++);
+            result_no = GetStackInt(stack);
+            time = fish_game_data[result_no].time;
+
             if (time < 0.0f) {
                 time = 0.0f;
             }
+
             if (360000.0f <= time) {
                 time = 360000.0f;
             }
-            minutes = (int)(time / 3600.0f);
+
+            minutes = (int) (time / 3600.0f);
             time -= minutes * 3600.0f;
-            seconds = (int)(time / 60.0f);
-            hundredths = (int)(100.0f * (time - seconds * 60.0f) / 60.0f);
+            seconds = (int) (time / 60.0f);
+            hundredths = (int) (100.0f * (time - seconds * 60.0f) / 60.0f);
             digit[0] = minutes / 10;
             digit[1] = minutes % 10;
             digit[2] = -1;
@@ -6904,6 +7024,7 @@ int _SET_GYORACE_ETC(RS_STACKDATA *stack, int argc) {
             digit[6] = hundredths / 10;
             digit[7] = hundredths % 10;
             memset(text, 0, 0x14);
+
             switch (digit[0]) {
                 case 0:
                     sprintf(text, at_4261__2);
@@ -6939,6 +7060,7 @@ int _SET_GYORACE_ETC(RS_STACKDATA *stack, int argc) {
                     sprintf(text, at_4271__2);
                     break;
             }
+
             for (i = 1; i < 8; i++) {
                 switch (digit[i]) {
                     case 0:
@@ -6976,7 +7098,8 @@ int _SET_GYORACE_ETC(RS_STACKDATA *stack, int argc) {
                         break;
                 }
             }
-            strcpy(mes->name[nameNo - 1], text);
+
+            strcpy(mes->name[name_no - 1], text);
             break;
         case 7:
             InitFishPrize();
@@ -6985,8 +7108,10 @@ int _SET_GYORACE_ETC(RS_STACKDATA *stack, int argc) {
         default:
             return 0;
     }
+
     return 1;
 }
+
 int _GET_GYORACE_ETC(RS_STACKDATA *stack, int argc) {
     FISH_PRIZE_INFO info;
     int             race_no;
@@ -7583,47 +7708,58 @@ int _SET_EVENT_DATA(RS_STACKDATA *stack, int argc) {
 
     return 1;
 }
+
 int _STOPWATCH(RS_STACKDATA *stack, int argc) {
-    CSaveData *saveData = GetSaveData();
-    if (saveData == NULL) {
+    CSaveData *save_data = GetSaveData();
+
+    if (save_data == NULL) {
         return 0;
     }
+
     int mode = GetStackInt(stack++);
+
     if (mode == 0) {
         PlayTimeCount(1);
-        EdEventInfo.stopwatch_start = saveData->play_time;
+        EdEventInfo.stopwatch_start = save_data->play_time;
+
         if (EdEventInfo.stopwatch_start == 0) {
             EdEventInfo.stopwatch_start = 1;
         }
+
         return 1;
     }
+
     if (mode == 1) {
         if (EdEventInfo.stopwatch_start == 0) {
             EdEventInfo.stopwatch_start = 0;
             SetStack(stack, -1);
             return 1;
         } else {
-            u64 elapsed = saveData->play_time - EdEventInfo.stopwatch_start;
+            u64 elapsed = save_data->play_time - EdEventInfo.stopwatch_start;
             EdEventInfo.stopwatch_start = 0;
-            SetStack(stack++, (int)(elapsed / 3600));
-            SetStack(stack++, (int)(elapsed % 3600 / 60));
-            SetStack(stack++, (int)(elapsed % 60 * 100 / 60));
+            SetStack(stack++, (int) (elapsed / 3600));
+            SetStack(stack++, (int) (elapsed % 3600 / 60));
+            SetStack(stack++, (int) (elapsed % 60 * 100 / 60));
             SetStack(stack++, elapsed < 7261);
             return 1;
         }
     }
+
     if (mode == 2) {
         EdEventInfo.stopwatch_limit = GetStackInt(stack);
         return 1;
     }
+
     if (mode == 3) {
         EdEventInfo.stopwatch_x = GetStackInt(stack++);
         EdEventInfo.stopwatch_y = GetStackInt(stack++);
         EdEventInfo.stopwatch_style = GetStackInt(stack);
         return 1;
     }
+
     return 0;
 }
+
 int _SET_FUNC_ETC(RS_STACKDATA *stack, int argc) {
     u32 *flags;
 
@@ -9158,43 +9294,52 @@ int _GET_MES_OKURI(RS_STACKDATA *stack, int argc) {
     SetStack(stack, mes->push_button);
     return 1;
 }
+
 int _GET_FISHINGTOURNAMENT_ETC(RS_STACKDATA *stack, int argc) {
-    int shown;
-    int i;
-    int weight;
-    char *name;
-    int padding;
-    CFishingTournament *tournament;
-    FISH_PRIZE_INFO prize;
-    float size;
-    ClsMes *mes;
+    int                    shown;
+    int                    i;
+    int                    weight;
+    char                  *name;
+    int                    padding;
+    CFishingTournament    *tournament;
+    FISH_PRIZE_INFO        prize;
+    float                  size;
+    ClsMes                *mes;
     FISH_TOURNAMENT_ENTRY *entry;
-    int j;
-    char text[0x200];
-    char itemName[0x20];
-    char nameColumn[0x20];
-    char sizeColumn[0x28];
+    int                    j;
+    char                   text[0x200];
+    char                   item_name[0x20];
+    char                   name_column[0x20];
+    char                   size_column[0x28];
+
     switch (GetStackInt(stack++)) {
         case 0:
             tournament = GetFishTournament();
             shown = 0;
+
             if (tournament == NULL) {
                 return 0;
             }
+
             for (i = 0; i < 10; i++) {
                 entry = tournament->GetRecord(i);
+
                 if (entry != NULL) {
                     name = GetItemMessage(entry->item_no);
+
                     if (name != NULL) {
-                        strcpy(itemName, name);
+                        strcpy(item_name, name);
                         size = entry->size / 10.0f;
                         weight = entry->weight;
-                        sprintf(nameColumn, at_5410, itemName);
-                        padding = 0x16 - strlen(itemName);
+                        sprintf(name_column, at_5410, item_name);
+                        padding = 0x16 - strlen(item_name);
+
                         for (j = 0; j < padding / 2; j++) {
-                            strcat(nameColumn, at_5411);
+                            strcat(name_column, at_5411);
                         }
-                        sprintf(sizeColumn, at_5412, size, weight);
+
+                        sprintf(size_column, at_5412, size, weight);
+
                         switch (shown) {
                             case 0:
                                 strcpy(text, at_5413);
@@ -9229,56 +9374,71 @@ int _GET_FISHINGTOURNAMENT_ETC(RS_STACKDATA *stack, int argc) {
                             default:
                                 return 0;
                         }
+
                         shown++;
-                        strcat(text, nameColumn);
-                        strcat(text, sizeColumn);
+                        strcat(text, name_column);
+                        strcat(text, size_column);
+
                         if (i < 9) {
                             strcat(text, at_5263__2);
                         }
                     }
                 }
             }
+
             mes = GetMes(GetStackInt(stack));
+
             if (mes == NULL) {
                 return 0;
             }
+
             if (0 < shown) {
                 mes->MakeMesWin(text, 0, 1);
             }
+
             break;
         case 1:
             if (GetFishPrize(0, GetStackInt(stack++) - 1, &prize) == 0) {
                 return 0;
             }
+
             SetStack(stack++, prize.unk_0);
             SetStack(stack, prize.unk_4);
             break;
         case 2:
             tournament = GetFishTournament();
+
             if (tournament == NULL) {
                 return 0;
             }
+
             SetStack(stack, tournament->EntryRemain());
             break;
         case 3:
             tournament = GetFishTournament();
+
             if (tournament == NULL) {
                 return 0;
             }
+
             SetStack(stack, tournament->CalcTopWeight());
             break;
         case 4:
             tournament = GetFishTournament();
+
             if (tournament == NULL) {
                 return 0;
             }
+
             SetStack(stack, tournament->rank);
             break;
         default:
             return 0;
     }
+
     return 1;
 }
+
 int _SET_CHARA_FAR_DIST(RS_STACKDATA *stack, int argc) {
     CCharacter2 *chara = GetChara(GetStackInt(stack++));
 
@@ -10684,60 +10844,68 @@ int _OBJS_JUMP(RS_STACKDATA *stack, int argc) {
 
 int _OBJS_SET_EOH_FRAME_POS(RS_STACKDATA *stack, int argc) {
     CSceneObjSeq *seq;
-    float offset[4];
-    int slot;
-    int eohNo;
-    int frames;
-    const int vector_bytes = 0x18;
-    char *frameName;
+    float         offset[4];
+    int           slot;
+    int           eoh_no;
+    int           frames;
+    const int     vector_bytes = 0x18;
+    char         *frame_name;
 
     frames = 0;
     mgZeroVector(offset);
+
     switch (argc) {
         case 3:
             slot = GetStackInt(stack++);
-            eohNo = GetStackInt(stack++);
-            frameName = GetStackString(stack);
+            eoh_no = GetStackInt(stack++);
+            frame_name = GetStackString(stack);
             break;
         case 4:
             slot = GetStackInt(stack++);
-            eohNo = GetStackInt(stack++);
-            frameName = GetStackString(stack++);
+            eoh_no = GetStackInt(stack++);
+            frame_name = GetStackString(stack++);
             frames = GetStackInt(stack);
             break;
         case 6:
             slot = GetStackInt(stack++);
-            eohNo = GetStackInt(stack++);
-            frameName = GetStackString(stack++);
+            eoh_no = GetStackInt(stack++);
+            frame_name = GetStackString(stack++);
             GetStackVector(offset, stack);
             break;
         case 7:
             slot = GetStackInt(stack++);
-            eohNo = GetStackInt(stack++);
-            frameName = GetStackString(stack++);
+            eoh_no = GetStackInt(stack++);
+            frame_name = GetStackString(stack++);
             GetStackVector(offset, stack);
 
-            stack = (RS_STACKDATA *)((u8 *)stack + vector_bytes);
+            stack = (RS_STACKDATA *) ((u8 *) stack + vector_bytes);
             frames = GetStackInt(stack);
             break;
     }
+
     seq = GetObjSeq(slot);
+
     if (seq == NULL) {
         return 0;
     }
-    seq->SetEohFramePos(eohNo, frameName, frames, offset);
+
+    seq->SetEohFramePos(eoh_no, frame_name, frames, offset);
     return 1;
 }
+
 int _OBJS_ADD_POS(RS_STACKDATA *stack, int argc) {
     float add[4];
-    int index;
-    int frame = 1;
+    int   index;
+    int   frame = 1;
+
     switch (argc) {
         case 1: {
             ARG_DATA *args = FindArgData(GetStackInt(stack));
+
             if (args == NULL) {
                 return 0;
             }
+
             index = GetArgInt(args++);
             GetArgVector(add, args);
             frame = GetArgInt(args += 3);
@@ -10748,20 +10916,26 @@ int _OBJS_ADD_POS(RS_STACKDATA *stack, int argc) {
             index = GetStackInt(stack++);
             GetStackVector(add, stack);
             stack += 3;
+
             if (argc >= 5) {
                 frame = GetStackInt(stack++);
             }
+
             break;
         default:
             return 0;
     }
+
     CSceneObjSeq *seq = GetObjSeq(index);
+
     if (seq == NULL) {
         return 0;
     }
+
     seq->AddPos(add, frame);
     return 1;
 }
+
 int _OBJS_ATTACH_CAMERA(RS_STACKDATA *stack, int argc) {
     CSceneObjSeq *seq;
     int           slot;
@@ -11664,21 +11838,25 @@ int VpkFileNameFromVoiceNo(char *name, int voice_no) {
 
     return 0;
 }
+
 int _STREAM_OPEN(RS_STACKDATA *stack, int argc) {
-    char voicePack[0x80];
-    char voicePath[0x80];
+    char voice_pack[0x80];
+    char voice_path[0x80];
     GetStackInt(stack++);
+
     switch (argc) {
         case 2:
             switch (stack->type) {
                 case RS_INT: {
                     EdEventInfo.stream_from_fpl = 1;
-                    int voiceNo = GetStackInt(stack++);
-                    if (VpkFileNameFromVoiceNo(voicePack, voiceNo) == 0) {
+                    int voice_no = GetStackInt(stack++);
+
+                    if (VpkFileNameFromVoiceNo(voice_pack, voice_no) == 0) {
                         return 0;
                     }
-                    sprintf(voicePath, at_6834, voiceNo);
-                    CommandStreamOpenFromFPL(1, voicePack, voicePath);
+
+                    sprintf(voice_path, at_6834, voice_no);
+                    CommandStreamOpenFromFPL(1, voice_pack, voice_path);
                 }
                 case RS_STR:
                     EdEventInfo.stream_from_fpl = 0;
@@ -11691,8 +11869,10 @@ int _STREAM_OPEN(RS_STACKDATA *stack, int argc) {
             CommandStreamOpenFromFPL(1, GetStackString(stack++), GetStackString(stack));
             return 0;
     }
+
     return 0;
 }
+
 int CommandStreamPlay(int stream, int volume) {
     int reverb = sndGetReverbDepth(1);
     int scaled = (int) ((double) volume - 256.0 * (1.5 * (double) reverb));
@@ -12162,34 +12342,49 @@ int _BGM_PLAY_ENABLE(RS_STACKDATA *stack, int argc) {
     (&EventScene->skip_load_sound)[1] = 0;
     return 1;
 }
+
 int _GET_DEF_BGM_NO(RS_STACKDATA *stack, int argc) {
-    int sndId;
-    int bgmNo;
+    int snd_id;
+    int bgm_no;
+
     if (argc == 1) {
-        CScene *scene = EventScene; int map = scene->now_map_no; int sub = scene->now_sub_map_no;
-if (0 < sub) { sndId = GetMapSndDataID(sub); } else { sndId = GetMapSndDataID(map); }
-        bgmNo = EventScene->GetDefBgmNo(sndId);
-        SetStack(stack, bgmNo);
+        CScene *scene = EventScene;
+        int     map = scene->now_map_no;
+        int     sub = scene->now_sub_map_no;
+
+        if (0 < sub) {
+            snd_id = GetMapSndDataID(sub);
+        } else {
+            snd_id = GetMapSndDataID(map);
+        }
+
+        bgm_no = EventScene->GetDefBgmNo(snd_id);
+        SetStack(stack, bgm_no);
         return 1;
     }
+
     if (argc == 2) {
-        sndId = GetMapSndDataID(GetStackInt(stack++));
-        bgmNo = EventScene->GetDefBgmNo(sndId);
-        SetStack(stack, bgmNo);
+        snd_id = GetMapSndDataID(GetStackInt(stack++));
+        bgm_no = EventScene->GetDefBgmNo(snd_id);
+        SetStack(stack, bgm_no);
         return 1;
     }
+
     return 0;
 }
+
 int _SET_MOVIE_CC(RS_STACKDATA *stack, int argc) {
-    int i;
-    int no;
-    int start;
+    int   i;
+    int   no;
+    int   start;
     char *text;
-    int frames;
-    int mode = GetStackInt(stack++);
+    int   frames;
+    int   mode = GetStackInt(stack++);
+
     switch (mode) {
         case 0:
             EdEventInfo.caption_enable = GetStackInt(stack);
+
             if (EdEventInfo.caption_enable == 0) {
                 for (i = 0; i < 18; i++) {
                     EdEventInfo.caption_start[i] = 0;
@@ -12197,18 +12392,22 @@ int _SET_MOVIE_CC(RS_STACKDATA *stack, int argc) {
                     EdEventInfo.caption_frames[i] = 0;
                 }
             }
+
             break;
         case 1:
             no = GetStackInt(stack++);
             start = GetStackInt(stack++);
             text = GetStackString(stack++);
             frames = GetStackInt(stack);
+
             if (no < 0) {
                 return 0;
             }
+
             if (no >= 18) {
                 return 0;
             }
+
             start = start * 50 / 60;
             frames = frames * 50 / 60;
             EdEventInfo.caption_start[no] = start;
@@ -12218,8 +12417,10 @@ int _SET_MOVIE_CC(RS_STACKDATA *stack, int argc) {
         default:
             return 0;
     }
+
     return 1;
 }
+
 int _REGISTER_VILLAGER2(RS_STACKDATA *stack, int argc) {
     int        villager_no;
     int        mode;
@@ -12595,29 +12796,36 @@ void _EOH_SET_STEP(RS_STACKDATA *stack, int argc) {
     argc = GetStackInt(stack++);
     EventObjHandleMother.SetStep(argc, GetStackFloat(stack));
 }
+
 int _EOH_SET_TEX_ANIM(RS_STACKDATA *stack, int argc) {
     int no = GetStackInt(stack);
+
     switch (stack[1].type) {
         case RS_INT:
             if (argc == 2) {
                 return EventObjHandleMother.SetTexAnim(no, 0, NULL);
             }
+
             if (argc == 3) {
                 int result = EventObjHandleMother.SetTexAnim(no, GetStackInt(stack + 1), GetStackString(stack + 2));
                 return result;
             }
+
             return 0;
         case RS_STR: {
             if (argc == 2) {
                 return EventObjHandleMother.SetTexAnim(no, 1, GetStackString(stack + 1));
             }
-            char *offName = GetStackString(stack + 1);
-            char *onName = GetStackString(stack + 2);
-            return EventObjHandleMother.SetTexAnim(no, 0, offName) ? EventObjHandleMother.SetTexAnim(no, 1, onName) : 0;
+
+            char *off_name = GetStackString(stack + 1);
+            char *on_name = GetStackString(stack + 2);
+            return EventObjHandleMother.SetTexAnim(no, 0, off_name) ? EventObjHandleMother.SetTexAnim(no, 1, on_name) : 0;
         }
     }
+
     return 0;
 }
+
 int _EOH_SET_SCALE(RS_STACKDATA *stack, int argc) {
     int   no = GetStackInt(stack++);
     float x = GetStackFloat(stack++);
@@ -15398,38 +15606,49 @@ int _CANCEL_NOW_LOADING(RS_STACKDATA *stack, int argc) {
     CancelNowLoading();
     return 1;
 }
+
 static inline int Ident(int v) {
     return v;
 }
+
 extern "C" void *__vt__9mgCVisual[];
 extern "C" void *__vt__11mgC3DSprite[];
+
 int _ESM_INITIALIZE(RS_STACKDATA *stack, int argc) {
-    int stackNo;
-    int texbOffset = 0;
+    int        stack_no;
+    int        texb_offset = 0;
     mgCMemory *memory;
-    stackNo = GetStackInt(stack++);
+    stack_no = GetStackInt(stack++);
+
     if (argc >= 2) {
-        texbOffset = GetStackInt(stack);
+        texb_offset = GetStackInt(stack);
     }
-    if ((memory = (mgCMemory *)EventScene->GetStack(stackNo)) == NULL) {
+
+    if ((memory = (mgCMemory *) EventScene->GetStack(stack_no)) == NULL) {
         return 0;
     }
+
     CEffectScriptMan *manager;
-    if ((manager = (CEffectScriptMan *)operator new(sizeof(CEffectScriptMan), memory->Alloc(0x11B))) != NULL) {
-        ((void ***)&manager->sprite)[7] = __vt__9mgCVisual;
+
+    if ((manager = (CEffectScriptMan *) operator new(sizeof(CEffectScriptMan), memory->Alloc(0x11B))) != NULL) {
+        ((void ***) &manager->sprite)[7] = __vt__9mgCVisual;
         manager->sprite.Initialize();
-        *(void ***)((u_int)&manager->sprite + 0x1C) = __vt__11mgC3DSprite;
+        *(void ***) ((u_int) &manager->sprite + 0x1C) = __vt__11mgC3DSprite;
         manager->sprite.Initialize();
         manager->Initialize(NULL, -1, -1);
     }
+
     EventEffectScript = manager;
+
     if (EventEffectScript == NULL) {
         return 0;
     }
-    EventEffectScript->Initialize(memory, Ident(EventScene->event_texb) + Ident(texbOffset), EventScene->event_texb_num - texbOffset);
+
+    EventEffectScript->Initialize(memory, Ident(EventScene->event_texb) + Ident(texb_offset), EventScene->event_texb_num - texb_offset);
     EventEffectScript->load_buffer = read_buffer;
     return 1;
 }
+
 int _ESM_INIT_FIX(RS_STACKDATA *stack, int argc) {
     int        stack_no;
     int        heap_size;
@@ -15858,35 +16077,48 @@ int _IS_CLEAR_DESTROY(RS_STACKDATA *stack, int argc) {
     SetStack(stack, floor_manager->IsClearMostFastDestroy());
     return 1;
 }
+
 int _IS_CLEAR_PRACTICE(RS_STACKDATA *stack, int argc) {
     if (argc != 3) {
         return 0;
     }
-    DNG_BATTLE_AREA *area = &EventScene->battle_area;
-    CDngFloorManager *floorManager = &area->floor_manager;
+
+    DNG_BATTLE_AREA  *area = &EventScene->battle_area;
+    CDngFloorManager *floor_manager = &area->floor_manager;
+
     if (area == NULL) {
         return 0;
     }
-    if (floorManager == NULL) {
+
+    if (floor_manager == NULL) {
         return 0;
     }
-    int cleared = floorManager->IsClearPractice(GetStackInt(stack++));
-    CSaveData *saveData = GetSaveData();
-    if (saveData == NULL) {
+
+    int        cleared = floor_manager->IsClearPractice(GetStackInt(stack++));
+    CSaveData *save_data = GetSaveData();
+
+    if (save_data == NULL) {
         return 0;
     }
-    CSaveDataDungeon *dungeon = &saveData->save_dungeon;
+
+    CSaveDataDungeon *dungeon = &save_data->save_dungeon;
+
     if (dungeon == NULL) {
         return 0;
     }
-    DNGMAP_ROOM_INFO *info = floorManager->GetDngMapFloorInfo(dungeon->floor_id[dungeon->stage_id]);
+
+    DNGMAP_ROOM_INFO *info = floor_manager->GetDngMapFloorInfo(dungeon->floor_id[dungeon->stage_id]);
+
     if (info == NULL) {
         return 0;
     }
+
     int bonus = info->practice_type;
+
     switch (bonus) {
         case 2: {
             int param = info->practice_param;
+
             switch (param) {
                 case 1:
                 case 2:
@@ -15897,10 +16129,12 @@ int _IS_CLEAR_PRACTICE(RS_STACKDATA *stack, int argc) {
             }
         }
     }
+
     SetStack(stack++, cleared);
     SetStack(stack, bonus);
     return 1;
 }
+
 int _IS_PLAY_SUB_GAME(RS_STACKDATA *stack, int argc) {
     CDngFloorManager *floor_manager;
     DNG_BATTLE_AREA  *dng_scene;
@@ -16165,47 +16399,60 @@ int _FUNC_POINT_GET_POS(RS_STACKDATA *stack, int argc) {
     SetStack(stack, pos[2]);
     return 1;
 }
+
 static inline CMap *GetActiveEventMap() {
     return EventScene->GetMap(EventScene->active_map);
 }
+
 int _FUNC_POINT_GET_ROT(RS_STACKDATA *stack, int argc) {
-    float rot[4];
-    CMap *map;
-    CFuncPoint *funcPoint;
+    float       rot[4];
+    CMap       *map;
+    CFuncPoint *func_point;
     map = GetActiveEventMap();
+
     if (map == NULL) {
         return 0;
     }
+
     switch (stack->type) {
         case RS_INT: {
-            int partsNo = GetStackInt(stack++);
-            char *name = GetStackString(stack++);
-            CMapParts *parts = map->GetPlaceParts(partsNo);
+            int        parts_no = GetStackInt(stack++);
+            char      *name = GetStackString(stack++);
+            CMapParts *parts = map->GetPlaceParts(parts_no);
+
             if (parts == NULL) {
                 return 0;
             }
-            funcPoint = parts->func_point_mngr.Search(name);
+
+            func_point = parts->func_point_mngr.Search(name);
             break;
         }
         case RS_STR: {
-            char *placeName = GetStackString(stack++);
+            char *place_name = GetStackString(stack++);
             char *name = GetStackString(stack++);
-            if (strcmp(placeName, at_1083) != 0) {
-                CMapParts *parts = map->GetPlaceParts(placeName);
+
+            if (strcmp(place_name, at_1083) != 0) {
+                CMapParts *parts = map->GetPlaceParts(place_name);
+
                 if (parts == NULL) {
                     return 0;
                 }
-                funcPoint = parts->func_point_mngr.Search(name);
+
+                func_point = parts->func_point_mngr.Search(name);
             } else {
-                funcPoint = map->func_point.Search(name);
+                func_point = map->func_point.Search(name);
             }
+
             break;
         }
     }
-    if (funcPoint == NULL) {
+
+    if (func_point == NULL) {
         return 0;
     }
-    *(u_long128 *)rot = *(u_long128 *)funcPoint->rotation;
+
+    *(u_long128 *) rot = *(u_long128 *) func_point->rotation;
+
     switch (argc) {
         case 3:
             SetStack(stack, rot[1]);
@@ -16218,8 +16465,10 @@ int _FUNC_POINT_GET_ROT(RS_STACKDATA *stack, int argc) {
         default:
             return 0;
     }
+
     return 1;
 }
+
 int _ACTCHR_SET_DEF_MOTION(RS_STACKDATA *stack, int argc) {
     int           chara_no;
     int           motion_arg = 0;
@@ -16419,6 +16668,7 @@ int _END_SEPIA(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
+#ifdef NONMATCHING
 int _COPY_MONS2SCNCHR(RS_STACKDATA *stack, int argc) {
     if (ActiveMonster == NULL) {
         return 0;
@@ -16434,14 +16684,14 @@ int _COPY_MONS2SCNCHR(RS_STACKDATA *stack, int argc) {
     int          dst_no = GetStackInt(stack);
     CCharacter2 *copy;
 
-    if ((copy = (CCharacter2 *)operator new(sizeof(CCharacter2), (u_long128 *)memory->Alloc(0x68))) != NULL) {
-        *(void ***)copy = __vt__9mgCObject;
+    if ((copy = (CCharacter2 *) operator new(sizeof(CCharacter2), (u_long128 *) memory->Alloc(0x68))) != NULL) {
+        *(void ***) copy = __vt__9mgCObject;
         copy->Initialize();
-        *(void ***)copy = __vt__7CObject;
+        *(void ***) copy = __vt__7CObject;
         copy->Initialize();
-        *(void ***)copy = __vt__12CObjectFrame;
+        *(void ***) copy = __vt__12CObjectFrame;
         copy->Initialize();
-        *(void ***)copy = __vt__11CCharacter2;
+        *(void ***) copy = __vt__11CCharacter2;
         copy->shadow_link.Initialize();
         copy->Initialize();
     }
@@ -16463,6 +16713,10 @@ int _COPY_MONS2SCNCHR(RS_STACKDATA *stack, int argc) {
     EventScene->SetCharaTexb(dst_no, monster_index + 0x28);
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _COPY_MONS2SCNCHR__FP12RS_STACKDATAi);
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", __ct__7CObjectFRC7CObject);
+#endif
 
 int _UNLOCK_STACK(RS_STACKDATA *stack, int argc) {
     mgCMemory *scene_stack = EventScene->GetStack(GetStackInt(stack));
@@ -16820,17 +17074,22 @@ int _CLEAR_RND_STONE(RS_STACKDATA *stack, int argc) {
     AutoMapGen.ClearRandomStone();
     return 1;
 }
+
 int _GET_FLOOR_STATUS(RS_STACKDATA *stack, int argc) {
     if (argc != 1) {
         return 0;
     }
+
     DNG_BATTLE_AREA *info = &EventScene->battle_area;
+
     if (info == NULL) {
         return 0;
     }
-    SetStack(stack, (int)((u_int)info->floor_status * 16 / 16));
+
+    SetStack(stack, (int) ((u_int) info->floor_status * 16 / 16));
     return 1;
 }
+
 int _SET_FLOOR_STATUS(RS_STACKDATA *stack, int argc) {
     DNG_BATTLE_AREA *info = (&EventScene->battle_area);
     RS_STACKDATA    *args = stack;
@@ -16857,9 +17116,10 @@ int _AMG_GET_ATTR_STATUS(RS_STACKDATA *stack, int argc) {
     if (argc != 4) {
         return 0;
     }
+
     GetStackVector(position, stack);
 
-    stack = (RS_STACKDATA *)((u8 *)stack + 0x18);
+    stack = (RS_STACKDATA *) ((u8 *) stack + 0x18);
     SetStack(stack, AutoMapGen.GetAttrStatus(position));
     return 1;
 }

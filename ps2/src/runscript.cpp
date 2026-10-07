@@ -450,7 +450,7 @@ void CRunScript::exe(vmcode_t *entry) {
                         push_str(code + pc->arg2);
                         break;
                     case RS_CONST_FLOAT:
-                        push_float(*(float *)&pc->arg2);
+                        push_float(*(float *) &pc->arg2);
                         break;
                 }
 

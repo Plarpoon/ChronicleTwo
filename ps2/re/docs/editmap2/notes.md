@@ -41,6 +41,16 @@ COP2 opcodes. A guarded C++ draft forms two XZ-only edge vectors and calls
 `sceVu0OuterProduct`. It compiles, but differs from the retail inline VU0
 instructions; the game build retains the assembly fallback.
 
+## GetEditPartsAlt with placed parts
+
+The guarded C++ draft transforms each candidate polygon into a placed part's
+space, finds horizontal overlap, and raises the best floor height. In retail,
+the `triangle` pointer passed in `a1` to `PlaneNormalXZ` remains in that register
+for `CEditCollision::OverlapPoly3XZ`. MWCC reloads the pointer when the normal
+helper is represented by an external assembly gap, producing one extra
+instruction and a shifted delay slot. The draft scores 98.653595% in objdiff;
+the retail build retains `INCLUDE_ASM` for this function.
+
 ## GetSeSrcVolPan
 
 `CEditMap::GetSeSrcVolPan` gathers sound sources from placed parts and river

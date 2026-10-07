@@ -46,26 +46,35 @@ extern u_long128       at_796__4;
  * Calculates a normal for a triangle projected onto the horizontal plane.
  *
  */
+#ifdef NONMATCHING
+static void PlaneNormalXZ(float *normal, float *p0, float *p1, float *p2) {
+    sceVu0FVECTOR edge1 = {p1[0] - p0[0], 0.0f, p1[2] - p0[2], 0.0f};
+    sceVu0FVECTOR edge2 = {p2[0] - p0[0], 0.0f, p2[2] - p0[2], 0.0f};
+    sceVu0OuterProduct(normal, edge1, edge2);
+}
+#else
 void PlaneNormalXZ(float *normal, float *p0, float *p1, float *p2);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", PlaneNormalXZ__FPfPfPfPf);
+#endif
+#ifdef NONMATCHING
 float CEditMap::GetEditPartsAlt(CEditPartsInfo *info, sceVu0FVECTOR pos, float rot_y, CEditParts **parts, int num) {
-    sceVu0FMATRIX parts_matrix;
-    sceVu0FMATRIX invers_matrix;
-    sceVu0FMATRIX matrix;
-    sceVu0FVECTOR parts_pos;
-    sceVu0FVECTOR offset;
-    sceVu0FVECTOR parts_rot;
-    sceVu0FVECTOR triangle[3];
-    mgVu0FBOX box;
-    sceVu0FVECTOR normal;
+    sceVu0FMATRIX   parts_matrix;
+    sceVu0FMATRIX   invers_matrix;
+    sceVu0FMATRIX   matrix;
+    sceVu0FVECTOR   parts_pos;
+    sceVu0FVECTOR   offset;
+    sceVu0FVECTOR   parts_rot;
+    sceVu0FVECTOR   triangle[3];
+    mgVu0FBOX       box;
+    sceVu0FVECTOR   normal;
     CEditPartsInfo *parts_info;
-    int i;
-    float area;
-    CCPoly *poly;
-    int j;
-    CEditParts *edit_parts;
-    float alt;
-    int poly_count;
+    int             i;
+    float           area;
+    CCPoly         *poly;
+    int             j;
+    CEditParts     *edit_parts;
+    float           alt;
+    int             poly_count;
 
     if (info == NULL) {
         return pos[1];
@@ -110,6 +119,9 @@ float CEditMap::GetEditPartsAlt(CEditPartsInfo *info, sceVu0FVECTOR pos, float r
     }
     return GetEditAlt(alt);
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/editmap2", GetEditPartsAlt__8CEditMapFP14CEditPartsInfoPffPP10CEditPartsi);
+#endif
 int CEditMap::CheckEditParts(CEditPartsInfo *info, float *pos, float rot_y, EP_PLACE_INFO *place, CEditParts **parts, int num) {
     sceVu0FMATRIX parts_matrix;
     sceVu0FMATRIX invers_matrix;

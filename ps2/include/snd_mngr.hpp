@@ -17,11 +17,11 @@
 
 class mgCMemory;
 class sndCSeSeqData;
+
 enum SYSTEM_SE {
     SYSTEM_SE_CURSOR = 0,
     SYSTEM_SE_DECIDE = 1,
 };
-
 
 /**
  *

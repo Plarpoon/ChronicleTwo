@@ -315,11 +315,11 @@ public:
     MENU_SWAPITEM_INFO swap_info;     /**< Where the item being moved came from. */
     s16                cmd_arg_pos;   /**< Position of the item that the command list was opened for. */
     s32                unk_F8;
-    s32                make_item_no; /**< Identifier of the item selected for creation. */
-    int                make_num; /**< Number of objects chosen to make. */
+    s32                make_item_no;  /**< Identifier of the item selected for creation. */
+    int                make_num;      /**< Number of objects chosen to make. */
     s32                make_space_no; /**< Free inventory slot for the item being created. */
-    s8                 make_cursor;  /**< Row the cursor is on in the make question; 0 is the number. */
-    s16                make_num_max; /**< Number of objects that can be made at most. */
+    s8                 make_cursor;   /**< Row the cursor is on in the make question; 0 is the number. */
+    s16                make_num_max;  /**< Number of objects that can be made at most. */
 
     /**
      *

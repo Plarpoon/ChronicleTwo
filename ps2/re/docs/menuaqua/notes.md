@@ -1,5 +1,9 @@
 # menuaqua: reverse-engineering notes
 
+The C++ drafts of `CAquaFish::SetAdjustScale`, `CAquarium::Draw`, and `GyoraceMenuKey`
+still differ from retail. They remain under `NONMATCHING`; their retail assembly gaps make
+the complete menuaqua object pass `check_objects.py`.
+
 Aquarium menu (fish swim, eat food, fight, pair/breed), the gyorace (fish race) fish-select and
 saved-race menus, fish race/fishing tournament prize scripts, and shared sub-game panel drawing.
 No first-game counterpart (Dark Cloud has no aquarium); layouts below come from this game only.

@@ -2946,7 +2946,7 @@ int CheckEquipSetItem(int item_no) {
             return 0;
     }
 }
-#ifdef NONMATCHING
+
 int CActionChara::CheckDamage() {
     sceVu0FVECTOR     position;
     CBattleCharaInfo *battle;
@@ -2967,109 +2967,141 @@ int CActionChara::CheckDamage() {
     if (nowScene__2 == NULL) {
         return 0;
     }
+
     DNG_BATTLE_AREA *battle_area = &nowScene__2->battle_area;
     u32              battle_sound = nowScene__2->se_battle_id;
     u32              chara_sound = sound_info.se_bank;
     battle = GetBattleCharaInfo();
     GetPosition(position);
+
     if (damage_time > 0) {
         return 0;
     }
+
     if (muteki_time > 0) {
         return 0;
     }
+
     handled = 0;
     hit = ColPrimMan.CheckHit(0);
+
     if (hit != NULL) {
         immobilized = 0;
         attributes = battle->GetAttr();
+
         if ((attributes & (CHARA_STATUS_UNK_8 | CHARA_STATUS_UNK_20)) != 0) {
             immobilized = 1;
         }
+
         max_hp = battle->GetMaxHp_i();
         now_hp = battle->GetNowHp_i();
         damage = hit->damage * (1.0f + fRand(0.15f));
         damage -= battle->GetDefenceVol();
+
         if (damage <= 0.0f) {
             damage = 0.0f;
         }
+
         if (hit->param->hit_count > 1) {
             damage /= hit->param->hit_count;
         }
+
         damage += 1.0f + fRand(2.0f);
+
         if ((hit->status & 0x1000) != 0) {
             damage = (int) (max_hp * (0.01f * hit->damage));
+
             if (now_hp - damage < 0.0f) {
                 damage = now_hp - 1.0f;
             }
         }
+
         if ((hit->status & 0x2000) != 0) {
             damage = now_hp / 2;
+
             if (damage <= 1.0f) {
                 damage = 1.0f;
             }
         }
+
         if ((int) damage <= 0) {
             damage = 0.0f;
         }
+
         guarded = guard_flag;
+
         if (guarded != 0) {
             damage *= 0.01f * hit->param->critical_rate;
         }
+
         if (((s16) hit->param->hit_flags & 0x8) != 0) {
             guard_flag = 0;
             guarded = 0;
         }
+
         if (damage >= 0.0f) {
             damage = GetDispVolumeForFloat(damage);
         }
+
         battle->AddHp_Point(-damage, 0.0f);
+
         if ((damage_points = (int) damage) > 0) {
             if ((hit->status & 0x4) != 0 && iRand(100) < 30 &&
                 (attributes & CHARA_STATUS_POISON) == 0 && CheckAmuletAvoid(0x101) == 0) {
                 battle->SetAttr(CHARA_STATUS_POISON, 0);
                 sndSePlay(battle_sound, 0x18, 0);
             }
+
             if ((hit->status & 0x10000) != 0 && battle_area->unk_8c != 2 && iRand(100) < 30 &&
                 (attributes & CHARA_STATUS_UNK_2) == 0 && CheckAmuletAvoid(0x100) == 0) {
                 battle->SetAttrVol(CHARA_STATUS_UNK_2, 3600);
                 sndSePlay(battle_sound, 0x52, 0);
             }
+
             if ((hit->status & 0x8000) != 0 && iRand(100) < 50 &&
                 (attributes & CHARA_STATUS_UNK_20) == 0 && CheckAmuletAvoid(0xFD) == 0) {
                 battle->SetAttrVol(CHARA_STATUS_UNK_20, 900);
                 immobilized = 1;
                 sndSePlay(battle_sound, 0x53, 0);
             }
+
             if ((hit->status & 0x8) != 0 && iRand(100) < 50 &&
                 (attributes & CHARA_STATUS_UNK_8) == 0 && CheckAmuletAvoid(0xFE) == 0) {
                 battle->SetAttrVol(CHARA_STATUS_UNK_8, 300);
                 immobilized = 1;
                 sndSePlay(battle_sound, 0x54, 0);
             }
+
             if ((hit->status & 0x20000) != 0 && iRand(100) < 50 &&
                 (attributes & CHARA_STATUS_UNK_4) == 0 && CheckAmuletAvoid(0xFF) == 0) {
                 battle->SetAttr(CHARA_STATUS_UNK_4, 0);
                 sndSePlay(battle_sound, 0x55, 0);
             }
+
             if ((hit->status & 0x100000) != 0 && iRand(100) < 50) {
                 battle->SetAttr(CHARA_STATUS_UNK_40, 0);
                 sndSePlay(battle_sound, 0x52, 0);
             }
         }
+
         reaction = 2;
+
         if (((s16) hit->param->hit_flags & 0x2) != 0) {
             reaction = 4;
         }
+
         if (((s16) hit->param->hit_flags & 0x4) != 0) {
             reaction = 1;
         }
+
         if (guarded != 0) {
             reaction = 0;
         }
+
         if (immobilized != 0) {
             reaction = 3;
         }
+
         if (battle->GetNowHp_i() <= 0) {
             if (CheckEquipSetItem(0x111) == 0) {
                 reaction = 6;
@@ -3082,32 +3114,41 @@ int CActionChara::CheckDamage() {
                 sndSePlay(SystemSND_ID, 0xA, 0);
             }
         }
+
         sceVu0CopyVector(blow_vec, hit->hit_vec);
         blow_speed = 4.0f;
         blow_rate = 1.0f;
         blow_decel = 0.0f;
         blow_time = 5;
+
         if (guarded != 0) {
             sndSePlay(battle_sound, 0x21, 0);
+
             if (immobilized == 0) {
                 sndSePlay(chara_sound, 0x1D, 0);
             }
+
             GuardEffectSet(nowScene__2, hit->hit_pos);
+
             if (battle->chr_no == USER_CHARA_MONICA) {
                 element = -1;
+
                 if (battle->equip->data.weapon.status[1] > 30) {
                     strongest = 0;
+
                     for (index = 0; index < 4; index++) {
                         if (strongest < hit->param->element[index]) {
                             strongest = hit->param->element[index];
                             element = index;
                         }
                     }
+
                     if (element >= 0) {
                         battle->SetMagicSwordPow(element, hit->damage);
                     }
                 }
             }
+
             if (damage > 0.0f) {
                 HitEffectSet(nowScene__2, hit->hit_pos);
                 pallet[0].SetAnim(255, 128, 128, 1, 45, 0);
@@ -3130,13 +3171,16 @@ int CActionChara::CheckDamage() {
                 shake.time = 8;
                 GamePad__2.SetVibration(1, 128, 20);
             }
+
             if (immobilized == 0) {
                 sndSePlay(chara_sound, 0x24, 0);
             }
+
             sndSePlay(battle_sound, 0x16, 0);
             HitEffectSet(nowScene__2, hit->hit_pos);
             DamageScore2.SetValue(0, damage_points, body_height);
         }
+
         switch (reaction) {
             case 0:
             case 1:
@@ -3149,9 +3193,11 @@ int CActionChara::CheckDamage() {
             case 2:
                 stagger += hit->param->stagger;
                 stagger_time = 60;
+
                 if (stagger >= 2 || (menu_flag != 0 && stand_flag != 0)) {
                     damage_req = ACTION_DAMAGE_REQ_SMALL;
                 }
+
                 handled = 1;
                 break;
             case 4:
@@ -3163,14 +3209,14 @@ int CActionChara::CheckDamage() {
                 break;
         }
     }
+
     if (handled != 0) {
         menu_flag = 0;
     }
+
     return handled;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/actionchara", CheckDamage__12CActionCharaFv);
-#endif
+
 int CActionChara::LoadActionFile(char *script, int size, mgCMemory *memory) {
     SetActionExtendTable();
     chara_kind = 2;

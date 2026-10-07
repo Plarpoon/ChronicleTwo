@@ -271,7 +271,7 @@ public:
      * @address 0x1EC480
      * @size 0x110
      */
-    void DrawDngName(int alpha);
+    void DrawDngName(int opacity);
 
     /**
      *

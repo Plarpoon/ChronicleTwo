@@ -463,7 +463,7 @@ extern short              NowMainCharaChngStatusBit;
 extern int                NowMainCharaChngTexMovePhase;
 extern int                NowMainCharaChngTexMoveX;
 extern short              NowReadMainCharaNo;
-extern u8                *MenuPartyNPCModelReadBuffer;
+extern u_int             *MenuPartyNPCModelReadBuffer;
 extern short              MenuCosutumeLoadPhase;
 extern mgCMemory          MenuChangeMemory;
 extern unsigned long      CostumeAttr;
@@ -3217,48 +3217,38 @@ char *GetMonsterName(int monster_no) {
     return NULL;
 }
 
-#ifdef NONMATCHING
 int get_gajji_id_from_monster_progress_table(int progress_no, int *column_out) {
     int row;
     int column;
 
-    for (row = 0; row < 19; row++) {
-        for (column = 1; column < 5; column++) {
-            if (progress_no == monster_progress_tbl[row * 5 + column]) {
+    for (row = 0; row < MONSTER_PROGRESS_NUM; row++) {
+        for (column = 1; column < 1 + MONSTER_PROGRESS_LEVEL_NUM; column++) {
+            if (progress_no == monster_progress_tbl[row][column]) {
                 if (column_out) {
                     *column_out = column - 1;
                 }
 
-                return monster_progress_tbl[row * 5];
+                return monster_progress_tbl[row][0];
             }
         }
     }
 
     return -1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", get_gajji_id_from_monster_progress_table__FiPi);
-#endif
 
-#ifdef NONMATCHING
 int GetMonsterProgressTableNo(int column, int value) {
-    int  row = 0;
-    s16 *entry = &monster_progress_tbl[column + 1];
+    int row = 0;
 
     do {
-        if (value == *entry) {
+        if (value == monster_progress_tbl[row][column + 1]) {
             return row;
         }
 
         row++;
-        entry += 5;
-    } while (row < 19);
+    } while (row < MONSTER_PROGRESS_NUM);
 
     return -1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", GetMonsterProgressTableNo__Fii);
-#endif
 
 int get_monster_tbl_bajjilevel(int *list, int monster_id, int value, int column) {
     int row;
@@ -3275,9 +3265,9 @@ int get_monster_tbl_bajjilevel(int *list, int monster_id, int value, int column)
 
     for (; row < 19; row++) {
         if (value < 0 ||
-            (0 <= value && column > 0 && value == (monster_progress_tbl + column)[row * 5])) {
-            if (monster_id == monster_progress_tbl[row * 5]) {
-                list[count] = (monster_progress_tbl + column)[row * 5 + 1];
+            (0 <= value && column > 0 && value == monster_progress_tbl[row][column])) {
+            if (monster_id == monster_progress_tbl[row][0]) {
+                list[count] = monster_progress_tbl[row][column + 1];
                 count++;
             }
         }
@@ -3302,7 +3292,7 @@ int get_default_monster_progresstbl(int id) {
     int row;
 
     for (row = 0; row < 19; row++) {
-        if (id == monster_progress_tbl[row * 5]) {
+        if (id == monster_progress_tbl[row][0]) {
             return row;
         }
     }
@@ -3498,7 +3488,6 @@ int MonsterEffectEnter(CScene *scene, u_long128 *buffer, int tex_block) {
     return 0;
 }
 
-#ifdef NONMATCHING
 int CMenuMosSelect::CheckLoadBGMonster() {
     switch (load_phase) {
         case 0: {
@@ -3552,7 +3541,7 @@ int CMenuMosSelect::CheckLoadBGMonster() {
 
                 if (MenuLoadInfo.unk_6[1] == 0) {
                     MonsterScaleCheck(chara.entry[0]);
-                    chara.entry[0]->SetPosition(16.0f, 1.0f, 0.0f);
+                    chara.entry[0]->SetPosition(float(16.0), 1.0f, 0.0f);
                     model_form->SetActionCharaPtr(monster, tex_block, -1);
                     model_form->counter = -14;
                     model_form->draw_flag = 1;
@@ -3615,9 +3604,6 @@ int CMenuMosSelect::CheckLoadBGMonster() {
     skip_draw ^= 1;
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", CheckLoadBGMonster__14CMenuMosSelectFv);
-#endif
 
 void GetBajjiPosition(CMenuPosDataForm *form, int slot, int unused, int *pos) {
     char name[0x20];
@@ -4187,7 +4173,7 @@ int CMenuMosSelect::KeyStep() {
                             break;
                         case 20: {
                             int cursor = info->AddMsgCursor2(0, select_badge->class_level, 0);
-                            view_monster = monster_progress_tbl[select_badge->progress * (1 + MONSTER_PROGRESS_LEVEL_NUM) + 1 + cursor];
+                            view_monster = monster_progress_tbl[select_badge->progress][1 + cursor];
                             switch (buttons) {
                                 case 1:
                                     if (GetUserDataMan()->active_chr_no == 3 &&
@@ -4206,7 +4192,7 @@ int CMenuMosSelect::KeyStep() {
                     }
                     break;
                 case 2: {
-                    s16 *row = &monster_progress_tbl[select_badge->progress * (1 + MONSTER_PROGRESS_LEVEL_NUM)];
+                    s16 *row = monster_progress_tbl[select_badge->progress];
                     int  count = select_badge->class_level + 1;
                     int  level = -1;
                     for (i = 0; i < count; i++) {
@@ -4307,9 +4293,9 @@ int CMenuMosSelect::KeyStep() {
                     info->MsgPreset(6);
                     MonsterNameTable names = at_3511;
                     for (i = 0; i < select_badge->class_level + 1; i++) {
-                        names.name[i] = GetMonsterName(monster_progress_tbl[select_badge->progress * (1 + MONSTER_PROGRESS_LEVEL_NUM) + 1 + i]);
+                        names.name[i] = GetMonsterName(monster_progress_tbl[select_badge->progress][1 + i]);
                         if (GetUserDataMan()->active_chr_no == 3 &&
-                            monster_progress_tbl[select_badge->progress * (1 + MONSTER_PROGRESS_LEVEL_NUM) + 1 + i] == GetUserDataMan()->monster_id &&
+                            monster_progress_tbl[select_badge->progress][1 + i] == GetUserDataMan()->monster_id &&
                             i >= 0 && i < 20) {
                             info->line_color[i] = 0x80202020;
                         }
@@ -4335,7 +4321,7 @@ int CMenuMosSelect::KeyStep() {
                     FadeOutMenu(40, 0.0f);
                     mode = 2;
                     MOS_CHANGE_PARAM *chosen = select_badge;
-                    s16               monsterNo = monster_progress_tbl[chosen->progress * (1 + MONSTER_PROGRESS_LEVEL_NUM) + 1 + info->GetMsgCursor()];
+                    s16               monsterNo = monster_progress_tbl[chosen->progress][1 + info->GetMsgCursor()];
                     chosen->monster_id = monsterNo;
                     view_monster = monsterNo;
                     load_monster = -1;
@@ -4361,7 +4347,7 @@ int CMenuMosSelect::KeyStep() {
                 case 30: {
                     BuildUpWeaponInfo.unk_0 = 1;
                     step = 10;
-                    int monsterNo = monster_progress_tbl[select_badge->progress * (1 + MONSTER_PROGRESS_LEVEL_NUM) + 1 + select_badge->class_level];
+                    int monsterNo = monster_progress_tbl[select_badge->progress][1 + select_badge->class_level];
                     level_num = get_monster_tbl_bajjilevel(level_monster, select, monsterNo, select_badge->class_level + 1);
                     MonsterNameTable names = at_3529;
                     ExeScript(at_3703);
@@ -5945,14 +5931,14 @@ void DrawMainCharaBG() {
 }
 
 int MenuNPCModelLoad(mgCMemory *memory, int chara_no, int background) {
-    int   size;
-    u8   *buffer;
-    char *name;
+    int    size;
+    u_int *buffer;
+    char  *name;
 
     MenuNPCLoadFlag = 0;
     memory->Align64();
     name = GetPartyCharaModelName(chara_no, 3);
-    buffer = memory_free_top(memory);
+    buffer = reinterpret_cast<u_int *>(memory_free_top(memory));
     MenuPartyNPCModelReadBuffer = buffer;
 
     if (name == NULL) {
@@ -5960,7 +5946,7 @@ int MenuNPCModelLoad(mgCMemory *memory, int chara_no, int background) {
     }
 
     if (background != 0) {
-        LoadFileBG(name, (u_long128 *) buffer, &size);
+        LoadFileBG(name, reinterpret_cast<u_long128 *>(buffer), &size);
     } else {
         LoadFile2(name, buffer, &size, 0);
     }
@@ -5973,21 +5959,19 @@ int MenuNPCModelLoad(mgCMemory *memory, int chara_no, int background) {
     return MenuNPCLoadFlag;
 }
 
-#ifdef NONMATCHING
 int MenuNPCLoadCheck(CActionChara *chara, mgCMemory *memory, int tex_block) {
     if (MenuNPCLoadFlag == 1) {
         if (chara != NULL) {
 
-            mgCTextureManager *tex_manager = &mgTexManager;
-            char              *suffix = tex_manager->name_suffix;
+            mgCTextureManager *tex_manager = static_cast<mgCTextureManager *>(&mgTexManager);
             memory->stack_used = 0;
             memory->lock = 0;
-            mgTexManager.DeleteBlock(tex_block);
-            strcpy(suffix, at_4950__2);
+            tex_manager->DeleteBlock(tex_block);
+            strcpy(tex_manager->name_suffix, at_4950__2);
             chara->Initialize(NULL);
-            chara->LoadPack((u_int *) MenuPartyNPCModelReadBuffer, menu_infocfgname, memory, memory, memory,
+            chara->LoadPack(MenuPartyNPCModelReadBuffer, menu_infocfgname, memory, memory, memory,
                             tex_block, 0);
-            suffix[0] = 0;
+            tex_manager->name_suffix[0] = 0;
             MenuNPCLoadFlag = 0;
             return 1;
         }
@@ -5995,9 +5979,6 @@ int MenuNPCLoadCheck(CActionChara *chara, mgCMemory *memory, int tex_block) {
 
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", MenuNPCLoadCheck__FP12CActionCharaP9mgCMemoryi);
-#endif
 
 void CMenuCostumeSel::UpdateCostumeList(int mode, unsigned long chara_flag) {
     WornCostumes worn;
@@ -7143,20 +7124,19 @@ void MonsterBookInit(mgCMemory *stack, int *tex_block, int mode) {
 int MonsterBookKey() {
     return MenuMosBookPtr->KeyStep();
 }
-#ifdef NONMATCHING
+
 void MonsterBookDraw() {
     MenuMosBookPtr->Draw();
+
     if (menu_debug_flag) {
-        DrawMenuFillBox(20.0f, 40.0f, 200.0f, 24.0f, 0x40, 0, 0, 0);
+        DrawMenuFillBox(float(20.0), 40.0f, 200.0f, float(24.0), 0x40, 0, 0, 0);
         CMenuFont font;
         font.SetStr(at_5893);
         font.SetPos(20, 40);
         font.DrawDirect(font.str, font.pos_x, font.pos_y);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", MonsterBookDraw__Fv);
-#endif
+
 /**
  *
  * Short rectangle used for screen positions and bounds.

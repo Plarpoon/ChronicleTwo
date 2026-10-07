@@ -466,7 +466,6 @@ void CRain::Stop() {
     active = 0;
 }
 
-#ifdef NONMATCHING
 void CRain::Start() {
     int   i;
     float position[4];
@@ -490,9 +489,6 @@ void CRain::Start() {
         ripple[i].Birth(position);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scene", Start__5CRainFv);
-#endif
 
 void CRain::Step() {
     int   i;

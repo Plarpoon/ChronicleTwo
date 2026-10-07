@@ -696,7 +696,7 @@ STATIC_ASSERT(sizeof(mgRect<short>) == 0x8);
  * Monster forms of each badge: a badge number, then the monster of each of its four forms.
  *
  */
-extern s16 monster_progress_tbl[MONSTER_PROGRESS_NUM * (1 + MONSTER_PROGRESS_LEVEL_NUM)];
+extern s16 monster_progress_tbl[MONSTER_PROGRESS_NUM][1 + MONSTER_PROGRESS_LEVEL_NUM];
 
 /**
  *

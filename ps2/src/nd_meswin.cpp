@@ -924,7 +924,6 @@ void ClsMes::SetDefColor(u32 rgba) {
     color = def_color;
 }
 
-#ifdef NONMATCHING
 void ClsMes::Preset(int preset) {
     npc_name_mode = 0;
     char_num = 0;
@@ -939,7 +938,7 @@ void ClsMes::Preset(int preset) {
 
     last_x = 0;
     last_y = 0;
-    *(int *) &fade = 0;
+    fade = 0.0f;
     open = 1;
     draw_speed = GetDrawSpeedDef();
     page_wait = 0;
@@ -1104,9 +1103,6 @@ void ClsMes::Preset(int preset) {
             abs_win.height = -1;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nd_meswin", Preset__6ClsMesFi);
-#endif
 
 void ClsMes::SetWindowMode(int mode) {
     if (mode == 2) {

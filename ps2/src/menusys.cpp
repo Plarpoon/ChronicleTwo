@@ -10379,7 +10379,6 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", LRCheck__13CMenuItemInfoFi);
  * Sets the item information cursor indicators for the active menu mode.
  *
  */
-#ifdef NONMATCHING
 void MenuItemInfoCursorSet(int mode) {
     MENU_ITEM_CURSOR_INFO *info = &MenuItemCursorInfo;
     info->enable = 0;
@@ -10422,9 +10421,6 @@ void MenuItemInfoCursorSet(int mode) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuItemInfoCursorSet__Fi);
-#endif
 
 extern u32 status_table_8427[7];
 extern s8  xytable_8428[7][2];

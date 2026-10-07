@@ -6193,7 +6193,11 @@ static int _SET_CAMERA_NEXT_POS(RS_STACKDATA *stack, int argc) {
     return 1;
 }
 
-#ifdef NONMATCHING
+/**
+ *
+ * Tests a segment against event collision polygons and returns hit details to the script.
+ *
+ */
 int _CHK_INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
     float                from[4];
     float                to[4];
@@ -6267,7 +6271,7 @@ int _CHK_INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
     hit = CheckHit(poly, poly_count, from, to, hit_pos, 1, ignore_mask);
 
     if (hit >= 0) {
-        poly += hit;
+        poly = &poly[hit];
         sceVu0Normalize(normal, poly->normal);
         angle = mgReflectionPlane(normal, hit_pos, from, reflection);
         sceVu0Normalize(reflection, reflection);
@@ -6322,11 +6326,12 @@ int _CHK_INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
 
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _CHK_INTERSECTION_POINT__FP12RS_STACKDATAi);
-#endif
 
-#ifdef NONMATCHING
+/**
+ *
+ * Tests a swept segment against event collision polygons and returns hit details to the script.
+ *
+ */
 int _CHK_INTERSECTION_POINT_PIPE(RS_STACKDATA *stack, int argc) {
     float                from[4];
     float                to[4];
@@ -6406,7 +6411,7 @@ int _CHK_INTERSECTION_POINT_PIPE(RS_STACKDATA *stack, int argc) {
     from[3] = 1.0f;
 
     if (hit > 0) {
-        poly += hit_polys[0];
+        poly = &poly[hit_polys[0]];
         sceVu0Normalize(normal, poly->normal);
         angle = mgReflectionPlane(normal, hit_points[0], from, reflection);
         sceVu0Normalize(reflection, reflection);
@@ -6461,9 +6466,6 @@ int _CHK_INTERSECTION_POINT_PIPE(RS_STACKDATA *stack, int argc) {
 
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/event_func", _CHK_INTERSECTION_POINT_PIPE__FP12RS_STACKDATAi);
-#endif
 
 int _SET_FCAMERA_FOLLOW(RS_STACKDATA *stack, int arg_count) {
     float            position[4];

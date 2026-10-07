@@ -1910,7 +1910,7 @@ void CNameRegiMenu::DrawBaseBoard() {
         }
     }
 }
-#ifdef NONMATCHING
+
 void CNameRegiMenu::DrawActiveFont() {
     /**
      *
@@ -1933,14 +1933,18 @@ void CNameRegiMenu::DrawActiveFont() {
     FontTables *tables;
     y = 0x104;
     font_mode = GetActiveFontMode();
+
     if (NameregiGaiji != NULL) {
         MenuReloadTexture(OldReloadTexNumber, NameregiGaiji->block);
     }
+
     font = &grid_font[0];
     tables = &NameRegistFont_Table[font_mode];
+
     if (key_arg_no == 1) {
         DrawMenuFillBox(select_box_x, select_box_y, 14.0f, 21.0f, 0x40, 0x80, 0x20, 0x20);
     }
+
     switch (font_mode) {
         case NAMEREGI_FONT_MODE_HIRA:
         case NAMEREGI_FONT_MODE_KATA:
@@ -1971,10 +1975,12 @@ void CNameRegiMenu::DrawActiveFont() {
             line[0x26] = 0;
             int column = 0;
             line[0x27] = 0;
+
             if (cell < 0x672) {
                 do {
                     char *glyph = &line[column];
                     int   kind = GetNameRegistFontKanjiList(cell, glyph);
+
                     if (kind == 0) {
                         column += 2;
                     } else if (kind == 1) {
@@ -1994,21 +2000,26 @@ void CNameRegiMenu::DrawActiveFont() {
                         font->DrawDirect(font->str, font->pos_x, font->pos_y);
                         break;
                     }
+
                     cell++;
+
                     if (column >= 0x26) {
                         font->SetStr(line);
                         font->SetPos(0x34, y);
                         font->DrawDirect(font->str, font->pos_x, font->pos_y);
                         y += 0x18;
                         column = 0;
+
                         if (y >= 0x194) {
                             break;
                         }
                     }
                 } while (cell < 0x672);
             }
+
             MenuReloadTexture(OldReloadTexNumber, NameRegiTex1->block);
             int mark = 0;
+
             if (0 < mark_num) {
                 do {
                     mgRect<int> mark_tex;
@@ -2018,10 +2029,12 @@ void CNameRegiMenu::DrawActiveFont() {
                     mark++;
                 } while (mark < mark_num);
             }
+
             if (NameregiGaiji != NULL) {
                 MenuReloadTexture(OldReloadTexNumber, NameregiGaiji->block);
                 int i = 0;
                 int glyph_x;
+
                 if (0 < mark_num) {
                     do {
                         int glyph_y = marks[i].y + 3;
@@ -2033,6 +2046,7 @@ void CNameRegiMenu::DrawActiveFont() {
                     } while (i < mark_num);
                 }
             }
+
             break;
         }
         case NAMEREGI_FONT_MODE_KIGOU:
@@ -2045,9 +2059,6 @@ void CNameRegiMenu::DrawActiveFont() {
             break;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/nameregi", DrawActiveFont__13CNameRegiMenuFv);
-#endif
 
 void CNameRegiMenu::StepMarkCursor() {
     float target_x = 0.0f;

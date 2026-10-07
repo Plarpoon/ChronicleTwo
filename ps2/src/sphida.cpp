@@ -240,7 +240,6 @@ void CSphida::Initialize() {
     }
 }
 
-#ifdef NONMATCHING
 void CSphida::SetUp(int arg) {
     CMapParts           *parts[128];
     float                dists[128];
@@ -346,9 +345,6 @@ void CSphida::SetUp(int arg) {
     this->InitStatusSprite();
     this->play_flag = 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sphida", SetUp__7CSphidaFi);
-#endif
 
 void CSphida::s17_SetUp(int arg) {
     this->pin_pos[0] = -1.09f;

@@ -1,6 +1,8 @@
 #include "common.h"
 #include "mw_runtime.h"
 
+#define DNG_MAIN_SOURCE
+
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -15,6 +17,7 @@
 #include "dng_event.hpp"
 #include "dng_hud.hpp"
 #include "dng_main.hpp"
+#undef DNG_MAIN_SOURCE
 #include "dng_status.hpp"
 #include "effscript.hpp"
 #include "event.hpp"
@@ -822,10 +825,14 @@ void InitDungeonMain(INIT_LOOP_ARG arg) {
 }
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", InitDungeonMain__F13INIT_LOOP_ARG);
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", Initialize__13MoveCheckInfoFv);
+#endif
+
+void MoveCheckInfo::Initialize() {
+    memset(this, 0, sizeof(MoveCheckInfo));
+}
+
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", __as__9mgCCameraFRC9mgCCamera);
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dng_main", __ct__14CActiveMonsterFv);
-#endif
 
 void CRedMarkModel::Initialize() {
     draw_request = 0;

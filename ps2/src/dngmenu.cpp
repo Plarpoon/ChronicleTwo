@@ -30,10 +30,10 @@
 
 #ifdef NONMATCHING
 extern float         DngTreeMapActiveLightRate;
-extern CMenuTreeMap *CMenuTreePt;
 extern mgRect<float> treemap_root_put;
 static void          DrawDngRoomInfo(DNGMAP_ROOM_INFO *room);
 #endif
+extern CMenuTreeMap *CMenuTreePt;
 
 // Code (.text)
 #ifdef NONMATCHING
@@ -50,13 +50,15 @@ void CDngFreeMap::Initialize() {
     user_room_no = -1;
     back_scroll = 0.0f;
     pos_x = pos_y = 0.0f;
-    next_pos_x = next_pos_y = 200.0f;
+    next_pos_x = 200.0f;
+    next_pos_y = 200.0f;
     select_glid = NULL;
     InitTexture();
     alpha = 128.0f;
     user_glid = NULL;
     blink_cnt = 0;
-    koma_now = koma_path = NULL;
+    koma_now = NULL;
+    koma_path = NULL;
     koma_move = 0;
     fade_mode = DNGMAP_FADE_NONE;
     fade_time = -1;
@@ -72,30 +74,26 @@ void CDngFreeMap::InitTexture() {
     name_tex = NULL;
     tex_block = -1;
 }
-#ifdef NONMATCHING
+
 void CDngFreeMap::SetUserGlid(int room_no) {
     user_glid = NULL;
-    if (room_no >= 0) {
+
+    if (0 <= room_no) {
         user_glid = GetRoomGlid(room_no);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", SetUserGlid__11CDngFreeMapFi);
-#endif
-#ifdef NONMATCHING
+
 void CDngFreeMap::CalcGlidPutPos(GLID_INFO *glid, float &x, float &y, int board) {
     if (glid != NULL) {
-        x = (float) (glid->x * 52 - glid->y * 16);
-        y = (float) (glid->y * 20);
+        x = glid->x * 52 + glid->y * -16;
+        y = glid->y * 20;
+
         if (board == 0) {
             x += pos_x;
             y += pos_y;
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", CalcGlidPutPos__11CDngFreeMapFP9GLID_INFORfRfi);
-#endif
 #ifdef NONMATCHING
 void CDngFreeMap::CheckIsViewMove(int x, int y, float &move_x, float &move_y) {
     int clipped_x = x;
@@ -118,7 +116,6 @@ void CDngFreeMap::CheckIsViewMove(int x, int y, float &move_x, float &move_y) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", CheckIsViewMove__11CDngFreeMapFiiRfRf);
 #endif
-#ifdef NONMATCHING
 void CDngFreeMap::SetNextRoomPos(GLID_INFO *glid) {
     if (glid != NULL) {
         float x, y, move_x, move_y;
@@ -128,9 +125,7 @@ void CDngFreeMap::SetNextRoomPos(GLID_INFO *glid) {
         next_pos_y = pos_y + move_y;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", SetNextRoomPos__11CDngFreeMapFP9GLID_INFO);
-#endif
+
 GLID_INFO *CDngFreeMap::GetNextGlid(GLID_INFO *glid, int *direction) {
     if (glid == NULL || floor_manager == NULL) {
         return NULL;
@@ -158,40 +153,66 @@ GLID_INFO *CDngFreeMap::GetEntranceRoomGlid() {
 
     return NULL;
 }
-#ifdef NONMATCHING
+
 void CDngFreeMap::SetTextureInfo() {
     map_tex = mgTexManager.GetTexture("dt", -1);
     last_tex = mgTexManager.GetTexture("dtbg", -1);
     koma_tex = mgTexManager.GetTexture("dngop", -1);
     name_tex = mgTexManager.GetTexture("dtname", -1);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", SetTextureInfo__11CDngFreeMapFv);
-#endif
-#ifdef NONMATCHING
+
 void CDngFreeMap::ResetDngMapPos(int room_no, int at_once) {
     GLID_INFO *glid = GetRoomGlid(room_no);
-    if (glid == NULL) {
-        pos_x = next_pos_x = -100.0f;
-        pos_y = next_pos_y = -100.0f;
-        return;
-    }
-    float x, y;
-    CalcGlidPutPos(glid, x, y, 1);
-    next_pos_x = 256.0f - x;
-    next_pos_y = 208.0f - y;
-    if (at_once != 0) {
-        pos_x = next_pos_x;
-        pos_y = next_pos_y;
+
+    if (glid != NULL) {
+        CDngFloorManager *floor = floor_manager;
+        int               width = floor->glid_w;
+        int               height = floor->glid_h;
+        float             room_pos[2];
+        float             edge_x, edge_y, left_x, top_y, right_x, bottom_y;
+
+        for (int index = 0; index < floor_manager->glid_num; index++) {
+            GLID_INFO *cell = &floor_manager->glid_info[index];
+
+            if (cell->x == 0) {
+                CalcGlidPutPos(cell, left_x, edge_y, 1);
+            }
+
+            if (cell->y == 0) {
+                CalcGlidPutPos(cell, edge_x, top_y, 1);
+            }
+
+            if (cell->x == width) {
+                CalcGlidPutPos(cell, right_x, edge_y, 1);
+            }
+
+            if (cell->y == height) {
+                CalcGlidPutPos(cell, edge_x, bottom_y, 1);
+            }
+        }
+
+        CalcGlidPutPos(glid, room_pos[0], room_pos[1], 1);
+        next_pos_x = 256.0f - room_pos[0];
+        next_pos_y = 208.0f - room_pos[1];
+
+        if (at_once != 0) {
+            pos_x = next_pos_x;
+            pos_y = next_pos_y;
+        }
+    } else {
+        pos_x = -100.0f;
+        next_pos_x = -100.0f;
+        pos_y = -100.0f;
+        next_pos_y = -100.0f;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", ResetDngMapPos__11CDngFreeMapFii);
-#endif
-#ifdef NONMATCHING
+
 void CDngFreeMap::DrawBackPattern(int opacity) {
     mgCDrawPrim *prim = GetMenuPrim();
-    if (mode == DNGMAP_MODE_EVENT && opacity >= 0) {
+    if (mode == DNGMAP_MODE_EVENT) {
+        if ((float) opacity < 0.0f) {
+            return;
+        }
         SetSpriteEnv(prim, 2);
         prim->Bilinear(1);
         prim->AntiAliasing(1);
@@ -206,15 +227,13 @@ void CDngFreeMap::DrawBackPattern(int opacity) {
         tile.Set(0, 256, 128, 128);
         DrawMenuTilePattern(prim, map_tex, back_scroll, back_scroll, tile, 1, NULL);
         back_scroll += 0.5f;
-        if (back_scroll >= 0.0f) {
-            back_scroll -= (float) tile.right;
+        if (back_scroll < 0.0f) {
+            return;
         }
+        back_scroll -= (float) tile.right;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DrawBackPattern__11CDngFreeMapFi);
-#endif
-#ifdef NONMATCHING
+
 void CDngFreeMap::DrawDngName(int opacity) {
     if (name_tex != NULL) {
         mgRect<int> tex_rect;
@@ -223,21 +242,19 @@ void CDngFreeMap::DrawDngName(int opacity) {
         SetSpriteEnv(prim, 0);
         prim->Begin(6);
         prim->Texture(name_tex);
-        prim->Color(10, 10, 10, (int) (0.25f * (float) opacity));
+        prim->Color(10, 10, 10, 0.25f * opacity);
         PrimQuad(prim, 4.0f, 4.0f, tex_rect);
         prim->Color(128, 128, 128, 128);
         PrimQuad(prim, 0.0f, 0.0f, tex_rect);
         prim->End();
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DrawDngName__11CDngFreeMapFi);
-#endif
-#ifdef NONMATCHING
+
 void CDngFreeMap::DrawLast() {
     if (last_tex == NULL || mode == DNGMAP_MODE_EVENT) {
         return;
     }
+
     mgCDrawPrim *prim = GetMenuPrim();
     SetSpriteEnv(prim, 4);
     prim->AlphaBlend(1);
@@ -250,9 +267,6 @@ void CDngFreeMap::DrawLast() {
     prim->Vertex(mgScreenWidth, mgScreenHeight, 0);
     prim->End();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DrawLast__11CDngFreeMapFv);
-#endif
 #ifdef NONMATCHING
 /**
  *
@@ -1242,40 +1256,36 @@ void CDngFreeMap::Draw() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Draw__11CDngFreeMapFv);
 #endif
-#ifdef NONMATCHING
 void CDngFreeMap::FadeIn(int frames) {
     fade_mode = DNGMAP_FADE_IN;
     fade_time = frames;
     fade_step = 128.0f;
-    if (frames > 0) {
+
+    if (0 < frames) {
         fade_step = 128.0f / (float) frames;
     }
+
     alpha = 0.0f;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", FadeIn__11CDngFreeMapFi);
-#endif
-#ifdef NONMATCHING
+
 void CDngFreeMap::FadeOut(int frames) {
     fade_mode = DNGMAP_FADE_OUT;
     fade_time = frames;
     fade_step = -128.0f;
-    if (frames > 0) {
+
+    if (0 < frames) {
         fade_step = -128.0f / (float) frames;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", FadeOut__11CDngFreeMapFi);
-#endif
-#ifdef NONMATCHING
+
 void CDngFreeMap::DeleteTexBlock() {
+    mgCTextureManager &manager = mgTexManager;
+
     if (tex_block >= 0) {
-        mgTexManager.DeleteBlock(tex_block);
+        manager.DeleteBlock(tex_block);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DeleteTexBlock__11CDngFreeMapFv);
-#endif
+
 void CDngFreeMap::SetKomaMove(int moving) {
     koma_move = moving;
     koma_now = koma_path;
@@ -1572,22 +1582,19 @@ int CDngFreeMap::LoadDngInfo(mgCMemory *stack, int block, int dungeon, int room,
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", LoadDngInfo__11CDngFreeMapFP9mgCMemoryiiii);
 #endif
 
-#ifdef NONMATCHING
-extern unsigned char DngTreeMode;
-extern unsigned char TreeMapCallDungeonSubMap;
+extern s16 DngTreeMode;
 
 int CheckDngTreeMapFuncType() {
     if (MenuCommonInfo->open_type == 3) {
         return 2;
     }
+
     if (MenuCommonInfo->open_type == 1 || TreeMapCallDungeonSubMap == 1) {
         return 1;
     }
+
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", CheckDngTreeMapFuncType__Fv);
-#endif
 #ifdef NONMATCHING
 extern char *name_tbl_2728[8];
 
@@ -1977,7 +1984,7 @@ int CMenuTreeMap::Step() {
         if (action == 200) {
             MenuSePlay(5);
             FadeOutMenu(40, 0.0f);
-            unk_11a = 0;
+            draw_hidden = 0;
             mode = 2;
             cursor_view = 0;
         } else if (action == 0x78) {
@@ -2053,7 +2060,7 @@ int CMenuTreeMap::Step() {
             if (jump_event) {
                 MenuMainScene->skip_load_bgm = 1;
             }
-            unk_11a = 0;
+            draw_hidden = 0;
             mode = 2;
             FadeOutMenu(40, 0.0f);
         } else if (action == 100) {
@@ -2089,7 +2096,7 @@ int CMenuTreeMap::Step() {
                     DngInfoFloorInfo = target_save;
                     GetSaveData()->GetBitCtrl();
                     DNG_BATTLE_AREA *area = (DNG_BATTLE_AREA *) menu_GetBattleAreaScene();
-                    jump_pay = (area->unk_5c == 0 && MenuCommonInfo->open_type == 1 && !TreeMapCallDungeonSubMap);
+                    jump_pay = (area->battle_clear == 0 && MenuCommonInfo->open_type == 1 && !TreeMapCallDungeonSubMap);
                     int mes_no = 0x3C;
                     if (flags & (DNGMAP_ROOM_FLAG_START | DNGMAP_ROOM_FLAG_SUB | DNGMAP_ROOM_FLAG_EXIT | DNGMAP_ROOM_FLAG_BOSS)) {
                         mes_no = 0x3D;
@@ -2273,7 +2280,7 @@ extern short         TreeMapSaveNum;
 extern float         TreeMapSaveHopCount;
 
 void CMenuTreeMap::Draw() {
-    if ((mode & 2) && unk_11a == 1) {
+    if ((mode & 2) && draw_hidden == 1) {
         return;
     }
     MenuDngMap->Draw();
@@ -2393,42 +2400,42 @@ void CMenuTreeMap::Draw() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Draw__12CMenuTreeMapFv);
 #endif
-#ifdef NONMATCHING
 int CMenuTreeMap::FadeInOutMenu() {
     int done = 0;
+
     switch (mode) {
         case 1:
             done = FadeCheckMenu();
+
             if (done != 0) {
                 FadeOutMenu(40, 0.0f);
             }
+
             break;
         case 2:
-            if (unk_11a == 0) {
+            if (draw_hidden == 0) {
                 done = FadeCheckMenu();
             }
+
             break;
     }
+
     return done;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", FadeInOutMenu__12CMenuTreeMapFv);
-#endif
 #ifdef NONMATCHING
-extern mgCMemory     MenuTreeMapStack;
-extern CMenuTreeMap *CMenuTreePt;
-extern CDngFreeMap  *MenuDngMap;
-extern CDC2Mes      *MenuDngMes[8];
-extern u_long128    *MenuCursorDataBuff;
-extern int           DngInfoRoomInfo;
-extern int           dngfloor_backdraw_alpha;
-extern u8            dngfloor_infoview;
-extern u8            dngfloor_backdraw;
-extern s16           TreeMapSaveDispCount;
-extern u8            DngInfoStageNo;
-extern char         *at_3478[2];
-extern char          at_3539[];
-extern char          at_3540[];
+extern mgCMemory    MenuTreeMapStack;
+extern CDngFreeMap *MenuDngMap;
+extern CDC2Mes     *MenuDngMes[8];
+extern u_long128   *MenuCursorDataBuff;
+extern int          DngInfoRoomInfo;
+extern int          dngfloor_backdraw_alpha;
+extern u8           dngfloor_infoview;
+extern u8           dngfloor_backdraw;
+extern s16          TreeMapSaveDispCount;
+extern u8           DngInfoStageNo;
+extern char        *at_3478[2];
+extern char         at_3539[];
+extern char         at_3540[];
 
 void DngTreeMapInit(mgCMemory *stack, int *tex_block, int menu_mode, int dng_no) {
     MenuTreeMapStack.stSetBuffer(stack->stGetTop(), stack->stGetRest());
@@ -2489,24 +2496,28 @@ void DngTreeMapInit(mgCMemory *stack, int *tex_block, int menu_mode, int dng_no)
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DngTreeMapInit__FP9mgCMemoryPiii);
 #endif
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Init__6ClsMesFv);
-#ifdef NONMATCHING
 extern mgCMemory    MenuTreeMapStack;
 extern CDngFreeMap *MenuDngMap;
 
 int DngTreeMapKey() {
     int result = 0;
+
     if (DngTreeMode == DNG_TREE_MODE_MAP) {
         result = CMenuTreePt->Step();
+
         if (DngTreeMode == DNG_TREE_MODE_SAVE) {
             SetDngTreeFlag(1);
             SaveMapInfo(MenuDngMap->dng_no);
             NowProgramLoopNo = 2;
-            mgCMemory save_stack;
-            save_stack.stSetBuffer(MenuTreeMapStack.stGetTop(), MenuTreeMapStack.stGetRest());
+            mgCMemory  save_stack;
+            int        rest = MenuTreeMapStack.stGetRest();
+            u_long128 *top = MenuTreeMapStack.stGetTop();
+            save_stack.stSetBuffer(top, rest);
             MenuSaveInit(&save_stack, &CMenuTreePt->tex_block[3], 7);
         }
     } else if (DngTreeMode == DNG_TREE_MODE_SAVE) {
         result = MenuSaveKey();
+
         if (result != 0) {
             SetDngTreeFlag(0);
             DngTreeMode = DNG_TREE_MODE_MAP;
@@ -2517,25 +2528,20 @@ int DngTreeMapKey() {
             CMenuTreePt->MsgInit();
         }
     }
+
     return result;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DngTreeMapKey__Fv);
-#endif
-#ifdef NONMATCHING
+
 void DngTreeMapDraw() {
-    switch (DngTreeMode) {
-        case DNG_TREE_MODE_MAP:
-            CMenuTreePt->Draw();
-            break;
-        case DNG_TREE_MODE_SAVE:
-            MenuSaveDraw();
-            break;
+    s16 mode = DngTreeMode;
+
+    if (mode == DNG_TREE_MODE_MAP) {
+        CMenuTreePt->Draw();
+    } else if (mode == DNG_TREE_MODE_SAVE) {
+        MenuSaveDraw();
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DngTreeMapDraw__Fv);
-#endif
+
 int CBaseMenuClass::IsCreateObject(int select_key, int push_button) { return 1; }
 
 int CBaseMenuClass::IsMakeObject(int select_key, int push_button) { return 0; }
@@ -2546,7 +2552,6 @@ int CBaseMenuClass::ItemCmdAfter(int cmd_ret, ITEMCMD_RET_PARA *ret) { return 0;
 
 void CBaseMenuClass::ExitEnd() {}
 
-#ifdef NONMATCHING
 template <>
 void mgRect<float>::Set(float new_left, float new_top, float new_right, float new_bottom) {
     left = new_left;
@@ -2554,9 +2559,6 @@ void mgRect<float>::Set(float new_left, float new_top, float new_right, float ne
     right = new_right;
     bottom = new_bottom;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Set__9mgRect_f_Fffff);
-#endif
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dngmenu", markOffsetTable_1092__DATA);

@@ -294,6 +294,9 @@ void InitMnOnePictTex() {
     MnOnePictTex[7] = 0;
 }
 
+extern "C" void *__ct__14CBaseMenuClassFv(void *);
+extern "C" void *__vt__11CManualMenu[];
+
 void MenuManualInit(mgCMemory *memory, int *tex_block, int mode) {
     CManualMenu *menu;
     u_int       *pack;
@@ -317,7 +320,19 @@ void MenuManualInit(mgCMemory *memory, int *tex_block, int mode) {
     StaticMenuLocalStack.stSetBuffer(memory->stGetTop(), free_size);
     ManualMovie = (CMovie *) operator new(0x23940, StaticMenuLocalStack.Alloc(0x2396));
 
-    menu = new (StaticMenuLocalStack.Alloc(0x1A)) CManualMenu;
+    if ((menu = (CManualMenu *) operator new(sizeof(CManualMenu), StaticMenuLocalStack.Alloc(0x1A))) != NULL) {
+        __ct__14CBaseMenuClassFv(menu);
+        *(void ***) ((u_char *) menu + 0x10C) = __vt__11CManualMenu;
+        menu->movie_stack.Init();
+        menu->select = 0;
+        menu->top = 0;
+        menu->list_y = 400.0f;
+        menu->cursor_jump = 0;
+        menu->pict_mode = 0;
+        menu->pict_num = 0;
+        menu->key_arg_no = 0;
+        menu->movie_stack.stSetBuffer(NULL, 0);
+    }
 
     CManualPtr = menu;
     menu->SetTexBlock(tex_block);
@@ -547,6 +562,8 @@ void MenuManualDraw() {
         CManualPtr->key_arg_no = 0;
     }
 }
+extern "C" void StepMainMenuIconMove__18CMenuPosDataManageFPiii(void *, void *, int, int);
+
 int CManualMenu::KeyStep() {
     int                finished;
     int                move_type;
@@ -585,7 +602,7 @@ int CManualMenu::KeyStep() {
         move_type = 0;
     }
 
-    MenuPosData->StepMainMenuIconMove(common_mode, 8, move_type);
+    StepMainMenuIconMove__18CMenuPosDataManageFPiii(MenuPosData, common_mode, 8, move_type);
     frame_end = GetMenuMainFrameEndFlag();
 
     switch (mode) {
@@ -2663,6 +2680,10 @@ void ResetMapInfo() {
     *(int *) ((u8 *) GetSaveData() + kDungeonNoOffset) = dungeon_no;
 }
 
+extern "C" void *__ct__18CMemoryCardManagerFv(void *);
+extern "C" void *__ct__7CDC2MesFv(void *);
+extern "C" void *__vt__14CSaveMenuClass[];
+
 void MenuSaveInit(mgCMemory *memory, int *tex_block, int mode) {
     CSaveMenuClass     *menu;
     CMemoryCardManager *card;
@@ -2680,11 +2701,44 @@ void MenuSaveInit(mgCMemory *memory, int *tex_block, int mode) {
     free_size = memory->stGetRest();
     SaveMenuStack.stSetBuffer(memory->stGetTop(), free_size);
 
-    menu = new (SaveMenuStack.Alloc(0x1D)) CSaveMenuClass;
+    if ((menu = (CSaveMenuClass *) operator new(sizeof(CSaveMenuClass), SaveMenuStack.Alloc(0x1D))) != NULL) {
+        __ct__14CBaseMenuClassFv(menu);
+        *(void ***) ((u_char *) menu + 0x10C) = __vt__14CSaveMenuClass;
+        menu->first_step = 1;
+        menu->slot = 0;
+        menu->list_jump = 0;
+        menu->top = 0;
+        menu->select = 0;
+        menu->mode = 0;
+        menu->dl_base = 0;
+        menu->save_kind = 1;
+        menu->need_kb = 0;
+        menu->save_kb = 0;
+        menu->check_kb = 0;
+        menu->chapter8_start = 0;
+        menu->save_count = 0;
+        menu->unk_154 = 0;
+        menu->dl_tex = NULL;
+        menu->title_form = NULL;
+        menu->slot_form[0] = NULL;
+        menu->slot_form[1] = NULL;
+        menu->cursor_form = NULL;
+        menu->list_form = NULL;
+        menu->scrlbar_form = NULL;
+        menu->scrlbar_parts[0] = NULL;
+        menu->scrlbar_parts[1] = NULL;
+        menu->scrlbar_parts[2] = NULL;
+        menu->scrlbar_pos[0] = 0;
+        menu->scrlbar_pos[1] = 9;
+        menu->card_ok = 0;
+        menu->card_changed = 0;
+    }
 
     SaveMenuPtr = menu;
 
-    card = new (SaveMenuStack.Alloc(0x112)) CMemoryCardManager;
+    if ((card = (CMemoryCardManager *) operator new(0x1100, SaveMenuStack.Alloc(0x112))) != NULL) {
+        card = (CMemoryCardManager *) __ct__18CMemoryCardManagerFv(card);
+    }
 
     MemoryCardPtr = card;
     InitMenuReturnMsg(&SaveMenuStack);
@@ -2754,7 +2808,9 @@ void MenuSaveInit(mgCMemory *memory, int *tex_block, int mode) {
         }
 
         for (i = 0; i < 13; i++) {
-            window = new (SaveMenuStack.Alloc(0x2A7)) CDC2Mes;
+            if ((window = (CDC2Mes *) operator new(0x2A50, SaveMenuStack.Alloc(0x2A7))) != NULL) {
+                window = (CDC2Mes *) __ct__7CDC2MesFv(window);
+            }
 
             SaveFileList[i] = window;
             SaveFileList[i]->SetMessData(main_messages, main_messages);

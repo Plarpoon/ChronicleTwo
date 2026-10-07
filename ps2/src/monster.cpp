@@ -88,6 +88,7 @@ extern int               dmg_sc_cnt_2104;
 extern s8                init_2105;
 extern SPI_TAG_PARAM     mos_data_anlyze_tag[];
 extern "C" CCameraControl *GetCamera__6CSceneFi(CScene *, int);
+extern "C" void SethitEffect__15CHitEffectImageFPfPfffffii(CHitEffectImage *, float *, float *, float, float, float, float, int, int);
 extern CUserDataManager *DngUserData;
 extern CEffectScriptMan *FxScriptMan;
 float                    SearchArea(CScene *scene, float *from, float *to, float range);
@@ -1161,7 +1162,7 @@ void HitEffectSet(CScene *scene, float *point, int flags) {
     CFlushEffect    *flush;
     float            power;
 
-    camera = (CCameraControl *) scene->GetCamera(scene->active_camera);
+    camera = GetCamera__6CSceneFi(scene, scene->active_camera);
 
     if (camera == NULL) {
         return;
@@ -1191,7 +1192,7 @@ void HitEffectSet(CScene *scene, float *point, int flags) {
         float spread = 30.0f;
         float gravity = 0.1f;
         power = 0.2f;
-        hit->SethitEffect(pos, dir.f, spread, speed, power, gravity, 30, 32);
+        SethitEffect__15CHitEffectImageFPfPfffffii(hit, pos, dir.f, spread, speed, power, gravity, 30, 32);
         hit->kind = 0;
         rect.Set(32, 0, 32, 32);
         HitRectangle copy = *(HitRectangle *) &rect;
@@ -1263,7 +1264,7 @@ void GuardEffectSet(CScene *scene, float *point, int play_script) {
     CHitEffectImage *hit;
     CFlushEffect    *flush;
 
-    camera = (CCameraControl *) scene->GetCamera(scene->active_camera);
+    camera = GetCamera__6CSceneFi(scene, scene->active_camera);
 
     if (camera == NULL) {
         return;

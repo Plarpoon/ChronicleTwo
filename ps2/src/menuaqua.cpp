@@ -230,6 +230,7 @@ extern "C" int AQUA_TITLE_Y;
 extern "C" int AQUA_TITLE_W;
 
 extern "C" int AQUA_TITLE_H;
+extern "C" void Initialize__11CCharacter2Fv(void *character);
 
 extern "C" mgCCameraFollow *Camera__2;
 
@@ -916,7 +917,7 @@ CAquaFish::CAquaFish() {
 }
 
 void CAquaFish::Initialize() {
-    CCharacter2::Initialize();
+    Initialize__11CCharacter2Fv(this);
     mgZeroVector(move);
     mgZeroVector(target_pos);
     mgZeroVector(target_rot);
@@ -3901,7 +3902,7 @@ void CAquarium::SelFishSetCursor() {
         Camera__2->GetCameraMatrix(view);
         Camera__2->GetPos(camera_pos);
         mgSetViewMatrix(view, camera_pos);
-        (fish[sel_fish])->GetPosition(fish_pos);
+        ((CAquaFish *) fish[sel_fish])->GetPosition(fish_pos);
         mgTransWorldScreen(screen_int, fish_pos);
         sceVu0ITOF4Vector(screen, screen_int);
         screen[0] -= 50.0f;

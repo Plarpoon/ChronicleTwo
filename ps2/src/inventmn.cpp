@@ -5185,6 +5185,8 @@ int neta_sort(int mode, int first, int last, int *keys) {
     return swapped;
 }
 
+extern "C" int neta_sort__FiiiPi(int, int, int);
+
 void CMenuInvent::UpdataNetaMemoStr() {
     int              sort_keys[(0x184)];
     CInventUserData *user_data;
@@ -5222,7 +5224,7 @@ void CMenuInvent::UpdataNetaMemoStr() {
     do {
         i = 0;
         i |= neta_sort(unk_392, 0, standard_count, sort_keys);
-        i |= neta_sort(unk_392, standard_count, NetaMemoStrNum, sort_keys);
+        i |= neta_sort__FiiiPi(unk_392, standard_count, NetaMemoStrNum);
     } while (i != 0);
 
     for (i = NetaMemoStrNum; i < (0x200); i++) {
@@ -6666,8 +6668,9 @@ int MenuInventPushKey(int pad, int pushed) {
                         if (neta > 0 && InventUserDataPtr->CheckNetaFlag(neta) < 0) {
                             CursorPos position;
                             CMenuInventPt->GetNetaBoardCursorPosition(i, &position.x);
-                            CMenuInventPt->neta_effect_pos[InventInNetaEffectNum][0] = (float) position.x;
-                            CMenuInventPt->neta_effect_pos[InventInNetaEffectNum][1] = (float) position.y;
+                            float *effect = CMenuInventPt->neta_effect_pos[InventInNetaEffectNum];
+                            effect[0] = (float) position.x;
+                            effect[1] = (float) position.y;
                             CMenuInventPt->neta_effect_alpha[InventInNetaEffectNum] = 0x80;
                             CMenuInventPt->new_neta_photo[i] = 1;
                             InventInNetaEffectNum += 1;

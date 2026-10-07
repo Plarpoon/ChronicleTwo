@@ -272,6 +272,8 @@ public:
     s32 *src_frame; /**< Index of each frame of the first model. */
     s32 *dst_frame; /**< Index of the frame of the second model that matches each entry of src_frame. */
 
+    CCharaFrameMatching() {}
+
     /**
      *
      * Empties the matching.

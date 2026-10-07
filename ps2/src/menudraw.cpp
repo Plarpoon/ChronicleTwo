@@ -5582,6 +5582,13 @@ void CRepairManager::SetRepairData(mgCMemory *memory, int block, unsigned int *p
     keep = 1;
 }
 
+extern void *__vt__9mgCObject[];
+extern void *__vt__7CObject[];
+extern void *__vt__12CObjectFrame[];
+extern void *__vt__11CCharacter2[];
+extern void *__vt__12CActionChara[];
+extern "C" void *__ct__10CRunScriptFv(void *);
+
 void CRepairManager::GeneratePoly(float *pos, int block) {
     int           pack_size;
     unsigned int *pack;
@@ -5593,7 +5600,22 @@ void CRepairManager::GeneratePoly(float *pos, int block) {
     model_stack.stack_used = 0;
     model_stack.lock = 0;
 
-    chara = new (model_stack.Alloc(0x105)) CActionChara;
+    if ((chara = (CActionChara *)operator new(sizeof(CActionChara), model_stack.Alloc(0x105))) != NULL) {
+        *(void **)chara = __vt__9mgCObject;
+        ((mgCObject *)chara)->Initialize();
+        *(void **)chara = __vt__7CObject;
+        ((mgCObject *)chara)->Initialize();
+        *(void **)chara = __vt__12CObjectFrame;
+        ((mgCObject *)chara)->Initialize();
+        *(void **)chara = __vt__11CCharacter2;
+        chara->shadow_link.num = 0;
+        chara->shadow_link.dst_frame = 0;
+        chara->shadow_link.src_frame = 0;
+        ((mgCObject *)chara)->Initialize();
+        *(void **)chara = __vt__12CActionChara;
+        __ct__10CRunScriptFv(&chara->script);
+        memset(&chara->move_check, 0, sizeof(chara->move_check));
+    }
 
     model = chara;
     model->Initialize(NULL);

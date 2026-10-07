@@ -571,10 +571,17 @@ int mgCTextureAnime::SearchGroupName(char *group_name) {
 
 #pragma global_optimizer reset
 
+extern "C" u_char __vt__24CList_15mgCTexAnimeData_[];
+extern "C" void   __ct__15mgCTexAnimeDataFv(void *);
+
 CList<mgCTexAnimeData> *mgCTextureAnime::NewTexAnimeData(mgCMemory *stack) {
     CList<mgCTexAnimeData> *node;
 
-    node = new (stack->Alloc(6)) CList<mgCTexAnimeData>;
+    if ((node = (CList<mgCTexAnimeData> *) operator new(0x40, stack->Alloc(6))) != 0) {
+        *(void **) ((u_char *) node + 0x3C) = __vt__24CList_15mgCTexAnimeData_;
+        __ct__15mgCTexAnimeDataFv((u_char *) node + 8);
+        node->Initialize();
+    }
 
     return node;
 }

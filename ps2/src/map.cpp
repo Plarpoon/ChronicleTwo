@@ -152,6 +152,8 @@ CPartsGroup *CMap::GetPartsGroup(int no) {
     return &parts_group[no];
 }
 
+extern void *__vt__23CList_14PartsGroupData_[];
+
 int CMap::AddPartsGroup(char *name, CMapParts *parts, mgCMemory *memory) {
     int                    group_no;
     char                  *new_name;
@@ -175,7 +177,11 @@ int CMap::AddPartsGroup(char *name, CMapParts *parts, mgCMemory *memory) {
         group->name = new_name;
     }
 
-    node = new (memory->Alloc(3)) CList<PartsGroupData>;
+    if ((node = (CList<PartsGroupData> *) operator new(0x10, memory->Alloc(3))) != 0) {
+        *(void ***) ((u8 *) node + 0xC) = __vt__23CList_14PartsGroupData_;
+        node->data.parts = 0;
+        node->Initialize();
+    }
 
     node->data.parts = parts;
     group->Add(node);
@@ -402,6 +408,8 @@ CMapParts *CMap::GetParts(char *name) {
     return NULL;
 }
 
+extern void *__vt__18CList_P9CMapParts_[];
+
 void CMap::CreateDrawRect(mgCMemory *memory, mgVu0FBOX *rect, mgVu0FBOX *clip, int outside) {
     mgVu0FBOX           parts_box;
     MapDrawOffRect     *slot;
@@ -446,7 +454,10 @@ void CMap::CreateDrawRect(mgCMemory *memory, mgVu0FBOX *rect, mgVu0FBOX *clip, i
                 continue;
             }
 
-            node = new (memory->Alloc(3)) CList<CMapParts *>;
+            if ((node = (CList<CMapParts *> *) operator new(0x10, memory->Alloc(3))) != 0) {
+                *(void ***) ((u8 *) node + 0xC) = __vt__18CList_P9CMapParts_;
+                node->Initialize();
+            }
 
             node->data = parts;
             last = slot->parts;

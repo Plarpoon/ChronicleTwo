@@ -577,6 +577,8 @@ int GetObjectNameList(char *names, CCharacter2 *chara, mgCFrame **frames, int ma
     return count;
 }
 
+extern "C" mgCFrameAttr *__ct__12mgCFrameAttrFv(mgCFrameAttr *);
+
 void CScene::CharaObjectOnOff(int index, mgCMemory *memory) {
     mgCFrame        *frames[16];
     CVillagerInfo   *info;
@@ -608,7 +610,9 @@ void CScene::CharaObjectOnOff(int index, mgCMemory *memory) {
             mgCFrameAttr *attr = frames[i]->attr;
 
             if (attr == NULL && memory != NULL) {
-                attr = new (memory->Alloc(0xB)) mgCFrameAttr;
+                if ((attr = (mgCFrameAttr *) operator new(0x90, (u_long128 *) memory->Alloc(0xB))) != NULL) {
+                    attr = __ct__12mgCFrameAttrFv(attr);
+                }
 
                 frames[i]->attr = attr;
             }
@@ -626,7 +630,9 @@ void CScene::CharaObjectOnOff(int index, mgCMemory *memory) {
             mgCFrameAttr *attr = frames[j]->attr;
 
             if (attr == NULL && memory != NULL) {
-                attr = new (memory->Alloc(0xB)) mgCFrameAttr;
+                if ((attr = (mgCFrameAttr *) operator new(0x90, (u_long128 *) memory->Alloc(0xB))) != NULL) {
+                    attr = __ct__12mgCFrameAttrFv(attr);
+                }
 
                 frames[j]->attr = attr;
             }

@@ -56,6 +56,12 @@ extern char at_244[];
  * List node that tracks animation of a map part.
  *
  */
+class ObjAnimeNodeLinks {
+    u_char unk_00[0x40];
+
+public:
+    virtual void Initialize();
+};
 
 /**
  *
@@ -1031,13 +1037,22 @@ int CMapParts::AssignFuncAnime(mgCMemory *memory) {
 
     if ((point = func_point_mngr.Get()) != NULL) {
         do {
-            node = new (memory->Alloc(7)) CList<CObjAnime>;
+            if ((node = (CList<CObjAnime> *) operator new(sizeof(CList<CObjAnime>), memory->Alloc(7))) != NULL) {
+                node->vtable = &__vt__17CList_9CObjAnime_;
+                node->data.frame = NULL;
+                node->data.piece = NULL;
+                node->data.parts = NULL;
+                node->data.func_point = NULL;
+                node->data.back = 0;
+                node->data.stop = 0;
+                ((ObjAnimeNodeLinks *) node)->Initialize();
+            }
 
             if (node == NULL) {
                 return 0;
             }
 
-            node->Initialize();
+            ((ObjAnimeNodeLinks *) node)->Initialize();
 
             last = anime_list;
 

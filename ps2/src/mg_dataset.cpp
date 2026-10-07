@@ -24,6 +24,18 @@ extern char  *name_def_276;
 extern s8     init_277;
 extern int    flag_571;
 extern s8     init_572;
+extern char   __vt__12mgCShadowMDT[];
+extern char   __vt__12mgCVisualMDT[];
+extern char   __vt__15mgCShadowFixMDT[];
+extern char   __vt__15mgCVisualFixMDT[];
+extern char   __vt__18mgCVisualMotionMDT[];
+extern char   __vt__9mgCVisual[];
+
+extern "C" void         *__nw__FUiP1(u_int size, void *where);
+extern "C" void         *__nwa__FUiP1(u_int size, void *where);
+extern "C" mgCFrameAttr *__ct__12mgCFrameAttrFv(mgCFrameAttr *self);
+extern "C" mgCObject    *__ct__8mgCFrameFv(mgCObject *self);
+extern "C" void         *__construct_new_array(void *, mgCObject *(*)(mgCObject *), void *, u_int, int);
 
 /**
  *
@@ -537,7 +549,9 @@ static int CreateFrameVisual(mgCFrame *input_frame, mgCMemory *input_memory, mgC
     }
 
     if (current != 0 || object->mdt_ofs != 0 || parent == NULL) {
-        attr = new (memory->Alloc(0xB)) mgCFrameAttr;
+        if ((attr = (mgCFrameAttr *) __nw__FUiP1(0x90, memory->Alloc(0xB))) != 0) {
+            attr = __ct__12mgCFrameAttrFv(attr);
+        }
 
         if (attr != NULL) {
             attr->Initialize();
@@ -571,21 +585,80 @@ static int CreateFrameVisual(mgCFrame *input_frame, mgCMemory *input_memory, mgC
     }
 
     switch (type) {
-        case MG_VISUAL_CREATE_MDT:
-            visual = new (memory->Alloc(0x7)) mgCVisualMDT;
+        case MG_VISUAL_CREATE_MDT: {
+            mgCVisualMDT *created;
+
+            if ((created = (mgCVisualMDT *) __nw__FUiP1(0x50, memory->Alloc(0x7))) != 0) {
+                *(void **) ((char *) created + 0x1C) = __vt__9mgCVisual;
+                created->Initialize();
+                *(void **) ((char *) created + 0x1C) = __vt__12mgCVisualMDT;
+                created->Initialize();
+            }
+
+            visual = created;
             break;
-        case MG_VISUAL_CREATE_FIX_MDT:
-            visual = new (memory->Alloc(0x7)) mgCVisualFixMDT;
+        }
+        case MG_VISUAL_CREATE_FIX_MDT: {
+            mgCVisualMDT *created;
+
+            if ((created = (mgCVisualMDT *) __nw__FUiP1(0x50, memory->Alloc(0x7))) != 0) {
+                *(void **) ((char *) created + 0x1C) = __vt__9mgCVisual;
+                created->Initialize();
+                *(void **) ((char *) created + 0x1C) = __vt__12mgCVisualMDT;
+                created->Initialize();
+                *(void **) ((char *) created + 0x1C) = __vt__15mgCVisualFixMDT;
+                created->Initialize();
+            }
+
+            visual = created;
             break;
-        case MG_VISUAL_CREATE_MOTION_MDT:
-            visual = new (memory->Alloc(0x13)) mgCVisualMotionMDT;
+        }
+        case MG_VISUAL_CREATE_MOTION_MDT: {
+            mgCVisualMDT *created;
+
+            if ((created = (mgCVisualMDT *) __nw__FUiP1(0x110, memory->Alloc(0x13))) != 0) {
+                *(void **) ((char *) created + 0x1C) = __vt__9mgCVisual;
+                created->Initialize();
+                *(void **) ((char *) created + 0x1C) = __vt__12mgCVisualMDT;
+                created->Initialize();
+                *(void **) ((char *) created + 0x1C) = __vt__15mgCVisualFixMDT;
+                created->Initialize();
+                *(void **) ((char *) created + 0x1C) = __vt__18mgCVisualMotionMDT;
+                created->Initialize();
+            }
+
+            visual = created;
             break;
-        case MG_VISUAL_CREATE_SHADOW_MDT:
-            visual = new (memory->Alloc(0x7)) mgCShadowMDT;
+        }
+        case MG_VISUAL_CREATE_SHADOW_MDT: {
+            mgCVisualMDT *created;
+
+            if ((created = (mgCVisualMDT *) __nw__FUiP1(0x50, memory->Alloc(0x7))) != 0) {
+                *(void **) ((char *) created + 0x1C) = __vt__9mgCVisual;
+                created->Initialize();
+                *(void **) ((char *) created + 0x1C) = __vt__12mgCVisualMDT;
+                created->Initialize();
+                *(void **) ((char *) created + 0x1C) = __vt__12mgCShadowMDT;
+            }
+
+            visual = created;
             break;
-        case MG_VISUAL_CREATE_SHADOW_FIX_MDT:
-            visual = new (memory->Alloc(0x7)) mgCShadowFixMDT;
+        }
+        case MG_VISUAL_CREATE_SHADOW_FIX_MDT: {
+            mgCVisualMDT *created;
+
+            if ((created = (mgCVisualMDT *) __nw__FUiP1(0x50, memory->Alloc(0x7))) != 0) {
+                *(void **) ((char *) created + 0x1C) = __vt__9mgCVisual;
+                created->Initialize();
+                *(void **) ((char *) created + 0x1C) = __vt__12mgCVisualMDT;
+                created->Initialize();
+                *(void **) ((char *) created + 0x1C) = __vt__12mgCShadowMDT;
+                *(void **) ((char *) created + 0x1C) = __vt__15mgCShadowFixMDT;
+            }
+
+            visual = created;
             break;
+        }
     }
 
     memory->Alloc(1);
@@ -723,7 +796,8 @@ mgCFrame *mgLoadMDSFile(mgLoadData *load) {
         blocks = (i * 0x110) >> 4;
     }
 
-    frames = new (memory->Alloc(blocks + 2)) mgCFrame[i];
+    frames = (mgCFrame *) __construct_new_array(
+        __nwa__FUiP1(i * 0x110 + 0x10, memory->Alloc(blocks + 2)), __ct__8mgCFrameFv, 0, 0x110, i);
 
     if ((mds->object_num * 4) & 0xF) {
         blocks = ((mds->object_num * 4) >> 4) + 1;
@@ -889,7 +963,9 @@ void CopyFrame(mgCFrame *dst, mgCFrame *src, mgCMemory *memory, int copy_visual,
     if (source_attr != 0) {
         mgCFrameAttr *attr;
 
-        attr = new (memory->Alloc(0xB)) mgCFrameAttr;
+        if ((attr = (mgCFrameAttr *) __nw__FUiP1(0x90, memory->Alloc(0xB))) != 0) {
+            attr = __ct__12mgCFrameAttrFv(attr);
+        }
 
         attr->alpha_ref = source_attr->alpha_ref;
         attr->alpha_blend = source_attr->alpha_blend;
@@ -963,7 +1039,9 @@ mgCVisual *mgCVisual::Copy(mgCMemory *memory) {
 mgCFrame *CopyFrameSub(mgCFrame *src, mgCMemory *memory, int copy_visual, mgCFrame **frame_table) {
     mgCFrame *frame;
 
-    frame = new (memory->Alloc(0x13)) mgCFrame;
+    if ((frame = (mgCFrame *) __nw__FUiP1(0x110, memory->Alloc(0x13))) != 0) {
+        frame = (mgCFrame *) __ct__8mgCFrameFv((mgCObject *) frame);
+    }
 
     if (frame == 0) {
         return 0;
@@ -1124,7 +1202,9 @@ void mgCMDTBuilder::End(mgCFrame *frame, mgCVisualMDT *visual, mgLoadData *load)
     frame->SetBSphere(sphere, sphere[3]);
     mgCFrameAttr *attr;
 
-    attr = new (load->memory->Alloc(0xB)) mgCFrameAttr;
+    if ((attr = (mgCFrameAttr *) __nw__FUiP1(0x90, load->memory->Alloc(0xB))) != 0) {
+        attr = __ct__12mgCFrameAttrFv(attr);
+    }
 
     frame->attr = attr;
 }

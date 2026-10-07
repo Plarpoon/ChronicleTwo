@@ -790,19 +790,18 @@ void EditInit(INIT_LOOP_ARG arg) {
     NowLoadingBarSteEnd();
     DeleteNowLoading();
 }
-CameraCtrlParam &CameraCtrlParam::operator=(const CameraCtrlParam &source) {
-    min_dist = source.min_dist;
-    max_dist = source.max_dist;
-    near_height = source.near_height;
-    far_height = source.far_height;
-    height = source.height;
-    max_height = source.max_height;
-    min_height = source.min_height;
-    rest_max_height = source.rest_max_height;
-    rest_min_height = source.rest_min_height;
-    ground_space = source.ground_space;
-    no_check = source.no_check;
-    return *this;
+/**
+ *
+ * Copies every camera distance and height limit from another parameter set.
+ *
+ * @mangled __as__15CameraCtrlParamFRC15CameraCtrlParam
+ * @address 0x1ACEE0
+ * @size 0x60
+ */
+extern "C" CameraCtrlParam &__as__15CameraCtrlParamFRC15CameraCtrlParam(CameraCtrlParam       *destination,
+                                                                         const CameraCtrlParam *source) {
+    *destination = *source;
+    return *destination;
 }
 void EditExit() {
     sndSeAllStop(1);

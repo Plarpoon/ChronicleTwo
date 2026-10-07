@@ -144,6 +144,10 @@ extern VpkTable          at_6800__2;
 extern CEventSprite2     EventSprite2[0x30];
 extern CSceneObjSeq      ObjectSeq[32];
 extern CSceneCmrSeq      CameraSeq;
+extern "C" void *__vt__9mgCObject[];
+extern "C" void *__vt__7CObject[];
+extern "C" void *__vt__12CObjectFrame[];
+extern "C" void *__vt__11CCharacter2[];
 extern mgCMemory         BuffEventSnd;
 extern mgCMemory         BuffEventSnd2;
 extern u_long128         event_snd_buff[];
@@ -5521,7 +5525,19 @@ int _COPY_CHARA(RS_STACKDATA *stack, int argc) {
     CCharacter2 *source = GetCharacter(src_no);
     CCharacter2 *copy;
 
-    copy = new (memory->Alloc(0x68)) CCharacter2;
+    if ((copy = (CCharacter2 *)operator new(sizeof(CCharacter2), (u_long128 *)memory->Alloc(0x68))) != NULL) {
+        *(void ***)copy = __vt__9mgCObject;
+        copy->Initialize();
+        *(void ***)copy = __vt__7CObject;
+        copy->Initialize();
+        *(void ***)copy = __vt__12CObjectFrame;
+        copy->Initialize();
+        *(void ***)copy = __vt__11CCharacter2;
+        copy->shadow_link.num = 0;
+        copy->shadow_link.dst_frame = 0;
+        copy->shadow_link.src_frame = 0;
+        copy->Initialize();
+    }
 
     if (source == NULL) {
         return 0;
@@ -16428,7 +16444,17 @@ int _COPY_MONS2SCNCHR(RS_STACKDATA *stack, int argc) {
     int          dst_no = GetStackInt(stack);
     CCharacter2 *copy;
 
-    copy = new (memory->Alloc(0x68)) CCharacter2;
+    if ((copy = (CCharacter2 *)operator new(sizeof(CCharacter2), (u_long128 *)memory->Alloc(0x68))) != NULL) {
+        *(void ***)copy = __vt__9mgCObject;
+        copy->Initialize();
+        *(void ***)copy = __vt__7CObject;
+        copy->Initialize();
+        *(void ***)copy = __vt__12CObjectFrame;
+        copy->Initialize();
+        *(void ***)copy = __vt__11CCharacter2;
+        copy->shadow_link.Initialize();
+        copy->Initialize();
+    }
 
     if (copy == NULL) {
         return 0;

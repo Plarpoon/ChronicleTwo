@@ -14,6 +14,8 @@
 #include "scriptinterpreter.hpp"
 
 extern SPI_TAG_PARAM     tag_movie[];
+extern "C" void         *__ct__18CScriptInterpreterFv(void *);
+extern "C" void         *__ct__11mgCDrawPrimFv(void *);
 extern CMovie           *MovieView;
 extern int               MovieMode;
 extern short             MovieSelect;
@@ -180,7 +182,7 @@ void MovieViewInit(INIT_LOOP_ARG arg) {
     script_ptr = script;
 
     if (LoadFile2(at_843__4, script_ptr, &script_size, 0) != 0) {
-        new ((u_long128 *) interpreter) CScriptInterpreter;
+        __ct__18CScriptInterpreterFv(interpreter);
         ((CScriptInterpreter *) interpreter)->SetTag(tag_movie);
         ((CScriptInterpreter *) interpreter)->SetScript(script_ptr, script_size);
         ((CScriptInterpreter *) interpreter)->Run();
@@ -356,7 +358,7 @@ int MovieViewLoop() {
         mgPerformanceMeter(0);
         textures->ReloadTexture(0xA, (sceVif1Packet *) 0);
         MovieView->SwitchThread();
-        new ((u_long128 *) &prim) mgCDrawPrim;
+        __ct__11mgCDrawPrimFv(&prim);
         ((CPreSprite *) prim)->Initialize(NULL, NULL);
         ((CPreSprite *) prim)->Preset2D();
         ((CPreSprite *) prim)->AlphaBlendEnable(0);

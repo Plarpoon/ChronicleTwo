@@ -456,9 +456,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/convviewlp", at_1167__2__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/convviewlp", at_1168__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/convviewlp", at_1169__DATA);
 
-// Static initialiser table (.ctor)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/convviewlp", D_0037B0A0__DATA);
-
 // Small uninitialised data (.sbss)
 INCLUDE_BSS(MovieScene__2, 0x4);
 INCLUDE_BSS(ConvMode, 0x4);

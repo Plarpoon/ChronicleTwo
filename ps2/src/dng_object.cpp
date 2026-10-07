@@ -45,6 +45,8 @@
 #include "sound.hpp"
 #include "water.hpp"
 
+extern "C" void *__ct__11mgCDrawPrimFv(void *);
+
 /**
  *
  * Vector copied as four floats or one quadword.
@@ -473,19 +475,23 @@ void CRocketLauncher::Step() {
 }
 
 void CRocketLauncher::Draw() {
+    union {
+        CPreSprite sprite;
+    };
+    float smooth[128][4];
+    int   corner_a[4];
+    int   corner_b[4];
+    float look_matrix[4][4];
+    int   points;
+    int   index;
+    float fade;
+    float size;
+
     if (state == 0) {
         return;
     }
 
-    CPreSprite sprite;
-    float      smooth[128][4];
-    int        corner_a[4];
-    int        corner_b[4];
-    float      look_matrix[4][4];
-    int        points;
-    int        index;
-    float      fade;
-    float      size;
+    __ct__11mgCDrawPrimFv(&sprite);
 
     if (draw_flags & 2) {
         points = CreatSmoothPass(smooth, trail, 0x10, 6, trail_index, 0x10);

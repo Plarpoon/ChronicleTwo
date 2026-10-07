@@ -5565,6 +5565,7 @@ extern u8 __vt__7CObject[];
 extern u8 __vt__12CObjectFrame[];
 extern u8 __vt__11CCharacter2[];
 extern u8 __vt__12CActionChara[];
+extern "C" void *__ct__10CRunScriptFv(void *);
 
 /**
  *
@@ -5587,7 +5588,7 @@ static inline CActionChara *NewMenuActionChara(mgCMemory *stack) {
         chara->shadow_link.src_frame = 0;
         ((mgCObject *) chara)->Initialize();
         *(void **) chara = __vt__12CActionChara;
-        new ((u_long128 *) &chara->script) CRunScript;
+        __ct__10CRunScriptFv(&chara->script);
         memset(&chara->move_check, 0, sizeof(chara->move_check));
     }
 
@@ -5606,7 +5607,7 @@ extern char at_4955[];
 extern char at_4956[];
 extern char at_4957[];
 #ifdef NONMATCHING
-// ~18.0% match, 554 words off
+// ~18.2% match, 549 words off
 int CMenuItemInfo::IsAskExtend(int select_key, int push_button) {
     mgCMemory *load_stack = &MenuCharaLoadStack;
     mgCMemory work;
@@ -7818,6 +7819,8 @@ void MenuItemDebugDraw(void) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuItemDebugDraw__Fv);
 #endif
 
+extern "C" void __ct__13CGameDataUsedFv(void *);
+
 int CMenuItemInfo::PushKey(int pad, int trigger) {
     int               leaving = 0;
     CHARA_DATA       *chara;
@@ -8207,7 +8210,7 @@ int CMenuItemInfo::PushKey(int pad, int trigger) {
                     break;
                 case kCmdSortBag: {
                     int found = 0;
-                    new ((u_long128 *) &saved_item) CGameDataUsed;
+                    __ct__13CGameDataUsedFv(&saved_item);
                     short view_mode = this->view_mode;
 
                     if ((view_mode == 2 || view_mode == 5) &&
@@ -8559,14 +8562,16 @@ int CMenuItemInfo::PushKey(int pad, int trigger) {
                     if (trigger & 1) {
                         int changed = 0;
                         int i = 0;
+                        int offset = 0;
 
                         do {
-                            if (SpectolInfoStay.data.weapon.attribute[i] <
-                                item->data.weapon.attribute[i]) {
+                            if (*(short *) ((u8 *) saved_words + offset + 0x16) <
+                                *(short *) ((u8 *) words + offset + 0x16)) {
                                 changed = 1;
                             }
 
                             i += 1;
+                            offset += 2;
                         } while (i < 5);
 
                         if (changed != 0) {

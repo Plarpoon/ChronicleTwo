@@ -42,6 +42,34 @@
 
 extern int MenuCharaChangePosDataCfgBuffer;
 
+extern void *__vt__9mgCObject[];
+extern void *__vt__7CObject[];
+extern void *__vt__12CObjectFrame[];
+extern void *__vt__11CCharacter2[];
+extern void *__vt__12CActionChara[];
+extern "C" void *__ct__10CRunScriptFv(void *);
+
+static inline CActionChara *NewMenuActionChara(mgCMemory *stack) {
+    CActionChara *chara;
+    if ((chara = (CActionChara *) operator new(sizeof(CActionChara), stack->Alloc(0x105))) != NULL) {
+        *(void **) chara = __vt__9mgCObject;
+        ((mgCObject *) chara)->Initialize();
+        *(void **) chara = __vt__7CObject;
+        ((mgCObject *) chara)->Initialize();
+        *(void **) chara = __vt__12CObjectFrame;
+        ((mgCObject *) chara)->Initialize();
+        *(void **) chara = __vt__11CCharacter2;
+        chara->shadow_link.num = 0;
+        chara->shadow_link.dst_frame = 0;
+        chara->shadow_link.src_frame = 0;
+        ((mgCObject *) chara)->Initialize();
+        *(void **) chara = __vt__12CActionChara;
+        __ct__10CRunScriptFv(&chara->script);
+        memset(&chara->move_check, 0, sizeof(chara->move_check));
+    }
+    return chara;
+}
+
 inline CMenuChrCngMenu::CMenuChrCngMenu() {
     change_phase = 0;
     change_chara = -1;
@@ -1177,7 +1205,7 @@ void CMenuChrCngMenu::EnterNPCFaceData() {
 int CMenuChrCngMenu::LoadBGNPCModel(int restart_read) {
     mgCMemory *stack = &MenuCharaLoadStack;
     stack->stReset();
-    npc_chara = new (stack->Alloc(0x105)) CActionChara;
+    npc_chara = NewMenuActionChara(stack);
     npc_chara->Initialize(NULL);
     stack->Align64();
     npc_build_stack.stSetBuffer(stack->stGetTop(), 0xCD00);
@@ -2860,6 +2888,9 @@ void MenuCharaChangeStarDraw() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuchr", MenuCharaChangeStarDraw__Fv);
 #endif
+
+extern "C" void *__ct__14CBaseMenuClassFv(void *self);
+
 int MenuCharaChangeInit(mgCMemory *stack, int *tex_block, int mode) {
     u_long128       *buffer;
     int              size;
@@ -2867,6 +2898,7 @@ int MenuCharaChangeInit(mgCMemory *stack, int *tex_block, int mode) {
     CMenuChrCngMenu *menu;
     CRepairManager  *repair;
     int              i;
+    mgCMemory       *slot;
     CCharacter2     *chara;
     short            party_chara;
 
@@ -2883,7 +2915,81 @@ int MenuCharaChangeInit(mgCMemory *stack, int *tex_block, int mode) {
     MenuChangeMemory.stSetBuffer(stack->stGetTop(), size);
     MenuChangeMemory.Alloc(0x100);
 
-    menu = new (MenuChangeMemory.Alloc(0x1FA)) CMenuChrCngMenu;
+    if ((menu = (CMenuChrCngMenu *) operator new(0x1F80, (u_long128 *) MenuChangeMemory.Alloc(0x1FA))) != NULL) {
+        __ct__14CBaseMenuClassFv(menu);
+        *(void **) ((u8 *) menu + 0x10C) = __vt__15CMenuChrCngMenu;
+        menu->npc_model_stack.Init();
+        menu->npc_build_stack.Init();
+        menu->change_phase = 0;
+        menu->change_chara = -1;
+        menu->change_ready = 0;
+        MenuCharaChangePosDataCfgBuffer = 0;
+        menu->unk_118 = 0;
+        menu->select = 0;
+        menu->last_select = 0;
+        menu->star_fade = 0;
+        menu->enable_change = 0;
+        menu->party_member = 0;
+        menu->item_brd_select = 0;
+        *(int *) &menu->item_brd_pos = 0;
+        menu->open_wait = -1;
+        menu->set_cursor = 1;
+        menu->cursor_wave = 0;
+        menu->form = NULL;
+        (&menu->npc_mes_form)[3] = NULL;
+        (&menu->npc_mes_form)[2] = NULL;
+        (&menu->npc_mes_form)[1] = NULL;
+        (&menu->npc_mes_form)[0] = NULL;
+        menu->chara_pos[0] = NULL;
+        menu->chara_pos[1] = NULL;
+        menu->chara_pos[2] = NULL;
+        menu->chara_pos[3] = NULL;
+        menu->chara_pos[4] = NULL;
+        menu->npc_cmd_mes[0] = 0;
+        menu->npc_cmd_mes[1] = 0;
+        menu->npc_cmd_mes[2] = 0;
+        menu->npc_cmd_mes[3] = 0;
+        menu->unk_23C = 0;
+        menu->cmd_part[0] = NULL;
+        menu->cmd_part[1] = NULL;
+        menu->cmd_part[2] = NULL;
+        menu->cmd_part[3] = NULL;
+        menu->point_gauge_part = NULL;
+        menu->set_cursor = 0;
+        menu->gauge_part[0] = NULL;
+        menu->gauge_part[1] = NULL;
+        menu->gauge_part[2] = NULL;
+        menu->gauge[0] = NULL;
+        menu->gauge[1] = NULL;
+        menu->gauge[2] = NULL;
+        menu->item_brd_arrived = 0;
+        menu->party_info = 0;
+        menu->npc_data = 0;
+        menu->mes_data = 0;
+        menu->sys_mes = NULL;
+        menu->npc_no = 0;
+        menu->sub_menu = -1;
+        menu->sub_menu_next = -1;
+        menu->face_state = -1;
+        menu->face_chara = -1;
+        menu->face_loaded = 0;
+        menu->face_img = NULL;
+        menu->npc_chara = NULL;
+        menu->npc_loading = 0;
+        menu->npc_loaded = 0;
+        menu->npc_wait = 0;
+        menu->npc_show = 0;
+        menu->npc_y = 0;
+        menu->InitStarInfo();
+        menu->key_arg_no = 0;
+        menu->close_on_end = 0;
+        menu->got_item = 0;
+        menu->gift_item = 0;
+        menu->gift_num = 0;
+        memset((u8 *) menu + 0x1A80, 0, 0x500);
+        menu->npc_model_stack.stSetBuffer(NULL, 0);
+        menu->npc_build_stack.stSetBuffer(NULL, 0);
+    }
 
     ChrChangMenuPt = menu;
     menu->SetTexBlock(tex_block);
@@ -2891,7 +2997,16 @@ int MenuCharaChangeInit(mgCMemory *stack, int *tex_block, int mode) {
     ChrChangMenuPt->last_select = party_chara;
     ChrChangMenuPt->select = party_chara;
 
-    repair = new (MenuChangeMemory.Alloc(0x21)) CRepairManager;
+    if ((repair = (CRepairManager *) operator new(0x1EC, (u_long128 *) MenuChangeMemory.Alloc(0x21))) != NULL) {
+        slot = (mgCMemory *) &repair->effect_stack[0];
+
+        do {
+            slot->Init();
+            slot = (mgCMemory *) ((u8 *) slot + 0x30);
+        } while ((unsigned int) slot < (unsigned int) &repair->unk_1a4);
+
+        (&repair->model_stack)->Init();
+    }
 
     MenuRepairMan = repair;
     repair->Initialize();
@@ -3464,7 +3579,7 @@ int MonsterEffectRead(mgCMemory *stack, int monster_no, int background) {
     return mos_effect_read_num;
 }
 
-int MonsterEffectEnter(CScene *scene, u_long128 *buffer, int tex_block) {
+extern "C" int MonsterEffectEnter__FP6CSceneP1i(CScene *scene, u_long128 *buffer, int tex_block) {
     int        i;
     u_long128 *saved_buffer;
 
@@ -3764,6 +3879,11 @@ inline CMenuMosSelect::CMenuMosSelect() {
     model_form = NULL;
 }
 
+extern "C" void *__ct__7CDC2MesFv(void *mes);
+extern "C" void *__ct__6ClsMesFv(void *mes);
+extern "C" void *__ct__12CObjectFrameFv(void *frame);
+extern "C" void Initialize__19CCharaFrameMatchingFv(void *matching);
+
 #pragma inline_depth(3)
 
 void MenuMonsterBoxInit(mgCMemory *stack, int *tex_block, int mode) {
@@ -3777,7 +3897,72 @@ void MenuMonsterBoxInit(mgCMemory *stack, int *tex_block, int mode) {
     memory.stSetBuffer(stack->stGetTop(), rest);
     stack = &memory;
 
-    menu = new (stack->Alloc(0x769)) CMenuMosSelect;
+    if ((menu = (CMenuMosSelect *) operator new(sizeof(CMenuMosSelect), stack->Alloc(0x769))) != NULL) {
+        __ct__14CBaseMenuClassFv(menu);
+        *(void **) ((u8 *) menu + 0x10C) = __vt__14CMenuMosSelect;
+        __ct__7CDC2MesFv(&menu->mes);
+        __ct__6ClsMesFv(&menu->info_win);
+        chara = menu->monster;
+
+        do {
+            __ct__12CObjectFrameFv(chara);
+            *(void **) chara = __vt__11CCharacter2;
+            Initialize__19CCharaFrameMatchingFv(&chara->shadow_link);
+            ((CObject *) chara)->Initialize();
+            *(void **) chara = __vt__12CActionChara;
+            __ct__10CRunScriptFv(&chara->script);
+            memset(&chara->move_check, 0, sizeof(chara->move_check));
+            chara++;
+        } while (chara < menu->monster + 1);
+
+        __ct__12CObjectFrameFv(&menu->effect);
+        *(void **) &menu->effect = __vt__11CCharacter2;
+        Initialize__19CCharaFrameMatchingFv(&menu->effect.shadow_link);
+        ((CObject *) &menu->effect)->Initialize();
+        *(void **) &menu->effect = __vt__12CActionChara;
+        __ct__10CRunScriptFv(&menu->effect.script);
+        memset(&menu->effect.move_check, 0, sizeof(menu->effect.move_check));
+        menu->effect_stack.Init();
+        menu->unk_7620.Init();
+        menu->key_arg_no = 0;
+        menu->select = 0;
+        menu->top = 0;
+        menu->unk_5504 = 0;
+        menu->mes_data = NULL;
+        menu->monster->Initialize(NULL);
+        menu->unk_765C = 0;
+        menu->result = 0;
+        menu->load_wait = 0;
+        menu->load_phase = 0;
+        menu->view_monster = -1;
+        menu->pick_monster = -1;
+        menu->load_monster = -1;
+        menu->level_max = 0;
+        menu->set_cursor = 1;
+        menu->mes_show = 0;
+        MenuMesInit(&menu->mes);
+        menu->mes.texture_block = MenuArg.mes_tex_block;
+        menu->badge = GetUserDataMan()->GetMonsterBajjiDataPtr(1);
+        menu->select_badge = NULL;
+        menu->info_win.texture_block = MenuArg.mes_tex_block;
+        MenuMesInit(&menu->info_win);
+        menu->info_win.SetWindowMode(4);
+        menu->info_win.fuchi = 0;
+        menu->info_win.fade_speed = 1.0f;
+        menu->info_win.push_button = 0;
+        menu->info_win.fukidashi_pos = 8;
+        menu->info_win.alpha = 0;
+        menu->effect_data = NULL;
+        menu->effect_sound = NULL;
+        menu->effect_show = 0;
+        menu->effect_frame = 0;
+        menu->info_win_show = 1;
+        menu->skip_draw = 0;
+        menu->change_wait = 0;
+        menu->badge_form = NULL;
+        menu->info_form = NULL;
+        menu->model_form = NULL;
+    }
 
     MenuMosSelectPtr = menu;
     menu->SetTexBlock(tex_block);
@@ -5957,20 +6142,21 @@ int MenuNPCModelLoad(mgCMemory *memory, int chara_no, int background) {
     return MenuNPCLoadFlag;
 }
 
+extern "C" int DeleteBlock__17mgCTextureManagerFi(void *, int);
+
 int MenuNPCLoadCheck(CActionChara *chara, mgCMemory *memory, int tex_block) {
     if (MenuNPCLoadFlag == 1) {
         if (chara != NULL) {
 
-            mgCTextureManager *tex_manager = &mgTexManager;
-            char              *suffix = tex_manager->name_suffix;
+            u8 *tex_manager = (u8 *) &mgTexManager;
             memory->stack_used = 0;
             memory->lock = 0;
-            mgTexManager.DeleteBlock(tex_block);
-            strcpy(suffix, at_4950__2);
+            DeleteBlock__17mgCTextureManagerFi(tex_manager, tex_block);
+            strcpy((char *) (tex_manager + 0x1D8), at_4950__2);
             chara->Initialize(NULL);
             chara->LoadPack((u_int *) MenuPartyNPCModelReadBuffer, menu_infocfgname, memory, memory, memory,
                             tex_block, 0);
-            suffix[0] = 0;
+            tex_manager[0x1D8] = 0;
             MenuNPCLoadFlag = 0;
             return 1;
         }
@@ -6044,7 +6230,7 @@ void CMenuCostumeSel::LoadMenuData(mgCMemory *stack, int *tex_block) {
     SetTexBlock(tex_block);
 
     for (i = 0; i < 7; i++) {
-        MenuActionChara[i] = new (stack->Alloc(0x105)) CActionChara;
+        MenuActionChara[i] = NewMenuActionChara(stack);
         MenuActionChara[i]->Initialize(NULL);
     }
 
@@ -6407,7 +6593,7 @@ int CMenuCostumeSel::KeyStep() {
     return 0;
 }
 #ifdef NONMATCHING
-// 98.4% match, 12 words off
+// 97.3% match, 31 words off
 void CMenuCostumeSel::Draw() {
     sceVu0FMATRIX view;
     sceVu0FVECTOR eye;
@@ -6558,7 +6744,7 @@ extern u_long CostumeOptionEnv;
 extern "C" void *__ct__14CBaseMenuClassFv(void *self);
 extern "C" void *__ct__15mgCCameraFollowFffff(void *camera, float distance, float height, float angle,
                                                float speed);
-// 100.0% match, 0 words off, only with every NONMATCHING draft in the unit compiled
+// 99.9% match, 4 words off
 // Matches 100% with compiler state: a u64 division compiled before the unit's first function and every NONMATCHING draft in the unit compiled (state.py: primer=u64div drafts)
 void MenuCostumeInit(mgCMemory *stack, int *tex_block, int mode) {
     int i;
@@ -7149,7 +7335,7 @@ int CMosBookMenu::KeyStep() {
             if (ReadBGSync() == 0) {
                 this->load_phase += 1;
                 this->show_wait = 0;
-                this->monster = new (this->stack.Alloc(0x105)) CActionChara;
+                this->monster = NewMenuActionChara(&this->stack);
                 this->monster->Initialize(NULL);
                 MenuMonsterLoadBGCheck(MenuCharaBuild2, &this->monster, this->tex_block_no, -1);
                 float x = -12.8f;

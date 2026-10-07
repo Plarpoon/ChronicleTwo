@@ -63,6 +63,7 @@ void                    DrawMenuDl(int x, int y, int width, int alpha, float rat
 int                     GetSelectLanguageNo();
 extern char             at_1479__2[];
 void                    TitleHDDInstallDraw();
+extern "C" void        *__ct__9CMenuFontFv(void *);
 extern CScene          *TitleScene;
 extern s16              TitlePhase;
 extern s16              TitleMCActivePort;
@@ -2669,7 +2670,7 @@ void TitleHDDInstallDraw() {
             DrawMenuDl(0x88, 0x9C, 0xF0, 0x80, (float) HDDINFO.progress / 100.0f);
             textures->ReloadTexture(0x46, (sceVif1Packet *) NULL);
 
-            new ((u_long128 *) &font) CMenuFont;
+            __ct__9CMenuFontFv(&font);
             font.SetStr(infomsg_2664[LanguageCode]);
             font.SetPos(0xA6, 0xAE);
             font.DrawDirect(font.str, font.pos_x, font.pos_y);

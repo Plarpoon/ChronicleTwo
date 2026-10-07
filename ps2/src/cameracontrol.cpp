@@ -42,7 +42,7 @@ void CameraCtrlParam::SetFixDist(float distance) {
     min_dist = distance;
 }
 #ifdef NONMATCHING
-// 90.2% match, 16 words off
+// 61.3% match, 38 words off
 CCameraControl::CCameraControl() : mgCCameraFollow(40.0f, 30.0f, 0.0f, 8.0f) {
     mgCCameraFollow(40.0f, 30.0f, 0.0f, 8.0f);
     active_param = 0;

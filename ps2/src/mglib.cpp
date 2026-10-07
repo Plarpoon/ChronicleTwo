@@ -67,7 +67,29 @@ extern int           user_prog_num;
 extern int           font_cons;
 extern int           font_draw_flag;
 
-extern mgCTexture frame_tex;
+extern "C" void *__ct__10mgCTextureFv(void *);
+
+struct mgFrameTextureCopy {
+    short  block;
+    short  width;
+    short  height;
+    short  bpp;
+    char   name[0x20];
+    u_int  vram_size;
+    u_int  image_blocks;
+    u_int  clut_size;
+    u_long tex0;
+    u_long tex1;
+    u_long clamp;
+    float  image[4];
+    u_int  clut;
+    u_int  swizzled;
+    u_int  next;
+
+    mgFrameTextureCopy() { __ct__10mgCTextureFv(this); }
+};
+
+extern mgFrameTextureCopy frame_tex;
 extern mgCTexture fixz_tex[2];
 extern float      at_863[4];
 extern float      at_1389[4];
@@ -1043,7 +1065,8 @@ void mgSetPkFrameBuffer(mgCTexture *texture) {
 }
 #ifdef NONMATCHING
 #define mgDBuff (*(sceGsDBuff *)mgDBuff)
-// 97.6% match, 20 words off
+#define frame_tex (*(mgCTexture *) &frame_tex)
+// 85.0% match, 161 words off
 void mgSetPkFrameBuffer(int fbp, int width, int height, int psm) {
     sceGsFrame     frame;
     sceGsFrame    *default_frame;
@@ -1178,12 +1201,13 @@ void mgSetPkFrameBuffer(int fbp, int width, int height, int psm) {
     frame_tex.tex0.bits.tfx = 0;
     *(u_long *)&frame_tex.tex1 = 0x261;
 }
+#undef frame_tex
 #undef mgDBuff
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgSetPkFrameBuffer__Fiiii);
 #endif
 void mgGetFrameBuffer(mgCTexture *texture) {
-    *texture = frame_tex;
+    *(mgFrameTextureCopy *) texture = frame_tex;
 }
 
 void mgGetFrameBackBuffer(mgCTexture *texture) {
@@ -1195,7 +1219,7 @@ void mgGetFrameBackBuffer(mgCTexture *texture) {
         draw_env = mgDBuff + dbuff_draw_env_a;
     }
 
-    *texture = frame_tex;
+    *(mgFrameTextureCopy *) texture = frame_tex;
     texture->tex0.TBP0 = (*(u_short *) draw_env & 0x1FF) * 32;
 }
 
@@ -1845,7 +1869,7 @@ INCLUDE_BSS(mgPickZBuff, 0x40);
 INCLUDE_BSS(vifpacket, 0x40);
 mgCMemory  packet_buf[2];
 mgCMemory  data_buf[2];
-mgCTexture frame_tex;
+mgFrameTextureCopy frame_tex;
 INCLUDE_BSS(store_data_614, 0x1000);
 INCLUDE_BSS(at_863, 0x10);
 mgCTexture fixz_tex[2];

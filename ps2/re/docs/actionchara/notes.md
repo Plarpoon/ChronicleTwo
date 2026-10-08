@@ -218,3 +218,23 @@ The stable function/type/value policy produces the complete retail
 736-byte body and resolves its five canonical findings. All other 135
 allocated sections retain identical bytes, geometry and resolved relocation
 targets; the unit's other existing findings remain unchanged.
+
+## Robot movement literals and remaining instruction order
+
+`RoboWalkMoveIF` and `RoboAirMoveIF` already emit the six Shift-JIS motion
+strings `at_2420`–`at_2422` and `at_2504`–`at_2506` directly from their
+`SetMotion` arguments. Keeping matching `INCLUDE_RODATA` markers appended a
+second copy of each section and prevented the object checker from resolving
+the whole `.rodata` run. Removing those markers leaves the retail 43-piece
+data layout and reduces the unit check to two movement-function differences.
+
+In `RoboWalkMoveIF`'s idle-arm path, retail preserves floating zero in a saved
+FPR across `unitRotation(frame, 0.0f, 16.0f)` and reuses it for `SetRotation`.
+In `RoboAirMoveIF`, the equivalent idle-arm call instead materializes zero
+late; the later movement call with a local angle preserves it across
+`unitRotation`. A broad zero evaluate-first policy for `SetRotation` changes
+other calls in these functions. The compiler profile distinguishes the walk
+call by the nested `16.0f` argument and the air call by its nested local-angle
+load. These are parsed argument identities, independent of occurrence or code
+address. With both policies, the whole actionchara object matches its retail
+0x8F80 bytes and 1,035 resolved relocations.

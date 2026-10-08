@@ -607,6 +607,32 @@
         "value_bits": "0x3f800000",
         "callee": "mgTransWorldPrim3DSprite__FPiPiPfffi",
         "evaluate_first": true
+      },
+      {
+        "translation_unit": "actionchara.cpp",
+        "function": "RoboWalkMoveIF__12CActionCharaFi",
+        "value_type": "binary32",
+        "value_bits": "0x00000000",
+        "callee": "SetRotation__9mgCObjectFfff",
+        "nested_call": {
+          "callee": "unitRotation__FP8mgCFrameff",
+          "argument_index": 2,
+          "value_type": "binary32",
+          "value_bits": "0x41800000"
+        },
+        "evaluate_first": true
+      },
+      {
+        "translation_unit": "actionchara.cpp",
+        "function": "RoboAirMoveIF__12CActionCharaFii",
+        "value_type": "binary32",
+        "value_bits": "0x00000000",
+        "callee": "SetRotation__9mgCObjectFfff",
+        "nested_variable": {
+          "callee": "unitRotation__FP8mgCFrameff",
+          "argument_index": 1
+        },
+        "evaluate_first": true
       }
     ]
   }

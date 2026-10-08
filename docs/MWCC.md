@@ -40,6 +40,16 @@ ordinals, instruction addresses or compiler-arena addresses select expressions.
 Unmatched selectors are errors, so source changes cannot silently leave stale
 calibration behind. Signed zero and NaN payloads remain distinct identities.
 
+**Nested call arguments.** Some calls in one function need opposite schedules
+despite sharing the outer callee and constant. At argument consumption, the
+verified 3.0 call AST exposes sibling call expressions. A scoped selector may
+identify a nested call by its mangled callee and either a typed constant at a
+formal argument index or a nonliteral variable load at that index. The index
+is a source argument position, not a call occurrence. `RoboWalkMoveIF` uses
+`unitRotation`'s 16.0f argument to preserve zero across that call;
+`RoboAirMoveIF` instead selects the call whose angle is a local variable.
+The pinned Satan's Fiddle source patch implements and tests this generic form.
+
 **Pooled literal aliasing.** The separate bug that treats a literal's value buffer
 as variable alias metadata is verified for MWCC 2.3.3. No affected alias path is
 validated for this 3.0 image. It can pool constants under other optimization
@@ -58,10 +68,16 @@ therefore omits literal-reload policy settings.
 | `event_func.cpp`, `_SET_CROSSFADE__FP12RS_STACKDATAi` | binary32 one (`0x3f800000`) first only for `CrossFadeOut__10CFadeInOutFiif`; sibling `CrossFadeIn` and `CrossFade` calls retain false. |
 | `scenesnd.cpp`, `SePlayFoot__6CSceneFiiPf` | binary32 1200 (`0x44960000`) first emits it before 160, as retail does. |
 | `gyoracesim.cpp`, `CharacterBonus__FP12grFISH_PARAMP15RACE_FISH_PARAMi` | zero and 0.01 (`0x3c23d70a`) first preserve both the earlier zero/0.01 calls and the later call's 0.01-before-one materialization. |
+| `actionchara.cpp`, `RoboWalkMoveIF__12CActionCharaFi` and `RoboAirMoveIF__12CActionCharaFii` | Nested `unitRotation` argument identity selects the zero load order for only the differing rotation calls; the complete unit passes. |
 
 These rows were accepted through the canonical object comparison. They establish
 the listed functions' bytes and resolved relocations, not whole-unit matching
 when other source or data-layout failures remain.
+
+`mg_texture.cpp` needs one shared `#pragma optimization_level 2` region around
+its three hash-table methods. Direct indexing yields the retail table access;
+whole-unit level 2 changes unrelated functions. The scoped region preserves
+the exact 0x3674-byte object and 160 resolved relocations.
 Unit-specific evidence is in the tracked mapjump and event_func RE notes and
 [pbuggy calibration notes](../ps2/re/docs/pbuggy/notes.md).
 

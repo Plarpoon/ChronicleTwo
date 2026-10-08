@@ -175,13 +175,20 @@ node and appends it to its name's chain. `DelHash` unlinks the matching texture
 and returns that node to the free stack. `SearchHash` compares names and applies
 an optional texture-block filter.
 
-The preserved typed native implementations differ from retail by one commutative
-`addu` operand order when forming the bucket address. Retail adds scaled index
-then manager base; typed member-array indexing emits base then index. All other
-instructions and relocations match. Casts on the index, base, or member array,
-unsigned indices, swapped subscript syntax, local manager pointers, and direct
-bucket-load expressions did not produce the retail instruction. These functions
-remain fuzzy; no zero-difference match is claimed.
+The native implementations now match retail exactly. `AddHash` obtains one free
+link, initializes it, and either installs it as the bucket head or appends it to
+the end of the chain. `DelHash` unlinks the matching texture and returns the link
+to the free stack. `SearchHash` compares names and applies an optional texture-block
+filter. All three use typed `hash_table[index]` reads and writes.
+
+A single `optimization_level 2` scope across these contiguous methods, while the
+translation unit retains its existing disabled global optimizer and scheduler,
+produces the retail operand order for bucket address formation. The fixed
+translation-unit `-O3,p` build without this scope leaves one commutative `addu`
+operand mismatch in each function. Applying `-O2` to the whole unit fails many
+unrelated function extents and instructions, so the narrow shared scope is
+required. The fixed-profile private build passed `check_objects.py` for the whole
+unit: 0x3674 bytes and 160 resolved relocations, with all three functions exact.
 
 ## Native full-image conversion
 

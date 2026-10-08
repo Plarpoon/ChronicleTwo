@@ -202,5 +202,28 @@ for `MenuAquaInit` is verified below.
 in the order 40.0f, zero, 30.0f, 8.0f. The function now matches canonical bytes
 and resolved relocations. With the division primer removed and helper masks
 GPR `0x30` / FPR `0`, validation checks `0x11C50` bytes and 2,970 relocations.
-The seven existing `DrawEsaDropRoot` issues remain; their complete masked
-instruction bytes and resolved relocation targets/addends are unchanged.
+Before the float-order selector below, `DrawEsaDropRoot` had seven issues;
+their masked instruction bytes and resolved relocation targets/addends were
+unchanged by the camera constructor selector.
+
+## DrawEsaDropRoot sprite-call float order
+
+The retail call to `mgTransWorldPrim3DSprite` prepares the `1.0f` width before
+the `0.3f` height. The default MWCC argument scheduling evaluates the `0.3f`
+argument first, moving its constant setup and float-register transfer ahead of
+the width. A private profile row selecting binary32 `0x3f800000`
+(`1.0f`) with `evaluate_first: true`, scoped to
+`mgTransWorldPrim3DSprite__FPiPiPfffi`, restores the retail instruction order.
+The tracked profile also has three existing menuaqua selectors; the candidate
+was tested with all three preserved and the new row appended. The full wrapper
+build and canonical checker then pass the whole unit (`0x11C54` bytes and
+2,970 relocations). A direct source-only MWCC object also scores 100% for this
+function after mapping compiler-local `count$978` and `init$979` to the retail
+`count_1612` and `init_1613` symbols in a temporary objdiff project. Without
+those diagnostic aliases, objdiff reports only those three relocation names;
+the canonical checker confirms their resolved values. The shared compiler profile preserves the existing selectors and adds this
+callee-scoped row.
+
+Canonical normal and objdiff-base targets also pass after integration: the
+whole-unit checker reports 0x11C54 bytes and 2,970 relocations, and the standard
+project objdiff reports 100% for the native 316-byte DrawEsaDropRoot.

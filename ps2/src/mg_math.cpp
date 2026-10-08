@@ -201,20 +201,22 @@ asm void mgVectorMaxMin(float *max, float *min, float *a, float *b, float *c, fl
     jr ra
     sqc2 vf21, 0x0(a1)
 }
-#ifdef NONMATCHING
-void mgBoxMaxMin(mgVu0FBOX *box, mgVu0FBOX *other) {
-    for (int i = 0; i < 4; ++i) {
-        if (other->max[i] > box->max[i]) {
-            box->max[i] = other->max[i];
-        }
-        if (other->min[i] < box->min[i]) {
-            box->min[i] = other->min[i];
-        }
-    }
+asm void mgBoxMaxMin(mgVu0FBOX *box, mgVu0FBOX *other) {
+    .set noreorder
+    lqc2 vf15, 0x0(a0)
+    lqc2 vf16, 0x10(a0)
+    lqc2 vf17, 0x0(a1)
+    lqc2 vf18, 0x10(a1)
+    vmax.xyzw vf20, vf15, vf16
+    vmini.xyzw vf21, vf15, vf16
+    vmax.xyzw vf20, vf20, vf17
+    vmini.xyzw vf21, vf21, vf17
+    vmax.xyzw vf20, vf20, vf18
+    vmini.xyzw vf21, vf21, vf18
+    sqc2 vf20, 0x0(a0)
+    jr ra
+    sqc2 vf21, 0x10(a0)
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgBoxMaxMin__FP9mgVu0FBOXP9mgVu0FBOX);
-#endif
 #ifdef NONMATCHING
 void mgPlaneNormal(float *normal, float *v0, float *v1, float *v2) {
     float ax = v1[0] - v0[0], ay = v1[1] - v0[1], az = v1[2] - v0[2];

@@ -43,13 +43,13 @@ MWCC body matches all 0x2C retail bytes, and the `editmap2` object passes
 
 ## GetEditPartsAlt with placed parts
 
-The guarded C++ draft transforms each candidate polygon into a placed part's
+`GetEditPartsAlt` transforms each candidate polygon into a placed part's
 space, finds horizontal overlap, and raises the best floor height. In retail,
 the `triangle` pointer passed in `a1` to `PlaneNormalXZ` remains in that register
-for `CEditCollision::OverlapPoly3XZ`. MWCC reloads the pointer when the normal
-helper is represented by an external assembly gap, producing one extra
-instruction and a shifted delay slot. The draft scores 98.653595% in objdiff;
-the retail build retains `INCLUDE_ASM` for this function.
+for `CEditCollision::OverlapPoly3XZ`. Compiling the normal helper in this unit
+preserves that register across the call. The resulting 0x264-byte function
+matches objdiff exactly, and the `editmap2` object passes `check_objects.py`
+with 143 resolved relocations.
 
 ## GetSeSrcVolPan
 

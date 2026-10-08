@@ -90,7 +90,6 @@ void CDngFreeMap::CalcGlidPutPos(GLID_INFO *glid, float &x, float &y, int board)
         }
     }
 }
-#ifdef NONMATCHING
 void CDngFreeMap::CheckIsViewMove(int x, int y, float &move_x, float &move_y) {
     int clipped_x = x;
     int clipped_y = y;
@@ -109,9 +108,7 @@ void CDngFreeMap::CheckIsViewMove(int x, int y, float &move_x, float &move_y) {
     move_x = (float) (clipped_x - x);
     move_y = (float) (clipped_y - y);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", CheckIsViewMove__11CDngFreeMapFiiRfRf);
-#endif
+
 void CDngFreeMap::SetNextRoomPos(GLID_INFO *glid) {
     if (glid != NULL) {
         float x, y, move_x, move_y;

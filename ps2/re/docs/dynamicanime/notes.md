@@ -135,3 +135,9 @@ matches the retail function; its promotion links byte-identically.
 ## Constructor-backed allocations
 
 `dynCOLLISION` allocates a `CDAColPipe`; its C++ constructor naturally initializes the `CDACollision` base before the derived volume. The typed draft is guarded by `NONMATCHING`, with retail assembly active pending an exact match.
+
+The native draft compiles to 97.25%: its only byte difference is the allocation
+null check, where MWCC tests the saved pointer register instead of the return
+register used by retail. Splitting `Alloc(16)` into a typed `u_long128 *` local
+before placement construction produces identical code. The checked source
+retains the nested typed placement expression; retail assembly remains active.

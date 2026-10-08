@@ -208,6 +208,9 @@ for `__construct_new_array` in PhotoNetaEnter. Size 0xC.
   `&photo_work[index][0]` indexing scores 60.0%, while the previous byte-offset
   expression scored 99.583336% but used raw pointer arithmetic. The typed draft
   remains under `NONMATCHING`; the matching build uses retail assembly.
+  A private native compile of the explicit eight-assignment loop scored 34.0208%
+  and emitted 0x108 bytes; a typed row pointer advanced by eight scored 55.8958%
+  and emitted 0xA8 bytes. Neither variant is kept in the source.
 
 ## Unresolved
 - Meaning of most unk_ fields of CMenuInvent; mode values 4 and 8.

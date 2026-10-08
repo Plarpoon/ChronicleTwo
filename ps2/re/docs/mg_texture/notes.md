@@ -200,3 +200,19 @@ matched topology and relocations but permuted saved registers; they do not
 establish a remaining failure in this newer body. The merged function needs
 canonical validation under the deterministic compiler profile. Its cursor
 advancement operates on byte-copy buffers rather than hidden object fields.
+
+## Additional hash-table source trials
+
+At default optimization level, index/base casts, unsigned indices, swapped
+subscripts, manager locals, bucket-head references, and one-pointer bucket
+records do not resolve address-operand order. Level 2 with the original
+bucket-pointer locals makes only `SearchHash` exact. Direct bucket-head
+accesses at level 2 make all three exact: native sizes are `0xD8`, `0xE8`,
+and `0xB0`.
+
+Nesting `hash()` in the subscript or changing its return to `u_int` retains
+the default mismatch. A `u_char` return adds normalization and size/relocation
+failures. Level 1 and global-optimizer-on change other instructions. The DC1
+`CTextureManager` uses fixed arrays and provides no corresponding bucket
+accessor. The active implementation uses upstream's single shared level-2
+scope; no profile row or shared-header change is required.

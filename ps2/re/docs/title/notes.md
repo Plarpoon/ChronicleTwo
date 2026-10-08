@@ -1,10 +1,9 @@
 # title: reverse-engineering notes
 
-`TitleBootInit`, `TitleModeKey`, and `TitleHDDInstallDraw` retain C++ drafts
-under `NONMATCHING`; the matching build uses retail `INCLUDE_ASM` gaps for all
-three. The promoted `TitleHDDInstallDraw` emitted 0x424 bytes against retail's
-0x410 and moved the following function after alignment. Restoring all three
-gaps also restores the base unit's data layout.
+`TitleBootInit` and `TitleModeKey` retain C++ drafts under `NONMATCHING`;
+the matching build uses retail `INCLUDE_ASM` gaps for both. `TitleHDDInstallDraw`
+is source-supplied and matches retail, including the complete title object and
+linked PAL image. The unit has 35 matched functions and two guarded drafts.
 
 The title main-loop mode (`LOOP_TITLE`). No class is owned by this unit (`class_units.tsv`
 has none); the header declares the unit's own structs and enums, the 8 global functions and
@@ -23,16 +22,11 @@ External callers: mainloop `LoopInit/LoopMain/LoopExit` tables (TitleInit/Loop/E
 mainloop `EventSelect` and menuaqua `GyoraceMenuKey` (InitOmakeEnv), nowload
 `SCElogoFade` (TitleLangSel*), menuchr `MenuCostumeInit` (reads CostumeOptionEnv).
 
-## Header dependencies (unresolved)
-`TITLE_INFO` holds by value `SV_CONFIG_OPTION` (+0x48, 0x40 bytes; `InitSV_CONFIG_OPTION` in
-savedata memsets 0x40 and sets +0x14 = 1) and `CScene::BGM_STATUS` (+0x178, 0x1C bytes, from
-`CScene::Get/SetActiveBgmStatus` in scenesnd: words at +0,+4,+8,+0xC,+0x10,+0x14,+0x18).
-The header includes `savedata.hpp` and `scenesnd.hpp`, which do not exist yet, so it does not
-compile until they do. With stub definitions of those two types (0x40 / 0x1C) the header
-compiles and every STATIC_ASSERT holds. `title.cpp` was left without `#include "title.hpp"`
-so the unit keeps building; add it once those headers exist. Which header will own
-`SV_CONFIG_OPTION` is a guess (savedata, home of `InitSV_CONFIG_OPTION`); `menumain.hpp`
-only forward-declares it.
+## Header dependencies
+`TITLE_INFO` holds `SV_CONFIG_OPTION` by value (+0x48, 0x40 bytes; declared in
+`savedata.hpp`) and `CScene::BGM_STATUS` (+0x178, 0x1C bytes; declared in
+`scenesnd.hpp`). Both headers exist and are included by `title.hpp`, which is
+included by `title.cpp`. The `TITLE_INFO` size assertion is 0x194.
 
 ## Function return types (static ones go in the .cpp)
 - `title_init_rand()` void: srand(mgGetVSyncCount()).
@@ -178,8 +172,74 @@ established.
   +0x2E5C map slot, +0x38/+0x3C stacks, +0x906C, +0x10548 object with vtable call.
 - CCharacter2/CActionChara is constructed inline in TitleBootInit (new 0x1030).
 
-## DrawMenuDl draft
-The install progress panel draws two quads for its bar, then three textured rows with a shadow pass. Its fill changes from grey to green at progress 1. The panel width uses the short values at table_2611 offsets 4 and 0x20. Its guarded C++ draft differs from retail, so the matching build uses the assembly gap.
+## HDD installation drawing
+
+`TitleHDDInstallDraw` directly constructs a scoped `CMenuFont` when the progress
+bar is drawn. Its five rectangles are `mgRect<int>(...)` argument temporaries,
+not named stack locals. The background's source rectangle is constructed before
+its destination rectangle. MWCC reserves the font at stack +0x60, the rectangle
+temporaries at +0x120..+0x160, and the cursor pair at +0x178 in a 0x180-byte frame.
+The emitted function is 0x408 bytes; retail's 0x410 extent includes trailing
+padding. The checker reports zero differences, and promotion preserves the
+production object and linked image.
+
+An anonymous union plus the game's `u_long128*` placement-new overload adds an
+allocation call and null test absent from retail. A scoped font with named
+rectangles removes those calls but allocates the rectangles before the font,
+shrinking the frame to 0x170 and differing at 26 instruction operands. Direct
+rectangle constructor arguments reproduce retail without storage or constructor
+helpers. The other matched title drawing functions use this same form.
+
+`DrawMenuDl` draws two quads for the bar, then three textured rows with a shadow
+pass. Its fill changes from grey to green at progress 1. The panel width uses
+the short values at `table_2611` offsets 4 and 0x20.
+
+## Remaining guarded differences
+
+### TitleModeKey
+
+The draft emits 0x9BC bytes against retail's padded 0x9C0 extent. Fifteen of
+624 words differ:
+
+- +0xC8/+0xCC: the two captured port bytes occupy s1/s2 instead of s2/s1.
+- +0x188/+0x198/+0x1AC: byte narrowing and the first comparison use different
+  registers; the second narrowing reuses the dead first snapshot register.
+- +0x3C4/+0x3C8, +0x3DC/+0x3E0, and +0x410/+0x414: fade-down speed and zero
+  endpoint materialization are reversed.
+- +0x7FC..+0x808: extras cursor speed 3 and endpoint 128 materialization are
+  reversed.
+
+Retail captures port 0 before port 1. The earlier draft captured port 1 first,
+which reversed the relocation addends of the loads at +0xC8/+0xCC. Relocation
+masking hid those addend differences in its thirteen-word difference count.
+Both orders preserve the draft's card comparison semantics; the retained guarded
+draft follows retail's capture order.
+
+Declaration order, direct initialization, paired card/snapshot declarations,
+function-scope snapshots, comparison operand reversal, and an unescaped byte
+array do not reproduce the retail registers. Removing the named first-card
+pointer changes its caching and substantially disturbs the function. Float
+literal/cast/default-expression changes and named fade parameters either leave
+the mismatched schedules or disturb other matching calls; some also remove one
+instruction from the menu setup and shift the tail.
+
+Blocker category: register allocation and float constant scheduling. Reconsider
+when an independently validated MWCC byte-snapshot allocation idiom and fade
+parameter materialization idiom cover these exact patterns.
+
+### TitleBootInit
+
+The draft emits 0xA84 bytes against retail's padded 0xA90 extent, differing in
+56 of 676 words. Differences include follow-camera float argument scheduling,
+map-buffer/register assignments, file-size stack slots, icon-copy registers,
+and memory-buffer argument scheduling.
+
+At +0x7D8, after allocating `CActionChara`, retail branches on v0 and copies v0
+to s0 in the delay slot at +0x7DC. MWCC copies first and then branches on s0.
+This is the placement-new null-branch blocker assigned to the dedicated compiler
+lane. Further title-local experiments on this function are deferred. Reconsider
+when that lane supplies a validated natural placement-construction pattern;
+then address the other scheduling and local-layout differences.
 
 ## Title drawing floating argument calibration
 
@@ -189,3 +249,143 @@ coordinates and prepares them before alpha conversion. With the artificial
 division primer removed and helper masks GPR `0x30` / FPR `0`, the complete
 unit passes canonical bytes and resolved relocations: `0x68B8` checked bytes
 and 2,055 relocations.
+
+## TitleModeKey stable-selector limits
+
+The isolated canonical Satan's Fiddle build differs from the plain-wibo
+all-draft diagnostic: with only TitleModeKey native and no new selector, its
+body is `0x9B8` and the +0x2BC switch-branch delay slot absorbs the later
+`lui` for -8.0f. The resulting four-byte contraction produces 379/624
+aligned-word differences and displaced relocations through the menu tail.
+
+A callee-scoped binary32 zero (`0x00000000`) evaluate-first selector for
+`CalcMenuAdd__FPfff` restores the `0x9BC` body and leaves 23/624 differences.
+Adding the binary32 128.0f endpoint (`0x43000000`) at the same callee restores
+the menu/extras endpoint-first materialization and leaves 15/624 differences.
+Unscoped versions have the same result. The complete-unit check still has
+the target's byte problem and two displaced relocations at +0x7DC/+0x7E8;
+these are partial calibrations, not accepted profile rows.
+
+The remaining words comprise the five card-snapshot register differences,
+four words at +0x3F0..+0x3FC in `CalcMenuAdd(..., 8.0f, 128.0f)`, and six
+words at +0x7DC..+0x7F4 in the extras-menu -8.0f/zero call. Also selecting
+8.0f (`0x41000000`) first changes address/constant scheduling and leaves
+16 words; selecting -8.0f (`0xc1000000`) first instead permits the earlier
+four-byte contraction again and leaves 382 words. Explicit float literals
+and explicit zero endpoints do not remove the 15-word residual.
+
+GPR helper history `0x10` / FPR `0` leaves the target's snapshot allocation
+unchanged and breaks the already native `TitleModeDraw__Fv` and
+`DrawMenuDl__Fiiiif`. The existing `0x30` history is retained.
+
+Blocker category: card-snapshot register allocation plus context-dependent
+fade-argument scheduling. TitleModeKey remains guarded with its original
+source/profile. Reconsider with a natural lifetime/expression explanation
+covering both the snapshot allocation and the differing -8/zero and 8/128
+call schedules. TitleBootInit remains deferred to the placement-new lane.
+
+## Mid-day selector applicability and snapshot types (2026-10-08)
+
+Both TitleModeKey and TitleBootInit remain guarded. The source-only
+canonical-profile baseline reproduces 379/624 aligned-word differences
+for TitleModeKey (the four-byte contraction described above) and 56/676
+for TitleBootInit. The documented private zero/128.0f `CalcMenuAdd` rows
+restore the TitleModeKey extent and its 15-word residual.
+
+Changing both captured port values to `int`, `u32` or `u16`, with explicit
+byte narrowing at the two comparisons, leaves the same 15 words. Each
+trial keeps the two capture loads in retail order, but s1/s2 remain
+permuted at `+0xC8/+0xCC`, `+0x188`, `+0x198` and `+0x1AC`.
+No widened snapshot type is retained.
+
+The conflicting `CalcMenuAdd` calls take a field address and direct float
+arguments. Neither the enclosing phase switch nor the selected field is
+a nested call expression, so upstream's new nested selectors do not
+distinguish those calls. Manufacturing an extra call would not represent
+retail source behavior. No new production profile row is accepted.
+TitleBootInit's placement-construction experiments remain deferred under
+the existing ownership rule; this lane does not repeat them.
+
+Receipts: `.private/floatsel/title/draft-base/`,
+`.private/floatsel/title/snapshot-int/`, `snapshot-u32/` and `snapshot-u16/`;
+the m2c TitleModeKey output is also in `.private/floatsel/`.
+
+The fresh isolated production probe confirms 15/624 words, one byte problem
+and the two displaced relocation sites at `+0x7DC/+0x7E8`; no sibling function
+changes. Receipt: `.private/floatsel/title/key-best-production/`.
+
+## Round-1 snapshot and fade expression probes (2026-10-08)
+
+The round-1 base is `a9dddc6`, with its fresh canonical baseline and object
+copies saved under `.private/round1/`. TitleModeKey and TitleBootInit retain
+their guards. Existing m2c output, header layouts and documented negative
+trials are the analysis baseline; TitleBootInit's construction work is not
+repeated.
+
+The nineteen new TitleModeKey probes use the canonical adapter and a private
+profile containing the documented zero/128.0f `CalcMenuAdd__FPfff` rows.
+Alpha-address and reset-order probes also test that profile plus the
+previously recorded 8.0f row. No profile row is accepted or written into the
+production configuration.
+
+Explicit byte masks, widening only one captured port, references to the card
+or manager, and separate comparison scopes leave the original five snapshot
+register differences. Local `CardSnapshot` aggregates with either field
+order contain just the two captured bytes; scalar replacement changes the
+card-pointer and snapshot allocations and increases the residual to 23
+words. This is a source experiment, not evidence of a retail aggregate type.
+Naming the detected card result, using XOR for a change test or narrowing
+the loss accumulator to bool also worsens the result.
+
+Named addresses/references to the title and extras alpha fields do not
+improve fade ordering. With 8.0f evaluated first, the title-alpha call also
+moves its field-address load and changes its integer temporary, leaving 16
+words overall. Moving the extras pulse reset after its alpha update leaves
+19 or 20 words. The existing documented `CalcMenuAdd(float*, float, float)`
+changes only its cursor, clamps it at the endpoint after crossing and
+returns the clamp result; these address/reset variants introduce no new
+callee or nested call expression.
+
+| Trial and private policy | Differing words / retail extent |
+|---|---|
+| `key-snapshot-mask-first-zero128` | 15/624 |
+| `key-first-snapshot-int-zero128` | 15/624 |
+| `key-second-snapshot-int-zero128` | 15/624 |
+| `key-card-check-result-zero128` | 529/624 |
+| `key-card-check-xor-zero128` | 0x9C8 body, oversized |
+| `key-card-lost-bool-zero128` | 0x9C4 body, oversized |
+| `key-card-reference-zero128` | 15/624 |
+| `key-manager-reference-zero128` | 15/624 |
+| `key-check-scopes-zero128` | 15/624 |
+| `key-snapshot-struct-zero128` | 23/624 |
+| `key-snapshot-struct-reverse-zero128` | 23/624 |
+| `key-title-alpha-address-zero128` | 15/624 |
+| `key-title-alpha-address-zero128-plus8` | 16/624 |
+| `key-title-alpha-reference-zero128` | 15/624 |
+| `key-title-alpha-reference-zero128-plus8` | 16/624 |
+| `key-omake-alpha-address-zero128` | 15/624 |
+| `key-omake-alpha-address-zero128-plus8` | 16/624 |
+| `key-omake-reset-call-zero128` | 19/624 |
+| `key-omake-reset-call-zero128-plus8` | 20/624 |
+
+The best complete-wrapper confirmation retains the `0x9BC` body and
+15/624 differing words. The title object checks `0x68B4` bytes and 2,200
+relocations, with exactly three problems: target bytes at `0x002A521A` and
+the two displaced relocations at `+0x7DC` (`TitleInfo`) and `+0x7E8`
+(`TitlePushStart_AlphaPlus`). All other functions and relocations remain
+exact. The private confirmation is
+`.private/round1/title/key-best-production/`; individual sources, compiler
+logs, diffs and the structured ledger are alongside it.
+
+No new source draft, production calibration or shared-file proposal is
+retained. The guarded title source and production profile are unchanged
+from the round-1 base; the blocker remains snapshot allocation plus the
+context-dependent fade scheduling described above.
+
+Final guarded validation repeats the baseline exactly: all 149 game object
+SHA-256 hashes and the complete PAL ELF file are unchanged, the canonical
+checker remains 147/149 with only `nd_meswin` and `actscript` failing, and
+coverage is unchanged. The verifier retains exactly `0x26` text bytes and
+passes all other sections and the memory-end check. Receipts:
+`.private/round1/final-build.log`, `final-check.log`, `final-coverage.txt`,
+`final-hashes.json` and `validation-summary.json`.

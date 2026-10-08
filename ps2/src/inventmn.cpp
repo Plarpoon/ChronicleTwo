@@ -895,8 +895,11 @@ void CInventUserData::Initialize() {
 
 #ifdef NONMATCHING
 void CInventUserData::ResetAddress() {
-    for (int index = 0; index < 30; index++) {
-        photo[index].image = &photo_work[index][0];
+    char (*work)[0x2000];
+    int index = 0;
+    work = photo_work;
+    for (; index < 30; index++) {
+        photo[index].image = work[index];
     }
 }
 
@@ -3738,9 +3741,6 @@ extern char at_3631[];
 extern char at_3632[];
 
 #ifdef NONMATCHING
-
-#pragma opt_common_subs off
-
 void CMenuInvent::CalcTex() {
     if (bg_form != NULL) {
         float *left_top = GetMenuMainFrameLeftTopPos(0);
@@ -4026,12 +4026,12 @@ void CMenuInvent::CalcTex() {
     if (kakudai_pic_form != NULL && kakudai_pic != NULL) {
         if (mode == 12) {
             if (ask_para.ask_mode == INVENT_ASK_ZOOM) {
-                CalcMenuAdd(&kakudai_pic->unk_2c, 0.025f, 1.3f);
-            } else if (CalcMenuAdd(&kakudai_pic->unk_2c, -0.025f, 0.7f)) {
+                CalcMenuAdd(&kakudai_pic->picture_scale, 0.025f, 1.3f);
+            } else if (CalcMenuAdd(&kakudai_pic->picture_scale, -0.025f, 0.7f)) {
                 kakudai_pic_form->draw_flag = 0;
             }
         } else {
-            kakudai_pic->unk_2c = 0.7f;
+            kakudai_pic->picture_scale = 0.7f;
         }
     }
     NowGiftBoxPtr = SearchNowPosItemExist();
@@ -4063,7 +4063,6 @@ void CMenuInvent::CalcTex() {
     MenuEffect[1]->Step();
 }
 
-#pragma opt_common_subs reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", CalcTex__11CMenuInventFv);
 #endif
@@ -7157,8 +7156,9 @@ int MenuInventKey() {
             float             list_x = list_form->x;
             int               name_x = 74.0f + list_x;
             int               y = 13.0f + list_form->y + (float) (top * 46);
+            int               card = top;
             int               number_x = 11.0f + list_x;
-            for (int card = top; card < 0; card++) {
+            for (; card < 0; card++) {
                 names[line] = NULL;
                 item_pos[line * 2] = name_x;
                 item_pos[line * 2 + 1] = y;

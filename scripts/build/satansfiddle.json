@@ -226,6 +226,21 @@
         "evaluate_first": true
       },
       {
+        "translation_unit": "actscript.cpp",
+        "function": "_SHOT__FP12RS_STACKDATAi",
+        "value_type": "binary32",
+        "value_bits": "0x43200000",
+        "callee": "SetValue__16CEffectScriptManFifii",
+        "control": {
+          "kind": "condition",
+          "values": [
+            90
+          ]
+        },
+        "expected_matches": 1,
+        "evaluate_first": true
+      },
+      {
         "translation_unit": "cameracontrol.cpp",
         "function": "__ct__14CCameraControlFv",
         "value_type": "binary32",
@@ -266,6 +281,13 @@
         "function": "Step__9CLaserGunFv",
         "value_type": "binary32",
         "value_bits": "0x3dcccccd",
+        "evaluate_first": true
+      },
+      {
+        "translation_unit": "dng_object.cpp",
+        "function": "Step__11CMachineGunFv",
+        "value_type": "binary32",
+        "value_bits": "0x00000000",
         "evaluate_first": true
       },
       {
@@ -323,6 +345,30 @@
         "function": "CharacterBonus__FP12grFISH_PARAMP15RACE_FISH_PARAMi",
         "value_type": "binary32",
         "value_bits": "0x3c23d70a",
+        "evaluate_first": true
+      },
+      {
+        "translation_unit": "gyoracesim.cpp",
+        "function": "FishModifyParam__FP12grFISH_PARAMPff",
+        "value_type": "binary32",
+        "value_bits": "0x3e4ccccd",
+        "callee": "GetRandomNumber__Fff",
+        "control": {
+          "kind": "switch",
+          "values": [
+            1
+          ]
+        },
+        "expected_matches": 1,
+        "evaluate_first": true
+      },
+      {
+        "translation_unit": "gyoracesim.cpp",
+        "function": "FishModifyParam__FP12grFISH_PARAMPff",
+        "value_type": "binary32",
+        "value_bits": "0x3e99999a",
+        "callee": "GetRandomNumber__Fff",
+        "expected_matches": 1,
         "evaluate_first": true
       },
       {
@@ -433,6 +479,14 @@
         "evaluate_first": true
       },
       {
+        "translation_unit": "menuchr.cpp",
+        "function": "Draw__12CMosBookMenuFv",
+        "value_type": "binary32",
+        "value_bits": "0x41800000",
+        "callee": "PrimQuad__FP11mgCDrawPrimff9mgRect<i>",
+        "evaluate_first": true
+      },
+      {
         "translation_unit": "menudraw.cpp",
         "function": "Func_MenuItemBrdPosStep__Fi",
         "value_type": "binary32",
@@ -533,10 +587,108 @@
         "evaluate_first": true
       },
       {
+        "translation_unit": "nd_meswin.cpp",
+        "function": "DrawMesWin__6ClsMesFv",
+        "value_type": "binary32",
+        "value_bits": "0x3f000000",
+        "callee": "CalcAutoPosSet__Fffff",
+        "control": {
+          "kind": "switch",
+          "values": [
+            9,
+            10
+          ]
+        },
+        "expected_matches": 1,
+        "evaluate_first": true
+      },
+      {
+        "translation_unit": "nd_meswin.cpp",
+        "function": "DrawMesWin__6ClsMesFv",
+        "value_type": "binary32",
+        "value_bits": "0x3f733333",
+        "callee": "CalcAutoPosSet__Fffff",
+        "control": {
+          "kind": "condition",
+          "values": [
+            7,
+            9,
+            10
+          ]
+        },
+        "expected_matches": 1,
+        "evaluate_first": true
+      },
+      {
+        "translation_unit": "nd_meswin.cpp",
+        "function": "DrawMesWin__6ClsMesFv",
+        "value_type": "binary32",
+        "value_bits": "0x3f000000",
+        "callee": "CalcAutoPosSet__Fffff",
+        "control": {
+          "kind": "condition",
+          "values": [
+            11
+          ]
+        },
+        "argument": {
+          "argument_index": 1,
+          "value_type": "binary32",
+          "value_bits": "0x44000000"
+        },
+        "evaluate_before": 1,
+        "expected_matches": 1,
+        "evaluate_first": false
+      },
+      {
+        "translation_unit": "nd_meswin.cpp",
+        "function": "DrawMesWin__6ClsMesFv",
+        "value_type": "binary32",
+        "value_bits": "0x3f000000",
+        "callee": "CalcAutoPosSet__Fffff",
+        "control": {
+          "kind": "condition",
+          "values": [
+            11
+          ]
+        },
+        "argument": {
+          "argument_index": 1,
+          "value_type": "binary32",
+          "value_bits": "0x43f00000"
+        },
+        "expected_matches": 1,
+        "evaluate_first": true
+      },
+      {
         "translation_unit": "pbuggy.cpp",
         "function": "InitBomb__FP6CScene",
         "value_type": "binary32",
         "value_bits": "0x40490fdb",
+        "evaluate_first": true
+      },
+      {
+        "translation_unit": "pbuggy.cpp",
+        "function": "CharaControl__FP6CSceneP11CPadControl",
+        "value_type": "binary32",
+        "value_bits": "0x41a00000",
+        "callee": "CreateCharaCPoly__FP6CCPolyiPfPfff",
+        "evaluate_first": true
+      },
+      {
+        "translation_unit": "pbuggy.cpp",
+        "function": "CharaControl__FP6CSceneP11CPadControl",
+        "value_type": "binary32",
+        "value_bits": "0x00000000",
+        "callee": "SetPosition__9mgCObjectFfff",
+        "evaluate_first": true
+      },
+      {
+        "translation_unit": "pbuggy.cpp",
+        "function": "CharaControl__FP6CSceneP11CPadControl",
+        "value_type": "binary32",
+        "value_bits": "0xc3aa0000",
+        "callee": "SetPosition__9mgCObjectFfff",
         "evaluate_first": true
       },
       {

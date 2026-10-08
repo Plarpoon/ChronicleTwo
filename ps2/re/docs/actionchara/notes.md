@@ -238,3 +238,8 @@ call by the nested `16.0f` argument and the air call by its nested local-angle
 load. These are parsed argument identities, independent of occurrence or code
 address. With both policies, the whole actionchara object matches its retail
 0x8F80 bytes and 1,035 resolved relocations.
+
+A reused `neutral_angle` local constant-folds away; unsuffixed double zero
+also narrows to the same binary32 identity. Neither separates the rotation
+consumers under a broad zero-first policy. The native nested expressions and
+upstream nested selectors are the active implementation.

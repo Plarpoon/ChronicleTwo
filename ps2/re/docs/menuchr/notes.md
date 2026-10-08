@@ -4,12 +4,17 @@ The matching build uses retail gaps for the C++ drafts still guarded by
 `NONMATCHING`, including `CMenuChrCngMenu::LoadBGNPCModel`,
 `MenuCharaChangeInit`, `CMenuCostumeSel::LoadMenuData`,
 and `CMosBookMenu::KeyStep`. The current source also keeps gaps for
-`MenuMemoryDivide`, `EnterDataMenu`, `KeyChangeMain`,
-`MenuCharaChangeStarDraw`, `CMenuMosSelect::KeyStep`, `MenuMonsterLoadBG`,
-`MenuItemCharaDataLoadEndCheckAfter`, `InitMainCharaBG`,
-`CMenuCostumeSel::Draw`, `MenuCostumeInit`, and `CMosBookMenu::Draw`.
-Only the unguarded functions described below are C++ decompilations; the
-current complete object requires integrated verification.
+`EnterDataMenu`, `KeyChangeMain`,
+`MenuCharaChangeStarDraw`, `CMenuMosSelect::KeyStep`,
+`MenuItemCharaDataLoadEndCheckAfter`,
+`CMenuCostumeSel::Draw` and `MenuCostumeInit`.
+Only unguarded functions are active C++ decompilations. `MenuMemoryDivide` and
+`CMosBookMenu::Draw` are native, including their capacity and drawing tables.
+The complete unit passes canonical verification. The merged October 8
+Satan's Fiddle base has independent PAL `.text` mismatches in `nd_meswin`
+and `actscript`. The current scores, retained drafts, and receipts are in
+[mid-day round-one assessment](midday-r1-assessment.md); the dated older assessments below
+record their earlier baselines.
 
 `MonsterBookDraw` draws the book, then draws a debug label when
 `menu_debug_flag` is set. The retail float register setup for
@@ -31,9 +36,8 @@ with both dimensions lets MWCC produce those two induction variables while
 the source uses typed indices. `get_gajji_id_from_monster_progress_table`
 searches all forms and returns the badge ID with the form column, while
 `GetMonsterProgressTableNo` searches one form column for a monster ID and
-returns the row. Both are active C++ functions. Their typed loops require comparison against
-the current object before a matching claim can be made; the unit also retains
-assembly gaps for the menu functions listed below.
+returns the row. Both are active C++ functions. Their typed loops pass the
+current complete-object check; the unit retains assembly gaps for the menu functions listed below.
 
 `MenuCharaChangeDraw` matches as native C++ with the three stable
 floating-expression rows documented below. They restore the panel coordinates
@@ -50,14 +54,17 @@ compiled body differs in only two instructions: retail branches on the
 allocation result in `v0` and moves it to `s1` in the delay slot, while MWCC
 currently moves first and branches on `s1`. Named locals, assignment chaining,
 parenthesized new expressions, and a same-type cast retain that difference.
-`MenuMemoryDivide` differs in 18 instructions, mostly saved-register choices
-for its buffer and loop indices. Its existing buffer increments also need a
-typed array representation before promotion. `MenuMonsterLoadBG` has a
-larger stack-frame and register-allocation difference in its guarded draft.
+`MenuMemoryDivide` partitions aligned quadword storage with typed table and
+buffer indexing; its native function, capacity tables, and stack-name literal
+match retail. See [memory partitioning](midday-memory.md).
+`MenuMonsterLoadBG` is also native, as documented in the loader section below.
+`CMosBookMenu::Draw` preserves the explicit panel, heading, model, digit, and
+font sequence and matches with its six native drawing tables; see
+[monster-book drawing](midday-book.md).
 `CMenuCostumeSel::LoadMenuData` and `CMosBookMenu::KeyStep` each differ by
 the same two placement-new branch/move instructions as `LoadBGNPCModel`.
 `MenuItemCharaDataLoadEndCheckAfter` differs by two instructions in the
-inlined `CScene` constructor: the address argument for `MdsListSet::Initialize`
+inlined `CScene` constructor: the address argument for `CMdsListSet::Initialize`
 is prepared before the call in the draft and in the call delay slot in retail.
 
 The seven `MenuActionCharaBuffer` stacks and the other eight `mgCMemory` globals use native
@@ -223,7 +230,15 @@ array indexing and member calls use the declared C++ types.
 
 `CMosBookMenu` initializes the camera, list, and description fields in its native constructor, as in the PR7 cleanup branch. `MonsterBookInit` constructs it in `MosBookStack` and then sets its texture block and boot mode.
 
-`CMenuMosSelect` initializes its badge and message window fields in its native constructor. Its member `CActionChara` objects contain `CCharaFrameMatching` objects whose default construction is trivial; an explicitly empty `CCharaFrameMatching` constructor introduces two calls to `Initialize__19CCharaFrameMatchingFv` in `MenuMonsterBoxInit` that are absent from PAL. The constructor is inlined into `MenuMonsterBoxInit` at inline depth 3, matching the PAL constructor sequence and null branch exactly.
+`CMenuMosSelect` initializes its badge and message window fields in its native
+constructor. Its two `CActionChara` members contain `CCharaFrameMatching`
+objects. `CCharaFrameMatching` has no user-declared constructor: PAL contains
+no constructor calls for these members, and each character retains its
+explicit `Initialize__19CCharaFrameMatchingFv` call. An explicitly empty
+constructor added two calls absent from PAL. The menu constructor is inlined
+into `MenuMonsterBoxInit` at inline depth 3, which matches PAL with trivial
+default construction; every other unit including `character.hpp` keeps its
+object bytes and relocations.
 
 `SetMenuLoadItemNo` reads Max's or Monica's five `CHARA_DATA::equip` item numbers. For the ridepod, the displayed order is parts 3, 0, 1, an empty slot, and part 2. Typed access to `ROBO_DATA::parts` and `CGameDataUsed::item_no` preserves its exact PAL object code.
 
@@ -271,3 +286,65 @@ Three unscoped binary32 selectors for `MonsterBookDraw__Fv` mark `40.0f` (`0x422
 ## Native monster-box draw
 
 `MenuMonsterBoxDraw` uses its existing typed native draft. The `sceVif1Packet*` null argument selects the texture reload overload. Its debug-label literal preserves the retail Shift-JIS bytes inline; the unused `at_3762` declaration and separate assembly data include are removed. Canonical verification passes the complete unit: `0x11CF4` allocated bytes and 3,651 relocations, with the accepted monster-book selectors and helper masks.
+
+## Main-character background initialization
+
+`InitMainCharaBG` prepares the menu texture blocks and load stacks, selects the
+requested character, preserves the active model's position and rotation, then
+starts the appropriate character, ridepod, or monster background read. When
+the stored monster ID is negative it sets both user data and the read request
+to 0x34. Naming the `CUserDataManager *` returned by the getter before the
+store produces retail's two halfword stores from v1, avoiding the draft's
+constant in saved register s0. This removes all five differing instructions.
+
+`InitMainCharaBG` passes the draft comparison, the game-unit object check,
+and coverage.
+
+The guarded drafts refer to the current shared field names `battle_clear`
+(`DNG_BATTLE_AREA` offset 0x5c) and `monster_mode` (`BUILDUP_WEAPON_INFO`
+offset zero). The palette overlay's substructure is named `palette`, exposing
+`palette.clut` through MWCC without changing its layout or the contiguous
+constructor clear. These names repair compilation of all eighteen original
+drafts; the nested switch in `KeyChangeMain` itself was well formed.
+
+`MenuMemoryDivide` uses typed quadword-array indexing for its buffer movement.
+This preserves the existing 18-word register-allocation difference. Moving
+the buffer declaration before alignment and reversing the explicit rounding
+addition operands do not correct the allocation.
+
+The guarded `EnterDataMenu` draft uses the texture block loaded from base
+menu offset 0x18 for texture registration, repair setup, and reload. Its
+script pointer and script length are base fields at 0x8 and 0xc, rather than
+the party-change state at 0x118/0x11c. The NPC reset includes offset 0x23c.
+Capturing the texture manager and initial texture block follows retail's
+reads before the pack lookup. These corrections reduce the draft difference
+from 370 to 331 of 388 words; the body remains guarded.
+
+See [the October 8 lane assessment](round2.md) for the remaining function
+scores, concrete park triggers, shared constructor proposal, and validation
+receipts.
+
+## Native monster background read
+
+`MenuMonsterLoadBG` resets the background reader when requested, selects the
+monster model path for the current menu mode, and starts the model read from
+an aligned stack buffer. A successful read marks the request as reading and
+reserves its rounded quadword count. Mode 2 also starts the monster script
+read and reserves its buffer. A missing model filename returns zero; an
+unsuccessful background read still returns one without marking the request
+as reading or reserving buffers.
+
+The model and script filenames occupy separate 64-byte buffers. Naming the
+pointer into each buffer at its lookup preserves their lifetimes across
+lookup and string-copy calls. The script pointer begins after model lookup
+succeeds. The successful-read branch encloses allocation and optional script
+loading, followed by the common return. Naming the typed `stGetTop()` result
+before `LoadFileBG` preserves the buffer read before the path argument read.
+These source changes reduce the current Satan's Fiddle draft from 118
+differing words to zero, without a profile row or shared-header change.
+
+After manual guard removal, the canonical wrapper, section fixup, and
+complete-unit checker accept `0x11CDC` allocated bytes and 3,734 resolved
+relocations. The native loader body is `0x1E4` bytes inside its `0x1F0` retail
+extent. See [remaining guards on the merged base](remaining-sf-r2.md) for
+per-target measurements, useful negative experiments, and final receipts.

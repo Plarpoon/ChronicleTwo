@@ -1,7 +1,6 @@
 # mg_dataset: reverse-engineering notes
 
-The native drafts of `CreateFrameVisual`, `mgLoadMDSFile(mgLoadData*)`,
-`CopyFrame`, `CopyFrameSub`, and `mgCMDTBuilder::End(mgCFrame*, mgCVisualMDT*,
+The native drafts of `CreateFrameVisual`, `CopyFrame`, `CopyFrameSub`, and `mgCMDTBuilder::End(mgCFrame*, mgCVisualMDT*,
 mgLoadData*)` remain behind `NONMATCHING` with retail assembly fallbacks.
 The current `htoi` and `mgSetFrameAttr` bodies are active native C++; earlier
 statements that both remained guarded are stale. `htoi` matches retail bytes
@@ -177,3 +176,9 @@ allocations, plus one four-instruction scheduling difference near +0x1E4.
 `mgCopyFrame` keeps its allocated copies as `mgCFrame*` and accesses each
 frame by array index. The constructor array has a 0x110-byte element stride;
 the typed version matches retail at 100% (0x274 bytes).
+
+## Native MDS loader
+
+`mgLoadMDSFile(mgLoadData*)` is native and matches retail with a separate
+allocation count and iteration index. Its serialized-file offsets and current
+placement-new parks are documented in [matching-20261008.md](matching-20261008.md).

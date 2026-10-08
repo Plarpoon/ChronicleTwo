@@ -11,14 +11,16 @@ functions; they do not assert retail enum names.
 
 ## Current assembly gaps
 
-`CDngFreeMap::DrawRoot`, `DrawRoomOne`,
-`DrawTreeMap`, `Draw`, and `LoadDngInfo` retain C++ drafts
+`CDngFreeMap::DrawRoot`, `DrawRoomOne` and `LoadDngInfo` retain C++ drafts
 under `NONMATCHING`; the matching build selects their retail `INCLUDE_ASM`
-gaps. The same applies to `CheckGeoramaMateria`, `DrawDngRoomInfo`,
-`DrawGeoramaMateria`, `CMenuTreeMap::InitEnd`,
-`MsgInit`, `Step`, and `Draw`, plus `DngTreeMapInit`. The `ClsMes::Init`
-body at the end of this unit is also an assembly gap. Match claims elsewhere
-in these notes apply only to the named unguarded C++ functions.
+gaps. The same applies to `DrawDngRoomInfo`, `DrawGeoramaMateria`,
+`CMenuTreeMap::MsgInit`, `Step` and `DngTreeMapInit`.
+`CheckGeoramaMateria` and `CMenuTreeMap::InitEnd` are native and exact;
+see [r2.md](r2.md). Both classes' `Draw` functions are now native and exact;
+see [midday.md](midday.md) for complete-unit and baseline acceptance.
+`ClsMes::Init` remains an assembly gap by assignment, with a conditional
+natural-emission proposal. Match claims elsewhere in these notes apply
+only to the named unguarded C++ functions.
 
 ## Additional map behavior
 
@@ -105,7 +107,7 @@ dispatches modes 0 and 1 to the map or save menu. Both functions match retail
 from C++ and pass full-image verification. `CheckGeoramaMateria` walks the
 floor's group identifiers, collects the item numbers from matching groups,
 then twice removes items whose
-attribute word does not contain bit `0x10`.
+attribute word does not contain `ITEM_ATTRIBUTE_GEORAMA_MATERIA` (`0x10`).
 
 `DrawPlayer` draws the `dngop` texture at its room's board position, shifted
 four pixels right and thirty up. In event mode it takes positions from the
@@ -181,7 +183,7 @@ the page count in the lower right.
 constructs the tree menu and floor map inside it, loads the floor grid when
 the opening mode requires it, and reads the menu's data list. It sets each
 of the eight message windows to use the system message buffer and gives
-the second window the digit font. The menu cursor texture file is
+the second window sixteen-pixel numeric value spacing. The menu cursor texture file is
 `frametex.img`.
 
 `CMenuTreeMap::InitEnd` loads the dungeon map picture and floor information
@@ -362,10 +364,12 @@ six alpha units per frame and out eight. It draws the border and seal pulse,
 then places four challenge rows and their message windows; the medal message
 uses a language-specific position.
 
-The medal overlay's UV coordinates in `DrawDngRoomInfo` remain uncertain:
-retail copies packed words from `medal_xytbl_1736` into rectangle locals.
-The current draft uses the existing highlight rectangle for that overlay,
-so its placement needs further work during matching.
+The completion overlay uses signed halfword X coordinates from
+`medal_xytbl_1736`, assigning only the highlight rectangle's left field.
+Offsets 0, 4, 6, and 8 supply X positions 168, 212, 234, and 146 for the
+timed-clear, fishing, spheda, and final medal rows. The guarded draft now
+contains these typed reads; the rectangle retains top 0 and size 22 by 22.
+See [r2.md](r2.md) for the resolved table interpretation and remaining work.
 
 `mgRect<float>::Set` stores its four arguments directly into the left, top,
 right and bottom fields. The explicit float specialization is a separate
@@ -538,7 +542,9 @@ ineffective and discarded.
 ## Remaining native draft checks with helper seed 0x30
 
 Each result below compiles only the named draft as native C++, retaining the
-other assembly gaps, after the matching `CheckIsViewMove` promotion. The
+other assembly gaps, after the matching `CheckIsViewMove` promotion. Local
+`DrawTreeMap`, `CheckGeoramaMateria`, and `InitEnd` implementations supersede
+the earlier failed trials of those functions. The
 normal unit remains byte-identical; none of these trials is a new match.
 The comparison includes canonical section bytes and resolved relocations.
 
@@ -546,11 +552,8 @@ The comparison includes canonical section bytes and resolved relocations.
 |---|---:|---|
 | `CDngFreeMap::DrawRoot` | 81.85545% | 3332-byte native body; canonical check fails. |
 | `CDngFreeMap::DrawRoomOne` | 73.13356% | 2216-byte native body; canonical check fails. |
-| `CheckGeoramaMateria` | 86.991% | 0x1A8 bytes rather than 0x1C0; separate sort index and do/while pass do not change output. |
 | `DrawDngRoomInfo` | 48.992977% | 3052-byte native body; canonical check fails. |
 | `DrawGeoramaMateria` | 79.984% | 0x404 bytes rather than 0x400; canonical check fails. |
-| `CDngFreeMap::DrawTreeMap` | 72.74% | 808-byte native body; canonical check fails. |
-| `CMenuTreeMap::InitEnd` | 84.830% | 0x364 bytes rather than 0x380; canonical check fails. |
 | `CMenuTreeMap::MsgInit` | 97.836% | Correct 0x1D0 size; screen-coordinate load scheduling still differs. Naming the X coordinate in a local leaves output unchanged. |
 | `DngTreeMapInit` | 25.15625% | 1552-byte native body; canonical check fails. |
 
@@ -563,3 +566,65 @@ placeholder types. Those tables require native typed data definitions before
 that draft can be compared. Isolated `CMenuTreeMap::Step` and `Draw` drafts
 also have declaration/type compilation failures; their guards cannot simply
 be removed. These results distinguish buildable drafts from native matches.
+
+## DrawTreeMap
+
+`DrawTreeMap` constructs its board rectangle with four values and walks a
+retained grid pointer. Its highlight uses a two-float position array and keeps
+the separate float adjustments `x - 8 - 30`, `-42 + (11 + y)` and
+`size - size * rate`; retail performs each float operation separately.
+Declaring the mark mask before the loop index matches retail register reuse;
+the nonzero blink read uses a signed byte conversion. The function matches all
+198 nonpadding instructions.
+
+## Guarded draft findings
+
+`CheckGeoramaMateria` uses one addressable index for the floor-group walk and
+both removal passes. Declaring that index before `count` reproduces stack
+slots 0x38 and 0x3C; declaring the group-search index before the group ID
+reproduces the search registers. Separate input checks give retail's early
+returns. Earlier item-loop declaration placement, initialization placement,
+and postincrement syntax leave six register differences. Reusing the finished
+group-search index for item traversal resolves them in r2, and the guard is
+removed after complete-unit byte and relocation validation; see [r2.md](r2.md).
+
+`DrawGeoramaMateria` reads `GeoramaMateriaInfoDrawPage` as a signed byte at
+0x1EEE84 and 0x1EEF68. Both declarations in this unit therefore use `s8`.
+The three panel calls take separately constructed rectangle values, matching
+the three distinct retail temporaries. Title and item dimensions use separate
+locals. The page-end index remains an integer: narrowing it to a short adds
+sign-extension instructions absent from retail. These corrections retain a
+0x404-byte guarded function against 0x400 bytes in retail.
+
+`CDngFreeMap::Draw` has a 256-byte detail buffer and a 32-byte secondary line
+buffer (retail stack 0x140..0x240 and 0x240..0x260). It reloads the selected
+floor ID for each graph query. Retail also appends `"NONE"` to the detail
+buffer after the final debug row; the append is present at 0x1EFD00..0x1EFD0C,
+and the literal occupies 0x36DAE8. It is not followed by another draw call.
+Restoring these details gives the retail 0x280-byte frame, while instruction
+scheduling and branch structure initially remained different. The midday pass resolves
+those differences and promotes the function; see [midday.md](midday.md).
+
+The remaining differences and reconsideration triggers are recorded in
+[parks.md](parks.md). The standalone `ClsMes::Init` proposal is recorded in
+[clsmes-init-proposal.md](clsmes-init-proposal.md).
+
+## Merged SF second pass
+
+[The r2 record](r2.md) documents exact native promotions of
+`CheckGeoramaMateria` and `CMenuTreeMap::InitEnd`, refreshed SF measurements
+of every assigned guard, and the retained guarded corrections.
+[parks.md](parks.md) is the current remainder list and retry guide.
+
+## Midday round 1
+
+[round1.md](round1.md) records new MsgInit assignment forms and tree-opening
+condition, cursor-buffer type and optimizer probes. Their best results remain
+7/116 and 55/256. The conditional natural ClsMes::Init proposal remains
+inactive; no dungeon function, global type or profile row changes this round.
+
+## October 8 near-miss wave
+
+[nearmiss-20261008.md](nearmiss-20261008.md) records the new local-data,
+coordinate-width, input-order and compiler-control probes. MsgInit remains
+at 7/116 words, and the conditional ClsMes::Init proposal remains inactive.

@@ -63,17 +63,29 @@ owned (`class_units.tsv` lists none for this unit). No first-game counterpart (D
 
 ## Current C++ status
 
-All functions in this unit are now ordinary C++ definitions; the source has no
-`NONMATCHING` branches or `INCLUDE_ASM` gaps. `PrintV` uses a stack digit array,
-`CPreSprite`, and a glyph rectangle passed by value. The durability and
+Six functions have active C++ definitions. `DrawMainUnitStatusBord__Ff` remains
+behind `NONMATCHING` with its assembly fallback. `PrintV` uses a stack digit
+array, `CPreSprite`, and a glyph rectangle passed by value. The durability and
 absorption getters write current and maximum values into adjacent integers.
-The boards use typed battle, status, gauge, and user-data records. The main
-board's magic-sword and ailment-icon tables are typed local arrays with the
-values found in retail data.
+The boards use typed battle, status, gauge, and user-data records.
 
-Earlier isolated promotion trials had compiler or layout blockers; those
-results do not describe the current source. The current unit still needs an
-integrated object check before every function can be called matched.
+The main-board draft's two native sprite constructors belong immediately after
+the flash `sinf`, at retail +0x1E4/+0x1EC, before the first Initialize. Moving
+the declarations to this point reduces its checked-in-profile differences from
+1126/1192 words to 1124/1192, with code size still 0x1240 versus retail 0x12A0.
+This closer natural correction is retained with the guard. Scalar flash and
+durability ratios, or moving render-only glyph/table/absorption buffers after
+the sprites, do not improve that result and are not retained.
+
+Remaining differences begin at +0x74 with position-register allocation and
+include different spills, branch scheduling and sprite stack slots. The current
+sprite locals follow the early buffers in the frame; retail uses sp+0x110 and
+sp+0x240, with durability values at sp+0x480. This is a local-lifetime and
+stack-layout blocker; no isolated float-order selector has been demonstrated.
+Reconsider when a natural rendering scope and buffer declaration arrangement
+recovers those retail slots and lifetimes without fake scalar alignments or
+constructor-suppression helpers. The linked unit continues to pass with the
+main-board assembly fallback.
 
 ## Number glyph calls
 
@@ -85,4 +97,39 @@ The unit-level `divbyzerocheck` pragma was redundant with the global MWCC flag; 
 
 ## Native primitive constructors
 
-The former `MG_DRAWPRIM_MANUAL_CTOR` macro suppressed normal `mgCDrawPrim` construction throughout this unit. Removing it and the explicit constructor aliases makes `PrintV`, `DrawDrumCounter`, the active-item cursor, and the status boards construct their `CPreSprite` locals through C++. `DrawRoboUnitStatusBord` declares its two sprites immediately before first use, after calculating gauge colours, so the calls retain retail order; the full unit has no new fuzzy functions.
+The former `MG_DRAWPRIM_MANUAL_CTOR` macro suppressed normal `mgCDrawPrim` construction throughout this unit. Removing it and the explicit constructor aliases makes `PrintV`, `DrawDrumCounter`, the active-item cursor, and the status boards construct their `CPreSprite` locals through C++. `DrawRoboUnitStatusBord` declares its two sprites immediately before first use, after calculating gauge colours, so the calls retain retail order; the already active functions continue to match; the main board retains its guarded checkpoint above.
+
+## Mid-day scoped positions and item receivers (October 8)
+
+The main-board guarded draft now differs in 1,117/1,192 words, compared with
+1,124/1,192 at lane entry. Its native body grows from 0x1240 to 0x1248, closer
+to the 0x12A0 retail extent. Declaring `weapon_y` and its initial `hp_y` copy
+at their calculation restores the initial position-register assignment and
+reduces the entry draft to 1,121 words. Named pointers to the second and third
+active items preserve the indexed receivers across the first icon query/draw;
+in combination with those scoped positions they give the retained 1,117-word
+checkpoint. These are real item records at `active_items[1]` and `[2]`, each
+0x6C bytes, with no pointer-to-byte casts or constructor replacement.
+
+Both durability outputs and both absorption outputs remain separate. Retail
+passes sp+0x480 and sp+0x488 to the two `GetNowWhp` calls, then sp+0x490 and
+sp+0x498 to the two `GetNowAbs` calls. A reused absorption buffer reduces a
+positional word count, but does not recover those distinct retail destinations
+and is not retained. Splitting all four output pairs into separate named arrays
+and adding the same position/item scopes gives 1,115 words but shrinks the body
+to 0x1230, farther from the retail extent; the closer extent and original
+output-array layout are retained instead.
+
+A nested rendering scope with later table/glyph declarations still gives
+1,124 words. Explicit `fptosi` calls for the two initial position conversions
+give 1,134 words. Parallel or paired position arrays give 1,102 words with a
+0x1230 body and fail to recover the scalar receiver/spill layout. No compiler
+profile row or header change is justified by these trials.
+
+The guard remains. Retail's sprite slots at sp+0x110/+0x240 and output buffers
+at sp+0x480..0x49C still differ from the native frame, and position/spill and
+branch scheduling differences remain throughout the function. The native
+canonical comparison fails; the default assembly-backed unit continues to
+pass. Receipts are under `.private/midday/probes/dng_status/`, with the retained
+body in `scoped-item-positions/`; integrated validation is recorded in
+`.private/midday-final-build.log` and `.private/midday-final-objects.log`.

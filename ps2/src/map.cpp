@@ -479,7 +479,11 @@ void CMap::CreateDrawRect(mgCMemory *memory, mgVu0FBOX *rect, mgVu0FBOX *clip, i
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", CreateDrawRect__4CMapFP9mgCMemoryP9mgVu0FBOXP9mgVu0FBOXi);
 #endif
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", Initialize__18CList_P9CMapParts_Fv);
+template <>
+void CList<CMapParts *>::Initialize() {
+    prev = 0;
+    next = 0;
+}
 
 void CMap::CreateOcclusion(float (*corner)[4]) {
     if (occlusion_num < MAP_OCCLUSION_MAX) {

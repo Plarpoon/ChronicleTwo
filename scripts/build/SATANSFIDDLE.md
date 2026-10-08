@@ -74,16 +74,89 @@ the `SetRotation` zero associated with `unitRotation`'s third argument 16.0f,
 while `RoboAirMoveIF` selects the zero associated with a local angle passed
 as `unitRotation`'s second argument.
 
+The subsequent `patches/satansfiddle-control-context.patch` adds two optional
+source identities for verified MWCC 3.0 statement lowering. `control` identifies
+the integer value set of an enclosing equality condition or grouped switch case;
+`argument` identifies a sibling floating constant by its formal position, type,
+and IEEE bits. Both require `callee`. For example, the two `_SHOT` alpha calls
+share their callee and 160.0f value, but only the attack-type-90 condition needs
+early evaluation:
+
+```json
+{
+  "translation_unit": "actscript.cpp",
+  "function": "_SHOT__FP12RS_STACKDATAi",
+  "value_type": "binary32",
+  "value_bits": "0x43200000",
+  "callee": "SetValue__16CEffectScriptManFifii",
+  "control": {"kind": "condition", "values": [90]},
+  "expected_matches": 1,
+  "evaluate_first": true
+}
+```
+
+`control` is a semantic projection: it retains the kind and integer value set,
+but omits the compared expression's identity, source location, and the selected
+constant's formal slot. Comparisons of different subjects against the same set
+can therefore match the same row. Repeated identities receive the same policy.
+
+Condition values are reconstructed from forward equality-controlled statement
+regions, including short-circuit OR branches. Switch values group cases sharing
+their actual source label. Values are normalized as a set, and duplicate or empty
+sets fail validation. Every switch descriptor retains its case boundary, including
+unrepresentable bounds and ranges exceeding 16 values. Such descriptors reject
+reconstruction of the selected function. The default target is a separate boundary;
+only forward layouts with no explicit case after the default are supported.
+Nonterminal defaults and missing case/default labels fail the compilation. A
+terminal default body, including explicit cases sharing that boundary, receives
+no switch selector context; its target is not
+claimed to be the switch join. Other unsupported condition forms leave a row
+unconsumed unless its projected identity also occurs elsewhere. Neither statement
+position nor compiler pointers enter a selector. The two hooks are supported
+only on the hash-verified 3.0 compiler; other profiles reject these capabilities.
+
+Centered message placement additionally distinguishes screen-limit argument 1,
+512.0f for X and 480.0f for Y. Its optional `argument` uses the same fields as a
+nested constant selector except for the nested callee. Argument positions refer
+to the compiler's formal argument list, including an implicit receiver when one
+exists; `CalcAutoPosSet` has four ordinary scalar arguments.
+
+The optional `evaluate_before` policy names a formal sibling argument index and
+requires `evaluate_first: false`. It prioritizes the selected constant in the
+ordinary register-argument evaluation walk after formal slots have been assigned.
+The original list order is restored before transfers to those slots. This allows
+the centered-X half ratio to materialize before screen limit argument 1 while
+retaining both integer values until their later floating transfers. It changes
+compiler expression scheduling, without editing instructions or emitted objects.
+Both the selected argument and target must still participate in this ordinary
+walk: their masked argument category must be 1 or 2, their evaluated marker must
+be zero, and their expression's evaluate-first flag must be false. Missing or
+already evaluated siblings, other categories, self-dependencies, cycles, and incomplete restoration fail the
+compilation. The selector and lowering evidence is documented in
+[`selector-proposal-20261008.md`](../../ps2/re/docs/satansfiddle/selector-proposal-20261008.md).
+
 Unscoped rows apply during annotation and argument consumption. Callee-scoped
 rows apply at argument consumption, where a matching scoped row takes precedence
 over an unscoped row regardless of configuration order. Nested selectors take
-precedence over callee-only rows. The consumer hook also
-initializes fresh direct constant nodes that bypassed annotation. An explicit
+precedence over callee-only rows. Each additional nested, control, or argument
+identity increases the row's specificity. All applicable rows are collected before
+selection. Conflicting `(evaluate_first, evaluate_before)` policies at the greatest
+specificity fail regardless of row order. Equally specific rows with the same
+policy all apply; less specific consumer rows do not count as consumed there.
+An unscoped row applied during annotation retains that separate consumption.
+The consumer hook initializes fresh
+direct constant nodes that bypassed annotation. An explicit
 stable selector can adjust verified assignment wrappers and compiler-registered
 literal-pool loads; arbitrary variable expressions retain normal annotation.
 
 The adapter selects only the current unit's override rows; Satan's Fiddle rejects
-stale selectors within that compilation. Ordinals, instruction addresses and
+stale selectors within that compilation. Callee-scoped rows can additionally set
+`expected_matches` to a positive count of distinct selected call arguments per
+compiler invocation. Repeated callbacks for one call argument count once; two
+formal slots or two calls count separately. The assertion never changes identity,
+specificity, or selection and rejects both missing and excess matches. The five
+control-context calibration rows each require one match in each mwccgap pass.
+Ordinals, instruction addresses and
 compiler-arena addresses are not selectors. The 3.0 profile does
 not configure literal-reload behavior: the current `-O3,p` constants are immediate,
 and no affected alias path has been validated for 3.0's pooled constants under
@@ -117,3 +190,26 @@ Use
 adapter's argument, selector, and failure-path checks.
 Use `python3 -m unittest discover -s scripts/build -p test_objdiff_config.py`
 to check template, local-symbol, and literal-name mappings.
+
+The Docker wrapper stage also runs Satan's Fiddle's configuration and control
+tests. Development images include the CLI regression runner and a separate binary
+built with `hook-test-faults`; the production wrapper excludes fault injection.
+A mounted genuine 3.0 compiler exercises selected and unselected calls in the same
+function, all six placement schedules, two simultaneous nested saved lists,
+restoration write failure without object publication, ambiguous and shadowed
+policies in both row orders, excess cardinality, unsupported switch bounds,
+early-evaluated targets, repeated builds, temporary filenames and stale selectors:
+
+```sh
+export SATANSFIDDLE_TEST_COMPILER_300="$PWD/tools/compilers/mw/3.0-011126/mwccps2.exe"
+export SATANSFIDDLE_TEST_EXECUTABLE=/usr/local/bin/satansfiddle
+export SATANSFIDDLE_TEST_FAULT_EXECUTABLE=/usr/local/libexec/satansfiddle-tests/satansfiddle-fault-test
+/usr/local/libexec/satansfiddle-tests/compiler_cli-* \
+  --ignored --skip real_compilers_repeatability_float_policies_and_failure
+```
+
+The omitted legacy test additionally requires genuine MWCC 2.3.3. Nonignored
+tests run in the Docker wrapper stage. Algorithm tests cover oversized/unrepresentable
+case ranges, missing boundaries, nonterminal defaults, precedence and walk categories.
+The stage-local native link flags also reach dependency crates so Cargo can link
+all test targets; no wrapper-byte equivalence between recipes is asserted.

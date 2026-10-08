@@ -210,12 +210,12 @@ constructors install the list vtable and initialize the links. Their typed
 constructor drafts remain behind `NONMATCHING`; retail assembly supplies the
 active functions until those drafts compare byte for byte. The list vtables
 reference `CList<PartsGroupData>::Initialize` and `CList<CMapParts *>::Initialize`.
-The former retains its assembly fallback. The latter has a native explicit
-specialization at 0x15E3D0 (size 0xC): it clears `prev` at offset 4, then `next`
-at offset 0, leaving the stored data unchanged. `decompile.sh` confirms those
-two stores. The specialization uses the documented `CList` fields and lets
-MWCC generate its template symbol naturally. The complete `map` object matches
-0x4738 bytes and 418 resolved relocations; this verifies the method independently
+Both methods have native explicit specializations: `PartsGroupData` at
+0x15DB50 and `CMapParts *` at 0x15E3D0 (each size 0xC). Each clears
+`prev` at offset 4, then `next` at offset 0, leaving the stored data unchanged. `decompile.sh` confirms those
+two stores. The specializations use the documented `CList` fields and let
+MWCC generate their template symbols naturally. The complete `map` object matches
+0x4734 bytes and 418 resolved relocations; this verifies the methods independently
 of the still-guarded constructor-backed allocations.
 
 `CPartsGroup::Add` and `CMap::AddParts` reproduce PAL code in the pre-merge

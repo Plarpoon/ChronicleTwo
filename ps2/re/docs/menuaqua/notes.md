@@ -7,13 +7,16 @@ comparison, but the current matching build selects its `INCLUDE_ASM` gap.
 Their C++ bodies remain guarded drafts and are not active decompilations.
 The `SettingAqua` draft constructs its `love_chara` member as a `CCharacter2`.
 
-`CAquaFish::SetAdjustScale`, `DrawFishParam`, `CAquarium::ColCheck`,
+`DrawFishParam`, `CAquarium::ColCheck`,
 `CAquarium::Step`, and `GyoraceMenuKey` likewise retain `NONMATCHING` drafts
 with retail `INCLUDE_ASM` fallbacks.
 
-`CAquaFish::SetAdjustScale` is otherwise instruction-identical: its six differing
-instructions load the `0.95f` and `0.6f` arguments in the opposite order. Explicit
-float construction and named argument locals retain the compiler's ordering.
+`CAquaFish::SetAdjustScale` (0x20F0E0, size 0x8C) is native and exact. It
+computes a size-dependent scale, applies it to all three axes, and derives the
+collision radius from body height. The Satan's Fiddle selector for binary32
+0.95 (`0x3f733333`) evaluates that argument first, preserving retail's
+0.95-before-0.6 load order. The canonical object comparison has no findings
+for this method; the seven existing `DrawEsaDropRoot` findings remain unchanged.
 
 Aquarium menu (fish swim, eat food, fight, pair/breed), the gyorace (fish race) fish-select and
 saved-race menus, fish race/fishing tournament prize scripts, and shared sub-game panel drawing.

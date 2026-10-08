@@ -179,7 +179,11 @@ int CMap::AddPartsGroup(char *name, CMapParts *parts, mgCMemory *memory) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", AddPartsGroup__4CMapFPcP9CMapPartsP9mgCMemory);
 #endif
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", Initialize__23CList_14PartsGroupData_Fv);
+template <>
+void CList<PartsGroupData>::Initialize() {
+    prev = 0;
+    next = 0;
+}
 
 CPartsGroup *CMap::SearchPartsGroup(char *name) {
     return GetPartsGroup(SearchPartsGroupNo(name));

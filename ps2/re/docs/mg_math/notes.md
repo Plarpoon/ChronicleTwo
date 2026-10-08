@@ -154,9 +154,10 @@ ordinary PS2 builds therefore use retail assembly.
 `mgZeroVector` now uses a 128-bit integer store through the four-float vector
 address. MWCC emits retail's `jr ra` with `sq zero,0(a0)` in the delay slot;
 the isolated linked image matches. The reinterpretation is needed to request
-one PS2 quadword store from C++. `mgZeroVectorW` remains an assembly gap:
-retail stores VU0 constant `vf0` with `sqc2`, which a scalar or integer
-C++ store does not express. The other shortest remaining gaps (`mgFotI4`,
+one PS2 quadword store from C++. `mgZeroVectorW` uses the VU-only inline
+assembly exception: retail stores VU0 constant `vf0` with `sqc2`, which a
+scalar or integer C++ store does not express. Its PC stub writes (0, 0, 0, 1).
+The other shortest remaining gaps (`mgFotI4`,
 `mgAddVector`, `mgSubVector`, `mgUnitMatrix`, `mgZeroMatrix`) likewise use
 VU0 arithmetic or `sqc2` in retail.
 

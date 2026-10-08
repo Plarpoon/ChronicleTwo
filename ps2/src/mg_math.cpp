@@ -53,13 +53,12 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgCreateBox8__FPA4_fPfPf);
 void mgZeroVector(float *vector) {
     *reinterpret_cast<u_long128 *>(vector) = 0;
 }
-#ifdef NONMATCHING
-void mgZeroVectorW(float *vector) {
-    vector[0] = vector[1] = vector[2] = 0.0f;
-    vector[3] = 1.0f;
+#ifndef PORT
+asm void mgZeroVectorW(float *vector) {
+    .set noreorder
+    jr ra
+    sqc2 vf0, 0x0(a0)
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgZeroVectorW__FPf);
 #endif
 #ifdef NONMATCHING
 int mgClipBoxVertex(float *point, float *max, float *min) {

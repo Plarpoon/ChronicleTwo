@@ -51,6 +51,8 @@ helpers in `chronicle/ps2/include/mathutil.hpp` / `src/mathutil.cpp` (`VectorMax
   bounds across all four lanes and store them to separate vectors.
 - mgVectorMaxMin(max, min, a, b, c): a second `vmax.xyzw`/`vmini.xyzw` pair
   folds the third input into both four-lane bounds before storing them.
+- mgVectorMaxMin(max, min, a, b, c, d): three paired VU reductions produce
+  the per-lane maximum and minimum of all four input vectors.
 - mgZeroMatrix: `vsub.xyzw` clears all lanes of `vf1`, then four `sqc2` stores
   write the rows of the matrix, with row zero in the return delay slot.
 - mgUnitMatrix: three `vmr32.xyzw` rotations of VU0's constant `vf0` form
@@ -192,6 +194,7 @@ The four-input overload uses the same VU minimum operation three times.
 The two-input `mgVectorMaxMin` uses VU maximum and minimum operations for
 both output vectors.
 The three-input overload uses a second VU reduction stage for the third vector.
+The four-input overload uses a third stage for the fourth vector.
 
 The VU0 vector and matrix routines in this unit retain their guarded C++ drafts
 and retail `INCLUDE_ASM` entries. Handwritten assembly bodies promoted into the

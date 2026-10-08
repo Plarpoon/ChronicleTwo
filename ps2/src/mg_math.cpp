@@ -185,35 +185,22 @@ asm void mgVectorMaxMin(float *max, float *min, float *a, float *b, float *c) {
     jr ra
     sqc2 vf21, 0x0(a1)
 }
-#ifdef NONMATCHING
-void mgVectorMaxMin(float *max, float *min, float *a, float *b, float *c, float *d) {
-    for (int i = 0; i < 4; ++i) {
-        float hi = a[i], lo = a[i];
-        if (b[i] > hi) {
-            hi = b[i];
-        }
-        if (b[i] < lo) {
-            lo = b[i];
-        }
-        if (c[i] > hi) {
-            hi = c[i];
-        }
-        if (c[i] < lo) {
-            lo = c[i];
-        }
-        if (d[i] > hi) {
-            hi = d[i];
-        }
-        if (d[i] < lo) {
-            lo = d[i];
-        }
-        max[i] = hi;
-        min[i] = lo;
-    }
+asm void mgVectorMaxMin(float *max, float *min, float *a, float *b, float *c, float *d) {
+    .set noreorder
+    lqc2 vf15, 0x0(a2)
+    lqc2 vf16, 0x0(a3)
+    lqc2 vf17, 0x0(t0)
+    lqc2 vf18, 0x0(t1)
+    vmax.xyzw vf20, vf15, vf16
+    vmini.xyzw vf21, vf15, vf16
+    vmax.xyzw vf20, vf20, vf17
+    vmini.xyzw vf21, vf21, vf17
+    vmax.xyzw vf20, vf20, vf18
+    vmini.xyzw vf21, vf21, vf18
+    sqc2 vf20, 0x0(a0)
+    jr ra
+    sqc2 vf21, 0x0(a1)
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgVectorMaxMin__FPfPfPfPfPfPf);
-#endif
 #ifdef NONMATCHING
 void mgBoxMaxMin(mgVu0FBOX *box, mgVu0FBOX *other) {
     for (int i = 0; i < 4; ++i) {

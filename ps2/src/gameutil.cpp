@@ -1629,29 +1629,30 @@ int CheckHitsPipe(CCPoly *polys, int count, sceVu0FVECTOR from, float *to, int m
     return hits;
 }
 
-#ifdef NONMATCHING
-int CheckHitsSphere(CCPoly *polys, int count, float *sphere, int max_hits, int *hit_polys, float (*hit_points)[4], int sort, int ignore_mask) {
-    sceVu0FVECTOR sphere_max;
-    sceVu0FVECTOR sphere_min;
-    sceVu0FVECTOR poly_max;
-    sceVu0FVECTOR poly_min;
-    sceVu0FVECTOR push;
-    sceVu0FVECTOR normal;
-    sceVu0FVECTOR swap;
-    CCPoly       *poly;
-    int           hits;
-    int           i;
-    int           j;
+int CheckHitsSphere(CCPoly *polys, int count, float *sphere, int max_hits, int *hit_polys, sceVu0FVECTOR *hit_points, int sort, int ignore_mask) {
+    float push[4];
+    float poly_min[4];
+    float poly_max[4];
+    float sphere_max[4];
+    float sphere_min[4];
+    float normal[4];
+    float swap[4];
+    int i;
+    int hits;
+    CCPoly *poly;
+    int j;
+    int index;
 
     hits = 0;
-    sphere_max[0] = sphere[0] + sphere[3];
-    sphere_max[1] = sphere[1] + sphere[3];
-    sphere_max[2] = sphere[2] + sphere[3];
-    sphere_max[3] = sphere[3];
-    sphere_min[0] = sphere[0] - sphere[3];
-    sphere_min[1] = sphere[1] - sphere[3];
-    sphere_min[2] = sphere[2] - sphere[3];
-    sphere_min[3] = sphere[3];
+    float radius = sphere[3];
+    *reinterpret_cast<u_long128 *>(sphere_max) = *reinterpret_cast<const u_long128 *>(sphere);
+    *reinterpret_cast<u_long128 *>(sphere_min) = *reinterpret_cast<const u_long128 *>(sphere);
+    sphere_max[0] += radius;
+    sphere_max[1] += radius;
+    sphere_max[2] += radius;
+    sphere_min[0] -= radius;
+    sphere_min[1] -= radius;
+    sphere_min[2] -= radius;
     poly = polys;
 
     for (i = 0; i < count; i++, poly++) {
@@ -1661,11 +1662,11 @@ int CheckHitsSphere(CCPoly *polys, int count, float *sphere, int max_hits, int *
 
         mgVectorMaxMin(poly_max, poly_min, poly->vertex[0], poly->vertex[1], poly->vertex[2]);
 
-        if (poly_min[0] > sphere_max[0] || poly_min[1] > sphere_max[1] || poly_min[2] > sphere_max[2]) {
+        if (sphere_max[0] < poly_min[0] || sphere_max[1] < poly_min[1] || sphere_max[2] < poly_min[2]) {
             continue;
         }
 
-        if (sphere_min[0] > poly_max[0] || sphere_min[1] > poly_max[1] || sphere_min[2] > poly_max[2]) {
+        if (!(sphere_min[0] <= poly_max[0]) || !(sphere_min[1] <= poly_max[1]) || !(sphere_min[2] <= poly_max[2])) {
             continue;
         }
 
@@ -1684,12 +1685,13 @@ int CheckHitsSphere(CCPoly *polys, int count, float *sphere, int max_hits, int *
         hits++;
     }
 
-    if (sort != 0) {
+    if (sort == 0) return hits;
+    {
         if (sort > 0) {
             for (i = 0; i < hits - 1; i++) {
                 for (j = i + 1; j < hits; j++) {
-                    if (hit_points[j][3] < hit_points[i][3]) {
-                        int index = hit_polys[i];
+                    if (!(hit_points[i][3] <= hit_points[j][3])) {
+                        index = hit_polys[i];
 
                         hit_polys[i] = hit_polys[j];
                         hit_polys[j] = index;
@@ -1701,12 +1703,11 @@ int CheckHitsSphere(CCPoly *polys, int count, float *sphere, int max_hits, int *
             }
         }
 
-        // A descending sort was never written; it sorts ascending as well.
         if (sort < 0) {
             for (i = 0; i < hits - 1; i++) {
                 for (j = i + 1; j < hits; j++) {
-                    if (hit_points[j][3] < hit_points[i][3]) {
-                        int index = hit_polys[i];
+                    if (!(hit_points[i][3] <= hit_points[j][3])) {
+                        index = hit_polys[i];
 
                         hit_polys[i] = hit_polys[j];
                         hit_polys[j] = index;
@@ -1721,9 +1722,6 @@ int CheckHitsSphere(CCPoly *polys, int count, float *sphere, int max_hits, int *
 
     return hits;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CheckHitsSphere__FP6CCPolyiPfiPiPA4_fii);
-#endif
 
 #ifdef NONMATCHING
 int MoveCheck(float *pos, float *velocity, float *out_pos, MoveCheckInfo *info, CCPoly *polys, int count, int ignore_mask) {

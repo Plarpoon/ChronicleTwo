@@ -103,6 +103,10 @@ At least 0x110 here (larger than the first game's 0xD0): 0x00 float radius (<=0 
 - Return types: CheckHit/CheckHitVertical return polygon index or -1 (0 for NULL info in CheckHit,
   -1 in CheckHitVertical); CheckHits* return hit count; sort > 0 and sort < 0 both sort ascending by
   distance (stored in hit_points[i][3]). Pipe radius is from[3]; sphere radius is sphere[3].
+  `CheckHitsSphere` expands the sphere centre by its radius on xyz, rejects
+  polygons outside that box, records sphere/polygon intersections, and sorts
+  their distances when requested. Its 0x3E4 bytes match objdiff exactly;
+  `gameutil` passes `check_objects.py` with 357 resolved relocations.
 - MoveCheck always returns 0. CreateCharaCPoly returns 0 if max_polys < 2, else 2.
 - CheckPosInOutFor*/CalcIntersection* return 0/1 (declared int; `xori` result could also be bool).
 - ChangeWeight: void (v0 is memcpy leftover). AnimeDataInit(*) returns 1; CreateAnimeDataEX 1.

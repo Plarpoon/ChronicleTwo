@@ -454,6 +454,11 @@ static void CollisionFish(RACE_FISH_PARAM *fish, int count) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyoracesim", CollisionFish__FP15RACE_FISH_PARAMi);
 #endif
 #ifdef NONMATCHING
+/**
+ *
+ * Simulates race steps, records goal times and assigns the final places.
+ *
+ */
 int StepGyoRace(RACE_FISH_PARAM *fish, grRACE_INFO *info) {
     int i;
     int step;
@@ -576,10 +581,13 @@ float GetCourseR(float pos, float unused) {
 
     return 1.0f;
 }
-#ifdef NONMATCHING
+
+/**
+ *
+ * Builds race statistics from a fish's attributes, name, and tactics.
+ *
+ */
 void FishModifyParam(grFISH_PARAM *source, float *output, float average) {
-    float unused1_a;
-    float unused1_b;
     int i;
     output[0] = (float)source->stamina;
     for (i = 0; i < 3; ++i) output[i + 1] = (float)source->speed[i];
@@ -594,18 +602,14 @@ void FishModifyParam(grFISH_PARAM *source, float *output, float average) {
             for (i = 0; i < 5; ++i) output[i] *= float(1.1);
         }
     }
-    float unused15_a;
-    float unused15_b;
-    float unused15_c;
     float ratios[5];
     CRandom random;
-    u32 seed = 1;
+    u32 seed = random.seed = 1;
     int shift = 0;
-    random.seed = seed;
     int length = strlen(source->name);
     for (i = 0; i < length; ++i) {
         signed char letter = source->name[i];
-        seed += letter << shift;
+        seed += (u32) (s32) letter << shift;
         shift += 4;
         shift %= 28;
     }
@@ -622,7 +626,6 @@ void FishModifyParam(grFISH_PARAM *source, float *output, float average) {
     }
     for (i = 0; i < 5; ++i) output[i] *= ratios[i];
     float noise = float(25.0) * average / float(100.0);
-    float unused40_a;
     if (noise < float(6.25)) noise = 6.25f;
     for (i = 0; i < 4; ++i) {
         float variation = noise * nrnd();
@@ -630,7 +633,6 @@ void FishModifyParam(grFISH_PARAM *source, float *output, float average) {
         output[i] += variation;
         if (output[i] < float(0.0)) output[i] = float(0.0);
     }
-    float unused47_a;
     output[5] = GetRandomNumber(float(0.5), float(0.5));
     switch (source->tactics) {
     case 0: {
@@ -640,9 +642,7 @@ void FishModifyParam(grFISH_PARAM *source, float *output, float average) {
         break;
     }
     case 1: {
-        float mean = (float)1.0;
-        float range = 0.2f;
-        float factor = GetRandomNumber(mean, range);
+        float factor = GetRandomNumber(1.0, 0.2);
         for (i = 1; i <= 3; ++i) output[i] *= factor;
         break;
     }
@@ -677,9 +677,6 @@ void FishModifyParam(grFISH_PARAM *source, float *output, float average) {
     }
     for (i = 0; i < 4; ++i) if (output[i] < 0.0f) output[i] = 0.0f;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gyoracesim", FishModifyParam__FP12grFISH_PARAMPff);
-#endif
 /**
  *
  * Sets a fish's speed adjustment across ranks for its character bonus.

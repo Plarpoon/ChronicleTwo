@@ -252,7 +252,17 @@ void mgCDrawPrim::Data0(float *data) {
 }
 #endif
 
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", Data4__11mgCDrawPrimFPf);
+#ifndef PORT
+void mgCDrawPrim::Data4(float *data) {
+    u_long128 *destination = write;
+    write++;
+    asm {
+        lqc2 vf1, 0(data)
+        vftoi4.xyzw vf1, vf1
+        sqc2 vf1, 0(destination)
+    }
+}
+#endif
 
 void mgCDrawPrim::Data(int *data) {
     u_long128 quad = *(u_long128 *) data;

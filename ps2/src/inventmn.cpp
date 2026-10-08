@@ -134,7 +134,8 @@ extern unsigned int        InventSubDataReadBGInfo;
 extern mgCMemory           MenuInventStack;
 extern CActionChara       *MenuActionChara[7];
 extern short               NetaMemoID[512];
-extern int                 NetaMemoStr[512];
+/** Names of discovered ideas displayed in the invention notebook. */
+extern char               *NetaMemoStr[512];
 extern short               NetaMemoStrNum;
 extern CMenuPosDataForm   *GiftBoxViewForm;
 
@@ -1452,10 +1453,10 @@ int _PIC_NAME(SPI_STACK *stack, int unused) {
         }
 
         entry->name = mgCopyString(text, PicNameStack);
-        entry->unk_2 = spiGetStackInt(arg);
+        entry->sort_key = spiGetStackInt(arg);
         pic_name_info_num_count++;
 
-        if (*(unsigned short *) &entry->neta_id == 30000) {
+        if (entry->neta_id == 30000) {
             pic_name_info_num_count--;
             pic_name_info_num--;
         }
@@ -5237,7 +5238,7 @@ static int neta_sort(int mode, int first, int last, int *keys) {
     for (i = first; i < last; i++) {
         for (j = i + 1; j < last; j++) {
             if ((mode == 0 && keys[j] < keys[i]) || (mode == 1 && keys[j] < keys[i])) {
-                int tmp_str = NetaMemoStr[i];
+                char *tmp_str = NetaMemoStr[i];
                 NetaMemoStr[i] = NetaMemoStr[j];
                 NetaMemoStr[j] = tmp_str;
                 int tmp_key = keys[i];
@@ -5254,9 +5255,8 @@ static int neta_sort(int mode, int first, int last, int *keys) {
     return swapped;
 }
 
-#ifdef NONMATCHING
 void CMenuInvent::UpdataNetaMemoStr() {
-    int              sort_keys[(0x184)];
+    int              sort_keys[0x184];
     CInventUserData *user_data;
     int              i;
     int              standard_count;
@@ -5276,8 +5276,8 @@ void CMenuInvent::UpdataNetaMemoStr() {
 
         if (0 <= user_data->CheckNetaFlag(info->neta_id)) {
             NetaMemoID[NetaMemoStrNum] = info->neta_id;
-            NetaMemoStr[NetaMemoStrNum] = (int) info->name;
-            sort_keys[NetaMemoStrNum] = info->unk_2;
+            NetaMemoStr[NetaMemoStrNum] = info->name;
+            sort_keys[NetaMemoStrNum] = info->sort_key;
 
             if (info->neta_id < (0x3E8)) {
                 standard_count += 1;
@@ -5300,10 +5300,6 @@ void CMenuInvent::UpdataNetaMemoStr() {
         NetaMemoStr[i] = 0;
     }
 }
-
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", UpdataNetaMemoStr__11CMenuInventFv);
-#endif
 
 void MakeMsgNetaName(CDC2Mes *message, CMenuPosDataForm *form, USER_PICTURE_INFO *photo, int *pos, int show_mark) {
     NetaNameBlank blank = at_4470;
@@ -5740,9 +5736,9 @@ void MenuInventNetaMemoDraw(float *origin, int &loaded_tex) {
                     break;
                 }
 
-                int number = NetaMemoStr[i];
+                char *name = NetaMemoStr[i];
 
-                if (number != 0) {
+                if (name != NULL) {
                     short neta_id = NetaMemoID[i];
                     char *prefix;
 
@@ -5754,7 +5750,7 @@ void MenuInventNetaMemoDraw(float *origin, int &loaded_tex) {
                         prefix = gaiji_table_4737[2];
                     }
 
-                    sprintf(text, at_4775, prefix, number);
+                    sprintf(text, at_4775, prefix, name);
                     menu_font.SetStr(text);
                     menu_font.SetPos(text_x, text_y);
                     menu_font.DrawDirect(menu_font.str, menu_font.pos_x, menu_font.pos_y);

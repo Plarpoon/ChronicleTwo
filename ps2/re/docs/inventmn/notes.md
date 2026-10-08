@@ -232,3 +232,24 @@ order for the debug panel rectangle without occurrence counters. With the
 artificial division primer removed and helper masks GPR `0x30` / FPR `0`, the
 complete unit passes canonical bytes and resolved relocations: `0xFF38` checked
 bytes and 2,786 relocations.
+
+
+## Native notebook promotion and pointer types
+
+The previously documented exact UpdataNetaMemoStr body remained behind a
+NONMATCHING guard. A fresh m2c analysis and private native promotion confirm
+that it passes the whole-unit PAL checker (0xFF2C bytes, 2,794 relocations).
+NetaMemoStr holds pointers to idea names, not integer identifiers; its
+producer copies PIC_NAME_INFO::name, its sorter exchanges pointers, and its
+draw consumer supplies the name to the formatted label. These consumers now
+use char pointers directly without a pointer-to-integer cast.
+
+PIC_NAME_INFO offset +2 is the signed sort_key read by the notebook sorter
+and assigned from the third picture-name script argument. Its idea identifier
+at +0 remains unsigned: retail uses lhu for that field, while sort_key uses
+lh. The native notebook function occupies 0x194 bytes; the old 0x1A0 header
+size included more than the symbol's actual extent.
+
+Canonical normal and objdiff-base builds also pass after the type and field
+updates: 0xFF2C checked bytes and 2,794 relocations, with standard project
+objdiff reporting 100% for the native 404-byte UpdataNetaMemoStr.

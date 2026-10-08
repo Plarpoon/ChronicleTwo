@@ -14,7 +14,8 @@ whole-unit object comparison including resolved relocations, and a 100% objdiff
 function comparison. Preserve retail function order and migrate associated data
 to native definitions. Do not replace compiler-generated constructors or vtable
 stores with manually written equivalents. Refresh the inventory after validated
-batches; publish only after the complete game builds and its executable matches.
+batches. Each validated commit is pushed to remote master immediately; the
+complete-game build and exact executable remain the final completion gate.
 
 ## Dependency order
 
@@ -52,9 +53,10 @@ concurrently, but memory-intensive compiler jobs use
   the same callee and literal. Broad 0.5f/0.95f selectors do not match; investigate
   a stable semantic discriminator without instruction or occurrence targeting.
 - **actionchara:** duplicate assembly literal definitions account for most
-  original failures. Two remaining native rotation calls require preserving
-  zero across a nested unitRotation call; generic semantic compiler selection
-  is under investigation.
+  original failures. Generic nested-argument selectors restore the two native rotation
+  calls. Canonical whole-unit validation passes 0x8F80 bytes and 1,035
+  relocations; standard objdiff is 100% for both RoboWalkMoveIF (1,300 bytes)
+  and RoboAirMoveIF (1,784 bytes).
 - **actscript:** _SHOT retains a register-allocation residual. Earlier literal,
   local-variable, and helper-mask variants did not resolve it.
 - **mg_tanime / funcpoint:** next small constructor-dependent trials test native
@@ -64,3 +66,8 @@ concurrently, but memory-intensive compiler jobs use
 Per-unit notes contain the detailed observations and failed experiments. Counts
 above are a revision-specific baseline, not a claim that the remaining work is
 complete or that a guarded draft is matched.
+
+- **inventmn:** UpdataNetaMemoStr native promotion with a correctly typed name
+  pointer array passes canonical whole-unit validation (0xFF2C bytes, 2,794
+  relocations). Standard objdiff is 100% for the 404-byte function after its
+  sort-key field documentation and removal of the obsolete assembly fallback.

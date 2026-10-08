@@ -53,19 +53,25 @@ asm void mgZeroVectorW(float *vector) {
     jr ra
     sqc2 vf0, 0x0(a0)
 }
-#ifdef NONMATCHING
-int mgClipBoxVertex(float *point, float *max, float *min) {
-    for (int axis = 0; axis < 3; ++axis) {
-        int i = axis;
-        if (max[i] - point[i] < 0.0f || point[i] - min[i] < 0.0f) {
-            return 0;
-        }
-    }
-    return 1;
+asm int mgClipBoxVertex(float *point, float *max, float *min) {
+    .set noreorder
+    lqc2 vf1, 0x0(a0)
+    lqc2 vf10, 0x0(a1)
+    lqc2 vf11, 0x0(a2)
+    ctc2.ni zero, vi16
+    vsub.xyz vf25, vf10, vf1
+    vsub.xyz vf25, vf1, vf11
+    vnop
+    vnop
+    vnop
+    vnop
+    vnop
+    cfc2.ni v0, vi16
+    andi v0, v0, 0x80
+    xor v0, v0, zero
+    jr ra
+    sltiu v0, v0, 0x1
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgClipBoxVertex__FPfPfPf);
-#endif
 #ifdef NONMATCHING
 int mgClipBox(float *max0, float *min0, float *max1, float *min1) {
     for (int axis = 0; axis < 3; ++axis) {

@@ -33,6 +33,7 @@ helpers in `chronicle/ps2/include/mathutil.hpp` / `src/mathutil.cpp` (`VectorMax
 - Clip functions return the result of `(cfc2 status & 0x80) == 0` (sticky sign flag; `ctc2 $0`
   clears status first). Return type taken as `int`; callers only test != 0.
   - mgClipBoxVertex(p, max, min): vsub.xyz max-p, p-min.
+    Five `vnop` instructions wait for the VU status update before `cfc2`.
   - mgClipBox(max0,min0,max1,min1): vsub.xyz max0-min1, max1-min0 (overlap).
   - mgClipInBox: vsub.xyz max1-max0, min0-min1 (box0 inside box1).
   - W variants use `.xyw` masks (screen-space boxes, mg_frame).
@@ -232,6 +233,8 @@ The two-vector `mgDistVectorXZ2` omits y from that final accumulation.
 The two-vector `mgDistVector` follows the squared three-lane path with the VU
 Q square root and wait.
 The two-vector `mgDistVectorXZ` uses only x and z in the Q input.
+`mgClipBoxVertex` uses VU0's sticky sign flag across its two masked
+subtractions; the integer return path tests bit 0x80 after the VU pipeline wait.
 
 The VU0 vector and matrix routines in this unit retain their guarded C++ drafts
 and retail `INCLUDE_ASM` entries. Handwritten assembly bodies promoted into the

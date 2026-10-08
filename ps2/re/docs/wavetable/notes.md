@@ -17,6 +17,14 @@ unroll. This shows that the currently close instruction schedule depends on
 the flat pointer expression; an exact, type-safe source form is still needed.
 These private trials changed neither the canonical source nor Satan's Fiddle.
 
+`CreateTexture` is byte-matched but still uses two flat-pointer expressions
+to select the current height plane. Replacing them with direct
+`height[current][row]` indexing or an equivalent typed flat-array view keeps
+the 0x420-byte size but changes instructions at 0x1A370D onward. Hoisting a
+typed row-array pointer shrinks the function to 0x400 bytes and moves later
+literals and calls. These private type-cleanup forms therefore cannot replace
+the matched source without further source-schedule analysis.
+
 ## CWaveTable (size 0x1208)
 No counterpart in the first game's headers.
 

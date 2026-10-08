@@ -85,6 +85,8 @@ helpers in `chronicle/ps2/include/mathutil.hpp` / `src/mathutil.cpp` (`VectorMax
   adds only x²+z² before returning the VU x lane through `qmfc2`.
 - mgDistVector(a, b): follows the two-vector squared-distance lane sequence,
   then takes the VU Q square root and transfers Q to the float return register.
+- mgDistVectorXZ(a, b): subtracts `b-a`, squares xyz, accumulates x²+z² in
+  one VU lane, and returns its VU Q square root after `vwaitq`.
 - mgDistPlanePoint(n, on_plane, p) = n . (p - on_plane) (sceVu0SubVector + sceVu0InnerProduct).
   Ghidra shows it void; mgReflectionPlane consumes its $f0, so it returns float.
 - mgReflectionPlane: d = DistPlanePoint; out = (on_plane - p) - n*(-2d); returns 2d.
@@ -229,6 +231,7 @@ three-lane squared accumulation.
 The two-vector `mgDistVectorXZ2` omits y from that final accumulation.
 The two-vector `mgDistVector` follows the squared three-lane path with the VU
 Q square root and wait.
+The two-vector `mgDistVectorXZ` uses only x and z in the Q input.
 
 The VU0 vector and matrix routines in this unit retain their guarded C++ drafts
 and retail `INCLUDE_ASM` entries. Handwritten assembly bodies promoted into the

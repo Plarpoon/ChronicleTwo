@@ -547,11 +547,22 @@ asm float mgDistVector(float *a, float *b) {
     jr ra
     nop
 }
-#ifdef NONMATCHING
-float mgDistVectorXZ(float *a, float *b) { return sqrtf((b[0] - a[0]) * (b[0] - a[0]) + (b[2] - a[2]) * (b[2] - a[2])); }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgDistVectorXZ__FPfPf);
-#endif
+asm float mgDistVectorXZ(float *a, float *b) {
+    .set noreorder
+    lqc2 vf2, 0x0(a0)
+    lqc2 vf3, 0x0(a1)
+    vsub.xyz vf4, vf3, vf2
+    vmul.xyz vf4, vf4, vf4
+    vmr32.xy vf5, vf4
+    vmr32.x vf6, vf5
+    vadd.x vf7, vf4, vf6
+    vsqrt Q, vf7x
+    vwaitq
+    cfc2.ni v0, vi22
+    mtc1 v0, f0
+    jr ra
+    nop
+}
 asm float mgDistVector2(float *a, float *b) {
     .set noreorder
     lqc2 vf2, 0x0(a0)

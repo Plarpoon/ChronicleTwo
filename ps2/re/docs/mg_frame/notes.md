@@ -220,10 +220,12 @@ this game's `CObject` (object unit) derives from mgCObject.
 
 ## Assembly gaps
 
-`GetDrawRect` retains
-their C++ drafts under `NONMATCHING` and use `INCLUDE_ASM` in the retail build.
-Their promoted forms required VU0 assembly inside C++ source. The surrounding
-matched functions remain compiled from C++.
+`GetDrawRect` now compiles from C++ with an inline VU0 block. It starts with
+empty bounds, transforms the visible frame's eight bound corners through the
+world-to-screen matrix, divides x/y by the absolute homogeneous w, and builds
+screen bounds. It rejects bounds outside the screen or behind the scissor
+threshold, then merges eligible children's rectangles. Objdiff scores all
+320 instructions and the 0x500-byte symbol at 100% (score 0).
 
 `mgCFrame::Draw(u_int*)` has a guarded C++ draft. In its screen clipping path,
 retail keeps the `test1` output pointers in argument registers `a3` and `a4`

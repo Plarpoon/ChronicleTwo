@@ -1573,83 +1573,222 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", Draw__8mgCFrameFPUi);
 #endif
 
 #pragma global_optimizer off
-#ifdef NONMATCHING
 int mgCFrame::GetDrawRect(mgVu0FBOX *rect, mgCDrawManager *manager) {
+    sceVu0FMATRIX   lw;
+    sceVu0FVECTOR   rect_max;
+    sceVu0FVECTOR   rect_min;
+    sceVu0FMATRIX   screen_matrix;
+    mgVu0FBOX       child_rect;
+    mgCFrameAttr   *draw_attr;
+    int             visible;
+    mgRENDER_INFO  *info;
+    mgCFrame       *frame;
+    register float *lo;
+    register float *hi;
+    register float *matrix;
+    register float *corners;
+    float           left;
+    float           top;
+    int             billboard;
+    int             draw_child;
+    register u_long128 *copy_min;
+    register u_long128 copy_value;
+    register u_long128 *copy_max;
+
     if (manager == NULL) {
         manager = &mgDrawManager;
     }
-    mgRENDER_INFO *render = manager->render_info;
-    mgCFrameAttr  *draw_attr = attr != NULL ? attr : &dmy_attr;
-    sceVu0FMATRIX  world;
-    if (draw_attr->billboard != 0) {
-        GetBBoardMatrix(draw_attr->billboard, world, render);
-    } else {
-        GetLWMatrixTopBottom(world);
+    info = manager->render_info;
+    copy_max = reinterpret_cast<u_long128 *>(rect_max);
+    copy_value = *reinterpret_cast<u_long128 *>(at_1118);
+    *copy_max = copy_value;
+    copy_min = reinterpret_cast<u_long128 *>(rect_min);
+    *copy_min = *reinterpret_cast<u_long128 *>(at_1119);
+
+    draw_attr = attr;
+    if (draw_attr == NULL) {
+        draw_attr = &dmy_attr;
     }
 
-    int found = 0;
-    if ((draw_attr->draw & MG_FRAME_DRAW_VISIBLE) && visual != NULL && bound != NULL) {
-        sceVu0FMATRIX screen;
-        sceVu0MulMatrix(screen, render->world_screen_rel, world);
-        sceVu0FVECTOR maximum;
-        sceVu0FVECTOR minimum;
-        for (int i = 0; i < 8; i++) {
-            sceVu0FVECTOR point;
-            sceVu0ApplyMatrix(point, screen, bound->corner[i]);
-            float depth = point[3] < 0.0f ? -point[3] : point[3];
-            point[0] /= depth;
-            point[1] /= depth;
-            if (i == 0) {
-                sceVu0CopyVector(maximum, point);
-                sceVu0CopyVector(minimum, point);
-            } else {
-                for (int axis = 0; axis < 4; axis++) {
-                    if (maximum[axis] < point[axis]) {
-                        maximum[axis] = point[axis];
-                    }
-                    if (minimum[axis] > point[axis]) {
-                        minimum[axis] = point[axis];
-                    }
-                }
-            }
+    billboard = MG_FRAME_BILLBOARD_NONE;
+    if (attr != NULL) {
+        billboard = this->attr->billboard;
+    }
+    if (billboard != MG_FRAME_BILLBOARD_NONE) {
+        GetBBoardMatrix(billboard, lw, info);
+    } else {
+        GetLWMatrixTopBottom(lw);
+    }
+
+    visible = 0;
+    if (draw_attr->draw & MG_FRAME_DRAW_VISIBLE) {
+        visible = 1;
+    }
+    if (visual == NULL || bound == NULL) {
+        visible = 0;
+    }
+
+    do {
+        if (!visible) break;
+        mgMulMatrix(screen_matrix, info->world_screen_rel, lw);
+        corners = &bound->corner[0][0];
+        matrix = &screen_matrix[0][0];
+        hi = rect_max;
+        lo = rect_min;
+
+        // Each corner goes through the screen transform and is divided through by the magnitude
+        // of its w, and the box around the results is kept.
+        asm {
+            lqc2    vf10, 0(corners)
+            lqc2    vf11, 16(corners)
+            lqc2    vf12, 32(corners)
+            lqc2    vf13, 48(corners)
+            lqc2    vf14, 64(corners)
+            lqc2    vf15, 80(corners)
+            lqc2    vf16, 96(corners)
+            lqc2    vf17, 112(corners)
+            lqc2    vf1, 0(matrix)
+            lqc2    vf2, 16(matrix)
+            lqc2    vf3, 32(matrix)
+            lqc2    vf4, 48(matrix)
+            vmulax  ACC, vf1, vf10
+            vmadday ACC, vf2, vf10
+            vmaddaz ACC, vf3, vf10
+            vmaddw  vf10, vf4, vf10
+            vmulax  ACC, vf1, vf11
+            vmadday ACC, vf2, vf11
+            vmaddaz ACC, vf3, vf11
+            vabs.w  vf20, vf10
+            vnop
+            vnop
+            vmaddw  vf11, vf4, vf11
+            vdiv    Q, vf0w, vf20w
+            vnop
+            vnop
+            vabs.w  vf21, vf11
+            vnop
+            vnop
+            vwaitq
+            vmulq.xy vf10, vf10, Q
+            vdiv    Q, vf0w, vf21w
+            vmulax  ACC, vf1, vf12
+            vmadday ACC, vf2, vf12
+            vmaddaz ACC, vf3, vf12
+            vmaddw  vf12, vf4, vf12
+            vmulax  ACC, vf1, vf13
+            vwaitq
+            vmulq.xy vf11, vf11, Q
+            vabs.w  vf22, vf12
+            vmadday ACC, vf2, vf13
+            vmaddaz ACC, vf3, vf13
+            vmaddw  vf13, vf4, vf13
+            vdiv    Q, vf0w, vf22w
+            vmulax  ACC, vf1, vf14
+            vmadday ACC, vf2, vf14
+            vabs.w  vf23, vf13
+            vmaddaz ACC, vf3, vf14
+            vmaddw  vf14, vf4, vf14
+            vmax    vf30, vf10, vf11
+            vmini   vf31, vf10, vf11
+            vwaitq
+            vmulq.xy vf12, vf12, Q
+            vdiv    Q, vf0w, vf23w
+            vabs.w  vf24, vf14
+            vmulax  ACC, vf1, vf15
+            vmadday ACC, vf2, vf15
+            vmaddaz ACC, vf3, vf15
+            vmaddw  vf15, vf4, vf15
+            vmax    vf30, vf30, vf12
+            vmini   vf31, vf31, vf12
+            vwaitq
+            vmulq.xy vf13, vf13, Q
+            vdiv    Q, vf0w, vf24w
+            vabs.w  vf25, vf15
+            vmulax  ACC, vf1, vf16
+            vmadday ACC, vf2, vf16
+            vmaddaz ACC, vf3, vf16
+            vmaddw  vf16, vf4, vf16
+            vmax    vf30, vf30, vf13
+            vmini   vf31, vf31, vf13
+            vwaitq
+            vmulq.xy vf14, vf14, Q
+            vdiv    Q, vf0w, vf25w
+            vabs.w  vf26, vf16
+            vmulax  ACC, vf1, vf17
+            vmadday ACC, vf2, vf17
+            vmaddaz ACC, vf3, vf17
+            vmaddw  vf17, vf4, vf17
+            vmax    vf30, vf30, vf14
+            vmini   vf31, vf31, vf14
+            vwaitq
+            vmulq.xy vf15, vf15, Q
+            vdiv    Q, vf0w, vf26w
+            vabs.w  vf27, vf17
+            vnop
+            vmax    vf30, vf30, vf15
+            vmini   vf31, vf31, vf15
+            vnop
+            vwaitq
+            vmulq.xy vf16, vf16, Q
+            vdiv    Q, vf0w, vf27w
+            vnop
+            vmax    vf30, vf30, vf16
+            vmini   vf31, vf31, vf16
+            vnop
+            vnop
+            vwaitq
+            vmulq.xy vf17, vf17, Q
+            vmax    vf30, vf30, vf17
+            vmini   vf31, vf31, vf17
+            sqc2    vf30, 0(hi)
+            sqc2    vf31, 0(lo)
         }
-        float half_width = (float) mgScreenWidth * 0.5f;
-        float half_height = (float) mgScreenHeight * 0.5f;
-        if (maximum[0] >= -half_width && minimum[0] <= half_width &&
-            maximum[1] >= -half_height && minimum[1] <= half_height &&
-            minimum[3] >= (float) render->scissor) {
-            maximum[0] += half_width;
-            minimum[0] += half_width;
-            maximum[1] += half_height;
-            minimum[1] += half_height;
-            sceVu0CopyVector(rect->max, maximum);
-            sceVu0CopyVector(rect->min, minimum);
-            found = 1;
+
+        // The box counts only when it overlaps the screen, whose coordinates are relative to its
+        // centre, and does not lie behind the near plane; it is then moved to screen coordinates.
+        visible = 0;
+        left = 0.5f * -mgScreenWidth;
+        top = 0.5f * -mgScreenHeight;
+        float right = left + mgScreenWidth;
+        float bottom = top + mgScreenHeight;
+        if (rect_min[0] <= right && rect_max[0] >= left &&
+            rect_min[1] <= bottom && rect_max[1] >= top && rect_max[3] >= info->clip_min[2]) {
+            visible = 1;
+            rect_min[0] += mgScreenWidth / 2;
+            rect_max[0] += mgScreenWidth / 2;
+            rect_min[1] += mgScreenHeight / 2;
+            rect_max[1] += mgScreenHeight / 2;
         }
+    } while (0);
+
+    if (visible) {
+        sceVu0CopyVector(rect->max, rect_max);
+        sceVu0CopyVector(rect->min, rect_min);
     }
     if (draw_attr->draw & MG_FRAME_DRAW_SKIP_CHILDREN) {
-        return found;
+        return visible;
     }
-    for (mgCFrame *node = child; node != NULL; node = node->brother) {
-        if (node->attr != NULL && (node->attr->draw & MG_FRAME_DRAW_SKIP_BY_PARENT)) {
-            continue;
+
+    for (frame = child; frame != NULL; frame = frame->brother) {
+        draw_child = 1;
+        if (frame->attr != NULL && (frame->attr->draw & MG_FRAME_DRAW_SKIP_BY_PARENT)) {
+            draw_child = 0;
         }
-        mgVu0FBOX child_rect;
-        if (node->GetDrawRect(&child_rect, NULL)) {
-            if (found == 0) {
-                *rect = child_rect;
+        if (draw_child && frame->GetDrawRect(&child_rect, NULL)) {
+            if (!visible) {
+                sceVu0CopyVector(rect_max, child_rect.max);
+                sceVu0CopyVector(rect_min, child_rect.min);
             } else {
-                mgVectorMaxMin(rect->max, rect->min, rect->max, rect->min,
-                               child_rect.max, child_rect.min);
+                mgVectorMaxMin(rect_max, rect_min, rect_max, rect_min, child_rect.max, child_rect.min);
             }
-            found = 1;
+            visible = 1;
         }
     }
-    return found;
+
+    sceVu0CopyVector(rect->max, rect_max);
+    sceVu0CopyVector(rect->min, rect_min);
+    return visible;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", GetDrawRect__8mgCFrameFP9mgVu0FBOXP14mgCDrawManager);
-#endif
 #pragma global_optimizer reset
 
 mgCFrame &mgCFrame::operator=(mgCFrame &other) {

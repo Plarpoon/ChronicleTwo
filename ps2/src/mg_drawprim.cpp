@@ -240,7 +240,17 @@ void mgCDrawPrim::End2() {
     }
 }
 
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", Data0__11mgCDrawPrimFPf);
+#ifndef PORT
+void mgCDrawPrim::Data0(float *data) {
+    u_long128 *destination = write;
+    write++;
+    asm {
+        lqc2 vf1, 0(data)
+        vftoi0.xyzw vf1, vf1
+        sqc2 vf1, 0(destination)
+    }
+}
+#endif
 
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", Data4__11mgCDrawPrimFPf);
 

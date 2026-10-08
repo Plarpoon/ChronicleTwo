@@ -162,23 +162,16 @@ asm void mgVectorMin(float *min, float *a, float *b, float *c, float *d) {
     jr ra
     sqc2 vf20, 0x0(a0)
 }
-#ifdef NONMATCHING
-void mgVectorMaxMin(float *max, float *min, float *a, float *b) {
-    for (int i = 0; i < 4; ++i) {
-        float hi = a[i], lo = a[i];
-        if (b[i] > hi) {
-            hi = b[i];
-        }
-        if (b[i] < lo) {
-            lo = b[i];
-        }
-        max[i] = hi;
-        min[i] = lo;
-    }
+asm void mgVectorMaxMin(float *max, float *min, float *a, float *b) {
+    .set noreorder
+    lqc2 vf15, 0x0(a2)
+    lqc2 vf16, 0x0(a3)
+    vmax.xyzw vf18, vf15, vf16
+    vmini.xyzw vf20, vf15, vf16
+    sqc2 vf18, 0x0(a0)
+    jr ra
+    sqc2 vf20, 0x0(a1)
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgVectorMaxMin__FPfPfPfPf);
-#endif
 #ifdef NONMATCHING
 void mgVectorMaxMin(float *max, float *min, float *a, float *b, float *c) {
     for (int i = 0; i < 4; ++i) {

@@ -56,6 +56,10 @@ helpers in `chronicle/ps2/include/mathutil.hpp` / `src/mathutil.cpp` (`VectorMax
 - mgBoxMaxMin(box, other): paired VU reductions take the maximum and minimum
   across both corners of both boxes, so the result also normalizes reversed
   corners. Both results include the w component and are stored in `box`.
+- mgPlaneNormal(out, v0, v1, v2): subtracts v0 from v1 and v2, then uses
+  `vopmula.xyz`/`vopmsub.xyz` to form their cross product. The result is
+  unnormalized; the masked operation does not assign `vf12.w` before the
+  whole quadword is stored, so the output w component is unspecified.
 - mgZeroMatrix: `vsub.xyzw` clears all lanes of `vf1`, then four `sqc2` stores
   write the rows of the matrix, with row zero in the return delay slot.
 - mgUnitMatrix: three `vmr32.xyzw` rotations of VU0's constant `vf0` form
@@ -199,6 +203,8 @@ both output vectors.
 The three-input overload uses a second VU reduction stage for the third vector.
 The four-input overload uses a third stage for the fourth vector.
 `mgBoxMaxMin` uses the same VU reduction over the two corners of each box.
+`mgPlaneNormal` uses VU0's outer-product accumulator instructions; its old
+C++ draft's explicit zero for w did not reflect the masked VU destination.
 
 The VU0 vector and matrix routines in this unit retain their guarded C++ drafts
 and retail `INCLUDE_ASM` entries. Handwritten assembly bodies promoted into the

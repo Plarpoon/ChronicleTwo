@@ -269,6 +269,13 @@
         "evaluate_first": true
       },
       {
+        "translation_unit": "dng_object.cpp",
+        "function": "Step__11CMachineGunFv",
+        "value_type": "binary32",
+        "value_bits": "0x00000000",
+        "evaluate_first": true
+      },
+      {
         "translation_unit": "dngmenu.cpp",
         "function": "Initialize__11CDngFreeMapFv",
         "value_type": "binary32",

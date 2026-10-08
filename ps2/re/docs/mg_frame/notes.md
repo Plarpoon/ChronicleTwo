@@ -179,8 +179,10 @@ this game's `CObject` (object unit) derives from mgCObject.
   three scale factors are row 0's length. Yaw: z axis = eye-pos with y zeroed, normalised;
   x axis = (z.z, 0, -z.x). Mode bit 0 multiplies in a pitch matrix (rows 1/2: (0,h,-dy),(0,dy,h)).
   The mode-2 path contains `m[2][0]=m[2][0]; m[2][2]=m[2][2]` self-copies in retail.
-  A guarded C++ draft now computes those axes and caches the billboard matrix;
-  it compiles but differs from the retail VU0 scaling block.
+  The C++ definition now computes those axes and caches the billboard matrix.
+  Its inline VU0 scaling block multiplies all four rows by the derived scale,
+  preserving the homogeneous component. All 123 instructions and the
+  0x1ec-byte symbol match retail in objdiff (score 0).
 - GetLocalMatrix scales trans_matrix component-wise by `scale` (each row times the scale vector,
   last row copied) via VU0 asm; GetLWMatrix/TopBottom multiply parent*local with one VU0 block
   that stores the product to lw_matrix and to the output. The VU0 block now
@@ -218,7 +220,7 @@ this game's `CObject` (object unit) derives from mgCObject.
 
 ## Assembly gaps
 
-`GetBBoardMatrix` and `GetDrawRect` retain
+`GetDrawRect` retains
 their C++ drafts under `NONMATCHING` and use `INCLUDE_ASM` in the retail build.
 Their promoted forms required VU0 assembly inside C++ source. The surrounding
 matched functions remain compiled from C++.

@@ -21,34 +21,33 @@ asm void mgFotI4(int *out, float *in) {
     sqc2 vf1, 0x0(a0)
 }
 #endif
-#ifdef NONMATCHING
-void mgCreateBox8(float (*corners)[4], float *max, float *min) {
-    for (int i = 0; i < 8; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            corners[i][j] = min[j];
-        }
-    }
-    for (int j = 0; j < 4; ++j) {
-        corners[7][j] = max[j];
-    }
-    corners[1][0] = max[0];
-    corners[2][1] = max[1];
-    corners[4][2] = max[2];
-    for (int j = 0; j < 4; ++j) {
-        corners[6][j] = max[j];
-    }
-    corners[6][0] = min[0];
-    for (int j = 0; j < 4; ++j) {
-        corners[5][j] = max[j];
-    }
-    corners[5][1] = min[1];
-    for (int j = 0; j < 4; ++j) {
-        corners[3][j] = max[j];
-    }
-    corners[3][2] = min[2];
+#ifndef PORT
+asm void mgCreateBox8(float (*corners)[4], float *max, float *min) {
+    .set noreorder
+    lqc2 vf1, 0x0(a1)
+    lqc2 vf2, 0x0(a2)
+    vaddx.xyzw vf3, vf2, vf0x
+    vaddx.xyzw vf4, vf2, vf0x
+    vaddx.xyzw vf5, vf2, vf0x
+    vaddx.xyzw vf6, vf1, vf0x
+    vaddx.xyzw vf7, vf1, vf0x
+    vaddx.xyzw vf8, vf1, vf0x
+    sqc2 vf2, 0x0(a0)
+    sqc2 vf1, 0x70(a0)
+    vaddx.x vf3, vf1, vf0x
+    vaddx.y vf4, vf1, vf0x
+    vaddx.z vf5, vf1, vf0x
+    vaddx.x vf6, vf2, vf0x
+    vaddx.y vf7, vf2, vf0x
+    vaddx.z vf8, vf2, vf0x
+    sqc2 vf3, 0x10(a0)
+    sqc2 vf4, 0x20(a0)
+    sqc2 vf5, 0x40(a0)
+    sqc2 vf6, 0x60(a0)
+    sqc2 vf7, 0x50(a0)
+    jr ra
+    sqc2 vf8, 0x30(a0)
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgCreateBox8__FPA4_fPfPf);
 #endif
 void mgZeroVector(float *vector) {
     *reinterpret_cast<u_long128 *>(vector) = 0;

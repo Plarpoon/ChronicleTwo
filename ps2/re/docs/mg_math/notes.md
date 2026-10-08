@@ -49,6 +49,9 @@ helpers in `chronicle/ps2/include/mathutil.hpp` / `src/mathutil.cpp` (`VectorMax
   the x, y and z identity rows; `vf0` supplies the w row, and four `sqc2`
   stores write them in reverse row order.
 - mgCreateBox8(out[8], max, min): out[0]=min, out[7]=max, others mixed via vaddx.x/.y/.z with vf0.
+  Each mixed corner starts as a four-lane copy of max or min, then a masked
+  `vaddx` copies one selected component from the opposite bound; every corner
+  retains the source vector's w component.
 - mgDistVector*/XZ: vmul then vmr32 sums; non-squared ones use vsqrt + vwaitq, result via
   `cfc2 vi22` (Q). XZ sums x and z only. Squared ones via qmfc2.
 - mgDistPlanePoint(n, on_plane, p) = n . (p - on_plane) (sceVu0SubVector + sceVu0InnerProduct).
@@ -174,6 +177,8 @@ its four-lane `vadd.xyzw`.
 `mgSubVector` uses the VU-only exception for its four-lane `vsub.xyzw`.
 `mgZeroMatrix` and `mgUnitMatrix` use the VU-only exception for their
 quadword stores and vector instructions.
+`mgCreateBox8` uses the same exception because its masked VU component
+operations produce the eight four-component box corners.
 
 The VU0 vector and matrix routines in this unit retain their guarded C++ drafts
 and retail `INCLUDE_ASM` entries. Handwritten assembly bodies promoted into the

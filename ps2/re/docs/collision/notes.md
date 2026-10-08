@@ -148,9 +148,14 @@ CreateBBox (+8).
 - `LoadCollisionFile`: object records start at `header + 1` (not `object_ofs`) with fixed stride
   0x70 (`MDTOBJ_HEADER`, not its `size`); `frame->Initialize()` is a virtual call; bounds alloc
   is `mgCFrame::BoundInfo` (0xB0). Alloc sizes follow `size/16 + 2` quadwords for placement new.
-- Unsure drafts (DIFF): CColFrame::PickUpNearPoly builds the 8 box corners in a loop (retail
-  stores them explicitly; corner i takes max on x/y/z for bits 1/2/4); LoadCollisionFile matrix
-  copy loop shape; CreateCollisionMDT vertex copies.
+- `CColFrame::PickUpNearPoly` explicitly forms eight corners from the query box,
+  transforms them into collision space, queries its own polygons, transforms the
+  returned triangles back with `pre_trance_normal` and `trance_normal`, then
+  recursively queries child frames while capacity remains. Its 0x290 bytes
+  match objdiff exactly; the collision object passes `check_objects.py` with
+  98 resolved relocations.
+- Unsure drafts (DIFF): LoadCollisionFile matrix copy loop shape;
+  CreateCollisionMDT vertex copies.
 
 ## Native loader comparison
 

@@ -166,9 +166,8 @@ The `libvu0.h` functions `sceVu0FTOI4Vector` and
 inline code or `Vertex`'s mixed per-lane conversion. Scalar C++ casts emit
 scalar conversion instructions, including different rounding and register
 traffic. No existing header supplies an intrinsic for these VU0 operations.
-The remaining two functions use `INCLUDE_ASM` gaps at their retail addresses:
-`Vertex__11mgCDrawPrimFPf` and `Color__11mgCDrawPrimFPf`.
-They remain undecompiled. `Data0(float*)` also
+`Color__11mgCDrawPrimFPf` remains supplied by `INCLUDE_ASM`.
+`Data0(float*)` also
 failed to match as scalar C++. It is now defined in source using the narrow
 VU instruction exception: MWCC emits the exact retail `lqc2 vf1`,
 `vftoi0.xyzw vf1`, and `sqc2 vf1` sequence after incrementing `write`.
@@ -178,6 +177,10 @@ and 0x1c-byte symbol size equal retail.
 `vftoi4.xyzw` scaling all lanes to 12.4 fixed point. Objdiff scores it at
 100% instruction match (score 0), with seven identical instructions and a
 0x1c-byte symbol.
+`Vertex(float*)` converts x and y with `vftoi4.xy`, z with `vftoi0.z`,
+stores the vector in an aligned stack array, then passes its first three
+integer lanes to `Vertex4`. MWCC produces the retail 14-instruction,
+0x38-byte function exactly; objdiff scores the function at 100% (score 0).
 
 ## Compiler flag cleanup
 

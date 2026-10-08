@@ -293,7 +293,19 @@ void mgCDrawPrim::Vertex(float x, float y, float z) {
 }
 
 #pragma global_optimizer off
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", Vertex__11mgCDrawPrimFPf);
+#ifndef PORT
+void mgCDrawPrim::Vertex(float *pos) {
+    int converted[4] __attribute__((aligned(16)));
+    int *result = converted;
+    asm {
+        lqc2 vf10, 0(pos)
+        vftoi4.xy vf10, vf10
+        vftoi0.z vf10, vf10
+        sqc2 vf10, 0(result)
+    }
+    Vertex4(converted[0], converted[1], converted[2]);
+}
+#endif
 #pragma global_optimizer reset
 
 void mgCDrawPrim::Vertex4(int x, int y, int z) {

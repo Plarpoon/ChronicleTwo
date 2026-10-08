@@ -196,8 +196,9 @@ this game's `CObject` (object unit) derives from mgCObject.
   four-component bounds. `test2` reads those eight retained VU0 vectors, divides only
   their x/y components by the absolute value of w, then writes four-component bounds.
   The guarded C++ drafts preserve the intermediate vectors in a file-local array;
-  they compile but differ from the hand-scheduled VU0 functions. The original ASM
-  remains in the retail build.
+  they compile but differ from the hand-scheduled VU0 functions. `test2` is now
+  emitted by MWCC from its VU0 `asm void` source definition. Its 49 instructions
+  and 0xc4-byte symbol match retail exactly in objdiff (score 0).
 - mgInsideScreen(corners, matrix, max, min): hand-scheduled VU0 block (screen*matrix, transform
   8 corners, divide by |w|, max/min), then tail-calls mgClipBoxW against screen_box_max/min.
   A guarded scalar/intrinsic C++ draft now computes the same screen bounds and
@@ -211,7 +212,7 @@ this game's `CObject` (object unit) derives from mgCObject.
 
 ## Assembly gaps
 
-`test1`, `test2`, the four-argument `mgInsideScreen`, `GetLocalMatrix`,
+`test1`, the four-argument `mgInsideScreen`, `GetLocalMatrix`,
 `GetBBoardMatrix`, `GetLWMatrix`, `GetLWMatrixTopBottom`, and `GetDrawRect` retain
 their C++ drafts under `NONMATCHING` and use `INCLUDE_ASM` in the retail build.
 Their promoted forms required VU0 assembly inside C++ source. The surrounding

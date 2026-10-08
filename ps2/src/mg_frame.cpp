@@ -179,7 +179,59 @@ void test2(float *out_max, float *out_min) {
     }
 }
 #else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", test2__FPfPf);
+#ifndef PORT
+asm void test2(float *out_max, float *out_min) {
+    vabs.w  vf20, vf10
+    vabs.w  vf21, vf11
+    vabs.w  vf22, vf12
+    vabs.w  vf23, vf13
+    vabs.w  vf24, vf14
+    vabs.w  vf25, vf15
+    vabs.w  vf26, vf16
+    vabs.w  vf27, vf17
+    vdiv    Q, vf0w, vf20w
+    vwaitq
+    vmulq.xy vf10, vf10, Q
+    vdiv    Q, vf0w, vf21w
+    vwaitq
+    vmulq.xy vf11, vf11, Q
+    vdiv    Q, vf0w, vf22w
+    vmax    vf1, vf10, vf11
+    vmini   vf2, vf10, vf11
+    vwaitq
+    vmulq.xy vf12, vf12, Q
+    vdiv    Q, vf0w, vf23w
+    vwaitq
+    vmulq.xy vf13, vf13, Q
+    vdiv    Q, vf0w, vf24w
+    vmax    vf3, vf12, vf13
+    vmini   vf4, vf12, vf13
+    vwaitq
+    vmulq.xy vf14, vf14, Q
+    vdiv    Q, vf0w, vf25w
+    vwaitq
+    vmulq.xy vf15, vf15, Q
+    vdiv    Q, vf0w, vf26w
+    vmax    vf5, vf14, vf15
+    vmini   vf6, vf14, vf15
+    vwaitq
+    vmulq.xy vf16, vf16, Q
+    vdiv    Q, vf0w, vf27w
+    vwaitq
+    vmulq.xy vf17, vf17, Q
+    vmax    vf10, vf1, vf3
+    vmini   vf11, vf2, vf4
+    vmax    vf7, vf16, vf17
+    vmini   vf8, vf16, vf17
+    vmax    vf12, vf5, vf7
+    vmini   vf13, vf6, vf8
+    vmax    vf14, vf10, vf12
+    vmini   vf15, vf11, vf13
+    sqc2    vf14, 0(a0)
+    jr      ra
+    sqc2    vf15, 0(a1)
+}
+#endif
 #endif
 void test2(float *out_max, float *out_min);
 // clang-format on

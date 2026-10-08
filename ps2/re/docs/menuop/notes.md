@@ -4,33 +4,33 @@ Unit: manual menu (`CManualMenu`, `MenuManual*`), option menu (`CMenuOption`, `M
 menu (`CSaveMenuClass`, `MenuSave*`, `SaveFileListDraw`, map-info save/restore), mini-game save menu
 (`SubGameSave*`). No first-game counterpart (Dark Cloud 1 has no `CBaseMenuClass` menus).
 
-## Header dependencies (unresolved at time of writing)
-- `menuop.hpp` includes `menusys.hpp` (base `CBaseMenuClass`), `savedata.hpp` (`SV_CONFIG_OPTION`, by
-  value x2 in CMenuOption) and `scenesnd.hpp` (`CScene::BGM_STATUS`, by value in CManualMenu and
-  CSaveMenuClass). `savedata.hpp` and `scenesnd.hpp` did not exist; `menusys.hpp` exists but pulls
-  in `memcard.hpp` (missing) via userdata/inventmn. So the header does not compile yet.
+## Header dependencies
+- `menuop.hpp` includes `menusys.hpp` (base `CBaseMenuClass`), `savedata.hpp`
+  (`SV_CONFIG_OPTION`, by value twice in CMenuOption), `scenesnd.hpp`
+  (`CScene::BGM_STATUS`, by value in CManualMenu and CSaveMenuClass), and
+  `memcard.hpp` (typed card and file information). These headers compile together.
 - Layout verified by compiling against stubs (CBaseMenuClass = 0x10C bytes + vptr at 0x10C, sizeof
   0x110; SV_CONFIG_OPTION 0x40; BGM_STATUS 0x1C) with every field offset asserted.
 - `SV_CONFIG_OPTION`: size 0x40 (`InitSV_CONFIG_OPTION` memsets 0x40, sets +0x14 = 1), owned by
   savedata. `CScene::BGM_STATUS`: 0x1C (GetActiveBgmStatus writes +0..+0x18; +4 is the BGM number,
   read as `bgm_status+4` for LoadBGM in MenuManualDraw / CSaveMenuClass::KeyStep).
-- `ps2/src/menuop.cpp` now has `#include "menuop.hpp"`; it compiles once those headers exist.
+- `ps2/src/menuop.cpp` includes `menuop.hpp`; the unit compiles with all drafts enabled.
 
 ## Vtables
 `__vt__11CManualMenu` 0x37C580, `__vt__11CMenuOption` 0x37C560, `__vt__14CSaveMenuClass` 0x37C540,
 each 0x20: 2 zero words + CBaseMenuClass's six (IsCreateObject, IsMakeObject, IsAskExtend,
 ItemCmdAfter, InitEnd, ExitEnd), none overridden. No out-of-line ctor/dtor exists for any of the
 three; the constructors are inlined into the *Init functions (`__nw__FUiP1(size, Alloc(...))`,
-`__ct__14CBaseMenuClassFv`, store vptr at 0x10C, then member inits). The next agent must add an
-inline constructor per class reproducing these stores in order (below).
+`__ct__14CBaseMenuClassFv`, store vptr at 0x10C, then member inits). The inline
+constructors reproduce these stores in the order documented below.
 
 ## CManualMenu (0x178) -- `__nw(0x178)` in MenuManualInit
 `MenuManualInit` keeps its typed C++ draft under `NONMATCHING`. The draft emits 0x518 bytes
 where retail uses 0x510, moving the next function by 0x10 after alignment. The matching build
 uses the retail assembly gap; other menuop functions still prevent whole-unit matching.
-`MenuSaveInit` also retains its C++ draft under `NONMATCHING`; the retail gap restores the
-unit's byte and relocation layout. With both initializer gaps, the menuop object passes
-`check_objects.py`.
+`MenuSaveInit` is native and exact with a loop initializing the two slot-form
+pointers in `CSaveMenuClass`. The menuop object passes `check_objects.py` with
+the remaining `MenuManualInit` and save-menu `KeyStep` guards.
 Ctor order: vptr; `movie_stack.Init()`; select=0, top=0, list_y=400.0f (0x43C80000), cursor_jump=0,
 pict_mode=0, pict_num=0, base 0x14 (s16)=0; `movie_stack.stSetBuffer(NULL)`.
 - 0x110 select, 0x114 top: `MenuKeySelectCheck(.., &select, &top, 0, 0x2E, 10, 0)`; 46 entries, 10 lines.
@@ -116,19 +116,17 @@ scrlbar_parts[0..2]=0; scrlbar_pos={0,9}; card_ok=0; card_changed=0.
 - Local functions (static, keep in .cpp): InitMnOnePictTex, SetMCIconData, SubGameCFGAnalyze.
 
 ## Function notes
-- Typed `CMenuOption` and `CSaveMenuClass` constructors produce exact retail
-  `MenuOptionInit` and `MenuSaveInit` bodies, including their base construction and
-  initialization order. The typed `CManualMenu` constructor gives a 99.32% body;
-  MWCC moves the allocation pointer before its null branch, while retail places
-  the move in its delay slot, adding one nop later.
+- The typed `CMenuOption` constructor produces an exact retail `MenuOptionInit`.
+  `CSaveMenuClass` also produces an exact `MenuSaveInit`, using a loop over its
+  actual slot-form array. `CManualMenu` reproduces the documented member stores
+  but its guarded init still differs at the placement-new null branch and
+  subsequent scheduling.
 - Init signature `(mgCMemory *stack, int *tex_block, int open_type)`; open_type is
   MenuCommonInfo+0x50 (MenuOpenType) from NextMenuInit/MenuMainInit, or 7 / 0x1E from
   DngTreeMapKey / GyoraceMenuKey.
 - *Key functions are `return Ptr->KeyStep();` (tail call), so they return int.
-- In `CManualMenu::KeyStep`, the `CalcMenuAdd` call in movie BGM phase 3
-  differs only in the order of two adjacent `mtc1` instructions: retail loads
-  the increment into `fa0` before zero into `fa1`; the current C++ sequence
-  loads `fa1` first. The surrounding call arguments and instructions match.
+- `CManualMenu::KeyStep` matches retail, including the float argument setup
+  for the movie BGM phase-3 `CalcMenuAdd` call.
 - LocalFunc_AdjustScrlBar(parts[3], pos[2], size[2], top, line_num, show_num, jump): uses pos[1],
   size[1]; part +0x20 y, +0x28 h. Also called by editmenu's CRemovalMenu::KeyStep.
 - SaveFileListDraw(int &tex_block, float *pos, int alpha): called from
@@ -136,10 +134,10 @@ scrlbar_parts[0..2]=0; scrlbar_pos={0,9}; card_ok=0; card_changed=0.
 - SetDlInfoMsg(load, show): msg 0xC09 if load else 0xC08 on MenuDCMsg[7]; MenuMesForm[?] +1 = show.
 
 ## LocalFunc_AdjustScrlBar draft
-The scrollbar helper divides the available height by total and visible lines, resizes the middle part, then positions the three parts in order. The guarded C++ draft compiles but differs from retail, so assembly remains active.
+The scrollbar helper divides the available height by total and visible lines, resizes the middle part, then positions the three parts in order. The typed C++ function matches retail.
 
 ## SaveFileListDraw draft
-The save list draws 13 card slots in one primitive batch, with an extra marker for occupied slots. It then positions message lines and formats each occupied file’s play time from frames into hours and minutes. Europe uses ASCII digits and `sprintf`; other regions build digits with `GetMenuBigNum`. The guarded C++ draft compiles and retains the assembly fallback.
+The save list draws 13 card slots in one primitive batch, with an extra marker for occupied slots. It then positions message lines and formats each occupied file’s play time from frames into hours and minutes. Europe uses ASCII digits and `sprintf`; other regions build digits with `GetMenuBigNum`. The typed C++ function matches retail.
 
 ## Save map and option indexing
 
@@ -155,3 +153,324 @@ only the saved-register pairing in the three-button loop: retail uses `s3`
 for the row base and `s2` for the byte offset, while MWCC assigns these in
 the opposite order. Reordering declarations and loop increments leaves the
 99.78% score unchanged.
+
+## Remaining-function classification at 0abce37
+
+The current unit has 36 functions: 33 match and these three retain their
+`NONMATCHING` guards. The comparison below uses relocation-masked instruction
+words over each manifest extent, not objdiff similarity percentages.
+
+### MenuManualInit__FP9mgCMemoryPii — placement-new null branch
+
+Retail is 0x510 bytes; the natural C++ draft is 0x518 bytes. At retail +0x98
+(0x2C4518), `beqz v0` skips construction and `move s2,v0` occupies its delay
+slot. The draft moves into s2 first, then branches on s2. Base construction,
+vtable emission, and the embedded mgCMemory initialization consequently have
+different scheduling. The current draft does not fit the retail extent.
+
+This is the placement-new branch category reserved for the dedicated compiler
+research lane. Keep the constructor and init guarded. Reconsider when that lane
+provides a natural C++ declaration or compiler explanation that reproduces
+branch-before-copy without hand-written vtable stores or instruction wrappers.
+
+### MenuSaveInit__FP9mgCMemoryPii — placement-new null branch
+
+The draft and retail extents are both 0x6A0; 245/424 masked words differ. The
+first differing pair is at +0x68/+0x6C (0x2C9B48/0x2C9B4C): retail uses
+`beqz v0` with `move s0,v0` in its delay slot; the draft copies into s0 and then
+branches on s0. This shifts the inline base/derived initialization sequence by
+one instruction through the allocation of CMemoryCardManager. The same store
+order therefore does not imply a matching function. The message-window loop
+has a separate placement-new call whose scheduling also differs.
+
+Stop on the shared placement-new category. Reconsider after the dedicated lane
+solves the branch/copy pattern, then compare the remaining allocation and loop
+scheduling before attempting manual promotion.
+
+### KeyStep__14CSaveMenuClassFv — control flow and stack layout
+
+Baseline: 1291/1692 words differ, draft 0x1A2C, retail 0x1A70. With the
+retained natural C++ corrections: 1189/1692 differ, draft 0x1A44. No guard has
+been removed. All other 33 unit functions still match.
+
+Retail loads MenuDCMsg[2] after CMemoryCardManager::Step. After FormStep, it
+captures messages 4, 5 and 6 before StepMsg and the position calls. Those load
+orders are significant across calls and are reflected in the draft. File-list
+phase 7 is an explicit idle switch arm: retail compares it between phases 2 and
+6 and branches to the shared page exit. Placing that arm after the phase-6
+notice body reproduces the dispatch order. LR page jumps modify the existing
+movement accumulator by two, and the file-read page clamps `top > 10` to 10.
+The latter spelling reproduces retail's `slti at` comparison.
+
+Entering the file list refreshes its messages in every menu mode. Expressing
+that assignment once after the conditional load messages restores the retail
+register allocation: Step result s7, error pointer s8, refresh s6, LR key spill
+at stack +0xDC. The comma assignment inside the mode test changes those live
+ranges despite giving the same boolean result.
+
+Remaining differences include:
+
+- Retail frame 0x1A0 versus draft 0x160. Both place the 13 file-info pointers
+  at +0xE0 and the form coordinates at +0x120/+0x124. Retail's temporary arrays
+  start at +0x168, while the draft's start at +0x128. The unreferenced interval
+  +0x128..+0x167 does not establish a legitimate extra array or its element type;
+  adding artificial padding or enlarging an array solely to reserve it is not
+  supported by the evidence.
+- The readiness tests after clamping the signed input-wait counter emit a
+  relational result followed by a branch in retail (for example `slt`/`bnez`
+  at +0xA18/+0xA1C); the draft emits `bgtz` directly. Changing only the ready
+  predicate from `<= 0` to `< 1` produces identical instructions.
+- Save/load message and page-exit blocks retain scheduling and branch-target
+  differences; the shorter draft displaces later blocks. Matching initial
+  register allocation is insufficient to establish a matching full body.
+
+Park under control-flow/stack-layout reconstruction. Reconsider when an actual
+local type or array extent explains the 64-byte stack interval, or when a
+natural counter-condition structure supported by retail produces its boolean
+materialization. Re-run the complete function diff after either finding;
+remaining page scheduling must also reach zero before removing the guard.
+
+For m2c, the generated retail function refers to two tables named
+`at_2517__2` and `at_2518__2`, which its jump-table recognizer does not accept.
+An analysis-only copy renaming those to `jtbl_at_2517__2` and
+`jtbl_at_2518__2`, with their exact `.word` destinations from the corresponding
+retail `__DATA.s` files expressed as local labels, allows the full function to
+be decompiled. Generated assembly and shared headers need no changes.
+
+## Save-menu constructor inline classification (2026-10-08)
+
+`CSaveMenuClass` initializes its two actual `slot_form` entries in an ascending
+loop. The optimizer unrolls it to the same NULL stores at +0x17C and +0x180;
+all intervening form assignments and the three scrollbar-part assignments
+retain their existing order and values. No base/member constructor calls are
+added or removed. The constructor's inline-info classification is 3, verified
+with the hash-pinned trace driver. This puts allocation assignment inside the
+construction guard: `beqz v0` at caller +0x68, with `move s0,v0` at +0x6C.
+
+Canonical native `MenuSaveInit__FP9mgCMemoryPii` has 0/424 differing words,
+identical relocation kinds and the retail 0x6A0 size; plain-wibo
+`draft.sh --diff` also reports zero differences. Only that function changes
+in the full native draft comparison. Its guard/fallback are removed manually.
+`MenuManualInit` and `CSaveMenuClass::KeyStep` retain their independent parks.
+
+The full build retains i15's .text difference of 0x26 bytes, with every other
+section and BSS end OK. Complete objects pass 147/149; nd_meswin and actscript
+retain exactly their original single problem each. Against the accepted shop
+change, only `menuop.cpp.o` changes its full-file hash; all 149 allocated-section
+inventories stay identical. Coverage increases from 6,682/173/15/2 to
+6,683 matched / 172 guarded / 15 asm-only / 2 fuzzy, without any matched function
+losing its status. Receipts: `.private/receipts/ctor-final/save-promoted/`.
+See [the classifier rules](../funcpoint/placement-new.md#constructor-inline-classification).
+
+## Mid-day save-menu draft at c79e57c
+
+The lane baseline has 34 matched functions and two guarded drafts in the
+36-function unit: MenuManualInit and CSaveMenuClass::KeyStep. There are no
+asm-only functions. Canonical SF native compilation confirms the earlier
+1189/1692 masked-word KeyStep diff and its 0x1A44-byte body.
+
+### Input-wait predicate and retained scheduling
+
+The signed input-wait counter is decremented and clamped to zero separately
+from deciding whether input is still waiting. An explicit boolean
+`input_waiting = input_wait_counter > 0`, followed by `if (!input_waiting)`,
+reproduces retail's boolean materialization (`slt` followed by `bnez`) at
+all three readiness checks. This flag carries the actual debounce condition;
+it adds no game state, dummy storage, helper function, or SF policy.
+An integer flag produces the same native function as the boolean control.
+
+Additional retained natural expressions preserve these retail operations:
+
+- Accumulate the up-key movement with `moveKey -= 1`, matching the retail
+  saved-register decrement at +0x290; the accumulator begins at zero.
+- Clamp the slot with `slot > 1`, producing retail's `slti at`/`bnez`
+  upper-bound check at +0x2F4/+0x2F8.
+- Express insufficient space as `card->free_size <= check_kb`. The equality
+  boundary is unchanged, while operand loading and comparison allocation
+  become closer to retail at the relevant space checks.
+- Capture the selected file-info pointer before decrementing the input-wait
+  counter. Both operations follow the cursor's SetAction call and no call
+  intervenes; this restores retail's select/manager load order in that block.
+
+| Canonical native KeyStep variant | Differing words / 1692 | Body bytes |
+| --- | --- | --- |
+| Lane entry | 1189 | 0x1A44 |
+| Explicit waiting flag only, bool or int | 1011 | 0x1A4C |
+| Waiting flag plus slot upper-bound spelling | 1009 | 0x1A4C |
+| Waiting flag plus accumulated up movement | 1010 | 0x1A4C |
+| Waiting flag plus free-space operand order | 1003 | 0x1A4C |
+| All three additional expressions | 1000 | 0x1A4C |
+| Combined version capturing file info before decrement, retained | 994 | 0x1A4C |
+| Combined version capturing file info after clamping, rejected | 1008 | 0x1A4C |
+
+All other 34 native functions remain exact, and the MenuManualInit native
+body remains 0x518 against retail's 0x510. The diff printer counts
+285/326 words when it includes that body's two-word overrun.
+No guard or assembly fallback is removed.
+
+### Remaining boundaries
+
+KeyStep's frame is still 0x160 against retail's 0x1A0, and scratch-array
+addresses still differ by 0x40 after the existing row-info and form-coordinate
+locals. Page exits and later scheduling remain different; the body is still
+0x24 bytes shorter than the 0x1A70 retail extent. The improved readiness
+predicate does not resolve these independent boundaries.
+
+The quest-fish confirmation at retail +0x950 passes count 16 to the already
+documented CDC2Mes::SetMsgVolumeNo overload, with its buffer at stack +0x168;
+only the first two words are initialized in this caller. That count is not
+evidence for filling the unreferenced interval +0x128..+0x167 with a larger
+initialized local array: the buffer begins after that interval, and the
+callee reads up to MES_VALUE_MAX entries from the supplied pointer. No
+artificial stack padding, invented extent, or shared-header proposal is made.
+
+m2c uses an analysis-only assembly copy with the two existing jump tables
+named `jtbl_at_2517__2` and `jtbl_at_2518__2`; exact destinations are copied
+from their retail data files. Passing that copy as an additional input to
+decompile.sh yields the complete function without modifying generated
+assembly. MenuManualInit's earlier constructor classification park remains
+applicable: no supported homogeneous inline member-array clear exists.
+
+### Validation
+
+The final build retains the baseline 0x26 differing PAL .text bytes; all
+other file-backed sections and memory end 0x01F64A00 are OK. Complete object
+checks remain 147/149, with the unchanged single nd_meswin/DrawMesWin and
+actscript/_SHOT problems. Owned units pass: menudraw 0x14058 bytes/2,584
+relocations, menushop 0x5A5C/1,327, menuop 0x7DE4/2,075.
+
+All 149 final object SHA-256 values and allocated-section inventories are
+identical to lane entry. Coverage stays 6,686 matched / 169 guarded /
+15 asm-only / 2 fuzzy, with identical per-function rows. No header, compiler
+profile, toolchain, or non-owned source is changed.
+
+Private receipts: `.private/menuui-{baseline,final}-{build,objects,objdiff,progress}.log`,
+`.private/menuui/hash-comparison.json`, the before/final coverage files,
+`.private/menuui/native-before/`, `.private/menuui/retained/`,
+`.private/menuui/save-*/`, and the complete m2c output
+`.private/menuui/save.m2c.txt`.
+
+## Round-1 load-confirmation join at b1220c8
+
+The refreshed baseline has 6,736 matched functions, 124 guarded drafts,
+10 asm-only functions and two fuzzy functions. Complete objects pass
+147/149; the only failures remain nd_meswin/DrawMesWin and actscript/_SHOT.
+The PAL verifier differs in exactly 0x26 .text bytes, with all other sections
+and memory end 0x01F64A00 matching. The menuop baseline is 34 native matches
+and the two established guarded drafts.
+
+Retail's quest-fish and ordinary load-confirmation paths join at +0x994
+for one MenuSePlay(SYSTEM_SE_DECIDE) call. A quest file without fish instead
+sets SAVE_LIST_PHASE_NOTICE and exits the input-button switch. Expressing
+that exit with break allows the two successful confirmation paths to share
+the sound call naturally. The message setup order and notice behavior are
+unchanged; the count-16 volume argument is spelled MES_VALUE_MAX.
+
+Canonical native KeyStep improves from 994/1692 to 522/1692 differing
+relocation-masked words, retaining the 0x1A4C body and NONMATCHING guard.
+All 34 other native functions remain exact, and MenuManualInit retains
+its independent 0x518-versus-0x510 constructor park.
+
+The 0x160 native frame still differs from retail's 0x1A0. The initialized
+quest buffer remains two words at retail stack +0x168, immediately followed
+by another two-word initializer at +0x170. Extending that buffer to 16
+elements would overlap the documented neighboring locals and extend beyond
+retail's frame. The SetMsgVolumeNo count does not justify a larger buffer
+or a dummy array in the unreferenced +0x128..+0x167 interval.
+
+Receipts: .private/menuui-r1/{baseline-build,baseline-objects,baseline-objdiff,
+baseline-progress}.log, coverage-before.txt, native-before/,
+save-shared-load-sound/, and save.m2c.txt. The complete m2c analysis uses the
+pre-existing private jump-table input; no assembly file is written or modified.
+
+The guarded-change build preserves the baseline PAL result. The complete
+menuop object passes with 0x7DE4 allocated bytes and 2,075 relocations.
+All 149 object file hashes and allocated-section inventories are identical
+to the refreshed baseline. Additional receipts are save-shared-build.log,
+save-shared-objects.log and save-shared-hash-comparison.json in that directory.
+
+## Round-1 page transitions and message rows
+
+The next-page jump table has seven entries. FILE_READ (3) and UNK_5 (5)
+both reset phase but have distinct retail destinations, +0x15D8 and +0x16A0.
+Keeping these as separate switch cases, with the UNK_5 reset after FORMAT
+and an explicit empty ERROR case, restores the seven-entry table and the
+retail placement of the reset blocks. Combining cases 3 and 5 emits a
+six-entry table and displaces subsequent blocks.
+
+The retained reconstruction also expresses formatting completion with the
+failure predicate first, uses a real boolean for the absence of a pending
+page change, and preserves the loaded-transfer operand order in StepMenuDl2.
+The format-confirmation assignment follows both message and answer tests,
+rather than appearing in a comma expression inside the condition. Each
+message row initializes its slot number before initializing its digit width.
+These changes preserve the analyzed behavior and improve control flow and
+scheduling without artificial locals or new helpers.
+
+The row refresh at retail +0x1738 writes a 32-bit -1 to the documented
+ClsMes::mes_no field at +0x1E3C. CDC2Mes also has a distinct 16-bit mes_no
+at +0x295E, used for the existing error-message comparisons. The reset must
+therefore use `rowMes->ClsMes::mes_no = -1`; unqualified access selects the
+wrong field. Both fields and the class sizes are already documented in
+menucls1 and nd_meswin, so no shared-header change is necessary.
+
+| Canonical native KeyStep variant | Differing words / 1692 | Body bytes |
+| --- | --- | --- |
+| Shared load-confirmation sound, preceding retained draft | 522 | 0x1A4C |
+| Failure-first format completion only | 499 | 0x1A4C |
+| Transfer operand order only | 519 | 0x1A4C |
+| Format and transfer changes combined | 496 | 0x1A4C |
+| Combined plus bool negative-page flag compared to zero | 392 | 0x1A5C |
+| Combined plus int negative-page flag compared to zero | 319 | 0x1A54 |
+| Separate FILE_READ and UNK_5 reset cases | 98 | 0x1A64 |
+| Qualified base message-number reset | 97 | 0x1A64 |
+| Slot number initialized before digit width | 93 | 0x1A64 |
+| Format-confirmation assignment after both predicates | 95 | 0x1A64 |
+| Combined row/confirmation changes and bool flag negation, retained | 91 | 0x1A64 |
+
+Further predicate alternatives do not improve the retained draft. On the
+97-word version, a bool flag compared to zero gives 232 words, whereas
+negating the bool or int flag gives 97. Direct negative-predicate negation
+gives 494, comparison to zero gives 336, and a combined update-page boolean
+gives 212. Moving predicate recomputation, separating its branch-local
+assignments, or changing the int flag's declaration scope does not improve
+allocation. Private enum typing also leaves the measured predicate draft
+unchanged and supplies no reason for a header change.
+
+Normalizing the other-slot index through bool/u8 locals or casts gives
+233..391 words before the final two improvements; comparisons of a converted
+bool with false give 227 on the final draft. A named transfer-progress local
+produces 100 instead of 97 words. These variants are rejected. No compiler
+profile row is supported by the remaining integer differences.
+
+### Remaining boundaries and receipts
+
+The final guarded draft has 91/1692 differing words, a 0x1A64 body against
+retail's padded 0x1A70 extent, and a 0x160 frame against 0x1A0. The
+unreferenced 0x40 interval preceding the small initialized message buffers
+still has no supported source type or local extent. Buffer initialization,
+message values and row-number stores after that interval use stack addresses
+0x40 below retail. No dummy padding or overlapping array is added.
+
+The other differences are the commutative addition operand order at +0xABC,
+negative-page predicate allocation and duplicated materialization around
++0x12A4..+0x14BC, and the other-slot boolean lowering before +0x1568. The
+extra predicate instruction and shorter boolean sequence offset each other;
+most later instructions again align. All 34 other native functions remain
+exact, and MenuManualInit keeps its independent constructor park. The
+KeyStep guard stays active until the full function reaches zero.
+
+Private receipts: `.private/menuui-r1/save-variants2.log` through
+`save-variants8.log`, their `save-*` source/object/diff directories, and
+`retained-menuop/`. The final whole-build, complete-object and hash receipts
+are `final-build.log`, `final-objects.log` and `final-hash-comparison.json`
+in that directory. No assembly, header, compiler-profile or non-owned
+source edit is retained.
+
+The final complete menuop object passes with 0x7DE4 allocated bytes and
+2,075 relocations. Complete objects remain 147/149, with the unchanged
+nd_meswin and actscript failures. PAL retains exactly 0x26 .text bytes
+different, with all other sections and memory end 0x01F64A00 matching.
+All 149 file hashes and allocated-section inventories are identical to the
+refreshed baseline. Coverage remains 6,736 matched / 124 guarded /
+10 asm-only / 2 fuzzy, and no promotion is claimed.

@@ -3,13 +3,13 @@
 `CAquarium::Draw` draws the fish, aquarium frames, bubbles, water reflection,
 and menu overlays in retail order. An earlier C++ version passed an isolated
 comparison, but the current matching build selects its `INCLUDE_ASM` gap.
-`CAquarium::SettingAqua` and `GyoraceMenuDraw` also use retail assembly gaps.
-Their C++ bodies remain guarded drafts and are not active decompilations.
+`CAquarium::SettingAqua` still uses a retail assembly gap.
+`GyoraceMenuDraw` is native and exact.
 The `SettingAqua` draft constructs its `love_chara` member as a `CCharacter2`.
 
 `DrawFishParam`, `CAquarium::ColCheck`,
-`CAquarium::Step`, and `GyoraceMenuKey` likewise retain `NONMATCHING` drafts
-with retail `INCLUDE_ASM` fallbacks.
+`CAquarium::Step` retains a `NONMATCHING` draft with a retail `INCLUDE_ASM`
+fallback. `GyoraceMenuKey` is native and exact.
 
 `CAquaFish::SetAdjustScale` (0x20F0E0, size 0x8C) is native and exact. It
 computes a size-dependent scale, applies it to all three axes, and derives the
@@ -21,6 +21,36 @@ for this method; the seven existing `DrawEsaDropRoot` findings remain unchanged.
 Aquarium menu (fish swim, eat food, fight, pair/breed), the gyorace (fish race) fish-select and
 saved-race menus, fish race/fishing tournament prize scripts, and shared sub-game panel drawing.
 No first-game counterpart (Dark Cloud has no aquarium); layouts below come from this game only.
+
+## Saved fish-race menu
+
+`GyoraceMenuKey` drives the saved-racer menu and returns 2 when the user exits
+or a fade finishes. Mode 0 waits for the background read, enters two packed
+images and a configuration buffer, then initializes the menu textures. Mode 1
+dispatches the main menu cursor to name registration, race start, racer
+assignment, racer deletion, tactics viewing, race submission, or the save menu.
+Modes 0xA-0xC select a stored fish and its tactics; modes 0x14-0x16 ask before
+deleting a stored fish; 0x1E asks before starting a race; 0x28 displays a
+racer's tactics; and 0x32 asks before submitting a race result. Modes
+0x3C-0x42 run the save and fish-load flow, including confirmation before
+replacing saved data or assigning the selected inventory fish. After a mode
+change, the function updates visibility flags, list contents, selection
+state, and cursor position before stepping the message windows.
+`GyoraceMenuMode` names the analyzed prompt and sub-screen values; the
+assembly-owned mode storage remains a 16-bit integer.
+
+`GyoraceMenuDraw` delegates name registration and save-mode drawing to their
+own routines. Its normal path draws the full-screen frame and title, race
+message panels, a scissored saved-fish list, tactics and selected-fish data,
+and the inventory board in the load flow. It moves the animated list and
+inventory cursors with `CalcMenu1` and advances the shared animation counter.
+The packed archive returned by `GetPackFile` is word-addressed; the key
+function views its image payload as bytes when passing it to `EnterIMGFile`
+and its configuration payload as characters.
+
+Both functions have retail-sized native bodies (`0x12B0` and `0x9C0`). The
+canonical `menuaqua` object comparison passes all `0x11C44` allocated bytes
+and 3,218 relocations with both promoted together.
 
 ## Class sizes (all asserted except CGyoraceFishData)
 - CBubble 0x40: `__nw(0x40)` after `Alloc(6)` in `CAquarium::Initialize`/`SettingAqua`; battle
@@ -238,3 +268,6 @@ range predicate is already reproduced by the existing source condition.
 Swapping only the declaration positions of `me` and `i`, while keeping `me = fish[no]` in its
 original statement, yields 98.99327% (361 matching instructions, 85 argument mismatches). This is
 closer than first-local initialization but below the unchanged baseline.
+Giving the fish, obstacle, and effect-clear loops distinct local indices scores 99.06054% for
+ColCheck (366 matching instructions, 80 argument mismatches); the whole unit still has the single
+ColCheck byte mismatch. This improves on the declaration-position swap but remains below baseline.

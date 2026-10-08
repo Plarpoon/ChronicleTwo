@@ -141,7 +141,8 @@ buffer, 0x32 per line), 0x225C/0x2278/0x228C (cursor), 0x258C/0x2590 widths.
   `aquafish_info` rows of 0xC {s16 item; char* name at +4; s8 colour at +8 and +9}, 19 rows.
   `aquafish_mixTable` s8[171][3] (parent1-0x136, parent2-0x136, child-0x136).
   `ColChkPoint`/`ColChkPoint2` 9 rows, `ColChkPoint3` 6 rows of 0x20 {float pos[4]; float
-  radius; 12 bytes}; `ColChkPointNum` u8[3]. `aqua_bubble_generate_pos` float[3][3][4].
+  radius; 12 bytes}; `ColChkPointNum` s8[3], read with `lb` as the active tank's
+  collision-point count. `aqua_bubble_generate_pos` float[3][3][4].
   `GyoracerIndexNo`/`GyoracerTacticsNo` s16[6]. `fish_save_present` FISH_PRIZE_INFO[4][3].
   Prize script data: `FishTournamentGoods` groups of 0x44 {int num; int [8] from script; 7 unused
   ints; ptr at 0x40 to num entries of 0x1C = {int; FISH_PRIZE_INFO[3]}}.
@@ -227,3 +228,13 @@ callee-scoped row.
 Canonical normal and objdiff-base targets also pass after integration: the
 whole-unit checker reports 0x11C54 bytes and 2,970 relocations, and the standard
 project objdiff reports 100% for the native 316-byte DrawEsaDropRoot.
+
+`ColCheck`'s private baseline compiles to 0x6F8 bytes and scores 99.31615%: 386 instructions
+match and 60 have argument mismatches, with no instruction insertions or deletions. The first
+mismatch swaps the saved-register roles of the selected fish pointer and loop index. Moving the
+fish-pointer initialization to the first local worsens the score to 98.86996% (353 matches, 93
+argument mismatches); it still emits no structural instruction differences. The native AquaMode
+range predicate is already reproduced by the existing source condition.
+Swapping only the declaration positions of `me` and `i`, while keeping `me = fish[no]` in its
+original statement, yields 98.99327% (361 matching instructions, 85 argument mismatches). This is
+closer than first-local initialization but below the unchanged baseline.

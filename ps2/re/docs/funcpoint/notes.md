@@ -126,3 +126,10 @@ removing the redundant cast on `mgCMemory::Alloc`, separating the allocation
 buffer, and changing the pointer declaration or constructor parentheses all
 retain those two differing instructions. Local scheduling and optimizer pragmas
 either leave the same pair or change many additional instructions.
+
+A private trial used the typed allocation pointer without the redundant cast,
+scoped `optimization_level 2` to this function, and restored level 3 immediately
+after it. The rest of the translation unit remained byte-identical, but the
+function grew from retail's 0xA0 to 0xC4 bytes and scored 56.35%. The allocation
+branch then tests the saved register and adds extra copies and nops, so this
+optimization-level change is not a useful match.

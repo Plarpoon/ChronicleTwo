@@ -1,14 +1,20 @@
 # mg_dataset: reverse-engineering notes
 
-The native drafts of `htoi`, `CreateFrameVisual`, `mgLoadMDSFile(mgLoadData*)`,
+The native drafts of `CreateFrameVisual`, `mgLoadMDSFile(mgLoadData*)`,
 `CopyFrame`, `CopyFrameSub`, and `mgCMDTBuilder::End(mgCFrame*, mgCVisualMDT*,
-mgLoadData*)` still differ from retail. Their matching build paths use retail
-assembly while the C++ remains under `NONMATCHING`. For `htoi`, replacing the
-unsigned-byte view with `static_cast<u8>(text[back - 1])` changed the score from
-99.81132% to 96.01887%; the original draft was retained.
-Guarding `htoi` also changes the following `mgSetFrameAttr` code generation:
-the latter grows from its exact retail size 0x658 to 0x668 and changes calls and
-relocations. `mgSetFrameAttr` therefore also uses a retail gap in this build.
+mgLoadData*)` remain behind `NONMATCHING` with retail assembly fallbacks.
+The current `htoi` and `mgSetFrameAttr` bodies are active native C++; earlier
+statements that both remained guarded are stale. `htoi` matches retail bytes
+with an integer-address expression, but that expression violates the source
+rules and still needs a compliant replacement.
+
+A prior typed `static_cast<u8>(text[back - 1])` trial scored 96.01887%.
+An unsigned-byte view of `&text[back]` differed in one commutative `addu`
+operand order (99.81132%). A reversed-index byte-view experiment also retains
+the first difference at 0x132586 and is not an accepted compliant source form.
+No replacement from these experiments is promoted. Guarding `htoi` in an
+earlier experiment also changed the following mgSetFrameAttr code generation
+from 0x658 to 0x668; that experimental guard is not present in current source.
 
 Header: `ps2/include/mg_dataset.hpp`. Retail unit `0x1321E0`-`0x134A20`.
 First-game counterpart: `dataset`/`mds`/`mdt` (`LoadMDSFile`, `CopyFrame`, `SetFrameAttr`,
@@ -38,7 +44,9 @@ and each was re-verified here.
 | `mgCVisualFixMDT::Initialize` | inline, owner mg_visual | just calls `mgCVisualMDT::Initialize` |
 | `mgCVisualMDT::Iam/GetMaterialNum/GetpMaterial/Draw(float(*)[4],mgCDrawManager*)` | inline, owner mg_visual | Iam=1; `+0x40` material count; `+0x44` material table; Draw = `Draw(NULL, m, dm)` via slot +0x2C |
 
-`htoi` now reads the byte at `&text[back]` with an unsigned-byte view instead of adding the text address to an integer. MWCC generates the same instructions except for the commutative operand order in one `addu` (`base,index` rather than retail's `index,base`), leaving this function at 99.81132% while that pointer expression is tuned.
+The typed-view `htoi` experiment above emits `base,index` rather than retail's
+`index,base` in one commutative address addition. This is an unresolved source
+compliance issue, not an accepted replacement.
 
 `CopyFrameSub` allocates and constructs a frame, copies its contents, then recursively copies each child and attaches the copy to the new parent. The guarded draft's native placement new tests the allocation result before putting it in saved register `s0`; retail first saves it in `s0`, then tests and passes that saved register to the constructor. The four-instruction shift also moves the following loop and epilogue, producing 46 differing instructions out of 68. Splitting the memory allocation from placement new, combining the frame assignment with its null check, and spelling the child loop as `while` left this code generation unchanged. The retail gap remains active.
 
@@ -157,8 +165,8 @@ The draft compiler must use the same global flag: without it, `EndPrim`
 omits retail's divide-by-zero trap and appears to differ in 10 words even
 though its normal game build matches.
 
-Current guarded drafts: `htoi` differs only in the operand order of one
-commutative `addu` at +0x44. `CopyFrame` and `mgCMDTBuilder::End(frame, visual,
+The typed-view `htoi` experiment differs in one commutative `addu` at +0x44.
+Among the current guarded drafts, `CopyFrame` and `mgCMDTBuilder::End(frame, visual,
 load)` each differ only in the null branch following placement allocation:
 retail tests `v0`, while the compiled drafts test the equal-valued `a0`.
 `CreateFrameVisual` has this same branch-register difference at six placement

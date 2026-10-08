@@ -17,6 +17,16 @@ stores with manually written equivalents. Refresh the inventory after validated
 batches. Each validated commit is pushed to remote master immediately; the
 complete-game build and exact executable remain the final completion gate.
 
+## Current measured coverage
+
+After the validated promotions through `fa99453`, the report contains 6,664
+perfect native functions and 208 outstanding functions: 191 guarded drafts,
+15 assembly-only bodies, and two fuzzy native functions (DrawMesWin and _SHOT).
+This count measures object matching, not full source compliance. In particular,
+mg_dataset's htoi currently matches bytes using a pointer-to-integer expression
+that still requires a compliant typed-indexing replacement. The complete game
+has not reached the final matching or source-compliance gate.
+
 ## Dependency order
 
 | Phase | Work | Prerequisite and exit evidence |

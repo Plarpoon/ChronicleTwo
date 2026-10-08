@@ -38,6 +38,7 @@ helpers in `chronicle/ps2/include/mathutil.hpp` / `src/mathutil.cpp` (`VectorMax
     Either negative result sets the sticky sign flag; five `vnop` instructions
     wait before the flag is read and converted to a Boolean return.
   - mgClipInBox: vsub.xyz max1-max0, min0-min1 (box0 inside box1).
+    Both vectors must be nonnegative on x, y and z for containment.
   - W variants use `.xyw` masks (screen-space boxes, mg_frame).
     `mgClipBoxW` uses the overlap operands of `mgClipBox`; z is excluded and
     w participates in the sticky-sign test instead.
@@ -241,6 +242,7 @@ The two-vector `mgDistVectorXZ` uses only x and z in the Q input.
 subtractions; the integer return path tests bit 0x80 after the VU pipeline wait.
 `mgClipBox` applies the same status test to the two box separation vectors.
 `mgClipBoxW` performs that test on x, y and w only.
+`mgClipInBox` uses the sticky VU sign flag for containment rather than overlap.
 
 The VU0 vector and matrix routines in this unit retain their guarded C++ drafts
 and retail `INCLUDE_ASM` entries. Handwritten assembly bodies promoted into the

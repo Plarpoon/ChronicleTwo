@@ -46,7 +46,6 @@ extern u_long128       at_796__4;
  * Calculates a normal for a triangle projected onto the horizontal plane.
  *
  */
-#ifndef PORT
 static void PlaneNormalXZ(float *normal, float *p0, float *p1, float *p2) {
     asm {
         lqc2 vf15, 0(p0)
@@ -61,7 +60,6 @@ static void PlaneNormalXZ(float *normal, float *p0, float *p1, float *p2) {
         sqc2 vf12, 0(normal)
     }
 }
-#endif
 #ifdef NONMATCHING
 float CEditMap::GetEditPartsAlt(CEditPartsInfo *info, sceVu0FVECTOR pos, float rot_y, CEditParts **parts, int num) {
     sceVu0FMATRIX   parts_matrix;

@@ -218,7 +218,6 @@ int CColFrame::InsidePoint(float *point) {
  */
 #pragma force_active on
 #pragma global_optimizer off
-#ifndef PORT
 /**
  *
  * Loads the matrix used to transform collision normals into VU0 registers.
@@ -232,7 +231,6 @@ static asm void pre_trance_normal(float (*matrix)[4]) {
     jr ra
     lqc2 vf13, 0x30(a0)
 }
-#endif
 #pragma global_optimizer reset
 
 /**
@@ -242,7 +240,6 @@ static asm void pre_trance_normal(float (*matrix)[4]) {
  *
  */
 #pragma global_optimizer off
-#ifndef PORT
 static asm void trance_normal(float *v0, float *v1, float *v2, float *normal) {
     .set noreorder
     lqc2 vf16, 0(a0)
@@ -271,7 +268,6 @@ static asm void trance_normal(float *v0, float *v1, float *v2, float *normal) {
     jr ra
     sqc2 vf22, 0(a3)
 }
-#endif
 #pragma global_optimizer reset
 #pragma force_active reset
 

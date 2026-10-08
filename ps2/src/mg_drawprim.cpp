@@ -240,7 +240,6 @@ void mgCDrawPrim::End2() {
     }
 }
 
-#ifndef PORT
 void mgCDrawPrim::Data0(float *data) {
     u_long128 *destination = write;
     write++;
@@ -250,9 +249,7 @@ void mgCDrawPrim::Data0(float *data) {
         sqc2 vf1, 0(destination)
     }
 }
-#endif
 
-#ifndef PORT
 void mgCDrawPrim::Data4(float *data) {
     u_long128 *destination = write;
     write++;
@@ -262,7 +259,6 @@ void mgCDrawPrim::Data4(float *data) {
         sqc2 vf1, 0(destination)
     }
 }
-#endif
 
 void mgCDrawPrim::Data(int *data) {
     u_long128 quad = *(u_long128 *) data;
@@ -293,7 +289,6 @@ void mgCDrawPrim::Vertex(float x, float y, float z) {
 }
 
 #pragma global_optimizer off
-#ifndef PORT
 void mgCDrawPrim::Vertex(float *pos) {
     int converted[4] __attribute__((aligned(16)));
     int *result = converted;
@@ -305,7 +300,6 @@ void mgCDrawPrim::Vertex(float *pos) {
     }
     Vertex4(converted[0], converted[1], converted[2]);
 }
-#endif
 #pragma global_optimizer reset
 
 void mgCDrawPrim::Vertex4(int x, int y, int z) {
@@ -331,7 +325,6 @@ void mgCDrawPrim::Color(int r, int g, int b, int a) {
 }
 
 #pragma global_optimizer off
-#ifndef PORT
 void mgCDrawPrim::Color(float *color) {
     int converted[4] __attribute__((aligned(16)));
     int *result = converted;
@@ -342,7 +335,6 @@ void mgCDrawPrim::Color(float *color) {
     }
     Color(converted[0], converted[1], converted[2], converted[3]);
 }
-#endif
 #pragma global_optimizer reset
 
 void mgCDrawPrim::TextureCrd4(int u, int v) {

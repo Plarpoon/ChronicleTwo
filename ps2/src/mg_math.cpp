@@ -135,14 +135,15 @@ asm void mgAddVector(float *vector, float *add) {
     sqc2 vf15, 0x0(a0)
 }
 #endif
-#ifdef NONMATCHING
-void mgSubVector(float *vector, float *sub) {
-    for (int i = 0; i < 4; ++i) {
-        vector[i] -= sub[i];
-    }
+#ifndef PORT
+asm void mgSubVector(float *vector, float *sub) {
+    .set noreorder
+    lqc2 vf15, 0x0(a0)
+    lqc2 vf16, 0x0(a1)
+    vsub.xyzw vf15, vf15, vf16
+    jr ra
+    sqc2 vf15, 0x0(a0)
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgSubVector__FPfPf);
 #endif
 
 void mgNormalizeVector(float *out, float *in, float length) {

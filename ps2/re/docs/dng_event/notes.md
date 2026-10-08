@@ -118,11 +118,46 @@ TRESURE_BOX_GROUP / TRESURE_BOX_ITEM / TRESURE_BOX_FLOOR / MESSAGE_TASK are not 
 No counterpart class in Dark Cloud 1; its CDungeonMap (dungeonmap.hpp) held treasure boxes as
 TREASURE_BOX structs and trap circles as MAP_TRAP_CIRCLE, a different layout.
 
-## DrawEpisode draft
-`CStartupEpisodeTitle::DrawEpisode` draws the message first, then the title frame with alpha-scaled width and a language-dependent reveal scissor. The guarded C++ draft compiles and retains its assembly fallback because it differs from retail.
+## DrawEpisode native match
 
-## SearchMapFlatPosition draft
-`SearchMapFlatPosition` selects a placed map part that the automap has not hidden, samples vertical segments around its center, and accepts a floor polygon only when a short follow-up collision succeeds. It tries sixteen segments per part and reports failure after the retry count expires. Its guarded C++ draft differs in 33 of 260 instructions, primarily around the initial map and parts-table null checks and local stack slots. Splitting the initial map assignment from its null check changed the stack frame from 0x2BE0 to 0x2BD0 and increased the instruction differences, so the combined expression remains.
+`DrawEpisode__20CStartupEpisodeTitleFii` (0x0028ED90, 0x2C0 bytes) draws
+the message before constructing the frame sprite. Its alpha controls the frame
+width, and its reveal clips the language-specific title glyphs. Language 3 uses
+left edge `width / 2 - 8`; other languages use `width / 2 - 0x31` and two glyph
+pieces. Each branch calculates its own reveal width and retains its left edge
+through scissor and glyph drawing.
+
+Native integer casts for alpha, fill width and reveal use the calibrated
+conversion-helper history. Explicit `fptosi` calls leave two height-temporary
+register differences after the branch calculations are corrected. With casts,
+no new float selector is needed; the existing TU masks are GPR 0x30/FPR zero.
+The baseline draft differed in 83/176 words (0x294 vs 0x2C0); the promoted body
+has zero byte or resolved-relocation differences. Canonical wrapper/fixup checks
+pass the complete unit: 0x5440 bytes and 876 relocations.
+
+## SearchMapFlatPosition guarded checkpoint
+
+`SearchMapFlatPosition__FPfP11CAutoMapGen` selects a placed map part that the
+automap has not hidden, samples vertical segments around its center, and accepts
+a floor polygon only when a short follow-up collision succeeds. It tries sixteen
+segments per part and reports failure after the retry count expires.
+
+Under the checked-in Satan's Fiddle profile its existing guarded draft differs
+in seven of 260 words, all spilled-pointer stack offsets: +0x2C/+0x374/+0x380
+use sp+0xEC instead of retail sp+0xE0; +0x34/+0xFC use sp+0xE8 instead of
+sp+0xDC; +0x44/+0x1E8 use sp+0xE0 instead of sp+0xD8. Frame size is 0x2BE0.
+The draft still contains artificial `ActiveDngMap`/`Ident` wrappers and scalar
+alignment attributes, so this near-match is not promotable natural source.
+
+Direct scene/map method calls with a combined assignment/null test give eight
+word differences: the same seven stack offsets plus a reload before the placed
+parts query. Removing the scalar alignment attributes gives 53/260 differences
+and a 0x2BD0 frame. SDK vector aliases and a named scene receiver do not recover
+the missing frame space. These less accurate drafts are not retained. This is a
+stack-layout/register-lifetime blocker, with no demonstrated float-order row.
+Reconsider when a natural collision-buffer and pointer-lifetime layout produces
+retail's sp+0xD8/sp+0xDC/sp+0xE0 spills and 0x2BE0 frame without the artificial
+wrappers or scalar alignment attributes.
 
 ## AutoSetTreasureBox
 
@@ -149,3 +184,60 @@ relocation from the primer baseline.
 `GetKeyDoorIndex` call, retaining it in f20 for `PutTreasureBox`. The stable
 binary32 zero evaluate-first selector scoped to that latter callee reproduces
 the retail order. The complete unit checks exactly:0x5440 bytes,869 relocations.
+
+## Nearmiss receiver and scratch trials
+
+Six new source hypotheses do not improve the retained 7/260 guarded draft.
+A named initial receiver with a separate assignment/null test gives 73/260;
+making the persistent map pointer const also gives 73/260. A collision-scratch
+aggregate follows retail's contiguous polygon/box/hit/result storage but emits
+0x418 bytes (retail extent 0x410), with a 0x2BD0 frame; it is reverted.
+
+Capturing the GetMap return separately, then using a combined assignment/null
+test for the persistent map and the captured pointer for GetPlacPartsTable,
+produces the retail 0x2BE0 frame without wrappers or scalar alignments. It
+still differs by 33/260 words: the entry gains a pointer spill/reload pair,
+map spills at sp+0xD0 instead of +0xD8, and the input pointers spill at
+sp+0xE8/+0xEC instead of +0xDC/+0xE0. Limiting the captured receiver to the
+initial lookup block leaves this 33-word result unchanged. Testing the fresh
+call directly and only then assigning the persistent receiver falls back to
+53/260 with the 0x2BD0 frame and one reload before GetPlacPartsTable.
+
+All trials are reverted. The natural frame-size remainder is now demonstrated
+as a pointer-lifetime effect, but promotion still requires retail return-value
+forwarding and all three pointer slots without the inherited wrappers or
+alignment attributes. Reconsider that narrower receiver-lifetime problem;
+another vector typedef or scratch aggregate has negative evidence. Receipts:
+`.private/receipts/nearmiss-probes/dng_event/n1/` through `n6/`, including
+`n5-corrected/`; the target-scoped 33-word candidate is `n6/`. No header or
+compiler-profile changes are proposed.
+
+## Mid-day receiver lifetime bounds (October 8)
+
+The refreshed queue contains only `SearchMapFlatPosition__FPfP11CAutoMapGen`
+in this unit; the no-argument treasure-box placement body is already native.
+The canonical source checkpoint remains 7/260 words and a 0x410 body, with
+its inherited helper wrappers and scalar alignment annotations. It is not
+promoted or changed by this lane.
+
+Private natural receiver variants confirm the previous 33-word bound when
+separate placement/collision pointers preserve the 0x2BE0 frame. Replacing the
+collision receiver with a reference raises that variant to 52 words. A direct
+assignment/null test, a reference to the scene or map, and scoped polygon count
+and collision-loop variables give 53 words and the smaller 0x2BD0 frame.
+Binding the active-map result to a const pointer reference emits 0x418 bytes
+and differs by 249 words. A condition-declaration or positive-assignment scope
+emits 0x40C bytes and differs by 247 words. None restores the entry result
+forwarding together with the three retail pointer spills.
+
+`attr` is loaded from the automap cell with `lh`, but making the local a short
+adds sign-extension/control scheduling and gives 196 words with a 0x418 body;
+the integer local is retained. An unsigned attempt counter adds one comparison
+word to the natural direct-call draft (54 versus 53). SDK vector typedefs do
+not change the direct-call result. These tests need no header or selector row.
+
+Remaining blocker: a natural receiver lifetime that preserves retail's
+sp+0xD8 map, sp+0xDC automap, sp+0xE0 output and 0x2BE0 frame without the
+existing wrappers/attributes. All trials are private and reverted. Receipts:
+`.private/midday/probes/dng_event/` and
+`.private/midday/m2c/SearchMapFlatPosition__FPfP11CAutoMapGen.txt`.

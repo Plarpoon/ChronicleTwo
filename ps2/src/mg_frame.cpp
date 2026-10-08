@@ -845,45 +845,53 @@ void mgCFrame::ClearChildFlag() {
 #pragma schedule reset
 
 #pragma global_optimizer off
-#ifdef NONMATCHING
 void mgCFrame::GetLocalMatrix(float (*matrix)[4]) {
-    if (!use_srt) {
-        sceVu0CopyMatrix(matrix, trans_matrix);
-        return;
-    }
-
-    for (int row = 0; row < 3; row++) {
-        for (int component = 0; component < 4; component++) {
-            matrix[row][component] = trans_matrix[row][component] * scale[component];
+    if (use_srt) {
+        float (*destination)[4] = matrix;
+        asm {
+            addiu v1, this, 0xB0
+            addiu v0, this, 0x30
+            lqc2 vf10, 0(v0)
+            lqc2 vf1, 0(v1)
+            lqc2 vf2, 16(v1)
+            lqc2 vf3, 32(v1)
+            lqc2 vf4, 48(v1)
+            vmul.xyzw vf1, vf1, vf10
+            vmul.xyzw vf2, vf2, vf10
+            vmul.xyzw vf3, vf3, vf10
+            vmulw.xyzw vf4, vf4, vf0w
+            sqc2 vf1, 0(destination)
+            sqc2 vf2, 16(destination)
+            sqc2 vf3, 32(destination)
+            sqc2 vf4, 48(destination)
         }
-    }
-    sceVu0CopyVector(matrix[3], trans_matrix[3]);
-    sceVu0FVECTOR translation;
-    if (rot_type & MG_FRAME_ROT_LOCAL_ORIGIN) {
-        sceVu0CopyVector(translation, matrix[3]);
-        mgZeroVectorW(matrix[3]);
-    }
-    if (rot_type & MG_FRAME_ROT_APPLY) {
-        if (rotation[0] != 0.0f) {
-            sceVu0RotMatrixX(matrix, matrix, rotation[0]);
+        sceVu0FVECTOR translation;
+        if (rot_type & MG_FRAME_ROT_LOCAL_ORIGIN) {
+            sceVu0CopyVector(translation, matrix[3]);
+            mgZeroVectorW(matrix[3]);
         }
-        if (rotation[1] != 0.0f) {
-            sceVu0RotMatrixY(matrix, matrix, rotation[1]);
+        if (rot_type & MG_FRAME_ROT_APPLY) {
+            if (rotation[0] != 0.0f) {
+                sceVu0RotMatrixX(matrix, matrix, rotation[0]);
+            }
+            if (rotation[1] != 0.0f) {
+                sceVu0RotMatrixY(matrix, matrix, rotation[1]);
+            }
+            if (rotation[2] != 0.0f) {
+                sceVu0RotMatrixZ(matrix, matrix, rotation[2]);
+            }
         }
-        if (rotation[2] != 0.0f) {
-            sceVu0RotMatrixZ(matrix, matrix, rotation[2]);
+        if (rot_type & MG_FRAME_ROT_LOCAL_ORIGIN) {
+            sceVu0AddVector(matrix[3], translation, position);
+            matrix[3][3] = 1.0f;
+        } else {
+            sceVu0AddVector(matrix[3], matrix[3], position);
+            matrix[3][3] = 1.0f;
         }
-    }
-    if (rot_type & MG_FRAME_ROT_LOCAL_ORIGIN) {
-        sceVu0AddVector(matrix[3], translation, position);
     } else {
-        sceVu0AddVector(matrix[3], matrix[3], position);
+        sceVu0CopyMatrix(matrix, trans_matrix);
     }
-    matrix[3][3] = 1.0f;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", GetLocalMatrix__8mgCFrameFPA4_f);
-#endif
 #pragma global_optimizer reset
 
 #pragma global_optimizer off

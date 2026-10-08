@@ -183,10 +183,11 @@ this game's `CObject` (object unit) derives from mgCObject.
   it compiles but differs from the retail VU0 scaling block.
 - GetLocalMatrix scales trans_matrix component-wise by `scale` (each row times the scale vector,
   last row copied) via VU0 asm; GetLWMatrix/TopBottom multiply parent*local with one VU0 block
-  that stores the product to lw_matrix and to the output.
-  A guarded C++ GetLocalMatrix draft now expresses the scaling, optional
-  rotations, and translation using SDK vector helpers; it compiles but differs
-  from retail's VU0 block.
+  that stores the product to lw_matrix and to the output. The VU0 block now
+  lives in the C++ definition; its address setup uses `this+0xb0` for the
+  source matrix and `this+0x30` for scale, preserving retail's register order.
+  Objdiff scores all 87 instructions and the 0x15c-byte function at 100%
+  (score 0).
   Guarded GetLWMatrix and GetLWMatrixTopBottom drafts now rebuild the cached
   matrix when the frame or an ancestor changed. The top-to-bottom form can use
   the parent's cached matrix directly. Both compile and differ from retail's
@@ -214,7 +215,6 @@ this game's `CObject` (object unit) derives from mgCObject.
 
 ## Assembly gaps
 
-`GetLocalMatrix`,
 `GetBBoardMatrix`, `GetLWMatrix`, `GetLWMatrixTopBottom`, and `GetDrawRect` retain
 their C++ drafts under `NONMATCHING` and use `INCLUDE_ASM` in the retail build.
 Their promoted forms required VU0 assembly inside C++ source. The surrounding

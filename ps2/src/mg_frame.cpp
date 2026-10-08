@@ -955,38 +955,83 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", GetBBoardMatrix__8mgCFrameFiPA4
 
 #pragma optimization_level 3
 #pragma global_optimizer off
-#ifdef NONMATCHING
 void mgCFrame::GetLWMatrix(float (*matrix)[4]) {
-    if (reference) {
+    float parent_matrix[4][4];
+    float local_matrix[4][4];
+    if (reference != 0) {
         changed = 1;
     }
-    if (!changed) {
-        mgCFrame *ancestor = parent;
-        while (ancestor != NULL && !ancestor->changed) {
-            ancestor = ancestor->parent;
-        }
-        if (ancestor == NULL) {
+    if (changed == 0) {
+        mgCFrame *frame = parent;
+        if (frame == NULL) {
             sceVu0CopyMatrix(matrix, lw_matrix);
             return;
         }
+        mgCFrame *node = frame;
+        while (node != NULL) {
+            if (node->changed != 0) {
+                break;
+            }
+            frame = node->parent;
+            if (frame == NULL) {
+                sceVu0CopyMatrix(matrix, lw_matrix);
+                return;
+            }
+            node = frame;
+        }
     }
-
     ClearChildFlag();
-    sceVu0FMATRIX local;
-    GetLocalMatrix(local);
+    GetLocalMatrix(local_matrix);
     if (parent == NULL) {
-        sceVu0CopyMatrix(lw_matrix, local);
+        sceVu0CopyMatrix(lw_matrix, local_matrix);
+        sceVu0CopyMatrix(matrix, lw_matrix);
+        changed = 0;
     } else {
-        sceVu0FMATRIX parent_matrix;
         parent->GetLWMatrix(parent_matrix);
-        sceVu0MulMatrix(lw_matrix, parent_matrix, local);
+        float(*b)[4];
+        float(*a)[4];
+        float(*dst)[4];
+        a = parent_matrix;
+        b = local_matrix;
+        dst = lw_matrix;
+        asm {
+            lqc2 vf5, 0(b)
+            lqc2 vf1, 0(a)
+            lqc2 vf2, 0x10(a)
+            lqc2 vf3, 0x20(a)
+            lqc2 vf4, 0x30(a)
+            vmulax.xyzw ACC, vf1, vf5x
+            vmadday.xyzw ACC, vf2, vf5y
+            vmaddaz.xyzw ACC, vf3, vf5z
+            vmaddw.xyzw vf20, vf4, vf5w
+            lqc2 vf6, 0x10(b)
+            lqc2 vf7, 0x20(b)
+            lqc2 vf8, 0x30(b)
+            vmulax.xyzw ACC, vf1, vf6x
+            vmadday.xyzw ACC, vf2, vf6y
+            vmaddaz.xyzw ACC, vf3, vf6z
+            vmaddw.xyzw vf21, vf4, vf6w
+            vmulax.xyzw ACC, vf1, vf7x
+            vmadday.xyzw ACC, vf2, vf7y
+            vmaddaz.xyzw ACC, vf3, vf7z
+            vmaddw.xyzw vf22, vf4, vf7w
+            vmulax.xyzw ACC, vf1, vf8x
+            vmadday.xyzw ACC, vf2, vf8y
+            vmaddaz.xyzw ACC, vf3, vf8z
+            vmaddw.xyzw vf23, vf4, vf8w
+            sqc2 vf20, 0(dst)
+            sqc2 vf21, 0x10(dst)
+            sqc2 vf22, 0x20(dst)
+            sqc2 vf23, 0x30(dst)
+            sqc2 vf20, 0(matrix)
+            sqc2 vf21, 0x10(matrix)
+            sqc2 vf22, 0x20(matrix)
+            sqc2 vf23, 0x30(matrix)
+        }
+
+        changed = 0;
     }
-    sceVu0CopyMatrix(matrix, lw_matrix);
-    changed = 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", GetLWMatrix__8mgCFrameFPA4_f);
-#endif
 
 #pragma optimization_level reset
 

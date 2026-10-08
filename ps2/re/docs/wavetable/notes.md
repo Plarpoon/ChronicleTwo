@@ -15,6 +15,9 @@ array pointers, and a typed flat-array union all compile but yield scalar
 inner loops of 0x208 or 0x290 bytes instead of retail's eight-column
 unroll. This shows that the currently close instruction schedule depends on
 the flat pointer expression; an exact, type-safe source form is still needed.
+Scoped optimization level four also leaves the typed two-dimensional loop
+scalar at 0x208 bytes, so the mismatch is not resolved by stronger standard
+optimization.
 These private trials changed neither the canonical source nor Satan's Fiddle.
 
 `CreateTexture` is byte-matched but still uses two flat-pointer expressions

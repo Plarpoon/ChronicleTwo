@@ -72,6 +72,14 @@ concurrently, but memory-intensive compiler jobs use
 - **mg_tanime / funcpoint:** next small constructor-dependent trials test native
   allocation and scoped optimization; manual initializer/vtable writes remain
   prohibited.
+- **mg_visual:** the native source manually defines `mgCVisualMDT::operator=`,
+  although retail emits it as a compiler-derived function immediately after
+  `mgCVisualFixMDT::Copy`. A private typed `Copy` trial with implicit assignment
+  inlines the copy and produces a 0x228-byte caller instead of retail's 0x190.
+  Scoped `inline_depth(0)` emits the derived assignment naturally, but shrinks
+  the caller to 0x11C and emits unrelated helpers. The assembly-backed `Copy`
+  must be replaced together with natural assignment emission and whole-unit
+  verification; the private trials did not change canonical source.
 
 Per-unit notes contain the detailed observations and failed experiments. Counts
 above are a revision-specific baseline, not a claim that the remaining work is

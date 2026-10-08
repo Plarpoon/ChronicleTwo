@@ -183,3 +183,21 @@ indexing, but that spelling changes the adjacent `StepFishBoiledEffect`
 object diff, so it retains its explicit stride. The separate part lookup in
 the item board helper and the line-position initializer still need their
 byte-stride forms for exact MWCC register allocation.
+
+## Stable item-board interpolation argument order
+
+The `menudraw.cpp` profile row for `Func_MenuItemBrdPosStep__Fi` selects
+`binary32` `0x40000000` (2.0f) with `evaluate_first: true`. It applies to all
+identical literals in that function and has no occurrence counter or callee
+restriction. The function obtains the item board's origin, computes its
+vertical target from the top visible row, either interpolates or snaps the
+board position, and updates its scroll bar. At `CalcMenu1`, the flag
+materializes the 2.0f minimum movement argument before the 4.0f interpolation
+divisor, restoring retail's argument register order.
+
+The native 256-byte function has zero differing instruction words and
+relocation fields with the current annotation and direct-literal consumer
+hooks. Canonical wrapper compilation, `fixup_sections.sh`, and
+`check_objects.py` validate `0x14090` allocated unit bytes and 2,389
+relocations. The existing `CRepairManager::GeneratePoly` constructor/layout
+findings remain; this row introduces no additional failing function.

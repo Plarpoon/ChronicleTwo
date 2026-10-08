@@ -7,52 +7,55 @@
 #include "mg_math.hpp"
 
 // Code (.text)
-#ifdef NONMATCHING
 int IntersectionPipeYPoly3(float *pipe, float (*poly)[4], float *normal, float (*hits)[4]) {
-    sceVu0FVECTOR axis = {0.0f, normal[1], 0.0f, 0.0f};
-    sceVu0FVECTOR tangent;
+    /** Zero vector used to seed the plane tangent calculation. */
+    static sceVu0FVECTOR at;
+    sceVu0FVECTOR axis;
     sceVu0FVECTOR offset;
-    sceVu0FVECTOR side[2];
-    sceVu0FVECTOR flat_poly[3];
+    sceVu0FVECTOR side0;
+    sceVu0FVECTOR side1;
     sceVu0FVECTOR flat_pipe;
-    float         radius = pipe[3];
-    int           count = 0;
-
-    sceVu0OuterProduct(tangent, normal, axis);
-    sceVu0OuterProduct(offset, normal, tangent);
+    sceVu0FVECTOR flat_poly[3];
+    float radius_squared = pipe[3] * pipe[3];
+    *(u_long128 *) axis = *(u_long128 *) at;
+    axis[1] = normal[1];
+    sceVu0OuterProduct(axis, normal, axis);
+    sceVu0OuterProduct(offset, normal, axis);
     sceVu0Normalize(offset, offset);
-    sceVu0ScaleVector(offset, offset, radius);
-    sceVu0AddVector(side[0], pipe, offset);
-    sceVu0SubVector(side[1], pipe, offset);
-    for (int i = 0; i < 2; i++) {
-        if (mgCheckPointPoly3_XZ(side[i], poly[0], poly[1], poly[2]) != 0) {
-            sceVu0CopyVector(hits[count++], side[i]);
-        }
+    sceVu0ScaleVector(offset, offset, pipe[3]);
+    int count = 0;
+    sceVu0AddVector(side0, pipe, offset);
+    float *second_side = side1;
+    sceVu0SubVector(second_side, pipe, offset);
+    if (mgCheckPointPoly3_XZ(side0, poly[0], poly[1], poly[2]) != 0) {
+        count++;
+        *(u_long128 *) hits[0] = *(u_long128 *) side0;
     }
-    sceVu0CopyVector(flat_pipe, pipe);
+    if (mgCheckPointPoly3_XZ(second_side, poly[0], poly[1], poly[2]) != 0) {
+        *(u_long128 *) hits[count++] = *(u_long128 *) second_side;
+    }
+    *(u_long128 *) flat_pipe = *(u_long128 *) pipe;
     flat_pipe[1] = 0.0f;
     for (int i = 0; i < 3; i++) {
-        sceVu0CopyVector(flat_poly[i], poly[i]);
+        if (mgDistVectorXZ2(pipe, poly[i]) <= radius_squared) {
+            *(u_long128 *) hits[count++] = *(u_long128 *) poly[i];
+        }
+        *(u_long128 *) flat_poly[i] = *(u_long128 *) poly[i];
         flat_poly[i][1] = 0.0f;
-        if (mgDistVectorXZ2(pipe, poly[i]) <= radius * radius) {
-            sceVu0CopyVector(hits[count++], poly[i]);
-        }
     }
-    for (int i = 0; i < 3; i++) {
-        count += mgIntersectionSphereLine(flat_pipe, flat_poly[i], flat_poly[(i + 1) % 3], hits + count);
+    count += mgIntersectionSphereLine(flat_pipe, flat_poly[0], flat_poly[1], &hits[count]);
+    count += mgIntersectionSphereLine(flat_pipe, flat_poly[1], flat_poly[2], &hits[count]);
+    count += mgIntersectionSphereLine(flat_pipe, flat_poly[2], flat_poly[0], &hits[count]);
+    if (count <= 0) {
+        return 0;
     }
-    if (count > 0) {
-        float plane_height = sceVu0InnerProduct(normal, poly[0]);
-        float inverse_y = 1.0f / normal[1];
-        for (int i = 0; i < count; i++) {
-            hits[i][1] = inverse_y * ((plane_height - normal[0] * hits[i][0]) - normal[2] * hits[i][2]);
-        }
+    float plane_height = sceVu0InnerProduct(normal, poly[0]);
+    float inverse_y = 1.0f / normal[1];
+    for (int i = 0; i < count; i++) {
+        hits[i][1] = inverse_y * ((plane_height - normal[0] * hits[i][0]) - normal[2] * hits[i][2]);
     }
     return count;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/intersection", IntersectionPipeYPoly3__FPfPA4_fPfPA4_f);
-#endif
 int IntersectionPipePoly3(float *pipe, float *axis, float (*tri)[4], float *offset, float (*hits_out)[4]) {
     float basis[4][4];
     float inverse[4][4];

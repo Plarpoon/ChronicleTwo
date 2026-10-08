@@ -123,3 +123,7 @@ NameRegiTopic (char[0x40], event topic shown for target 2), NameRegiStack (mgCMe
 - The unit-local `divbyzerocheck` on/reset directives are redundant with the
   compiler-wide flag: removing all three pairs leaves every section and
   symbol in the unit's object diff unchanged.
+
+## Password confirmation in KeyStep
+
+The fish-password branch converts the Shift-JIS input to ASCII, terminates the input at 22 characters, copies the fish name into a 20-byte decoding key, decodes up to 16 bytes, and interprets the first 14 decoded bytes as the fish record. Failed decoding or a first packed item identifier below 0x136 opens message 0x1011; success installs the decoded fish and opens message 0x1012. The two explicit pointer casts at `DecodePassword` set MWCC operand evaluation rank: retail prepares the output address, then the key pointer, then the input address and size. They preserve pointer types and array bounds and add no instructions. The complete 5228-byte native `KeyStep` body has zero differing instruction words against PAL; the final four bytes of its 5232-byte symbol extent are zero alignment padding. No calls, data definitions, or relocation targets change. After the canonical `fixup_sections.sh` pass removes compiler-generated duplicate-data intermediates, the PAL object checker verifies the whole unit's 0x4C58 allocated bytes and 792 relocations with no findings. The external Python parser override is active during this validation.

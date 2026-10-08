@@ -5134,7 +5134,12 @@ void CMenuInvent::GetNetaMemoCursorPosition(int slot, int *pos) {
     pos[1] += slot * 0x1A + 0x4E;
 }
 
-int neta_sort(int mode, int first, int last, int *keys) {
+/**
+ *
+ * Orders discovered invention ideas while keeping their names, identifiers and sort keys together.
+ *
+ */
+static int neta_sort(int mode, int first, int last, int *keys) {
     int swapped = 0;
     int i;
     int j;

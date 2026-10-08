@@ -3211,7 +3211,7 @@ int get_gajji_id_from_monster_progress_table(int progress_no, int *column_out) {
 
     for (row = 0; row < 19; row++) {
         for (column = 1; column < 5; column++) {
-            if (progress_no == monster_progress_tbl[row * 5 + column]) {
+            if (progress_no == (&monster_progress_tbl[row * 5])[column]) {
                 if (column_out) {
                     *column_out = column - 1;
                 }
@@ -3225,18 +3225,13 @@ int get_gajji_id_from_monster_progress_table(int progress_no, int *column_out) {
 }
 
 int GetMonsterProgressTableNo(int column, int value) {
-    int  row = 0;
-    s16 *entry = &monster_progress_tbl[column + 1];
-
+    int row = 0;
     do {
-        if (value == *entry) {
+        if (value == (monster_progress_tbl + column)[row * 5 + 1]) {
             return row;
         }
-
         row++;
-        entry += 5;
     } while (row < 19);
-
     return -1;
 }
 

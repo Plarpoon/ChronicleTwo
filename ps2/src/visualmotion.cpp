@@ -16,27 +16,10 @@
 
 // Code (.text)
 void mgCVisualMotionMDT::Initialize() {
-    int  slot_count;
-    int  bone_index;
-    int *slot;
-
     mgCVisualMDT::Initialize();
-    slot_count = 0;
-    bone_index = 0;
-
-    do {
-        slot = &bone[bone_index];
-        slot_count += 8;
-        bone_index += 8;
-        slot[0] = -1;
-        slot[1] = -1;
-        slot[2] = -1;
-        slot[3] = -1;
-        slot[4] = -1;
-        slot[5] = -1;
-        slot[6] = -1;
-        slot[7] = -1;
-    } while (slot_count < 0x20);
+    for (int bone_index = 0; bone_index < 32; bone_index++) {
+        bone[bone_index] = -1;
+    }
 
     vu1_base = 0x7C;
     vu1_offset = 0x94;
@@ -194,26 +177,13 @@ mgVertexWeight::mgVertexWeight() {
 }
 
 void mgCVisualMotionMDT::ChangeWeight(mgCFrame **new_frames, float (*matrix)[4][4], int count) {
-    int  i;
-    int  bone_index;
-    int *slot;
-    int  old;
-
-    bone_index = 0;
-    i = 0;
-
-    do {
-        slot = &bone[bone_index];
-        old = *slot;
-
+    for (int bone_index = 0; bone_index < 32; bone_index++) {
+        int old = bone[bone_index];
         if (old < 0) {
             break;
         }
-
-        *slot = (*new_frames)->SearchFrameID(this->frame[old]->name);
-        i += 1;
-        bone_index++;
-    } while (i < 0x20);
+        bone[bone_index] = (*new_frames)->SearchFrameID(this->frame[old]->name);
+    }
 
     this->frame = new_frames;
     this->base_matrix = matrix;

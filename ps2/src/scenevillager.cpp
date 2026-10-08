@@ -1491,11 +1491,10 @@ void CScene::DrawGameObject(int now_map_no) {
             }
 
             for (i = 0; i < entry->place_num; i++) {
-                GAMEOBJ_PLACE *place = &entry->place[i];
-                u_long128      point_copy = *(u_long128 *) place;
+                u_long128 point_copy = *(u_long128 *) &entry->place[i];
                 *(u_long128 *) first_point = point_copy;
                 first_point[3] = 1.0f;
-                *(u_long128 *) second_point = *(u_long128 *) place;
+                *(u_long128 *) second_point = *(u_long128 *) &entry->place[i];
                 second_point[3] = 1.0f;
 
                 if (entry->type == 1 || entry->type == 2) {
@@ -1504,13 +1503,13 @@ void CScene::DrawGameObject(int now_map_no) {
 
                 if (second != NULL) {
                     second->SetPosition(second_point);
-                    second->SetRotation(0.0f, place->rot_y, 0.0f);
+                    second->SetRotation(0.0f, entry->place[i].rot_y, 0.0f);
                     second->DrawDirect();
                 }
 
                 if (first != NULL) {
                     first->SetPosition(first_point);
-                    first->SetRotation(0.0f, place->rot_y, 0.0f);
+                    first->SetRotation(0.0f, entry->place[i].rot_y, 0.0f);
                     first->DrawDirect();
                 }
             }

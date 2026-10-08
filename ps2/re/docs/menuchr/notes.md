@@ -167,7 +167,7 @@ array indexing and member calls use the declared C++ types.
 
 `SetMenuLoadItemNo` reads Max's or Monica's five `CHARA_DATA::equip` item numbers. For the ridepod, the displayed order is parts 3, 0, 1, an empty slot, and part 2. Typed access to `ROBO_DATA::parts` and `CGameDataUsed::item_no` preserves its exact PAL object code.
 
-`monster_progress_tbl` has 19 rows of five signed halfwords. Each row starts with a badge number and holds four monster forms. The search functions walk the row and form columns, while `get_monster_tbl_bajjilevel` filters a row by badge and level before gathering its next form. Typed indexing preserves the latter function's PAL code; two search loops currently differ in induction-variable code generation.
+`monster_progress_tbl` has 19 rows of five signed halfwords. Each row starts with a badge number and holds four monster forms. The search functions walk the row and form columns, while `get_monster_tbl_bajjilevel` filters a row by badge and level before gathering its next form. Typed indexing preserves the latter function's PAL code; both badge and form searches match PAL exactly. The badge search first selects a row pointer, then indexes its form column; the form search first offsets the table base by the selected column and then indexes successive five-halfword rows. These expression shapes retain the independent retail induction variables without byte-pointer arithmetic.
 
 `CMenuCostumeSel::UpdateCostumeList` reads the worn outfit IDs from equipment slots 2, 4, and 3. These are the `item_no` fields of `CHARA_DATA::equip`; typed member access matches PAL. `MenuNPCLoadCheck` writes a temporary texture manager name suffix while loading the party model, then clears its first character.
 
@@ -175,3 +175,31 @@ array indexing and member calls use the declared C++ types.
 `mgCFrameAttr::draw` field. The two anonymous offset structs previously used
 for this access are the existing `mgCFrame` and `mgCFrameAttr` types. Using
 those types and the literal name matches the 0x34-byte PAL function exactly.
+
+## Stable party-panel and monster-position argument order
+
+These `menuchr.cpp` rows in `scripts/build/satansfiddle.json` select
+`binary32` IEEE bits with `evaluate_first: true` for every identical literal
+in the named function. They use neither occurrence counters nor callee
+restrictions.
+
+| Function | IEEE bits | Value | Purpose |
+| --- | --- | --- | --- |
+| `MenuCharaChangeDraw__Fv` | `0x41a00000` | 20.0f | Keeps the panel's horizontal origin ahead of its remaining coordinates. |
+| `MenuCharaChangeDraw__Fv` | `0x41d00000` | 26.0f | Keeps the second panel's vertical origin ahead of its dimensions. |
+| `MenuCharaChangeDraw__Fv` | `0x43960000` | 300.0f | Materializes the second panel's height before its 280.0f width. |
+| `CheckLoadBGMonster__14CMenuMosSelectFv` | `0x3f800000` | 1.0f | Materializes the monster's vertical position before its 16.0f horizontal position. |
+
+All three panel rows are needed together: promoting only 300.0f changes the
+first `DrawMenuFillBox` call and moves the second panel's dimensions ahead
+of its origin. The complete set preserves both debug-panel calls. The
+monster row preserves `SetPosition(16.0f, 1.0f, 0.0f)` after background model
+loading and before attaching the monster to its menu form.
+
+With the current annotation and direct-literal consumer hooks, the native
+1,968-byte `MenuCharaChangeDraw` and 1,036-byte `CheckLoadBGMonster` bodies
+have zero differing instruction words and relocation fields. Canonical
+wrapper compilation, `fixup_sections.sh`, and `check_objects.py` check
+`0x11D00` allocated unit bytes and 3,723 relocations. Other existing unit
+findings remain; these rows preserve the matched monster-progress lookup
+functions and introduce no additional failing function.

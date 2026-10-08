@@ -119,3 +119,48 @@ It calculates opacity from horizontal distance to the main scene camera:
 opacity is positive and the world position transforms to a drawable GS
 vertex. Its guarded draft compiles and differs from retail in eight floating
 point register choices.
+
+## Native remainder and guarded candidates
+
+`Initialize` resets the scene slots and battle-area state; retail's game
+object loop uses `sky_num` as its bound. All seven typed slot-array loops
+have the same instructions as PAL except the exchange of the counter
+and scaled array-displacement saved registers. `ClearStack` clears
+stack_used and lock for each existing stack from the requested index
+onwards and resets later buffers; its instruction differences likewise
+come from saved-register allocation. Alternative induction-variable and
+dead-expression trials are not retained.
+
+The `RandXYinViewArea` guarded body is one float-add operand order from
+PAL: +0xBC is `f20 = f0 + f20` in retail, while the current body uses
+`f20 = f20 + f0`. Source operand reversal and a no-op float cast leave the
+result unchanged. Keeping the random result as a multi-definition local
+produces the desired operand order but exchanges f20/f21 for heading and
+distance later in the function, so the assembly fallback remains.
+
+`CParticle::Draw`'s guarded body reproduces the full 456-byte instruction
+shape but differs at eight register choices around opacity calculation:
+retail uses v1/f2 for -0.42666668, a2/f3 for 128 and f1 for the zero
+comparison; the isolated compiler uses a0/f2, v1/f1 and f0 respectively.
+Splitting out the fade term does not correct this. Neither guarded body
+is claimed matched.
+
+## Satan's Fiddle floating-point calibration
+
+`./decompile.sh Birth__9CRainDropFi`, `ParticleBirth__5CRainFPfi` and
+`Start__5CRainFv` confirm the native rain behavior: birth chooses near/far
+view distances and clones eight trail positions; particle birth randomizes
+velocity then claims the first free particle; start initializes both rain
+groups and ripple positions. Their argument preparation is now exact with
+binary32 evaluate-first selectors for 800 (`Birth`), 2 (`ParticleBirth`)
+and view angle bits `0x3F490FDB` (`Start`).
+
+The compiler propagates local floats into fresh kind-0x33 argument nodes
+whose evaluation byte was uninitialized. Initializer-only selectors left
+four, two and twelve instruction differences respectively. LLDB at the
+MWCC 3.0 argument reader 0x4A4AE3 confirmed each propagated node retains its
+source type and IEEE value. Satan's Fiddle now initializes that consumer
+and applies the same TU/function/type/IEEE-bits policy there. Canonical
+wrapper plus section-fixup checks recover all three functions without
+source changes or new failing functions; only the existing Initialize
+and ClearStack register-allocation differences remain.

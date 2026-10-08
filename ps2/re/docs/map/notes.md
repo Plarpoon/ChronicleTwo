@@ -202,3 +202,20 @@ fallback.
   Native placement construction supplies the list vtable, clears its data and
   calls `Initialize`; MWCC moves the allocation result before the null branch
   while retail moves it in the branch delay slot.
+
+## Native remainder verification
+
+`CPartsGroup::Add`, `CMap::AddParts` and both emitted list-node
+`Initialize` specializations already reproduce PAL code. Each append walks
+to the last node, writes its next link and sets the new node's prev link
+when non-null. `CMap::AddParts` rejects a null new node.
+
+The remaining native differences are confined to four functions.
+`AddPartsGroup` and `CreateDrawRect` differ around the placement-new result
+copy and null branch. Their typed list layout and initializer bodies are
+otherwise established. `GetCharaLight` exchanges the saved registers of
+the light-loop array displacement and point address. `DrawWater` exchanges
+the overlay-placement pointer and overlay-parts displacement registers.
+The literal float arguments in `DrawWater` match in the isolated build
+used for this check. Pointer declaration and redundant initialization
+trials did not correct these allocations and are absent from the source.

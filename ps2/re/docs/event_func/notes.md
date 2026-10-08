@@ -187,3 +187,28 @@ this particle type, switch to it.
 # Native event object construction
 
 `_COPY_CHARA` and `_COPY_MONS2SCNCHR` allocate a `CCharacter2` in a scene stack, then copy the source character or monster into the new slot. Native placement construction performs the base object setup, vtable installation, shadow matching reset, and character initialization represented by the retail sequence. `_ESM_INITIALIZE` similarly creates `CEffectScriptMan` in the event stack; its sprite and manager constructors perform the two initialization steps that were formerly written through vtable symbols. The `_ESM_INITIALIZE` C++ body remains behind `NONMATCHING`, so the PAL build uses its assembly body.
+
+## Crossfade floating argument calibration
+
+`_SET_CROSSFADE__FP12RS_STACKDATAi` captures the screen, converts script frame
+counts from 60 Hz to 50 Hz with a minimum of one, and calls `CrossFadeIn` or
+`CrossFadeOut` for three arguments, otherwise `CrossFade`. Each native call
+passes `1.0f`, but retail evaluates that constant early only for
+`CrossFadeOut__10CFadeInOutFiif`. The `CrossFadeIn__10CFadeInOutFiif` and
+`CrossFade__10CFadeInOutFif` calls retain the false policy.
+
+The verified row selects `event_func.cpp`,
+`_SET_CROSSFADE__FP12RS_STACKDATAi`, `binary32`, IEEE bits `0x3f800000`,
+`callee: CrossFadeOut__10CFadeInOutFiif`, and `evaluate_first: true`.
+A value-only true row changes the sibling calls' register allocation; false
+for all three emits a function four bytes too long. The stable mangled callee
+distinguishes the argument at consumption without occurrence indices. Live
+compiler tracing found direct floating constant nodes at all three calls,
+including a freshly allocated node with an uninitialized evaluate-first byte.
+
+The production mwccgap wrapper, section fixup, and canonical object checker
+prove the `0x158`-byte function's exact bytes and resolved relocations. The unit
+returns to its original `0x22cc4` bytes, 6888 relocations, and 16 existing issues,
+with no crossfade failure. Those remaining issues include event object-copy
+functions and unrelated data/layout mismatches. This is a function match,
+not a whole-unit pass. See [MWCC notes](../../../../docs/MWCC.md).

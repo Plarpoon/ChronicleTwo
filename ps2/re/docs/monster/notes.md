@@ -154,3 +154,37 @@ LoadReferMonsterFile int, SearchArea float, LoadMonsterLanguage void.
 The local `divbyzerocheck on`/`reset` pair is redundant with the PS2
 compiler flag. Removing it leaves every section and symbol in this unit's
 object diff unchanged.
+
+## Effect-call behavior and pre-calibration differences
+
+`HitEffectSet` offsets the hit position 20 units towards the camera, cycles
+through the hit-image and flash pools, chooses the flash settings from
+flag bit 2 and starts a second image of kind 2. `GuardEffectSet` performs
+the same camera offset, creates an image of kind 1 and optionally starts
+the guard effect script. The guard image dereference has no null guard in
+retail. Pool wrapping, image fields and flash fields match.
+
+Before consumer calibration, the isolated native `HitEffectSet` differed only at the first
+`SethitEffect` call: retail materializes spread 30 into f12 before speed
+60 into f13; the compiler reversed those two loads.
+`GuardEffectSet` materializes gravity 0.1, spread 50, power 0 and speed 30
+in retail, while the pre-calibration compiler ordered spread, speed, gravity,
+power. These are float evaluation/argument-order differences; no
+source-side literal or argument value change is justified.
+
+## Stable floating-point compiler policies
+
+The native effect routines now match with Satan's Fiddle consumer-level
+binary32 policies. HitEffectSet selects spread 30 (`0x41F00000`) and
+power 0.2 (`0x3E4CCCCD`) as evaluate-first. GuardEffectSet selects
+power 0 (`0x00000000`) and gravity 0.1 (`0x3DCCCCCD`) instead.
+`./decompile.sh GuardEffectSet__FP6CScenePfi` confirms the vector offset,
+image pool selection and effect parameters; the source body is unchanged.
+
+Local floats, including GuardEffectSet's const reference to its zero-power
+local, propagate into fresh floating argument nodes. The initializer-only
+hook could not preserve their ordering bytes. The argument consumer now
+uses their original type and IEEE bits, rather than source order or arena
+residue. Both effects have zero byte and relocation differences, and
+canonical wrapper plus section fixup validates the entire monster unit:
+0x16818 bytes and 571 relocations.

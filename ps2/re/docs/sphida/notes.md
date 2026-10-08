@@ -83,3 +83,27 @@ No vtable of its own.
 The local `divbyzerocheck on`/`reset` pair is redundant with the PS2
 compiler flag. Removing it leaves every section and symbol in the unit's
 object diff unchanged.
+
+## Full-section verification of SetUp
+
+`CSphida::SetUp` already reproduces the complete 0x480-byte PAL function,
+including all relocation targets, in the isolated object. The progress
+report previously showed a 59.51% function row because exported switch labels
+split the cases into additional symbols. Localizing those labels in the
+objdiff target restores the complete 0x480-byte function and its 100% row
+with the project's relocation comparison setting. This is a reporting
+correction, not a new native match.
+After the required `fixup_sections.sh` object preparation,
+`check_objects.py` passes the entire unit: 0x313C bytes and 438
+relocations. Intermediate `.dead` sections are compiler data copies
+supplied by placeholders; the normal preparation stage removes them.
+
+`decompile.sh SetUp__7CSphidaFi` cannot resolve the named switch jump
+table at its indirect jump. Existing type analysis plus the full retail
+disassembly establishes the setup behavior. The function chooses pin
+and ball positions outside treasure-box/random-circle exclusion areas,
+settles the ball against collision polygons, chooses their colors,
+computes par from navigation distance on stages 0/3/4/5/6 or direct
+distance otherwise, clamps par to 99, copies the red-mark model and
+initializes status sprites. The second exclusion loop tests the pin
+against RandomCircle in retail, even though it is choosing the ball.

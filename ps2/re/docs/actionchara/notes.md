@@ -195,3 +195,14 @@ order; MWCC folds the multiplication and the full actionchara object matches.
 `CalcCollision` and `GetSwEffectPtr` advance typed entries with `&entry[1]` and `&slot[1]`; `CheckEquipSetItem` and the corresponding item check advance with `&item[1]`. These forms keep the retail pointer increment instructions while making the array element type explicit. Effect selection uses `&BattleFX.hit[index]` and `&BattleFX.flush[index]`. In `HitEffectSet`, binding `hit_next` to a local integer before indexing preserves MWCC’s argument scheduling; direct indexing changes the function score to 96.83%. All affected functions compare exactly.
 
 `CActionChara::Step` can call the held `mgCFrame` and `CMapParts` members directly; their stored fields already have the needed types. Removing the three base/derived casts leaves its object code exact.
+
+## Stable floating-point compiler calibration
+
+GuardEffectSet__FP6CScenePf uses binary32 evaluate-first policies for
+`0x3DCCCCCD` (0.1) and `0x41F00000` (30), scoped to actionchara.cpp and
+that function. Both values are required to reproduce the PAL argument
+materialization order. Satan's Fiddle verifies the original type/value
+identity and initializes expression flags; no source value, argument
+order or pointer workaround was introduced for this calibration. Canonical
+wrapper plus section fixup validates the entire unit: 0x8FB4 bytes and
+1005 relocations pass, including the unaffected native functions.

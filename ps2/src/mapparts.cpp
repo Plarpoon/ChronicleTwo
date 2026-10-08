@@ -72,20 +72,6 @@ struct PartsPieceNode {
     u_char          unk_c4[0xC];
 };
 
-/**
- *
- * Provides list links and initialization for map animation nodes.
- *
- */
-class CList_9CObjAnime_ {
-public:
-    CList<CObjAnime> *next; /**< Next animation node. */
-    CList<CObjAnime> *prev; /**< Previous animation node. */
-
-    /** Clears the animation node's links. */
-    void Initialize();
-};
-
 extern "C" void *__vt__17CList_9CMapPiece_[];
 extern "C" void *__vt__9mgCObject[];
 extern "C" void *__vt__7CObject[];
@@ -1070,7 +1056,8 @@ int CMapParts::AssignFuncAnime(mgCMemory *memory) {
     return 1;
 }
 
-void CList_9CObjAnime_::Initialize() {
+template <>
+void CList<CObjAnime>::Initialize() {
     prev = NULL;
     next = NULL;
 }

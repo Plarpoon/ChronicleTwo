@@ -36,7 +36,6 @@ static void          DrawDngRoomInfo(DNGMAP_ROOM_INFO *room);
 #endif
 
 // Code (.text)
-#ifdef NONMATCHING
 void CDngFreeMap::Initialize() {
     active = 1;
     unk_9 = 0;
@@ -50,21 +49,20 @@ void CDngFreeMap::Initialize() {
     user_room_no = -1;
     back_scroll = 0.0f;
     pos_x = pos_y = 0.0f;
-    next_pos_x = next_pos_y = 200.0f;
+    next_pos_x = 200.0f;
+    next_pos_y = 200.0f;
     select_glid = NULL;
     InitTexture();
     alpha = 128.0f;
     user_glid = NULL;
     blink_cnt = 0;
-    koma_now = koma_path = NULL;
+    koma_now = NULL;
+    koma_path = NULL;
     koma_move = 0;
     fade_mode = DNGMAP_FADE_NONE;
     fade_time = -1;
     fade_step = 0.0f;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Initialize__11CDngFreeMapFv);
-#endif
 void CDngFreeMap::InitTexture() {
     map_tex = NULL;
     last_tex = NULL;
@@ -72,30 +70,22 @@ void CDngFreeMap::InitTexture() {
     name_tex = NULL;
     tex_block = -1;
 }
-#ifdef NONMATCHING
 void CDngFreeMap::SetUserGlid(int room_no) {
     user_glid = NULL;
-    if (room_no >= 0) {
+    if (0 <= room_no) {
         user_glid = GetRoomGlid(room_no);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", SetUserGlid__11CDngFreeMapFi);
-#endif
-#ifdef NONMATCHING
 void CDngFreeMap::CalcGlidPutPos(GLID_INFO *glid, float &x, float &y, int board) {
     if (glid != NULL) {
-        x = (float) (glid->x * 52 - glid->y * 16);
-        y = (float) (glid->y * 20);
+        x = static_cast<float>(glid->x * 52 + glid->y * -16);
+        y = static_cast<float>(glid->y * 20);
         if (board == 0) {
             x += pos_x;
             y += pos_y;
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", CalcGlidPutPos__11CDngFreeMapFP9GLID_INFORfRfi);
-#endif
 #ifdef NONMATCHING
 void CDngFreeMap::CheckIsViewMove(int x, int y, float &move_x, float &move_y) {
     int clipped_x = x;
@@ -158,16 +148,12 @@ GLID_INFO *CDngFreeMap::GetEntranceRoomGlid() {
 
     return NULL;
 }
-#ifdef NONMATCHING
 void CDngFreeMap::SetTextureInfo() {
     map_tex = mgTexManager.GetTexture("dt", -1);
     last_tex = mgTexManager.GetTexture("dtbg", -1);
     koma_tex = mgTexManager.GetTexture("dngop", -1);
     name_tex = mgTexManager.GetTexture("dtname", -1);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", SetTextureInfo__11CDngFreeMapFv);
-#endif
 #ifdef NONMATCHING
 void CDngFreeMap::ResetDngMapPos(int room_no, int at_once) {
     GLID_INFO *glid = GetRoomGlid(room_no);
@@ -1242,40 +1228,30 @@ void CDngFreeMap::Draw() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Draw__11CDngFreeMapFv);
 #endif
-#ifdef NONMATCHING
 void CDngFreeMap::FadeIn(int frames) {
     fade_mode = DNGMAP_FADE_IN;
     fade_time = frames;
     fade_step = 128.0f;
-    if (frames > 0) {
-        fade_step = 128.0f / (float) frames;
+    if (0 < frames) {
+        fade_step = 128.0f / static_cast<float>(frames);
     }
     alpha = 0.0f;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", FadeIn__11CDngFreeMapFi);
-#endif
-#ifdef NONMATCHING
 void CDngFreeMap::FadeOut(int frames) {
     fade_mode = DNGMAP_FADE_OUT;
     fade_time = frames;
     fade_step = -128.0f;
-    if (frames > 0) {
-        fade_step = -128.0f / (float) frames;
+    if (0 < frames) {
+        fade_step = -128.0f / static_cast<float>(frames);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", FadeOut__11CDngFreeMapFi);
-#endif
-#ifdef NONMATCHING
 void CDngFreeMap::DeleteTexBlock() {
-    if (tex_block >= 0) {
-        mgTexManager.DeleteBlock(tex_block);
+    mgCTextureManager *manager = &mgTexManager;
+    int block = tex_block;
+    if (block >= 0) {
+        manager->DeleteBlock(block);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DeleteTexBlock__11CDngFreeMapFv);
-#endif
 void CDngFreeMap::SetKomaMove(int moving) {
     koma_move = moving;
     koma_now = koma_path;
@@ -2546,7 +2522,6 @@ int CBaseMenuClass::ItemCmdAfter(int cmd_ret, ITEMCMD_RET_PARA *ret) { return 0;
 
 void CBaseMenuClass::ExitEnd() {}
 
-#ifdef NONMATCHING
 template <>
 void mgRect<float>::Set(float new_left, float new_top, float new_right, float new_bottom) {
     left = new_left;
@@ -2554,9 +2529,6 @@ void mgRect<float>::Set(float new_left, float new_top, float new_right, float ne
     right = new_right;
     bottom = new_bottom;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", Set__9mgRect_f_Fffff);
-#endif
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dngmenu", markOffsetTable_1092__DATA);

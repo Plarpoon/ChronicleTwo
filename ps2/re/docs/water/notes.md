@@ -1,6 +1,6 @@
 # water: reverse-engineering notes
 
-`CFireRaster::Step` walks its `FireRasterParticle particle[20]` array while advancing a separate phase value for the wisp sway. Typed array indexing reproduces all PAL instructions except the compiler's choice of two saved registers for the slot offset and phase.
+`CFireRaster::Step` advances 20 wisp particles, expires spent particles and respawns the last free slot. Its sway phase is twice the loop counter. Typed particle indexing, phase expressions `i * 2`, and advancing the particle index before the counter reproduce the complete 460-byte PAL function, including relocations. The free slot is passed as its `position` member.
 
 ## C++ draft status
 All 25 functions have C++ in `ps2/src/water.cpp`. 13 are exact and compiled by

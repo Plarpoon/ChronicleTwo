@@ -124,3 +124,18 @@ No equivalent in Dark Cloud 1 (no fish race).
 `SetRaceFishParam` maps its fifth and sixth floats directly to the race
 entrant's power and aggression fields, so those members use those names.
 The promoted function remains exact in objdiff.
+
+## Deterministic floating-point compilation
+
+`CharacterBonus__FP12grFISH_PARAMP15RACE_FISH_PARAMi` at `0x00323E90` needs
+binary32 `0.01f` (`0x3C23D70A`) evaluated before `1.0f` in the random-bonus
+call. Selecting `0.01f` alone would also reorder the earlier
+`GetRandomNumber(0.0f, 0.01f)` calls. The Satan's Fiddle JSON profile therefore
+sets `evaluate_first` to true for both `0x3C23D70A` and `0x00000000` in this
+function. The earlier calls keep their retail order, while the later call
+materializes `0.01f` before `1.0f`. Each selector applies to all matching
+constants, without relying on their visitation order.
+
+With MWCC 3.0-011126, `-O3,p`, both mwccgap passes and the normal section
+fixup, the complete unit passes the retail checker: `0x3150` initialized bytes and
+86 relocations. This remains true with the call-argument consumer hook.

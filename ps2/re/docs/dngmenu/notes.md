@@ -292,8 +292,51 @@ so its placement needs further work during matching.
 
 `mgRect<float>::Set` stores its four arguments directly into the left, top,
 right and bottom fields. The explicit float specialization is a separate
-retail symbol from the generic template, so it has its own guarded draft.
+retail symbol from the generic template, emitted by a native specialization.
 
 ## Native static initialization
 
 The light-circle and free-map number rectangles are zero-filled 0x10-byte data globals whose four-argument constructors call `mgRect<int>::Set`. The root placement rectangle uses the default `mgRect<float>` constructor; the floor-information rectangle uses four arguments. A native `mgCMemory MenuTreeMapStack` completes the same initialization order. Together these globals emit the 144-byte retail `__sinit_dngmenu_cpp` exactly and retain the original data/BSS section assignments after object postprocessing. This replaces the guarded handwritten initializer and assembly fallback.
+
+## Small floor-map functions: native assessment
+
+The m2c output confirms the existing drafts for `SetUserGlid`,
+`CalcGlidPutPos`, `SetTextureInfo`, `FadeIn`, `FadeOut`, `DeleteTexBlock`,
+and `Initialize`. Dependencies are already typed and documented:
+`CDngFreeMap` is 0x110 bytes, `GLID_INFO` grid coordinates are signed
+16-bit fields at offsets 2 and 4, and the texture block is signed 16-bit
+at 0xD0. Texture manager lookup takes a name and block number; deletion
+takes the sign-extended block. Fade duration and state are 32-bit integers
+with float alpha and step. Grid projection uses signed integer arithmetic
+before conversion to float; its null case leaves both output references
+unchanged. Initialization writes the Y scroll before X, X target before
+Y target, and current path pointer before path head.
+
+`mgRect<float>::Set` has four scalar float stores, confirmed by m2c. Its
+native specialization is assessed alongside the small functions because
+the assembly fallback coexists with an implicitly instantiated template
+body and creates an unnamed extra text section in the baseline object.
+
+### Canonical native result
+
+All eight assessed functions have zero byte and resolved-relocation
+differences: `Initialize`, `SetUserGlid`, `CalcGlidPutPos`, `SetTextureInfo`,
+`FadeIn`, `FadeOut`, `DeleteTexBlock`, and `mgRect<float>::Set`. The entire
+isolated wrapper object passes the canonical comparator (0x8C30 compared
+bytes and 1097 relocations). The assembly fallback for the float rectangle
+specialization creates an anonymous extra text section in the prior
+object, preventing text comparison; the native specialization resolves
+that section issue and the associated unresolved targets.
+
+Initialization requires the binary32 286.0 value (`0x438f0000`) in
+`Initialize__11CDngFreeMapFv` to evaluate first. This is an unscoped stable
+Satan's Fiddle identity. It restores the early f15 load without changing
+the rectangle arguments. Separate assignments preserve the target-scroll
+and path-pointer store order.
+
+MWCC emits retail's `slt` plus branch when the comparison operands are
+written `0 <= room_no` and `0 < frames`; writing the variable first emits
+the dedicated signed-zero branch. Grid X projection adds the negative
+row contribution (`x * 52 + y * -16`), preserving retail's negation
+before the shift. Texture deletion binds the manager before testing the
+block number so the manager address is available at the retail branch.

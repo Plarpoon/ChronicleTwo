@@ -104,7 +104,17 @@ retail signature is `PUi`; no record struct is declared.
   `mgMaterial` records. The copy placeholder needs a typed material pointer at offset 0x44 for
   the full game build. A separate material index makes MWCC retain the retail offset induction,
   and the function matches 100%.
-- Typed `bone[bone_index]` access in `Initialize` and `ChangeWeight` replaces byte offsets into
-  the object. Both compile with equivalent loads and stores, but register allocation differs from
-  retail; current objdiff scores are 97.42% and 95.00% respectively.
+- `Initialize` clears the 32 typed bone entries with a single loop. MWCC unrolls this
+  into eight stores per iteration; writing the unrolled loop explicitly changes its
+  register allocation. `ChangeWeight` indexes the bone array directly and stops at
+  its first negative entry before remapping names onto the new skeleton. Keeping a
+  separate slot pointer changes the retained induction register. Both functions now
+  have zero canonical byte and resolved-relocation differences.
+
+## Canonical native verification
+
+The focused MWCC wrapper build, section fixup and canonical checker pass the complete
+`visualmotion` object: 0x1A00 checked bytes and 101 relocations. This establishes the
+native `Initialize` and `ChangeWeight` corrections while the existing
+`CreateFaceMotionPacket` assembly fallback remains in the linked object.
 - CreateVertexWeight's return value is unused by its only caller; declared `void`.

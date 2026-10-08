@@ -110,3 +110,20 @@ into a frame buffer), +8 name, +0x38 sceGsTex0 tex0 (TBP0/TBW/PSM/CBP fields use
 The local `divbyzerocheck on`/`reset` pair is redundant with the PS2
 compiler flag. Removing it leaves every section and symbol in this unit's
 object diff unchanged.
+
+## Remaining canonical differences
+
+The focused wrapper build and section fixup check 0x27E0 bytes and 341 relocations.
+`NewTexAnimeData` retains the typed `CList<mgCTexAnimeData>` placement construction.
+Retail saves the allocation result in its retained register before the null branch
+and returns that register after the branch joins. Current MWCC lowering saves it
+inside the successful branch and returns the unsaved null result on failure. The
+record constructor and virtual list initialization calls otherwise correspond.
+Disabling the global optimizer does not change this lowering; a manual compiler
+constructor call is unnecessary for the source semantics and is not a native fix.
+
+The other two canonical failures concern `nowTexData`: its declared 0x34-byte record
+occupies a retail 0x40-byte BSS piece, leaving the run twelve bytes short. The
+`CList` node is already correctly sized at 0x40 and its carried record remains
+0x34; enlarging that record would shift the node's vtable. These baseline failures
+are preserved pending a separate analysis of the global object's trailing storage.

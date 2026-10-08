@@ -562,16 +562,18 @@ float mgDistVectorXZ2(float *a, float *b) { return ((b[0] - a[0]) * (b[0] - a[0]
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgDistVectorXZ2__FPfPf);
 #endif
-#ifdef NONMATCHING
-void mgUnitMatrix(float (*matrix)[4]) {
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            matrix[i][j] = i == j ? 1.0f : 0.0f;
-        }
-    }
+#ifndef PORT
+asm void mgUnitMatrix(float (*matrix)[4]) {
+    .set noreorder
+    vmr32.xyzw vf1, vf0
+    vmr32.xyzw vf2, vf1
+    vmr32.xyzw vf3, vf2
+    sqc2 vf0, 0x30(a0)
+    sqc2 vf1, 0x20(a0)
+    sqc2 vf2, 0x10(a0)
+    jr ra
+    sqc2 vf3, 0x0(a0)
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgUnitMatrix__FPA4_f);
 #endif
 #ifndef PORT
 asm void mgZeroMatrix(float (*matrix)[4]) {

@@ -12,14 +12,14 @@ int         Check_Point_Poly3(float x, float y, float x0, float y0, float x1, fl
 static void MulMatrix3(float (*matrix)[4], float (*second)[4], float (*third)[4]);
 
 // Code (.text)
-#ifdef NONMATCHING
-void mgFotI4(int *out, float *in) {
-    for (int i = 0; i < 4; ++i) {
-        out[i] = static_cast<int>(in[i] * 16.0f);
-    }
+#ifndef PORT
+asm void mgFotI4(int *out, float *in) {
+    .set noreorder
+    lqc2 vf1, 0x0(a1)
+    vftoi4.xyzw vf1, vf1
+    jr ra
+    sqc2 vf1, 0x0(a0)
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgFotI4__FPiPf);
 #endif
 #ifdef NONMATCHING
 void mgCreateBox8(float (*corners)[4], float *max, float *min) {

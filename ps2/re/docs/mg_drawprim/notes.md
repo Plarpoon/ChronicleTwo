@@ -166,9 +166,11 @@ The `libvu0.h` functions `sceVu0FTOI4Vector` and
 inline code or `Vertex`'s mixed per-lane conversion. Scalar C++ casts emit
 scalar conversion instructions, including different rounding and register
 traffic. No existing header supplies an intrinsic for these VU0 operations.
-`Color__11mgCDrawPrimFPf` remains supplied by `INCLUDE_ASM`.
-`Data0(float*)` also
-failed to match as scalar C++. It is now defined in source using the narrow
+`Color(float*)` converts all four lanes with `vftoi0.xyzw`, stores the
+result in an aligned stack array, and passes the integer lanes to
+`Color(int, int, int, int)`. Its 14 instructions and 0x38-byte symbol match
+retail exactly in objdiff (score 0).
+`Data0(float*)` failed to match as scalar C++. It is now defined in source using the narrow
 VU instruction exception: MWCC emits the exact retail `lqc2 vf1`,
 `vftoi0.xyzw vf1`, and `sqc2 vf1` sequence after incrementing `write`.
 Objdiff scores `Data0` at 100% instruction match (score 0); its seven instructions

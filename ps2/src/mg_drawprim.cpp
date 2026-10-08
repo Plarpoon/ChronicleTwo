@@ -331,7 +331,18 @@ void mgCDrawPrim::Color(int r, int g, int b, int a) {
 }
 
 #pragma global_optimizer off
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_drawprim", Color__11mgCDrawPrimFPf);
+#ifndef PORT
+void mgCDrawPrim::Color(float *color) {
+    int converted[4] __attribute__((aligned(16)));
+    int *result = converted;
+    asm {
+        lqc2 vf10, 0(color)
+        vftoi0.xyzw vf10, vf10
+        sqc2 vf10, 0(result)
+    }
+    Color(converted[0], converted[1], converted[2], converted[3]);
+}
+#endif
 #pragma global_optimizer reset
 
 void mgCDrawPrim::TextureCrd4(int u, int v) {

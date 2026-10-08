@@ -130,6 +130,17 @@ definitions. Keep member functions and constructors in C++ form so the compiler
 emits those symbols. A local `divbyzerocheck` pragma needs demonstrated code
 generation evidence because that option is enabled by the shared flags.
 
+Retail compiler-derived copy assignments have processor-specific symbol binding
+13, unlike user-written assignments with global binding. Their outline decision
+depends on inline depth: scoped `inline_depth(0)` makes the implicit
+`CMapLightingInfo` assignment appear at the retail address and matches its
+callers, while default depth inlines it. The same depth outlines the implicit
+`sceGsTex0` and `mgCVisualMDT` assignments, but changes their callers or nested
+base/constructor calls; those units still need exact source and type work.
+`dont_inline` does not outline the implicit TEX0 assignment in the tested
+compiler. Do not hand-write these generated assignments or compensate with
+function-specific compiler hooks.
+
 Compare complete objects as well as individual functions: emitted inline
 helpers, static initializers and data sizes can change the containing unit.
 The PAL executable verifier checks the final linked layout afterward.

@@ -79,6 +79,12 @@ bytes and again omitted the assignment symbol. These are compiler scheduling
 observations, not accepted source forms; `Copy` and the derived assignment
 remain to be promoted together.
 
+A further private typed `Copy` trial kept the existing explicit assignment
+definition to isolate the caller. MWCC emitted 0x1A0 bytes instead of retail's
+0x190; the first instruction difference is at 0x141294, and the later `Alloc`
+and placement-array-new calls move with the extra code. It cannot be promoted
+independently of the compiler-derived assignment cleanup.
+
 ## Vtables
 `__vt__12mgCVisualMDT` (0x37B400, 0x48): base slots +0x08..+0x30 (Iam, GetMaterialNum, GetpMaterial,
 GetMaterial, Copy(base), CreateBBox, CreateRenderInfoPacket, CreatePacket(mem,mem)(base),

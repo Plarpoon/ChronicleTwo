@@ -573,16 +573,16 @@ void mgUnitMatrix(float (*matrix)[4]) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgUnitMatrix__FPA4_f);
 #endif
-#ifdef NONMATCHING
-void mgZeroMatrix(float (*matrix)[4]) {
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            matrix[i][j] = 0.0f;
-        }
-    }
+#ifndef PORT
+asm void mgZeroMatrix(float (*matrix)[4]) {
+    .set noreorder
+    vsub.xyzw vf1, vf1, vf1
+    sqc2 vf1, 0x30(a0)
+    sqc2 vf1, 0x20(a0)
+    sqc2 vf1, 0x10(a0)
+    jr ra
+    sqc2 vf1, 0x0(a0)
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgZeroMatrix__FPA4_f);
 #endif
 /**
  *

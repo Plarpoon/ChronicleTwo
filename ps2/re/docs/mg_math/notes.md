@@ -43,6 +43,8 @@ helpers in `chronicle/ps2/include/mathutil.hpp` / `src/mathutil.cpp` (`VectorMax
   their corresponding components, and `sqc2` writes the result to the first.
 - mgSubVector: `lqc2` loads both four-component vectors, `vsub.xyzw` subtracts
   the second from the first, and `sqc2` writes the result to the first.
+- mgZeroMatrix: `vsub.xyzw` clears all lanes of `vf1`, then four `sqc2` stores
+  write the rows of the matrix, with row zero in the return delay slot.
 - mgCreateBox8(out[8], max, min): out[0]=min, out[7]=max, others mixed via vaddx.x/.y/.z with vf0.
 - mgDistVector*/XZ: vmul then vmr32 sums; non-squared ones use vsqrt + vwaitq, result via
   `cfc2 vi22` (Q). XZ sums x and z only. Squared ones via qmfc2.
@@ -167,7 +169,8 @@ scalar or integer C++ store does not express.
 four-lane `vftoi4.xyzw` conversion. `mgAddVector` uses the VU-only exception for
 its four-lane `vadd.xyzw`.
 `mgSubVector` uses the VU-only exception for its four-lane `vsub.xyzw`.
-The other shortest remaining gaps (`mgUnitMatrix`, `mgZeroMatrix`) use
+`mgZeroMatrix` uses the VU-only exception for its quadword stores. The other
+shortest remaining gap (`mgUnitMatrix`) uses
 VU0 arithmetic or `sqc2` in retail.
 
 The VU0 vector and matrix routines in this unit retain their guarded C++ drafts

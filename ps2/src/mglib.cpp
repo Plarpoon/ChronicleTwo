@@ -1,3 +1,4 @@
+#define MGLIB_IMPLICIT_TEX0_ASSIGNMENT
 #include "common.h"
 #include "mw_runtime.h"
 
@@ -1155,13 +1156,9 @@ void mgSetPkFrameBuffer(int fbp, int width, int height, int psm) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgSetPkFrameBuffer__Fiiii);
 #endif
-#ifdef NONMATCHING
 void mgGetFrameBuffer(mgCTexture *texture) {
     *texture = frame_tex;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgGetFrameBuffer__FP10mgCTexture);
-#endif
 
 #ifdef NONMATCHING
 void mgGetFrameBackBuffer(mgCTexture *texture) {

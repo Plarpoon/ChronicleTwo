@@ -5,6 +5,17 @@ array. Naming its two elements `disp1` and `disp0` prevented the whole-unit
 draft compiler from running; using `disp[1]` and `disp[0]` restores that
 diagnostic build without changing the matching game build.
 
+`mgGetFrameBuffer` now uses the native `mgCTexture` assignment and matches all 0xF8 retail
+bytes in objdiff. The matching mglib object has 0x4DB8 bytes and 1047 resolved relocations;
+`mg_texture` remains exact at 0x3674 bytes and 160 relocations. The linked build retains only
+the pre-existing 0x26-byte `nd_meswin` mismatch. The narrow
+`MGLIB_IMPLICIT_TEX0_ASSIGNMENT` header switch omits the custom SDK assignment operator
+declaration while compiling mglib, allowing MWCC to emit its retail implicit member copy.
+`mg_texture` keeps the custom operator needed by `ReloadTexture`. This gives the two translation
+units different member declarations for `sceGsTex0`; the layout and generated runtime behavior
+are the same, but the declaration difference is a C++ ODR concern if these are ever combined
+under link-time optimization. `mgGetFrameBackBuffer` still uses retail assembly.
+
 The global draw environment, texture manager, draw manager, two packet stacks, two data stacks,
 frame texture and two fixed-Z textures are native C++ objects. Their declaration order reproduces
 the compiler-generated `__sinit_mglib_cpp` call sequence, which matches the 200-byte retail

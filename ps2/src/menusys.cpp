@@ -102,8 +102,6 @@ enum TuneBuildUpStep {
  *
  */
 enum BuildUpTuning {
-    kStatWord = 11,
-    kSpareWord = 22,
     kPointsPerStep = 100,
     kStatMax = 100
 };
@@ -2639,8 +2637,40 @@ int MenuItemBrdKey(int keys, int *cursor, int *scroll, int board) {
     return result;
 }
 
-extern s8 ret_tbl1_2511[2];
+/**
+ *
+ * Identifies the result of exchanging items between menu slots.
+ *
+ */
+enum MENU_SWAP_RESULT {
+    MENU_SWAP_RESULT_FAILED = 0,               /**< The requested exchange cannot run. */
+    MENU_SWAP_RESULT_NORMAL = 1,               /**< The exchange uses the ordinary completion path. */
+    MENU_SWAP_RESULT_DESTINATION_OCCUPIED = 2, /**< The general exchange starts with an occupied destination. */
+    MENU_SWAP_RESULT_DESTINATION_EMPTY = 3,    /**< The general exchange places an item in an empty destination. */
+    MENU_SWAP_RESULT_GIFT_BOX = 4,             /**< The destination handles gift-box insertion. */
+    MENU_SWAP_RESULT_STACK = 5,                /**< Matching stackable items handle the exchange. */
+    MENU_SWAP_RESULT_AQUARIUM = 7,             /**< The aquarium handles the source fish. */
+};
+
+/**
+ *
+ * Selects the general exchange result from the source slot's original item presence.
+ *
+ */
+s8 ret_tbl1_2511[2] = {MENU_SWAP_RESULT_NORMAL, MENU_SWAP_RESULT_DESTINATION_EMPTY};
+
+/**
+ *
+ * Supplies the initial result entries for an empty or occupied destination slot.
+ *
+ */
+s8 at_2512[2] = {MENU_SWAP_RESULT_FAILED, MENU_SWAP_RESULT_DESTINATION_OCCUPIED};
 #ifdef NONMATCHING
+/**
+ *
+ * Exchanges menu items through gift-box, bait, stacking and aquarium handling.
+ *
+ */
 int MenuDataSwap(CGameDataUsed *destination, CGameDataUsed *source, int quantity) {
     int          dst_type;
     int          dst_no;
@@ -2651,10 +2681,11 @@ int MenuDataSwap(CGameDataUsed *destination, CGameDataUsed *source, int quantity
     int          src_no;
     int          result;
     int          dst_used;
+    s8           results[2];
     if (destination == NULL || source == NULL) {
-        return 0;
+        return MENU_SWAP_RESULT_FAILED;
     }
-    result = 1;
+    result = MENU_SWAP_RESULT_NORMAL;
     dst_no = destination->item_no;
     src_no = source->item_no;
     dst_type = GetItemDataType(dst_no);
@@ -2667,17 +2698,17 @@ int MenuDataSwap(CGameDataUsed *destination, CGameDataUsed *source, int quantity
         if (destination->SetGiftBoxItem(src_no, -1) >= 0) {
             source->DeleteNum(1);
         }
-        result = 4;
+        result = MENU_SWAP_RESULT_GIFT_BOX;
     } else if (dst_type == 0x1D && src_used == USED_ITEM_TYPE_FISH) {
         MenuUserDataManPtr->FishInAquarium(source, 0);
-        result = 7;
+        result = MENU_SWAP_RESULT_AQUARIUM;
     } else if (destination == MenuUserDataManPtr->GetActiveEsa()) {
-        result = 1;
+        result = MENU_SWAP_RESULT_NORMAL;
         if (destination->GetNum() <= 0) {
             destination->CopyDataItem(src_no);
             source->DeleteNum(1);
         } else if (source->CopyDataItem(destination) == 0) {
-            result = 0;
+            result = MENU_SWAP_RESULT_FAILED;
         }
     } else if (destination->CheckTypeEnableStack() && destination->GetNum() > 1 && src_used == 0) {
         memcpy(source, destination, sizeof(CGameDataUsed));
@@ -2695,7 +2726,7 @@ int MenuDataSwap(CGameDataUsed *destination, CGameDataUsed *source, int quantity
             destination->AddNum(add, 1);
             source->AddNum(-add, 1);
         }
-        result = 5;
+        result = MENU_SWAP_RESULT_STACK;
     } else {
         int had_src = 0;
         int had_dst = 0;
@@ -2706,7 +2737,8 @@ int MenuDataSwap(CGameDataUsed *destination, CGameDataUsed *source, int quantity
         if (src_no > 0) {
             had_src = 1;
         }
-        s8 results[2] = {ret_tbl1_2511[had_src], 2};
+        results[0] = ret_tbl1_2511[had_src];
+        results[1] = MENU_SWAP_RESULT_DESTINATION_OCCUPIED;
         result = results[had_dst];
     }
     CheckEnableHaveItemNum();
@@ -5689,15 +5721,6 @@ int CMenuItemInfo::ItemCmdAfter(int cmd_ret, ITEMCMD_RET_PARA *ret) {
 }
 
 
-/**
- *
- * Constructs an action character in the menu memory stack.
- *
- */
-static inline CActionChara *NewMenuActionChara(mgCMemory *stack) {
-    return new ((u_long128 *) stack->Alloc(0x105)) CActionChara;
-}
-
 extern int  Effect_Counter_4682;
 extern s8   init_4683;
 extern u8   BuildEndFlag_4703;
@@ -5710,6 +5733,7 @@ extern char at_4955[];
 extern char at_4956[];
 extern char at_4957[];
 #ifdef NONMATCHING
+#pragma inline_depth(8)
 int CMenuItemInfo::IsAskExtend(int select_key, int push_button) {
     mgCMemory         *load_stack = &MenuCharaLoadStack;
     mgCMemory          work;
@@ -5870,7 +5894,7 @@ int CMenuItemInfo::IsAskExtend(int select_key, int push_button) {
                         load_stack->Align64();
                         int rest = load_stack->stGetRest();
                         work.stSetBuffer(load_stack->stGetTop(), rest);
-                        build_up_chara = NewMenuActionChara(&work);
+                        build_up_chara = new (work.Alloc(0x105)) CActionChara;
                         build_up_chara->Initialize(NULL);
                         build_up_chara->LoadPack((u_int *) model_file->buffer, at_4954, &work, &work, &work, tex_block[2], NULL);
                         build_up_chara->SetScale(1.5f, 1.5f, 1.5f);
@@ -5961,6 +5985,7 @@ int CMenuItemInfo::IsAskExtend(int select_key, int push_button) {
     }
     return 0;
 }
+#pragma inline_depth reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", IsAskExtend__13CMenuItemInfoFii);
 #endif
@@ -6320,6 +6345,7 @@ void CMenuItemInfo::AttachFormInfo() {
 }
 
 #ifdef NONMATCHING
+#pragma inline_depth(8)
 void CMenuItemInfo::MenuModeMalloc(mgCMemory *stack) {
     int             i;
     CMenuMoveItem  *move_item;
@@ -6331,7 +6357,7 @@ void CMenuItemInfo::MenuModeMalloc(mgCMemory *stack) {
                                 free_blocks);
 
     for (i = 0; i < 7; i++) {
-        MenuActionChara[i] = NewMenuActionChara(&MenuItemMemory2);
+        MenuActionChara[i] = new (MenuItemMemory2.Alloc(0x105)) CActionChara;
         MenuActionChara[i]->Initialize(NULL);
     }
 
@@ -6341,7 +6367,7 @@ void CMenuItemInfo::MenuModeMalloc(mgCMemory *stack) {
 
     MenuMoveItemPtr = move_item;
     MenuMoveItemPtr->AttachForm();
-    SpectolFrame = NewMenuActionChara(&MenuItemMemory2);
+    SpectolFrame = new (MenuItemMemory2.Alloc(0x105)) CActionChara;
 
     if ((effect = (CMenuEffect *) operator new(0x38, MenuItemMemory2.Alloc(6))) != NULL) {
         effect->Initialize();
@@ -6366,6 +6392,7 @@ void CMenuItemInfo::MenuModeMalloc(mgCMemory *stack) {
     MenuItemMemory.stSetBuffer(
         (MenuItemMemory2.stack + MenuItemMemory2.stack_used), free_blocks);
 }
+#pragma inline_depth reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuModeMalloc__13CMenuItemInfoFP9mgCMemory);
 #endif
@@ -7955,7 +7982,6 @@ void MenuItemDebugDraw(void) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuItemDebugDraw__Fv);
 #endif
 
-#ifdef NONMATCHING
 int CMenuItemInfo::PushKey(int pad, int trigger) {
     int               leaving = 0;
     CHARA_DATA       *chara;
@@ -7969,18 +7995,9 @@ int CMenuItemInfo::PushKey(int pad, int trigger) {
     int               fusion_target;
     CMenuPosDataForm *message_form;
 
-    union {
-        CGameDataUsed saved_item;
-    };
-
-    char               path[0x40];
-    char               full_path[0x60];
     MENU_SWAPITEM_INFO swap;
     int                equip_slot;
     int                robo_equip_slot;
-    char              *item_name;
-    int                file_size;
-    int                fusion_file_size;
 
     if (MenuCommonInfo->key_enable == 0) {
         return 0;
@@ -8170,7 +8187,7 @@ int CMenuItemInfo::PushKey(int pad, int trigger) {
                     break;
                 case 7: {
                     signed char robo_slot = MenuRoboEquipTable[cursor];
-                    target = &MenuUserParam.robo->parts[0] + robo_slot;
+                    target = &MenuUserParam.robo->parts[robo_slot];
                     swap.Set(kAreaRobo, robo_slot, 2, 0);
                     area = kAreaRobo;
 
@@ -8345,7 +8362,7 @@ int CMenuItemInfo::PushKey(int pad, int trigger) {
                     break;
                 case kCmdSortBag: {
                     int found = 0;
-                    new ((u_long128 *) &saved_item) CGameDataUsed;
+                    CGameDataUsed saved_item;
                     short view_mode = this->view_mode;
 
                     if ((view_mode == 2 || view_mode == 5) &&
@@ -8513,10 +8530,10 @@ int CMenuItemInfo::PushKey(int pad, int trigger) {
                             if (over_item_no != 0) {
                                 msg->MakeMsg(0x99);
 
-                                *(float *) &item_name = at_7021;
-                                item_name = GetItemMessage(over_item_no);
+                                char *item_name[1] = {NULL};
+                                item_name[0] = GetItemMessage(over_item_no);
                                 CDataCommon *data = GetCommonItemData(over_item_no);
-                                msg->SetMsgItemNo(&item_name, 1);
+                                msg->SetMsgItemNo(item_name, 1);
                                 msg->SetMsgVolumeNoOne(data->max_num);
                             }
 
@@ -8567,9 +8584,12 @@ int CMenuItemInfo::PushKey(int pad, int trigger) {
                     int model_no = (*chr_ptr)->equip[0].GetModelNo();
 
                     if (this->equipped_model_no != model_no) {
+                        char path[0x40];
+                        char full_path[0x60];
+                        int file_size;
                         SetMenuEtcFlag(1);
                         MainCharaReadStackReadAdr =
-                            (u8 *) (MainCharaReadStack.stack + MainCharaReadStack.stack_used);
+                            (u8 *) MainCharaReadStack.stGetTop();
                         GetMainCharaModelName(chara_no, path, 0);
                         MainCharaReadBuffer.model = (u_int *) MainCharaReadStackReadAdr;
                         sprintf(full_path, at_7342, path);
@@ -8578,7 +8598,7 @@ int CMenuItemInfo::PushKey(int pad, int trigger) {
                         MainCharaReadStack.Alloc(blocks);
                         MainCharaReadStack.Align64();
                         MainCharaReadBuffer.skin =
-                            (u_int *) (MainCharaReadStack.stack + MainCharaReadStack.stack_used);
+                            (u_int *) MainCharaReadStack.stGetTop();
 
                         char *file = (*chr_ptr)->equip[4].GetDataPath();
 
@@ -8590,7 +8610,7 @@ int CMenuItemInfo::PushKey(int pad, int trigger) {
 
                         MainCharaReadStack.Align64();
                         MainCharaReadBuffer.outline =
-                            (u_int *) (MainCharaReadStack.stack + MainCharaReadStack.stack_used);
+                            (u_int *) MainCharaReadStack.stGetTop();
                         file = (*chr_ptr)->equip[3].GetDataPath();
 
                         if (file != NULL) {
@@ -8662,32 +8682,30 @@ int CMenuItemInfo::PushKey(int pad, int trigger) {
                     }
 
                     CGameDataUsed *item = this->view_weapon;
-                    short         *saved_words = (short *) &SpectolInfoStay.data.weapon.whp;
-                    short         *words = (short *) &item->data.weapon.whp;
-                    int            spare_points = item->data.weapon.fusion_point / kPointsPerStep;
+                    WEAPON_USED   *saved_weapon = &SpectolInfoStay.data.weapon;
+                    WEAPON_USED   *weapon = &item->data.weapon;
+                    int            spare_points = weapon->fusion_point / kPointsPerStep;
                     int            selected = MenuCommonInfo->select_pos[0];
-                    short         *entry = (short *) ((selected << 1) + (int) words);
-                    short         *stat_slot = &entry[kStatWord];
-                    short          value = entry[kStatWord];
+                    short          value = weapon->attribute[selected];
 
-                    if (0 < value - saved_words[selected + kStatWord]) {
+                    if (0 < value - saved_weapon->attribute[selected]) {
                         if (0 < value) {
                             if (pad & kPadLeft) {
-                                *stat_slot = value - 1;
-                                words[kSpareWord] += kPointsPerStep;
+                                weapon->attribute[selected] = value - 1;
+                                weapon->fusion_point += kPointsPerStep;
                                 MenuSePlay(0);
                             }
                         }
                     }
 
                     if (0 < spare_points) {
-                        if (words[MenuCommonInfo->select_pos[0] + kStatWord] < kStatMax &&
+                        if (weapon->attribute[MenuCommonInfo->select_pos[0]] < kStatMax &&
                             (pad & kPadRight)) {
-                            words[kSpareWord] -= kPointsPerStep;
-                            words[MenuCommonInfo->select_pos[0] + kStatWord] += 1;
+                            weapon->fusion_point -= kPointsPerStep;
+                            weapon->attribute[MenuCommonInfo->select_pos[0]] += 1;
 
-                            if (words[kSpareWord] < 0) {
-                                words[kSpareWord] = 0;
+                            if (weapon->fusion_point < 0) {
+                                weapon->fusion_point = 0;
                             }
 
                             MenuSePlay(0);
@@ -8699,8 +8717,7 @@ int CMenuItemInfo::PushKey(int pad, int trigger) {
                         int i = 0;
 
                         do {
-                            if (SpectolInfoStay.data.weapon.attribute[i] <
-                                item->data.weapon.attribute[i]) {
+                            if (saved_weapon->attribute[i] < weapon->attribute[i]) {
                                 changed = 1;
                             }
 
@@ -8790,7 +8807,7 @@ int CMenuItemInfo::PushKey(int pad, int trigger) {
                             }
                         }
 
-                        (&MenuCommonInfo->cursor)[1] = MenuItem_ItemBoardTopLine;
+                        MenuCommonInfo->top_line = MenuItem_ItemBoardTopLine;
                         MenuItem_ItemBoardTopSelect = index;
                         MenuCommonInfo->select_pos[0] = (short) index;
                     }
@@ -8830,9 +8847,8 @@ int CMenuItemInfo::PushKey(int pad, int trigger) {
                         load_stack->Alloc(0x100);
                         MenuCommonInfo->FadeOutMenuBGMVol(-6, 0x18);
                         StartReadBG();
-                        LoadFileBG(at_7347,
-                                   (load_stack->stack + load_stack->stack_used),
-                                   &fusion_file_size);
+                        int fusion_file_size;
+                        LoadFileBG(at_7347, load_stack->stGetTop(), &fusion_file_size);
                         unsigned int blocks = QuadwordsFor(fusion_file_size);
                         load_stack->Alloc(blocks);
                         SpectolFusionTargetChara = NULL;
@@ -8994,9 +9010,7 @@ int CMenuItemInfo::PushKey(int pad, int trigger) {
 done:
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", PushKey__13CMenuItemInfoFii);
-#endif
+
 
 /**
  *
@@ -9406,7 +9420,7 @@ extern s8    backboard_x_repeat_drawnum_7628[5];
 extern s8    backboard_y_repeat_drawnum_7629[3];
 extern s16   mos_repeat_table_x_7694[5];
 extern char *strtbl_7727[7];
-#ifdef NONMATCHING
+
 void MenuWeaponBuildUpDraw(int &tex_block) {
     if (BuildUpWeaponInfo.mode == 0) {
         return;
@@ -9625,9 +9639,7 @@ void MenuWeaponBuildUpDraw(int &tex_block) {
         mes->DrawMsg();
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menusys", MenuWeaponBuildUpDraw__FRi);
-#endif
+
 extern s8 count_7867;
 extern s8 init_7868;
 
@@ -11515,29 +11527,51 @@ void CItemSelect::Draw() {
 extern char at_9215[];
 extern char at_9216[];
 #ifdef NONMATCHING
+/**
+ *
+ * Creates the inventory choice with its screen rectangles and available items.
+ *
+ */
+inline CItemSelect::CItemSelect() {
+    alpha_step = 0;
+    alpha = 0;
+    bg_alpha = 0;
+    item_num = 0;
+    cursor_y = 0.0f;
+    cursor_x = 0.0f;
+    scroll = 0.0f;
+    texture = NULL;
+    list_rect.Set(120.0f, (float) (mgScreenHeight - 0x10A), 0.0f, 200.0f);
+    item_rect.Set(20.0f + list_rect.left, 370.0f + list_rect.top, 44.0f, 55.0f);
+    top_line = 0;
+    cursor = 0;
+    line_num = 1.0f;
+    CheckEnableHaveItemNum();
+    SetPtrList();
+}
+
 void MenuItemSelectInit(mgCMemory *stack, int *tex_block, int mode) {
     MenuItemMainMemory.stSetBuffer(stack->stGetTop(), stack->stGetRest());
     ItemSelectPtr = new (MenuItemMainMemory.Alloc(0x47)) CItemSelect;
-    ItemSelectPtr->list_rect.Set(120.0f, (float) (mgScreenHeight - 0x10A), 0.0f, 200.0f);
-    ItemSelectPtr->item_rect.Set(20.0f + ItemSelectPtr->list_rect.left,
-                                 370.0f + ItemSelectPtr->list_rect.top, 44.0f, 55.0f);
-    CheckEnableHaveItemNum();
-    ItemSelectPtr->SetPtrList();
     ItemSelectPtr->SetTexBlock(tex_block);
-    MenuItemSelectMode = (mode == 0x16);
+    MenuItemSelectMode = 0;
+    if (mode == 0x16) {
+        MenuItemSelectMode = 1;
+    }
     MenuBGTextureBlock = ItemSelectPtr->tex_block[0];
     MenuCapture(MenuBGTextureBlock, &MenuItemMainMemory, 1);
     MenuPosData->AttachCommonTexInfo();
     MenuItemMainMemory.Align64();
     StartReadBG();
 
-    int size = 0;
+    int size;
     if (mode == 9) {
         size = LoadFileMenu(at_9215, MenuItemMainMemory.stGetTop(), 0);
-    } else if (mode == 0x16) {
+    }
+    if (mode == 0x16) {
         size = LoadFileMenu(at_9216, MenuItemMainMemory.stGetTop(), 0);
     }
-    MenuItemMainMemory.Alloc((size + 15) >> 4);
+    MenuItemMainMemory.Alloc(QuadwordsFor(size));
     MenuDCMsg[0]->MsgPreset(2);
     MenuDCMsg[0]->fuchi = 5;
     MenuDCMsg[0]->MakeMsg(0);
@@ -11929,8 +11963,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menusys", trans_spectol_pos__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menusys", trans_spectol_posold__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menusys", trans_spectol_rgb__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menusys", SpectolFramePosValue__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menusys", ret_tbl1_2511__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menusys", at_2512__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menusys", menu_camera_reference_id__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menusys", menu_camera_reference_no__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menusys", tbl_4094__DATA);

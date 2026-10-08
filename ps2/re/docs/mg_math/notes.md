@@ -39,6 +39,8 @@ helpers in `chronicle/ps2/include/mathutil.hpp` / `src/mathutil.cpp` (`VectorMax
 - mgZeroVector: `sq $zero` (all four zero). mgZeroVectorW: `sqc2 vf0` -> (0,0,0,1).
 - mgFotI4: `lqc2` loads four floats, `vftoi4.xyzw` converts each lane to a signed
   integer after multiplying by 16, and `sqc2` stores all four results.
+- mgAddVector: `lqc2` loads both four-component vectors, `vadd.xyzw` adds
+  their corresponding components, and `sqc2` writes the result to the first.
 - mgCreateBox8(out[8], max, min): out[0]=min, out[7]=max, others mixed via vaddx.x/.y/.z with vf0.
 - mgDistVector*/XZ: vmul then vmr32 sums; non-squared ones use vsqrt + vwaitq, result via
   `cfc2 vi22` (Q). XZ sums x and z only. Squared ones via qmfc2.
@@ -158,11 +160,11 @@ address. MWCC emits retail's `jr ra` with `sq zero,0(a0)` in the delay slot;
 the isolated linked image matches. The reinterpretation is needed to request
 one PS2 quadword store from C++. `mgZeroVectorW` uses the VU-only inline
 assembly exception: retail stores VU0 constant `vf0` with `sqc2`, which a
-scalar or integer C++ store does not express. Its PC stub writes (0, 0, 0, 1).
+scalar or integer C++ store does not express.
 `mgFotI4` also uses the VU-only exception because C++ cannot express the
-four-lane `vftoi4.xyzw` conversion; its PC stub performs the equivalent
-component conversions. The other shortest remaining gaps (`mgAddVector`,
-`mgSubVector`, `mgUnitMatrix`, `mgZeroMatrix`) likewise use
+four-lane `vftoi4.xyzw` conversion. `mgAddVector` uses the VU-only exception for
+its four-lane `vadd.xyzw`.
+The other shortest remaining gaps (`mgSubVector`, `mgUnitMatrix`, `mgZeroMatrix`) use
 VU0 arithmetic or `sqc2` in retail.
 
 The VU0 vector and matrix routines in this unit retain their guarded C++ drafts

@@ -125,14 +125,15 @@ int mgClipInBoxW(float *max0, float *min0, float *max1, float *min1) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgClipInBoxW__FPfPfPfPf);
 #endif
-#ifdef NONMATCHING
-void mgAddVector(float *vector, float *add) {
-    for (int i = 0; i < 4; ++i) {
-        vector[i] += add[i];
-    }
+#ifndef PORT
+asm void mgAddVector(float *vector, float *add) {
+    .set noreorder
+    lqc2 vf15, 0x0(a0)
+    lqc2 vf16, 0x0(a1)
+    vadd.xyzw vf15, vf15, vf16
+    jr ra
+    sqc2 vf15, 0x0(a0)
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgAddVector__FPfPf);
 #endif
 #ifdef NONMATCHING
 void mgSubVector(float *vector, float *sub) {

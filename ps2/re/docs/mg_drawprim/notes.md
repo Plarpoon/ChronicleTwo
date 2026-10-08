@@ -172,13 +172,13 @@ They remain undecompiled. `Data0(float*)` also
 failed to match as scalar C++. It is now defined in source using the narrow
 VU instruction exception: MWCC emits the exact retail `lqc2 vf1`,
 `vftoi0.xyzw vf1`, and `sqc2 vf1` sequence after incrementing `write`.
-The corresponding PC stub converts each lane to an integer in
-`port/src/stubs/mg_drawprim.cpp`. Objdiff scores `Data0` at 100% instruction
-match (score 0); its seven instructions and 0x1c-byte symbol size equal retail.
+Objdiff scores `Data0` at 100% instruction match (score 0); its seven instructions
+and 0x1c-byte symbol size equal retail.
 `Data4(float*)` uses the same cursor update and VU transfer instructions, with
 `vftoi4.xyzw` scaling all lanes to 12.4 fixed point. Objdiff scores it at
 100% instruction match (score 0), with seven identical instructions and a
-0x1c-byte symbol. Its PC stub scales and converts each lane separately.
+0x1c-byte symbol.
+
 ## Compiler flag cleanup
 
 The local `divbyzerocheck on`/`reset` pair is redundant with the PS2

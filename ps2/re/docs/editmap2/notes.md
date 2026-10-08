@@ -39,8 +39,7 @@ a call introduces an ABI boundary and cannot reproduce this inline body.
 Scalar C++ likewise emits scalar FPU instructions instead of the required
 COP2 opcodes. The function now uses the narrow inline VU0 exception. The
 MWCC body matches all 0x2C retail bytes, and the `editmap2` object passes
-`check_objects.py` with 143 resolved relocations. The PC stub computes the
-horizontal normal with scalar arithmetic.
+`check_objects.py` with 143 resolved relocations.
 
 ## GetEditPartsAlt with placed parts
 

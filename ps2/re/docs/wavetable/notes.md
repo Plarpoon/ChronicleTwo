@@ -1,12 +1,21 @@
 # wavetable: reverse-engineering notes
 
 ## C++ draft status
-All five functions have typed C++ drafts in `ps2/src/wavetable.cpp`. Each draft
-compiles with MWCC. The destructor's isolated object code matches the retail
-function, but promotion cannot link while its vtable is supplied as assembly
-data. The other four drafts differ from retail, so all five retain the
-`INCLUDE_ASM` fallback in the matching build. Each received one promotion
-attempt, recorded in `scripts/re/promotion_attempts.tsv`.
+The constructor, destructor, `CreateTexture`, and `GetEffect` are native C++.
+Only `Effect` retains `INCLUDE_ASM` in the matching build. Its guarded draft
+compiles to the retail 0x510-byte length with `-O3,p`, but 27 instructions
+differ: the compiler assigns the 0.0196f and 1.9216f constants to opposite
+floating registers, propagating the difference through the unrolled wave
+calculation and the final seam loop. The guarded draft also flattens the
+three-dimensional height array through raw float pointers, so it does not
+meet the source-type requirements for promotion.
+
+Private MWCC trials using typed two-dimensional array indexing, typed row
+array pointers, and a typed flat-array union all compile but yield scalar
+inner loops of 0x208 or 0x290 bytes instead of retail's eight-column
+unroll. This shows that the currently close instruction schedule depends on
+the flat pointer expression; an exact, type-safe source form is still needed.
+These private trials changed neither the canonical source nor Satan's Fiddle.
 
 ## CWaveTable (size 0x1208)
 No counterpart in the first game's headers.

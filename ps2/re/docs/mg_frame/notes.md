@@ -202,9 +202,10 @@ this game's `CObject` (object unit) derives from mgCObject.
   0xc4-byte symbol. Both match retail exactly in objdiff (score 0).
 - mgInsideScreen(corners, matrix, max, min): hand-scheduled VU0 block (screen*matrix, transform
   8 corners, divide by |w|, max/min), then tail-calls mgClipBoxW against screen_box_max/min.
-  A guarded scalar/intrinsic C++ draft now computes the same screen bounds and
-  compiles, but it differs from retail's inline VU0 instruction sequence.
-  Draft differs only in how the base register for world_screen_rel is formed.
+  Its inline VU0 source now matches retail exactly: keeping a local pointer to
+  `mgRenderInfo` makes MWCC form `world_screen_rel` from the common base and
+  reuse that base for both clip bounds. Objdiff scores all 121 instructions of
+  the 0x1e4-byte function at 100% (score 0).
 - Promotion: promoting `mgCFrame::mgCFrame` loses `__vt__9mgCObject`; promoting
   `mgCObject::SetPosition(float*)` (first non-inline virtual) makes the compiler emit the inline
   virtuals ChangeParam/UseParam/... out of place. Both stay as drafts. mgFrameNameComp needs
@@ -213,7 +214,7 @@ this game's `CObject` (object unit) derives from mgCObject.
 
 ## Assembly gaps
 
-The four-argument `mgInsideScreen`, `GetLocalMatrix`,
+`GetLocalMatrix`,
 `GetBBoardMatrix`, `GetLWMatrix`, `GetLWMatrixTopBottom`, and `GetDrawRect` retain
 their C++ drafts under `NONMATCHING` and use `INCLUDE_ASM` in the retail build.
 Their promoted forms required VU0 assembly inside C++ source. The surrounding

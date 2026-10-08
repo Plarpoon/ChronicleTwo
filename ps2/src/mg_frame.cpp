@@ -350,39 +350,134 @@ int mgInsideScreen(float (*corners)[4], float (*matrix)[4]) {
 }
 
 #pragma global_optimizer off
-#ifdef NONMATCHING
 int mgInsideScreen(float (*corners)[4], float (*matrix)[4], float *out_max, float *out_min) {
-    sceVu0FMATRIX screen_matrix;
-    sceVu0MulMatrix(screen_matrix, mgRenderInfo.world_screen_rel, matrix);
+    mgRENDER_INFO *render_info = &mgRenderInfo;
+    register float *screen = &render_info->world_screen_rel[0][0];
+    register float *m = &matrix[0][0];
+    register float *in = &corners[0][0];
+    register float *hi = out_max;
+    register float *lo = out_min;
 
-    for (int i = 0; i < 8; i++) {
-        sceVu0FVECTOR transformed;
-        sceVu0ApplyMatrix(transformed, screen_matrix, corners[i]);
-        float depth = transformed[3];
-        if (depth < 0.0f) {
-            depth = -depth;
-        }
-        transformed[0] /= depth;
-        transformed[1] /= depth;
-        if (i == 0) {
-            sceVu0CopyVector(out_max, transformed);
-            sceVu0CopyVector(out_min, transformed);
-        } else {
-            for (int axis = 0; axis < 4; axis++) {
-                if (out_max[axis] < transformed[axis]) {
-                    out_max[axis] = transformed[axis];
-                }
-                if (out_min[axis] > transformed[axis]) {
-                    out_min[axis] = transformed[axis];
-                }
-            }
-        }
+    // Each corner goes through the screen transform and is divided through by the magnitude
+    // of its w, with each division overlapped with the next corner's transform.
+    asm {
+        lqc2    vf11, 0(screen)
+        lqc2    vf12, 16(screen)
+        lqc2    vf13, 32(screen)
+        lqc2    vf14, 48(screen)
+        lqc2    vf5, 0(m)
+        lqc2    vf6, 16(m)
+        lqc2    vf7, 32(m)
+        lqc2    vf8, 48(m)
+        vmulax  ACC, vf11, vf5
+        vmadday ACC, vf12, vf5
+        vmaddaz ACC, vf13, vf5
+        vmaddw  vf1, vf14, vf5
+        vmulax  ACC, vf11, vf6
+        vmadday ACC, vf12, vf6
+        vmaddaz ACC, vf13, vf6
+        vmaddw  vf2, vf14, vf6
+        vmulax  ACC, vf11, vf7
+        vmadday ACC, vf12, vf7
+        vmaddaz ACC, vf13, vf7
+        vmaddw  vf3, vf14, vf7
+        vmulax  ACC, vf11, vf8
+        vmadday ACC, vf12, vf8
+        vmaddaz ACC, vf13, vf8
+        vmaddw  vf4, vf14, vf8
+        lqc2    vf10, 0(in)
+        lqc2    vf11, 16(in)
+        lqc2    vf12, 32(in)
+        lqc2    vf13, 48(in)
+        lqc2    vf14, 64(in)
+        lqc2    vf15, 80(in)
+        lqc2    vf16, 96(in)
+        lqc2    vf17, 112(in)
+        vmulax  ACC, vf1, vf10
+        vmadday ACC, vf2, vf10
+        vmaddaz ACC, vf3, vf10
+        vmaddw  vf10, vf4, vf10
+        vmulax  ACC, vf1, vf11
+        vmadday ACC, vf2, vf11
+        vmaddaz ACC, vf3, vf11
+        vabs.w  vf20, vf10
+        vmaddw  vf11, vf4, vf11
+        vdiv    Q, vf0w, vf20w
+        vabs.w  vf21, vf11
+        vwaitq
+        vmulq.xy vf10, vf10, Q
+        vdiv    Q, vf0w, vf21w
+        vmulax  ACC, vf1, vf12
+        vmadday ACC, vf2, vf12
+        vmaddaz ACC, vf3, vf12
+        vmaddw  vf12, vf4, vf12
+        vmulax  ACC, vf1, vf13
+        vwaitq
+        vmulq.xy vf11, vf11, Q
+        vabs.w  vf22, vf12
+        vmadday ACC, vf2, vf13
+        vmaddaz ACC, vf3, vf13
+        vmaddw  vf13, vf4, vf13
+        vdiv    Q, vf0w, vf22w
+        vmulax  ACC, vf1, vf14
+        vmadday ACC, vf2, vf14
+        vabs.w  vf23, vf13
+        vmaddaz ACC, vf3, vf14
+        vmaddw  vf14, vf4, vf14
+        vmax    vf30, vf10, vf11
+        vmini   vf31, vf10, vf11
+        vmulq.xy vf12, vf12, Q
+        vdiv    Q, vf0w, vf23w
+        vabs.w  vf24, vf14
+        vmulax  ACC, vf1, vf15
+        vmadday ACC, vf2, vf15
+        vmaddaz ACC, vf3, vf15
+        vmaddw  vf15, vf4, vf15
+        vmax    vf30, vf30, vf12
+        vmini   vf31, vf31, vf12
+        vmulq.xy vf13, vf13, Q
+        vdiv    Q, vf0w, vf24w
+        vabs.w  vf25, vf15
+        vmulax  ACC, vf1, vf16
+        vmadday ACC, vf2, vf16
+        vmaddaz ACC, vf3, vf16
+        vmaddw  vf16, vf4, vf16
+        vmax    vf30, vf30, vf13
+        vmini   vf31, vf31, vf13
+        vmulq.xy vf14, vf14, Q
+        vdiv    Q, vf0w, vf25w
+        vabs.w  vf26, vf16
+        vmulax  ACC, vf1, vf17
+        vmadday ACC, vf2, vf17
+        vmaddaz ACC, vf3, vf17
+        vmaddw  vf17, vf4, vf17
+        vmax    vf30, vf30, vf14
+        vmini   vf31, vf31, vf14
+        vmulq.xy vf15, vf15, Q
+        vdiv    Q, vf0w, vf26w
+        vabs.w  vf27, vf17
+        vnop
+        vmax    vf30, vf30, vf15
+        vmini   vf31, vf31, vf15
+        vnop
+        vwaitq
+        vmulq.xy vf16, vf16, Q
+        vdiv    Q, vf0w, vf27w
+        vnop
+        vmax    vf30, vf30, vf16
+        vmini   vf31, vf31, vf16
+        vnop
+        vnop
+        vwaitq
+        vmulq.xy vf17, vf17, Q
+        vmax    vf30, vf30, vf17
+        vmini   vf31, vf31, vf17
+        sqc2    vf30, 0(hi)
+        sqc2    vf31, 0(lo)
     }
-    return mgClipBoxW(out_max, out_min, mgRenderInfo.screen_box_max, mgRenderInfo.screen_box_min);
+
+    return mgClipBoxW(out_max, out_min, render_info->screen_box_max, render_info->screen_box_min);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", mgInsideScreen__FPA4_fPA4_fPfPf);
-#endif
 #pragma global_optimizer reset
 
 void mgCObject::SetPosition(float *position) {

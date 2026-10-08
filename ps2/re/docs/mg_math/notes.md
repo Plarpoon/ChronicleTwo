@@ -78,6 +78,9 @@ helpers in `chronicle/ps2/include/mathutil.hpp` / `src/mathutil.cpp` (`VectorMax
   the VU Q register. After `vwaitq`, `cfc2 vi22` and `mtc1` return its value.
 - mgDistVectorXZ(vector): squares x/y/z but rotates z² into the x lane and
   adds only x²+z² before the VU Q square root; y does not affect the result.
+- mgDistVector2(a, b): subtracts `b-a` in the x/y/z lanes, squares those
+  lanes, accumulates x²+y² then z²+(x²+y²), and returns the raw float bits
+  from VU0 through `qmfc2` and `mtc1`.
 - mgDistPlanePoint(n, on_plane, p) = n . (p - on_plane) (sceVu0SubVector + sceVu0InnerProduct).
   Ghidra shows it void; mgReflectionPlane consumes its $f0, so it returns float.
 - mgReflectionPlane: d = DistPlanePoint; out = (on_plane - p) - n*(-2d); returns 2d.
@@ -217,6 +220,8 @@ order to preserve the retail floating-point result.
 The single-vector `mgDistVector` uses the same accumulation and VU Q square
 root, which differs from a scalar `sqrtf` call.
 The XZ overload keeps only the squared x and z components in the Q input.
+The two-vector `mgDistVector2` adds a VU masked subtraction before the same
+three-lane squared accumulation.
 
 The VU0 vector and matrix routines in this unit retain their guarded C++ drafts
 and retail `INCLUDE_ASM` entries. Handwritten assembly bodies promoted into the

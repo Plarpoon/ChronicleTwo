@@ -218,9 +218,6 @@ int CColFrame::InsidePoint(float *point) {
  */
 #pragma force_active on
 #pragma global_optimizer off
-#ifdef NONMATCHING
-static float normal_transform[4][4];
-#endif
 #ifndef PORT
 /**
  *
@@ -245,40 +242,35 @@ static asm void pre_trance_normal(float (*matrix)[4]) {
  *
  */
 #pragma global_optimizer off
-#ifdef NONMATCHING
-/**
- *
- * Transforms a collision triangle and calculates its face normal.
- *
- */
-void trance_normal(float *v0, float *v1, float *v2, float *normal) {
-    float  vertex[3][4];
-    float *source[3] = {v0, v1, v2};
-    for (int corner = 0; corner < 3; corner++) {
-        for (int row = 0; row < 4; row++) {
-            vertex[corner][row] = normal_transform[0][row] * source[corner][0] +
-                                  normal_transform[1][row] * source[corner][1] +
-                                  normal_transform[2][row] * source[corner][2] +
-                                  normal_transform[3][row] * source[corner][3];
-        }
-    }
-    for (int row = 0; row < 4; row++) {
-        v0[row] = vertex[0][row];
-        v1[row] = vertex[1][row];
-        v2[row] = vertex[2][row];
-    }
-
-    float edge1[3] = {vertex[1][0] - vertex[0][0], vertex[1][1] - vertex[0][1],
-                      vertex[1][2] - vertex[0][2]};
-    float edge2[3] = {vertex[2][0] - vertex[0][0], vertex[2][1] - vertex[0][1],
-                      vertex[2][2] - vertex[0][2]};
-    normal[0] = edge1[1] * edge2[2] - edge1[2] * edge2[1];
-    normal[1] = edge1[2] * edge2[0] - edge1[0] * edge2[2];
-    normal[2] = edge1[0] * edge2[1] - edge1[1] * edge2[0];
-    normal[3] = 0.0f;
+#ifndef PORT
+static asm void trance_normal(float *v0, float *v1, float *v2, float *normal) {
+    .set noreorder
+    lqc2 vf16, 0(a0)
+    lqc2 vf17, 0x10(a0)
+    lqc2 vf18, 0x20(a0)
+    vmulax.xyzw ACC, vf10, vf16x
+    vmadday.xyzw ACC, vf11, vf16y
+    vmaddaz.xyzw ACC, vf12, vf16z
+    vmaddw.xyzw vf16, vf13, vf16w
+    vmulax.xyzw ACC, vf10, vf17x
+    vmadday.xyzw ACC, vf11, vf17y
+    vmaddaz.xyzw ACC, vf12, vf17z
+    vmaddw.xyzw vf17, vf13, vf17w
+    vmulax.xyzw ACC, vf10, vf18x
+    vmadday.xyzw ACC, vf11, vf18y
+    vmaddaz.xyzw ACC, vf12, vf18z
+    vmaddw.xyzw vf18, vf13, vf18w
+    vsub.xyzw vf20, vf17, vf16
+    vsub.xyzw vf21, vf18, vf16
+    sqc2 vf16, 0(a0)
+    sqc2 vf17, 0(a1)
+    sqc2 vf18, 0(a2)
+    vnop
+    vopmula.xyz ACC, vf20, vf21
+    vopmsub.xyz vf22, vf21, vf20
+    jr ra
+    sqc2 vf22, 0(a3)
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/collision", trance_normal__FPfPfPfPf);
 #endif
 #pragma global_optimizer reset
 #pragma force_active reset

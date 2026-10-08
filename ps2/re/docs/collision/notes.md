@@ -127,8 +127,13 @@ CreateBBox (+8).
   normal's w lane unspecified; the draft writes zero there. `pre_trance_normal`
   now uses the narrow inline VU0 exception: its four matrix loads match all
   0x14 retail bytes, and the `collision` object passes `check_objects.py` with
-  98 resolved relocations. The PC stub stores the matrix for later operations.
-  `trance_normal` still uses the assembly fallback.
+  98 resolved relocations.
+  `trance_normal` also uses the narrow inline VU0 exception. It reads three
+  contiguous input vectors from its first pointer, transforms them with the
+  matrix retained in vf10-vf13, stores the three results through separate
+  destination pointers, and computes their cross-product normal. Its 0x64
+  retail bytes match objdiff exactly; the `collision` object passes
+  `check_objects.py` with 98 resolved relocations.
 - `CCollisionMDT::PickUpNearPoly` loads the query box (w = 1) into vf10/vf11 with two `lqc2`
   before the loop; nothing in this function reads them. The C++ draft does not reproduce
   these register writes, so the retail build uses `INCLUDE_ASM`.

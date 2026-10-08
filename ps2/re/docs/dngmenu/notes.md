@@ -340,3 +340,88 @@ the dedicated signed-zero branch. Grid X projection adds the negative
 row contribution (`x * 52 + y * -16`), preserving retail's negation
 before the shift. Texture deletion binds the manager before testing the
 block number so the manager address is available at the retail branch.
+
+## Scroll targeting and final overlay
+
+`SetNextRoomPos` projects the requested grid cell, converts X then Y to
+integer with the runtime conversion helper, and adds the clipping
+displacement to the current scroll. Dependencies and float reference
+outputs are already documented. `ResetDngMapPos` additionally walks every
+cell and projects cells on each outer grid boundary before projecting the
+selected room. These boundary results are unused, but the calls remain
+in retail. The boundary coordinates are the signed `glid_w` and `glid_h`
+fields of `CDngFloorManager`; cells have a 0x70-byte stride.
+`DrawLast` skips absent textures and event mode, then draws the 128 by
+128 source texture over the full screen using the menu primitive.
+
+`DrawDngName` uses an integer source rectangle and two by-value `PrimQuad`
+calls. Its shadow alpha converts one quarter of the integer opacity to
+integer through the runtime float conversion helper. `DrawBackPattern`
+converts opacity to float before testing against zero, and returns without
+drawing when event mode has negative opacity. Both routines use the
+existing documented `mgCDrawPrim` and `mgRect<int>` interfaces.
+
+`DngTreeMapDraw` reads `DngTreeMode` with a signed-halfword load, rather
+than the byte type in the guarded draft. Its source declaration is signed
+16-bit; the existing four-byte BSS reservation includes alignment padding.
+`CheckDngTreeMapFuncType` reads the documented signed-halfword opening
+mode and unsigned-byte sub-map flag. Both dispatch helpers have complete
+existing dependency interfaces.
+
+`SetNextRoomPos`, `ResetDngMapPos`, `DrawLast`, `DrawDngName`, and
+`DrawBackPattern` pass the canonical comparator as native bodies with the
+shared profile. The complete unit passes (0x8C10 bytes, 1101 relocations).
+`ResetDngMapPos` uses a two-element float array for the selected room's
+projection and int locals for sign-extended grid dimensions. Negative
+event opacity returns from `DrawBackPattern` immediately.
+
+`Step` converts each scroll delta to integer, calls the integer runtime
+`abs`, then converts that result to float for comparison with 1.0. The
+float comparison, rather than an integer comparison, is present in retail.
+Its selection-brightness global is a float. The fade and grid-scroll
+fields and runtime `abs(int)` interface are already typed and documented.
+
+`FadeInOutMenu` tests the signed-halfword field `unk_11a` at offset 0x11A
+before checking the closing fade. The m2c type mapping incorrectly labels
+this read as the second message window's text offset; the actual retail
+load resolves the ambiguity. Both opening and closing
+menu state values are already documented by the base menu interface.
+`DrawGlid` draws a red outline with a by-value float rectangle: the lower
+edge is offset 20 down and 16 left, and the alpha converts to integer.
+
+`DrawGlidCheck` uses the four typed neighbour pointers, grid coordinate
+fields, room flags and visited byte already documented by `dngfloor`.
+The sub-floor and boss-floor flags are tested separately in retail before
+checking the visited byte. The returned bits encode adjoining room edges
+and directional visited-floor marks.
+
+`CheckDngTreeMapFuncType`, `DngTreeMapDraw`, `Step`, `DrawGlid`, and
+`FadeInOutMenu` also have zero canonical differences as native bodies.
+`DrawGlid` keeps named upper/right/lower coordinates live through the
+outline calls, reproducing retail's three preserved float registers.
+
+Viewport clipping retains its guarded draft: four instructions differ,
+consisting of two exchanged coordinate initializations and a subtraction
+scheduled into a branch delay slot. `DrawGlidCheck` likewise retains its
+guard: its native candidate differs only by an omitted duplicate zero
+return assignment on the null path. Neither candidate is counted native.
+
+## Tree map drawing assessment
+
+`DrawTreeMap` retains the initial grid-table pointer across the highlight
+rendering calls and advances it by whole typed cells. The cell kind is
+loaded after `DrawGlidCheck`, and the blink flag is read as signed byte.
+The m2c output moves this load before the call; the actual disassembly
+establishes its position.
+The highlight starts at `(x - 8 - 30, -42 + 11 + y)` and contracts using
+`62 - 62 * rate` and `40 - 40 * rate`; these expressions retain the
+retail floating-point rounding sequence. The cell rectangle is constructed
+directly with `(0, 0, 52, 20)`, rather than constructed with zero edges
+and then reset. Existing grid, rectangle, primitive and drawing interfaces
+cover all dependencies.
+
+The improved `DrawTreeMap` draft remains guarded at the checkpoint. Its
+remaining canonical differences are the exchanged loop-index and mark
+register assignments (s19 versus s20); every other instruction and all
+resolved relocations agree. The private 52.0 evaluate-first trial did not
+improve this difference and no profile row is accepted.

@@ -41,6 +41,7 @@ from mwccgap.elf import Elf, SHT_NOBITS  # noqa: E402
 
 import disassemble  # noqa: E402
 import layout  # noqa: E402
+import lcf  # noqa: E402
 
 SHF_ALLOC = 0x2
 STT_SECTION = 3
@@ -75,6 +76,7 @@ class Context:
         self.layout = layout.Layout()
         self.pieces = disassemble.Pieces(self.layout)
         self.retail = layout.Retail()
+        self.linker = lcf.Generator()
         self.addresses = {n: a for a, n, _s, _f in self.pieces.symbols.rows}
         self.gp = self.addresses["_gp"]
         # Names splat made up for values it took for addresses; the linker
@@ -155,7 +157,13 @@ def check_unit(ctx, unit, verbose):
                 if section.sh_addralign != FUNCTION_ALIGNMENT or start % FUNCTION_ALIGNMENT:
                     errors.append(f"{name}: alignment {section.sh_addralign} at 0x{start:08X}")
                 reach = start + -(-size // FUNCTION_ALIGNMENT) * FUNCTION_ALIGNMENT
-                if not (start + size <= end <= reach):
+                # A terminal function need not contain the gap that the
+                # generated linker script fills before the next unit.
+                contents_end = ctx.linker.contents_end(unit, lo, hi)
+                linker_tail = (index == indices[-1]
+                               and start + size == contents_end < end
+                               and not any(ctx.retail.bytes(contents_end, end)))
+                if not (start + size <= end <= reach) and not linker_tail:
                     errors.append(f"{name}: size 0x{size:X} does not reach 0x{end:08X}")
             else:
                 if section.sh_addralign > 1:

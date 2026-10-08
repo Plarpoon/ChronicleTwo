@@ -29,7 +29,6 @@ extern char HelpMesBuff[0x1000];
 extern int  InitFlag__2;
 
 ClsMes        HelpMes __attribute__((aligned(4)));
-u8            D_01F628B8[4];
 u8            D_01F628BC[4];
 HELP_MES_INFO HelpMesInfo;
 

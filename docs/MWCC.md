@@ -81,3 +81,19 @@ objects retain the exported labels required by separately assembled tables.
 A fuzzy percentage is diagnostic, not proof of an exact match. `INCLUDE_ASM`
 and inline assembly do not qualify as matched native decompilation. Internal
 class initializers must be generated naturally by the compiler.
+
+## Data extents and alignment
+
+Retail symbol sizes describe objects, while the split section pieces include
+the alignment gap before the next symbol or referenced address. Once data
+sections are assigned alignment one for linking, their bytes must retain that
+gap. The postprocessor extends a correctly sized native object by fewer than
+16 bytes to its piece boundary; initialized padding must be zero in retail.
+An object with a size different from its declared retail size is not padded.
+Referenced interior addresses remain separate piece boundaries.
+
+A terminal function may end before the next unit's address when the generated
+linker script supplies the intervening alignment. The canonical checker permits
+this only at the exact `contents_end` established by the script and only for an
+all-zero retail tail. Objdiff target symbol metadata records declared retail
+function sizes so the same linker padding is excluded from function scores.

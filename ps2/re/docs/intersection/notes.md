@@ -63,9 +63,7 @@ the asm (event_func's `_MT_TEST` is a different function).
 
 ## C++ drafts
 
-The vertical and oriented pipe queries, sphere query, and transformed box overload
-are native C++. The axis-aligned box query keeps its draft behind `NONMATCHING`
-and uses the retail assembly by default. The pipe queries use four-lane arrays
+All five intersection queries are native C++. The pipe queries use four-lane arrays
 for temporary points and transforms; sphere contact corresponds to the
 `SpherePoly3Contact` values declared in the header. The axis-aligned box query
 uses the named box bounds, sorts candidates by distance in each point's w lane,
@@ -95,10 +93,18 @@ The retail side predicates implement `point >= max || point <= min`; MWCC
 lowers the former through `c.lt.s` plus a boolean temporary, including its
 unordered floating-point behavior. The sort swaps when the earlier distance
 is not `<=` the later distance, so unordered distances also swap.
-A native candidate reproduced every instruction and call relocation through
-retail address 0x2E3988 (the complete geometry search), but sorting/output
-register allocation and trailing alignment still differed. The assembly fallback
-therefore remains active. The guarded draft remains unchanged.
+The native query passes the whole-unit canonical object check with zero byte and
+resolved-relocation differences (0xE04 bytes, 51 relocations). `count` and
+`last_candidate` precede the two index declarations; `axis` is reused for the
+geometry search, sort's outer loop and output copy. This preserves the retail
+register lifetimes through the sorting and output phases. Each face uses a
+single-entry while condition and exits through breaks after rejection or copy.
+The input box uses aggregate initialization, avoiding its out-of-line assignment
+operator. No Satan's Fiddle override is required.
+The native function size is 0x4AC; retail's additional zero word at 0x2E3AFC
+is padding after the return delay slot, aligning the next function to 16 bytes.
+The canonical checker permits this alignment-only tail omission.
+
 
 Quadword copies in the native pipe query preserve all four vector lanes just as
 the existing native queries do. The SDK copy routine would emit a function call;

@@ -37,6 +37,8 @@ foreach(row IN LISTS unit_rows)
         DEPENDS ${CMAKE_SOURCE_DIR}/${INCLUDE_DIR}/macro.inc
                 ${CMAKE_SOURCE_DIR}/${SPLIT_STAMP}
                 ${CMAKE_SOURCE_DIR}/${SCRIPTS_DIR}/build/prepare_objdiff_target.py
+                ${CMAKE_SOURCE_DIR}/${SCRIPTS_DIR}/build/layout.py
+                ${CMAKE_SOURCE_DIR}/${CONFIG_DIR}/main.symbols.txt
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "AS (objdiff target) ${reference}"
         VERBATIM)

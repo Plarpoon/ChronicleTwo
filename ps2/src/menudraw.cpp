@@ -2224,28 +2224,28 @@ void MenuMainFrameDraw(int &loaded_tex, int unused) {
     prim->Vertex(fptosi(x4 + size), fptosi(y4 + 1.25f * size), 0);
     prim->End();
 }
-#ifdef NONMATCHING
 void MenuMainFrameImgDraw(int &loaded_tex_no) {
     mgRect<int> dest(0, 0, 0, 0);
     mgRect<int> source(0, 0, mgScreenWidth / 2, mgScreenHeight / 2);
     int         alpha = (int) (128.0f * (MenuMainFrame_Display_Mode_Cnt / 10.0f));
     dest = MenuMainIMG_PutRect;
-    if (MenuMainFrame_Display_Mode == 1 || MenuMainFrame_Display_Mode == 0) {
-        if (MenuMainFrame_Display_Mode == 1) {
-            alpha = 0x80;
-        }
-    } else {
-        dest.left = (int) (MenuMainFrame_Lenze_Pos[0] - 194.0f);
-        dest.top = (int) (MenuMainFrame_Lenze_Pos[1] - 184.61539f);
+    switch (MenuMainFrame_Display_Mode) {
+        case 0:
+        case 1:
+            if (MenuMainFrame_Display_Mode == 1) {
+                alpha = 0x80;
+            }
+            break;
+        default:
+            dest.left = (int) (MenuMainFrame_Lenze_Pos[0] - 194.0f);
+            dest.top = (int) (MenuMainFrame_Lenze_Pos[1] - 184.61539f);
+            break;
     }
     mgRect<int> screen(0, 0, mgScreenWidth, mgScreenHeight);
     DrawMenuMainFrmImg(loaded_tex_no, screen, source, 0x80, 0x80, 0x80, alpha, 0);
     dest.bottom += 1;
     DrawMenuMainFrmImg(loaded_tex_no, dest, source, 0x80, 0x80, 0x80, alpha, 0);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menudraw", MenuMainFrameImgDraw__FRi);
-#endif
 #ifdef NONMATCHING
 void DrawMenuWakuStep(void) {
     float move[2][3] = {

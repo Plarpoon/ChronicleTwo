@@ -170,52 +170,76 @@ int IntersectionSpherePoly3(float *sphere, float (*tri)[4], float *normal, float
 
     return 0;
 }
-#ifdef NONMATCHING
 int IntersectionBox(float *from, float *to, mgVu0FBOX *box, float (*hits)[4]) {
-    sceVu0FVECTOR direction;
+    int count;
+    int last_candidate;
+    int axis;
+    int later_index;
     sceVu0FVECTOR segment_max;
     sceVu0FVECTOR segment_min;
+    sceVu0FVECTOR direction;
     sceVu0FVECTOR point;
     sceVu0FVECTOR candidates[6];
-    int           count = 0;
     sceVu0SubVector(direction, to, from);
+    mgVu0FBOX local_box = *box;
     mgVectorMaxMin(segment_max, segment_min, from, to);
-    for (int axis = 0; axis < 3; axis++) {
-        for (int face = 0; face < 2; face++) {
-            float plane = face == 0 ? box->min[axis] : box->max[axis];
-            if (plane >= segment_max[axis] || plane <= segment_min[axis]) {
-                continue;
-            }
-            sceVu0ScaleVector(point, direction, (plane - from[axis]) / direction[axis]);
+    count = 0;
+    for (axis = 0; axis < 3; axis++) {
+        float plane_min;
+        while ((plane_min = local_box.min[axis]) < segment_max[axis] && !(plane_min <= segment_min[axis])) {
+            sceVu0ScaleVector(point, direction, (plane_min - from[axis]) / direction[axis]);
             sceVu0AddVector(point, point, from);
             int side_axis = (axis + 1) % 3;
+            if (point[side_axis] >= local_box.max[side_axis] || point[side_axis] <= local_box.min[side_axis]) {
+                break;
+            }
             int other_axis = (side_axis + 1) % 3;
-            if (point[side_axis] < box->max[side_axis] && point[side_axis] > box->min[side_axis] &&
-                point[other_axis] < box->max[other_axis] && point[other_axis] > box->min[other_axis]) {
-                point[3] = mgDistVector(point, from);
-                sceVu0CopyVector(candidates[count++], point);
+            if (point[other_axis] >= local_box.max[other_axis] || point[other_axis] <= local_box.min[other_axis]) {
+                break;
             }
+            point[3] = mgDistVector(point, from);
+            *(u_long128 *) candidates[count++] = *(u_long128 *) point;
+            break;
+        }
+        float plane_max;
+        while ((plane_max = local_box.max[axis]) < segment_max[axis] && !(plane_max <= segment_min[axis])) {
+            sceVu0ScaleVector(point, direction, (plane_max - from[axis]) / direction[axis]);
+            sceVu0AddVector(point, point, from);
+            int side_axis = (axis + 1) % 3;
+            if (point[side_axis] >= local_box.max[side_axis] || point[side_axis] <= local_box.min[side_axis]) {
+                break;
+            }
+            int other_axis = (side_axis + 1) % 3;
+            if (point[other_axis] >= local_box.max[other_axis] || point[other_axis] <= local_box.min[other_axis]) {
+                break;
+            }
+            point[3] = mgDistVector(point, from);
+            *(u_long128 *) candidates[count++] = *(u_long128 *) point;
+            break;
         }
     }
-    for (int i = 0; i < count - 1; i++) {
-        for (int j = i + 1; j < count; j++) {
-            if (candidates[j][3] < candidates[i][3]) {
-                sceVu0FVECTOR swap;
-                sceVu0CopyVector(swap, candidates[i]);
-                sceVu0CopyVector(candidates[i], candidates[j]);
-                sceVu0CopyVector(candidates[j], swap);
+    last_candidate = count - 1;
+    if (count > 1) {
+        axis = 0;
+        while (axis < last_candidate) {
+            for (later_index = axis + 1; later_index < count; later_index++) {
+                if (!(candidates[axis][3] <= candidates[later_index][3])) {
+                    *(u_long128 *) point = *(u_long128 *) candidates[later_index];
+                    *(u_long128 *) candidates[later_index] = *(u_long128 *) candidates[axis];
+                    *(u_long128 *) candidates[axis] = *(u_long128 *) point;
+                }
             }
+            axis++;
         }
     }
-    int hit_count = count > 2 ? 2 : count;
-    for (int i = 0; i < hit_count; i++) {
-        sceVu0CopyVector(hits[i], candidates[i]);
+    if (count > 2) {
+        count = 2;
     }
-    return hit_count;
+    for (axis = 0; axis < count; axis++) {
+        *(u_long128 *) hits[axis] = *(u_long128 *) candidates[axis];
+    }
+    return count;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/intersection", IntersectionBox__FPfPfP9mgVu0FBOXPA4_f);
-#endif
 int IntersectionBox(float *start, float *end, mgVu0FBOX *box, float (*matrix)[4], float (*hits_out)[4]) {
     float local_start[4];
     float local_end[4];

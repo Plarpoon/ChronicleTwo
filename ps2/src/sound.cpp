@@ -395,29 +395,26 @@ void CSound::DEL_PORT(int port) {
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", DEL_PORT__6CSoundFi);
 #endif
 
-#ifdef NONMATCHING
 void CSound::SQ_Play(int port, int seq_no, int volume) {
     void *sequence;
 
-    if (seq_no >= midi_state.port[port].sequence_count) {
+    if (seq_no < midi_state.port[port].sequence_count) {
+        sequence = midi_state.port[port].sequence[seq_no];
+    } else {
         printf("###############NOT FOUND SEQ_NO=%d #####################\n", seq_no);
         return;
     }
-    sequence = midi_state.port[port].sequence[seq_no];
     ezMidi(port + 0x20, 0);
     printf("MIDI start! port=%d \n", port);
     ezMidi(port + 0x40, (int) sequence);
     printf("###############PLAY SEQ_NO=%d PORT=%d#####################\n", seq_no, port);
     if (volume != 256) {
-        volume = (int) (volume * 2.015748f);
+        volume = static_cast<int>(2.015748f * volume);
     }
     ezMidi(port + 0xB0, volume);
     ezMidi(port + 0x30, 0);
     ezMidi(port, 0);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sound", SQ_Play__6CSoundFiii);
-#endif
 
 void CSound::SQ_RePlay(int port) {
     if (midi_state.port[port].sequence_count > 0) {
@@ -903,9 +900,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_475__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_476__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_477__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_564__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_576__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_577__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_578__2__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_595__2__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_613__2__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sound", at_728__DATA);

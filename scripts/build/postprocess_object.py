@@ -703,7 +703,7 @@ def name_literal_data(elf, unit, placeholders):
 
 def pad_data(elf, unit, placeholders):
     retail = layout.Retail()
-    pieces = disassemble.Pieces(references=[])
+    pieces = disassemble.Pieces()
     cuts = {name: (start, end) for section, run in pieces.unit(unit)
             if section in ('.data', '.sdata', '.rodata', '.bss', '.sbss') for name, start, end in run}
     declared_sizes = {name: size for _address, name, size, _is_function
@@ -714,10 +714,14 @@ def pad_data(elf, unit, placeholders):
                 or not 0 < index < len(elf.sections) or symbol.name not in cuts):
             continue
         start, end = cuts[symbol.name]
-        if symbol.name in declared_sizes:
-            end = min(end, start + declared_sizes[symbol.name])
         section = elf.sections[index]
         size = section_size(section)
+        # Symbol sizes describe the object, whereas section pieces also own
+        # the following alignment gap. Do not hide an incorrect object size
+        # by filling it; only a correctly sized object may acquire padding.
+        declared_size = declared_sizes.get(symbol.name)
+        if declared_size is not None and size != declared_size:
+            continue
         if (section.sh_type == SHT_NOBITS and size and 0 < end - start - size < 16):
             section.sh_size = end - start
             symbol.st_size = section.sh_size

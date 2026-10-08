@@ -127,3 +127,13 @@ occupies a retail 0x40-byte BSS piece, leaving the run twelve bytes short. The
 `CList` node is already correctly sized at 0x40 and its carried record remains
 0x34; enlarging that record would shift the node's vtable. These baseline failures
 are preserved pending a separate analysis of the global object's trailing storage.
+
+With the native BSS padding correction applied, the focused object has only the
+`NewTexAnimeData` byte failure. The remaining allocation difference can be isolated
+by disabling peephole optimization: the compiler then saves the allocation result
+before the null branch, matching retail's placement of that move, but tests the
+saved register rather than the original return register and loads the virtual table
+through the argument alias. Default peephole optimization fixes those two aliases,
+but sinks the saved-pointer move into the successful branch and skips its return on
+failure. Disabling propagation or lifetime optimization does not change that result.
+This is a code-generation difference, not evidence of an incorrect `CList` layout.

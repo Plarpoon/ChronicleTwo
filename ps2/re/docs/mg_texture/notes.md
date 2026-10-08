@@ -44,3 +44,24 @@ instructions and relocations match. Casts on the index, base, or member array,
 unsigned indices, swapped subscript syntax, local manager pointers, and direct
 bucket-load expressions did not produce the retail instruction. These functions
 remain fuzzy; no zero-difference match is claimed.
+
+## Full-image 32-to-8 conversion analysis
+
+`decompile.sh Conv32To8__FiiPUc` confirms a 64 KiB local static output
+workspace and two 8 KiB stack pages. The source-page pitch is
+`pages_x * row_bytes`, with 256-byte rows in the temporary 32-bit page;
+the destination pitch is `pages_x * width`, with 128-byte rows in the
+converted page. The original dimensions determine the final copy size.
+One-page images retain their width and half-height source row count;
+multi-page images clamp those dimensions to 128 by 64 pixels.
+
+A native candidate with typed array indexing and nested row/column offsets
+reproduces the 0x29C-byte body topology and every call/data relocation when
+it shares the preceding page converter's optimization-level-2 scope. The
+remaining differences are a permutation of four saved registers holding
+width, page columns, source row bytes, and the inner row index. Default
+optimization level 3 instead emits 0x258 bytes. Merely preserving schedule
+off, adding a standard register hint, or separating the input width from
+the working width does not close the register allocation difference.
+The source fallback remains active; no optimization-setting change is
+retained from these trials.

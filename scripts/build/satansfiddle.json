@@ -4,7 +4,13 @@
   "compiler_options": "-O3,p -strings readonly -c -Cpp_exceptions off -RTTI off -pragma 'divbyzerocheck on' -i ps2/include",
   "default_gpr_helper_mask": 0,
   "default_fpr_helper_mask": 0,
-  "translation_units": [],
+  "translation_units": [
+    {
+      "name": "sound.cpp",
+      "gpr_helper_mask": 32,
+      "fpr_helper_mask": 0
+    }
+  ],
   "floating_point": {
     "default_evaluate_first": false,
     "expression_overrides": [

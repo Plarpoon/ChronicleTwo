@@ -97,3 +97,22 @@ function-local statics (DrawFireEffect / GetLight area); `at_475`, `at_1118` are
 ## Division-check pragma
 
 The unit-level `divbyzerocheck` pragma was redundant with the global MWCC flag; removing it left the full compiled object identical in objdiff.
+
+## Light-animation native candidate
+
+`GetLightAnimeWeight` reads the point-light flicker depth and period before checking
+its point type; even fire and flare points therefore perform the period conversion.
+Point-light mode zero returns one; random mode scales a random fraction between
+`1-depth` and one. The sine mode uses the signed frame remainder and a full-turn
+angle, while the saw mode falls linearly with that remainder. A nonpositive period
+returns one without performing a remainder operation. Fire and flare return a random
+weight between 0.7 and one; other point types return one.
+
+The current native candidate produces 0x228 bytes versus retail's 0x220. Its two
+conditional point-light returns acquire local branch joins that retail sends directly
+to the shared epilogue. Replacing these returns with conditional assignments can
+reach the retail size but retains a floating register across calls or folds the
+retail multiply by one, so size equality does not establish matching. Private stable
+selectors for binary32 one and full-turn angle (`0x40c90fdb`) did not remove the
+original differences. The assembly fallback remains until the candidate's complete
+bytes and relocations match.

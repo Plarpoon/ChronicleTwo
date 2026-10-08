@@ -1,5 +1,30 @@
 # mglib notes
 
+Round 3 from `80c270c` promotes `mgInit` at 0/652 words and migrates all
+initialized assembly data to C++. The complete object passes `0x4DA8` checked
+bytes and 1,146 resolved relocations; all 148 other objects and all ten linked
+file-backed sections remain byte-identical to baseline. The remaining three
+C++ BSS reservations, dither alternatives, and unapplied terminal-padding
+checker proposal are documented in [mglib-r3-20261008.md](mglib-r3-20261008.md).
+
+The pinned Satan’s Fiddle baseline and current matching status are in
+[matching-20261008.md](matching-20261008.md). The older isolated draft counts
+below describe earlier source/compiler states.
+The preceding pass from `0c33a7e`, including the retail-local `GetScreenSize`,
+frame-copy scopes and nested dither-table reconstruction, is documented in
+[mapmglib-midday-20261008.md](mapmglib-midday-20261008.md).
+
+Round 1 from integration `017d119` improves the guarded `mgInit` draft to
+18/652 words; its context copies and dither loops now agree. The remaining
+store scheduling, initialization hygiene, packet reservation park and acceptance
+receipts are documented in [mglib-r1-20261008.md](mglib-r1-20261008.md).
+
+Round 2 from `529fb83` resolves the background/FRAME store scheduling and
+retains a 0/652 guarded `mgInit` draft. Its register-cast review park is
+resolved by the round-3 coordinator ruling accepting the project's existing
+whole-register convention. The earlier typed-copy and intrinsic findings and
+baseline validation are in [mglib-r2-20261008.md](mglib-r2-20261008.md).
+
 The guarded frame-rotation draft uses the SDK's `sceGsDBuff::disp[2]`
 array. Naming its two elements `disp1` and `disp0` prevented the whole-unit
 draft compiler from running; using `disp[1]` and `disp[0]` restores that
@@ -52,9 +77,8 @@ TEX1/CLAMP base `addiu`s. The functions were exactly 0xF8 and 0x138 bytes, and
 the fixed-up mglib object passed at 0x4DB0 bytes with 1048 relocations. ObjDiff
 reported 100% for `mgGetFrameBuffer`; its 99.98718% for `mgGetFrameBackBuffer`
 was only the `mgDBuffID` GP relocation being named instead of represented as
-the retail numeric GP offset, which the resolved-object checker accepted. This
-is compiler evidence, not yet a promotable source result: the SDK assignment
-cleanup must preserve the currently matched `ReloadTexture` body. The
+the retail numeric GP offset, which the resolved-object checker accepted. The accepted unit-local SDK declaration switch now retains this implicit
+copy while preserving `ReloadTexture`; the earlier header park is resolved. The
 back-buffer draft now reads `sceGsDBuff::draw0/draw1.frame1.FBP` through the
 SDK type. The same source cleanup replaces the file's raw `mgDBuff` byte
 declaration and clear-colour offsets with typed SDK fields. With the existing
@@ -74,12 +98,16 @@ the dumped `D_0037AFE8__DATA` entry alongside it adds a second pointer to the li
 The source therefore omits that assembly placeholder; the generated entry occupies the retail
 slot. The same duplicate-entry pattern appeared in 21 other game units with native globals.
 
-## C++ draft status
-All 101 functions have C++ in `ps2/src/mglib.cpp`. 43 are exact and compiled by
-the matching build. 31 more compile to retail's bytes in isolation but stay
-under `NONMATCHING`. 27 differ from retail and keep the `INCLUDE_ASM` fallback.
-Each function tried has its one promotion attempt recorded in
-`scripts/re/promotion_attempts.tsv`.
+## Current source status
+
+The round-3 `sf-d8bf13c` build has 98 exact functions and three guarded drafts:
+`VSyncCallBack`, `mgEndFrame`, and `mgSetPkFrameBuffer(int,int,int,int)`.
+The complete object passes `0x4DA8` checked bytes and 1,146 resolved
+relocations. Upstream's
+native framebuffer copies and the local native shadow compositor coexist.
+The earlier 43-exact/31-isolated/27-differing inventory describes initial
+source drafting rather than this merged state. Remaining draft measurements
+are in [matching-20261008.md](matching-20261008.md).
 
 Header: `ps2/include/mglib.hpp`. No class is owned by mglib (`class_units.tsv`). Declared here:
 structs `mgFOG_PARAM` (retail name, from `mgSetFogParam__FP11mgFOG_PARAM`) and `MG_PICKZ`
@@ -106,6 +134,14 @@ The built ELF in `build/pal` marks everything GLOBAL; the retail ELF does not. U
 - Retail true sizes differ from the padded INCLUDE_BSS slots: VSyncField 4 (slot 8),
   mgChangeLight 4, draw_performance_meter 4, mgTexManager 0x21C (slot 0x220), gs_simage 0x70
   (slot 0xA0), prog_adr 12 (3 pointers).
+
+Round 3 restores these private globals as typed file statics. The stable
+`dimx_281` file-static table replaces the compiler-ordinal local spelling;
+the guarded frame-end local state remains at file scope while its retail
+assembly is active. `store_data_614` retains external linkage because an
+existing generated library-data expression references that symbol. The
+`gs_simage`, `image_num_1535`, and `init_1536` C++ BSS reservations remain for
+the checker/postprocessor limitations documented in the round-3 notes.
 
 ## Global types (evidence)
 - `DmaCH1/2/8` sceDmaChan* (sceDmaGetChan results; CH1 chcr.TTE set). DmaCH2 also used by movie,

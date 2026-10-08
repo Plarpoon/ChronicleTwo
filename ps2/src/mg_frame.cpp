@@ -139,7 +139,89 @@ void test1(float (*corners)[4], float (*screen)[4], float (*matrix)[4], float *o
     }
 }
 #else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", test1__FPA4_fPA4_fPA4_fPfPf);
+asm void test1(float (*corners)[4], float (*left)[4], float (*right)[4], float *out_max, float *out_min) {
+    lqc2    vf11, 0(a1)
+    lqc2    vf12, 16(a1)
+    lqc2    vf13, 32(a1)
+    lqc2    vf14, 48(a1)
+    lqc2    vf5, 0(a2)
+    lqc2    vf6, 16(a2)
+    lqc2    vf7, 32(a2)
+    lqc2    vf8, 48(a2)
+    vmulax  ACC, vf11, vf5
+    vmadday ACC, vf12, vf5
+    vmaddaz ACC, vf13, vf5
+    vmaddw  vf1, vf14, vf5
+    vmulax  ACC, vf11, vf6
+    vmadday ACC, vf12, vf6
+    vmaddaz ACC, vf13, vf6
+    vmaddw  vf2, vf14, vf6
+    vmulax  ACC, vf11, vf7
+    vmadday ACC, vf12, vf7
+    vmaddaz ACC, vf13, vf7
+    vmaddw  vf3, vf14, vf7
+    vmulax  ACC, vf11, vf8
+    vmadday ACC, vf12, vf8
+    vmaddaz ACC, vf13, vf8
+    vmaddw  vf4, vf14, vf8
+    lqc2    vf10, 0(a0)
+    lqc2    vf11, 16(a0)
+    lqc2    vf12, 32(a0)
+    lqc2    vf13, 48(a0)
+    lqc2    vf14, 64(a0)
+    lqc2    vf15, 80(a0)
+    lqc2    vf16, 96(a0)
+    lqc2    vf17, 112(a0)
+    vmulax  ACC, vf1, vf10
+    vmadday ACC, vf2, vf10
+    vmaddaz ACC, vf3, vf10
+    vmaddw  vf10, vf4, vf10
+    vmulax  ACC, vf1, vf11
+    vmadday ACC, vf2, vf11
+    vmaddaz ACC, vf3, vf11
+    vmaddw  vf11, vf4, vf11
+    vmulax  ACC, vf1, vf12
+    vmadday ACC, vf2, vf12
+    vmaddaz ACC, vf3, vf12
+    vmaddw  vf12, vf4, vf12
+    vmax    vf18, vf10, vf11
+    vmini   vf19, vf10, vf11
+    vmulax  ACC, vf1, vf13
+    vmadday ACC, vf2, vf13
+    vmaddaz ACC, vf3, vf13
+    vmaddw  vf13, vf4, vf13
+    vmax    vf18, vf18, vf12
+    vmini   vf19, vf19, vf12
+    vmulax  ACC, vf1, vf14
+    vmadday ACC, vf2, vf14
+    vmaddaz ACC, vf3, vf14
+    vmaddw  vf14, vf4, vf14
+    vmax    vf18, vf18, vf13
+    vmini   vf19, vf19, vf13
+    vmulax  ACC, vf1, vf15
+    vmadday ACC, vf2, vf15
+    vmaddaz ACC, vf3, vf15
+    vmaddw  vf15, vf4, vf15
+    vmax    vf18, vf18, vf14
+    vmini   vf19, vf19, vf14
+    vmulax  ACC, vf1, vf16
+    vmadday ACC, vf2, vf16
+    vmaddaz ACC, vf3, vf16
+    vmaddw  vf16, vf4, vf16
+    vmax    vf18, vf18, vf15
+    vmini   vf19, vf19, vf15
+    vmulax  ACC, vf1, vf17
+    vmadday ACC, vf2, vf17
+    vmaddaz ACC, vf3, vf17
+    vmaddw  vf17, vf4, vf17
+    vmax    vf18, vf18, vf16
+    vmini   vf19, vf19, vf16
+    vmax    vf18, vf18, vf17
+    vmini   vf19, vf19, vf17
+    sqc2    vf18, 0(a3)
+    jr      ra
+    sqc2    vf19, 0(t0)
+}
 #endif
 void test1(float (*corners)[4], float (*screen)[4], float (*matrix)[4], float *out_max,
            float *out_min);
@@ -179,7 +261,6 @@ void test2(float *out_max, float *out_min) {
     }
 }
 #else
-#ifndef PORT
 asm void test2(float *out_max, float *out_min) {
     vabs.w  vf20, vf10
     vabs.w  vf21, vf11
@@ -231,7 +312,6 @@ asm void test2(float *out_max, float *out_min) {
     jr      ra
     sqc2    vf15, 0(a1)
 }
-#endif
 #endif
 void test2(float *out_max, float *out_min);
 // clang-format on

@@ -12,7 +12,6 @@ int         Check_Point_Poly3(float x, float y, float x0, float y0, float x1, fl
 static void MulMatrix3(float (*matrix)[4], float (*second)[4], float (*third)[4]);
 
 // Code (.text)
-#ifndef PORT
 asm void mgFotI4(int *out, float *in) {
     .set noreorder
     lqc2 vf1, 0x0(a1)
@@ -20,8 +19,6 @@ asm void mgFotI4(int *out, float *in) {
     jr ra
     sqc2 vf1, 0x0(a0)
 }
-#endif
-#ifndef PORT
 asm void mgCreateBox8(float (*corners)[4], float *max, float *min) {
     .set noreorder
     lqc2 vf1, 0x0(a1)
@@ -48,17 +45,14 @@ asm void mgCreateBox8(float (*corners)[4], float *max, float *min) {
     jr ra
     sqc2 vf8, 0x30(a0)
 }
-#endif
 void mgZeroVector(float *vector) {
     *reinterpret_cast<u_long128 *>(vector) = 0;
 }
-#ifndef PORT
 asm void mgZeroVectorW(float *vector) {
     .set noreorder
     jr ra
     sqc2 vf0, 0x0(a0)
 }
-#endif
 #ifdef NONMATCHING
 int mgClipBoxVertex(float *point, float *max, float *min) {
     for (int axis = 0; axis < 3; ++axis) {
@@ -124,7 +118,6 @@ int mgClipInBoxW(float *max0, float *min0, float *max1, float *min1) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgClipInBoxW__FPfPfPfPf);
 #endif
-#ifndef PORT
 asm void mgAddVector(float *vector, float *add) {
     .set noreorder
     lqc2 vf15, 0x0(a0)
@@ -133,8 +126,6 @@ asm void mgAddVector(float *vector, float *add) {
     jr ra
     sqc2 vf15, 0x0(a0)
 }
-#endif
-#ifndef PORT
 asm void mgSubVector(float *vector, float *sub) {
     .set noreorder
     lqc2 vf15, 0x0(a0)
@@ -143,7 +134,6 @@ asm void mgSubVector(float *vector, float *sub) {
     jr ra
     sqc2 vf15, 0x0(a0)
 }
-#endif
 
 void mgNormalizeVector(float *out, float *in, float length) {
     sceVu0FVECTOR unit;
@@ -152,15 +142,14 @@ void mgNormalizeVector(float *out, float *in, float length) {
     sceVu0ScaleVector(out, unit, length);
 }
 
-#ifdef NONMATCHING
-void mgVectorMin(float *min, float *a, float *b) {
-    for (int i = 0; i < 4; ++i) {
-        min[i] = a[i] < b[i] ? a[i] : b[i];
-    }
+asm void mgVectorMin(float *min, float *a, float *b) {
+    .set noreorder
+    lqc2 vf15, 0x0(a1)
+    lqc2 vf16, 0x0(a2)
+    vmini.xyzw vf18, vf15, vf16
+    jr ra
+    sqc2 vf18, 0x0(a0)
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgVectorMin__FPfPfPf);
-#endif
 #ifdef NONMATCHING
 void mgVectorMin(float *min, float *a, float *b, float *c, float *d) {
     for (int i = 0; i < 4; ++i) {
@@ -561,7 +550,6 @@ float mgDistVectorXZ2(float *a, float *b) { return ((b[0] - a[0]) * (b[0] - a[0]
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgDistVectorXZ2__FPfPf);
 #endif
-#ifndef PORT
 asm void mgUnitMatrix(float (*matrix)[4]) {
     .set noreorder
     vmr32.xyzw vf1, vf0
@@ -573,8 +561,6 @@ asm void mgUnitMatrix(float (*matrix)[4]) {
     jr ra
     sqc2 vf3, 0x0(a0)
 }
-#endif
-#ifndef PORT
 asm void mgZeroMatrix(float (*matrix)[4]) {
     .set noreorder
     vsub.xyzw vf1, vf1, vf1
@@ -584,7 +570,6 @@ asm void mgZeroMatrix(float (*matrix)[4]) {
     jr ra
     sqc2 vf1, 0x0(a0)
 }
-#endif
 /**
  *
  * Multiplies a matrix in place by two further matrices.

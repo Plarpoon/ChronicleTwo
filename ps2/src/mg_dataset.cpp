@@ -486,6 +486,10 @@ mgCreateVisualType *SearchVisualType(mgCreateVisualType *table, char *name) {
 #pragma global_optimizer off
 #pragma opt_loop_invariants off
 
+static int CreateFrameVisual(mgCFrame *input_frame, mgCMemory *input_memory, mgCMemory *input_work_memory, mgCFrame *input_parent,
+                             MDTOBJ_HEADER *input_object, MDT_HEADER *input_mdt, int input_type, mgCTextureManager *input_texture_manager,
+                             u_int *weight, int index, mgCFrame **frame_table, float (*matrix_table)[4][4]);
+
 #ifdef NONMATCHING
 static int CreateFrameVisual(mgCFrame *input_frame, mgCMemory *input_memory, mgCMemory *input_work_memory, mgCFrame *input_parent,
                              MDTOBJ_HEADER *input_object, MDT_HEADER *input_mdt, int input_type, mgCTextureManager *input_texture_manager,
@@ -555,8 +559,8 @@ static int CreateFrameVisual(mgCFrame *input_frame, mgCMemory *input_memory, mgC
     }
 
     frame->bound = (mgCFrame::BoundInfo *) memory->Alloc(sizeof(mgCFrame::BoundInfo) / 16);
+    const int vertex_num = mdt->vertex_num;
     float (*vertices)[4] = (float (*)[4])((char *) mdt + mdt->vertex_ofs);
-    int vertex_num = ((int *) mdt)[3];
     mgCreateBBoxSphere(max, min, sphere, vertices, vertex_num);
 
     if (type == MG_VISUAL_CREATE_MDT) {
@@ -668,7 +672,6 @@ mgCFrame *mgLoadMDSFile(MDS_HEADER *mds, mgCMemory *memory, mgCreateVisualType *
 #pragma schedule off
 #pragma global_optimizer off
 
-#ifdef NONMATCHING
 mgCFrame *mgLoadMDSFile(mgLoadData *load) {
     u_int          i;
     MDTOBJ_HEADER *object;
@@ -723,15 +726,15 @@ mgCFrame *mgLoadMDSFile(mgLoadData *load) {
 
     object = (MDTOBJ_HEADER *) ((char *) mds + mds->object_ofs);
 
-    i = mds->object_num;
+    u_int frame_count = mds->object_num;
 
-    if ((i * 0x110) & 0xF) {
-        blocks = ((i * 0x110) >> 4) + 1;
+    if ((frame_count * 0x110) & 0xF) {
+        blocks = ((frame_count * 0x110) >> 4) + 1;
     } else {
-        blocks = (i * 0x110) >> 4;
+        blocks = (frame_count * 0x110) >> 4;
     }
 
-    frames = new (memory->Alloc(blocks + 2)) mgCFrame[i];
+    frames = new (memory->Alloc(blocks + 2)) mgCFrame[frame_count];
 
     if ((mds->object_num * 4) & 0xF) {
         blocks = ((mds->object_num * 4) >> 4) + 1;
@@ -796,9 +799,6 @@ mgCFrame *mgLoadMDSFile(mgLoadData *load) {
     mgSetFrameAttr(frames, 1);
     return frames;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_dataset", mgLoadMDSFile__FP10mgLoadData);
-#endif
 
 #pragma schedule reset
 #pragma global_optimizer reset
@@ -903,33 +903,7 @@ void CopyFrame(mgCFrame *dst, mgCFrame *src, mgCMemory *memory, int copy_visual,
 
         attr = new (memory->Alloc(0xB)) mgCFrameAttr;
 
-        attr->alpha_ref = source_attr->alpha_ref;
-        attr->alpha_blend = source_attr->alpha_blend;
-        attr->z_write = source_attr->z_write;
-        attr->z_test = source_attr->z_test;
-        attr->alpha_test = source_attr->alpha_test;
-        attr->dest_alpha_test = source_attr->dest_alpha_test;
-        attr->draw = source_attr->draw;
-        attr->clip_enable = source_attr->clip_enable;
-        attr->unk_20 = source_attr->unk_20;
-        attr->unk_24 = source_attr->unk_24;
-        attr->unk_28 = source_attr->unk_28;
-        attr->program_option = source_attr->program_option;
-        attr->fog = source_attr->fog;
-        attr->unk_34 = source_attr->unk_34;
-        attr->unk_38 = source_attr->unk_38;
-        attr->unk_3c = source_attr->unk_3c;
-        attr->program_mode = source_attr->program_mode;
-        attr->obj_alpha = source_attr->obj_alpha;
-        attr->no_cull = source_attr->no_cull;
-        attr->ambient_boost = source_attr->ambient_boost;
-        *(mgVec4 *) &attr->unk_50[0] = *(mgVec4 *) &source_attr->unk_50[0];
-        attr->no_light = source_attr->no_light;
-        *(mgVec4 *) attr->color = *(mgVec4 *) source_attr->color;
-        attr->point_light = source_attr->point_light;
-        attr->unk_84 = source_attr->unk_84;
-        attr->billboard = source_attr->billboard;
-        attr->depth_bias = source_attr->depth_bias;
+        *attr = *source_attr;
         dst->attr = attr;
     }
 

@@ -11,6 +11,35 @@ separate allocation storage, constructor parentheses, pointer qualifiers, and
 local optimizer, scheduler, and inline-depth controls retain or worsen this
 difference. No candidate passed isolated linked-image verification.
 
+The [placement-new report](../funcpoint/placement-new.md) records constructor
+and cross-unit evidence. Complete list specializations, including ordinary
+inline constructors defined in this source unit, narrow the difference to
+`beqz s0` instead of retail's `beqz v0` at +0x30 but do not match. The current
+generic constructor already performs virtual list initialization; the data
+constructor is independently evidenced by its retail out-of-line symbol.
+Changing either to omit initialization is inconsistent with those constructors.
+The saved and reproduced null-aware result-helper experiment grows the function
+to 0x88 bytes, despite a handoff synopsis describing it as a match; the helper
+is a semantic no-op and inadmissible in either case. The original 6/32-word
+guarded draft is retained. Reconsider when a genuine matching inlined-list
+caller establishes a new constructor or allocation-result lifetime distinction.
+
+The [Chronicle comparison](../funcpoint/placement-new.md#chronicle--dark-cloud-1-comparison)
+records all 19 matching DC1 placement-new expressions: four scalar sites test
+`v0`, six test a saved register, and nine arrays have no caller construction
+guard. DC1 uses MWCC 2.3.3 build 1010 at `-O2`, so these are comparative
+examples rather than a 3.0-011126 source recipe. Its class-A scalar constructors
+carry the expression through the constructor return; none preserves the original
+allocation pointer in DC2's copy-before-`beqz v0` sequence. Naming the placement
+buffer, initializing the destination at declaration, and compiling the original
+draft at `-O2` all leave this target at 6/32 words and 0x7C/0x80 bytes. A direct
+return was reproduced with the same result; that form was already recorded
+above. All experimental source changes were restored; the guarded unit passes
+`draft.sh --promote`, the PAL image passes, and complete objects pass 149/149.
+No source or shared-header patch is validated. A comparable 3.0-011126 inlined
+list caller, or a compiler trace showing where the implicit allocation check
+is bound to its persistent object pointer, is still needed.
+
 Engine texture animation (`mg_tanime.cpp`). First-game counterpart: `textureanime.hpp`
 (`CTexAnimeData` / `CTextureAnime`). The design is the same in spirit, but every layout differs:
 records are now heap-allocated `CList<mgCTexAnimeData>` nodes in per-group linked lists, groups have
@@ -155,3 +184,60 @@ the same six instruction differences. The fixed-up unit changed from 0x27E0 byte
 to 0x25F8 bytes and reported 223 object problems, including shortened later function
 extents. Pairing the scope with `global_optimizer off` produced the same target
 difference and unit-wide failure. Neither pragma form is a viable local fix.
+
+## Placement construction under Satan's Fiddle (2026-10-08)
+
+The canonical SF wrapper retains the guarded NewTexAnimeData draft at
+**6/32 differing words, 0x7c/0x80 bytes**. Current-source plain wibo emits
+the same selected function. GPR helper seeds 0/0x10/0x30, default float
+evaluate-first true, and the baseline policy all leave its text unchanged.
+The shared-header and source-form experiments above were not repeated.
+
+A hash- and signature-checked LLDB trace now explains the saved-copy position.
+The inliner classifies `CList<mgCTexAnimeData>`'s constructor as expression
+inline class 6. Original high-level IR retains a construction node (kind 0x3a)
+with allocation and a constructor comma expression. Late IroLinearForm emits
+an allocation-result temporary and its null guard, with the constructed-object
+copy inside the successful branch. Constructor-result copies then feed the
+allocation-expression result at the join. First coalescing maps that result
+and the guard to ABI `v0`, while retaining the success-only object copy;
+coloring maps that object to `s0`. The ordinary scheduling pass is skipped
+for this function. Retail instead saves its allocation pointer before the
+`v0` guard and returns the retained register at the join.
+
+Thus this six-word case includes a null-path/result-lifetime difference beyond
+the two-word saved-register guard pattern. Helper/float state did not move the
+copy, and no affected uninitialized compiler input was found. No new natural
+source or SF policy is validated. Reconsider when an evidenced constructor or
+caller takes the early statement-conversion path while preserving the retail
+construction calls and result lifetime, or when an identical-source state
+probe demonstrates an affected state read. Merely forcing control flow into
+the constructor would change source semantics or add a codegen no-op.
+
+The [SF placement-new report](../funcpoint/placement-new.md#under-satans-fiddle)
+records the comparison with class-A CMenuInvent/CMenuMoveItem, exact pass
+boundaries and initialized inline classification. Private evidence is in
+`.private/placenew-sf/trace-final-mg_tanime/` (inline classifications,
+original/optimized/expanded IR, PCode and canonical text comparison) and
+`.private/placenew-sf/baseline/native/mg_tanime.*`. No symbol was promoted.
+The lane's canonical image retains i13's three unrelated object failures
+(146/149); all sections except the known 0x2c-byte .text difference pass,
+and coverage remains 6,677 matched / 175 guarded / 15 asm-only / 5 fuzzy.
+
+## Constructor-classification follow-up (2026-10-08)
+
+The constructor lane decodes the exact statement classifier and validates real
+array-initialization loops for `CShopMenu` and `CSaveMenuClass`. An inline
+callee with statement class 3 can also request conversion while its enclosing
+constructor still has class 6. Ordinary locals, aggregate initialization,
+void-call sequences and final `return;` remain class 6; locals requiring a
+destructor use cleanup metadata and select class 3, while destructible by-value
+signatures can instead be ineligible (class 0).
+
+No corresponding array initialization exists in `CList<mgCTexAnimeData>`'s
+retail construction sequence. Its data constructor and virtual list
+initialization must remain; adding a destructor-bearing local or artificial
+control flow supplies no original-source evidence. `NewTexAnimeData` therefore
+retains its existing guard and separate result-lifetime park. Full classifier
+cases, constructor-chain comparison and i15 acceptance receipts are in
+[Constructor inline classification](../funcpoint/placement-new.md#constructor-inline-classification).

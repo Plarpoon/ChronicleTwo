@@ -72,7 +72,7 @@ Size from the `EdDebugInfo` global (editloop, 0x1ECDA20, size 0x3C).
 - 0x38 `int jump_map_no`: set from `map_jump`; EditInit sets -1; EditLoop calls
   `EditMapJump(jump_map_no)` when >= 0 and resets to -1.
 
-## Draft and promotion status
+## Earlier draft snapshot
 All ten previously assembly-only named functions have C++ implementations.
 `EditDebugInit`, `EditDebugMode`, `EditDebugStart`, `PrintCursor`,
 `InitLightingEdit`, and `IsLightingEditMode` pass isolated linked-image
@@ -86,3 +86,118 @@ relocates against the named symbol. The draft now has external C++ linkage,
 but the ledger prevents a second attempt this pass. m2c could not resolve the
 `LightingEdit` jump table; its existing Ghidra export and the retail assembly
 were used to establish the page and control flow after the m2c pass.
+
+## LightingEdit on the 73f8e75 merged base
+
+`LightingEdit__FP6CScene` is the unit's only guarded function. With the pinned
+Satan's Fiddle profile, the entry draft has 46 differing words out of 1,356
+(the plain-wibo draft helper reports 60). Four named projected endpoint arrays
+and a two-dimension coordinate adjustment loop reproduce retail's endpoint
+lifetimes. A single indexed matrix retains axis addresses across projection
+calls and differs by 53 words. The named-array version has zero differing
+words and identical relocation fields; its native body is 0x1524 bytes against
+the 0x1530 retail extent, whose remaining bytes are zero padding.
+
+The absolute value of the projected Y axis is a conditional expression. This
+removes the non-retail `LightAbs` wrapper. An in-place `if` instead changes the
+branch delay slot at function offsets 0x122C/0x1230. The projection declaration
+comes from its owning `mglib.hpp` header. The BG/ambient, Fog and File page
+labels include retail's trailing arrows; omitting them passes the instruction
+comparison but fails canonical data binding at retail 0x0036A850 (`at_1230`).
+
+A temporary, manually unguarded canonical compile with the wrapper and section
+fixup passes the complete unit: 0x296C allocated bytes and 668 resolved
+relocations. This is a matching candidate, but the assembly guard remains:
+the inherited fog-channel expression still converts the object address to an
+integer and adds the raw byte offset 6. Promotion must also satisfy the lane's
+natural-source rule.
+
+The proposed shared-header change overlays `mgFOG_PARAM::r/g/b/a` at offsets
+8..11 with `u_char color[4]`, retaining sizeof 0x30. Typed access
+`&fog->color[edit - 2]` adds an instruction at offset 0x79C, moving subsequent
+code by four bytes and producing 873 differing words. Signed and unsigned edit
+indices both do this. The proposal was tested privately and reverted; it is
+layout evidence, not an accepted matching patch. No profile row is needed for
+the zero-word candidate; the existing TU helper-mask row accounts for the 14
+extra differences seen with plain wibo.
+
+**Park category:** source compliance/shared layout. **Reconsider when:** an
+approved fog-channel representation permits indexed C++ access without the
+extra subtraction instruction, followed by a zero-word and whole-unit check.
+The rest of the function's control flow, strings, locals and expressions have
+matching evidence.
+
+Local evidence is in `.private/receipts/bigfn-drafts/editdebug-final.log` and
+`.private/receipts/bigfn-editdebug/final-probe/check.log`; the exact shared-header
+proposal is `.private/bigfn/mg_drawenv-color-proposal.patch`. The final guarded
+build comparison is `.private/receipts/bigfn-final/`.
+
+Final guarded validation is identical to i9 in verifier, complete object-check
+output and coverage. All three lane units pass; the inherited failing set stays
+mg_texture, nd_meswin, actionchara and actscript (145/149 pass). Coverage stays
+6,666 matched / 184 guarded / 15 assembly-only / 7 fuzzy. No target is promoted.
+Comparison receipt: `.private/receipts/bigfn-final/comparison.json`.
+
+## Nearmiss fog representation audit
+
+The current read-only DC1 checkout has no `mg_drawenv` unit or `mgFOG_PARAM`.
+Its `EDIT_FOG_INFO` in `ps2/include/editloop.hpp` places near/far floats at
+0/4, RGB at 8/9/10, and an unknown byte at 11. `EdSetLightParam` in
+`ps2/src/editloop3.cpp` interpolates those fields and calls `MGSetFogParm`;
+DC1's renderer keeps them in `RenderInfo`. Neither supplies an editor colour
+array beginning at byte 6. DC2's retail switch uses `edit = row - 2`, merges
+items 2/3/4, and then performs `edit + fog`, followed by byte offset 6.
+The switch data is a branch-target table, not a table of field addresses.
+
+A private three-channel RGB overlay, keeping alpha separate, still adds the
+index subtraction at +0x79C and differs by 873/1356 words. Selecting the three
+actual typed field addresses with a conditional expression adds branches and
+emits 0x1548 bytes, exceeding retail's 0x1530 extent. Both are reverted. A
+colour array starting at byte 6 would cover part of `far_dist`; it is not an
+evidenced colour representation. Packed int/short access also lacks evidence
+for retail's byte load/store sequence.
+
+The original zero-word candidate remains guarded because its integer/byte
+address arithmetic remains noncompliant. No shared header is changed. A new
+promotion requires a genuine typed layout/index expression that folds the
+colour offset without an extra operation, then the whole-unit check and the
+required hashes of all other game objects if the shared header changes.
+Receipts: `.private/receipts/nearmiss-probes/editdebug/n1/` and `n2/`; the RGB
+header proposal existed only in a private include-tree copy.
+
+## Mid-day typed-colour expression bounds (October 8)
+
+The inherited raw-address `LightingEdit` draft still has zero differing words
+and passes the canonical complete object (0x296C bytes, 668 relocations), but
+remains guarded for source compliance. Its 0x1524 native body has twelve zero
+padding bytes within the 0x1530 extent.
+
+A private `mgFOG_PARAM` union overlays the existing RGBA byte fields with
+`u_char color[4]`. MWCC compile-time assertions verify sizeof 0x30, the array
+and red field at offset 8, green at 9, blue at 10 and alpha at 11. The exact
+layout-only proposal is `.private/proposals/mg_drawenv-fog-color-array.patch`;
+no shared header is modified or committed.
+
+Strict subscript access, either `&fog->color[row - 4]` or a reference to
+`fog->color[edit - 2]`, still emits one extra index subtraction and differs by
+873/1356 words with a 0x1528 body. Carrying a separate colour index and forming
+the switch index from it gives 915; switching on `edit - 2` while keeping the
+unbiased row gives 945. No variant passes the whole-unit check.
+
+A diagnostic typed-array pointer expression, `fog->color + edit - 2`, folds
+the rebase into the two retail +6 memory/address displacements, leaving only
+one differing instruction at +0x79C: `addu v0,s2,s1` instead of retail
+`addu v0,s1,s2`. Integer-first source spelling does not reverse the compiler's
+operand order. This diagnostic still uses explicit pointer arithmetic and is
+not retained or proposed as an active compliant body. An index-first subtraction
+returns to the 873-word result. The array never begins inside `far_dist`.
+
+Promotion remains blocked by the typed access/code-generation problem. The
+shared union proposal is only layout evidence, not a matching solution; its
+all-unit effects have not been validated. The installed source/header/profile
+are unchanged. Receipts: `.private/midday/probes/editdebug/`, including
+`color-row/` for the layout assertions, `color-base-index/` for the one-word
+bound and `baseline/` for the inherited complete-object match. The required
+m2c attempt is saved under `.private/midday/m2c/`; its existing jump-table
+limitation remains, so the documented retail switch disassembly supplies the
+case analysis.

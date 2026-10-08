@@ -39,6 +39,8 @@ helpers in `chronicle/ps2/include/mathutil.hpp` / `src/mathutil.cpp` (`VectorMax
     wait before the flag is read and converted to a Boolean return.
   - mgClipInBox: vsub.xyz max1-max0, min0-min1 (box0 inside box1).
   - W variants use `.xyw` masks (screen-space boxes, mg_frame).
+    `mgClipBoxW` uses the overlap operands of `mgClipBox`; z is excluded and
+    w participates in the sticky-sign test instead.
 - mgZeroVector: `sq $zero` (all four zero). mgZeroVectorW: `sqc2 vf0` -> (0,0,0,1).
 - mgFotI4: `lqc2` loads four floats, `vftoi4.xyzw` converts each lane to a signed
   integer after multiplying by 16, and `sqc2` stores all four results.
@@ -238,6 +240,7 @@ The two-vector `mgDistVectorXZ` uses only x and z in the Q input.
 `mgClipBoxVertex` uses VU0's sticky sign flag across its two masked
 subtractions; the integer return path tests bit 0x80 after the VU pipeline wait.
 `mgClipBox` applies the same status test to the two box separation vectors.
+`mgClipBoxW` performs that test on x, y and w only.
 
 The VU0 vector and matrix routines in this unit retain their guarded C++ drafts
 and retail `INCLUDE_ASM` entries. Handwritten assembly bodies promoted into the

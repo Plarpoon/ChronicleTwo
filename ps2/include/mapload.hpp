@@ -209,10 +209,10 @@ public:
         u32  flag;     /**< FUNC_EVENT_FLAG bits. */
         int  event_no; /**< Event the point starts, used when above zero. */
         int  point_no; /**< Event point number, or treasure-box index for a box point. */
-        int  unk_2c;
-        int  unk_30;
-        int  unk_34;
-        char unk_38[16];
+        int  arg1; /**< First integer argument of the event point. */
+        int  arg2; /**< Second integer argument of the event point. */
+        int  arg3; /**< Third integer argument of the event point. */
+        char target[16]; /**< Name of the event point's target. */
     };
 
     /**
@@ -222,8 +222,8 @@ public:
      */
     struct SoundData {
         int           se_no; /**< Sound effect played. */
-        float         unk_24;
-        float         unk_28;
+        float         near_dist; /**< Distance at which the sound starts its spatial falloff. */
+        float         far_dist; /**< Distance at which the sound ends its spatial falloff. */
         float         unk_2c;
         int           shape; /**< 1 to sound along the line from start to end rather than from the point's position. */
         sceVu0FVECTOR start; /**< First end of the sounding line, in the point's space. */

@@ -168,3 +168,9 @@ current annotation and direct-literal consumer hooks, both native functions
 have zero differing instruction words and relocation fields. The canonical
 wrapper build followed by `fixup_sections.sh` and `check_objects.py` passes
 the whole unit: `0xC818` allocated bytes and 2,379 relocations.
+
+## Outstanding guarded drafts
+
+`MenuGeoramaMessageMake` populates ten lines of the georama message window, positions two footer lines, and refreshes the window. Its current C++ draft differs in thirteen register uses in the second line loop: retail assigns the loop index to `s0` and the selected name to `s4`, while MWCC makes the opposite allocation. Separating the loop index, moving the name declaration, and changing declaration order did not reproduce retail's allocation.
+
+`CMenuGeorama::GetNowSelectEditPartsInfo` returns an edit-part description from the stock, make, or checkpoint list. Its C++ draft differs at the stock branch's epilogue: retail branches to the shared `ld ra` with `nop` in the delay slot, while the draft branches past that load and places it in the delay slot. Shared-result and sequential-condition forms did not produce the retail schedule. Both functions keep their assembly fallbacks.

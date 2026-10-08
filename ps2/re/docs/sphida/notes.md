@@ -87,7 +87,7 @@ object diff unchanged.
 ## Full-section verification of SetUp
 
 `CSphida::SetUp` already reproduces the complete 0x480-byte PAL function,
-including all relocation targets, in the isolated object. The progress
+including all relocation targets, in the pre-merge isolated object. The progress
 report previously showed a 59.51% function row because exported switch labels
 split the cases into additional symbols. Localizing those labels in the
 objdiff target restores the complete 0x480-byte function and its 100% row
@@ -95,7 +95,9 @@ with the project's relocation comparison setting. This is a reporting
 correction, not a new native match.
 After the required `fixup_sections.sh` object preparation,
 `check_objects.py` passes the entire unit: 0x313C bytes and 438
-relocations. Intermediate `.dead` sections are compiler data copies
+relocations. Upstream also reports an isolated whole-image match. These checks
+precede the merge; the merged unit still requires canonical revalidation.
+Intermediate `.dead` sections are compiler data copies
 supplied by placeholders; the normal preparation stage removes them.
 
 `decompile.sh SetUp__7CSphidaFi` cannot resolve the named switch jump

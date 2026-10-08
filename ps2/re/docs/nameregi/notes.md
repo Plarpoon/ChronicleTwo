@@ -120,6 +120,9 @@ NameRegiTopic (char[0x40], event topic shown for target 2), NameRegiStack (mgCMe
   after reloading the message texture. A typed local at that point reproduces
   the retail stack layout and constructor call without a raw byte buffer or
   placement-new cast; the complete function matches.
+- `CNameRegiMenu::DrawActiveFont` draws the active font grid and its Kanji
+  marks. Its C++ body passes an isolated whole-image check with the game
+  compiler flags, including the `DrawMenuFillBox` arguments.
 - The unit-local `divbyzerocheck` on/reset directives are redundant with the
   compiler-wide flag: removing all three pairs leaves every section and
   symbol in the unit's object diff unchanged.

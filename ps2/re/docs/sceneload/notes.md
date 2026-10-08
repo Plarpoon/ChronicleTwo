@@ -6,6 +6,19 @@ Members emitted here but owned elsewhere: `CScene::*` (8, owner scenesnd, no hea
 `CMap::CMap()` (map.hpp, already declared there). The CEditMap constructor is inlined into
 `CScene::LoadMapFromMemory(int,int,SCN_LOADMAP_INFO2*)`.
 
+`mgCObjectStack<CList<EMAP_MESSAGE>>::Initialize` is already an active C++
+specialization and matches retail. `CMap::CMap` remains under `NONMATCHING`:
+the normal draft differs in nine instructions at its start. Retail stores the
+`CMap` vtable pointer before calling `CMapInfo::Initialize`, while the current
+base-class model calls the `CMapInfo` constructor first. Moving the call into
+`CMap`'s body puts it after the automatically constructed members. This order
+suggests `CMapInfo` may be the first member at offset zero, but changing that
+model affects map-related units and needs a separate type analysis.
+
+`CScene::LoadChara` and `CScene::CopyChara` allocate `CCharacter2` objects.
+Their C++ drafts use the class constructor; retail assembly remains active
+until the construction and surrounding scene logic match byte for byte.
+
 ## Non-member functions and data
 - `LoadMapData(SCN_LOADMAP_INFO2&, int)` is LOCAL in retail (`local_symbols.tsv`): `static` in
   the `.cpp`, not in the header. Returns `load_buf` end address (int) or 0 on failure; second

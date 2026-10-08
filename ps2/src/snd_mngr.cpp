@@ -17,7 +17,6 @@
 #include "snd_seseq.hpp"
 #include "sound.hpp"
 
-extern CSound       CSnd;
 extern int          snd_sema_id;
 extern float        MasterVol[2];
 extern int          MasterVolFade[2];
@@ -47,7 +46,6 @@ inline sndCSeSeqData *sndBankInfo::GetSeSeqData(int seseq_no) {
     return &seseq[seseq_no];
 }
 
-int         mgGetVSyncCount();
 static void StopSeSeq(int seq_id);
 static int  GetCSndPortNo(int port_no, int *port, int *sq_port, int *vol);
 static void FadeMasterVol();
@@ -64,7 +62,14 @@ static int EnableSndMngr = 1; /**< Enables loading sound banks. */
 
 static void  CSndStepWait();
 static char *GetLine(char **col, char *text, char *end);
+#else
+extern int EnableSndMngr;
 #endif
+
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
 
 // Code (.text)
 int CLoopSeMngr::Create(int sequence_count, mgCMemory *memory) {
@@ -859,29 +864,29 @@ static int GetCSndPortNo(int port_no, int *port, int *sq_port, int *vol) {
     return 1;
 }
 
-#ifdef NONMATCHING
 unsigned int sndLoadSound(int port_no, unsigned int *pack, mgCMemory *memory) {
     sndPortInfo  *info;
     sndBankInfo  *bank;
+    unsigned int *sq[32];
+    int           sq_size[32];
+    char         *sq_name[32];
+    unsigned int *mid[48];
+    int           mid_size[48];
+    char         *mid_name[48];
+    int           initial_vol;
     unsigned int *config;
+    int           config_size;
     unsigned int *volume;
+    int           volume_size;
     unsigned int *bd;
     unsigned int *hd;
-    unsigned int *sq[32];
-    unsigned int *mid[48];
-    int           sq_size[32];
-    int           mid_size[48];
-    char         *sq_name[32];
-    char         *mid_name[48];
-    int           config_size;
-    int           volume_size;
     int           bd_size;
     int           hd_size;
-    int           initial_vol;
     int           bank_no;
     unsigned int  size;
     unsigned int  quadwords;
     int           i;
+    unsigned int  sound_id;
 
     if (EnableSndMngr == 0) {
         return -1;
@@ -894,6 +899,7 @@ unsigned int sndLoadSound(int port_no, unsigned int *pack, mgCMemory *memory) {
     if (GetCSndPortNo(port_no, &info->port, &info->sq_port, &initial_vol) == 0) {
         return -1;
     }
+    sound_id = (port_no & 0xFF) << 24;
     if (GetPackFileExt(pack, "cfg", &config, 1, &config_size, NULL) <= 0) {
         return -1;
     }
@@ -916,7 +922,7 @@ unsigned int sndLoadSound(int port_no, unsigned int *pack, mgCMemory *memory) {
         sndWaitTransBd();
         info->bank_num++;
     } else {
-        if (info->bank_num >= 16) {
+        if (info->bank_num > 15) {
             sndSignalSema();
             return -1;
         }
@@ -926,6 +932,7 @@ unsigned int sndLoadSound(int port_no, unsigned int *pack, mgCMemory *memory) {
         sndWaitTransBd();
         info->bank_num++;
     }
+    sound_id |= (bank_no & 0xFF) << 16;
     bank = info->GetBank(bank_no);
     if (bank == NULL) {
         sndSignalSema();
@@ -934,9 +941,10 @@ unsigned int sndLoadSound(int port_no, unsigned int *pack, mgCMemory *memory) {
     if (port_no == SND_PORT_BGM || port_no == SND_PORT_BGM2 || port_no == 2 || port_no == SND_PORT_EVENT) {
         bank->sq_num = GetPackFileExt(pack, "sq", sq, 32, sq_size, sq_name);
         size = bank->sq_num * sizeof(char *);
-        quadwords = size >> 4;
         if (size & 0xF) {
-            quadwords++;
+            quadwords = (size >> 4) + 1;
+        } else {
+            quadwords = size >> 4;
         }
         bank->sq_name = new (memory->Alloc(quadwords + 2)) char *[bank->sq_num];
         for (i = 0; i < bank->sq_num; i++) {
@@ -948,9 +956,10 @@ unsigned int sndLoadSound(int port_no, unsigned int *pack, mgCMemory *memory) {
     bank->seseq_num = GetPackFileExt(pack, "mid", mid, 48, mid_size, mid_name);
     if (bank->seseq_num > 0) {
         size = bank->seseq_num * sizeof(sndCSeSeqData);
-        quadwords = size >> 4;
         if (size & 0xF) {
-            quadwords++;
+            quadwords = (size >> 4) + 1;
+        } else {
+            quadwords = size >> 4;
         }
         bank->seseq = new (memory->Alloc(quadwords + 2)) sndCSeSeqData[bank->seseq_num];
     }
@@ -967,11 +976,8 @@ unsigned int sndLoadSound(int port_no, unsigned int *pack, mgCMemory *memory) {
     info->LoadSeInfoTxt(bank_no, (char *) config, config_size, memory);
     info->LoadVolInfoTxt(bank_no, (char *) volume, volume_size);
     sndSignalSema();
-    return ((port_no & 0xFF) << 24) | ((bank_no & 0xFF) << 16);
+    return sound_id;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndLoadSound__FiPUiP9mgCMemory);
-#endif
 
 sndCSeSeqData::sndCSeSeqData() {
     Initialize();
@@ -1446,22 +1452,18 @@ void sndSetSeVolf(unsigned int snd_id, int se_no, float vol, int voice) {
     sndSetSeVol(snd_id, se_no, volume, voice);
 }
 
-#ifdef NONMATCHING
 void sndSetSePanf(unsigned int snd_id, int se_no, float pan, int voice) {
-    int position = fptosi(64.0f * pan) + 64;
-    int in_range = position < 128;
-    if (position < 0) {
-        position = 0;
-        in_range = 1;
+    int driver_pan;
+
+    driver_pan = (int)(64.0f * pan) + 64;
+    if (driver_pan < 0) {
+        driver_pan = 0;
     }
-    if (!in_range) {
-        position = 127;
+    if (driver_pan > 127) {
+        driver_pan = 127;
     }
-    sndSetSePan(snd_id, se_no, position, voice);
+    sndSetSePan(snd_id, se_no, driver_pan, voice);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", sndSetSePanf__FUiifi);
-#endif
 
 void sndSetSePitch(unsigned int snd_id, int se_no, int pitch, int voice) {
     sndPortInfo *info;
@@ -1803,13 +1805,11 @@ int sndBankInfo::SearchSeq(char *name, int *index) {
     return SND_SE_TYPE_KEYON;
 }
 
-#ifdef NONMATCHING
 void sndPortInfo::LoadSeInfoTxt(int bank_no, char *text, int size, mgCMemory *memory) {
     sndBankInfo *bank_info;
     sndSeInfo   *entry;
     char        *end;
     char        *begin;
-    char        *line;
     char         name[64];
     char         description[64];
     char         filename[64];
@@ -1820,6 +1820,7 @@ void sndPortInfo::LoadSeInfoTxt(int bank_no, char *text, int size, mgCMemory *me
     char         flag[8];
     unsigned int bytes;
     unsigned int quadwords;
+    int          se_count;
     int          count;
     int          index;
     int          reverb_type;
@@ -1831,7 +1832,7 @@ void sndPortInfo::LoadSeInfoTxt(int bank_no, char *text, int size, mgCMemory *me
         return;
     }
     end = text + size;
-    char *col[9] = {number, name, description, category, filename, program, key, flag, NULL};
+    char        *col[9] = { number, name, description, category, filename, program, key, flag, NULL };
     begin = text;
     bank_info->se_num = 0;
     while (text < end) {
@@ -1841,16 +1842,21 @@ void sndPortInfo::LoadSeInfoTxt(int bank_no, char *text, int size, mgCMemory *me
         }
         bank_info->se_num++;
     }
-    bytes = bank_info->se_num * sizeof(sndSeInfo);
-    quadwords = bytes >> 4;
+    se_count = bank_info->se_num;
+    bytes = se_count * sizeof(sndSeInfo);
     if (bytes & 0xF) {
-        quadwords++;
+        quadwords = (bytes >> 4) + 1;
+    } else {
+        quadwords = bytes >> 4;
     }
-    bank_info->se = new (memory->Alloc(quadwords + 2)) sndSeInfo[bank_info->se_num];
-    line = begin;
+    bank_info->se = new (memory->Alloc(quadwords + 2)) sndSeInfo[se_count];
+    text = begin;
     count = 0;
-    while (line < end && count < bank_info->se_num) {
-        line = GetLine(col, line, end);
+    while (text < end) {
+        if (!(count < bank_info->se_num)) {
+            break;
+        }
+        text = GetLine(col, text, end);
         if (strcmp(col[0], "END") == 0) {
             break;
         }
@@ -1915,9 +1921,6 @@ void sndPortInfo::LoadSeInfoTxt(int bank_no, char *text, int size, mgCMemory *me
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/snd_mngr", LoadSeInfoTxt__11sndPortInfoFiPciP9mgCMemory);
-#endif
 
 sndSeInfo::sndSeInfo() {
     this->unk_0 = 0;
@@ -2165,11 +2168,6 @@ void sndStreamClose() {
 // Constants (.rodata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_732__2__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_816__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_896__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_897__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_898__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_899__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_900__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1549__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1625__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/snd_mngr", at_1626__DATA);

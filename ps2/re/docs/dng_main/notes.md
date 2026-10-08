@@ -52,6 +52,21 @@ dng_event LoadDungeonMapFile), FinishDungeonMain (empty), LoopDungeonMain (retur
 DngStatus becomes 5). All others are local -> static in the .cpp.
 GetWeaponEffect returns `&wep_effect[cnt]` (CWeaponElement, stride 0x7C0, 8 entries, cycles).
 
+`InitDungeonMain` owns a function-local `mgCMemory` for the debug event stack. At
+0x001CF490, retail checks a one-byte GP-relative initialization guard and calls
+`mgCMemory::Init()` once before `stSetBuffer` and `InitEventEdit`. The stack is
+the 0x30-byte BSS object `debug_event_stack_1106` at 0x01EF7380; the guard is
+`init_1107` at 0x0037D470, followed by three alignment bytes. MWCC generates
+both naturally from the local static declaration, but its generated ordinal
+differs from retail's source ordinal. The object postprocessor maps the pair
+to the retail symbol names without defining a compiler initializer manually.
+The earlier isolated C++ checkpoint of `InitDungeonMain` was 0x20D8 bytes,
+short of retail's 0x2110-byte function, and changed later text layout. The
+merged source now selects the native body by default; that change does not
+establish an exact match. Historical assembly-fallback layout observations
+below describe the earlier checkpoint. Fresh integrated verification is
+required, including the naturally emitted local-static storage and helpers.
+
 ## Globals (types from __sinit, InitDungeonMain, CommonStageClassInit)
 Retail names with `__2` in main.symbols are these globals (other units have locals of the same
 name): MainBuffer, MainChara, EventCamera, BuffWorkData. viewAngleH/V, WaveTable are local here.
@@ -92,6 +107,23 @@ name): MainBuffer, MainChara, EventCamera, BuffWorkData. viewAngleH/V, WaveTable
   wep_effect_cnt, debug_cursor/mons_no/mons_cur/mons_num, nowload (NowLoadingInfo),
   WaveTable (CWaveTable, registered for destruction), SwordLuminous (CSwordLuminous),
   wep_effect (CWeaponElement[8]), backup_pos, cam_table, debug_no.
+
+`debug_no` occupies 0x20 bytes at 0x0033D400: eight `int` slots, with only
+the first seven indexed by the debug menu. The final zero belongs to the
+array itself, before `at_3734` at 0x0033D420.
+
+`DngMainKey` has the retail instruction layout except near 0x001D417C:
+the normal game build loads the two immediate coordinates for `SetNextRef`
+in reverse order, while passing the same values. The isolated draft build
+with `NONMATCHING` defined loads them in retail order, but that configuration
+also compiles the unrelated `InitDungeonMain` draft. Disabling just that
+earlier draft restores the reverse load order. An isolated game-build link of
+`DngMainKey` differs from retail by ten bytes in `.text`; every other section,
+including BSS, matches. Local variables, unsuffixed literals, array elements,
+and equivalent constant expressions did not fix the ordering. The normal
+build therefore keeps the retail assembly and its three data pieces
+(`at_2994`, `at_3336`, `at_3337`) until the C++ function matches in the
+normal translation-unit configuration.
 
 ## Unresolved / pending
 - NOT yet declared in the header because dng_effect.hpp does not define the classes and MWCC
@@ -191,3 +223,9 @@ The native object additionally carries 128 GP-relative relocations where
 the reference encodes final GP offsets directly. Its known unresolved
 global data names remain a dng_main layout limitation; this calibration
 does not claim that those addresses or the complete unit are exact.
+
+# `MoveCheckInfo::Initialize`
+
+The 0x110-byte movement-query record is cleared with `memset`. Moving its
+definition from the header into `dng_main.cpp` produces the retail tail call
+and allows the assembly fallback for this function to be removed.

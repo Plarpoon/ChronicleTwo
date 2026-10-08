@@ -97,3 +97,14 @@ linker script supplies the intervening alignment. The canonical checker permits
 this only at the exact `contents_end` established by the script and only for an
 all-zero retail tail. Objdiff target symbol metadata records declared retail
 function sizes so the same linker padding is excluded from function scores.
+
+## Natural C++ definitions
+
+MWCC generates constructor vtable writes and C++ symbol names from class
+definitions. Keep member functions and constructors in C++ form so the compiler
+emits those symbols. A local `divbyzerocheck` pragma needs demonstrated code
+generation evidence because that option is enabled by the shared flags.
+
+Compare complete objects as well as individual functions: emitted inline
+helpers, static initializers and data sizes can change the containing unit.
+The PAL executable verifier checks the final linked layout afterward.

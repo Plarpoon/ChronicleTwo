@@ -475,7 +475,7 @@ void mgCTextureAnime::TexAnime(int texb, sceVif1Packet *packet) {
             int                    *counter = base + 0x61;
             int                     count = base[0x61];
             CList<mgCTexAnimeData> *next;
-            if (count >= wait) {
+            if (wait <= *counter) {
                 *counter = 0;
                 next = node->next;
                 *current = next;
@@ -570,6 +570,8 @@ int mgCTextureAnime::SearchGroupName(char *group_name) {
 
 #pragma global_optimizer reset
 
+
+#ifdef NONMATCHING
 CList<mgCTexAnimeData> *mgCTextureAnime::NewTexAnimeData(mgCMemory *stack) {
     CList<mgCTexAnimeData> *node;
 
@@ -577,6 +579,9 @@ CList<mgCTexAnimeData> *mgCTextureAnime::NewTexAnimeData(mgCMemory *stack) {
 
     return node;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_tanime", NewTexAnimeData__15mgCTextureAnimeFP9mgCMemory);
+#endif
 
 // Defined in the class body in mg_tanime.hpp.
 #pragma global_optimizer off

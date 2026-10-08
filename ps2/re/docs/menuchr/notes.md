@@ -1,5 +1,65 @@
 # menuchr: reverse-engineering notes
 
+The matching build uses retail gaps for the C++ drafts still guarded by
+`NONMATCHING`, including `CMenuChrCngMenu::LoadBGNPCModel`,
+`MenuCharaChangeInit`, `CMenuCostumeSel::LoadMenuData`,
+and `CMosBookMenu::KeyStep`. The current source also keeps gaps for
+`MenuMemoryDivide`, `EnterDataMenu`, `KeyChangeMain`,
+`MenuCharaChangeStarDraw`, `CMenuMosSelect::KeyStep`, `MenuMonsterLoadBG`,
+`MenuItemCharaDataLoadEndCheckAfter`, `InitMainCharaBG`,
+`CMenuCostumeSel::Draw`, `MenuCostumeInit`, and `CMosBookMenu::Draw`.
+Only the unguarded functions described below are C++ decompilations; the
+current complete object requires integrated verification.
+
+`MonsterBookDraw` draws the book, then draws a debug label when
+`menu_debug_flag` is set. The retail float register setup for
+`DrawMenuFillBox` requires `float(20.0)` and `float(24.0)` at the first and
+fourth arguments; these explicit C++ conversions keep its 0x94-byte body
+byte-identical. `MenuNPCLoadCheck` clears the model stack state, frees the
+loaded texture block, applies the temporary name suffix, initializes and
+loads the townsperson model, then clears the suffix and load flag. A typed
+`static_cast<mgCTextureManager *>` on the manager address keeps the base
+pointer in `s0`, matching the retail code. The loaded model buffer is typed
+as `u_int *` for `CActionChara::LoadPack`; reinterpretation happens only at
+the memory allocation and DMA loading boundaries. Both functions, the entire
+menuchr unit object, and the isolated linked image match retail.
+
+`monster_progress_tbl` is a 19-by-5 array of `s16` rows. Each row starts with
+the badge ID and has four monster form IDs. The retail code advances its row
+address by ten bytes and its form address by two bytes; declaring the array
+with both dimensions lets MWCC produce those two induction variables while
+the source uses typed indices. `get_gajji_id_from_monster_progress_table`
+searches all forms and returns the badge ID with the form column, while
+`GetMonsterProgressTableNo` searches one form column for a monster ID and
+returns the row. Both are active C++ functions. Their typed loops require comparison against
+the current object before a matching claim can be made; the unit also retains
+assembly gaps for the menu functions listed below.
+
+`MenuCharaChangeDraw` matches as native C++ with the three stable
+floating-expression rows documented below. They restore the panel coordinates
+and dimensions to retail's argument materialization order.
+`CMenuMosSelect::CheckLoadBGMonster` has the same four-instruction reversal for
+the 16.0f and 1.0f arguments to `SetPosition`; binding the character pointer to
+a local also changes the adjacent zero argument setup. Writing the first
+argument as `float(16.0)` produces the retail register order, so this function
+now matches as C++, including the complete object and isolated linked image.
+
+
+`CMenuChrCngMenu::LoadBGNPCModel` has a native placement-new draft whose
+compiled body differs in only two instructions: retail branches on the
+allocation result in `v0` and moves it to `s1` in the delay slot, while MWCC
+currently moves first and branches on `s1`. Named locals, assignment chaining,
+parenthesized new expressions, and a same-type cast retain that difference.
+`MenuMemoryDivide` differs in 18 instructions, mostly saved-register choices
+for its buffer and loop indices. Its existing buffer increments also need a
+typed array representation before promotion. `MenuMonsterLoadBG` has a
+larger stack-frame and register-allocation difference in its guarded draft.
+`CMenuCostumeSel::LoadMenuData` and `CMosBookMenu::KeyStep` each differ by
+the same two placement-new branch/move instructions as `LoadBGNPCModel`.
+`MenuItemCharaDataLoadEndCheckAfter` differs by two instructions in the
+inlined `CScene` constructor: the address argument for `MdsListSet::Initialize`
+is prepared before the call in the draft and in the call delay slot in retail.
+
 The seven `MenuActionCharaBuffer` stacks and the other eight `mgCMemory` globals use native
 C++ construction in BSS declaration order. MWCC generates the 148-byte retail
 `__sinit_menuchr_cpp` from those declarations. `CMosBookMenu` constructs its camera with speed
@@ -163,7 +223,7 @@ array indexing and member calls use the declared C++ types.
 
 `CMosBookMenu` initializes the camera, list, and description fields in its native constructor, as in the PR7 cleanup branch. `MonsterBookInit` constructs it in `MosBookStack` and then sets its texture block and boot mode.
 
-`CMenuMosSelect` initializes its badge and message window fields in its native constructor. Its member `CActionChara` objects contain `CCharaFrameMatching` objects whose default construction is trivial; the explicitly empty constructor had introduced calls absent from PAL. The constructor is inlined into `MenuMonsterBoxInit` at inline depth 3, matching the PAL constructor sequence and null branch exactly.
+`CMenuMosSelect` initializes its badge and message window fields in its native constructor. Its member `CActionChara` objects contain `CCharaFrameMatching` objects whose default construction is trivial; an explicitly empty `CCharaFrameMatching` constructor introduces two calls to `Initialize__19CCharaFrameMatchingFv` in `MenuMonsterBoxInit` that are absent from PAL. The constructor is inlined into `MenuMonsterBoxInit` at inline depth 3, matching the PAL constructor sequence and null branch exactly.
 
 `SetMenuLoadItemNo` reads Max's or Monica's five `CHARA_DATA::equip` item numbers. For the ridepod, the displayed order is parts 3, 0, 1, an empty slot, and part 2. Typed access to `ROBO_DATA::parts` and `CGameDataUsed::item_no` preserves its exact PAL object code.
 

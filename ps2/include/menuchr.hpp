@@ -464,7 +464,7 @@ public:
     s16             chara;          /**< Character being dressed: 0 for Max, 1 for Monica. */
     int             monica_enabled; /**< 1 when Monica can be dressed too. */
     sceVu0FVECTOR   chara_pos;      /**< Position of the character's model. */
-    float           unk_270[4];
+    float           costume_rotation[4]; /**< Rotation restored to the character model while dressing it. */
     s32             unk_280;
     int             cursor_show;  /**< Non-zero while the cursor is drawn. */
     int             change_chara; /**< Non-zero while the other character is loading. */
@@ -478,7 +478,7 @@ public:
     float           cursor_x;    /**< Screen x of the cursor. */
     float           cursor_y;    /**< Screen y of the cursor. */
     float           cursor_wave; /**< Angle that bobs the cursor. */
-    float           unk_2BC;
+    float           cursor_wave_y; /**< Phase of the costume cursor's vertical bob. */
     CHARA_DATA     *chara_data; /**< Status of the character being dressed. */
     mgCTexture     *tile_tex;   /**< Texture of the background tiles. */
     mgCTexture     *cursor_tex; /**< Texture of the cursor. */
@@ -514,10 +514,10 @@ public:
         chara_pos[1] = -14.0f;
         chara_pos[2] = 4.0f;
         chara_pos[3] = 1.0f;
-        unk_270[0] = 0.0f;
-        unk_270[1] = 0.1f;
-        unk_270[2] = 0.0f;
-        unk_270[3] = 1.0f;
+        costume_rotation[0] = 0.0f;
+        costume_rotation[1] = 0.1f;
+        costume_rotation[2] = 0.0f;
+        costume_rotation[3] = 1.0f;
         camera.SetDistance(100.0f);
         camera.SetAngle(0.0f);
         camera.SetHeight(3.0f);
@@ -696,7 +696,7 @@ STATIC_ASSERT(sizeof(mgRect<short>) == 0x8);
  * Monster forms of each badge: a badge number, then the monster of each of its four forms.
  *
  */
-extern s16 monster_progress_tbl[MONSTER_PROGRESS_NUM * (1 + MONSTER_PROGRESS_LEVEL_NUM)];
+extern s16 monster_progress_tbl[MONSTER_PROGRESS_NUM][1 + MONSTER_PROGRESS_LEVEL_NUM];
 
 /**
  *
@@ -1306,11 +1306,11 @@ void MonsterBookDraw();
  */
 struct MENU_LOAD_INFO {
     signed char mode; /**< Current loading mode. */
-    signed char unk_1;
-    signed char unk_2;
-    signed char unk_3;
-    signed char unk_4;
-    signed char unk_5;
+    signed char alternate_model; /**< Selects the alternate character model for loading. */
+    signed char load_all; /**< Non-zero when all character model phases are loaded together. */
+    signed char chara_no; /**< Character selected for model loading. */
+    signed char request_phase; /**< Requested phase of character model loading. */
+    signed char load_phase; /**< Current phase of character model loading. */
     signed char unk_6[2];
 };
 

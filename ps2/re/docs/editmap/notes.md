@@ -125,3 +125,7 @@ offset in the first overload remains: `out[count - 1]` and
 ## Indexed map storage
 
 `ClearAllParts` initializes each `edit_parts[i]` directly; `InitialPlaceParts` reads `info_mngr.init_parts[i]`; `GetePlaceParts(char*)` searches `edit_parts[i]`; and `GetGridPos` checks `grid[i]`. These typed accesses each produce a 100% function match. `ClearAllParts` still uses offset counters for `place_log` and fixed placements: replacing both with typed indexing scored 99.22%; only the log replacement scored 99.69%. `GetSameParts` typed indexing scored 99.09% and was reverted.
+
+## Constructor-backed allocations
+
+`emapRIVER_PARTS_NAME`, `emapMASK_PARTS_NAME`, and `emapWATER_PARTS_NAME` each allocate a `CMapPiece`. The typed drafts use placement construction of that class. Retail assembly remains active pending an exact match.

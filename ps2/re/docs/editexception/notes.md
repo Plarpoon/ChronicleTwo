@@ -121,3 +121,7 @@ after their first use or ordinary out-of-line definitions -- the header declares
   values and the associated local-data layout still need migration.
 - `S51Thunder` writes two fields of each map-piece list node in retail; the
   current named-field interpretation for those node writes needs verification.
+
+## Constructor-backed allocations
+
+`InitFirePowder` uses native placement construction of `mgC3DSprite` in the guarded C++ draft; retail assembly remains active pending an exact match.

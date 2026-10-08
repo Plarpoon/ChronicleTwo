@@ -87,11 +87,10 @@ helpers in `chronicle/ps2/include/mathutil.hpp` / `src/mathutil.cpp` (`VectorMax
 - Correction: mgVectorMinMaxN reads only `count` vectors. It seeds with v[0], preloads v[1], but the
   loop advances the pointer before reloading, so v[1] is folded twice and the last folded is
   v[count-1].
-- VU0 functions are written as `asm { }` blocks on the raw argument registers ($4..$9), in the
-  style of the first game's chararead/bound; they match byte-for-byte and are promoted. Float ones
-  return through `mtc1 $2, $f0` with no C return (MWCC warns "return value expected").
-  Clip functions read the status into a `register int` and return
-  `(status & MG_VU0_STATUS_SIGN_STICKY) == 0` (new enum `mgVu0Status`); this matches.
+- An earlier attempt wrote VU0 functions as `asm { }` blocks on raw argument registers
+  ($4..$9). Those bodies reproduced retail bytes but did not count as C++ decompilation,
+  so the current source uses guarded C++ drafts with `INCLUDE_ASM` fallbacks.
+  The clip functions test the sticky sign bit (`MG_VU0_STATUS_SIGN_STICKY`).
 - Loop asm (mgApplyMatrixN, _MaxMin, mgVectorMinMaxN; retail marks them "handwritten"): the
   asm block assembler fills the `bgez` delay slot itself (moves the `lqc2` into it), so the
   drafts differ; they need the delay-slot instruction kept explicitly (noreorder-style).
@@ -112,28 +111,28 @@ helpers in `chronicle/ps2/include/mathutil.hpp` / `src/mathutil.cpp` (`VectorMax
   version truncated twice.
 - mgCosf is `mgSinf(1.5707964f + angle)` (tail jump). `sin_table_unit_1 = 162.97466f` gives
   retail's 0x4322F983.
-- Job mg_math.1 result corrected: its 30 VU0 `asm { }` functions are recorded as `asm`.
+- The former VU0 `asm { }` bodies are recorded as undecompiled assembly gaps.
 
 ## Current guarded drafts
 
-The seven remaining `INCLUDE_ASM` functions all have C++ drafts behind `NONMATCHING`. `mgApplyMatrixN`, `mgApplyMatrixN_MaxMin`, and `mgVectorMinMaxN` now use typed C++ loops instead of inline assembly in their guarded branches. The loops apply matrices to each vector and update four-component bounds; the default build continues to use retail assembly. Prior isolated promotion attempts for all seven functions are recorded in `scripts/re/promotion_attempts.tsv`, so a later source refinement does not create a second promotion attempt under the one-attempt rule.
+The seven non-VU0 gaps discussed in this section have C++ drafts behind `NONMATCHING`. `mgApplyMatrixN`, `mgApplyMatrixN_MaxMin`, and `mgVectorMinMaxN` now use typed C++ loops instead of inline assembly in their guarded branches. The loops apply matrices to each vector and update four-component bounds; the default build continues to use retail assembly. Prior isolated promotion attempts for all seven functions are recorded in `scripts/re/promotion_attempts.tsv`, so a later source refinement does not create a second promotion attempt under the one-attempt rule.
 
 ## Matrix loop drafts
 The three vector loop functions now have guarded C++ representations of the VU0 matrix transform and four-component extrema operations. These compile but differ from the retail handwritten VU0 instruction streams; the assembly fallbacks remain active. The supported callers pass a positive count.
 
 ## Guarded VU0 arithmetic drafts
 
-Thirty previously assembly-only functions now have `NONMATCHING` C++ bodies, each with the original
-`INCLUDE_ASM` in the default branch. `draft_check.py mg_math` compiles every body; none of these
-thirty matches its retail VU0 instruction sequence. The generated object therefore remains the
-assembly version in ordinary PS2 builds.
+Twenty-nine VU0 functions have `NONMATCHING` C++ bodies, each with the original
+`INCLUDE_ASM` in the default branch. `draft_check.py mg_math` compiles every body;
+none of these functions matches its retail VU0 instruction sequence. Their
+ordinary PS2 builds therefore use retail assembly.
 
 - `mgFotI4` scales four lanes by 16 before integer conversion. The draft uses a C++ cast, which
   approximates VU0 `vftoi4` for ordinary finite values; edge cases such as overflow and NaN may differ.
 - `mgCreateBox8` emits the eight corners in the VU0 store order: minimum; maximum x/y/z separately;
   three maximum corners with x/y/z respectively replaced by minimum; maximum. The four-component
   loads and stores preserve the input w components.
-- `mgZeroVector`, `mgZeroVectorW`, and `mgAddVector`/`mgSubVector` operate on all four lanes.
+- `mgZeroVectorW` and `mgAddVector`/`mgSubVector` operate on all four lanes.
 - The five `mgClip*` drafts test whether any of the two vector differences has a negative lane,
   as the cleared VU0 sticky sign bit does. The W forms test x, y, w; the others test x, y, z.
   Floating-point status behavior for exceptional inputs remains an approximation.
@@ -142,6 +141,7 @@ assembly version in ordinary PS2 builds.
 - `mgPlaneNormal` takes the cross product of the two edges starting at the first point. Its w lane
   is modeled as zero; the retail VU0 operation only writes xyz, so the exact stored w value needs
   a register-level match.
+
 - The seven `mgDistVector*` drafts sum squared x/y/z or x/z differences, then take a square root
   for the distance forms. They do not reproduce VU0 accumulation, Q register, or rounding details.
 - `mgUnitMatrix` and `mgZeroMatrix` write all sixteen scalar elements. `mgMulMatrix` multiplies two
@@ -150,3 +150,16 @@ assembly version in ordinary PS2 builds.
 - `mgInversMatrix` computes the inverse of the 3x3 linear portion using cofactors, then the
   translated fourth row. Like retail, it has no singular-matrix guard. Division and accumulation
   differ from VU0 at instruction and rounding level.
+
+`mgZeroVector` now uses a 128-bit integer store through the four-float vector
+address. MWCC emits retail's `jr ra` with `sq zero,0(a0)` in the delay slot;
+the isolated linked image matches. The reinterpretation is needed to request
+one PS2 quadword store from C++. `mgZeroVectorW` remains an assembly gap:
+retail stores VU0 constant `vf0` with `sqc2`, which a scalar or integer
+C++ store does not express. The other shortest remaining gaps (`mgFotI4`,
+`mgAddVector`, `mgSubVector`, `mgUnitMatrix`, `mgZeroMatrix`) likewise use
+VU0 arithmetic or `sqc2` in retail.
+
+The VU0 vector and matrix routines in this unit retain their guarded C++ drafts
+and retail `INCLUDE_ASM` entries. Handwritten assembly bodies promoted into the
+C++ source do not count as matched decompilations.

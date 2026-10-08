@@ -1,11 +1,13 @@
 # editloop: reverse-engineering notes
 
-## C++ draft status
-35 of 36 functions have C++ in `ps2/src/editloop.cpp`; 1 has no draft. 3 are
-exact and compiled by the matching build. 16 more compile to retail's bytes in
-isolation but stay under `NONMATCHING`. 16 differ from retail and keep the
-`INCLUDE_ASM` fallback. Each function tried has its one promotion attempt
-recorded in `scripts/re/promotion_attempts.tsv`.
+## Current source status
+
+`EditInit`, `EditLoop`, and `EditDraw` retain typed C++ drafts under
+`NONMATCHING`; the matching build selects their `INCLUDE_ASM` gaps. Earlier
+active versions changed the unit's code and data layout and failed the object
+check. `CameraCtrlParam::operator=` also has an assembly gap at its retail
+address, with no hand-written assignment definition. The other game functions
+remain native C++ where the base source already matched.
 
 The town main-loop mode (walking and Georama editing). `LoopInit/LoopMain/LoopExit` in mainloop
 hold `EditInit`, `EditLoop`, `EditExit`. No class is owned by this unit (`class_units.tsv`).
@@ -75,4 +77,6 @@ All other named data is local (static in .cpp): .sbss ints/pointers 0x37D2C0..0x
 `EditEvent` (CEditEvent, 0x150; +0x4 state, 1 = running; +0x148 door SE id), `EdDebugInfo`
 (EditDebugInfo, 0x3C), `TestVisual` (0x50), `TestFrame` (0x110), `beforeAnalyze` (int[16]).
 
-`CameraCtrlParam::operator=` copies the 11 scalar limits and the `no_check` flag field by field. A native C++ assignment operator has the retail mangled name and exactly reproduces the previous compiler-generated copy body.
+`CameraCtrlParam::operator=` copies the 11 scalar limits and `no_check`
+field in retail. The current editloop source keeps this body as an assembly
+gap; `cameracontrol.hpp` leaves assignment implicit for other C++ users.

@@ -50,17 +50,8 @@ extern char  at_858__3[];
 extern char  at_958__3[];
 extern char  at_959__3[];
 extern char  at_1093[];
-#include <cstdio>
-#include <cstring>
 
-#include "collision.hpp"
-#include "mapsky.hpp"
-#include "mg_camera.hpp"
-#include "mg_math.hpp"
 #include "mg_tanime.hpp"
-#include "mg_texture.hpp"
-#include "mglib.hpp"
-#include "screeneffect.hpp"
 
 // Code (.text)
 void CScene::UpDateMapInfo() {
@@ -192,10 +183,10 @@ int CScene::GetMapEvent(float *position, int map_no, CSceneEventData *event) {
                 event->event.flag = point->event.flag;
                 event->event.event_no = point->event.event_no;
                 event->event.point_no = point->event.point_no;
-                event->event.unk_2c = point->event.unk_2c;
-                event->event.unk_30 = point->event.unk_30;
-                event->event.unk_34 = point->event.unk_34;
-                *(CopyEventName *) event->event.unk_38 = *(CopyEventName *) point->event.unk_38;
+                event->event.arg1 = point->event.arg1;
+                event->event.arg2 = point->event.arg2;
+                event->event.arg3 = point->event.arg3;
+                *(CopyEventName *) event->event.target = *(CopyEventName *) point->event.target;
                 event->map_event.check_type = result.check_type;
                 event->map_event.event_no = result.event_no;
                 *(CopyEventWords *) event->map_event.matrix = *(CopyEventWords *) result.matrix;
@@ -293,7 +284,7 @@ void CScene::GetSunPosition(float *pos) {
     sceVu0Normalize(pos, pos);
     sceVu0ScaleVector(pos, pos, 5000.0f);
     pos[0] += camera_pos[0];
-    pos[1] += map->unk_dc;
+    pos[1] += map->map_info.sky_height;
     pos[2] += camera_pos[2];
 }
 
@@ -340,8 +331,8 @@ void CScene::DrawSky(int sky_index) {
 
         map = GetMap(active_map);
 
-        if (map != NULL && map->sky_info != 0) {
-            camera_info[1] = map->unk_dc;
+        if (map != NULL && map->map_info.sky_info != 0) {
+            camera_info[1] = map->map_info.sky_height;
             memset(&lighting, 0, sizeof(lighting));
             map->GetLightInfo(&lighting);
             map->GetLightingRatio(lighting_ratio);
@@ -368,8 +359,8 @@ void CScene::DrawLensFlare(int flare_type, char *texture, char *alpha_texture) {
     int   screen[4];
     CMap *map = GetMap(active_map);
 
-    if (map != NULL && map->sky_info != 0) {
-        if (map->lens_flare == 0) {
+    if (map != NULL && map->map_info.sky_info != 0) {
+        if (map->map_info.lens_flare == 0) {
             return;
         }
     } else {

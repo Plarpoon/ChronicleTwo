@@ -11,6 +11,7 @@
 #include "mapload.hpp"
 #include "mg_math.hpp"
 #include "mg_memory.hpp"
+#include "mglib.hpp"
 #include "scriptinterpreter.hpp"
 
 static int mapIMG(SPI_STACK *stack, int argument_count);
@@ -39,8 +40,6 @@ static int mapCHARA_LIGHT_ADJUST(SPI_STACK *stack, int argument_count);
 static int amapIMG(SPI_STACK *stack, int argument_count);
 static int amapPCP(SPI_STACK *stack, int argument_count);
 
-// mglib.hpp cannot be included beside mapload.hpp (both declare mgFOG_PARAM).
-extern int  mgScreenWidth;
 extern char at_360[];
 extern char at_361[];
 extern char at_362[];
@@ -74,32 +73,6 @@ extern char at_710[];
 extern char at_711[];
 extern char at_712[];
 extern char at_713__2[];
-
-static int mapIMG(SPI_STACK *stack, int argument_count);
-static int mapPCP(SPI_STACK *stack, int argument_count);
-static int mapACTIVE_LIGHT_SET(SPI_STACK *stack, int argument_count);
-static int mapLIGHT_SET(SPI_STACK *stack, int argument_count);
-static int mapFOV(SPI_STACK *stack, int argument_count);
-static int mapBGCOLOR(SPI_STACK *stack, int argument_count);
-static int mapBGCOLOR2(SPI_STACK *stack, int argument_count);
-static int mapAMBIENT(SPI_STACK *stack, int argument_count);
-static int mapLIGHT(SPI_STACK *stack, int argument_count);
-static int mapPLIGHT(SPI_STACK *stack, int argument_count);
-static int mapFOG_ENABLE(SPI_STACK *stack, int argument_count);
-static int mapFOG(SPI_STACK *stack, int argument_count);
-static int mapLIGHT_SET_END(SPI_STACK *stack, int argument_count);
-static int mapFLOOR(SPI_STACK *stack, int argument_count);
-static int mapCHARA_POS(SPI_STACK *stack, int argument_count);
-static int mapTIME_FLAG(SPI_STACK *stack, int argument_count);
-static int mapTIME_LIGHT_NUM(SPI_STACK *stack, int argument_count);
-static int mapDEF_FOOT(SPI_STACK *stack, int argument_count);
-static int mapSKY_INFO(SPI_STACK *stack, int argument_count);
-static int mapLENS_FLARE(SPI_STACK *stack, int argument_count);
-static int mapTIME_CFADE(SPI_STACK *stack, int argument_count);
-static int mapALL_SCISSOR(SPI_STACK *stack, int argument_count);
-static int mapCHARA_LIGHT_ADJUST(SPI_STACK *stack, int argument_count);
-static int amapIMG(SPI_STACK *stack, int argument_count);
-static int amapPCP(SPI_STACK *stack, int argument_count);
 
 /**
  *
@@ -646,7 +619,7 @@ static int mapDEF_FOOT(SPI_STACK *stack, int argument_count) {
  */
 static int mapSKY_INFO(SPI_STACK *stack, int argument_count) {
     MapInfo->sky_info = spiGetStackInt(stack++);
-    MapInfo->unk_dc = spiGetStackFloat(stack++);
+    MapInfo->sky_height = spiGetStackFloat(stack++);
 
     if (argument_count >= 3) {
         MapInfo->sun_angle = mgAngleLimit(3.1415927f * spiGetStackFloat(stack) / 180.0f);

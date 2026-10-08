@@ -165,7 +165,12 @@ Only non-local symbols get externs (the rest are `static` in the .cpp per `local
   MenuPosFormValueSetWeapon, MenuFormUpdataAttachInfo, MenuPosFormValueSetFishingRod, MenuItemDebugKey,
   MenuItemDebugDraw, local_item_infoview_set, MenuItemCharaActWepInfoDraw, MenuItemCharaViewCheck,
   MenuPosFormValueSetCharaRobo, MenuPosFormValueSetMonster, BuildUpWeaponNameBoardDraw,
-  MenuWeaponStatusInfoFormSet, MenuItemSelectDiffer, MenuItemInfoCursorSet, CheckTrushWeapon.
+  MenuWeaponStatusInfoFormSet, MenuItemSelectDiffer, CheckTrushWeapon.
+- `MenuItemSelectDiffer` has a 0x30-byte jump table at `at_7968` whose entries
+  point to interior addresses in the function. The current C++ draft compiles
+  to 0x268 bytes rather than retail's 0x270, changing those targets. The
+  default build uses retail assembly while the draft remains under
+  `NONMATCHING` for further matching work.
 - Return types come from m2c and Ghidra and were checked at call sites for SearchNowPosItemExist and
   GetExistThisPosData (both `CGameDataUsed *`) and GetGameDataUsedForSWAPINFO. Parameter names of the big
   functions (ModelReadStart, WeaponBuildCheck, KeyStepLocal, CheckSpectolFusion's int) are only partly
@@ -201,3 +206,28 @@ pointer fields; it leaves `unk_6`, `unk_72`, `unk_8C` and `unk_90` untouched.
 The four local `divbyzerocheck on`/`reset` pairs are redundant with the PS2
 compiler flag. Removing them leaves every section and symbol in this unit's
 object diff unchanged.
+
+## Pending menu function matches
+
+`CMenuItemInfo::MenuModeMalloc` retains a guarded C++ draft. Its object code
+differs from the retail function, including its size, so the normal build uses
+the retail assembly until its C++ form matches. `MenuItemInfoCursorSet` now
+matches exactly as C++, including its linked image.
+`CMenuItemInfo::PushKey` also retains a guarded draft: its object section exceeds
+the retail function by 0x20 bytes and shifts later linked text.
+`MenuWeaponBuildUpDraw` retains a guarded draft because MWCC assigns opposite
+integer registers to the bottom bar Y coordinate and its X literal before
+`PrimQuad`; the four resulting instructions differ from retail when the draft
+is compiled alone. Compiling all `NONMATCHING` drafts changes MWCC's register
+selection and yields an exact function, but that object contains other
+nonmatching functions.
+
+## October 2026 menu draft promotions
+
+- `CBaseMenuClass::MenuItemCommandSelect` is an exact C++ match when compiled alone through mwccgap. Its dispatch selects an item command from a key and button pair, including ask mode handling.
+- `MenuItemSelectDiffer` is an exact C++ match when compiled alone through mwccgap. It tests whether an item selection differs from the currently selected item.
+- Both functions passed the isolated linked-image verification. `MenuWeaponBuildUpDraw` differs by one instruction in the linked image despite the whole-unit draft comparison reporting a match. `CMenuItemInfo::LRCheck` differs in two branch-delay-slot words at offsets 0x264 and 0x268; the compiler places the zero return value in the delay slot and skips the shared return-value assignment.
+
+## Constructor-backed allocations
+
+`NewMenuActionChara` now uses native placement construction of `CActionChara`; both callers (`IsAskExtend` and `MenuModeMalloc`) are guarded C++ drafts with retail assembly active.

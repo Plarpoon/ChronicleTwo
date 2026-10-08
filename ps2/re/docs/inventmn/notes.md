@@ -1,5 +1,19 @@
 # inventmn: reverse-engineering notes
 
+## Linked text length
+
+The native drafts of `CMenuInvent::LoadCharaCheck`, `CMenuInvent::IsCreateObject`,
+and `MenuInventInit` compile to 0x48C, 0x1568, and 0x1018 bytes, respectively;
+retail uses 0x4D8, 0x1588, and 0x1048. Their shorter code shifts the following
+linked text by 0xA0 after function alignment. These drafts remain guarded by
+`NONMATCHING` and the matching build uses their retail assembly. The native
+`UpdataNetaMemoStr` also has differing bytes and relocations, so it uses the
+retail assembly while its C++ draft is refined.
+
+The matching build also selects retail gaps for `ResetAddress`, `CalcTex`,
+`IsAccessAlbum`, and `MenuInventKey`; those functions have guarded C++ drafts.
+The other invention-menu functions remain native C++ where already matched.
+
 Invention menu ("Invent"): camera photos, ideas ("neta", id < 1000) and scoops (id >= 1000),
 the memory-card album, invention recipes and the menu page class. No first-game counterpart
 (Dark Cloud 1 has no camera/invention system).
@@ -147,7 +161,7 @@ Offsets:
 - `CalcCursorPosition` selects cursor coordinates by the active layout (`key_arg_no`), including
   the idea board, card and photo lists, item board, album and notebook. It takes frame dimensions
   and offsets from the menu layout table, hides the frame for special `photo_only` states, and
-  can snap the cursor to its new position via `unk_eb6`. Its draft compiles but does not yet match.
+  can snap the cursor to its new position via `cursor_snap`. Its draft compiles but does not yet match.
 - 0xEB8..0xF28 forms/parts from AttachFormInfo (see header); 0xEFC, 0xF0C, 0xF2C not touched.
   Part pointers (GetPartInfo results) typed void* pending menudraw's part type.
 
@@ -186,11 +200,14 @@ for `__construct_new_array` in PhotoNetaEnter. Size 0xC.
 - `GradationSet` reads two grade-part names from `invent_grade_fff`. Typed
   indexing converts the byte-offset loop to an element index, changing a
   shift and the loop increment; the typed version currently scores 99.096%.
-- `UpdataNetaMemoStr` indexes `PIC_NAME_INFO` records directly; its remaining
-  mismatch is the four-argument native `neta_sort` call sequence noted above.
+- `UpdataNetaMemoStr` indexes `PIC_NAME_INFO` records directly and matches
+  retail with the file-local `neta_sort` definition described below.
 - `CInventUserData::ResetAddress` unrolls eight photo pointers per iteration. A
   typed `photo_work` row pointer preserves the loop shape, but MWCC hoists its base
-  calculation and chooses different constants for the unrolled addresses.
+  calculation and chooses different constants for the unrolled addresses. Direct
+  `&photo_work[index][0]` indexing scores 60.0%, while the previous byte-offset
+  expression scored 99.583336% but used raw pointer arithmetic. The typed draft
+  remains under `NONMATCHING`; the matching build uses retail assembly.
 
 ## Unresolved
 - Meaning of most unk_ fields of CMenuInvent; mode values 4 and 8.

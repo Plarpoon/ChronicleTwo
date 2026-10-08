@@ -121,6 +121,9 @@ TREASURE_BOX structs and trap circles as MAP_TRAP_CIRCLE, a different layout.
 ## DrawEpisode draft
 `CStartupEpisodeTitle::DrawEpisode` draws the message first, then the title frame with alpha-scaled width and a language-dependent reveal scissor. The guarded C++ draft compiles and retains its assembly fallback because it differs from retail.
 
+## SearchMapFlatPosition draft
+`SearchMapFlatPosition` selects a placed map part that the automap has not hidden, samples vertical segments around its center, and accepts a floor polygon only when a short follow-up collision succeeds. It tries sixteen segments per part and reports failure after the retry count expires. Its guarded C++ draft differs in 33 of 260 instructions, primarily around the initial map and parts-table null checks and local stack slots. Splitting the initial map assignment from its null check changed the stack frame from 0x2BE0 to 0x2BD0 and increased the instruction differences, so the combined expression remains.
+
 ## AutoSetTreasureBox draft
 The guarded no-argument draft reads the stage treasure table into a scratch memory region, places eight random boxes beyond 320 units from the event point, converts mimic monster entries into boxes, rolls up to three random circles, and places the geostone, random stones and key box where permitted. It compiles and differs from retail; the assembly fallback remains active.
 

@@ -199,8 +199,8 @@ struct WEAPON_USED {
  *
  */
 struct ROBOPART_USED {
-    COMMON_GAGE gage0;      /**< Gauge from the part's second parameter; the durability of an item type 0xF part. */
-    COMMON_GAGE gage1;      /**< Gauge from the part's fourth parameter; the durability of an item type 0xD part. */
+    COMMON_GAGE energy; /**< Energy gauge of the robot part. */
+    COMMON_GAGE whp; /**< Durability gauge. */
     s16         status[10]; /**< Status parameters of the part. */
     s16         defence;    /**< Defence the part gives. */
     s16         unk_26;
@@ -217,7 +217,7 @@ struct ROBOPART_USED {
 struct BREEDFISH_USED {
     char  name[0x15]; /**< Name of the fish. */
     u8    sex;        /**< Sex of the fish, 0 or 1. */
-    u8    unk_16;
+    u8    kind; /**< Fish variety used to select its displayed name. */
     u8    unk_17;
     u16   size;   /**< Size of the fish. */
     u16   weight; /**< Weight of the fish. */
@@ -227,10 +227,10 @@ struct BREEDFISH_USED {
     u16   param[5]; /**< Racing parameters of the fish. */
     u16   timer;    /**< Time left, counted down by the game clock. */
     u8    unk_32[3];
-    s8    unk_35;
-    u16   unk_36;
+    s8    breed_feeds_remaining; /**< Feedings left before this breeding fish stops eating. */
+    u16   life; /**< Remaining lifetime of the breeding fish. */
     u16   flags; /**< Flags; 0x2 marks an electric fish, which is never rubbish. */
-    u8    unk_3a;
+    u8    color; /**< Colour variant of the breeding fish. */
     s8    grow_count; /**< Food eaten towards the next growth; the fish grows past 10. */
     u8    unk_3c;
     u8    unk_3d;
@@ -904,7 +904,7 @@ struct CHARA_DATA {
     s16           defence;        /**< Defence of the character. */
     s16           status_time[4]; /**< Time left of the CHARA_STATUS_POWER, 0x2, 0x8 and 0x20 conditions. */
     u8            unk_14[0x17];
-    u8            unk_2b;
+    u8            keep_costume_on_equip_change; /**< Keeps the selected costume when equipment changes. */
     CGameDataUsed active_item[3]; /**< Active items. */
     CGameDataUsed equip[5];       /**< Equipment, by slot; slots 0 and 1 are the two weapons. */
 };
@@ -1121,7 +1121,7 @@ STATIC_ASSERT(sizeof(CMonsterBox) == 0x2F00);
  */
 class CFishAquarium {
 public:
-    u16           unk_0;
+    u16           active_tank; /**< Aquarium tank currently shown by the menu. */
     s16           unk_2;
     CGameDataUsed fish_tank[6];  /**< First tank. */
     CGameDataUsed sub_tank[4];   /**< Second tank, where fish crowded together tire. */
@@ -1793,7 +1793,7 @@ public:
     int                money;          /**< Money, up to 999999. */
     s16                yarikomi_medal; /**< Medals, up to 999. */
     u8                 unk_44da2[0x1E];
-    s16                unk_44dc0;
+    s16                special_item_bought; /**< Number of special shop items bought. */
     u8                 unk_44dc2[6];
     u64                unk_44dc8;
     s16                photo_subject[0x200]; /**< Subject numbers of the photos taken, in order; 0 ends the list. */
@@ -2811,7 +2811,7 @@ STATIC_ASSERT(sizeof(BATTLE_WEAPON_PARAM) == 0x1C);
 class CBattleCharaInfo {
 public:
     s16                 chr_no; /**< Character being played, a USER_CHARA. */
-    s16                 unk_2;
+    s16                 user_mons_id; /**< Monster form selected for the playable character. */
     s16                 now_npc;            /**< Townsperson in the party, or -1. */
     s16                 chara_type;         /**< Kind of status read, a BATTLE_CHARA_TYPE. */
     void               *chara_data;         /**< CHARA_DATA, ROBO_DATA or MOS_CHANGE_PARAM, by chara_type. */
@@ -2831,9 +2831,9 @@ public:
     COMMON_GAGE        *hp;               /**< Health gauge of the character. */
     float               hp_change_frames; /**< Frames the shown health takes to reach the real health. */
     float               hp_change_step;   /**< Change of the shown health each frame. */
-    float               unk_80;
+    float               disp_hp_max; /**< Maximum health used by the displayed gauge. */
     float               disp_hp; /**< Health shown, which follows the real health. */
-    float               unk_88;
+    float               prev_hp_max; /**< Maximum health used by the previous gauge state. */
     float               prev_hp; /**< Health before the last change. */
 
     /**
@@ -2941,7 +2941,7 @@ public:
      * @address 0x1A08B0
      * @size 0x44
      */
-    s16 GetPalletNo(int slot);
+    int GetPalletNo(int slot);
 
     /**
      *

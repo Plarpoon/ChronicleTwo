@@ -70,6 +70,20 @@ the .cpp. No global data: every datum is an `at_*` literal ("snd2/bgm/BG_%s...",
 | 0xC4D0/D4, 0xC4E0, 0xE4E0 | battle id / no, buff, stack | InitSeBattle (port 9) |
 | 0xE510/0x10510/0x10540 | loop_se_buff (0x200 qw) / stack / CLoopSeMngr | InitLooSeMngr (Create(0x30, stack)) |
 
+## `InitSeSrc` matching
+
+`InitSeSrc` stops the old source effects and ports, clears both 16-entry
+source tables, attaches the source stack to its buffer, starts ports 4 and 1,
+clears the four active playback slots, and queues source effects for playback.
+MWCC unrolls the typed array loop eight entries at a time with the same stores
+and branch positions as retail. The guarded C++ draft differs only in register
+allocation within that loop: retail uses `v1` for the count, `a0` for the byte
+offset, `a1` for the scene-relative base, and `a2` for -1; the draft uses
+`a0`, `a1`, `a2`, and `v1`, respectively. Explicit eight-entry unrolling,
+separate count and array indices, array references, chained assignments,
+unsigned indices, and equivalent `for`/`while` forms did not reproduce retail's
+register assignment. The retail assembly remains active.
+
 Accesses at +0xA46C/+0xA474 (LoadSeEnvPack) and BGM_INFO +0x44C/+0x454 (LoadBGMPack,
 `piVar1[0x113]`/`[0x115]`) are `mgCMemory::lock` / `stack_used` of the embedded stacks, not
 separate fields.

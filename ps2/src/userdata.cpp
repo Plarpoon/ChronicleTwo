@@ -30,15 +30,15 @@ int get_default_monster_progresstbl(int bajji_no);
 struct PackedFish {
     u16 item_no : 9; /**< Inventory item number of the fish. */
     u8  sex : 1;     /**< Sex of the fish. */
-    u8  field_4a : 5;
-    u8  param_3 : 7;
-    u16 unknown_3c : 7;
+    u8  color : 5;
+    u8  battle : 7;
+    u16 stamina : 7;
     u16 length : 15; /**< Fish length. */
     u16 weight : 15; /**< Fish weight. */
-    u8  param_0 : 7;
-    u16 param_1 : 7;
-    u8  color_no : 2; /**< Fish colour number. */
-    u8  param_2 : 7;
+    u8  boost : 7;
+    u16 endurance : 7;
+    u8  kind : 2;
+    u8  tenacity : 7;
     u16 flags : 8; /**< Fish state flags. */
 };
 
@@ -110,7 +110,7 @@ extern DEBUG_ITEM e3_town_5747[];
 extern DEBUG_ITEM e3_dng_5748[];
 extern DEBUG_ITEM e3_boss_5749[];
 extern s8         init_partytbl_5752[];
-extern DEBUG_ITEM dbg_set1_5774[];
+extern DEBUG_ITEM dbg_set1_5774[1];
 extern DEBUG_ITEM dbg_set2_5775[];
 extern DEBUG_ITEM dbg_set3_5776[];
 extern DEBUG_ITEM subgame1_5788[];
@@ -672,15 +672,15 @@ void CGameDataUsed::TransToPassword(char *data, int length) {
                 memset(&buffer, 0, 14);
                 buffer.fish.item_no = item->item_no;
                 buffer.fish.sex = static_cast<s8>(body->sex);
-                buffer.fish.field_4a = body->unk_3a;
-                buffer.fish.param_3 = body->param[4];
-                buffer.fish.unknown_3c = body->param[3];
+                buffer.fish.color = body->color;
+                buffer.fish.battle = body->param[4];
+                buffer.fish.stamina = body->param[3];
                 buffer.fish.length = body->size;
                 buffer.fish.weight = body->weight;
-                buffer.fish.param_0 = body->param[0];
-                buffer.fish.param_1 = body->param[1];
-                buffer.fish.color_no = body->unk_16;
-                buffer.fish.param_2 = body->param[2];
+                buffer.fish.boost = body->param[0];
+                buffer.fish.endurance = body->param[1];
+                buffer.fish.kind = body->kind;
+                buffer.fish.tenacity = body->param[2];
                 buffer.fish.flags = body->flags;
                 src = buffer.bytes;
 
@@ -711,15 +711,15 @@ void CGameDataUsed::TransToData(char *data, int length) {
 
                 item->item_no = buffer.fish.item_no;
                 item->data.fish.sex = buffer.fish.sex;
-                item->data.fish.unk_3a = buffer.fish.field_4a;
-                item->data.fish.param[4] = buffer.fish.param_3;
-                item->data.fish.param[3] = buffer.fish.unknown_3c;
+                item->data.fish.color = buffer.fish.color;
+                item->data.fish.param[4] = buffer.fish.battle;
+                item->data.fish.param[3] = buffer.fish.stamina;
                 item->data.fish.size = buffer.fish.length;
                 item->data.fish.weight = buffer.fish.weight;
-                item->data.fish.param[0] = buffer.fish.param_0;
-                item->data.fish.param[1] = buffer.fish.param_1;
-                item->data.fish.param[2] = buffer.fish.param_2;
-                item->data.fish.unk_16 = buffer.fish.color_no;
+                item->data.fish.param[0] = buffer.fish.boost;
+                item->data.fish.param[1] = buffer.fish.endurance;
+                item->data.fish.param[2] = buffer.fish.tenacity;
+                item->data.fish.kind = buffer.fish.kind;
                 item->data.fish.flags = buffer.fish.flags;
             }
         }
@@ -893,11 +893,11 @@ float CGameDataUsed::GetWHp(int *hp) {
             break;
         case 5:
             if (item_type == 0xD) {
-                gauge = &data.weapon.abs;
+                gauge = &data.robopart.whp;
             }
 
             if (item_type == 0xF) {
-                gauge = &data.weapon.whp;
+                gauge = &data.robopart.energy;
             }
 
             break;
@@ -925,12 +925,12 @@ int CGameDataUsed::IsRepair() {
             break;
         case 5:
             if (this->item_type == 0xD &&
-                (float) GetDispVolumeForFloat(this->data.weapon.abs.now) < this->data.weapon.abs.max) {
+                (float) GetDispVolumeForFloat(this->data.robopart.whp.now) < this->data.robopart.whp.max) {
                 return 1;
             }
 
             if (this->item_type == 0xF &&
-                (float) GetDispVolumeForFloat(this->data.weapon.whp.now) < this->data.weapon.whp.max) {
+                (float) GetDispVolumeForFloat(this->data.robopart.energy.now) < this->data.robopart.energy.max) {
                 return 1;
             }
 
@@ -951,11 +951,11 @@ int CGameDataUsed::Repair(int points) {
             break;
         case 5:
             if (this->item_type == 0xD) {
-                gauge = &this->data.weapon.abs;
+                gauge = &this->data.robopart.whp;
             }
 
             if (this->item_type == 0xF) {
-                gauge = &this->data.weapon.whp;
+                gauge = &this->data.robopart.energy;
             }
 
             break;
@@ -1211,25 +1211,29 @@ int CGameDataUsed::IsSpectolTrans() {
 
     return 0;
 }
-#ifdef NONMATCHING
 void CGameDataUsed::ToSpectolTrans(CGameDataUsed *attach, int num) {
+    int count;
+    char *name;
+    int level;
+    int bonus;
     if (attach != NULL) {
         attach->Init();
-        int count = GetNum();
+        count = GetNum();
         if (0 < num) {
             count = num;
         }
         ATTACH_USED *spectol = &attach->data.attach;
         spectol->spectol_item_no = item_no;
-        char *name = GetName(0);
-        int   level = GetLevel();
+        name = GetName(0);
+        level = GetLevel();
         switch (used_type) {
-            case 3:
+            case USED_ITEM_TYPE_WEAPON: {
+                WEAPON_USED *weapon = &data.weapon;
                 if (level < 5) {
                     spectol->spectol_type = 3;
                     spectol->spectol_value = GetRandI(4) + 1;
-                    short bonus = GetRandI(4) + 1;
-                    int   slot = GetRandI(10);
+                    bonus = GetRandI(4) + 1;
+                    int slot = GetRandI(10);
                     if (slot < 8) {
                         spectol->attribute[slot] = bonus;
                     } else {
@@ -1238,34 +1242,47 @@ void CGameDataUsed::ToSpectolTrans(CGameDataUsed *attach, int num) {
                     spectol->special = 0;
                 } else {
                     spectol->spectol_type = 1;
-                    spectol->spectol_value = (u8) (s8) data.weapon.level;
-                    if (spectol->spectol_value >= 21) {
+                    spectol->spectol_value = (u8)(s8)weapon->level;
+                    if (spectol->spectol_value > 20) {
                         spectol->spectol_value = 20;
                     }
-                    spectol->special = data.weapon.special;
-                    spectol->level = data.weapon.level;
-                    spectol->status[0] = data.weapon.status[0];
-                    spectol->status[1] = fptosi(0.6f * (float) data.weapon.status[1]);
-                    for (int i = 0; i < 8; i++) {
-                        spectol->attribute[i] = fptosi(0.6f * (float) data.weapon.attribute[i]);
-                    }
+                    spectol->special = weapon->special;
+                    spectol->level = weapon->level;
+                    spectol->status[0] = weapon->status[0];
+                    spectol->status[1] = fptosi(0.6f * (float)weapon->status[1]);
+                    spectol->attribute[0] = fptosi(0.6f * (float)weapon->attribute[0]);
+                    spectol->attribute[1] = fptosi(0.6f * (float)weapon->attribute[1]);
+                    spectol->attribute[2] = fptosi(0.6f * (float)weapon->attribute[2]);
+                    spectol->attribute[3] = fptosi(0.6f * (float)weapon->attribute[3]);
+                    spectol->attribute[4] = fptosi(0.6f * (float)weapon->attribute[4]);
+                    spectol->attribute[5] = fptosi(0.6f * (float)weapon->attribute[5]);
+                    spectol->attribute[6] = fptosi(0.6f * (float)weapon->attribute[6]);
+                    spectol->attribute[7] = fptosi(0.6f * (float)weapon->attribute[7]);
                 }
                 break;
-            case 2:
+            }
+            case USED_ITEM_TYPE_ATTACH: {
                 spectol->level = 0;
-                spectol->status[0] = data.attach.status[0] * count;
-                spectol->status[1] = data.attach.status[1] * count;
-                for (int i = 0; i < 8; i++) {
-                    spectol->attribute[i] = data.attach.attribute[i] * count;
-                }
-                spectol->special = data.attach.special;
+                ATTACH_USED *source = &data.attach;
+                spectol->status[0] = source->status[0] * count;
+                spectol->status[1] = source->status[1] * count;
+                spectol->attribute[0] = source->attribute[0] * count;
+                spectol->attribute[1] = source->attribute[1] * count;
+                spectol->attribute[2] = source->attribute[2] * count;
+                spectol->attribute[3] = source->attribute[3] * count;
+                spectol->attribute[4] = source->attribute[4] * count;
+                spectol->attribute[5] = source->attribute[5] * count;
+                spectol->attribute[6] = source->attribute[6] * count;
+                spectol->attribute[7] = source->attribute[7] * count;
+                spectol->special = source->special;
                 spectol->spectol_type = 2;
                 spectol->spectol_value = count;
                 if (item_no == 0x17F) {
-                    spectol->spectol_value = data.attach.spectol_value;
+                    spectol->spectol_value = source->spectol_value;
                 }
                 break;
-            case 6:
+            }
+            case USED_ITEM_TYPE_FISH:
                 spectol->level = 0;
                 spectol->attribute[7] = 2;
                 spectol->special = 0;
@@ -1281,16 +1298,13 @@ void CGameDataUsed::ToSpectolTrans(CGameDataUsed *attach, int num) {
         }
         spectol->level = level;
         attach->item_type = GameItemDataManage.GetDataType(0xB9);
-        attach->used_type = 2;
+        attach->used_type = USED_ITEM_TYPE_ATTACH;
         attach->item_no = 0xB9;
         spectol->num = 1;
         attach->SetName(name);
         attach->CheckParamLimmit();
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", ToSpectolTrans__13CGameDataUsedFP13CGameDataUsedi);
-#endif
 void CGameDataUsed::GetStatusParam(short *param) {
     if (param != NULL) {
         if (used_type == 3) {
@@ -1722,7 +1736,7 @@ void CGameDataUsed::CopyGameData(CGameDataUsed *other) {
 
         if (robo != NULL && &(&robo->parts[0])[2] == this) {
             old_max = fptosi(robo->hp.max);
-            robo->hp.max = this->data.weapon.whp.max;
+            robo->hp.max = this->data.robopart.energy.max;
 
             if ((float) old_max <= 0.0f) {
                 robo->hp.now = robo->hp.max;
@@ -1767,7 +1781,7 @@ int CGameDataUsed::CopyDataWeapon(int item_no) {
     this->data.weapon.attribute[5] = record->attribute[5];
     this->data.weapon.attribute[6] = record->attribute[6];
     this->data.weapon.attribute[7] = record->attribute[7];
-    this->data.weapon.fusion_point = record->unk_38;
+    this->data.weapon.fusion_point = record->initial_fusion_point;
     this->data.weapon.special = record->special;
     this->data.weapon.unk_2e = 0;
     this->data.weapon.unk_30 = 0;
@@ -1871,16 +1885,16 @@ int CGameDataUsed::CopyDataFish(int item_no) {
     fish->data.fish.weight = (u16) (value + GetRandF(500.0f));
     fish->data.fish.sex = GetRandI(2);
     fish->data.fish.unk_1c = GetRandI(4);
-    fish->data.fish.unk_16 = GetRandI(4);
+    fish->data.fish.kind = GetRandI(4);
     fish->data.fish.hp = 100;
     fish->data.fish.fatigue = 0;
-    fish->data.fish.param[4] = *(u16 *) &record->unk_6;
-    fish->data.fish.param[0] = *(u16 *) &record->unk_a;
-    fish->data.fish.param[1] = *(u16 *) &record->unk_c;
-    fish->data.fish.param[2] = *(u16 *) &record->unk_e;
-    fish->data.fish.param[3] = *(u16 *) &record->unk_8;
-    fish->data.fish.unk_36 = GetRandI(0x33) + 0xC8;
-    fish->data.fish.unk_35 = 0;
+    fish->data.fish.param[4] = *(u16 *) &record->battle;
+    fish->data.fish.param[0] = *(u16 *) &record->boost;
+    fish->data.fish.param[1] = *(u16 *) &record->endurance;
+    fish->data.fish.param[2] = *(u16 *) &record->tenacity;
+    fish->data.fish.param[3] = *(u16 *) &record->stamina;
+    fish->data.fish.life = GetRandI(0x33) + 0xC8;
+    fish->data.fish.breed_feeds_remaining = 0;
     fish->data.fish.timer = 0;
     fish->data.fish.flags = 0;
     fish->data.fish.unk_3c = GetRandI(0x100);
@@ -1933,8 +1947,8 @@ int CGameDataUsed::CopyDataRoboPart(int item_no) {
     CDataRoboPart *record;
     char          *message;
     char          *base;
+    float          durability;
     float          energy;
-    float          hp;
 
     record = GameItemDataManage.GetRoboData(item_no);
 
@@ -1945,14 +1959,14 @@ int CGameDataUsed::CopyDataRoboPart(int item_no) {
     this->used_type = 5;
     this->item_no = item_no;
     this->item_type = GetItemDataType(item_no);
-    base = (char *) &this->data.robopart.gage0;
-    energy = record->unk_6;
-    this->data.robopart.gage1.max = energy;
-    this->data.robopart.gage1.now = energy;
-    hp = record->unk_2;
-    this->data.robopart.gage0.max = hp;
-    this->data.robopart.gage0.now = hp;
-    this->data.robopart.defence = record->unk_1c;
+    base = (char *) &this->data.robopart.energy;
+    durability = record->durability;
+    this->data.robopart.whp.max = durability;
+    this->data.robopart.whp.now = durability;
+    energy = record->energy;
+    this->data.robopart.energy.max = energy;
+    this->data.robopart.energy.now = energy;
+    this->data.robopart.defence = record->defence;
     this->data.robopart.unk_26 = record->unk_4;
     this->data.robopart.status[0] = record->unk_8;
     this->data.robopart.status[1] = record->unk_a;
@@ -1975,7 +1989,7 @@ int CGameDataUsed::CopyDataRoboPart(int item_no) {
 
 void CFishAquarium::Initialize() {
     int i;
-    unk_0 = 0;
+    active_tank = 0;
     unk_2 = 0;
 
     for (i = 0; i < 6; i++) {
@@ -2104,15 +2118,19 @@ int CFishAquarium::CheckHaigouTankSex(CGameDataUsed *fish) {
 
     return 1;
 }
-#ifdef NONMATCHING
 void CFishAquarium::RefreshParam() {
+    int i;
+    bool crowded;
+    float hour;
+    int in_tank;
+    int tired;
     int now = GetSaveData()->play_time;
     s64 elapsed = now - last_time;
     last_time = now;
-    int   day = GetMainScene()->day;
-    float hour = GetMainScene()->time;
+    int day = GetMainScene()->day;
+    hour = GetMainScene()->time;
     float hours = hour - last_hour;
-    int   days = day - last_day;
+    int days = day - last_day;
     if (hours < 0.0f && 0 < days) {
         days--;
         hours += 24.0f;
@@ -2121,21 +2139,23 @@ void CFishAquarium::RefreshParam() {
         }
     }
     int fatigue_step = 0;
-    if (6.0f <= (float) fptosi(hours + 24.0f * (float) days)) {
+    hours += 24.0f * (float)days;
+    if (6.0f <= (float)fptosi(hours)) {
         fatigue_step = 1;
     }
-    for (int i = 0; i < 6; i++) {
+    for (i = 0; i < 6; i++) {
         fish_tank[i].TimeCheck(elapsed);
     }
-    bool crowded = false;
-    if (GetAquariumFishNum(1) >= 2) {
+    int fish_num = GetAquariumFishNum(1);
+    crowded = false;
+    if (fish_num > 1) {
         crowded = true;
     }
-    for (int i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++) {
         if (sub_tank[i].item_no > 0) {
             sub_tank[i].TimeCheck(elapsed);
+            int tank_days = day - sub_tank[i].data.fish.tank_day;
             float tank_hours = hour - sub_tank[i].data.fish.tank_hour;
-            int   tank_days = day - sub_tank[i].data.fish.tank_day;
             if (tank_hours < 0.0f && 0 < tank_days) {
                 tank_days--;
                 tank_hours += 24.0f;
@@ -2143,10 +2163,10 @@ void CFishAquarium::RefreshParam() {
                     tank_days = 0;
                 }
             }
-            int in_tank = fptosi(tank_hours + 24.0f * (float) tank_days);
+            in_tank = fptosi(tank_hours + 24.0f * (float)tank_days);
             int tired = 0;
             while (crowded && in_tank - 6 >= 0) {
-                if ((u32) sub_tank[i].data.fish.hp >= 16) {
+                if ((u32)sub_tank[i].data.fish.hp > 15) {
                     sub_tank[i].data.fish.param[4]++;
                     sub_tank[i].AddFishHp(-5);
                     sub_tank[i].CheckParamLimmit();
@@ -2155,16 +2175,16 @@ void CFishAquarium::RefreshParam() {
                 tired = 1;
             }
             if (tired) {
-                int new_day = day;
-                if ((float) fptosi(hour - (float) in_tank) < 0.0f) {
-                    new_day = day - 1;
+                int new_day = (int)day;
+                if ((float)fptosi(hour - (float)in_tank) < 0.0f) {
+                    new_day = (int)day - 1;
                 }
                 sub_tank[i].data.fish.tank_day = new_day;
                 sub_tank[i].data.fish.tank_hour = hour;
             }
         }
     }
-    for (int i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++) {
         breed_tank[i].TimeCheck(elapsed);
     }
     if (fatigue_step) {
@@ -2173,9 +2193,6 @@ void CFishAquarium::RefreshParam() {
     }
     unk_518 = unk_518 % 0x534;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", RefreshParam__13CFishAquariumFv);
-#endif
 
 int GetShiledKitLimmit(int item_no) {
     int index = item_no - 0xF6;
@@ -2633,7 +2650,7 @@ float CUserDataManager::AddHp_Rate(int chara_no, float rate) {
 
 COMMON_GAGE *CUserDataManager::GetWHpGage(int group, int member) {
     if (group == 2) {
-        return &robo_data.parts[0].data.robopart.gage1;
+        return &robo_data.parts[0].data.robopart.whp;
     }
 
     if (group == 3) {
@@ -3415,13 +3432,15 @@ void CUserDataManager::AllWeaponRepair() {
     robo_data.parts[0].Repair(999);
     robo_data.AddPoint(999.0f);
 }
-#ifdef NONMATCHING
 void CUserDataManager::RefreshNPCStatus(int mode) {
     CGameDataUsed *repair_item[144];
-    int            day = GetSaveData()->day;
-    int            refresh = 0;
-    float          elapsed = GetSaveData()->now_time - npc_refresh_hour;
-    int            days = day - npc_refresh_day;
+    int i;
+    int uses;
+    int day = GetSaveData()->day;
+    float now = GetSaveData()->now_time;
+    int refresh = 0;
+    int days = day - npc_refresh_day;
+    float elapsed = now - npc_refresh_hour;
 
     if (elapsed < 0.0f) {
         days--;
@@ -3430,33 +3449,29 @@ void CUserDataManager::RefreshNPCStatus(int mode) {
             days = 0;
         }
     }
-    elapsed += 24.0f * (float) days;
+    elapsed += 24.0f * (float)days;
     if (1.0f <= elapsed) {
         refresh = 1;
     }
     if (refresh != 0) {
-        s16 time = fptosi(elapsed);
+        int time = (int)elapsed;
         if (NowPartyCharaID() == 0xB) {
-            int repair_num = 0;
-            if (time > 0) {
-                for (int i = 0; i < 144; i++) {
+            if (0 < time) {
+                int repair_num = 0;
+                for (i = 0; i < 144; i++) {
                     CGameDataUsed *item = GetUsedDataPtr(i);
-                    if (item->used_type == 3 && item->IsRepair() != 0) {
+                    if (item->used_type == USED_ITEM_TYPE_WEAPON && item->IsRepair() != 0) {
                         repair_item[repair_num++] = item;
                     }
                 }
-                if (repair_num > 0) {
-                    s16 uses = 0;
-                    if (time > 0) {
-                        while (uses < time) {
-                            if (UseNpcAbility(0xB, 3, 1) == 0) {
-                                time = uses;
-                                break;
-                            }
-                            uses++;
+                if (0 < repair_num) {
+                    for (uses = 0; uses < time; uses++) {
+                        if (UseNpcAbility(0xB, 3, 1) == 0) {
+                            time = uses;
+                            break;
                         }
                     }
-                    for (int i = 0; i < repair_num; i++) {
+                    for (i = 0; i < repair_num; i++) {
                         repair_item[i]->Repair(time * 2);
                     }
                 }
@@ -3464,18 +3479,18 @@ void CUserDataManager::RefreshNPCStatus(int mode) {
         }
         for (int chara = 1; chara < 32; chara++) {
             PARTY_CHARA_INFO *info = GetPartyCharaInfo(chara);
-            NPC_BASE_DATA    *npc = GetPartyNPCData(chara);
+            NPC_BASE_DATA *npc = GetPartyNPCData(chara);
             if (info != NULL && npc != NULL && !(info->status & 1)) {
-                s8    max_point = npc->max_npc_point;
-                float gain = (float) max_point * elapsed / 24.0f;
+                s8 max_point = npc->max_npc_point;
+                float gain = (float)max_point * elapsed / 24.0f;
                 if (gain < 1.0f) {
                     gain = 1.0f;
                 }
-                float total = (float) info->point + gain;
-                if (total > 1000.0f) {
+                float total = (float)info->point + gain;
+                if (1000.0f < total) {
                     info->point = max_point;
                 } else {
-                    info->point = fptosi(total);
+                    info->point = (int)total;
                 }
                 if (npc->max_npc_point < info->point) {
                     info->point = npc->max_npc_point;
@@ -3488,9 +3503,6 @@ void CUserDataManager::RefreshNPCStatus(int mode) {
         npc_refresh_hour = GetSaveData()->now_time;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", RefreshNPCStatus__16CUserDataManagerFi);
-#endif
 int CUserDataManager::GetFishingRodNo() {
     return chara_data[0].equip[0].item_no;
 }
@@ -3559,8 +3571,8 @@ int CUserDataManager::GetFishInAquarium(int fish_no, float size, float weight) {
     fish.data.fish.param[0] += GetRandI(3);
     fish.data.fish.param[1] += GetRandI(3);
     fish.data.fish.param[2] += GetRandI(3);
-    fish.data.fish.unk_36 = GetRandI(0x33) + 200;
-    fish.data.fish.unk_35 = 0;
+    fish.data.fish.life = GetRandI(0x33) + 200;
+    fish.data.fish.breed_feeds_remaining = 0;
     CGameDataUsed *slot = SearchSpaceUsedDataPtr();
 
     if (slot != 0) {
@@ -4265,42 +4277,47 @@ int CUserDataManager::GetOverItem(int item_no, int count) {
 
     return 0;
 }
-#ifdef NONMATCHING
 int CUserDataManager::CheckItemLimmitOver() {
+    CHARA_DATA *charas;
+    int i;
+    int owned_no;
+    int gift;
+    CDataCommon *common;
+    int bag_size;
     u16 item_count[0x200];
     u16 item_count2[0x200];
+    CGameDataUsed *inventory;
 
     memset(item_count, 0, sizeof(item_count));
     memset(item_count2, 0, sizeof(item_count2));
-    CGameDataUsed *inventory = GetUsedDataPtr(0);
-    int            bag_size = GetNowBagMax(1);
-    for (int i = 0; i < bag_size; i++) {
-        CGameDataUsed *used = &inventory[i];
-        int            owned_no = used->item_no;
+    inventory = GetUsedDataPtr(0);
+    bag_size = GetNowBagMax(1);
+    for (i = 0; i < bag_size; i++) {
+        owned_no = inventory[i].item_no;
         if (0 < owned_no) {
-            item_count[owned_no] += used->GetNum();
-            if (0 < used->GetGiftBoxItemNum()) {
+            item_count[owned_no] += inventory[i].GetNum();
+            if (0 < inventory[i].GetGiftBoxItemNum()) {
                 for (int k = 0; k < 3; k++) {
-                    int gift = used->GetGiftBoxItemNo(k);
-                    if (0 < gift) {
+                    gift = inventory[i].GetGiftBoxItemNo(k);
+                    if (gift > 0) {
                         item_count[gift]++;
                     }
                 }
             }
         }
     }
-    CHARA_DATA *charas = GetCharaDataPtr(0);
+    charas = GetCharaDataPtr(0);
     for (int chara = 0; chara < 2; chara++) {
-        CHARA_DATA *data = &charas[chara];
+        charas += chara;
         for (int slot = 0; slot < 3; slot++) {
-            CGameDataUsed *active = &data->active_item[slot];
-            int            active_no = active->item_no;
-            if (0 < active_no) {
+            CGameDataUsed *active = &charas->active_item[slot];
+            int active_no = active->item_no;
+            if (active_no > 0) {
                 item_count[active_no] += active->GetNum();
                 if (0 < active->GetGiftBoxItemNum()) {
                     for (int k = 0; k < 3; k++) {
-                        int gift = active->GetGiftBoxItemNo(k);
-                        if (0 < gift) {
+                        gift = active->GetGiftBoxItemNo(k);
+                        if (gift > 0) {
                             item_count[gift]++;
                         }
                     }
@@ -4308,17 +4325,14 @@ int CUserDataManager::CheckItemLimmitOver() {
             }
         }
     }
-    for (int item_no = 1; item_no < 0x200; item_no++) {
-        CDataCommon *common = GetCommonItemData(item_no);
-        if (common != NULL && common->max_num < item_count[item_no]) {
-            return item_no;
+    for (i = 1; i < 0x200; i++) {
+        common = GetCommonItemData(i);
+        if (common != NULL && common->max_num < item_count[i]) {
+            return i;
         }
     }
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", CheckItemLimmitOver__16CUserDataManagerFv);
-#endif
 
 /**
  *
@@ -4534,13 +4548,13 @@ void CheckEquipChange(int chara_no) {
             GetCharaDefaultWeapon(1, weapons);
             GetUserDataMan()->SetChrEquipDirect(1, weapons[0]);
 
-            if (static_cast<s8>(chara->unk_2b) == 0) {
+            if (static_cast<s8>(chara->keep_costume_on_equip_change) == 0) {
                 GetUserDataMan()->SetChrEquipDirect(1, weapons[2]);
                 GetUserDataMan()->SetChrEquipDirect(1, weapons[3]);
                 GetUserDataMan()->SetChrEquipDirect(1, weapons[4]);
             }
 
-            chara->unk_2b = 0;
+            chara->keep_costume_on_equip_change = 0;
         }
     }
 }
@@ -4554,7 +4568,7 @@ void CBattleCharaInfo::Initialize() {
     hp = 0;
     equip = 0;
     hp_change_step = 0;
-    unk_80 = -1.0f;
+    disp_hp_max = -1.0f;
     disp_hp = -1.0f;
 }
 
@@ -4574,7 +4588,7 @@ void CBattleCharaInfo::SetChrNo(int new_chara_no) {
     }
 
     chr_no = new_chara_no;
-    unk_2 = 0;
+    user_mons_id = 0;
 
     if (0 <= chr_no && chr_no < 2) {
         chara_type = 0;
@@ -4583,9 +4597,9 @@ void CBattleCharaInfo::SetChrNo(int new_chara_no) {
         equip = (CGameDataUsed *) ((CHARA_DATA *) chara_data)->equip;
         hp = &((CHARA_DATA *) chara_data)->hp;
         disp_hp = hp->now;
-        unk_80 = hp->max;
+        disp_hp_max = hp->max;
         prev_hp = hp->now;
-        unk_88 = hp->max;
+        prev_hp_max = hp->max;
     } else if (chr_no == 2) {
         chara_type = 1;
         chara_data = &manager->robo_data;
@@ -4593,9 +4607,9 @@ void CBattleCharaInfo::SetChrNo(int new_chara_no) {
         equip = (CGameDataUsed *) &((ROBO_DATA *) chara_data)->parts[0];
         hp = &((ROBO_DATA *) chara_data)->hp;
         disp_hp = hp->now;
-        unk_80 = hp->max;
+        disp_hp_max = hp->max;
         prev_hp = hp->now;
-        unk_88 = hp->max;
+        prev_hp_max = hp->max;
     } else if (chr_no == 3) {
         chara_type = 2;
         int monster_id = GetMonsterID();
@@ -4607,14 +4621,14 @@ void CBattleCharaInfo::SetChrNo(int new_chara_no) {
             base = info->user_mons_id;
         }
 
-        unk_2 = base;
+        user_mons_id = base;
         active_item = 0;
         equip = 0;
         hp = &manager->GetCharaDataPtr(1)->hp;
         disp_hp = hp->now;
-        unk_80 = hp->max;
+        disp_hp_max = hp->max;
         prev_hp = hp->now;
-        unk_88 = hp->max;
+        prev_hp_max = hp->max;
     }
 
     poison_count = 0;
@@ -4718,7 +4732,7 @@ u32 CBattleCharaInfo::GetSpecialStatus(int slot) {
     return 0;
 }
 
-short CBattleCharaInfo::GetPalletNo(int slot) {
+int CBattleCharaInfo::GetPalletNo(int slot) {
     if (chara_type == 0) {
         if (slot == 0 || slot == 1) {
 
@@ -4730,98 +4744,95 @@ short CBattleCharaInfo::GetPalletNo(int slot) {
 
     return -1;
 }
-#ifdef NONMATCHING
 void CBattleCharaInfo::RefreshParamater() {
-    float weapon_rate[2] = {1.0f, 1.0f};
-    short status[10];
-    int   capacity;
-
-    if (chara_data == NULL) {
+    if (chara_data != NULL) {
+    } else if (chara_data == NULL) {
         return;
     }
-    memset(weapon_param, 0, sizeof(weapon_param));
+    memset(weapon_param, 0, 0x40);
     BATTLE_WEAPON_PARAM *param = weapon_param;
-    CUserDataManager    *user_data = GetUserDataMan();
+    CUserDataManager *user_data = GetUserDataMan();
     now_npc = 0;
     if (user_data != NULL) {
         now_npc = user_data->NowPartyCharaID();
     }
+    CScene *scene = GetMainScene();
     CGameDataUsed *equipment = equip;
-    CScene        *scene = GetMainScene();
-    switch (chara_type) {
-        case BATTLE_CHARA_HUMAN:
-            if (((CHARA_DATA *) chara_data)->status_attr & CHARA_STATUS_POWER) {
-                weapon_rate[0] = 1.5f;
-                weapon_rate[1] = 1.5f;
-            }
-            defence = ((CHARA_DATA *) chara_data)->defence;
-            for (int i = 0; i < 2; i++) {
-                CGameDataUsed *item = &equipment[i];
-                item->GetStatusParam(status, scene->time);
-                param->status[0] = fptosi((float) status[0] * weapon_rate[i]);
-                param->status[1] = status[1];
-                param->status[2] = status[2];
-                param->status[3] = status[3];
-                param->status[4] = status[4];
-                param->status[5] = status[5];
-                param->status[6] = status[6];
-                param->status[7] = status[7];
-                param->status[8] = status[8];
-                param->status[9] = status[9];
-                param->special = item->data.weapon.special;
-                param->pallet_no = item->GetPalletColor();
-                param++;
-            }
-            break;
-        case BATTLE_CHARA_ROBO:
-            robo_hp_drain = 0.006f * ((float) CheckNowRoboUseCapacity((ROBO_DATA *) chara_data, &capacity) / (float) capacity);
-            defence = ((ROBO_DATA *) chara_data)->GetDefenceVol();
-            for (int i = 0; i < 2; i++) {
-                param->status[0] = equipment->data.weapon.level;
-                param->status[1] = equipment->data.weapon.status[0];
-                param->status[2] = equipment->data.weapon.status[1];
-                param->status[3] = equipment->data.weapon.attribute[0];
-                param->status[4] = equipment->data.weapon.attribute[1];
-                param->status[5] = equipment->data.weapon.attribute[2];
-                param->status[6] = equipment->data.weapon.attribute[3];
-                param->status[7] = equipment->data.weapon.attribute[4];
-                param->status[8] = equipment->data.weapon.attribute[5];
-                param->status[9] = equipment->data.weapon.attribute[6];
-                param++;
-            }
-            break;
-        case BATTLE_CHARA_MONSTER: {
-            monster_hp_drain = 0.005f;
-            if (user_data->monster_box.IsChange(0xC) != 0) {
-                monster_hp_drain = 0.0025f;
-            }
-            float monster_rate = 1.0f;
-            if (user_data->monster_box.IsChange(0xB) != 0) {
-                monster_rate = 1.25f;
-            }
-            MOS_CHANGE_PARAM *monster = (MOS_CHANGE_PARAM *) chara_data;
-            weapon_param[0].status[0] = fptosi(monster_rate * (float) monster->GetAttackVol(-1));
-            weapon_param[0].status[1] = fptosi(monster_rate * (float) monster->GetAttackVol(-1));
-            defence = fptosi(monster_rate * (float) monster->GetDefenceVol(-1));
-            weapon_param[0].status[2] = 0;
-            weapon_param[0].status[3] = 0;
-            weapon_param[0].status[4] = 0;
-            weapon_param[0].status[5] = 0;
-            weapon_param[0].status[6] = 0;
-            weapon_param[0].status[7] = 0;
-            weapon_param[0].status[8] = 0;
-            weapon_param[0].status[9] = 0;
-            break;
+    if (chara_type == BATTLE_CHARA_HUMAN) {
+        float weapon_rate[2] = {1.0f, 1.0f};
+        short status[10];
+        if (((CHARA_DATA *)chara_data)->status_attr & CHARA_STATUS_POWER) {
+            weapon_rate[0] = 1.5f;
+            weapon_rate[1] = 1.5f;
         }
+        defence = (u16 &)((CHARA_DATA *)chara_data)->defence;
+        int i = 0;
+        while (i < 2) {
+            WEAPON_USED *weapon0 = &equipment[i].data.weapon;
+            WEAPON_USED *weapon = weapon0;
+            CGameDataUsed *item = &equipment[i];
+            float now;
+            item->GetStatusParam(status, now = scene->time);
+            param->status[0] = fptosi((float)status[0] * weapon_rate[i]);
+            param->status[1] = status[1];
+            param->status[2] = status[2];
+            param->status[3] = status[3];
+            param->status[4] = status[4];
+            param->status[5] = status[5];
+            param->status[6] = status[6];
+            param->status[7] = status[7];
+            param->status[8] = status[8];
+            param->status[9] = status[9];
+            param->special = weapon->special;
+            param->pallet_no = item->GetPalletColor();
+            i++;
+            param++;
+        }
+    } else if (chara_type == BATTLE_CHARA_ROBO) {
+        int capacity;
+        robo_hp_drain = 0.006f * ((float)CheckNowRoboUseCapacity((ROBO_DATA *)chara_data, &capacity) / (float)capacity);
+        WEAPON_USED *weapon = &equipment->data.weapon;
+        defence = ((ROBO_DATA *)chara_data)->GetDefenceVol();
+        for (int i = 0; i < 2; i++) {
+            param->status[0] = weapon->level;
+            param->status[1] = weapon->status[0];
+            param->status[2] = weapon->status[1];
+            param->status[3] = weapon->attribute[0];
+            param->status[4] = weapon->attribute[1];
+            param->status[5] = weapon->attribute[2];
+            param->status[6] = weapon->attribute[3];
+            param->status[7] = weapon->attribute[4];
+            param->status[8] = weapon->attribute[5];
+            param->status[9] = weapon->attribute[6];
+            param++;
+        }
+    } else if (chara_type == BATTLE_CHARA_MONSTER) {
+        monster_hp_drain = 0.005f;
+        if (user_data->monster_box.IsChange(0xC) != 0) {
+            monster_hp_drain = 0.0025f;
+        }
+        float monster_rate = 1.0f;
+        if (user_data->monster_box.IsChange(0xB) != 0) {
+            monster_rate = 1.25f;
+        }
+        param->status[0] = fptosi(monster_rate * (float)((MOS_CHANGE_PARAM *)chara_data)->GetAttackVol(-1));
+        param->status[1] = fptosi(monster_rate * (float)((MOS_CHANGE_PARAM *)chara_data)->GetAttackVol(-1));
+        defence = fptosi(monster_rate * (float)((MOS_CHANGE_PARAM *)chara_data)->GetDefenceVol(-1));
+        param->status[2] = 0;
+        param->status[3] = 0;
+        param->status[4] = 0;
+        param->status[5] = 0;
+        param->status[6] = 0;
+        param->status[7] = 0;
+        param->status[8] = 0;
+        param->status[9] = 0;
     }
     if (scene != NULL) {
-        BattleParamater_Time = scene->time;
-        BattleParamater_TimeBand = GetTimeBand(scene->time);
+        float time = scene->time;
+        BattleParamater_Time = time;
+        BattleParamater_TimeBand = GetTimeBand(time);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", RefreshParamater__16CBattleCharaInfoFv);
-#endif
 COMMON_GAGE *CBattleCharaInfo::GetNowAccessWHp(int slot) {
     COMMON_GAGE *gage = 0;
     short        current_mode = chara_type;
@@ -6085,13 +6096,11 @@ void AquaFishFatigueClear() {
         tank++;
     } while (tank < 3);
 }
-#ifdef NONMATCHING
 void DebugGetItem(CUserDataManager *user_data, int mode) {
     CUserDataManager *manager = user_data;
-    DEBUG_ITEM       *items;
-    DEBUG_ITEM       *extra_items;
-    short             equip_no[4];
-    CGameDataUsed    *attach;
+    DEBUG_ITEM *items;
+    DEBUG_ITEM *extra_items;
+    CGameDataUsed *attach;
 
     if (user_data == NULL) {
         manager = GetUserDataMan();
@@ -6144,7 +6153,7 @@ void DebugGetItem(CUserDataManager *user_data, int mode) {
         manager->EnableCharaChange(2);
         items = e3_boss_5749;
     }
-    memcpy(equip_no, at_5773, sizeof(equip_no));
+    short equip_no[4] = {0, 0, 0, 0};
     if (mode == 7) {
         items = dbg_set1_5774;
         extra_items = &start_tbl_5746[1];
@@ -6204,21 +6213,25 @@ void DebugGetItem(CUserDataManager *user_data, int mode) {
             manager->GetCharaDataPtr(0)->hp.max = 48.0f;
             manager->GetCharaDataPtr(0)->defence = 8;
         }
-        if (equip_no[0] >= 2) {
-            manager->GetItem(equip_no[0], 1);
-            manager->SetChrEquip(0, equip_no[0]);
+        int e0 = equip_no[0];
+        if (e0 > 1) {
+            manager->GetItem(e0, 1);
+            manager->SetChrEquip(0, e0);
         }
-        if (equip_no[1] >= 2) {
-            manager->GetItem(equip_no[1], 1);
-            manager->SetChrEquip(0, equip_no[1]);
+        int e1 = equip_no[1];
+        if (e1 > 1) {
+            manager->GetItem(e1, 1);
+            manager->SetChrEquip(0, e1);
         }
-        if (equip_no[2] >= 2) {
-            manager->GetItem(equip_no[2], 1);
-            manager->SetChrEquip(1, equip_no[2]);
+        int e2 = equip_no[2];
+        if (e2 > 1) {
+            manager->GetItem(e2, 1);
+            manager->SetChrEquip(1, e2);
         }
-        if (equip_no[3] >= 2) {
-            manager->GetItem(equip_no[3], 1);
-            manager->SetChrEquip(1, equip_no[3]);
+        int e3 = equip_no[3];
+        if (e3 > 1) {
+            manager->GetItem(e3, 1);
+            manager->SetChrEquip(1, e3);
         }
         if (extra_items != NULL) {
             for (int i = 0; extra_items[i].item_no > 0; i++) {
@@ -6227,9 +6240,6 @@ void DebugGetItem(CUserDataManager *user_data, int mode) {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/userdata", DebugGetItem__FP16CUserDataManageri);
-#endif
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/userdata", mos_henge_param__DATA);

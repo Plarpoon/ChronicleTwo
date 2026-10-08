@@ -1,11 +1,9 @@
 # mainloop: reverse-engineering notes
 
 ## C++ draft status
-All 62 functions have C++ in `ps2/src/mainloop.cpp`. 12 are exact and compiled
-by the matching build. 27 more compile to retail's bytes in isolation but stay
-under `NONMATCHING`. 23 differ from retail and keep the `INCLUDE_ASM` fallback.
-Each function tried has its one promotion attempt recorded in
-`scripts/re/promotion_attempts.tsv`.
+All 62 functions in `ps2/src/mainloop.cpp` now build from C++ and match retail
+at the function level. `EventSelect` also passes an isolated full-image check.
+Promotion attempts are recorded in `scripts/re/promotion_attempts.tsv`.
 
 No class in `build/re/class_units.tsv` is owned by mainloop. The unit emits the out-of-line
 constructors `CUserDataManager::CUserDataManager()` (owner userdata) and `CEditData::CEditData()`
@@ -125,3 +123,6 @@ analog_table: ANALOG_TABLE_ENTRY {no, axis} rows {0,1},{1,2},{2,3},{3,4},{4,2},{
 - Save data offsets seen: +0x1A00 s64 play time, +0x1A08 progress (2 = forces time 22.0),
   +0x1A10 float time of day, +0x1A14 copied to CScene+0x2F68, +0x1C578 vibration off,
   +0x1C59C.. option values (MonsterName/Map/EnemyHP/AngerCounter).
+## Pending code matches
+
+`EventSelect` now builds from C++ and passes full-image verification. Its initialized menu table remains in its existing data gap.

@@ -1,5 +1,9 @@
 # visualmotion: reverse-engineering notes
 
+`mgCVisualMotionMDT::Copy` is currently supplied by retail assembly. Retail
+constructs each base of the copied motion visual before copying its material,
+frame, and weight data; the source has no direct virtual-table stores.
+
 Header: `ps2/include/visualmotion.hpp`. Skinned MDT model (`mgCVisualMotionMDT`), its per-vertex
 weight (`mgVertexWeight`) and its build parameters (`mgCVMotionData`). No first-game counterpart
 (chronicle has no VisualMotion / VertexWeight).

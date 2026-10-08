@@ -428,7 +428,7 @@ class CMenuTreeMap : public CBaseMenuClass {
 public:
     float                  cursor_pos[2]; /**< Screen position of the cursor, easing towards the chosen floor. */
     s16                    dng_no;        /**< Dungeon being shown. */
-    s16                    unk_11a;
+    s16                    draw_hidden; /**< Non-zero while the dungeon map drawing is hidden. */
     s16                    jump_pay; /**< Non-zero when jumping to a floor costs half the player's money. */
     u8                     unk_11e[0x2];
     GLID_INFO             *select_glid; /**< Grid cell of the floor the cursor is on. */
@@ -449,20 +449,7 @@ public:
      * Creates the menu with its message windows and points the floor windows at them.
      *
      */
-#ifdef NONMATCHING
-    CMenuTreeMap() {
-        unk_11a = 0;
-        select_glid = NULL;
-        mes_data = NULL;
-        key_arg_no = 0;
-        help_view = 1;
-        cursor_reset = 0;
-        money_view = 0;
-        tresure_loaded = 0;
-    }
-#else
     CMenuTreeMap();
-#endif
 
     /**
      *

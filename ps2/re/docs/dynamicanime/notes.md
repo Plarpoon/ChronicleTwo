@@ -131,3 +131,7 @@ CDACollision::Initialize zeroes center/radius and sets friction 0.8; CDAColPipe'
 (it does not call the base).
 The C++ body of `CDACollision::CheckHit` returns 0 for every position and
 matches the retail function; its promotion links byte-identically.
+
+## Constructor-backed allocations
+
+`dynCOLLISION` allocates a `CDAColPipe`; its C++ constructor naturally initializes the `CDACollision` base before the derived volume. The typed draft is guarded by `NONMATCHING`, with retail assembly active pending an exact match.

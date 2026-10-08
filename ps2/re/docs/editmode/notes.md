@@ -1,5 +1,9 @@
 # editmode: reverse-engineering notes
 
+`LoadEditCursor` allocates three `CCharacter2` objects for the paint, removal,
+and shovel cursors. Its C++ draft uses the class constructor; retail assembly
+remains active while the surrounding load and construction code is unmatched.
+
 Georama mode (town editor cursor): placing, removing ("RemoveMtn", shovel) and painting parts,
 putting parts against walls, rivers, undo, help line, walk<->edit checks. No class is owned by
 this unit (`class_units.tsv`). All external callers are in `editloop`. No first-game counterpart
@@ -90,3 +94,10 @@ follow settings; the player already inherits `mgCObject`. `EndEditMode` uses
 the typed `CEditMap` returned by the active map slot and calls the player's
 base position setter directly. Removing those base/derived C-style casts
 leaves both functions exact in objdiff.
+# `StartEditModeFromMenu` draft
+
+The guarded C++ body has six instruction alignment differences in the two
+stores to `PaintCursor2->attr->color[1]` and `[2]`: retail loads the global
+cursor before each colour value, while MWCC schedules that load after the
+value and delays the attribute load. Named cursor and converted-colour locals
+retain the same scheduling. The assembly fallback remains active.

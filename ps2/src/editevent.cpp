@@ -44,9 +44,7 @@ extern "C" char at_1211__2[];
 extern char     at_888__3[];
 extern char     at_1175__2[];
 
-extern mgCTextureManager mgTexManager;
 #include <cmath>
-#include <cstdio>
 
 static int CheckPlaceBurnParts(GeoFuncParam *param, RS_STACKDATA *args, int argc);
 
@@ -143,7 +141,7 @@ static inline void close_message(ClsMes *message) {
     message->select = -1;
     message->draw_speed = message->GetDrawSpeedDef();
     message->mes_no = -1;
-    message->unk_1e40 = 0;
+    message->text_ptr = 0;
     message->open = 0;
     message->fade = 0.0f;
     message->fukidashi_centre_x = -1;
@@ -195,10 +193,10 @@ int CEditEvent::Step(CScene *scene) {
     pad = &PadCtrl;
     show = character->CheckDraw();
     show &= scene->CheckDrawChara(scene->player_chara);
-    argument_1 = data.event.unk_2c;
-    argument_2 = data.event.unk_30;
+    argument_1 = data.event.arg1;
+    argument_2 = data.event.arg2;
     flags = data.event.flag;
-    argument_3 = data.event.unk_34;
+    argument_3 = data.event.arg3;
     result = EDIT_EVENT_RESULT_CONTINUE;
 
     if (type == EDIT_EVENT_TYPE_DOOR) {
@@ -212,8 +210,8 @@ int CEditEvent::Step(CScene *scene) {
 
             switch (step) {
                 case EDIT_DOOR_STEP_START:
-                    if (strcmp(data.event.unk_38, at_1133__5) != 0) {
-                        strcpy(map_name, data.event.unk_38);
+                    if (strcmp(data.event.target, at_1133__5) != 0) {
+                        strcpy(map_name, data.event.target);
 
                         if (data.event.flag & FUNC_EVENT_ED_DOOR) {
                             int         villager = -1;
@@ -308,7 +306,7 @@ int CEditEvent::Step(CScene *scene) {
                     if (data.event.point_no > 0) {
                         scene->RunEvent(data.event.point_no, &data);
                         result = EDIT_EVENT_RESULT_END;
-                    } else if (strcmp(data.event.unk_38, at_1133__5) != 0) {
+                    } else if (strcmp(data.event.target, at_1133__5) != 0) {
                         if (scene->fade.FadeCheck() && PreLoadSync() == 0) {
                             scene->fade.FadeIn(0x1E);
 

@@ -50,15 +50,9 @@ void mgCreateBox8(float (*corners)[4], float *max, float *min) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgCreateBox8__FPA4_fPfPf);
 #endif
-#ifdef NONMATCHING
 void mgZeroVector(float *vector) {
-    for (int i = 0; i < 4; ++i) {
-        vector[i] = 0.0f;
-    }
+    *reinterpret_cast<u_long128 *>(vector) = 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgZeroVector__FPf);
-#endif
 #ifdef NONMATCHING
 void mgZeroVectorW(float *vector) {
     vector[0] = vector[1] = vector[2] = 0.0f;

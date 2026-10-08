@@ -1,5 +1,9 @@
 # water: reverse-engineering notes
 
+`CreateWaterFrame`'s typed native constructor sequence remains fuzzy. Its
+matching build path uses retail assembly and retains the C++ draft under
+`NONMATCHING`.
+
 `CFireRaster::Step` advances 20 wisp particles, expires spent particles and respawns the last free slot. Its sway phase is twice the loop counter. Typed particle indexing, phase expressions `i * 2`, and advancing the particle index before the counter reproduce the complete 460-byte PAL function, including relocations. The free slot is passed as its `position` member.
 
 ## C++ draft status

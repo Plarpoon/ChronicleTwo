@@ -1,0 +1,35 @@
+from types import SimpleNamespace
+
+from check_objects import is_retail_tail_padding
+
+
+class Retail:
+    def __init__(self, padding, relocations=None):
+        self.padding = padding
+        self.relocations = relocations or {}
+
+    def bytes(self, start, end):
+        return self.padding[:end - start]
+
+
+def context(padding, declared_size=4, relocations=None):
+    return SimpleNamespace(
+        pieces=SimpleNamespace(symbols=SimpleNamespace(
+            by_name={"datum": (0x1000, "datum", declared_size, False)})),
+        retail=Retail(padding, relocations))
+
+
+def test_final_datum_padding():
+    assert is_retail_tail_padding(context(bytes(4)), "datum", ".sdata", 0x1000, 0x1008, 4)
+    assert is_retail_tail_padding(context(b""), "datum", ".bss", 0x1000, 0x1008, 4)
+
+    assert not is_retail_tail_padding(context(b"\0\1\0\0"), "datum", ".sdata", 0x1000, 0x1008, 4)
+    assert not is_retail_tail_padding(context(bytes(4), declared_size=8), "datum", ".sdata", 0x1000, 0x1008, 4)
+    assert not is_retail_tail_padding(context(bytes(4), relocations={0x1006: 2}),
+                                      "datum", ".sdata", 0x1000, 0x1008, 4)
+    assert not is_retail_tail_padding(context(bytes(16)), "datum", ".sdata", 0x1000, 0x1014, 4)
+
+
+if __name__ == "__main__":
+    test_final_datum_padding()
+    print("check_objects tail padding checks passed")

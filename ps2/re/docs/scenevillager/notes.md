@@ -90,6 +90,15 @@ Bits 1/2/4 are SCENE_DATA_STATUS (scene.hpp). If `scenesnd` declares these bits 
   mode (1/2 toggles hand_R/hand_L vs v_R/v_L frames when +4 == 0xE), +0x50 pos, +0x60 rot.
 - `GetVillagerInfo(int)` (vlgr_info): +4 model name, +0xC frames to set attr 1, +0x10 frames to
   set attr 2 (`mgCFrameAttr+0x18`).
+
+## CharaObjectOnOff
+The scene looks up the named frames in a villager's show and hide lists. It allocates an
+`mgCFrameAttr` when a frame lacks one, then sets `draw` to 1 for show or 2 for hide. The guarded C++
+draft scored 97.59% against retail; the matching build selects its
+`INCLUDE_ASM` gap. In the hide loop, retail branches on the
+placement-new result in `v0` while moving it to `a0` in the delay slot; MWCC moves it first,
+branches on `a0`, and emits a nop. Assigning the constructed attribute directly to the frame
+adds a reload and lowers the score to 93.66%.
 - GetTalkEvent memsets a local `CSceneEventData` (0xD0) and writes `+0x8 = slot-8`,
   `chara_no`, `chara_slot` into the caller's.
 - No first-game counterpart for these types was identified.

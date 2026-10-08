@@ -1,13 +1,12 @@
 # editcoll: reverse-engineering notes
 
-## Draft status
-All ten functions have named, typed C++ drafts that compile with MWCC. Each had
-one isolated promotion attempt; every candidate differed from retail and remains
-behind `NONMATCHING`, with `INCLUDE_ASM` selected by the matching build. Of the
-six later drafts, `Copy` retained the retail section layout but differed by 0x114
-bytes in `.text`. The other five changed the linked layout, so their whole-image
-checks reported widespread differences; the per-function draft comparison also
-reports differences for each of them.
+## Current source status
+
+`ClipBoxXZ` remains an `INCLUDE_ASM` gap because the retail routine uses VU0
+status flags. The other nine functions now have C++ definitions without
+`NONMATCHING` guards. Earlier isolated drafts differed from retail; the
+current definitions require an integrated object check before their matching
+status can be stated.
 
 Header: `ps2/include/editcoll.hpp`. No first-game counterpart (`CEditCollision` does not exist in
 `/home/adubbz/development/chronicle`); the base classes `CCollision`/`CCollisionMDT`/`CCPoly` are in
@@ -80,4 +79,4 @@ None: the unit has no data symbols (no INCLUDE_RODATA/INCLUDE_BSS). Float litera
 0.1) are in .rodata/.sdata of the functions themselves.
 
 ## ClipBoxXZ draft
-The guarded scalar draft returns overlap when neither X nor Z projection has a negative separating gap. It compiles and differs from the retail VU0 status-flag implementation; the assembly fallback remains active.
+An earlier scalar C++ draft returned overlap when neither X nor Z projection had a negative separating gap. It differed from the retail VU0 status-flag implementation; the current source keeps an assembly gap.

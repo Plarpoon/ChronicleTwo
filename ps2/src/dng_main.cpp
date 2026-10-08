@@ -69,57 +69,31 @@ extern "C" float      viewAngleH__2;
 extern "C" float      viewAngleV__2;
 extern char           at_3589[];
 extern CWeaponElement wep_effect[8];
-#include "actionchara.hpp"
-#include "automap.hpp"
-#include "cameracontrol.hpp"
 #include "charasetup.hpp"
 #include "collision.hpp"
 #include "colprim.hpp"
 #include "dataread.hpp"
 #include "dbg_font.hpp"
-#include "dng_debug.hpp"
-#include "dng_effect.hpp"
-#include "dng_event.hpp"
-#include "dng_hud.hpp"
 #include "dng_object.hpp"
-#include "dng_status.hpp"
 #include "editexception.hpp"
-#include "effscript.hpp"
-#include "event.hpp"
-#include "event_func.hpp"
 #include "eventedit.hpp"
 #include "funcpoint.hpp"
 #include "gamedata.hpp"
 #include "gamepad.hpp"
 #include "helpmes.hpp"
-#include "mainloop.hpp"
-#include "maintex.hpp"
 #include "map.hpp"
-#include "mapload.hpp"
 #include "mapselect.hpp"
 #include "menumain.hpp"
-#include "mg_camera.hpp"
-#include "mg_drawprim.hpp"
-#include "mg_math.hpp"
-#include "mg_texture.hpp"
-#include "mglib.hpp"
-#include "monster.hpp"
 #include "nd_meswin.hpp"
 #include "nowload.hpp"
 #include "padcontrol.hpp"
-#include "photo.hpp"
 #include "pot.hpp"
 #include "prespr.hpp"
-#include "savedata.hpp"
-#include "savedatadungeon.hpp"
-#include "sceneevent.hpp"
-#include "scenesnd.hpp"
 #include "screeneffect.hpp"
 #include "snd_mngr.hpp"
 #include "sphida.hpp"
 #include "subgame.hpp"
 #include "sysmes.hpp"
-#include "userdata.hpp"
 #include "wavetable.hpp"
 
 // Small uninitialised data (.sbss)
@@ -154,8 +128,6 @@ CPullItemManager     PullItemMan;
 mgCFrame            *TornadoModel;
 static int           wep_effect_cnt;
 
-void            EntryEventScript(int no);
-void            ResetEyeView(CActionChara *chara);
 int             DngMainKey();
 int             RunMainEvent();
 void            CheckWeaponEnable();
@@ -171,7 +143,6 @@ int             EventScriptSetup(SYSTEM_SCRIPT_INFO *script);
 int             ChangeSetUnit(int dir);
 void            InitEyeCamera(CActionChara *chara);
 int             IsRunDeadEvent(CActionChara *chara);
-extern CGamePad GamePad__2;
 extern int      debug_cursor;
 extern int      debug_mons_no;
 extern int      debug_mons_cur;
@@ -235,7 +206,6 @@ CTornado              tornado[6];
 CChillAfterHit        chillAfterHit[6];
 CFireAfterHit         fireAfterHit[6];
 
-INCLUDE_BSS(debug_event_stack_1106, 0x30);
 INCLUDE_BSS(stack_1823, 0x30);
 INCLUDE_BSS(at_1994, 0x10);
 INCLUDE_BSS(at_2001, 0x10);
@@ -329,7 +299,7 @@ void InitDungeonMain(INIT_LOOP_ARG arg) {
     nowload.tex_block = 0x51;
     nowload.unk_4 = 1;
     nowload.step_count = 10;
-    arg.unk_4c = 0;
+    arg.mc_load = 0;
     nowload.memory.stSetBuffer(BuffReadData + 0x2E630, 10000);
     CreateNowLoading(&nowload);
     DngSaveData = GetSaveData();
@@ -375,19 +345,19 @@ void InitDungeonMain(INIT_LOOP_ARG arg) {
     DNG_BATTLE_AREA *area = BattleAreaScene;
 
     DngMainMap = NULL;
-    area->unk_5c = 1;
+    area->battle_clear = 1;
     area->battle_bgm_state = 0;
     area->battle_bgm_vol = 0.0f;
-    area->unk_54 = 0;
+    area->camera_mode = 0;
     area->pause_flag = 0;
     area->timer = 0;
     area->minimap_reveal = 0;
     area->quake_count = 0;
     area->script.running = 0;
     area->subject_counter = 0;
-    area->unk_98 = 0;
+    area->practice_actions = 0;
     area->floor_status = 0;
-    area->unk_8c = 0;
+    area->weather = 0;
     area->lock_on_mode = 0;
     BattleAreaScene->map_name[0] = '\0';
 
@@ -1078,8 +1048,8 @@ int LoopDungeonMain() {
                 if (MenuArg.end_code == 11) {
                     SubGameInfo info;
 
-                    DngMainScene->unk_3e68 = 40;
-                    DngMainScene->unk_3e6c = 31;
+                    DngMainScene->tex_block_base = 40;
+                    DngMainScene->tex_block_count = 31;
                     info.scene = DngMainScene;
                     info.rod_no = MenuArg.result[0];
                     info.esa_no = MenuArg.result[1];
@@ -1185,7 +1155,7 @@ void DngMainDraw() {
     CMapLightingInfo *info = &light;
 
     if (DngMainMap != NULL) {
-        DngMainMap->time_light_blend = 1;
+        DngMainMap->map_info.time_light_blend = 1;
         DngMainMap->now_time = DngMainScene->time;
         DngMainMap->GetLightInfo(info);
 
@@ -1546,7 +1516,7 @@ void DngMainDraw() {
 
     ActiveMonster->DrawEffectScript();
 
-    if (BattleAreaScene->unk_8c == 2) {
+    if (BattleAreaScene->weather == 2) {
         CPreSprite prim;
 
         prim.Initialize(NULL, NULL);
@@ -1555,9 +1525,9 @@ void DngMainDraw() {
         prim.Coord(0);
         prim.Shading(1);
         prim.DepthTestEnable(0);
-        prim.DepthTest(-1);
-        prim.AlphaBlend(1);
-        prim.Begin(1);
+        prim.DepthTest(MG_DEPTH_TEST_ALWAYS);
+        prim.AlphaBlend(MG_ALPHA_BLEND_NORMAL);
+        prim.Begin(MG_PRIM_LINE);
         int x = 16;
 
         for (int r = 0; r < 132; r++) {
@@ -2437,7 +2407,7 @@ int DngMainKey() {
             }
         }
 
-        MainCamera.rot_reverse = !DngSaveData->GetConfig()->unk_37;
+        MainCamera.rot_reverse = !DngSaveData->GetConfig()->rot_normal;
         static int camera_default_dist = 1;
         float      dist_table[3] = {100.0f, 160.0f, 500.0f};
 
@@ -2554,7 +2524,7 @@ int DngMainKey() {
             }
         }
 
-        if (BattleAreaScene->unk_54 == 0) {
+        if (BattleAreaScene->camera_mode == 0) {
             if (DebugInfo.debug_camera == 0) {
                 sceVu0FVECTOR rot;
 
@@ -2631,7 +2601,7 @@ int DngMainKey() {
             }
         }
 
-        if (BattleAreaScene->unk_54 == 1) {
+        if (BattleAreaScene->camera_mode == 1) {
             MainCamera.FollowOff();
             CCharacter2  *boss = DngMainScene->GetCharacter(24);
             sceVu0FVECTOR chara_pos;
@@ -2670,7 +2640,7 @@ int DngMainKey() {
             MainCamera.SetRef(boss_pos);
         }
 
-        if (BattleAreaScene->unk_54 == 2) {
+        if (BattleAreaScene->camera_mode == 2) {
             MainCamera.FollowOff();
             sceVu0FVECTOR pos;
 
@@ -2705,7 +2675,7 @@ int DngMainKey() {
             MainCamera.SetNextRef(268.8f, ref_y, -322.4f);
         }
 
-        if (BattleAreaScene->unk_54 == 4) {
+        if (BattleAreaScene->camera_mode == 4) {
             sceVu0FVECTOR rot;
 
             camera->ControlOn();
@@ -2855,7 +2825,7 @@ void IsEventRun() {
             info->SetAttr(0x6F, 1);
             FxScriptMan->CreateEffSpt("\x92\xca\x8f\xed\x89\xf1\x95\x9c", 0, 0);
             FxScriptMan->SetScriptTargetId(0, -1, -1);
-            CPalletAnime *pallet = &MainChara__2->unk_67c;
+            CPalletAnime *pallet = &MainChara__2->script_pallet;
             pallet->red = 0x60;
             pallet->green = 0xB4;
             pallet->blue = 0xFF;
@@ -2864,7 +2834,7 @@ void IsEventRun() {
             pallet->elapsed = 0;
             pallet->repeats = 0;
             sndSePlay(GetSystemSndID(), 10, 0);
-            BattleAreaScene->unk_98 |= 0x80;
+            BattleAreaScene->practice_actions |= 0x80;
         }
     }
 
@@ -2882,9 +2852,9 @@ void IsEventRun() {
     int num = ActiveMonster->GetMonsterNum(-1.0f);
     num += TreasureBoxMan->MimicCount();
 
-    if (num == 0 && BattleAreaScene->unk_5c == 0) {
+    if (num == 0 && BattleAreaScene->battle_clear == 0) {
         *event_no = 1500;
-        BattleAreaScene->unk_5c = 1;
+        BattleAreaScene->battle_clear = 1;
         ColPrimMan.Initialize(DngMainScene);
         BTsubo.Clear();
         BTsuboCol = NULL;
@@ -3322,7 +3292,7 @@ static void EyeCamera(mgCCamera *camera, CCharacter2 *chara, int mode) {
     camera->SetRef(ref);
 }
 
-int debug_no[7] = {100, 0, 1, 0, 0, 0, 0};
+int debug_no[8] = {100, 0, 1, 0, 0, 0, 0, 0};
 
 /**
  *
@@ -3336,7 +3306,7 @@ void DebugMainDraw() {
         prim.Initialize(NULL, NULL);
         prim.Preset2D();
         prim.TextureMapEnable(0);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Color(0x10, 0x10, 0x40, 0x74);
         prim.Vertex(0x10, 0x28, 0);
         prim.Vertex(0x100, 0x120, 0);
@@ -3376,7 +3346,7 @@ void DebugMainDraw() {
             prim.Initialize(NULL, NULL);
             prim.Preset2D();
             prim.TextureMapEnable(0);
-            prim.Begin(6);
+            prim.Begin(MG_PRIM_SPRITE);
             prim.Color(8, 8, 0x20, 0x74);
             prim.Vertex(0x5C, 0x3C, 0);
             prim.Vertex(0x168, 0x158, 0);
@@ -3457,7 +3427,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_main", at_3602__DATA);
 // Small initialised data (.sdata)
 
 // Small uninitialised data (.sbss)
-INCLUDE_BSS(init_1107, 0x4);
 INCLUDE_BSS(init_1824, 0x4);
 INCLUDE_BSS(water_cnt_2619, 0x4);
 INCLUDE_BSS(init_2620, 0x4);

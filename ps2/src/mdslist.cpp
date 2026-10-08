@@ -33,10 +33,6 @@ extern u_int        *pcp_file;
 extern int           pcpAllScissor;
 extern SPI_TAG_PARAM pcp_tag[];
 CCharacter2         *CreateChara(u_int *pack, char *config, mgCMemory *memory);
-extern "C" void     *__vt__9mgCObject[];
-extern "C" void     *__vt__7CObject[];
-extern "C" void     *__vt__12CObjectFrame[];
-extern "C" void     *__vt__11CCharacter2[];
 
 extern char at_754[];
 
@@ -179,6 +175,7 @@ int CMapPiece::DrawSub(int direct) {
     return result;
 }
 
+#ifdef NONMATCHING
 void CMapPiece::Copy(CMapPiece &dest, mgCMemory *memory) {
     int            i;
     PieceMaterial *to;
@@ -233,19 +230,7 @@ void CMapPiece::Copy(CMapPiece &dest, mgCMemory *memory) {
     }
 
     if (chara != NULL && memory != NULL) {
-        if ((model = (CCharacter2 *) operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-            *(void ***) model = __vt__9mgCObject;
-            model->Initialize();
-            *(void ***) model = __vt__7CObject;
-            model->Initialize();
-            *(void ***) model = __vt__12CObjectFrame;
-            model->Initialize();
-            *(void ***) model = __vt__11CCharacter2;
-            model->shadow_link.num = 0;
-            model->shadow_link.dst_frame = 0;
-            model->shadow_link.src_frame = 0;
-            model->Initialize();
-        }
+        model = new (memory->Alloc(0x68)) CCharacter2;
 
         dest.chara = model;
 
@@ -257,6 +242,9 @@ void CMapPiece::Copy(CMapPiece &dest, mgCMemory *memory) {
         dest.chara = chara;
     }
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", Copy__9CMapPieceFR9CMapPieceP9mgCMemory);
+#endif
 
 void CMapPiece::Initialize() {
     int i;
@@ -814,22 +802,11 @@ CMdsInfo::CMdsInfo() {
  * Constructs a character and loads its visual data from a model pack.
  *
  */
+#ifdef NONMATCHING
 CCharacter2 *CreateChara(u_int *pack, char *config, mgCMemory *memory) {
     CCharacter2 *chara;
 
-    if ((chara = (CCharacter2 *) operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-        *(void ***) chara = __vt__9mgCObject;
-        chara->Initialize();
-        *(void ***) chara = __vt__7CObject;
-        chara->Initialize();
-        *(void ***) chara = __vt__12CObjectFrame;
-        chara->Initialize();
-        *(void ***) chara = __vt__11CCharacter2;
-        chara->shadow_link.num = 0;
-        chara->shadow_link.dst_frame = 0;
-        chara->shadow_link.src_frame = 0;
-        chara->Initialize();
-    }
+    chara = new (memory->Alloc(0x68)) CCharacter2;
 
     if (chara == NULL) {
         return NULL;
@@ -839,6 +816,9 @@ CCharacter2 *CreateChara(u_int *pack, char *config, mgCMemory *memory) {
     chara->LoadPackNoLine(pack, config, memory, memory, memory, -1, 0);
     return chara;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mdslist", CreateChara__FPUiPcP9mgCMemory);
+#endif
 
 // Initialised data (.data)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mdslist", pcp_tag__DATA);

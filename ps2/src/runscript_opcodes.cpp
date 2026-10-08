@@ -118,10 +118,10 @@ void CMonsterMan::RunScript(int index) {
  */
 static int GetStackInt(RS_STACKDATA *stack) {
     if (stack->type == 1) {
-        return (int) stack->f;
+        return (int) stack->val.f;
     }
 
-    return stack->i;
+    return stack->val.i;
 }
 
 /**
@@ -131,10 +131,10 @@ static int GetStackInt(RS_STACKDATA *stack) {
  */
 static float GetStackFloat(RS_STACKDATA *stack) {
     if (stack->type == 0) {
-        return (float) stack->i;
+        return (float) stack->val.i;
     }
 
-    return *(float *) &stack->i;
+    return *(float *) &stack->val.i;
 }
 
 /**
@@ -143,7 +143,7 @@ static float GetStackFloat(RS_STACKDATA *stack) {
  *
  */
 static char *GetStackString(RS_STACKDATA *stack) {
-    return (char *) stack->i;
+    return (char *) stack->val.i;
 }
 
 /**
@@ -153,7 +153,7 @@ static char *GetStackString(RS_STACKDATA *stack) {
  */
 static void SetStack(RS_STACKDATA *stack, int value) {
     if (stack->type == 3) {
-        ((RS_STACKDATA *) stack->i)->i = value;
+        ((RS_STACKDATA *) stack->val.i)->val.i = value;
     }
 }
 
@@ -164,7 +164,7 @@ static void SetStack(RS_STACKDATA *stack, int value) {
  */
 static void SetStack(RS_STACKDATA *stack, float value) {
     if (stack->type == 3) {
-        *(float *) &((RS_STACKDATA *) stack->i)->i = value;
+        *(float *) &((RS_STACKDATA *) stack->val.i)->val.i = value;
     }
 }
 
@@ -540,13 +540,13 @@ int _SET_PALLET_ANIM(RS_STACKDATA *stack, int argc) {
     }
 
     CActiveMonster *monster = nowMonster;
-    monster->unk_67c.red = first;
-    monster->unk_67c.green = second;
-    monster->unk_67c.blue = third;
-    monster->unk_67c.pulse_num = fourth;
-    monster->unk_67c.duration = fifth;
-    monster->unk_67c.elapsed = 0;
-    monster->unk_67c.repeats = sixth;
+    monster->script_pallet.red = first;
+    monster->script_pallet.green = second;
+    monster->script_pallet.blue = third;
+    monster->script_pallet.pulse_num = fourth;
+    monster->script_pallet.duration = fifth;
+    monster->script_pallet.elapsed = 0;
+    monster->script_pallet.repeats = sixth;
     return 1;
 }
 
@@ -557,8 +557,8 @@ int _SET_PALLET_ANIM(RS_STACKDATA *stack, int argc) {
  */
 int _RESET_PALLET_ANIM(RS_STACKDATA *stack, int argc) {
     CActiveMonster *monster = nowMonster;
-    monster->unk_67c.duration = 0;
-    monster->unk_67c.elapsed = 0;
+    monster->script_pallet.duration = 0;
+    monster->script_pallet.elapsed = 0;
     return 1;
 }
 
@@ -654,9 +654,9 @@ int _GET_POSREF_ANGLE(RS_STACKDATA *stack, int argc) {
  */
 int _NORMAL_VECTOR(RS_STACKDATA *stack, int argc) {
     float vec[4];
-    vec[0] = stack[0].p->f;
-    vec[1] = stack[1].p->f;
-    vec[2] = stack[2].p->f;
+    vec[0] = stack[0].val.p->val.f;
+    vec[1] = stack[1].val.p->val.f;
+    vec[2] = stack[2].val.p->val.f;
     vec[3] = 1.0f;
     sceVu0Normalize(vec, vec);
     SetStack(stack++, vec[0]);
@@ -693,9 +693,9 @@ int _ADD_VECTOR(RS_STACKDATA *stack, int argc) {
     float x = GetStackFloat(source++);
     float y = GetStackFloat(source++);
     float z = GetStackFloat(source);
-    SetStack(stack, stack[0].p->f + x);
-    SetStack(stack + 1, stack[1].p->f + y);
-    SetStack(stack + 2, stack[2].p->f + z);
+    SetStack(stack, stack[0].val.p->val.f + x);
+    SetStack(stack + 1, stack[1].val.p->val.f + y);
+    SetStack(stack + 2, stack[2].val.p->val.f + z);
     return 1;
 }
 
@@ -710,9 +710,9 @@ int _SUB_VECTOR(RS_STACKDATA *stack, int argc) {
     float x = GetStackFloat(source++);
     float y = GetStackFloat(source++);
     float z = GetStackFloat(source);
-    SetStack(stack, stack[0].p->f - x);
-    SetStack(stack + 1, stack[1].p->f - y);
-    SetStack(stack + 2, stack[2].p->f - z);
+    SetStack(stack, stack[0].val.p->val.f - x);
+    SetStack(stack + 1, stack[1].val.p->val.f - y);
+    SetStack(stack + 2, stack[2].val.p->val.f - z);
     return 1;
 }
 
@@ -723,9 +723,9 @@ int _SUB_VECTOR(RS_STACKDATA *stack, int argc) {
  */
 int _SCALE_VECTOR(RS_STACKDATA *stack, int argc) {
     float scale = GetStackFloat(stack + 3);
-    SetStack(stack, stack[0].p->f * scale);
-    SetStack(stack + 1, stack[1].p->f * scale);
-    SetStack(stack + 2, stack[2].p->f * scale);
+    SetStack(stack, stack[0].val.p->val.f * scale);
+    SetStack(stack + 1, stack[1].val.p->val.f * scale);
+    SetStack(stack + 2, stack[2].val.p->val.f * scale);
     return 1;
 }
 
@@ -741,9 +741,9 @@ int _DIV_VECTOR(RS_STACKDATA *stack, int argc) {
         return 0;
     }
 
-    SetStack(stack, stack[0].p->f / divisor);
-    SetStack(stack + 1, stack[1].p->f / divisor);
-    SetStack(stack + 2, stack[2].p->f / divisor);
+    SetStack(stack, stack[0].val.p->val.f / divisor);
+    SetStack(stack + 1, stack[1].val.p->val.f / divisor);
+    SetStack(stack + 2, stack[2].val.p->val.f / divisor);
     return 1;
 }
 
@@ -766,7 +766,7 @@ int _ANGLE_CMP(RS_STACKDATA *stack, int argc) {
  *
  */
 int _ANGLE_LIMIT(RS_STACKDATA *stack, int unused) {
-    SetStack(stack, mgAngleLimit(stack->p->f));
+    SetStack(stack, mgAngleLimit(stack->val.p->val.f));
     return 1;
 }
 
@@ -844,7 +844,7 @@ int _GET_MONSTER_LIFE(RS_STACKDATA *stack, int argc) {
         return 0;
     }
 
-    RS_STACKDATA *slot = (RS_STACKDATA *) stack->i;
+    RS_STACKDATA *slot = (RS_STACKDATA *) stack->val.i;
 
     if (slot->type == 0) {
         SetStack(stack, nowMonster->life);
@@ -1144,15 +1144,15 @@ int _SET_ESCAPE_RATE(RS_STACKDATA *stack, int argc) {
     }
 
     float scale = GetStackFloat(stack);
-    monster->tbl->escape_rate[0] = fptosi((float) monster->base_tbl->escape_rate[0] * scale);
-    monster->tbl->escape_rate[1] = fptosi((float) monster->base_tbl->escape_rate[1] * scale);
+    monster->tbl->escape_rate0 = fptosi((float) monster->base_tbl->escape_rate0 * scale);
+    monster->tbl->escape_rate1 = fptosi((float) monster->base_tbl->escape_rate1 * scale);
 
-    if ((u8) monster->tbl->escape_rate[0] > 100) {
-        monster->tbl->escape_rate[0] = 100;
+    if ((u8) monster->tbl->escape_rate0 > 100) {
+        monster->tbl->escape_rate0 = 100;
     }
 
-    if ((u8) monster->tbl->escape_rate[1] > 100) {
-        monster->tbl->escape_rate[1] = 100;
+    if ((u8) monster->tbl->escape_rate1 > 100) {
+        monster->tbl->escape_rate1 = 100;
     }
 
     return 1;
@@ -1438,7 +1438,7 @@ int _SET_CAMERA_MODE(RS_STACKDATA *stack, int argc) {
         return 0;
     }
 
-    area->unk_54 = mode;
+    area->camera_mode = mode;
     return 1;
 }
 
@@ -1700,7 +1700,7 @@ int _V_POP(RS_STACKDATA *stack, int argc) {
         return 0;
     }
 
-    RS_STACKDATA *slot = (RS_STACKDATA *) stack->i;
+    RS_STACKDATA *slot = (RS_STACKDATA *) stack->val.i;
 
     if (slot->type == 0) {
         if (index < MONSTER_VAR_MAX) {
@@ -1792,7 +1792,7 @@ int _V_POP2(RS_STACKDATA *stack, int argc) {
         return 0;
     }
 
-    RS_STACKDATA *slot = (RS_STACKDATA *) stack->i;
+    RS_STACKDATA *slot = (RS_STACKDATA *) stack->val.i;
 
     if (slot->type == 0) {
         if (index < MONSTER_VAR2_MAX) {
@@ -1935,7 +1935,7 @@ int _SET_DMG2(RS_STACKDATA *stack, int argc) {
     frame_a = object->frame;
 
     if (power <= 0.0f) {
-        power = object->unk_04;
+        power = object->size;
     }
 
     if (index_b >= 0) {
@@ -3218,7 +3218,7 @@ int _SET_DEAD_START(RS_STACKDATA *args, int argc) {
     }
 
     nowMonster->state = ACTIVE_MONSTER_DEAD;
-    pallet = &nowMonster->unk_67c;
+    pallet = &nowMonster->script_pallet;
     pallet->duration = 0;
     pallet->elapsed = 0;
 
@@ -3353,12 +3353,6 @@ int _SET_DEAD_START(RS_STACKDATA *args, int argc) {
     sndSePlay(nowScene->se_battle_id, 1, 0);
     return 1;
 }
-#ifdef NONMATCHING
-/**
- *
- * Starts the monster death effect and spawns its experience pickups.
- *
- */
 int _SET_DEAD_OFF(RS_STACKDATA *args, int argc) {
     sceVu0FVECTOR position;
     sceVu0FVECTOR velocity;
@@ -3377,8 +3371,8 @@ int _SET_DEAD_OFF(RS_STACKDATA *args, int argc) {
         return 0;
     }
     nowMonster->dead_alpha = 128;
-    height = 2.0f * nowMonster->body_height;
-    radius = 3.0f * nowMonster->body_width;
+    radius = 3.0f * nowMonster->GetBodyWidth();
+    height = 2.0f * nowMonster->GetBodyHeight();
     if (height >= 60.0f) {
         height = 60.0f;
     }
@@ -3415,7 +3409,8 @@ int _SET_DEAD_OFF(RS_STACKDATA *args, int argc) {
     experience = nowMonster->reward_exp;
     pickup_count = 0;
     if (nowMonster->last_hit_attr & 0x800) {
-        experience = (int) (1.2f * experience);
+        float bonus = 1.2f;
+        experience = (int)((float)experience * bonus);
     }
     if (experience < 6 && experience > 0) {
         pickup_count = 6;
@@ -3432,7 +3427,7 @@ int _SET_DEAD_OFF(RS_STACKDATA *args, int argc) {
     if (experience >= 500) {
         pickup_count = 16;
     }
-    growth = (float) experience / (float) pickup_count;
+    growth = (float)experience / (float)pickup_count;
     for (i = 0; i < pickup_count; i++) {
         CPullItem *item = PullItemMan.GetList(2);
         if (item != NULL) {
@@ -3458,9 +3453,6 @@ int _SET_DEAD_OFF(RS_STACKDATA *args, int argc) {
     sndSePlay(nowScene->se_battle_id, 20, 0);
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _SET_DEAD_OFF__FP12RS_STACKDATAi);
-#endif
 /**
  *
  * Clears the monster catch state when its throw ends.
@@ -3635,7 +3627,7 @@ int _GET_USER_MONS_ID(RS_STACKDATA *stack, int argc) {
     int chara_id = -1;
 
     if (DngUserData->active_chr_no == 3) {
-        chara_id = GetBattleCharaInfo()->unk_2;
+        chara_id = GetBattleCharaInfo()->user_mons_id;
 
         if (nowMonster->tbl->user_mons_id != chara_id) {
             chara_id = -1;
@@ -3834,51 +3826,31 @@ void _ESM_DELETE(RS_STACKDATA *stack, int argc) {
     int effect_id = nowMonster->chara_type;
     ActiveMonster->effect_man->DeleteEffSpt(effect_id, GetStackInt(stack));
 }
-#ifdef NONMATCHING
-/**
- *
- * Sets the first script vector on a monster effect slot.
- *
- */
 int _ESM_SET_VECT1(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR vector;
-    int           slot = GetStackInt(stack++);
+    int slot = GetStackInt(stack++);
     vector[0] = GetStackFloat(stack++);
     vector[1] = GetStackFloat(stack++);
     vector[2] = GetStackFloat(stack);
     vector[3] = 1.0f;
-    return ActiveMonster->effect_man->SetScriptVect1(vector, nowMonster->chara_type, slot);
+    int monster_type = nowMonster->chara_type;
+    int group = monster_type;
+    return ActiveMonster->effect_man->SetScriptVect1(vector, group, slot);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ESM_SET_VECT1__FP12RS_STACKDATAi);
-#endif
-#ifdef NONMATCHING
-/**
- *
- * Writes the first script vector from a monster effect slot.
- *
- */
 int _ESM_GET_VECT1(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR vector;
     if (argc != 4) {
         return 0;
     }
     int slot = GetStackInt(stack++);
-    int result = ActiveMonster->effect_man->GetScriptVect1(vector, nowMonster->chara_type, slot);
+    int monster_type = nowMonster->chara_type;
+    int group = monster_type;
+    int result = ActiveMonster->effect_man->GetScriptVect1(vector, group, slot);
     SetStack(stack++, vector[0]);
     SetStack(stack++, vector[1]);
     SetStack(stack, vector[2]);
     return result;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ESM_GET_VECT1__FP12RS_STACKDATAi);
-#endif
-#ifdef NONMATCHING
-/**
- *
- * Sets the second script vector on a monster effect slot.
- *
- */
 int _ESM_SET_VECT2(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR vector;
     if (argc != 4) {
@@ -3889,91 +3861,55 @@ int _ESM_SET_VECT2(RS_STACKDATA *stack, int argc) {
     vector[1] = GetStackFloat(stack++);
     vector[2] = GetStackFloat(stack);
     vector[3] = 1.0f;
-    return ActiveMonster->effect_man->SetScriptVect2(vector, nowMonster->chara_type, slot);
+    int monster_type = nowMonster->chara_type;
+    int group = monster_type;
+    return ActiveMonster->effect_man->SetScriptVect2(vector, group, slot);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ESM_SET_VECT2__FP12RS_STACKDATAi);
-#endif
-#ifdef NONMATCHING
-/**
- *
- * Writes the second script vector from a monster effect slot.
- *
- */
 int _ESM_GET_VECT2(RS_STACKDATA *stack, int argc) {
     sceVu0FVECTOR vector;
     if (argc != 4) {
         return 0;
     }
     int slot = GetStackInt(stack++);
-    int result = ActiveMonster->effect_man->GetScriptVect2(vector, nowMonster->chara_type, slot);
+    int monster_type = nowMonster->chara_type;
+    int group = monster_type;
+    int result = ActiveMonster->effect_man->GetScriptVect2(vector, group, slot);
     SetStack(stack++, vector[0]);
     SetStack(stack++, vector[1]);
     SetStack(stack, vector[2]);
     return result;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ESM_GET_VECT2__FP12RS_STACKDATAi);
-#endif
-#ifdef NONMATCHING
-/**
- *
- * Sets the target identifier on a monster effect slot.
- *
- */
 int _ESM_SET_TARGET_ID(RS_STACKDATA *stack, int argc) {
     int slot = GetStackInt(stack++);
     int id = GetStackInt(stack);
-    return ActiveMonster->effect_man->SetScriptTargetId(id, nowMonster->chara_type, slot);
+    int monster_type = nowMonster->chara_type;
+    int group = monster_type;
+    return ActiveMonster->effect_man->SetScriptTargetId(id, group, slot);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ESM_SET_TARGET_ID__FP12RS_STACKDATAi);
-#endif
-#ifdef NONMATCHING
-/**
- *
- * Writes the target identifier from a monster effect slot.
- *
- */
 void _ESM_GET_TARGET_ID(RS_STACKDATA *stack, int argc) {
     int id;
     int slot = GetStackInt(stack++);
-    ActiveMonster->effect_man->GetScriptTargetId(id, nowMonster->chara_type, slot);
+    int monster_type = nowMonster->chara_type;
+    int group = monster_type;
+    ActiveMonster->effect_man->GetScriptTargetId(id, group, slot);
     SetStack(stack, id);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ESM_GET_TARGET_ID__FP12RS_STACKDATAi);
-#endif
-#ifdef NONMATCHING
-/**
- *
- * Sets the user identifier on a monster effect slot.
- *
- */
 int _ESM_SET_USER_ID(RS_STACKDATA *stack, int argc) {
     int slot = GetStackInt(stack++);
     int id = GetStackInt(stack);
-    return ActiveMonster->effect_man->SetScriptUserId(id, nowMonster->chara_type, slot);
+    int monster_type = nowMonster->chara_type;
+    int group = monster_type;
+    return ActiveMonster->effect_man->SetScriptUserId(id, group, slot);
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ESM_SET_USER_ID__FP12RS_STACKDATAi);
-#endif
-#ifdef NONMATCHING
-/**
- *
- * Writes the user identifier from a monster effect slot.
- *
- */
 int _ESM_GET_USER_ID(RS_STACKDATA *stack, int argc) {
     int id;
     int slot = GetStackInt(stack++);
-    int result = ActiveMonster->effect_man->GetScriptUserId(id, nowMonster->chara_type, slot);
+    int monster_type = nowMonster->chara_type;
+    int group = monster_type;
+    int result = ActiveMonster->effect_man->GetScriptUserId(id, group, slot);
     SetStack(stack, id);
     return result;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/runscript_opcodes", _ESM_GET_USER_ID__FP12RS_STACKDATAi);
-#endif
 /**
  *
  * Sets an integer or float parameter on a monster effect slot.
@@ -4094,8 +4030,8 @@ int _SW_EFFECT(RS_STACKDATA *stack, int argc) {
     effect->end = end_frame;
     effect->frame0 = start_name;
     effect->frame1 = end_name;
-    effect->unk_1c = arg_a;
-    effect->unk_1d = arg_c;
+    effect->length = arg_a;
+    effect->hold_time = arg_c;
     effect->fade_time = arg_b;
     effect->wait = 0;
     nowMonster->sw_effect_num += 1;
@@ -4476,7 +4412,7 @@ int _SET_INDEXOBJ_SIZE(RS_STACKDATA *stack, int argument_count) {
     int                 offset = object_index * sizeof(CHARA_ENTRY_OBJECT);
     int                 address = (int) objects;
     address = offset + address;
-    ((CHARA_ENTRY_OBJECT *) address)->unk_04 = size;
+    ((CHARA_ENTRY_OBJECT *) address)->size = size;
     return 1;
 }
 
@@ -4501,7 +4437,7 @@ int _GET_INDEXOBJ_SIZE(RS_STACKDATA *stack, int argument_count) {
     object_index *= sizeof(CHARA_ENTRY_OBJECT);
     object_index += object_base;
     CHARA_ENTRY_OBJECT *object = (CHARA_ENTRY_OBJECT *) object_index;
-    SetStack(stack, object->unk_04);
+    SetStack(stack, object->size);
     return 1;
 }
 

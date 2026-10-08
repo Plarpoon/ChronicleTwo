@@ -64,6 +64,7 @@ public:
      */
     CameraCtrlParam() { no_check = 0; }
 
+#ifdef CAMERA_CONTROL_USE_RETAIL_ASSIGNMENT
     /**
      *
      * Copies every camera distance and height limit from another parameter set.
@@ -73,6 +74,7 @@ public:
      * @size 0x60
      */
     CameraCtrlParam &operator=(const CameraCtrlParam &source);
+#endif
 
     /**
      *

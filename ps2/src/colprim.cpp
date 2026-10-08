@@ -193,7 +193,7 @@ int CColPrim::IsHit(CScene *scene, int chara_id) {
 
         if (self->param->shape & DAMAGE_SHAPE_POINT) {
             for (int i = 0; i < count; i++) {
-                if (mgDistVector(starts[i], entry_position) <= 2.0f * (self->radius + entry->unk_04)) {
+                if (mgDistVector(starts[i], entry_position) <= 2.0f * (self->radius + entry->size)) {
                     entry_position[3] = 1.0f;
                     sceVu0CopyVector(self->hit_pos, entry_position);
 
@@ -213,7 +213,7 @@ int CColPrim::IsHit(CScene *scene, int chara_id) {
 
         if (self->param->shape & DAMAGE_SHAPE_LINE) {
             for (int j = 0; j < count; j++) {
-                if (mgDistLinePoint(entry_position, starts[j], ends[j], self->hit_pos) <= 2.0f * (self->radius + entry->unk_04)) {
+                if (mgDistLinePoint(entry_position, starts[j], ends[j], self->hit_pos) <= 2.0f * (self->radius + entry->size)) {
                     sceVu0SubVector(self->hit_vec, self->pos[1], self->old_pos[1]);
                     hit = 1;
                     break;

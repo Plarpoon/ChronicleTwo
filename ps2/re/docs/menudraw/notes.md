@@ -1,5 +1,10 @@
 # menudraw: reverse-engineering notes
 
+`CRepairManager::GeneratePoly` compiles to 0x214 bytes against retail's 0x240,
+moving the next function and the following translation units by 0x20 after
+alignment. Its typed C++ draft is guarded by `NONMATCHING`; the matching build
+uses retail assembly until the constructor sequence matches.
+
 The migrated form helpers write the form's character, movement and named part data through
 their existing members. `CMenuEffect::type` is a signed byte: its initializer stores -1, and
 using an unsigned field changes MWCC's immediate instruction. `CRepairManager::IsRun` checks
@@ -215,10 +220,10 @@ The native function has zero canonical instruction and resolved-relocation
 differences using the standard profile. The isolated unit contains `0x1408C`
 allocated bytes and 2,397 relocations, with only the existing 16
 `CRepairManager::GeneratePoly` constructor/layout problems. No compiler
-profile override is needed. `PrimFillRect4`, `DrawMenuWakuStep`, and
-`DrawMenuNumber` remain guarded drafts; their attempted promotions were
-restored after unresolved entry-copy, induction, and texture-argument load
-scheduling differences, respectively.
+profile override is needed. `PrimFillRect4` and `DrawMenuNumber` remain guarded
+drafts after unresolved entry-copy and texture-argument scheduling differences.
+The newer native `DrawMenuWakuStep` is retained in the merge; the earlier
+induction-scheduling trial does not describe its current status.
 
 The tile-pattern draft reproduces retail's outer column loop when the screen
 edge is tested within a bounded do-loop and columns advance by the destination

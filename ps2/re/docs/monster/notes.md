@@ -1,5 +1,11 @@
 # monster: reverse-engineering notes
 
+`HitEffectSet` and `GuardEffectSet` use their verified native C++ bodies with
+four stable floating-point compiler selectors. Their pre-calibration scheduling
+differences and selector identities are documented below. `CMonsterMan::ThinkHost`
+also has an active C++ definition whose matching status depends on the integrated
+object comparison.
+
 No first-game counterpart: Dark Cloud has no `CActiveMonster`, `CMonsterMan` or `CMonsterLocateInfo`.
 `CActiveMonster` derives from `CActionChara` (actionchara.hpp, size 0x1030).
 
@@ -188,3 +194,12 @@ uses their original type and IEEE bits, rather than source order or arena
 residue. Both effects have zero byte and relocation differences, and
 canonical wrapper plus section fixup validates the entire monster unit:
 0x16818 bytes and 571 relocations.
+
+## Integer helper history
+
+The non-retail `static u_long PrimeLongDivision(u_long a, u_long b)` function
+performed unsigned long division in a discarded `.dead` section. It served only
+to alter the compiler's helper-call argument-register history and is removed.
+Any required integer helper history must be represented by a verified Satan's
+Fiddle translation-unit mask. Its effect on the merged unit's new native bodies
+requires canonical validation after tool and header reconciliation.

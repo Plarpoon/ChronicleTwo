@@ -143,10 +143,10 @@ signature is `(int, u_long128*, u_long128*, int)`. The index's demangling "(int,
   `sceVif1Packet` next to mglib's include.
 - New enums `mgPACKET_CODE` (DMA tag IDs CNT/CALL/RET, VIF DIRECT, GIF tag EOP/PRE/field shifts,
   uncached bit) and `mgGS_CODE` (PRMODECONT, ZTST GREATER, PRIM FST) name constants the SDK shim lacks.
-- Drafts (DIFF): Data0/Data4/Vertex(float*)/Color(float*) are VU0 `lqc2`/`vftoi0`/`vftoi4`/`sqc2`
-  in retail, written as C casts here (retail is probably inline asm). The mgCDrawManager drafts
-  follow the decompilation; BeginDraw's table sizes are `group_num/4+1` without an order list and
-  `(count+1)/4+1` with one.
+- Earlier scalar C++ attempts for Data0/Data4/Vertex(float*)/Color(float*) differed from
+  retail's VU0 `lqc2`/`vftoi0`/`vftoi4`/`sqc2` operations. The current source uses
+  `INCLUDE_ASM` for all four. BeginDraw's table sizes are `group_num/4+1` without an
+  order list and `(count+1)/4+1` with one.
 
 ## Drafting (job mg_drawprim.2)
 - AddPacket: the `group < group_max` test is on the caller's group, before the order lookup; with
@@ -166,15 +166,11 @@ The `libvu0.h` functions `sceVu0FTOI4Vector` and
 inline code or `Vertex`'s mixed per-lane conversion. Scalar C++ casts emit
 scalar conversion instructions, including different rounding and register
 traffic. No existing header supplies an intrinsic for these VU0 operations.
-Consequently these bodies currently match through inline assembly and do
-not count as decompiled C++ functions.
-
-The proper undecompiled form is one `INCLUDE_ASM` marker at each address:
+The three functions now use `INCLUDE_ASM` gaps at their retail addresses:
 `Data4__11mgCDrawPrimFPf`, `Vertex__11mgCDrawPrimFPf`, and
-`Color__11mgCDrawPrimFPf` in `ps2/asm/pal/nonmatchings/mg_drawprim`.
-After replacing the bodies, run the normal split through
-`scripts/build/cmake.sh` so the generated symbol files are rebuilt; do not
-edit `ps2/asm` directly. Verify the three object diffs and both PS2 builds.
+`Color__11mgCDrawPrimFPf`. They remain undecompiled. `Data0(float*)` also
+uses an assembly gap after its scalar C++ draft failed to match. The current
+source contains no inline assembly definitions for these functions.
 The matching path for source C++ would require adding compiler support for
 VU0 vector intrinsics that emit the exact COP2 instruction and mask sequence.
 ## Compiler flag cleanup

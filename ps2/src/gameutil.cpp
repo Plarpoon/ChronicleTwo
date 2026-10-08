@@ -17,111 +17,122 @@
 #include "mg_visual.hpp"
 #include "mglib.hpp"
 
-// Trap on division by zero for variable integer divisors.
+extern sceVu0FVECTOR *vert_845;
+extern sceVu0FMATRIX  tmp_SkinMatrix_847;
+extern sceVu0FMATRIX  tmp_SkinMatrix_inv_848;
+extern sceVu0FMATRIX  tmp_ChrMatrix_849;
+extern sceVu0FMATRIX  tmp_BaseSkinMatrix_851;
+extern sceVu0FMATRIX  tmp_BaseSkinMatrix_inv_852;
+extern sceVu0FVECTOR *vert_915;
+extern sceVu0FVECTOR *nml_916;
+extern sceVu0FMATRIX  tmp_SkinMatrix_917;
+extern sceVu0FMATRIX  tmp_SkinMatrix_inv_918;
+extern sceVu0FMATRIX  tmp_ChrMatrix_919;
+extern sceVu0FMATRIX  tmp_BaseSkinMatrix_921;
+extern sceVu0FMATRIX  tmp_BaseSkinMatrix_inv_922;
 
-#ifdef NONMATCHING
-/**
- *
- * Skinned frame whose bone matrices MotionProc2 and MotionProc3 last set up.
- *
- */
 static mgCFrame *OldSkinFrame;
 
-/**
- *
- * Skinned-vertex accumulator of the frame being skinned; w sums the weights.
- *
- */
-static sceVu0FVECTOR def_vrtx[800];
+struct FrameLinkRecord {
+    int count;
+    int link[11];
+};
 
-/**
- *
- * Skinned-normal accumulator of the frame being skinned.
- *
- */
-static sceVu0FVECTOR def_nml[1];
-#endif
+struct CCPolyCopy {
+    float vertex[3][4];
+    float normal[4];
+    float attr[4];
+};
+
+struct MotionVector {
+    float f[4];
+};
+
+extern MotionVector at_945;
+extern char         at_966[];
+extern char         at_967[];
+
+float def_vrtx[800][4];
+
+static float def_nml[1][4];
 
 // Code (.text)
-#ifdef NONMATCHING
-/**
- *
- * Interpolates between two quaternions, stored w first, along the shorter arc.
- *
- */
-static void QuatSlerp(float *from, float *to, float t, float *out) {
-    float cosine;
-    float angle;
-    float inv_sine;
-    float scale_from;
-    float scale_to;
+static void QuatSlerp(float *q0, float *q1, float t, float *out) {
+    float cos_theta;
+    float scale0;
+    float scale1;
+    float theta;
+    float inv_sin;
 
-    cosine = from[0] * to[0] + from[3] * to[3] + from[2] * to[2] + from[1] * to[1];
+    cos_theta = (q0[3] * q1[3]) + ((q0[1] * q1[1]) + (q0[2] * q1[2])) + (q0[0] * q1[0]);
+    scale1 = t;
 
-    if (cosine < 0.0f) {
-        to[0] = -to[0];
-        cosine = -cosine;
-        to[1] = -to[1];
-        to[2] = -to[2];
-        to[3] = -to[3];
+    if (cos_theta < 0.0f) {
+        q1[0] = -q1[0];
+        cos_theta = -cos_theta;
+        q1[1] = -q1[1];
+        q1[2] = -q1[2];
+        q1[3] = -q1[3];
     }
 
-    if (cosine < 0.01f) {
-        out[1] = to[1];
-        out[2] = to[2];
-        out[3] = to[3];
-        out[0] = to[0];
+    if (cos_theta < 0.01f) {
+        out[1] = q1[1];
+        out[2] = q1[2];
+        out[3] = q1[3];
+        out[0] = q1[0];
     } else {
-        scale_from = 1.0f - t;
-        scale_to = t;
-
-        if (1.0f - cosine > 0.01f) {
-            angle = acosf(cosine);
-            inv_sine = 1.0f / sinf(angle);
-            scale_from = inv_sine * sinf((1.0f - t) * angle);
-            scale_to = inv_sine * sinf(t * angle);
+        if (!((1.0f - cos_theta) <= 0.01f)) {
+            theta = acosf(cos_theta);
+            inv_sin = 1.0f / sinf(theta);
+            scale0 = inv_sin * sinf((1.0f - scale1) * theta);
+            scale1 = inv_sin * sinf(scale1 * theta);
+        } else {
+            scale0 = 1.0f - scale1;
         }
 
-        out[1] = scale_to * to[1] + scale_from * from[1];
-        out[2] = scale_to * to[2] + scale_from * from[2];
-        out[3] = scale_to * to[3] + scale_from * from[3];
-        out[0] = scale_to * to[0] + scale_from * from[0];
+        out[1] = (scale0 * q0[1]) + (scale1 * q1[1]);
+        out[2] = (scale0 * q0[2]) + (scale1 * q1[2]);
+        out[3] = (scale0 * q0[3]) + (scale1 * q1[3]);
+        out[0] = (scale0 * q0[0]) + (scale1 * q1[0]);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", QuatSlerp__FPfPffPf);
-#endif
 
 #ifdef NONMATCHING
 Mot_List *MotionProc(mgCFrame *root, float time, Mot_List *list, mgCCamera *camera) {
-    unsigned int  frame_no = (unsigned int) time;
-    int           low = 0;
-    int           high = list->key_count;
-    int           middle;
-    unsigned int  key;
-    unsigned int  next;
-    unsigned int  key_frame;
-    float         t;
-    mgCFrame     *frame;
-    sceVu0FVECTOR value;
-    sceVu0FVECTOR rotation;
-    sceVu0FVECTOR from;
-    sceVu0FVECTOR to;
+    unsigned int frame_no = (unsigned int) time;
+    int          high;
+    int          low;
+    int          middle;
+    unsigned int count = list->key_count;
+    low = 0;
+    high = count;
+    int          next;
+    mgCFrame    *frame;
+    int          key;
+    unsigned int key_frame;
+    float        t;
+    float        one_minus_t;
+    float        value[4];
+    float        rotation[4];
+    float        from[4];
+    float        to[4];
 
-    while (low < high) {
-        middle = (low + high) >> 1;
+    if (low < high) {
+        do {
+            middle = (low + high) >> 1;
 
-        if (list->key_frames[middle] <= frame_no) {
-            low = middle + 1;
-        } else {
-            high = middle;
-        }
+            if (list->key_frames[middle] <= frame_no) {
+                low = middle + 1;
+            } else {
+                high = middle;
+            }
+        } while (low < high);
     }
 
     key = low - 1;
-    next = low;
+    next = key + 1;
 
-    if (next > list->key_count - 1) {
+    if (next > count + (key - next)) {
         next = key;
     }
 
@@ -134,7 +145,7 @@ Mot_List *MotionProc(mgCFrame *root, float time, Mot_List *list, mgCCamera *came
             sceVu0CopyVector(from, list->values[key]);
             sceVu0CopyVector(to, list->values[next]);
 
-            if (t > 0.001f && t < 0.999f) {
+            if (!(t <= 0.001f) && t < 0.999f) {
                 QuatSlerp(list->values[key], list->values[next], t, rotation);
                 frame->SetTransMatrix(rotation);
             } else {
@@ -142,21 +153,21 @@ Mot_List *MotionProc(mgCFrame *root, float time, Mot_List *list, mgCCamera *came
                     frame->SetTransMatrix(from);
                 }
 
-                if (t >= 0.999f) {
+                if (!(t < 0.999f)) {
                     frame->SetTransMatrix(to);
                 }
             }
 
             break;
         case MOTION_KEY_SCALE:
-            if (t > 0.001f && t < 0.999f) {
+            if (!(t <= 0.001f) && t < 0.999f) {
                 sceVu0InterVectorXYZ(value, list->values[next], list->values[key], t);
             } else {
                 if (t <= 0.001f) {
                     sceVu0CopyVectorXYZ(value, list->values[key]);
                 }
 
-                if (t >= 0.999f) {
+                if (!(t < 0.999f)) {
                     sceVu0CopyVectorXYZ(value, list->values[next]);
                 }
             }
@@ -164,14 +175,14 @@ Mot_List *MotionProc(mgCFrame *root, float time, Mot_List *list, mgCCamera *came
             frame->SetScale(value[0], value[1], value[2]);
             break;
         case MOTION_KEY_TRANSLATION:
-            if (t > 0.001f && t < 0.999f) {
+            if (!(t <= 0.001f) && t < 0.999f) {
                 sceVu0InterVectorXYZ(value, list->values[next], list->values[key], t);
             } else {
                 if (t <= 0.001f) {
                     sceVu0CopyVectorXYZ(value, list->values[key]);
                 }
 
-                if (t >= 0.999f) {
+                if (!(t < 0.999f)) {
                     sceVu0CopyVectorXYZ(value, list->values[next]);
                 }
             }
@@ -182,47 +193,47 @@ Mot_List *MotionProc(mgCFrame *root, float time, Mot_List *list, mgCCamera *came
             frame->changed = 1;
             break;
         case MOTION_KEY_VERTEX: {
-            sceVu0FVECTOR *vertices = ((mgCVisualMDT *) frame->visual)->vertex;
+            int            vertex;
             int            driven = list->frame;
-
-            if (t > 0.001f && t < 0.999f) {
-                while (driven == list->frame) {
-                    sceVu0InterVectorXYZ(value, list->values[next], list->values[key], t);
-                    sceVu0CopyVectorXYZ(vertices[list->target - 1], value);
-                    list = list->next;
-
-                    if (list == NULL) {
-                        return NULL;
+            sceVu0FVECTOR *vertices = ((mgCVisualMDT *) frame->visual)->vertex;
+            do {
+                if (!(t <= 0.001f) && t < 0.999f) {
+                    Mot_List *node = list;
+                    while (driven == node->frame) {
+                        vertex = list->target - 1;
+                        sceVu0InterVectorXYZ(value, list->values[next], list->values[key], t);
+                        sceVu0CopyVectorXYZ(vertices[vertex], value);
+                        list = list->next;
+                        if (list == NULL) {
+                            return NULL;
+                        }
+                        node = list;
+                    }
+                    break;
+                }
+                if (t <= 0.001f) {
+                    Mot_List *node = list;
+                    while (driven == node->frame) {
+                        sceVu0CopyVectorXYZ(vertices[list->target - 1], list->values[key]);
+                        list = list->next;
+                        if (list == NULL) {
+                            return NULL;
+                        }
+                        node = list;
                     }
                 }
-
-                return list;
-            }
-
-            if (t <= 0.001f) {
-                while (driven == list->frame) {
-                    sceVu0CopyVectorXYZ(vertices[list->target - 1], list->values[key]);
-                    list = list->next;
-
-                    if (list == NULL) {
-                        return NULL;
+                if (!(t < 0.999f)) {
+                    Mot_List *node = list;
+                    while (driven == node->frame) {
+                        sceVu0CopyVectorXYZ(vertices[list->target - 1], list->values[next]);
+                        list = list->next;
+                        if (list == NULL) {
+                            return NULL;
+                        }
+                        node = list;
                     }
                 }
-            }
-
-            if (t < 0.999f) {
-                return list;
-            }
-
-            while (driven == list->frame) {
-                sceVu0CopyVectorXYZ(vertices[list->target - 1], list->values[next]);
-                list = list->next;
-
-                if (list == NULL) {
-                    return NULL;
-                }
-            }
-
+            } while (0);
             return list;
         }
         case MOTION_KEY_CAMERA_POSITION:
@@ -234,7 +245,7 @@ Mot_List *MotionProc(mgCFrame *root, float time, Mot_List *list, mgCCamera *came
 
             break;
         case MOTION_KEY_CAMERA_TARGET:
-            // The look-at position is never interpolated from the keys here.
+
             if (camera != NULL) {
                 root->GetWorldPosition(value, value);
                 camera->SetRef(value[0], value[1], value[2]);
@@ -242,10 +253,10 @@ Mot_List *MotionProc(mgCFrame *root, float time, Mot_List *list, mgCCamera *came
 
             break;
         case MOTION_KEY_MATERIAL_ALPHA: {
-            float       one_minus_t = 1.0f - t;
+            one_minus_t = 1.0f - t;
             mgMaterial *materials = frame->visual->GetpMaterial();
 
-            materials[list->target].diffuse[3] = 1.0f - (t * list->values[next][0] + one_minus_t * list->values[key][0]);
+            materials[list->target].diffuse[3] = 1.0f - (one_minus_t * list->values[key][0] + t * list->values[next][0]);
             break;
         }
         case MOTION_KEY_MATERIAL_COLOR: {
@@ -257,13 +268,15 @@ Mot_List *MotionProc(mgCFrame *root, float time, Mot_List *list, mgCCamera *came
         }
         case MOTION_KEY_CAMERA_ROLL:
             if (camera != NULL) {
-                camera->SetRoll(-((t * list->values[next][0] + (1.0f - t) * list->values[key][0]) / 180.0f * 3.1415927f));
+                one_minus_t = 1.0f - t;
+                camera->SetRoll(-((one_minus_t * list->values[key][0] + t * list->values[next][0]) / 180.0f * 3.1415927f));
             }
 
             break;
         case MOTION_KEY_CAMERA_FOV:
             if (camera != NULL) {
-                mgSetProjection(1.0f / tanf((t * list->values[next][0] + (1.0f - t) * list->values[key][0]) * 0.5f / 180.0f * 3.1415927f) * 480.0f * 0.5f);
+                one_minus_t = 1.0f - t;
+                mgSetProjection(1.0f / tanf((one_minus_t * list->values[key][0] + t * list->values[next][0]) * 0.5f / 180.0f * 3.1415927f) * 480.0f * 0.5f);
             }
 
             break;
@@ -275,7 +288,7 @@ Mot_List *MotionProc(mgCFrame *root, float time, Mot_List *list, mgCCamera *came
             }
 
             break;
-        case MOTION_KEY_UNK_33:
+        case MOTION_KEY_VISIBLE_TREE:
             if (list->values[key][0] < 1.0f) {
                 frame->attr->draw = MG_FRAME_DRAW_SKIP_CHILDREN;
             } else {
@@ -291,47 +304,50 @@ Mot_List *MotionProc(mgCFrame *root, float time, Mot_List *list, mgCCamera *came
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", MotionProc__FP8mgCFramefP8Mot_ListP9mgCCamera);
 #endif
 
-#ifdef NONMATCHING
 Mot_List *MotionProc(mgCFrame *root, unsigned int from_frame, unsigned int to_frame, float blend, Mot_List *list, mgCCamera *camera) {
-    int           low;
-    int           high;
-    int           middle;
-    int           key;
-    int           next;
-    mgCFrame     *frame;
-    sceVu0FVECTOR value;
-    sceVu0FVECTOR rotation;
-    sceVu0FVECTOR from;
-    sceVu0FVECTOR to;
+    int       high;
+    int       low;
+    int       key;
+    int       next;
+    mgCFrame *frame;
+    float     one_minus_blend;
+    float     value[4];
+    float     rotation[4];
+    float     from[4];
+    float     to[4];
+    {
+        int high = list->key_count;
+        int low = 0;
+        int middle;
 
-    low = 0;
-    high = list->key_count;
+        while (low < high) {
+            key = (middle = (low + high) >> 1);
 
-    while (low < high) {
-        middle = (low + high) >> 1;
-
-        if (list->key_frames[middle] <= from_frame) {
-            low = middle + 1;
-        } else {
-            high = middle;
+            if (list->key_frames[key] <= from_frame) {
+                low = key + 1;
+            } else {
+                high = key;
+            }
         }
+
+        key = low - 1;
     }
+    {
+        high = list->key_count;
+        low = 0;
 
-    key = low - 1;
-    low = 0;
-    high = list->key_count;
+        while (low < high) {
+            next = (low + high) >> 1;
 
-    while (low < high) {
-        middle = (low + high) >> 1;
-
-        if (list->key_frames[middle] <= to_frame) {
-            low = middle + 1;
-        } else {
-            high = middle;
+            if (list->key_frames[next] <= to_frame) {
+                low = next + 1;
+            } else {
+                high = next;
+            }
         }
-    }
 
-    next = low - 1;
+        next = low - 1;
+    }
     frame = root->GetFrame(list->frame);
 
     switch (list->type) {
@@ -339,7 +355,7 @@ Mot_List *MotionProc(mgCFrame *root, unsigned int from_frame, unsigned int to_fr
             sceVu0CopyVector(from, list->values[key]);
             sceVu0CopyVector(to, list->values[next]);
 
-            if (blend > 0.0001f && blend < 0.9999f) {
+            if (!(blend <= 0.0001f) && blend < 0.9999f) {
                 QuatSlerp(from, to, blend, rotation);
                 frame->SetTransMatrix(rotation);
             } else {
@@ -347,7 +363,7 @@ Mot_List *MotionProc(mgCFrame *root, unsigned int from_frame, unsigned int to_fr
                     frame->SetTransMatrix(from);
                 }
 
-                if (blend >= 0.9999f) {
+                if (!(blend < 0.9999f)) {
                     frame->SetTransMatrix(to);
                 }
             }
@@ -365,46 +381,78 @@ Mot_List *MotionProc(mgCFrame *root, unsigned int from_frame, unsigned int to_fr
             frame->changed = 1;
             break;
         case MOTION_KEY_VERTEX: {
-            sceVu0FVECTOR *vertices = ((mgCVisualMDT *) frame->visual)->vertex;
+            int            vertex;
             int            driven = list->frame;
+            sceVu0FVECTOR *vertices = ((mgCVisualMDT *) frame->visual)->vertex;
 
-            if (blend > 0.0001f && blend < 0.9999f) {
-                while (driven == list->frame) {
-                    sceVu0InterVectorXYZ(value, list->values[next], list->values[key], blend);
-                    sceVu0CopyVectorXYZ(vertices[list->target - 1], value);
-                    list = list->next;
+            do {
+                if (!(blend <= 0.0001f) && blend < 0.9999f) {
+                    Mot_List *node = list;
 
-                    if (list == NULL) {
+                    while (driven == node->frame) {
+                        vertex = list->target - 1;
+                        sceVu0InterVectorXYZ(value, list->values[next], list->values[key], blend);
+                        sceVu0CopyVectorXYZ(vertices[vertex], value);
+                        list = list->next;
+
+                        do {
+                            if (list == NULL) {
+                                break;
+                            }
+
+                            node = list;
+                            goto blend_nonnull0;
+                        } while (0);
+
                         return NULL;
+                    blend_nonnull0:;
+                    }
+
+                    break;
+                }
+
+                if (blend <= 0.0001f) {
+                    Mot_List *node = list;
+
+                    while (driven == node->frame) {
+                        sceVu0CopyVectorXYZ(vertices[list->target - 1], list->values[key]);
+                        list = list->next;
+
+                        do {
+                            if (list == NULL) {
+                                break;
+                            }
+
+                            node = list;
+                            goto blend_nonnull1;
+                        } while (0);
+
+                        return NULL;
+                    blend_nonnull1:;
                     }
                 }
 
-                return list;
-            }
+                if (!(blend < 0.9999f)) {
+                    Mot_List *node = list;
 
-            if (blend <= 0.0001f) {
-                while (driven == list->frame) {
-                    sceVu0CopyVectorXYZ(vertices[list->target - 1], list->values[key]);
-                    list = list->next;
+                    while (driven == node->frame) {
+                        sceVu0CopyVectorXYZ(vertices[list->target - 1], list->values[next]);
+                        list = list->next;
 
-                    if (list == NULL) {
+                        do {
+                            if (list == NULL) {
+                                break;
+                            }
+
+                            node = list;
+                            goto blend_nonnull2;
+                        } while (0);
+
                         return NULL;
+                    blend_nonnull2:;
                     }
                 }
-            }
-
-            if (blend < 0.9999f) {
-                return list;
-            }
-
-            while (driven == list->frame) {
-                sceVu0CopyVectorXYZ(vertices[list->target - 1], list->values[next]);
-                list = list->next;
-
-                if (list == NULL) {
-                    return NULL;
-                }
-            }
+            } while (0);
 
             return list;
         }
@@ -425,10 +473,10 @@ Mot_List *MotionProc(mgCFrame *root, unsigned int from_frame, unsigned int to_fr
 
             break;
         case MOTION_KEY_MATERIAL_ALPHA: {
-            float       one_minus_blend = 1.0f - blend;
+            one_minus_blend = 1.0f - blend;
             mgMaterial *materials = frame->visual->GetpMaterial();
 
-            materials[list->target].diffuse[3] = 1.0f - (blend * list->values[next][0] + one_minus_blend * list->values[key][0]);
+            materials[list->target].diffuse[3] = 1.0f - (one_minus_blend * list->values[key][0] + blend * list->values[next][0]);
             frame->attr->unk_28 = 2;
             break;
         }
@@ -441,13 +489,15 @@ Mot_List *MotionProc(mgCFrame *root, unsigned int from_frame, unsigned int to_fr
         }
         case MOTION_KEY_CAMERA_ROLL:
             if (camera != NULL) {
-                camera->SetRoll(-((blend * list->values[next][0] + (1.0f - blend) * list->values[key][0]) / 180.0f * 3.1415927f));
+                one_minus_blend = 1.0f - blend;
+                camera->SetRoll(-((one_minus_blend * list->values[key][0] + blend * list->values[next][0]) / 180.0f * 3.1415927f));
             }
 
             break;
         case MOTION_KEY_CAMERA_FOV:
             if (camera != NULL) {
-                mgSetProjection(1.0f / tanf((blend * list->values[next][0] + (1.0f - blend) * list->values[key][0]) * 0.5f / 180.0f * 3.1415927f) * 480.0f * 0.5f);
+                one_minus_blend = 1.0f - blend;
+                mgSetProjection(1.0f / tanf((one_minus_blend * list->values[key][0] + blend * list->values[next][0]) * 0.5f / 180.0f * 3.1415927f) * 480.0f * 0.5f);
             }
 
             break;
@@ -459,7 +509,7 @@ Mot_List *MotionProc(mgCFrame *root, unsigned int from_frame, unsigned int to_fr
             }
 
             break;
-        case MOTION_KEY_UNK_33:
+        case MOTION_KEY_VISIBLE_TREE:
             if (list->values[key][0] < 1.0f) {
                 frame->attr->draw = MG_FRAME_DRAW_SKIP_CHILDREN;
             } else {
@@ -471,9 +521,8 @@ Mot_List *MotionProc(mgCFrame *root, unsigned int from_frame, unsigned int to_fr
 
     return list->next;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", MotionProc__FP8mgCFrameUiUifP8Mot_ListP9mgCCamera);
-#endif
+
+static void testVUnew(float (*matrix)[4], float *vertex, float *weight, float *accum, float *out);
 
 #ifdef NONMATCHING
 /**
@@ -586,28 +635,19 @@ Mot_List *MotionProc2(mgCFrame *root, tagMOTION_TYPE *motion, tagFRAME_INF *fram
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", MotionProc2__FP8mgCFrameP14tagMOTION_TYPEP12tagFRAME_INFP8Mot_List);
 #endif
 
-#ifdef NONMATCHING
 Mot_List *MotionProc3(mgCFrame *root, tagMOTION_TYPE *motion, tagFRAME_INF *frame_info, Mot_List *list) {
-    static sceVu0FVECTOR *vert;
-    static sceVu0FVECTOR *nml;
-    static sceVu0FMATRIX  tmp_SkinMatrix;
-    static sceVu0FMATRIX  tmp_SkinMatrix_inv;
-    static sceVu0FMATRIX  tmp_ChrMatrix;
-    static sceVu0FMATRIX  tmp_BaseSkinMatrix;
-    static sceVu0FMATRIX  tmp_BaseSkinMatrix_inv;
-    mgCFrame             *bone;
-    mgCFrame             *skin;
-    tagFRAME_INF         *info;
-    sceVu0FMATRIX         bone_matrix;
-    sceVu0FMATRIX         bone_base;
-    sceVu0FMATRIX         bone_in_skin;
-    sceVu0FMATRIX         bone_in_skin_inv;
-    sceVu0FMATRIX         skin_bone;
-    sceVu0FMATRIX         deform;
-    sceVu0FMATRIX         rotate;
-    sceVu0FVECTOR         normal;
-    unsigned int          i;
-    int                   vertex;
+    float        deform[4][4];
+    float        rotate[4][4];
+    float        bone_matrix[4][4];
+    float        bone_in_skin[4][4];
+    float        skin_bone[4][4];
+    float        bone_in_skin_inv[4][4];
+    float        bone_base[4][4];
+    float        normal[4];
+    mgCFrame    *bone;
+    mgCFrame    *skin;
+    int          vertex;
+    unsigned int i;
 
     if (list->type != MOTION_KEY_SKIN_WEIGHTED) {
         return list->next;
@@ -615,76 +655,72 @@ Mot_List *MotionProc3(mgCFrame *root, tagMOTION_TYPE *motion, tagFRAME_INF *fram
 
     bone = root->GetFrame(list->target);
     skin = root->GetFrame(list->frame);
-    info = &frame_info[list->frame];
 
     if (OldSkinFrame != skin) {
         OldSkinFrame = root->GetFrame(list->frame);
-        vert = ((mgCVisualMDT *) skin->visual)->vertex;
-        nml = ((mgCVisualMDT *) skin->visual)->normal;
+        mgCVisualMDT *visual = (mgCVisualMDT *) skin->visual;
+        vert_915 = visual->vertex;
+        nml_916 = visual->normal;
 
-        if (info->vertex_count > 400) {
-            printf("###### MAX_VERTX OVER %d/%d######\n", info->vertex_count, 400);
+        if (((tagFRAME_INF *) ((list->frame << 5) + (int) frame_info))->vertex_count > 400) {
+            printf(at_966, ((tagFRAME_INF *) ((list->frame << 5) + (int) frame_info))->vertex_count, 400);
         }
 
-        if (info->normal_count > 800) {
-            printf("###### MAX_NORMAL OVER %d/%d######\n", info->normal_count, 800);
+        if (((tagFRAME_INF *) ((list->frame << 5) + (int) frame_info))->normal_count > 800) {
+            printf(at_967, ((tagFRAME_INF *) ((list->frame << 5) + (int) frame_info))->normal_count, 800);
         }
 
-        for (i = 0; i < info->vertex_count; i++) {
+        for (i = 0; i < frame_info[list->frame].vertex_count; i++) {
             def_vrtx[i][0] = 0.0f;
             def_vrtx[i][1] = 0.0f;
             def_vrtx[i][2] = 0.0f;
             def_vrtx[i][3] = 1.0f;
         }
 
-        for (i = 0; i < info->normal_count; i++) {
-            def_nml[i][0] = 0.0f;
-            def_nml[i][1] = 0.0f;
-            def_nml[i][2] = 0.0f;
-            def_nml[i][3] = 1.0f;
+        for (unsigned int normal_index = 0; normal_index < frame_info[list->frame].normal_count; normal_index++) {
+            def_nml[normal_index][0] = 0.0f;
+            def_nml[normal_index][1] = 0.0f;
+            def_nml[normal_index][2] = 0.0f;
+            def_nml[normal_index][3] = 1.0f;
         }
 
         skin->attr->unk_28 = 1;
-        skin->GetLWMatrix(tmp_SkinMatrix);
-        root->GetLWMatrix(tmp_ChrMatrix);
-        sceVu0InversMatrix(tmp_SkinMatrix_inv, tmp_SkinMatrix);
-        mgMulMatrix(tmp_BaseSkinMatrix, tmp_ChrMatrix, motion->base_matrices[list->frame]);
-        mgInversMatrix(tmp_BaseSkinMatrix_inv, tmp_BaseSkinMatrix);
+        skin->GetLWMatrix(tmp_SkinMatrix_917);
+        root->GetLWMatrix(tmp_ChrMatrix_919);
+        sceVu0InversMatrix(tmp_SkinMatrix_inv_918, tmp_SkinMatrix_917);
+        mgMulMatrix(tmp_BaseSkinMatrix_921, tmp_ChrMatrix_919, motion->base_matrices[list->frame]);
+        mgInversMatrix(tmp_BaseSkinMatrix_inv_922, tmp_BaseSkinMatrix_921);
     }
 
     sceVu0UnitMatrix(bone_matrix);
-    sceVu0UnitMatrix(tmp_SkinMatrix);
+    sceVu0UnitMatrix(tmp_SkinMatrix_917);
     bone->GetLWMatrix(bone_matrix);
-    mgMulMatrix(bone_base, tmp_ChrMatrix, motion->base_matrices[list->target]);
-    mgMulMatrix(bone_in_skin, tmp_BaseSkinMatrix_inv, bone_base);
+    mgMulMatrix(bone_base, tmp_ChrMatrix_919, motion->base_matrices[list->target]);
+    mgMulMatrix(bone_in_skin, tmp_BaseSkinMatrix_inv_922, bone_base);
     mgInversMatrix(bone_in_skin_inv, bone_in_skin);
-    mgMulMatrix(skin_bone, tmp_SkinMatrix_inv, bone_matrix);
+    mgMulMatrix(skin_bone, tmp_SkinMatrix_inv_918, bone_matrix);
     mgMulMatrix(deform, skin_bone, bone_in_skin_inv);
 
-    // Normals turn with the bone but do not move with it.
     sceVu0CopyMatrix(rotate, deform);
     rotate[3][0] = 0.0f;
     rotate[3][1] = 0.0f;
     rotate[3][2] = 0.0f;
 
-    for (i = 0; i < list->key_count; i++) {
-        sceVu0FVECTOR weight = {0.0f, 0.0f, 0.0f, 0.0f};
+    for (unsigned int index = 0; index < list->key_count; index++) {
+        MotionVector weight = at_945;
 
-        weight[0] = list->values[i][0] * 0.01f;
+        weight.f[0] = 0.01f * list->values[index][0];
 
-        if (weight[0] > 0.0f) {
-            vertex = list->key_frames[i];
-            testVUnew(deform, info->base_vertices[vertex], weight, def_vrtx[vertex], vert[vertex]);
-            sceVu0ApplyMatrix(normal, rotate, info->base_normals[vertex]);
-            sceVu0InterVectorXYZ(nml[vertex], normal, info->base_normals[vertex], weight[0]);
+        if (!(weight.f[0] <= 0.0f)) {
+            vertex = list->key_frames[index];
+            testVUnew(deform, frame_info[list->frame].base_vertices[vertex], weight.f, def_vrtx[vertex], vert_915[vertex]);
+            sceVu0ApplyMatrix(normal, rotate, frame_info[list->frame].base_normals[vertex]);
+            sceVu0InterVectorXYZ(nml_916[vertex], normal, frame_info[list->frame].base_normals[vertex], weight.f[0]);
         }
     }
 
     return list->next;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", MotionProc3__FP8mgCFrameP14tagMOTION_TYPEP12tagFRAME_INFP8Mot_List);
-#endif
 
 void SetMotionTime(mgCFrame *root, tagMOTION_TYPE *motion, float time, mgCCamera *camera) {
     Mot_List *list;
@@ -702,7 +738,6 @@ void ChangeMotion(mgCFrame *root, tagMOTION_TYPE *motion, unsigned int from_fram
     }
 }
 
-#ifdef NONMATCHING
 void DeformMesh(mgCFrame *root, tagMOTION_TYPE *motion, tagFRAME_INF *frame_info, bool with_normals) {
     Mot_List *list = motion->skin_list;
 
@@ -718,297 +753,356 @@ void DeformMesh(mgCFrame *root, tagMOTION_TYPE *motion, tagFRAME_INF *frame_info
 
     OldSkinFrame = NULL;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", DeformMesh__FP8mgCFrameP14tagMOTION_TYPEP12tagFRAME_INFb);
-#endif
 
-#ifdef NONMATCHING
-/**
- *
- * Allocates a key list's values and key frames and fills them from the keys of a motion file.
- *
- */
 static void SetKeyFrame(Mot_List *list, FRAME_VECTOR_EX_DATA *keys, mgCMemory *memory) {
-    unsigned int i;
+    list->values = (float (*)[4]) memory->Alloc((list->key_count * 16 / 16) + 1);
+    list->key_frames = (u32 *) memory->Alloc((list->key_count * 4 >> 4) + 1);
+    u32 i = 0;
 
-    list->values = (sceVu0FVECTOR *) memory->Alloc(list->key_count * sizeof(sceVu0FVECTOR) / 16 + 1);
-    list->key_frames = (u32 *) memory->Alloc(list->key_count * sizeof(u32) / 16 + 1);
-
-    for (i = 0; i < list->key_count; i++) {
-        list->values[i][0] = keys->value[0];
-        list->values[i][1] = keys->value[1];
-        list->values[i][2] = keys->value[2];
-        list->values[i][3] = keys->value[3];
-        list->key_frames[i] = keys->frame;
+    while (i < list->key_count) {
+        float *value = list->values[i];
+        u32   *time = &list->key_frames[i];
+        i++;
+        value[0] = keys->value[0];
+        value[1] = keys->value[1];
+        value[2] = keys->value[2];
+        value[3] = keys->value[3];
+        *time = keys->frame;
         keys++;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", SetKeyFrame__FP8Mot_ListP20FRAME_VECTOR_EX_DATAP9mgCMemory);
-#endif
 
-#ifdef NONMATCHING
-void ChangeWeight(Mot_List *list, mgCMemory *memory, unsigned char *file, int frame, tagFRAME_INF *frame_info, mgCVisualMDT *visual, mgCFrame *root, mgCFrame *skin_root) {
-    Mot_List      *last;
-    Mot_List      *node;
-    Mot_List      *built;
-    Mot_List      *reversed;
-    Mot_List      *following;
-    Mot_File_List *header;
-    tagFRAME_INF  *info;
-    mgFACE_GROUP  *group;
-    mgCFace       *face;
-    int            i;
+void ChangeWeight(Mot_List *list, mgCMemory *memory, u8 *data, int frame_no, tagFRAME_INF *frame_info,
+                  mgCVisualMDT *mesh, mgCFrame *frame, mgCFrame *source_frame) {
+    Mot_List             *prev;
+    Mot_File_List        *header;
+    Mot_List             *head;
+    FRAME_VECTOR_EX_DATA *cursor;
+    Mot_List             *old_prev;
+    Mot_List             *channel;
+    Mot_List             *cur;
+    FRAME_VECTOR_EX_DATA *keys;
+    int                  *src_vertices;
+    int                  *src_uvs;
+    int                   i;
+    mgFACE_GROUP         *node;
+    mgCFace              *index_list;
+    int                  *indices;
+    int                   pos;
+    FrameLinkRecord      *record;
 
-    // Unlink the frame's old key lists, leaving last on the final list that remains.
-    last = list;
+    prev = list;
+    cur = list;
 
-    for (node = list; node != NULL; node = node->next) {
-        if (frame == node->frame) {
-            last->next = node->next;
-        } else {
-            last = node;
-        }
+    if (cur != NULL) {
+        do {
+            if (frame_no == cur->frame) {
+                prev->next = cur->next;
+            } else {
+                prev = cur;
+            }
+
+            cur = cur->next;
+        } while (cur != NULL);
     }
 
-    built = NULL;
+    cursor = (FRAME_VECTOR_EX_DATA *) data;
+    head = NULL;
 
     do {
-        header = (Mot_File_List *) file;
-        node = (Mot_List *) memory->Alloc(sizeof(Mot_List) / 16 + 1);
-        node->frame = frame;
-        node->target = root->SearchFrameID(skin_root->GetFrame(header->target)->name);
-        node->key_count = header->key_count;
-        node->type = header->type;
-        SetKeyFrame(node, (FRAME_VECTOR_EX_DATA *) (header + 1), memory);
+        header = (Mot_File_List *) cursor;
+        channel = (Mot_List *) memory->Alloc(3);
+        channel->frame = frame_no;
 
-        if (built == NULL) {
-            node->next = NULL;
+        channel->target =
+            frame->SearchFrameID(source_frame->GetFrame((u32) header->target)->name);
+        channel->key_count = header->key_count;
+        channel->type = header->type;
+        cursor++;
+        keys = cursor;
+        cursor += channel->key_count;
+        SetKeyFrame(channel, keys, memory);
+
+        if (head == NULL) {
+            channel->next = NULL;
         } else {
-            node->next = built;
+            channel->next = head;
         }
 
-        built = node;
-        file = (unsigned char *) ((FRAME_VECTOR_EX_DATA *) (header + 1) + node->key_count);
-    } while (header->more != 0);
+        head = channel;
+    } while ((u64) header->more != 0);
 
-    reversed = NULL;
+    old_prev = NULL;
 
-    while (built != NULL) {
-        following = built->next;
-        built->next = reversed;
-        reversed = built;
-        built = following;
+    if (channel != NULL) {
+        do {
+            cur = old_prev;
+            old_prev = head;
+            head = head->next;
+            old_prev->next = cur;
+        } while (head != NULL);
     }
 
-    last->next = reversed;
+    prev->next = old_prev;
 
-    if (visual != NULL) {
-        sceVu0FVECTOR *vertices = visual->vertex;
-        sceVu0FVECTOR *normals = visual->normal;
+    if (mesh != NULL) {
+        src_vertices = (int *) mesh->vertex;
+        src_uvs = (int *) mesh->normal;
+        frame_info[frame_no].base_vertices = (float (*)[4]) memory->Alloc((mesh->vertex_num * 16U / 16) + 1);
+        frame_info[frame_no].base_normals = (float (*)[4]) memory->Alloc(((u32) mesh->normal_num * 16 / 16) + 1);
+        frame_info[frame_no].vertex_refs =
+            (int (*)[12]) memory->Alloc(((u32) (mesh->vertex_num * 0x30) >> 4) + 1);
+        frame_info[frame_no].vertex_count = mesh->vertex_num;
+        frame_info[frame_no].normal_count = mesh->normal_num;
+        memcpy(frame_info[frame_no].base_vertices, src_vertices, mesh->vertex_num * 16);
+        memcpy(frame_info[frame_no].base_normals, src_uvs, mesh->normal_num * 16);
 
-        info = &frame_info[frame];
-        info->base_vertices = (sceVu0FVECTOR *) memory->Alloc(visual->vertex_num * sizeof(sceVu0FVECTOR) / 16 + 1);
-        info->base_normals = (sceVu0FVECTOR *) memory->Alloc(visual->normal_num * sizeof(sceVu0FVECTOR) / 16 + 1);
-        info->vertex_refs = (s32(*)[12]) memory->Alloc(visual->vertex_num * sizeof(*info->vertex_refs) / 16 + 1);
-        info->vertex_count = visual->vertex_num;
-        info->normal_count = visual->normal_num;
-        memcpy(info->base_vertices, vertices, visual->vertex_num * sizeof(sceVu0FVECTOR));
-        memcpy(info->base_normals, normals, visual->normal_num * sizeof(sceVu0FVECTOR));
-
-        for (i = 0; i < visual->vertex_num; i++) {
-            info->vertex_refs[i][0] = 0;
+        for (i = 0; i < mesh->vertex_num; i++) {
+            frame_info[frame_no].vertex_refs[i][0] = 0;
         }
 
-        for (group = visual->face_group; group != NULL; group = group->next) {
-            for (face = group->face; face != NULL; face = face->next) {
-                int  index;
-                int *refs;
+        node = (mgFACE_GROUP *) mesh->face_group;
 
-                if (group->face->type & MG_FACE_NO_NORMAL) {
-                    break;
+        if (node != NULL) {
+            do {
+                index_list = node->face;
+
+                if (index_list != NULL) {
+                    do {
+                        indices = index_list->index;
+                        pos = 0;
+
+                        if (!(node->face->type & 0x200)) {
+                            while (pos < index_list->index_num) {
+                                int from = indices[pos];
+                                pos++;
+                                int to = indices[pos];
+                                pos += index_list->index_stride - 1;
+                                record = (FrameLinkRecord *) &frame_info[frame_no].vertex_refs[from];
+                                record->link[record->count] = to;
+                                record = (FrameLinkRecord *) &frame_info[frame_no].vertex_refs[from];
+                                record->count++;
+                            }
+
+                            index_list = index_list->next;
+                        } else {
+                            break;
+                        }
+                    } while (index_list != NULL);
                 }
 
-                for (index = 0; index < face->index_num; index += face->index_stride) {
-                    refs = info->vertex_refs[face->index[index]];
-                    refs[refs[0] + 1] = face->index[index + 1];
-                    refs[0]++;
-                }
-            }
+                node = node->next;
+            } while (node != NULL);
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", ChangeWeight__FP8Mot_ListP9mgCMemoryPUciP12tagFRAME_INFP12mgCVisualMDTP8mgCFrameP8mgCFrame);
-#endif
 
-#ifdef NONMATCHING
-int CreateAnimeDataEX(tagMOTION_TYPE *motion, mgCMemory *memory, MOTION_FILE_INFO *files) {
-    FRAME_VECTOR_EX_DATA *data;
+int CreateAnimeDataEX(tagMOTION_TYPE *motion, mgCMemory *memory, MOTION_FILE_INFO *info) {
+    FRAME_VECTOR_EX_DATA *cursor;
+    Mot_List             *channel;
     Mot_File_List        *header;
-    Mot_List             *list;
-    Mot_List             *reversed;
-    Mot_List             *node;
+    FRAME_VECTOR_EX_DATA *keys;
+    FRAME_VECTOR_EX_DATA *deform_cursor;
+    Mot_List             *deform_channel;
+    Mot_File_List        *deform_header;
+    FRAME_VECTOR_EX_DATA *deform_keys;
+    Mot_List             *head;
+    Mot_List             *prev;
+    Mot_List             *old_prev;
+    Mot_List             *cur;
 
-    if (files[0].name != NULL) {
-        motion->base_matrices = (sceVu0FMATRIX *) memory->Alloc(files[0].size / 16 + 1);
-        memcpy(motion->base_matrices, files[0].data, files[0].size);
+    if (info[0].name != 0) {
+        motion->base_matrices = (sceVu0FMATRIX *) memory->Alloc((info[0].size / 16) + 1);
+        memcpy(motion->base_matrices, info[0].data, info[0].size);
     }
 
-    if (files[1].name != NULL) {
-        data = (FRAME_VECTOR_EX_DATA *) files[1].data;
+    if (info[1].name != 0) {
+        cursor = (FRAME_VECTOR_EX_DATA *) info[1].data;
         motion->motion_list = NULL;
 
         do {
-            header = (Mot_File_List *) data;
-            list = (Mot_List *) memory->Alloc(sizeof(Mot_List) / 16 + 1);
-            list->frame = header->frame;
-            list->target = header->target;
-            list->key_count = header->key_count;
-            list->type = header->type;
-            SetKeyFrame(list, &data[1], memory);
+            header = (Mot_File_List *) cursor;
+            channel = (Mot_List *) memory->Alloc(3);
+            channel->frame = header->frame;
+            channel->target = header->target;
+            channel->key_count = header->key_count;
+            channel->type = header->type;
+            cursor++;
+            keys = cursor;
+            cursor += channel->key_count;
+            SetKeyFrame(channel, keys, memory);
+            head = motion->motion_list;
 
-            if (motion->motion_list == NULL) {
-                list->next = NULL;
+            if (head == NULL) {
+                channel->next = NULL;
             } else {
-                list->next = motion->motion_list;
+                channel->next = head;
             }
 
-            motion->motion_list = list;
-            data = &data[list->key_count + 1];
-        } while (header->more != 0);
+            motion->motion_list = channel;
+        } while ((u64) header->more != 0);
 
-        reversed = NULL;
+        prev = NULL;
 
-        while ((node = motion->motion_list) != NULL) {
-            motion->motion_list = node->next;
-            node->next = reversed;
-            reversed = node;
+        while ((cur = motion->motion_list) != NULL) {
+            old_prev = prev;
+            prev = cur;
+            motion->motion_list = cur->next;
+            cur->next = old_prev;
         }
 
-        motion->motion_list = reversed;
+        motion->motion_list = prev;
     }
 
-    if (files[2].name != NULL) {
-        data = (FRAME_VECTOR_EX_DATA *) files[2].data;
+    if (info[2].name != 0) {
+        deform_cursor = (FRAME_VECTOR_EX_DATA *) info[2].data;
         motion->skin_list = NULL;
 
         do {
-            header = (Mot_File_List *) data;
-            list = (Mot_List *) memory->Alloc(sizeof(Mot_List) / 16 + 1);
-            list->frame = header->frame;
-            list->target = header->target;
-            list->key_count = header->key_count;
-            list->type = header->type;
-            SetKeyFrame(list, &data[1], memory);
+            deform_header = (Mot_File_List *) deform_cursor;
+            deform_channel = (Mot_List *) memory->Alloc(3);
+            deform_channel->frame = deform_header->frame;
+            deform_channel->target = deform_header->target;
+            deform_channel->key_count = deform_header->key_count;
+            deform_channel->type = deform_header->type;
+            deform_cursor++;
+            deform_keys = deform_cursor;
+            deform_cursor += deform_channel->key_count;
+            SetKeyFrame(deform_channel, deform_keys, memory);
+            head = motion->skin_list;
 
-            if (motion->skin_list == NULL) {
-                list->next = NULL;
+            if (head == NULL) {
+                deform_channel->next = NULL;
             } else {
-                list->next = motion->skin_list;
+                deform_channel->next = head;
             }
 
-            motion->skin_list = list;
-            data = &data[list->key_count + 1];
-        } while (header->more != 0);
+            motion->skin_list = deform_channel;
+        } while ((u64) deform_header->more != 0);
 
-        reversed = NULL;
+        prev = NULL;
 
-        while ((node = motion->skin_list) != NULL) {
-            motion->skin_list = node->next;
-            node->next = reversed;
-            reversed = node;
+        while ((cur = motion->skin_list) != NULL) {
+            old_prev = prev;
+            prev = cur;
+            motion->skin_list = cur->next;
+            cur->next = old_prev;
         }
 
-        motion->skin_list = reversed;
+        motion->skin_list = prev;
     }
 
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CreateAnimeDataEX__FP14tagMOTION_TYPEP9mgCMemoryP16MOTION_FILE_INFO);
-#endif
 
 void AnimeDataInit(mgCFrame *root, tagMOTION_TYPE *motion, mgCMemory *memory, tagFRAME_INF **frame_info) {
     *frame_info = (tagFRAME_INF *) memory->stAlloc64((root->GetFrameNum() + 10) * sizeof(tagFRAME_INF) / 16 + 1);
     AnimeDataInit(root, motion, memory, *frame_info);
 }
 
-#ifdef NONMATCHING
-int AnimeDataInit(mgCFrame *root, tagMOTION_TYPE *motion, mgCMemory *memory, tagFRAME_INF *frame_info) {
-    Mot_List     *list = motion->skin_list;
-    int           count = root->GetFrameNum();
-    int           i;
-    mgCFrame     *skin;
-    mgCVisualMDT *visual;
-    tagFRAME_INF *info;
-    mgFACE_GROUP *group;
-    mgCFace      *face;
+int AnimeDataInit(mgCFrame *frame, tagMOTION_TYPE *motion, mgCMemory *memory,
+                  tagFRAME_INF *frame_info) {
+    Mot_List        *channel = motion->skin_list;
+    int              i;
+    int              frame_num;
+    int              j;
+    mgCVisualMDT    *mesh;
+    mgFACE_GROUP    *node;
+    mgCFace         *list;
+    int             *indices;
+    int              pos;
+    FrameLinkRecord *record;
+    int             *src_vertices;
+    int             *src_uvs;
+    mgCFrame        *target;
 
-    for (i = 0; i < count; i++) {
-        mgCFrame *frame = root->GetFrame(i);
+    frame_num = frame->GetFrameNum();
+    i = 0;
 
-        frame_info[i].parent = frame->parent - root;
-        frame_info[i].vertex_count = 0;
-        frame_info[i].normal_count = 0;
+    if (i < frame_num) {
+        do {
+            int frame_no =
+                ((int) frame->GetFrame(i)->parent - (int) frame) /
+                272;
+            tagFRAME_INF *info = &frame_info[i];
+            i++;
+            info->parent = frame_no;
+            info->vertex_count = 0;
+            info->normal_count = 0;
+        } while (i < frame_num);
     }
 
-    for (; list != NULL; list = list->next) {
-        if (list->type != MOTION_KEY_SKIN_WEIGHTED && list->type != MOTION_KEY_SKIN_AVERAGED) {
-            continue;
-        }
+    if (channel != NULL) {
+        do {
+            if (channel->type == 0x14 || channel->type == 0x15) {
+                frame->GetFrame(channel->target);
+                target = frame->GetFrame(channel->frame);
 
-        root->GetFrame(list->target);
-        skin = root->GetFrame(list->frame);
-        info = &frame_info[list->frame];
+                if (frame_info[channel->frame].vertex_count == 0 && target != NULL) {
+                    mesh = (mgCVisualMDT *) target->visual;
 
-        // A frame's skinning data is built once, from the first key list that skins it.
-        if (info->vertex_count != 0 || skin == NULL || skin->visual == NULL) {
-            continue;
-        }
+                    if (mesh != NULL && mesh != NULL) {
+                        src_vertices = (int *) mesh->vertex;
+                        src_uvs = (int *) mesh->normal;
+                        frame_info[channel->frame].base_vertices =
+                            (float (*)[4]) memory->Alloc((mesh->vertex_num * 16U / 16) + 1);
+                        frame_info[channel->frame].base_normals =
+                            (float (*)[4]) memory->Alloc(((u32) mesh->normal_num * 16 / 16) + 1);
+                        frame_info[channel->frame].vertex_refs = (int (*)[12]) memory->Alloc(
+                            ((u32) (mesh->vertex_num * 0x30) >> 4) + 1);
+                        frame_info[channel->frame].vertex_count = mesh->vertex_num;
+                        frame_info[channel->frame].normal_count = mesh->normal_num;
+                        memcpy(frame_info[channel->frame].base_vertices, src_vertices,
+                               mesh->vertex_num * 16);
+                        memcpy(frame_info[channel->frame].base_normals, src_uvs, mesh->normal_num * 16);
 
-        visual = (mgCVisualMDT *) skin->visual;
+                        for (j = 0; j < mesh->vertex_num; j++) {
+                            frame_info[channel->frame].vertex_refs[j][0] = 0;
+                        }
 
-        {
-            sceVu0FVECTOR *vertices = visual->vertex;
-            sceVu0FVECTOR *normals = visual->normal;
+                        node = (mgFACE_GROUP *) mesh->face_group;
 
-            info->base_vertices = (sceVu0FVECTOR *) memory->Alloc(visual->vertex_num * sizeof(sceVu0FVECTOR) / 16 + 1);
-            info->base_normals = (sceVu0FVECTOR *) memory->Alloc(visual->normal_num * sizeof(sceVu0FVECTOR) / 16 + 1);
-            info->vertex_refs = (s32(*)[12]) memory->Alloc(visual->vertex_num * sizeof(*info->vertex_refs) / 16 + 1);
-            info->vertex_count = visual->vertex_num;
-            info->normal_count = visual->normal_num;
-            memcpy(info->base_vertices, vertices, visual->vertex_num * sizeof(sceVu0FVECTOR));
-            memcpy(info->base_normals, normals, visual->normal_num * sizeof(sceVu0FVECTOR));
-        }
+                        if (node != NULL) {
+                            do {
+                                list = node->face;
 
-        for (i = 0; i < visual->vertex_num; i++) {
-            info->vertex_refs[i][0] = 0;
-        }
+                                if (list != NULL) {
+                                    do {
+                                        indices = list->index;
+                                        pos = 0;
 
-        for (group = visual->face_group; group != NULL; group = group->next) {
-            for (face = group->face; face != NULL; face = face->next) {
-                int  index;
-                int *refs;
+                                        if (!(node->face->type & 0x200)) {
+                                            while (pos < list->index_num) {
+                                                int from = indices[pos];
+                                                pos++;
+                                                int to = indices[pos];
+                                                pos += list->index_stride - 1;
+                                                record = (FrameLinkRecord *) &frame_info[channel->frame].vertex_refs[from];
+                                                record->link[record->count] = to;
+                                                record = (FrameLinkRecord *) &frame_info[channel->frame].vertex_refs[from];
+                                                record->count++;
+                                            }
 
-                if (group->face->type & MG_FACE_NO_NORMAL) {
-                    break;
-                }
+                                            list = list->next;
+                                        } else {
+                                            break;
+                                        }
+                                    } while (list != NULL);
+                                }
 
-                for (index = 0; index < face->index_num; index += face->index_stride) {
-                    refs = info->vertex_refs[face->index[index]];
-                    refs[refs[0] + 1] = face->index[index + 1];
-                    refs[0]++;
+                                node = node->next;
+                            } while (node != NULL);
+                        }
+                    }
                 }
             }
-        }
+
+            channel = channel->next;
+        } while (channel != NULL);
     }
 
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", AnimeDataInit__FP8mgCFrameP14tagMOTION_TYPEP9mgCMemoryP12tagFRAME_INF);
-#endif
 
 int CheckHit(CCPoly *polys, int count, float *from, float *to, float *hit_point, int nearest, int ignore_mask) {
     CollisionInfo info;
@@ -1124,24 +1218,23 @@ int CheckHitVertical(CCPoly *polys, int count, float *from, float height, float 
     return CheckHitVertical(&info, from, height, hit_point, ignore_mask);
 }
 
-#ifdef NONMATCHING
-int CheckHitVertical(CollisionInfo *info, float *from, float height, float *hit_point, int ignore_mask) {
-    sceVu0FVECTOR to;
-    CCPoly       *poly;
-    int           count;
-    int           i;
-    int           best;
-    float         best_y;
+int CheckHitVertical(CollisionInfo *collision, float *pos, float dy, float *hit, int mask) {
+    float   end[3];
+    float   best_y;
+    int     i;
+    int     best;
+    CCPoly *poly;
+    int     count;
 
-    if (info == NULL) {
+    if (collision == NULL) {
         return -1;
     }
 
-    to[0] = from[0];
-    to[1] = from[1] + height;
-    to[2] = from[2];
-    poly = info->polys;
-    count = info->count;
+    end[0] = pos[0];
+    end[1] = pos[1] + dy;
+    end[2] = pos[2];
+    poly = collision->polys;
+    count = collision->count;
     best = -1;
 
     if (poly == NULL || count == 0) {
@@ -1149,38 +1242,29 @@ int CheckHitVertical(CollisionInfo *info, float *from, float height, float *hit_
     }
 
     for (i = 0; i < count; i++, poly++) {
-        if (poly->ignore_mask & ignore_mask) {
-            continue;
-        }
-
-        if (mgIntersectionPoint_line_poly3(from, to, poly->vertex[0], poly->vertex[1], poly->vertex[2], poly->normal, hit_point) == 0) {
-            continue;
-        }
-
-        if (height <= 0.0f) {
-            // Looking down: keep the highest polygon below the point.
-            if (hit_point[1] < from[1] && (best < 0 || (best >= 0 && !(hit_point[1] < best_y)))) {
-                best_y = hit_point[1];
-                best = i;
-            }
-        } else {
-            // Looking up: keep the lowest polygon above the point.
-            if (from[1] < hit_point[1] && (best < 0 || (best >= 0 && !(best_y < hit_point[1])))) {
-                best_y = hit_point[1];
-                best = i;
+        if (!(poly->ignore_mask & mask) &&
+            mgIntersectionPoint_line_poly3(pos, end, poly->vertex[0], poly->vertex[1],
+                                           poly->vertex[2], poly->normal, hit) != 0) {
+            if (dy <= 0.0f) {
+                if (!(pos[1] <= hit[1]) && (best < 0 || (best >= 0 && best_y <= hit[1]))) {
+                    best = i;
+                    best_y = hit[1];
+                }
+            } else {
+                if (pos[1] < hit[1] && (best < 0 || (best >= 0 && !(best_y < hit[1])))) {
+                    best = i;
+                    best_y = hit[1];
+                }
             }
         }
     }
 
     if (best >= 0) {
-        hit_point[1] = best_y;
+        hit[1] = best_y;
     }
 
     return best;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CheckHitVertical__FP13CollisionInfoPffPfi);
-#endif
 
 int CheckHits(CCPoly *polys, int count, float *from, float *to, int max_hits, int *hit_polys, float (*hit_points)[4], int sort, int ignore_mask) {
     CollisionInfo info;
@@ -1297,31 +1381,29 @@ int CheckHits(CollisionInfo *info, float *from, float *to, int max_hits, int *hi
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CheckHits__FP13CollisionInfoPfPfiPiPA4_fii);
 #endif
 
-#ifdef NONMATCHING
-int CheckHitsPipeY(CCPoly *polys, int count, float *from, float height, int max_hits, int *hit_polys, float (*hit_points)[4], int sort, int ignore_mask) {
-    sceVu0FVECTOR top;
-    sceVu0FVECTOR pipe_max;
-    sceVu0FVECTOR pipe_min;
-    sceVu0FVECTOR poly_max;
-    sceVu0FVECTOR poly_min;
-    sceVu0FVECTOR points[8];
-    sceVu0FVECTOR best;
-    sceVu0FVECTOR swap;
-    CCPoly       *poly;
-    float         radius;
-    float         normal_y;
-    int           point_count;
-    int           found;
-    int           hits;
-    int           i;
-    int           j;
+int CheckHitsPipeY(CCPoly *polys, int count, float *from, float height, int max_hits, int *hit_polys, sceVu0FVECTOR *hit_points, int sort, int ignore_mask) {
+    float   best[4];
+    float   poly_min[4];
+    float   poly_max[4];
+    float   pipe_max[4];
+    float   pipe_min[4];
+    float   top[4];
+    float   points[11][4];
+    float   swap[4];
+    CCPoly *poly;
+    float   radius;
+    float   normal_y;
+    int     point_count;
+    int     j;
+    int     found;
+    int     hits;
+    int     i;
+    int     index;
 
     hits = 0;
     radius = from[3];
-    top[0] = from[0];
-    top[1] = from[1] + height;
-    top[2] = from[2];
-    top[3] = from[3];
+    *(u_long128 *) top = *(u_long128 *) from;
+    top[1] += height;
     mgVectorMaxMin(pipe_max, pipe_min, from, top);
     pipe_max[0] += radius;
     pipe_max[2] += radius;
@@ -1334,12 +1416,7 @@ int CheckHitsPipeY(CCPoly *polys, int count, float *from, float height, int max_
             continue;
         }
 
-        // A wall that is nearly upright has no height under the pipe.
-        normal_y = poly->normal[1];
-
-        if (normal_y < 0.0f) {
-            normal_y = -normal_y;
-        }
+        normal_y = (poly->normal[1] < 0.0f) ? -poly->normal[1] : poly->normal[1];
 
         if (normal_y < 0.01f) {
             continue;
@@ -1347,11 +1424,11 @@ int CheckHitsPipeY(CCPoly *polys, int count, float *from, float height, int max_
 
         mgVectorMaxMin(poly_max, poly_min, poly->vertex[0], poly->vertex[1], poly->vertex[2]);
 
-        if (poly_min[0] > pipe_max[0] || poly_min[1] > pipe_max[1] || poly_min[2] > pipe_max[2]) {
+        if (pipe_max[0] < poly_min[0] || pipe_max[1] < poly_min[1] || pipe_max[2] < poly_min[2]) {
             continue;
         }
 
-        if (pipe_min[0] > poly_max[0] || pipe_min[1] > poly_max[1] || pipe_min[2] > poly_max[2]) {
+        if (!(pipe_min[0] <= poly_max[0]) || !(pipe_min[1] <= poly_max[1]) || !(pipe_min[2] <= poly_max[2])) {
             continue;
         }
 
@@ -1361,22 +1438,15 @@ int CheckHitsPipeY(CCPoly *polys, int count, float *from, float height, int max_
             continue;
         }
 
-        // Keep the highest point that lies within the pipe's height.
         found = 0;
 
         for (j = 0; j < point_count; j++) {
-            if (points[j][1] <= pipe_max[1] && pipe_min[1] <= points[j][1]) {
+            if (points[j][1] <= pipe_max[1] && !(points[j][1] < pipe_min[1])) {
                 if (found == 0) {
-                    best[0] = points[j][0];
-                    best[1] = points[j][1];
-                    best[2] = points[j][2];
-                    best[3] = points[j][3];
+                    *(u_long128 *) best = *(u_long128 *) points[j];
                     found = 1;
-                } else if (best[1] < points[j][1]) {
-                    best[0] = points[j][0];
-                    best[1] = points[j][1];
-                    best[2] = points[j][2];
-                    best[3] = points[j][3];
+                } else if (!(points[j][1] <= best[1])) {
+                    *(u_long128 *) best = *(u_long128 *) points[j];
                 }
             }
         }
@@ -1395,12 +1465,16 @@ int CheckHitsPipeY(CCPoly *polys, int count, float *from, float height, int max_
         hits++;
     }
 
-    if (sort != 0) {
+    if (sort == 0) {
+        return hits;
+    }
+
+    {
         if (sort > 0) {
             for (i = 0; i < hits - 1; i++) {
                 for (j = i + 1; j < hits; j++) {
-                    if (hit_points[j][3] < hit_points[i][3]) {
-                        int index = hit_polys[i];
+                    if (!(hit_points[i][3] <= hit_points[j][3])) {
+                        index = hit_polys[i];
 
                         hit_polys[i] = hit_polys[j];
                         hit_polys[j] = index;
@@ -1412,12 +1486,11 @@ int CheckHitsPipeY(CCPoly *polys, int count, float *from, float height, int max_
             }
         }
 
-        // A descending sort was never written; it sorts ascending as well.
         if (sort < 0) {
             for (i = 0; i < hits - 1; i++) {
                 for (j = i + 1; j < hits; j++) {
-                    if (hit_points[j][3] < hit_points[i][3]) {
-                        int index = hit_polys[i];
+                    if (!(hit_points[i][3] <= hit_points[j][3])) {
+                        index = hit_polys[i];
 
                         hit_polys[i] = hit_polys[j];
                         hit_polys[j] = index;
@@ -1432,30 +1505,27 @@ int CheckHitsPipeY(CCPoly *polys, int count, float *from, float height, int max_
 
     return hits;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CheckHitsPipeY__FP6CCPolyiPffiPiPA4_fii);
-#endif
 
-#ifdef NONMATCHING
-int CheckHitsPipe(CCPoly *polys, int count, float *from, float *to, int max_hits, int *hit_polys, float (*hit_points)[4], int sort, int ignore_mask) {
-    sceVu0FVECTOR pipe_max;
-    sceVu0FVECTOR pipe_min;
-    sceVu0FVECTOR dir;
-    sceVu0FVECTOR points[8];
-    sceVu0FVECTOR poly_max;
-    sceVu0FVECTOR poly_min;
-    sceVu0FVECTOR best;
-    sceVu0FVECTOR offset;
-    sceVu0FVECTOR swap;
-    CCPoly       *poly;
-    float         radius;
-    float         length;
-    float         along;
-    int           point_count;
-    int           found;
-    int           hits;
-    int           i;
-    int           j;
+int CheckHitsPipe(CCPoly *polys, int count, sceVu0FVECTOR from, float *to, int max_hits, int *hit_polys, sceVu0FVECTOR *hit_points, int sort, int ignore_mask) {
+    float   best[4];
+    float   poly_min[4];
+    float   poly_max[4];
+    float   pipe_max[4];
+    float   pipe_min[4];
+    float   dir[4];
+    float   points[11][4];
+    float   offset[4];
+    float   swap[4];
+    CCPoly *poly;
+    float   radius;
+    float   length;
+    float   along;
+    int     point_count;
+    int     j;
+    int     found;
+    int     hits;
+    int     i;
+    int     index;
 
     hits = 0;
     radius = from[3];
@@ -1478,11 +1548,11 @@ int CheckHitsPipe(CCPoly *polys, int count, float *from, float *to, int max_hits
 
         mgVectorMaxMin(poly_max, poly_min, poly->vertex[0], poly->vertex[1], poly->vertex[2]);
 
-        if (poly_min[0] > pipe_max[0] || poly_min[1] > pipe_max[1] || poly_min[2] > pipe_max[2]) {
+        if (pipe_max[0] < poly_min[0] || pipe_max[1] < poly_min[1] || pipe_max[2] < poly_min[2]) {
             continue;
         }
 
-        if (pipe_min[0] > poly_max[0] || pipe_min[1] > poly_max[1] || pipe_min[2] > poly_max[2]) {
+        if (!(pipe_min[0] <= poly_max[0]) || !(pipe_min[1] <= poly_max[1]) || !(pipe_min[2] <= poly_max[2])) {
             continue;
         }
 
@@ -1492,7 +1562,6 @@ int CheckHitsPipe(CCPoly *polys, int count, float *from, float *to, int max_hits
             continue;
         }
 
-        // Keep the point nearest the pipe's start among those along its length; w holds the distance.
         found = 0;
 
         for (j = 0; j < point_count; j++) {
@@ -1500,18 +1569,12 @@ int CheckHitsPipe(CCPoly *polys, int count, float *from, float *to, int max_hits
             along = sceVu0InnerProduct(offset, dir);
             points[j][3] = along;
 
-            if (along >= 0.0f && along <= length) {
+            if (!(along < 0.0f) && along <= length) {
                 if (found == 0) {
-                    best[0] = points[j][0];
-                    best[1] = points[j][1];
-                    best[2] = points[j][2];
-                    best[3] = points[j][3];
+                    *(u_long128 *) best = *(u_long128 *) points[j];
                     found = 1;
                 } else if (points[j][3] < best[3]) {
-                    best[0] = points[j][0];
-                    best[1] = points[j][1];
-                    best[2] = points[j][2];
-                    best[3] = points[j][3];
+                    *(u_long128 *) best = *(u_long128 *) points[j];
                 }
             }
         }
@@ -1529,12 +1592,16 @@ int CheckHitsPipe(CCPoly *polys, int count, float *from, float *to, int max_hits
         hits++;
     }
 
-    if (sort != 0) {
+    if (sort == 0) {
+        return hits;
+    }
+
+    {
         if (sort > 0) {
             for (i = 0; i < hits - 1; i++) {
                 for (j = i + 1; j < hits; j++) {
-                    if (hit_points[j][3] < hit_points[i][3]) {
-                        int index = hit_polys[i];
+                    if (!(hit_points[i][3] <= hit_points[j][3])) {
+                        index = hit_polys[i];
 
                         hit_polys[i] = hit_polys[j];
                         hit_polys[j] = index;
@@ -1546,12 +1613,11 @@ int CheckHitsPipe(CCPoly *polys, int count, float *from, float *to, int max_hits
             }
         }
 
-        // A descending sort was never written; it sorts ascending as well.
         if (sort < 0) {
             for (i = 0; i < hits - 1; i++) {
                 for (j = i + 1; j < hits; j++) {
-                    if (hit_points[j][3] < hit_points[i][3]) {
-                        int index = hit_polys[i];
+                    if (!(hit_points[i][3] <= hit_points[j][3])) {
+                        index = hit_polys[i];
 
                         hit_polys[i] = hit_polys[j];
                         hit_polys[j] = index;
@@ -1566,9 +1632,6 @@ int CheckHitsPipe(CCPoly *polys, int count, float *from, float *to, int max_hits
 
     return hits;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CheckHitsPipe__FP6CCPolyiPfPfiPiPA4_fii);
-#endif
 
 #ifdef NONMATCHING
 int CheckHitsSphere(CCPoly *polys, int count, float *sphere, int max_hits, int *hit_polys, float (*hit_points)[4], int sort, int ignore_mask) {
@@ -1780,48 +1843,44 @@ int MoveCheck(float *pos, float *velocity, float *out_pos, MoveCheckInfo *info, 
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", MoveCheck__FPfPfPfP13MoveCheckInfoP6CCPolyii);
 #endif
 
-#ifdef NONMATCHING
-int GetFootPoly(float *pos, float depth, CCPoly *found, float *ground, CCPoly *polys, int count, int ignore_mask) {
-    s16           ground_kind;
-    s16           foot_sound;
-    s16           area_kind;
+int GetFootPoly(float *pos, float depth, CCPoly *found, sceVu0FVECTOR ground, CCPoly *polys, int count, int ignore_mask) {
     s16           poly_ignore_mask;
     u16           parts_no;
     s16           attribute;
-    float         attribute_value;
     int           hit_polys[32];
     sceVu0FVECTOR from;
     sceVu0FVECTOR to;
-    sceVu0FVECTOR hit_points[32];
-    sceVu0FVECTOR normal;
-    float         normal_y;
-    CCPoly       *poly;
+    sceVu0FVECTOR hit_points[64];
+    int           attribute_value[4];
     int           hits;
     int           found_ground;
     int           i;
-
+    float         normal_y;
     sceVu0CopyVector(from, pos);
     sceVu0CopyVector(to, pos);
     from[3] = 4.0f;
     to[1] -= depth;
     hits = CheckHitsPipeY(polys, count, from, -depth, 32, hit_polys, hit_points, 1, ignore_mask);
+
     if (hits == 0) {
         return 0;
     }
-    ground_kind = 0;
-    foot_sound = 0;
-    area_kind = 0;
+
+    int ground_kind = 0;
+    int foot_sound = 0;
+    int area_kind = 0;
     found_ground = 0;
+
     for (i = 0; i < hits; i++) {
+        sceVu0FVECTOR normal;
         sceVu0Normalize(normal, polys[hit_polys[i]].normal);
-        normal_y = normal[1];
-        if (normal_y < 0.0f) {
-            normal_y = -normal_y;
-        }
+        normal_y = (normal[1] < 0.0f) ? -normal[1] : normal[1];
+
         if (normal_y < 0.05f) {
             continue;
         }
-        *found = polys[hit_polys[i]];
+
+        *(CCPolyCopy *) found = *(CCPolyCopy *) &polys[hit_polys[i]];
         sceVu0CopyVector(ground, hit_points[i]);
         found_ground = 1;
         ground[0] = from[0];
@@ -1831,341 +1890,397 @@ int GetFootPoly(float *pos, float depth, CCPoly *found, float *ground, CCPoly *p
         area_kind = found->area_kind;
         poly_ignore_mask = found->ignore_mask;
         parts_no = found->parts_no;
-        attribute = found->unk_4a;
-        attribute_value = found->unk_4c;
+        attribute = found->attr;
+        *(float *) &attribute_value[3] = found->attr_value;
         break;
     }
+
     for (i = 0; i < hits; i++) {
-        poly = &polys[hit_polys[i]];
+        short *poly = &polys[hit_polys[i]].ground_kind;
+
         if (ground_kind == 0) {
-            ground_kind = poly->ground_kind;
+            ground_kind = poly[0];
         }
+
         if (foot_sound == 0) {
-            foot_sound = poly->foot_sound;
+            foot_sound = poly[1];
         }
+
         if (area_kind == 0) {
-            area_kind = poly->area_kind;
+            area_kind = poly[2];
         }
     }
+
     found->ground_kind = ground_kind;
     found->foot_sound = foot_sound;
     found->area_kind = area_kind;
     found->ignore_mask = poly_ignore_mask;
     found->parts_no = parts_no;
-    found->unk_4a = attribute;
-    found->unk_4c = attribute_value;
+    found->attr = attribute;
+    found->attr_value = *(float *) &attribute_value[3];
     return found_ground;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", GetFootPoly__FPffP6CCPolyPfP6CCPolyii);
-#endif
 
-#ifdef NONMATCHING
-void GetCPolyAttr(MoveCheckInfo *info, float *from, float *to, float height, CCPoly *polys, int count, int ignore_mask) {
-    int           hit_polys[32];
-    sceVu0FVECTOR above;
-    sceVu0FVECTOR below;
-    sceVu0FVECTOR hit_points[32];
-    int           hits;
-    int           i;
-    s16           area_kind;
+void GetCPolyAttr(MoveCheckInfo *info, float *from, float *to, float dy, CCPoly *polys, int count,
+                  int unused) {
+    int   hit_index[32];
+    float probe_from[4];
+    float probe_to[4];
+    float hit_point[64][4];
+    int   hits;
+    int   i;
+    s16   kind;
 
     info->in_water = 0;
     info->crossed_area = 0;
-    hits = CheckHits(polys, count, from, to, 32, hit_polys, hit_points, 1, 0);
+    hits = CheckHits(polys, count, from, to, 0x20, hit_index, hit_point, 1, 0);
+
     for (i = 0; i < hits; i++) {
-        area_kind = polys[hit_polys[i]].area_kind;
-        if (area_kind == 7 || area_kind == 1) {
-            info->crossed_area = 1;
-            info->signed_distance = mgDistVector(from, to);
-            if (from[1] > to[1]) {
-                info->signed_distance *= -1.0f;
-            }
-            *(u_long128 *) info->crossed_point = *(u_long128 *) hit_points[i];
+        kind = polys[hit_index[i]].area_kind;
+
+        switch (kind) {
+            case 1:
+            case 7:
+                info->crossed_area = 1;
+                info->signed_distance = mgDistVector(from, to);
+
+                if (!(from[1] <= to[1])) {
+                    info->signed_distance *= -1.0f;
+                }
+
+                *(u_long128 *) info->crossed_point = *(u_long128 *) hit_point[i];
+                break;
         }
     }
-    sceVu0CopyVector(above, to);
-    sceVu0CopyVector(below, to);
-    above[1] += height;
-    hits = CheckHits(polys, count, above, below, 32, hit_polys, hit_points, 1, 0);
-    if (hits != 0) {
-        for (i = 0; i < hits; i++) {
-            area_kind = polys[hit_polys[i]].area_kind;
-            if (area_kind == 7 || area_kind == 1) {
+
+    sceVu0CopyVector(probe_from, to);
+    sceVu0CopyVector(probe_to, to);
+    probe_from[1] += dy;
+    hits = CheckHits(polys, count, probe_from, probe_to, 0x20, hit_index, hit_point, 1, 0);
+
+    if (hits == 0) {
+        return;
+    }
+
+    for (i = 0; i < hits; i++) {
+        kind = polys[hit_index[i]].area_kind;
+
+        switch (kind) {
+            case 1:
+            case 7:
                 info->in_water = 1;
-                *(u_long128 *) info->water_surface = *(u_long128 *) hit_points[i];
-            }
+                *(u_long128 *) info->water_surface = *(u_long128 *) hit_point[i];
+                break;
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", GetCPolyAttr__FP13MoveCheckInfoPfPffP6CCPolyii);
-#endif
 
-#ifdef NONMATCHING
-int CheckWidth(CCPoly *polys, int count, float *pos, float radius, float *out_pos, int ignore_mask) {
-    sceVu0FVECTOR to;
-    sceVu0FVECTOR positive_hit;
-    sceVu0FVECTOR negative_hit;
-    sceVu0FVECTOR from;
-    sceVu0FVECTOR normal;
-    float         diagonal_radius;
-    int           sides;
-    int           positive;
-    int           negative;
-    int           hit;
+int CheckWidth(CCPoly *polys, int count, float *pos, float radius, float *out, int mask) {
+    float probe_end[4];
+    float hit_first[4];
+    float hit_second[4];
+    float probe[4];
+    float normal[4];
+    int   sides;
+    int   saw_first;
+    int   saw_second;
+    int   index;
+    float diagonal;
 
+    diagonal = radius / 1.4142135f;
     sides = 0;
-    diagonal_radius = radius / 1.4142135f;
-    sceVu0CopyVector(from, pos);
-    sceVu0CopyVector(out_pos, pos);
-    positive = 0;
-    negative = 0;
-    to[0] = from[0] + diagonal_radius;
-    to[1] = from[1];
-    to[2] = from[2] + diagonal_radius;
-    hit = CheckHit(polys, count, from, to, positive_hit, 1, ignore_mask);
-    if (hit >= 0) {
-        sceVu0Normalize(normal, polys[hit].normal);
-        if (normal[1] < 0.5f && normal[1] > -0.5f) {
-            positive = 1;
-            sides |= CHECK_WIDTH_SIDE_POS_X | CHECK_WIDTH_SIDE_POS_Z;
-        }
-    }
-    to[0] = from[0] - diagonal_radius;
-    to[1] = from[1];
-    to[2] = from[2] - diagonal_radius;
-    hit = CheckHit(polys, count, from, to, negative_hit, 1, ignore_mask);
-    if (hit >= 0) {
-        sceVu0Normalize(normal, polys[hit].normal);
-        if (normal[1] < 0.5f && normal[1] > -0.5f) {
-            negative = 1;
-            sides |= CHECK_WIDTH_SIDE_NEG_X | CHECK_WIDTH_SIDE_NEG_Z;
-        }
-    }
-    if (positive != 0 && negative != 0) {
-        out_pos[0] = 0.5f * (positive_hit[0] + negative_hit[0]);
-        out_pos[2] = 0.5f * (positive_hit[2] + negative_hit[2]);
-    } else {
-        if (positive != 0) {
-            out_pos[0] = positive_hit[0] - diagonal_radius;
-            out_pos[2] = positive_hit[2] - diagonal_radius;
-        }
-        if (negative != 0) {
-            out_pos[0] = negative_hit[0] + diagonal_radius;
-            out_pos[2] = negative_hit[2] + diagonal_radius;
+    sceVu0CopyVector(probe, pos);
+    sceVu0CopyVector(out, pos);
+    saw_second = 0;
+    saw_first = 0;
+    probe_end[0] = probe[0] + diagonal;
+    probe_end[1] = probe[1];
+    probe_end[2] = probe[2] + diagonal;
+    index = CheckHit(polys, count, probe, probe_end, hit_first, 1, mask);
+
+    if (index >= 0) {
+        sceVu0Normalize(normal, polys[index].normal);
+
+        if (normal[1] < 0.5f && !(normal[1] <= -0.5f)) {
+            saw_first = 1;
+            sides |= 5;
         }
     }
 
-    sceVu0CopyVector(from, out_pos);
-    positive = 0;
-    negative = 0;
-    to[0] = from[0] + diagonal_radius;
-    to[1] = from[1];
-    to[2] = from[2] - diagonal_radius;
-    hit = CheckHit(polys, count, from, to, positive_hit, 1, ignore_mask);
-    if (hit >= 0) {
-        sceVu0Normalize(normal, polys[hit].normal);
-        if (normal[1] < 0.5f && normal[1] > -0.5f) {
-            positive = 1;
-            sides |= CHECK_WIDTH_SIDE_POS_X | CHECK_WIDTH_SIDE_NEG_Z;
-        }
-    }
-    to[0] = from[0] - diagonal_radius;
-    to[1] = from[1];
-    to[2] = from[2] + diagonal_radius;
-    hit = CheckHit(polys, count, from, to, negative_hit, 1, ignore_mask);
-    if (hit >= 0) {
-        sceVu0Normalize(normal, polys[hit].normal);
-        if (normal[1] < 0.5f && normal[1] > -0.5f) {
-            negative = 1;
-            sides |= CHECK_WIDTH_SIDE_NEG_X | CHECK_WIDTH_SIDE_POS_Z;
-        }
-    }
-    if (positive != 0 && negative != 0) {
-        out_pos[0] = 0.5f * (positive_hit[0] + negative_hit[0]);
-        out_pos[2] = 0.5f * (positive_hit[2] + negative_hit[2]);
-    } else {
-        if (positive != 0) {
-            out_pos[0] = positive_hit[0] - diagonal_radius;
-            out_pos[2] = positive_hit[2] + diagonal_radius;
-        }
-        if (negative != 0) {
-            out_pos[0] = negative_hit[0] + diagonal_radius;
-            out_pos[2] = negative_hit[2] - diagonal_radius;
+    probe_end[0] = probe[0] - diagonal;
+    probe_end[1] = probe[1];
+    probe_end[2] = probe[2] - diagonal;
+    index = CheckHit(polys, count, probe, probe_end, hit_second, 1, mask);
+
+    if (index >= 0) {
+        sceVu0Normalize(normal, polys[index].normal);
+
+        if (normal[1] < 0.5f && !(normal[1] <= -0.5f)) {
+            sides |= 10;
+            saw_second = 1;
         }
     }
 
-    sceVu0CopyVector(from, out_pos);
-    positive = 0;
-    negative = 0;
-    to[0] = from[0] + radius;
-    to[1] = from[1];
-    to[2] = from[2];
-    hit = CheckHit(polys, count, from, to, positive_hit, 1, ignore_mask);
-    if (hit >= 0) {
-        sceVu0Normalize(normal, polys[hit].normal);
-        if (normal[1] < 0.5f && normal[1] > -0.5f) {
-            positive = 1;
-            sides |= CHECK_WIDTH_SIDE_POS_X;
-        }
-    }
-    to[0] = from[0] - radius;
-    to[1] = from[1];
-    to[2] = from[2];
-    hit = CheckHit(polys, count, from, to, negative_hit, 1, ignore_mask);
-    if (hit >= 0) {
-        sceVu0Normalize(normal, polys[hit].normal);
-        if (normal[1] < 0.5f && normal[1] > -0.5f) {
-            negative = 1;
-            sides |= CHECK_WIDTH_SIDE_NEG_X;
-        }
-    }
-    if (positive != 0 && negative != 0) {
-        out_pos[0] = 0.5f * (positive_hit[0] + negative_hit[0]);
+    if (saw_first && saw_second) {
+        out[0] = 0.5f * (hit_first[0] + hit_second[0]);
+        out[2] = 0.5f * (hit_first[2] + hit_second[2]);
     } else {
-        if (positive != 0) {
-            out_pos[0] = positive_hit[0] - radius;
+        if (saw_first) {
+            out[0] = hit_first[0] - diagonal;
+            out[2] = hit_first[2] - diagonal;
         }
-        if (negative != 0) {
-            out_pos[0] = negative_hit[0] + radius;
+
+        if (saw_second) {
+            out[0] = hit_second[0] + diagonal;
+            out[2] = hit_second[2] + diagonal;
         }
     }
 
-    sceVu0CopyVector(from, out_pos);
-    positive = 0;
-    negative = 0;
-    to[0] = from[0];
-    to[1] = from[1];
-    to[2] = from[2] + radius;
-    hit = CheckHit(polys, count, from, to, positive_hit, 1, ignore_mask);
-    if (hit >= 0) {
-        sceVu0Normalize(normal, polys[hit].normal);
-        if (normal[1] < 0.5f && normal[1] > -0.5f) {
-            positive = 1;
-            sides |= CHECK_WIDTH_SIDE_POS_Z;
+    sceVu0CopyVector(probe, out);
+    saw_second = 0;
+    saw_first = 0;
+    probe_end[0] = probe[0] + diagonal;
+    probe_end[1] = probe[1];
+    probe_end[2] = probe[2] - diagonal;
+    index = CheckHit(polys, count, probe, probe_end, hit_first, 1, mask);
+
+    if (index >= 0) {
+        sceVu0Normalize(normal, polys[index].normal);
+
+        if (normal[1] < 0.5f && !(normal[1] <= -0.5f)) {
+            saw_first = 1;
+            sides |= 9;
         }
     }
-    to[0] = from[0];
-    to[1] = from[1];
-    to[2] = from[2] - radius;
-    hit = CheckHit(polys, count, from, to, negative_hit, 1, ignore_mask);
-    if (hit >= 0) {
-        sceVu0Normalize(normal, polys[hit].normal);
-        if (normal[1] < 0.5f && normal[1] > -0.5f) {
-            negative = 1;
-            sides |= CHECK_WIDTH_SIDE_NEG_Z;
+
+    probe_end[0] = probe[0] - diagonal;
+    probe_end[1] = probe[1];
+    probe_end[2] = probe[2] + diagonal;
+    index = CheckHit(polys, count, probe, probe_end, hit_second, 1, mask);
+
+    if (index >= 0) {
+        sceVu0Normalize(normal, polys[index].normal);
+
+        if (normal[1] < 0.5f && !(normal[1] <= -0.5f)) {
+            sides |= 6;
+            saw_second = 1;
         }
     }
-    if (positive != 0 && negative != 0) {
-        out_pos[2] = 0.5f * (positive_hit[2] + negative_hit[2]);
+
+    if (saw_first && saw_second) {
+        out[0] = 0.5f * (hit_first[0] + hit_second[0]);
+        out[2] = 0.5f * (hit_first[2] + hit_second[2]);
     } else {
-        if (positive != 0) {
-            out_pos[2] = positive_hit[2] - radius;
+        if (saw_first) {
+            out[0] = hit_first[0] - diagonal;
+            out[2] = hit_first[2] + diagonal;
         }
-        if (negative != 0) {
-            out_pos[2] = negative_hit[2] + radius;
+
+        if (saw_second) {
+            out[0] = hit_second[0] + diagonal;
+            out[2] = hit_second[2] - diagonal;
         }
     }
+
+    sceVu0CopyVector(probe, out);
+    saw_second = 0;
+    saw_first = 0;
+    probe_end[0] = probe[0] + radius;
+    probe_end[1] = probe[1];
+    probe_end[2] = probe[2];
+    index = CheckHit(polys, count, probe, probe_end, hit_first, 1, mask);
+
+    if (index >= 0) {
+        sceVu0Normalize(normal, polys[index].normal);
+
+        if (normal[1] < 0.5f && !(normal[1] <= -0.5f)) {
+            saw_first = 1;
+            sides |= 1;
+        }
+    }
+
+    probe_end[0] = probe[0] - radius;
+    probe_end[1] = probe[1];
+    probe_end[2] = probe[2];
+    index = CheckHit(polys, count, probe, probe_end, hit_second, 1, mask);
+
+    if (index >= 0) {
+        sceVu0Normalize(normal, polys[index].normal);
+
+        if (normal[1] < 0.5f && !(normal[1] <= -0.5f)) {
+            sides |= 2;
+            saw_second = 1;
+        }
+    }
+
+    if (saw_first && saw_second) {
+        out[0] = 0.5f * (hit_first[0] + hit_second[0]);
+    } else {
+        if (saw_first) {
+            out[0] = hit_first[0] - radius;
+        }
+
+        if (saw_second) {
+            out[0] = hit_second[0] + radius;
+        }
+    }
+
+    sceVu0CopyVector(probe, out);
+    saw_second = 0;
+    saw_first = 0;
+    probe_end[0] = probe[0];
+    probe_end[1] = probe[1];
+    probe_end[2] = probe[2] + radius;
+    index = CheckHit(polys, count, probe, probe_end, hit_first, 1, mask);
+
+    if (index >= 0) {
+        sceVu0Normalize(normal, polys[index].normal);
+
+        if (normal[1] < 0.5f && !(normal[1] <= -0.5f)) {
+            sides |= 4;
+            saw_first = 1;
+        }
+    }
+
+    probe_end[0] = probe[0];
+    probe_end[1] = probe[1];
+    probe_end[2] = probe[2] - radius;
+    index = CheckHit(polys, count, probe, probe_end, hit_second, 1, mask);
+
+    if (index >= 0) {
+        sceVu0Normalize(normal, polys[index].normal);
+
+        if (normal[1] < 0.5f && !(normal[1] <= -0.5f)) {
+            sides |= 8;
+            saw_second = 1;
+        }
+    }
+
+    if (saw_first && saw_second) {
+        out[2] = 0.5f * (hit_first[2] + hit_second[2]);
+    } else {
+        if (saw_first) {
+            out[2] = hit_first[2] - radius;
+        }
+
+        if (saw_second) {
+            out[2] = hit_second[2] + radius;
+        }
+    }
+
     return sides;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CheckWidth__FP6CCPolyiPffPfi);
-#endif
 
-#ifdef NONMATCHING
-int CheckWidthPipe(CCPoly *polys, int count, float *pos, float radius, float *out_pos, int ignore_mask) {
-    sceVu0FVECTOR to;
-    sceVu0FVECTOR positive_hit;
-    sceVu0FVECTOR negative_hit;
-    sceVu0FVECTOR from;
-    sceVu0FVECTOR normal;
-    int           hit_polys[32];
-    sceVu0FVECTOR hit_points[32];
-    float         probe_radius;
-    int           sides;
-    int           positive;
-    int           negative;
+int CheckWidthPipe(CCPoly *polys, int count, float *pos, float radius, float *out, int mask) {
+    float probe_end[4];
+    float hit_high[4];
+    float hit_low[4];
+    float probe[4];
+    float normal[4];
+    int   hit_index[32];
+    float hit_point[32][4];
+    int   sides;
+    int   has_high;
+    int   has_low;
+    float reach;
+    int   hit;
 
-    probe_radius = radius * 0.8f;
+    reach = radius;
+    reach *= 0.8f;
     sides = 0;
-    sceVu0CopyVector(from, pos);
-    from[1] += 3.0f * pos[3];
-    sceVu0CopyVector(out_pos, pos);
-    to[3] = from[3];
-    positive = 0;
-    negative = 0;
-    to[1] = from[1];
-    to[0] = from[0] + probe_radius;
-    to[2] = from[2];
-    if (CheckHitsPipe(polys, count, from, to, 32, hit_polys, hit_points, 1, ignore_mask) > 0) {
-        *(u_long128 *) positive_hit = *(u_long128 *) hit_points[0];
-        sceVu0Normalize(normal, polys[hit_polys[0]].normal);
-        if (normal[1] < 0.5f && normal[1] > -0.5f) {
-            positive = 1;
-            sides |= CHECK_WIDTH_SIDE_POS_X;
-        }
-    }
-    to[0] = from[0] - probe_radius;
-    to[2] = from[2];
-    if (CheckHitsPipe(polys, count, from, to, 32, hit_polys, hit_points, 1, ignore_mask) > 0) {
-        *(u_long128 *) negative_hit = *(u_long128 *) hit_points[0];
-        sceVu0Normalize(normal, polys[hit_polys[0]].normal);
-        if (normal[1] < 0.5f && normal[1] > -0.5f) {
-            negative = 1;
-            sides |= CHECK_WIDTH_SIDE_NEG_X;
-        }
-    }
-    if (positive != 0 && negative != 0) {
-        out_pos[0] = 0.5f * (positive_hit[0] + negative_hit[0]);
-    } else {
-        if (positive != 0) {
-            out_pos[0] = positive_hit[0] - probe_radius;
-        }
-        if (negative != 0) {
-            out_pos[0] = negative_hit[0] + probe_radius;
+    sceVu0CopyVector(probe, pos);
+    probe[1] += 3.0f * pos[3];
+    sceVu0CopyVector(out, pos);
+    probe_end[3] = probe[3];
+    has_low = 0;
+    has_high = 0;
+    probe_end[1] = probe[1];
+    probe_end[0] = probe[0] + reach;
+    probe_end[2] = probe[2];
+
+    if (CheckHitsPipe(polys, count, probe, probe_end, 0x20, hit_index, hit_point, 1, mask) > 0) {
+        hit = hit_index[0];
+        *(u_long128 *) hit_high = *(u_long128 *) hit_point[0];
+        sceVu0Normalize(normal, polys[hit].normal);
+
+        if (normal[1] < 0.5f && !(normal[1] <= -0.5f)) {
+            has_high = 1;
+            sides |= 1;
         }
     }
 
-    from[0] = out_pos[0];
-    from[2] = out_pos[2];
-    positive = 0;
-    negative = 0;
-    to[0] = from[0];
-    to[2] = from[2] + probe_radius;
-    if (CheckHitsPipe(polys, count, from, to, 32, hit_polys, hit_points, 1, ignore_mask) > 0) {
-        *(u_long128 *) positive_hit = *(u_long128 *) hit_points[0];
-        sceVu0Normalize(normal, polys[hit_polys[0]].normal);
-        if (normal[1] < 0.5f && normal[1] > -0.5f) {
-            positive = 1;
-            sides |= CHECK_WIDTH_SIDE_POS_Z;
+    probe_end[0] = probe[0] - reach;
+    probe_end[2] = probe[2];
+
+    if (CheckHitsPipe(polys, count, probe, probe_end, 0x20, hit_index, hit_point, 1, mask) > 0) {
+        hit = hit_index[0];
+        *(u_long128 *) hit_low = *(u_long128 *) hit_point[0];
+        sceVu0Normalize(normal, polys[hit].normal);
+
+        if (normal[1] < 0.5f && !(normal[1] <= -0.5f)) {
+            sides |= 2;
+            has_low = 1;
         }
     }
-    to[0] = from[0];
-    to[2] = from[2] - probe_radius;
-    if (CheckHitsPipe(polys, count, from, to, 32, hit_polys, hit_points, 1, ignore_mask) > 0) {
-        *(u_long128 *) negative_hit = *(u_long128 *) hit_points[0];
-        sceVu0Normalize(normal, polys[hit_polys[0]].normal);
-        if (normal[1] < 0.5f && normal[1] > -0.5f) {
-            negative = 1;
-            sides |= CHECK_WIDTH_SIDE_NEG_Z;
-        }
-    }
-    if (positive != 0 && negative != 0) {
-        out_pos[2] = 0.5f * (positive_hit[2] + negative_hit[2]);
+
+    if (has_high && has_low) {
+        out[0] = 0.5f * (hit_high[0] + hit_low[0]);
     } else {
-        if (positive != 0) {
-            out_pos[2] = positive_hit[2] - probe_radius;
+        if (has_high) {
+            out[0] = hit_high[0] - reach;
         }
-        if (negative != 0) {
-            out_pos[2] = negative_hit[2] + probe_radius;
+
+        if (has_low) {
+            out[0] = hit_low[0] + reach;
         }
     }
+
+    has_low = 0;
+    has_high = 0;
+    probe[0] = out[0];
+    probe[2] = out[2];
+    probe_end[0] = probe[0];
+    probe_end[2] = probe[2] + reach;
+
+    if (CheckHitsPipe(polys, count, probe, probe_end, 0x20, hit_index, hit_point, 1, mask) > 0) {
+        hit = hit_index[0];
+        *(u_long128 *) hit_high = *(u_long128 *) hit_point[0];
+        sceVu0Normalize(normal, polys[hit].normal);
+
+        if (normal[1] < 0.5f && !(normal[1] <= -0.5f)) {
+            sides |= 4;
+            has_high = 1;
+        }
+    }
+
+    probe_end[0] = probe[0];
+    probe_end[2] = probe[2] - reach;
+
+    if (CheckHitsPipe(polys, count, probe, probe_end, 0x20, hit_index, hit_point, 1, mask) > 0) {
+        hit = hit_index[0];
+        *(u_long128 *) hit_low = *(u_long128 *) hit_point[0];
+        sceVu0Normalize(normal, polys[hit].normal);
+
+        if (normal[1] < 0.5f && !(normal[1] <= -0.5f)) {
+            sides |= 8;
+            has_low = 1;
+        }
+    }
+
+    if (has_high && has_low) {
+        out[2] = 0.5f * (hit_high[2] + hit_low[2]);
+    } else {
+        if (has_high) {
+            out[2] = hit_high[2] - reach;
+        }
+
+        if (has_low) {
+            out[2] = hit_low[2] + reach;
+        }
+    }
+
     return sides;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CheckWidthPipe__FP6CCPolyiPffPfi);
-#endif
 
 int CreateCharaCPoly(CCPoly *polys, int max_polys, float *pos, float *target, float distance, float half_size) {
     sceVu0FVECTOR direction;
@@ -2231,26 +2346,19 @@ int LinerInterpolationI(int from, int to, int step, int steps) {
     return from + step * (to - from) / steps;
 }
 
-#ifdef NONMATCHING
-void RollPos(float *centre, float *pos, float angle, float *out) {
-    float centre_x;
-    float centre_y;
-    float x;
-    float y;
-    float relative_x;
-
-    centre_x = centre[0];
-    centre_y = centre[1];
-    x = pos[0];
-    y = pos[1];
-    relative_x = x - centre_x;
-    y -= centre_y;
-    out[0] = centre_x + (relative_x * cosf(angle) - y * sinf(angle));
-    out[1] = centre_y - (relative_x * sinf(angle) + y * cosf(angle));
+void RollPos(float *center, float *point, float angle, float *out) {
+    float px;
+    float cx = center[0];
+    float cy = center[1];
+    px = point[0];
+    float dy = point[1];
+    float t;
+    float dx;
+    t = (dx = px - cx) * cosf(angle);
+    out[0] = cx + (t - (dy -= cy) * sinf(angle));
+    t = dx * sinf(angle);
+    out[1] = cy - (t + dy * cosf(angle));
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", RollPos__FPfPffPf);
-#endif
 
 s32 CheckPosInOutForRect(RECT *rect, s32 x, s32 y) {
     s32 left = rect->x;
@@ -2326,24 +2434,29 @@ s32 CheckPosInOutFor2P(float x0, float y0, float x1, float y1, float x, float y)
 
     return outside ^ 1;
 }
-#ifdef NONMATCHING
+
 int CalcIntersectionPointLineAndLine(float ax0, float ay0, float ax1, float ay1, float bx0, float by0, float bx1, float by1, float *out_x, float *out_y) {
     float slope_a;
     float slope_b;
     float relative_x;
+    float relative_y;
 
     if (ax0 == ax1 && bx0 == bx1) {
         return 0;
     }
+
     if (ax0 != ax1) {
         slope_a = (ay1 - ay0) / (ax1 - ax0);
     }
+
     if (bx0 != bx1) {
         slope_b = (by1 - by0) / (bx1 - bx0);
     }
+
     if (slope_a == slope_b) {
         return 0;
     }
+
     if (ax0 == ax1) {
         *out_x = ax0;
         *out_y = slope_b * (ax0 - bx0);
@@ -2355,13 +2468,11 @@ int CalcIntersectionPointLineAndLine(float ax0, float ay0, float ax1, float ay1,
     } else {
         relative_x = ((by0 - ay0) - slope_b * (bx0 - ax0)) / (slope_a - slope_b);
         *out_x = relative_x + ax0;
-        *out_y = (relative_x * slope_a) + ay0;
+        relative_y = relative_x * slope_a;
+        *out_y = relative_y + ay0;
         return 1;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CalcIntersectionPointLineAndLine__FffffffffPfPf);
-#endif
 
 s32 CalcIntersectionPoint2PAnd2P(float ax0, float ay0, float ax1, float ay1, float bx0, float by0, float bx1, float by1, float *out_x, float *out_y) {
     if (CalcIntersectionPointLineAndLine(ax0, ay0, ax1, ay1, bx0, by0, bx1, by1, out_x, out_y) == 0) {
@@ -2380,14 +2491,11 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gameutil", at_966__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/gameutil", at_967__DATA);
 
 // Small uninitialised data (.sbss)
-INCLUDE_BSS(OldSkinFrame, 0x4);
 INCLUDE_BSS(vert_845, 0x10);
 INCLUDE_BSS(vert_915, 0x10);
 INCLUDE_BSS(nml_916, 0x4);
 
 // Uninitialised data (.bss)
-INCLUDE_BSS(def_vrtx, 0x3200);
-INCLUDE_BSS(def_nml, 0x10);
 INCLUDE_BSS(tmp_SkinMatrix_847, 0x40);
 INCLUDE_BSS(tmp_SkinMatrix_inv_848, 0x40);
 INCLUDE_BSS(tmp_ChrMatrix_849, 0x40);

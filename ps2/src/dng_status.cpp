@@ -36,15 +36,14 @@
 extern float cur_ang_1005;
 extern s8    init_1006;
 
-#include <cmath>
-
 #include "actionchara.hpp"
-#include "dng_main.hpp"
-#include "maintex.hpp"
-#include "prespr.hpp"
 #include "scenesnd.hpp"
 #include "subgame.hpp"
-#include "userdata.hpp"
+
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
 
 // Code (.text)
 void PrintV(int x, int y, int value, mgCTexture *texture, mgRect<int> rect, int digit_count,
@@ -88,7 +87,7 @@ void PrintV(int x, int y, int value, mgCTexture *texture, mgRect<int> rect, int 
     CPreSprite spare;
     sprite.Initialize(0, 0);
     sprite.Preset2D();
-    sprite.Begin(6);
+    sprite.Begin(MG_PRIM_SPRITE);
     sprite.Texture(texture);
 
     if (color != 0) {
@@ -159,7 +158,7 @@ void DrawActiveItemCursor(int x, int y, float alpha) {
     sprite.Initialize(0, 0);
     sprite.Preset2D();
     sprite.Bilinear(1);
-    sprite.Begin(3);
+    sprite.Begin(MG_PRIM_TRIANGLE);
     sprite.Texture(TEX_SystenFrame);
     sprite.SetAlphaBlend(2);
     sprite.Color(0x80, 0x80, 0x80, fptosi(128.0f * alpha));
@@ -829,7 +828,7 @@ void DrawMonsterUnitStatusBord(float alpha) {
     mgRect<int> rect3;
     prim.Initialize(0, 0);
     prim.Preset2D();
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Bilinear(0);
     prim.Texture(TEX_SystenFrame);
     prim.Color(0x80, 0x80, 0x80, 0x80);
@@ -840,7 +839,7 @@ void DrawMonsterUnitStatusBord(float alpha) {
     prim.End();
     prim.Initialize(0, 0);
     prim.Preset2D();
-    prim.Begin(4);
+    prim.Begin(MG_PRIM_TRIANGLE_STRIP);
     prim.Texture(TEX_SystenFrame);
     prim.Color(0x80, 0x80, 0x80, 0x80);
     hp_rate = (float) now_hp / (float) max_hp;
@@ -862,7 +861,7 @@ void DrawMonsterUnitStatusBord(float alpha) {
     prim.End();
     prim.Initialize(0, 0);
     prim.Preset2D();
-    prim.Begin(4);
+    prim.Begin(MG_PRIM_TRIANGLE_STRIP);
     prim.Bilinear(0);
     prim.Texture(TEX_SystenFrame);
     prim.Color(0x80, 0x80, 0x80, 0x80);
@@ -891,7 +890,7 @@ void DrawMonsterUnitStatusBord(float alpha) {
     info->GetNowAbs(0, abs);
     abs_right = fptosi(137.0f * ((float) abs[0] / (float) abs[1])) + 0x157;
     prim.Preset2D();
-    prim.Begin(4);
+    prim.Begin(MG_PRIM_TRIANGLE_STRIP);
     prim.TextureCrd(0x46, 0xB6);
     prim.Vertex(0x157, 0x14, 0);
     prim.TextureCrd(0x4E, 0xB6);

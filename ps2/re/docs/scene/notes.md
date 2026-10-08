@@ -117,33 +117,35 @@ statics `sun_func_1518` (0x1C0 bytes, .bss) / `init_1519` (guard byte, .sbss).
 It calculates opacity from horizontal distance to the main scene camera:
 `128 - 0.42666668 * sqrt(dx*dx + dz*dz)`. It emits a point only when the
 opacity is positive and the world position transforms to a drawable GS
-vertex. Its guarded draft compiles and differs from retail in eight floating
-point register choices.
+vertex. The merged source contains a native C++ body; earlier guarded-draft
+register differences are recorded below as prior comparison evidence.
 
-## Native remainder and guarded candidates
+## Native comparison history
 
-`Initialize` resets the scene slots and battle-area state; retail's game
+In the pre-merge canonical comparison, `Initialize` resets the scene slots and battle-area state; retail's game
 object loop uses `sky_num` as its bound. All seven typed slot-array loops
-have the same instructions as PAL except the exchange of the counter
+had the same instructions as PAL except the exchange of the counter
 and scaled array-displacement saved registers. `ClearStack` clears
 stack_used and lock for each existing stack from the requested index
 onwards and resets later buffers; its instruction differences likewise
 come from saved-register allocation. Alternative induction-variable and
 dead-expression trials are not retained.
 
-The `RandXYinViewArea` guarded body is one float-add operand order from
-PAL: +0xBC is `f20 = f0 + f20` in retail, while the current body uses
-`f20 = f20 + f0`. Source operand reversal and a no-op float cast leave the
+The earlier `RandXYinViewArea` guarded body was one float-add operand order from
+PAL: +0xBC is `f20 = f0 + f20` in retail, while that draft used
+`f20 = f20 + f0`. Source operand reversal and a no-op float cast left the
 result unchanged. Keeping the random result as a multi-definition local
-produces the desired operand order but exchanges f20/f21 for heading and
-distance later in the function, so the assembly fallback remains.
+produced the desired operand order but exchanged f20/f21 for heading and
+distance later in the function. Upstream subsequently supplied the active
+native body; the earlier guarded-draft blocker does not describe its promotion
+status. Canonical comparison must be repeated for the merged source.
 
-`CParticle::Draw`'s guarded body reproduces the full 456-byte instruction
-shape but differs at eight register choices around opacity calculation:
+`CParticle::Draw`'s earlier guarded body reproduced the full 456-byte instruction
+shape but differed at eight register choices around opacity calculation:
 retail uses v1/f2 for -0.42666668, a2/f3 for 128 and f1 for the zero
-comparison; the isolated compiler uses a0/f2, v1/f1 and f0 respectively.
-Splitting out the fade term does not correct this. Neither guarded body
-is claimed matched.
+comparison; the isolated compiler used a0/f2, v1/f1 and f0 respectively.
+Splitting out the fade term did not correct that trial. Upstream now supplies
+an active native body, so the merged implementation needs a fresh comparison.
 
 ## Satan's Fiddle floating-point calibration
 
@@ -162,5 +164,7 @@ MWCC 3.0 argument reader 0x4A4AE3 confirmed each propagated node retains its
 source type and IEEE value. Satan's Fiddle now initializes that consumer
 and applies the same TU/function/type/IEEE-bits policy there. Canonical
 wrapper plus section-fixup checks recover all three functions without
-source changes or new failing functions; only the existing Initialize
-and ClearStack register-allocation differences remain.
+source changes or new failing functions; the pre-merge check retained the
+existing Initialize and ClearStack register-allocation differences. Upstream independently reported
+`CRain::Start` matching in an isolated whole-image check. These results are
+pre-merge evidence, not validation of the merged unit.

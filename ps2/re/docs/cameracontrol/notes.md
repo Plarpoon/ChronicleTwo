@@ -40,6 +40,17 @@ temporary (e.g. `mgCCameraFollow(40.0f, 30.0f, 0.0f, 8.0f);`). The default limit
 through GetActiveParam are the same values `_RESET_CAMERA_CTRL_PARAM` (runscript_opcodes)
 writes: 100,160,18,10,-15(height),40,-15,20,-15,25; then `no_check = 0`.
 
+The constructor is now compiled C++ and matches all 0x120 retail bytes and its
+relocations. `decompile.sh __ct__14CCameraControlFv` confirms the base constructor,
+four `CameraCtrlParam::no_check` initializations, discarded temporary, active
+parameter defaults, `InitStatus`, and copy to `default_param`. m2c's offset
+labels for the vtable and field stores are inaccurate because it loses the
+class layout; the header layout and retail disassembly resolve those stores.
+Writing the second and fourth `mgCCameraFollow` arguments as `float(30.0)` and
+`float(8.0)` for both calls makes MWCC load the four argument registers in the
+retail order. Plain float literals produce the same values but different
+instruction order.
+
 ### Control (nested struct, size 0xC)
 MoveCamera(CPadControl*) builds it on the stack: +0 `rot` (analog 6 * -0.05, or +/-0.05
 from buttons 3/2, negated by rot_reverse), +4 `height` (analog 7 * -2.0), +8 `rot_back`
@@ -75,9 +86,10 @@ CopyParam. All fields float except +0x28.
 | 0x24 | `ground_space` | CheckGround: eye kept this far above floor hit; default 25 |
 | 0x28 | `no_check` s32 | inline ctor = 0; fishing UkiWaitLoop sets 1 after SetFixHeight(100)/SetFixDist(80); MoveCamera skips ground/wall checks when non-zero |
 
-`operator=` is declared explicitly (first-game style, e.g. `CCameraFollow::operator=`). It is
-retail-emitted out of line in editloop; it may in fact be the implicit one -- the editloop
-agent must decide (an explicit declaration needs a definition there).
+`CameraCtrlParam::operator=` has no explicit header declaration or C++
+definition. Native assignment in camera code uses the implicit operation; the
+retail out-of-line body at 0x1ACEE0 is currently an `INCLUDE_ASM` gap in
+`editloop.cpp`. It copies the scalar limits and `no_check` field.
 
 ## Enums
 - `CameraRotCancel`: bits seen in MoveCamera (1 buttons, 2 analog, 0x40 rot-back, 0x80

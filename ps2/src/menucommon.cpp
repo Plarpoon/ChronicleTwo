@@ -113,7 +113,6 @@ extern s8    mes_cord_conv_1193[16][2];
 
 static inline unsigned int align16_blocks(unsigned int n);
 
-int menu_spi_analyze_func_strcut1(MENU_SPI_ANALYZE_STRUCT1 *table, char *name);
 
 int menu_dtype_init(CMenuPosDataForm *form, SPI_STACK *stack, int argc);
 
@@ -306,6 +305,11 @@ static inline unsigned int align16_blocks(unsigned int n) {
 }
 
 #include "common.h"
+
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
 
 // Code (.text)
 int GetRandI(int range) {
@@ -945,18 +949,13 @@ int GetDispVolumeForFloat(float volume) {
 float GetFloatCommaValue(float value) {
     return value - (float) fptosi(value);
 }
-#ifdef NONMATCHING
 int CalcScrlBarPutPos(int top, float pos, int length, float pos_max) {
     int y = top;
     if (pos_max != 0.0f) {
-        float ratio = pos / pos_max;
-        y = fptosi((float) top + (float) length * ratio);
+        y = (int)((float)top + length * (pos / pos_max));
     }
     return y;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menucommon", CalcScrlBarPutPos__Fifif);
-#endif
 void Trans3DPosTo2DPos(mgCCamera *camera, mgCFrame *frame, int *out) {
     float view[4][4];
     float camera_pos[4];

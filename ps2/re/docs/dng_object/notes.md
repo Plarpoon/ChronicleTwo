@@ -146,7 +146,7 @@ reverted. Its existing slot alias remains; typed-array address trials still chan
 
 ## Focused machine-gun effect checkpoint
 
-The current `CMachineGun::Step` native body has the correct 0x2F0-byte
+The pre-merge `CMachineGun::Step` candidate had the correct 0x2F0-byte
 instruction shape; its pre-calibration differences were the literal
 argument order at `SethitEffect` around +0x20C..+0x234. Retail places
 power 0 into f14 before speed 30 into f13 and gravity 0.1 into f15.
@@ -173,5 +173,20 @@ canonical wrapper/fixup checks. A separate
 consumer-level selector for CMachineGun's zero argument (`0x00000000`)
 also makes its complete 0x2F0-byte function exact. Giving the spread
 constant an evaluate-first policy changes scheduling again; it remains
-false. The entire unit passes: 0x4B90 bytes and 654 relocations. No source
-workaround was introduced.
+false. The pre-merge calibration checkpoint passed the entire unit: 0x4B90 bytes and 654 relocations. The subsequent compliance guard described below supersedes its native status.
+
+## Merge checkpoint and compliance guard
+
+The newer master source retains `CMachineGun::Step` behind `NONMATCHING`
+because its draft still uses a raw slot alias. The compiler calibration
+above records the exact instruction and relocation result of that earlier
+body; it does not override the current assembly fallback or qualify that
+guarded draft as native decompilation. `CLaserGun::Step` remains native.
+Typed shot-array work is still required before restoring the machine-gun
+body as accepted source. The merged unit requires fresh integrated checks.
+
+The former binary32 zero evaluate-first calibration for `CMachineGun::Step`
+is retained as analysis evidence, but its active profile row is removed while
+the source stays guarded for raw field-offset aliases. Strict selector checking
+must not accept a calibration that no native function consumes. Restore a row
+only after the typed native body reaches zero byte and relocation differences.

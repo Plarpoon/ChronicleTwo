@@ -105,7 +105,7 @@ Unseen: 0x08, 0x54, 0xC4, 0xE4, 0x108.
 
 The local stack access helpers are ordinary C++ static functions. The two `SetStack` overloads write through reference slots only when `RS_STACKDATA::type == 3`. Retail symbol listings append numeric suffixes where same-named local helpers occur in earlier units; their instruction bodies are identical to the unsuffixed native C++ object functions apart from relocated branch addresses.
 
-`CEffectScriptMan::SetCharacter` reaches `slot[group][slot]` at offset 0x184. Native two-dimensional indexing preserves the address but MWCC reverses both commutative `addu` operands (99.88%); staging the row first leaves one reversed `addu` (99.94%). Typed pointer and flat indexing variants were also tested and did not reproduce retail operand order, so the byte-offset expression remains pending an exact typed form. Four sprite-command stack advances likewise changed scheduling when written as `stack += n` or `&stack[n]`; their byte-address forms remain pending.
+`CEffectScriptMan::SetCharacter` reaches `slot[group][slot]` at offset 0x184. Native two-dimensional indexing preserves the address but MWCC reverses both commutative `addu` operands (99.88%); staging the row first leaves one reversed `addu` (99.94%). Typed pointer and flat indexing variants were also tested and did not reproduce retail operand order, so the byte-offset expression remains pending an exact typed form. This function remains a `NONMATCHING` C++ draft with an active `INCLUDE_ASM` fallback. Four sprite-command stack advances likewise changed scheduling when written as `stack += n` or `&stack[n]`; their byte-address forms remain pending.
 
 The `CRunScript` member at offset 0x50 is constructed after raw `_EFF_SCRIPT` placement allocation succeeds. Native member placement new through the project overload adds an `operator new` call (98.11%); an inline void-pointer placement overload adds a second null check (98.13%). Native placement construction of the whole `_EFF_SCRIPT` scored 97.20%. The explicit constructor symbol remains for exact matching.
 
@@ -136,3 +136,20 @@ places it in the branch delay slot and leaves the call delay slot empty. The
 new expression also swaps the saved registers used for the script and work
 token through the rest of `CreateEffSpt`. The original explicit call restores
 100% and remains pending a native C++ source form with the same schedule.
+## Pending code matches
+
+`_INTERSECTION_POINT` tests a segment against scene collision polygons and returns the hit
+index, position, reflection, area kind, and footstep sound according to its argument count.
+Its native C++ function passes the full linked-image comparison. Array indexing through the
+polygon cursor preserves retail register allocation; indexing from the original local array
+changes it.
+## Constructor call cleanup
+
+`BuildBase(int, ...)`, `CreateEffSpt(int, int, int)`, `AssignCharacter`, and
+`SetCharacter` retain C++ drafts under `NONMATCHING`; the matching build selects
+their retail `INCLUDE_ASM` bodies. Their `CCharacter2` allocations now use
+typed placement construction, which supplies the constructor chain without
+explicit vtable stores. The `CreateEffSpt` draft also constructs its
+`CRunScript` member through typed placement new and uses the named
+`RS_STACKDATA::val` union and `CMap::map_info` fields. These draft changes have
+not established byte matches.

@@ -98,7 +98,7 @@ public:
     int               time_light_num;    /**< Number of lighting sets that divide the day. */
     int               def_foot;          /**< Value of the DEF_FOOT tag. */
     int               sky_info;          /**< First value of the SKY_INFO tag. */
-    float             unk_dc;
+    float             sky_height; /**< Height used to position the sky and its camera. */
     float             sun_angle;                   /**< Angle, in radians, of the sun's path about the vertical axis. */
     int               lens_flare;                  /**< Value of the LENS_FLARE tag. */
     int               all_scissor;                 /**< Value passed on when the model packs are loaded. */

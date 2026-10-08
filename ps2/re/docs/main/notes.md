@@ -39,23 +39,15 @@ mode table etc.); this game's `main` holds only start-up/shut-down, the game mod
 - `MainThreadPriority` and `MainLoop` should come from `mainloop.hpp`; `InitCDFile` from
   `dataread.hpp`; `mwInit` is the MW runtime init (no SDK header declares it yet).
 
-## Drafts (job main.1)
-- All four drafts compile to retail's bytes (`MATCH`). `vcount` is `static volatile int`
-  (the reload after the store needs `volatile`). `ClearScreen` is `void`.
-- `mwInit` is declared `extern "C" void mwInit()` in `main.hpp` (called with no arguments here;
-  the first game's runtime takes `argc, argv, envp`). `GetThreadId`/`ChangeThreadPriority` added
-  to `sce/eekernel.h`, `sceSifExitCmd` to `sce/sifrpc.h`.
-- Promoted: `ClearScreen`. Not promoted although `MATCH`:
-  - `VSyncCallBack`: needs an `asm { sync ei }` block (AGENTS.md: inline asm is never matched).
-  - `init`, `main`: both read `vcount`, so its typed definition must be visible in the game
-    build. The build repoints the code at the `vcount__2` placeholder and marks the compiler's
-    copy `.dead`, but `postprocess_object.py`'s `retail_sections` then renames that copy back to
-    `.sbss` because the name `vcount` matches another unit's global `vcount` (0x37CEC0); the
-    extra 4 bytes of `.sbss` shift the image (`PROMOTE FAILED`, `.bss` ends 0x40 late). Needs a
-    tool fix (skip `.dead` sections in `retail_sections`) or the INCLUDE_BSS migrated.
+## Current source status
 
-## VSyncCallBack draft
-The guarded C++ draft increments the non-negative vertical blank counter. Retail ends with `sync; ei`, an instruction sequence unavailable to this plain C++ draft, so the retail assembly remains active.
+`ClearScreen`, `init`, and `main` are native C++ definitions. `vcount__2` is a
+file-local volatile counter so the callback and startup code reload it as
+retail does. `VSyncCallBack` retains one assembly gap: retail ends with `sync`
+and `ei`, which the plain C++ callback draft did not emit. The current source
+has no guarded callback draft. Previous promotion trials and their data-section
+binding issue are historical; matching of the current object is checked with
+the integrated build.
 
 The source now declares and calls the callback by its native static C++ name.
 `postprocess_object.py` binds that local name to this unit's assembled

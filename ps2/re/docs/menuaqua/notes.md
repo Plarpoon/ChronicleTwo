@@ -1,5 +1,20 @@
 # menuaqua: reverse-engineering notes
 
+`CAquarium::Draw` draws the fish, aquarium frames, bubbles, water reflection,
+and menu overlays in retail order. An earlier C++ version passed an isolated
+comparison, but the current matching build selects its `INCLUDE_ASM` gap.
+`CAquarium::SettingAqua` and `GyoraceMenuDraw` also use retail assembly gaps.
+Their C++ bodies remain guarded drafts and are not active decompilations.
+The `SettingAqua` draft constructs its `love_chara` member as a `CCharacter2`.
+
+`CAquaFish::SetAdjustScale`, `DrawFishParam`, `CAquarium::ColCheck`,
+`CAquarium::Step`, and `GyoraceMenuKey` likewise retain `NONMATCHING` drafts
+with retail `INCLUDE_ASM` fallbacks.
+
+`CAquaFish::SetAdjustScale` is otherwise instruction-identical: its six differing
+instructions load the `0.95f` and `0.6f` arguments in the opposite order. Explicit
+float construction and named argument locals retain the compiler's ordering.
+
 Aquarium menu (fish swim, eat food, fight, pair/breed), the gyorace (fish race) fish-select and
 saved-race menus, fish race/fishing tournament prize scripts, and shared sub-game panel drawing.
 No first-game counterpart (Dark Cloud has no aquarium); layouts below come from this game only.

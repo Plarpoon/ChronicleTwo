@@ -13,10 +13,9 @@
 #include "mglib.hpp"
 
 extern u_char texflush_dma__2[0x30];
-extern void  *__vt__9mgCVisual[];
-extern void  *__vt__12mgCVisualMDT[];
-extern void  *__vt__15mgCVisualFixMDT[];
-
+extern u_int prog_vif_730[4];
+extern u_int progf_vif_731[4];
+extern u_long128 *(*set_data_func__2[8])(int, int, int **, u_long128 *, u_long128 *, u_long128 *, u_long128 *, u_long128 *);
 /**
  *
  * Exposes the allocation state used while building a visual's packet.
@@ -33,20 +32,6 @@ struct VisualScratchMemory {
 
 /**
  *
- * Holds the material table copied into a fixed MDT visual.
- *
- */
-struct FixMDTCopy {
-    u_char      pad_00[0x1C];
-    void      **vptr; /**< Fixed MDT visual's virtual method table. */
-    u_char      pad_20[0x20];
-    int         material_num; /**< Number of materials in the copied table. */
-    mgMaterial *material;     /**< Material table allocated for the visual. */
-    u_char      pad_48[8];
-};
-
-/**
- *
  * Copies a material's four float channels together.
  *
  */
@@ -54,7 +39,6 @@ struct mgMaterialVector {
     float values[4]; /**< Material channel values. */
 };
 
-#ifdef NONMATCHING
 /**
  *
  * Initial transform and lighting upload of an MDT visual's setup packet.
@@ -74,6 +58,7 @@ struct mgVISUAL_SETUP_PACKET {
 
 STATIC_ASSERT(sizeof(mgVISUAL_SETUP_PACKET) == 0x140);
 
+#ifdef NONMATCHING
 static u_long128 *(*set_data_func[8])(int, int, int **, u_long128 *, u_long128 *, u_long128 *, u_long128 *, u_long128 *) = {
     SetData0, SetData1, SetData2, SetData3, SetData4, SetData5, SetData6, SetData7}; /**< Vertex upload writers selected by the face attributes. */
 
@@ -83,23 +68,7 @@ static u_long128 *(*set_data_func[8])(int, int, int **, u_long128 *, u_long128 *
 u_int *GetScrPad() {
     return (u_int *) (buff_id ? 0x70002000 : 0x70000000);
 }
-#ifdef NONMATCHING
-void SendDMA(void *packet, int size) {
-    if (start_dma) {
-        sceDmaSync(DmaCH8, 0, 0);
-        start_dma = 0;
-    }
-    *(volatile u_int *) 0x1000E010 = 0x100;
-    DmaCH8->sadr = (u_int) GetScrPad() & 0x0FFFFFFF;
-    DmaCH8->madr = (u_int) packet & 0x0FFFFFFF;
-    DmaCH8->qwc = size;
-    DmaCH8->chcr.STR = 1;
-    start_dma = 1;
-    buff_id = !buff_id;
-}
-#else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", SendDMA__FPvi);
-#endif
 #pragma global_optimizer off
 
 int mgSetPkTEX0(u_int *packet, unsigned long tex0, unsigned long tex1) {
@@ -157,52 +126,45 @@ int SetPointLight(u_int *packet, float (*first)[4], float (*second)[4]) {
     dst[7] = *(u_long128 *) second[3];
     return 9;
 }
-#ifdef NONMATCHING
 int mgCVisualMDT::SetMaterialRef(u_long128 *packet, mgMaterial *material, int flags) {
     mgCTexture *texture;
-
     texture = material->texture;
     if (texture == NULL) {
-        packet[0] = mat_vif;
-        packet[1] = *(u_long128 *) material->diffuse;
-        packet[2] = *(u_long128 *) material->unk_10;
+        packet[0] = *(u_long128 *)&mat_vif;
+        packet[1] = *(u_long128 *)material->diffuse;
+        packet[2] = *(u_long128 *)material->unk_10;
         packet[3] = 0;
-        packet[4] = mat_pw;
+        packet[4] = *(u_long128 *)&mat_pw;
         prev_tex = NULL;
         return 5;
     }
     if (flags & 0x1) {
-        packet[0] = mat_vif;
-        packet[1] = *(u_long128 *) material->diffuse;
-        packet[2] = *(u_long128 *) material->unk_10;
+        packet[0] = *(u_long128 *)&mat_vif;
+        packet[1] = *(u_long128 *)material->diffuse;
+        packet[2] = *(u_long128 *)material->unk_10;
         packet[3] = 0;
         packet[4] = 3;
-        packet[5] = mat_vif_d_tex;
-        *(u_long *) &packet[6] = (u_long) 0x30000000 << 32 | 0x8001;
-        ((u_long *) &packet[6])[1] = 0x86E;
-        *(u_long *) &packet[7] = *(u_long *) &texture->tex1;
-        ((u_long *) &packet[7])[1] = SCE_GS_TEX1_1;
-        *(u_long *) &packet[8] = texture->tex0.value;
-        *(u_long *) &packet[9] = *(u_long *) &texture->clamp;
+        packet[5] = *(u_long128 *)&mat_vif_d_tex;
+        packet[6] = 0x000000000000086E3000000000008001;
+        *(u_long *)&packet[7] = *(u_long *)&texture->tex1;
+        ((u_long *)&packet[7])[1] = SCE_GS_TEX1_1;
+        *(u_long *)&packet[8] = texture->tex0.value;
+        *(u_long *)&packet[9] = *(u_long *)&texture->clamp;
         prev_tex = texture;
         return 10;
     } else {
-        packet[0] = mat_vif_dif;
-        packet[1] = *(u_long128 *) material->diffuse;
-        packet[2] = mat_vif_d_tex;
-        *(u_long *) &packet[3] = (u_long) 0x30000000 << 32 | 0x8001;
-        ((u_long *) &packet[3])[1] = 0x86E;
-        *(u_long *) &packet[4] = *(u_long *) &texture->tex1;
-        ((u_long *) &packet[4])[1] = SCE_GS_TEX1_1;
-        *(u_long *) &packet[5] = texture->tex0.value;
-        *(u_long *) &packet[6] = *(u_long *) &texture->clamp;
+        packet[0] = *(u_long128 *)&mat_vif_dif;
+        packet[1] = *(u_long128 *)material->diffuse;
+        packet[2] = *(u_long128 *)&mat_vif_d_tex;
+        packet[3] = 0x000000000000086E3000000000008001;
+        *(u_long *)&packet[4] = *(u_long *)&texture->tex1;
+        ((u_long *)&packet[4])[1] = SCE_GS_TEX1_1;
+        *(u_long *)&packet[5] = texture->tex0.value;
+        *(u_long *)&packet[6] = *(u_long *)&texture->clamp;
         prev_tex = texture;
         return 7;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", SetMaterialRef__12mgCVisualMDTFP1P10mgMateriali);
-#endif
 int mgCVisualMDT::SetPModeRef(u_long128 *packet, int flags) {
     int prim_mode = prmode;
 
@@ -433,18 +395,16 @@ int mgCVisualMDT::CreateBBox(float *min, float *max, float (*matrix)[4]) {
     mgVectorMinMaxN(min, max, vertex, vertex_num);
     return 1;
 }
-#ifdef NONMATCHING
 FACES_ID *mgCVisualMDT::CreateFace(FACES_ID *faces, mgCMemory *memory, mgCMemory *index_memory, mgCFace **out_face) {
     mgCFace      *face;
     mgCFace      *last_face;
     mgFACE_GROUP *group;
     mgFACE_GROUP *previous;
-    int          *indices;
     int          *write;
     int           i;
 
     GetTextureManager();
-    face = (mgCFace *) memory->Alloc(3);
+    face = (mgCFace *)memory->Alloc(3);
     face->vertex_num = faces->face_num;
     face->type = faces->type;
     face->index_stride = 3;
@@ -459,16 +419,17 @@ FACES_ID *mgCVisualMDT::CreateFace(FACES_ID *faces, mgCMemory *memory, mgCMemory
     }
     face->index_num = face->vertex_num * face->index_stride;
     face->material = faces->material;
-    indices = faces->index;
-    write = (int *) index_memory->Alloc(face->index_num / 4 + 1);
+    faces = (FACES_ID *)faces->index;
+    write = (int *)index_memory->Alloc(face->index_num / 4 + 1);
     face->index = write;
     for (i = 0; i < face->index_num; i++) {
-        *write++ = *indices++;
+        *write++ = *(int *)faces;
+        faces = (FACES_ID *)((int *)faces + 1);
     }
     face->next = NULL;
     previous = face_group;
     if (previous == NULL) {
-        if ((group = (mgFACE_GROUP *) operator new(sizeof(mgFACE_GROUP), memory->Alloc(4))) != NULL) {
+        if ((group = (mgFACE_GROUP *)operator new(sizeof(mgFACE_GROUP), memory->Alloc(4))) != NULL) {
             memset(group, 0, sizeof(mgFACE_GROUP));
         }
         group->next = NULL;
@@ -483,7 +444,7 @@ FACES_ID *mgCVisualMDT::CreateFace(FACES_ID *faces, mgCMemory *memory, mgCMemory
             previous = previous->next;
         }
         if (previous->next == NULL) {
-            if ((group = (mgFACE_GROUP *) operator new(sizeof(mgFACE_GROUP), memory->Alloc(4))) != NULL) {
+            if ((group = (mgFACE_GROUP *)operator new(sizeof(mgFACE_GROUP), memory->Alloc(4))) != NULL) {
                 memset(group, 0, sizeof(mgFACE_GROUP));
             }
             previous->next = group;
@@ -503,14 +464,15 @@ FACES_ID *mgCVisualMDT::CreateFace(FACES_ID *faces, mgCMemory *memory, mgCMemory
         }
         last_face->next = face;
     }
-    if (out_face != NULL) {
+    switch ((int)out_face) {
+    case 0:
+        break;
+    default:
         *out_face = face;
+        break;
     }
-    return (FACES_ID *) indices;
+    return faces;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", CreateFace__12mgCVisualMDTFP8FACES_IDP9mgCMemoryP9mgCMemoryPP7mgCFace);
-#endif
 int mgCVisualMDT::DataAssignMDT(MDT_HEADER *header, mgCMemory *memory,
                                 mgCTextureManager *textures) {
     mgCVisualMDT *self = this;
@@ -951,37 +913,37 @@ u_long128 *SetData5(int count, int type, int **index, u_long128 *packet, u_long1
     *index = cursor;
     return colour_out;
 }
-#ifdef NONMATCHING
 /**
  *
  * Writes the indexed vertex streams for one vertex batch.
  *
  */
+#pragma global_optimizer off
 u_long128 *SetData6(int count, int type, int **index, u_long128 *packet, u_long128 *vertex, u_long128 *normal, u_long128 *uv, u_long128 *colour) {
     int       *cursor;
     u_long128 *vertex_out;
-
-    ((int *) packet)[0] = count;
-    ((int *) packet)[1] = 0;
-    ((int *) packet)[2] = 0;
-    ((int *) packet)[3] = type;
+    u_long128 unused;
+    u_long128 element;
+    ((int *)packet)[0] = count;
+    ((int *)packet)[1] = 0;
+    ((int *)packet)[2] = 0;
+    ((int *)packet)[3] = type;
     vertex_out = packet + 1;
-    u_long128  unused;
-    u_long128 *unused_out = &unused;
     cursor = *index;
-    while (count > 0) {
-        count--;
-        u_long128 element = vertex[cursor[0]];
-        *vertex_out++ = element;
-        *unused_out = element;
-        cursor += 1;
+    if (count > 0) {
+        do {
+            count--;
+            element = vertex[cursor[0]];
+            *vertex_out = element;
+            *(u_long128 *)&unused = element;
+            cursor += 1;
+            vertex_out++;
+        } while (count > 0);
     }
     *index = cursor;
     return vertex_out;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", SetData6__FiiPPiP1P1P1P1P1);
-#endif
+#pragma global_optimizer reset
 /**
  *
  * Writes the indexed vertex, colour streams for one vertex batch.
@@ -1011,43 +973,40 @@ u_long128 *SetData7(int count, int type, int **index, u_long128 *packet, u_long1
     *index = cursor;
     return colour_out;
 }
-#ifdef NONMATCHING
 int mgCVisualMDT::CreateFacePacket(u_int *packet, mgCFace *face) {
-    static u_int prog_vif[4] __attribute__((aligned(16))) = {0, 0, 0, MG_VIF_MSCAL | 0x2};
-    static u_int progf_vif[4] __attribute__((aligned(16))) = {0, 0, 0, MG_VIF_MSCNT};
-    sceGifTag    batch_tag;
-    sceGifTag    end_tag;
-    u_int        finish[4] __attribute__((aligned(16))) = {MG_VIF_FLUSHA, 0, 0, 0};
-    int         *indices;
-    u_int       *destination;
-    u_int       *write;
-    u_int       *buffer_start;
-    u_int       *unpack;
-    u_long128   *end;
-    short        remaining;
-    short        batch_limit;
-    short        count;
-    int          variant;
-    int          primitive;
-    int          use_scratchpad;
-    int          started;
-    int          words;
-
+    u_int     *start;
+    sceGifTag  batch_tag;
+    u_long128 *end;
+    int        use_scratchpad;
+    u_int     *write;
+    int        primitive;
+    int        count;
+    int        batch_limit;
+    sceGifTag  end_tag;
+    int        started;
+    u_int     *buffer_start;
+    u_int     *unpack;
+    u_int     *payload;
+    int       *indices;
+    int        remaining;
+    int        words;
+    int        variant;
     if (face == NULL) {
         return 0;
     }
     use_scratchpad = 0;
-    if (((u_int) packet & 0xF0000000) == MG_UNCACHED) {
+    if (((u_int)packet & 0xF0000000) == MG_UNCACHED) {
         use_scratchpad = 1;
     }
-    remaining = face->vertex_num;
+    start = packet;
     primitive = face->type & MG_FACE_PRIM_MASK;
+    started = 0;
+    remaining = face->vertex_num;
+    batch_limit = (vu1_offset - 2) / 3 / 3 * 3;
     indices = face->index;
     variant = 0;
-    started = 0;
-    batch_limit = (vu1_offset - 2) / 3 / 3 * 3;
     if (face->type & MG_FACE_COLOUR) {
-        variant = 1;
+        variant += 1;
         batch_limit = (vu1_offset - 2) / 4 / 3 * 3;
     }
     if (face->type & MG_FACE_NO_TEXTURE) {
@@ -1056,7 +1015,7 @@ int mgCVisualMDT::CreateFacePacket(u_int *packet, mgCFace *face) {
     if (face->type & MG_FACE_NO_NORMAL) {
         variant += 4;
     }
-    *(u_long128 *) &batch_tag = 0;
+    *(u_long128 *)&batch_tag = 0;
     batch_tag.EOP = 1;
     batch_tag.PRE = 1;
     end_tag = batch_tag;
@@ -1078,9 +1037,9 @@ int mgCVisualMDT::CreateFacePacket(u_int *packet, mgCFace *face) {
     packet[1] = 0;
     packet[2] = 0;
     packet[3] = MG_VIF_UNPACK_V4_32 | (1 << MG_VIF_NUM_SHIFT) | 0x0027;
-    *(u_long128 *) &packet[4] = *(u_long128 *) &end_tag;
-    destination = packet + 8;
-    write = use_scratchpad ? GetScrPad() : destination;
+    *(u_long128 *)&packet[4] = *(u_long128 *)&end_tag;
+    packet += 8;
+    write = use_scratchpad ? GetScrPad() : packet;
     buffer_start = write;
     while (remaining > 0) {
         count = batch_limit;
@@ -1092,18 +1051,22 @@ int mgCVisualMDT::CreateFacePacket(u_int *packet, mgCFace *face) {
         write[2] = 0;
         write[3] = 0;
         unpack = write + 3;
+        write += 4;
+        payload = write;
         batch_tag.NLOOP = count | 0x8000;
-        *(u_long128 *) &write[4] = *(u_long128 *) &batch_tag;
-        end = set_data_func[variant](count, face->type, &indices, (u_long128 *) &write[8],
-                                     (u_long128 *) vertex, (u_long128 *) normal, (u_long128 *) uv, (u_long128 *) colour);
-        *unpack = (((u_int *) end - (write + 4)) / 4 << MG_VIF_NUM_SHIFT) | MG_VIF_UNPACK_V4_32 | MG_VIF_UNPACK_FLG;
+        *(u_long128 *)write = *(u_long128 *)&batch_tag;
+        write += 4;
+        end = set_data_func__2[variant](count, face->type, &indices, (u_long128 *)write,
+                                    (u_long128 *)vertex, (u_long128 *)normal, (u_long128 *)uv, (u_long128 *)colour);
+        *unpack = ((u_int)((u_int *)end - payload) / 4 << MG_VIF_NUM_SHIFT) | MG_VIF_UNPACK_V4_32 | MG_VIF_UNPACK_FLG;
         if (started == 0) {
+            *end = *(u_long128 *)prog_vif_730;
             started = 1;
-            *end = *(u_long128 *) prog_vif;
+            write = (u_int *)(end + 1);
         } else {
-            *end = *(u_long128 *) progf_vif;
+            *end = *(u_long128 *)progf_vif_731;
+            write = (u_int *)(end + 1);
         }
-        write = (u_int *) (end + 1);
         if (primitive == MG_PRIM_TRIANGLE_STRIP && batch_limit < remaining) {
             remaining += 2;
             indices -= face->index_stride * 2;
@@ -1111,45 +1074,42 @@ int mgCVisualMDT::CreateFacePacket(u_int *packet, mgCFace *face) {
         words = write - buffer_start;
         if (words > 0x514) {
             if (use_scratchpad != 0) {
-                SendDMA(destination, words / 4);
+                SendDMA(packet, words / 4);
             }
-            destination += words;
-            write = use_scratchpad ? GetScrPad() : destination;
+            packet += words;
+            write = use_scratchpad ? GetScrPad() : packet;
             buffer_start = write;
         }
         remaining -= batch_limit;
     }
     words = write - buffer_start;
     if (use_scratchpad != 0 && words > 0) {
-        SendDMA(destination, words / 4);
+        SendDMA(packet, words / 4);
     }
-    destination += words;
-    *(u_long128 *) destination = *(u_long128 *) finish;
-    destination += 4;
-    return (destination - packet) / 4;
+    packet += words;
+    u_int finish[4] __attribute__((aligned(16))) = {MG_VIF_FLUSHA, 0, 0, 0};
+    *(u_long128 *)packet = *(u_long128 *)finish;
+    packet += 4;
+    return (packet - start) / 4;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", CreateFacePacket__12mgCVisualMDTFPUiP7mgCFace);
-#endif
-#ifdef NONMATCHING
 int mgCVisualMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_INFO *info) {
     mgVISUAL_SETUP_PACKET *setup;
     mgLIGHT_INFO          *lighting;
     mgCDrawEnv            *environment;
     u_int                 *start;
+    int                    i;
+    int                    flags;
+    int                    fog_colour;
+    int                    size;
     u_int                 *write;
-    sceVu0FMATRIX          projection;
     sceVu0FMATRIX          world_screen;
+    sceVu0FMATRIX          projection;
+    sceVu0FVECTOR          boosted_ambient;
+    sceVu0FVECTOR          eye;
     sceVu0FMATRIX          inverse;
     sceVu0FMATRIX          model_clip;
     sceVu0FMATRIX          point_position;
     sceVu0FMATRIX          point_colour;
-    sceVu0FVECTOR          boosted_ambient;
-    sceVu0FVECTOR          eye;
-    int                    flags;
-    int                    fog_colour;
-    int                    size;
-    int                    i;
 
     if (info->attr == NULL) {
         packet[0] = MG_DMA_RET;
@@ -1158,13 +1118,14 @@ int mgCVisualMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
         packet[3] = 0;
         return 1;
     }
-    start = GetScrPad();
-    setup = (mgVISUAL_SETUP_PACKET *) start;
+    write = GetScrPad();
+    start = write;
+    setup = (mgVISUAL_SETUP_PACKET *)write;
     lighting = info->GetpLightInfo();
-    *(u_long128 *) setup->model_world[0] = *(u_long128 *) matrix[0];
-    *(u_long128 *) setup->model_world[1] = *(u_long128 *) matrix[1];
-    *(u_long128 *) setup->model_world[2] = *(u_long128 *) matrix[2];
-    *(u_long128 *) setup->model_world[3] = *(u_long128 *) matrix[3];
+    *(u_long128 *)setup->model_world[0] = *(u_long128 *)matrix[0];
+    *(u_long128 *)setup->model_world[1] = *(u_long128 *)matrix[1];
+    *(u_long128 *)setup->model_world[2] = *(u_long128 *)matrix[2];
+    *(u_long128 *)setup->model_world[3] = *(u_long128 *)matrix[3];
     if (info->attr->depth_bias > 1.0f) {
         sceVu0CopyMatrix(projection, info->screen);
         projection[3][2] *= 1.005f;
@@ -1180,23 +1141,23 @@ int mgCVisualMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
     setup->vif[0] = 0;
     setup->vif[1] = vu1_base | MG_VIF_BASE;
     setup->vif[2] = vu1_offset | MG_VIF_OFFSET;
-    *(u_long128 *) setup->light_dir[0] = *(u_long128 *) lighting->light_dir[0];
-    *(u_long128 *) setup->light_dir[1] = *(u_long128 *) lighting->light_dir[1];
-    *(u_long128 *) setup->light_dir[2] = *(u_long128 *) lighting->light_dir[2];
+    *(u_long128 *)setup->light_dir[0] = *(u_long128 *)lighting->light_dir[0];
+    *(u_long128 *)setup->light_dir[1] = *(u_long128 *)lighting->light_dir[1];
+    *(u_long128 *)setup->light_dir[2] = *(u_long128 *)lighting->light_dir[2];
     sceVu0CopyMatrix(setup->light_color, lighting->light_color);
-    *(u_long128 *) setup->ambient = *(u_long128 *) lighting->ambient;
+    *(u_long128 *)setup->ambient = *(u_long128 *)lighting->ambient;
     setup->ambient[3] *= info->attr->obj_alpha;
     if (info->attr->ambient_boost != 0) {
         sceVu0ScaleVector(boosted_ambient, lighting->light_color[0], 0.3f);
         mgAddVector(boosted_ambient, lighting->ambient);
-        *(u_long128 *) setup->object_color = *(u_long128 *) boosted_ambient;
+        *(u_long128 *)setup->object_color = *(u_long128 *)boosted_ambient;
         setup->object_color[3] = info->object_color[3];
     } else {
-        *(u_long128 *) setup->object_color = *(u_long128 *) info->object_color;
+        *(u_long128 *)setup->object_color = *(u_long128 *)info->object_color;
     }
     setup->object_color[3] *= info->attr->obj_alpha;
-    write = (u_int *) (setup + 1);
-    setup->vif[3] = (((u_int) (write - (start + 4)) / 4 - 1) << MG_VIF_NUM_SHIFT) | MG_VIF_UNPACK_V4_32 | 0x0003;
+    write = (u_int *)(setup + 1);
+    setup->vif[3] = (((u_int)(write - setup->vif) / 4 - 1) << MG_VIF_NUM_SHIFT) | MG_VIF_UNPACK_V4_32 | 0x0003;
     if (info->attr->program_mode != 0) {
         write[0] = 0;
         write[1] = 0;
@@ -1209,7 +1170,7 @@ int mgCVisualMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
         sceVu0CopyMatrix(inverse, matrix);
         sceVu0InversMatrix(inverse, inverse);
         sceVu0ApplyMatrix(eye, inverse, eye);
-        *(u_long128 *) &write[4] = *(u_long128 *) eye;
+        *(u_long128 *)&write[4] = *(u_long128 *)eye;
         write += 8;
     }
     if (info->scissor != 0) {
@@ -1218,18 +1179,18 @@ int mgCVisualMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
         write[2] = 0;
         write[3] = MG_VIF_UNPACK_V4_32 | (8 << MG_VIF_NUM_SHIFT) | 0x0019;
         mgMulMatrix(model_clip, info->world_clip, matrix);
-        sceVu0CopyMatrix((float (*)[4]) & write[4], model_clip);
-        *(u_long128 *) &write[20] = *(u_long128 *) info->clip_screen[0];
-        *(u_long128 *) &write[24] = *(u_long128 *) info->clip_screen[1];
-        *(u_long128 *) &write[28] = *(u_long128 *) info->clip_screen[2];
-        *(u_long128 *) &write[32] = *(u_long128 *) info->clip_screen[3];
+        sceVu0CopyMatrix((float (*)[4])&write[4], model_clip);
+        *(u_long128 *)&write[20] = *(u_long128 *)info->clip_screen[0];
+        *(u_long128 *)&write[24] = *(u_long128 *)info->clip_screen[1];
+        *(u_long128 *)&write[28] = *(u_long128 *)info->clip_screen[2];
+        *(u_long128 *)&write[32] = *(u_long128 *)info->clip_screen[3];
         if (info->attr->depth_bias > 1.0f) {
-            ((float *) &write[32])[2] *= 1.0000685f;
+            ((float *)&write[32])[2] *= 1.0000685f;
         }
         write += 36;
     }
-    setup->dma[0] |= (write - (start + 4)) / 4;
-    if (info->plight_hit != 0 && info->unk_fac != 0) {
+    setup->dma[0] |= (write - setup->vif) / 4;
+    if (info->plight_hit != 0 && info->lighting_enabled != 0) {
         for (i = 0; i < 4; i++) {
             sceVu0SubVector(point_position[i], lighting->point_light[i].pos, matrix[3]);
             point_position[i][3] = lighting->point_light[i].power;
@@ -1242,7 +1203,7 @@ int mgCVisualMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
         write[1] = 0;
         write[2] = 0;
         write[3] = MG_VIF_UNPACK_V4_32 | (4 << MG_VIF_NUM_SHIFT) | 0x0019;
-        mgMulMatrix((float (*)[4]) & write[4], info->view, matrix);
+        mgMulMatrix((float (*)[4])&write[4], info->view, matrix);
         write += 20;
     }
     flags = 0;
@@ -1269,7 +1230,7 @@ int mgCVisualMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
     if (info->motion != 0) {
         flags |= 0x40;
     }
-    if (info->attr->no_light != 0 || info->unk_fac == 0 || info->attr->ambient_boost != 0) {
+    if (info->attr->no_light != 0 || info->lighting_enabled == 0 || info->attr->ambient_boost != 0) {
         flags |= 0x20;
     }
     if (info->attr->unk_84 == 1) {
@@ -1295,13 +1256,15 @@ int mgCVisualMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
     write[17] = 0;
     write[18] = MG_GS_PRMODECONT;
     write[19] = 0;
-    prmode = ((info->attr->fog != 0 && info->fog_enable != 0) << 5) | 0x58;
+    prmode = (((info->attr->fog != 0 && info->fog_enable != 0) != 0) << 5) | 0x58;
     write[20] = prmode;
     write[21] = 0;
     write[22] = SCE_GS_PRMODE;
     write[23] = 0;
-    fog_colour = info->fog.r | (info->fog.g << 8) | (info->fog.b << 16);
-    if (info->attr->fog >= 2) {
+    fog_colour = info->fog.r;
+    fog_colour |= info->fog.g << 8;
+    fog_colour |= info->fog.b << 16;
+    if (info->attr->fog > 1) {
         if (info->attr->fog == 2) {
             fog_colour = 0;
         }
@@ -1314,11 +1277,12 @@ int mgCVisualMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
     write[26] = 0x3D;
     write[27] = 0;
     write += 28;
-    environment = draw_env;
-    if (environment == NULL) {
+    if (draw_env != NULL) {
+        environment = draw_env;
+    } else {
         environment = &info->draw_env[0];
     }
-    write += SetDrawEnvGifTag((u_long128 *) write, info, environment) * 4;
+    write += SetDrawEnvGifTag((u_long128 *)write, info, environment) * 4;
     write += CreateExtRenderInfoPacket(write, matrix, info) * 4;
     write[0] = MG_DMA_RET;
     write[1] = 0;
@@ -1329,58 +1293,12 @@ int mgCVisualMDT::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRE
     SendDMA(packet, size);
     return size;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", CreateRenderInfoPacket__12mgCVisualMDTFPUiPA4_fP13mgRENDER_INFO);
-#endif
 int mgCVisualMDT::CreateExtRenderInfoPacket(u_int         *packet, float (*matrix)[4],
                                             mgRENDER_INFO *info) {
     return 0;
 }
 
-mgCVisual *mgCVisualFixMDT::Copy(mgCMemory *memory) {
-    FixMDTCopy *copy;
-
-    if ((copy = (FixMDTCopy *) operator new(0x50, memory->Alloc(7))) != NULL) {
-        copy->vptr = __vt__9mgCVisual;
-        ((mgCVisual *) copy)->Initialize();
-        copy->vptr = __vt__12mgCVisualMDT;
-        ((mgCVisual *) copy)->Initialize();
-        copy->vptr = __vt__15mgCVisualFixMDT;
-        ((mgCVisual *) copy)->Initialize();
-    }
-
-    if (copy == NULL) {
-        return NULL;
-    }
-
-    ((mgCVisualMDT *) copy)->operator=(*this);
-    int count = material_num;
-    int i = 0;
-
-    if (count > 0) {
-        u_int bytes = count * 0x30;
-        u_int quads = (bytes & 0xF) ? (bytes >> 4) + 1 : bytes >> 4;
-        copy->material = (mgMaterial *) operator new[](material_num * 0x30,
-                                                       memory->Alloc(quads + 2));
-        i = 0;
-    }
-
-    mgMaterial *dst;
-    mgMaterial *src;
-    int         offset = 0;
-
-    while (i < material_num) {
-        i++;
-        src = (mgMaterial *) ((u_char *) material + offset);
-        dst = (mgMaterial *) ((u_char *) copy->material + offset);
-        offset += 0x30;
-        *(mgMaterialVector *) dst->diffuse = *(mgMaterialVector *) src->diffuse;
-        *(mgMaterialVector *) dst->unk_10 = *(mgMaterialVector *) src->unk_10;
-        dst->texture = src->texture;
-    }
-
-    return (mgCVisualFixMDT *) copy;
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", Copy__15mgCVisualFixMDTFP9mgCMemory);
 
 mgCVisualMDT &mgCVisualMDT::operator=(const mgCVisualMDT &source) {
     unk_00 = source.unk_00;
@@ -1462,41 +1380,41 @@ void SetDrawEnv(mgCDrawEnv *env, mgCVisualAttr *attr, mgCDrawEnv *base) {
         env->SetAlpha(attr->alpha_blend);
     }
 }
-#ifdef NONMATCHING
 int mgCVisualPrim::CreateRenderInfoPacket(u_int *packet, float (*matrix)[4], mgRENDER_INFO *info) {
     u_int      *start;
     u_int      *write;
     mgCDrawEnv *environment;
-    u_int       tag[4] __attribute__((aligned(16))) = {0x10000007, 0, 0, 0x50000007};
     int         size;
 
-    start = GetScrPad();
-    *(u_long128 *) start = *(u_long128 *) tag;
-    *(u_int *) &giftag = 0x8002;
-    *(u_long128 *) &start[4] = *(u_long128 *) &giftag;
-    *(u_long *) &start[8] = 1;
-    *(u_long *) &start[10] = MG_GS_PRMODECONT;
-    *(u_long *) &start[12] = 0;
-    *(u_long *) &start[14] = SCE_GS_TEXFLUSH;
-    environment = (mgCDrawEnv *) &start[16];
+    write = GetScrPad();
+    start = write;
+    u_int tag[4] __attribute__((aligned(16)));
+    *(u_long128 *)tag = 0;
+    tag[0] = 0x10000007;
+    tag[3] = 0x50000007;
+    *(u_long128 *)write = *(u_long128 *)tag;
+    giftag.word0 = 0x8002;
+    *(u_long128 *)&write[4] = *(u_long128 *)&giftag;
+    u_int *body = write + 8;
+    *(u_long *)&body[0] = 1;
+    *(u_long *)&body[2] = MG_GS_PRMODECONT;
+    *(u_long *)&body[4] = 0;
+    *(u_long *)&body[6] = SCE_GS_TEXFLUSH;
+    environment = (mgCDrawEnv *)(body + 8);
     if (draw_env != NULL) {
         *environment = *draw_env;
     } else {
         SetDrawEnv(environment, &attr, &info->draw_env[0]);
     }
-    write = (u_int *) (environment + 1);
+    write = (u_int *)(environment + 1);
     write[0] = MG_DMA_RET;
     write[1] = 0;
     write[2] = 0;
     write[3] = 0;
-    write += 4;
-    size = ((u_long128 *) write - (u_long128 *) start);
+    size = ((u_long128 *)environment + 5 - (u_long128 *)start);
     SendDMA(packet, size);
     return size;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", CreateRenderInfoPacket__13mgCVisualPrimFPUiPA4_fP13mgRENDER_INFO);
-#endif
 void mgCVisualPrim::Initialize() {
     unk_00 = 0;
     draw_env = NULL;
@@ -1525,7 +1443,6 @@ INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", mat_vif_d_tex__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", set_data_func__2__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", prog_vif_730__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", progf_vif_731__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", at_769__DATA);
 
 // Virtual tables (.vtables)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", __vt__13mgCVisualPrim__DATA);

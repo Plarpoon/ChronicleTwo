@@ -7,7 +7,7 @@ import postprocess_object as p
 
 
 class DataPaddingTests(unittest.TestCase):
-    def run_padding(self, size=12, declared=12, end=16, nobits=True, tail=b"\0" * 4):
+    def run_padding(self, size=12, declared=12, end=16, nobits=True, tail=b"\0" * 4, terminal=False):
         section = SimpleNamespace(sh_type=p.SHT_NOBITS if nobits else 1,
                                   sh_size=size, data=b"x" * size,
                                   name=".bss" if nobits else ".data")
@@ -15,7 +15,10 @@ class DataPaddingTests(unittest.TestCase):
                                  name="object", st_size=size)
         elf = SimpleNamespace(sections=[None, section],
                               symtab=SimpleNamespace(symbols=[symbol]))
-        pieces = SimpleNamespace(unit=lambda unit: [(section.name, [("object", 0, end)])])
+        run = [("object", 0, end)]
+        if not terminal:
+            run.append(("following", end, end + 4))
+        pieces = SimpleNamespace(unit=lambda unit: [(section.name, run)])
         retail = SimpleNamespace(bytes=lambda start, end: tail)
         with patch.object(p.disassemble, "Pieces", return_value=pieces), \
              patch.object(p.layout, "Retail", return_value=retail), \
@@ -41,6 +44,9 @@ class DataPaddingTests(unittest.TestCase):
     def test_initialized_tail_must_be_retail_zero(self):
         self.assertEqual(self.run_padding(nobits=False), 16)
         self.assertEqual(self.run_padding(nobits=False, tail=b"\0\0\1\0"), 12)
+
+    def test_terminal_padding_belongs_to_linker(self):
+        self.assertEqual(self.run_padding(terminal=True), 12)
 
 
 if __name__ == "__main__":

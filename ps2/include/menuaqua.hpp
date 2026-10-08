@@ -293,7 +293,7 @@ public:
     s32            route_time; /**< Steps spent heading for the current point of route. */
     u8             unk_918[0x8];
     s16            eat_item; /**< Item number of the food that the fish has just eaten; 0 for none. */
-    s8             unk_922;
+    s8             swim_variant; /**< Swimming variant index that wraps after the eighth value. */
     u32            col_flags;   /**< What the fish touched this step, AQUA_FISH_COL bits. */
     s32            wall_time;   /**< Steps that the fish has kept touching the walls while circling. */
     s32            fatigue;     /**< Fatigue built up by fighting. */

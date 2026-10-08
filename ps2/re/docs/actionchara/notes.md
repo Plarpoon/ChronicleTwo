@@ -1,11 +1,15 @@
 # actionchara: reverse-engineering notes
 
-## C++ draft status
-All 73 functions have C++ in `ps2/src/actionchara.cpp`. 27 are exact and
-compiled by the matching build. 3 more compile to retail's bytes in isolation
-but stay under `NONMATCHING`. 43 differ from retail and keep the `INCLUDE_ASM`
-fallback. Each function tried has its one promotion attempt recorded in
-`scripts/re/promotion_attempts.tsv`.
+`CActionChara::CheckDamage` now compiles to retail's bytes and passes the
+isolated whole-image check with the game compiler flags.
+
+## Current source status
+
+The current `actionchara.cpp` defines its game functions in C++ and contains
+no `NONMATCHING` guards or `INCLUDE_ASM` function gaps. Earlier promotion
+attempts are recorded in `scripts/re/promotion_attempts.tsv`; their results
+do not by themselves verify the present object. The matching build must be
+checked before making a unit-wide match claim.
 
 Header: `ps2/include/actionchara.hpp`. Owns `CActionChara` (derives `CCharacter2`, unit `character`),
 plus the parameter/table types `RUN_SCRIPT_ENV`, `ACTION_SW_EFFECT`, `ACTION_DAMAGE`, `ACTION_OBJECT`,

@@ -35,12 +35,17 @@ struct LineBreakPair {
 
 extern LineBreakPair at_1615__2;
 
+#pragma define_section dead ".dead" ".dead"
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 void CScene::BGM_INFO::Init() {
     snd_id = -1;
     load_no = -1;
     fade_speed = 0.0f;
-    unk_c = 1.0f;
+    master_volf = 1.0f;
     time_vol = 0;
     fade_volf = 1.0f;
 }
@@ -153,32 +158,28 @@ void CScene::InitLooSeMngr() {
 CScene::BGM_INFO *CScene::GetActiveBgmInfo() {
     return &bgm[bgm_no];
 }
-#ifdef NONMATCHING
-void CScene::PlayBGM(int play_no, int volume, float scale) {
+void CScene::PlayBGM(int bgm_no, int vol, float volf) {
     if (skip_play_bgm != 0) {
         skip_play_bgm = 0;
-        return;
+    } else {
+        BGM_INFO *info = GetActiveBgmInfo();
+        if (info->play_no != bgm_no) {
+            StopBGM(info->play_no);
+        }
+        info->vol = vol;
+        info->volf = volf;
+        if (info->vol < 0) {
+            info->vol = sndGetSeDefVol(info->snd_id, bgm_no);
+        }
+        int play_vol = sndVolLimit((int)((float)info->vol * volf));
+        if (play_vol < 0) {
+            play_vol = 1;
+        }
+        sndSePlayV(info->snd_id, bgm_no, play_vol, 0);
+        info->play_no = bgm_no;
+        info->fade_speed = 0.0f;
     }
-    BGM_INFO *info = GetActiveBgmInfo();
-    if (info->play_no != play_no) {
-        StopBGM(info->play_no);
-    }
-    info->vol = volume;
-    info->volf = scale;
-    if (info->vol < 0) {
-        info->vol = sndGetSeDefVol(info->snd_id, play_no);
-    }
-    int limited = sndVolLimit(fptosi((float) info->vol * scale));
-    if (limited < 0) {
-        limited = 1;
-    }
-    sndSePlayV(info->snd_id, play_no, limited, 0);
-    info->play_no = play_no;
-    info->time_vol = 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenesnd", PlayBGM__6CSceneFiif);
-#endif
 void CScene::PauseBGM() {
     BGM_INFO *info = GetActiveBgmInfo();
 
@@ -230,7 +231,7 @@ int CScene::GetBGMState() {
 void CScene::SetVolfBGM(float rate) {
     BGM_INFO *info = GetActiveBgmInfo();
     info->volf = rate;
-    int vol = fptosi(info->fade_volf * (info->unk_c * ((float) info->vol * rate)));
+    int vol = fptosi(info->fade_volf * (info->master_volf * ((float) info->vol * rate)));
 
     if (vol > 0x7F) {
         vol = 0x7F;
@@ -266,7 +267,7 @@ void CScene::GetActiveBgmStatus(BGM_STATUS *status) {
     BGM_INFO   *info = scene->GetActiveBgmInfo();
     out->state = scene->GetBGMState();
     out->load_no = info->load_no;
-    out->unk_c = info->unk_c;
+    out->master_volf = info->master_volf;
     out->vol = info->vol;
     out->time_vol = info->time_vol;
     out->volf = info->volf;
@@ -277,7 +278,7 @@ void CScene::SetActiveBgmStatus(BGM_STATUS *status) {
     BGM_INFO   *info = GetActiveBgmInfo();
     BGM_STATUS *saved = status;
     info->play_no = saved->play_no;
-    info->unk_c = saved->unk_c;
+    info->master_volf = saved->master_volf;
     info->vol = saved->vol;
     info->time_vol = saved->time_vol;
     info->volf = saved->volf;

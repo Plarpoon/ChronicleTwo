@@ -61,26 +61,19 @@ owned (`class_units.tsv` lists none for this unit). No first-game counterpart (D
 0x6C between the three active item entries), `SubGameRunning()`, `CScene::GetCharacter`,
 `CActionChara::CheckRunEvent`.
 
-## C++ draft pass
+## Current C++ status
 
-All seven remaining functions have typed C++ drafts under `NONMATCHING`.
-`PrintV` uses a stack digit array, `CPreSprite`, and the glyph rectangle by
-value. Both durability and absorption getters write a pair of current and
-maximum values into adjacent integers. The board drafts use typed
-`CBattleCharaInfo`, `DNG_STATUS`, `CWarningGage2`, and `CUserDataManager`
-fields. The main board's magic sword and ailment icon tables have been
-transcribed as typed local arrays in the draft, with the exact values shown
-by the retail data declarations.
+All functions in this unit are now ordinary C++ definitions; the source has no
+`NONMATCHING` branches or `INCLUDE_ASM` gaps. `PrintV` uses a stack digit array,
+`CPreSprite`, and a glyph rectangle passed by value. The durability and
+absorption getters write current and maximum values into adjacent integers.
+The boards use typed battle, status, gauge, and user-data records. The main
+board's magic-sword and ailment-icon tables are typed local arrays with the
+values found in retail data.
 
-`DrawStatusBord` matched byte for byte and passed isolated whole-image
-promotion. All six other drafts compile with `NONMATCHING` but differ from
-retail. The first isolated attempts for the three large board functions were
-stopped at compilation because their shared draft-only gauge macro was not
-visible when only one draft was enabled; the macro is now visible outside the
-draft guards. `PrintV` was stopped by `mwccgap` source lookup of the mangled
-template argument `mgRect<int>`. The other two first attempts reached the
-whole-image comparison and differed. The default linked image remains
-byte-identical.
+Earlier isolated promotion trials had compiler or layout blockers; those
+results do not describe the current source. The current unit still needs an
+integrated object check before every function can be called matched.
 
 ## Number glyph calls
 

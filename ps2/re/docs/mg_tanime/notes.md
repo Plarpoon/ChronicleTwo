@@ -1,5 +1,16 @@
 # mg_tanime: reverse-engineering notes
 
+`mgCTextureAnime::NewTexAnimeData`'s native constructor sequence is still
+fuzzy, so the matching build uses retail assembly and preserves its C++ draft
+under `NONMATCHING`.
+The six differing instructions surround placement-new's generated null check:
+retail moves the allocated node into `s0` before the branch and uses `v0` for
+the list vtable address, while MWCC's current C++ expression branches on `v0`,
+then moves the node into `s0` and uses `v1` for the vtable. Direct returns,
+separate allocation storage, constructor parentheses, pointer qualifiers, and
+local optimizer, scheduler, and inline-depth controls retain or worsen this
+difference. No candidate passed isolated linked-image verification.
+
 Engine texture animation (`mg_tanime.cpp`). First-game counterpart: `textureanime.hpp`
 (`CTexAnimeData` / `CTextureAnime`). The design is the same in spirit, but every layout differs:
 records are now heap-allocated `CList<mgCTexAnimeData>` nodes in per-group linked lists, groups have

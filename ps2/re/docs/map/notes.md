@@ -203,19 +203,26 @@ fallback.
   calls `Initialize`; MWCC moves the allocation result before the null branch
   while retail moves it in the branch delay slot.
 
-## Native remainder verification
+## Constructor-backed allocations and verification
 
-`CPartsGroup::Add`, `CMap::AddParts` and both emitted list-node
-`Initialize` specializations already reproduce PAL code. Each append walks
-to the last node, writes its next link and sets the new node's prev link
-when non-null. `CMap::AddParts` rejects a null new node.
+`CMap::AddPartsGroup` and `CMap::CreateDrawRect` allocate `CList` nodes whose
+constructors install the list vtable and initialize the links. Their typed
+constructor drafts remain behind `NONMATCHING`; retail assembly supplies the
+active functions until those drafts compare byte for byte. The list vtables
+reference `CList<PartsGroupData>::Initialize` and `CList<CMapParts *>::Initialize`;
+these twelve-byte virtual methods currently also use retail assembly.
+The earlier native specialization trials reproduced their instruction bodies,
+but that does not establish a completed native constructor-backed implementation.
 
-The remaining native differences are confined to four functions.
-`AddPartsGroup` and `CreateDrawRect` differ around the placement-new result
-copy and null branch. Their typed list layout and initializer bodies are
-otherwise established. `GetCharaLight` exchanges the saved registers of
-the light-loop array displacement and point address. `DrawWater` exchanges
-the overlay-placement pointer and overlay-parts displacement registers.
-The literal float arguments in `DrawWater` match in the isolated build
-used for this check. Pointer declaration and redundant initialization
-trials did not correct these allocations and are absent from the source.
+`CPartsGroup::Add` and `CMap::AddParts` reproduce PAL code in the pre-merge
+canonical comparison. Each append walks to the last node, writes its next link
+and sets the new node's prev link when non-null. `CMap::AddParts` rejects a null
+new node.
+
+The previous native `GetCharaLight` comparison exchanged the saved registers of
+the light-loop array displacement and point address. `DrawWater` exchanged the
+overlay-placement pointer and overlay-parts displacement registers. The literal
+float arguments in `DrawWater` matched in that isolated build. Pointer
+declaration and redundant initialization trials did not correct those
+allocations and are absent from the source. These observations describe the
+pre-merge snapshot; the merged source requires canonical revalidation.

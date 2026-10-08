@@ -36,20 +36,6 @@ int  TakeBomb();
 int  ThrowBomb(float *velocity);
 int  NowPutBomb();
 
-/**
- *
- * Sprite state embedded in an effect script object.
- *
- */
-struct EffectScriptSpriteState {
-    u_char padding[0x30];
-    u_char sprite[0x1C];  /**< Sprite state bytes. */
-    void  *sprite_vtable; /**< Sprite virtual method table. */
-};
-
-extern void *__vt__9mgCVisual[];
-extern void *__vt__11mgC3DSprite[];
-
 extern int          BuggyTexb;
 extern int          PorcussTexb;
 extern int          MucchoTexb;
@@ -153,232 +139,7 @@ extern int         BombImpact;
 extern int         reload_cnt_1350;
 
 // Code (.text)
-int sgInitBuggy(SubGameInfo *info) {
-    CScene            *scene;
-    mgCMemory         *stack;
-    int                i;
-    u32               *pack;
-    mgCTextureManager *texture_manager;
-    char              *idle_motion;
-    char              *walk_motion;
-    char              *run_motion;
-    char              *carry_idle_motion;
-    char              *carry_walk_motion;
-    CCharacter2       *player;
-    int                img_size;
-    CCameraControl    *camera;
-    ClsMes            *message;
-    mgCFrame          *buggy_frame;
-    mgCFrame          *gun_fire_frame;
-    mgCFrame          *porcuss_frame;
-    mgCFrame          *muccho_frame;
-    mgCFrame          *frame;
-    u32               *file;
-    u8                *img_copy;
-    CEffectScriptMan  *effects;
-
-    BuggyTexb = info->texb;
-    EffectTexbNum = 5;
-    PorcussTexb = BuggyTexb + 1;
-    MucchoTexb = PorcussTexb + 1;
-    BombTexb = MucchoTexb + 1;
-    StarbullTexb = BombTexb + 1;
-    GunEffTexb = StarbullTexb + 1;
-    SysTexb = GunEffTexb + 1;
-    EffectTexb__2 = SysTexb + 1;
-    scene = info->scene;
-    player = scene->GetCharacter(scene->player_chara);
-
-    if (player == NULL) {
-        return 0;
-    }
-
-    scene->AssignStack(5);
-    stack = (mgCMemory *) scene->GetStack(5);
-    pack = (u32 *) scene->read_buff;
-    texture_manager = &mgTexManager;
-
-    for (i = 0; i < info->texb_num; i++) {
-
-        (texture_manager)->DeleteBlock(info->texb + i);
-    }
-
-    WorkBuff = (int) operator new[](0x27100, stack->Alloc(0x2712));
-    EffectBuff.SetHeapMem(stack->Alloc(0x4E20), 0x4E20);
-
-    if (LoadFile2(at_942__4, pack, NULL, 0) == 0) {
-        return 0;
-    }
-
-    if ((file = (u32 *) GetPackFile(pack, at_943__5, NULL)) != NULL) {
-        scene->LoadChara(0x40, file, at_944__4, stack, stack, stack, BuggyTexb, 0);
-    }
-
-    if ((file = (u32 *) GetPackFile(pack, at_945__6, NULL)) != NULL) {
-        scene->LoadChara(0x41, file, at_946__5, stack, stack, stack, PorcussTexb, 0);
-    }
-
-    if ((file = (u32 *) GetPackFile(pack, at_947__5, NULL)) != NULL) {
-        scene->LoadChara(0x42, file, at_948__5, stack, stack, stack, MucchoTexb, 0);
-    }
-
-    if ((file = (u32 *) GetPackFile(pack, at_949__6, NULL)) != NULL) {
-        scene->LoadChara(0x44, file, at_950__6, stack, stack, stack, StarbullTexb, 0);
-    }
-
-    if ((file = (u32 *) GetPackFile(pack, at_951__5, NULL)) != NULL) {
-        scene->LoadChara(0x43, file, at_950__6, stack, stack, stack, BombTexb, 0);
-    }
-
-    if ((file = (u32 *) GetPackFile(pack, at_952__5, NULL)) != NULL) {
-        scene->LoadChara(0x45, file, at_950__6, stack, stack, stack, GunEffTexb, 1);
-    }
-
-    if ((file = (u32 *) GetPackFile(pack, at_953__4, NULL)) != NULL) {
-        scene->LoadChara(0x46, file, at_950__6, stack, stack, stack, GunEffTexb, 1);
-    }
-
-    BuggyChara = scene->GetCharacter(0x40);
-    PorcussChara = scene->GetCharacter(0x41);
-    MucchoChara = scene->GetCharacter(0x42);
-    BombChara = scene->GetCharacter(0x43);
-    StarbullChara = scene->GetCharacter(0x44);
-    GunFireEff = scene->GetCharacter(0x45);
-    GunHitEff = scene->GetCharacter(0x46);
-    scene->SetActive(1, 0x40);
-    (scene)->SetCharaTexb(0x40, BuggyTexb);
-    scene->SetActive(1, 0x41);
-    (scene)->SetCharaTexb(0x41, PorcussTexb);
-    scene->SetActive(1, 0x42);
-    (scene)->SetCharaTexb(0x42, MucchoTexb);
-    (scene)->SetCharaTexb(0x43, BombTexb);
-    scene->SetActive(1, 0x44);
-    (scene)->SetCharaTexb(0x44, StarbullTexb);
-    scene->SetActive(1, 0x45);
-    (scene)->SetCharaTexb(0x45, GunEffTexb);
-    scene->SetActive(1, 0x46);
-    (scene)->SetCharaTexb(0x46, GunEffTexb);
-
-    if (BuggyChara == NULL || PorcussChara == NULL || MucchoChara == NULL) {
-        return 0;
-    }
-
-    if (BombChara == NULL || StarbullChara == NULL) {
-        return 0;
-    }
-
-    if (GunFireEff == NULL || GunHitEff == NULL) {
-        return 0;
-    }
-
-    buggy_frame = BuggyChara->CObjectFrame::frame;
-    porcuss_frame = PorcussChara->CObjectFrame::frame;
-    muccho_frame = MucchoChara->CObjectFrame::frame;
-    gun_fire_frame = (GunFireEff)->CObjectFrame::frame;
-
-    if (buggy_frame == NULL || porcuss_frame == NULL || muccho_frame == NULL || gun_fire_frame == NULL) {
-        return 0;
-    }
-
-    porcuss_frame->SetReference(buggy_frame->SearchFrame(at_954__4));
-    muccho_frame->SetReference(buggy_frame->SearchFrame(at_955__3));
-    gun_fire_frame->SetReference(buggy_frame->SearchFrame(at_956__3));
-    frame = gun_fire_frame->SearchFrame(at_957__3);
-
-    if (frame != NULL) {
-        frame->attr->draw = 0;
-    }
-
-    frame = gun_fire_frame->SearchFrame(at_958__5);
-
-    if (frame != NULL) {
-        frame->attr->draw = 0;
-    }
-
-    if ((file = (u32 *) GetPackFile(pack, at_959__5, NULL)) != NULL) {
-        player->LoadPack(file, at_950__6, stack, stack, stack, 0, 0);
-    }
-
-    stack->Align64();
-
-    if ((file = (u32 *) GetPackFile(pack, at_960__3, &img_size)) != NULL) {
-        u32 blocks;
-
-        if (img_size & 0xF) {
-            blocks = ((u32) img_size >> 4) + 1;
-        } else {
-            blocks = (u32) img_size >> 4;
-        }
-
-        img_copy = (u8 *) stack->Alloc(blocks);
-
-        if (img_copy != NULL) {
-            memcpy(img_copy, file, img_size);
-            (texture_manager)->EnterIMGFile(img_copy, SysTexb, NULL, NULL);
-        }
-    }
-
-    void *memory = operator new(sizeof(CEffectScriptMan), stack->Alloc(0x11B));
-    effects = (CEffectScriptMan *) memory;
-
-    if (memory != NULL) {
-        EffectScriptSpriteState *sprite = (EffectScriptSpriteState *) effects;
-        sprite->sprite_vtable = __vt__9mgCVisual;
-        ((mgC3DSprite *) sprite->sprite)->Initialize();
-        sprite->sprite_vtable = __vt__11mgC3DSprite;
-        ((mgC3DSprite *) sprite->sprite)->Initialize();
-        effects->Initialize(NULL, -1, -1);
-    }
-
-    effects->Initialize(stack, EffectTexb__2, EffectTexbNum);
-    effects->load_buffer = (u_long128 *) pack;
-    effects->SetWorkBuffer(&EffectBuff);
-    effects->LoadBaseEffSpt(at_961__4, NULL, -1);
-    effects->LoadBaseEffSpt(at_962__4, NULL, -1);
-    (scene)->AssignEffect(7, effects, NULL);
-    EffectMan__2 = scene->GetEffect(7);
-
-    if (EffectMan__2 == NULL) {
-        return 0;
-    }
-
-    BuggySndID = -1;
-
-    if (LoadFile2(at_963__3, pack, NULL, 0) != 0) {
-        sndInitPort(5);
-        BuggySndID = sndLoadSound(5, pack, stack);
-    }
-
-    (scene)->LoadBGM(0xBF, (u_long128 *) pack);
-    scene->PlayBGM(0, -1, 1.0f);
-    InitBuggy(scene);
-    InitBomb(scene);
-    CharaStatus = 0;
-    player->SetMotion(at_964__3, 4);
-    RunEventNo__2 = -1;
-    player->SetPosition(0.0f, 134.0f, -340.0f);
-    player->SetRotation(0.0f, 0.0f, 0.0f);
-    camera = (CCameraControl *) scene->GetCamera(scene->active_camera);
-
-    if (camera != NULL) {
-        camera->SetRotate(3.14f);
-        camera->RotBack(2.6415927f);
-        ((mgCCamera *) camera)->Step(-1);
-    }
-
-    message = scene->GetMessage(1);
-    message->Preset(4);
-    message->SetWindowMode(4);
-    message->MakeMesWin(0x7D0);
-    message->fukidashi_pos = 8;
-    IntroHelpMesFlag = 1;
-    PolVoice.step = 0;
-    PolVoice.play = 0;
-    PolVoice.vol_l = 1.0f;
-    PolVoice.vol_r = 1.0f;
-    PolVoice.SetVol(0.6f, -1.0f);
-    return 1;
-}
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/pbuggy", sgInitBuggy__FP11SubGameInfo);
 
 int sgExitBuggy(SubGameInfo *info) {
     CScene            *scene;
@@ -426,7 +187,7 @@ int sgLoopBuggy(SubGameInfo *info) {
             message->select = -1;
             message->draw_speed = message->GetDrawSpeedDef();
             message->mes_no = -1;
-            message->unk_1e40 = 0;
+            message->text_ptr = 0;
             message->open = 0;
             message->fade = 0.0f;
             message->fukidashi_centre_x = -1;
@@ -528,15 +289,15 @@ int sgSystemDrawBuggy(SubGameInfo *info) {
     prim.AlphaBlendEnable(1);
     prim.DepthTestEnable(0);
     prim.Coord(0);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.TextureMapEnable(0);
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Color(0x1E, 0x2E, 0x1F, 0x60);
     prim.Vertex(0x3E, 0x26, 0);
     prim.Vertex(0xEB, 0x2C, 0);
     prim.End();
     prim.TextureMapEnable(1);
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(gauge_texture);
     int train_width = fptosi(gauge_width * TrainHP);
     prim.Color(0x80, 0x80, 0x80, 0x80);
@@ -580,7 +341,7 @@ int sgSystemDrawBuggy(SubGameInfo *info) {
 
     prim.TextureMapEnable(0);
     prim.Shading(1);
-    prim.Begin(4);
+    prim.Begin(MG_PRIM_TRIANGLE_STRIP);
     prim.Color(color_full);
     prim.Vertex(buggy_bar_x, bar_y + 0x1F, 0);
     prim.Color(color_full);
@@ -592,7 +353,7 @@ int sgSystemDrawBuggy(SubGameInfo *info) {
     prim.Vertex(bar_end, bar_y + 0x25, 0);
     prim.End();
     prim.TextureMapEnable(1);
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(gauge_texture);
     prim.Color(0x80, 0x80, 0x80, 0x80);
     prim.TextureCrd(0, 0x28);
@@ -602,6 +363,7 @@ int sgSystemDrawBuggy(SubGameInfo *info) {
     prim.End();
     return 1;
 }
+static inline int BombCPoly(CCPoly *polys, float *bomb, float *pos) { return CreateCharaCPoly(polys, 0x10, bomb, pos, 1.0f, 20.0f); }
 #ifdef NONMATCHING
 /**
  *
@@ -1186,10 +948,10 @@ void InitBomb(CScene *scene) {
     StarbullPos[1] = 113.0f;
     StarbullPos[2] = -300.0f;
     StarbullChara->SetPosition(StarbullPos);
-    float tilt = 0.0f;
-    StarbullChara->SetRotation(tilt, 3.1415927f, tilt);
+    StarbullChara->SetRotation(0.0f, 3.1415927f, 0.0f);
     StarbullChara->SetMotion(at_1316__3, 0);
 }
+
 
 /**
  *

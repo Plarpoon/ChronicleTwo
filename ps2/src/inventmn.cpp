@@ -605,6 +605,13 @@ enum {
     kSceneAttrFlags = 0x18000
 };
 
+#pragma define_section dead ".dead" \
+                            ".dead"
+
+__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
+    return a / b;
+}
+
 // Code (.text)
 CInventUserData *GetInventUserDataPtr() {
     CSaveData *save = GetSaveData();
@@ -891,13 +898,16 @@ void CInventUserData::Initialize() {
     ResetAddress();
 }
 
+#ifdef NONMATCHING
 void CInventUserData::ResetAddress() {
-    char (*work)[0x2000] = photo_work;
-
     for (int index = 0; index < 30; index++) {
-        photo[index].image = work[index];
+        photo[index].image = &photo_work[index][0];
     }
 }
+
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", ResetAddress__15CInventUserDataFv);
+#endif
 
 void CInventUserData::PhotoCheckEnd() {
     int i;
@@ -1570,9 +1580,9 @@ int CheckPhotoFlag() {
     int                offset = 0;
 
     do {
-        USER_PICTURE_INFO *info = &photos[i];
+        USER_PICTURE_INFO *info = (USER_PICTURE_INFO *) ((u8 *) photos + offset);
 
-        if (info->used != 0) {
+        if (*(signed char *) &*(signed char *) &info->used != 0) {
             short *neta_id = &info->neta_id;
 
             if (0 < *neta_id && user->CheckNetaFlag(*neta_id) < 0) {
@@ -1816,7 +1826,7 @@ int CInventDataManage::LoadAnalyzeInventFile(char *script, int size) {
     interpreter.Run();
     return 1;
 }
-#ifdef NONMATCHING
+
 int CheckInventItem(int item_id) {
     CInventDataManage manage;
     int               file_size;
@@ -1834,48 +1844,59 @@ int CheckInventItem(int item_id) {
     manage.LoadAnalyzeInventFile(buffer, file_size);
     InventUserDataPtr = GetInventUserDataPtr();
     record = manage.GetInventDataInfoByItemID(item_id);
-    neta_id = record->neta_id;
+
     if (record == NULL) {
         return 0;
     }
+
+    neta_id = record->neta_id;
     s8 found[3] = {0, 0, 0};
+
     for (i = 0; i < 30; i++) {
         USER_PICTURE_INFO *photo = InventUserDataPtr->GetPhotoInfo(i);
-        if (photo->used != 0) {
+
+        if (*(signed char *) &photo->used != 0) {
             short photo_neta = photo->neta_id;
+
             if (photo_neta > 0) {
                 if (neta_id[0] == photo_neta) {
                     found[0] = 1;
                 }
+
                 if (neta_id[1] == photo_neta) {
                     found[1] = 1;
                 }
+
                 if (neta_id[2] == photo_neta) {
                     found[2] = 1;
                 }
             }
         }
     }
+
     for (i = 0; i < 0x200; i++) {
         int memo_neta = InventUserDataPtr->GetNetaID(i);
+
         if (neta_id[0] == memo_neta) {
             found[0] = 1;
         }
+
         if (neta_id[1] == memo_neta) {
             found[1] = 1;
         }
+
         if (neta_id[2] == memo_neta) {
             found[2] = 1;
         }
     }
+
     if (found[0] != 0 && found[1] != 0 && found[2] != 0) {
         return 1;
     }
+
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", CheckInventItem__Fi);
-#endif
+
 int CheckItemTable(int item_id, int *values) {
     CInventDataManage manage;
     int               file_size;
@@ -2057,6 +2078,7 @@ static inline int StackBlocks(int bytes) {
  * Constructs an action character in the inventory memory stack.
  *
  */
+
 static inline CActionChara *NewInventActionChara(mgCMemory *stack) {
     return new (stack->Alloc(StackBlocks(sizeof(CActionChara)))) CActionChara;
 }
@@ -2074,8 +2096,8 @@ void CMenuInvent::LoadCharaCheck() {
                 poly_chr_form[0]->SetActionCharaPtr(NULL, tex_block[1], -1);
             }
             MenuLoadInfo.mode = 1;
-            MenuLoadInfo.unk_2 = 1;
-            MenuLoadInfo.unk_3 = 0;
+            MenuLoadInfo.load_all = 1;
+            MenuLoadInfo.chara_no = 0;
             MenuLoadInfo.unk_6[1] = 0;
             SetMenuLoadItemNo(0);
             size = MenuItemCharaDataLoad(load_stack, 0, MenuCharaBuild2, 0);
@@ -2105,9 +2127,9 @@ void CMenuInvent::LoadCharaCheck() {
             }
             chara->SetMotion(at_2246, 0, 1);
             if (chara_read_info != NULL) {
-                BG_READ_INFO      *read_info = chara_read_info;
-                mgCTextureManager *tex_manager = &mgTexManager;
-                u_int             *model_file = GetPackFile((u_int *) read_info->buffer, at_2247, &size);
+                BG_READ_INFO            *read_info = chara_read_info;
+                u_int                   *model_file = GetPackFile((u_int *) read_info->buffer, at_2247, &size);
+                mgCTextureManager *const tex_manager = &mgTexManager;
                 chara_stack.stack_used = 0;
                 chara_stack.lock = 0;
                 strcpy(tex_manager->name_suffix, at_2248);
@@ -2124,9 +2146,15 @@ void CMenuInvent::LoadCharaCheck() {
                 chara->SetMotion(at_2252, 0, 1);
             }
             if (album_enable == 0 && photo_only == 1) {
-                chara->SetPosition(15.0f, -29.0f, 14.0f);
+                float z = 14.0f;
+                float y = -29.0f;
+                float x = float(15);
+                chara->SetPosition(x, y, z);
             } else {
-                chara->SetPosition(20.0f, -29.0f, 14.0f);
+                float z = float(14);
+                float x = 20.0f;
+                float y = float(-29);
+                chara->SetPosition(x, y, z);
             }
             chara->SetRotation(0.0f, -0.56f, 0.0f);
             chara->Step();
@@ -2145,6 +2173,7 @@ void CMenuInvent::LoadCharaCheck() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", LoadCharaCheck__11CMenuInventFv);
 #endif
+
 USER_PICTURE_INFO *CMenuInvent::GetNowSelectedPictInfo() {
     USER_PICTURE_INFO *info = 0;
 
@@ -2215,27 +2244,40 @@ void CMenuInvent::InitNetaCircle(int show) {
         i++;
     } while (i < 3);
 }
-#ifdef NONMATCHING
+
+static inline void SetNetaName(CDC2Mes *message, int line, char *name) {
+    if (name != NULL) {
+        strcpy(message->name[line], name);
+    }
+}
+
 int CMenuInvent::SetNetaCircle(int type, int index) {
     char             *name;
     CMenuPosDataForm *form;
     CMenuPosDataForm *label;
     int               pos[2];
+
     if (neta_select_num >= 3) {
         return 0;
     }
+
     name = NULL;
+
     if (type == 0) {
         if (SelectedNetaPhotoAlready(index) != 0) {
             return 0;
         }
+
         USER_PICTURE_INFO *photo = InventUserDataPtr->GetPhotoInfo(index);
+
         if (photo == NULL) {
             return 0;
         }
-        if (photo->used == 0) {
+
+        if (*(s8 *) &photo->used == 0) {
             return 0;
         }
+
         photo->is_new = 0;
         name = GetPhotoName(photo);
         neta_select_type[neta_select_num] = 0;
@@ -2244,6 +2286,7 @@ int CMenuInvent::SetNetaCircle(int type, int index) {
         if (SelectedNetaMemoListAlready(index) != 0) {
             return 0;
         }
+
         USER_PICTURE_INFO memo;
         memo.used = 1;
         memo.neta_id = NetaMemoID[index];
@@ -2251,26 +2294,32 @@ int CMenuInvent::SetNetaCircle(int type, int index) {
         neta_select_index[neta_select_num] = index;
         name = GetPhotoName(&memo);
     }
+
     neta_select_state[neta_select_num] = 1;
     form = neta_form[neta_select_num];
+
     if (form != NULL) {
         form->draw_flag = 1;
         form->rgba[0] = 0x80;
         form->rgba[1] = 0x80;
         form->rgba[2] = 0x80;
         form->rgba[3] = 0x80;
+
         for (int i = 0; i < 4; i++) {
             form->SetRGBACalcParam(i, 0, 0x80);
         }
+
         form->SetRGBACalcParam(3, 8, 0x80);
         MENUFORMPARTS_TYPE *ring = form->GetPartInfo(at_2368__2);
         ring->draw_flag = 1;
+
         if (neta_select_type[neta_select_num] == 0) {
             GetNetaBoardCursorPosition(index, pos);
             form->SetPos(pos[0], pos[1]);
             ring->etc_info[0] = index;
-            ring->unk_2c = 0.7f;
+            ring->picture_scale = 0.7f;
         }
+
         if (neta_select_type[neta_select_num] == 1) {
             GetNetaMemoCursorPosition(index - memo_top, pos);
             pos[0] += 220;
@@ -2278,34 +2327,36 @@ int CMenuInvent::SetNetaCircle(int type, int index) {
             form->rgba[1] = 0x80;
             form->rgba[2] = 0x80;
             form->rgba[3] = 0;
+
             for (int i = 0; i < 4; i++) {
                 form->SetRGBACalcParam(i, 0, 0x80);
             }
+
             form->SetRGBACalcParam(3, 12, 0x80);
             form->SetPos(pos[0], pos[1]);
             ring->etc_info[0] = 1000;
         }
     }
+
     label = neta_name_form[neta_select_num];
+
     if (label != NULL) {
         label->SetAction(at_2313);
     }
-    CDC2Mes *message = MenuDCMsg[7];
-    if (name != NULL) {
-        strcpy(message->name[neta_select_num], name);
-    }
+
+    SetNetaName(MenuDCMsg[7], neta_select_num, name);
     MenuDCMsg[7]->ClsMes::mes_no = -1;
     MenuDCMsg[7]->MakeMsg(neta_select_num + 50);
     neta_select_num++;
+
     if (neta_select_num == 1 && MenuActionChara[0] != NULL) {
         MenuActionChara[0]->SetMotion(at_2369__2, 0, 1);
     }
+
     neta_circle_angle += 0.05235988f;
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", SetNetaCircle__11CMenuInventFii);
-#endif
+
 int CMenuInvent::CancelNetaCircle(int mode) {
     int removed_idea = -1;
 
@@ -2558,11 +2609,11 @@ void CMenuInvent::GradationSet(int mode) {
 
                 do {
                     MENUFORMPARTS_TYPE *part =
-                        invent_okeff_form->GetPartInfo(invent_grade_fff[offset / sizeof(invent_grade_fff[0])]);
+                        invent_okeff_form->GetPartInfo(*(char **) ((u8 *) invent_grade_fff + offset));
                     i++;
 
-                    part->y = 224.0f;
-                    offset += sizeof(invent_grade_fff[0]);
+                    *(int *) &part->y = 0x43600000;
+                    offset += 4;
                     part->h = 0.0f;
                 } while (i < 2);
             }
@@ -2610,7 +2661,7 @@ void CMenuInvent::GradationSet(int mode) {
             }
 
             gradation_mode = 1;
-            unk_eb0 = 0;
+            gradation_height = 0;
             return;
         }
         case 2: {
@@ -2639,54 +2690,83 @@ void CMenuInvent::GradationSet(int mode) {
             return;
     }
 }
-#ifdef NONMATCHING
+
 void CMenuInvent::GradationStep() {
     if (invent_okeff_form == NULL) {
         return;
     }
-    if (gradation_mode == 1) {
-        bool advance = false;
-        for (int i = 0; i < 2; i++) {
-            MENUFORMPARTS_TYPE *part = invent_okeff_form->GetPartInfo(invent_grade_fff[i]);
-            if (at_2639.v[2] >= unk_eb0) {
-                part->h = (float) unk_eb0;
-                if (i == 0) {
-                    part->y = 224.0f - part->h;
-                }
-                advance = true;
-            }
-        }
-        if (advance) {
-            unk_eb0 += 4;
-        }
-    } else if (gradation_mode == 3) {
-        for (int i = 0; i < 2; i++) {
-            MENUFORMPARTS_TYPE *part = invent_okeff_form->GetPartInfo(invent_grade_fff[i]);
-            for (int effect_index = 0; effect_index < 2; effect_index++) {
-                int row = (i == 1) ^ (effect_index == 1);
-                for (int channel = 0; channel < 3; channel++) {
-                    float current = part->effect[effect_index].param[channel];
-                    float target = (float) invent_color_tbl[create_step][row][channel];
-                    int   value = (int) current;
-                    if (current < target) {
-                        value = (int) (current + 2.0f);
-                    } else if (current > target) {
-                        value = (int) (current - 2.0f);
+
+    int                 i;
+    MENUFORMPARTS_TYPE *part;
+    GradationSteps      steps = at_2639;
+
+    switch (gradation_mode) {
+        case 1: {
+            int grown = 0;
+
+            for (i = 0; i < 2; i++) {
+                part = invent_okeff_form->GetPartInfo(invent_grade_fff[i]);
+
+                if (steps.v[2] >= gradation_height) {
+                    part->h = gradation_height;
+
+                    if (i % 2 == 0) {
+                        part->y = 224.0f - part->h;
                     }
-                    if (value < 0) {
-                        value = 0;
-                    } else if (value > 255) {
-                        value = 255;
-                    }
-                    part->effect[effect_index].param[channel] = (float) value;
+
+                    grown = 1;
                 }
             }
+
+            if (grown) {
+                gradation_height += 4;
+            }
+
+            break;
         }
+        case 3:
+            for (i = 0; i < 2; i++) {
+                part = invent_okeff_form->GetPartInfo(invent_grade_fff[i]);
+                int k;
+                int row = 0;
+
+                if (i == 1) {
+                    row = 1;
+                }
+
+                for (int j = 0; j < 2; j++) {
+                    MENU_PARTS_EFFECT_STRUCT1 *effect = &part->effect[j];
+
+                    for (k = 0; k < 3; k++) {
+                        float now = effect->param[k];
+                        int   next = now;
+                        u_int target = invent_color_tbl[create_step][row][k];
+
+                        if (now < target) {
+                            next = now + 2.0f;
+                        } else if (!(now <= target)) {
+                            next = now - 2.0f;
+                        }
+
+                        if (next < 0) {
+                            next = 0;
+                        }
+
+                        if (next > 255) {
+                            next = 255;
+                        }
+
+                        effect->param[k] = next;
+                    }
+
+                    row ^= 1;
+                }
+            }
+
+            break;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", GradationStep__11CMenuInventFv);
-#endif
+
 void CMenuInvent::InitEnd() {
     BG_READ_INFO *read_info;
 
@@ -2704,7 +2784,7 @@ void CMenuInvent::InitEnd() {
         PrepareNextMode((int) key_arg_no);
     }
 
-    unk_eb6 = 1;
+    cursor_snap = 1;
     ExeScript(at_2713__2);
     MenuItemBrdCalcManner = 0;
 }
@@ -2723,7 +2803,7 @@ void CMenuInvent::ExitEnd() {
         sys->invent_album.top = this->album_top;
         sys->invent_memo.select = this->memo_cursor;
         sys->invent_memo.top = this->memo_top;
-        sys->invent_unk_2e = this->unk_392;
+        sys->invent_memo_sort_mode = this->memo_sort_mode;
     }
 
     InventUserDataPtr->PhotoCheckEnd();
@@ -2768,9 +2848,9 @@ void CMenuInvent::EnterDataMenu(u8 *pack) {
 }
 
 int CMenuInvent::ItemCmdAfter(int command, ITEMCMD_RET_PARA *para) {
-    if (para->unk_2 >= -1) {
+    if (para->menu_cmd >= -1) {
         MenuSePlay(para->cmd);
-        signed char result = para->unk_2;
+        signed char result = para->menu_cmd;
 
         switch (result) {
             case 0:
@@ -2832,10 +2912,8 @@ extern short       sndtimetbl_2868[2];
 extern signed char D_003532DF[];
 extern float       eff_light_2927[4];
 
-#ifdef NONMATCHING
-
 #pragma inline_depth(5)
-
+#ifdef NONMATCHING
 int CMenuInvent::IsCreateObject(int mode, int keys) {
     CActionChara      *action_chara = MenuActionChara[0];
     CDC2Mes           *message_window = MenuDCMsg[4];
@@ -2860,16 +2938,18 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                             InventUserDataPtr->SetCreateItemFlag(this->card_cursor, this->create_item_id);
                         } else {
                             s32 recipe_index;
-                            this->unk_584 = 0;
+                            s32 recipe_offset;
+                            this->create_partial_match = 0;
                             InventUserDataPtr->GetPhotoInfo(0);
                             recipe_index = 0;
+                            recipe_offset = 0;
                             while (InventManagePt->num != 0) {
                                 INVENT_DATA_INFO  *recipe;
                                 CInventDataManage *table = InventManagePt;
                                 if (recipe_index < 0 || table->num <= recipe_index) {
                                     recipe = NULL;
                                 } else {
-                                    recipe = &table->table[recipe_index];
+                                    recipe = (INVENT_DATA_INFO *) ((u8 *) table->table + recipe_offset);
                                 }
                                 if (recipe == NULL) {
                                     break;
@@ -2895,19 +2975,20 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                                     }
                                     if (matched == 2) {
                                         s32 slot_index;
-                                        this->unk_584 = 1;
+                                        this->create_partial_match = 1;
                                         for (slot_index = 0; slot_index < 3; slot_index++) {
                                             if (found.v[slot_index] == 0) {
-                                                this->unk_594 = slot_index;
+                                                this->create_missing_slot = slot_index;
                                             }
                                         }
                                         break;
                                     }
                                 }
+                                recipe_offset += sizeof(INVENT_DATA_INFO);
                                 recipe_index++;
                             }
                         }
-                        this->unk_60a = 0x7C;
+                        this->create_wait_time = 0x7C;
                         this->ExeScript(at_3113);
                         this->GradationSet(1);
                         this->step = kCreateWaitStart;
@@ -2916,7 +2997,7 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                         StartReadBG();
                         s32 sound_message_size;
                         LoadFileBG(at_3114, load_stack->stGetTop(), &sound_message_size);
-                        this->unk_5fc = kLoadSoundMsg;
+                        this->create_load_state = kLoadSoundMsg;
                         break;
                     }
                 case kCreateKeyCancel:
@@ -2927,28 +3008,28 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
             break;
         }
         case kCreateWaitStart:
-            this->unk_60a--;
-            if (this->unk_60a <= 0 && this->unk_5fc > 1) {
+            this->create_wait_time--;
+            if (this->create_wait_time <= 0 && this->create_load_state > 1) {
                 this->step++;
             }
             break;
         case kCreateShowReady:
             action_chara->GetNowMotionName();
             s32 motion = action_chara->seq_state;
-            if (this->unk_5fc >= 5 && motion == 3) {
+            if (this->create_load_state >= 5 && motion == 3) {
                 this->step++;
                 action_chara->seq_advance = 1;
                 action_chara->SetMotion(at_3116, 4, 1);
-                this->unk_604 = 1;
-                this->unk_606 = 1;
-                this->unk_608 = 0;
+                this->jingle_state = 1;
+                this->jingle_pending = 1;
+                this->jingle_time = 0;
                 this->poly_chr_form[1]->SetActionCharaPtr(this->create_chara, this->tex_block[2], -1);
                 this->GradationSet(3);
                 MenuCommonInfo->MenuPosPlay();
-                this->unk_5e4 = 0.0f;
-                this->unk_5f0 = 0.0f;
-                this->unk_5f4 = 0;
-                this->unk_5f8 = 0.0f;
+                this->create_spin_angle = 0.0f;
+                this->create_wobble_phase = 0.0f;
+                this->create_show_phase = 0;
+                this->create_scale_in = 0.0f;
                 if (this->create_step != 0) {
                     this->ExeScript(at_3117);
                     if (this->create_chara != NULL) {
@@ -2970,7 +3051,7 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                         }
                         MenuRoboPartsLightOff(frame);
                     }
-                } else if (this->unk_584 != 0) {
+                } else if (this->create_partial_match != 0) {
                     s32 index;
                     this->ExeScript(at_3118);
                     for (index = 0; index < 3; index++) {
@@ -3014,7 +3095,7 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                 } else {
                     this->ExeScript(at_3120);
                 }
-                MenuSePlay(0, this->unk_394, &MenuSoundBuffer);
+                MenuSePlay(0, this->create_sound_buffer, &MenuSoundBuffer);
             }
             break;
         case kCreateShow: {
@@ -3022,20 +3103,21 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                 if (this->create_chara != NULL) {
                     float scale[4];
                     this->create_chara->GetScale(scale);
-                    switch (this->unk_5f4) {
+                    switch (this->create_show_phase) {
                         case 0:
-                            if (CalcMenuAdd(&this->unk_5f8, 0.4f, this->unk_5f8) != 0) {
-                                this->unk_5f4 = 1;
-                                this->unk_5e4 = 0.0f;
-                                this->unk_5ec = 0.4f * this->create_scale;
+                            if (CalcMenuAdd(&this->create_scale_in, 0.4f, this->create_scale_in) != 0) {
+                                this->create_show_phase = 1;
+                                this->create_spin_angle = 0.0f;
+                                this->create_wobble_amp = 0.4f * this->create_scale;
                             }
-                            scale[0] = this->unk_5f8;
+                            scale[0] = this->create_scale_in;
                             break;
                         case 1:
-                            scale[0] = this->create_scale + this->unk_5ec * sinf(0.10471976f * this->unk_5f0);
-                            CalcMenuAdd(&this->unk_5ec, -0.02f, 0.0f);
-                            CalcMenuAdd(&this->unk_5e4, 0.15707964f, 15.707964f);
-                            CalcMenuAdd(&this->unk_5f0, 1.0f, 600.0f);
+                            scale[0] = this->create_scale + this->create_wobble_amp * sinf(0.10471976f * this->create_wobble_phase);
+                            float step = -0.02f;
+                            CalcMenuAdd(&this->create_wobble_amp, float(-0.02), 0.0f);
+                            CalcMenuAdd(&this->create_spin_angle, 0.15707964f, 15.707964f);
+                            CalcMenuAdd(&this->create_wobble_phase, 1.0f, 600.0f);
                             if (menu_debug_flag != 0) {
                                 float move[4];
                                 float scale_step = -GamePad__2.GetRYf() / 8.0f;
@@ -3060,14 +3142,14 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                     this->create_chara->Step();
                 }
             }
-            switch (this->unk_604) {
+            switch (this->jingle_state) {
                 case 0:
                     break;
                 case 1:
-                    if (this->unk_606 != 0) {
+                    if (this->jingle_pending != 0) {
                         s16 jingle_length = sndtimetbl_2868[this->create_step];
-                        if (this->unk_608 > jingle_length / 2) {
-                            this->unk_606 = 0;
+                        if (this->jingle_time > jingle_length / 2) {
+                            this->jingle_pending = 0;
                             this->ExeScript(at_3121);
                             if (this->create_step != 0) {
                                 char *message = GetItemMessage(this->create_item_id);
@@ -3075,7 +3157,7 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                                     strcpy(message_window->name[0], message);
                                 }
                                 message_window->MakeMsg(kMsgItemCreated);
-                            } else if (this->unk_584 != 0) {
+                            } else if (this->create_partial_match != 0) {
                                 char *name;
                                 message_window->MakeMsg(kMsgPhotoNamed);
                                 name = (char *) this->create_photo_name;
@@ -3087,41 +3169,41 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                             }
                         }
                     }
-                    this->unk_608++;
-                    if (this->unk_608 > sndtimetbl_2868[this->create_step]) {
+                    this->jingle_time++;
+                    if (this->jingle_time > sndtimetbl_2868[this->create_step]) {
                         MenuCommonInfo->FadeInMenuBGMVol(6);
-                        this->unk_604 = 0;
+                        this->jingle_state = 0;
                     }
                     break;
             }
-            if (this->unk_584 != 0) {
+            if (this->create_partial_match != 0) {
                 u32 color;
-                this->unk_5b8++;
-                if (this->unk_5b8 >= 0x32) {
-                    this->unk_5b8 = 0;
+                this->blink_time++;
+                if (this->blink_time >= 0x32) {
+                    this->blink_time = 0;
                 }
                 color = kBlinkDark;
-                if (this->unk_5b8 >= 0x19) {
+                if (this->blink_time >= 0x19) {
                     color = kBlinkLight;
                 }
                 CDC2Mes *color_window = MenuDCMsg[7];
-                if (this->unk_594 >= 0 && this->unk_594 < 0x14) {
-                    color_window->line_color[this->unk_594] = color;
+                if (this->create_missing_slot >= 0 && this->create_missing_slot < 0x14) {
+                    color_window->line_color[this->create_missing_slot] = color;
                 }
             }
-            if (this->unk_604 == 0 && ((keys & kCreateKeyConfirm) || (keys & kCreateKeyCancel))) {
+            if (this->jingle_state == 0 && ((keys & kCreateKeyConfirm) || (keys & kCreateKeyCancel))) {
                 s32 cursor[2];
                 this->step = 0;
                 this->mode = 0;
-                if (this->unk_5fc == kLoadJingleOpen || this->unk_5fc == kLoadJinglePlay) {
+                if (this->create_load_state == kLoadJingleOpen || this->create_load_state == kLoadJinglePlay) {
                     CSnd.StreamClose(1);
-                    this->unk_5fc = -2;
+                    this->create_load_state = -2;
                 }
                 action_chara->DeleteExtMotion();
                 MenuCommonInfo->FadeInMenuBGMVol(6);
                 this->create_effect = NULL;
                 if (this->create_step != 0 ||
-                    ((s16) this->create_step == 0 && this->unk_584 == 0)) {
+                    ((s16) this->create_step == 0 && this->create_partial_match == 0)) {
                     this->InitNetaCircle(0);
                 } else {
                     this->InitNetaCircle(1);
@@ -3129,8 +3211,8 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                 this->ExeScript(at_3122);
                 this->create_step = 0;
                 CDC2Mes *color_window = MenuDCMsg[7];
-                if (this->unk_594 >= 0 && this->unk_594 < 0x14) {
-                    color_window->line_color[this->unk_594] = kLineColorNormal;
+                if (this->create_missing_slot >= 0 && this->create_missing_slot < 0x14) {
+                    color_window->line_color[this->create_missing_slot] = kLineColorNormal;
                 }
                 this->GradationSet(0);
                 this->poly_chr_form[1]->SetActionCharaPtr(NULL, this->tex_block[2], -1);
@@ -3153,7 +3235,7 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
     }
 
     s32 read_done = ReadBGSync();
-    switch (this->unk_5fc) {
+    switch (this->create_load_state) {
         case -2:
             break;
         case kLoadSoundMsg:
@@ -3163,7 +3245,7 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                     MenuSePlay(0, (u32 *) file->buffer, &MenuSoundBuffer);
                     MenuCommonInfo->FadeOutMenuBGMVol(-3, 0x18);
                 }
-                this->unk_5fc = kLoadModel;
+                this->create_load_state = kLoadModel;
             }
             break;
         case kLoadModel: {
@@ -3179,7 +3261,7 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
             if (this->create_step != 0) {
                 strcat((char *) &path, at_3124);
             } else {
-                if (this->unk_584 != 0) {
+                if (this->create_partial_match != 0) {
                     strcat((char *) &path, at_3125);
                 } else {
                     strcat((char *) &path, at_3126);
@@ -3193,11 +3275,11 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
             LoadFileBG((char *) &path, (u_long128 *) this->create_model_file, &motion_size);
             this->create_motion_file = this->create_model_file + motion_size / 16 * 16;
             LoadFileBG(at_3127, (u_long128 *) this->create_motion_file, &motion_size);
-            this->unk_5fc = kLoadModelDone;
+            this->create_load_state = kLoadModelDone;
             break;
         }
         case kLoadModelDone:
-            if (this->unk_60a <= 0 && read_done == 0) {
+            if (this->create_wait_time <= 0 && read_done == 0) {
                 float             pos[4];
                 float             rot[4];
                 BG_READ_INFO     *pack_bg;
@@ -3229,6 +3311,7 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                 this->create_effect->Initialize(0);
                 frame = mgLoadMDSFile(pack_file, load_stack, NULL, NULL);
                 this->create_effect->CObjectFrame::frame = frame;
+                float effect_y = -20.0f;
                 if (frame != NULL) {
                     mgCFrameAttr *attr = (mgCFrameAttr *) frame->attr;
                     attr->no_light = 1;
@@ -3236,7 +3319,8 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                     attr->color[1] = eff_light_2927[1];
                     attr->color[2] = eff_light_2927[2];
                     attr->color[3] = eff_light_2927[3];
-                    this->create_effect->SetPosition(18.0f, -20.0f, 20.0f);
+                    float y = -20.0f;
+                    this->create_effect->SetPosition(18.0f, y, 20.0f);
                     this->create_effect->SetRotation(0.0f, 0.15707964f, 0.0f);
                     frame->SetAttrParam(*attr, 1, kSceneAttrFlags);
                 }
@@ -3246,19 +3330,19 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                     form->counter = 0;
                     form->ambient[0] = -1.0f;
                 }
-                this->unk_5fc = kLoadSoundBank;
+                this->create_load_state = kLoadSoundBank;
                 load_stack->Align64();
-                this->unk_600 = 100;
+                this->create_timer = 100;
                 if (this->create_step != 0) {
                     u8   *item_file;
                     char *item_path;
                     s32   item_size;
-                    this->unk_600 = 200;
+                    this->create_timer = 200;
                     this->create_chara = NewInventActionChara(load_stack);
                     this->create_chara->Initialize(0);
-                    this->unk_d48.stSetBuffer(load_stack->stGetTop(), 0x35C0);
-                    this->unk_d48.stack_used = 0;
-                    this->unk_d48.lock = 0;
+                    this->item_model_memory.stSetBuffer(load_stack->stGetTop(), 0x35C0);
+                    this->item_model_memory.stack_used = 0;
+                    this->item_model_memory.lock = 0;
                     load_stack->Alloc(0x35C0);
                     load_stack->Align64();
                     item_file = (u8 *) load_stack->stGetTop();
@@ -3269,7 +3353,7 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                             LoadFileBG((char *) item_path, (u_long128 *) item_file, &item_size);
                         }
                     }
-                    this->unk_5fc = kLoadItemModel;
+                    this->create_load_state = kLoadItemModel;
                 }
             }
             break;
@@ -3280,32 +3364,32 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                     texture_manager->DeleteBlock(this->tex_block[2]);
                     strcpy(texture_manager->name_suffix, at_3134);
                     this->create_chara->Initialize(0);
-                    this->create_chara->LoadPack((unsigned int *) item_bg->buffer, at_2249, &this->unk_d48,
-                                                 &this->unk_d48, &this->unk_d48, this->tex_block[2], 0);
+                    this->create_chara->LoadPack((unsigned int *) item_bg->buffer, at_2249, &this->item_model_memory,
+                                                 &this->item_model_memory, &this->item_model_memory, this->tex_block[2], 0);
                     texture_manager->name_suffix[0] = 0;
                 }
-                this->unk_5fc++;
+                this->create_load_state++;
             }
             break;
         case kLoadSoundBank: {
             s32 sound_size;
             load_stack->Align64();
             StartReadBG();
-            this->unk_394 = (u32 *) load_stack->stGetTop();
-            LoadFileBG(sndfileName_2951[this->create_step], (u_long128 *) this->unk_394, &sound_size);
+            this->create_sound_buffer = (u32 *) load_stack->stGetTop();
+            LoadFileBG(sndfileName_2951[this->create_step], (u_long128 *) this->create_sound_buffer, &sound_size);
             load_stack->Alloc((sound_size & 15) != 0 ? ((unsigned int) sound_size >> 4) + 1 : (unsigned int) sound_size >> 4);
-            this->unk_5fc++;
+            this->create_load_state++;
             break;
         }
         case kLoadSoundPort:
             if (read_done == 0) {
                 sndInitPort(8);
-                this->unk_5fc++;
+                this->create_load_state++;
             }
             break;
         case kLoadJingleOpen:
-            this->unk_600--;
-            if (this->unk_600 == 0x28) {
+            this->create_timer--;
+            if (this->create_timer == 0x28) {
                 s32  wave = this->create_step;
                 char wave_name[0x88];
                 if (wave == 1) {
@@ -3314,7 +3398,7 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                 sprintf(wave_name, at_3135, wavname_2960[wave]);
                 CSnd.StreamOpenFast(1, wave_name);
             }
-            if (this->unk_600 <= 0) {
+            if (this->create_timer <= 0) {
                 while (CSnd.StreamOpenState() != 0) {
                 }
                 CSnd.StreamStandBy(1);
@@ -3322,32 +3406,33 @@ int CMenuInvent::IsCreateObject(int mode, int keys) {
                 }
                 CSnd.StreamSetVol(1, 0x7FFF, 0x7FFF);
                 CSnd.StreamPlay(1);
-                this->unk_600 = 0x50;
-                this->unk_5fc++;
+                this->create_timer = 0x50;
+                this->create_load_state++;
             }
             break;
         case kLoadJinglePlay:
             s32 play_state = CSnd.StreamGetState(1);
-            this->unk_600--;
-            if ((play_state & 0x8000) && this->unk_600 <= 0) {
+            this->create_timer--;
+            if ((play_state & 0x8000) && this->create_timer <= 0) {
                 CSnd.StreamClose(1);
-                this->unk_5fc++;
+                this->create_load_state++;
             }
             break;
     }
     return 1;
 }
 
-#pragma inline_depth reset
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", IsCreateObject__11CMenuInventFii);
 #endif
+#pragma inline_depth reset
+
 void CMenuInvent::CalcMakeBrd(int message_index) {
     if (makebrd_form != NULL && makebrd_form->draw_flag) {
-        make_board.unk_1c = make_num;
+        make_board.make_num = make_num;
         make_board.material_num = 4;
         MakeItemNeeds needs;
-        InventManagePt->HowMuchZairyouMakeItem(unk_FC, make_num, (int *) &needs);
+        InventManagePt->HowMuchZairyouMakeItem(make_item_no, make_num, (int *) &needs);
         int index = 0;
 
         for (; index < needs.num; index++) {
@@ -3376,9 +3461,9 @@ void CMenuInvent::CalcMakeBrd(int message_index) {
             make_board.line[index].sub_num = 0;
         }
 
-        make_board.unk_20 = make_cursor;
-        CalcMenuAdd(&make_board.unk_24, -1, 0);
-        CalcMenuAdd(&make_board.unk_28, -1, 0);
+        make_board.make_cursor = make_cursor;
+        CalcMenuAdd(&make_board.decrease_flash_frames, -1, 0);
+        CalcMenuAdd(&make_board.increase_flash_frames, -1, 0);
         CalcCommonBrdDrawInfo(&makebrd_form->x, &make_board, MenuDCMsg[message_index]);
     }
 }
@@ -3395,131 +3480,140 @@ int CMenuInvent::EnableSelectMaxCardList() {
     return count;
 }
 
-#ifdef NONMATCHING
 void CMenuInvent::CalcCursorPosition() {
-    if (photo_only == 2) {
+    if (mode == 2) {
         MenuCommonInfo->SetWakuType(-1);
         return;
     }
-    if (photo_only == 1) {
+
+    if (mode == 1) {
         MenuCommonInfo->SetWakuType(-1);
     }
 
-    int  pos[2] = {at_3201.pos[0], at_3201.pos[1]};
-    int  offset[2] = {at_3202.x, at_3202.y};
-    int  width;
-    int  height;
-    char name[32];
-    sprintf(name, at_3257, key_arg_no);
-    MenuPosData->GetEtcTblValue(name, width, height);
-    sprintf(name, at_3258, key_arg_no);
-    MenuPosData->GetEtcTblValue(name, offset[0], offset[1]);
-    MenuCommonInfo->SetWakuWH(wakutype_3203[key_arg_no], width, height);
+    InventCursorPos cursor = at_3201;
+    char            text[0x28];
+    CursorPos       offset = at_3202;
+    CursorPos       waku;
+    CursorPos       command_pos;
+    sprintf(text, at_3257, key_arg_no);
+    MenuPosData->GetEtcTblValue(text, waku.x, waku.y);
+    sprintf(text, at_3258, key_arg_no);
+    MenuPosData->GetEtcTblValue(text, offset.x, offset.y);
+    MenuCommonInfo->SetWakuWH(wakutype_3203[key_arg_no], waku.x, waku.y);
     MenuCommonInfo->SetWakuType(wakutype_3203[key_arg_no]);
 
     switch (key_arg_no) {
         case 0:
         case 4:
         case 6:
-            GetNetaBoardCursorPosition(card_cursor, pos);
+            GetNetaBoardCursorPosition(photo_cursor, cursor.pos);
+
             if (neta_board_form != NULL) {
-                pos[1] = (int) (108.0f + (4.0f + neta_board_form->y) +
-                                (float) ((card_cursor / 2 - card_top) * 0x36));
+                cursor.pos[1] = 108.0f + (4.0f + neta_board_form->y) + (float) ((photo_cursor / 2 - photo_top) * 54);
             }
-            pos[0] += 3;
-            pos[1] += 2;
+
+            cursor.pos[0] += 3;
+            cursor.pos[1] += 2;
+            command_pos.x = cursor.pos[0];
+            command_pos.y = cursor.pos[1];
             break;
         case 1:
         case 7:
-            album_sw_form->GetPutPosXY(at_3259, pos[0], pos[1]);
+            album_sw_form->GetPutPosXY(at_3259, cursor.pos[0], cursor.pos[1]);
             break;
         case 2:
-            pos[0] = (int) (card_list_form->x - 40.0f);
-            pos[1] = (photo_cursor - photo_top) * 0x2E + 0x48;
-            if (photo_only == 6) {
-                int index = icon_data[1].name[0x1C];
-                pos[0] = (int) (-50.0f + MakeBoardDrawInfo[index * 2]);
-                pos[1] = (int) MakeBoardDrawInfo[index * 2 + 1];
+            cursor.pos[0] = card_list_form->x - 40.0f;
+            cursor.pos[1] = (card_cursor - card_top) * 46 + 72;
+
+            if (mode == 6) {
+                cursor.pos[0] = -50.0f + MakeBoardDrawInfo[make_cursor * 2];
+                cursor.pos[1] = MakeBoardDrawInfo[make_cursor * 2 + 1];
             }
+
             break;
         case 3:
-            MenuPosData->GetPosMenuItemOnItemBrd(pos, item_cursor, 1);
-            pos[0] -= 8;
-            pos[1] -= 10;
+            MenuPosData->GetPosMenuItemOnItemBrd(cursor.pos, item_cursor, 1);
+            cursor.pos[0] -= 8;
+            cursor.pos[1] -= 10;
+            command_pos.x = cursor.pos[0];
+            command_pos.y = cursor.pos[1];
             break;
         case 5:
-            sprintf(name, at_3260__2, album_cursor - album_top * 2);
-            album_big_form->GetPutPosXY(name, pos[0], pos[1]);
+            sprintf(text, at_3260__2, album_cursor - album_top * 2);
+            album_big_form->GetPutPosXY(text, cursor.pos[0], cursor.pos[1]);
+            command_pos.x = cursor.pos[0];
+            command_pos.y = cursor.pos[1];
             break;
         case 8:
-            neta_board_form->GetPutPosXY(at_3261, pos[0], pos[1]);
+            neta_board_form->GetPutPosXY(at_3261, cursor.pos[0], cursor.pos[1]);
             break;
         case 11:
-            neta_memo_form->GetPutPosXY(at_3262__2, pos[0], pos[1]);
+            neta_memo_form->GetPutPosXY(at_3262__2, cursor.pos[0], cursor.pos[1]);
             break;
         case 10:
-            neta_board_form->GetPutPosXY(at_3263__2, pos[0], pos[1]);
+            neta_board_form->GetPutPosXY(at_3263__2, cursor.pos[0], cursor.pos[1]);
             break;
         case 9:
-            GetNetaMemoCursorPosition((int) icon_data[2].data - icon_data[2].size, pos);
-            pos[0] -= 0x20;
+            GetNetaMemoCursorPosition(memo_cursor - memo_top, cursor.pos);
+            cursor.pos[0] -= 32;
             break;
     }
 
     MenuItemCommandDir = -1;
-    if (photo_only == 4 || (photo_only == 12 && unk_112 == 0)) {
-        SetItemCmdMsgPos(&pos[0]);
+
+    if (mode == 4 || (mode == 12 && step == 0)) {
+        SetItemCmdMsgPos(&command_pos.x);
     }
-    if (photo_only == 5 || photo_only == 4 || photo_only == 12 ||
-        photo_only == 9 || photo_only == 14) {
+
+    if (mode == 5 || mode == 4 || mode == 12 || mode == 9 || mode == 14) {
         MenuCommonInfo->SetWakuType(-1);
     }
-    MenuCommonInfo->MenuPosStep(pos, offset);
-    if (unk_eb6 != 0) {
-        MenuCommonInfo->MenuSetPos(pos[0], pos[1]);
-        unk_eb6 = 0;
+
+    MenuCommonInfo->MenuPosStep(cursor.pos, &offset.x);
+
+    if (cursor_snap != 0) {
+        MenuCommonInfo->MenuSetPos(cursor.pos[0], cursor.pos[1]);
+        cursor_snap = 0;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", CalcCursorPosition__11CMenuInventFv);
-#endif
+
 int CMenuInvent::IsMakeObject(int keys, int button) {
     switch (step) {
         case 0: {
             int select = SelectMakeObject(keys);
 
             if (select == -1) {
-                make_board.unk_24 = 6;
-                make_board.unk_28 = 0;
+                make_board.decrease_flash_frames = 6;
+                make_board.increase_flash_frames = 0;
             } else if (select == 1) {
-                make_board.unk_24 = 0;
-                make_board.unk_28 = 6;
+                make_board.decrease_flash_frames = 0;
+                make_board.increase_flash_frames = 6;
             }
 
             switch (button) {
                 case 1:
                     if (make_cursor == 0) {
-                        int enough = InventManagePt->CheckMakeItem(unk_FC, make_num, MenuUserParam.used_data);
-                        unk_104 = GetUserDataMan()->SearchSpaceUsedData();
+                        int enough = InventManagePt->CheckMakeItem(make_item_no, make_num, MenuUserParam.used_data);
+                        make_space_no = GetUserDataMan()->SearchSpaceUsedData();
 
                         if (enough == 0) {
                             step = 3;
                             ExeScript(at_3348__2);
-                        } else if (unk_104 < 0) {
+                        } else if (make_space_no < 0) {
                             step = 3;
                             ExeScript(at_3349__2);
                         } else {
-                            if (unk_FC == 0xA5) {
+                            if (make_item_no == 0xA5) {
                                 GetSaveData()->SetBitFlag(13, 1);
                             }
 
-                            if (unk_FC == 0x12F) {
+                            if (make_item_no == 0x12F) {
                                 GetSaveData()->SetBitFlag(48, 1);
                             }
 
-                            InventManagePt->DeleteUserUsedItem(unk_FC, make_num);
-                            unk_104 = GetUserDataMan()->SearchSpaceUsedData();
-                            int row = unk_104 / 6;
+                            InventManagePt->DeleteUserUsedItem(make_item_no, make_num);
+                            make_space_no = GetUserDataMan()->SearchSpaceUsedData();
+                            int row = make_space_no / 6;
 
                             if (item_top > row) {
                                 while (row < item_top) {
@@ -3531,15 +3625,15 @@ int CMenuInvent::IsMakeObject(int keys, int button) {
                                 }
                             }
 
-                            item_cursor = unk_104;
+                            item_cursor = make_space_no;
                             step = 10;
                             MenuCharaLoadStack.stack_used = 0;
                             MenuCharaLoadStack.lock = 0;
                             MenuCharaLoadStack.Alloc(0xC0);
-                            unk_578 = MenuCharaLoadStack.stack + MenuCharaLoadStack.stack_used;
+                            load_sound_buffer = MenuCharaLoadStack.stack + MenuCharaLoadStack.stack_used;
                             StartReadBG();
                             int size;
-                            LoadFileBG(at_3350__2, (u_long128 *) unk_578, &size);
+                            LoadFileBG(at_3350__2, (u_long128 *) load_sound_buffer, &size);
                             u_int bytes = size + 16;
                             MenuCharaLoadStack.Alloc((bytes & 0xF) ? (bytes >> 4) + 1 : bytes >> 4);
                         }
@@ -3559,7 +3653,7 @@ int CMenuInvent::IsMakeObject(int keys, int button) {
         case 10:
             if (ReadBGSync() == 0) {
                 ItemBoardKoma koma = at_3306;
-                MenuPosData->GetPosMenuItemBrdKoma(koma.pos, unk_104, 0);
+                MenuPosData->GetPosMenuItemBrdKoma(koma.pos, make_space_no, 0);
                 mgCTexture *effect_tex = MenuPosData->icon_effect_tex;
                 MenuEffect[0]->PresetEffect(&MenuCharaLoadStack, effect_tex, 0, koma.pos);
                 MenuEffect[0]->EffectStart();
@@ -3574,7 +3668,7 @@ int CMenuInvent::IsMakeObject(int keys, int button) {
                 }
 
                 ExeScript(at_3351);
-                MenuSePlay(0, (u_int *) unk_578, &MenuSoundBuffer);
+                MenuSePlay(0, (u_int *) load_sound_buffer, &MenuSoundBuffer);
                 CreateModeSwapForm(1);
                 step = 1;
             }
@@ -3585,8 +3679,8 @@ int CMenuInvent::IsMakeObject(int keys, int button) {
                 CGameDataUsed *space = GetUserDataMan()->SearchSpaceUsedDataPtr();
 
                 for (int i = 0; i < make_num; i++) {
-                    GetUserDataMan()->CopyGameData(space, unk_FC);
-                    GetUserDataMan()->GetCostume(unk_FC);
+                    GetUserDataMan()->CopyGameData(space, make_item_no);
+                    GetUserDataMan()->GetCostume(make_item_no);
                 }
 
                 CheckEnableHaveItemNum();
@@ -3596,7 +3690,7 @@ int CMenuInvent::IsMakeObject(int keys, int button) {
                 step++;
                 ExeScript(at_3352);
                 ItemNameList2 names = at_3317;
-                names.name[0] = GetItemMessage(unk_FC);
+                names.name[0] = GetItemMessage(make_item_no);
                 CDC2Mes *message = MenuDCMsg[4];
                 message->SetMsgItemNo(names.name, 1);
                 message->SetMsgVolumeNoOne(make_num);
@@ -3622,7 +3716,7 @@ int CMenuInvent::IsMakeObject(int keys, int button) {
                 mode = 0;
                 step = 0;
                 make_cursor = 0;
-                unk_eb6 = 1;
+                cursor_snap = 1;
             }
 
             break;
@@ -3649,6 +3743,7 @@ extern char at_3631[];
 extern char at_3632[];
 
 #ifdef NONMATCHING
+
 #pragma opt_common_subs off
 
 void CMenuInvent::CalcTex() {
@@ -3935,7 +4030,7 @@ void CMenuInvent::CalcTex() {
     GradationStep();
     if (kakudai_pic_form != NULL && kakudai_pic != NULL) {
         if (mode == 12) {
-            if (ask_para.unk_70 == INVENT_ASK_ZOOM) {
+            if (ask_para.ask_mode == INVENT_ASK_ZOOM) {
                 CalcMenuAdd(&kakudai_pic->unk_2c, 0.025f, 1.3f);
             } else if (CalcMenuAdd(&kakudai_pic->unk_2c, -0.025f, 0.7f)) {
                 kakudai_pic_form->draw_flag = 0;
@@ -3963,7 +4058,7 @@ void CMenuInvent::CalcTex() {
     }
     if (mode == 6 && step == 1) {
         int effect_pos[2];
-        MenuPosData->GetPosMenuItemBrdForEffect(effect_pos, unk_104, 0);
+        MenuPosData->GetPosMenuItemBrdForEffect(effect_pos, make_space_no, 0);
         MenuEffect[0]->base_info[0] = effect_pos[0];
         MenuEffect[0]->base_info[1] = effect_pos[1];
         MenuEffect[1]->base_info[0] = effect_pos[0] + 2;
@@ -3995,7 +4090,7 @@ void CMenuInvent::BootExtendCommand() {
     menu_invent_command_info_move_album_Space_info = NULL;
     MenuSePlay(19);
     MENU_ASKMODE_PARA ask;
-    ask.unk_70 = 0;
+    ask.ask_mode = 0;
     ask.mes_no = 6;
     ask.form = MenuMesForm[ask.mes_no];
     int count = 0;
@@ -4007,7 +4102,7 @@ void CMenuInvent::BootExtendCommand() {
             continue;
         }
 
-        ask.unk_48[count] = MES_SHADE_AUTO;
+        ask.cmd_shade[count] = MES_SHADE_AUTO;
 
         if (menu_invent_command_info_ptr->cmd[i] == INVENT_CMD_SET_BOARD && neta_select_num >= 3) {
             enable = 0;
@@ -4040,7 +4135,7 @@ void CMenuInvent::BootExtendCommand() {
 
         if (enable == 0) {
             ask.cmd_color[count] = 0x80202020;
-            ask.unk_48[count] = MES_SHADE_FAINT;
+            ask.cmd_shade[count] = MES_SHADE_FAINT;
         }
 
         ask.cmd_msg[count] = menu_invent_command_info_ptr->cmd[i];
@@ -4057,7 +4152,7 @@ void CMenuInvent::BootExtendCommand() {
     message->SetMsgCursor(0);
 
     for (int line = 0; line < count; line++) {
-        int shade = ask.unk_48[line];
+        int shade = ask.cmd_shade[line];
 
         if (line >= 0 && line < MES_LINE_MAX) {
             message->line_shade[line] = shade;
@@ -4094,7 +4189,7 @@ int CMenuInvent::IsAskExtend(int keys, int button) {
     int                num;
     int                all_num;
 
-    switch (ask_para.unk_70) {
+    switch (ask_para.ask_mode) {
         case INVENT_ASK_COMMAND: {
             int line = command_message->CommandMsgCursor();
 
@@ -4105,11 +4200,11 @@ int CMenuInvent::IsAskExtend(int keys, int button) {
                 }
 
                 int command = command_message->item_mes[line] - INVENT_CMD_ZOOM;
-                ask->unk_70 = convtbl_3726[command];
+                ask->ask_mode = convtbl_3726[command];
                 command_form->draw_flag = 0;
                 int se = 1;
 
-                switch (ask->unk_70) {
+                switch (ask->ask_mode) {
                     case INVENT_ASK_SET_BOARD: {
                         int se_end = 5;
 
@@ -4199,7 +4294,7 @@ int CMenuInvent::IsAskExtend(int keys, int button) {
         }
         case INVENT_ASK_ZOOM:
             if (button != 0) {
-                ask->unk_70 = INVENT_ASK_COMMAND;
+                ask->ask_mode = INVENT_ASK_COMMAND;
                 MenuSePlay(5);
                 command_form->draw_flag = 1;
             }
@@ -4261,7 +4356,7 @@ int CMenuInvent::IsAskExtend(int keys, int button) {
                             menu_invent_command_info_move_album_Space_info->used = 1;
                             Init_USER_PICTURE_INFO(menu_invent_command_info_pict_info);
 
-                            if (ask->unk_70 == INVENT_ASK_TO_ALBUM) {
+                            if (ask->ask_mode == INVENT_ASK_TO_ALBUM) {
                                 AttachPictTex(tex_block[4], album_tex, InventAlbumPtr->GetAlbumPhotoInfo(0), 50);
                                 album_flag[menu_invent_command_info_move_album_Space_pos] = 1;
                             } else {
@@ -4269,7 +4364,7 @@ int CMenuInvent::IsAskExtend(int keys, int button) {
                                 album_flag[album_cursor] = -1;
                             }
 
-                            ask->unk_70 = INVENT_ASK_COMMAND;
+                            ask->ask_mode = INVENT_ASK_COMMAND;
                             step = 0;
                             mode = 0;
                             IsAskEnd(5, command_form);
@@ -4384,7 +4479,7 @@ void CMenuInvent::PhotoNetaEnter(int index, int button) {
                 case 1:
                 case 4:
                     if (answer == 0) {
-                        unk_390 = 0;
+                        neta_effect_time = 0;
                         InventInNetaEffectFlag = 1;
                         ExeScript(at_3932);
                         MenuSePlay(0x20);
@@ -4406,15 +4501,15 @@ void CMenuInvent::PhotoNetaEnter(int index, int button) {
             break;
         }
         case 1:
-            if (unk_390 == 0) {
+            if (neta_effect_time == 0) {
                 if (CheckRunStarDust(InventInNetaEffect, InventInNetaEffectNum4) == 0) {
-                    unk_390++;
+                    neta_effect_time++;
                 }
             } else {
-                unk_390++;
+                neta_effect_time++;
             }
 
-            if (unk_390 > 50) {
+            if (neta_effect_time > 50) {
                 CheckPhotoFlag();
                 InventUserDataPtr->PhotoCheckEnd();
 
@@ -4486,6 +4581,7 @@ CStarDust::CStarDust() {
     this->active = 0;
 }
 #ifdef NONMATCHING
+
 void CMenuInvent::IsAccessAlbum() {
     CDC2Mes *message = MenuDCMsg[4];
     if (message == NULL) {
@@ -4531,7 +4627,7 @@ void CMenuInvent::IsAccessAlbum() {
                 move++;
             }
             if (message->AddMsgCursor(move, 1, 2, 1) != 0) {
-                MenuSePlay(0);
+                MenuSePlay(SYSTEM_SE_CURSOR);
             }
             switch (button) {
                 case 1:
@@ -4576,13 +4672,13 @@ void CMenuInvent::IsAccessAlbum() {
                 if (McCheckMCPs2(card) == 0) {
                     no_card = 1;
                 } else if (card->formatted == 0) {
-                    if (unk_d7c == 1) {
+                    if (album_save_mode == 1) {
                         step = 500;
                         ExeScript(at_4356);
                     } else {
                         loaded = 2;
                     }
-                } else if (unk_d7c == 0) {
+                } else if (album_save_mode == 0) {
                     step = 3;
                     MCManagerPtr->SetFuncNo(18);
                 } else {
@@ -4602,7 +4698,7 @@ void CMenuInvent::IsAccessAlbum() {
                         step = 5;
                         MCManagerPtr->SetFuncNo(17);
                         InitMenuDl(GetMenuDlTexture(), MCManagerPtr->GetSaveDataSize(2));
-                        unk_d78 = 0;
+                        download_base = 0;
                         ExeScript(at_4358);
                         if (MenuDCMsg[4] != NULL) {
                             MenuDCMsg[4]->SetMsgVolumeNoOne(ActiveSlot_3949 + 1);
@@ -4614,7 +4710,7 @@ void CMenuInvent::IsAccessAlbum() {
             }
             break;
         case 5:
-            StepMenuDl2(unk_d78 + MCManagerPtr->total_transferred);
+            StepMenuDl2(download_base + MCManagerPtr->total_transferred);
             if (done != 0) {
                 InitMenuDl(NULL, 0);
                 if (McCheckMCPs2(card) == 0) {
@@ -4629,8 +4725,8 @@ void CMenuInvent::IsAccessAlbum() {
         case 6:
             if (button != 0) {
                 back_to_photo = 1;
-                unk_eb6 = 1;
-                MenuSePlay(1);
+                cursor_snap = 1;
+                MenuSePlay(SYSTEM_SE_DECIDE);
             }
             break;
         case 231:
@@ -4661,7 +4757,7 @@ void CMenuInvent::IsAccessAlbum() {
             break;
         case 100:
             if (button != 0) {
-                MenuSePlay(1);
+                MenuSePlay(SYSTEM_SE_DECIDE);
                 loaded = 2;
             }
             break;
@@ -4674,7 +4770,7 @@ void CMenuInvent::IsAccessAlbum() {
                 move++;
             }
             if (message->AddMsgCursor(move, 2, 3, 1) != 0) {
-                MenuSePlay(0);
+                MenuSePlay(SYSTEM_SE_CURSOR);
             }
             switch (button) {
                 case 1:
@@ -4747,7 +4843,7 @@ void CMenuInvent::IsAccessAlbum() {
             }
             break;
         case 205:
-            StepMenuDl2(unk_d78 + MCManagerPtr->total_transferred);
+            StepMenuDl2(download_base + MCManagerPtr->total_transferred);
             if (done != 0) {
                 if (McCheckMCPs2(card) == 0) {
                     card_removed = 1;
@@ -4760,14 +4856,14 @@ void CMenuInvent::IsAccessAlbum() {
             break;
         case 206:
             if (button != 0) {
-                MenuSePlay(1);
+                MenuSePlay(SYSTEM_SE_DECIDE);
                 finish = 1;
             }
             break;
         case 220: {
             int answer = message->YesNoCursor2(0);
             if (answer == 1) {
-                MenuSePlay(1);
+                MenuSePlay(SYSTEM_SE_DECIDE);
                 if (CheckRecoverPhotoNum() > 0) {
                     ExeScript(at_4362);
                     step = 240;
@@ -4805,7 +4901,7 @@ void CMenuInvent::IsAccessAlbum() {
                 int space = 0;
                 for (int i = 0; i < 50; i++) {
                     USER_PICTURE_INFO *photo = InventUserDataPtr->GetPhotoInfo(i);
-                    if (photo != NULL && photo->used == 0) {
+                    if (photo != NULL && *(s8 *) &photo->used == 0) {
                         space++;
                     }
                 }
@@ -4863,7 +4959,7 @@ void CMenuInvent::IsAccessAlbum() {
         case 301: {
             int answer = message->YesNoCursor2(0);
             if (answer == 1) {
-                MenuSePlay(1);
+                MenuSePlay(SYSTEM_SE_DECIDE);
                 if (CheckRecoverPhotoNum() > 0) {
                     ExeScript(at_4362);
                     step = 240;
@@ -4937,7 +5033,7 @@ void CMenuInvent::IsAccessAlbum() {
             if (McCheckMCPs2(card) == 0) {
                 card_removed = 1;
             } else {
-                unk_d78 = 0;
+                download_base = 0;
                 MCManagerPtr->SetFuncNo(19);
                 InitMenuDl(GetMenuDlTexture(), MCManagerPtr->GetSaveDataSize(4));
             }
@@ -4947,7 +5043,7 @@ void CMenuInvent::IsAccessAlbum() {
                 card_removed = 1;
             } else if (card->formatted == 1) {
                 MCManagerPtr->SetFuncNo(16);
-                unk_d78 = MCManagerPtr->total_transferred;
+                download_base = MCManagerPtr->total_transferred;
             } else if (card->formatted == 0) {
                 step = 500;
                 ExeScript(at_4356);
@@ -4961,7 +5057,7 @@ void CMenuInvent::IsAccessAlbum() {
             if (McCheckMCPs2(card) == 0) {
                 card_removed = 1;
             } else {
-                unk_d78 = 0;
+                download_base = 0;
                 MCManagerPtr->SetFuncNo(16);
                 InitMenuDl(GetMenuDlTexture(), MCManagerPtr->GetSaveDataSize(2));
                 ExeScript(at_4368__2);
@@ -4990,7 +5086,7 @@ void CMenuInvent::IsAccessAlbum() {
             } else if (card->free_size < MCManagerPtr->GetSaveDataSize(5) + 2) {
                 card_full = 1;
             } else {
-                if (unk_d7c == 1) {
+                if (album_save_mode == 1) {
                     step = 230;
                 }
                 ExeScript(at_4370);
@@ -5001,20 +5097,20 @@ void CMenuInvent::IsAccessAlbum() {
     }
     if (no_card != 0) {
         InitMenuDl(NULL, 0);
-        if (unk_d7c == 0) {
+        if (album_save_mode == 0) {
             step = 110;
         }
-        if (unk_d7c == 1) {
+        if (album_save_mode == 1) {
             step = 300;
         }
         ExeScript(at_4371);
     }
     if (card_full != 0) {
         InitMenuDl(NULL, 0);
-        if (unk_d7c == 0) {
+        if (album_save_mode == 0) {
             step = 100;
         }
-        if (unk_d7c == 1) {
+        if (album_save_mode == 1) {
             step = 300;
         }
         ExeScript(at_4372);
@@ -5023,10 +5119,10 @@ void CMenuInvent::IsAccessAlbum() {
     if (card_error == 1) {
         InitMenuDl(NULL, 0);
         ExeScript(at_4373);
-        if (unk_d7c == 0) {
+        if (album_save_mode == 0) {
             step = 100;
         }
-        if (unk_d7c == 1) {
+        if (album_save_mode == 1) {
             step = 300;
         }
     }
@@ -5053,7 +5149,7 @@ void CMenuInvent::IsAccessAlbum() {
             ExeScript(at_4377);
             MenuSePlay(31);
         }
-        unk_eb6 = 1;
+        cursor_snap = 1;
         step = 6;
         if (loaded < 0) {
             step = 0;
@@ -5164,6 +5260,7 @@ static int neta_sort(int mode, int first, int last, int *keys) {
     return swapped;
 }
 
+#ifdef NONMATCHING
 void CMenuInvent::UpdataNetaMemoStr() {
     int              sort_keys[(0x184)];
     CInventUserData *user_data;
@@ -5200,8 +5297,8 @@ void CMenuInvent::UpdataNetaMemoStr() {
 
     do {
         i = 0;
-        i |= neta_sort(unk_392, 0, standard_count, sort_keys);
-        i |= neta_sort(unk_392, standard_count, NetaMemoStrNum, sort_keys);
+        i |= neta_sort(memo_sort_mode, 0, standard_count, sort_keys);
+        i |= neta_sort(memo_sort_mode, standard_count, NetaMemoStrNum, sort_keys);
     } while (i != 0);
 
     for (i = NetaMemoStrNum; i < (0x200); i++) {
@@ -5209,6 +5306,10 @@ void CMenuInvent::UpdataNetaMemoStr() {
         NetaMemoStr[i] = 0;
     }
 }
+
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", UpdataNetaMemoStr__11CMenuInventFv);
+#endif
 
 void MakeMsgNetaName(CDC2Mes *message, CMenuPosDataForm *form, USER_PICTURE_INFO *photo, int *pos, int show_mark) {
     NetaNameBlank blank = at_4470;
@@ -5250,92 +5351,110 @@ void MakeMsgNetaName(CDC2Mes *message, CMenuPosDataForm *form, USER_PICTURE_INFO
     }
 }
 
-#ifdef NONMATCHING
 void MenuInventCreateCardDraw(int &tex_block, float *pos) {
+    int         i;
     mgCTexture *texture = Tex_Hatsumei;
+
     if (texture != NULL) {
         MenuReloadTexture(tex_block, texture->block);
         mgRect<int> card_rect(280, 466, 231, 45);
         mgRect<int> put_rect;
         put_rect.Set(0, 0, 0, 0);
         mgCDrawPrim *prim = GetMenuPrim();
-        ScreenPoint  origin = at_4493;
-        origin.xy[0] = (int) pos[0];
-        origin.xy[1] = (int) pos[1];
-        put_rect.Set(origin.xy[0], origin.xy[1], card_rect.right, card_rect.bottom);
+        int          origin[2] = {(int) pos[0], (int) pos[1]};
+        put_rect.Set(origin[0], origin[1], card_rect.right, card_rect.bottom);
         MenuColor rgba = at_4494;
         SetSpriteEnv(prim, 0);
         prim->Bilinear(1);
         prim->Begin(6);
         prim->Texture(texture);
-        int i;
+
         for (i = 0; i < 256; i++) {
             if (put_rect.top + put_rect.bottom >= 20) {
                 prim->Color(0x80, 0x80, 0x80, 0x80);
                 PrimQuad(prim, put_rect, card_rect);
+
                 if (put_rect.top >= 410) {
                     break;
                 }
             }
+
             put_rect.top += 46;
         }
+
         prim->End();
         mgCTexture *icon_tex = MenuPosData->item_icon_tex[0][0];
+
         if (icon_tex != NULL) {
             MenuReloadTexture(tex_block, icon_tex->block);
-            put_rect.left = origin.xy[0] + 35;
-            put_rect.top = origin.xy[1] + 6;
+            put_rect.left = origin[0] + 35;
+            put_rect.top = origin[1] + 6;
+
             for (i = 0; i < 256; i++) {
                 if (put_rect.top + put_rect.bottom >= 20) {
                     mgRect<float> icon_rect(put_rect.left, put_rect.top, 32.0f, 33.0f);
                     DrawOneItem(prim, icon_rect, InventUserDataPtr->GetCreateItemID(i), 2, NULL, rgba.rgba, 0);
+
                     if (put_rect.top >= 410) {
                         break;
                     }
                 }
+
                 put_rect.top += 46;
             }
         }
+
         MenuReloadTexture(tex_block, -1);
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", MenuInventCreateCardDraw__FRiPf);
-#endif
-#ifdef NONMATCHING
+
 void PictureDraw(mgCTexture *tex, USER_PICTURE_INFO *photo, float x, float y, float scale, int alpha, int red,
                  int blue, int green) {
+    float        w;
+    float        h;
+    float        right;
+    float        bottom;
+    mgRect<int>  tex_rect;
+    mgCDrawPrim *prim;
+    mgRect<int>  put_rect;
+
     if (tex == NULL) {
         return;
     }
-    float       w = 80.0f;
-    float       h = 64.0f;
-    mgRect<int> tex_rect;
+
+    w = 80.0f;
+    h = 64.0f;
     tex_rect.Set(0, 0, 64, 64);
     w *= scale;
     x += (80.0f - w) / 2.0f;
     h *= scale;
     y += (64.0f - h) / 2.0f;
+
     if (mgScreenWidth < x) {
         return;
     }
-    float bottom = y + h;
+
+    bottom = y + h;
+
     if (bottom < 0.0f) {
         return;
     }
-    mgCDrawPrim *prim = GetMenuPrim();
+
+    prim = GetMenuPrim();
     SetSpriteEnv(prim, 1);
     prim->Shading(0);
     prim->AntiAliasing(1);
     prim->Begin(6);
     prim->Color(0x20, 0x20, 0x20, alpha * 2 / 3);
     prim->Vertex(3.0f + (x - 2.0f), 3.0f + (y - 2.0f), 0.0f);
-    float right = 2.0f + (x + w);
+    right = x + w;
+    right = 2.0f + right;
     bottom = 2.0f + bottom;
     prim->Vertex(3.0f + right, 3.0f + bottom, 0.0f);
     prim->Color(10, 10, 10, alpha);
     prim->Vertex((x - 2.0f) - 2.0f, (y - 2.0f) - 2.0f, 0.0f);
     prim->Vertex(1.0f + right, 1.0f + bottom, 0.0f);
+
     if (0 < photo->neta_id) {
         if (photo->neta_id >= 1000) {
             prim->Color(CMenuInventPt->scoop_color[0], CMenuInventPt->scoop_color[1], 0x40, alpha);
@@ -5346,6 +5465,7 @@ void PictureDraw(mgCTexture *tex, USER_PICTURE_INFO *photo, float x, float y, fl
     } else {
         prim->Color(0xCD, 0xCD, 0xCD, alpha);
     }
+
     prim->Vertex(x - 2.0f, (y - 2.0f) - 1.0f, 0.0f);
     prim->Vertex(right - 1.0f, bottom - 1.0f, 0.0f);
     prim->End();
@@ -5357,14 +5477,11 @@ void PictureDraw(mgCTexture *tex, USER_PICTURE_INFO *photo, float x, float y, fl
     prim->Texture(tex);
     prim->Color(red, green, blue, alpha);
     prim->Direct(0x3B, 0x80 | (0x80UL << 32));
-    mgRect<int> put_rect;
     put_rect.Set(x, y, w, h);
     PrimQuad(prim, put_rect, tex_rect);
     prim->End();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", PictureDraw__FP10mgCTextureP17USER_PICTURE_INFOfffiiii);
-#endif
+
 void PictureMemoOne(float x, float y, int alpha) {
     mgCDrawPrim *prim;
 
@@ -5418,11 +5535,12 @@ void PictureDraw(int &tex_block, mgRect<float> rect, int picture_no, float scale
         PictureDraw(texture, photo, rect.left, rect.top, scale, alpha, rgba[0], rgba[1], rgba[2]);
     }
 }
-#ifdef NONMATCHING
+
 void MenuInventPictureBoardDraw(float *pos, int &tex_block, int alpha) {
     if (CMenuInventPt == NULL || CMenuInventPt->neta_board_form == NULL) {
         return;
     }
+
     USER_PICTURE_INFO *photos = InventUserDataPtr->GetPhotoInfo(0);
     MenuReloadTexture(tex_block, CMenuInventPt->photo_tex[0]->block);
     int         top = 108.0f + (4.0f + pos[1]);
@@ -5432,20 +5550,26 @@ void MenuInventPictureBoardDraw(float *pos, int &tex_block, int alpha) {
     SetMenuScissor(clip);
     int          i;
     mgCDrawPrim *prim = GetMenuPrim();
+
     for (i = 0; i < 30; i++) {
-        USER_PICTURE_INFO *photo = &photos[i];
-        if (photo->used == 0 || CMenuInventPt->SelectedNetaPhotoAlready(i) != 0) {
+        if (*(s8 *) &photos[i].used == 0 || CMenuInventPt->SelectedNetaPhotoAlready(i) != 0) {
             continue;
         }
-        float x = pos[0] + CMenuInventPt->photo_pos[i][0];
-        float y = CMenuInventPt->photo_scroll + CMenuInventPt->photo_pos[i][1];
+
+        USER_PICTURE_INFO *photo = &photos[i];
+        float              x = pos[0] + CMenuInventPt->photo_pos[i][0];
+        float              y = CMenuInventPt->photo_scroll + CMenuInventPt->photo_pos[i][1];
+
         if (y < 20.0f) {
             continue;
         }
+
         if (410.0f < y) {
             break;
         }
+
         PictureDraw(CMenuInventPt->photo_tex[i], photo, x, y, 0.7f, alpha, 0x80, 0x80, 0x80);
+
         if (*(s8 *) &photo->is_new != 0) {
             SetSpriteEnv(prim, 0);
             prim->Begin(6);
@@ -5453,51 +5577,58 @@ void MenuInventPictureBoardDraw(float *pos, int &tex_block, int alpha) {
             prim->Color(0x80, 0x80, 0x80, alpha);
             mgRect<int> new_mark;
             new_mark.Set(74, 342, 34, 14);
-            PrimQuad(prim, 35.0f + x, 44.8f + y, new_mark);
+            float mark_y = 44.8f + y;
+            PrimQuad(prim, 35.0f + x, mark_y, new_mark);
             prim->End();
         }
     }
+
     ResetMenuScissor();
+
     if (InventInNetaEffectFlag != 0) {
-        NetaEffectTarget target = at_4638;
-        target.x = 24.0f + pos[0];
-        target.y = 26.0f + pos[1];
+        float target[2] = {24.0f + pos[0], 26.0f + pos[1]};
+
         for (int i = 0; i < InventInNetaEffectNum4; i++) {
             if (InventInNetaEffect[i].active != 0) {
                 InventInNetaEffect[i].Step();
                 InventInNetaEffect[i].Draw(Tex_Hatsumei, 220, 490);
             }
         }
+
         for (int i = 0; i < InventInNetaEffectNum; i++) {
             short *effect_alpha = &CMenuInventPt->neta_effect_alpha[i];
+
             if (*effect_alpha > 0) {
                 float *effect_pos = CMenuInventPt->neta_effect_pos[i];
-                float  dy = target.y - effect_pos[1];
-                effect_pos[0] += (target.x - effect_pos[0]) / 26.0f;
+                float  dy = target[1] - effect_pos[1];
+                effect_pos[0] += (target[0] - effect_pos[0]) / 26.0f;
                 effect_pos[1] += dy / 12.0f;
+
                 if (dy < 0.0f) {
                     dy = -dy;
                 }
+
                 if (dy < 14.0f) {
                     *effect_alpha -= 5;
+
                     if (*effect_alpha < 0) {
                         *effect_alpha = 0;
                     }
                 } else {
                     CStarDust *star = CheckNotRunStarDust(InventInNetaEffect, InventInNetaEffectNum4);
+
                     if (star != NULL) {
                         int star_x = effect_pos[0] + GetRandF(34.0f);
                         star->Generate(star_x, 10.0f + effect_pos[1] + GetRandF(28.0f), 11, 7);
                     }
                 }
+
                 PictureMemoOne(effect_pos[0], effect_pos[1], CMenuInventPt->neta_effect_alpha[i]);
             }
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", MenuInventPictureBoardDraw__FPfRii);
-#endif
+
 void MenuInventAlbumPictureDraw(float *origin, int &loaded_tex) {
     mgRect<int>        unused_rect;
     mgRect<int>        clip_rect;
@@ -5658,7 +5789,6 @@ extern char at_5016[];
 extern u8   itemmenu_chr_rotflag;
 extern int *menu_randam_line_draw_postbl;
 
-#ifdef NONMATCHING
 inline CMenuInvent::CMenuInvent() {
     int i;
     card_cursor = card_top = 0;
@@ -5667,43 +5797,50 @@ inline CMenuInvent::CMenuInvent() {
     album_cursor = album_top = 0;
     memo_cursor = 0;
     memo_top = 0;
-    unk_24c = 0;
+    card_scroll_dir = 0;
     unk_112 = 0;
+
     for (i = 0; i < 3; i++) {
         neta_select_index[i] = -1;
         neta_select_type[i] = neta_select_state[i] = -1;
         unk_622[i] = 0;
     }
+
     neta_select_num = 0;
     neta_circle_angle = 0.0f;
     neta_circle_radius = 40.0f;
     create_step = 0;
     create_item_id = 0;
-    unk_584 = -1;
+    create_partial_match = -1;
+
     for (i = 0; i < 3; i++) {
         create_photo_neta[i] = 0;
     }
-    unk_594 = -1;
-    unk_5b8 = 0;
+
+    create_missing_slot = -1;
+    blink_time = 0;
     neta_circle_snap = 0;
     neta_flash_angle = 0.0f;
-    unk_390 = 0;
+    neta_effect_time = 0;
     album_scroll_reset = 0;
     album_scroll_x = album_scroll_y = 0.0f;
+
     for (i = 0; i < 30; i++) {
         photo_tex[i] = NULL;
         photo_pos[i][0] = (i % 2) * 0x58 + 8;
         photo_pos[i][1] = (i / 2) * 0x36 + 0x68;
     }
+
     for (i = 0; i < 50; i++) {
         album_tex[i] = NULL;
     }
+
     InitPhotoNetaBoardToAlbum(0);
-    unk_394 = NULL;
+    create_sound_buffer = NULL;
     photo_scroll = 0.0f;
     photo_bar = 0.0f;
-    unk_5f8 = 0.0f;
-    unk_5f4 = 0;
+    create_scale_in = 0.0f;
+    create_show_phase = 0;
     blink_count = 0;
     chara_read_info = NULL;
     chara_load_step = 0;
@@ -5713,8 +5850,8 @@ inline CMenuInvent::CMenuInvent() {
     arrow_count = 0;
     photo_only = 0;
     gradation_mode = 0;
-    unk_eb0 = 0;
-    unk_d78 = 0;
+    gradation_height = 0;
+    download_base = 0;
     mgZeroVector(neta_color);
     scoop_color[0] = 128.0f;
     scoop_color[1] = 128.0f;
@@ -5739,10 +5876,18 @@ inline CMenuInvent::CMenuInvent() {
     Init_MENUFORM_MAKEBRD_INFO(&make_board);
 }
 
+static inline u8 *StackBytes(mgCMemory *m) { return m->stack_bytes; }
+
+static inline int StackSize(mgCMemory *m) { return m->stack_size; }
+
+static inline int StackUsed(mgCMemory *m) { return m->stack_used; }
+
+#ifdef NONMATCHING
 int MenuInventInit(mgCMemory *memory, int *tex_block, int arg) {
-    u8 *pack = memory->stack_bytes;
-    MenuInventStack.stSetBuffer((u_long128 *) pack, memory->stack_size);
-    MenuInventStack.stAlloc64(memory->stack_used);
+    int size = StackSize(memory);
+    u8 *pack = StackBytes(memory);
+    MenuInventStack.stSetBuffer((u_long128 *) pack, size);
+    MenuInventStack.stAlloc64(StackUsed(memory));
     mgCMemory *stack = &MenuInventStack;
     debug_invent_successflag = 0;
     InventAlbumPtr = NULL;
@@ -5864,7 +6009,7 @@ int MenuInventInit(mgCMemory *memory, int *tex_block, int arg) {
             CMenuInventPt->album_top = sys->invent_album.top;
             CMenuInventPt->memo_cursor = sys->invent_memo.select;
             CMenuInventPt->memo_top = sys->invent_memo.top;
-            CMenuInventPt->unk_392 = sys->invent_unk_2e;
+            CMenuInventPt->memo_sort_mode = sys->invent_memo_sort_mode;
         }
     }
     CMenuInvent *menu = CMenuInventPt;
@@ -5882,6 +6027,7 @@ int MenuInventInit(mgCMemory *memory, int *tex_block, int arg) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", MenuInventInit__FP9mgCMemoryPii);
 #endif
+
 void CMenuInvent::NextDifferentMode(int next, int arg) {
     switch (next) {
         case 0:
@@ -6012,21 +6158,28 @@ int MenuInventDebugKey() {
 
     return 1;
 }
-#ifdef NONMATCHING
+
 void MenuInventDebugDraw() {
     DrawMenuFillBox(0x40, 0, 0, 0);
-    mgCTextureManager *tex_manager = &mgTexManager;
+    mgCTextureManager *texture_manager = &mgTexManager;
     mgCDrawPrim        prim;
+    mgCTextureManager *tex_manager = texture_manager;
     CMenuFont          font;
     char               line[0x40];
     float              scale[4];
     float              position[4];
     char               model_text[0x80];
+
     switch (CMenuInventPt->key_arg_no) {
         case 0: {
-            int y = 80 - debug_invent_select * 20;
-            DrawMenuFillBox(270.0f, 80.0f, 220.0f, 300.0f, 0x80, 0, 0, 0);
+            int   y = 80 - debug_invent_select * 20;
+            float top = 80.0f;
+            float left = 270.0f;
+            float width = 220.0f;
+            float height = 300.0f;
+            DrawMenuFillBox(left, top, width, height, 0x80, 0, 0, 0);
             tex_manager->ReloadTexture(MenuArg.mes_tex_block, (sceVif1Packet *) NULL);
+
             for (int i = 0; i < pic_name_info_num; i++) {
                 if (y >= 80) {
                     sprintf(line, at_5153, pic_name_info_top[i].neta_id, pic_name_info_top[i].name);
@@ -6034,19 +6187,24 @@ void MenuInventDebugDraw() {
                     font.SetPos(270, y);
                     font.DrawDirect(font.str, font.pos_x, font.pos_y);
                 }
+
                 y += 20;
+
                 if (y >= 380) {
                     break;
                 }
             }
+
             font.SetStr(at_5154);
             font.SetPos(250, 80);
             font.DrawDirect(font.str, font.pos_x, font.pos_y);
+
             if (debug_invent_successflag != 0) {
                 font.SetStr(at_5155);
                 font.SetPos(20, 60);
                 font.DrawDirect(font.str, font.pos_x, font.pos_y);
             }
+
             if (CMenuInventPt->create_chara != NULL) {
                 CMenuInventPt->create_chara->GetScale(scale);
                 CMenuInventPt->create_chara->GetPosition(position);
@@ -6055,13 +6213,12 @@ void MenuInventDebugDraw() {
                 font.SetPos(40, 340);
                 font.DrawDirect(font.str, font.pos_x, font.pos_y);
             }
+
             break;
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/inventmn", MenuInventDebugDraw__Fv);
-#endif
+
 int MenuInventPushKey(int pad, int pushed) {
     int mode = CMenuInventPt->key_arg_no;
 
@@ -6167,9 +6324,9 @@ int MenuInventPushKey(int pad, int pushed) {
 
                 if (old_row != new_row) {
                     if (old_row < new_row) {
-                        CMenuInventPt->unk_24c = 1;
+                        CMenuInventPt->card_scroll_dir = 1;
                     } else {
-                        CMenuInventPt->unk_24c = 0;
+                        CMenuInventPt->card_scroll_dir = 0;
                     }
                 }
 
@@ -6366,7 +6523,7 @@ int MenuInventPushKey(int pad, int pushed) {
 
                             CMenuInventPt->mode = 14;
                             CMenuInventPt->step = 0;
-                            CMenuInventPt->unk_d7c = 0;
+                            CMenuInventPt->album_save_mode = 0;
                             CMenuInventPt->unk_112 = 1;
                             break;
                         case 2:
@@ -6484,7 +6641,7 @@ int MenuInventPushKey(int pad, int pushed) {
                             if (CMenuInventPt->unk_112 == 1) {
                                 CMenuInventPt->mode = 14;
                                 CMenuInventPt->step = 201;
-                                CMenuInventPt->unk_d7c = 1;
+                                CMenuInventPt->album_save_mode = 1;
                                 command = K_COMMAND_HANDLED;
                                 CMenuInventPt->ExeScript(at_5550);
                             }
@@ -6641,8 +6798,9 @@ int MenuInventPushKey(int pad, int pushed) {
                         if (neta > 0 && InventUserDataPtr->CheckNetaFlag(neta) < 0) {
                             CursorPos position;
                             CMenuInventPt->GetNetaBoardCursorPosition(i, &position.x);
-                            CMenuInventPt->neta_effect_pos[InventInNetaEffectNum][0] = (float) position.x;
-                            CMenuInventPt->neta_effect_pos[InventInNetaEffectNum][1] = (float) position.y;
+                            float *effect = CMenuInventPt->neta_effect_pos[InventInNetaEffectNum];
+                            effect[0] = (float) position.x;
+                            effect[1] = (float) position.y;
                             CMenuInventPt->neta_effect_alpha[InventInNetaEffectNum] = 0x80;
                             CMenuInventPt->new_neta_photo[i] = 1;
                             InventInNetaEffectNum += 1;
@@ -6735,10 +6893,10 @@ int MenuInventPushKey(int pad, int pushed) {
                 } while (i < 3);
 
                 CMenuInventPt->create_item_id =
-                    InventManagePt->CheckInventEnable(ideas, &CMenuInventPt->unk_584);
+                    InventManagePt->CheckInventEnable(ideas, &CMenuInventPt->create_partial_match);
                 InventManagePt->GetInventDataInfoByItemID(CMenuInventPt->create_item_id);
                 CMenuInventPt->mode = 5;
-                CMenuInventPt->unk_5fc = -2;
+                CMenuInventPt->create_load_state = -2;
 
                 if (InventUserDataPtr->IsAlreadyCreatedItem(CMenuInventPt->create_item_id) >= 0) {
                     CMenuInventPt->step = 4;
@@ -6759,14 +6917,14 @@ int MenuInventPushKey(int pad, int pushed) {
                 if (item_id <= 0) {
                     CMenuInventPt->PrepareNextMode(0);
                 } else {
-                    CMenuInventPt->unk_FC = item_id;
+                    CMenuInventPt->make_item_no = item_id;
                     CMenuInventPt->make_num = 1;
                     CMenuInventPt->make_material =
                         &InventManagePt->GetInventDataInfoByItemID(item_id)->materials;
                     CMenuInventPt->mode = 6;
                     CMenuInventPt->step = 0;
                     CMenuInventPt->make_cursor = 1;
-                    CDataCommon *common = GetCommonItemData(CMenuInventPt->unk_FC);
+                    CDataCommon *common = GetCommonItemData(CMenuInventPt->make_item_no);
                     CMenuInventPt->make_num_max = 1;
 
                     if (common != NULL) {
@@ -6780,7 +6938,7 @@ int MenuInventPushKey(int pad, int pushed) {
                         CMenuInventPt->step = 3;
                         CMenuInventPt->ExeScript(at_5555);
                         ItemNameList1 item_name = at_5457;
-                        item_name.name[0] = GetItemMessage(CMenuInventPt->unk_FC);
+                        item_name.name[0] = GetItemMessage(CMenuInventPt->make_item_no);
                         MenuDCMsg[4]->SetMsgItemNo(item_name.name, 1);
                         MenuDCMsg[4]->SetMsgVolumeNoOne(common->max_num);
                     } else {
@@ -6789,7 +6947,7 @@ int MenuInventPushKey(int pad, int pushed) {
                         }
 
                         ItemNameList5 names = at_5460;
-                        names.name[0] = GetItemMessage(CMenuInventPt->unk_FC);
+                        names.name[0] = GetItemMessage(CMenuInventPt->make_item_no);
 
                         for (int i = 0; i < CMenuInventPt->make_material->num; i++) {
                             names.name[1 + i] =
@@ -6820,7 +6978,7 @@ int MenuInventPushKey(int pad, int pushed) {
             case K_COMMAND_QUIT:
                 CMenuInventPt->mode = 14;
                 CMenuInventPt->step = 201;
-                CMenuInventPt->unk_d7c = 1;
+                CMenuInventPt->album_save_mode = 1;
                 CMenuInventPt->ExeScript(at_5550);
                 MenuSePlay(5);
                 break;
@@ -6859,11 +7017,12 @@ int MenuInventPushKey(int pad, int pushed) {
     return 1;
 }
 #ifdef NONMATCHING
+
 int MenuInventKey() {
     int          result = 0;
-    int          item_pos[8][2];
+    int          item_pos[16];
     char        *names[MES_ITEM_MAX];
-    int          number_pos[8][2];
+    int          number_pos[16];
     int          numbers[8];
     CardListTops tops;
     int          count_x;
@@ -6938,30 +7097,30 @@ int MenuInventKey() {
                 CMenuInventPt->SelectedNetaPhotoAlready(CMenuInventPt->photo_cursor);
             }
             if (CMenuInventPt->neta_board_form != NULL) {
-                CMenuInventPt->neta_board_form->GetPutPosXY(at_5742, item_pos[0][0], item_pos[0][1]);
-                item_pos[0][1] += 5;
+                CMenuInventPt->neta_board_form->GetPutPosXY(at_5742, item_pos[0], item_pos[1]);
+                item_pos[1] += 5;
             }
-            MakeMsgNetaName(list_message, MenuMesForm[2], photo, item_pos[0], 1);
+            MakeMsgNetaName(list_message, MenuMesForm[2], photo, item_pos, 1);
             int      line;
             CDC2Mes *name_message = MenuDCMsg[7];
             if (name_message != NULL) {
                 short key = CMenuInventPt->key_arg_no;
                 if (key == 4 || key == 5) {
                     if (CMenuInventPt->album_big_form != NULL && InventAlbumPtr != NULL) {
-                        CMenuInventPt->album_big_form->GetPutPosXY(at_5743, item_pos[0][0], item_pos[0][1]);
-                        item_pos[0][1] += 5;
+                        CMenuInventPt->album_big_form->GetPutPosXY(at_5743, item_pos[0], item_pos[1]);
+                        item_pos[1] += 5;
                         MenuMesForm[7]->draw_flag = 1;
                         name_message->line_pos_on[0] = 0;
                         MakeMsgNetaName(name_message, MenuMesForm[7],
-                                        InventAlbumPtr->GetAlbumPhotoInfo(CMenuInventPt->album_cursor), item_pos[0], 1);
+                                        InventAlbumPtr->GetAlbumPhotoInfo(CMenuInventPt->album_cursor), item_pos, 1);
                     }
                 } else if (key != 6 && CMenuInventPt->unk_112 == 0 && CMenuInventPt->photo_only == 0) {
                     for (line = 0; line < 3; line++) {
                         CMenuPosDataForm *name_form = CMenuInventPt->neta_name_form[line];
                         if (name_form != NULL) {
-                            name_form->GetPutPosXY(at_5744, item_pos[0][0], item_pos[0][1]);
-                            int x = item_pos[0][0];
-                            int y = item_pos[0][1];
+                            name_form->GetPutPosXY(at_5744, item_pos[0], item_pos[1]);
+                            int x = item_pos[0];
+                            int y = item_pos[1];
                             if (line >= 0 && line < MES_LINE_MAX) {
                                 name_message->line_pos[line][0] = x;
                                 name_message->line_pos[line][1] = y;
@@ -6971,8 +7130,7 @@ int MenuInventKey() {
                     }
                 }
             }
-            CMenuPosDataForm *count_form = MenuMesForm[3];
-            if (count_form != NULL) {
+            if (MenuMesForm[3] != NULL) {
                 count_x = 370;
                 count_y = 16;
                 if (LanguageCode == 1) {
@@ -6980,7 +7138,7 @@ int MenuInventKey() {
                     count_y = 14;
                 }
                 if (LanguageCode < 2) {
-                    count_form->SetPos(count_x, count_y);
+                    MenuMesForm[3]->SetPos(count_x, count_y);
                 } else {
                     MenuPosData->GetEtcTblValue(at_5745, count_x, count_y);
                 }
@@ -7003,7 +7161,7 @@ int MenuInventKey() {
             int line = 0;
             tops.top[0] = CMenuInventPt->card_top;
             tops.top[1] = CMenuInventPt->card_top - 1;
-            int top = tops.top[CMenuInventPt->unk_24c];
+            int top = tops.top[CMenuInventPt->card_scroll_dir];
             InventUserDataPtr->GetHatsumeiNum();
             CMenuPosDataForm *list_form = CMenuInventPt->card_list_form;
             float             list_x = list_form->x;
@@ -7012,28 +7170,29 @@ int MenuInventKey() {
             int               number_x = 11.0f + list_x;
             for (int card = top; card < 0; card++) {
                 names[line] = NULL;
-                item_pos[line][0] = name_x;
-                item_pos[line][1] = y;
+                item_pos[line * 2] = name_x;
+                item_pos[line * 2 + 1] = y;
                 y += 46;
                 line++;
             }
             int europe = CheckNowEurope();
             for (; line < 7; line++) {
                 int card = top + line;
-                item_pos[line][0] = name_x;
-                item_pos[line][1] = y;
-                number_pos[line][0] = number_x;
-                number_pos[line][1] = y + 2;
+                int pos = line * 2;
+                item_pos[pos] = name_x;
+                item_pos[pos + 1] = y;
+                number_pos[pos] = number_x;
+                number_pos[pos + 1] = y + 2;
                 int item = InventUserDataPtr->GetCreateItemID(card);
                 names[line] = GetItemMessage(item);
                 numbers[line] = card + 1;
                 if (europe != 0) {
                     if (card + 1 < 10) {
-                        number_pos[line][0] -= 8;
+                        number_pos[pos] -= 8;
                     } else if (card + 1 < 100) {
-                        number_pos[line][0] += 2;
+                        number_pos[pos] += 2;
                     } else {
-                        number_pos[line][0] += 12;
+                        number_pos[pos] += 12;
                     }
                 }
                 if (card == 0) {
@@ -7044,9 +7203,9 @@ int MenuInventKey() {
                 y += 46;
             }
             list_message->SetMsgItemNo(names, 6);
-            list_message->SetMsgItemPos(&item_pos[0][0], 6);
+            list_message->SetMsgItemPos(item_pos, 6);
             number_message->SetMsgVolumeNo(numbers, digit_tbl3_5641, 6);
-            number_message->SetMsgItemPos(&number_pos[0][0], 6);
+            number_message->SetMsgItemPos(number_pos, 6);
             CGameDataUsed *item = CMenuInventPt->SearchNowPosItemExist();
             if (CMenuInventPt->key_arg_no == 2 && InventUserDataPtr->GetCreateItemID(CMenuInventPt->card_cursor) <= 0) {
                 item_message->MakeMsg(617);

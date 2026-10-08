@@ -1,5 +1,11 @@
 # title: reverse-engineering notes
 
+`TitleBootInit`, `TitleModeKey`, and `TitleHDDInstallDraw` retain C++ drafts
+under `NONMATCHING`; the matching build uses retail `INCLUDE_ASM` gaps for all
+three. The promoted `TitleHDDInstallDraw` emitted 0x424 bytes against retail's
+0x410 and moved the following function after alignment. Restoring all three
+gaps also restores the base unit's data layout.
+
 The title main-loop mode (`LOOP_TITLE`). No class is owned by this unit (`class_units.tsv`
 has none); the header declares the unit's own structs and enums, the 8 global functions and
 the 3 global data. No first-game counterpart: the first game's `title`/`titleloop` overlay is
@@ -173,4 +179,4 @@ established.
 - CCharacter2/CActionChara is constructed inline in TitleBootInit (new 0x1030).
 
 ## DrawMenuDl draft
-The install progress panel draws two quads for its bar, then three textured rows with a shadow pass. Its fill changes from grey to green at progress 1. The panel width uses the short values at table_2611 offsets 4 and 0x20. The guarded C++ draft compiles, differs from retail, and retains the assembly fallback.
+The install progress panel draws two quads for its bar, then three textured rows with a shadow pass. Its fill changes from grey to green at progress 1. The panel width uses the short values at table_2611 offsets 4 and 0x20. Its guarded C++ draft differs from retail, so the matching build uses the assembly gap.

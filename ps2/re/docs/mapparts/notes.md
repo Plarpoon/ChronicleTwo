@@ -1,5 +1,9 @@
 # mapparts: reverse-engineering notes
 
+`CMapParts::Copy` and `CMapParts::AssignFuncAnime` are currently supplied by
+retail assembly. Their list nodes and map pieces are constructed as C++ objects
+in retail; the source no longer writes virtual-table addresses into raw storage.
+
 Header: `ps2/include/mapparts.hpp`. Declares `CMapParts`, `CMapTreasureBox`, `InScreenFuncInfo`,
 `MAP_PARTS_COLOR_MAX`. Unit owns no plain-named global data (only `at_244` = float4 {0,0,0,1}
 literal and the three vtables).

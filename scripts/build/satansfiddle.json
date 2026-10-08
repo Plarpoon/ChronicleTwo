@@ -6,6 +6,11 @@
   "default_fpr_helper_mask": 0,
   "translation_units": [
     {
+      "name": "monster.cpp",
+      "gpr_helper_mask": 48,
+      "fpr_helper_mask": 0
+    },
+    {
       "name": "sound.cpp",
       "gpr_helper_mask": 32,
       "fpr_helper_mask": 0
@@ -40,13 +45,6 @@
         "function": "DngMainKey__Fv",
         "value_type": "binary32",
         "value_bits": "0x41A00000",
-        "evaluate_first": true
-      },
-      {
-        "translation_unit": "dng_object.cpp",
-        "function": "Step__11CMachineGunFv",
-        "value_type": "binary32",
-        "value_bits": "0x00000000",
         "evaluate_first": true
       },
       {

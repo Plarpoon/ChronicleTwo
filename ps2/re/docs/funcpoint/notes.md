@@ -108,11 +108,21 @@ angle, while the saw mode falls linearly with that remainder. A nonpositive peri
 returns one without performing a remainder operation. Fire and flare return a random
 weight between 0.7 and one; other point types return one.
 
-The current native candidate produces 0x228 bytes versus retail's 0x220. Its two
-conditional point-light returns acquire local branch joins that retail sends directly
-to the shared epilogue. Replacing these returns with conditional assignments can
-reach the retail size but retains a floating register across calls or folds the
-retail multiply by one, so size equality does not establish matching. Private stable
-selectors for binary32 one and full-turn angle (`0x40c90fdb`) did not remove the
-original differences. The assembly fallback remains until the candidate's complete
-bytes and relocations match.
+The original guarded candidate produced 0x228 bytes versus retail's 0x220.
+The native source now gives the signed remainder a named `phase` local before
+converting it to float in the sine and saw modes. The sine angle multiplies that
+phase by the full-turn constant before dividing by the period. Complete canonical
+verification of this merged native source remains necessary; size equality alone
+does not establish matching.
+
+## `CFuncPointMngr::Add(int, mgCMemory*)` draft
+The typed placement-new draft differs only in the placement-new null branch: retail
+tests `v0` and copies the returned pointer into `s0` in the branch delay slot,
+while MWCC's current expression copies it before testing `s0`. Both versions
+produce the same node construction and calls, but the linked image differs by seven
+bytes. The assembly implementation remains active until this branch order matches.
+Combining allocation with the null test, changing the later branch layout,
+removing the redundant cast on `mgCMemory::Alloc`, separating the allocation
+buffer, and changing the pointer declaration or constructor parentheses all
+retain those two differing instructions. Local scheduling and optimizer pragmas
+either leave the same pair or change many additional instructions.

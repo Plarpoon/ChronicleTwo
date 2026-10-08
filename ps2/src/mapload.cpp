@@ -94,7 +94,6 @@ extern char          at_1437[];
 extern char          at_1438[];
 extern char          at_1439[];
 extern char          at_1544[];
-MAP_TIME_BAND        GetTimeBand(float time);
 int                  mapDummy(SPI_STACK *stack, int argument_count);
 static int           IsAddMode();
 int                  mapPARTS(SPI_STACK *stack, int argument_count);
@@ -234,12 +233,12 @@ MAP_TIME_BAND GetTimeBand(float time) {
 }
 
 float CMap::GetNowTime() {
-    if (time_enable) {
+    if (map_info.time_enable) {
         return now_time;
     }
 
-    if (fixed_time_enable) {
-        return fixed_time;
+    if (map_info.fixed_time_enable) {
+        return map_info.fixed_time;
     }
 
     return 12.0f;
@@ -250,7 +249,7 @@ int CMap::GetNowTimeBand() {
 }
 
 int CMap::GetNowTimeLightBand() {
-    int band_count = time_light_num;
+    int band_count = map_info.time_light_num;
 
     if (band_count < 2) {
         return 0;
@@ -342,7 +341,7 @@ void CMap::GetLightingSunRatio(float *out_ratio) {
 }
 
 int CMap::GetTimeLightingRatio(float *ratio) {
-    int   band_count = time_light_num;
+    int   band_count = map_info.time_light_num;
     int   i;
     float hour;
     float blend;
@@ -394,12 +393,12 @@ void CMap::GetSunPoint(float *out_pos) {
 
     mgUnitMatrix(matrix);
     sceVu0RotMatrixZ(matrix, matrix, mgAngleLimit((GetNowTime() * 6.2831855f) / 24.0f));
-    sceVu0RotMatrixY(matrix, matrix, sun_angle);
+    sceVu0RotMatrixY(matrix, matrix, map_info.sun_angle);
     sceVu0ApplyMatrix(out_pos, matrix, sun);
 }
 
 float CMap::GetLightNoTime(int index) {
-    int   band_count = time_light_num;
+    int   band_count = map_info.time_light_num;
     float hour;
 
     if (index >= band_count || GetTimeEnable() == 0) {
@@ -432,7 +431,7 @@ float CMap::GetLightNoTime(int index) {
 }
 
 int CMap::GetTimeEnable() {
-    return time_enable;
+    return map_info.time_enable;
 }
 
 void CMap::GetLightInfo(CMapLightingInfo *out_info) {
@@ -440,9 +439,9 @@ void CMap::GetLightInfo(CMapLightingInfo *out_info) {
         return;
     }
 
-    int num = time_light_num;
+    int num = map_info.time_light_num;
 
-    if (GetActiveLightNo() >= num || (!GetTimeEnable() && !fixed_time_enable)) {
+    if (GetActiveLightNo() >= num || (!GetTimeEnable() && !map_info.fixed_time_enable)) {
         CMapLightingInfo *info = GetLightingInfo(GetActiveLightNo());
 
         if (info != NULL) {
@@ -458,7 +457,7 @@ void CMap::GetLightInfo(CMapLightingInfo *out_info) {
     int band = GetNowTimeLightBand();
 
     for (int i = 0; i < num; i++) {
-        list[i] = CMapInfo::GetLightingInfo(i);
+        list[i] = map_info.GetLightingInfo(i);
 
         if (list[i] == NULL) {
             return;
@@ -467,7 +466,7 @@ void CMap::GetLightInfo(CMapLightingInfo *out_info) {
 
     *out_info = *list[band];
 
-    if (time_light_blend) {
+    if (map_info.time_light_blend) {
         GetLightInfo(out_info, ratio, GetTimeLightingRatio(ratio));
 
         // The first directional light follows the sun, never lower than a fixed height.
@@ -508,13 +507,13 @@ mgMaterial *mgCFrame::GetMaterial(int index) {
 }
 
 CMapLightingInfo *CMap::GetLightingInfo(int no) {
-    return CMapInfo::GetLightingInfo(no);
+    return map_info.GetLightingInfo(no);
 }
 
 #pragma inline_depth(0)
 
 int CMap::GetActiveLightNo() {
-    return CMapInfo::GetActiveLightNo();
+    return map_info.GetActiveLightNo();
 }
 
 #pragma inline_depth reset
@@ -535,10 +534,10 @@ void CMap::GetLightInfo(CMapLightingInfo *out_info, float *ratio, int num) {
     int               fog_num = 0;
     int               i;
     int               j;
-    int               lighting_num = time_light_num;
+    int               lighting_num = map_info.time_light_num;
 
     for (i = 0; i < lighting_num; i++) {
-        list[i] = CMapInfo::GetLightingInfo(i);
+        list[i] = map_info.GetLightingInfo(i);
 
         if (list[i] == NULL) {
             return;
@@ -568,7 +567,7 @@ void CMap::GetLightInfo(CMapLightingInfo *out_info, float *ratio, int num) {
                 work[0] = list[i]->fog.r;
                 work[1] = list[i]->fog.g;
                 work[2] = list[i]->fog.b;
-                work[3] = list[i]->fog.unk_b;
+                work[3] = list[i]->fog.a;
                 sceVu0ScaleVector(work, work, ratio[i]);
                 mgAddVector(fog_color, work);
                 work[0] = list[i]->fog.near_dist;
@@ -618,7 +617,7 @@ void CMap::GetLightInfo(CMapLightingInfo *out_info, float *ratio, int num) {
     out_info->fog.r = fog_color[0];
     out_info->fog.g = fog_color[1];
     out_info->fog.b = fog_color[2];
-    out_info->fog.unk_b = fog_color[3];
+    out_info->fog.a = fog_color[3];
     out_info->fog.near_dist = fog[0];
     out_info->fog.far_dist = fog[1];
     out_info->fog.far_value = fog[2];
@@ -1891,9 +1890,9 @@ int mapFUNC_EVENT_DATA(SPI_STACK *stack, int argc) {
     event = &mapNowFuncPoint->event;
     event->event_no = spiGetStackInt(stack++);
     event->point_no = spiGetStackInt(stack++);
-    event->unk_2c = spiGetStackInt(stack++);
-    event->unk_30 = spiGetStackInt(stack++);
-    event->unk_34 = spiGetStackInt(stack++);
+    event->arg1 = spiGetStackInt(stack++);
+    event->arg2 = spiGetStackInt(stack++);
+    event->arg3 = spiGetStackInt(stack++);
 
     if (kind_name != NULL) {
         if (strcmp(kind_name, at_1278) == 0) {
@@ -1923,10 +1922,10 @@ int mapFUNC_EVENT_DATA(SPI_STACK *stack, int argc) {
 
         if (target_name != NULL) {
             if ((u32) strlen(target_name) >= 0x10) {
-                strncpy(event->unk_38, target_name, 0xF);
-                event->unk_38[0xF] = 0;
+                strncpy(event->target, target_name, 0xF);
+                event->target[0xF] = 0;
             } else {
-                strcpy(event->unk_38, target_name);
+                strcpy(event->target, target_name);
             }
         }
     }
@@ -1967,8 +1966,8 @@ int mapFUNC_SOUND_DATA(SPI_STACK *stack, int argc) {
     }
 
     sound->se_no = spiGetStackInt(stack++);
-    sound->unk_24 = spiGetStackFloat(stack++);
-    sound->unk_28 = spiGetStackFloat(stack++);
+    sound->near_dist = spiGetStackFloat(stack++);
+    sound->far_dist = spiGetStackFloat(stack++);
     sound->unk_2c = (float) spiGetStackInt(stack++);
     sound->shape = spiGetStackInt(stack++);
     spiGetStackVector(sound->start, stack);

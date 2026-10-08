@@ -152,21 +152,22 @@ struct BASE_MONSTER_TBL {
     s32   unk_4c;
     s32   life;         /**< Life that the monster starts with. */
     s8    user_mons_id; /**< Monster that the player can turn into to pass as this one; -1 for none. */
-    u16   unk_56;
-    u16   unk_58;
-    s16   unk_5a;
+    u16   reward_exp; /**< Experience awarded for defeating this monster. */
+    u16   reward_money; /**< Money awarded for defeating this monster. */
+    u16   unk_5a;
     float whp;            /**< Wear that a melee hit on the monster does to the main character's weapon. */
-    s16   gekirin_num;    /**< Hits that fill the monster's rage. */
+    u16   gekirin_num;    /**< Hits that fill the monster's rage. */
     s8    guard_rate;     /**< Chance out of 100 that the monster guards a hit. */
-    s8    escape_rate[2]; /**< Chances out of 100 that the monster dodges each kind of attack of its target. */
-    s16   attack;         /**< Attack power of the monster. */
+    s8    escape_rate0; /**< Chance out of 100 that the monster dodges an attack of its target whose murderous mode is 0. */
+    s8    escape_rate1; /**< Chance out of 100 that the monster dodges an attack of its target whose murderous mode is 1. */
+    u16   attack;         /**< Attack power of the monster. */
     u8    defense;        /**< Defence that is taken off the attack power of a hit. */
     s8    stagger;        /**< Stagger that hits must build up to make the monster flinch; 0 to flinch at every hit. */
     s8    boss;           /**< Nonzero for a boss, whose life is shown across the foot of the screen. */
     s8    sw_effect_num;  /**< Number of sword after-images that the monster's model carries. */
-    s16   unk_6c[8];
+    s16   element_resist[8]; /**< Percentages that reduce damage from each element. */
     s16   ext_param[12]; /**< Percentages that scale the damage of each kind of attack. */
-    u32   unk_94;
+    u32   flags; /**< Bits that suppress normal damage and knockback reactions. */
     u32   unk_98;
     s32   next_id; /**< Monster kind that is loaded along with this one; -1 for none. */
 
@@ -176,10 +177,10 @@ struct BASE_MONSTER_TBL {
     };
 
     u32 resist_attr; /**< Hit attribute bits that cannot leave statuses on the monster. */
-    s16 unk_ac;
-    s16 unk_ae;
-    s8  unk_b0;
-    s16 unk_b2;
+    s16 status_chance; /**< Base chance used when applying a hit status. */
+    s16 ratio_damage_rate; /**< Percentage used when scaling ratio-based damage. */
+    s8  area_no; /**< Area number assigned to this monster definition. */
+    s16 memo_index; /**< Index of this monster in the encyclopedia. */
     s16 unk_b4;
 };
 
@@ -222,7 +223,7 @@ STATIC_ASSERT(sizeof(MONSTER_STATUS) == 0xC);
  */
 struct MONSTER_REACT {
     s16 kind; /**< DamageKind that the entry is for. */
-    s16 flag; /**< Bits added to the battle area's unk_98 when a hit of this kind lands. */
+    s16 flag; /**< Bits added to the battle area's practice_actions when a hit of this kind lands. */
     s16 blow; /**< Nonzero when a hit of this kind knocks the monster back. */
     s16 pad;
 };
@@ -302,7 +303,7 @@ public:
     s16               piyori_time;  /**< Steps left of the monster's stun. */
     MONSTER_STATUS    status;       /**< Statuses that hits have left on the monster. */
     u32               attrib;       /**< Behaviour bits that the script sets, MONSTER_ATTRIB bits. */
-    s32               unk_134c;
+    s32               message_no; /**< Message parameter associated with the active monster. */
     s32               locate_param;    /**< Value given with the monster in the floor's list of monsters; -1 for none. */
     s16               gate_key;        /**< Gate key that the monster drops when it dies; 0 or less for none. */
     s16               no_damage_cnt;   /**< Hits that did the monster no damage. */

@@ -139,3 +139,4 @@ constants, without relying on their visitation order.
 With MWCC 3.0-011126, `-O3,p`, both mwccgap passes and the normal section
 fixup, the complete unit passes the retail checker: `0x3150` initialized bytes and
 86 relocations. This remains true with the call-argument consumer hook.
+`CollisionFish` differs by eight register choices in its final per-lane separation loop; moving the lane counter declaration did not change the allocation.

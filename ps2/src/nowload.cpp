@@ -66,24 +66,9 @@ extern int        wave_status;
 extern int        play_time_count;
 NowLoadingInfo    LoadInfo;
 extern float      ProgBarWidthStep;
-#include <cstdio>
-#include <cstring>
 
-#include "dataread.hpp"
-#include "mainloop.hpp"
-#include "mg_texture.hpp"
-#include "mglib.hpp"
-#include "scenesnd.hpp"
-#include "snd_mngr.hpp"
 #ifdef NONMATCHING
-#include "event.hpp"
-#include "gamepad.hpp"
-#include "mg_drawprim.hpp"
 #include "mg_tanime.hpp"
-#include "padcontrol.hpp"
-#include "savedata.hpp"
-#include "title.hpp"
-
 #endif
 
 extern int           bgm_status[7];
@@ -122,11 +107,11 @@ void NowLoadingLoop(void *unused) {
                 prim.Initialize(NULL, NULL);
                 prim.DepthTestEnable(0);
                 prim.AlphaBlendEnable(1);
-                prim.ZMask(1);
+                prim.ZMask(MG_Z_MASK_WRITE);
                 prim.TextureMapEnable(0);
                 prim.Shading(1);
                 prim.AntiAliasing(1);
-                prim.Begin(4);
+                prim.Begin(MG_PRIM_TRIANGLE_STRIP);
                 float        x_local = 91.0f;
                 const float &x_value = x_local;
                 float        top_y;
@@ -147,7 +132,7 @@ void NowLoadingLoop(void *unused) {
                 prim.TextureMapEnable(1);
                 prim.AntiAliasing(0);
                 prim.Bilinear(0);
-                prim.Begin(6);
+                prim.Begin(MG_PRIM_SPRITE);
                 prim.Color(128, 128, 128, 128);
                 prim.Texture(loading);
                 prim.TextureCrd(image_rect.left, image_rect.top);
@@ -454,9 +439,9 @@ int PauseLoop() {
     prim.DepthTestEnable(0);
     prim.AlphaBlendEnable(0);
     prim.Bilinear(0);
-    prim.ZMask(-1);
+    prim.ZMask(MG_Z_MASK_MASKED);
     prim.TextureMapEnable(1);
-    prim.Begin(6);
+    prim.Begin(MG_PRIM_SPRITE);
     prim.Texture(backdrop);
 
     if ((signed char) config->unk_35 == 0) {
@@ -487,7 +472,7 @@ int PauseLoop() {
         int x = mgScreenWidth / 2 - width / 2;
         int y = mgScreenHeight / 2 - height / 2;
         prim.AlphaBlendEnable(1);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         prim.Texture(skip);
         prim.Color(128, 128, 128, 128);
         prim.TextureCrd(0, 0);
@@ -599,7 +584,7 @@ void SCElogoFade(int fade_out, mgCMemory *memory) {
         prim.Initialize(NULL, NULL);
         prim.AlphaBlendEnable(1);
         prim.TextureMapEnable(1);
-        prim.Begin(6);
+        prim.Begin(MG_PRIM_SPRITE);
         int opacity = opacity_value / 20;
 
         if (opacity > 128) {

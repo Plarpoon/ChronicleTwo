@@ -96,7 +96,6 @@ static void QuatToMat(float *quaternion, float (*matrix)[4]) {
     matrix[3][3] = 1.0f;
 }
 
-// clang-format off
 /**
  *
  * Transforms eight corners by the product of two matrices, leaving the results in VU0
@@ -142,6 +141,8 @@ void test1(float (*corners)[4], float (*screen)[4], float (*matrix)[4], float *o
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", test1__FPA4_fPA4_fPA4_fPfPf);
 #endif
+void test1(float (*corners)[4], float (*screen)[4], float (*matrix)[4], float *out_max,
+           float *out_min);
 // clang-format on
 // clang-format off
 /**
@@ -180,6 +181,7 @@ void test2(float *out_max, float *out_min) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_frame", test2__FPfPf);
 #endif
+void test2(float *out_max, float *out_min);
 // clang-format on
 
 int mgInsideScreen(mgVu0FBOX *box) {
@@ -1148,69 +1150,85 @@ void mgCFrame::SetAttrParamDraw(int value, int recurse) {
 
 #ifdef NONMATCHING
 int mgCFrame::Draw(unsigned int *packet) {
-    int           words = 0;
-    sceVu0FMATRIX world;
-    if (attr != NULL && attr->billboard != 0) {
-        GetBBoardMatrix(attr->billboard, world, &mgRenderInfo);
-    } else {
+    mgRENDER_INFO *info = &mgRenderInfo;
+    int            words = 0;
+    sceVu0FMATRIX  world;
+    if (attr == NULL) {
         GetLWMatrixTopBottom(world);
-    }
-
-    if (attr != NULL && (attr->draw & MG_FRAME_DRAW_VISIBLE) && visual != NULL) {
-        bool visible = true;
-        if (!attr->no_cull && bound != NULL) {
-            sceVu0FVECTOR screen_max;
-            sceVu0FVECTOR screen_min;
-            visible = mgInsideScreen(bound->corner, world, screen_max, screen_min) != 0;
-            if (visible) {
-                mgRenderInfo.clip = mgClipInBoxW(screen_max, screen_min,
-                                                 mgRenderInfo.gs_box_max,
-                                                 mgRenderInfo.gs_box_min) == 0;
-                mgRenderInfo.scissor = (attr->program_mode & 2)
-                                           ? attr->clip_enable != 0
-                                           : (attr->clip_enable != 0 || mgRenderInfo.all_scissor != 0);
-            }
+    } else {
+        if (attr->billboard != 0) {
+            GetBBoardMatrix(attr->billboard, world, info);
+        } else {
+            GetLWMatrixTopBottom(world);
         }
-        if (visible) {
-            mgRenderInfo.attr = attr;
-            sceVu0CopyVector(mgRenderInfo.object_color, attr->color);
-            mgRenderInfo.plight_hit = 0;
-            if (mgRenderInfo.plight_enable && attr->point_light &&
-                !attr->no_light && bound != NULL) {
+
+        while (attr != NULL && (attr->draw & MG_FRAME_DRAW_VISIBLE)) {
+            if (visual == NULL) {
+                break;
+            }
+            if (!attr->no_cull && bound != NULL) {
+                sceVu0FVECTOR box_max;
+                sceVu0FVECTOR box_min;
+                test1(bound->corner, info->world_screen_rel, world, box_max, box_min);
+                if (box_max[3] < info->clip_min[2]) {
+                    break;
+                }
+                test2(box_max, box_min);
+                if (!mgClipBoxW(box_max, box_min, info->screen_box_max, info->screen_box_min)) {
+                    break;
+                }
+                if (mgClipInBoxW(box_max, box_min, info->gs_box_max, info->gs_box_min)) {
+                    info->clip = 0;
+                    info->scissor = 0;
+                } else {
+                    info->clip = 1;
+                    if (attr->program_mode & 2) {
+                        info->scissor = attr->clip_enable != 0;
+                    } else {
+                        info->scissor = (attr->clip_enable != 0) | info->all_scissor;
+                    }
+                }
+            }
+            info->attr = attr;
+            sceVu0CopyVector(info->object_color, attr->color);
+            info->plight_hit = 0;
+            if (info->plight_enable && attr->point_light && !attr->no_light && bound != NULL) {
                 sceVu0FMATRIX transposed;
                 sceVu0TransposeMatrix(transposed, world);
                 float scale = mgDistVector(transposed[0]);
                 float y_scale = mgDistVector(transposed[1]);
                 float z_scale = mgDistVector(transposed[2]);
-                if (y_scale > scale) {
-                    scale = y_scale;
-                }
-                if (z_scale > scale) {
-                    scale = z_scale;
-                }
+                scale = scale > y_scale ? (scale > z_scale ? scale : z_scale)
+                                        : (y_scale > z_scale ? y_scale : z_scale);
                 float         radius = bound->radius * scale;
                 sceVu0FVECTOR center;
                 sceVu0CopyVector(center, bound->center);
                 center[3] = 1.0f;
                 sceVu0ApplyMatrix(center, world, center);
-                mgLIGHT_INFO *light = mgRenderInfo.GetpLightInfo();
+                mgLIGHT_INFO *light = info->GetpLightInfo();
                 for (int i = 0; i < 4; i++) {
-                    mgPOINT_LIGHT &point = light->point_light[i];
-                    if (point.power > 0.0f &&
-                        mgDistVector(point.pos, center) < radius + point.range) {
-                        mgRenderInfo.plight_hit = 1;
-                        break;
+                    if (!(light->point_light[i].power <= 0.0f)) {
+                        float reach = radius + light->point_light[i].range;
+                        if (!(reach <= mgDistVector(light->point_light[i].pos, center))) {
+                            info->plight_hit = 1;
+                            break;
+                        }
                     }
                 }
             }
-            words = visual->Draw(packet, world, NULL);
+            words += visual->Draw(packet, world, NULL);
+            break;
+        }
+        if (attr->draw & MG_FRAME_DRAW_SKIP_CHILDREN) {
+            return words;
         }
     }
-    if (attr != NULL && (attr->draw & MG_FRAME_DRAW_SKIP_CHILDREN)) {
-        return words;
-    }
     for (mgCFrame *node = child; node != NULL; node = node->brother) {
-        if (node->attr == NULL || (node->attr->draw & MG_FRAME_DRAW_SKIP_BY_PARENT) == 0) {
+        int use = 1;
+        if (node->attr != NULL && (node->attr->draw & MG_FRAME_DRAW_SKIP_BY_PARENT)) {
+            use = 0;
+        }
+        if (use) {
             words += node->Draw(packet + words * 4);
         }
     }

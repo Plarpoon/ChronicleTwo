@@ -155,7 +155,7 @@ int _DATACOM(SPI_STACK *stack, int arg_count) {
         }
     }
 
-    comdatapt->unk_20 = spiGetStackInt(stack++);
+    comdatapt->icon_texture_no = spiGetStackInt(stack++);
     comdatapt->icon_no = spiGetStackInt(stack++);
     comdatapt->message_no = spiGetStackInt(stack++);
     name_stack = spiGetStackString(stack++);
@@ -342,7 +342,7 @@ int _DATAWEP_SPE(SPI_STACK *stack, int arg_count) {
         return 0;
     }
 
-    SpiWeaponPt->unk_38 = fptoui(spiGetStackFloat(stack++));
+    SpiWeaponPt->initial_fusion_point = fptoui(spiGetStackFloat(stack++));
     SpiWeaponPt->pallet_color = spiGetStackInt(stack++);
     SpiWeaponPt->unk_47 = spiGetStackInt(stack++);
     SpiWeaponPt->fusion_point = spiGetStackInt(stack++);
@@ -516,10 +516,10 @@ int _DATAROBO_ANALYZE(SPI_STACK *stack, int arg_count) {
     SpiRoboPart->offset_no = spiGetStackInt(stack++);
 
     if (type == 0) {
-        SpiRoboPart->unk_1c = spiGetStackInt(stack++);
+        SpiRoboPart->defence = spiGetStackInt(stack++);
         spiGetStackString(stack++);
     } else if (type == 1) {
-        SpiRoboPart->unk_6 = spiGetStackInt(stack++);
+        SpiRoboPart->durability = spiGetStackInt(stack++);
         SpiRoboPart->unk_8 = spiGetStackInt(stack++);
         SpiRoboPart->unk_a = spiGetStackInt(stack++);
 
@@ -533,7 +533,7 @@ int _DATAROBO_ANALYZE(SPI_STACK *stack, int arg_count) {
         SpiRoboPart->unk_4 = spiGetStackInt(stack++);
         SpiRoboPart->info_type_e = spiGetStackInt(stack++);
     } else if (type == 3) {
-        SpiRoboPart->unk_2 = spiGetStackInt(stack);
+        SpiRoboPart->energy = spiGetStackInt(stack);
     }
 
     SpiRoboPart++;
@@ -563,11 +563,11 @@ int _DATAFISH(SPI_STACK *stack, int arg_count) {
 
         SpiFish->size = spiGetStackFloat(stack++);
         SpiFish->unk_4 = spiGetStackInt(stack++);
-        SpiFish->unk_6 = spiGetStackInt(stack++);
-        SpiFish->unk_a = spiGetStackInt(stack++);
-        SpiFish->unk_c = spiGetStackInt(stack++);
-        SpiFish->unk_e = spiGetStackInt(stack++);
-        SpiFish->unk_8 = spiGetStackInt(stack++);
+        SpiFish->battle = spiGetStackInt(stack++);
+        SpiFish->boost = spiGetStackInt(stack++);
+        SpiFish->endurance = spiGetStackInt(stack++);
+        SpiFish->tenacity = spiGetStackInt(stack++);
+        SpiFish->stamina = spiGetStackInt(stack++);
 
         if (arg_count < 8) {
             return 1;

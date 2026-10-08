@@ -24,20 +24,7 @@
 #include "sysmes.hpp"
 #include "userdata.hpp"
 
-extern ClsMes SystemMessage;
-extern ClsMes SystemMessage2;
-extern ClsMes SystemMessage3;
-extern short  SystemMesBuffer[];
-extern short  SysMesBuffer[];
-#include "dataread.hpp"
-#include "mainloop.hpp"
 #include "nd_meswin.hpp"
-
-extern short  SystemMesBuffer[];
-extern short  SysMesBuffer[];
-extern ClsMes SystemMessage;
-extern ClsMes SystemMessage2;
-extern ClsMes SystemMessage3;
 
 // Code (.text)
 ClsMes *GetSystemMessage() {
@@ -102,17 +89,12 @@ void CreateSystemMes() {
     CreateSystemMes(2, 0);
 }
 
-#ifdef NONMATCHING
 void CreateSystemMes(int index, int unused) {
-    ClsMes *message = GetSystemMessage(index);
-    message->Init();
+    GetSystemMessage(index)->Init();
     GetSystemMessage(index)->Preset(5);
     GetSystemMessage(index)->SetBuff(GetSysMesBuffer());
     GetSystemMessage(index)->SetBuff_system(GetSystemMesBuffer());
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sysmes", CreateSystemMes__Fii);
-#endif
 
 // Constants (.rodata)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_482__DATA);

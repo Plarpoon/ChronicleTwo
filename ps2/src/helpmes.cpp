@@ -11,20 +11,12 @@ extern int  ShowOffOnce;
 extern int  WindowMode;
 extern char at_799__6[15];
 extern char at_800__5[30];
-#include <cstdio>
-#include <cstring>
 
-#include "dataread.hpp"
-#include "mainloop.hpp"
 #include "mg_memory.hpp"
 #include "mg_texture.hpp"
 #include "mglib.hpp"
-#include "nd_meswin.hpp"
 #include "snd_mngr.hpp"
 
-extern int  ShowOffOnce;
-extern int  WindowMode;
-extern int  LanguageCode;
 extern char HelpMesBuff[0x1000];
 extern int  InitFlag__2;
 
@@ -89,7 +81,7 @@ void CreateHelpMes(int message_id) {
         HelpMes.page_time = 0;
         HelpMes.page_auto_time = 30;
         HelpMes.mes_no = -1;
-        HelpMes.unk_1e40 = 0;
+        HelpMes.text_ptr = 0;
         HelpMes.alpha = 0x80;
 
         for (int i = 0; i < MES_NAME_MAX; i++) {

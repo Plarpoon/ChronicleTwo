@@ -1,22 +1,23 @@
 # nd_meswin: reverse-engineering notes
 
+`ClsMes::Preset` builds from C++ and passes full-image verification. Its fade
+reset uses a typed floating-point assignment with the same retail code.
+
 `ClsMes::GetMesWidth_system` scans the system message's 16-bit codes and
 returns the widest line. It expands registered names and display controls,
 uses the half-font width for narrow glyphs, and returns -1 for an invalid
-message or missing system text. A guarded C++ draft now compiles, but its
-generated code differs from retail.
+message or missing system text. Its C++ implementation matches retail.
 
 `ClsMes::SetGoalCursorXY` targets a yes/no choice coordinate in
 `MES_WIN_YESNO`. In other modes it places the selection marker beside the
 selected text line, adjusts for centered text, and shifts it by half the
-difference between the text width and the widest visible line. Its guarded
-draft compiles but does not match retail.
+difference between the text width and the widest visible line. Its C++
+implementation matches retail.
 
 ## C++ draft status
-The current unit draft check reports 83 matches and 15 differences. The
-differing functions keep retail assembly in the
-game build. Earlier promotion attempts are recorded in
-`scripts/re/promotion_attempts.tsv`.
+The current unit draft check reports 97 matches and one difference,
+`ClsMes::DrawMesWin`. It retains retail assembly in the game build.
+Promotion attempts are recorded in `scripts/re/promotion_attempts.tsv`.
 
 The migrated message setters write the window mode, background opacity, packed colours,
 message buffers and line widths through `ClsMes` members. `GetNextLineTop` scans until the

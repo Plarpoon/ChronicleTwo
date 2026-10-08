@@ -62,7 +62,6 @@ extern float                    OldCameraPos[4];
 extern sceVu0FVECTOR            OldFixCameraPos;
 extern int                      name_id_982[30];
 extern char                    *name_978[4];
-extern DEBUG_INFO               DebugInfo;
 extern int                      LadderMode;
 extern int                      LadderStep;
 extern mgCCamera               *LadderCamera;
@@ -84,31 +83,14 @@ extern int                      CharaMotionMode;
 extern int                      CharaMotionModeCnt;
 extern int                      FixCameraChgCnt;
 extern int                      ViewMode;
-extern CGamePad                 GamePad__2;
 
 #include <libvu0.h>
 
 #include <cmath>
-#include <cstring>
 
-#include "cameracontrol.hpp"
-#include "character.hpp"
 #include "dng_event.hpp"
-#include "editmap.hpp"
 #include "effscript.hpp"
-#include "gamepad.hpp"
 #include "gameutil.hpp"
-#include "helpmes.hpp"
-#include "inventmn.hpp"
-#include "mainloop.hpp"
-#include "mg_math.hpp"
-#include "mglib.hpp"
-#include "padcontrol.hpp"
-#include "photo.hpp"
-#include "savedata.hpp"
-#include "scenesnd.hpp"
-#include "sphida.hpp"
-#include "userdata.hpp"
 
 #ifdef NONMATCHING
 static int                      LadderMode;           /**< End of the ladder the player entered. */
@@ -135,8 +117,6 @@ static float                    OldMtnRate;           /**< Motion ratio at the p
 static int                      LdrSound;             /**< Ladder footstep sound set. */
 static int                      LdrBtmFoot;           /**< Footstep set at the ladder bottom. */
 static int                      LdrTopFoot;           /**< Footstep set at the ladder top. */
-static InitializedMoveCheckInfo MoveInfo;             /**< Last player movement collision result. */
-static CSceneEventData          LadderData;           /**< Event that owns the current ladder. */
 static sceVu0FVECTOR            OldFixCameraPos;      /**< Cached fixed-camera eye position. */
 static sceVu0FVECTOR            OldCameraPos;         /**< Follow-camera position saved before eye view. */
 static sceVu0FVECTOR            LdrPos;               /**< Origin of the ladder. */
@@ -439,7 +419,7 @@ void EditMoveChara(CScene *scene, sceVu0FVECTOR velocity, EditMoveCharaInfo *inf
             foot_sound = MoveInfo.ground_poly.foot_sound;
 
             if (foot_sound == 0) {
-                foot_sound = map->def_foot;
+                foot_sound = map->map_info.def_foot;
             }
 
             character->sound_info.foot_sound_id = foot_sound;
@@ -594,7 +574,7 @@ void EditCameraControl(CScene *scene, CPadControl *pad, float (*look_at)[4]) {
     }
 
     SV_CONFIG_OPTION &config = GetSaveData()->config;
-    camera->rot_reverse = !(bool) config.unk_37;
+    camera->rot_reverse = !(bool) config.rot_normal;
     FixCameraFlag = fixed;
 
     if (!debug_camera && ViewMode == EDIT_VIEW_MODE_WALK) {
@@ -1202,10 +1182,10 @@ static void InitLadder(int mode, CScene *scene, CSceneEventData *event) {
     sceVu0ApplyMatrix(top_offset, matrix, top_offset);
     sceVu0ApplyMatrix(bottom_offset, matrix, bottom_offset);
     sceVu0ApplyMatrix(camera_offset, matrix, camera_offset);
-    height = (float) event->event.unk_2c;
-    LdrSound = event->event.unk_30;
+    height = (float) event->event.arg1;
+    LdrSound = event->event.arg2;
     current_foot = character->sound_info.foot_sound_id;
-    other_foot = event->event.unk_34;
+    other_foot = event->event.arg3;
     sceVu0AddVector(LdrTopPos, LdrPos, top_offset);
     sceVu0AddVector(LdrBottomPos, LdrPos, bottom_offset);
     sceVu0AddVector(LdrCamPos, LdrPos, camera_offset);

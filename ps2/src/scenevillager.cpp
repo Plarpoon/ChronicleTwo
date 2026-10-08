@@ -151,10 +151,10 @@ void CScene::GetCharaLighting(float (*lights)[4], float *ambient) {
         float next;
         float third;
 
-        if (map->chara_light_adjust != 0) {
-            light_scale = map->chara_light_adjust_value[0];
-            ambient_scale = map->chara_light_adjust_value[1];
-            ambient_floor = 128.0f * map->chara_light_adjust_value[2];
+        if (map->map_info.chara_light_adjust != 0) {
+            light_scale = map->map_info.chara_light_adjust_value[0];
+            ambient_scale = map->map_info.chara_light_adjust_value[1];
+            ambient_floor = 128.0f * map->map_info.chara_light_adjust_value[2];
         }
 
         limit = *(typeof(limit) *) at_868__4;
@@ -274,45 +274,46 @@ int CScene::DrawChara(int index, int pass) {
     mgActiveLighting(prev_lighting, 0);
     return 1;
 }
-#ifdef NONMATCHING
+
+static inline float ShadowAbs(float value) {
+    if (value < 0.0f) {
+        return -value;
+    }
+
+    return value;
+}
+
 int CScene::DrawCharaShadow(int index) {
     float        light_dir[4][4];
     float        light_color[4][4];
-    float        direction[4];
-    float        position[4];
-    float        color[4];
     CCharacter2 *chara = GetCharacter(index);
 
     if (chara == NULL) {
         return 0;
     }
+
     mgGetLight(light_dir, light_color);
-    *(u_long128 *) direction = *(u_long128 *) at_988__3;
-    direction[0] = light_dir[0][0];
-    direction[1] = light_dir[1][0];
-    direction[2] = light_dir[2][0];
-    float height = direction[1];
-    if (height < 0.0f) {
-        height = -height;
-    }
-    direction[1] = height;
-    if (height < 0.8f) {
+    float direction[4] = {light_dir[0][0], light_dir[1][0], light_dir[2][0], 0.0f};
+    direction[1] = ShadowAbs(direction[1]);
+
+    if (direction[1] < 0.8f) {
         direction[1] = 0.8f;
     }
-    *(u_long128 *) position = *(u_long128 *) at_991__4;
-    *(u_long128 *) color = *(u_long128 *) at_992__3;
+
+    float position[4] = {0.0f, -10.0f, 0.0f, 0.0f};
+    float color[4] = {0.0f, 1.0f, 0.0f, 0.0f};
+
     if (CheckDrawCharaShadow(index) == 0) {
         return 0;
     }
+
     chara->GetEntryObjectPos(1, position);
     position[1] -= 20.0f;
     mgSetDropShadowMatrix(direction, position, color);
     chara->DrawShadowDirect();
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenevillager", DrawCharaShadow__6CSceneFi);
-#endif
+
 void CScene::DrawExclamationMark(mgCFrame *frame) {
     float position[4];
     int   index;
@@ -579,6 +580,7 @@ int GetObjectNameList(char *names, CCharacter2 *chara, mgCFrame **frames, int ma
     return count;
 }
 
+#ifdef NONMATCHING
 void CScene::CharaObjectOnOff(int index, mgCMemory *memory) {
     mgCFrame        *frames[16];
     CVillagerInfo   *info;
@@ -639,6 +641,9 @@ void CScene::CharaObjectOnOff(int index, mgCMemory *memory) {
         }
     }
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/scenevillager", CharaObjectOnOff__6CSceneFiP9mgCMemory);
+#endif
 
 int CScene::LoadVillager(int map_no, int texb) {
     int                 chara_nos[32];

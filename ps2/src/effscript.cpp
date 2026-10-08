@@ -20,11 +20,6 @@
 #include "scene.hpp"
 #include "scenesnd.hpp"
 
-extern "C" void __ct__10CRunScriptFv(void *script);
-extern void    *__vt__9mgCObject[];
-extern void    *__vt__7CObject[];
-extern void    *__vt__12CObjectFrame[];
-extern void    *__vt__11CCharacter2[];
 
 /**
  *
@@ -318,6 +313,7 @@ extern char at_1102__2[];
 extern char at_1103__5[];
 extern char at_1104__7[];
 
+#ifdef NONMATCHING
 int CEffectScriptMan::BuildBase(int base_no, u_long128 *data, int data_size, u_long128 *script, int script_size, mgCMemory *work, int texb) {
     mgCMemory *memory;
 
@@ -393,19 +389,7 @@ int CEffectScriptMan::BuildBase(int base_no, u_long128 *data, int data_size, u_l
                     CCharacter2 *source = GetBaseChara(base_no);
                     CCharacter2 *model;
 
-                    if ((model = (CCharacter2 *) operator new(sizeof(CCharacter2), memory->Alloc(0x68))) != NULL) {
-                        *(void ***) model = __vt__9mgCObject;
-                        model->Initialize();
-                        *(void ***) model = __vt__7CObject;
-                        model->Initialize();
-                        *(void ***) model = __vt__12CObjectFrame;
-                        model->Initialize();
-                        *(void ***) model = __vt__11CCharacter2;
-                        model->shadow_link.num = 0;
-                        model->shadow_link.dst_frame = 0;
-                        model->shadow_link.src_frame = 0;
-                        model->Initialize();
-                    }
+                    model = new (memory->Alloc(0x68)) CCharacter2;
 
                     base[index]->chara = model;
                     base[index]->chara->Initialize();
@@ -485,6 +469,9 @@ int CEffectScriptMan::BuildBase(int base_no, u_long128 *data, int data_size, u_l
     base_num++;
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", BuildBase__16CEffectScriptManFiP1iP1iP9mgCMemoryi);
+#endif
 
 int CEffectScriptMan::BuildBase(char *name, u_long128 *path_file, int path_size, u_long128 *pack_file,
                                 int pack_size, mgCMemory *memory, int level) {
@@ -545,6 +532,7 @@ int CEffectScriptMan::GetNeedFilePath(char *name, char *path, char *pack) {
     return GetNeedFilePath(SearchBaseNo(name), path, pack);
 }
 
+#ifdef NONMATCHING
 _EFF_SCRIPT *CEffectScriptMan::CreateEffSpt(int base_no, int group, int register_in_group) {
     EFF_SPT_BASE *base;
     int           slot;
@@ -609,7 +597,7 @@ _EFF_SCRIPT *CEffectScriptMan::CreateEffSpt(int base_no, int group, int register
     if ((script = (_EFF_SCRIPT *) operator new(
              sizeof(_EFF_SCRIPT), work_memory->Alloc(0x17))) !=
         NULL) {
-        __ct__10CRunScriptFv(&script->run);
+        new (reinterpret_cast<u_long128 *>(&script->run)) CRunScript;
     }
 
     script->work = token;
@@ -623,20 +611,7 @@ _EFF_SCRIPT *CEffectScriptMan::CreateEffSpt(int base_no, int group, int register
     if (base->chara != NULL) {
         CCharacter2 *chara;
 
-        if ((chara = (CCharacter2 *) operator new(
-                 sizeof(CCharacter2), work_memory->Alloc(0x68))) != 0) {
-            *(void **) chara = __vt__9mgCObject;
-            chara->Initialize();
-            *(void **) chara = __vt__7CObject;
-            chara->Initialize();
-            *(void **) chara = __vt__12CObjectFrame;
-            chara->Initialize();
-            *(void **) chara = __vt__11CCharacter2;
-            chara->shadow_link.num = 0;
-            chara->shadow_link.dst_frame = 0;
-            chara->shadow_link.src_frame = 0;
-            chara->Initialize();
-        }
+        chara = new (work_memory->Alloc(0x68)) CCharacter2;
 
         script->chara = chara;
         script->chara->Initialize();
@@ -733,6 +708,9 @@ _EFF_SCRIPT *CEffectScriptMan::CreateEffSpt(int base_no, int group, int register
     now = script;
     return script;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", CreateEffSpt__16CEffectScriptManFiii);
+#endif
 
 int CEffectScriptMan::CreateEffSpt(char *name, int user_id, int use_slot) {
     _EFF_SCRIPT *effect = CreateEffSpt(SearchBaseNo(name), user_id, use_slot);
@@ -1144,6 +1122,7 @@ void CEffectScriptMan::DeleteSprite(_ES_SPRITE *sprite) {
     memory->Free((u_long128 *) sprite);
 }
 
+#ifdef NONMATCHING
 int CEffectScriptMan::AssignCharacter(_EFF_SCRIPT *script, int count) {
     if (count > EFF_SPT_SUB_CHARA_MAX) {
         return 0;
@@ -1160,20 +1139,7 @@ int CEffectScriptMan::AssignCharacter(_EFF_SCRIPT *script, int count) {
     for (int i = 0; i < count; i++) {
         CCharacter2 *chara;
 
-        if ((chara = (CCharacter2 *) operator new(
-                 sizeof(CCharacter2), work_memory->Alloc(0x68))) != 0) {
-            *(void **) chara = __vt__9mgCObject;
-            chara->Initialize();
-            *(void **) chara = __vt__7CObject;
-            chara->Initialize();
-            *(void **) chara = __vt__12CObjectFrame;
-            chara->Initialize();
-            *(void **) chara = __vt__11CCharacter2;
-            chara->shadow_link.num = 0;
-            chara->shadow_link.dst_frame = 0;
-            chara->shadow_link.src_frame = 0;
-            chara->Initialize();
-        }
+        chara = new (work_memory->Alloc(0x68)) CCharacter2;
 
         script->sub_chara[i] = chara;
         script->chara->Copy(*script->sub_chara[i], work_memory);
@@ -1184,6 +1150,9 @@ int CEffectScriptMan::AssignCharacter(_EFF_SCRIPT *script, int count) {
     work_memory->EndStackMode();
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", AssignCharacter__16CEffectScriptManFP11_EFF_SCRIPTi);
+#endif
 
 int CEffectScriptMan::SetScriptProgNo(int prog_no, int group, int slot) {
     if (group < 0 || group >= EFF_SPT_OWNER_MAX || slot < 0 || slot >= EFF_SPT_OWNER_SLOT_MAX) {
@@ -1573,6 +1542,7 @@ CCharacter2 *CEffectScriptMan::GetCharacter(int group, int slot) {
     return 0;
 }
 
+#ifdef NONMATCHING
 int CEffectScriptMan::SetCharacter(CCharacter2 *source, int group, int slot) {
     int        chara_blocks = (source)->GetCopySize() + 0x68;
     u_long128 *token = work_memory->StartStackMode(3, chara_blocks);
@@ -1595,40 +1565,14 @@ int CEffectScriptMan::SetCharacter(CCharacter2 *source, int group, int slot) {
             return 0;
         }
 
-        if ((chara = (CCharacter2 *) operator new(
-                 sizeof(CCharacter2), work_memory->Alloc(0x68))) != 0) {
-            *(void **) chara = __vt__9mgCObject;
-            chara->Initialize();
-            *(void **) chara = __vt__7CObject;
-            chara->Initialize();
-            *(void **) chara = __vt__12CObjectFrame;
-            chara->Initialize();
-            *(void **) chara = __vt__11CCharacter2;
-            chara->shadow_link.num = 0;
-            chara->shadow_link.dst_frame = 0;
-            chara->shadow_link.src_frame = 0;
-            chara->Initialize();
-        }
+        chara = new (work_memory->Alloc(0x68)) CCharacter2;
 
         (*entry)->chara = chara;
         source->Copy(*(*entry)->chara, work_memory);
         (*entry)->chara_work = token;
     } else {
         if (now != 0) {
-            if ((chara = (CCharacter2 *) operator new(
-                     sizeof(CCharacter2), work_memory->Alloc(0x68))) != 0) {
-                *(void **) chara = __vt__9mgCObject;
-                chara->Initialize();
-                *(void **) chara = __vt__7CObject;
-                chara->Initialize();
-                *(void **) chara = __vt__12CObjectFrame;
-                chara->Initialize();
-                *(void **) chara = __vt__11CCharacter2;
-                chara->shadow_link.num = 0;
-                chara->shadow_link.dst_frame = 0;
-                chara->shadow_link.src_frame = 0;
-                chara->Initialize();
-            }
+            chara = new (work_memory->Alloc(0x68)) CCharacter2;
 
             now->chara = chara;
             source->Copy(*now->chara, work_memory);
@@ -1642,6 +1586,9 @@ int CEffectScriptMan::SetCharacter(CCharacter2 *source, int group, int slot) {
     work_memory->EndStackMode();
     return 1;
 }
+#else
+INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", SetCharacter__16CEffectScriptManFP11CCharacter2ii);
+#endif
 
 int CEffectScriptMan::SetTexb(int texb, int group, int slot) {
     if (slot >= 0) {
@@ -1803,10 +1750,10 @@ static _ES_SPRITE *GetSpritePtr(_EFF_SCRIPT *script, int index) {
  */
 static int GetStackInt(RS_STACKDATA *slot) {
     if (slot->type == 1) {
-        return fptosi(*(float *) &slot->i);
+        return fptosi(*(float *) &slot->val.i);
     }
 
-    return slot->i;
+    return slot->val.i;
 }
 
 /**
@@ -1816,10 +1763,10 @@ static int GetStackInt(RS_STACKDATA *slot) {
  */
 static float GetStackFloat(RS_STACKDATA *slot) {
     if (slot->type == 0) {
-        return (float) slot->i;
+        return (float) slot->val.i;
     }
 
-    return *(float *) &slot->i;
+    return *(float *) &slot->val.i;
 }
 
 /**
@@ -1840,7 +1787,7 @@ static void GetStackVector(float *vector, RS_STACKDATA *slot) {
  *
  */
 static char *GetStackString(RS_STACKDATA *slot) {
-    return reinterpret_cast<char *>(slot->i);
+    return reinterpret_cast<char *>(slot->val.i);
 }
 
 /**
@@ -1850,7 +1797,7 @@ static char *GetStackString(RS_STACKDATA *slot) {
  */
 static void SetStack(RS_STACKDATA *slot, int value) {
     if (slot->type == 3) {
-        slot->p->i = value;
+        slot->val.p->val.i = value;
     }
 }
 
@@ -1861,7 +1808,7 @@ static void SetStack(RS_STACKDATA *slot, int value) {
  */
 static void SetStack(RS_STACKDATA *slot, float value) {
     if (slot->type == 3) {
-        slot->p->f = value;
+        slot->val.p->val.f = value;
     }
 }
 
@@ -1893,9 +1840,9 @@ static int _NORMAL_VECTOR(RS_STACKDATA *stack, int argument_count) {
         return 0;
     }
 
-    vector[0] = stack->p->f;
-    vector[1] = (stack + 1)->p->f;
-    vector[2] = (stack + 2)->p->f;
+    vector[0] = stack->val.p->val.f;
+    vector[1] = (stack + 1)->val.p->val.f;
+    vector[2] = (stack + 2)->val.p->val.f;
     vector[3] = 1.0f;
     sceVu0Normalize(vector, vector);
     SetStack(stack++, vector[0]);
@@ -1936,9 +1883,9 @@ static int _ADD_VECTOR(RS_STACKDATA *stack, int argument_count) {
     }
 
     GetStackVector(vector, stack + 3);
-    SetStack(stack, stack->p->f + vector[0]);
-    SetStack(stack + 1, (stack + 1)->p->f + vector[1]);
-    SetStack(stack + 2, (stack + 2)->p->f + vector[2]);
+    SetStack(stack, stack->val.p->val.f + vector[0]);
+    SetStack(stack + 1, (stack + 1)->val.p->val.f + vector[1]);
+    SetStack(stack + 2, (stack + 2)->val.p->val.f + vector[2]);
     return 1;
 }
 
@@ -1955,9 +1902,9 @@ static int _SUB_VECTOR(RS_STACKDATA *stack, int argument_count) {
     }
 
     GetStackVector(vector, stack + 3);
-    SetStack(stack, stack->p->f - vector[0]);
-    SetStack(stack + 1, (stack + 1)->p->f - vector[1]);
-    SetStack(stack + 2, (stack + 2)->p->f - vector[2]);
+    SetStack(stack, stack->val.p->val.f - vector[0]);
+    SetStack(stack + 1, (stack + 1)->val.p->val.f - vector[1]);
+    SetStack(stack + 2, (stack + 2)->val.p->val.f - vector[2]);
     return 1;
 }
 
@@ -1974,9 +1921,9 @@ static int _SCALE_VECTOR(RS_STACKDATA *stack, int argument_count) {
     }
 
     scale = GetStackFloat(stack + 3);
-    SetStack(stack, stack->p->f * scale);
-    SetStack(stack + 1, (stack + 1)->p->f * scale);
-    SetStack(stack + 2, (stack + 2)->p->f * scale);
+    SetStack(stack, stack->val.p->val.f * scale);
+    SetStack(stack + 1, (stack + 1)->val.p->val.f * scale);
+    SetStack(stack + 2, (stack + 2)->val.p->val.f * scale);
     return 1;
 }
 
@@ -1998,9 +1945,9 @@ static int _DIV_VECTOR(RS_STACKDATA *stack, int argument_count) {
         return 0;
     }
 
-    SetStack(stack, stack->p->f / divisor);
-    SetStack(stack + 1, (stack + 1)->p->f / divisor);
-    SetStack(stack + 2, (stack + 2)->p->f / divisor);
+    SetStack(stack, stack->val.p->val.f / divisor);
+    SetStack(stack + 1, (stack + 1)->val.p->val.f / divisor);
+    SetStack(stack + 2, (stack + 2)->val.p->val.f / divisor);
     return 1;
 }
 
@@ -2107,7 +2054,7 @@ static int _ANGLE_LIMIT(RS_STACKDATA *stack, int argument_count) {
         return 0;
     }
 
-    SetStack(stack, mgAngleLimit(stack->p->f));
+    SetStack(stack, mgAngleLimit(stack->val.p->val.f));
     return 1;
 }
 
@@ -2331,7 +2278,7 @@ int _GET_VALUE(RS_STACKDATA *stack, int argument_count) {
         return 0;
     }
 
-    switch (result_slot->p->type) {
+    switch (result_slot->val.p->type) {
         case 0: {
             _EFF_SCRIPT *script = now_script;
             SetStack(result_slot, script->value[index].i);
@@ -4626,10 +4573,10 @@ int _SCN_GET_ENTRY_OBJ_POS(RS_STACKDATA *stack, int argc) {
     SetStack(stack, pos[2]);
     return 1;
 }
-#ifdef NONMATCHING
+
 /**
  *
- * Finds a scene collision point and optionally returns its reflection and surface data.
+ * Tests a segment against scene collision polygons and returns hit details to the script.
  *
  */
 int _INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
@@ -4640,56 +4587,67 @@ int _INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
     mgVu0FBOX     box;
     CCPoly        poly[0x80];
     sceVu0FVECTOR normal;
-    int           foot_sound;
-    int           area_kind;
 
     if (argc != 8 && argc != 9 && argc != 10 && argc != 11 && argc != 12 && argc != 13 && argc != 14 && argc != 15 && argc != 16) {
         return 0;
     }
+
     int ignore_mask = GetStackInt(stack++);
     GetStackVector(start, stack);
     GetStackVector(end, stack + 3);
     stack += 6;
     float range = 10.0f + mgDistVector(start, end);
-    box.max[3] = 1.0f;
-    box.min[3] = 1.0f;
     box.max[0] = range + start[0];
     box.min[0] = start[0] - range;
     box.max[1] = range + start[1];
     box.min[1] = start[1] - range;
     box.max[2] = range + start[2];
     box.min[2] = start[2] - range;
+    box.max[3] = 1.0f;
+    box.min[3] = 1.0f;
     int poly_num = now_scene->GetColPoly(poly, box, 0x80);
+
     if (poly_num >= 0x80) {
         printf(at_3303__2, poly_num);
         return 0;
     }
-    int hit_no = CheckHit(poly, poly_num, start, end, hit, 1, ignore_mask);
+
+    CCPoly *hit_poly = poly;
+    int     hit_no = CheckHit(hit_poly, poly_num, start, end, hit, 1, ignore_mask);
+    int     foot_sound;
+    int     area_kind;
+
     if (hit_no >= 0) {
-        CCPoly *hit_poly = &poly[hit_no];
+        hit_poly = &hit_poly[hit_no];
         sceVu0Normalize(normal, hit_poly->normal);
         mgReflectionPlane(normal, hit, start, reflection);
         sceVu0Normalize(reflection, reflection);
         foot_sound = hit_poly->foot_sound;
         area_kind = hit_poly->area_kind;
+
         if (foot_sound == 0) {
             CMap *map = now_scene->GetMap(now_scene->active_map);
+
             if (map != NULL) {
-                foot_sound = map->def_foot;
+                foot_sound = map->map_info.def_foot;
             }
         }
     }
+
     switch (argc) {
         case 8:
         case 9:
         case 10:
             SetStack(stack++, hit_no);
+
             if (argc >= 9) {
                 SetStack(stack++, area_kind);
             }
+
             if (argc == 10) {
                 SetStack(stack, foot_sound);
             }
+
             break;
         case 11:
         case 12:
@@ -4698,12 +4656,15 @@ int _INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
             SetStack(stack++, hit[1]);
             SetStack(stack++, hit[2]);
             SetStack(stack++, hit_no);
+
             if (argc >= 12) {
                 SetStack(stack++, area_kind);
             }
+
             if (argc == 13) {
                 SetStack(stack, foot_sound);
             }
+
             break;
         case 14:
         case 15:
@@ -4715,21 +4676,23 @@ int _INTERSECTION_POINT(RS_STACKDATA *stack, int argc) {
             SetStack(stack++, reflection[1]);
             SetStack(stack++, reflection[2]);
             SetStack(stack++, hit_no);
+
             if (argc >= 15) {
                 SetStack(stack++, area_kind);
             }
+
             if (argc == 16) {
                 SetStack(stack, foot_sound);
             }
+
             break;
         default:
             return 0;
     }
+
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/effscript", _INTERSECTION_POINT__FP12RS_STACKDATAi);
-#endif
+
 /**
  *
  * Plays a sound from the current effect owner character.

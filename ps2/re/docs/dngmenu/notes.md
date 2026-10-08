@@ -1,6 +1,24 @@
 # dngmenu: reverse-engineering notes
 
+`DNGMAP_TEX_POS` is a pair of signed halfword texture coordinates used by the
+room-type marker table. The local GLID constants distinguish room and entrance
+cells and position adjacent cells by 52 pixels horizontally, -16 pixels of
+row shear, and 20 pixels vertically. The tree-map fade-out constant is 40
+frames. These names describe the uses visible in the map drawing and fade
+functions; they do not assert retail enum names.
+
 `dng_light_circle` and `dngfreemap_num` are const `mgRect<int>` globals: MWCC emits their zero-initialized storage in retail's `.rodata` section and still runs their constructors from the exact 144-byte static initializer. Declaring them without `const` places the storage in `.bss` and breaks the section mapping.
+
+## Current assembly gaps
+
+`CDngFreeMap::CheckIsViewMove`, `DrawRoot`, `DrawRoomOne`,
+`DrawTreeMap`, `DrawPlayer`, `Draw`, and `LoadDngInfo` retain C++ drafts
+under `NONMATCHING`; the matching build selects their retail `INCLUDE_ASM`
+gaps. The same applies to `CheckGeoramaMateria`, `DrawDngRoomInfo`,
+`DrawGeoramaMateria`, `MakeDngTreeMapJumpNo`, `CMenuTreeMap::InitEnd`,
+`MsgInit`, `Step`, and `Draw`, plus `DngTreeMapInit`. The `ClsMes::Init`
+body at the end of this unit is also an assembly gap. Match claims elsewhere
+in these notes apply only to the named unguarded C++ functions.
 
 ## Additional map behavior
 
@@ -9,27 +27,74 @@
 `CheckIsViewMove` clips a point to the view rectangle, reserving 10 pixels
 at the right and bottom, and returns the displacement required to bring it
 inside. `SetNextRoomPos` applies that displacement to the scroll target.
-`ResetDngMapPos` centres a room on `(256, 208)` and uses `(-100, -100)`
-when the requested room is absent.
+`SetNextRoomPos` matches retail from C++. `CheckIsViewMove` remains guarded.
+Using `right + -10.0f` and `bottom + -10.0f` with float comparisons in the
+retail direction reduces its draft to four differing instructions: two
+register moves and the placement of the final X displacement across a
+floating point branch delay slot. MWCC
+emits the retail integer sequence
+for `x * 52 + y * -16`; the equivalent subtraction emits a different
+sequence. The conversions to float are implicit. `SetTextureInfo` looks up
+the `dt`, `dtbg`, `dngop`, and `dtname` textures in that order and also passes
+full-image verification from C++.
+
+`ResetDngMapPos` scans the floor grid and calls `CalcGlidPutPos` for cells on
+the four boundary lines. The resulting eight local floats are not read after
+the scan. It then centres the requested room on `(256, 208)` and uses
+`(-100, -100)` when that room is absent. A two-float room position array
+produces the retail saved-register and stack sequence; the C++ function
+passes full-image verification.
+
+`CDngFreeMap::Initialize` is native and exact with the accepted Satan's Fiddle binary32 286.0 (`0x438F0000`) evaluate-first selector. Separate assignments to `next_pos` and `koma_path` preserve the retail store order. The earlier six-byte constant-load ordering difference is resolved.
+
+`CMenuTreeMap::FadeInOutMenu` tests `draw_hidden` at offset 0x11A before
+checking the second fade step. Using that typed field instead of the old
+`unk_11a` name yields an exact C++ function and full-image match.
 
 `DrawGlidCheck` inspects a passage cell's four neighbours. It marks adjoining
 rooms above and left with bits `2` and `8`; visited boss or sub rooms set
-directional bits `0x40`, `0x80`, `0x100`, or `0x200`. `DrawBackPattern`
+directional bits `0x40`, `0x80`, `0x100`, or `0x200`. The room flag checks
+must be separate short-circuit tests for MWCC to emit
+retail's branch layout. Initializing the mark mask after the null check
+produces both of retail's zero moves. The function passes full-image
+verification from C++.
+
+`DrawGlid` draws the room passage outline as a five-vertex red line loop.
+Keeping named `top`, `right`, and `bottom` values live between vertex calls
+produces retail's `f20`, `f21`, and `f22` allocation. The C++ function matches
+all 76 instructions and passes full-image verification. Its generated C++
+symbol contains `<f>`, so the guarded promotion helper cannot match the
+normalized assembly marker; removing the marker before the full-image check
+lets the build's existing symbol normalization handle it.
+
+`DrawBackPattern`
 draws a translucent black rectangle in event mode. In menu mode it scrolls
 the `dt` backdrop by half a pixel per frame and wraps its offset at the
-tile width of 128. `DrawLast` covers the menu screen with `dtbg`, while
-`DrawDngName` draws `dtname` twice, offset by four pixels for its shadow.
+tile width of 128. The event-mode opacity test converts its integer argument
+to float before comparing with zero. An early return for negative opacity and
+for negative scroll leaves the exact retail branch destinations; this C++
+function passes full-image verification. `DrawLast` covers the menu screen with `dtbg` and passes
+full-image verification from C++. `DrawDngName` draws `dtname` twice,
+offset by four pixels for its shadow. Its shadow opacity is one quarter
+of the requested opacity; the function matches retail from C++ and passes
+full-image verification without explicit numeric casts.
 
 `FadeIn` starts at alpha zero and increases by `128 / frames` per step;
 `FadeOut` decreases by the same amount. For nonpositive durations, the
-step is 128 in magnitude. `SetKomaMove` starts at the second node of the
+step is 128 in magnitude. Both fade functions match retail from C++ and pass
+full-image verification. MWCC emits the retail comparison sequence for
+`0 < frames`; spelling the equivalent condition `frames > 0` emits a shorter
+branch sequence. `SetKomaMove` starts at the second node of the
 path because `koma_path` itself is the piece's starting point.
 
 `CheckDngTreeMapFuncType` returns 2 when the menu's `open_type` is 3,
 1 when it is 1 or `TreeMapCallDungeonSubMap` is set, and 0 otherwise. The
 flag is read as an unsigned byte even though the assembly reservation is
-four bytes. `CheckGeoramaMateria` walks the floor's group identifiers, collects
-the item numbers from matching groups, then twice removes items whose
+four bytes. `DngTreeMapDraw` reads `DngTreeMode` as a signed halfword and
+dispatches modes 0 and 1 to the map or save menu. Both functions match retail
+from C++ and pass full-image verification. `CheckGeoramaMateria` walks the
+floor's group identifiers, collects the item numbers from matching groups,
+then twice removes items whose
 attribute word does not contain bit `0x10`.
 
 `DrawPlayer` draws the `dngop` texture at its room's board position, shifted
@@ -64,6 +129,8 @@ save menu the unused portion of `MenuTreeMapStack` plus the tree menu's
 fourth texture block. When the save screen closes, it clears the save
 flag, resumes map mode, starts a forty-frame fade and resets the tree
 menu to mode 12, step 1 before rebuilding its messages.
+Evaluating `stGetRest` before `stGetTop` gives the retail load order for
+the stack buffer arguments. The C++ function passes full-image verification.
 
 `__sinit_dngmenu_cpp` sets the initial source rectangles for the map's
 light circle, number glyphs, root placement and floor information frame,
@@ -204,7 +271,7 @@ to be defined in dngmenu.cpp (declared only in the header).
 |---|---|---|---|
 | 0x110 | float[2] | cursor_pos | passed as `float*` to MenuCursorDraw; eased in Draw |
 | 0x118 | s16 | dng_no | DngTreeMapInit param 4 (clamped 0..6) |
-| 0x11A | s16 | unk_11a | only ever set 0; tested in FadeInOutMenu and Draw |
+| 0x11A | s16 | draw_hidden | Set to 0 by the menu setup; tested in FadeInOutMenu and Draw to control drawing. |
 | 0x11C | s16 | jump_pay | set 1 when `BattleAreaScene+0x5C == 0 && MenuCommonInfo+0x50 == 1` and not sub map; jump then `AddMoney(-money/2)` |
 | 0x120 | GLID_INFO* | select_glid | InitEnd/Step |
 | 0x124-0x12F | | unk_124 | never accessed |
@@ -250,8 +317,8 @@ menumap). Statics of note: `MenuDngMap` (CDngFreeMap*), `CMenuTreePt` (CMenuTree
 
 ## Non-members
 `CheckGeoramaMateria`, `DrawDngRoomInfo`, `DrawGeoramaMateria` are LOCAL in retail -> static in
-the .cpp, not in the header. `ClsMes::Init` (0x1F38E0) is emitted here but declared in
-`nd_meswin.hpp`.
+the .cpp, not in the header. `ClsMes::Init` (0x1F38E0) belongs to this unit and is
+currently supplied by `INCLUDE_ASM`; its C++ declaration is in `nd_meswin.hpp`.
 
 ## GLID_INFO / DNGMAP_ROOM_INFO as seen from here (for dngfloor's header)
 GLID_INFO stride 0x70 (CDngFloorManager +4 array, +8 count, +0xC/+0xE grid width/height):
@@ -293,6 +360,19 @@ so its placement needs further work during matching.
 `mgRect<float>::Set` stores its four arguments directly into the left, top,
 right and bottom fields. The explicit float specialization is a separate
 retail symbol from the generic template, emitted by a native specialization.
+
+retail symbol from the generic template. MWCC initially names its symbol
+`Set__9mgRect<f>Fffff`; the object postprocessor normalizes that name to
+retail's `Set__9mgRect_f_Fffff`. A candidate that leaves the assembly marker
+in the disabled branch fails mwccgap's raw-name lookup; removing the guard
+and marker makes the native specialization pass the full linked-image check.
+
+`SetUserGlid` clears the selected player cell and looks up a room only when
+its number is nonnegative. Writing the comparison as `0 <= room_no` gives
+retail's `slt at` and matches the linked image. `DeleteTexBlock` releases a
+nonnegative texture block through the texture manager. Binding the manager
+before the sign test places its address setup in retail's branch delay slot;
+that native function also matches the linked image.
 
 ## Native static initialization
 
@@ -381,7 +461,7 @@ float comparison, rather than an integer comparison, is present in retail.
 Its selection-brightness global is a float. The fade and grid-scroll
 fields and runtime `abs(int)` interface are already typed and documented.
 
-`FadeInOutMenu` tests the signed-halfword field `unk_11a` at offset 0x11A
+`FadeInOutMenu` tests the signed-halfword field `draw_hidden` at offset 0x11A
 before checking the closing fade. The m2c type mapping incorrectly labels
 this read as the second message window's text offset; the actual retail
 load resolves the ambiguity. Both opening and closing
@@ -402,9 +482,7 @@ outline calls, reproducing retail's three preserved float registers.
 
 Viewport clipping retains its guarded draft: four instructions differ,
 consisting of two exchanged coordinate initializations and a subtraction
-scheduled into a branch delay slot. `DrawGlidCheck` likewise retains its
-guard: its native candidate differs only by an omitted duplicate zero
-return assignment on the null path. Neither candidate is counted native.
+scheduled into a branch delay slot. The earlier `DrawGlidCheck` candidate omitted a duplicate zero return assignment on the null path; master resolves this by initializing the mark mask after the null check, and that native implementation is retained in the merge.
 
 ## Tree map drawing assessment
 
@@ -420,8 +498,12 @@ directly with `(0, 0, 52, 20)`, rather than constructed with zero edges
 and then reset. Existing grid, rectangle, primitive and drawing interfaces
 cover all dependencies.
 
-The improved `DrawTreeMap` draft remains guarded at the checkpoint. Its
+The improved `DrawTreeMap` candidate was saved outside the checkout; the original guarded draft is retained in source. The candidate's
 remaining canonical differences are the exchanged loop-index and mark
 register assignments (s19 versus s20); every other instruction and all
 resolved relocations agree. The private 52.0 evaluate-first trial did not
 improve this difference and no profile row is accepted.
+
+## Combined native merge checkpoint
+
+The merge preserves all eighteen locally validated promotions and master's additional native `DrawGlidCheck` and `DngTreeMapKey` implementations. Master's typed names `draw_hidden` and `battle_clear` are retained. These combined sources require integrated verification after the shared header and tool conflicts are resolved. No new calibration rows were introduced during resolution.

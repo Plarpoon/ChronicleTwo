@@ -208,3 +208,19 @@ this game's `CObject` (object unit) derives from mgCObject.
   virtuals ChangeParam/UseParam/... out of place. Both stay as drafts. mgFrameNameComp needs
   StrCmp (static, still asm) and stays a draft.
 - Initialize__12mgCFrameBaseFv reports MATCH from the header's inline definition.
+
+## Assembly gaps
+
+`test1`, `test2`, the four-argument `mgInsideScreen`, `GetLocalMatrix`,
+`GetBBoardMatrix`, `GetLWMatrix`, `GetLWMatrixTopBottom`, and `GetDrawRect` retain
+their C++ drafts under `NONMATCHING` and use `INCLUDE_ASM` in the retail build.
+Their promoted forms required VU0 assembly inside C++ source. The surrounding
+matched functions remain compiled from C++.
+
+`mgCFrame::Draw(u_int*)` has a guarded C++ draft. In its screen clipping path,
+retail keeps the `test1` output pointers in argument registers `a3` and `a4`
+across the call to `test2`, then passes those registers to `mgClipBoxW`. MWCC
+reloads both pointers from the stack when `test2` is represented only by a C++
+declaration and an assembly gap, adding two instructions. The draft scores
+97.99574% in objdiff; the retail build therefore retains `INCLUDE_ASM` for
+this function until the register sequence can be produced from C++.

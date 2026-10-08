@@ -72,7 +72,9 @@ A private typed `Copy` trial removed the declaration and manual definition.
 At default inline depth MWCC inlined the assignment, omitted its symbol, and
 made `Copy` 0x228 bytes versus retail's 0x190. Scoped `inline_depth(0)` emitted
 the implicit assignment as a weak 0x8C-byte function but made `Copy` 0x11C
-bytes and emitted unrelated helpers. A scoped depth of one made `Copy` 0x1D0
+bytes and emitted a separate 0x40-byte `mgCVisual` base assignment. Retail's
+0x98-byte derived assignment is a leaf that copies the base fields inline.
+A scoped depth of one made `Copy` 0x1D0
 bytes and again omitted the assignment symbol. These are compiler scheduling
 observations, not accepted source forms; `Copy` and the derived assignment
 remain to be promoted together.

@@ -6,9 +6,7 @@ The native drafts of `CMenuInvent::LoadCharaCheck`, `CMenuInvent::IsCreateObject
 and `MenuInventInit` compile to 0x48C, 0x1568, and 0x1018 bytes, respectively;
 retail uses 0x4D8, 0x1588, and 0x1048. Their shorter code shifts the following
 linked text by 0xA0 after function alignment. These drafts remain guarded by
-`NONMATCHING` and the matching build uses their retail assembly. The native
-`UpdataNetaMemoStr` also has differing bytes and relocations, so it uses the
-retail assembly while its C++ draft is refined.
+`NONMATCHING` and the matching build uses their retail assembly. `UpdataNetaMemoStr` matches with the sorting helper declared local, as in retail.
 
 The matching build also selects retail gaps for `ResetAddress`, `CalcTex`,
 `IsAccessAlbum`, and `MenuInventKey`; those functions have guarded C++ drafts.
@@ -203,8 +201,8 @@ for `__construct_new_array` in PhotoNetaEnter. Size 0xC.
 - `UpdataNetaMemoStr` indexes `PIC_NAME_INFO` records directly and matches
   retail with the file-local `neta_sort` definition described below.
 - `CInventUserData::ResetAddress` unrolls eight photo pointers per iteration. A
-  typed `photo_work` row pointer preserves the loop shape, but MWCC hoists its base
-  calculation and chooses different constants for the unrolled addresses. Direct
+  typed, indexed `photo_work` row pointer now matches the unrolled body, with
+  thirteen words remaining in base setup and the final two-photo tail. Direct
   `&photo_work[index][0]` indexing scores 60.0%, while the previous byte-offset
   expression scored 99.583336% but used raw pointer arithmetic. The typed draft
   remains under `NONMATCHING`; the matching build uses retail assembly.
@@ -253,3 +251,83 @@ size included more than the symbol's actual extent.
 Canonical normal and objdiff-base builds also pass after the type and field
 updates: 0xFF2C checked bytes and 2,794 relocations, with standard project
 objdiff reporting 100% for the native 404-byte UpdataNetaMemoStr.
+
+## Remaining guarded functions
+
+The draft checker compares relocated instruction words against each manifest
+extent, including alignment padding. The following functions remain guarded.
+
+- `MenuInventKey__Fv`: 8/524 words differ; native text is 0x824 bytes in a
+  retail 0x830-byte extent. Initializing the card after row Y and before number
+  X improves the previous 10-word remainder. The negative-card padding loop's
+  induction register map still differs at +0x5E0..+0x620. See [midday.md](midday.md)
+  for measured declaration and loop negatives.
+- `ResetAddress__15CInventUserDataFv`: 13/48 words differ, both 0xC0 bytes.
+  A typed, indexed row pointer restores the exact eight-assignment unrolled
+  body; its invariant-base setup and two-photo remainder still differ. The
+  previous direct indexing was 34/48. No row-pointer induction or shared
+  flat-buffer type change is retained; see [midday.md](midday.md).
+- `LoadCharaCheck__11CMenuInventFv`: 190/312 words differ, 0x48C native bytes
+  against retail's 0x4E0 extent. Retail's placement new branches on `v0` at
+  0x00202528 and copies its result into `s4` in the delay slot at 0x0020252C.
+  The draft copies first (offset 0x288), then branches on `s4` (offset 0x28C).
+  The constructor expansion is also shorter. Reconsider after the dedicated
+  placement-new lane supplies a compliant matching form and the shared
+  `CActionChara` constructor chain reproduces the retail expansion.
+- `MenuInventInit__FP9mgCMemoryPii`: 606/1044 words differ, 0x1018 native bytes
+  against retail's 0x1050 extent. The first character allocation branches on
+  `v0` at 0x0020B79C with the copy to `s1` at 0x0020B7A0; the draft copies
+  to `s0` at offset 0x7EC before branching at 0x7F0. The same mismatch recurs
+  for the next two character allocations. The direct `CMenuInvent` placement-new
+  expression already preserves the retail branch-before-copy shape at
+  0x0020B024/0x0020B028, as do the two effect allocations; those are useful
+  comparisons for the dedicated allocation research. Reconsider after that
+  lane resolves character allocation and the shared constructor chain.
+- `IsCreateObject__11CMenuInventFii`: 382/1380 words differ, 0x1568 native bytes
+  against retail's 0x1590 extent. Its two character allocations have the same
+  placement-new branch/copy pairs at 0x00204E04/0x00204E08 and
+  0x0020500C/0x00205010. Reconsider after the dedicated allocation result and
+  shared constructor chain are resolved.
+- `IsAccessAlbum__11CMenuInventFv`: 1080/1276 words differ, 0x13D0 native bytes
+  against retail's 0x13F0 extent. The album allocation branches on `v0` at
+  0x00208608 with the copy to `s2` in the delay slot at 0x0020860C. The draft
+  copies to `s1` at offset 0x32C, then branches at 0x330 and inserts a nop.
+  Its stack frame is 0x140 bytes rather than retail's 0x150. Reconsider after
+  the dedicated placement-new result, then recheck local lifetimes and scheduling.
+- `CalcTex__11CMenuInventFv`: removing the draft's `opt_common_subs off`
+  override reduces native text from 0x1438 to 0x13B0 bytes, against retail's
+  0x13A0 extent. It remains oversized and guarded. The default-optimization
+  draft uses a 0x160-byte stack frame and saves `s8`; retail uses a 0x150-byte
+  frame and saves through `s7`. A retained address for the clip's bottom field
+  changes the circle loop, and album-scroll expression scheduling differs.
+  Replacing the background coordinate array with `CursorPos` leaves the size
+  unchanged. Reconsider when typed local lifetimes eliminate the extra saved
+  clipping pointer and the album-scroll expression matches retail's evaluation
+  order. Retail calls the three SDK vector routines rather than inlining COP2.
+
+`decompile.sh` cannot recover the jump tables in `MenuInventKey` and
+`IsCreateObject` at assembly lines 176 and 861, respectively. The instruction
+findings above use their retail assembly directly; no jump-table metadata or
+assembly was modified.
+
+## Midday remainder measurements
+
+[midday.md](midday.md) records the retained ResetAddress and MenuInventKey
+improvements, rejected CalcTex local-layout probes, and the natural-constructor
+condition for revisiting the four placement-new remainders. All seven guards
+and the complete canonical inventory object remain intact.
+
+## Midday round 1
+
+[round1.md](round1.md) records the new small-remainder probes and the retained
+13/48-word ResetAddress draft. The row pointer is declared before the real
+photo index and assigned after its initialization. The native unrolled body
+remains exact; the invariant-base setup and two-photo tail still differ.
+MenuInventKey remains at 8/524 words and all seven inventory guards remain.
+
+## October 8 near-miss wave
+
+[nearmiss-20261008.md](nearmiss-20261008.md) records the new linkage,
+local-data, index-width, initialization-order and compiler-control probes.
+MenuInventKey and ResetAddress remain at 8/524 and 13/48 words; no source
+change or promotion is retained.

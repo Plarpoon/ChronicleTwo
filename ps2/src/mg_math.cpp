@@ -150,17 +150,18 @@ asm void mgVectorMin(float *min, float *a, float *b) {
     jr ra
     sqc2 vf18, 0x0(a0)
 }
-#ifdef NONMATCHING
-void mgVectorMin(float *min, float *a, float *b, float *c, float *d) {
-    for (int i = 0; i < 4; ++i) {
-        float v = a[i] < b[i] ? a[i] : b[i];
-        v = v < c[i] ? v : c[i];
-        min[i] = v < d[i] ? v : d[i];
-    }
+asm void mgVectorMin(float *min, float *a, float *b, float *c, float *d) {
+    .set noreorder
+    lqc2 vf15, 0x0(a1)
+    lqc2 vf16, 0x0(a2)
+    lqc2 vf17, 0x0(a3)
+    lqc2 vf18, 0x0(t0)
+    vmini.xyzw vf20, vf15, vf16
+    vmini.xyzw vf20, vf20, vf17
+    vmini.xyzw vf20, vf20, vf18
+    jr ra
+    sqc2 vf20, 0x0(a0)
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_math", mgVectorMin__FPfPfPfPfPf);
-#endif
 #ifdef NONMATCHING
 void mgVectorMaxMin(float *max, float *min, float *a, float *b) {
     for (int i = 0; i < 4; ++i) {

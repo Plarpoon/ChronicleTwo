@@ -169,8 +169,110 @@ have zero differing instruction words and relocation fields. The canonical
 wrapper build followed by `fixup_sections.sh` and `check_objects.py` passes
 the whole unit: `0xC818` allocated bytes and 2,379 relocations.
 
-## Outstanding guarded drafts
+## Earlier guarded draft findings
 
 `MenuGeoramaMessageMake` populates ten lines of the georama message window, positions two footer lines, and refreshes the window. Its current C++ draft differs in thirteen register uses in the second line loop: retail assigns the loop index to `s0` and the selected name to `s4`, while MWCC makes the opposite allocation. Separating the loop index, moving the name declaration, and changing declaration order did not reproduce retail's allocation.
 
 `CMenuGeorama::GetNowSelectEditPartsInfo` returns an edit-part description from the stock, make, or checkpoint list. Its C++ draft differs at the stock branch's epilogue: retail branches to the shared `ld ra` with `nop` in the delay slot, while the draft branches past that load and places it in the delay slot. Shared-result and sequential-condition forms did not produce the retail schedule. Both functions keep their assembly fallbacks.
+
+## MakeDownLoadAnaunce on the 73f8e75 merged base
+
+`MakeDownLoadAnaunce__FiP9mgCMemoryPiPiPi` is the unit's only guarded function.
+The entry draft differs by 25 of 900 words with either plain wibo or the pinned
+profile. The control-flow skeleton, placement constructors, integer arithmetic,
+string wrapping and floating arguments already reproduce retail. The native
+body is 0xE08 bytes against the 0xE10 retail extent; the tail is zero padding.
+
+Declaring the condition iterator at function scope and narrowing the analysis
+source pointer to its request loop reduces the difference to 23 words. Both
+loop-local variables instead differ by 34 words; declaring the iterator before
+the aggregate condition count differs by 31. The 32-byte alignment annotation
+on the scalar font index can be removed without changing the 23-word result.
+No new alignment annotation or compiler profile row is introduced.
+
+All remaining differing words are stack operands at function offsets 0x480,
+0x484, 0x498, 0x49C, 0x4B4, 0x540, 0x604, 0x638, 0x68C, 0x6A4, 0x6F0,
+0x79C, 0x7B4, 0x7BC, 0x9B8, 0x9CC, 0x9E0, 0x9E8, 0x9EC, 0x9F4,
+0x9F8, 0xA10 and 0xA1C. They are the request-source/index and condition-loop
+spill slots. Branches, calls and register operands otherwise match. Existing
+placement-new null branches are already exact here; the lane did not modify
+them. There is no float-order remainder to propose.
+
+**Park category:** local lifetimes/spill assignment. **Reconsider when:** retail
+or type evidence establishes the original request-source/condition-iterator
+scope and restores the remaining slots through natural declarations, without
+new alignment attributes or codegen wrappers. Keep the assembly guard until
+zero difference and a complete-unit pass.
+
+Evidence is in `.private/receipts/bigfn-drafts/editmenu-scoped-src.log`,
+`editmenu-scalar-font-index.log`, and the per-unit private experiment log. The
+final guarded build comparison is `.private/receipts/bigfn-final/`.
+
+Final guarded validation is identical to i9 in verifier, complete object-check
+output and coverage. All three lane units pass; the inherited failing set stays
+mg_texture, nd_meswin, actionchara and actscript (145/149 pass). Coverage stays
+6,666 matched / 184 guarded / 15 assembly-only / 7 fuzzy. No target is promoted.
+Comparison receipt: `.private/receipts/bigfn-final/comparison.json`.
+
+## Nearmiss continuation order and source cleanup
+
+The retained guarded `MakeDownLoadAnaunce` draft now differs by 19/900 words,
+down from 23/900, with the same 0xE08 body in the retail 0xE10 extent. Retail
+increments the aggregate condition count at +0x9E0/+0x9E8 before incrementing
+the condition iterator at +0x9EC/+0x9F4. Updating `condition_num` before `con`
+in the shared loop continuation reproduces these four words; their original
+slots were already correct. This is independent update order, not a spill
+layout difference. Every remaining scalar alignment attribute is removed;
+removing them does not change the draft's code. The quadword load buffer
+retains its real type and alignment.
+
+The 19 remaining differences are the prior list excluding those four
+continuation words. A separate request index, request-pass source scope,
+checked source reference, shared font-height pointer and a function-scope
+source after the scalar declarations all retain 19. Sharing the font pointer
+changes saved-register allocation (44/900); merging the source assignment/null
+test changes scheduling/body size (605/900); declaring the source first moves
+earlier spills too (76/900). All are reverted. The guard remains until the
+request-source and three reduced array-index spill slots match naturally.
+
+Receipts: `.private/receipts/nearmiss-probes/editmenu/n1` through `n10`; retained
+candidate `n2`. The canonical guarded complete-object check is under
+`.private/receipts/nearmiss-canonical/editmenu/n2/`. No profile row is added.
+
+## Mid-day request-pointer lifetime match (October 8)
+
+`MakeDownLoadAnaunce__FiP9mgCMemoryPiPiPi` is now native and exact. The request
+loop first checks `MenuEditAnalyzeDataSrc[no]` for NULL and skips the empty
+entry, then declares `EditAnalyzeDataSrc *src` from that same table entry.
+There is no call or write between the test and the declaration. MWCC shares
+the table load while delaying the local pointer's lifetime until after the
+empty-entry branch.
+
+This changes only the four spill assignments that accounted for the retained
+19/900-word checkpoint. The reduced condition-array indices occupy sp+0x140
+and sp+0x150, the reduced request-table index occupies sp+0x160, and `src`
+occupies sp+0x170, as in retail. The previous draft placed `src` at sp+0x140
+and the other three spills at sp+0x150/+0x160/+0x170. Instruction order,
+register operands, calls and branch layout are otherwise unchanged. No new
+compiler selector, type change, alignment annotation or helper is needed.
+
+The native body is 0xE08 bytes followed by the retail extent's eight zero
+padding bytes. Canonical wrapper/fixup comparison reports zero of 900 differing
+words and passes the whole unit: 0xC7E8 allocated bytes, 2,581 relocations.
+Removing the assembly guard also passes the integrated unit check. All 148
+other game objects retain their baseline file hashes. The full check remains
+147/149, with only the inherited nd_meswin and actscript failures, and PAL
+remains 0x26 differing .text bytes with every other file-backed section exact.
+Coverage increases from 6,686 to 6,687 matched functions.
+
+Natural scope trials retained 19 words for a const source pointer, a separately
+named signed request index, a source object reference, and a scoped font index;
+scoping the condition index instead gives 32. An unsigned request index adds a
+signedness difference (20), and a reference to the global pointer slot gives
+539/900 with a 0xE18 body. Those variants are not retained.
+
+Receipts: `.private/midday/probes/editmenu/source-after-test/` contains the
+source snapshot, word comparison, disassembly and complete-object check;
+`.private/midday-editmenu-build.log`, `.private/midday-editmenu-objects.log`,
+`.private/midday/editmenu-hash-comparison.json`, and
+`.private/midday-coverage-editmenu.txt` record integrated validation.

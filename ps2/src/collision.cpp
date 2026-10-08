@@ -220,21 +220,21 @@ int CColFrame::InsidePoint(float *point) {
 #pragma global_optimizer off
 #ifdef NONMATCHING
 static float normal_transform[4][4];
-
+#endif
+#ifndef PORT
 /**
  *
- * Stores the matrix used to transform collision vertices and normals.
+ * Loads the matrix used to transform collision normals into VU0 registers.
  *
  */
-void pre_trance_normal(float (*matrix)[4]) {
-    for (int column = 0; column < 4; column++) {
-        for (int row = 0; row < 4; row++) {
-            normal_transform[column][row] = matrix[column][row];
-        }
-    }
+static asm void pre_trance_normal(float (*matrix)[4]) {
+    .set noreorder
+    lqc2 vf10, 0(a0)
+    lqc2 vf11, 0x10(a0)
+    lqc2 vf12, 0x20(a0)
+    jr ra
+    lqc2 vf13, 0x30(a0)
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/collision", pre_trance_normal__FPA4_f);
 #endif
 #pragma global_optimizer reset
 

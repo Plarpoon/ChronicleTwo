@@ -37,9 +37,10 @@ instruction as unsupported rather than C expressions. The available
 `libvu0.h` exposes callable SDK functions, including `sceVu0OuterProduct`;
 a call introduces an ABI boundary and cannot reproduce this inline body.
 Scalar C++ likewise emits scalar FPU instructions instead of the required
-COP2 opcodes. A guarded C++ draft forms two XZ-only edge vectors and calls
-`sceVu0OuterProduct`. It compiles, but differs from the retail inline VU0
-instructions; the game build retains the assembly fallback.
+COP2 opcodes. The function now uses the narrow inline VU0 exception. The
+MWCC body matches all 0x2C retail bytes, and the `editmap2` object passes
+`check_objects.py` with 143 resolved relocations. The PC stub computes the
+horizontal normal with scalar arithmetic.
 
 ## GetEditPartsAlt with placed parts
 

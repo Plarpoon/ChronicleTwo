@@ -522,35 +522,32 @@ Mot_List *MotionProc(mgCFrame *root, unsigned int from_frame, unsigned int to_fr
     return list->next;
 }
 
-static void testVUnew(float (*matrix)[4], float *vertex, float *weight, float *accum, float *out);
-
-#ifdef NONMATCHING
+#pragma global_optimizer off
 /**
  *
- * Adds a vertex moved by a bone matrix and scaled by its weight to an accumulated vertex, and writes the sum to both the accumulator and an output vertex.
+ * Accumulates a weighted transformed vertex and writes the resulting vertex.
  *
  */
 static void testVUnew(float (*matrix)[4], float *vertex, float *weight, float *accum, float *out) {
-    sceVu0FVECTOR moved;
-    int           i;
-
-    for (i = 0; i < 4; i++) {
-        moved[i] = matrix[0][i] * vertex[0] + matrix[1][i] * vertex[1] + matrix[2][i] * vertex[2] + matrix[3][i] * vertex[3];
+    asm {
+        lqc2 vf4, 0(matrix)
+        lqc2 vf5, 0x10(matrix)
+        lqc2 vf6, 0x20(matrix)
+        lqc2 vf7, 0x30(matrix)
+        lqc2 vf8, 0(vertex)
+        vmulax.xyzw ACC, vf4, vf8x
+        vmadday.xyzw ACC, vf5, vf8y
+        vmaddaz.xyzw ACC, vf6, vf8z
+        vmaddw.xyzw vf12, vf7, vf8w
+        lqc2 vf4, 0(accum)
+        lqc2 vf5, 0(weight)
+        vmulx.xyz vf6, vf12, vf5x
+        vadd.xyzw vf6, vf4, vf6
+        sqc2 vf6, 0(accum)
+        sqc2 vf6, 0(out)
     }
-
-    // Only xyz are weighted; w gains the third matrix row's w.
-    accum[0] += moved[0] * weight[0];
-    accum[1] += moved[1] * weight[0];
-    accum[2] += moved[2] * weight[0];
-    accum[3] += matrix[2][3];
-    out[0] = accum[0];
-    out[1] = accum[1];
-    out[2] = accum[2];
-    out[3] = accum[3];
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", testVUnew__FPA4_fPfPfPfPf);
-#endif
+#pragma global_optimizer reset
 
 #ifdef NONMATCHING
 Mot_List *MotionProc2(mgCFrame *root, tagMOTION_TYPE *motion, tagFRAME_INF *frame_info, Mot_List *list) {

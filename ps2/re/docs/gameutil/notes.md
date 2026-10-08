@@ -118,7 +118,10 @@ The unit-level `divbyzerocheck` pragma was redundant with the global MWCC flag; 
 
 ## Assembly gaps
 
-`testVUnew`, `MotionProc2`, `CheckHit(CollisionInfo*, ...)`, and
+`testVUnew` uses the narrow inline VU0 exception: it transforms a vertex,
+weights its xyz lanes, adds it to the accumulated vertex, and writes the
+result to both destinations. Its 0x40 retail bytes match objdiff exactly;
+the complete `gameutil` object passes `check_objects.py` with 357 resolved
+relocations. `MotionProc2`, `CheckHit(CollisionInfo*, ...)`, and
 `CheckHits(CollisionInfo*, ...)` retain C++ drafts under `NONMATCHING` and use
-`INCLUDE_ASM` in retail builds. Their promoted versions contained VU0 assembly
-inside C++ functions, so those promotions do not meet the source matching rule.
+`INCLUDE_ASM` in retail builds.

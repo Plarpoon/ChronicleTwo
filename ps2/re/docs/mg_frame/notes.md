@@ -192,8 +192,9 @@ this game's `CObject` (object unit) derives from mgCObject.
   changed. Its inline VU0 block multiplies the parent world matrix by the
   local matrix and stores the product in both the cache and caller's output.
   All 94 instructions and the 0x178-byte function match retail exactly in
-  objdiff (score 0). The guarded GetLWMatrixTopBottom draft still differs
-  from retail's inline VU0 matrix multiply; it uses the parent's cache.
+  objdiff (score 0). `GetLWMatrixTopBottom` uses its parent's cached matrix
+  and the same VU0 multiplication sequence. Its 89 instructions and
+  0x164-byte symbol also match retail exactly (score 0).
 - test1/test2 are whole-asm VU0 functions. `test1` first multiplies the screen matrix by
   the supplied matrix, transforms eight corners into vf10-vf17, and writes their
   four-component bounds. `test2` reads those eight retained VU0 vectors, divides only
@@ -217,7 +218,7 @@ this game's `CObject` (object unit) derives from mgCObject.
 
 ## Assembly gaps
 
-`GetBBoardMatrix`, `GetLWMatrixTopBottom`, and `GetDrawRect` retain
+`GetBBoardMatrix` and `GetDrawRect` retain
 their C++ drafts under `NONMATCHING` and use `INCLUDE_ASM` in the retail build.
 Their promoted forms required VU0 assembly inside C++ source. The surrounding
 matched functions remain compiled from C++.

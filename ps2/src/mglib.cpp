@@ -7,10 +7,7 @@
 #include "mg_math.hpp"
 #include "mg_memory.hpp"
 #include "mg_texture.hpp"
-#define mgDBuff mgDBuffDeclaration
 #include "mglib.hpp"
-#undef mgDBuff
-extern u_char mgDBuff[];
 #include <eekernel.h>
 #include <libdev.h>
 
@@ -25,13 +22,6 @@ static const u_int gs_csr = 0x12001000;
 static const u_int dma_tag_call = 0x50000000;
 static const int   builtin_vu_prog_count = 3;
 static const int   user_vu_prog_base = 0x100;
-
-enum {
-    dbuff_draw_env_a = 0x60,
-    dbuff_draw_env_b = 0x150,
-    dbuff_clear_a = 0x100,
-    dbuff_clear_b = 0x1F0
-};
 
 enum {
     gs_prim = 0x00,
@@ -171,7 +161,7 @@ int GetScreenSize(int mode, int *width, int *height, int *left, int *top, int *r
 }
 #ifdef NONMATCHING
 void mgInit(int screen_mode, int video_mode) {
-    sceGsDBuff        *buffers = (sceGsDBuff *) mgDBuff;
+    sceGsDBuff        *buffers = &mgDBuff;
     static signed char dimx[16] = {10, 4, 6, 8, 12, 0, 2, 14, 7, 9, 11, 5, 3, 15, 13, 1};
     sceDmaEnv          dma_env;
     u_long128          clear_pixels[8192];
@@ -399,17 +389,17 @@ void mgBeginFrame(mgCDrawManager *manager) {
     h_count = *(int *) timer0_count;
 
     int red = fptosi(mgBackColor[0]);
-    mgDBuff[dbuff_clear_a + 0] = red;
+    mgDBuff.clear0.rgbaq.bytes.red = red;
     int green = fptosi(mgBackColor[1]);
-    mgDBuff[dbuff_clear_a + 1] = green;
+    mgDBuff.clear0.rgbaq.bytes.green = green;
     int blue = fptosi(mgBackColor[2]);
-    mgDBuff[dbuff_clear_a + 2] = blue;
+    mgDBuff.clear0.rgbaq.bytes.blue = blue;
     int alpha = fptosi(mgBackColor[3]);
-    mgDBuff[dbuff_clear_b + 0] = red;
-    mgDBuff[dbuff_clear_b + 1] = green;
-    mgDBuff[dbuff_clear_b + 2] = blue;
-    mgDBuff[dbuff_clear_a + 3] = alpha;
-    mgDBuff[dbuff_clear_b + 3] = alpha;
+    mgDBuff.clear1.rgbaq.bytes.red = red;
+    mgDBuff.clear1.rgbaq.bytes.green = green;
+    mgDBuff.clear1.rgbaq.bytes.blue = blue;
+    mgDBuff.clear0.rgbaq.bytes.alpha = alpha;
+    mgDBuff.clear1.rgbaq.bytes.alpha = alpha;
     mgBeginPacket(manager);
     *(u_long128 *) &mgGiftagAD = 0;
     mgGiftagAD.EOP = 1;
@@ -423,19 +413,19 @@ void mgBeginFrame(mgCDrawManager *manager) {
     sceVif1PkCloseGifTag(mgVif1Packet);
     sceVif1PkCloseDirectCode(mgVif1Packet);
     mgSetPkTextureRepeat(1);
-    long long *draw_env;
+    sceGsFrame *draw_env;
 
     if (mgDBuffID != 0) {
-        draw_env = (long long *) (mgDBuff + dbuff_draw_env_a);
+        draw_env = &mgDBuff.draw0.frame1;
     } else {
-        draw_env = (long long *) (mgDBuff + dbuff_draw_env_b);
+        draw_env = &mgDBuff.draw1.frame1;
     }
 
-    mgFRAME_1.value = *draw_env;
+    mgFRAME_1.value = draw_env->value;
     mgSetPkFrameBuffer(-1, -1, -1, -1);
     mgSetPkClearScreen(
-        mgDBuff[dbuff_clear_a + 0], mgDBuff[dbuff_clear_a + 1],
-        mgDBuff[dbuff_clear_a + 2], mgDBuff[dbuff_clear_a + 3]);
+        mgDBuff.clear0.rgbaq.bytes.red, mgDBuff.clear0.rgbaq.bytes.green,
+        mgDBuff.clear0.rgbaq.bytes.blue, mgDBuff.clear0.rgbaq.bytes.alpha);
     mgFlushRenderInfo();
 }
 
@@ -506,7 +496,7 @@ void mgStoreFrameImage() {
 }
 #ifdef NONMATCHING
 void mgEndFrame(mgCDrawManager *manager) {
-    sceGsDBuff      *buffers = (sceGsDBuff *) mgDBuff;
+    sceGsDBuff      *buffers = &mgDBuff;
     static int       count = 1;
     static float     cpu_ratio = 0.0f;
     static float     free_ratio = 0.0f;
@@ -1029,7 +1019,7 @@ void mgSetPkFrameBuffer(mgCTexture *texture) {
 }
 #ifdef NONMATCHING
 void mgSetPkFrameBuffer(int fbp, int width, int height, int psm) {
-    sceGsDBuff    *buffers = (sceGsDBuff *) mgDBuff;
+    sceGsDBuff    *buffers = &mgDBuff;
     mgCTexture    *frame_texture = &frame_tex;
     sceGsFrame     frame;
     sceGsFrame    *default_frame;
@@ -1175,16 +1165,16 @@ INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgGetFrameBuffer__FP10mgCTexture);
 
 #ifdef NONMATCHING
 void mgGetFrameBackBuffer(mgCTexture *texture) {
-    u_char *draw_env;
+    sceGsFrame *draw_env;
 
     if (mgDBuffID != 0) {
-        draw_env = mgDBuff + dbuff_draw_env_b;
+        draw_env = &mgDBuff.draw1.frame1;
     } else {
-        draw_env = mgDBuff + dbuff_draw_env_a;
+        draw_env = &mgDBuff.draw0.frame1;
     }
 
     *texture = frame_tex;
-    texture->tex0.TBP0 = (*(u_short *) draw_env & 0x1FF) * 32;
+    texture->tex0.TBP0 = draw_env->FBP * 32;
 }
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgGetFrameBackBuffer__FP10mgCTexture);

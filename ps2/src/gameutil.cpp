@@ -1111,99 +1111,98 @@ int CheckHit(CCPoly *polys, int count, float *from, float *to, float *hit_point,
     return CheckHit(&info, from, to, hit_point, nearest, ignore_mask);
 }
 
-#ifdef NONMATCHING
-int CheckHit(CollisionInfo *info, float *from, float *to, float *hit_point, int nearest, int ignore_mask) {
-    sceVu0FVECTOR point;
-    sceVu0FVECTOR diff;
-    sceVu0FVECTOR poly_max;
-    sceVu0FVECTOR poly_min;
-    sceVu0FVECTOR line_max;
-    sceVu0FVECTOR line_min;
-    sceVu0FVECTOR offset;
-    CCPoly       *poly;
-    int           count;
-    int           i;
-    int           hit;
-    int           found;
-    float         best;
-    float         from_side;
-    float         to_side;
-    float         dist;
+#pragma global_optimizer off
+int CheckHit(CollisionInfo *collision, float *from, float *to, float *hit, int closest, int mask) {
+    float point[4];
+    float diff[4];
+    float polyMin[4];
+    float polyMax[4];
+    float segMax[4];
+    float segMin[4];
+    float offset[4];
+    float bestDist;
+    float d0;
+    float d1;
+    float dist;
+    int i;
+    int best;
+    CCPoly *poly;
+    int count;
+    int hasBest;
 
-    if (info == NULL) {
+    if (collision == NULL) {
         return 0;
     }
+    best = -1;
+    hasBest = 0;
+    mgVectorMaxMin(segMax, segMin, from, to);
 
-    hit = -1;
-    found = 0;
-    mgVectorMaxMin(line_max, line_min, from, to);
-    poly = info->polys;
-    count = info->count;
-
+    {
+        float *minPtr;
+        float *maxPtr;
+        maxPtr = segMax;
+        minPtr = segMin;
+        asm {
+            lqc2 vf10, 0(maxPtr)
+            lqc2 vf11, 0(minPtr)
+        }
+    }
+    poly = collision->polys;
+    count = collision->count;
     if (poly == NULL || count == 0) {
         return -1;
     }
-
     for (i = 0; i < count; i++, poly++) {
-        if (poly->ignore_mask & ignore_mask) {
+        if (poly->ignore_mask & mask) {
             continue;
         }
 
-        mgVectorMaxMin(poly_max, poly_min, poly->vertex[0], poly->vertex[1], poly->vertex[2]);
-
-        if (poly_min[0] > line_max[0] || poly_min[1] > line_max[1] || poly_min[2] > line_max[2]) {
+        mgVectorMaxMin(polyMax, polyMin, poly->vertex[0], poly->vertex[1], poly->vertex[2]);
+        if (segMax[0] < polyMin[0] || segMax[1] < polyMin[1] || segMax[2] < polyMin[2]) {
             continue;
         }
-
-        if (line_min[0] > poly_max[0] || line_min[1] > poly_max[1] || line_min[2] > poly_max[2]) {
+        if (!(segMin[0] <= polyMax[0]) || !(segMin[1] <= polyMax[1]) ||
+            !(segMin[2] <= polyMax[2])) {
             continue;
         }
 
         sceVu0SubVector(offset, from, poly->vertex[0]);
-        from_side = sceVu0InnerProduct(poly->normal, offset);
+        d0 = sceVu0InnerProduct(poly->normal, offset);
         sceVu0SubVector(offset, to, poly->vertex[0]);
-        to_side = sceVu0InnerProduct(poly->normal, offset);
-
-        if (from_side > 0.0f && to_side > 0.0f) {
+        d1 = sceVu0InnerProduct(poly->normal, offset);
+        if (!(d0 <= 0.0f || d1 <= 0.0f)) {
             continue;
         }
-
-        if (from_side < 0.0f && to_side < 0.0f) {
+        if (d0 < 0.0f && d1 < 0.0f) {
             continue;
         }
-
-        if (mgIntersectionPoint_line_poly3(from, to, poly->vertex[0], poly->vertex[1], poly->vertex[2], poly->normal, point) == 0) {
+        if (mgIntersectionPoint_line_poly3(from, to, poly->vertex[0], poly->vertex[1],
+                                           poly->vertex[2], poly->normal, point) == 0) {
             continue;
         }
-
-        if (nearest == 0) {
-            sceVu0CopyVector(hit_point, point);
-            return i;
+        if (closest == 0) {
+            best = i;
+            sceVu0CopyVector(hit, point);
+            break;
         }
-
         diff[0] = from[0] - point[0];
         diff[1] = from[1] - point[1];
         diff[2] = from[2] - point[2];
-        dist = diff[2] * diff[2] + diff[0] * diff[0] + diff[1] * diff[1];
-
-        if (found == 0) {
-            sceVu0CopyVector(hit_point, point);
-            best = dist;
-            hit = i;
-        } else if (dist < best) {
-            sceVu0CopyVector(hit_point, point);
-            best = dist;
-            hit = i;
+        dist = (diff[0] * diff[0]) + (diff[1] * diff[1]) + (diff[2] * diff[2]);
+        if (hasBest == 0) {
+            bestDist = dist;
+            best = i;
+            sceVu0CopyVector(hit, point);
+        } else if (!(bestDist <= dist)) {
+            bestDist = dist;
+            best = i;
+            sceVu0CopyVector(hit, point);
         }
-
-        found = 1;
+        hasBest = 1;
     }
-
-    return hit;
+    return best;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", CheckHit__FP13CollisionInfoPfPfPfii);
-#endif
+#pragma global_optimizer reset
 
 int CheckHitVertical(CCPoly *polys, int count, float *from, float height, float *hit_point, int ignore_mask) {
     CollisionInfo info;

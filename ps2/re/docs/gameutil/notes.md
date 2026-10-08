@@ -122,6 +122,9 @@ The unit-level `divbyzerocheck` pragma was redundant with the global MWCC flag; 
 weights its xyz lanes, adds it to the accumulated vertex, and writes the
 result to both destinations. Its 0x40 retail bytes match objdiff exactly;
 the complete `gameutil` object passes `check_objects.py` with 357 resolved
-relocations. `MotionProc2`, `CheckHit(CollisionInfo*, ...)`, and
-`CheckHits(CollisionInfo*, ...)` retain C++ drafts under `NONMATCHING` and use
-`INCLUDE_ASM` in retail builds.
+relocations. `MotionProc2` and `CheckHits(CollisionInfo*, ...)` retain C++
+drafts under `NONMATCHING` and use `INCLUDE_ASM` in retail builds.
+`CheckHit(CollisionInfo*, ...)` now uses two
+inline VU loads to retain the segment bounds in vf10/vf11 before testing
+polygons. Its 0x32C bytes match objdiff exactly, and the `gameutil` object
+passes `check_objects.py` with 357 resolved relocations.

@@ -1,8 +1,7 @@
 # menuaqua: reverse-engineering notes
 
 `CAquarium::Draw` draws the fish, aquarium frames, bubbles, water reflection,
-and menu overlays in retail order. An earlier C++ version passed an isolated
-comparison, but the current matching build selects its `INCLUDE_ASM` gap.
+and menu overlays in retail order. Its native body is exact.
 `CAquarium::SettingAqua` still uses a retail assembly gap.
 `GyoraceMenuDraw` is native and exact.
 The `SettingAqua` draft constructs its `love_chara` member as a `CCharacter2`.
@@ -51,6 +50,23 @@ and its configuration payload as characters.
 Both functions have retail-sized native bodies (`0x12B0` and `0x9C0`). The
 canonical `menuaqua` object comparison passes all `0x11C44` allocated bytes
 and 3,218 relocations with both promoted together.
+
+## Aquarium drawing
+
+`CAquarium::Draw` restores the water ambient light while drawing the fish and
+tank, then draws food, bubbles, water, the reflection walls, the menu windows,
+and optional debug fish parameters. Its wall pass selects one of four vertical
+quads from the camera position, offsets the vertices toward the camera, clips
+them against the screen, and draws only visible quads. The water pass captures
+the frame buffer before and after the surface and reflection work.
+
+The debug panel's `DrawMenuFillBox` call receives width 120.0f and height
+242.0f after top 80.0f. Retail prepares width and height before top. The pinned
+MWCC floating-argument consumer has an unstable evaluate-first byte for these
+constants; two callee-scoped binary32 rows in the JSON profile restore their
+retail load order. With this function promoted, the whole native `menuaqua`
+object checks all `0x11C3C` allocated bytes and 3,244 relocations without a
+finding; standard objdiff scores its `0xE80` body at 100%.
 
 ## Class sizes (all asserted except CGyoraceFishData)
 - CBubble 0x40: `__nw(0x40)` after `Alloc(6)` in `CAquarium::Initialize`/`SettingAqua`; battle

@@ -4921,7 +4921,6 @@ int CAquarium::Step() {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Step__9CAquariumFv);
 #endif
-#ifdef NONMATCHING
 void CAquarium::Draw() {
     mgCTextureManager *textures = &mgTexManager;
     int                i;
@@ -5243,9 +5242,6 @@ void CAquarium::Draw() {
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/menuaqua", Draw__9CAquariumFv);
-#endif
 void MenuAquaInit(mgCMemory *memory, int *tex_block, int) {
     AquaScene = GetMainScene();
     Auqa_Bgm_Volf = AquaScene->GetTimeBgmVolf();

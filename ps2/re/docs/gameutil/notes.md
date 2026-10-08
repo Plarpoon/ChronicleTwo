@@ -107,7 +107,13 @@ At least 0x110 here (larger than the first game's 0xD0): 0x00 float radius (<=0 
   polygons outside that box, records sphere/polygon intersections, and sorts
   their distances when requested. Its 0x3E4 bytes match objdiff exactly;
   `gameutil` passes `check_objects.py` with 357 resolved relocations.
-- MoveCheck always returns 0. CreateCharaCPoly returns 0 if max_polys < 2, else 2.
+- MoveCheck always returns 0. It clips the requested movement against pipe
+  hits, halves horizontal velocity for up to two retries, then updates ground
+  and wall contact through polygon probes. A union overlays the returned
+  `CCPoly` with the copied polygon record so `GetFootPoly` has its actual
+  argument type; this also preserves the retail call setup. Its 0x608 bytes
+  match objdiff, and `gameutil` passes `check_objects.py` with 357 relocations.
+  CreateCharaCPoly returns 0 if max_polys < 2, else 2.
 - CheckPosInOutFor*/CalcIntersection* return 0/1 (declared int; `xori` result could also be bool).
 - ChangeWeight: void (v0 is memcpy leftover). AnimeDataInit(*) returns 1; CreateAnimeDataEX 1.
 - MotionProc (time): `fptoui(time)` then binary search; types 12 process consecutive lists with the

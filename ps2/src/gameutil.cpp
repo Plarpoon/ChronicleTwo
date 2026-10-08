@@ -1723,119 +1723,115 @@ int CheckHitsSphere(CCPoly *polys, int count, float *sphere, int max_hits, int *
     return hits;
 }
 
-#ifdef NONMATCHING
-int MoveCheck(float *pos, float *velocity, float *out_pos, MoveCheckInfo *info, CCPoly *polys, int count, int ignore_mask) {
-    sceVu0FVECTOR ground;
-    sceVu0FVECTOR from;
-    sceVu0FVECTOR to;
-    sceVu0FVECTOR extension;
-    int           hit_polys[64];
-    sceVu0FVECTOR hit_points[64];
-    sceVu0FVECTOR extended_to;
-    CCPoly        ground_poly;
-    sceVu0FVECTOR ground_query;
-    sceVu0FVECTOR wall_query;
-    float         radius;
-    float         landing_margin;
-    int           retries;
+int MoveCheck(float *pos, float *vel, float *out, MoveCheckInfo *info, CCPoly *polys, int count,
+              int mask) {
+    float point[4];
+    float start[4];
+    float end[4];
+    float dir[4];
+    int hitIndex[64];
+    float hitPoint[64][4];
+    float scratch[4];
+    union { CCPoly poly; CCPolyCopy copy; } foot;
+    float footProbe[4];
+    float probe[4];
+    float radius;
+    float margin;
+    int tries;
+    int wallSides;
 
     radius = info->radius;
     if (radius <= 0.0f) {
         radius = 15.0f;
     }
-    out_pos[0] = pos[0];
-    out_pos[1] = pos[1];
-    out_pos[2] = pos[2];
-    sceVu0Normalize(extension, velocity);
-    sceVu0ScaleVector(extension, extension, 0.3f * radius);
-    from[0] = pos[0];
-    from[1] = 10.0f + pos[1];
-    from[2] = pos[2];
-    to[0] = from[0] + velocity[0];
-    to[1] = from[1] + velocity[1];
-    to[2] = from[2] + velocity[2];
-    from[3] = 4.0f;
-    sceVu0AddVector(extended_to, to, extension);
-    retries = 0;
-
-    while (1) {
-        if (CheckHitsPipe(polys, count, from, to, 64, hit_polys, hit_points, 1, ignore_mask) <= 0) {
-            from[0] = to[0];
-            from[1] = to[1];
-            from[2] = to[2];
-            to[0] = from[0];
-            to[1] = from[1] - 10.0f;
-            to[2] = from[2];
+    out[0] = pos[0];
+    out[1] = pos[1];
+    out[2] = pos[2];
+    sceVu0Normalize(dir, vel);
+    sceVu0ScaleVector(dir, dir, 0.3f * radius);
+    start[0] = pos[0];
+    start[1] = 10.0f + pos[1];
+    start[2] = pos[2];
+    end[0] = start[0] + vel[0];
+    end[1] = start[1] + vel[1];
+    end[2] = start[2] + vel[2];
+    start[3] = 4.0f;
+    sceVu0AddVector(scratch, end, dir);
+    tries = 0;
+    do {
+        if (CheckHitsPipe(polys, count, start, end, 0x40, hitIndex, hitPoint, 1, mask) <= 0) {
+            start[0] = end[0];
+            start[1] = end[1];
+            start[2] = end[2];
+            end[0] = start[0];
+            end[1] = start[1] - 10.0f;
+            end[2] = start[2];
             break;
         }
-        retries++;
-        velocity[0] *= 0.5f;
-        velocity[2] *= 0.5f;
-        to[0] = from[0] + velocity[0];
-        to[1] = from[1] + velocity[1];
-        to[2] = from[2] + velocity[2];
-        if (retries >= 2) {
-            break;
-        }
-    }
-
+        vel[0] *= 0.5f;
+        vel[2] *= 0.5f;
+        tries++;
+        end[0] = start[0] + vel[0];
+        end[1] = start[1] + vel[1];
+        end[2] = start[2] + vel[2];
+    } while (tries < 2);
     info->ground_found = 0;
     info->landed = 0;
-    landing_margin = 4.0f;
-    if (velocity[1] > 0.1f) {
-        landing_margin = 0.0f;
+    margin = 4.0f;
+    if (vel[1] > 0.1f) {
+        margin = 0.0f;
     }
-    sceVu0CopyVector(ground_query, from);
-    if (info->skip_ground == 0 && GetFootPoly(ground_query, 20.0f, &ground_poly, ground, polys, count, ignore_mask) != 0) {
-        sceVu0Normalize(ground_poly.normal, ground_poly.normal);
-        info->ground_poly = ground_poly;
-        info->second_poly = ground_poly;
-        info->ground_found = 1;
-        info->landed = 0;
-        *(u_long128 *) info->ground_point = *(u_long128 *) ground;
-        if (ground[1] > ((from[1] + velocity[1]) - 10.0f) - landing_margin) {
-            info->landed = 1;
-        }
-    }
-    if (info->landed != 0) {
-        out_pos[0] = ground[0];
-        out_pos[1] = ground[1];
-        out_pos[2] = ground[2];
-    } else {
-        out_pos[0] = to[0];
-        out_pos[1] = to[1];
-        out_pos[2] = to[2];
-    }
-    *(u_long128 *) wall_query = *(u_long128 *) out_pos;
-    wall_query[1] += 5.0f;
-    info->width_result = CheckWidth(polys, count, wall_query, radius, to, ignore_mask);
-    if (info->width_result != 0) {
-        wall_query[0] = to[0];
-        wall_query[2] = to[2];
-    }
-    wall_query[3] = 4.0f;
-    if (CheckWidthPipe(polys, count, wall_query, radius, to, ignore_mask) != 0) {
-        out_pos[0] = to[0];
-        out_pos[2] = to[2];
-    } else {
-        out_pos[0] = wall_query[0];
-        out_pos[2] = wall_query[2];
-    }
+    sceVu0CopyVector(footProbe, start);
     if (info->skip_ground == 0) {
-        sceVu0CopyVector(ground_query, from);
-        if (GetFootPoly(ground_query, 20.0f, &ground_poly, ground, polys, count, ignore_mask) != 0) {
-            *(u_long128 *) info->ground_point = *(u_long128 *) ground;
-            if (ground[1] > ((from[1] + velocity[1]) - 10.0f) - landing_margin) {
-                out_pos[1] = ground[1];
+        if (GetFootPoly(footProbe, 20.0f, &foot.poly, point, polys, count, mask)) {
+            sceVu0Normalize(foot.copy.normal, foot.copy.normal);
+            *reinterpret_cast<CCPolyCopy *>(&info->ground_poly) = foot.copy;
+            *reinterpret_cast<CCPolyCopy *>(&info->second_poly) = foot.copy;
+            info->ground_found = 1;
+            info->landed = 0;
+            *reinterpret_cast<u_long128 *>(info->ground_point) = *reinterpret_cast<u_long128 *>(point);
+            if (!(point[1] <= start[1] + vel[1] - 10.0f - margin)) {
+                info->landed = 1;
             }
         }
     }
-    GetCPolyAttr(info, pos, out_pos, 34.0f, polys, count, ignore_mask);
+    if (info->landed) {
+        out[0] = point[0];
+        out[1] = point[1];
+        out[2] = point[2];
+    } else {
+        out[0] = end[0];
+        out[1] = end[1];
+        out[2] = end[2];
+    }
+    *reinterpret_cast<u_long128 *>(probe) = *reinterpret_cast<u_long128 *>(out);
+    probe[1] += 5.0f;
+    wallSides = CheckWidth(polys, count, probe, radius, end, mask);
+    info->width_result = wallSides;
+    if (wallSides) {
+        probe[0] = end[0];
+        probe[2] = end[2];
+    }
+    probe[3] = 4.0f;
+    if (CheckWidthPipe(polys, count, probe, radius, end, mask)) {
+        out[0] = end[0];
+        out[2] = end[2];
+    } else {
+        out[0] = probe[0];
+        out[2] = probe[2];
+    }
+    if (info->skip_ground == 0) {
+        sceVu0CopyVector(footProbe, start);
+        if (GetFootPoly(footProbe, 20.0f, &foot.poly, point, polys, count, mask)) {
+            *reinterpret_cast<u_long128 *>(info->ground_point) = *reinterpret_cast<u_long128 *>(point);
+            if (!(point[1] <= start[1] + vel[1] - 10.0f - margin)) {
+                out[1] = point[1];
+            }
+        }
+    }
+    GetCPolyAttr(info, pos, out, 34.0f, polys, count, mask);
     return 0;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/gameutil", MoveCheck__FPfPfPfP13MoveCheckInfoP6CCPolyii);
-#endif
 
 int GetFootPoly(float *pos, float depth, CCPoly *found, sceVu0FVECTOR ground, CCPoly *polys, int count, int ignore_mask) {
     s16           poly_ignore_mask;

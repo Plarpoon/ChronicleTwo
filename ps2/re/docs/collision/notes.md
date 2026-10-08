@@ -135,8 +135,10 @@ CreateBBox (+8).
   retail bytes match objdiff exactly; the `collision` object passes
   `check_objects.py` with 98 resolved relocations.
 - `CCollisionMDT::PickUpNearPoly` loads the query box (w = 1) into vf10/vf11 with two `lqc2`
-  before the loop; nothing in this function reads them. The C++ draft does not reproduce
-  these register writes, so the retail build uses `INCLUDE_ASM`.
+  before the loop; nothing in this function reads them. The typed volatile view of the
+  box's maximum bounds makes MWCC reload its X lane after the early overlap tests, as
+  retail does. The function's 0x238 bytes match objdiff exactly, and the full collision
+  object passes `check_objects.py` with 98 resolved relocations.
 - MDT layout: `CreateCollisionMDT` reads `MDT_HEADER` (mg_dataset.hpp) vertex_ofs/faces_ofs/
   material_ofs; `MDT_FACES::prim_num`, records from `faces + 1`; `FACES_ID::face_num` is used as
   an INDEX count here (triangles = face_num / 3; the next record is `&index[face_num]`), so

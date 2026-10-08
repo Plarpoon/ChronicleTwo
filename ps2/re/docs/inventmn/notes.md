@@ -219,3 +219,13 @@ for `__construct_new_array` in PhotoNetaEnter. Size 0xC.
 ## Invention memo sorting linkage
 
 `neta_sort` sorts one half-open range of the discovered idea list, exchanging each entry's name value, sort key and signed halfword idea identifier together. Both supported mode values currently use the same ascending key comparison, and the return flag records whether any pair was swapped. The helper is file-local and defined before `CMenuInvent::UpdataNetaMemoStr`. This linkage lets MWCC retain the unchanged sort-key pointer in the caller-saved argument register between the two range sorts. `UpdataNetaMemoStr` gathers known ideas, separates identifiers below 1000 from the other identifiers, repeatedly sorts both ranges until stable, and clears the unused list tail. Its native 404-byte body now has zero differing instruction or relocation fields in the PAL checker; no data or caller interfaces change.
+
+## Debug inventory floating argument calibration
+
+`MenuInventDebugDraw__Fv` uses stable binary32 selectors for 300.0f
+(`0x43960000`, evaluate first), 270.0f (`0x43870000`, evaluate last), and
+80.0f (`0x42a00000`, evaluate first). These preserve retail's materialization
+order for the debug panel rectangle without occurrence counters. With the
+artificial division primer removed and helper masks GPR `0x30` / FPR `0`, the
+complete unit passes canonical bytes and resolved relocations: `0xFF38` checked
+bytes and 2,786 relocations.

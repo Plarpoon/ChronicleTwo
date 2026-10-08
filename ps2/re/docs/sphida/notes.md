@@ -109,3 +109,7 @@ computes par from navigation distance on stages 0/3/4/5/6 or direct
 distance otherwise, clamps par to 99, copies the red-mark model and
 initializes status sprites. The second exclusion loop tests the pin
 against RandomCircle in retail, even though it is choosing the ball.
+
+## CPowGage::Draw floating argument order
+
+Merged source had one canonical mismatch at 0x002EE3A8. Retail prepares the sprite height 28.0f before the width 18.0f on the side caps. A stable Satan’s Fiddle selector for Draw__8CPowGageFv, binary32 bits 0x41e00000, evaluate_first true reproduces the argument order across all matching sprite calls without source changes, ordinals or compiler register tricks. The prepared isolated unit passes all 0x3134 allocated bytes and 438 resolved relocations.

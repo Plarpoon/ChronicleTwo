@@ -16,6 +16,13 @@ The profile seeds integer and floating helper masks at translation-unit entry;
 normal helper calls still accumulate history afterward. These masks describe
 helper arguments, not a general register reservation policy.
 
+Direct measurements in this pinned 3.0 compiler establish GPR mask `0x30` for
+unsigned 64-bit division and `0x10` for double-to-float conversion, with FPR mask
+zero in both cases. The calibrated unit rows use `0x30`, except `nd_meswin.cpp`
+uses `0x10`. Do not insert non-retail functions in discarded sections to seed
+this history. Replacing those functions with profile rows preserves every
+allocated byte and resolved relocation, including existing unmatched functions.
+
 **Floating argument evaluation order.** A floating constant's internal
 evaluate-first byte can retain compiler-arena contents. Call lowering uses
 that byte to decide whether to materialize an argument in its early walk.

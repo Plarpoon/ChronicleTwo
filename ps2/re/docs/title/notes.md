@@ -180,3 +180,12 @@ established.
 
 ## DrawMenuDl draft
 The install progress panel draws two quads for its bar, then three textured rows with a shadow pass. Its fill changes from grey to green at progress 1. The panel width uses the short values at table_2611 offsets 4 and 0x20. Its guarded C++ draft differs from retail, so the matching build uses the assembly gap.
+
+## Title drawing floating argument calibration
+
+`TitleModeDraw__Fv` uses stable binary32 selectors `0x41c00000` (24.0f) and
+`0x00000000` (0.0f), both evaluated first. This preserves the retained title
+coordinates and prepares them before alpha conversion. With the artificial
+division primer removed and helper masks GPR `0x30` / FPR `0`, the complete
+unit passes canonical bytes and resolved relocations: `0x68B8` checked bytes
+and 2,055 relocations.

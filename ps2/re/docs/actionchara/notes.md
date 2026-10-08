@@ -207,6 +207,14 @@ GuardEffectSet__FP6CScenePf uses binary32 evaluate-first policies for
 that function. Both values are required to reproduce the PAL argument
 materialization order. Satan's Fiddle verifies the original type/value
 identity and initializes expression flags; no source value, argument
-order or pointer workaround was introduced for this calibration. Canonical
-wrapper plus section fixup validates the entire unit: 0x8FB4 bytes and
-1005 relocations pass, including the unaffected native functions.
+order or pointer workaround was introduced for this calibration. The calibrated effect routines match; other movement and data-piece
+findings remain in the merged unit.
+
+## Gun movement rotation argument order
+
+`HumanGunMoveIF__12CActionCharaFPcPc` needs binary32 zero
+(`0x00000000`) evaluated first, before the nested rotation calculation.
+The stable function/type/value policy produces the complete retail
+736-byte body and resolves its five canonical findings. All other 135
+allocated sections retain identical bytes, geometry and resolved relocation
+targets; the unit's other existing findings remain unchanged.

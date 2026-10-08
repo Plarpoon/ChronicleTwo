@@ -32,11 +32,6 @@ extern MSIN_BUFFER   msinBf[MIDI_MSIN_PORT_COUNT];
 extern MIDI_BANK     gBank;
 #endif
 
-#pragma define_section dead ".dead" ".dead"
-__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
-    return a / b;
-}
-
 // Code (.text)
 void CSound::StopVoice(int core) {
     sceSdRemote(1, rSdSetSwitch, core | SD_S_KOFF, 0xFFFFFF);

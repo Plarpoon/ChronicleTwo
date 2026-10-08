@@ -189,6 +189,15 @@ The native 1,044-byte body has zero differing instruction words or relocation
 fields after the canonical wrapper build and `fixup_sections.sh` pass. The
 current consumer-hook validation checks `0x11C80` allocated unit bytes and
 2,927 relocations; the unrelated existing `SetAdjustScale` and `MenuAquaInit`
-differences remain. `MenuAquaInit`'s inlined camera-constructor argument order
-still differs; trial flags for its 40.0f and zero arguments did not affect
-that order and are absent from the saved profile.
+differences were present in that earlier validation; the current zero selector
+for `MenuAquaInit` is verified below.
+
+## Aquarium camera constructor floating argument calibration
+
+`MenuAquaInit__FP9mgCMemoryPii` uses stable binary32 `0x00000000` (0.0f)
+`evaluate_first: true` to restore camera constructor argument materialization
+in the order 40.0f, zero, 30.0f, 8.0f. The function now matches canonical bytes
+and resolved relocations. With the division primer removed and helper masks
+GPR `0x30` / FPR `0`, validation checks `0x11C50` bytes and 2,970 relocations.
+The seven existing `DrawEsaDropRoot` issues remain; their complete masked
+instruction bytes and resolved relocation targets/addends are unchanged.

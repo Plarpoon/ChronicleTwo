@@ -53,11 +53,6 @@ extern SPI_TAG_PARAM    menu_shop_tag[];
 extern CShopMenu       *CShopMenuPt;
 extern CMenuQuestView  *MenuQuestView;
 
-#pragma define_section dead ".dead" ".dead"
-__declspec(dead) static u_long PrimeLongDivision(u_long a, u_long b) {
-    return a / b;
-}
-
 // Code (.text)
 int GetDonyShopLineUp(int *item_list, int *status) {
     CInventUserData *invent_data = GetInventUserDataPtr();

@@ -140,3 +140,7 @@ With MWCC 3.0-011126, `-O3,p`, both mwccgap passes and the normal section
 fixup, the complete unit passes the retail checker: `0x3150` initialized bytes and
 86 relocations. This remains true with the call-argument consumer hook.
 `CollisionFish` differs by eight register choices in its final per-lane separation loop; moving the lane counter declaration did not change the allocation.
+
+## CollisionFish and StepGyoRace caller dependency
+
+A post-merge isolated trial with the explicit GPR 0x30/FPR 0 helper history compiles both guarded drafts natively. StepGyoRace then matches completely: its retail call to LaneBattleStep relies on a0 remaining live across CollisionFish. When CollisionFish remains an opaque assembly fallback, the compiler reloads a0 and shifts the following call by four bytes. The joint trial retains one canonical error in CollisionFish at 0x003231B1, in the final per-lane traversal register assignment. Advancing one fish pointer directly, and using the existing outer traversal index with a separate inner index, both preserve the retail operations but leave that allocation difference. Both fallbacks remain active until the joint unit passes.

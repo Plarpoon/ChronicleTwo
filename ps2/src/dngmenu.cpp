@@ -1038,7 +1038,6 @@ void CDngFreeMap::DrawTreeMap(int opacity) {
 #else
 INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DrawTreeMap__11CDngFreeMapFi);
 #endif
-#ifdef NONMATCHING
 extern float dng_player_pos[2];
 extern int   dng_player_blink_cnt;
 
@@ -1046,21 +1045,22 @@ void CDngFreeMap::DrawPlayer(int opacity) {
     if (user_glid == NULL || koma_tex == NULL) {
         return;
     }
-    float x, y;
-    CalcGlidPutPos(user_glid, x, y, 0);
-    x += 4.0f;
-    y -= 30.0f;
+    float board_x, board_y;
+    CalcGlidPutPos(user_glid, board_x, board_y, 0);
+    board_x += 4.0f;
+    board_y -= 30.0f;
+    float sprite_alpha = static_cast<float>(opacity);
     if (mode == DNGMAP_MODE_EVENT) {
         if (koma_move != 0 && koma_now != NULL) {
             dng_player_pos[0] = koma_now->x;
             dng_player_pos[1] = koma_now->y;
             koma_now = koma_now->next;
         }
-        x = dng_player_pos[0];
-        y = dng_player_pos[1];
+        board_x = dng_player_pos[0];
+        board_y = dng_player_pos[1];
     }
     if (mode == DNGMAP_MODE_MENU) {
-        y -= 6.0f * sinf(0.06283186f * (float) dng_player_blink_cnt);
+        board_y -= 6.0f * sinf(0.06283186f * (float) dng_player_blink_cnt);
     }
     dng_player_blink_cnt++;
     if (dng_player_blink_cnt >= 50) {
@@ -1076,15 +1076,11 @@ void CDngFreeMap::DrawPlayer(int opacity) {
     prim->Begin(6);
     prim->Texture(koma_tex);
     int level = (int) brightness;
-    prim->Color(level, level, level, opacity);
-    mgRect<int> tex_rect;
-    tex_rect.Set(0, 0, 30, 48);
-    PrimQuad(prim, x, y, tex_rect);
+    prim->Color(level, level, level, static_cast<int>(sprite_alpha));
+    mgRect<int> tex_rect(0, 0, 30, 48);
+    PrimQuad(prim, board_x, board_y, tex_rect);
     prim->End();
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", DrawPlayer__11CDngFreeMapFi);
-#endif
 void CDngFreeMap::Step() {
     if (active == 0) {
         return;
@@ -1566,7 +1562,6 @@ int CheckDngTreeMapFuncType() {
     }
     return 0;
 }
-#ifdef NONMATCHING
 extern char *name_tbl_2728[8];
 
 void MakeDngTreeMapJumpNo(int dng_no, int floor_id, int *loop_no, int *map_no) {
@@ -1590,13 +1585,11 @@ void MakeDngTreeMapJumpNo(int dng_no, int floor_id, int *loop_no, int *map_no) {
         *loop_no = 1;
         *map_no = SearchMapNo(name_tbl_2728[dng_no]);
         if (dng_no == 6) {
-            GetMainScene()->SetNowMapNo(SearchMapNo("d07f01"));
+            CScene *scene = GetMainScene();
+            scene->SetNowMapNo(SearchMapNo("d07f01"));
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/dngmenu", MakeDngTreeMapJumpNo__FiiPiPi);
-#endif
 #ifdef NONMATCHING
 extern CDngFreeMap *MenuDngMap;
 extern u_long128   *MenuCursorDataBuff;

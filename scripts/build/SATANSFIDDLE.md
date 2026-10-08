@@ -1,10 +1,12 @@
 # Satan's Fiddle compiler integration
 
 The PS2 game units use MWCC 3.0-011126 through Satan's Fiddle. The linker uses
-plain `wibo`; library and data-only assembly use GNU `as`. Build Satan's Fiddle
-with its documented Linux, Rust, LLDB and unstripped `wibo` prerequisites before
-running the game build. Reuse the existing checkout in cloud tasks; no worktree
-is needed for setup.
+plain `wibo`; library and data-only assembly use GNU `as`. The Docker image
+builds a pinned Satan's Fiddle revision and includes LLDB and an unstripped
+`wibo`, so local container builds and CI use the same compiler wrapper. For
+builds outside the container, build Satan's Fiddle with its documented Linux,
+Rust, LLDB and unstripped `wibo` prerequisites. Reuse the existing checkout in
+cloud tasks; no worktree is needed for setup.
 
 Objdiff's source-only base objects use the same adapter, profile, options and
 logical translation-unit name as the linked objects. They omit mwccgap so
@@ -26,6 +28,13 @@ starts helper-call history at zero and initializes the floating-point
 evaluate-first annotation to false. These deterministic settings establish a
 repeatable baseline; matching retail can require documented per-unit overrides.
 There is no statefix dependency.
+
+The checked-in translation-unit rows replace artificial discarded helper
+functions with measured compiler history: GPR mask `0x30` for the selected units
+and `0x10` for `nd_meswin.cpp`, with FPR mask zero. Calibration checks the complete
+allocated object and resolved relocation identities, so a pre-existing mismatch
+cannot conceal a new change. These rows describe compiler state, not additional
+game functions.
 
 `scripts/build/mwccgap.sh` supplies `satansfiddle-wibo.py` as mwccgap's
 `--wibo-path`. For each of mwccgap's two passes, the adapter preserves every

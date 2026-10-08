@@ -244,3 +244,12 @@ returns to its original `0x22cc4` bytes, 6888 relocations, and 16 existing issue
 with no crossfade failure. Those remaining issues include event object-copy
 functions and unrelated data/layout mismatches. This is a function match,
 not a whole-unit pass. See [MWCC notes](../../../../docs/MWCC.md).
+
+## LoadMovie floating argument calibration
+
+`LoadMovie__FPcP9mgCMemoryb` uses a stable binary32 `0x44000000` (512.0f)
+`evaluate_first: true` selector for caption centering. This prepares the
+horizontal extent before the zero origin in `CalcAutoPosSet`; caption behavior
+is unchanged. With the artificial division primer removed and translation-unit
+helper masks GPR `0x30` / FPR `0`, the complete unit passes canonical instruction
+bytes and resolved relocations: `0x22C7C` checked bytes and 6,920 relocations.

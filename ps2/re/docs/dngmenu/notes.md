@@ -12,10 +12,10 @@ functions; they do not assert retail enum names.
 ## Current assembly gaps
 
 `CDngFreeMap::CheckIsViewMove`, `DrawRoot`, `DrawRoomOne`,
-`DrawTreeMap`, `DrawPlayer`, `Draw`, and `LoadDngInfo` retain C++ drafts
+`DrawTreeMap`, `Draw`, and `LoadDngInfo` retain C++ drafts
 under `NONMATCHING`; the matching build selects their retail `INCLUDE_ASM`
 gaps. The same applies to `CheckGeoramaMateria`, `DrawDngRoomInfo`,
-`DrawGeoramaMateria`, `MakeDngTreeMapJumpNo`, `CMenuTreeMap::InitEnd`,
+`DrawGeoramaMateria`, `CMenuTreeMap::InitEnd`,
 `MsgInit`, `Step`, and `Draw`, plus `DngTreeMapInit`. The `ClsMes::Init`
 body at the end of this unit is also an assembly gap. Match claims elsewhere
 in these notes apply only to the named unguarded C++ functions.
@@ -507,3 +507,20 @@ improve this difference and no profile row is accepted.
 ## Combined native merge checkpoint
 
 The merge preserves all eighteen locally validated promotions and master's additional native `DrawGlidCheck` and `DngTreeMapKey` implementations. Master's typed names `draw_hidden` and `battle_clear` are retained. These combined sources require integrated verification after the shared header and tool conflicts are resolved. No new calibration rows were introduced during resolution.
+
+## Native jump destination selection
+
+`MakeDngTreeMapJumpNo` selects special event destinations and otherwise uses
+the dungeon's first-floor name. For dungeon six, retail gets the current scene
+before looking up `d07f01`; retaining the scene in a typed local preserves this
+nested-call order. The combined dngmenu unit passes its canonical check
+with this native body:0x8BE0 bytes,1119 resolved relocations. No selector changes
+are needed.
+
+`DrawPlayer` projects into separate scalar coordinates, applies its four-pixel
+and thirty-pixel adjustments, then converts opacity to float. The later Color
+argument converts it back to integer, as retail does. A direct texture-rectangle
+constructor avoids an unnecessary default initialization. Together with the
+jump helper, the complete unit passes:0x8BD4 bytes,1129 relocations.
+No new floating selectors are required; initial 4/30 selector trials were
+ineffective and discarded.

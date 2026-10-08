@@ -263,3 +263,11 @@ wrapper compilation, `fixup_sections.sh`, and `check_objects.py` check
 `0x11D00` allocated unit bytes and 3,723 relocations. Other existing unit
 findings remain; these rows preserve the matched monster-progress lookup
 functions and introduce no additional failing function.
+
+## Monster-book debug argument order
+
+Three unscoped binary32 selectors for `MonsterBookDraw__Fv` mark `40.0f` (`0x42200000`), `200.0f` (`0x43480000`), and `24.0f` (`0x41c00000`) as evaluated first. The debug rectangle materializes those values before `20.0f`, matching retail. The complete unit passes canonical verification: `0x11CF8` allocated bytes and 3,640 relocations. The unused long-division primer is replaced by translation-unit GPR helper mask `0x30`, FPR mask `0`, with identical allocated bytes and relocation identities.
+
+## Native monster-box draw
+
+`MenuMonsterBoxDraw` uses its existing typed native draft. The `sceVif1Packet*` null argument selects the texture reload overload. Its debug-label literal preserves the retail Shift-JIS bytes inline; the unused `at_3762` declaration and separate assembly data include are removed. Canonical verification passes the complete unit: `0x11CF4` allocated bytes and 3,651 relocations, with the accepted monster-book selectors and helper masks.

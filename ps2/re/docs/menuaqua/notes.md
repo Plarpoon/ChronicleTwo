@@ -15,7 +15,8 @@ computes a size-dependent scale, applies it to all three axes, and derives the
 collision radius from body height. The Satan's Fiddle selector for binary32
 0.95 (`0x3f733333`) evaluates that argument first, preserving retail's
 0.95-before-0.6 load order. The canonical object comparison has no findings
-for this method; the seven existing `DrawEsaDropRoot` findings remain unchanged.
+for this method. The later sprite-call calibration below resolves the
+previous `DrawEsaDropRoot` findings.
 
 Aquarium menu (fish swim, eat food, fight, pair/breed), the gyorace (fish race) fish-select and
 saved-race menus, fish race/fishing tournament prize scripts, and shared sub-game panel drawing.
@@ -287,3 +288,43 @@ closer than first-local initialization but below the unchanged baseline.
 Giving the fish, obstacle, and effect-clear loops distinct local indices scores 99.06054% for
 ColCheck (366 matching instructions, 80 argument mismatches); the whole unit still has the single
 ColCheck byte mismatch. This improves on the declaration-position swap but remains below baseline.
+
+## Remaining guarded-function measurements
+
+- `SettingAqua__9CAquariumFv`: **2/752 words**, compiled **0xBB4**, retail extent
+  **0xBC0**. At **+0xA00/+0xA04**, placement new for `CCharacter2` branches on
+  `v0` and copies it to `s3` in the retail delay slot. MWCC instead copies first
+  and branches on `s3`. Parked under the placement-new stop rule; reconsider
+  when the dedicated constructor/null-branch lane supplies a natural solution.
+
+- `ColCheck__9CAquariumFi`: **60/448 words**, compiled **0x6F8**, retail extent
+  **0x700**. The differing instructions exchange `s2` and `s3`: retail holds
+  the selected fish in `s3` and uses `s2` for the fish-loop offset and obstacle
+  count; draft allocates those registers oppositely. All other instructions
+  and relocations agree. Giving each loop its own index produces **76**
+  differing words; initializing the selected-fish pointer before the
+  temporary declarations produces **89**. Reconsider with evidence for a
+  natural local lifetime or type correction that yields the retail allocation.
+
+- `DrawFishParam__FiiP10mgCTextureP13CGameDataUsed`: **652/704 words**, compiled
+  **0xAA4**, retail extent **0xB00**. Retail uses a **0x450** stack frame;
+  draft uses **0x430**. Fresh rectangle temporaries for the three unknown-weight
+  glyphs restore the frame size but still leave **651** differing words and
+  the same body length. Retail also preloads six dimension-table bytes before
+  copying the width/height initializer templates; draft interleaves template
+  copies and loads. Separate zero initialization and entry assignments leave
+  **669** differing words with **0xAD4** compiled bytes. Reconsider with the
+  original initializer/lifetime structure established from the retail loads,
+  stores, and rectangle stack slots. Both probes are reverted.
+
+- `Step__9CAquariumFv`: **1111/1732 words**, compiled **0x1B04**, retail extent
+  **0x1B10**. Before **+0x660**, instruction differences are downstream branch
+  targets. At **+0x664**, the draft schedules the tank-index shift into a
+  branch delay slot where retail has a nop, then loads `menu_cursor` after
+  the table-address work; retail loads it first. That one-word contraction
+  shifts the following menu cases and inflates the aligned-word difference.
+  Its out-of-line `CFishFood` constructor preserves the retail placement-new
+  branch/copy-delay pattern and is not the inline constructor blocker above.
+  m2c currently cannot resolve the menu switch jump table. Reconsider with
+  jump-table recovery and a natural evaluation-order/type explanation for
+  the menu-id lookup, then realign the comparison before chasing later blocks.

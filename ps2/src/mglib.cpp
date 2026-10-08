@@ -1160,7 +1160,6 @@ void mgGetFrameBuffer(mgCTexture *texture) {
     *texture = frame_tex;
 }
 
-#ifdef NONMATCHING
 void mgGetFrameBackBuffer(mgCTexture *texture) {
     sceGsFrame *draw_env;
 
@@ -1173,9 +1172,6 @@ void mgGetFrameBackBuffer(mgCTexture *texture) {
     *texture = frame_tex;
     texture->tex0.TBP0 = draw_env->FBP * 32;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mglib", mgGetFrameBackBuffer__FP10mgCTexture);
-#endif
 
 mgCDrawEnv *mgGetpDrawEnv(int which) {
     u_int index = (u_int) which > 0;

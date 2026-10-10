@@ -141,6 +141,11 @@ class initializers must be generated naturally by the compiler.
   created afterwards and number below every named local. A single-use named
   local is copy-propagated into its source, but a `T *const &` binding or a
   `const` pointer local survives (menumain, mg_dataset).
+- A pointer returned by a `static inline` helper is an inline-expansion
+  temporary and numbers below placement-new temporaries. Fetching an earlier
+  call result through such a helper gives it a later saved register than a
+  placement-constructed object, where a named local takes the earlier one
+  (`InitSuccess`, fishing).
 - A loop's own index, and a variable's first use, are coloured before the loop
   optimizer's derived offsets; a later use is coloured after them, wherever the
   variable is declared. Assigning to a loop index after its loop changes the

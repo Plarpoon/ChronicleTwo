@@ -8,27 +8,28 @@ a different design.
 
 ## Status
 
-`InitSuccess` is the unit's only guarded function; every other function is
-native. `sgRestartFishing` and `StepDataLoading` are native with scoped
-`CCharacter2` placement rows in the compiler profile (one and seven sites);
-see [placement conversion](../satansfiddle/placement-new.md).
+Every function in the unit is native. `sgRestartFishing` and
+`StepDataLoading` have scoped `CCharacter2` placement rows in the compiler
+profile (one and seven sites); see
+[placement conversion](../satansfiddle/placement-new.md).
 
 `InitSuccess` prepares the caught-fish character, the fishing rewards and the
-success message. Retail keeps the player character in `s2` and constructs the
-fish in `s1`; the draft exchanges those saved registers. The exchange and the
-allocation-result branch (retail tests the call result in `v0` and copies it
-into the saved register in the delay slot; the draft copies first and tests
-the copy) remain coupled in the original draft: retail keeps `fish_chara` as its own named web,
-distinct from the allocation-result temporary, while the compiled draft lets
-copy propagation replace the named local with that temporary. A measured
-placement row restores the branch but leaves the saved-register exchange;
-see [construction eligibility](placement-new-20261008.md#caught-fish-construction-eligibility) and [saved-register numbering](placement-new-20261008.md#saved-register-numbering). Declaration
-order, scope, direct assignment to `FishChara`, `opt_lifetimes`,
-`opt_dead_assignments` and `optimization_level 4` do not change the result;
-`opt_propagation off`, `global_optimizer off`, `opt_common_subs off` and
-`optimization_level 2` make it far worse. The three strings it consumes
-(`at_932__4` "info.cfg", `at_2197__3`, `at_2198__3`) are the unit's only
-remaining data markers.
+success message. It matches with two source forms and no profile row:
+
+- The fish is allocated with
+  `FishStack.Alloc(align16_blocks(sizeof(CCharacter2)) + 2)`. The block-count
+  expression makes the placement construction test the allocator result in
+  `v0` and copy it to the saved register in the delay slot, as retail does.
+- The player comes from the `static inline` `PlayerChara(scene)` accessor. Its
+  result is an inline-expansion temporary, numbered below the placement
+  temporary that carries the fish, so the texture manager, fish and player
+  take `s0`, `s1` and `s2`. A direct `GetCharacter` call makes the player a
+  named local numbered above the fish and exchanges `s1` and `s2`. The other
+  player fetches in the unit keep the direct call; the accessor regresses five
+  of them. The numbering evidence is in
+  [saved-register numbering](placement-new-20261008.md#saved-register-numbering).
+
+Its motion-name strings are inline literals; the unit has no data markers.
 
 `GetUkiWaitTime`'s width call `GetRandamNumber(1.0f, 1.3f, 0.6)` needs the
 binary32 `0x3fa66666` evaluate-first row in the compiler profile: retail keeps

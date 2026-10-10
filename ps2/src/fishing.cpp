@@ -49,9 +49,7 @@ struct Vec4 {
     float v[4]; /**< Vector components. */
 };
 
-static void       StepDataLoading(void *arg);
-extern const char at_2197__3[] = "\x92\xDE\x82\xEA\x82\xBD\x8E\x9E";
-extern const char at_2198__3[] = "\x92\xDE\x82\xE8\x8F\xE3\x82\xB0\x8A\xEC\x82\xD1";
+static void StepDataLoading(void *arg);
 
 enum {
     kFishShapeCount = 5,
@@ -273,6 +271,28 @@ static inline int FreeSize(mgCMemory *memory) {
  */
 static inline u_long128 *FreeTop(mgCMemory *memory) {
     return memory->stGetTop();
+}
+
+/**
+ *
+ * Rounds a byte count up to a number of 16-byte blocks.
+ *
+ */
+static inline u_int align16_blocks(u_int size) {
+    if (size & 0xF) {
+        return (size >> 4) + 1;
+    }
+
+    return size >> 4;
+}
+
+/**
+ *
+ * Returns the scene's player character.
+ *
+ */
+static inline CCharacter2 *PlayerChara(CScene *scene) {
+    return scene->GetCharacter(scene->player_chara);
 }
 
 /**
@@ -3377,7 +3397,6 @@ void FalseLoop(CScene *scene, CPadControl *pad) {
  * Prepares caught fish data, rewards, and the success display.
  *
  */
-#ifdef NONMATCHING
 int InitSuccess(CScene *scene) {
     mgCTextureManager *tex_manager;
     CCharacter2       *fish_chara;
@@ -3388,7 +3407,7 @@ int InitSuccess(CScene *scene) {
     int                fish_item_no;
     float              fish_size;
     float              fish_weight;
-    chara = scene->GetCharacter(scene->player_chara);
+    chara = PlayerChara(scene);
 
     if (chara == NULL) {
         return 0;
@@ -3412,7 +3431,7 @@ int InitSuccess(CScene *scene) {
         FishStack.stack_used = 0;
         FishStack.lock = 0;
 
-        fish_chara = new (FishStack.Alloc(0x68)) CCharacter2;
+        fish_chara = new (FishStack.Alloc(align16_blocks(sizeof(CCharacter2)) + 2)) CCharacter2;
 
         FishChara = fish_chara;
         fish_chara->Initialize();
@@ -3479,9 +3498,6 @@ int InitSuccess(CScene *scene) {
     sndSePlay(FanSnd, 0, 0);
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/fishing", InitSuccess__FP6CScene);
-#endif
 
 /**
  *

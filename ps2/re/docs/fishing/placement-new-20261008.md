@@ -8,8 +8,8 @@ attaching them to the player; its seven constructions reuse one local
 profile (`__nw__FUiP1`, `__ct__11CCharacter2Fv`, after-inline conversion).
 
 `InitSuccess` prepares the caught-fish character, fishing rewards and the
-success message and remains guarded; see [notes.md](notes.md) for the
-saved-register exchange that keeps it from matching.
+success message and is native; see [notes.md](notes.md) for the source forms
+it matches with.
 
 ## Caught-fish construction eligibility
 
@@ -51,8 +51,8 @@ but still leaves the same **24/280** saved-register exchange and `0x458` body.
 A construction-local const pointer and direct assignment to `FishChara`
 retain that result. The helper's statement-inline body is not an eligible
 expression-inline site for the one-site conversion row; combining them is
-rejected rather than producing an object. No helper or profile change is
-activated while the function remains guarded.
+rejected rather than producing an object. The native function uses this
+expression with no profile row.
 
 ## Saved-register numbering
 
@@ -83,8 +83,7 @@ frontend's construction temporary.
 
 The accessor works only because it makes the player an inline temporary.
 It is not a unit-wide idiom: the other player fetches need the direct
-call. No existing header inline returns the player character, so the
-function stays guarded.
+call. The native function uses this accessor for its one player fetch.
 
 ## Smart and deferred inline policies
 
@@ -96,7 +95,7 @@ numbering correction. `-inline deferred` retains the same target score and
 regresses other native functions. Scoped `defer_codegen on`, alone or with
 `inline_bottom_up on`, alongside smart depth also retains 24/280. These
 policies do not recover the player-first temporary numbering required by the
-interference graph. No inline policy or allocation-source edit is retained.
+interference graph. No inline policy is retained.
 
 ## Reference-bound characters
 

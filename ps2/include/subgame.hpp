@@ -22,7 +22,7 @@ enum SUBGAME_TYPE {
     SUBGAME_FISHING = 1, /**< Fishing. */
     SUBGAME_GYORACE = 2, /**< The fish race. */
     SUBGAME_BUGGY = 3,   /**< The buggy game. */
-    SUBGAME_UNUSED = 4,   /**< Accepted sub game with no handlers, which ends on its first frame. */
+    SUBGAME_UNUSED = 4,  /**< Accepted sub game with no handlers, which ends on its first frame. */
     SUBGAME_MAX = 5,
 };
 
@@ -74,8 +74,7 @@ struct SubGameInfo {
         keep_bgm = 0;
         dungeon = 0;
         scene = 0;
-        menu_buff = 0;
-        load_buff = 0;
+        load_buff = menu_buff = 0;
         no_map_event = 0;
         record_check = 0;
     }

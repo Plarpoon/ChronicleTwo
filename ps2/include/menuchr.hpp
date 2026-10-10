@@ -138,48 +138,48 @@ public:
     int                 select;      /**< Character the cursor is on: 0 to 3 for the party, 4 for the townsperson. */
     int                 last_select; /**< Character the cursor was last moved to. */
     s32                 unk_118;
-    s16                 open_wait;        /**< Frames left before the screen takes keys. */
-    u8                  set_cursor;       /**< Non-zero to put the cursor on its place at once. */
-    u8                  change_ready;     /**< Non-zero once a change of character may be loaded. */
-    s16                 change_phase;     /**< Step of the change of character. @see CHR_CNG_PHASE */
-    s16                 change_chara;     /**< Character being changed to. */
-    u32                 enable_change;    /**< Bits of the characters that can be changed to. */
-    u32                 party_member;     /**< Bits of the characters in the party. */
-    u8                  close_on_end;     /**< Non-zero to close the menu once the townsperson's ability ends. */
-    u8                  got_item;         /**< Non-zero once the townsperson's ability has given an item. */
-    int                 gift_item;        /**< Item the townsperson's ability gives. */
-    int                 gift_num;         /**< Number of gift_item given. */
-    int                 item_brd_select;  /**< Slot of the item board the cursor is on. */
-    int                 item_brd_pos;     /**< Scroll position of the item board. */
-    CMenuPosDataForm   *form;             /**< Form of the screen. */
-    MENUFORMPARTS_TYPE *gauge_part[3];    /**< Health gauge part of Max, Monica and the ridepod. */
-    COMMON_GAGE        *gauge[3];         /**< Health of Max, Monica and the ridepod. */
-    MENU_ETCINFO       *chara_pos[5];     /**< Place of each character's icon. */
-    CMenuPosDataForm   *npc_mes_form;     /**< Form that holds the townsperson's speech. */
-    CMenuPosDataForm   *npc_sub_form;     /**< Form that moves with the townsperson's speech. */
-    CMenuPosDataForm   *npc_chara_form;   /**< Form that shows the townsperson's model. */
-    CMenuPosDataForm   *npc_sub_form2;    /**< Second form that moves with the townsperson's speech. */
-    MENUFORMPARTS_TYPE *cmd_part[4];      /**< Parts the townsperson's commands are placed at. */
-    MENUFORMPARTS_TYPE *point_gauge_part; /**< Gauge of the townsperson's ability points. */
-    mgCMemory           npc_model_stack;  /**< Memory the townsperson's model file is read into. */
-    mgCMemory           npc_build_stack;  /**< Memory the townsperson's model is built in. */
-    PARTY_CHARA_INFO   *party_info;       /**< Party record of the townsperson. */
-    NPC_BASE_DATA      *npc_data;         /**< Definition of the townsperson. */
-    int                 item_brd_arrived; /**< Non-zero once the item board has reached its place. */
-    s8                  face_state;       /**< State of the townsperson's face: -1 none, 0 loading, 1 entered. */
-    u8                  face_loaded;      /**< Non-zero when the face file has been read at once rather than in the background. */
-    s16                 face_chara;       /**< Townsperson whose face is loaded, or below zero for none. */
-    u8                 *face_img;         /**< Face image file of the townsperson. */
-    u8                  npc_loading;      /**< Non-zero while the townsperson's model is loading. */
-    u8                  npc_loaded;       /**< Non-zero once the townsperson's model is in place. */
-    CActionChara       *npc_chara;        /**< Model of the townsperson, or NULL. */
-    int                 npc_wait;         /**< Frames the townsperson's model has been shown, up to 21. */
-    int                 npc_show;         /**< Non-zero while the townsperson's model is drawn in its form. */
-    float               npc_y;            /**< Height of the townsperson's model. */
-    int                 npc_no;           /**< Townsperson in the party, or zero or below for none. */
-    int                 npc_mes_talk;     /**< Message that the townsperson says on the screen. */
-    int                 npc_mes_cmd;      /**< Message of the townsperson's command question. */
-    int                 npc_mes_cancel;   /**< Message the townsperson says when their ability is cancelled. */
+    s16                 open_wait;                            /**< Frames left before the screen takes keys. */
+    u8                  set_cursor;                           /**< Non-zero to put the cursor on its place at once. */
+    u8                  change_ready;                         /**< Non-zero once a change of character may be loaded. */
+    s16                 change_phase;                         /**< Step of the change of character. @see CHR_CNG_PHASE */
+    s16                 change_chara;                         /**< Character being changed to. */
+    u32                 enable_change;                        /**< Bits of the characters that can be changed to. */
+    u32                 party_member;                         /**< Bits of the characters in the party. */
+    u8                  close_on_end;                         /**< Non-zero to close the menu once the townsperson's ability ends. */
+    u8                  got_item;                             /**< Non-zero once the townsperson's ability has given an item. */
+    int                 gift_item;                            /**< Item the townsperson's ability gives. */
+    int                 gift_num;                             /**< Number of gift_item given. */
+    int                 item_brd_select;                      /**< Slot of the item board the cursor is on. */
+    int                 item_brd_pos;                         /**< Scroll position of the item board. */
+    CMenuPosDataForm   *form;                                 /**< Form of the screen. */
+    MENUFORMPARTS_TYPE *gauge_part[3];                        /**< Health gauge part of Max, Monica and the ridepod. */
+    COMMON_GAGE        *gauge[3];                             /**< Health of Max, Monica and the ridepod. */
+    MENU_ETCINFO       *chara_pos[5];                         /**< Place of each character's icon. */
+    CMenuPosDataForm   *npc_mes_form;                         /**< Form that holds the townsperson's speech. */
+    CMenuPosDataForm   *npc_sub_form;                         /**< Form that moves with the townsperson's speech. */
+    CMenuPosDataForm   *npc_chara_form;                       /**< Form that shows the townsperson's model. */
+    CMenuPosDataForm   *npc_sub_form2;                        /**< Second form that moves with the townsperson's speech. */
+    MENUFORMPARTS_TYPE *cmd_part[4];                          /**< Parts the townsperson's commands are placed at. */
+    MENUFORMPARTS_TYPE *point_gauge_part;                     /**< Gauge of the townsperson's ability points. */
+    mgCMemory           npc_model_stack;                      /**< Memory the townsperson's model file is read into. */
+    mgCMemory           npc_build_stack;                      /**< Memory the townsperson's model is built in. */
+    PARTY_CHARA_INFO   *party_info;                           /**< Party record of the townsperson. */
+    NPC_BASE_DATA      *npc_data;                             /**< Definition of the townsperson. */
+    int                 item_brd_arrived;                     /**< Non-zero once the item board has reached its place. */
+    s8                  face_state;                           /**< State of the townsperson's face: -1 none, 0 loading, 1 entered. */
+    u8                  face_loaded;                          /**< Non-zero when the face file has been read at once rather than in the background. */
+    s16                 face_chara;                           /**< Townsperson whose face is loaded, or below zero for none. */
+    u8                 *face_img;                             /**< Face image file of the townsperson. */
+    u8                  npc_loading;                          /**< Non-zero while the townsperson's model is loading. */
+    u8                  npc_loaded;                           /**< Non-zero once the townsperson's model is in place. */
+    CActionChara       *npc_chara;                            /**< Model of the townsperson, or NULL. */
+    int                 npc_wait;                             /**< Frames the townsperson's model has been shown, up to 21. */
+    int                 npc_show;                             /**< Non-zero while the townsperson's model is drawn in its form. */
+    float               npc_y;                                /**< Height of the townsperson's model. */
+    int                 npc_no;                               /**< Townsperson in the party, or zero or below for none. */
+    int                 npc_mes_talk;                         /**< Message that the townsperson says on the screen. */
+    int                 npc_mes_cmd;                          /**< Message of the townsperson's command question. */
+    int                 npc_mes_cancel;                       /**< Message the townsperson says when their ability is cancelled. */
     int                 npc_cmd_mes[CHR_CNG_NPC_COMMAND_NUM]; /**< Message of each of the townsperson's commands. */
     s32                 unk_23C;
     float               cursor_wave;    /**< Angle that bobs the character under the cursor. */
@@ -475,11 +475,11 @@ public:
     s16             costume_list[COSTUME_LIST_NUM][COSTUME_LIST_MAX]; /**< Costumes the character has, by kind. */
     s16            *list[COSTUME_LIST_NUM];                           /**< List shown on each line, as an entry of costume_list. */
     s32             unk_220;
-    float           tile_scroll;    /**< Scroll of the background tiles. */
-    mgCMemory       stack;          /**< Memory of the screen's data. */
-    s16             chara;          /**< Character being dressed: 0 for Max, 1 for Monica. */
-    int             monica_enabled; /**< 1 when Monica can be dressed too. */
-    sceVu0FVECTOR   chara_pos;      /**< Position of the character's model. */
+    float           tile_scroll;         /**< Scroll of the background tiles. */
+    mgCMemory       stack;               /**< Memory of the screen's data. */
+    s16             chara;               /**< Character being dressed: 0 for Max, 1 for Monica. */
+    int             monica_enabled;      /**< 1 when Monica can be dressed too. */
+    sceVu0FVECTOR   chara_pos;           /**< Position of the character's model. */
     float           costume_rotation[4]; /**< Rotation restored to the character model while dressing it. */
     s32             unk_280;
     int             cursor_show;  /**< Non-zero while the cursor is drawn. */
@@ -491,57 +491,15 @@ public:
     int             show_help;    /**< Non-zero while the help is drawn. */
     s32             unk_2A8;
     s32             unk_2AC;
-    float           cursor_x;    /**< Screen x of the cursor. */
-    float           cursor_y;    /**< Screen y of the cursor. */
-    float           cursor_wave; /**< Angle that bobs the cursor. */
+    float           cursor_x;      /**< Screen x of the cursor. */
+    float           cursor_y;      /**< Screen y of the cursor. */
+    float           cursor_wave;   /**< Angle that bobs the cursor. */
     float           cursor_wave_y; /**< Phase of the costume cursor's vertical bob. */
-    CHARA_DATA     *chara_data; /**< Status of the character being dressed. */
-    mgCTexture     *tile_tex;   /**< Texture of the background tiles. */
-    mgCTexture     *cursor_tex; /**< Texture of the cursor. */
+    CHARA_DATA     *chara_data;    /**< Status of the character being dressed. */
+    mgCTexture     *tile_tex;      /**< Texture of the background tiles. */
+    mgCTexture     *cursor_tex;    /**< Texture of the cursor. */
 
-#ifdef NONMATCHING
-    CMenuCostumeSel() : camera(40.0f, 30.0f, 0.0f, 8.0f) {
-        select = 0;
-        tile_scroll = 0.0f;
-        chara = 0;
-        monica_enabled = 0;
-        memset(costume_num, 0, sizeof(costume_num));
-        memset(costume_select, 0, sizeof(costume_select));
-        memset(costume_list, 0, sizeof(costume_list));
-        list[0] = costume_list[1];
-        list[1] = costume_list[0];
-        list[2] = costume_list[2];
-        unk_220 = 0;
-        unk_280 = 0;
-        cursor_show = 0;
-        change_chara = 0;
-        memset(line_wave, 0, sizeof(line_wave));
-        load_wait = 0;
-        loading = 0;
-        wait_load = 0;
-        show_help = 0;
-        cursor_x = 0.0f;
-        cursor_y = 0.0f;
-        cursor_wave = 0.0f;
-        chara_data = NULL;
-        tile_tex = NULL;
-        cursor_tex = NULL;
-        chara_pos[0] = 15.0f;
-        chara_pos[1] = -14.0f;
-        chara_pos[2] = 4.0f;
-        chara_pos[3] = 1.0f;
-        costume_rotation[0] = 0.0f;
-        costume_rotation[1] = 0.1f;
-        costume_rotation[2] = 0.0f;
-        costume_rotation[3] = 1.0f;
-        camera.SetDistance(100.0f);
-        camera.SetAngle(0.0f);
-        camera.SetHeight(3.0f);
-        camera.SetSpeed(4.0f, -1.0f);
-        camera.SetFollow(0.0f, 0.0f, 0.0f);
-        camera.Step(-1);
-    }
-#endif
+    CMenuCostumeSel();
 
     /**
      *
@@ -1348,19 +1306,21 @@ int MonsterBookKey();
  */
 void MonsterBookDraw();
 
+#define MENU_LOAD_TARGET_SCENE 1
+
 /**
  *
  * State of the menus' background model loading.
  *
  */
 struct MENU_LOAD_INFO {
-    signed char mode; /**< Current loading mode. */
+    signed char mode;            /**< Current loading mode. */
     signed char alternate_model; /**< Selects the alternate character model for loading. */
-    signed char load_all; /**< Non-zero when all character model phases are loaded together. */
-    signed char chara_no; /**< Character selected for model loading. */
-    signed char request_phase; /**< Requested phase of character model loading. */
-    signed char load_phase; /**< Current phase of character model loading. */
-    signed char unk_6;
+    signed char load_all;        /**< Non-zero when all character model phases are loaded together. */
+    signed char chara_no;        /**< Character selected for model loading. */
+    signed char request_phase;   /**< Requested phase of character model loading. */
+    signed char load_phase;      /**< Current phase of character model loading. */
+    signed char target_flags;
     signed char update_scene; /**< Non-zero when loading also updates the main scene's characters and stacks. */
 };
 

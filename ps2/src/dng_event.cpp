@@ -2,6 +2,7 @@
 #include "mw_runtime.h"
 
 #include <cmath>
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -53,37 +54,25 @@
 #include "userdata.hpp"
 #include "water.hpp"
 
-extern int                     FLS_FLOOR_ID;
-extern char                    at_1082__2[];
-extern char                    at_1248[];
-extern char                    at_1274__2[];
-extern char                    at_1279__2[];
-extern int                     gatekey_index[7];
-extern int                     keydoor_key_index[7];
-extern char                    at_1466__5[];
-extern char                    at_1467__5[];
-extern char                    at_1468__5[];
-extern int                     counter_1489;
-extern float                   xchg_rot_list[4];
-extern char                    at_1645[];
-extern char                    at_1732__2[];
-extern TRESURE_BOX_FLOOR_INFO *nowTbFloor;
-extern int                     nowTboxGroup;
-extern int                     nowTboxItemCnt;
-extern char                    at_1905__2[];
-extern "C" float               at_1936__2[4];
-extern "C" char                at_1965__2[];
-extern SPI_TAG_PARAM           tag__5[];
-extern SPI_TAG_PARAM           tag2[];
-extern char                    at_1348[];
-extern char                    at_2529[];
+static int                     FLS_FLOOR_ID;
+static float                   at_1082__2[4] = {0.0f, -99999.0f, 0.0f, 1.0f};
+static float                   at_1248[4] = {0.0f, 1.0f, 0.0f, 0.0f};
+static int                     gatekey_index[7] = {337, 339, 341, 342, 344, 348, 350};
+static int                     keydoor_key_index[7] = {338, 340, -1, 343, 346, 349, 351};
+static int                     counter_1489;
+static float                   xchg_rot_list[4] = {0.0f, -1.5707964f, 3.1415927f, 1.5707964f};
+static TRESURE_BOX_FLOOR_INFO *nowTbFloor;
+static int                     nowTboxGroup;
+static int                     nowTboxItemCnt;
+static float                   at_1936__2[4] = {0.0f, 20.0f, 80.0f, 1.0f};
 static MapJumpMapInfo          MainMapInfo;
 
 // Code (.text)
 void CStartupEpisodeTitle::DrawEpisode(int mes_tex_block, int frame_tex_block) {
-    if (mes == NULL || state == 0) {
+    if (mes == NULL || state == (int) EPISODE_TITLE_OFF) {
         return;
     }
+
     mgTexManager.ReloadTexture(mes_tex_block, (sceVif1Packet *) NULL);
     mes->DrawMesWin();
     mgTexManager.ReloadTexture(frame_tex_block, (sceVif1Packet *) NULL);
@@ -101,6 +90,7 @@ void CStartupEpisodeTitle::DrawEpisode(int mes_tex_block, int frame_tex_block) {
     sprite.SetIStretch(0x20, y, x, 8, 0x6C, 0x38, 10, 8);
     sprite.SetIRect(x + 0x20, y, 10, 8, 0x76, 0x38);
     int title_y = mgScreenHeight - 0x34;
+
     if (LanguageCode == 3) {
         x = width / 2 - 8;
         int revealed = (int) (154.0f * reveal);
@@ -113,9 +103,11 @@ void CStartupEpisodeTitle::DrawEpisode(int mes_tex_block, int frame_tex_block) {
         sprite.SetIRect(x, title_y, 0x48, 0xE, 0, 0x24);
         sprite.SetIRect(x + 0x48, title_y, 0x52, 0xE, 0, 0x32);
     }
+
     sprite.SetScirror(0, 0, mgScreenWidth - 1, mgScreenHeight - 1);
     sprite.End();
 }
+
 void CStartupEpisodeTitle::Switch(int on) {
     char   *title;
     ClsMes *current;
@@ -123,7 +115,7 @@ void CStartupEpisodeTitle::Switch(int on) {
     u8     *floor_manager;
     int     floor_id;
 
-    floor_manager = (u8 *) &DngMainScene->battle_area + 0x14;
+    floor_manager = (u8 *) &DngMainScene->battle_area + offsetof(DNG_BATTLE_AREA, floor_manager);
     floor_id = DngSaveDataDungeon->floor_id[DngSaveDataDungeon->stage_id];
 
     if (on != 0) {
@@ -145,7 +137,7 @@ void CStartupEpisodeTitle::Switch(int on) {
         reveal = 0;
         slide = 0;
         wait = 0x3C;
-    } else if (state != 0) {
+    } else if (state != (int) EPISODE_TITLE_OFF) {
         current = mes;
         current->draw_speed = current->GetDrawSpeedDef();
         current->mes_no = -1;
@@ -167,7 +159,7 @@ void CStartupEpisodeTitle::Step() {
         return;
     }
 
-    if (state == 1) {
+    if (state == (int) EPISODE_TITLE_FADE_IN) {
         alpha += 0.033333335f;
 
         if (!(alpha < 1.0f)) {
@@ -186,20 +178,20 @@ void CStartupEpisodeTitle::Step() {
             if (!(slide < 1.0f)) {
                 slide = 1.0f;
                 wait = 0x3C;
-                state = 2;
+                state = (int) EPISODE_TITLE_HOLD;
             }
         }
     }
 
-    if (state == 2) {
+    if (state == (int) EPISODE_TITLE_HOLD) {
         wait -= 1;
 
         if (wait < 0) {
-            state = 3;
+            state = (int) EPISODE_TITLE_FADE_OUT;
         }
     }
 
-    if (state == 3) {
+    if (state == (int) EPISODE_TITLE_FADE_OUT) {
         reveal -= 0.05f;
 
         if (reveal <= 0.0f) {
@@ -224,7 +216,7 @@ void CStartupEpisodeTitle::Step() {
                 mes_win->fade = 0.0f;
                 mes_win->fukidashi_centre_x = -1;
                 mes_win->fukidashi_centre_y = -1;
-                state = 0;
+                state = (int) EPISODE_TITLE_OFF;
             }
         }
     }
@@ -242,7 +234,7 @@ void CStartupEpisodeTitle::Step() {
 
 void CStartupEpisodeTitle::Initialize() {
     mes = NULL;
-    state = 0;
+    state = (int) EPISODE_TITLE_OFF;
     wait = 0;
 }
 
@@ -470,7 +462,7 @@ void CGeoStone::DrawMiniMapSymbol(CMiniMapSymbol *symbol_drawer) {
 
     if (this->flag != 0) {
         GetPosition(position);
-        (symbol_drawer)->DrawSymbol(position, 3);
+        (symbol_drawer)->DrawSymbol(position, (int) MINIMAP_SYMBOL_GEOSTONE);
     }
 }
 
@@ -549,7 +541,7 @@ void CRandomCircle::DrawSymbol(CMiniMapSymbol *mini_map) {
 
     do {
         if (active[id] != 0) {
-            mini_map->DrawSymbol(this->pos[id], 2);
+            mini_map->DrawSymbol(this->pos[id], (int) MINIMAP_SYMBOL_RANDOM_CIRCLE);
         }
 
         id += 1;
@@ -697,7 +689,7 @@ void CTreasureBoxManager::SetLargeModel(CCharacter2 *model, int value) {
     frame = model->CObjectFrame::frame;
 
     if (frame != NULL) {
-        found = frame->SearchFrame(at_1274__2);
+        found = frame->SearchFrame("tbox1");
 
         if (found != NULL) {
             entry = box;
@@ -713,7 +705,7 @@ void CTreasureBoxManager::SetLargeModel(CCharacter2 *model, int value) {
 }
 
 void CTreasureBoxManager::SetCollisionModel(u32 *pack, mgCMemory *memory) {
-    col_frame = LoadCollisionFile((MDS_HEADER *) GetPackFile(pack, at_1279__2, NULL), memory);
+    col_frame = LoadCollisionFile((MDS_HEADER *) GetPackFile(pack, "tbox_a.mds", NULL), memory);
 }
 
 void CTreasureBoxManager::PutTreasureBox(int index, float *pos, float rot_y, int flags, int item0, int num0, int item1, int num1) {
@@ -726,7 +718,7 @@ void CTreasureBoxManager::PutTreasureBox(int index, float *pos, float rot_y, int
         do {
             chest = &this->box[i];
 
-            if (chest->state == 0) {
+            if (chest->state == (int) TREASURE_BOX_STATE_NONE) {
                 index = i;
                 break;
             }
@@ -740,7 +732,7 @@ void CTreasureBoxManager::PutTreasureBox(int index, float *pos, float rot_y, int
     }
 
     chest = &this->box[index];
-    chest->state = 1;
+    chest->state = (int) TREASURE_BOX_STATE_UNOPENED;
     chest->SetPosition(pos);
     chest->SetRotation(0.0f, rot_y, 0.0f);
     chest->flags = flags;
@@ -759,7 +751,7 @@ int CTreasureBoxManager::CheckArea(float *pos, float radius) {
 loop:
     slot = &this->box[i];
 
-    if (slot->state != 0) {
+    if (slot->state != (int) TREASURE_BOX_STATE_NONE) {
         slot->GetPosition(chest_pos);
 
         if (mgDistVector(chest_pos, pos) < radius) {
@@ -786,9 +778,9 @@ void CTreasureBoxManager::DrawMiniMapSymbol(CMiniMapSymbol *symbol_drawer) {
     do {
         slot = &this->box[i];
 
-        if (slot->state == 1) {
+        if (slot->state == (int) TREASURE_BOX_STATE_UNOPENED) {
             slot->GetPosition(chest_pos);
-            (symbol_drawer)->DrawSymbol(chest_pos, 1);
+            (symbol_drawer)->DrawSymbol(chest_pos, (int) MINIMAP_SYMBOL_TREASURE_BOX);
         }
 
         i += 1;
@@ -804,7 +796,7 @@ void CTreasureBoxManager::Draw(float *view_pos) {
     do {
         slot = &this->box[i];
 
-        if (slot->state != 0) {
+        if (slot->state != (int) TREASURE_BOX_STATE_NONE) {
             (slot)->Draw(view_pos);
         }
 
@@ -831,7 +823,7 @@ void CTreasureBoxManager::DrawShadow(float *view_pos) {
     do {
         slot = &this->box[i];
 
-        if (slot->state != 0) {
+        if (slot->state != (int) TREASURE_BOX_STATE_NONE) {
             slot->DrawShadow(view_pos, shadow_direction);
         }
 
@@ -852,7 +844,7 @@ int CTreasureBoxManager::PickupCollision(float *pos, CCPoly *polys, mgVu0FBOX bo
     do {
         slot = &this->box[i];
 
-        if (slot->state != 0) {
+        if (slot->state != (int) TREASURE_BOX_STATE_NONE) {
             slot->GetPosition(chest_pos);
 
             if (mgDistVector(chest_pos, pos) <= 40.0f) {
@@ -880,7 +872,7 @@ int CTreasureBoxManager::MimicCount() {
     do {
         slot = &this->box[i];
 
-        if (slot->state == 1 && (slot->flags & 0x100)) {
+        if (slot->state == (int) TREASURE_BOX_STATE_UNOPENED && (slot->flags & (int) TREASURE_BOX_FLAG_MIMIC)) {
             count += 1;
         }
 
@@ -904,7 +896,7 @@ int CTreasureBoxManager::CheckEvent(float *pos, float dist) {
     do {
         slot = &this->box[i];
 
-        if (slot->state == 1) {
+        if (slot->state == (int) TREASURE_BOX_STATE_UNOPENED) {
             slot->GetPosition(chest_pos);
             distance = mgDistVector(chest_pos, pos);
 
@@ -964,7 +956,7 @@ int Lamb2WolfManager() {
     }
 
     if (form == 0x58) {
-        object = chara->SearchObject(at_1466__5);
+        object = chara->SearchObject("parts01");
 
         if (object != NULL) {
             object->GetRotation(rotation);
@@ -976,14 +968,14 @@ int Lamb2WolfManager() {
         return 0;
     }
 
-    lamb = chara->SearchObject(at_1467__5);
-    wolf = chara->SearchObject(at_1468__5);
+    lamb = chara->SearchObject("w15a");
+    wolf = chara->SearchObject("w15b");
 
     if (lamb == NULL || wolf == NULL) {
         return -1;
     }
 
-    if (GetTimeBand(DngMainScene->time) == 2) {
+    if (GetTimeBand(DngMainScene->time) == MAP_TIME_BAND_NIGHT) {
         lamb->SetAttrParamDraw(0, 0);
         wolf->SetAttrParamDraw(1, 0);
         return 1;
@@ -1007,7 +999,7 @@ void StatusWarningSnd() {
     CBattleCharaInfo *info;
     float             ratio;
 
-    if (!(DngMainScene->battle_area.pause_flag & 0x400)) {
+    if (!(DngMainScene->battle_area.pause_flag & DNG_PAUSE_PLAYER_STATUS)) {
         if (counter_1489 < 0x14) {
             counter_1489 += 1;
         } else {
@@ -1028,7 +1020,7 @@ void StatusWarningSnd() {
 }
 
 void BattleAreaBGMCtrl() {
-    void            *player;
+    CActionChara    *player;
     DNG_BATTLE_AREA *state;
     float            distance;
     int              phase;
@@ -1037,7 +1029,7 @@ void BattleAreaBGMCtrl() {
     CScene          *scene;
 
     state = (&DngMainScene->battle_area);
-    player = DngMainScene->GetCharacter(0);
+    player = (CActionChara *) DngMainScene->GetCharacter(0);
 
     if (dngGetDebugInfo()->sound_flag == 0) {
         sndSeStop(EdEventInfo.snd_id[4], 0, 0);
@@ -1051,33 +1043,33 @@ void BattleAreaBGMCtrl() {
     }
 
     if (distance <= 340.0f) {
-        *(s16 *) ((u8 *) player + 0x75E) = 1;
+        player->battle_stance = 1;
     } else {
-        *(s16 *) ((u8 *) player + 0x75E) = 0;
+        player->battle_stance = 0;
     }
 
-    if (!(state->pause_flag & 0x4000) && state->boss_map == 0) {
+    if (!(state->pause_flag & DNG_PAUSE_BATTLE_MUSIC) && state->boss_map == 0) {
         phase = state->battle_bgm_state;
         fade = state->battle_bgm_vol;
 
-        if (phase == 0) {
+        if (phase == (int) DNG_BGM_MAP) {
             if (!(340.0f < distance)) {
-                state->battle_bgm_state = 1;
+                state->battle_bgm_state = (int) DNG_BGM_FADE_OUT_MAP;
             }
         }
 
-        if (phase == 2) {
+        if (phase == (int) DNG_BGM_BATTLE) {
             if (400.0f <= distance) {
-                state->battle_bgm_state = 3;
+                state->battle_bgm_state = (int) DNG_BGM_FADE_OUT_BATTLE;
             }
         }
 
         switch (phase) {
-            case 1:
+            case DNG_BGM_FADE_OUT_MAP:
                 fade += 0.05f;
 
                 if (!(fade < 1.0f)) {
-                    state->battle_bgm_state = 2;
+                    state->battle_bgm_state = (int) DNG_BGM_BATTLE;
                     fade = 1.0f;
                     sndSePlay(EdEventInfo.snd_id[4], 0, 0);
                     DngMainScene->PauseBGM();
@@ -1088,11 +1080,11 @@ void BattleAreaBGMCtrl() {
                 scene->SetVolfBGM(scene->GetActiveBgmInfo()->volf);
                 state->battle_bgm_vol = fade;
                 return;
-            case 3:
+            case DNG_BGM_FADE_OUT_BATTLE:
                 fade -= 0.016666668f;
 
                 if (fade <= 0.0f) {
-                    state->battle_bgm_state = 4;
+                    state->battle_bgm_state = (int) DNG_BGM_FADE_IN_MAP;
                     fade = 0.0f;
                     sndSeStop(EdEventInfo.snd_id[4], 0, 0);
                     DngMainScene->RePlayBGM();
@@ -1105,12 +1097,12 @@ void BattleAreaBGMCtrl() {
 
                 state->battle_bgm_vol = fade;
                 return;
-            case 4:
+            case DNG_BGM_FADE_IN_MAP:
                 rate = DngMainScene->GetActiveBgmInfo()->master_volf;
                 rate += 0.033333335f;
 
                 if (!(rate < 1.0f)) {
-                    state->battle_bgm_state = 0;
+                    state->battle_bgm_state = (int) DNG_BGM_MAP;
                     rate = 1.0f;
                 }
 
@@ -1144,17 +1136,17 @@ void XChgMapLighting() {
     map = (CMapInfo *) DngMainScene->GetMap(DngMainScene->active_map);
 
     if ((map != NULL) && (map != NULL) && (map->lighting_info_num >= 0x10)) {
-        memset(saved, 0, 0x1D0);
+        memset(saved, 0, sizeof(saved));
         i = 0;
         byte_offset = 0;
 
         do {
-            memcpy(saved, (u8 *) map->lighting_info + byte_offset, 0x1D0);
+            memcpy(saved, (u8 *) map->lighting_info + byte_offset, sizeof(CMapLightingInfo));
             memcpy((u8 *) map->lighting_info + byte_offset,
-                   (u8 *) map->lighting_info + byte_offset + 0xE80, 0x1D0);
-            memcpy((u8 *) map->lighting_info + byte_offset + 0xE80, saved, 0x1D0);
+                   (u8 *) map->lighting_info + byte_offset + 8 * sizeof(CMapLightingInfo), sizeof(CMapLightingInfo));
+            memcpy((u8 *) map->lighting_info + byte_offset + 8 * sizeof(CMapLightingInfo), saved, sizeof(CMapLightingInfo));
             i += 1;
-            byte_offset += 0x1D0;
+            byte_offset += sizeof(CMapLightingInfo);
         } while (i < 8);
     }
 }
@@ -1183,7 +1175,7 @@ int SearchMapEventParts(int kind, CMapParts **parts, float *rotation, int unused
     switch (kind) {
         case 0:
             for (i = 0; i < 4; i++) {
-                sprintf(name, at_1645, i + 0x20);
+                sprintf(name, "way%d", i + 0x20);
                 found = (CMapParts *) (map)->GetPlaceParts(name);
 
                 if (found != NULL) {
@@ -1198,7 +1190,7 @@ int SearchMapEventParts(int kind, CMapParts **parts, float *rotation, int unused
             break;
         case 2:
             for (i = 0; i < 0x10; i++) {
-                sprintf(name, at_1645, i + 0x24);
+                sprintf(name, "way%d", i + 0x24);
                 found = (CMapParts *) (map)->GetPlaceParts(name);
 
                 if (found != NULL) {
@@ -1217,61 +1209,76 @@ int SearchMapEventParts(int kind, CMapParts **parts, float *rotation, int unused
 
     return result;
 }
+
 int SearchMapFlatPosition(sceVu0FVECTOR out_pos, CAutoMapGen *map_gen) {
-    float center[4];
-    float from[4];
-    float to[4];
-    CCPoly polys[128];
-    mgVu0FBOX box;
-    int hit_polys[32];
-    float hit_points[32][4];
-    float found[4];
-    CMapParts *parts;
-    int place_num;
-    int poly_num;
-    CMapParts *place_parts;
-    int tries_left;
-    int attempt;
-    CMap *map;
-    int hit_num;
-    int attr;
-    int axis;
+    float       center[4];
+    float       from[4];
+    float       to[4];
+    CCPoly      polys[128];
+    mgVu0FBOX   box;
+    int         hit_polys[32];
+    float       hit_points[32][4];
+    float       found[4];
+    CMapParts  *parts;
+    int         place_num;
+    int         poly_num;
+    CMapParts  *place_parts;
+    int         tries_left;
+    int         attempt;
+    CMap       *map;
+    int         hit_num;
+    int         attr;
+    int         axis;
     CMap *const scene_map = DngMainScene->GetMap(DngMainScene->active_map);
+
     if ((map = scene_map) == NULL) {
         return 0;
     }
+
     place_parts = scene_map->GetPlacPartsTable(&place_num);
+
     if (place_parts == NULL) {
         return 0;
     }
+
     if (place_num <= 0) {
         return 0;
     }
+
     CMapParts *placed = place_parts;
     place_num = 0;
+
     while ((placed->name[0] == 0) == 0) {
         placed++;
         place_num++;
     }
+
     tries_left = 999;
     box.min[3] = box.max[3] = center[3] = from[3] = to[3] = 1.0f;
+
     while (1) {
         parts = &place_parts[iRand(place_num)];
         attr = 0;
+
         if (map_gen != NULL) {
             CAutoMapParts *cell = map_gen->grid;
+
             for (int i = 0; i < map_gen->grid_w * map_gen->grid_h; i++) {
                 if (cell->parts_no >= 0 && cell->parts == parts) {
                     attr = cell->attr;
                     break;
                 }
+
                 cell++;
             }
         }
+
         if (attr & AUTOMAP_ATTR_HIDE) {
             continue;
         }
+
         parts->GetPosition(center);
+
         for (axis = 0; axis < 3; axis++) {
             if (axis == 1) {
                 box.max[axis] = 4160.0f + center[axis];
@@ -1281,7 +1288,9 @@ int SearchMapFlatPosition(sceVu0FVECTOR out_pos, CAutoMapGen *map_gen) {
                 box.min[axis] = center[axis] - 100.0f;
             }
         }
+
         poly_num = map->GetColPoly(polys, box, 0x80);
+
         for (attempt = 0; attempt < 16; attempt++) {
             sceVu0CopyVector(from, center);
             from[0] += fRand(320.0f) - 160.0f;
@@ -1290,16 +1299,20 @@ int SearchMapFlatPosition(sceVu0FVECTOR out_pos, CAutoMapGen *map_gen) {
             from[1] += 4200.0f;
             to[1] -= 4200.0f;
             hit_num = CheckHits(polys, poly_num, from, to, 0x20, hit_polys, hit_points, 0, 0);
+
             for (int i = 0; i < hit_num; i++) {
                 short area_kind = polys[hit_polys[i]].area_kind;
+
                 if (area_kind == 0xB) {
                     break;
                 }
+
                 if (area_kind == 5) {
                     sceVu0CopyVector(from, hit_points[i]);
                     sceVu0CopyVector(to, hit_points[i]);
                     from[1] += 10.0f;
                     to[1] -= 10.0f;
+
                     if (CheckHit(polys, poly_num, from, to, found, 1, 1) >= 0) {
                         sceVu0CopyVector(out_pos, found);
                         out_pos[3] = 1.0f;
@@ -1308,36 +1321,46 @@ int SearchMapFlatPosition(sceVu0FVECTOR out_pos, CAutoMapGen *map_gen) {
                 }
             }
         }
+
         if (tries_left < 0) {
-            printf(at_1732__2);
+            printf("flat put err\n");
             return 0;
         }
+
         tries_left--;
     }
 }
+
 int GetDungeonEventPoint(float *out_pos, float *out_rot, int kind) {
     float euler[4];
+
     if (kind == DUNGEON_EVENT_POINT_PLAYER) {
         CCharacter2 *player = DngMainScene->GetCharacter(0);
+
         if (player == NULL) {
             return 0;
         }
+
         player->GetPosition(out_pos);
-        out_pos[0] = (int)((80.0f + out_pos[0]) / 160.0f) * 160;
+        out_pos[0] = (int) ((80.0f + out_pos[0]) / 160.0f) * 160;
         out_pos[1] = 0;
-        out_pos[2] = (int)((80.0f + out_pos[2]) / 160.0f) * 160;
+        out_pos[2] = (int) ((80.0f + out_pos[2]) / 160.0f) * 160;
         *out_rot = 0;
     }
+
     if (kind == DUNGEON_EVENT_POINT_WAY_20) {
         CMapParts *parts[8];
-        float rotation[8];
-        CMap *map = DngMainScene->GetMap(DngMainScene->active_map);
+        float      rotation[8];
+        CMap      *map = DngMainScene->GetMap(DngMainScene->active_map);
+
         if (map == NULL) {
             return 0;
         }
+
         if (SearchMapEventParts(0, parts, rotation, 8) <= 0) {
             return 0;
         }
+
         CMapParts *found = parts[0];
         found->GetPosition(out_pos);
         *out_rot = rotation[0];
@@ -1346,16 +1369,20 @@ int GetDungeonEventPoint(float *out_pos, float *out_rot, int kind) {
         EdEventInfo.dng_event_parts = found;
         EdEventInfo.dng_event_found = 1;
     }
+
     if (kind == DUNGEON_EVENT_POINT_WAY_24) {
         CMapParts *parts[16];
-        float rotation[16];
-        CMap *map = DngMainScene->GetMap(DngMainScene->active_map);
+        float      rotation[16];
+        CMap      *map = DngMainScene->GetMap(DngMainScene->active_map);
+
         if (map == NULL) {
             return 0;
         }
+
         if (SearchMapEventParts(2, parts, rotation, 0x10) <= 0) {
             return 0;
         }
+
         CMapParts *found = parts[0];
         found->GetPosition(out_pos);
         *out_rot = rotation[0];
@@ -1364,27 +1391,36 @@ int GetDungeonEventPoint(float *out_pos, float *out_rot, int kind) {
         EdEventInfo.dng_event_parts = found;
         EdEventInfo.dng_event_found = 1;
     }
+
     if (kind == DUNGEON_EVENT_POINT_TREASURE_BOX) {
         DNG_BATTLE_AREA *area = &DngMainScene->battle_area;
+
         if (area == NULL) {
             return 0;
         }
+
         CTreasureBoxManager *boxes = area->treasure_box;
+
         if (boxes == NULL) {
             return 0;
         }
-        int near_box = boxes->near_box;
-        int box_no = near_box;
+
+        int           near_box = boxes->near_box;
+        int           box_no = near_box;
         CTreasureBox *box = &boxes->box[box_no];
+
         if (box == NULL) {
             return 0;
         }
+
         box->GetPosition(out_pos);
         box->GetRotation(euler);
         *out_rot = euler[1];
     }
+
     return 1;
 }
+
 /**
  *
  * Begins a treasure box group list for the current floor.
@@ -1469,6 +1505,15 @@ int _FLOOR(SPI_STACK *stack, int argc) {
 
     return 1;
 }
+
+static SPI_TAG_PARAM tag__5[] = {
+    {"GROUP_START", _GROUP_START},
+    {"GROUP",       _GROUP      },
+    {"ITEM",        _ITEM       },
+    {"FLOOR_START", _FLOOR_START},
+    {"FLOOR",       _FLOOR      },
+    {NULL,          NULL        },
+};
 
 void CreatTresuarBoxInfo(TRESURE_BOX_FLOOR_INFO *table, char *script, int length) {
     table->group_num = 0;
@@ -1555,7 +1600,7 @@ TRESURE_BOX_ITEM *PickupRandomItem(TRESURE_BOX_FLOOR_INFO *table, int floor_inde
             group++;
         } while (i < table->group_num);
 
-        printf(at_1905__2, i);
+        printf("ERR:GROUP_ID OVER!! %d\n", i);
 
         while (1) {
         }
@@ -1645,7 +1690,7 @@ float ScanEyePoint(float *eye_pos) {
             return angle;
         }
 
-        printf(at_1965__2, position[0], position[2]);
+        printf("-------------------------> hit %.2f,%.2f\n", position[0], position[2]);
         angle += 0.3926991f;
         angle = mgAngleLimit(angle);
         i++;
@@ -1660,81 +1705,92 @@ void AutoSetTreasureBox(int id, float *position, float power) {
     (DngMainScene->battle_area.treasure_box)->PutTreasureBox(-1, position, power, 0x41, id, 1, -1, 0);
 }
 
-extern char at_2159[];
-void AutoSetTreasureBox(void) {
-    DNG_BATTLE_AREA *area = &DngMainScene->battle_area;
+void AutoSetTreasureBox() {
+    DNG_BATTLE_AREA     *area = &DngMainScene->battle_area;
     CTreasureBoxManager *manager = DngMainScene->battle_area.treasure_box;
-    int stage = DngSaveDataDungeon->stage_id;
-    u32 floor = DngSaveDataDungeon->floor_id[stage];
-    float event_pos[4];
-    float event_rot;
-    float angle;
-    int box;
-    int i;
+    int                  stage = DngSaveDataDungeon->stage_id;
+    u32                  floor = DngSaveDataDungeon->floor_id[stage];
+    float                event_pos[4];
+    float                event_rot;
+    float                angle;
+    int                  box;
+    int                  i;
 
     GetDungeonEventPoint(event_pos, &event_rot, 2);
     event_pos[3] = 1.0f;
     mgCMemory stack;
-    char path[0x40];
-    float pos[4];
-    float mimic_pos[4];
-    int size;
-    sprintf(path, at_2159, stage + 1);
+    char      path[0x40];
+    float     pos[4];
+    float     mimic_pos[4];
+    int       size;
+    sprintf(path, "dungeon/cfg_file/tbox_d0%d.cfg", stage + 1);
     LoadFile(path, BuffReadData, &size);
     stack.stSetBuffer(BuffReadData + size / 16 + 1, 0x4000);
     TRESURE_BOX_FLOOR_INFO *info = new (stack.Alloc(0x1A43)) TRESURE_BOX_FLOOR_INFO;
-    CreatTresuarBoxInfo(info, (char *)BuffReadData, size);
+    CreatTresuarBoxInfo(info, (char *) BuffReadData, size);
     PickupRandomItemCheckMax(info, floor);
 
     for (box = 0; box < 8; box++) {
         int searching = 1;
+
         while (searching) {
             if (SearchMapFlatPosition(pos, &AutoMapGen) && !(mgDistVector(event_pos, pos) <= 320.0f) &&
                 manager->CheckArea(pos, 60.0f)) {
-                angle = (2.0f * (3.1415927f * (float)rand())) / 2.1474836e9f - 3.1415927f;
+                angle = (2.0f * (3.1415927f * (float) rand())) / 2.1474836e9f - 3.1415927f;
                 int flags;
                 int num0 = 1;
                 int item0 = 0;
                 int item1 = -1;
                 int num1 = 1;
+
                 if (box < 2) {
                     if (box == 0) {
                         item0 = 0x132;
                     }
+
                     if (box == 1) {
                         item0 = 0x131;
                     }
+
                     flags = 0x41;
                 } else {
                     int roll = iRand(100);
                     flags = 1;
+
                     if (roll > 92) {
                         flags = 2;
                     }
+
                     if (roll > 96) {
                         flags = 4;
                     }
+
                     switch (iRand(3)) {
-                    default:
-                        flags |= 8;
-                        break;
-                    case 1:
-                        flags |= 0x10;
-                        break;
-                    case 2:
-                        flags |= 0x20;
-                        break;
+                        default:
+                            flags |= 8;
+                            break;
+                        case 1:
+                            flags |= 0x10;
+                            break;
+                        case 2:
+                            flags |= 0x20;
+                            break;
                     }
+
                     roll = iRand(100);
                     int kind = 0x40;
+
                     if (roll > 94) {
                         kind = 0x200;
                     }
+
                     if (roll > 96) {
                         kind = 0x80;
                     }
+
                     flags |= kind;
-                    if (flags & 0x80) {
+
+                    if (flags & (int) TREASURE_BOX_FLAG_TWO_ITEMS) {
                         TRESURE_BOX_ITEM *item = PickupRandomItem(info, floor, 60);
                         item0 = item->item_no;
                         num0 = item->num;
@@ -1744,27 +1800,34 @@ void AutoSetTreasureBox(void) {
                         angle = ScanEyePoint(pos);
                     } else {
                         TRESURE_BOX_ITEM *item;
+
                         if (flags & 2) {
                             item = PickupRandomItem(info, floor, -30);
                         } else {
                             item = PickupRandomItem(info, floor, (iRand(100) + iRand(100)) / 2);
                         }
+
                         item0 = item->item_no;
                         num0 = item->num;
                     }
                 }
+
                 if (num0 >= 3 && num0 < 10) {
                     num0 += iRand(3) - 1;
                 }
+
                 if (num0 >= 10) {
-                    num0 = (int)(0.8f * (float)num0 + fRand(0.4f * (float)num0) + 0.5f);
+                    num0 = (int) (0.8f * (float) num0 + fRand(0.4f * (float) num0) + 0.5f);
                 }
+
                 if (num1 >= 3 && num1 < 10) {
                     num1 += iRand(3) - 1;
                 }
+
                 if (num1 >= 10) {
-                    num1 = (int)(0.8f * (float)num1 + fRand(0.4f * (float)num1) + 0.5f);
+                    num1 = (int) (0.8f * (float) num1 + fRand(0.4f * (float) num1) + 0.5f);
                 }
+
                 manager->PutTreasureBox(-1, pos, angle, flags, item0, num0, item1, num1);
                 searching = 0;
             }
@@ -1773,14 +1836,16 @@ void AutoSetTreasureBox(void) {
 
     for (i = 0; i < ActiveMonster->locate.num; i++) {
         int monster_id = ActiveMonster->locate.monster_id[i];
+
         if (monster_id >= 0xF5 && monster_id < 0x10D) {
             int placed = 0;
             int param = ActiveMonster->locate.param[i];
+
             do {
                 if (SearchMapFlatPosition(mimic_pos, &AutoMapGen) && !(mgDistVector(event_pos, mimic_pos) <= 320.0f) &&
                     CheckObjectPutArea(mimic_pos)) {
                     manager->PutTreasureBox(-1, mimic_pos,
-                                            (2.0f * (3.1415927f * (float)rand())) / 2.1474836e9f - 3.1415927f,
+                                            (2.0f * (3.1415927f * (float) rand())) / 2.1474836e9f - 3.1415927f,
                                             0x101, monster_id, param, -1, 0);
                     placed = 1;
                 }
@@ -1789,29 +1854,38 @@ void AutoSetTreasureBox(void) {
     }
 
     int circle_num = 0;
+
     if (iRand(100) > 75) {
         circle_num++;
     }
+
     if (iRand(100) > 80) {
         circle_num++;
     }
+
     if (iRand(100) > 90) {
         circle_num++;
     }
+
     for (int circle = 0; circle < circle_num; circle++) {
         int retry = 0;
+
         while (1) {
             if (!SearchMapFlatPosition(pos, &AutoMapGen)) {
                 break;
             }
+
             if (mgDistVector(event_pos, pos) <= 320.0f) {
                 continue;
             }
+
             if (CheckObjectPutArea(pos)) {
                 RandomCircle.SetCircle(pos);
                 break;
             }
+
             retry++;
+
             if (retry > 100) {
                 break;
             }
@@ -1819,13 +1893,16 @@ void AutoSetTreasureBox(void) {
     }
 
     int geo_stone = area->floor_manager.IsGeoStone(floor);
+
     if (geo_stone && (DngSaveDataDungeon->GetFloorInfoPtr(stage, floor)->flag & DNG_FLOOR_FLAG_GEOSTONE_FOUND)) {
         geo_stone = 0;
     }
+
     while (geo_stone) {
         if (!SearchMapFlatPosition(pos, &AutoMapGen)) {
             break;
         }
+
         if (CheckObjectPutArea(pos) && !(mgDistVector(event_pos, pos) <= 320.0f)) {
             pos[1] += 20.0f;
             pos[3] = 1.0f;
@@ -1834,9 +1911,11 @@ void AutoSetTreasureBox(void) {
             stone->angle = 0.0f;
             stone->flag = 1;
             stone->anime = 1;
+
             if (AutoMapGen.gio_parts != NULL) {
                 AutoMapGen.gio_parts->SetPosition(pos);
             }
+
             break;
         }
     }
@@ -1845,6 +1924,7 @@ void AutoSetTreasureBox(void) {
         if (!SearchMapFlatPosition(pos, &AutoMapGen)) {
             break;
         }
+
         if (CheckObjectPutArea(pos) && !(mgDistVector(event_pos, pos) <= 320.0f)) {
             AutoMapGen.random_stone[stone_no]->SetPosition(pos);
             stone_no++;
@@ -1855,10 +1935,12 @@ void AutoSetTreasureBox(void) {
         if (!SearchMapFlatPosition(pos, &AutoMapGen)) {
             break;
         }
+
         if (CheckObjectPutArea(pos) && !(mgDistVector(event_pos, pos) <= 320.0f)) {
             AUTOMAP_ROOM *room = &AutoMapGen.room[AutoMapGen.door_room];
-            int x = (int)((pos[0] + 0.5f * AutoMapGen.cell_w) / AutoMapGen.cell_w);
-            int y = (int)((pos[2] + 0.5f * AutoMapGen.cell_d) / AutoMapGen.cell_d);
+            int           x = (int) ((pos[0] + 0.5f * AutoMapGen.cell_w) / AutoMapGen.cell_w);
+            int           y = (int) ((pos[2] + 0.5f * AutoMapGen.cell_d) / AutoMapGen.cell_d);
+
             if (room->x > x || x >= room->x + room->w || room->y > y || room->y + room->h <= y) {
                 manager->PutTreasureBox(-1, pos, 0.0f, 1, GetKeyDoorIndex(stage, floor), 1, -1, 0);
                 break;
@@ -1866,34 +1948,41 @@ void AutoSetTreasureBox(void) {
         }
     }
 }
+
 int _FLS(SPI_STACK *stack, int argc) {
     FLS_FLOOR_ID = spiGetStackInt(stack++);
     spiGetStackInt(stack);
     int current_floor = DngSaveDataDungeon->floor_id[DngSaveDataDungeon->stage_id];
     int floor = current_floor;
+
     if (FLS_FLOOR_ID == floor) {
-        ((CMonsterMan *)ActiveMonster)->locate.num = 0;
+        ((CMonsterMan *) ActiveMonster)->locate.num = 0;
     }
+
     return 1;
 }
+
 int _FL(SPI_STACK *stack, int argc) {
     int i;
     int entry;
     int current_floor = DngSaveDataDungeon->floor_id[DngSaveDataDungeon->stage_id];
     int floor = current_floor;
+
     if (FLS_FLOOR_ID != floor) {
         return 1;
     }
+
     {
         for (i = 0; i < argc / 2; i++) {
-            entry = ((CMonsterMan *)ActiveMonster)->locate.num;
-            ((CMonsterMan *)ActiveMonster)->locate.monster_id[entry] = spiGetStackInt(stack++);
-            ((CMonsterMan *)ActiveMonster)->locate.param[entry] = spiGetStackInt(stack++);
-            ((CMonsterMan *)ActiveMonster)->locate.num++;
+            entry = ((CMonsterMan *) ActiveMonster)->locate.num;
+            ((CMonsterMan *) ActiveMonster)->locate.monster_id[entry] = spiGetStackInt(stack++);
+            ((CMonsterMan *) ActiveMonster)->locate.param[entry] = spiGetStackInt(stack++);
+            ((CMonsterMan *) ActiveMonster)->locate.num++;
         }
     }
     return 1;
 }
+
 /**
  *
  * Ends the scripted monster placement floor.
@@ -1903,6 +1992,13 @@ int _FLE(SPI_STACK *stack, int argc) {
     FLS_FLOOR_ID = -1;
     return 1;
 }
+
+static SPI_TAG_PARAM tag2[] = {
+    {"FLS", _FLS},
+    {"FL",  _FL },
+    {"FLE", _FLE},
+    {NULL,  NULL},
+};
 
 void CreatMonsterFloorInfo(char *script, int length) {
     FLS_FLOOR_ID = -1;
@@ -2003,42 +2099,32 @@ void DungeonFloorInit() {
 
 void DungeonFloorFinish() {
 }
-extern char at_2446[];
-extern char at_2447[];
-extern char at_2448[];
-extern char at_2449[];
-extern char at_2450__2[];
-extern char at_2451[];
-extern char at_2452[];
-extern char at_2453[];
-extern char at_2454[];
-extern char at_2455__2[];
-extern char at_2456[];
+
 void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
-    mgCMemory *stack;
-    u_long128 *image;
-    mgCTextureManager *textures;
-    int new_map;
-    int image_size;
-    CMap *map;
-    int box;
-    mgCCamera *camera;
-    int map_no;
+    mgCMemory           *stack;
+    u_long128           *image;
+    mgCTextureManager   *textures;
+    int                  new_map;
+    int                  image_size;
+    CMap                *map;
+    int                  box;
+    mgCCamera           *camera;
+    int                  map_no;
     CTreasureBoxManager *boxes;
-    int cell;
-    int snd_id;
-    int stage_size;
-    int seal;
-    int step;
-    int bgm_no;
-    int room_size;
-    u_long128 *stage_image;
-    int room;
+    int                  cell;
+    int                  snd_id;
+    int                  stage_size;
+    int                  seal;
+    int                  step;
+    int                  bgm_no;
+    int                  room_size;
+    u_long128           *stage_image;
+    int                  room;
 
     DNG_BATTLE_AREA *area = &DngMainScene->battle_area;
     DngMainScene->battle_area.battle_clear = 1;
     area->battle_clear = 1;
-    area->battle_bgm_state = 0;
+    area->battle_bgm_state = (int) DNG_BGM_MAP;
     area->battle_bgm_vol = 0.0f;
     area->camera_mode = 0;
     area->pause_flag = 0;
@@ -2049,9 +2135,9 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
     area->subject_counter = 0;
     area->practice_actions = 0;
     area->floor_status = 0;
-    area->weather = 0;
+    area->weather = DNG_WEATHER_NORMAL;
     area->lock_on_mode = 0;
-    area->pause_flag |= 0x400;
+    area->pause_flag |= DNG_PAUSE_PLAYER_STATUS;
     CheckItemDngKey();
     mgInitLighting();
     DngMainScene->AutoChangeEnvOffset(0);
@@ -2061,33 +2147,43 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
     int floor = DngSaveDataDungeon->floor_id[stage];
     NowFloorInfoPtr = DngSaveDataDungeon->GetFloorInfoPtr(stage, floor);
     seal = area->floor_manager.IsSealFloor(floor);
+
     if (0 < seal) {
         area->floor_status |= 1 << (seal - 1);
     }
-    area->pause_flag |= 0x100;
+
+    area->pause_flag |= DNG_PAUSE_MINIMAP;
+
     if (cfg_name != NULL) {
-        area->pause_flag &= ~0x100;
+        area->pause_flag &= ~DNG_PAUSE_MINIMAP;
+
         if (GetBattleCharaInfo()->GetNowNPC() == 9) {
             area->minimap_reveal |= 1;
         }
     }
+
     DngMainScene->StopSeSrc();
     sndSeAllStop(-1);
     sndStopVoice(1);
     snd_id = GetMapSndDataID(SearchMapNo(map_name));
     DngMainScene->LoadSound(snd_id, BuffReadData);
+
     if (DngMainScene->skip_load_bgm == 0) {
         bgm_no = DngMainScene->GetDefBgmNo(snd_id);
+
         if (bgm_no == -1) {
             DngMainScene->StopBGM(0);
         }
+
         if (DngMainScene->CheckLoadBGM(bgm_no) == 0 || bgm_no == 9999) {
             DngMainScene->PlayBGM(0, -1, 1.0f);
         } else {
             DngMainScene->StopBGM(0);
             sndStep(2.0f);
+
             if (DngMainScene->LoadBGM(bgm_no, BuffReadData)) {
                 DngMainScene->PlayBGM(0, -1, 1.0f);
+
                 if (bgm_no == 0) {
                     DngMainScene->AutoChangeBGMVol(1);
                     DngMainScene->StepSnd();
@@ -2098,23 +2194,27 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
     } else {
         DngMainScene->skip_load_bgm = 0;
     }
+
     if (strcmp(area->map_name, map_name) == 0) {
         new_map = 0;
     } else {
         strcpy(area->map_name, map_name);
         new_map = 1;
     }
+
     if (new_map) {
         map_no = SearchMapNo(map_name);
+
         if (map_no < 0) {
-            printf(at_2446, map_name);
+            printf("NOT MAP ENTRY !! %s\n", map_name);
         }
+
         SCN_LOADMAP_INFO2 load_info;
         MainMapInfo.map_no = 0;
         MainMapInfo.stack_no = 1;
         MainMapInfo.efp_tex_block = 0xF;
         MainMapInfo.tex_block = 0;
-        MainMapInfo.load_buf = (u8 *)BuffReadData;
+        MainMapInfo.load_buf = (u8 *) BuffReadData;
         SetMainMapInfo(&MainMapInfo);
         GetLoadMapInfo(&load_info, map_no);
         load_info.sky_tex_block = 0x4C;
@@ -2123,84 +2223,105 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
         DngMainScene->DeleteMap(0, 1);
         DngMainScene->LoadMap(0, &load_info, 0);
         DngMainScene->SetNowMapNo(map_no);
-        DngMainScene->SetActive(2, 0);
+        DngMainScene->SetActive(SCENE_DATA_MAP, 0);
         DngMainMap = DngMainScene->GetMap(DngMainScene->active_map);
         stack = DngMainScene->GetStack(1);
+
         if (stack != NULL && cfg_name != NULL) {
             stack->lock = 0;
             stack->Align64();
-            image = (u_long128 *)stack->stAllocTest(1);
+            image = (u_long128 *) stack->stAllocTest(1);
+
             if (image != NULL) {
                 textures = &mgTexManager;
                 textures->DeleteBlock(0x66);
                 char image_path[0x40];
-                sprintf(image_path, at_2447, map_name);
+                sprintf(image_path, "dungeon/minimap/%s.img", map_name);
+
                 if (LoadFile2(image_path, image, &image_size, 0)) {
                     stack->Alloc(image_size / 16 + 1);
-                    textures->EnterIMGFile((u_char *)image, 0x66, stack, NULL);
+                    textures->EnterIMGFile((u_char *) image, 0x66, stack, NULL);
                 }
             }
         }
+
         map_effect.type = MAP_EFFECT_NONE;
-        if (strcmp(map_name, at_2448) == 0) {
+
+        if (strcmp(map_name, "d01f01") == 0) {
             map_effect.type = MAP_EFFECT_D01;
         }
-        if (strcmp(map_name, at_2449) == 0) {
+
+        if (strcmp(map_name, "d02f01") == 0) {
             map_effect.type = MAP_EFFECT_D02;
         }
-        if (strcmp(map_name, at_2450__2) == 0) {
+
+        if (strcmp(map_name, "d03f01") == 0) {
             map_effect.type = MAP_EFFECT_D03;
         }
-        if (strcmp(map_name, at_2451) == 0) {
+
+        if (strcmp(map_name, "d03f02") == 0) {
             map_effect.type = MAP_EFFECT_D03;
         }
-        if (strcmp(map_name, at_2452) == 0) {
+
+        if (strcmp(map_name, "d03f03") == 0) {
             map_effect.type = MAP_EFFECT_D03;
         }
+
         if (map_effect.type >= 0) {
             map_effect.Init_LightBoll(stack, 0x30);
             camera = DngMainScene->GetCamera(0);
+
             if (camera != NULL) {
                 for (step = 0; step < 16; step++) {
                     map_effect.Step(camera);
                 }
             }
         }
+
         stack->lock = 0;
         stack->Align64();
-        stage_image = (u_long128 *)stack->stAllocTest(1);
+        stage_image = (u_long128 *) stack->stAllocTest(1);
+
         if (stage_image != NULL) {
             char stage_path[0x30];
+
             if (stage != 4) {
-                sprintf(stage_path, at_2453, stage + 1);
+                sprintf(stage_path, "dungeon/articles/d0%detc.img", stage + 1);
             } else if (floor < 16) {
-                sprintf(stage_path, at_2454);
+                sprintf(stage_path, "dungeon/articles/d05f01etc.img");
             } else {
-                sprintf(stage_path, at_2455__2);
+                sprintf(stage_path, "dungeon/articles/d05f02etc.img");
             }
+
             LoadFile(stage_path, stage_image, &stage_size);
             stack->Alloc(stage_size / 16 + 1);
             mgTexManager.DeleteBlock(0x6A);
-            mgTexManager.EnterIMGFile((u_char *)stage_image, 0x6A, stack, NULL);
+            mgTexManager.EnterIMGFile((u_char *) stage_image, 0x6A, stack, NULL);
         }
+
         stack->lock = 1;
     }
+
     if (AutoMapGen.grid != NULL) {
         for (cell = 0; cell < AutoMapGen.grid_w * AutoMapGen.grid_h; cell++) {
             AutoMapGen.grid[cell].Initialize();
         }
     }
+
     for (room = 0; room < 8; room++) {
         AutoMapGen.room[room].unk_0 = 0;
     }
+
     AutoMapGen.healing_point.enable = 0;
     AutoMapGen.healing_point.timer = 0;
     AutoMapGen.room_info = NULL;
     AutoMapGen.room_info_num = 0;
     AutoMapGen.gio_parts = NULL;
+
     for (int stone = 0; stone < 12; stone++) {
         AutoMapGen.random_stone[stone] = NULL;
     }
+
     AutoMapGen.pot_parts = NULL;
     AutoMapGen.gen_flag = 0;
     AutoMapGen.door_room = -1;
@@ -2208,24 +2329,28 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
     AutoMapGen.navi_enable = 0;
     AutoMapGen.random_map = 0;
     AutoMapGen.minimap_enable = 0;
+
     if (cfg_name != NULL) {
         char room_path[0x80];
-        sprintf(room_path, at_2456, cfg_name);
+        sprintf(room_path, "dungeon/cfg_file/%s.cfg", cfg_name);
         mgCMemory room_stack;
         LoadFile(room_path, BuffReadData, &room_size);
         room_stack.stSetBuffer(BuffReadData + room_size / 16 + 1, 0x8000);
-        AutoMapGen.SetupRoomInfo((char *)BuffReadData, room_size, &room_stack);
+        AutoMapGen.SetupRoomInfo((char *) BuffReadData, room_size, &room_stack);
         AutoMapGen.gen_flag |= gen_flag;
         AutoMapGen.Build();
     }
+
     area->boss_map = 0;
     BTsubo.Init(0);
     BTsubo2.Init();
     BTsuboCol = NULL;
     EdEventMapInit();
+
     if (ActiveMonster != NULL) {
         ActiveMonster->Initialize(DngMainScene);
     }
+
     map = DngMainScene->GetMap(DngMainScene->active_map);
     AutoMapGen.mini_map.map = NULL;
     AutoMapGen.mini_map.parts_table = NULL;
@@ -2236,9 +2361,11 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
     AutoMapGen.mini_map.SetMapInfo(map, AutoMapGen.grid, AutoMapGen.grid_w, AutoMapGen.grid_h, AutoMapGen.cell_w,
                                    AutoMapGen.cell_d);
     boxes = area->treasure_box;
+
     for (box = 0; box < TREASURE_BOX_MAX; box++) {
         boxes->box[box].Initialize();
     }
+
     RandomCircle.Clear();
     GeoStone.SetFlag(0);
     PullItemMan.Clear();
@@ -2246,6 +2373,7 @@ void LoadDungeonMapFile(char *map_name, char *cfg_name, int gen_flag) {
     FxScriptMan->AllClearEffSpt();
     InitS51Thunder();
 }
+
 void MinimapDoorEnable(float *pos) {
     AutoMapGen.MinimapDoorOpen(pos);
     AutoMapGen.UpdateNaviMap(pos, 4);
@@ -2285,7 +2413,7 @@ void LoadMonsterFile() {
 
         char path[76];
         int  size;
-        sprintf(path, at_2529, stage_id);
+        sprintf(path, "dungeon/cfg_file/mos_place%d.cfg", stage_id);
         LoadFile(path, BuffReadData, &size);
         CreatMonsterFloorInfo((char *) BuffReadData, size);
         int monster_count = ActiveMonster->locate.num;
@@ -2342,59 +2470,3 @@ void LoadMonsterFile(int monster_id, int initialize) {
         }
     }
 }
-
-// Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1082__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1248__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", gatekey_index__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", keydoor_key_index__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", xchg_rot_list__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", tag__5__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1936__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", tag2__DATA);
-
-// Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1274__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1279__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1466__5__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1467__5__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1468__5__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1645__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1732__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1825__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1826__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1827__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1828__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1829__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1905__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_1965__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2159__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2198__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2199__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2200__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2446__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2447__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2448__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2449__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2450__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2451__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2452__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2453__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2454__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2455__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2456__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", at_2529__DATA);
-
-// Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", __vt__9CGeoStone__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/dng_event", __vt__13CRedMarkModel__DATA);
-
-// Small uninitialised data (.sbss)
-INCLUDE_BSS(counter_1489, 0x4);
-INCLUDE_BSS(nowTbFloor, 0x4);
-INCLUDE_BSS(nowTboxGroup, 0x4);
-INCLUDE_BSS(nowTboxItemCnt, 0x4);
-INCLUDE_BSS(FLS_FLOOR_ID, 0x4);
-
-// Uninitialised data (.bss)
-INCLUDE_BSS(at_1348, 0x10);

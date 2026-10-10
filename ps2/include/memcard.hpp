@@ -42,6 +42,7 @@ enum MC_FUNC_NO {
     MC_FUNC_MAKE_OMAKE_DIR     = 23, /**< Creates the bonus data directory. */
     MC_FUNC_CONVERT            = 24, /**< Converts old save data; finishes at once. */
 };
+
 // clang-format on
 
 /**
@@ -55,6 +56,7 @@ enum MC_STEP_RESULT {
     MC_STEP_BUSY   = 0,  /**< The operation is still running. */
     MC_STEP_DONE   = 1,  /**< The operation has finished. */
 };
+
 // clang-format on
 
 /**
@@ -73,6 +75,7 @@ enum MC_ERROR_CODE {
     MC_ERROR_NO_CARD     = 8,  /**< The card could not be found. */
     MC_ERROR_COMMAND     = 11, /**< A memory card library command could not be started. */
 };
+
 // clang-format on
 
 /**
@@ -93,6 +96,7 @@ enum MC_DATA_SIZE_TYPE {
     MC_SIZE_OMAKE_TOTAL = 8, /**< Bytes the bonus data directory takes, icons included. */
     MC_SIZE_OMAKE_KB    = 9, /**< Kilobytes the bonus data directory takes, icons included. */
 };
+
 // clang-format on
 
 /**
@@ -323,6 +327,39 @@ public:
      * @size 0x10
      */
     void InitError();
+
+    /**
+     *
+     * Returns the error record for the current operation.
+     *
+     */
+    MC_ERROR_INFO *GetErrorInfo() {
+        return &error;
+    }
+
+    /**
+     *
+     * Returns the card record for the current port, or NULL for an invalid port.
+     *
+     */
+    MC_CARD_INFO *GetCardInfo() {
+        int current_port = port;
+
+        if (current_port == 0 || current_port == 1) {
+            return &card[current_port];
+        }
+
+        return NULL;
+    }
+
+    /**
+     *
+     * Returns the bytes moved by the current operation.
+     *
+     */
+    int GetTransferredSize() {
+        return total_transferred;
+    }
 
     /**
      *

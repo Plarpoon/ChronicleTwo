@@ -298,9 +298,11 @@ public:
         error = -1;
         num = 0;
         num_max = 0;
+
         for (int i = 0; i < 2; i++) {
             arrow_flash[i] = 0;
         }
+
         list_x = 0.0f;
         list_y = 0.0f;
         shop_name_ofs_x = 0;
@@ -423,6 +425,8 @@ public:
     s32 select;                         /**< Line under the cursor. */
     s32 top;                            /**< First line shown. */
     s32 photo_no[QUEST_VIEW_PHOTO_MAX]; /**< Photo held in each album slot, or -1 when the slot is empty. */
+
+    CMenuQuestView();
 
     /**
      *

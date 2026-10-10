@@ -16,10 +16,22 @@
 #include "mg_visual.hpp"
 #include "mglib.hpp"
 #include "visualmotion.hpp"
-extern char   at_550[];
 
-void CopyFrame(mgCFrame *dst, mgCFrame *src, mgCMemory *memory, int copy_visual, mgCFrame **frame_table);
+void      CopyFrame(mgCFrame *dst, mgCFrame *src, mgCMemory *memory, int copy_visual, mgCFrame **frame_table);
 mgCFrame *CopyFrameSub(mgCFrame *src, mgCMemory *memory, int copy_visual, mgCFrame **frame_table);
+
+/**
+ *
+ * Rounds a byte count up to a number of 16-byte allocation blocks.
+ *
+ */
+static inline u_int align16_blocks(u_int size) {
+    if (size & 0xF) {
+        return (size >> 4) + 1;
+    }
+
+    return size >> 4;
+}
 
 /**
  *
@@ -170,29 +182,37 @@ int conv_new_text(char *dst, char *src) {
 
 static int htoi(char *text) {
     char *end = text;
-    s32 length = 0;
-    s32 value = 0;
+    s32   length = 0;
+    s32   value = 0;
+
     while (*end++ != 0) {
         length++;
     }
+
     s32 i;
     s32 place = 1;
+
     for (i = 0; i < length; i++) {
         s32 back = length - i;
-        s32 ch = ((u8 *)(back + (s32)text))[-1];
+        s32 ch = ((u8 *) (back + (s32) text))[-1];
         s32 digit = 0;
+
         if (ch >= '0' && ch <= '9') {
             digit = ch - '0';
         }
+
         if (ch >= 'a' && ch <= 'f') {
             digit = ch - 'a' + 10;
         }
+
         if (ch >= 'A' && ch <= 'F') {
             digit = ch - 'A' + 10;
         }
+
         value += digit * place;
         place <<= 4;
     }
+
     return value;
 }
 
@@ -480,7 +500,6 @@ static int CreateFrameVisual(mgCFrame *input_frame, mgCMemory *input_memory, mgC
                              MDTOBJ_HEADER *input_object, MDT_HEADER *input_mdt, int input_type, mgCTextureManager *input_texture_manager,
                              u_int *weight, int index, mgCFrame **frame_table, float (*matrix_table)[4][4]);
 
-#ifdef NONMATCHING
 static int CreateFrameVisual(mgCFrame *input_frame, mgCMemory *input_memory, mgCMemory *input_work_memory, mgCFrame *input_parent,
                              MDTOBJ_HEADER *input_object, MDT_HEADER *input_mdt, int input_type, mgCTextureManager *input_texture_manager,
                              u_int *weight, int index, mgCFrame **frame_table, float (*matrix_table)[4][4]) {
@@ -517,7 +536,7 @@ static int CreateFrameVisual(mgCFrame *input_frame, mgCMemory *input_memory, mgC
 
     name = (char *) memory->Alloc((len + 1) / 16 + 1);
 
-    if (MG_ADDRESS_CHECK(name, at_550) == NULL) {
+    if (MG_ADDRESS_CHECK(name, "mgLoadMDSFile") == NULL) {
         return 0;
     }
 
@@ -535,7 +554,7 @@ static int CreateFrameVisual(mgCFrame *input_frame, mgCMemory *input_memory, mgC
     }
 
     if (current != 0 || object->mdt_ofs != 0 || parent == NULL) {
-        attr = new (memory->Alloc(0xB)) mgCFrameAttr;
+        attr = new (memory->Alloc(align16_blocks(sizeof(mgCFrameAttr)) + 2)) mgCFrameAttr;
 
         if (attr != NULL) {
             attr->Initialize();
@@ -550,7 +569,7 @@ static int CreateFrameVisual(mgCFrame *input_frame, mgCMemory *input_memory, mgC
 
     frame->bound = (mgCFrame::BoundInfo *) memory->Alloc(sizeof(mgCFrame::BoundInfo) / 16);
     const int vertex_num = mdt->vertex_num;
-    float (*vertices)[4] = (float (*)[4])((char *) mdt + mdt->vertex_ofs);
+    float(*vertices)[4] = (float(*)[4])((char *) mdt + mdt->vertex_ofs);
     mgCreateBBoxSphere(max, min, sphere, vertices, vertex_num);
 
     if (type == MG_VISUAL_CREATE_MDT) {
@@ -570,19 +589,19 @@ static int CreateFrameVisual(mgCFrame *input_frame, mgCMemory *input_memory, mgC
 
     switch (type) {
         case MG_VISUAL_CREATE_MDT:
-            visual = new (memory->Alloc(0x7)) mgCVisualMDT;
+            visual = new (memory->Alloc(align16_blocks(sizeof(mgCVisualMDT)) + 2)) mgCVisualMDT;
             break;
         case MG_VISUAL_CREATE_FIX_MDT:
-            visual = new (memory->Alloc(0x7)) mgCVisualFixMDT;
+            visual = new (memory->Alloc(align16_blocks(sizeof(mgCVisualFixMDT)) + 2)) mgCVisualFixMDT;
             break;
         case MG_VISUAL_CREATE_MOTION_MDT:
-            visual = new (memory->Alloc(0x13)) mgCVisualMotionMDT;
+            visual = new (memory->Alloc(align16_blocks(sizeof(mgCVisualMotionMDT)) + 2)) mgCVisualMotionMDT;
             break;
         case MG_VISUAL_CREATE_SHADOW_MDT:
-            visual = new (memory->Alloc(0x7)) mgCShadowMDT;
+            visual = new (memory->Alloc(align16_blocks(sizeof(mgCShadowMDT)) + 2)) mgCShadowMDT;
             break;
         case MG_VISUAL_CREATE_SHADOW_FIX_MDT:
-            visual = new (memory->Alloc(0x7)) mgCShadowFixMDT;
+            visual = new (memory->Alloc(align16_blocks(sizeof(mgCShadowFixMDT)) + 2)) mgCShadowFixMDT;
             break;
     }
 
@@ -611,9 +630,6 @@ static int CreateFrameVisual(mgCFrame *input_frame, mgCMemory *input_memory, mgC
     frame->SetVisual(visual);
     return 1;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_dataset", CreateFrameVisual__FP8mgCFrameP9mgCMemoryP9mgCMemoryP8mgCFrameP13MDTOBJ_HEADERP10MDT_HEADERiP17mgCTextureManagerPUiiPP8mgCFramePA4_A4_f);
-#endif
 
 #pragma opt_loop_invariants reset
 #pragma schedule reset
@@ -669,7 +685,7 @@ mgCFrame *mgLoadMDSFile(mgLoadData *load) {
     mgCFrame      *frames;
     MDTOBJ_HEADER *current;
     mgCFrame      *frame;
-    float (*matrix_table)[4][4];
+    float(*matrix_table)[4][4];
     mgCFrame          **frame_table;
     mgCMemory          *memory;
     mgCMemory          *work_memory;
@@ -808,9 +824,9 @@ void mgCreateBBoxSphere(float *max, float *min, float *sphere, float (*vertex)[4
         return;
     }
 
-    s32        i;
-    float     *point = vertex[0];
-    float      center[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+    s32    i;
+    float *point = vertex[0];
+    float  center[4] = {0.0f, 0.0f, 0.0f, 0.0f};
     sceVu0CopyVector(max, vertex[0]);
     sceVu0CopyVector(min, vertex[0]);
 
@@ -850,7 +866,6 @@ void mgCreateBBoxSphere(float *max, float *min, float *sphere, float (*vertex)[4
 #pragma schedule off
 #pragma global_optimizer off
 
-#ifdef NONMATCHING
 void CopyFrame(mgCFrame *dst, mgCFrame *src, mgCMemory *memory, int copy_visual, mgCFrame **frame_table) {
     *dst = *src;
 
@@ -885,7 +900,7 @@ void CopyFrame(mgCFrame *dst, mgCFrame *src, mgCMemory *memory, int copy_visual,
     if (source_attr != 0) {
         mgCFrameAttr *attr;
 
-        attr = new (memory->Alloc(0xB)) mgCFrameAttr;
+        attr = new (memory->Alloc(align16_blocks(sizeof(mgCFrameAttr)) + 2)) mgCFrameAttr;
 
         *attr = *source_attr;
         dst->attr = attr;
@@ -894,7 +909,7 @@ void CopyFrame(mgCFrame *dst, mgCFrame *src, mgCMemory *memory, int copy_visual,
     mgCFrame::BoundInfo *source_bound = (mgCFrame::BoundInfo *) src->bound;
 
     if (source_bound != 0) {
-        mgCFrame::BoundInfo *bound = (mgCFrame::BoundInfo *) operator new(0xB0, memory->Alloc(0xD));
+        mgCFrame::BoundInfo *bound = (mgCFrame::BoundInfo *) operator new(sizeof(mgCFrame::BoundInfo), memory->Alloc(0xD));
         *(mgCFrame::BoundCorners *) bound->corner = *(mgCFrame::BoundCorners *) source_bound->corner;
         *(mgVec4 *) bound->max = *(mgVec4 *) source_bound->max;
         *(mgVec4 *) bound->min = *(mgVec4 *) source_bound->min;
@@ -902,9 +917,6 @@ void CopyFrame(mgCFrame *dst, mgCFrame *src, mgCMemory *memory, int copy_visual,
         dst->bound = bound;
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_dataset", CopyFrame__FP8mgCFrameP8mgCFrameP9mgCMemoryiPP8mgCFrame);
-#endif
 
 #pragma global_optimizer reset
 #pragma schedule reset
@@ -931,13 +943,12 @@ mgCVisual *mgCVisual::Copy(mgCMemory *memory) {
  *
  */
 #pragma schedule off
-#pragma global_optimizer off
+#pragma optimization_level 2
 
-#ifdef NONMATCHING
 mgCFrame *CopyFrameSub(mgCFrame *src, mgCMemory *memory, int copy_visual, mgCFrame **frame_table) {
     mgCFrame *frame;
 
-    frame = new (memory->Alloc(0x13)) mgCFrame;
+    frame = new (memory->Alloc(align16_blocks(sizeof(mgCFrame)) + 2)) mgCFrame;
 
     if (frame == 0) {
         return 0;
@@ -945,7 +956,7 @@ mgCFrame *CopyFrameSub(mgCFrame *src, mgCMemory *memory, int copy_visual, mgCFra
 
     CopyFrame(frame, src, memory, copy_visual, frame_table);
 
-    for (mgCFrame *child = src->child; child != 0; child = child->brother) {
+    for (mgCFrame *child = src->GetChild(); child != 0; child = child->GetBrother()) {
         mgCFrame *copy = CopyFrameSub(child, memory, copy_visual, frame_table);
 
         if (copy != 0) {
@@ -955,11 +966,8 @@ mgCFrame *CopyFrameSub(mgCFrame *src, mgCMemory *memory, int copy_visual, mgCFra
 
     return frame;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_dataset", CopyFrameSub__FP8mgCFrameP9mgCMemoryiPP8mgCFrame);
-#endif
 
-#pragma global_optimizer reset
+#pragma optimization_level reset
 #pragma schedule reset
 
 #pragma schedule off
@@ -1071,7 +1079,6 @@ MDT_HEADER *mgCMDTBuilder::End() {
 
 #pragma schedule off
 
-#ifdef NONMATCHING
 void mgCMDTBuilder::End(mgCFrame *frame, mgCVisualMDT *visual, mgLoadData *load) {
     mgCTextureManager *textures;
     MDT_HEADER        *block;
@@ -1091,23 +1098,20 @@ void mgCMDTBuilder::End(mgCFrame *frame, mgCVisualMDT *visual, mgLoadData *load)
     }
 
     MDT_HEADER *mdt = block;
-    float (*points)[4] = (float (*)[4])((u8 *) block + mdt->vertex_ofs);
+    float(*points)[4] = (float(*)[4])((u8 *) block + mdt->vertex_ofs);
     mgCreateBBoxSphere(box_max, box_min, sphere, points, (u_int) mdt->vertex_num);
     visual->Initialize();
     visual->DataAssignMDT(block, load->memory, textures);
-    frame->bound = (mgCFrame::BoundInfo *) operator new(0xB0, load->memory->Alloc(0xD));
+    frame->bound = (mgCFrame::BoundInfo *) operator new(sizeof(mgCFrame::BoundInfo), load->memory->Alloc(0xD));
     frame->SetVisual(visual);
     frame->SetBBox(box_max, box_min);
     frame->SetBSphere(sphere, sphere[3]);
     mgCFrameAttr *attr;
 
-    attr = new (load->memory->Alloc(0xB)) mgCFrameAttr;
+    attr = new (load->memory->Alloc(align16_blocks(sizeof(mgCFrameAttr)) + 2)) mgCFrameAttr;
 
     frame->attr = attr;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_dataset", End__13mgCMDTBuilderFP8mgCFrameP12mgCVisualMDTP10mgLoadData);
-#endif
 
 #pragma schedule reset
 
@@ -1285,6 +1289,7 @@ void mgCMDTBuilder::EndPrim() {
 
 #pragma optimization_level reset
 #pragma schedule off
+
 // Defined inline in mg_visual.hpp.
 
 int mgCVisualMDT::Iam() {
@@ -1380,9 +1385,6 @@ void mgCVisual::Draw(float (*matrix)[4], mgCDrawManager *manager) {
 }
 
 #pragma optimization_level reset
-
-// Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_dataset", at_550__DATA);
 
 // Virtual tables (.vtables)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_dataset", __vt__15mgCShadowFixMDT__DATA);

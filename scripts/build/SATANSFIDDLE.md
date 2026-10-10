@@ -5,14 +5,17 @@ plain `wibo`; library and data-only assembly use GNU `as`. The Docker image
 builds a pinned Satan's Fiddle revision and includes LLDB and an unstripped
 `wibo`, so local container builds and CI use the same compiler wrapper. For
 builds outside the container, build Satan's Fiddle with its documented Linux,
-Rust, LLDB and unstripped `wibo` prerequisites. Reuse the existing checkout in
-cloud tasks; no worktree is needed for setup.
+Rust, LLDB and unstripped `wibo` prerequisites.
 
 Objdiff's source-only base objects use the same adapter, profile, options and
 logical translation-unit name as the linked objects. They omit mwccgap so
 assembly fallbacks remain absent from the native-code metric. The generated
 objdiff configuration reads actual base-object symbols and maps sanitized retail
 template identities to MWCC's original template spelling.
+
+Scalar placement construction can request MWCC's ordinary statement conversion
+through an explicit frontend policy. Its mechanism, calibrated rows and limits
+are documented in [the design note](../../ps2/re/docs/satansfiddle/placement-new.md).
 
 ```sh
 export SATANSFIDDLE=/absolute/path/to/satansfiddle
@@ -132,8 +135,7 @@ Both the selected argument and target must still participate in this ordinary
 walk: their masked argument category must be 1 or 2, their evaluated marker must
 be zero, and their expression's evaluate-first flag must be false. Missing or
 already evaluated siblings, other categories, self-dependencies, cycles, and incomplete restoration fail the
-compilation. The selector and lowering evidence is documented in
-[`selector-proposal-20261008.md`](../../ps2/re/docs/satansfiddle/selector-proposal-20261008.md).
+compilation.
 
 Unscoped rows apply during annotation and argument consumption. Callee-scoped
 rows apply at argument consumption, where a matching scoped row takes precedence
@@ -149,8 +151,11 @@ direct constant nodes that bypassed annotation. An explicit
 stable selector can adjust verified assignment wrappers and compiler-registered
 literal-pool loads; arbitrary variable expressions retain normal annotation.
 
-The adapter selects only the current unit's override rows; Satan's Fiddle rejects
-stale selectors within that compilation. Callee-scoped rows can additionally set
+The adapter validates every helper, float and placement row's logical source
+identity against the C/C++ files under `ps2/src` before selecting the current
+unit's rows. An unknown or misspelled translation unit rejects the whole profile,
+even when that row belongs to another unit. Satan's Fiddle then rejects stale
+selectors within the selected compilation. Callee-scoped rows can additionally set
 `expected_matches` to a positive count of distinct selected call arguments per
 compiler invocation. Repeated callbacks for one call argument count once; two
 formal slots or two calls count separately. The assertion never changes identity,
@@ -198,7 +203,8 @@ A mounted genuine 3.0 compiler exercises selected and unselected calls in the sa
 function, all six placement schedules, two simultaneous nested saved lists,
 restoration write failure without object publication, ambiguous and shadowed
 policies in both row orders, excess cardinality, unsupported switch bounds,
-early-evaluated targets, repeated builds, temporary filenames and stale selectors:
+early-evaluated targets, repeated builds, temporary filenames, stale selectors,
+and implicit class-6 constructors whose raw names lack exact mangled witnesses:
 
 ```sh
 export SATANSFIDDLE_TEST_COMPILER_300="$PWD/tools/compilers/mw/3.0-011126/mwccps2.exe"
@@ -213,3 +219,99 @@ tests run in the Docker wrapper stage. Algorithm tests cover oversized/unreprese
 case ranges, missing boundaries, nonterminal defaults, precedence and walk categories.
 The stage-local native link flags also reach dependency crates so Cargo can link
 all test targets; no wrapper-byte equivalence between recipes is asserted.
+
+## Scalar placement construction conversion
+
+The third patch, `patches/satansfiddle-placement-new.patch`, adds an optional
+`placement_new.statement_conversions` table. An empty table installs no new
+hooks. The capability supports only the hash-verified MWCC 3.0-011126 image.
+The adapter filters rows by the logical source name for both mwccgap passes
+and source-only objdiff compilation.
+
+For example, the function-point allocation can request conversion after its
+constructor has been expression-inlined:
+
+```json
+{
+  "translation_unit": "funcpoint.cpp",
+  "function": "Add__14CFuncPointMngrFiP9mgCMemory",
+  "allocator": "__nw__FUiP1",
+  "constructor": "__ct__19CList<10CFuncPoint>Fv",
+  "conversion": "after_constructor_inline",
+  "expected_matches": 1
+}
+```
+
+All fields are mandatory. `constructor` is the exact mangled direct constructor
+of the allocated scalar type. `allocator` is the exact scalar placement allocator
+signature. `conversion` is `before_constructor_inline` or
+`after_constructor_inline`; those timings are observably different. Before
+timing supplies class 3 only for the current root constructor inline request.
+After timing preserves ordinary expression inlining and requests the normal
+statement-conversion worklist. Stored constructor metadata stays unchanged.
+
+Eligibility requires a direct scalar construction whose constructor has the
+measured expression-inline class 6. Class 0 and class 3 constructions are outside
+this capability and are ignored uniformly, whether their link names are already
+cached or still raw. Every eligible construction with the row's semantic identity
+receives the same policy. `expected_matches` asserts a positive count of distinct
+eligible compiler constructions;
+it never selects the first, last, or numbered occurrence. Duplicate identities
+and unknown fields reject the profile. Repeated observations of a construction
+do not increase its match count; actual lowering must execute exactly once.
+
+The frontend can expose a raw name before its exact link name exists. Raw stems
+are provisional filters only. A changed construction must obtain exact caller,
+allocator and constructor witnesses from populated compiler link-name fields
+or an observational hook on the compiler's normal mangler return. A wrong
+provisional overload, multiple possible rows, absent witness, unsupported
+target shape, or mismatched eligible count rejects the compilation. A row with
+no eligible class-6 constructions fails its count assertion.
+The observed root call node, callee object and actual inline-info read must all
+agree; a base/member or ordinary same-type constructor does not qualify.
+
+The request converts the enclosing expression and can change its evaluation
+and scheduling. Initial support requires exactly one scalar construction in
+that region. A bounded AST walk after expression inlining finds hidden sibling
+or nested constructions, and a separate observer validates actual construction
+lowering. Shared construction-bearing subtrees reject. Retained inline callee
+bodies are audited for deferred constructions; before timing also audits the
+root constructor body. Unsupported indirect calls, body forms or cleanup
+metadata reject conservatively.
+
+Internal compiler pointers are scoped by measured arena lifetimes. An arena
+reset or teardown requires completed conversion and saved exact witnesses.
+Completion after process exit reads host records only. Hook, identity, scope,
+count and compiler failures preserve an existing output and remove temporary
+objects through the wrapper's transactional publisher.
+
+Genuine-compiler placement tests cover both timings, selected and unselected
+functions, repeated compilation, distinct same-identity constructions,
+cardinality failures, temporary filenames, caller/allocator/constructor
+identity errors, hidden/nested constructions, indirect inline factories,
+ordinary same-type constructor calls, class-3 exclusion and stale eligibility,
+and request-write failure. Run them with
+the compiler and production/fault executable variables shown above:
+
+```sh
+/usr/local/libexec/satansfiddle-tests/compiler_cli-* \
+  --ignored real_placement --nocapture --test-threads=1
+```
+
+An activated row requires natural C++ source, manual guard removal, resolved
+complete-object checking, unchanged unrelated artifacts and PAL verification.
+Zero masked instruction words alone do not establish a matching decompilation.
+Rows and guard removal belong in the same buildable change because an
+assembly-backed caller has zero eligible constructions and fails its assertion.
+
+## Continuous verification
+
+The [compiler workflow](../../.github/workflows/compiler.yml) rebuilds the
+pinned toolchain and runs the genuine-compiler fixtures on pull requests,
+master pushes and manual dispatches. It runs thirteen fixtures with the
+production and fault-enabled executables; the legacy two-compiler fixture
+is excluded because it additionally requires MWCC 2.3.3. The same workflow
+runs the object/data/provenance and profile-adapter unit tests. These checks
+require the tracked compiler but no retail executable or private assets.
+The trusted progress workflow separately performs game-image verification
+when private retail access is available.

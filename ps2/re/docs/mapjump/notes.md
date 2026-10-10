@@ -40,13 +40,14 @@ No vtable, no base. Constructor is out of line (emitted in mapjump, called from 
 | `OldRot` | 0x10 | `float[4]`, player rotation; vfunc +0x24 = GetRot. `ExitInterior` uses `OldRot[1] + PI` (faces back out). |
 | `OldCamPos` / `OldCamRef` | 0x10 each | `float[4]`, `mgCCamera::GetPos/GetRef` saved, `SetPos/SetRef` restored. |
 | `PrevInterior` / `NowInterior` | 0x40 each | `char[64]`, map names of previous and current interior. |
-| `OldBgmStatus` | 0x20 | `CScene::BGM_STATUS` (0x20 bytes), from `GetActiveBgmStatus`. |
+| `OldBgmStatus` | 0x1C | `CScene::BGM_STATUS` from `GetActiveBgmStatus`; its four-byte piece tail is alignment. |
 
 `.data` `at_997__4` (0x40 at 0x35B940) is the initialiser of a `char[0x40]` local in
 `SetInteriorDoorPos`: the default door function point name (Ghidra shows a string starting
 "exit" at 0x35B940), replaced by `PrevInterior` when that is set.
-Note `at_912__4` lives in `.bss`, so `LoadMapScript`'s copied buffer is a function-local static
-array, not a literal.
+`at_912__4` is the zero template for `LoadMapScript`'s stack-local
+`char script[0x80] = ""`. Four 32-byte copies initialize the buffer before
+path concatenation; it is not persistent mutable state.
 
 ## Functions
 All 23 functions are global (only `__sinit_mapjump_cpp` is local). Return types:
@@ -94,9 +95,7 @@ produced a 64-byte frame and a function 12 bytes shorter than retail.
 The verified profile row selects `mapjump.cpp`, `ExitInterior__FP6CScenePi`,
 `binary32`, IEEE bits `0x00000000`, and `evaluate_first: true`. It applies to
 both matching zero arguments without occurrence indices or a source change.
-The full mwccgap wrapper followed by section fixup and the canonical object
-checker restores all function bytes and resolved relocations. The unit returns
-to its original `0x1200` bytes and 372 relocations, with four existing data-layout
-issues: `MainMapInfo__2` and `SubMapInfo` symbol extents, and the following
-`SubMapInfo` and `at_912__4` BSS positions. This proves the function match,
-not resolution of those data issues. See [MWCC notes](../../../../docs/MWCC.md).
+The selected row preserves the retail function bytes and resolved relocations.
+The map state objects now have native declared extents and source names;
+`MainMapInfo` is file-local in this unit. See
+[MWCC notes](../../../../docs/MWCC.md).

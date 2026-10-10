@@ -16,42 +16,87 @@
 #include "menusys.hpp"
 #include "mg_drawprim.hpp"
 #include "mg_math.hpp"
+#include "mg_memory.hpp"
+#include "mg_tanime.hpp"
 #include "mg_texture.hpp"
 #include "mglib.hpp"
 #include "prespr.hpp"
 #include "savedata.hpp"
 #include "scenesnd.hpp"
 #include "scriptinterpreter.hpp"
+#include "snd_mngr.hpp"
 #include "sound.hpp"
 #include "sysmes.hpp"
 #include "userdata.hpp"
 
-extern MENU_CHAPTER_INFO *MenuChapterInfo;
-extern u32                MenuChapterMode;
-extern u32                MenuChapterSnd_ID;
-extern signed char        init_919;
-extern signed char        init_922;
-extern int                menu_chap_error_check_cnt;
-extern int                menu_snd_counter;
-extern u32                voiceflag_921;
-extern u32                wait_cnt_918;
-extern mgCTexture        *MenuChapterBG;
-extern mgCTexture        *MenuChapter_Logo;
+/**
+ *
+ * Chapter title fade and display mode.
+ *
+ */
+static u32 MenuChapterMode;
 
-#include "mg_memory.hpp"
-#include "mg_tanime.hpp"
-#include "snd_mngr.hpp"
+/**
+ *
+ * Chapter title texture blocks, display counter and logo opacity.
+ *
+ */
+static MENU_CHAPTER_INFO *MenuChapterInfo;
 
-static mgCMemory           MenuChapterStack;
-extern char               *chap_voice_851[8];
-extern const unsigned char at_902__3__DATA[];
-extern const unsigned char at_903__3__DATA[];
-extern const unsigned char at_904__5__DATA[];
-extern const unsigned char at_905__5__DATA[];
-extern const unsigned char at_906__5__DATA[];
+/**
+ *
+ * Background texture for the chapter title.
+ *
+ */
+static mgCTexture *MenuChapterBG;
+
+/**
+ *
+ * Logo texture for the chapter title.
+ *
+ */
+static mgCTexture *MenuChapter_Logo;
+
+/**
+ *
+ * Loaded chapter sound bank ID.
+ *
+ */
+static u32 MenuChapterSnd_ID;
+
+/**
+ *
+ * Frame counter for chapter narration and sound playback.
+ *
+ */
+static int menu_snd_counter;
+
+/**
+ *
+ * Elapsed frames used to time out chapter narration.
+ *
+ */
+static int menu_chap_error_check_cnt;
+
+/**
+ *
+ * Memory stack reserved for chapter images, sound and display state.
+ *
+ */
+static mgCMemory MenuChapterStack;
 
 // Code (.text)
 void MenuChapterInit(mgCMemory *stack, int *tex_block, int open_type, int chapter) {
+    static char *chap_voice[8] = {
+        "0060600.wav",
+        "2070310.wav",
+        "3060260.wav",
+        "4020120.wav",
+        "5000010.wav",
+        "6000360.wav",
+        "7000010.wav",
+        "8000140.wav",
+    };
     char image_path[96];
 
     union {
@@ -95,7 +140,7 @@ void MenuChapterInit(mgCMemory *stack, int *tex_block, int open_type, int chapte
     MenuChapterStack.Align64();
     menu_snd_counter = 0;
     unsigned int *sound_buffer = (unsigned int *) (MenuChapterStack.stack + MenuChapterStack.stack_used);
-    LoadFile2((char *) at_906__5__DATA, sound_buffer, (int *) &file_size, 0);
+    LoadFile2((char *) "snd2/sp/SP_007.snd", sound_buffer, (int *) &file_size, 0);
 
     if (file_size & 0xF) {
         blocks = (file_size >> 4) + 1;
@@ -106,7 +151,7 @@ void MenuChapterInit(mgCMemory *stack, int *tex_block, int open_type, int chapte
     MenuChapterStack.Alloc(blocks);
     sndInitPort(8);
     MenuChapterSnd_ID = sndLoadSound(8, sound_buffer, &sound_memory);
-    strcpy(voice_path, chap_voice_851[chapter]);
+    strcpy(voice_path, chap_voice[chapter]);
     CSnd.StreamOpenFast(1, voice_path);
 
     if (CSnd.StreamOpenState() != 0) {
@@ -133,15 +178,8 @@ int MenuChapterKey() {
 
     finished = 0;
 
-    if (init_919 == 0) {
-        wait_cnt_918 = 0;
-        init_919 = 1;
-    }
-
-    if (init_922 == 0) {
-        voiceflag_921 = 0;
-        init_922 = 1;
-    }
+    static u32 wait_cnt = 0;
+    static u32 voiceflag = 0;
 
     fade = &MenuMainScene->fade;
     fade_done = fade->FadeCheck();
@@ -154,7 +192,7 @@ int MenuChapterKey() {
                 if (menu_snd_counter == 2) {
                     CSnd.StreamSetVol(1, 0x7FFF, 0x7FFF);
                     CSnd.StreamPlay(1);
-                    wait_cnt_918 = 0;
+                    wait_cnt = 0;
                 }
 
                 if (CalcMenuAdd(&MenuChapterInfo->logo_alpha, 3.0f, 128.0f) != 0) {
@@ -162,7 +200,7 @@ int MenuChapterKey() {
                     MenuChapterInfo->show_cnt = 0;
                     menu_snd_counter = 0;
                     menu_chap_error_check_cnt = 0;
-                    voiceflag_921 = 0;
+                    voiceflag = 0;
                 }
             }
 
@@ -173,10 +211,10 @@ int MenuChapterKey() {
             voice_state = CSnd.StreamGetState(1);
 
             if (voice_state == 0x8000 || menu_chap_error_check_cnt > 0x5DC) {
-                voiceflag_921 = 1;
+                voiceflag = 1;
             }
 
-            if ((voiceflag_921 != 0) && (voice_state == 0)) {
+            if ((voiceflag != 0) && (voice_state == 0)) {
                 if (menu_snd_counter == 0) {
                     CSnd.StreamStop(1);
                     CSnd.StreamClose(1);
@@ -213,7 +251,6 @@ void MenuChapterDraw() {
     mgCDrawPrim prim;
     mgRect<int> screen;
     mgRect<int> source;
-    mgRect<int> title;
     prim.offset_x = 0;
     prim.offset_y = 0;
     SetSpriteEnv(&prim, 0);
@@ -231,10 +268,7 @@ void MenuChapterDraw() {
         prim.Texture(MenuChapter_Logo);
         prim.Color(128, 128, 128, fptosi(MenuChapterInfo->logo_alpha));
         mgRect<int> title(0, 0, 512, 64);
-        float       height = (float) mgScreenHeight;
-        float       half_height = height / 2.0f;
-        float       top = half_height - 32.0f;
-        PrimQuad(&prim, 0.0f, top - 12.0f, title);
+        PrimQuad(&prim, 0.0f, (float) mgScreenHeight / 2.0f - 32.0f - 12.0f, title);
         prim.Color(128, 128, 128, 128);
         mgRect<int> overlay(0, 64, 512, 64);
         PrimQuad(&prim, 0.0f, 0.0f, overlay);
@@ -242,36 +276,3 @@ void MenuChapterDraw() {
 
     prim.End();
 }
-
-// Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", chap_voice_851__DATA);
-
-// Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", at_852__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", at_853__4__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", at_854__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", at_855__4__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", at_856__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", at_857__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", at_858__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", at_859__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", at_902__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", at_903__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", at_904__5__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", at_905__5__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menucapt", at_906__5__DATA);
-
-// Small uninitialised data (.sbss)
-INCLUDE_BSS(MenuChapterMode, 0x4);
-INCLUDE_BSS(MenuChapterInfo, 0x4);
-INCLUDE_BSS(MenuChapterBG, 0x4);
-INCLUDE_BSS(MenuChapter_Logo, 0x4);
-INCLUDE_BSS(MenuChapterSnd_ID, 0x4);
-INCLUDE_BSS(menu_snd_counter, 0x4);
-INCLUDE_BSS(menu_chap_error_check_cnt, 0x4);
-INCLUDE_BSS(wait_cnt_918, 0x4);
-INCLUDE_BSS(init_919, 0x4);
-INCLUDE_BSS(voiceflag_921, 0x4);
-INCLUDE_BSS(init_922, 0x4);
-
-// Uninitialised data (.bss)

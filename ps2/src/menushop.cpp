@@ -32,26 +32,249 @@
 #include "sysmes.hpp"
 #include "userdata.hpp"
 
-mgCMemory MenuLocalStack;
+/**
+ *
+ * Storage for shop and quest memo resources.
+ *
+ */
+static mgCMemory MenuLocalStack;
 
+/**
+ *
+ * Currency used for the current shop.
+ *
+ */
+static short NowSellMode;
 
-extern short            NowSellMode;
-extern SHOP_PRICE_INFO *Spi_PriceList;
-extern char             at_1221__3[];
-extern char             at_1222__3[];
-extern char             at_1223__3[];
-extern char             at_1224__3[];
-extern char             at_1225__3[];
-extern char             at_1226__3[];
-extern char             at_1227__2[];
-extern char             at_1228__2[];
-extern DONY_SHOP_ITEM   dony_shoplist[];
-extern short            Now_Shop_ID;
-extern int             *Now_ShopDataReadPtr;
-extern short            Now_ShopListNum;
-extern SPI_TAG_PARAM    menu_shop_tag[];
-extern CShopMenu       *CShopMenuPt;
-extern CMenuQuestView  *MenuQuestView;
+/**
+ *
+ * Goods and prices for the current shop.
+ *
+ */
+static CShop *CShopPtr;
+
+/**
+ *
+ * Texture atlas for the shop boards and item marks.
+ *
+ */
+static mgCTexture *Tex_Shop;
+
+/**
+ *
+ * Item texture loaded with the shop resources.
+ *
+ */
+static mgCTexture *Tex_Mt0;
+
+/**
+ *
+ * Number of goods parsed from the selected shop row.
+ *
+ */
+static short Now_ShopListNum;
+
+/**
+ *
+ * Destination for item numbers parsed from the shop script.
+ *
+ */
+static int *Now_ShopDataReadPtr;
+
+/**
+ *
+ * Shop number selected while parsing the goods script.
+ *
+ */
+static short Now_Shop_ID;
+
+/**
+ *
+ * Destination for buying and selling prices parsed from the shop script.
+ *
+ */
+static SHOP_PRICE_INFO *Spi_PriceList;
+
+/**
+ *
+ * Active shop menu.
+ *
+ */
+static CShopMenu *CShopMenuPt;
+
+/**
+ *
+ * Request definitions displayed in the quest memo.
+ *
+ */
+static CQuestManager *QuestMan;
+
+/**
+ *
+ * Saved request acceptance and completion flags.
+ *
+ */
+static CQuestData *QuestDataPtr;
+
+/**
+ *
+ * Texture atlas for the quest and scoop memo.
+ *
+ */
+static mgCTexture *Tex_QuestMemo;
+
+/**
+ *
+ * Message shown beneath the quest memo.
+ *
+ */
+static CDC2Mes *QuestMenuMes;
+
+/**
+ *
+ * Request selected for the open memo comment.
+ *
+ */
+static QUEST_INFO *ActiveQuestInfo;
+
+/**
+ *
+ * Scrolling offset of the quest memo backing pattern.
+ *
+ */
+static float QuestTilePatternXY;
+
+/**
+ *
+ * Screen position of the quest memo selection cursor.
+ *
+ */
+static float QuestCursorPos[2];
+
+/**
+ *
+ * Screen position of the first quest memo list row.
+ *
+ */
+static float QuestListTopY;
+
+/**
+ *
+ * Horizontal position of the open memo comment.
+ *
+ */
+static float QuestCommentWinX;
+
+/**
+ *
+ * Vertical position of the quest memo scrollbar.
+ *
+ */
+static float QuestScrlBarY;
+
+/**
+ *
+ * Height of the quest memo scrollbar.
+ *
+ */
+static float QuestScrlBarH;
+
+/**
+ *
+ * Whether the quest memo comment window is open.
+ *
+ */
+static u8 QuestViewCommentFlag;
+
+/**
+ *
+ * Number of lines in the request reaction message.
+ *
+ */
+static s16 QuestReactionCommentGyouNum;
+
+/**
+ *
+ * Saved scoop discovery and photograph flags.
+ *
+ */
+static CScoopDataManager *ScoopMan;
+
+/**
+ *
+ * Scoop selected for the open memo comment.
+ *
+ */
+static SCOOP_DATA *ScmFlagCtrl;
+
+/**
+ *
+ * First request or scoop displayed by the debug overlay.
+ *
+ */
+static int menu_debug_questselect;
+
+/**
+ *
+ * Request or photo-scoop mode of the quest memo.
+ *
+ */
+static s8 Menu_Memo_ViewMode;
+
+/**
+ *
+ * Active quest memo viewer.
+ *
+ */
+static CMenuQuestView *MenuQuestView;
+
+/**
+ *
+ * Request title, description and reaction message windows.
+ *
+ */
+static CDC2Mes *QuestCommentMes[3];
+
+/**
+ *
+ * Donny's goods and their required recruitment levels.
+ *
+ */
+static DONY_SHOP_ITEM dony_shoplist[8] = {
+    {0xBD, 1},
+    {0x73, 2},
+    {0xCD, 3},
+    {0x7A, 4},
+    {0x105, 5},
+    {0x1AC, 6},
+    {0x1AB, 7},
+    {-1, 1}
+};
+
+/**
+ *
+ * Parses goods for the selected shop.
+ *
+ */
+static int _SHOP_ANALYZE(SPI_STACK *stack, int argc);
+
+/**
+ *
+ * Parses an item's buying and selling prices.
+ *
+ */
+static int _PRICE(SPI_STACK *stack, int argc);
+
+/**
+ *
+ * Tags accepted by the shop goods and price script.
+ *
+ */
+static SPI_TAG_PARAM menu_shop_tag[3] = {
+    {"SHOP", _SHOP_ANALYZE},
+    {"PRICE", _PRICE},
+    {NULL, NULL}
+};
 
 // Code (.text)
 int GetDonyShopLineUp(int *item_list, int *status) {
@@ -276,7 +499,7 @@ int CShop::AddMoney(int amount) {
     return 0;
 }
 
-int _SHOP_ANALYZE(SPI_STACK *stack, int argc) {
+static int _SHOP_ANALYZE(SPI_STACK *stack, int argc) {
     int remaining;
     int index;
     int shop_id = spiGetStackInt(stack++);
@@ -326,7 +549,7 @@ int _SHOP_ANALYZE(SPI_STACK *stack, int argc) {
     return 1;
 }
 
-int _PRICE(SPI_STACK *stack, int argc) {
+static int _PRICE(SPI_STACK *stack, int argc) {
     int item_id = spiGetStackInt(stack++);
     Spi_PriceList[item_id].buy = spiGetStackInt(stack++);
     Spi_PriceList[item_id].sell = spiGetStackInt(stack++);
@@ -348,20 +571,20 @@ void CShop::AnalyzeShopList(char *script, int length) {
 }
 
 void CShopMenu::AttachForm() {
-    money_brd = (CMenuPosDataForm *) MenuPosData->GetFormInfo(at_1221__3);
-    trade_brd = (CMenuPosDataForm *) MenuPosData->GetFormInfo(at_1222__3);
-    shop_name_brd = (CMenuPosDataForm *) MenuPosData->GetFormInfo(at_1223__3);
-    item_brd = (CMenuPosDataForm *) MenuPosData->GetFormInfo(at_1224__3);
-    item_list = (CMenuPosDataForm *) MenuPosData->GetFormInfo(at_1225__3);
-    exp_brd = (CMenuPosDataForm *) MenuPosData->GetFormInfo(at_1226__3);
-    medal_brd = (CMenuPosDataForm *) MenuPosData->GetFormInfo(at_1227__2);
+    money_brd = (CMenuPosDataForm *) MenuPosData->GetFormInfo("moneybrd");
+    trade_brd = (CMenuPosDataForm *) MenuPosData->GetFormInfo("\x94\x84\x94\x83\x83\x7B\x81\x5B\x83\x68");
+    shop_name_brd = (CMenuPosDataForm *) MenuPosData->GetFormInfo("\x93\x58\x96\xBC\x83\x7B\x81\x5B\x83\x68");
+    item_brd = (CMenuPosDataForm *) MenuPosData->GetFormInfo("\x95\x69\x95\xA8\x83\x7B\x81\x5B\x83\x68");
+    item_list = (CMenuPosDataForm *) MenuPosData->GetFormInfo("\x95\x69\x95\xA8\x83\x8A\x83\x58\x83\x67");
+    exp_brd = (CMenuPosDataForm *) MenuPosData->GetFormInfo("EXPBRD");
+    medal_brd = (CMenuPosDataForm *) MenuPosData->GetFormInfo("MEDALBRD");
 
     if (item_list != NULL) {
         item_list->GetPutPosXY(NULL, list_x, list_y);
         list_y += 48.0f;
     }
 
-    GiftBoxViewForm = (CMenuPosDataForm *) MenuPosData->GetFormInfo(at_1228__2);
+    GiftBoxViewForm = MenuPosData->GetFormInfo("giftview");
 }
 
 int CShopMenu::IsCancelNoneLoadItem() {
@@ -393,16 +616,11 @@ int CShopMenu::IsCancelNoneLoadItem() {
     return 1;
 }
 
-extern char   at_1252[];
-extern char   at_1253[];
-extern char   at_1254[];
-extern CShop *CShopPtr;
-
 void CShopMenu::UpdataScrlBar() {
     if (item_brd != NULL) {
-        scrl_bar_top = item_brd->GetPartInfo(at_1252);
-        scrl_bar_body = item_brd->GetPartInfo(at_1253);
-        scrl_bar_bottom = item_brd->GetPartInfo(at_1254);
+        scrl_bar_top = item_brd->GetPartInfo("b0");
+        scrl_bar_body = item_brd->GetPartInfo("b1");
+        scrl_bar_bottom = item_brd->GetPartInfo("b2");
         float line_count = (float) CShopPtr->item_num;
 
         if (line_count < 6.0f) {
@@ -422,23 +640,23 @@ void CShopMenu::UpdataScrlBar() {
     }
 }
 
-extern char        at_1306__3[];
-extern char        at_1298__2[];
-extern char        at_1299__4[];
-extern char        at_1300__4[];
-extern char        at_1301__3[];
-extern char        at_1302__3[];
-extern char        at_1303__3[];
-extern char        at_1304__4[];
-extern char        at_1305__3[];
-extern char        at_1307__4[];
-extern char        at_1308__4[];
-extern char       *imglist_1267[3];
-extern char       *extbl_1278[4];
-extern mgCTexture *Tex_Shop;
-extern mgCTexture *Tex_Mt0;
-
 void CShopMenu::InitEnd() {
+    // Opening shop script selected by currency.
+    static char *extbl[4] = {
+        "\x92\xCA\x8F\xED",
+        "\x83\x58\x83\x5E\x81\x5B\x83\x75\x83\x8B",
+        "\x83\x6A\x81\x5B\x83\x68",
+        "\x83\x68\x83\x6A\x81\x5B"
+    };
+
+    // Image packs loaded for shop items and their special icons.
+    static char *imglist[4] = {
+        "allitem.img",
+        "spectre.img",
+        "img.img",
+        NULL
+    };
+
     mgCTextureManager *textures = &mgTexManager;
     int                size;
     int                shop_name_no;
@@ -453,10 +671,10 @@ void CShopMenu::InitEnd() {
             chapter = 1;
         }
 
-        sprintf(path, at_1298__2, chapter);
+        sprintf(path, "menu/shoplst%d.cfg", chapter);
 
         if (LanguageCode > 0) {
-            sprintf(path, at_1299__4, chapter);
+            sprintf(path, "menu/shopusa%d.cfg", chapter);
         }
 
         MenuLocalStack.Align64();
@@ -467,14 +685,14 @@ void CShopMenu::InitEnd() {
         }
 
         for (int image = 0; image < 3; image++) {
-            textures->EnterIMGFile((u_char *) GetPackFile(shop_pack, imglist_1267[image], &size), texture_block, NULL, NULL);
+            textures->EnterIMGFile((u_char *) GetPackFile(shop_pack, imglist[image], &size), texture_block, NULL, NULL);
         }
 
-        Tex_Shop = textures->GetTexture(at_1300__4, -1);
-        Tex_Mt0 = textures->GetTexture(at_1301__3, -1);
-        MenuDataAnalyze((char *) GetPackFile(shop_pack, at_1302__3, &size), size, &MenuLocalStack);
-        script = (char *) GetPackFile(shop_pack, at_1303__3, &script_size);
-        MenuCommandAnalyzeInfo.system_mes_buff[2] = (short *) GetPackFile(shop_pack, at_1304__4, &size);
+        Tex_Shop = textures->GetTexture("shop", -1);
+        Tex_Mt0 = textures->GetTexture("mt0", -1);
+        MenuDataAnalyze((char *) GetPackFile(shop_pack, "shop.cfg", &size), size, &MenuLocalStack);
+        script = (char *) GetPackFile(shop_pack, "shop_com.cfg", &script_size);
+        MenuCommandAnalyzeInfo.system_mes_buff[2] = (short *) GetPackFile(shop_pack, "shopname.mes", &size);
     }
 
     mgCMemory sound_memory;
@@ -483,7 +701,7 @@ void CShopMenu::InitEnd() {
     MenuLocalStack.Alloc(0x300);
     u_int *sound_buffer = (u_int *) MenuLocalStack.stGetTop();
 
-    if (LoadFile2(at_1305__3, sound_buffer, NULL, 0) != 0) {
+    if (LoadFile2("snd2/sp/SP_042.snd", sound_buffer, NULL, 0) != 0) {
         sndInitPort(8);
         se_handle = sndLoadSound(8, sound_buffer, &sound_memory);
     }
@@ -503,40 +721,27 @@ void CShopMenu::InitEnd() {
     MenuMainScene->LoadBGM(0x32, MenuLocalStack.stGetTop());
     MenuMainScene->PlayBGM(0, -1, 1.0f);
     cursor_reset = 1;
-    MenuPosData->FormReLink(at_1306__3, at_1307__4);
+    MenuPosData->FormReLink("msg0", "dmy_msg0");
     MenuCommonInfo->InitHaveData();
     MenuCommonInfo->SetHaveItemInfo(0, 0);
-    ExeScript(at_1308__4);
-    ExeScript(extbl_1278[NowSellMode]);
+    ExeScript("INIT");
+    ExeScript(extbl[NowSellMode]);
     CDC2Mes *message = MenuDCMsg[1];
     shop_name_no = CShopPtr->shop_id;
     message->SetMsgItemNo(&shop_name_no, 1);
     shop_name_ofs_x = message->GetMesWidth_system(shop_name_no) >> 1;
     shop_name_ofs_y = 2;
 }
-extern s16 shop_mode_prev_1326;
-extern s8 init_1327;
-extern char *exe_tbl_1509[];
-extern char *extbl_1573[];
-extern char *extbl_1589[];
-extern char at_1650[];
-extern char at_1651[];
-extern char at_1652[];
-extern char at_1653[];
-extern char at_1654__2[];
-extern char at_1655__3[];
-extern char at_1656__3[];
-extern char at_1657__2[];
-extern char at_1658[];
-extern char at_1659[];
-extern char at_1660[];
-extern char at_1661__2[];
-extern char at_1662[];
-extern char at_1663[];
-extern char at_1664__2[];
-extern char at_1665[];
-extern char at_1666[];
+
 int CShopMenu::KeyStep() {
+    // Purchase setup script selected by currency.
+    static char *exe_tbl[4] = {
+        "\x82\xA9\x82\xA4\x90\xDD\x92\xE8",
+        "\x82\xA9\x82\xA4\x90\xDD\x92\xE8\x52\x4F\x42\x4F",
+        "\x82\xA9\x82\xA4\x90\xDD\x92\xE8\x83\x81\x83\x5F\x83\x8B",
+        "\x82\xE0\x82\xE7\x82\xA4\x90\xDD\x92\xE8"
+    };
+
     int ret = 0;
     MenuCommonInfo->CheckSelectKey();
     int lr;
@@ -548,7 +753,7 @@ int CShopMenu::KeyStep() {
     switch (mode) {
     case 1:
         if (fade_end) {
-            ExeScript(at_1650);
+            ExeScript("INIT_END");
             mode = 0;
         }
         break;
@@ -570,10 +775,8 @@ int CShopMenu::KeyStep() {
             }
             return 0;
         }
-        if (init_1327 == 0) {
-            shop_mode_prev_1326 = 0;
-            init_1327 = 1;
-        }
+        // Shop list mode restored after a quantity selection or error message.
+        static s16 shop_mode_prev = 0;
         int command = 0;
         MENU_SWAPITEM_INFO swap;
         swap.Set(-1, 0, -1, 0);
@@ -622,7 +825,7 @@ int CShopMenu::KeyStep() {
                 case 1:
                 case 4:
                     command = 0x3E8;
-                    shop_mode_prev_1326 = key_arg_no;
+                    shop_mode_prev = key_arg_no;
                     break;
                 case 2:
                     command = 0x32;
@@ -657,7 +860,7 @@ int CShopMenu::KeyStep() {
                         break;
                     }
                     command = 0x3F2;
-                    shop_mode_prev_1326 = key_arg_no;
+                    shop_mode_prev = key_arg_no;
                     break;
                 case 4:
                     command = 0x14;
@@ -737,12 +940,12 @@ int CShopMenu::KeyStep() {
                 CShopPtr->GetPrice(SearchNowPosItemExist(), NULL, &sell_price);
                 total = sell_price * num;
             }
-            trade_brd->SetNumber(at_1651, total);
-            trade_brd->SetPartRGBA(at_1651, 0x80, 0x80, 0x80, 0x80);
-            trade_brd->SetPartRGBA(at_1652, 0x80, 0x80, 0x80, 0x80);
+            trade_brd->SetNumber("\x8D\x87\x8C\x76", total);
+            trade_brd->SetPartRGBA("\x8D\x87\x8C\x76", 0x80, 0x80, 0x80, 0x80);
+            trade_brd->SetPartRGBA("\x83\x4D\x83\x8B\x83\x5F\x82\x51", 0x80, 0x80, 0x80, 0x80);
             if (key_arg_no == 2 && total > CShopPtr->CheckMoney()) {
-                trade_brd->SetPartRGBA(at_1651, 0x80, 0x14, 0x14, 0x80);
-                trade_brd->SetPartRGBA(at_1652, 0x80, 0x14, 0x14, 0x80);
+                trade_brd->SetPartRGBA("\x8D\x87\x8C\x76", 0x80, 0x14, 0x14, 0x80);
+                trade_brd->SetPartRGBA("\x83\x4D\x83\x8B\x83\x5F\x82\x51", 0x80, 0x14, 0x14, 0x80);
             }
             switch (push) {
             case 1:
@@ -777,7 +980,7 @@ int CShopMenu::KeyStep() {
                 }
             }
             if (answer == 2) {
-                ExeScript(at_1653);
+                ExeScript("\x82\xE2\x82\xC1\x82\xCF\x82\xE2\x82\xDF");
                 if (key_arg_no == 4) {
                     key_arg_no = 2;
                 }
@@ -803,7 +1006,7 @@ int CShopMenu::KeyStep() {
             item_name = item->GetName(1);
         }
         if (trade_brd != NULL) {
-            MENUFORMPARTS_TYPE *icon = trade_brd->GetPartInfo(at_1654__2);
+            MENUFORMPARTS_TYPE *icon = trade_brd->GetPartInfo("item");
             if (item != NULL && item_no != 0x1A6 && item_no != 0x1A8) {
                 if (item_no == 0x1AA) {
                     MenuFormPartsPresetItem(icon, 1, item_no, item->data.item.num);
@@ -888,16 +1091,16 @@ int CShopMenu::KeyStep() {
             arrow_flash[1] = 0;
             arrow_flash[0] = 0;
             CShopPtr->GetPrice(SearchNowPosItemExist(), &buy_price, NULL);
-            trade_brd->SetNumber(at_1655__3, buy_price);
+            trade_brd->SetNumber("\x92\x50\x95\x69", buy_price);
             num = 1;
-            ExeScript(exe_tbl_1509[NowSellMode]);
+            ExeScript(exe_tbl[NowSellMode]);
             count_mes->SetMsgItemNo(&item_name, 1);
             if (item_no == 0x1A6) {
-                ExeScript(at_1656__3);
+                ExeScript("VOICEON");
             } else if (item_no == 0x1A8) {
-                ExeScript(at_1657__2);
+                ExeScript("\x83\x71\x83\x7D\x81\x5B\x83\x89\x4F\x4E");
             } else {
-                ExeScript(at_1658);
+                ExeScript("VOICEOFF");
             }
             break;
         }
@@ -917,7 +1120,7 @@ int CShopMenu::KeyStep() {
                 user->GetItem(item_no, num);
             }
             CShopPtr->AddMoney(-total);
-            ExeScript(at_1659);
+            ExeScript("\x94\x84\x94\x83\x90\xAC\x97\xA7");
             if (item_no == 0x1A7) {
                 user->special_item_bought++;
             }
@@ -930,7 +1133,7 @@ int CShopMenu::KeyStep() {
                 GetUserDataMan()->monster_box.EnableChange(4);
                 CMap *map = MenuMainScene->GetMap(MenuMainScene->active_map);
                 if (map != NULL) {
-                    CFuncPoint *point = map->func_point.Search(at_1660);
+                    CFuncPoint *point = map->func_point.Search("e277");
                     if (point != NULL) {
                         point->enable = 1;
                     }
@@ -975,21 +1178,21 @@ int CShopMenu::KeyStep() {
                 arrow_flash[1] = 0;
                 arrow_flash[0] = 0;
                 if (item_no == 0x1A6) {
-                    ExeScript(at_1656__3);
+                    ExeScript("VOICEON");
                 } else if (item_no == 0x1A8) {
-                    ExeScript(at_1657__2);
+                    ExeScript("\x83\x71\x83\x7D\x81\x5B\x83\x89\x4F\x4E");
                 } else {
-                    ExeScript(at_1658);
+                    ExeScript("VOICEOFF");
                 }
                 int unit_price;
                 CShopPtr->GetPrice(sell_item, NULL, &unit_price);
-                trade_brd->SetNumber(at_1655__3, unit_price);
+                trade_brd->SetNumber("\x92\x50\x95\x69", unit_price);
                 key_arg_no = 3;
                 SetMenuKeyCtrlEnv(2);
                 num_cursor = 0;
                 num = 1;
                 num_max = sell_item->GetNum();
-                ExeScript(at_1661__2);
+                ExeScript("\x82\xA4\x82\xE9\x90\xDD\x92\xE8");
                 count_mes->SetMsgItemNo(&item_name, 1);
             }
             break;
@@ -997,15 +1200,22 @@ int CShopMenu::KeyStep() {
         case 0x3E9:
         case 0x3F3:
             if (key_arg_no == 2) {
+                // Purchase confirmation script selected by currency.
+                static char *extbl[4] = {
+                    "\x82\xA9\x82\xA4\x81\x48",
+                    "\x82\xA9\x82\xA4\x81\x48\x52\x4F\x42\x4F",
+                    "\x82\xA9\x82\xA4\x81\x48\x83\x81\x83\x5F\x83\x8B",
+                    "\x82\xA9\x82\xA4\x81\x48"
+                };
                 if (NowSellMode != SHOP_SELL_MODE_DONY && total > CShopPtr->CheckMoney()) {
                     refuse = 1;
                     break;
                 }
-                ExeScript(extbl_1573[NowSellMode]);
+                ExeScript(extbl[NowSellMode]);
                 key_arg_no = 4;
             }
             if (key_arg_no == 3) {
-                ExeScript(at_1662);
+                ExeScript("\x82\xA4\x82\xE9\x81\x48");
                 key_arg_no = 5;
             }
             {
@@ -1029,13 +1239,13 @@ int CShopMenu::KeyStep() {
             CShopPtr->CheckSyojiHin();
             CheckEnableHaveItemNum();
             key_arg_no = 1;
-            ExeScript(at_1659);
+            ExeScript("\x94\x84\x94\x83\x90\xAC\x97\xA7");
             MenuSePlay(se_handle, 0);
             break;
         case 0x44C:
-            ExeScript(at_1663);
+            ExeScript("\x83\x41\x83\x43\x83\x65\x83\x80\x91\x49\x91\xF0\x82\xC9\x82\xE0\x82\xC7\x82\xE9");
             error = -1;
-            key_arg_no = shop_mode_prev_1326;
+            key_arg_no = shop_mode_prev;
             SetMenuKeyCtrlEnv(0);
             break;
         }
@@ -1044,17 +1254,25 @@ int CShopMenu::KeyStep() {
             ask_mes->ClsMes::mes_no = -1;
         }
         switch (refuse) {
-        case 1:
+        case 1: {
+            // Insufficient currency script selected by currency.
+            static char *extbl[4] = {
+                "\x82\xA8\x8B\xE0\x95\x73\x91\xAB",
+                "\x45\x58\x45\x95\x73\x91\xAB",
+                "\x83\x81\x83\x5F\x83\x8B\x95\x73\x91\xAB",
+                "\x82\xA8\x8B\xE0\x95\x73\x91\xAB"
+            };
             key_arg_no = 6;
-            ExeScript(extbl_1589[NowSellMode]);
+            ExeScript(extbl[NowSellMode]);
             break;
+        }
         case 2:
             key_arg_no = 6;
-            ExeScript(at_1664__2);
+            ExeScript("\x8B\xF3\x82\xAB\x83\x58\x83\x79\x81\x5B\x83\x58\x96\xB3\x82\xB5");
             break;
         case 3: {
             key_arg_no = 6;
-            ExeScript(at_1665);
+            ExeScript("\x83\x41\x83\x43\x83\x65\x83\x80\x8C\xC0\x8A\x45");
             char *message[1] = {NULL};
             message[0] = GetItemMessage(item_no);
             ask_mes->SetMsgItemNo(message, 1);
@@ -1062,7 +1280,7 @@ int CShopMenu::KeyStep() {
         }
         case 4:
             key_arg_no = 6;
-            ExeScript(at_1666);
+            ExeScript("\x8D\xC5\x8C\xE3\x82\xCC\x95\x90\x8A\xED");
             break;
         }
         break;
@@ -1082,27 +1300,17 @@ int CShopMenu::KeyStep() {
     }
     return ret;
 }
-extern char at_1817[];
-extern char at_1818[];
-extern char at_1819[];
-extern char at_1820[];
-extern char at_1821[];
-extern char at_1822[];
-extern char at_1823__2[];
-extern char at_1824__2[];
-extern char at_1825__3[];
-extern char at_1826__4[];
 void CShopMenu::CalcTex() {
     int pos[3][2];
     int name_pos[2];
     float bar_pos[2];
     if (shop_name_brd != NULL && MenuMesForm[1] != NULL) {
-        shop_name_brd->GetPutPosXY(at_1817, name_pos[0], name_pos[1]);
+        shop_name_brd->GetPutPosXY("\x92\x86\x90\x53", name_pos[0], name_pos[1]);
         MenuDCMsg[1]->SetMovePosGyou(0, name_pos[0] - shop_name_ofs_x, name_pos[1] + shop_name_ofs_y);
     }
     if (item_list != NULL && item_brd != NULL) {
         CalcMenu1(item_brd->y - 44.0f * (float)list_top, &item_list->y, 4.0f, 0.0f, 0);
-        item_brd->GetPutPosXY(at_1818, bar_pos[0], bar_pos[1]);
+        item_brd->GetPutPosXY("\x83\x6F\x81\x5B\x8A\xEE\x96\x7B", bar_pos[0], bar_pos[1]);
         bar_pos[1] -= item_brd->y;
         CalcMenu1(bar_pos[1] + scrl_bar_step * (float)list_top, &scrl_bar_top->y, 4.0f, 0.0f, 0);
         scrl_bar_body->y = scrl_bar_top->y + scrl_bar_top->h;
@@ -1110,13 +1318,13 @@ void CShopMenu::CalcTex() {
     }
     CUserDataManager *user_data = GetUserDataMan();
     if (money_brd != NULL) {
-        money_brd->SetNumber(at_1819, user_data->money);
+        money_brd->SetNumber("num", user_data->money);
     }
     if (exp_brd != NULL) {
-        exp_brd->SetNumber(at_1820, GetDispVolumeForFloat(user_data->GetRoboAbs()));
+        exp_brd->SetNumber("corep", GetDispVolumeForFloat(user_data->GetRoboAbs()));
     }
     if (medal_brd != NULL) {
-        medal_brd->SetNumber(at_1819, CShopPtr->CheckMoney());
+        medal_brd->SetNumber("num", CShopPtr->CheckMoney());
     }
     Func_MenuItemBrdPosStep(bag_top);
     NowGiftBoxPtr = SearchNowPosItemExist();
@@ -1224,24 +1432,24 @@ void CShopMenu::CalcTex() {
         }
     }
     if (trade_brd != NULL) {
-        trade_brd->GetPutPosXY(at_1821, pos[0][0], pos[0][1]);
+        trade_brd->GetPutPosXY("\x97\xF1\x30", pos[0][0], pos[0][1]);
         int *up = pos[1];
-        trade_brd->GetPutPosXY(at_1822, up[0], up[1]);
+        trade_brd->GetPutPosXY("\x97\xF1\x31", up[0], up[1]);
         int *down = pos[2];
-        trade_brd->GetPutPosXY(at_1823__2, down[0], down[1]);
-        trade_brd->SetNumber(at_1824__2, num);
+        trade_brd->GetPutPosXY("\x8D\x87\x8C\x76\x8B\xE0\x8A\x7A", down[0], down[1]);
+        trade_brd->SetNumber("\x90\x94", num);
         if (NowSellMode != SHOP_SELL_MODE_DONY || (key_arg_no != SHOP_MENU_MODE_BUY_NUM && key_arg_no != SHOP_MENU_MODE_BUY_ASK && key_arg_no != SHOP_MENU_MODE_BUY_ERROR)) {
             MenuDCMsg[3]->SetMovePosGyou(0, pos[0][0], pos[0][1]);
             MenuDCMsg[3]->SetMovePosGyou(1, up[0], pos[1][1]);
             MenuDCMsg[3]->SetMovePosGyou(2, down[0], pos[2][1]);
         }
-        trade_brd->SetPartRGBA(at_1825__3, 0x80, 0x80, 0x80, 0x80);
-        trade_brd->SetPartRGBA(at_1826__4, 0x80, 0x80, 0x80, 0x80);
+        trade_brd->SetPartRGBA("\x96\xEE\x88\xF3\x8F\xE3", 0x80, 0x80, 0x80, 0x80);
+        trade_brd->SetPartRGBA("\x96\xEE\x88\xF3\x89\xBA", 0x80, 0x80, 0x80, 0x80);
         if (0 < arrow_flash[0]) {
-            trade_brd->SetPartRGBA(at_1825__3, 0xA4, 0xA4, 0xA4, 0x80);
+            trade_brd->SetPartRGBA("\x96\xEE\x88\xF3\x8F\xE3", 0xA4, 0xA4, 0xA4, 0x80);
         }
         if (0 < arrow_flash[1]) {
-            trade_brd->SetPartRGBA(at_1826__4, 0xA4, 0xA4, 0xA4, 0x80);
+            trade_brd->SetPartRGBA("\x96\xEE\x88\xF3\x89\xBA", 0xA4, 0xA4, 0xA4, 0x80);
         }
     }
     if (0 < arrow_flash[0]) {
@@ -1261,11 +1469,6 @@ struct CursorPoint {
     int y; /**< Vertical coordinate. */
 };
 
-extern CursorPoint at_1831__2;
-extern CursorPoint t_offxy_1832;
-extern CursorPoint cursor_offsetxy_1836;
-extern char       *cursortbl_1838[2];
-
 /**
  *
  * Sets a shop menu form's position from integer screen coordinates.
@@ -1277,10 +1480,22 @@ static inline void SetFormPoint(CMenuPosDataForm *form, int x, int y) {
 }
 
 void CShopMenu::CalcCursorPosition() {
-    CursorPoint  position = at_1831__2;
+    // Quantity and cancellation cursor part names.
+    static char *cursortbl[2] = {
+        "0",
+        "1"
+    };
+
+    // Cursor frame offset for the player's bag.
+    static CursorPoint cursor_offsetxy = {-46, 18};
+
+    // Cursor frame offset for the shop goods list.
+    static CursorPoint t_offxy = {0, 0};
+
+    CursorPoint  position = {0, 0};
     CursorPoint  bag_point;
     int          waku_type = -1;
-    CursorPoint *offset = &t_offxy_1832;
+    CursorPoint *offset = &t_offxy;
 
     switch (key_arg_no) {
         case SHOP_MENU_MODE_BUY_LIST:
@@ -1290,13 +1505,13 @@ void CShopMenu::CalcCursorPosition() {
         case SHOP_MENU_MODE_BAG:
             MenuPosData->GetPosMenuItemOnItemBrd(&bag_point.x, bag_pos, 1);
             waku_type = 0;
-            offset = &cursor_offsetxy_1836;
+            offset = &cursor_offsetxy;
             position.x = bag_point.x - 8;
             position.y = bag_point.y - 10;
             break;
         default:
             if (trade_brd != NULL) {
-                trade_brd->GetPutPosXY(cursortbl_1838[num_cursor], position.x, position.y);
+                trade_brd->GetPutPosXY(cursortbl[num_cursor], position.x, position.y);
             }
 
             break;
@@ -1347,8 +1562,10 @@ CGameDataUsed *CShopMenu::SearchNowPosItemExist() {
 
     return NULL;
 }
-extern u8 rgba_1897[4];
 void ShopSellListDraw(int &tex_block, float *pos) {
+    // Neutral item icon color used in the shop list.
+    static u8 rgba[4] = {128, 128, 128, 128};
+
     mgCTexture *icon_tex = MenuPosData->item_icon_tex[0][0];
     int line;
     if (icon_tex == NULL) {
@@ -1446,16 +1663,10 @@ void ShopSellListDraw(int &tex_block, float *pos) {
             PrimQuad(prim, icon_rect, robo_icon);
             prim->End();
         } else {
-            DrawOneItem(prim, icon_rect, item_no, 0, NULL, rgba_1897, 0);
+            DrawOneItem(prim, icon_rect, item_no, 0, NULL, rgba, 0);
         }
     }
 }
-extern char at_2114__2[];
-extern char at_2115__2[];
-extern char at_2116__2[];
-extern char at_2117__2[];
-extern char at_2118__2[];
-
 
 void MenuShopInit(mgCMemory *stack, int *tex_block, int arg) {
     int               cfg_size;
@@ -1519,14 +1730,14 @@ void MenuShopInit(mgCMemory *stack, int *tex_block, int arg) {
 
     CShopMenuPt->no_price_mes_width = no_width;
     message->MakeMsg(0);
-    MenuDataAnalyze((char *) GetMenuMainPosCfgBuffer(&cfg_size), cfg_size, &MenuLocalStack);
+    MenuDataAnalyze(GetMenuMainPosCfgBuffer(&cfg_size), cfg_size, &MenuLocalStack);
     form = MenuPosData->GetFormInfo(0x50);
     form_num = MenuPosData->form_num;
 
     for (no = 0x50; no < form_num; no++, form++) {
-        if (form != NULL && form->name != NULL && strcmp(form->name, at_1306__3) != 0 &&
-            strcmp(form->name, at_2114__2) != 0 && strcmp(form->name, at_2115__2) != 0 &&
-            strcmp(form->name, at_2116__2) != 0 && strcmp(form->name, at_2117__2) != 0) {
+        if (form != NULL && form->name != NULL && strcmp(form->name, "msg0") != 0 &&
+            strcmp(form->name, "msg1") != 0 && strcmp(form->name, "howmachbrd") != 0 &&
+            strcmp(form->name, "cursor0") != 0 && strcmp(form->name, "cur_waku0") != 0) {
             form->draw_flag = 0;
         }
     }
@@ -1549,7 +1760,7 @@ void MenuShopInit(mgCMemory *stack, int *tex_block, int arg) {
     MenuLocalStack.Align64();
     CShopMenuPt->pack = (u_int *) MenuLocalStack.stGetTop();
     CShopMenuPt->pack_size =
-        LoadFileMenu(at_2118__2, (u_long128 *) CShopMenuPt->pack, 1);
+        LoadFileMenu("shop.pac", (u_long128 *) CShopMenuPt->pack, 1);
     u_int pack_size = CShopMenuPt->pack_size;
     MenuLocalStack.Alloc((pack_size & 0xF) ? (pack_size >> 4) + 1 : pack_size >> 4);
     MenuLocalStack.Alloc(0x100);
@@ -1565,8 +1776,6 @@ int MenuShopKey() {
 void MenuShopDraw() {
     MenuPosData->FormDraw();
 }
-
-extern CDC2Mes *QuestMenuMes;
 
 void CMenuQuestView::UnderMsg(int type) {
     int position[2];
@@ -1588,11 +1797,6 @@ void CMenuQuestView::UnderMsg(int type) {
     QuestMenuMes->SetWindowMode(4);
 }
 
-/** Current request or photo-scoop memo mode. */
-extern s8 Menu_Memo_ViewMode;
-/** Request list shown by the quest memo. */
-extern CQuestManager *QuestMan;
-
 int CMenuQuestView::SelectMax() {
     if (Menu_Memo_ViewMode == QUEST_VIEW_MODE_QUEST) {
         return QuestMan->num;
@@ -1605,23 +1809,20 @@ int CMenuQuestView::SelectMax() {
     return 1;
 }
 
-extern char       *packname_2171[2];
-extern char        at_2219__2[];
-extern char        at_2220[];
-extern char        at_2221[];
-extern char        at_2222[];
-extern CDC2Mes    *QuestCommentMes[3];
-extern mgCTexture *Tex_QuestMemo;
-extern float       QuestTilePatternXY[2];
-extern float       QuestCursorPos[2];
-extern float       QuestScrlBarY;
-extern float       QuestScrlBarH;
-extern float       QuestMoveRate;
-extern u8          QuestViewCommentFlag;
-extern QUEST_INFO *ActiveQuestInfo;
-extern SCOOP_DATA *ScmFlagCtrl;
+/**
+ *
+ * Interpolation divisor for quest memo list and cursor movement.
+ *
+ */
+static float QuestMoveRate = 1.0f;
 
 void CMenuQuestView::InitEnd() {
+    // Package names for the quest and memo view.
+    static char *packname[2] = {
+        "quest.pac",
+        "scoop.pac"
+    };
+
     select = 0;
     top = 0;
     int              line;
@@ -1641,7 +1842,7 @@ void CMenuQuestView::InitEnd() {
 
     MenuLocalStack.Align64();
     u_int *pack = (u_int *) MenuLocalStack.stGetTop();
-    int    size = LoadFileMenu(packname_2171[Menu_Memo_ViewMode], (u_long128 *) pack, 1);
+    int    size = LoadFileMenu(packname[Menu_Memo_ViewMode], (u_long128 *) pack, 1);
 
     if (0 < size) {
         unsigned int quadwords;
@@ -1656,7 +1857,7 @@ void CMenuQuestView::InitEnd() {
 
         if (Menu_Memo_ViewMode == QUEST_VIEW_MODE_QUEST) {
             char name[64];
-            sprintf(name, at_2219__2, LanguageCode);
+            sprintf(name, "quest%d.cfg", LanguageCode);
             char *script = (char *) GetPackFile(pack, name, &size);
 
             if (script != NULL) {
@@ -1666,7 +1867,7 @@ void CMenuQuestView::InitEnd() {
 
         if (Menu_Memo_ViewMode == QUEST_VIEW_MODE_SCOOP) {
             InitScoopString();
-            char *script = (char *) GetPackFile(pack, at_2220, &size);
+            char *script = (char *) GetPackFile(pack, "scoop.cfg", &size);
 
             if (script != NULL) {
                 AnalyzeScoopString(&MenuLocalStack, script, size);
@@ -1686,10 +1887,10 @@ void CMenuQuestView::InitEnd() {
             QuestCommentMes[line]->push_button = 0;
         }
 
-        u_char *image = (u_char *) GetPackFile(pack, at_2221, NULL);
+        u_char *image = (u_char *) GetPackFile(pack, "out.img", NULL);
         mgTexManager.EnterIMGFile(image, tex_block[0], NULL, NULL);
-        Tex_QuestMemo = mgTexManager.GetTexture(at_2222, -1);
-        QuestTilePatternXY[0] = 0.0f;
+        Tex_QuestMemo = mgTexManager.GetTexture("memonpc", -1);
+        QuestTilePatternXY = 0.0f;
     }
 
     QuestScrlBarH = 10.0f;
@@ -1708,12 +1909,6 @@ void CMenuQuestView::InitEnd() {
     FadeInMenu(40, 0.0f);
 }
 
-extern CQuestData        *QuestDataPtr;
-extern CScoopDataManager *ScoopMan;
-extern float              QuestListTopY;
-extern float              QuestCommentWinX;
-extern s16                QuestReactionCommentGyouNum;
-extern int                menu_debug_questselect;
 int CMenuQuestView::KeyStep() {
     MenuCommonInfo->CheckSelectKey();
     int lr_key = MenuCommonInfo->CheckLRKey();
@@ -1865,9 +2060,9 @@ int CMenuQuestView::KeyStep() {
         }
         break;
     }
-    QuestTilePatternXY[0] += 0.5f;
-    if (0.0f <= QuestTilePatternXY[0]) {
-        QuestTilePatternXY[0] -= 128.0f;
+    QuestTilePatternXY += 0.5f;
+    if (0.0f <= QuestTilePatternXY) {
+        QuestTilePatternXY -= 128.0f;
     }
     float target = 0x52 - top * 0x22;
     QuestListTopY += (target - QuestListTopY) / QuestMoveRate;
@@ -1923,11 +2118,27 @@ int MenuNPCQuestViewKey() {
     return MenuQuestView->KeyStep();
 }
 
-extern s8    randam_checktbl[];
-extern short tbl_2469[7][12];
-extern short at_2470[12];
-extern char  at_2629__2[];
+/**
+ *
+ * Photograph stamp variants selected by scoop index.
+ *
+ */
+static s8 randam_checktbl[60] = {
+    0, 1, 2, 3, 1, 3, 2, 1, 0, 3, 0, 1, 3, 2, 1, 0, 2, 0, 3, 1, 0, 1, 2, 3, 1, 3, 2, 1, 0, 3, 0, 1, 3, 2, 1, 0, 2, 0, 3, 1, 0, 1, 2, 3, 1, 3, 2, 1, 0, 3, 0, 1, 3, 2, 1, 0, 2, 0, 3, 1
+};
+
 void MenuNPCQuestViewDraw() {
+    // Quest board texture rows.
+    static short tbl[7][12] = {
+        {0, 0, 26, 26, 26, 0, 6, 26, 32, 0, 26, 26},
+        {0, 26, 26, 4, 26, 26, 6, 4, 32, 26, 26, 4},
+        {0, 30, 26, 14, 26, 30, 6, 14, 32, 30, 26, 14},
+        {0, 44, 26, 4, 26, 44, 6, 4, 32, 44, 26, 4},
+        {0, 48, 26, 14, 26, 48, 6, 14, 32, 48, 26, 14},
+        {0, 62, 26, 4, 26, 62, 6, 4, 32, 62, 26, 4},
+        {0, 66, 26, 26, 26, 66, 6, 26, 32, 66, 26, 26}
+    };
+
     int mark_u;
     if (Tex_QuestMemo == NULL) {
         return;
@@ -1936,7 +2147,7 @@ void MenuNPCQuestViewDraw() {
     textures->ReloadTexture(Tex_QuestMemo->block, (sceVif1Packet *)NULL);
     mgCDrawPrim *prim = GetMenuPrim();
     SetSpriteEnv(prim, 0);
-    DrawMenuTilePattern(prim, Tex_QuestMemo, QuestTilePatternXY[0], QuestTilePatternXY[0],
+    DrawMenuTilePattern(prim, Tex_QuestMemo, QuestTilePatternXY, QuestTilePatternXY,
                         mgRect<int>(0x180, 0, 0x80, 0x80), 0, NULL);
     SetSpriteEnv(prim, 0);
     prim->Begin(MG_PRIM_SPRITE);
@@ -2071,7 +2282,7 @@ void MenuNPCQuestViewDraw() {
     bar_rect.bottom = 0xA;
     PrimQuad(prim, bar_rect, mgRect<int>(0x3A, 0x52, 8, 0xA));
     prim->End();
-    mgCTexture *cursor = textures->GetTexture(at_2629__2, -1);
+    mgCTexture *cursor = textures->GetTexture("mnmain", -1);
     if (cursor != NULL && QuestViewCommentFlag == 0) {
         textures->ReloadTexture(cursor->block, (sceVif1Packet *)NULL);
         MenuCursorDraw(cursor, QuestCursorPos, 0.0f, 0x80);
@@ -2100,7 +2311,7 @@ void MenuNPCQuestViewDraw() {
         prim->Texture(Tex_QuestMemo);
         prim->Color(0x80, 0x80, 0x80, 0x80);
         for (int part = 0; part < 7; part++) {
-            Menu3DivideTextureDraw(prim, mgRect<int>(box_x, box_y, 0x18C, heights[part]), tbl_2469[part], 1);
+            Menu3DivideTextureDraw(prim, mgRect<int>(box_x, box_y, 0x18C, heights[part]), tbl[part], 1);
             box_y += heights[part];
         }
         prim->End();
@@ -2203,152 +2414,3 @@ void MenuNPCQuestViewDraw() {
         }
     }
 }
-
-// Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", dony_shoplist__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", menu_shop_tag__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", imglist_1267__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", extbl_1278__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", exe_tbl_1509__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", extbl_1573__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", extbl_1589__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", randam_checktbl__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", tbl_2469__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_2470__DATA);
-
-// Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1206__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1207__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1221__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1222__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1223__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1224__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1225__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1226__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1227__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1228__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1252__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1253__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1254__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1268__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1269__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1270__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1279__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1280__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1281__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1282__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1298__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1299__4__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1300__4__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1301__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1302__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1303__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1304__4__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1305__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1306__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1307__4__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1308__4__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1510__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1511__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1512__4__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1513__4__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1574__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1575__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1576__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1590__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1591__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1592__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1650__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1651__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1652__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1653__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1654__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1655__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1656__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1657__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1658__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1659__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1660__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1661__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1662__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1663__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1664__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1665__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1666__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1667__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1817__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1818__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1819__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1820__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1821__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1822__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1823__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1824__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1825__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1826__4__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1839__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1840__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_1881__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_2114__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_2115__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_2116__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_2117__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_2118__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_2172__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_2173__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_2219__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_2220__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_2221__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_2222__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", at_2629__2__DATA);
-
-// Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", __vt__14CMenuQuestView__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", __vt__9CShopMenu__DATA);
-
-// Small initialised data (.sdata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", t_offxy_1832__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", cursor_offsetxy_1836__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", cursortbl_1838__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", rgba_1897__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", QuestMoveRate__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/menushop", packname_2171__DATA);
-
-// Small uninitialised data (.sbss)
-INCLUDE_BSS(NowSellMode, 0x4);
-INCLUDE_BSS(CShopPtr, 0x4);
-INCLUDE_BSS(Tex_Shop, 0x4);
-INCLUDE_BSS(Tex_Mt0, 0x4);
-INCLUDE_BSS(Now_ShopListNum, 0x4);
-INCLUDE_BSS(Now_ShopDataReadPtr, 0x4);
-INCLUDE_BSS(Now_Shop_ID, 0x4);
-INCLUDE_BSS(Spi_PriceList, 0x4);
-INCLUDE_BSS(shop_mode_prev_1326, 0x4);
-INCLUDE_BSS(init_1327, 0x8);
-INCLUDE_BSS(at_1581__2, 0x8);
-INCLUDE_BSS(at_1582__3, 0x8);
-INCLUDE_BSS(at_1595__3, 0x8);
-INCLUDE_BSS(at_1685__2, 0x8);
-INCLUDE_BSS(at_1831__2, 0x8);
-INCLUDE_BSS(CShopMenuPt, 0x4);
-INCLUDE_BSS(QuestMan, 0x4);
-INCLUDE_BSS(QuestDataPtr, 0x4);
-INCLUDE_BSS(Tex_QuestMemo, 0x4);
-INCLUDE_BSS(QuestMenuMes, 0x4);
-INCLUDE_BSS(ActiveQuestInfo, 0x4);
-INCLUDE_BSS(QuestTilePatternXY, 0x8);
-INCLUDE_BSS(QuestCursorPos, 0x8);
-INCLUDE_BSS(QuestListTopY, 0x4);
-INCLUDE_BSS(QuestCommentWinX, 0x4);
-INCLUDE_BSS(QuestScrlBarY, 0x4);
-INCLUDE_BSS(QuestScrlBarH, 0x4);
-INCLUDE_BSS(QuestViewCommentFlag, 0x4);
-INCLUDE_BSS(QuestReactionCommentGyouNum, 0x4);
-INCLUDE_BSS(ScoopMan, 0x4);
-INCLUDE_BSS(ScmFlagCtrl, 0x4);
-INCLUDE_BSS(menu_debug_questselect, 0x4);
-INCLUDE_BSS(Menu_Memo_ViewMode, 0x4);
-INCLUDE_BSS(MenuQuestView, 0x4);
-
-// Uninitialised data (.bss)
-INCLUDE_BSS(QuestCommentMes, 0x10);

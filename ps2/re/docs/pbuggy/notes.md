@@ -1,8 +1,20 @@
 # pbuggy: reverse-engineering notes
 
-`sgInitBuggy` is currently supplied by retail assembly. Its effect-script
-manager allocation initializes the embedded sprite through compiler-generated
-class construction; no source-level virtual-table writes are retained.
+`sgInitBuggy` is accepted native C++ with one scoped placement row for
+`CEffectScriptMan`. Its natural constructor initializes the embedded sprite
+without source-level virtual-table writes. No `NONMATCHING` guards or assembly
+fallbacks remain in this unit. See
+[placement conversion](../satansfiddle/placement-new.md).
+All BSS reservations have native definitions. Six data reservations remain:
+`at_1074__4__DATA` and `at_1193__DATA` preserve the retail vector layout,
+while `at_956__3__DATA`, `at_961__4__DATA`, `at_962__4__DATA`, and
+`at_964__3__DATA` preserve named string symbols used by native code.
+Replacing the first vector with a natural initialization changes instructions
+in `CharaControl`; replacing the second changes instructions in `BuggyControl`.
+Its scene character slots 0x40-0x46 are named by `BuggySceneChara`. Because
+native code now uses the texture-block slots and `WorkBuff`, they are `static`
+like every other data object here, matching retail's LOCAL bindings; their
+earlier external definitions only kept storage emitted for the assembly body.
 
 Buggy sub game (sub game 3 in `subgame`'s dispatchers `sgInitSubGame`, `sgLoopSubGame`,
 `sgDrawSubGameChara`, `sgDrawSubGameEffect`, `sgDrawSubGameCharaShadow`, `sgDrawSubGameSystem`).
@@ -10,8 +22,8 @@ The player drives a buggy with a gun and bombs and defends a train.
 
 `CharaControl(CScene*, CPadControl*)` is supplied by matching native C++.
 `InitBomb(CScene*)` uses the verified native body with the floating-point
-calibration described below. Other native promotions are retained separately
-from the construction fallback in `sgInitBuggy`.
+calibration described below. The dated validation below predates the native
+construction promotion of `sgInitBuggy`.
 
 ## Types
 - The unit owns no classes (`class_units.tsv` has no `pbuggy` rows) and declares no structs.
@@ -47,7 +59,7 @@ Every data symbol is LOCAL too, so the header has no `extern`s. Data (gp = 0x384
 - EffectBuff (.bss 0x30): `mgCMemory` (Init in `__sinit`, SetHeapMem 20000 bytes).
 - PolVoice (.bss, extent 0x20, referenced size 0x14): `sgCPlayVoice` (Close/SetVol; `__sinit`
   zeroes +0, +8, sets +0xC/+0x10 = 1.0f).
-- WorkBuff: `new[] 160000` buffer. BuggySndID: `sndLoadSound` id (-1 if none).
+- WorkBuff (`u8 *`): `new[] 160000` buffer. BuggySndID: `sndLoadSound` id (-1 if none).
 - RunEventNo (`RunEventNo__2`): -1, then 0x1F7 when BuggyHP <= 0, 0x1F6 when TrainHP <= 0.
 - BuggyHP (.sdata int, init 1, set 3 in InitBuggy; decremented in BuggyDamage),
   BuggyHPf (float, init 3.0, eases toward BuggyHP by 0.05/frame in sgSystemDraw; gauge = /3),
@@ -142,22 +154,5 @@ policy. Function-wide coordinate policies leave at least four differing
 words; named coordinate locals, assignments and double literal spelling
 also leave those four under the private collision-height policy.
 
-Both the source-only probe and the production mwccgap probe match all 620
-instruction words. After section fixup, the complete promoted unit passes
-`check_objects`: `0x34BC` bytes and 779 resolved relocations. This includes
-the unchanged assembly-backed `sgInitBuggy`; the simpler draft checker
-reports its split assembly relocations differently and is not the acceptance
-authority. Receipts are in `.private/floatsel/pbuggy/enum-production/` and
-`.private/floatsel/pbuggy/object-reference-production/`.
-
-The final canonical target rebuild compiles the promoted production object
-and its objdiff base with the checked-in profile. All 148 other game object
-files retain their baseline SHA-256 hashes; no header is changed. A normal
-PAL link with those objects has allocated sections byte-identical to the
-baseline image. The full checker remains 147/149, failing only the inherited
-nd_meswin and actscript bodies; the verifier retains exactly `0x26` differing
-text bytes, with all other sections and memory end unchanged. Coverage is
-6,687 matched / 168 guarded / 15 assembly-only / 2 fuzzy. Final receipts:
-`.private/floatsel/final-target-build.log`, `final-check.log`, `final-verify.log`,
-`final-coverage.txt`, `baseline-hashes.json`, `final-hashes.json` and
-`validation-summary.json`. Apply the profile and source commits together.
+CharaControl is native and exact: body `0x9AC` within extent `0x9B0`.
+The whole unit, including the native sgInitBuggy, passes complete-object checking.

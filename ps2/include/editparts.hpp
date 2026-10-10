@@ -40,12 +40,19 @@ class mgCMemory;
  *
  */
 enum EditPartsAtr {
+    EDIT_PARTS_ATR_NO_REMOVE_FOCUS = 0x1,  /**< Excludes a part from removal focus. */
+    EDIT_PARTS_ATR_NO_PREVIEW = 0x2,       /**< Suppresses the placement preview. */
     EDIT_PARTS_ATR_GROUND = 0x7,    /**< Bits that GROUND_PARTS sets; a part with all three is ground that holds a placement grid. */
+    EDIT_PARTS_ATR_QUARTER_TURN = 0x8,     /**< Restricts part rotation to quarter turns. */
+    EDIT_PARTS_ATR_MAGNET_HELP = 0x20,     /**< Shows the magnet toggle in placement help. */
     EDIT_PARTS_ATR_BLOCK = 0x30,    /**< Bits that BLOCK_PARTS sets. */
     EDIT_PARTS_ATR_TYPE_ONE = 0x40, /**< Bit that makes GetPartsType return type 1. */
     EDIT_PARTS_ATR_RIVER = 0x80,    /**< Bit that RIVER_PARTS sets; the part is a piece of river laid on the grid. */
+    EDIT_PARTS_ATR_LINE = 0x100,           /**< Snaps a line part only while the cursor is still. */
     EDIT_PARTS_ATR_FENCE = 0x130,   /**< Bits that FENCE_PARTS sets; a part with all of them is a fence. */
+    EDIT_PARTS_ATR_WALL = 0x200,           /**< Places a part on the selected wall plane. */
     EDIT_PARTS_ATR_BURN = 0x1000,   /**< Bit marking a part that can burn. */
+    EDIT_PARTS_ATR_ANY_HEIGHT = 0x10000,   /**< Bypasses the placement altitude limit. */
 };
 
 /**
@@ -274,7 +281,7 @@ public:
     CMapParts      *ground;           /**< Ground part of the map the part stands on, or NULL. */
     s32             max_material_num; /**< Largest number of materials any piece of the part recolours. */
     s32             unk_31c;
-    s32             allocation_address; /**< Address of the heap allocation that owns this part. */
+    u_long128      *allocation_address; /**< Start of the heap block holding the part's model copy, or NULL. */
     CEditPartsInfo *info;  /**< Definition of the part, or NULL. */
     CEditHouse     *house; /**< House of villagers the part has, or NULL. */
     s32             unk_32c;

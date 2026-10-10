@@ -1,44 +1,80 @@
 # mg_tanime: reverse-engineering notes
 
-`mgCTextureAnime::NewTexAnimeData`'s native constructor sequence is still
-fuzzy, so the matching build uses retail assembly and preserves its C++ draft
-under `NONMATCHING`.
-The six differing instructions surround placement-new's generated null check:
-retail moves the allocated node into `s0` before the branch and uses `v0` for
-the list vtable address, while MWCC's current C++ expression branches on `v0`,
-then moves the node into `s0` and uses `v1` for the vtable. Direct returns,
-separate allocation storage, constructor parentheses, pointer qualifiers, and
-local optimizer, scheduler, and inline-depth controls retain or worsen this
-difference. No candidate passed isolated linked-image verification.
+Every function of the unit is native C++ and byte-identical; there are no
+`NONMATCHING` guards, `INCLUDE_ASM` entries or data markers, and the unit emits
+its own `CList<mgCTexAnimeData>` vtable. `mgCTextureAnime::NewTexAnimeData`
+(retail symbol 0x13DA40, size 0x7C in a 0x80 extent) uses one before-inline
+placement conversion row for its `CList<mgCTexAnimeData>` construction; without
+the row MWCC branches on `v0`, then moves the node into `s0` and uses `v1` for
+the vtable, while retail moves the allocated node into `s0` before the branch
+(six words). The before-inline timing is the measured exception to the other
+accepted rows. See [placement conversion](../satansfiddle/placement-new.md).
 
-The [placement-new report](../funcpoint/placement-new.md) records constructor
-and cross-unit evidence. Complete list specializations, including ordinary
-inline constructors defined in this source unit, narrow the difference to
-`beqz s0` instead of retail's `beqz v0` at +0x30 but do not match. The current
-generic constructor already performs virtual list initialization; the data
-constructor is independently evidenced by its retail out-of-line symbol.
-Changing either to omit initialization is inconsistent with those constructors.
-The saved and reproduced null-aware result-helper experiment grows the function
-to 0x88 bytes, despite a handoff synopsis describing it as a match; the helper
-is a semantic no-op and inadmissible in either case. The original 6/32-word
-guarded draft is retained. Reconsider when a genuine matching inlined-list
-caller establishes a new constructor or allocation-result lifetime distinction.
+## Data
 
-The [Chronicle comparison](../funcpoint/placement-new.md#chronicle--dark-cloud-1-comparison)
-records all 19 matching DC1 placement-new expressions: four scalar sites test
-`v0`, six test a saved register, and nine arrays have no caller construction
-guard. DC1 uses MWCC 2.3.3 build 1010 at `-O2`, so these are comparative
-examples rather than a 3.0-011126 source recipe. Its class-A scalar constructors
-carry the expression through the constructor return; none preserves the original
-allocation pointer in DC2's copy-before-`beqz v0` sequence. Naming the placement
-buffer, initializing the destination at declaration, and compiling the original
-draft at `-O2` all leave this target at 6/32 words and 0x7C/0x80 bytes. A direct
-return was reproduced with the same result; that form was already recorded
-above. All experimental source changes were restored; the guarded unit passes
-`draft.sh --promote`, the PAL image passes, and complete objects pass 149/149.
-No source or shared-header patch is validated. A comparable 3.0-011126 inlined
-list caller, or a compiler trace showing where the implicit allocation check
-is bound to its persistent object pointer, is still needed.
+`tex_tag` is a `static SPI_TAG_PARAM[14]` table of the thirteen tag names and
+handlers plus its null terminator, with inline name literals; the handlers are
+file-local. Both texture-block mismatch diagnostics inline
+`"%s block is not match!!!\n"`. The ten loader-state globals are `static`
+definitions and `mgCTextureAnime::stop_anime` keeps its header declaration.
+
+## Current TexAnime and optimizer state
+
+`TexAnime` is native and exact at retail's 0x1458-byte symbol size. The
+unit uses `#pragma optimization_level 2`, preserving global common-
+subexpression elimination without the level-3 loop strength reduction.
+Template-using functions receive the pragma state in force when their
+code generation is triggered by the next top-level declaration. The
+unit-wide setting preserves the already matched sibling functions.
+The zero-constructed rectangle objects correspond to six real retail
+`Set(0,0,0,0)` calls on distinct slots.
+
+### Optimization level
+
+Retail `TexAnime` performs global common-subexpression elimination without
+strength reduction: `group * 4` is computed once per main-loop iteration and
+spilled (`sw/lw 0xF0(sp)`), `&frame[group]` is materialized before the
+comparison that stores through it, and the first loop still shifts its index
+every iteration. `#pragma optimization_level 2` applied once to the whole code
+section produces exactly that mixture and reproduces every other function;
+`opt_strength_reduction off` alone breaks `Initialize` and
+`NewTexAnimeGroupData`, and level 2 with `opt_propagation off` breaks
+`texSCROLL`. `TexAnime` and `NewTexAnimeData` use class templates
+(`mgRect<int>`, `CList<mgCTexAnimeData>`), and MWCC defers their code
+generation until the next top-level declaration begins, so a pragma pair
+around either function alone has no effect; a trailing `optimization_level 1`
+reset is unnecessary. Under level 2 `group_num`, `list[i]` and `name[i]`
+reproduce `GetEmptyGroup` and `SearchGroupName`, and `node->pGetData() == NULL`
+reproduces `NewTexAnimeGroupData`'s record test.
+
+### TexAnime source forms
+
+- The first loop's `node` and `data` are block-scoped; sharing them with the
+  main loop spills `node` (1204 words).
+- Six scroll rectangles are constructed with `mgRect<int>(0, 0, 0, 0)`: two
+  after the indexed path's end values, two after the true-colour path's, two at
+  the start of the VRAM draw (only the first drawn with). The palette and copy
+  rectangles are argument temporaries and follow them on the stack.
+- Period magnitudes are `p = p < 0.0f ? -p : p;` in both paths; the `if` form
+  misplaces one nop at each of the four joins.
+- `now[group]` is stored directly (its address CSE is the last spill slot); a
+  `current` slot pointer costs 48 words. The expiry test reads `now[group]`
+  before loading `node` from it, which gives retail's spill-slot order, and the
+  advanced record is held in a block-local `next` before it is stored: a
+  declared local is numbered low and coloured after the base and `wait`,
+  landing in `a0` as retail does.
+- `wait <= frame[group]` restores `slt at` in the patched branch; clearing the
+  counter after advancing costs 77–105 words.
+- `NewTexAnimeGroupData`'s list-slot pointer stays
+  `(CList<mgCTexAnimeData> **) ((group << 2) + (int) this + 0x64)`: retail adds
+  the scaled group to `this` with the index first (`addu v1,v0,s2`).
+  `&list[group]`, `list + group`, `group + list` and `&this->list[group]` all put
+  `this` first (one word at 0x13DB66); indexing `list[group]` directly swaps the
+  slot and head registers (11/72).
+- The `(int)` casts on `TBP0`/`TBW` convert `u_long` bitfields; the TEXA value
+  has no libgraph macro; `wait < 0` is an ordering test, not the
+  `MG_TEX_ANIME_WAIT_FOREVER` equality.
+- The texture animation colour is copied as one `mgTexAnimeColor` record.
 
 Engine texture animation (`mg_tanime.cpp`). First-game counterpart: `textureanime.hpp`
 (`CTexAnimeData` / `CTextureAnime`). The design is the same in spirit, but every layout differs:
@@ -66,7 +102,7 @@ Evidence: `Initialize` (stores), `EnterTexAnime` (copy, by width: 4 bytes, 2 ptr
 | 0x00 | s8 type | init 0xFF; `TEX_ANIME_DATA` arg 0; TexAnime: 0 copy, 1 scroll, 2 wave; texSCROLL branches on 1/2 |
 | 0x01 | s8 group | EnterTexAnime passes `(char)data[1]` to NewTexAnimeGroupData; DATA_END stores now_group |
 | 0x02 | s8 link_group | init 0xFF; TexAnime enables this group (if >=0) for each enabled group's current record |
-| 0x03 | u8 clut_copy | `CLUT_COPY` arg; TexAnime: if both textures 8bpp and (flag or src_w/h == texture width/height) a 256x256 MoveImage of CLUT TEX0s |
+| 0x03 | s8 clut_copy | `CLUT_COPY` arg; TexAnime: if both textures 8bpp and (flag or src_w/h == texture width/height) a 256x256 MoveImage of CLUT TEX0s |
 | 0x04 | mgCTexture* src_tex | `SRC_TEX` GetTexture(name,-1) |
 | 0x08 | mgCTexture* dest_tex | `DEST_TEX` |
 | 0x0C..0x12 | s16 src_x/y/w/h | `SRC_TEX` args 1..4, `<<4` |
@@ -76,8 +112,8 @@ Evidence: `Initialize` (stores), `EnterTexAnime` (copy, by width: 4 bytes, 2 ptr
 | 0x24/0x26 | s16 amplitude_x/y | texSCROLL type2: frac(arg)*10000 (10000 when |frac|<0.001); TexAnime: dest_w * amp * (1+sin(2pi*phase/period))/2 / 10000 |
 | 0x28 | s16 wait | `WAIT` arg0; arg1 non-zero -> 0xFFFF. TexAnime: 0 chains to next record in same frame; <0 holds |
 | 0x2A | s16 bug_patch | init from `mgBugPatch`; DATA sets from `texBugPatch` (`BUG_PATCH` tag). Non-zero: advance when frame >= wait, else when frame > wait |
-| 0x2C | u8 bilinear | init 1; `DEST_TEX` arg 5; TexAnime `Bilinear()` (only when dest bpp >= 24) |
-| 0x2D | u8 alpha_blend | init 4; `ALPHA_BLEND`; TexAnime: 4 = AlphaBlendEnable(0) |
+| 0x2C | s8 bilinear | init 1; `DEST_TEX` arg 5; TexAnime `Bilinear()` (only when dest bpp >= 24) |
+| 0x2D | s8 alpha_blend | init 4; `ALPHA_BLEND`; TexAnime: 4 = AlphaBlendEnable(0) |
 | 0x2E | s8 alpha_test | init 0xFF; `ALPHA_TEST` arg0; -1 = AlphaTestEnable(0), else AlphaTest(method, ref) |
 | 0x2F | u8 alpha_ref | `ALPHA_TEST` arg1 |
 | 0x30..0x33 | u8 r,g,b,a | init 0x80; `COLOR` args; `mgCDrawPrim::Color` |
@@ -150,94 +186,3 @@ into a frame buffer), +8 name, +0x38 sceGsTex0 tex0 (TBP0/TBW/PSM/CBP fields use
 The local `divbyzerocheck on`/`reset` pair is redundant with the PS2
 compiler flag. Removing it leaves every section and symbol in this unit's
 object diff unchanged.
-
-## Remaining canonical differences
-
-The focused wrapper build and section fixup check 0x27E0 bytes and 341 relocations.
-`NewTexAnimeData` retains the typed `CList<mgCTexAnimeData>` placement construction.
-Retail saves the allocation result in its retained register before the null branch
-and returns that register after the branch joins. Current MWCC lowering saves it
-inside the successful branch and returns the unsaved null result on failure. The
-record constructor and virtual list initialization calls otherwise correspond.
-Disabling the global optimizer does not change this lowering; a manual compiler
-constructor call is unnecessary for the source semantics and is not a native fix.
-
-The other two canonical failures concern `nowTexData`: its declared 0x34-byte record
-occupies a retail 0x40-byte BSS piece, leaving the run twelve bytes short. The
-`CList` node is already correctly sized at 0x40 and its carried record remains
-0x34; enlarging that record would shift the node's vtable. These baseline failures
-are preserved pending a separate analysis of the global object's trailing storage.
-
-With the native BSS padding correction applied, the focused object has only the
-`NewTexAnimeData` byte failure. The remaining allocation difference can be isolated
-by disabling peephole optimization: the compiler then saves the allocation result
-before the null branch, matching retail's placement of that move, but tests the
-saved register rather than the original return register and loads the virtual table
-through the argument alias. Default peephole optimization fixes those two aliases,
-but sinks the saved-pointer move into the successful branch and skips its return on
-failure. Disabling propagation or lifetime optimization does not change that result.
-This is a code-generation difference, not evidence of an incorrect `CList` layout.
-
-An additional native trial scoped `optimization_level 2` around `NewTexAnimeData`,
-with `optimization_level reset` immediately after the function. Its target retained
-the same six instruction differences. The fixed-up unit changed from 0x27E0 bytes
-to 0x25F8 bytes and reported 223 object problems, including shortened later function
-extents. Pairing the scope with `global_optimizer off` produced the same target
-difference and unit-wide failure. Neither pragma form is a viable local fix.
-
-## Placement construction under Satan's Fiddle (2026-10-08)
-
-The canonical SF wrapper retains the guarded NewTexAnimeData draft at
-**6/32 differing words, 0x7c/0x80 bytes**. Current-source plain wibo emits
-the same selected function. GPR helper seeds 0/0x10/0x30, default float
-evaluate-first true, and the baseline policy all leave its text unchanged.
-The shared-header and source-form experiments above were not repeated.
-
-A hash- and signature-checked LLDB trace now explains the saved-copy position.
-The inliner classifies `CList<mgCTexAnimeData>`'s constructor as expression
-inline class 6. Original high-level IR retains a construction node (kind 0x3a)
-with allocation and a constructor comma expression. Late IroLinearForm emits
-an allocation-result temporary and its null guard, with the constructed-object
-copy inside the successful branch. Constructor-result copies then feed the
-allocation-expression result at the join. First coalescing maps that result
-and the guard to ABI `v0`, while retaining the success-only object copy;
-coloring maps that object to `s0`. The ordinary scheduling pass is skipped
-for this function. Retail instead saves its allocation pointer before the
-`v0` guard and returns the retained register at the join.
-
-Thus this six-word case includes a null-path/result-lifetime difference beyond
-the two-word saved-register guard pattern. Helper/float state did not move the
-copy, and no affected uninitialized compiler input was found. No new natural
-source or SF policy is validated. Reconsider when an evidenced constructor or
-caller takes the early statement-conversion path while preserving the retail
-construction calls and result lifetime, or when an identical-source state
-probe demonstrates an affected state read. Merely forcing control flow into
-the constructor would change source semantics or add a codegen no-op.
-
-The [SF placement-new report](../funcpoint/placement-new.md#under-satans-fiddle)
-records the comparison with class-A CMenuInvent/CMenuMoveItem, exact pass
-boundaries and initialized inline classification. Private evidence is in
-`.private/placenew-sf/trace-final-mg_tanime/` (inline classifications,
-original/optimized/expanded IR, PCode and canonical text comparison) and
-`.private/placenew-sf/baseline/native/mg_tanime.*`. No symbol was promoted.
-The lane's canonical image retains i13's three unrelated object failures
-(146/149); all sections except the known 0x2c-byte .text difference pass,
-and coverage remains 6,677 matched / 175 guarded / 15 asm-only / 5 fuzzy.
-
-## Constructor-classification follow-up (2026-10-08)
-
-The constructor lane decodes the exact statement classifier and validates real
-array-initialization loops for `CShopMenu` and `CSaveMenuClass`. An inline
-callee with statement class 3 can also request conversion while its enclosing
-constructor still has class 6. Ordinary locals, aggregate initialization,
-void-call sequences and final `return;` remain class 6; locals requiring a
-destructor use cleanup metadata and select class 3, while destructible by-value
-signatures can instead be ineligible (class 0).
-
-No corresponding array initialization exists in `CList<mgCTexAnimeData>`'s
-retail construction sequence. Its data constructor and virtual list
-initialization must remain; adding a destructor-bearing local or artificial
-control flow supplies no original-source evidence. `NewTexAnimeData` therefore
-retains its existing guard and separate result-lifetime park. Full classifier
-cases, constructor-chain comparison and i15 acceptance receipts are in
-[Constructor inline classification](../funcpoint/placement-new.md#constructor-inline-classification).

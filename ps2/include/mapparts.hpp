@@ -101,7 +101,7 @@ public:
      * @address 0x15F7E0
      * @size 0x10
      */
-    virtual int Draw();
+    virtual int Draw() { return DrawSub(0); }
 
     /**
      *
@@ -112,7 +112,7 @@ public:
      * @address 0x15F7F0
      * @size 0x10
      */
-    virtual int DrawDirect();
+    virtual int DrawDirect() { return DrawSub(1); }
 
     /**
      *
@@ -184,7 +184,7 @@ public:
      *
      * @mangled Copy__9CMapPartsFR9CMapPartsP9mgCMemory
      * @address 0x168EB0
-     * @size 0x6B0
+     * @size 0x6AC
      */
     virtual void Copy(CMapParts &dest, mgCMemory *memory);
 
@@ -467,7 +467,7 @@ public:
      *
      * @mangled AssignFuncAnime__9CMapPartsFP9mgCMemory
      * @address 0x169560
-     * @size 0x140
+     * @size 0x138
      */
     int AssignFuncAnime(mgCMemory *memory);
 

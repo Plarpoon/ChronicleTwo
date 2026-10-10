@@ -25,13 +25,6 @@ enum {
     kMapPartsSize = 0x310
 };
 
-extern s8   init_1249;
-extern char at_1352[];
-extern char at_1353[];
-extern char at_574[];
-extern char at_2008[];
-extern char at_1927[];
-
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -40,6 +33,11 @@ extern char at_1927[];
 #include "mg_camera.hpp"
 #include "mg_drawprim.hpp"
 #include "water.hpp"
+
+/**
+ * Class name returned by the map object.
+ */
+char *CMapName = "CMap";
 
 // Code (.text)
 int CMapFlagData::SetFlag(int no, int on) {
@@ -143,8 +141,6 @@ CPartsGroup *CMap::GetPartsGroup(int no) {
     return &parts_group[no];
 }
 
-
-#ifdef NONMATCHING
 int CMap::AddPartsGroup(char *name, CMapParts *parts, mgCMemory *memory) {
     int                    group_no;
     char                  *new_name;
@@ -168,17 +164,13 @@ int CMap::AddPartsGroup(char *name, CMapParts *parts, mgCMemory *memory) {
         group->name = new_name;
     }
 
-    if ((node = new ((u_long128 *) memory->Alloc(3)) CList<PartsGroupData>) != 0) {
-        node->data.parts = 0;
-    }
+    node = new (memory->Alloc(sizeof(CList<PartsGroupData>) / 16 + 2)) CList<PartsGroupData>;
 
     node->data.parts = parts;
     group->Add(node);
     return group_no;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", AddPartsGroup__4CMapFPcP9CMapPartsP9mgCMemory);
-#endif
+
 template <>
 void CList<PartsGroupData>::Initialize() {
     prev = 0;
@@ -348,7 +340,7 @@ CMdsInfo *CMap::SearchMDS(char *name) {
 }
 
 void CMap::CreateEffect(unsigned int *pack, int tex_block, mgCMemory *stack) {
-    effect_list.LoadEFPFile(at_574, pack, tex_block, stack);
+    effect_list.LoadEFPFile("test", pack, tex_block, stack);
 }
 
 int CMap::SaerchEffectIndex(char *name) {
@@ -405,8 +397,6 @@ CMapParts *CMap::GetParts(char *name) {
     return NULL;
 }
 
-
-#ifdef NONMATCHING
 void CMap::CreateDrawRect(mgCMemory *memory, mgVu0FBOX *rect, mgVu0FBOX *clip, int outside) {
     mgVu0FBOX           parts_box;
     MapDrawOffRect     *slot;
@@ -434,9 +424,8 @@ void CMap::CreateDrawRect(mgCMemory *memory, mgVu0FBOX *rect, mgVu0FBOX *clip, i
         slot->used = 1;
         slot->area = *rect;
         slot->outside = outside;
-        CMapParts *placed_parts = place_parts;
-        for (j = 0; j < place_parts_max; j++) {
-            parts = &placed_parts[j];
+        parts = place_parts;
+        for (j = 0; j < place_parts_max; j++, parts++) {
             u8 unused = parts->name[0] == 0;
 
             if (unused) {
@@ -451,7 +440,7 @@ void CMap::CreateDrawRect(mgCMemory *memory, mgVu0FBOX *rect, mgVu0FBOX *clip, i
                 continue;
             }
 
-            node = new ((u_long128 *) memory->Alloc(3)) CList<CMapParts *>;
+            node = new (memory->Alloc(sizeof(CList<CMapParts *>) / 16 + 2)) CList<CMapParts *>;
 
             node->data = parts;
             last = slot->parts;
@@ -480,9 +469,7 @@ void CMap::CreateDrawRect(mgCMemory *memory, mgVu0FBOX *rect, mgVu0FBOX *clip, i
         }
     }
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/map", CreateDrawRect__4CMapFP9mgCMemoryP9mgVu0FBOXP9mgVu0FBOXi);
-#endif
+
 template <>
 void CList<CMapParts *>::Initialize() {
     prev = 0;
@@ -872,32 +859,20 @@ int CMap::GetCharaLight(mgCObject *chara, CFuncPoint *points, int max, int use_p
     if (2 < light_num) {
         light_num = 2;
     }
-    {
-    int index;
-    int point_offset;
-    CFuncPoint *point;
-    index = 0;
-    if (0 < light_num) {
-    point_offset = 0;
-    do {
-        point = (CFuncPoint *)((u8 *)points + point_offset);
-        sceVu0SubVector(direction, point->position, chara_position);
-        attenuation = point->plight.power;
+    for (int index = 0; index < light_num; index++) {
+        sceVu0SubVector(direction, points[index].position, chara_position);
+        attenuation = points[index].plight.power;
         attenuation *= attenuation;
         attenuation /= mgDistVector2(direction);
         if (!(attenuation <= 1.0f)) {
             attenuation = 1.0f;
         }
-        sceVu0ScaleVector(color, point->plight.color, 0.4f * (attenuation * GetLightAnimeWeight(point, anime_frame)));
+        sceVu0ScaleVector(color, points[index].plight.color, 0.4f * (attenuation * GetLightAnimeWeight(&points[index], anime_frame)));
         color[3] = 128.0f;
         sceVu0Normalize(direction, direction);
         mgSetLight(3 - index, direction, color);
-        index++;
-        point_offset += 0x1C0;
-    } while (index < light_num);
     }
 
-    }
     if (use_parts != 0) {
         CMapParts *parts;
         int nearest_distance;
@@ -917,7 +892,7 @@ int CMap::GetCharaLight(mgCObject *chara, CFuncPoint *points, int max, int use_p
         nearest_distance = 0x4876E000;
         *nearest_type = FUNC_POINT_NONE;
         for (index = 0; index < place_parts_num; index++, parts++) {
-            if ((parts->func_point_mngr.flag & FUNC_POINT_MNGR_LIGHT) != 0 && (u8)(*(s8 *)parts->name == 0) == 0) {
+            if ((parts->func_point_mngr.flag & FUNC_POINT_MNGR_LIGHT) != 0 && (u8)(parts->name[0] == 0) == 0) {
                 chara_position[3] = 1.0f;
                 parts->GetLWMatrix(world_matrix);
                 mgInversMatrix(inverse_matrix, world_matrix);
@@ -954,16 +929,16 @@ int CMap::GetCharaLight(mgCObject *chara, CFuncPoint *points, int max, int use_p
 }
 
 int CMap::SetFuncPLight(float *pos, CFuncPointCheck *check) {
-    static CFuncPoint points[8];
+    static CFuncPoint ft[8];
     sceVu0FVECTOR     color;
     CFuncPoint       *point;
     int               light_num;
     int               index;
 
-    light_num = func_point.GetLight(pos, points, 3, check, 0);
+    light_num = func_point.GetLight(pos, ft, 3, check, 0);
 
     for (index = 0; index < light_num; index++) {
-        point = &points[index];
+        point = &ft[index];
         sceVu0ScaleVector(color, point->plight.color, GetLightAnimeWeight(point, anime_frame));
         mgSetPlight(3 - index, point->position, color, point->plight.power, point->plight.range);
     }
@@ -1029,10 +1004,6 @@ int CMap::DrawSub(int direct) {
 
     return total;
 }
-
-int CMapParts::Draw() { return DrawSub(0); }
-
-int CMapParts::DrawDirect() { return DrawSub(1); }
 
 void CMap::DrawEffect() {
     CMapParts **list;
@@ -1100,11 +1071,11 @@ void CMap::DrawFireEffect(int tex_block) {
     check.time = 0;
     CreateFuncCheck(&check);
     mgTexManager.ReloadTexture(tex_block, (sceVif1Packet *) 0);
-    fire_texture = mgTexManager.GetTexture(at_1352, tex_block);
-    light_texture = mgTexManager.GetTexture(at_1353, tex_block);
+    fire_texture = mgTexManager.GetTexture("fire_wrk", tex_block);
+    light_texture = mgTexManager.GetTexture("lightling", tex_block);
     mgUnitMatrix(matrix);
 
-    ::DrawFireEffect((float (*)[4]) matrix, &func_point, &check, 1.0f, fire_texture, light_texture);
+    ::DrawFireEffect(matrix, &func_point, &check, 1.0f, fire_texture, light_texture);
     list = draw_parts;
 
     if (list != 0) {
@@ -1120,7 +1091,7 @@ void CMap::DrawFireEffect(int tex_block) {
             }
 
             parts->GetLWMatrix(matrix);
-            ::DrawFireEffect((float (*)[4]) matrix, &parts->func_point_mngr, &check,
+            ::DrawFireEffect(matrix, &parts->func_point_mngr, &check,
                              1.0f, fire_texture, light_texture);
         }
     }
@@ -1136,7 +1107,7 @@ void CMap::DrawFireRaster() {
     CreateFuncCheck(&check);
     mgUnitMatrix(matrix);
 
-    ::DrawFireRaster((float (*)[4]) matrix, &func_point, &check, fire_raster);
+    ::DrawFireRaster(matrix, &func_point, &check, fire_raster);
     list = draw_parts;
 
     if (list != 0) {
@@ -1165,7 +1136,6 @@ void CMap::DrawWater(mgCCamera *camera, mgCTexture *screen, mgCTexture *overlay)
 
     int ripple_row;
     int surface_no;
-    int surface_offset;
     int ripple_column;
     if (water_surface_num <= 0) return;
     if (screen == NULL) {
@@ -1186,19 +1156,19 @@ void CMap::DrawWater(mgCCamera *camera, mgCTexture *screen, mgCTexture *overlay)
         surface_no = 0;
     }
 
-    for (surface_no = 0, surface_offset = 0; surface_no < water_surface_num; surface_offset += 4, surface_no++) {
-        if ((*(CWaterFrame **)((u8 *)water_surface + surface_offset)) != NULL) {
-            (*(CWaterFrame **)((u8 *)water_surface + surface_offset))->CreatePacket();
-            (*(CWaterFrame **)((u8 *)water_surface + surface_offset))->SetTexture(screen);
+    for (surface_no = 0; surface_no < water_surface_num; surface_no++) {
+        if (water_surface[surface_no] != NULL) {
+            water_surface[surface_no]->CreatePacket();
+            water_surface[surface_no]->SetTexture(screen);
             ripple_row = fptosi(48.0f * ((float)rand() / (float)0x7FFFFFFF));
             ripple_column = fptosi(32.0f * ((float)rand() / 2147483648.0f));
             float shake_strength = 0.1f;
-            (*(CWaterFrame **)((u8 *)water_surface + surface_offset))->Shake(ripple_row, ripple_column, shake_strength);
+            water_surface[surface_no]->Shake(ripple_row, ripple_column, shake_strength);
             float speed_value = 0.15f;
             const float &speed = speed_value;
-            (*(CWaterFrame **)((u8 *)water_surface + surface_offset))->SetParam(speed, 0.0045f, 0.0f, 16.0f);
-            (*(CWaterFrame **)((u8 *)water_surface + surface_offset))->Step();
-            (*(CWaterFrame **)((u8 *)water_surface + surface_offset))->SetColor(0x80, 0x80, 0x80, 0x80);
+            water_surface[surface_no]->SetParam(speed, 0.0045f, 0.0f, 16.0f);
+            water_surface[surface_no]->Step();
+            water_surface[surface_no]->SetColor(0x80, 0x80, 0x80, 0x80);
         }
     }
 
@@ -1331,12 +1301,12 @@ void CMap::DrawWater(mgCCamera *camera, mgCTexture *screen, mgCTexture *overlay)
 }
 
 void CMap::DrawTrBox() {
-    int   plight_enable;
-    int   lighting;
-    float position[4];
-    char *box;
-    int   i;
-    int   light_count;
+    int              plight_enable;
+    int              lighting;
+    float            position[4];
+    CMapTreasureBox *box;
+    int              i;
+    int              light_count;
 
     if (tr_box_num == 0 || tr_box == 0) {
         return;
@@ -1349,21 +1319,21 @@ void CMap::DrawTrBox() {
     check.time = 0;
     CreateFuncCheck(&check);
     GetNowTime();
-    box = (char *) tr_box;
+    box = tr_box;
 
-    for (i = 0; i < tr_box_num; i++, box += 0x680) {
-        if (((CMapTreasureBox *) box)->active == 0) {
+    for (i = 0; i < tr_box_num; i++, box++) {
+        if (box->active == 0) {
             continue;
         }
 
-        CMapParts *link = ((CMapTreasureBox *) box)->parts;
+        CMapParts *link = box->parts;
 
         if (link != 0 && link->GetShow() == 0) {
             continue;
         }
 
-        if (*(unsigned int *) &func_point & 0x40) {
-            ((CMapTreasureBox *) box)->GetPosition(position);
+        if (func_point.flag & FUNC_POINT_MNGR_LIGHT) {
+            box->GetPosition(position);
             position[3] = 40.0f;
             light_count = SetFuncPLight(position, &check);
         } else {
@@ -1374,7 +1344,7 @@ void CMap::DrawTrBox() {
             mgPlightEnable(1);
         }
 
-        ((CMapTreasureBox *) box)->DrawDirect();
+        box->DrawDirect();
         ResetFuncPLight(light_count);
     }
 
@@ -1574,11 +1544,11 @@ void CMap::FixCameraPartsOnOff(float *camera_pos) {
     }
     CCameraInfo *selected = NULL;
     int          camera_no;
-    char        *candidate = (char *) camera_info;
+    CCameraInfo *candidate = camera_info;
 
-    for (camera_no = 0; camera_no < camera_info_num; camera_no++, candidate += 0xD0) {
-        if (mgDistVector(((CCameraInfo *) candidate)->pos[0], camera_pos) < 10.0f) {
-            selected = (CCameraInfo *) candidate;
+    for (camera_no = 0; camera_no < camera_info_num; camera_no++, candidate++) {
+        if (mgDistVector(candidate->pos[0], camera_pos) < 10.0f) {
+            selected = candidate;
             break;
         }
     }
@@ -1692,53 +1662,52 @@ CFuncPoint *CMap::GetEvent(float *pos, int check_type, MapEventInfo *info) {
 
 CFuncPoint *CMap::InScreenFunc(InScreenFuncInfo *info) {
     CFuncPoint *hit = 0;
-    char       *parts;
+    CMapParts  *parts;
     int         i;
     CFuncPoint *result;
     float       saved_y = 0.0f;
     float       nearest = 0.0f;
-    float      *values = (float *) info;
-    parts = (char *) place_parts;
+    parts = place_parts;
 
-    for (i = 0; i < place_parts_max; i++, parts += sizeof(CMapParts)) {
-        u8 unused = *(s8 *) ((CMapParts *) parts)->name == 0;
+    for (i = 0; i < place_parts_max; i++, parts++) {
+        u8 unused = parts->name[0] == 0;
 
         if (unused) {
             continue;
         }
 
-        if (((CMapParts *) parts)->CheckDraw() == 0) {
+        if (parts->CheckDraw() == 0) {
             continue;
         }
 
-        result = ((CMapParts *) parts)->InScreenFunc(info);
+        result = parts->InScreenFunc(info);
 
         if (result == 0) {
             continue;
         }
 
-        if (hit != 0 && !(values[2] < nearest)) {
+        if (hit != 0 && !(info->dist < nearest)) {
             continue;
         }
 
         hit = result;
-        saved_y = values[1];
-        nearest = values[2];
+        saved_y = info->unk_04;
+        nearest = info->dist;
     }
 
-    values[1] = saved_y;
+    info->unk_04 = saved_y;
     return hit;
 }
 
 void CMap::DrawScreenFunc(mgCFrame *frame) {
-    char *parts = (char *) place_parts;
-    int   i;
+    CMapParts *parts = place_parts;
+    int        i;
 
-    for (i = 0; i < place_parts_max; i++, parts += sizeof(CMapParts)) {
-        u8 unused = *(s8 *) ((CMapParts *) parts)->name == 0;
+    for (i = 0; i < place_parts_max; i++, parts++) {
+        u8 unused = parts->name[0] == 0;
 
-        if (!unused && ((CMapParts *) parts)->CheckDraw() != 0) {
-            ((CMapParts *) parts)->DrawScreenFunc(frame);
+        if (!unused && parts->CheckDraw() != 0) {
+            parts->DrawScreenFunc(frame);
         }
     }
 }
@@ -1765,11 +1734,11 @@ void CMap::AnimeStep(CObjAnimeEnv *env) {
     }
 }
 void CMap::Step() {
-    char *parts = (char *) place_parts;
-    int   i;
+    CMapParts *parts = place_parts;
+    int        i;
 
-    for (i = 0; i < place_parts_num; i++, parts += sizeof(CMapParts)) {
-        ((CMapParts *) parts)->Step();
+    for (i = 0; i < place_parts_num; i++, parts++) {
+        parts->Step();
     }
 }
 
@@ -1785,7 +1754,7 @@ int CMap::GetSeSrcVolPan(int *ids, float *vols, float *pans, int max) {
     total = 0;
     mgUnitMatrix(matrix);
 
-    got = ::GetSeSrcVolPan((float (*)[4]) matrix, &func_point, &check, ids, vols, pans, max);
+    got = ::GetSeSrcVolPan(matrix, &func_point, &check, ids, vols, pans, max);
     total += got;
     ids += got;
     max -= got;
@@ -1804,7 +1773,7 @@ int CMap::GetSeSrcVolPan(int *ids, float *vols, float *pans, int max) {
             continue;
         }
 
-        if ((*(u32 *) &parts->func_point_mngr & 0x80) == 0) {
+        if ((parts->func_point_mngr.flag & FUNC_POINT_MNGR_SOUND) == 0) {
             continue;
         }
 
@@ -1814,7 +1783,7 @@ int CMap::GetSeSrcVolPan(int *ids, float *vols, float *pans, int max) {
             return total;
         }
 
-        got = ::GetSeSrcVolPan((float (*)[4]) matrix, (&parts->func_point_mngr),
+        got = ::GetSeSrcVolPan(matrix, (&parts->func_point_mngr),
                                &check, ids, vols, pans, max);
         total += got;
         ids += got;
@@ -1861,28 +1830,28 @@ void CMap::AssignFuncPoint(mgCMemory *stack) {
 
         obj_anime = new (stack->Alloc(blocks + 2)) CObjAnime[count];
         CFuncPoint *point;
-        char       *animation = (char *) obj_anime;
+        CObjAnime  *animation = obj_anime;
 
         if (animation != NULL) {
             func_point.GetStart(FUNC_POINT_ANIME);
 
             if ((point = func_point.Get()) != NULL) {
                 do {
-                    ((CObjAnime *) animation)->frame = NULL;
-                    ((CObjAnime *) animation)->piece = NULL;
-                    ((CObjAnime *) animation)->parts = NULL;
-                    ((CObjAnime *) animation)->func_point = NULL;
-                    ((CObjAnime *) animation)->back = 0;
-                    ((CObjAnime *) animation)->stop = 0;
-                    ((CObjAnime *) animation)->func_point = point;
+                    animation->frame = NULL;
+                    animation->piece = NULL;
+                    animation->parts = NULL;
+                    animation->func_point = NULL;
+                    animation->back = 0;
+                    animation->stop = 0;
+                    animation->func_point = point;
                     parts = NULL;
 
                     if (point->anime.parts_name != NULL) {
                         parts = GetPlaceParts(point->anime.parts_name);
                     }
 
-                    ((CObjAnime *) animation)->AssignFuncAnime(point, parts);
-                    animation += 0x30;
+                    animation->AssignFuncAnime(point, parts);
+                    animation++;
                 } while ((point = func_point.Get()) != NULL);
             }
 
@@ -1903,7 +1872,7 @@ void CMap::CreateTrBox(CMapTreasureBox *model, int tex_block, mgCMemory *stack) 
         return;
     }
 
-    top_frame = model->CObjectFrame::frame->SearchFrame(at_1927);
+    top_frame = model->CObjectFrame::frame->SearchFrame("top");
 
     if (top_frame != NULL) {
         top_frame->SetRotType(2);
@@ -2051,7 +2020,7 @@ void CMap::LoadData(unsigned int *pcp_pack, unsigned int *img_pack, int *tex_blo
             }
 
             file = GetPackFile(img_pack, name, NULL);
-            printf(at_2008, file, name);
+            printf("%x %s\n", file, name);
 
             if (file != NULL) {
                 first_block = block;
@@ -2149,32 +2118,3 @@ int CheckFuncEvent(CFuncPoint *point, float *pos, int check_type, MapEventInfo *
 
     return 1;
 }
-
-int CObject::Draw() { return 0; }
-
-int CObject::DrawDirect() { return 0; }
-
-// Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_327__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_574__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_1352__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_1353__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_1927__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", at_2008__DATA);
-
-// Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", __vt__4CMap__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", __vt__18CList_P9CMapParts___DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", __vt__23CList_14PartsGroupData___DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", __vt__9CMapWater__DATA);
-
-// Small initialised data (.sdata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/map", CMapName__DATA);
-
-// Small uninitialised data (.sbss)
-INCLUDE_BSS(init_1249, 0x4);
-INCLUDE_BSS(init_1301, 0x4);
-
-// Uninitialised data (.bss)
-INCLUDE_BSS(ft_1248, 0xE00);
-INCLUDE_BSS(attr_1300, 0x90);

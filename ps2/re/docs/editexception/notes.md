@@ -1,30 +1,26 @@
 # editexception: reverse-engineering notes
 
-## Draft and matching status
-Named, typed C++ definitions for `InitNpcCameraReaction`, `InitS51Thunder`,
-`StepFirePowder`, `CGeyserEffect::Create`, `Step`, `GetEmpty`, `CreatePoint`, and
-`StepGeyserEffect` reproduce the retail image and are promoted. The
-`CGeyserEffect` constructor also compiles to matching instructions, but its
-single linked-image promotion attempt produced duplicate `mgCVisual` and
-`mgC3DSprite` definitions from the header's inline virtual functions; it
-remains guarded by `NONMATCHING` with the original assembly in the game build.
-The other seven functions now have named, typed C++ drafts behind `NONMATCHING`.
-All 17 functions compile in the draft comparison: ten compare equal and seven
-differ. Each of the seven new drafts received one isolated promotion attempt;
-none promoted, so the default game build still selects their `INCLUDE_ASM`
-branches. Three promotion attempts reached image comparison and differed;
-`DrawGeyserEffect`, `DrawFirePowder`, and `InitFirePowder` encountered duplicate
-inline `mgCVisual`/`mgC3DSprite`/`mgCFrame::SetVisual` definitions while linking,
-and `CreatePacket` failed the local-data postprocessor comparison. Those are
-promotion tooling or emitted-data blockers in addition to the function diffs.
+## Source status
+
+Every function is native C++ with no `NONMATCHING` guards, `INCLUDE_ASM`
+fallbacks or data markers; all data is typed native definitions. The complete
+object is 0x19FC bytes with 271 relocations. `InitFirePowder`
+(`InitFirePowder__FiP6CSceneiP9mgCMemory`, 0x2FCA30, GLOBAL, symbol size
+0x358 inside the 0x360 extent) depends on the placement-new row for
+`__nw__FUiP1` / `__ct__11mgC3DSpriteFv`, `after_constructor_inline`,
+`expected_matches: 1`: at its `SpriteVis = new (memory->Alloc(7)) mgC3DSprite`
+retail tests the allocation result in `v0` and copies it to `s0` in the branch
+delay slot, whereas MWCC otherwise copies first and tests `s0`. The particle
+array-new and the out-of-line frame/attribute constructors are not selected.
+See [placement conversion](../satansfiddle/placement-new.md).
 
 Special-case effects for edit (Georama) maps and the S51 dungeon floor. No first-game
-counterpart was found in `/home/adubbz/development/chronicle`.
+counterpart exists in Dark Cloud 1.
 
 ## Globals
 Every named global in this unit is LOCAL in retail (`build/re/local_symbols.tsv`), so none is
-declared in the header; they become `static` definitions in the `.cpp` when data is migrated.
-All are 4-byte `.sbss`.
+declared in the header; they are `static` definitions in the `.cpp`.
+All are 4-byte `.sbss`, in the retail order of camera-reaction, thunder, fire-powder and geyser state.
 
 | Symbol | Type | Meaning / evidence |
 |---|---|---|
@@ -47,11 +43,13 @@ All are 4-byte `.sbss`.
 | `GeyserRndSeed` | `int` | `rand()` at end of `InitGeyserEffect`; not read in this unit. |
 | `GeyserEffect` | `CGeyserEffect *` | `new[](0x210)` via `__construct_new_array(..., ctor, 0, 0x80, 4)`. |
 
-`at_1328__2` (.bss 0x10) and the `.data` `at_11xx`/`at_13xx` blocks are compiler-generated
-local array initialisers (colour/size/uv vectors for `CPSetSprite`); `at_1176__2`/`at_1177__2`
-are 4 x float[4] uv tables indexed by `i & 3` in `DrawFirePowder`.
-Strings: "p07_g0301", "g0301_07-m", "g0301_08-m", "na", "g0301_21", "s51",
-"p05_s5102-0", "p11_s5102-0", "effect/firerain.img", "firerain", "effect/geyser.img", "geyser_eff".
+The `.bss` 0x10 zero template and the `.data` blocks are compiler-generated local array
+initialisers (colour/size/uv vectors for `CPSetSprite`; `CGeyserEffect::CreatePacket` initialises
+its real `mgVec4` size, UV and colour aggregates directly, including the zero UV initialiser);
+`DrawFirePowder` has two 4 x float[4] uv tables indexed by `i & 3`.
+Strings, all inline literals at their uses: "p07_g0301", "g0301_07-m", "g0301_08-m", "na",
+"g0301_21", "s51", "p05_s5102-0", "p11_s5102-0", "effect/firerain.img", "firerain",
+"effect/geyser.img", "geyser_eff".
 
 ## FirePowder (0x20, name neutral: no retail type name)
 Init/Step/Draw FirePowder. 0x00 pos[4] (x,y,z random in +-200/+-300/+-200; w = phase, init 0),
@@ -106,7 +104,7 @@ after their first use or ordinary out-of-line definitions -- the header declares
   geyser parts); emitter index = ((id * 0x10DE8 + 1) >> 16) % 4 (signed). Calls parts vtbl+0x18
   to get a position/matrix into a 16-byte buffer, frame vtbl+0x10 to set it, `mgDrawDirect`.
 - Map numbers (2, 3, 9, 0x55, 0x57) and 0x4C (place-parts info id) have no enum yet in the tree;
-  left as literals for the body agent to wrap if an enum appears.
+  remain literals until their value domain is established.
 
 ## Unresolved
 - Retail name of the fire rain particle struct (`FirePowder` is neutral).
@@ -116,48 +114,16 @@ after their first use or ordinary out-of-line definitions -- the header declares
   cleanly with the current `CList<mgCTexAnimeData>` layout; the draft uses
   named record fields as a provisional interpretation. Its fade timing needs
   a type-layout check before matching work continues.
-- The `DrawFirePowder` and `CreatePacket` drafts use provisional UV, size and
-  colour arrays. Retail keeps their exact values in local assembly data; those
-  values and the associated local-data layout still need migration.
 - `S51Thunder` writes two fields of each map-piece list node in retail; the
   current named-field interpretation for those node writes needs verification.
 
-## Constructor-backed allocations
+## Source forms the matches depend on
 
-`InitFirePowder` uses native placement construction of `mgC3DSprite` in the guarded C++ draft; retail assembly remains active pending an exact match.
-
-## October 8 merged-base fire-powder audit
-
-`InitFirePowder` remains guarded at 150/216 positional differing words
-(0x35C/0x360 bytes) under the pinned profile. Its sprite allocation at +0x108
-has the known placement-new mismatch: retail branches on `v0` and copies to
-`s0` in the delay slot; native construction copies first and branches on
-`s0`. Constructor scheduling shifts the subsequent initialization and
-arithmetic. The natural sprite, frame and attribute types are retained.
-
-Blocker: placement-new construction scheduling. Reconsider after the
-constructor lane validates the sprite/null-result sequence, then remeasure
-the arithmetic tail; the current positional count does not establish that
-all remaining differences have that single cause.
-
-## Mid-day sprite receiver/null-branch audit (October 8)
-
-`InitFirePowder__FiP6CSceneiP9mgCMemory` is still this unit's only guarded
-function. Canonical baseline compilation confirms 150/216 differing words,
-a 0x35C body versus the 0x360 retail extent, and the first substantive mismatch
-at the sprite allocation's result/null test.
-
-Direct assignment of native placement-new to `SpriteVis`, a scoped `created`
-local, a named quadword placement buffer, removal of the redundant placement
-buffer cast, and a positive load-success scope all produce that same count and
-size. The compiler still copies `v0` to `s0` at +0x108, tests `s0` at +0x10C,
-and moves the next allocation's memory receiver into the delay slot. Retail
-tests `v0` at +0x108 and copies it to `s0` in that branch's delay slot. This
-scheduling shifts the following constructor and allocation code.
-
-The guard and original typed source are unchanged. No new selector is inferred
-from the positional arithmetic differences after the constructor. Further work
-needs evidence for native inline-constructor result/null-test scheduling before
-using that tail to calibrate constants. Receipts:
-`.private/midday/probes/editexception/` and
-`.private/midday/m2c/InitFirePowder__FiP6CSceneiP9mgCMemory.txt`.
+- `InitFirePowder`: `attr->fog = 2` selects black fog under the
+  `mgCFrameAttr::fog` contract (0 off, 1 scene colour, 2 black, 3 white; an
+  owning enum belongs in `mg_frame.hpp`); the Z-write sentinel is
+  `MG_ZBUF_NO_WRITE`; `align16_blocks` performs the quadword rounding of the
+  loaded image size. Map IDs and the story bit stay numeric (no owning enum).
+- The placed-parts piece walk uses `CObject *piece = &node->data` (the list
+  holds `CMapPiece`, which derives from `CObject`).
+- `(EditGsTest *) &draw_env.test` is a GS register view (accepted convention).

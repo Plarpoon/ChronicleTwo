@@ -15,18 +15,7 @@
 #include "scenesnd.hpp"
 
 static int         LoadMapData(SCN_LOADMAP_INFO2 &info, int deferred);
-extern char        at_885__2[];
-extern char        at_886__3[];
-extern char        at_887__2[];
-extern char        at_888__2[];
-extern char        at_889__3[];
-extern char        at_890__3[];
-extern char        at_958__2[];
-extern char        at_1116[];
-extern char        at_1117__2[];
-extern char        at_1118__2[];
 static const u_int timer0_count = 0x10000000;
-extern char        at_959__2[];
 
 // Code (.text)
 /**
@@ -61,7 +50,7 @@ static int LoadMapData(SCN_LOADMAP_INFO2 &info, int deferred) {
         files->map_data = (char *) load_buf;
         strcpy(path, files->dir);
         strcat(path, files->map_name);
-        strcat(path, at_885__2);
+        strcat(path, ".map");
 
         if (deferred != 0) {
             result = LoadFileBG(path, (u_long128 *) files->map_data, &files->map_size);
@@ -80,7 +69,7 @@ static int LoadMapData(SCN_LOADMAP_INFO2 &info, int deferred) {
         files->cfg_data = (char *) load_buf;
         strcpy(path, files->dir);
         strcat(path, files->cfg_name);
-        strcat(path, at_886__3);
+        strcat(path, ".cfg");
         files->cfg_size = 0;
 
         if (deferred != 0) {
@@ -100,7 +89,7 @@ static int LoadMapData(SCN_LOADMAP_INFO2 &info, int deferred) {
         files->mpk_data = (u_int *) load_buf;
         strcpy(path, files->dir);
         strcat(path, files->mpk_name);
-        strcat(path, at_887__2);
+        strcat(path, ".mpk");
 
         if (deferred != 0) {
             result &= LoadFileBG(path, (u_long128 *) files->mpk_data, &mpk_size);
@@ -121,10 +110,10 @@ static int LoadMapData(SCN_LOADMAP_INFO2 &info, int deferred) {
         if (info.load_sky != 0) {
             strcpy(path, files->dir);
             strcat(path, files->sky_name);
-            strcat(path, at_888__2);
+            strcat(path, ".sky");
             char def_sky_path[0x20] = "map/";
             strcat(def_sky_path, files->def_sky_name);
-            strcat(def_sky_path, at_888__2);
+            strcat(def_sky_path, ".sky");
 
             if (deferred != 0) {
                 if (LoadFileBG(path, (u_long128 *) files->sky_data, &sky_size) == 0) {
@@ -146,7 +135,7 @@ static int LoadMapData(SCN_LOADMAP_INFO2 &info, int deferred) {
         stack->Align64();
         strcpy(path, files->dir);
         strcat(path, files->ipk_name);
-        strcat(path, at_889__3);
+        strcat(path, ".ipk");
         files->ipk_data = (u_int *) stack->stGetTop();
 
         if (deferred != 0) {
@@ -166,7 +155,7 @@ static int LoadMapData(SCN_LOADMAP_INFO2 &info, int deferred) {
         stack->Align64();
         strcpy(path, files->dir);
         strcat(path, files->efp_name);
-        strcat(path, at_890__3);
+        strcat(path, ".efp");
         files->efp_data = (u_int *) stack->stGetTop();
 
         if (deferred != 0) {
@@ -193,8 +182,6 @@ void SCN_LOADMAP_INFO2::Initialize() {
     memset(this, 0, sizeof(*this));
 }
 
-
-#ifdef NONMATCHING
 int CScene::LoadChara(int index, u_int *pack, char *name, mgCMemory *model_stack, mgCMemory *motion_stack, mgCMemory *image_stack, int image_block, int no_outline) {
     u_int       *files[1];
     int          sizes[1];
@@ -205,7 +192,7 @@ int CScene::LoadChara(int index, u_int *pack, char *name, mgCMemory *model_stack
     }
 
     DeleteChara(index);
-    int slot = AssignChara(index, chara, at_958__2);
+    int slot = AssignChara(index, chara, "chara");
 
     if (slot < 0) {
         return -1;
@@ -217,10 +204,10 @@ int CScene::LoadChara(int index, u_int *pack, char *name, mgCMemory *model_stack
         return -1;
     }
 
-    scene_chara->status |= 1;
+    scene_chara->status |= SCENE_DATA_LOADED;
 
     if (name == NULL) {
-        GetPackFileExt(pack, at_959__2, files, 1, sizes, &name);
+        GetPackFileExt(pack, "cfg", files, 1, sizes, &name);
     }
 
     chara->Initialize();
@@ -236,9 +223,6 @@ int CScene::LoadChara(int index, u_int *pack, char *name, mgCMemory *model_stack
     chara->sound_info.foot_sound_id = 0;
     return slot;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneload", LoadChara__6CSceneFiPUiPcP9mgCMemoryP9mgCMemoryP9mgCMemoryii);
-#endif
 
 void CScene::DeleteChara(int index) {
     CSceneCharacter *chara;
@@ -250,7 +234,6 @@ void CScene::DeleteChara(int index) {
     }
 }
 
-#ifdef NONMATCHING
 int CScene::CopyChara(int index, int source_index, mgCMemory *memory) {
     float        position[4];
     float        rotation[4];
@@ -265,7 +248,7 @@ int CScene::CopyChara(int index, int source_index, mgCMemory *memory) {
 
     chara->Initialize();
     DeleteChara(index);
-    int slot = AssignChara(index, chara, at_958__2);
+    int slot = AssignChara(index, chara, "chara");
 
     if (slot < 0) {
         return -1;
@@ -278,7 +261,7 @@ int CScene::CopyChara(int index, int source_index, mgCMemory *memory) {
         return slot;
     }
 
-    scene_chara->status |= 1;
+    scene_chara->status |= SCENE_DATA_LOADED;
     scene_chara->texb = source->texb;
     CCharacter2 *original = source->chara;
 
@@ -298,9 +281,6 @@ int CScene::CopyChara(int index, int source_index, mgCMemory *memory) {
     original->SetScale(scale);
     return slot;
 }
-#else
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/sceneload", CopyChara__6CSceneFiiP9mgCMemory);
-#endif
 
 int CScene::LoadMapFromMemory(int map_no, SCN_LOADMAP_INFO2 *info) {
     int step = 0;
@@ -337,7 +317,7 @@ int CScene::LoadMapFromMemory(int map_no, int step, SCN_LOADMAP_INFO2 *info) {
         if (stack == NULL || buf == NULL) {
             return -1;
         }
-        edit_map = new ((u_long128 *) stack->Alloc(0x111)) CEditMap;
+        edit_map = new (stack->Alloc(0x111)) CEditMap;
         if (edit_map == NULL) {
             return -1;
         }
@@ -392,7 +372,7 @@ int CScene::LoadMapFromMemory(int map_no, int step, SCN_LOADMAP_INFO2 *info) {
         if (efp_data != NULL) {
             map->CreateEffect(efp_data, info->efp_tex_block, stack);
         }
-        strcpy((tex_manager = &mgTexManager)->name_suffix, at_1116);
+        strcpy((tex_manager = &mgTexManager)->name_suffix, "1");
         if (map->map_info.sky_info != 0 && files->sky_data != NULL && info->sky_tex_block > 0) {
             CMapSky *sky;
             DeleteSky(0);
@@ -414,7 +394,7 @@ int CScene::LoadMapFromMemory(int map_no, int step, SCN_LOADMAP_INFO2 *info) {
             map->SetPlacePartsBuff(stack, info->place_parts_max);
         }
         map->CreateMap(&mds_list_set, stack);
-        printf(at_1117__2, *(volatile u_int *) timer0_count - start_count);
+        printf("5:%d\n", *(volatile u_int *) timer0_count - start_count);
         return SCN_LOADMAP_STEP_FUNC_POINT;
     }
     if (step == SCN_LOADMAP_STEP_FUNC_POINT) {
@@ -437,7 +417,7 @@ int CScene::LoadMapFromMemory(int map_no, int step, SCN_LOADMAP_INFO2 *info) {
         slot->stack = stack;
         slot->status |= SCENE_DATA_LOADED;
         map->PlacePartsEnd();
-        printf(at_1118__2, stack->stGetRest() * 16 / 1024);
+        printf("remain %dkByte\n", stack->stGetRest() * 16 / 1024);
         return SCN_LOADMAP_STEP_CFG;
     }
     return -1;
@@ -585,18 +565,3 @@ int CScene::DeleteMap(int map_index, int clear_stack) {
 
     return 1;
 }
-
-// Initialised data (.data)
-
-// Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_885__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_886__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_887__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_888__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_889__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_890__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_958__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_959__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_1116__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_1117__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sceneload", at_1118__2__DATA);

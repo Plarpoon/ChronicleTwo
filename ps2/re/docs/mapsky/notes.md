@@ -3,13 +3,9 @@
 Unit at 0x1846F0-0x185710. One class (`CMapSky`, no vtable, no constructor) and one script-filled
 struct (`MAP_SKY_INFO`). No first-game counterpart (Dark Cloud has no `CMapSky`).
 
-## Draft and matching status
-All eleven previously assembly-only functions have named, typed C++ drafts.
-`DrawSkyBack`, `LoadSkyPack`, and `_SKY_BG` passed their first isolated
-promotion checks and now compile in the matching build. The other eight
-compiled but differed from retail; they remain guarded by `NONMATCHING` with
-their original `INCLUDE_ASM` branches selected by default. Every function in
-the unit has a C++ body, and the full default build remains byte identical.
+## Matching status
+
+All functions are native; no assembly function fallback remains.
 
 ## CMapSky (0x108)
 Size: `CScene::LoadMapFromMemory` (sceneload) does `__nw__FUiP1(0x108, mem)`, then calls
@@ -76,7 +72,9 @@ All non-member functions (`LoadSkyPack`, `CheckSkyID`, `_SKY_IMG`, `_SKY_MDS`, `
 (`MAP_SKY_INFO *`), `skyAnmNum`, `skybAnmNum` (int)) are LOCAL in retail: `static` in
 mapsky.cpp, not in the header. Handlers have signature `int (SPI_STACK *, int)` and return 1 on
 success, 0 on an invalid id / full table; they read int, string (stack+8), float (stack+0x10).
-- `tag__2` (0x40): function-local static `SPI_TAG_PARAM tag[8]` in LoadSkyPack, in tag order
+- `tag` (0x40): file-scope static `SPI_TAG_PARAM tag[8]` used by LoadSkyPack, in tag order (retail
+  LOCAL `tag` has no numbered suffix, so it is not a function static; the symbol list's `tag__2`
+  only separates it from other units' `tag`)
   SKY_IMG, SKY_MDS, SKY_ANIME, SUN_MDS, SKYB_MDS, SKYB_ANIME, SKY_BG, {0,0}.
 - `at_387__2` (0x10): function-local static `mgCreateVisualType` in LoadPack: {0, "" (at_386), -1, 0}.
 - LoadSkyPack builds a `CScriptInterpreter` on the stack (0xED0 bytes), `SetTag`, `SetScript`, `Run`.
@@ -94,3 +92,14 @@ success, 0 on an invalid id / full table; they read int, string (stack+8), float
 texture block to -1, then clears the sixteen animation entries in two groups of eight. The
 eight-entry grouping reproduces MWCC's two iterations of 0x40-byte stores. The background
 frame and visual pointers are cleared last. `CheckSkyID` accepts indices 0 through 3.
+
+
+## Native data
+
+No assembly data markers remain. MAP_SKY_INFO *skyInfo, skyAnmNum and skybAnmNum are
+file-local; the eight-row tag table includes its null row. LoadPack's 16-byte
+mgCreateVisualType initializer and one-byte empty string are identified together through
+the real pointer relocation. Anonymous initializer graphs require consistent code-root
+addresses, exact extents/fixed bytes, real R_MIPS_32 fields and zero alignment tails.
+Cycles, conflicting destinations, duplicate owners, nonpointer fields and changed child
+contents reject the graph; agreeing shared-child claims retain one section owner.

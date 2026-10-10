@@ -9,7 +9,7 @@
 - `FISH_FLOAT` is 0x10 bytes: two point pointers, an unused stored word, and buoyancy. The first point gets horizontal damping and upward acceleration according to the pair's depth in water.
 - `FISH_ROD_SEGMENT` is 0x10 bytes: rest length, stiffness, damping, and an untouched final word. Five entries correspond to the rod's five point masses.
 - `CFishObj` is 0x3D0 bytes. It holds at most eight points, eighteen constraints, and sixteen float pairs in the currently mapped storage. Observed object counts are 5/6/2 for the lure, 4/6/3 for the float, and 3/3/0 for the hook. The maximum array counts are storage extents rather than proven gameplay limits.
-- `RodPoint[5]`, `LurePoint[3]`, `FlyingPoint`, `FishPoint`, and `LinePoint[64]` share the `FISH_POINT` layout. `SaoFrame[8]` points at the rod joints named `sao1` through `sao8`. `SaoDist` records each joint's distance from the first joint.
+- `RodPoint[5]`, `LurePoint[3]`, `FlyingPoint`, `FishPoint`, and `LinePoint[64]` share the `FISH_POINT` layout. `SaoFrame[8]` points at the rod joints named `sao`, `sao2` through `sao7`, and `ito`. `SaoDist` records each joint's distance from the first joint.
 
 ## Line and casting
 
@@ -50,10 +50,10 @@
 
 The assembly reference uses hard-coded signed orientation axes `{0,1,2}` for the lure, `{-1,2,0}` for the float, and `{-1,0,2}` for the hook. The `fish_juji` sprite has left and right UV spans selected by `ActionChanceDir`. The interpolation basis is the four-row matrix `[-1,3,-3,1]`, `[2,-5,4,-1]`, `[-1,0,1,0]`, `[0,2,0,0]`, scaled by one half after multiplication.
 
-The guarded C++ drafts now cover every game function in the unit and the static initializer. A function remains supplied by `INCLUDE_ASM` until its retail object comparison reaches zero. The battle and rod step drafts use the named `CScene`, `MoveCheckInfo`, `mgCFrame`, `FISH_POINT`, and `FISH_ROD_SEGMENT` members. Their detailed disassembly and m2c listings are retained in the per-function records under `ps2/re/functions/fishingobj`.
+Every game function in the unit and the static initializer is native C++. The battle and rod step functions use the named `CScene`, `MoveCheckInfo`, `mgCFrame`, `FISH_POINT`, and `FISH_ROD_SEGMENT` members.
 
 ## Rod step sequence
 
-`RodStep` pins the rod’s first two masses to model joints, advances the cast endpoint, integrates the remaining rod, line and tackle points, solves the rod twice, then enforces either the battle attachment or the line and tackle constraints. It next builds seven flexible rod joint transforms from the five point curve, queries nearby collision triangles, corrects the line against ground, applies cast end velocity, resolves tackle collision, and applies water lift and buoyancy. The line query bounds enclose all paid-out line points and expand by 20 in each spatial axis. Collision triangles whose `area_kind` is 7 receive ignore-mask bit 8 before correction.
+`RodStep` pins the rod's first two masses to model joints, advances the cast endpoint, integrates the remaining rod, line and tackle points, solves the rod twice, then enforces either the battle attachment or the line and tackle constraints. It next builds seven flexible rod joint transforms from the five point curve, queries nearby collision triangles, corrects the line against ground, applies cast end velocity, resolves tackle collision, and applies water lift and buoyancy. The line query bounds enclose all paid-out line points and expand by 20 in each spatial axis. Collision triangles whose `area_kind` is 7 receive ignore-mask bit 8 before correction.
 
-`FishBattle` reads the player’s position and rotation, chooses a random heading around their facing direction, and changes that heading during a directional action chance. It constrains the fish to water height minus 10, moves at speed 8 through `MoveCheck`, and queries polygons within 100 units of its position. `NowFishRot` is a float; it is interpolated as an angle and passed to `sinf` and `cosf`.
+`FishBattle` reads the player's position and rotation, chooses a random heading around their facing direction, and changes that heading during a directional action chance. It constrains the fish to water height minus 10, moves at speed 8 through `MoveCheck`, and queries polygons within 100 units of its position. `NowFishRot` is a float; it is interpolated as an angle and passed to `sinf` and `cosf`.

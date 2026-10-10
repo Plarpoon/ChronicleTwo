@@ -50,7 +50,7 @@ Size from `Init` memset 0x6C, every array stride, `memcpy(...,0x6C)` in `CopyGam
 instead of casting the record to `short *` produces byte-identical code for the whole unit.
 - 0x0 s16 `used_type`: `ConvertUsedItemType` result (`CopyDataItem(int)`), 1 item, 2 attach, 3 weapon,
   4 item family 4, 5 ridepod part, 6 fish, 7 gift box, 8 boiled (`Boiled`). 0x2 s16 `item_no`.
-  0x4 s8 `item_type` (common data type; `IsWhoEquip` compares as `(char)`). 0x5 u8 `rename_flag`
+  0x4 s8 `item_type` (common data type; `IsWhoEquip` compares as `(char)`). 0x5 s8 `rename_flag`
   (`SetName`: 1 when strcmp with `GetItemMessage` differs; `GetName(2)` indexes `symbol_tbl_1338` by it).
   0x6..0x10 never seen.
 - 0x10: union by `used_type` (0x5C bytes). Evidence that the union starts at 0x10: `ToSpectolTrans` passes
@@ -277,9 +277,10 @@ The header gives their addresses, sizes, declarations and purpose comments.
 
 All six functions retain 100% PAL object matches with the typed member access.
 
-Signed reads of the weapon palette and attack-type bytes, the fish sex byte,
-the attachment spectrum source and the character equipment flag use value
-conversion to `s8`. This preserves retail's signed-byte behavior without
+Signed reads of the weapon palette and attack-type bytes, the attachment
+spectrum source and the character equipment flag use value conversion to
+`s8`. The fish `sex` and `rename_flag` fields are themselves `s8`, so their
+reads need no conversion. This preserves retail's signed-byte behavior without
 aliasing those fields through signed-byte pointers in `GetPalletColor`,
 `GetAttackType`, `TransToPassword`, `GetMsgAddInfo`, and `CheckEquipChange`.
 
@@ -313,3 +314,44 @@ values receive the same policy, using their exact IEEE bits. No source
 value, argument order or pointer workaround was introduced. Canonical
 wrapper plus section fixup validates the entire unit: 0xBC54 bytes and
 1076 relocations pass.
+
+
+## Native data and matching constraints
+
+All data are native. GetName owns a 0x61-byte item-name buffer with fifteen alignment
+bytes; GetMsgAddInfo owns a 0x40-byte spectrum buffer. FishGamePreEquip and the battle
+time/time-band caches are file-local. The equipment-type table is signed char[3][5]. A
+four-byte selection table contains {1,2,3,4} although the consumer reads only its first
+three entries. The weapon attribute table has fourteen declared words (0x38); the final
+two zeros are real elements, while the combination loop reads twelve.
+
+CheckWeaponAttribute's const-reference pair preserves retail allocation; a value local
+differs by seven words. The debug-item streams use short item/quantity pairs followed by
+a single -1 halfword, giving 4n+2-byte objects. A fixed-record representation would
+incorrectly add a quantity to the terminator. Consumers read quantity only after a
+positive item test; mode 7 begins the extra stream at pair two. init_partytbl is
+townspeople 1-25 followed by -1, declared size 0x1A.
+
+CheckParamLimmit's five-pointer zero template owns 0x14 bytes with twelve alignment
+bytes. DebugGetItem's four-short equipment template owns eight bytes. Exact extents and
+consistent opcode-matched address relocations identify both; source-only data credit
+excludes linker-owned terminal zero tails.
+
+## Signed flags and attach parameters
+
+BREEDFISH_USED::sex and CGameDataUsed::rename_flag are signed bytes, with
+analyzed consumers using 0/1. GetName indexes the localized name prefix and
+suffix table directly by rename_flag; TransToPassword packs sex into one
+bit, and CheckHaigouTankSex compares the stored bytes. Extra signed-byte
+casts are redundant.
+
+ATTACH_USED has status[2] at +2 followed by attribute[8] at +6.
+GetStatusParam reads these as ten ordered parameters, and monster
+class-change rewards fill the same ten-halfword run. The arrays stay
+separate because gamedata/userdata index them individually; the cross-array
+run is explicitly documented on status. Merging their source interface
+requires coordinated producer and consumer work.
+
+GetActiveChrNo and GetMonsterID are inline accessors with no retail
+out-of-line copy, so their purpose comments carry no mangled/address/size
+tags.

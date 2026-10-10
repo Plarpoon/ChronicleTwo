@@ -126,7 +126,7 @@ void EditPreMenuAnime(int max_count);
  *
  * @mangled LoadEditCursor__FP9mgCMemoryi
  * @address 0x2DDB30
- * @size 0x5C0
+ * @size 0x5B4
  */
 void LoadEditCursor(mgCMemory *stack, int block);
 
@@ -323,7 +323,7 @@ int PaintEditParts(CEditMap *map, int parts_no, int color_no, float *color);
  *
  * @mangled EditMode__FP6CScene
  * @address 0x2DF4F0
- * @size 0x1DE0
+ * @size 0x1DDC
  */
 void EditMode(CScene *scene);
 

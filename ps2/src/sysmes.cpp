@@ -96,25 +96,45 @@ void CreateSystemMes(int index, int unused) {
     GetSystemMessage(index)->SetBuff_system(GetSystemMesBuffer());
 }
 
-// Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_482__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_483__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_484__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_485__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_486__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_487__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_488__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_489__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_490__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_491__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_492__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_493__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/sysmes", at_494__DATA);
-
 // Uninitialised data (.bss)
+/**
+ *
+ * Memory the system message windows allocate from.
+ *
+ */
 mgCMemory SystemMesStack;
-INCLUDE_BSS(SystemMesBuffer, 0xD000);
-INCLUDE_BSS(SysMesBuffer, 0x13880);
+
+/**
+ *
+ * System-text buffer shared by the system message windows.
+ *
+ */
+short SystemMesBuffer[0x6800];
+
+/**
+ *
+ * Message buffer shared by the system message windows.
+ *
+ */
+short SysMesBuffer[0x9C40];
+
+/**
+ *
+ * First system message window.
+ *
+ */
 ClsMes SystemMessage;
+
+/**
+ *
+ * Second system message window.
+ *
+ */
 ClsMes SystemMessage2;
+
+/**
+ *
+ * Third system message window.
+ *
+ */
 ClsMes SystemMessage3;

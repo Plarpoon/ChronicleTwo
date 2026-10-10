@@ -1,8 +1,14 @@
 # mapparts: reverse-engineering notes
 
-`CMapParts::Copy` and `CMapParts::AssignFuncAnime` are currently supplied by
-retail assembly. Their list nodes and map pieces are constructed as C++ objects
-in retail; the source no longer writes virtual-table addresses into raw storage.
+`CMapParts::Copy` and `CMapParts::AssignFuncAnime` are accepted native C++.
+Their scoped rows construct one `CList<CMapPiece>` and one `CList<CObjAnime>`
+respectively. `Copy` requires conversion after constructor inlining; its
+list template contradicts a general before-inline template rule. No
+`NONMATCHING` guards or assembly fallbacks remain in this unit. See
+[placement conversion](../satansfiddle/placement-new.md).
+The native `AssignFuncAnime` construction makes this compile emit
+`__vt__17CList_9CObjAnime_` itself, weak as in retail (binding 13), so its
+former `.vtables` marker is removed and the unit has no assembly data markers.
 
 Header: `ps2/include/mapparts.hpp`. Declares `CMapParts`, `CMapTreasureBox`, `InScreenFuncInfo`,
 `MAP_PARTS_COLOR_MAX`. Unit owns no plain-named global data (only `at_244` = float4 {0,0,0,1}
@@ -14,10 +20,11 @@ literal and the three vtables).
   `class CMapParts;` (CMap holds `CMapParts *` arrays, stride 0x310).
 - `CFuncPointMngr`, `CFuncPointCheck` from `funcpoint.hpp`; `CCharacter2` from `character.hpp`;
   `mgCFrame` from `mg_frame.hpp` (needs `mg_visual.hpp`).
-- None of map.hpp / funcpoint.hpp / character.hpp / mg_visual.hpp existed when written, so the
-  header does not compile yet. Layout was verified with stub types of the right sizes (CObject
-  0x70, mgCFrame 0x110, CFuncPointMngr 0x34 with vptr at +0x30, CFuncPointCheck {float, s32},
-  CCharacter2 0x660): all offsets and both size asserts pass.
+- During original header probing, map.hpp / funcpoint.hpp / character.hpp /
+  mg_visual.hpp were absent. Stubs verified CObject 0x70, mgCFrame 0x110,
+  CFuncPointMngr 0x34 with vptr at +0x30, CFuncPointCheck {float, s32}, and
+  CCharacter2 0x660; all offsets and both size asserts passed. Current builds
+  use the existing real headers.
 - `InScreenFuncInfo` has no owner; also used by `CMap::InScreenFunc`, `CEditMap::InScreenFunc`,
   `CScene::InScreenFunc`, `DngMainDraw`. Declared here; other headers should include this one or
   forward-declare `struct InScreenFuncInfo;` rather than redefine it.
@@ -65,7 +72,9 @@ UpDatePosition (0x7C), Copy(CMapParts&, mgCMemory*) (0x80). Other slots used: 0x
 | 0x304-0x30F | alignment | |
 
 Inline functions emitted elsewhere: ctor (map 0x15DF40; the `*(this+0x2FC)=0` store is
-CFuncPointCheck's ctor), Draw/DrawDirect (map; tail calls to DrawSub(0)/DrawSub(1)),
+CFuncPointCheck's ctor), Draw/DrawDirect (map, weak; tail calls to DrawSub(0)/DrawSub(1);
+inline in `mapparts.hpp`, so `Initialize` is the first non-inline virtual and this unit
+emits `__vt__9CMapParts`),
 SetLODDist/SetLODBlend/GetLODBlend (mapload).
 
 Return types: functions returning a value are declared `int` (flags/counts) except SearchPiece /
@@ -91,12 +100,11 @@ Magic values seen (no enum declared here because they belong to other units):
   Construction uses `CObjAnime`'s default constructor, then calls virtual
   `Initialize`; `AssignFuncAnime` calls the virtual method again before
   linking the node. Both calls use retail's `t9` dispatch register. A private
-  typed `AssignFuncAnime` draft compiles, but compares at 80.4375% and emits
-  0x148 bytes against retail's 0x140. Differences include allocation-result
-  null checks, list-head/tail control flow, and the loop-tail branch and delay
-  slot. A private `do`/`while` form and a private 0x30 helper-mask seed did not
-  change the output. The source retains its assembly gap; this private draft
-  is not a matched implementation.
+  typed `AssignFuncAnime` trial compared at 80.4375% and emitted 0x148 bytes
+  against retail's 0x140. That earlier form missed allocation-result null
+  checks, list-head/tail flow, and the loop-tail branch/delay slot. A private
+  `do`/`while` form and 0x30 helper-mask seed left its output unchanged. The
+  trial retained assembly; it predates the accepted native implementation.
 - COcclusion stride 0xC0 (InsideScreen).
 - DAT_003971e0 in InsideScreen: global view matrix (owned elsewhere).
 
@@ -126,3 +134,15 @@ unrelated class; nothing was carried over. No first-game equivalent of CMapTreas
 CCharacter2 inline members emitted in this unit (GetMotionStatus ... SetPosition) belong to
 `character.hpp`; CMapPiece::Draw/DrawDirect (emitted here, 0x10 each) belong to `mdslist.hpp`;
 `CList<CObjAnime>::Initialize` comes from the CList template in `mg_tanime.hpp`.
+
+
+## Native data and matching constraints
+
+The unit has no assembly data markers. `CCharacter2::SetPosition`'s `{0,0,0,1}`
+initializer supplies the 16-byte position template. Native vtables have extents 0xF8 for
+`CMapTreasureBox` and 0x84 for `CMapParts`.
+
+MWCC emits a vtable in the unit defining its first non-inline virtual function.
+`CMapParts::Draw` and `DrawDirect` are weak inline bodies in map at 0x15F7E0/0x15F7F0.
+The first non-inline virtual is `Initialize` at 0x167660, so mapparts emits
+`__vt__9CMapParts` at 0x37B740. Native AssignFuncAnime emits the CList<CObjAnime> table.

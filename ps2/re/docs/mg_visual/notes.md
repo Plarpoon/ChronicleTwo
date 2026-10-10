@@ -1,15 +1,50 @@
 # mg_visual: reverse-engineering notes
 
-`mgCVisualFixMDT::Copy` is currently supplied by retail assembly. The copied
-visual's virtual table is established by class construction in retail, and the
-source no longer substitutes direct virtual-table stores.
+`mgCVisualFixMDT::Copy` is native C++. It constructs the copy with placement
+new, assigns it with `*copy = *this` and gives it a material array of its own.
+The copied visual's virtual table is established by class construction, with no
+direct virtual-table stores. Its placement construction uses an after-inline
+statement conversion row in `scripts/build/satansfiddle.json`. `*copy = *this`
+invokes the implicit derived assignment, which makes MWCC emit
+`__as__12mgCVisualMDTFRC12mgCVisualMDT` (0x1413F0, 0x98 bytes, generated weak
+binding) in this unit; the header declares no such operator. The material byte
+count is unsigned, rounded up to quadwords, and the rounded block count is
+assigned in both branches as retail does.
 
-## C++ draft status
-The current unit has one guarded C++ draft, `SendDMA`, whose matching build
-uses `INCLUDE_ASM`. The other functions now have ordinary C++ definitions.
-Earlier isolated promotion attempts are recorded in
-`scripts/re/promotion_attempts.tsv`; the current set of definitions requires a
-fresh integrated object check before individual matching claims can be made.
+## Source status
+`SendDMA` is the unit's only assembly-backed function; its guarded C++ draft
+sets the channel registers and alternates the scratchpad buffers but waits with
+`sceDmaSync`, while retail waits on the COP0 DMA completion condition. Every
+other function is native C++ and byte-identical.
+
+Ten `INCLUDE_RODATA` markers remain. `set_tex0_dma`, `set_tex0_giftag`,
+`set_texa_dma`, `set_texa_giftag`, `mat_vif`, `mat_vif_dif`, `mat_vif_d` and
+`mat_vif_d_tex` are 128-bit scalars with nonzero upper words: MWCC rejects a
+shift-based 128-bit initializer (`illegal data size`), a plain wide hexadecimal
+scalar leaves `set_tex0_dma`'s high command word wrong, and four-word arrays
+copied with `memcpy` change `mgSetPkTEX0` (0x74 bytes, a `memcpy` relocation) and
+`SetMaterialRef` (0x17C bytes). `__vt__13mgCVisualPrim__DATA` and
+`__vt__12mgCVisualMDT__DATA` are vtables no native source in this unit emits;
+native `Copy` references the MDT one. The GIF tag `giftag`, the 48-byte
+`texflush_dma` chain, the `set_data_func` writer table, the `prog_vif`/`progf_vif`
+program quadwords of `CreateFacePacket`, `start_dma`, `buff_id`, `prev_tex` and
+`mat_pw` (a `u_long128` initialized to 3) are ordinary definitions.
+
+- Both `DataAssignMDT` read the face section through `MDT_FACES`; the FixMDT one uses a plain
+  `mgCMemory` scratch stack and addresses the face packet as
+  `(int) &memory->stack[memory->stack_used]`. DMA tag words go to
+  `mgCFace::packet_tag_word[n]`, the first being `size | MG_DMA_REF`.
+- `CopyMDTData` and `CopyMDTDataPointer` locate sections from the serialized `*_ofs` byte
+  offsets; in `CopyMDTDataPointer` the section addresses are integers because pointer sums
+  reorder the address arithmetic.
+- `mgCVisualFixMDT::CreatePacket` reuses the `manager` parameter for the packet start: a
+  separate local swaps `this`/`manager` between `s0`/`s1`. Both `CreatePacket` form data
+  addresses as `data_cursor | 0x20000000` and sizes as `((int) cursor - (int) node->packet) / 16`.
+- `CreateRenderInfoPacket` writes matrices into the `u_int` packet through
+  `(float (*)[4]) &write[4]`.
+- `mgCVisualMDT::CreateFace` keeps `switch ((int) out_face)` with `case 0`; `if (out_face != NULL)`
+  changes the branch layout (0x14 bytes shorter). Both face groups are
+  `new (memory->Alloc(4)) mgFACE_GROUP`.
 
 Header: `ps2/include/mg_visual.hpp` (includes `mg_dataset.hpp` for `mgCVisual`, `MDT_HEADER`,
 `MDT_MATERIAL_`, `FACES_ID`, `mgVisualKind`). Declares `mgFaceType`, `mgDestAlphaTest`, `mgMaterial`,
@@ -63,10 +98,10 @@ through slot +0x30 at each level), so `mgCVisualMDT() { Initialize(); }` etc.
 
 `__as__12mgCVisualMDTFRC12mgCVisualMDT` (0x1413F0, in the manifest) is a compiler-generated copy
 assignment. It sits right after its first user `mgCVisualFixMDT::Copy`, copies every field word by
-word and skips the vptr. The current source explicitly declares and defines this
-operator while `Copy` is assembly-backed; this is a compliance blocker. Copy uses
-it as `*copy = *this` (an `mgCVisualMDT&` assignment), and
-`mgCVisualMotionMDT::Copy` uses it too.
+word and skips the vptr. The header declares no assignment operator: `Copy`'s
+`*copy = *this` invokes the implicit `mgCVisualFixMDT` assignment, which calls
+this generated base assignment, and MWCC emits it weak in this unit with
+retail's 0x98-byte body. `mgCVisualMotionMDT::Copy` uses it too.
 
 A private typed `Copy` trial removed the declaration and manual definition.
 At default inline depth MWCC inlined the assignment, omitted its symbol, and
@@ -76,8 +111,8 @@ bytes and emitted a separate 0x40-byte `mgCVisual` base assignment. Retail's
 0x98-byte derived assignment is a leaf that copies the base fields inline.
 A scoped depth of one made `Copy` 0x1D0
 bytes and again omitted the assignment symbol. These are compiler scheduling
-observations, not accepted source forms; `Copy` and the derived assignment
-remain to be promoted together.
+observations, not accepted source forms. `Copy` and the generated assignment
+are now native together (`placement-new-copy-derived-20261009.md`).
 
 A further private typed `Copy` trial kept the existing explicit assignment
 definition to isolate the caller. MWCC emitted 0x1A0 bytes instead of retail's
@@ -175,10 +210,6 @@ No texture: 5 qw. Texture and !(flags&1): 7 qw. Otherwise 10 qw. Sets `prev_tex`
 - GetScrPad -> `u_int*`; SendDMA(void* dst, int qwc): DMA ch8 (fromSPR), MADR = dst & 0x0FFFFFFF,
   SADR = scratchpad half, then toggles buff_id. CreateFacePacket/Prim RenderInfo write into the
   scratchpad when the packet address has top nibble 2, and flush through SendDMA every 0x514 words.
-  A guarded C++ draft sets the channel registers and alternates the scratchpad
-  buffers. It waits with `sceDmaSync` when the previous transfer is pending;
-  retail waits on the COP0 DMA completion condition, so the draft does not
-  match the handwritten instruction sequence.
 - mgSetPkTEX0(p, tex0, tex1[, texa]): writes TEX1 (reg 0x14) first, then TEX0 (6) [, TEXA 0x3B];
   returns 4 / 5. mgSetPkTexFlush_TagCnt returns 3 (writes only when p != NULL).
 - SetPointLight(p, m0, m1): VIF UNPACK 8 qw to 0x2D, both 4x4 matrices; returns 9. What each

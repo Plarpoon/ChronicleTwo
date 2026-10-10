@@ -5,12 +5,10 @@ CScriptInterpreter with two tags. Called from MainLoop and LanguageChange. No fi
 counterpart. The unit owns no class.
 
 ## Functions
-- `LoadNPCCfg`, `GetPartyCharaMessage`, `GetNPCModelName`, `GetNPCName`, and
-  `GetPartyNPCData` compile and match the linked retail game. The `LoadNPCCfg` stack buffer
-  has 2048 quadwords; a larger buffer changes only the frame offsets.
-- `_NPC_NUM`, `_NPC_INFO`, and `GetPartyCharaModelName` have named compiling drafts behind
-  `NONMATCHING`. The two local callbacks could not link the assembly `npc_spitag` reference
-  during their single promotion attempts. The model-path draft differed in code generation.
+
+All eight functions compile natively and match retail. `LoadNPCCfg` uses a 2048-quadword
+stack buffer; increasing it changes frame offsets.
+
 | Symbol | Binding | Notes |
 |---|---|---|
 | `_NPC_NUM(SPI_STACK*, int)` | LOCAL -> static in .cpp | `NpcBaseDataTotalNum = spiGetStackInt(stack)`; returns 1 |
@@ -19,7 +17,7 @@ counterpart. The unit owns no class.
 | `GetPartyCharaMessage(int,int,int)` | global, returns int | 0 if no entry; else `typetbl[type] + chara_no*100`; `type == 12` -> `chara_no + 3000`; 3rd arg non-zero adds 30000 (only `_GET_PARTY_CHARA_MES_NO`, an event-script tag, passes 1) |
 | `GetNPCModelName(int)` | returns char* | `&entry->model` (+0x1F) or 0 |
 | `GetNPCName(int)` | returns char* | `&entry->name` (+0x3) or 0 |
-| `GetPartyCharaModelName(int,int)` | returns char* | NULL unless 1 <= chara_no <= 0x20; builds path in `path_885` (static char[0x40]); type see enum |
+| `GetPartyCharaModelName(int,int)` | returns char* | NULL unless 1 <= chara_no <= 0x20; builds path in the function static `path` (char[0x40]); type see enum |
 | `GetPartyNPCData(int)` | returns NPC_BASE_DATA* | linear search of NpcBaseData[0..NpcBaseDataTotalNum) on `chara_no` (lh) |
 
 `_NPC_NUM`/`_NPC_INFO` take `(SPI_STACK *stack, int argument_count)` matching `SPI_TAG_FUNCTION`
@@ -50,8 +48,8 @@ Size 0x36 (2-byte aligned by the s16). Script arg N is `SPI_STACK` entry N (stri
 - `typetbl_853` .data 0x10: function-local `static char` table in GetPartyCharaMessage (loaded
   with lb): 0, 10, 20, 30, 2, 40, 45, 50, 55, 0, 90, 60, 0, 21, 25, 0. Types seen at call sites:
   0, 1, 3, 4, 5, 7, 8, 10, 11 (0x0B), 12 (0x0C, special-cased). No enum: meanings not established.
-- `path_885` .bss 0x40: function-local `static char[0x40]` in GetPartyCharaModelName.
-- `infocfg_886` .data 9: function-local `static char[] = "info.cfg"` in GetPartyCharaModelName
+- `path$885` .bss 0x40: function-local `static char[0x40]` in GetPartyCharaModelName.
+- `infocfg$886` .data 9: function-local `static char[] = "info.cfg"` in GetPartyCharaModelName
   (returned directly for type 1).
 - Strings: "chara/", ".chr", "event/train/t%s.chr", "menu/npc/t%s.chr", "npc%d.cfg".
 
@@ -59,3 +57,16 @@ Size 0x36 (2-byte aligned by the s16). Script arg N is `SPI_STACK` entry N (stri
 0 "chara/" + model + ".chr" (`_LOAD_CHARA_NPC`), 1 "info.cfg" (`_LOAD_CHARA_NPC`),
 2 "event/train/t%s.chr" (`_LOAD_CHARA_NPC`), 3 "menu/npc/t%s.chr" (MenuNPCModelLoad).
 The parameter stays `int` to mangle as `GetPartyCharaModelName__Fii`.
+
+
+## Native data and canonical identity
+
+All functions and data are native; no `INCLUDE_ASM`, `INCLUDE_RODATA` or `INCLUDE_BSS`
+remains. `NpcBaseData[180]` has stride 0x36 and declared extent 0x25F8; eight following
+bytes are alignment. The three-row `npc_spitag` array includes its null terminator.
+`GetPartyCharaModelName` owns `path[0x40]` and the writable nine-byte `infocfg[]` string
+as local statics.
+
+`typetbl_853` remains file-local under its retail identity. Making it a function-local
+`typetbl` preserves the executable but leaves the table unbound in the complete-object
+check. The 16-byte signed suffix table has no established category enum.

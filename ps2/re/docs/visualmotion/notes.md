@@ -1,8 +1,14 @@
 # visualmotion: reverse-engineering notes
 
-`mgCVisualMotionMDT::Copy` is currently supplied by retail assembly. Retail
-constructs each base of the copied motion visual before copying its material,
-frame, and weight data; the source has no direct virtual-table stores.
+`mgCVisualMotionMDT::Copy` is native C++. Placement new runs the inline
+constructor of each base, with no direct virtual-table stores. `*copy = *this`
+is the implicit derived assignment: it calls the generated `mgCVisualMDT`
+assignment (emitted by mg_visual) and `mgVu0FBOX::operator=`, and shares the
+frame and weight data. The copy then gets a material array of its own; indexing
+the source and destination material arrays with a separate index keeps retail's
+offset induction. The placement construction uses an after-inline statement
+conversion row in `scripts/build/satansfiddle.json`
+(`placement-new-copy-derived-20261009.md`).
 
 Header: `ps2/include/visualmotion.hpp`. Skinned MDT model (`mgCVisualMotionMDT`), its per-vertex
 weight (`mgVertexWeight`) and its build parameters (`mgCVMotionData`). No first-game counterpart
@@ -97,17 +103,13 @@ retail signature is `PUi`; no record struct is declared.
   checking `Iam() == 3`.
 - DataAssignMotionMDT resets `work_memory`'s `lock` (0x1C) and `stack_used` (0x24), allocates the
   weights from it, then uses its free space as a temporary `mgCMemory` for face indices;
-  packets go to `memory`. Each face gets `packet_tag = size | 0x30000000` (DMA call) and the
-  packet address. The face section is an `MDT_FACES` header followed by variable-size
+  packets go to `memory`. Each face gets `packet_tag_word[0] = size | MG_DMA_REF` (DMA tag ID 3,
+  REF: the GS data sits at the tag's address) and the packet address in `packet_tag_word[1]`. The face section is an `MDT_FACES` header followed by variable-size
   `FACES_ID` records; its `prim_num` field supplies the iteration count. Typed header and
   record access preserve a 100% PAL object match. Returns 1, or 0 when `work_memory` is NULL.
 
 ## Unresolved
 - Field names are descriptive, not retail. `mgCVMotionData::unk_10` purpose unknown.
-- `Copy` indexes source and destination material arrays directly and removes byte offsets into
-  `mgMaterial` records. The copy placeholder needs a typed material pointer at offset 0x44 for
-  the full game build. A separate material index makes MWCC retain the retail offset induction,
-  and the function matches 100%.
 - `Initialize` clears the 32 typed bone entries with a single loop. MWCC unrolls this
   into eight stores per iteration; writing the unrolled loop explicitly changes its
   register allocation. `ChangeWeight` indexes the bone array directly and stops at
@@ -119,21 +121,21 @@ retail signature is `PUi`; no record struct is declared.
 
 The focused MWCC wrapper build, section fixup and canonical checker pass the complete
 `visualmotion` object: 0x1A00 checked bytes and 101 relocations. This establishes the
-native `Initialize` and `ChangeWeight` corrections while the existing
-`CreateFaceMotionPacket` assembly fallback remains in the linked object.
+native `Initialize` and `ChangeWeight` corrections; `CreateFaceMotionPacket`
+is also native in the linked object.
 - CreateVertexWeight's return value is unused by its only caller; declared `void`.
 
-## Motion-packet native candidate
+## Motion-packet loop types
 
-The existing `CreateFaceMotionPacket` source candidate compiles to 0x5A4 bytes,
-versus retail's 0x590. This comparison also exposes native function-local static
-identities (`prog_vif_316` and `progf_vif_317`) that differ from retail's generated
-suffixes; the two VIF command quadwords contain the documented MSCAL/MSCNT values.
-Their compiler-generated names are not evidence of game logic differences.
+CreateFaceMotionPacket is native and exact. The decompiler's halfword temporaries do not
+justify making every batch counter short: that change adds truncations and grows the
+body to 0x5E8. Packed GIF-tag fields and the face's short vertex count have distinct
+arithmetic roles.
 
-The decompiler's signed-halfword temporaries do not justify changing all batch
-counters to `short`: doing so introduces truncations and grows the native function
-to 0x5E8. The packed GIF-tag fields and the face's short vertex count must be
-distinguished from the loop's arithmetic before revising these local types. The
-existing assembly fallback and the exact native initialization/remapping functions
-remain intact.
+## Native data
+
+The unit has no assembly data markers. The callback table, 0x50-byte motion vtable,
+aligned finish template, and local four-word `prog_vif`/`progf_vif` commands are native.
+The command arrays encode MSCAL(2) and MSCNT. Their identity depends on source base
+names, exact declared extents and bytes, and complete retail consumers; numeric compiler
+suffixes do not prove identity.

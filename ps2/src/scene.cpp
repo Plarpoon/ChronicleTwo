@@ -27,18 +27,6 @@
 #include "scene.hpp"
 #include "scenesnd.hpp"
 
-extern char at_1503__3[];
-extern char at_1504__3[];
-extern char at_853__3[];
-extern char at_1117[];
-extern char at_1171[];
-extern char noname_1188[8];
-extern char noname_1242[8];
-extern char noname_1294[8];
-extern char noname_1381[8];
-extern char noname_1692[8];
-extern char noname_1709[8];
-
 // Code (.text)
 float f_rand(float min_value, float max_value) {
     return min_value + (((max_value - min_value) * (float) rand()) / 2147483648.0f);
@@ -168,7 +156,7 @@ void CRipple::Draw() {
         prim.Begin(MG_PRIM_TRIANGLE);
 
         if (LanguageCode == 0 || LanguageCode == 1) {
-            rect_a = GetRectFontTex(GetFontNo(at_853__3), &tex_no);
+            rect_a = GetRectFontTex(GetFontNo("\x81\x9b"), &tex_no);
             u = rect_a.x;
             v = rect_a.y;
             w = rect_a.width;
@@ -518,7 +506,7 @@ void CRain::Step() {
                 break;
             }
 
-            mgCFrame *frame = chara_frame->SearchFrame(at_1117);
+            mgCFrame *frame = chara_frame->SearchFrame("hat");
 
             if (frame == NULL) {
                 break;
@@ -793,96 +781,42 @@ void CScene::InitAllData() {
 }
 
 void CScene::Initialize(void) {
+    int index;
+
     stack_num = 12;
     stack_no = 0;
-    for (int index = 0; index < stack_num; index++) {
+    for (index = 0; index < stack_num; index++) {
         stack[index] = NULL;
     }
     work_stack = NULL;
     read_buff = NULL;
     chara_num = 128;
-    {
-        int byte_offset;
-        int index = 0;
-        byte_offset = 0;
-        for (; index < chara_num; index++) {
-            CSceneCharacter *character = (CSceneCharacter *)((char *)this + byte_offset +
-                offsetof(CScene, chara));
-            character->Initialize();
-            byte_offset += sizeof(CSceneCharacter);
-        }
+    for (index = 0; index < chara_num; index++) {
+        chara[index].Initialize();
     }
     camera_num = 8;
-    {
-        int byte_offset;
-        int index = 0;
-        byte_offset = 0;
-        for (; index < camera_num; index++) {
-            CSceneCamera *camera = (CSceneCamera *)((char *)this + byte_offset +
-                offsetof(CScene, camera));
-            camera->Initialize();
-            byte_offset += sizeof(CSceneCamera);
-        }
+    for (index = 0; index < camera_num; index++) {
+        camera[index].Initialize();
     }
     message_num = 8;
-    {
-        int byte_offset;
-        int index = 0;
-        byte_offset = 0;
-        for (; index < message_num; index++) {
-            CSceneMessage *message = (CSceneMessage *)((char *)this + byte_offset +
-                offsetof(CScene, message));
-            message->Initialize();
-            byte_offset += sizeof(CSceneMessage);
-        }
+    for (index = 0; index < message_num; index++) {
+        message[index].Initialize();
     }
     map_num = 4;
-    {
-        int byte_offset;
-        int index = 0;
-        byte_offset = 0;
-        for (; index < map_num; index++) {
-            CSceneMap *map = (CSceneMap *)((char *)this + byte_offset +
-                offsetof(CScene, map));
-            map->Initialize();
-            byte_offset += sizeof(CSceneMap);
-        }
+    for (index = 0; index < map_num; index++) {
+        map[index].Initialize();
     }
     sky_num = 4;
-    {
-        int byte_offset;
-        int index = 0;
-        byte_offset = 0;
-        for (; index < sky_num; index++) {
-            CSceneSky *sky = (CSceneSky *)((char *)this + byte_offset +
-                offsetof(CScene, sky));
-            sky->Initialize();
-            byte_offset += sizeof(CSceneSky);
-        }
+    for (index = 0; index < sky_num; index++) {
+        sky[index].Initialize();
     }
     gameobj_num = 4;
-    {
-        int byte_offset;
-        int index = 0;
-        byte_offset = 0;
-        for (; index < sky_num; index++) {
-            CSceneGameObj *object = (CSceneGameObj *)((char *)this + byte_offset +
-                offsetof(CScene, gameobj));
-            object->Initialize();
-            byte_offset += sizeof(CSceneGameObj);
-        }
+    for (index = 0; index < sky_num; index++) {
+        gameobj[index].Initialize();
     }
     effect_num = 8;
-    {
-        int byte_offset;
-        int index = 0;
-        byte_offset = 0;
-        for (; index < effect_num; index++) {
-            CSceneEffect *effect = (CSceneEffect *)((char *)this + byte_offset +
-                offsetof(CScene, effect));
-            effect->Initialize();
-            byte_offset += sizeof(CSceneEffect);
-        }
+    for (index = 0; index < effect_num; index++) {
+        effect[index].Initialize();
     }
     bg_load_step = 0;
     mds_list_set.Initialize();
@@ -1091,17 +1025,17 @@ int CScene::CheckMDSName(int excluded_map, char *filename) {
 
 CSceneData *CScene::GetData(int kind, int index) {
     switch (kind) {
-        case 1:
+        case SCENE_DATA_CHARA:
             return GetSceneCharacter(index);
-        case 2:
+        case SCENE_DATA_MAP:
             return GetSceneMap(index);
-        case 3:
+        case SCENE_DATA_MESSAGE:
             return GetSceneMessage(index);
-        case 4:
+        case SCENE_DATA_CAMERA:
             return GetSceneCamera(index);
-        case 6:
+        case SCENE_DATA_GAMEOBJ:
             return GetSceneGameObj(index);
-        case 7:
+        case SCENE_DATA_EFFECT:
             return GetSceneGameObj(index);
         default:
             return NULL;
@@ -1136,8 +1070,11 @@ int CScene::AssignCamera(int index, mgCCamera *camera, char *camera_name) {
         return -1;
     }
 
+    static char noname[8] = "no_name";
+
+
     if (camera_name == NULL) {
-        camera_name = noname_1188;
+        camera_name = noname;
     }
 
     if (active_camera < 0) {
@@ -1223,8 +1160,11 @@ int CScene::AssignMessage(int index, ClsMes *message_data, char *message_name) {
         return -1;
     }
 
+    static char noname[8] = "no_name";
+
+
     if (message_name == NULL) {
-        message_name = noname_1242;
+        message_name = noname;
     }
 
     if (slot->AssignData(message_data, message_name) != 0) {
@@ -1278,8 +1218,11 @@ int CScene::AssignChara(int index, CCharacter2 *character_data, char *character_
         return -1;
     }
 
+    static char noname[8] = "no_name";
+
+
     if (character_name == NULL) {
-        character_name = noname_1294;
+        character_name = noname;
     }
 
     if (slot->AssignData(character_data, character_name) != 0) {
@@ -1353,8 +1296,11 @@ int CScene::AssignMap(int index, CMap *map_data, char *map_name) {
         return -1;
     }
 
+    static char noname[8] = "no_name";
+
+
     if (map_name == NULL) {
-        map_name = noname_1381;
+        map_name = noname;
     }
 
     if (active_map < 0) {
@@ -1602,8 +1548,11 @@ int CScene::AssignSky(int index, CMapSky *sky_data, char *sky_name) {
         return -1;
     }
 
+    static char noname[8] = "no_name";
+
+
     if (sky_name == NULL) {
-        sky_name = noname_1692;
+        sky_name = noname;
     }
 
     if (slot->AssignData(sky_data, sky_name) != 0) {
@@ -1633,8 +1582,11 @@ int CScene::AssignEffect(int index, CEffectScriptMan *effect, char *effect_name)
         return -1;
     }
 
+    static char noname[8] = "no_name";
+
+
     if (effect_name == NULL) {
-        effect_name = noname_1709;
+        effect_name = noname;
     }
 
     if (slot->AssignData(effect, effect_name) != 0) {
@@ -1882,7 +1834,7 @@ void CScene::SetWind(float strength, float *direction) {
 }
 
 void CScene::ResetWind() {
-    *(int *) &wind_power = 0;
+    wind_power = 0.0f;
 }
 
 float CScene::GetWind(float *direction) {
@@ -1909,29 +1861,3 @@ void CScene::SetNowSubMapNo(int now_sub_map_no) {
 
     this->now_sub_map_no = now_sub_map_no;
 }
-
-// Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", at_1503__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", at_1504__3__DATA);
-
-// Constants (.rodata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", at_853__3__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", at_1117__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", at_1171__DATA);
-
-// Virtual tables (.vtables)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", __vt__6CScene__DATA);
-
-// Small initialised data (.sdata)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1188__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1242__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1294__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1381__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1692__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/scene", noname_1709__DATA);
-
-// Small uninitialised data (.sbss)
-INCLUDE_BSS(init_1519, 0x4);
-
-// Uninitialised data (.bss)
-INCLUDE_BSS(sun_func_1518, 0x1C0);

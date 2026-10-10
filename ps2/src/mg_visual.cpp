@@ -12,24 +12,6 @@
 #include "mg_visual.hpp"
 #include "mglib.hpp"
 
-extern u_char texflush_dma__2[0x30];
-extern u_int prog_vif_730[4];
-extern u_int progf_vif_731[4];
-extern u_long128 *(*set_data_func__2[8])(int, int, int **, u_long128 *, u_long128 *, u_long128 *, u_long128 *, u_long128 *);
-/**
- *
- * Exposes the allocation state used while building a visual's packet.
- *
- */
-struct VisualScratchMemory {
-    u_char pad_00[0x1C];
-    int    lock;        /**< Prevents allocation while the stack is locked. */
-    int    stack;       /**< Base address of the packet scratch stack. */
-    int    stack_used;  /**< Number of occupied quadwords. */
-    int    stack_size;  /**< Capacity of the scratch stack. */
-    int    stack_block; /**< Address of the heap block holding the stack. */
-};
-
 /**
  *
  * Copies a material's four float channels together.
@@ -58,11 +40,63 @@ struct mgVISUAL_SETUP_PACKET {
 
 STATIC_ASSERT(sizeof(mgVISUAL_SETUP_PACKET) == 0x140);
 
-#ifdef NONMATCHING
-static u_long128 *(*set_data_func[8])(int, int, int **, u_long128 *, u_long128 *, u_long128 *, u_long128 *, u_long128 *) = {
-    SetData0, SetData1, SetData2, SetData3, SetData4, SetData5, SetData6, SetData7}; /**< Vertex upload writers selected by the face attributes. */
+/**
+ *
+ * Mutable A+D tag shared by visual packet writers.
+ *
+ */
+mgVisualGifTag giftag __attribute__((aligned(16))) = {MG_GIFTAG_EOP, {1u << MG_GIFTAG_NREG_SHIFT, SCE_GIF_PACKED_AD, 0}};
 
-#endif
+/**
+ *
+ * DMA chain flushing the GS texture cache.
+ *
+ */
+static u_char texflush_dma[0x30] __attribute__((aligned(16))) = {
+    0x02, 0x00, 0x00, MG_DMA_CNT >> 24, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, MG_VIF_DIRECT >> 24,
+    0x01, MG_GIFTAG_EOP >> 8, 0x00, 0x00, 0x00, 0x00, 0x00, 1 << (MG_GIFTAG_NREG_SHIFT - 24),
+    SCE_GIF_PACKED_AD, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    SCE_GS_TEXFLUSH, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+};
+
+/**
+ *
+ * Vertex upload writers selected by each face attribute combination.
+ *
+ */
+static u_long128 *(*set_data_func[8])(int, int, int **, u_long128 *, u_long128 *, u_long128 *, u_long128 *, u_long128 *) = {
+    SetData0, SetData1, SetData2, SetData3, SetData4, SetData5, SetData6, SetData7
+};
+
+/**
+ *
+ * Whether the scratchpad DMA transfer is active.
+ *
+ */
+int start_dma;
+
+/**
+ *
+ * Scratchpad half selected for the next packet.
+ *
+ */
+int buff_id;
+
+/**
+ *
+ * Texture whose registers were most recently written.
+ *
+ */
+mgCTexture *prev_tex;
+
+/**
+ *
+ * Final control quadword of a material upload.
+ *
+ */
+u_long128 mat_pw = 3;
 
 // Code (.text)
 u_int *GetScrPad() {
@@ -104,9 +138,9 @@ int mgSetPkTexFlush_TagCnt(u_int *buffer) {
     }
 
     u_long128 *dst = (u_long128 *) buffer;
-    dst[0] = *(u_long128 *) &texflush_dma__2[0];
-    dst[1] = *(u_long128 *) &texflush_dma__2[0x10];
-    dst[2] = *(u_long128 *) &texflush_dma__2[0x20];
+    dst[0] = *(u_long128 *) &texflush_dma[0];
+    dst[1] = *(u_long128 *) &texflush_dma[0x10];
+    dst[2] = *(u_long128 *) &texflush_dma[0x20];
     return 3;
 }
 
@@ -353,7 +387,7 @@ void mgCVisualMDT::CopyMDTDataPointer(MDT_HEADER *header, mgCMemory *memory) {
     colour_num = header->colour_num;
     uv_num = header->uv_num;
     material_num = header->material_num;
-    vertex = (float (*)[4]) vertex_address;
+    vertex = (sceVu0FVECTOR *) vertex_address;
     normal = (sceVu0FVECTOR *) normal_address;
     colour = (sceVu0FVECTOR *) colour_address;
     uv = (sceVu0FVECTOR *) uv_address;
@@ -429,7 +463,7 @@ FACES_ID *mgCVisualMDT::CreateFace(FACES_ID *faces, mgCMemory *memory, mgCMemory
     face->next = NULL;
     previous = face_group;
     if (previous == NULL) {
-        if ((group = (mgFACE_GROUP *)operator new(sizeof(mgFACE_GROUP), memory->Alloc(4))) != NULL) {
+        if ((group = new (memory->Alloc(4)) mgFACE_GROUP) != NULL) {
             memset(group, 0, sizeof(mgFACE_GROUP));
         }
         group->next = NULL;
@@ -444,7 +478,7 @@ FACES_ID *mgCVisualMDT::CreateFace(FACES_ID *faces, mgCMemory *memory, mgCMemory
             previous = previous->next;
         }
         if (previous->next == NULL) {
-            if ((group = (mgFACE_GROUP *)operator new(sizeof(mgFACE_GROUP), memory->Alloc(4))) != NULL) {
+            if ((group = new (memory->Alloc(4)) mgFACE_GROUP) != NULL) {
                 memset(group, 0, sizeof(mgFACE_GROUP));
             }
             previous->next = group;
@@ -488,9 +522,9 @@ int mgCVisualMDT::DataAssignMDT(MDT_HEADER *header, mgCMemory *memory,
     self->texture_manager = textures;
     CopyMDTData(header, memory);
     face_group = 0;
-    u_char   *table = (u_char *) header + header->faces_ofs;
-    FACES_ID *cursor = (FACES_ID *) (table + 0x10);
-    int       count = *(int *) (table + 8);
+    MDT_FACES *faces = (MDT_FACES *) ((u_char *) header + header->faces_ofs);
+    FACES_ID  *cursor = (FACES_ID *) (faces + 1);
+    int        count = faces->prim_num;
 
     for (int i = 0; i < count; i++) {
         cursor = self->CreateFace(cursor, memory, memory, 0);
@@ -504,9 +538,8 @@ int mgCVisualFixMDT::DataAssignMDT(MDT_HEADER *header, mgCMemory *memory,
     mgCVisualMDT       *self = this;
     mgCFace            *part;
     int                 scratch_buffer[0x12C00];
-    VisualScratchMemory scratch;
-    ((mgCMemory *) &scratch)->Init();
-    ((mgCMemory *) &scratch)->stSetBuffer((u_long128 *) scratch_buffer, 0x4B00);
+    mgCMemory           scratch;
+    scratch.stSetBuffer((u_long128 *) scratch_buffer, 0x4B00);
 
     if (textures == NULL) {
         textures = &mgTexManager;
@@ -515,20 +548,20 @@ int mgCVisualFixMDT::DataAssignMDT(MDT_HEADER *header, mgCMemory *memory,
     self->texture_manager = textures;
     CopyMDTDataPointer(header, memory);
     face_group = 0;
-    u_char   *table = (u_char *) header + header->faces_ofs;
-    int       count = *(int *) (table + 8);
-    FACES_ID *cursor = (FACES_ID *) (table + 0x10);
+    MDT_FACES *faces = (MDT_FACES *) ((u_char *) header + header->faces_ofs);
+    int        count = faces->prim_num;
+    FACES_ID  *cursor = (FACES_ID *) (faces + 1);
 
     for (int i = 0; i < count; i++) {
         scratch.stack_used = 0;
         scratch.lock = 0;
-        cursor = self->CreateFace(cursor, memory, (mgCMemory *) &scratch, &part);
-        int address = ((VisualScratchMemory *) memory)->stack + ((VisualScratchMemory *) memory)->stack_used * 16;
+        cursor = self->CreateFace(cursor, memory, &scratch, &part);
+        int address = (int) &memory->stack[memory->stack_used];
         int size = self->CreateFacePacket((u_int *) address, part);
-        ((int *) part)[8] = size | 0x30000000;
-        ((int *) part)[9] = address;
-        ((int *) part)[10] = 0;
-        ((int *) part)[11] = 0;
+        part->packet_tag_word[0] = size | MG_DMA_REF;
+        part->packet_tag_word[1] = address;
+        part->packet_tag_word[2] = 0;
+        part->packet_tag_word[3] = 0;
         memory->Alloc(size);
     }
 
@@ -544,10 +577,10 @@ int mgCVisualMDT::Draw(u_int *tag, float (*matrix)[4], mgCDrawManager *draw_mana
     }
 
     mgRENDER_INFO *info = draw_manager->render_info;
-    self->texture_manager = (mgCTextureManager *) draw_manager->texture_manager;
+    self->texture_manager = draw_manager->texture_manager;
     prev_tex = 0;
-    mgCMemory *memory = (mgCMemory *) draw_manager->data_memory;
-    void      *buffer = (void *) (memory->stack + memory->stack_used);
+    mgCMemory *memory = draw_manager->data_memory;
+    void      *buffer = memory->stack + memory->stack_used;
     memory->stack_used += self->CreateRenderInfoPacket((u_int *) buffer, matrix, info);
     self->CreatePacket(draw_manager);
 
@@ -593,8 +626,8 @@ u_int mgCVisualMDT::CreatePacket(mgCDrawManager *manager) {
     mgRENDER_INFO *info;
     int            data_start;
     info = manager->render_info;
-    packet_memory = (mgCMemory *) manager->packet_memory;
-    data_memory = (mgCMemory *) manager->data_memory;
+    packet_memory = manager->packet_memory;
+    data_memory = manager->data_memory;
     node = model->face_group;
     u_int start = (u_int) (packet_memory->stack + packet_memory->stack_used);
     int   data_cursor;
@@ -607,7 +640,7 @@ u_int mgCVisualMDT::CreatePacket(mgCDrawManager *manager) {
         node->packet = (u_long128 *) cursor;
         int    size = SetMaterialRef((u_long128 *) (data_cursor | 0x20000000),
                                      model->material + node->material,
-                                     ((mgCFrameAttr *) info->attr)->program_mode);
+                                     info->attr->program_mode);
         u_int *tag = (u_int *) cursor;
         cursor += 16;
         tag[0] = size | 0x30000000;
@@ -644,7 +677,7 @@ u_int mgCVisualMDT::CreatePacket(mgCDrawManager *manager) {
 
         cursor += mgSetPkTexFlush_TagCnt((u_int *) cursor) * 16;
         u_int *end_tag = (u_int *) cursor;
-        cursor = (u_char *) (end_tag + 4);
+        cursor += 16;
         end_tag[0] = 0x60000000;
         end_tag[1] = 0;
         end_tag[2] = 0;
@@ -665,8 +698,8 @@ u_int mgCVisualFixMDT::CreatePacket(mgCDrawManager *manager) {
     mgFACE_GROUP  *node;
     mgRENDER_INFO *info;
     int            data_start;
-    data_memory = (mgCMemory *) manager->data_memory;
-    packet_memory = (mgCMemory *) manager->packet_memory;
+    data_memory = manager->data_memory;
+    packet_memory = manager->packet_memory;
     node = face_group;
     info = manager->render_info;
 
@@ -681,7 +714,7 @@ u_int mgCVisualFixMDT::CreatePacket(mgCDrawManager *manager) {
         node->packet = (u_long128 *) cursor;
         int size =
             SetMaterialRef((u_long128 *) (data_cursor | 0x20000000), material + node->material,
-                           ((mgCFrameAttr *) info->attr)->program_mode);
+                           info->attr->program_mode);
         u_int *tag = (u_int *) cursor;
         cursor += 16;
         tag[0] = size | 0x30000000;
@@ -710,7 +743,7 @@ u_int mgCVisualFixMDT::CreatePacket(mgCDrawManager *manager) {
 
         cursor += mgSetPkTexFlush_TagCnt((u_int *) cursor) * 16;
         u_int *end_tag = (u_int *) cursor;
-        cursor = (u_char *) (end_tag + 4);
+        cursor += 16;
         end_tag[0] = 0x60000000;
         end_tag[1] = 0;
         end_tag[2] = 0;
@@ -913,6 +946,7 @@ u_long128 *SetData5(int count, int type, int **index, u_long128 *packet, u_long1
     *index = cursor;
     return colour_out;
 }
+
 /**
  *
  * Writes the indexed vertex streams for one vertex batch.
@@ -974,6 +1008,10 @@ u_long128 *SetData7(int count, int type, int **index, u_long128 *packet, u_long1
     return colour_out;
 }
 int mgCVisualMDT::CreateFacePacket(u_int *packet, mgCFace *face) {
+    // VIF quadwords starting the vertex transform program at entry two and continuing it.
+    static u_int prog_vif[4] __attribute__((aligned(16))) = {0, 0, 0, MG_VIF_MSCAL | 2};
+    static u_int progf_vif[4] __attribute__((aligned(16))) = {0, 0, 0, MG_VIF_MSCNT};
+
     u_int     *start;
     sceGifTag  batch_tag;
     u_long128 *end;
@@ -1056,15 +1094,15 @@ int mgCVisualMDT::CreateFacePacket(u_int *packet, mgCFace *face) {
         batch_tag.NLOOP = count | 0x8000;
         *(u_long128 *)write = *(u_long128 *)&batch_tag;
         write += 4;
-        end = set_data_func__2[variant](count, face->type, &indices, (u_long128 *)write,
+        end = set_data_func[variant](count, face->type, &indices, (u_long128 *)write,
                                     (u_long128 *)vertex, (u_long128 *)normal, (u_long128 *)uv, (u_long128 *)colour);
         *unpack = ((u_int)((u_int *)end - payload) / 4 << MG_VIF_NUM_SHIFT) | MG_VIF_UNPACK_V4_32 | MG_VIF_UNPACK_FLG;
         if (started == 0) {
-            *end = *(u_long128 *)prog_vif_730;
+            *end = *(u_long128 *)prog_vif;
             started = 1;
             write = (u_int *)(end + 1);
         } else {
-            *end = *(u_long128 *)progf_vif_731;
+            *end = *(u_long128 *)progf_vif;
             write = (u_int *)(end + 1);
         }
         if (primitive == MG_PRIM_TRIANGLE_STRIP && batch_limit < remaining) {
@@ -1298,28 +1336,33 @@ int mgCVisualMDT::CreateExtRenderInfoPacket(u_int         *packet, float (*matri
     return 0;
 }
 
-INCLUDE_ASM("ps2/asm/pal/nonmatchings/mg_visual", Copy__15mgCVisualFixMDTFP9mgCMemory);
+mgCVisual *mgCVisualFixMDT::Copy(mgCMemory *memory) {
+    mgCVisualFixMDT *copy = new (memory->Alloc(sizeof(mgCVisualFixMDT) / 16 + 2)) mgCVisualFixMDT;
 
-mgCVisualMDT &mgCVisualMDT::operator=(const mgCVisualMDT &source) {
-    unk_00 = source.unk_00;
-    draw_env = source.draw_env;
-    texture_manager = source.texture_manager;
-    prmode = source.prmode;
-    vu1_base = source.vu1_base;
-    vu1_offset = source.vu1_offset;
-    unk_18 = source.unk_18;
-    vertex_num = source.vertex_num;
-    normal_num = source.normal_num;
-    colour_num = source.colour_num;
-    uv_num = source.uv_num;
-    vertex = source.vertex;
-    normal = source.normal;
-    colour = source.colour;
-    uv = source.uv;
-    material_num = source.material_num;
-    material = source.material;
-    face_group = source.face_group;
-    return *this;
+    if (copy == NULL) {
+        return NULL;
+    }
+
+    *copy = *this;
+
+    if (material_num > 0) {
+        unsigned int size = material_num * sizeof(mgMaterial);
+        unsigned int blocks;
+
+        if (size % 16 != 0) {
+            blocks = size / 16 + 1;
+        } else {
+            blocks = size / 16;
+        }
+
+        copy->material = new (memory->Alloc(blocks + 2)) mgMaterial[material_num];
+    }
+
+    for (int index = 0; index < material_num; index++) {
+        copy->material[index] = material[index];
+    }
+
+    return copy;
 }
 
 void SetDrawEnv(mgCDrawEnv *env, mgCVisualAttr *attr, mgCDrawEnv *base) {
@@ -1429,27 +1472,15 @@ int mgCVisualFixMDT::Iam() {
 }
 
 // Initialised data (.data)
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", giftag__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", set_tex0_dma__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", set_tex0_giftag__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", set_texa_dma__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", set_texa_giftag__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", texflush_dma__2__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", mat_vif__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", mat_vif_dif__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", mat_vif_d__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", mat_pw__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", mat_vif_d_tex__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", set_data_func__2__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", prog_vif_730__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", progf_vif_731__DATA);
 
 // Virtual tables (.vtables)
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", __vt__13mgCVisualPrim__DATA);
-INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", __vt__15mgCVisualFixMDT__DATA);
 INCLUDE_RODATA("ps2/asm/pal/nonmatchings/mg_visual", __vt__12mgCVisualMDT__DATA);
-
-// Small uninitialised data (.sbss)
-INCLUDE_BSS(start_dma, 0x4);
-INCLUDE_BSS(buff_id, 0x4);
-INCLUDE_BSS(prev_tex, 0x4);
